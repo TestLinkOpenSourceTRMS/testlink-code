@@ -1,9 +1,12 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.29 2009/07/30 17:22:25 franciscom Exp $
+$Id: inc_head.tpl,v 1.30 2009/08/03 08:14:54 franciscom Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
+     20090801 - franciscom - moved include of prototype.js here because
+                             is not anymore included on EXT-JS distribution
+                             
      20080326 - franciscom - restored $testproject_coloring logic
      20080109 - franciscom - added sort table engine management
      20071201 - franciscom - tinymce support
@@ -34,7 +37,7 @@ rev :
 {* ----- load javascripts libraries -------------------------------------------------- *} 
 	<script type="text/javascript" src="{$basehref}gui/javascript/testlink_library.js" language="javascript"></script>
 	<script type="text/javascript" src="{$basehref}gui/javascript/test_automation.js" language="javascript"></script>
-	
+	<script type="text/javascript" src="{$basehref}third_party/prototype/prototype.js" language="javascript"></script>
 	{if $jsValidate == "yes"} 
 	<script type="text/javascript" src="{$basehref}gui/javascript/validate.js" language="javascript"></script>
     {include file="inc_jsCfieldsValidation.tpl"}

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.108 2009/07/21 15:33:37 havlat Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.109 2009/08/03 08:14:54 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -154,6 +154,10 @@ define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
 /** 
  * @todo havlatm: remove (must be solved via css)
  * @uses planAddTC_m1-tpl 
+ * 
+ * @TODO Francisco - 20090802 -
+ * @DISAGREE, if we want give user possibility to reconfigure
+ *                 how we can do this with CSS 
  **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
@@ -411,13 +415,18 @@ $tlCfg->results['status_label'] = array(
 //	'unknown'       => 'test_status_unknown'
 );
 
-// Is RIGHT to have this DIFFERENT from $tlCfg->results['status_label'],
+// Is RIGHT to have this configurationDIFFERENT from $tlCfg->results['status_label'],
 // because you must choose to not allow some of previous status be available
 // on execution page.
 // See this as a subset of $tlCfg->results['status_label']
 //
 // Used to generate radio and buttons at user interface level.
+//
+// IMPORTANT NOTE ABOUT ORDER:
 // Order is important, because this will be display order on User Interface
+// And will be used on every feature that will need to do ordering
+// according Test Case Execution Status.
+//
 //
 // key   => verbose status as defined in $tlCfg->results['status_code']
 // value => string id defined in the strings.txt file, 
@@ -480,7 +489,8 @@ define('TL_USER_NOBODY', -1);
 define('TL_NO_USER', TL_USER_NOBODY);
 define('TL_USER_ANYBODY', 0);
 
-
+/** must be changes if codes are changed in roles table */
+define('TL_ROLES_ADMIN', 8);
 define('TL_ROLES_TESTER', 7);
 define('TL_ROLES_GUEST', 5);
 define('TL_ROLES_NO_RIGHTS', 3);
@@ -552,6 +562,8 @@ $tlCfg->urgency['code_label'] = array(
 /**
  * data status constants are applicable for data like requirement, test case 
  * <b>Warning: keys must be compliant with ENUM values for DB tables</b>: tcversions, requirements, testplan
+ * @TODOD ENUM TYPE IS NOT ACCEPTED
+ * 
  */
 /** Review status: data was reviewed and are available for using */
 define('TL_REVIEW_STATUS_FINAL', 	'FINAL');
@@ -675,14 +687,17 @@ $tlCfg->gui->custom_fields->time_format = 'H:i:s';
 /** 
  * Review types
  * @since 1.9 
+ *
+ * @REFACTOR Francisco
+ * @TODO explain better where, when and how value is used
+ *       key must be a number.
  **/
-$tlCfg->review_types = array( 
-	'n' => 'type_undefined',
-	't' => 'typo', 
-	'r' => 'recommendation', 
-	'q' => 'question', 
-	'u' => 'unclear', 
-	'm' => 'major problem'
+$tlCfg->review_types = array(1 => 'type_undefined',
+	                         2 => 'typo', 
+	                         3 => 'recommendation', 
+	                         4 => 'question', 
+	                         5 => 'unclear', 
+	                         6 => 'major problem'
 );
 
 /**  @TODO havlatm: remove const; in addition the text should refer to Install manual */  

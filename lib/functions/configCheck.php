@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.49 2009/07/13 18:39:43 franciscom Exp $
+ * @version    	CVS: $Id: configCheck.php,v 1.50 2009/08/03 08:15:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
@@ -25,8 +25,6 @@
  *
  **/
 // ---------------------------------------------------------------------------------------------------
-/** @TODO martin: remove this include (obsolete) */
-require_once('plan.core.inc.php');
 
 /**
  * get home URL
@@ -987,5 +985,19 @@ function reportCheckingPermissions(&$errCounter,$inst_type='none')
 	echo check_file_permissions($errCounter,$inst_type,'config_db.inc.php', TRUE);
 	echo check_file_permissions($errCounter,$inst_type,'custom_config.inc.php');
 	echo '</table>';
+}
+
+// 20070911 - azl
+// 20071029 - azl - modified to only get active test plans bug # 1148
+function getTestPlansWithoutProject(&$db)
+{
+    $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
+    $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
+    
+	$sql = "SELECT id,name FROM {$tables['nodes_hierarchy']} WHERE id " . 
+	       " IN( SELECT id FROM {$tables['testplans']}  " .
+		   " WHERE testproject_id=0 and active=1)";
+	$testPlans = $db->get_recordset($sql);
+	return $testPlans;
 }
 ?>

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.159 2009/07/27 07:26:14 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.160 2009/08/03 08:15:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -73,8 +73,6 @@ require_once("user.class.php");
 require_once("keyword.class.php");
 require_once("treeMenu.inc.php");
 require_once("exec_cfield_mgr.class.php");
-require_once("plan.core.inc.php");
-
 require_once("inputparameter.inc.php");
 
 //@TODO schlundus, i think we can remove php4 legacy stuff?

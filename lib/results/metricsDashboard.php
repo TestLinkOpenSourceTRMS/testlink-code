@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/07/27 07:26:14 $ $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/08/03 08:15:43 $ $Author: franciscom $
  *
  * @author franciscom
  *
@@ -18,8 +18,6 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
-
-
 $gui->tplan_metrics = getMetrics($db,$args);
 
 $smarty = new TLSmarty;
@@ -36,8 +34,7 @@ function getMetrics(&$db,$args)
   
 	// BUGID 1215
 	// get all tesplans accessibles  for user, for $tproject_id
-	$test_plans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,$user_id);
-
+	$test_plans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
 	// Get count of testcases linked to every testplan
 	foreach($test_plans as $key => $value)
 	{

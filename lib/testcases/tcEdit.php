@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.107 $
- * @modified $Date: 2009/07/28 07:07:40 $  by $Author: franciscom $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2009/08/03 08:15:43 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -195,11 +195,11 @@ else if($args->do_create)
 
 		if($tcase['status_ok'])
 		{
-		    $cf_map = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($args->testproject_id,ENABLED,
+			$cf_map = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($args->testproject_id,ENABLED,
 			                                                             NO_FILTER_SHOW_ON_EXEC,'testcase') ;
-			  $tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['id']);
-        $user_feedback = sprintf(lang_get('tc_created'),$args->name);
-        $sqlResult = 'ok';
+	    	$tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['id']);
+        	$user_feedback = sprintf(lang_get('tc_created'),$args->name);
+        	$sqlResult = 'ok';
 		}
 		elseif(isset($tcase['msg']))
 		{
@@ -507,9 +507,6 @@ if ($show_newTC_form)
 	$filters=$tcase_mgr->buildCFLocationMap();
 	foreach($filters as $locationKey => $locationFilter)
 	{ 
-		// 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
-		//                                        $link_id=null,$tplan_id=null,
-		//                                        $tproject_id = null,$filters=null)
 		$cf_smarty[$locationKey] = 
 			$tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id,'design','',
 			                                              null,null,null,$locationFilter);
@@ -518,11 +515,7 @@ if ($show_newTC_form)
 
 	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('tc',$tc_default);
-  
-  
-  
-  
-  $smarty->display($templateCfg->template_dir . $g_tpl['tcNew']);
+	$smarty->display($templateCfg->template_dir . $g_tpl['tcNew']);
 }
 
 /*

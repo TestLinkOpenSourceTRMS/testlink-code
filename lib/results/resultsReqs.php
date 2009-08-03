@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/05/21 19:24:05 $ by $Author: schlundus $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -24,6 +24,8 @@ require_once('requirements.inc.php');
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
+$tables = tlObjectWithDB::getDBTables(array('req_coverage','nodes_hierarchy',
+                                            'tcversions','requirements'));
 
 $args = init_args();
 $gui = new stdClass();
@@ -70,12 +72,12 @@ if(!is_null($args->req_spec_id))
 	$sql = " SELECT DISTINCT REQ.id AS req_id, COALESCE(RC.testcase_id,0) AS testcase_id, " .
 	       " NH_REQ.name AS req_title,status AS req_status, NH.name AS testcase_name, " .
 	       " TCV.tc_external_id,TCV.version " .
-	       " FROM requirements REQ" .
-	       " JOIN nodes_hierarchy NH_REQ ON NH_REQ.id = REQ.id " .
-	       " LEFT OUTER JOIN req_coverage RC ON REQ.id = RC.req_id " .
-	       " LEFT OUTER JOIN nodes_hierarchy NH ON RC.testcase_id = NH.id " .
-	       " LEFT OUTER JOIN nodes_hierarchy NHB ON NHB.parent_id = NH.id " .
-	       " LEFT OUTER JOIN tcversions TCV ON TCV.id=NHB.id " .
+	       " FROM {$tables['requirements']} REQ" .
+	       " JOIN {$tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+	       " LEFT OUTER JOIN {$tables['req_coverage']}  RC ON REQ.id = RC.req_id " .
+	       " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NH ON RC.testcase_id = NH.id " .
+	       " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NHB ON NHB.parent_id = NH.id " .
+	       " LEFT OUTER JOIN {$tables['tcversions']} TCV ON TCV.id=NHB.id " .
 	       " WHERE status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}"; 
 
 	$reqs = $db->fetchRowsIntoMap($sql,'req_id',database::CUMULATIVE);
@@ -101,14 +103,12 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-	$iParams = array(
-		"format" => array(tlInputParameter::INT_N),
-		"req_spec_id" => array(tlInputParameter::INT_N),
-		"tplan_id" => array(tlInputParameter::INT_N),
-	);
+	$iParams = array("format" => array(tlInputParameter::INT_N),
+		             "req_spec_id" => array(tlInputParameter::INT_N),
+		             "tplan_id" => array(tlInputParameter::INT_N));
 
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
+	R_PARAMS($iParams,$args);
 
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;

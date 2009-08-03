@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2009/07/28 17:31:15 $ by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *      20090801 - franciscom - getTestCasesForTestPlan() allows keyword passed by name
  *      20090727 - franciscom - added contribution BUGID  - reportTCResult() accepts CF info
  *      20090726 - franciscom - added contribution BUGID 2719 - getFullPath()
  *      20090609 - franciscom - createTestPlan() - new method
@@ -927,9 +928,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		             " {$this->tables['node_types']} NT " .
 				     " WHERE NH.id={$tcaseid} AND node_type_id=NT.id " .
 				     " AND NT.description='testcase'";
-			
-			file_put_contents('c:\tmp\request.txt', $query); 
-			
 		    $result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
 		    $status_ok = is_null($result) ? false : true; 
         }
@@ -1719,21 +1717,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 
         if( $status_ok )
         {
-            $kMethod=null;
-            if($this->_isParamPresent(self::$keywordNameParamName))
-            {
-                $kMethod='getValidKeywordSetByName';
-            }
-		    else if ($this->_isParamPresent(self::$keywordIDParamName))
-		    {
-		        $kMethod='getValidKeywordSetById';
-		    }
-		    
-		    if( !is_null($kMethod) )
-		    {
-                $keywordSet=$this->$kMethod($this->args[self::$testProjectIDParamName],
-                                            $this->args[self::$keywordIDParamName]);
-		    }
+        	$keywordSet=$this->getKeywordSet($this->args[self::$testProjectIDParamName]);
         }
 
         if( $status_ok )
@@ -2005,7 +1989,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param int $args["testplanid"]
 	 * @param int $args["testcaseid"] - optional
 	 * @param int $args["buildid"] - optional
-	 * @param int $args["keywordid"] - optional
+	 * @param int $args["keywordid"] - optional mutual exclusive with $args["keywordname"]
+	 * @param int $args["keywords"] - optional  mutual exclusive with $args["keywordid"]
+	 *
 	 * @param boolean $args["executed"] - optional
 	 * @param int $args["$assignedto"] - optional
 	 * @param string $args["executestatus"] - optional
@@ -2019,7 +2005,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    $operation=__FUNCTION__;
  	    $msg_prefix="({$operation}) - ";
          
-        // Optional parameters
+        // Optional parameters that are not mutual exclusive
         $opt=array(self::$testCaseIDParamName => null,
                    self::$buildIDParamName => null,
                    self::$keywordIDParamName => null,
@@ -2028,6 +2014,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                    self::$executeStatusParamName => null,
                    self::$executionTypeParamName => null);
          	
+        $optMutualExclusive=array(self::$keywordIDParamName => null,
+                                  self::$keywordNameParamName => null); 	
         $this->_setArgs($args);
 		
 		// Test Case ID, Build ID are checked if present
@@ -2037,6 +2025,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 		
 		$tplanid=$this->args[self::$testPlanIDParamName];
+		$tplanInfo=$this->tplanMgr->tree_manager->get_node_hierachy_info($tplanid);
+		
 		foreach($opt as $key => $value)
 		{
 		    if($this->_isParamPresent($key))
@@ -2044,11 +2034,17 @@ class TestlinkXMLRPCServer extends IXR_Server
 		        $opt[$key]=$this->args[$key];      
 		    }   
 		}
-		$testplan = new testplan($this->dbObj);
+		
+		$keywordSet = null;
+        $keywordList=$this->getKeywordSet($tplanInfo['parent_id']);
+        if( !is_null($keywordList) )
+        {
+        	$keywordSet = explode(",",$keywordList);
+        }
 		
     // public function get_linked_tcversions($id,
     // $tcase_id=null ,
-    // $keyword_id=0 ,
+    // $keyword_id=0 ,  --> can be an array!!!!
     // $executed=null ,
     // $assigned_to=null ,
     // $exec_status=null ,
@@ -2060,15 +2056,15 @@ class TestlinkXMLRPCServer extends IXR_Server
     // $exec_type=null ,
     // $details='simple')
     //  
-		$recordset=$testplan->get_linked_tcversions($tplanid,                                      
-		                                            $opt[self::$testCaseIDParamName],
-                                                    $opt[self::$keywordIDParamName],
-		                                            $opt[self::$executedParamName],
-                                                    $opt[self::$assignedToParamName],
-                                                    $opt[self::$executeStatusParamName],
-	 	                                            $opt[self::$buildIDParamName],
-	 	                                            null,false,null,null,
-	 	                                            $opt[self::$executionTypeParamName],'full');
+		$recordset=$this->tplanMgr->get_linked_tcversions($tplanid,                                      
+		                                                  $opt[self::$testCaseIDParamName],
+                                                    	  $keywordSet,
+		                                            	  $opt[self::$executedParamName],
+                                                    	  $opt[self::$assignedToParamName],
+                                                    	  $opt[self::$executeStatusParamName],
+	 	                                            	  $opt[self::$buildIDParamName],
+	 	                                            	  null,false,null,null,
+	 	                                            	  $opt[self::$executionTypeParamName],'full');
 		return $recordset;
 	 }
 
@@ -2270,7 +2266,41 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
 
 
-  /**
+
+  	/**
+	 * getKeywordSet()
+	 *  
+	 * @param int tproject_id
+	 *            
+	 * @return string that represent a list of keyword id (comma is character separator)
+	 *
+	 * @access private
+	 */
+	private function getKeywordSet($tproject_id)
+	{ 
+    	$kMethod=null;
+    	$keywordSet=null;
+    	if($this->_isParamPresent(self::$keywordNameParamName))
+    	{
+    	    $kMethod='getValidKeywordSetByName';
+    	    $accessKey=self::$keywordNameParamName;
+    	}
+		else if ($this->_isParamPresent(self::$keywordIDParamName))
+		{
+		    $kMethod='getValidKeywordSetById';
+		    $accessKey=self::$keywordIDParamName;
+		}
+		if( !is_null($kMethod) )
+		{
+    	    $keywordSet=$this->$kMethod($tproject_id,$this->args[$accessKey]);
+		}
+    	
+		return $keywordSet;
+	}
+	
+
+
+  	/**
 	 * getValidKeywordSetByName()
 	 *  
 	 * @return string that represent a list of keyword id (comma is character separator)
@@ -2279,11 +2309,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
 	private function getValidKeywordSetByName($tproject_id,$keywords)
 	{ 
-		return getValidKeywordSet($tproject_id,$keywords,true);
+		return $this->getValidKeywordSet($tproject_id,$keywords,true);
 	}
 	
  	/**
- 	 * Retruns the 
+ 	 * 
  	 * @param $tproject_id the testprojectID the keywords belong
  	 * @param $keywords array of keywords or keywordIDs
  	 * @param $byName set this to true if $keywords is an array of keywords, false if it's an array of keywordIDs
@@ -2313,7 +2343,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	        {
 	        	$sql .= " AND id IN ({$itemsSet})";
 	        }
-	         	
+         	
 	        $keywordMap = $this->dbObj->fetchRowsIntoMap($sql,'keyword');
 	        if(!is_null($keywordMap))
 	        {

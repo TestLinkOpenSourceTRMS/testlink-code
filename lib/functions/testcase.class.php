@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.187 2009/07/28 07:07:39 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.188 2009/08/03 08:15:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -530,7 +530,6 @@ class testcase extends tlObjectWithAttachments
 	function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	              $viewer_args = null,$path_info=null,$mode=null)
 	{
-		echo __FUNCTION__;
 	    $status_ok = 1;
 	
 	    $gui = new stdClass();
@@ -754,11 +753,13 @@ class testcase extends tlObjectWithAttachments
 		tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
 	
 		// Check if new name will be create a duplicate testcase under same parent
-	  $bCheckDuplicates = config_get('check_names_for_duplicates');
-	  if ($bCheckDuplicates)
+	  $checkDuplicates = config_get('check_names_for_duplicates');
+	  if ($checkDuplicates)
 	  {  	
-		    $ret = $this->check_name_is_unique($id,$name);
-		}    
+		    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
+            $ret['status_ok'] = !$check['status']; 
+            $ret['msg'] = $check['msg']; 
+      }    
 	
 	  if($ret['status_ok'])
 	  {    
@@ -857,41 +858,6 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	
-	
-	
-	
-	/*
-	  function: check_name_is_unique
-	
-	  args:
-	  
-	  returns: 
-	
-	*/
-	function check_name_is_unique($id,$name)
-	{
-			$ret['status_ok'] = 1;
-			$ret['msg'] = '';
-	    
-	    $sql = " SELECT count(0) AS qty FROM {$this->tables['nodes_hierarchy']} NHA " .
-			       " WHERE NHA.name = '" . $this->db->prepare_string($name) . "'" .
-			       " AND NHA.node_type_id = {$this->my_node_type} " .
-			       " AND NHA.id <> {$id} " .
-			       " AND NHA.parent_id=" .
-			       " (SELECT NHB.parent_id " .
-			       "  FROM {$this->tables['nodes_hierarchy']} NHB" .
-			       "  WHERE NHB.id = {$id}) ";
-			       
-			$result = $this->db->exec_query($sql);
-			$myrow = $this->db->fetch_array($result);
-			if( $myrow['qty'] > 0)
-			{
-					$ret['status_ok'] = 0;
-					$ret['msg'] = sprintf(lang_get('testcase_name_already_exists'),$name);
-			}
-	    return $ret;
-	
-	} // function end
 	
 	
 	
@@ -3341,7 +3307,6 @@ class testcase extends tlObjectWithAttachments
 	        case 'execution':
 	            $cf_map = $this->get_linked_cfields_at_execution($id,null,$filters,$execution_id,
 	                                                             $testplan_id,$tproject_id,$location);
-	            new dBug($cf_map);                                                 
 	        break;
 	    }   
 	       

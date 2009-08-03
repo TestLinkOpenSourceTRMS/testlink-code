@@ -3,8 +3,8 @@
  * TestLink Open Source Project - @link http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: plan.core.inc.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/07/27 07:25:11 $ $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/08/03 08:15:43 $ $Author: franciscom $
  *  
  * 
  * @author 	Martin Havlat
@@ -28,76 +28,76 @@
   returns: 
 
 */
-function deprecated_getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$tplanID = null)
-{
-	$currentUser = $_SESSION['currentUser'];
-
-    $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
-    $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
-    $tables['user_testplan_roles'] = DB_TABLE_PREFIX . 'user_testplan_roles';
-     	
-	$my_user_id = $user_id ? $user_id : $currentUser->dbID;
-	
-	$sql = " /* getAccessibleTestPlans */ " .
-	       " SELECT NH.id, NH.name, TPLAN.active " .
-	       " FROM {$tables['nodes_hierarchy']} NH" .
-	       " JOIN {$tables['testplans']} TPLAN ON NH.id=TPLAN.id  " .
-	       " LEFT OUTER JOIN {$tables['user_testplan_roles']} USER_TPLAN_ROLES" .
-	       " ON TPLAN.id = USER_TPLAN_ROLES.testplan_id " .
-	       " AND USER_TPLAN_ROLES.user_id = {$my_user_id} WHERE active=1 AND  ";
-
-	$sql .= " testproject_id = {$testproject_id} AND ";
-	
-	$bGlobalNo = ($currentUser->globalRoleID == TL_ROLES_NO_RIGHTS);
-	$bProductNo = 0;
-	$analyse_global_role = 1;
-	if (isset($currentUser->tprojectRoles[$testproject_id]->dbID))
-	{
-		$bProductNo = ($currentUser->tprojectRoles[$testproject_id]->dbID == TL_ROLES_NO_RIGHTS); 
-		$analyse_global_role = 0;	
-	}
-	
-  if( $bProductNo || ($analyse_global_role && $bGlobalNo))
-  {
-    $sql .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
-  }	
-  else
-  {
-    $sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
-  }
-   
-	if (!is_null($tplanID))
-	{
-		$sql .= " AND NH.id = {$tplanID}";
-	}
-		
-	$sql .= " ORDER BY name";
-
-	$testPlans = $db->get_recordset($sql);
-	$arrPlans = null;
-  $tplanQty=sizeof($testPlans);
-	for($idx = 0; $idx < $tplanQty ;$idx++)
-	{
-		$testPlan = $testPlans[$idx];
-	 	if ($idx == 0 && (!isset($_SESSION['testplanID']) || !$_SESSION['testplanID']))
-		{
-        	$_SESSION['testplanID'] = $testPlan['id'];
-	        $_SESSION['testplanName'] = $testPlan['name'];
-		}	
-	
-		$selected = ($testPlan['id'] == $_SESSION['testplanID']) ? 'selected="selected"' : null ;
-		$arrPlans[] =  array( 'id' => $testPlan['id'], 'name' => $testPlan['name'],
-							            'selected' => $selected);
-	}
-	
-	if (!sizeof($testPlans))
-	{
-		unset($_SESSION['testplanID']);
-	    unset($_SESSION['testplanName']);
-	}
-	
-	return $arrPlans;
-}
+// function deprecated_getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$tplanID = null)
+// {
+// 	$currentUser = $_SESSION['currentUser'];
+// 
+//     $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
+//     $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
+//     $tables['user_testplan_roles'] = DB_TABLE_PREFIX . 'user_testplan_roles';
+//      	
+// 	$my_user_id = $user_id ? $user_id : $currentUser->dbID;
+// 	
+// 	$sql = " /* getAccessibleTestPlans */ " .
+// 	       " SELECT NH.id, NH.name, TPLAN.active " .
+// 	       " FROM {$tables['nodes_hierarchy']} NH" .
+// 	       " JOIN {$tables['testplans']} TPLAN ON NH.id=TPLAN.id  " .
+// 	       " LEFT OUTER JOIN {$tables['user_testplan_roles']} USER_TPLAN_ROLES" .
+// 	       " ON TPLAN.id = USER_TPLAN_ROLES.testplan_id " .
+// 	       " AND USER_TPLAN_ROLES.user_id = {$my_user_id} WHERE active=1 AND  ";
+// 
+// 	$sql .= " testproject_id = {$testproject_id} AND ";
+// 	
+// 	$bGlobalNo = ($currentUser->globalRoleID == TL_ROLES_NO_RIGHTS);
+// 	$bProductNo = 0;
+// 	$analyse_global_role = 1;
+// 	if (isset($currentUser->tprojectRoles[$testproject_id]->dbID))
+// 	{
+// 		$bProductNo = ($currentUser->tprojectRoles[$testproject_id]->dbID == TL_ROLES_NO_RIGHTS); 
+// 		$analyse_global_role = 0;	
+// 	}
+// 	
+//   if( $bProductNo || ($analyse_global_role && $bGlobalNo))
+//   {
+//     $sql .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
+//   }	
+//   else
+//   {
+//     $sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
+//   }
+//    
+// 	if (!is_null($tplanID))
+// 	{
+// 		$sql .= " AND NH.id = {$tplanID}";
+// 	}
+// 		
+// 	$sql .= " ORDER BY name";
+// 
+// 	$testPlans = $db->get_recordset($sql);
+// 	$arrPlans = null;
+//   $tplanQty=sizeof($testPlans);
+// 	for($idx = 0; $idx < $tplanQty ;$idx++)
+// 	{
+// 		$testPlan = $testPlans[$idx];
+// 	 	if ($idx == 0 && (!isset($_SESSION['testplanID']) || !$_SESSION['testplanID']))
+// 		{
+//         	$_SESSION['testplanID'] = $testPlan['id'];
+// 	        $_SESSION['testplanName'] = $testPlan['name'];
+// 		}	
+// 	
+// 		$selected = ($testPlan['id'] == $_SESSION['testplanID']) ? 'selected="selected"' : null ;
+// 		$arrPlans[] =  array( 'id' => $testPlan['id'], 'name' => $testPlan['name'],
+// 							            'selected' => $selected);
+// 	}
+// 	
+// 	if (!sizeof($testPlans))
+// 	{
+// 		unset($_SESSION['testplanID']);
+// 	    unset($_SESSION['testplanName']);
+// 	}
+// 	
+// 	return $arrPlans;
+// }
 
 /**
  * get count Test Plans available for user and Product
@@ -164,15 +164,15 @@ function deprecated_getAccessibleTestPlans(&$db,$testproject_id,$user_id=0,$tpla
 
 // 20070911 - azl
 // 20071029 - azl - modified to only get active test plans bug # 1148
-function getTestPlansWithoutProject(&$db)
-{
-    $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
-    $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
-    
-	$sql = "SELECT id,name FROM {$tables['nodes_hierarchy']} WHERE id " . 
-	       " IN( SELECT id FROM {$tables['testplans']}  " .
-		   " WHERE testproject_id=0 and active=1)";
-	$testPlans = $db->get_recordset($sql);
-	return $testPlans;
-}
+// function getTestPlansWithoutProject(&$db)
+// {
+//     $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
+//     $tables['testplans'] = DB_TABLE_PREFIX . 'testplans';
+//     
+// 	$sql = "SELECT id,name FROM {$tables['nodes_hierarchy']} WHERE id " . 
+// 	       " IN( SELECT id FROM {$tables['testplans']}  " .
+// 		   " WHERE testproject_id=0 and active=1)";
+// 	$testPlans = $db->get_recordset($sql);
+// 	return $testPlans;
+// }
 ?>

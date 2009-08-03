@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: uncoveredTestCases.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/05/27 18:42:07 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list test cases that has no requirement assigned
@@ -20,6 +20,8 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 
+$tables = tlObjectWithDB::getDBTables(array('req_coverage','nodes_hierarchy',
+                                            'tcversions','node_types'));
 $args = init_args();
 $tproject_mgr = new testproject($db);
 
@@ -53,13 +55,16 @@ if($gui->has_requirements)
     
     if(!is_null($tcasesID) && count($tcasesID) > 0)
     {
-		$sql = " SELECT NHA.id AS tc_id, NHA.name, NHA.parent_id AS testsuite_id,NT.description, REQC.req_id " .
-	           " FROM nodes_hierarchy NHA " .
-	           " JOIN node_types NT ON NHA.node_type_id=NT.id " .
-	           " LEFT OUTER JOIN req_coverage REQC on REQC.testcase_id=NHA.id " .
+        $debugMsg = 'File: ' . basename(__FILE__) . ' - Line: ' . __LINE__ . ' - ';
+		$sql = " /* $debugMsg */ " .
+		       " SELECT NHA.id AS tc_id, NHA.name, NHA.parent_id AS testsuite_id," .
+		       " NT.description, REQC.req_id " .
+	           " FROM {$tables['nodes_hierarchy']} NHA " .
+	           " JOIN {$tables['node_types']} NT ON NHA.node_type_id=NT.id " .
+	           " LEFT OUTER JOIN {$tables['req_coverage']} REQC on REQC.testcase_id=NHA.id " .
 	           " WHERE NT.description='testcase' AND NHA.id IN (" . implode(",",$tcasesID) . ") " .
 	           " and REQC.req_id IS NULL " ;
-		$uncovered = $db->fetchRowsIntoMap($sql,'tc_id');
+        $uncovered = $db->fetchRowsIntoMap($sql,'tc_id');
    }
 }
 
@@ -68,8 +73,12 @@ if($gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
     // Get external  ID
     $testSet = array_keys($uncovered);
     $inClause = implode(',',$testSet);
-    $sql=" SELECT distinct NHA.id AS tc_id, TCV.tc_external_id " .
-         " FROM nodes_hierarchy NHA,nodes_hierarchy NHB,tcversions TCV, node_types NT " .
+    $debugMsg = 'File: ' . basename(__FILE__) . ' - Line: ' . __LINE__ . ' - ';
+    $sql = "/* $debugMsg */ " .
+         " SELECT distinct NHA.id AS tc_id, TCV.tc_external_id " .
+         " FROM {$tables['nodes_hierarchy']} NHA, " . 
+         " {$tables['nodes_hierarchy']} NHB, " .
+         " {$tables['tcversions']} TCV, {$tables['node_types']} NT " .
          " WHERE NHA.node_type_id=NT.id AND NHA.id=NHB.parent_id AND NHB.id=TCV.id " .
          " AND NHA.id IN ({$inClause})  AND NT.description='testcase' ";
     $external_id = $db->fetchRowsIntoMap($sql,'tc_id');

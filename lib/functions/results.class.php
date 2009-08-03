@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.141 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.142 2009/08/03 08:15:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -982,8 +982,8 @@ class results extends tlObjectWithDB
 		
 		$keys = implode(',',$keywordsInPlan);
 		$sql = " SELECT testcase_id, keyword_id" .
-			" FROM testcase_keywords" .
-			" WHERE keyword_id IN ($keys)";
+			   " FROM {$this->tables['testcase_keywords']}" .
+			   " WHERE keyword_id IN ($keys)";
 		
 		$returnMap =  $this->db->fetchColumnsIntoMap($sql,'testcase_id', 'keyword_id',$CUMULATIVE);
 		

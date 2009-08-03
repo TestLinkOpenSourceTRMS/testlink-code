@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: fix_tplans.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/01/07 19:55:35 $  $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/08/03 08:15:43 $  $Author: franciscom $
  * @author asielb
  *
  * fixes bug 1021
@@ -12,7 +12,7 @@
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 require_once('testproject.class.php');
-require_once('plan.core.inc.php');
+require_once('configCheck.php');
 
 testlinkInitPage($db);
 $template_dir='project/';
@@ -22,12 +22,6 @@ $can_manage_tprojects=has_rights($db,'mgt_modify_product');
 // make sure the user has rights to manage test projects
 if ($can_manage_tprojects)
 {
-	function changeTestProjectForTestPlan(&$db, $testPlan, $testProject)
-	{
-		$query = "UPDATE testplans SET testproject_id={$testProject} WHERE id={$testPlan}";
-		$db->exec_query($query);
-		echo "<br />Done changing test project";
-	}
 	
 	if($_POST)
 	{
@@ -57,6 +51,14 @@ if ($can_manage_tprojects)
 else
 {
 	echo "<p>".lang_get('fix_tplans_no_rights')."</p>";
+}
+
+
+function changeTestProjectForTestPlan(&$db, $testPlan, $testProject)
+{
+	$query = "UPDATE testplans SET testproject_id={$testProject} WHERE id={$testPlan}";
+	$db->exec_query($query);
+	echo "<br />Done changing test project";
 }
 
 ?>

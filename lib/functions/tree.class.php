@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.65 2009/07/27 07:26:45 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.66 2009/08/03 08:15:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090801 - franciscom - new method nodeNameExists()
  * 20090726 - franciscom - BUGID 2728 
  * 20090607 - franciscom - refactoring to manage table prefix
  * 20090413 - franciscom - BUGID - get_full_path_verbose() interface changes
@@ -1011,33 +1012,67 @@ class tree extends tlObject
 
 
 	/**
-	 * check_name_is_unique
+	 * check if there is a sibbling node of same type that has same name
+	 *
+	 * @param string name: name to check
+	 * @param int node_type_id: node types to check.
+	 * @param int id: optional. exclude this node id from result set
+	 *                this is useful when you want to check for name
+	 *                existence during an update operation.
+	 *                Using id you get node parent, to get sibblings.
+	 *                If null parent_id argument must be present
+	 *
+	 * @param int parent_id: optional. Mandatory if id is null
+	 *                       Used to get children nodes to check for
+	 *                       name existence.
+	 *
+	 *                          
+	 * @return map ret: ret['status']=1 if name exists
+	 *                                0 if name does not exist
+	 *                  ret['msg']= localized message
+	 *                                
 	 */
-	function check_name_is_unique($id,$name,$node_type_id)
-	{
-		$ret['status_ok'] = 1;
+	function nodeNameExists($name,$node_type_id,$id=null,$parent_id=null)
+    {
+    	$debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
+		$ret['status'] = 0;
 		$ret['msg'] = '';
-		
-		$sql = " SELECT count(id) AS qty FROM {$this->object_table} NHA " .
-			" WHERE NHA.name = '" . $this->db->prepare_string($name) . "'" .
-			" AND NHA.node_type_id = {$node_type_id} " .
-			" AND NHA.id <> {$id} " .
-			" AND NHA.parent_id=" .
-			" (SELECT NHB.parent_id " .
-			"  FROM {$this->object_table} NHB" .
-			"  WHERE NHB.id = {$id}) ";
-		
-		$result = $this->db->exec_query($sql);
-		$myrow = $this->db->fetch_array($result);
-		if( $myrow['qty'] > 0)
+        if( is_null($id) && is_null($parent_id) )
+        {
+        	$msg = $debugMsg . 'Error on call $id and $parent_id can not be both null';
+        	throw new Exception($msg);
+        }        	
+        
+        $additionalFilters = '';
+        $parentNodeID=$parent_id;
+        if( !is_null($id) )
+        {
+        	// Try to get parent id if not provided on method call.
+        	if( is_null($parentNodeID) )
+        	{
+        		$sql = "/* {$debugMsg} */ " . 
+        		       " SELECT parent_id FROM {$this->object_table} NHA " .
+    				   " WHERE NHA.id = {$id} ";
+    	        $rs = $this->db->get_recordset($sql);
+        		$parentNodeID=$rs[0]['parent_id'];	   
+        	}
+        	$additionalFilters = " AND NHA.id <> {$id} ";
+        }		
+		$sql = "/* {$debugMsg} */ " . 
+		       " SELECT count(0) AS qty FROM {$this->object_table} NHA " .
+    		   " WHERE NHA.node_type_id	= {$node_type_id} " .
+    		   " AND NHA.name = '" . $this->db->prepare_string($name) . "'" .
+    		   " AND NHA.parent_id = {$parentNodeID} {$additionalFilters} "; 
+ 
+		$rs = $this->db->get_recordset($sql);
+		if( $rs[0]['qty'] > 0)
 		{
-			$ret['status_ok'] = 0;
+			$ret['status'] = 1;
 			$ret['msg'] = sprintf(lang_get('name_already_exists'),$name);
 		}
+    	
 		return $ret;
-		
-	}
-
+    }
 
 	/**
 	 * getTreeRoot()

@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.107 2009/07/20 16:56:55 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.108 2009/08/03 08:15:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *		
+ *      20090801 - franciscom - table prefix missed
  *		20090716 - franciscom - BUGID 2692
  * 		20090328 - franciscom - BUGID 2299 - introduced on 20090308.
  *                              Added logic to remove Empty Top level test suites 
@@ -261,7 +262,14 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	static $hash_id_descr;
 	static $status_descr_code;
 	static $status_code_descr;
-	
+	static $debugMsg;
+    static $tables;
+    
+	if (!$tables)
+	{
+  	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
+        $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
+    }	
 	if (!$hash_id_descr)
 	{
 		$hash_id_descr = $decoding_info['node_id_descr'];
@@ -314,9 +322,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 				{
 					if (!isset($tpNode['external_id']))
 					{
-						$sql = " SELECT TCV.tc_external_id AS external_id " .
-							" FROM tcversions TCV " .
-							" WHERE TCV.id=" . $node['tcversion_id'];
+						$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
+						       " SELECT TCV.tc_external_id AS external_id " .
+							   " FROM {$tables['tcversions']}  TCV " .
+							   " WHERE TCV.id=" . $node['tcversion_id'];
 						
 						$result = $db->exec_query($sql);
 						$myrow = $db->fetch_array($result);
@@ -356,10 +365,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			//                  if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
 			//
 			//
-			$sql=" SELECT count(TCV.id) AS num_active_versions " .
-				" FROM tcversions TCV, nodes_hierarchy NH " .
-				" WHERE NH.parent_id=" . $node['id'] .
-				" AND NH.id = TCV.id AND TCV.active=1";
+			$sql=" /* $debugMsg - line:" . __LINE__ . " */ " . 
+			     " SELECT count(TCV.id) AS num_active_versions " .
+				 " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+				 " WHERE NH.parent_id=" . $node['id'] .
+				 " AND NH.id = TCV.id AND TCV.active=1";
 			
 			$result = $db->exec_query($sql);
 			$myrow = $db->fetch_array($result);
@@ -372,10 +382,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		// -------------------------------------------------------------------
 		if ($node && $viewType=='testSpecTree')
 		{
-			$sql=" SELECT DISTINCT(TCV.tc_external_id) AS external_id " .
-				" FROM tcversions TCV, nodes_hierarchy NH " .
-				" WHERE  NH.id = TCV.id " .
-				" AND NH.parent_id=" . $node['id'];
+			$sql= " /* $debugMsg - line:" . __LINE__ . " */ " . 
+			      " SELECT DISTINCT(TCV.tc_external_id) AS external_id " .
+				  " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+				  " WHERE  NH.id = TCV.id " .
+				  " AND NH.parent_id=" . $node['id'];
 			
 			$result = $db->exec_query($sql);
 			$myrow = $db->fetch_array($result);

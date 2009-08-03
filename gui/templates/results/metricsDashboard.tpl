@@ -1,8 +1,9 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.7 2009/06/03 19:51:45 schlundus Exp $     
+ $Id: metricsDashboard.tpl,v 1.8 2009/08/03 08:15:43 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
-                                                 
+
+ rev: 20090802 - franciscom - configured table to have sortable columns                                                 
 *}
 {lang_get var="labels"
           s="generated_by_TestLink_on,testproject,test_plan,th_total_tc,th_active_tc,th_executed_tc,
@@ -13,14 +14,14 @@
 <div class="workBack">
 <h1 class="title">{$labels.testproject} {$smarty.const.TITLE_SEP} {$gui->tproject_name|escape}</h1>
 
-<table class="mainTable-x" style="width: 100%">
+<table class="mainTable-x sortable" style="width: 100%">
   <tr>
-    <th>{$labels.test_plan}</th>
-   	<th>{$labels.th_total_tc}</th>
-   	<th>{$labels.th_active_tc}</th>
-   	<th>{$labels.th_executed_tc}</th>
-   	<th>{$labels.th_executed_vs_active}</th>
-   	<th>{$labels.th_executed_vs_total}</th>
+    <th>{$sortHintIcon}{$labels.test_plan}</th>
+   	<th class="{$noSortableColumnClass}">{$labels.th_total_tc}</th>
+   	<th class="{$noSortableColumnClass}">{$labels.th_active_tc}</th>
+   	<th class="{$noSortableColumnClass}">{$labels.th_executed_tc}</th>
+   	<th class="{$noSortableColumnClass}">{$labels.th_executed_vs_active}</th>
+   	<th class="{$noSortableColumnClass}">{$labels.th_executed_vs_total}</th>
   </tr>
   {foreach item=metric from=$gui->tplan_metrics}
   <tr>

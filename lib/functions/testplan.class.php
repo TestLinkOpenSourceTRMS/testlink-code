@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.124 2009/07/27 07:26:14 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.125 2009/08/03 08:15:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1177,7 +1177,8 @@ class testplan extends tlObjectWithAttachments
 	 */
 	private function copy_user_roles($original_tplan_id, $new_tplan_id)
 	{
-		$sql = "SELECT * FROM user_testplan_roles WHERE testplan_id={$original_tplan_id} ";
+		$sql = "SELECT user_id FROM {$this->tables['user_testplan_roles']} " .
+		       "WHERE testplan_id={$original_tplan_id} ";
 		$rs=$this->db->get_recordset($sql);
 	
 		if(!is_null($rs))

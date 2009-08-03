@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.97 $
- * @modified $Date: 2009/07/22 17:30:06 $ by $Author: franciscom $
+ * @version $Revision: 1.98 $
+ * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -125,7 +125,7 @@ switch($action)
 		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 		$smarty->assign('opt_cfg', $opt_cfg);
 		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
-		                             $args->containerID, $args->testsuiteID,null,null,$webEditorTemplateCfg);
+		                             $args->containerID, $args->testsuiteID,null,$webEditorTemplateCfg);
 		break;
 
     case 'delete_testsuite':
@@ -166,21 +166,24 @@ switch($action)
     	break;
 
     case 'add_testsuite':
-	  	keywords_opt_transf_cfg($opt_cfg, "");
-	  	$smarty->assign('opt_cfg', $opt_cfg);
-
+	    $messages = null;
+	    $op['status'] = 0;
 		if ($name_ok)
 		{
-	    	$messages = addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
-			$msg = $messages['msg'];
+	    	$op = addTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
+	    	$messages = array( 'result_msg' => $op['messages']['msg'], 
+	    	                   'user_feedback' => $op['messages']['user_feedback']);
 	  	}
-    	else
-    	{
-	    	$messages['user_feedback'] = '';
-    	}	
-
-      	$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
-	                               $args->containerID, null,$msg,$messages['user_feedback'],$webEditorTemplateCfg);
+    	
+        // $userInput is used to maintain data filled by user if there is
+        // a problem with test suite name.
+        $userInput = $op['status'] ? null : $_REQUEST; 
+        $assignedKeywords = $op['status'] ? "" : $args->assigned_keyword_list;
+        keywords_opt_transf_cfg($opt_cfg, $assignedKeywords);
+      	$smarty->assign('opt_cfg', $opt_cfg);
+  	    $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
+	                                 $args->containerID, null,$messages,
+	                                 $webEditorTemplateCfg,$userInput);
     	break;
 
 
@@ -413,23 +416,25 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 
   args:
 
-  returns: messages map
+  returns: map with messages and status
 
 */
 function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 {
+
 	$ret = $tsuiteMgr->create($argsObj->containerID,$container['container_name'],$container['details'],
 	                         null,config_get('check_names_for_duplicates'),
 	                         config_get('action_on_duplicate_name'));
 		                         
-	$messages['msg'] = $ret['msg'];
-	$messages['user_feedback'] = '';
+    $op['messages']= array('msg' => $ret['msg'], 'user_feedback' => '');
+    $op['status']=$ret['status_ok'];
+	
 	if($ret['status_ok'])
 	{
-		$messages['user_feedback'] = lang_get('testsuite_created');
-		if($messages['msg'] != 'ok')
+		$op['messages']['user_feedback'] = lang_get('testsuite_created');
+		if($op['messages']['msg'] != 'ok')
 		{
-			$messages['user_feedback'] = $messages['msg'];  
+			$op['messages']['user_feedback'] = $op['messages']['msg'];  
 		}
 
 		if(trim($argsObj->assigned_keyword_list) != "")
@@ -438,7 +443,7 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
     	}
     	writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$ret['id'],$hash);
 	}
-	return $messages;
+	return $op;
 }
 
 /*
@@ -553,8 +558,8 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
          $tsuiteMgr->addKeywords($argsObj->testsuiteID,explode(",",$argsObj->assigned_keyword_list));
       }
       writeCustomFieldsToDB($tsuiteMgr->db,$argsObj->tprojectID,$argsObj->testsuiteID,$hash);
-  }
-  else
+  	}
+  	else
 	{
 	    $msg = $ret['msg'];
 	}

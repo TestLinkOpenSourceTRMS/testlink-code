@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.68 2009/06/11 17:39:02 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.69 2009/08/03 08:15:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090801 - franciscom - BUGID 2767 Duplicate testsuite name error message issue 
  * 20090514 - franciscom - typo bug on html_table_of_custom_field_inputs()
  * 20090503 - franciscom - bug in read_file()
  * 20090330 - franciscom - changes in calls to get_linked_cfields_at_design()
@@ -182,21 +183,14 @@ class testsuite extends tlObjectWithAttachments
 	
 		if ($check_duplicate_name)
 		{
-			
-	        $sql = " SELECT count(TS.id) AS qty FROM {$this->object_table} TS, " .
-	               " {$this->tables['nodes_hierarchy']} NH " .
-		    	   " WHERE NH.name = '" . $this->db->prepare_string($name) . "'" . 
-		    	   " AND TS.id=NH.id AND node_type_id = {$this->my_node_type} AND NH.parent_id={$parent_id} "; 
-			
-			$result = $this->db->exec_query($sql);
-			$myrow = $this->db->fetch_array($result);
-		
-			if( $myrow['qty'] )
+	        $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,null,$parent_id);
+			if( $check['status'] == 1)
 			{
 				if ($action_on_duplicate_name == 'block')
 				{
 					$ret['status_ok'] = 0;
-					$ret['msg'] = lang_get('component_name_already_exists');	
+					// BUGID 2767
+					$ret['msg'] = sprintf(lang_get('component_name_already_exists'),$name);	
 				} 
 				else
 				{
@@ -235,30 +229,36 @@ class testsuite extends tlObjectWithAttachments
 	 * update
 	 *
 	 */
-	function update($id, $name, $details)
+	function update($id, $name, $details, $parent_id=null)
 	{
-	  $ret = $this->tree_manager->check_name_is_unique($id,$name,$this->my_node_type);
-	  if($ret['status_ok'])
-	  {
-		    $sql = " UPDATE {$this->tables['testsuites']} " .
-		           " SET details = '" . $this->db->prepare_string($details) . "'" .
-		           " WHERE id = {$id}";
-		    $result = $this->db->exec_query($sql);
-	      
-		    if ($result)
-		    {
-		    	$sql = " UPDATE {$this->tables['nodes_hierarchy']}  SET name='" . 
-		    			$this->db->prepare_string($name) . "' WHERE id= {$id}";
-		    	$result = $this->db->exec_query($sql);
-		    }
-	      
-		    
-		    $ret['msg']='ok';
-		    if (!$result)
-		    {
-		    	$ret['msg'] = $this->db->error_msg();
-		    }
-		}
+	  	$ret['status_ok']=0;
+	  	$ret['msg']='';
+	  	$check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id,$parent_id);
+	  	if($check['status']==0)
+	  	{
+			$sql = " UPDATE {$this->tables['testsuites']} " .
+			       " SET details = '" . $this->db->prepare_string($details) . "'" .
+			       " WHERE id = {$id}";
+			$result = $this->db->exec_query($sql);
+	  		
+			if ($result)
+			{
+				$sql = " UPDATE {$this->tables['nodes_hierarchy']}  SET name='" . 
+						$this->db->prepare_string($name) . "' WHERE id= {$id}";
+				$result = $this->db->exec_query($sql);
+			}
+			
+	  		$ret['status_ok']=1;
+			$ret['msg']='ok';
+			if (!$result)
+			{
+				$ret['msg'] = $this->db->error_msg();
+			}
+	  	}
+	  	else
+	  	{
+	  		$ret['msg']=$check['msg'];
+	  	}
 		return $ret;
 	}
 	
@@ -446,23 +446,36 @@ class testsuite extends tlObjectWithAttachments
 	         action
 	         parent_id: testsuite parent id on tree.
 	         [id]
-	         [result_msg]: default: null
-	                       used to give information to user
-	                       
-	         [user_feedback]: default: null              
-	                          used to give information to user
+	         [messages]: default null
+	                     map with following keys
+	                     [result_msg]: default: null used to give information to user
+	                     [user_feedback]: default: null used to give information to user
+	                     
 	         [$userTemplateCfg]: configurations, Example: testsuite template usage
+	         [$userInput]
 	                          
 	  returns: -
 	
 	  rev :
+	       20090801 - franciscom - added $userInput
 	       20080105 - franciscom - added $userTemplateCfg
 	       20071202 - franciscom - interface changes -> template_dir
 	*/
 	function viewer_edit_new(&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action, $parent_id, 
-	                         $id=null, $result_msg=null, $user_feedback=null, $userTemplateCfg=null)
+	                         $id=null, $messages=null, $userTemplateCfg=null, $userInput=null)
 	{
-	    $cf_smarty=-2;
+	
+		$internalMsg = array('result_msg' => null,  'user_feedback' => null);
+		$the_data = null;
+		$name = '';
+		
+		if( !is_null($messages) )
+		{
+			$internalMsg = array_merge($internalMsg, $messages);
+		}
+		$useUserInput = is_null($userInput) ? 0 : 1;
+		
+	    $cf_smarty=-2; // MAGIC must be explained
 	    
 	    $pnode_info=$this->tree_manager->get_node_hierachy_info($parent_id);
 	    $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
@@ -470,38 +483,47 @@ class testsuite extends tlObjectWithAttachments
 	  
 	
 		$a_tpl = array( 'edit_testsuite' => 'containerEdit.tpl',
-						        'new_testsuite'  => 'containerNew.tpl',
-						        'add_testsuite'  => 'containerNew.tpl');
+						'new_testsuite'  => 'containerNew.tpl',
+						'add_testsuite'  => 'containerNew.tpl');
 		
 		$the_tpl = $a_tpl[$action];
-		$smarty->assign('sqlResult', $result_msg);
+		$smarty->assign('sqlResult', $internalMsg['result_msg']);
 		$smarty->assign('containerID',$parent_id);	 
-		$smarty->assign('user_feedback', $user_feedback);
+		$smarty->assign('user_feedback', $internalMsg['user_feedback'] );
 		
-		$the_data = null;
-		
-		$name = '';
-		if ($action == 'edit_testsuite')
+		if( $useUserInput )
 		{
-			$the_data = $this->get_by_id($id);
-			$name=$the_data['name'];
-			$smarty->assign('containerID',$id);	
-	    } 
-	    $webEditorData = $the_data;
+			$webEditorData = $userInput;
+		}
+		else
+		{
+			$the_data = null;
+			$name = '';
+			if ($action == 'edit_testsuite')
+			{
+				$the_data = $this->get_by_id($id);
+				$name=$the_data['name'];
+				$smarty->assign('containerID',$id);	
+	    	} 
+	    	$webEditorData = $the_data;
+		}
 		
 	    // Custom fields
 	    $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
-	    $smarty->assign('cf',$cf_smarty);	
 		
 		// webeditor
 		// 20090503 - now templates will be also used after 'add_testsuite', when
 		// presenting a new test suite with all other fields empty.
-		if( ($action == 'new_testsuite' || $action == 'add_testsuite') && !is_null($userTemplateCfg) )
-		{
-		   // need to understand if need to use templates
-		   $webEditorData=$this->_initializeWebEditors($webEditorHtmlNames,$userTemplateCfg);
-		   
-		} 
+   		if( !$useUserInput )
+        {
+			if( ($action == 'new_testsuite' || $action == 'add_testsuite') && !is_null($userTemplateCfg) )
+			{
+			   // need to understand if need to use templates
+			   $webEditorData=$this->_initializeWebEditors($webEditorHtmlNames,$userTemplateCfg);
+			   
+			} 
+		}
+		
 		foreach ($webEditorHtmlNames as $key)
 		{
 			// Warning:
@@ -512,6 +534,7 @@ class testsuite extends tlObjectWithAttachments
 			$smarty->assign($key, $of->CreateHTML());
 		}
 		
+	    $smarty->assign('cf',$cf_smarty);	
 		$smarty->assign('parent_info', $parent_info);
 		$smarty->assign('level', 'testsuite');
 		$smarty->assign('name',$name);
@@ -774,6 +797,9 @@ class testsuite extends tlObjectWithAttachments
 	  $this->tree_manager->delete_subtree_objects($id,'',array('testcase' => 'exclude_tcversion_nodes'));
 	  $this->delete($id);
 	} // end function
+	
+	
+
 	
 	
 	/*

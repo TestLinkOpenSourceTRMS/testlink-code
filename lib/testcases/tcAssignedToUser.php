@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/06/10 19:36:00 $  $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/08/03 08:15:43 $  $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
 */
@@ -31,8 +31,12 @@ $gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id,$args->tproject_
 
 if( !is_null($gui->resultSet) )
 {
+	
+	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
+
     $tplanSet=array_keys($gui->resultSet);
-    $sql="SELECT name,id FROM nodes_hierarchy WHERE id IN (" . implode(',',$tplanSet) . ")";
+    $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
+         "WHERE id IN (" . implode(',',$tplanSet) . ")";
     $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
 }
 $gui->warning_msg='';

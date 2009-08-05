@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2009/08/05 07:25:49 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *      20090804 - franciscom - deleteExecution() - new method (need more work)
  *      20090801 - franciscom - getTestCasesForTestPlan() allows keyword passed by name
  *      20090727 - franciscom - added contribution BUGID  - reportTCResult() accepts CF info
  *      20090726 - franciscom - added contribution BUGID 2719 - getFullPath()
@@ -194,6 +195,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $publicParamName = "public";
     public static $nodeIDParamName = "nodeid";
     public static $customFieldsParamName = "customfields";
+    public static $executionIDParamName = "executionid";
+
 
 	// public static $executionRunTypeParamName		= "executionruntype";
 		
@@ -264,6 +267,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
 	                            'tl.getTestCase' => 'this:getTestCase',
                                 'tl.getFullPath' => 'this:getFullPath',
+                                'tl.deleteExecution' => 'this:deleteExecution',
 			                    'tl.about' => 'this:about',
 			                    'tl.setTestMode' => 'this:setTestMode',
                     			// ping is an alias for sayHello
@@ -3372,6 +3376,74 @@ public function getTestCase($args)
         }        
 		return $status_ok;
 	}
+
+
+
+	 /**
+	 * delete an execution
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["executionid"]
+	 *
+	 * @return mixed $resultInfo 
+	 * 				[status]	=> true/false of success
+	 * 				[id]		  => result id or error code
+	 * 				[message]	=> optional message for error message string
+	 * @access public
+	 */	
+	 public function deleteExecution($args)
+	 {		
+		$resultInfo = array();
+        $operation=__FUNCTION__;
+	    $msg_prefix="({$operation}) - ";
+		$execCfg = config_get('exec_cfg');
+
+		$this->_setArgs($args);              
+		$resultInfo[0]["status"] = false;
+		
+        $checkFunctions = array('authenticate','checkExecutionID');       
+        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+	
+	    // Important userHasRight sets error object
+	    //
+        $status_ok = ($status_ok && $this->userHasRight("testplan_execute"));	
+		if($status_ok)
+		{			
+			if( $execCfg->can_delete_execution )  
+			{
+				$this->tcaseMgr->deleteExecution($args[self::$executionIDParamName]);			
+    	    	$resultInfo[0]["status"] = true;
+				$resultInfo[0]["id"] = $args[self::$executionIDParamName];	
+				$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
+				$resultInfo[0]["operation"] = $operation;
+			}
+			else
+			{
+				$status_ok = false;
+    		    $this->errors[] = new IXR_Error(CFG_DELETE_EXEC_DISABLED, 
+    		                                    CFG_DELETE_EXEC_DISABLED_STR);
+			}
+		}
+
+		return $status_ok ? $resultInfo : $this->errors;
+	}
+
+	/**
+	 * Helper method to see if an execution id exists on DB
+	 * no checks regarding other data like test case , test plam, build, etc are done
+	 * 
+	 * 
+	 * 	
+	 * @return boolean
+	 * @access private
+	 */        
+    protected function checkExecutionID()
+    {
+        // need to be implemented - franciscom
+        $status=true;
+    	return $status;
+    }
 
 
 

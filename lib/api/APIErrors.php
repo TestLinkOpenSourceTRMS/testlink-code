@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.24 2009/07/27 07:22:51 franciscom Exp $
+ * $Id: APIErrors.php,v 1.25 2009/08/05 07:25:49 franciscom Exp $
  */
 
 /** 
@@ -93,6 +93,8 @@ define('NODEID_IS_NOT_INTEGER_STR',lang_get('API_NODEID_IS_NOT_INTEGER',null,1))
 define('NODEID_DOESNOT_EXIST',231);
 define('NODEID_DOESNOT_EXIST_STR',lang_get('API_NODEID_DOESNOT_EXIST',null,1));
 
+define('CFG_DELETE_EXEC_DISABLED',232);
+define('CFG_DELETE_EXEC_DISABLED_STR',lang_get('API_CFG_DELETE_EXEC_DISABLED',null,1));
 
 
 /**

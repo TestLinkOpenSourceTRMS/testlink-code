@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.188 2009/08/03 08:15:43 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.189 2009/08/05 07:25:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2980,6 +2980,28 @@ class testcase extends tlObjectWithAttachments
 	    }
 	    return $viewerActions;     
 	}
+	
+	/**
+     * given an executio id delete execution and related data.
+     *
+     */
+    function deleteExecution($executionID)
+    {
+        $whereClause = " WHERE execution_id = {$executionID} "; 
+		$sql = array("DELETE FROM {$this->tables['execution_bugs']} {$whereClause} ", 
+		             "DELETE FROM {$this->tables['cfield_execution_values']} {$whereClause} ",
+		             "DELETE FROM {$this->tables['executions']} WHERE id = {$executionID}" );
+	
+		foreach ($sql as $the_stm)
+		{
+			$result = $this->db->exec_query($the_stm);
+			if (!$result)
+			{
+				break;
+			}
+		}
+    }
+	
 	
 	
 	

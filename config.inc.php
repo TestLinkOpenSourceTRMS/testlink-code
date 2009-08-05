@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.248 2009/07/09 19:02:55 schlundus Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.249 2009/08/05 07:23:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *     20090804 - franciscom - moved report config here
  *     20090304 - franciscom - BUGID 2171
  *     20090211 - franciscom - added $tlCfg->exec_cfg->enable_tree_testcases_colouring
  *                                   $tlCfg->exec_cfg->enable_tree_counters_colouring
@@ -284,7 +285,8 @@ $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \-]+$/';
 // 
 
 /* Taken from Ext-js VTypes.js */
-$tlCfg->validation_cfg->user_email_valid_regex_js = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
+// "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
+$tlCfg->validation_cfg->user_email_valid_regex_js =  "/^(\w+)([-+.][\w]+)*@(\w[-\w]*\.){1,5}([A-Za-z]){2,4}$/";
 $tlCfg->validation_cfg->user_email_valid_regex_php = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/U";
 // --------------------------------------------------------------------------------------
 /* [API] */
@@ -446,6 +448,41 @@ $g_use_ext_js_library = ENABLED;
 // '' (empty string) -> disable table sorting feature
 $g_sort_table_engine='kryogenix.org';
 
+
+// ----------------------------------------------------------------------------
+/* [Reports] */
+
+// --------------------------------------------------------------------------------------
+/* [Reports] */
+$tlCfg->reportsCfg=new stdClass();
+
+/** Displayed execution statuses to use on reports (ordered). */
+// Note: report generation must be changed to manage new statuses
+// 
+// BUGID 1785
+// With this change configuration is simplified
+// $tlCfg->reportsCfg->exec_status = array(
+//     'passed'  => 'test_status_passed',
+//     'failed'  => 'test_status_failed',
+//     'blocked' => 'test_status_blocked',
+//     'not_run' => 'test_status_not_run'
+// );
+$tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
+
+
+/** 
+ * Default Offset in seconds for reporting start date (reports with date range)
+ * @uses lib/results/resultsMoreBuilds.php
+ */
+$tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
+
+
+// Result matrix (resultsTC.php)
+// Shows an extra column which gives the status of the last executed build
+$tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
+
+// Show build columns in revers order. The latest build is to the left
+$tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
 
 
 // ----------------------------------------------------------------------------

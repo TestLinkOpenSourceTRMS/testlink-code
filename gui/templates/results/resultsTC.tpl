@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.7 2009/08/03 08:14:55 franciscom Exp $ *}
+{* $Id: resultsTC.tpl,v 1.8 2009/08/05 07:27:26 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070919 - franciscom - BUGID
@@ -13,26 +13,26 @@
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
-{$table->renderHeadSection()}
+{$gui->table->renderHeadSection()}
 </head>
 <body>
 
-{if $printDate == ''}
-<h1 class="title">{$title|escape}</h1>
+{if $gui->printDate == ''}
+<h1 class="title">{$gui->title|escape}</h1>
 
 {else}{* print data to excel *}
 <table style="font-size: larger;font-weight: bold;">
-	<tr><td>{$labels.title}</td><td>{$title|escape}</td><tr>
-	<tr><td>{$labels.date}</td><td>{$printDate|escape}</td><tr>
+	<tr><td>{$labels.title}</td><td>{$gui->title|escape}</td><tr>
+	<tr><td>{$labels.date}</td><td>{$gui->printDate|escape}</td><tr>
 	<tr><td>{$labels.printed_by}</td><td>{$user|escape}</td><tr>
 </table>
 {/if}
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 
-         arg_tproject_name=$tproject_name arg_tplan_name=$tplan_name}	
+         arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
 
-{$table->renderBodySection()}
+{$gui->table->renderBodySection()}
 
 {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div>

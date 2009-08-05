@@ -1,15 +1,17 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.43 2009/08/03 08:14:55 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.44 2009/08/05 07:27:26 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
 * 
 * Show Test Report by individual test case.
 *
-* @author 20050919 - fm - refactoring
+* @author 
 * 
+* 20090804 - franciscom - added Eloff contribution
+*
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -21,7 +23,14 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args();
 
-$arrData = array();
+$gui = new stdClass();
+$gui->map_label_css = null;
+$gui->title = lang_get('title_test_report_all_builds');
+$gui->printDate = '';
+$gui->matrixCfg  = config_get('resultMatrixReport');
+$gui->matrixData = array();
+
+$buildIDSet = null;
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
@@ -29,8 +38,8 @@ $tproject_mgr = new testproject($db);
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
-$tplan_name = $tplan_info['name'];
-$tproject_name = $tproject_info['name'];
+$gui->tplan_name = $tplan_info['name'];
+$gui->tproject_name = $tproject_info['name'];
 
 $testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
@@ -38,12 +47,10 @@ $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
 
-$arrBuilds = $tplan_mgr->get_builds($args->tplan_id, 1); //MHT: active builds only
-
-$arrBuildIds = null;
-if ($arrBuilds)
+$gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id, 1); //MHT: active builds only
+if ($gui->buildInfoSet)
 {
-	$arrBuildIds = array_keys($arrBuilds);
+	$buildIDSet = array_keys($gui->buildInfoSet);
 }
 $executionsMap = $re->getSuiteList();
 
@@ -54,10 +61,6 @@ $indexOfArrData = 0;
 // -----------------------------------------------------------------------------------
 $resultsCfg = config_get('results');
 $urgencyCfg = config_get('urgency');
-
-// What is this ? 
-// $matrixCfg  = config_get('result_matrix');
-
 $map_tc_status_verbose_code = $resultsCfg['code_status'];
 $map_tc_status_verbose_label = $resultsCfg['status_label'];
 
@@ -67,23 +70,23 @@ foreach($map_tc_status_verbose_code as $code => $verbose)
   {
     $label = $map_tc_status_verbose_label[$verbose];
     $map_tc_status_code_langet[$code] = lang_get($label);
-    $map_label_css[$map_tc_status_code_langet[$code]] = $resultsCfg['code_status'][$code];
+    $gui->map_label_css[$map_tc_status_code_langet[$code]] = $resultsCfg['code_status'][$code];
   }
 }
 
 $not_run_label=lang_get($resultsCfg['status_label']['not_run']);
 // -----------------------------------------------------------------------------------
 
-// @TODO explain scope
-// if ($matrixCfg['build_columns_last_executed'])
-// {
-// 	$arrBuilds[] = array('name' => 'Last');
-// }
-// 
-// if ($matrixCfg['build_columns_flip_order'])
-// {
-// 	$arrBuilds = array_reverse($arrBuilds);
-// }
+// Will add a column
+if ($gui->matrixCfg->buildColumns['showStatusLastExecuted'])
+{
+	$gui->buildInfoSet[] = array('name' => lang_get('result_on_last_build'));
+}
+
+if ($gui->matrixCfg->buildColumns['latestBuildOnLeft'])
+{
+	$gui->buildInfoSet = array_reverse($gui->buildInfoSet);
+}
 
 if ($lastResultMap != null) 
 {
@@ -118,10 +121,10 @@ if ($lastResultMap != null)
 			$lastBuildRun = array($resultsCfg['status_code']['not_run'], $not_run_label);
 			
 			// iterate over all builds and lookup results for current test case			
-		 	$qta_loops=sizeOf($arrBuildIds);
+		 	$qta_loops=sizeOf($buildIDSet);
 			for ($idx = 0 ; $idx < $qta_loops; $idx++) 
 			{
-				$buildId = $arrBuildIds[$idx];
+				$buildId = $buildIDSet[$idx];
 				$resultsForBuild =$not_run_label;
 				$lastStatus = $resultsCfg['status_code']['not_run'];
 				
@@ -143,19 +146,21 @@ if ($lastResultMap != null)
 				{
 					$lastBuildRun = array($lastStatus, $resultsForBuild);
 				}
-				//next($arrBuilds);
+				//next($gui->buildInfoSet);
 			} // end for loop
 
-			// if ($matrixCfg['build_columns_last_executed'])
-			// {
-			// 	$buildsArray[] = $lastBuildRun;
-            // }
-			// if ($matrixCfg['build_columns_flip_order']) {
-			// 	$buildsArray = array_reverse($buildsArray);
-			// }
+
+			if ($gui->matrixCfg->buildColumns['showStatusLastExecuted'])
+			{
+				$buildsArray[] = $lastBuildRun;
+            }
+			if ($gui->matrixCfg->buildColumns['latestBuildOnLeft']) 
+			{
+				$buildsArray = array_reverse($buildsArray);
+			}
 			$rowArray = array_merge($rowArray, $buildsArray);
 			
-			$arrData[$indexOfArrData] = $rowArray;
+			$gui->matrixData[$indexOfArrData] = $rowArray;
   			$indexOfArrData++;
 
 			
@@ -165,20 +170,10 @@ if ($lastResultMap != null)
 	} // end suite loop
 } // end if
 
-$table = buildMatrix($arrBuilds, $arrData);
-
+$gui->table = buildMatrix($gui->buildInfoSet, $gui->matrixData);
 
 $smarty = new TLSmarty;
-$smarty->assign('map_css',$map_label_css);
-$smarty->assign('title', lang_get('title_test_report_all_builds'));
-$smarty->assign('arrData', $arrData);
-$smarty->assign('arrBuilds', $arrBuilds);
-$smarty->assign('printDate','');
-$smarty->assign('tproject_name', $tproject_name);
-$smarty->assign('tplan_name', $tplan_name);
-// $smarty->assign('matrixCfg', $matrixCfg);
-$smarty->assign('table', $table);
-
+$smarty->assign('gui',$gui);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
 
 

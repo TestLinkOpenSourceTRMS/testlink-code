@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.125 2009/08/03 08:15:43 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.126 2009/08/05 07:27:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1400,6 +1400,7 @@ class testplan extends tlObjectWithAttachments
 	*/
 	function get_testsuites($id)
 	{
+		// BUGID 0002776
 		$sql = "SELECT nhgrandparent.name, nhgrandparent.id " . 
 			"FROM {$this->tables['testplan_tcversions']}  tptcv, {$this->tables['nodes_hierarchy']}  nh, " .
 			" {$this->tables['nodes_hierarchy']} nhparent, {$this->tables['nodes_hierarchy']} nhgrandparent " . 
@@ -1407,7 +1408,7 @@ class testplan extends tlObjectWithAttachments
 			"AND nh.parent_id = nhparent.id " .
 			"AND nhparent.parent_id = nhgrandparent.id " .
 			"AND tptcv.testplan_id = " . $id . " " .
-			"GROUP BY nhgrandparent.id " .
+			"GROUP BY nhgrandparent.name,nhgrandparent.id " .
 			"ORDER BY nhgrandparent.name" ;
 		
 		$recordset = $this->db->get_recordset($sql);

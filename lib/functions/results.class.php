@@ -6,13 +6,14 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.142 2009/08/03 08:15:43 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.143 2009/08/05 07:27:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
  * @internal Revisions:
  * 
+ * 20090804 - franciscom - added contributed code getPriority()
  * 20090618 - franciscom - BUGID 0002621 
  * 20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
  * 20090413 - amitkhullar - BUGID 2267 - SQL Error in linked Test Cases
@@ -1597,6 +1598,35 @@ class results extends tlObjectWithDB
 		
 		return $tcase_counters;
 	}
+
+
+	/**
+	 * Returns priority (urgency * importance) as HIGH, MEDUIM or LOW depending on value
+	 * @return HIGH, MEDIUM or LOW
+	 */
+	public function getPriority($tplan_id, $tcversion_id)
+	{
+		$sql =	" SELECT (urgency * importance) AS priority " .
+		        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			    " JOIN {$this->tables['tcversions']} TCV ON TPTCV.tcversion_id = TCV.id " .
+			    " WHERE TPTCV.testplan_id = {$tplan_id} AND TPTCV.tcversion_id = {$tcversion_id}";
+		$prio = $this->db->fetchOneValue($sql);
+		
+		// MUST BE REFACTORED can not HAVE THREE EXIT POINTS
+		if ($prio >= $this->priorityLevelsCfg[HIGH])
+		{
+			return HIGH;
+		}
+		if ($prio >= $this->priorityLevelsCfg[MEDIUM])
+		{
+			return MEDIUM;
+		}
+		else
+		{
+			return LOW;
+		}	
+	}
+
 
 } // ---- end class result -----
 

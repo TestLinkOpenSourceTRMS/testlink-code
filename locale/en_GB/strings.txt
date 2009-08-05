@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.462 2009/07/27 07:24:12 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.463 2009/08/05 07:24:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2061,7 +2061,7 @@ $TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 
 // ----- lib/results/resultsTC.php -----
-
+$TLS_result_on_last_build = '[Last Build]';
 
 
 // ----- lib/results/resultsNavigator.php -----
@@ -2333,6 +2333,7 @@ $TLS_API_TESTPLANNAME_ALREADY_EXISTS="Test Plan (name:%s) Already EXITS on Test 
 $TLS_API_NODEID_IS_NOT_INTEGER = "Node id is not an positive interger value.";
 $TLS_API_NODEID_DOESNOT_EXIST="Node with id (%s) does not exist on system.";
 
+$TLS_API_CFG_DELETE_EXEC_DISABLED = "Configuration does not allow delete executions";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

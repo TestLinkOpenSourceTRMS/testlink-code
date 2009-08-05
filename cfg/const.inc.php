@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.109 2009/08/03 08:14:54 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.110 2009/08/05 07:24:13 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -456,30 +456,6 @@ $tlCfg->results['charts']['status_colour']=array(
 );
 
 
-
-// --------------------------------------------------------------------------------------
-/* [Reports] */
-
-/** Displayed execution statuses to use on reports (ordered). */
-// Note: report generation must be changed to manage new statuses
-$tlCfg->reportsCfg=new stdClass();
-
-// BUGID 1785
-// With this change configuration is simplified
-// $tlCfg->reportsCfg->exec_status = array(
-//     'passed'  => 'test_status_passed',
-//     'failed'  => 'test_status_failed',
-//     'blocked' => 'test_status_blocked',
-//     'not_run' => 'test_status_not_run'
-// );
-$tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
-
-
-/** 
- * Default Offset in seconds for reporting start date (reports with date range)
- * @uses lib/results/resultsMoreBuilds.php
- */
-$tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 
 
 // --------------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.54 2009/07/17 17:10:42 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.55 2009/08/07 06:49:52 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,8 @@
 #
 # Rev :
 #
+# 20090806 - franciscom - added testplan_platforms,platforms
+#                         platform_id to tables
 # 20090717 - franciscom - added cfield_testprojects.location field
 # 20090512 - franciscom - BUGID - builds release_date
 #                         BUGID - is_public attribute for testprojects and testplans
@@ -145,19 +147,20 @@ CREATE TABLE /*prefix*/execution_bugs (
 
 
 CREATE TABLE /*prefix*/executions (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `build_id` int(10) NOT NULL default '0',
-  `tester_id` int(10) unsigned default NULL,
-  `execution_ts` datetime default NULL,
-  `status` char(1) default NULL,
-  `testplan_id` int(10) unsigned NOT NULL default '0',
-  `tcversion_id` int(10) unsigned NOT NULL default '0',
-  `tcversion_number` smallint(5) unsigned NOT NULL default '1',
-  `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
-  `notes` text,
-  PRIMARY KEY  (`id`),
-  KEY /*prefix*/testplan_id_tcversion_id(`testplan_id`,`tcversion_id`),
-  KEY /*prefix*/execution_type(`execution_type`)
+  id int(10) unsigned NOT NULL auto_increment,
+  build_id int(10) NOT NULL default '0',
+  tester_id int(10) unsigned default NULL,
+  execution_ts datetime default NULL,
+  status char(1) default NULL,
+  testplan_id int(10) unsigned NOT NULL default '0',
+  tcversion_id int(10) unsigned NOT NULL default '0',
+  tcversion_number smallint(5) unsigned NOT NULL default '1',
+  platform_id int(10) unsigned default '0',
+  execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  notes text,
+  PRIMARY KEY  (id),
+  KEY /*prefix*/testplan_id_tcversion_id(testplan_id,tcversion_id),
+  KEY /*prefix*/execution_type(execution_type)
 
 ) DEFAULT CHARSET=utf8;
 
@@ -315,15 +318,16 @@ CREATE TABLE /*prefix*/tcversions (
 
 
 CREATE TABLE /*prefix*/testplan_tcversions (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `testplan_id` int(10) unsigned NOT NULL default '0',
-  `tcversion_id` int(10) unsigned NOT NULL default '0',
-  `node_order` int(10) unsigned NOT NULL default '1',
-  `urgency` smallint(5) NOT NULL default '2',
-  `author_id` int(10) unsigned default NULL,
-  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY /*prefix*/testplan_tcversions_tplan_tcversion (`testplan_id`,`tcversion_id`)
+  id int(10) unsigned NOT NULL auto_increment,
+  testplan_id int(10) unsigned NOT NULL default '0',
+  tcversion_id int(10) unsigned NOT NULL default '0',
+  node_order int(10) unsigned NOT NULL default '1',
+  urgency smallint(5) NOT NULL default '2',
+  platform_id int(10) unsigned default '0',
+  author_id int(10) unsigned default NULL,
+  creation_ts datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (id),
+  UNIQUE KEY /*prefix*/testplan_tcversions_tplan_tcversion (testplan_id,tcversion_id)
 ) DEFAULT CHARSET=utf8;
 
 
@@ -534,3 +538,22 @@ CREATE TABLE /*prefix*/user_group_assign (
   `user_id` int(10) unsigned NOT NULL,
   UNIQUE KEY /*prefix*/idx_user_group_assign (`usergroup_id`,`user_id`)
 ) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/platforms (
+  id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  testproject_id INTEGER UNSIGNED NOT NULL,
+  notes text NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY /*prefix*/idx_platforms (testproject_id,name)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/testplan_platforms (
+  id int(10) unsigned NOT NULL auto_increment,
+  testplan_id int(10) unsigned NOT NULL,
+  platform_id int(10) unsigned NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY /*prefix*/idx_testplan_platforms(testplan_id,platform_id)
+) DEFAULT CHARSET=utf8 COMMENT='Connects a testplan with platforms';
+

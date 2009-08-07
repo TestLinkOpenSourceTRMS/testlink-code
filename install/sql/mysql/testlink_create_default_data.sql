@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.29 2009/07/15 17:25:58 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.30 2009/08/07 06:49:52 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
@@ -62,6 +62,8 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (22,'events_mgt');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (23 ,'testproject_user_role_assignment');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (25 ,'platform_view');
 
 
 # Rights for Administrator role
@@ -88,6 +90,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,21);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,22);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,23);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 
 # Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );

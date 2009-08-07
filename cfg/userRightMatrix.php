@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: userRightMatrix.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/05/18 20:22:08 $  $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/08/07 06:48:51 $  $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -44,24 +44,21 @@ $print_url='lib/print';
 
 
 // 
-$user_admin=array(	    "$user_admin_url/usersassign.php"  => array ("user_role_assignment",));														
-                  
-                  
+$user_admin=array("$user_admin_url/usersassign.php"  => array ("user_role_assignment",));														
 $proj_admin=array("$proj_admin_url/projectEdit.php" => array("mgt_modify_product",));
-
 $test_exec=array("$test_exec_url/execnavigator.php" => array("testplan_execute",));
 
 
-$tplan_admin=array("$tplan_admin_url/planupdatetc.php" => array("testplan_planning",),
-						       "$tplan_admin_url/planaddtc.php" => array("testplan_planning",),														
-						       "$tplan_admin_url/planaddtcnavigator.php" => array("testplan_planning",),														
-						       "$tplan_admin_url/planedit.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/plannew.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/planpriority.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/planupdatetc.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/planmilestoneedit.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/plantcnavigator.php" => array("testplan_planning",),														
-       						 "$tplan_admin_url/plantcremove.php" => array("testplan_planning",));														
+$tplan_admin= array("$tplan_admin_url/planupdatetc.php" => array("testplan_planning",),
+					"$tplan_admin_url/planaddtc.php" => array("testplan_planning",),														
+				    "$tplan_admin_url/planaddtcnavigator.php" => array("testplan_planning",),														
+				    "$tplan_admin_url/planedit.php" => array("testplan_planning",),														
+       				"$tplan_admin_url/plannew.php" => array("testplan_planning",),														
+       				"$tplan_admin_url/planpriority.php" => array("testplan_planning",),														
+       				"$tplan_admin_url/planupdatetc.php" => array("testplan_planning",),														
+       				"$tplan_admin_url/planmilestoneedit.php" => array("testplan_planning",),														
+       				"$tplan_admin_url/plantcnavigator.php" => array("testplan_planning",),														
+       				"$tplan_admin_url/plantcremove.php" => array("testplan_planning",));														
 
 $reports=array("$reports_url/resultsallbuilds.php" => array("testplan_metrics",),														
 						   "$reports_url/resultsbugs.php" => array("testplan_metrics",),														

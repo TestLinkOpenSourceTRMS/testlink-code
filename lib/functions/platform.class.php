@@ -6,11 +6,12 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: platform.class.php,v 1.1 2009/08/07 06:22:00 franciscom Exp $
+ * @version     CVS: $Id: platform.class.php,v 1.2 2009/08/07 16:55:49 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
- *      20090805 - Eloff    Updated code according to guidelines
+ *	20090807 - franciscom - added check on empty name with exception (throwIfEmptyName())
+ *	20090805 - Eloff    Updated code according to guidelines
  */
 
 /**
@@ -47,6 +48,7 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function create($name, $notes=null)
 	{
+		$safeName = $this->throwIfEmptyName($name);
 		$alreadyExists = $this->getID($name);
 		if ($alreadyExists)
 		{
@@ -54,9 +56,10 @@ class tlPlatform extends tlObjectWithDB
 		}
 		else
 		{
-			$sql = "INSERT INTO {$this->tables['platforms']}
-					(name, testproject_id, notes)
-					VALUES ('{$name}', $this->tproject_id, '{$notes}')";
+			$sql = "INSERT INTO {$this->tables['platforms']} " .
+				   "(name, testproject_id, notes) " .
+				   " VALUES ('" . $this->db->prepare_string($safeName) . 
+				   "', $this->tproject_id, '{$notes}')";
 			$result = $this->db->exec_query($sql);
 			$status = $result ? tl::OK : self::E_DBERROR;
 		}
@@ -85,10 +88,11 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function update($id, $name, $notes)
 	{
-		// USE db_prepare_string
-		$sql = "UPDATE {$this->tables['platforms']} SET
-				name = '{$name}', notes = '{$notes}'
-				WHERE id = {$id}";
+		$safeName = $this->throwIfEmptyName($name);
+		$sql = " UPDATE {$this->tables['platforms']} " .
+		       " SET name = '" . $this->db->prepare_string($name) . "' " .
+		       ", notes = '{$notes}' " .
+			   " WHERE id = {$id}";
 		$result =  $this->db->exec_query($sql);
 		return $result ? tl::OK : self::E_DBERROR;
 	}
@@ -213,4 +217,22 @@ class tlPlatform extends tlObjectWithDB
 				WHERE  TP.testplan_id = {$testplanID}";
 		return $this->db->fetchColumnsIntoMap($sql, 'id', 'name');
 	}
+
+
+   
+	/**
+	 * @return 
+	 *	       
+	 */
+	public function throwIfEmptyName($name)
+	{
+		$safeName = trim($name);
+		if (tlStringLen($safeName) == 0)
+		{
+			$msg = "Class: " . __CLASS__ . " - " . "Method: " . __FUNCTION__ ;
+			$msg .= " Empty name ";
+			throw new Exception($msg);
+	    }
+        return $safeName;
+    }
 }

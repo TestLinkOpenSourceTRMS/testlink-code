@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.3 2009/08/07 16:26:55 franciscom Exp $
+$Id: platformsEdit.tpl,v 1.4 2009/08/07 16:55:49 franciscom Exp $
 Purpose: smarty template - View all platforms
 
 rev:
@@ -67,7 +67,7 @@ function validateForm(f)
   			<td><input type="text" name="{$input_name}"
   			           size="{#PLATFORM_SIZE#}" maxlength="{#PLATFORM_MAXLEN#}"
   				         value="{$gui->name|escape}" />
-			  		{include file="error_icon.tpl" field="{$input_name}"}
+			  		{include file="error_icon.tpl" field="$input_name"}
 			  </td>
   		</tr>
   		<tr>

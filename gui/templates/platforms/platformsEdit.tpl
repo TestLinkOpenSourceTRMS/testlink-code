@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.1 2009/08/07 06:58:10 franciscom Exp $
+$Id: platformsEdit.tpl,v 1.2 2009/08/07 10:36:02 franciscom Exp $
 Purpose: smarty template - View all platforms
 
 rev:
@@ -46,8 +46,8 @@ function validateForm(f)
 {if $gui->canManage ne ""}
   <div class="workBack">
   
-  <div class="action_descr">{$action_descr|escape}
-	{if $mgt_view_events eq "yes" && $platformID > 0}
+  <div class="action_descr">{$gui->action_descr|escape}
+	{if $gui->mgt_view_events eq "yes" && $gui->platformID > 0}
 			<img style="margin-left:5px;" class="clickable" 
 			     src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
 			     onclick="showEventHistoryFor('{$gui->platformID}','platforms')" 

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.463 2009/08/05 07:24:46 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.464 2009/08/07 06:49:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -94,7 +94,7 @@ $TLS_Unknown = "Unknown";
 $TLS_urgency = "Urgency";
 $TLS_weeks = "weeks";
 $TLS_container = "container";
-
+$TLS_platform = "Platform";
 
 // Actions (used wide) 
 $TLS_add = "add";
@@ -802,6 +802,7 @@ $TLS_menu_view_roles = "View roles";
 $TLS_th_cf_rights = "Custom field";
 $TLS_th_kw_rights = $TLS_keyword;
 $TLS_th_mgttc_rights = "Test Case management";
+$TLS_th_platform_rights = $TLS_platform;
 $TLS_th_product_rights = "Test Project";
 $TLS_th_req_rights = "Requirement";
 $TLS_th_rights = "Rights";
@@ -1293,7 +1294,24 @@ $TLS_warning_enter_at_least2 = " chars.";
 $TLS_warning_enter_less1 = "Please enter less than";
 $TLS_warning_enter_less2 = " chars.";
 
+// ----- gui/templates/platformsView.tpl -----
+$TLS_alt_delete_platform = "Delete platform?";
+$TLS_btn_create_platform = "Create platform";
+$TLS_btn_edit_platform = "Edit";
+$TLS_th_platform = "Platform";
+$TLS_menu_manage_platforms = "Platform Management";
+$TLS_warning_delete_platform = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_warning_enter_at_least1 = "Please enter at least ";
+$TLS_warning_enter_at_least2 = " chars.";
+$TLS_warning_enter_less1 = "Please enter less than";
+$TLS_warning_enter_less2 = " chars.";
 
+// ----- gui/templates/platformsAssign.tpl -----
+$TLS_platform_assignment_no_testplan = "There is no Test Plan selected.";
+$TLS_menu_assign_platform_to_testplan = "Assign to Test Plan";
+$TLS_title_platforms = "Platforms";
+$TLS_available_platforms = "Available platforms";
+$TLS_assigned_platforms = "Assigned platforms";
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Export requirements";
@@ -1345,6 +1363,8 @@ $TLS_th_tc_priority_low = "Low priority";
 $TLS_th_progress = "Test progress [%]";
 $TLS_th_goal = "Execution goal [%]";
 $TLS_th_overall_priority = "Overall test priority";
+$TLS_th_overall_platform = "Overall test platform";
+$TLS_title_res_by_platform = "Results by Platform";
 $TLS_th_expected = "Expected";
 $TLS_th_overall = "Overall";
 
@@ -1650,7 +1670,7 @@ $TLS_title_test_spec = "Test Specification";
 $TLS_title_product_mgmt = "Test Project";
 $TLS_href_plan_define_priority = "Test Plan priority";
 $TLS_href_my_testcase_assignments="Test Cases assigned to me";
-
+$TLS_href_platform_management = "Platform Management";
 
 // ----- gui/templates/mainPage_right.tpl -----
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
@@ -1664,6 +1684,7 @@ $TLS_href_plan_mstones = "Milestone overview";
 $TLS_href_rep_and_metrics = "Test reports and Metrics";
 $TLS_href_tc_exec_assignment = "Assign Test Case execution";
 $TLS_href_update_tplan = "Update Linked Test Case Versions";
+$TLS_href_platform_assign = "Add / Remove Platforms";
 
 $TLS_href_upd_mod_tc = "Update modified Test Cases";
 $TLS_msg_no_rights_for_tp = "<br /> You don't have permissions for any ACTIVE Test Plan";
@@ -1755,6 +1776,10 @@ $TLS_desc_mgt_view_req = "Requirement view (read only access)";
 $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
 $TLS_desc_mgt_view_events = "Event viewer (read only access)";
 $TLS_desc_events_mgt = "Event management";
+$TLS_desc_platforms_view="Platform view (read only access)";
+$TLS_desc_platforms_management="Platform management";
+
+
 $TLS_desc_role_management = "Role management";
 $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
@@ -1964,6 +1989,8 @@ $TLS_update_tp_failed1 = "Update of Test Plan '";
 $TLS_update_tp_failed2 = "' failed";
 $TLS_warning_duplicate_tplan_name = "There is already a Test Plan with this name. " .
 		"Please choose another name!";
+$TLS_platform_default_suffix = "Default Platform %s";
+$TLS_platform_default_notes = "Automatically created platform for Test Plan %s";
 
 
 
@@ -2253,6 +2280,12 @@ $TLS_keyword_management = "Keyword management";
 $TLS_create_keyword = "Create keyword";
 $TLS_edit_keyword = "Edit keyword";
 $TLS_warning_empty_keyword = "Keyword must not be empty!";
+
+// ----- platformsEdit.php -----
+$TLS_platform_management = "Platform management";
+$TLS_create_platform = "Create platform";
+$TLS_edit_platform = "Edit platform";
+$TLS_warning_empty_platform = "Platform can not be empty!";
 
 // ----- api/TestlinkXMLRPCServerErrors.php -----
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";

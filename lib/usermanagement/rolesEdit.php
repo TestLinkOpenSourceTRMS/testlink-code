@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/08/07 06:48:35 $ by $Author: franciscom $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -198,7 +198,7 @@ function getRightsCfg()
     $cfg->req_mgmt = config_get('rights_req');
     $cfg->cfield_mgmt = config_get('rights_cf');
     $cfg->system_mgmt = config_get('rights_system');
-    
+    $cfg->platform_mgmt = config_get('rights_platforms');
     return $cfg;
 }
 

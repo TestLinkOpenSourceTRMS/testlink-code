@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/08/07 06:48:12 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/08/07 16:24:16 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  *
@@ -47,7 +47,7 @@ switch ($action)
 			
 	case "edit":
 	case "create":
-		$op = $action($smarty,$args,$gui,$platform_mgr);
+		$op = $action($args,$gui,$platform_mgr);
 	break;
 }
 
@@ -61,6 +61,7 @@ else
 }
 
 $gui->platforms = $platform_mgr->getAll();
+
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $default_template);
 
@@ -84,7 +85,6 @@ function init_args()
 		
 	$pParams = I_PARAMS($iParams);
 
-    
 	$args->doAction = $pParams["doAction"];
 	$args->platform_id = $pParams["id"];
 	$args->name = $pParams["name"];
@@ -116,7 +116,7 @@ function init_args()
   returns: - 
 
 */
-function create(&$smarty,&$args,&$guiObj)
+function create(&$args,&$guiObj)
 {
 	$ret = new stdClass();
 	$ret->template = 'platformsEdit.tpl';
@@ -140,26 +140,27 @@ function create(&$smarty,&$args,&$guiObj)
   returns: - 
 
 */
-function edit(&$smarty,&$args,&$guiObj,&$platform_mgr)
+function edit(&$args,&$guiObj,&$platform_mgr)
 {
 	$ret = new stdClass();
 	$ret->template = 'platformsEdit.tpl';
 	$ret->status = 1;
 
-	$action_descr = lang_get('edit_platform');
+	$guiObj->action_descr = lang_get('edit_platform');
 	$platform = $platform_mgr->getPlatform($args->platform_id);
+	
 	if ($platform)
 	{
 		$args->name = $platform['name'];
 		$args->notes = $platform['notes'];
-		$action_descr .= TITLE_SEP . $platform['name'];
+		$guiObj->name = $args->name;
+		$guiObj->notes = $args->notes;
+		$guiObj->action_descr .= TITLE_SEP . $platform['name'];
 	}
 	
 	$guiObj->submit_button_label = lang_get('btn_save');
 	$guiObj->submit_button_action = 'do_update';
 	$guiObj->main_descr = lang_get('platform_management');
-	$guiObj->action_descr = $action_descr;
-
 	return $ret;
 }
 
@@ -172,7 +173,7 @@ function edit(&$smarty,&$args,&$guiObj,&$platform_mgr)
   returns: 
 
 */
-function do_create(&$smarty,&$args,&$guiObj,&$platform_mgr)
+function do_create(&$args,&$guiObj,&$platform_mgr)
 {
 	$guiObj->main_descr = lang_get('platform_management');
 	$guiObj->action_descr = lang_get('create_platform');
@@ -194,7 +195,7 @@ function do_create(&$smarty,&$args,&$guiObj,&$platform_mgr)
   returns: 
 
 */
-function do_update(&$smarty,&$args,&$guiObj,&$platform_mgr)
+function do_update(&$args,&$guiObj,&$platform_mgr)
 {
 	$action_descr = lang_get('edit_platform');
 	$platform = $platform_mgr->getPlatform($args->platform_id);
@@ -224,7 +225,7 @@ function do_update(&$smarty,&$args,&$guiObj,&$platform_mgr)
   returns: 
 
 */
-function do_delete(&$smarty,&$args,&$guiObj,&$platform_mgr)
+function do_delete(&$args,&$guiObj,&$platform_mgr)
 {
 	$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . 
 	                      $args->testproject_name;
@@ -275,9 +276,14 @@ function getErrorMessage($code)
   return $msg;
 }
 
+
+/**
+ * 
+ *
+ */
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'testplan_planning');
+	return $user->hasRight($db,'platform_management');
 }
 
 

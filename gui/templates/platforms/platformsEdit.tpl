@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.2 2009/08/07 10:36:02 franciscom Exp $
+$Id: platformsEdit.tpl,v 1.3 2009/08/07 16:26:55 franciscom Exp $
 Purpose: smarty template - View all platforms
 
 rev:
@@ -25,10 +25,10 @@ var warning_empty_platform = "{$labels.warning_empty_platform}";
 {literal}
 function validateForm(f)
 {
-  if (isWhitespace(f.platform.value))
+  if (isWhitespace(f.name.value))
   {
       alert_message(alert_box_title,warning_empty_platform);
-      selectField(f, 'platform');
+      selectField(f, 'name');
       return false;
   }
   return true;
@@ -63,10 +63,11 @@ function validateForm(f)
   	<table class="common" style="width:50%">
   		<tr>
   			<th>{$labels.th_platform}</th>
-  			<td><input type="text" name="name"
+  			{assign var="input_name" value="name"}
+  			<td><input type="text" name="{$input_name}"
   			           size="{#PLATFORM_SIZE#}" maxlength="{#PLATFORM_MAXLEN#}"
   				         value="{$gui->name|escape}" />
-			  		{include file="error_icon.tpl" field="platform"}
+			  		{include file="error_icon.tpl" field="{$input_name}"}
 			  </td>
   		</tr>
   		<tr>

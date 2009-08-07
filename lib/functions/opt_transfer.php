@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: opt_transfer.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/04/30 18:46:36 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/08/07 06:58:10 $
  *
  * Manage Option Transfer (double select box)
  *
@@ -124,4 +124,40 @@ function opt_transf_empty_cfg()
 	$opt_cfg->to->js_events->ondblclick = "";
 	
 	return $opt_cfg;
+}
+
+/**
+ * 
+ *
+ */
+function item_opt_transf_cfg(&$opt_cfg, $right_list)
+{
+	$opt_cfg->size = 8;
+	$opt_cfg->style = "width: 98%;";
+
+	$opt_cfg->js_events->all_right_click = "";
+	$opt_cfg->js_events->left2right_click = "";
+	$opt_cfg->js_events->right2left_click = "";
+	$opt_cfg->js_events->all_left_click = "";
+	$opt_cfg->from->name = "from_select_box";
+	
+	$opt_cfg->from->id_field = 'id';
+	// $opt_cfg->from->desc_field = 'keyword';
+	$opt_cfg->from->desc_glue = " ";
+	$opt_cfg->from->desc_html_content = true;
+	$opt_cfg->from->required = false;
+	$opt_cfg->from->show_id_in_desc = true;
+	$opt_cfg->from->js_events->ondblclick = "";
+	
+	$opt_cfg->to->name = "to_select_box";
+	$opt_cfg->to->show_id_in_desc = true;
+	$opt_cfg->to->id_field = 'id';
+	//$opt_cfg->to->desc_field = 'keyword';
+	$opt_cfg->to->desc_glue = " ";
+	$opt_cfg->to->desc_html_content = true;
+	$opt_cfg->to->required = false;
+	$opt_cfg->to->show_id_in_desc = true;
+	$opt_cfg->to->js_events->ondblclick = "";
+
+	opt_transf_cfg($opt_cfg, $right_list,$opt_cfg->js_ot_name);  
 }

@@ -5,11 +5,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.37 2009/07/22 17:29:43 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.38 2009/08/07 06:58:10 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20090806 - franciscom - platforms feature
  * 20090615 - franciscom - fixed bug on getDBTables()
  * 20090609 - franciscom - added method getDBTables()
  * 20090607 - franciscom - added array with tables names as property to be used on
@@ -199,6 +200,7 @@ abstract class tlObject implements iSerialization
                         'node_types' => DB_TABLE_PREFIX . 'node_types',
                         'nodes_hierarchy' => DB_TABLE_PREFIX . 'nodes_hierarchy',
                         'object_keywords' => DB_TABLE_PREFIX . 'object_keywords',
+                        'platforms' => DB_TABLE_PREFIX . 'platforms',
                         'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
                         'req_specs' => DB_TABLE_PREFIX . 'req_specs',
                         'req_suites' => DB_TABLE_PREFIX . 'req_suites',
@@ -209,6 +211,7 @@ abstract class tlObject implements iSerialization
                         'roles' => DB_TABLE_PREFIX . 'roles',
                         'tcversions' => DB_TABLE_PREFIX . 'tcversions',
                         'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
+                        'testplan_platforms' => DB_TABLE_PREFIX . 'testplan_platforms',
                         'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',
                         'testplans' => DB_TABLE_PREFIX . 'testplans',
                         'testprojects' => DB_TABLE_PREFIX . 'testprojects',
@@ -220,7 +223,7 @@ abstract class tlObject implements iSerialization
                         'user_group_assign' => DB_TABLE_PREFIX . 'user_group_assign',
                         'user_testplan_roles' => DB_TABLE_PREFIX . 'user_testplan_roles',
                         'user_testproject_roles' => DB_TABLE_PREFIX . 'user_testproject_roles',
-                        'users' => DB_TABLE_PREFIX . 'users'); 
+                        'users' => DB_TABLE_PREFIX . 'users' ); 
 
 		if ($tableNames != null)
 		{	

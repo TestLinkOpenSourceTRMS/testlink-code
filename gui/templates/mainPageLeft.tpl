@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.14 2009/04/27 07:55:10 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.15 2009/08/07 06:58:10 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -17,6 +17,7 @@
                           href_roles_management,title_requirements,
                           href_req_spec,href_req_assign,
                           title_test_spec,href_edit_tc,href_browse_tc,href_search_tc,
+                          href_platform_management,
                           href_print_tc,href_keywords_assign'}
 
 
@@ -163,6 +164,15 @@
 	  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	        <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
 	  {/if} {* view_keys_rights *}
+	  
+ 		{* --- platforms management ---  *}
+		{if $platform_management == "yes" || 1}
+			<br />
+	  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+				<a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>
+		{/if}
+
+	  
     </div>
 	{/if}
   {* ---------------------------------------------------------------------------------------- *}

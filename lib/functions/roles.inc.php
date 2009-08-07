@@ -33,7 +33,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.55 2009/06/10 21:50:03 havlat Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.56 2009/08/07 06:58:10 franciscom Exp $
  * 
  *
  * @internal rev: 
@@ -74,6 +74,7 @@ function init_global_rights_maps()
 	global $g_rights_users_global;
 	global $g_rights_users;
 	global $g_rights_system;
+	global $g_rights_platforms;
 	global $g_propRights_global;
 	global $g_propRights_product;
 	
@@ -102,16 +103,17 @@ function init_global_rights_maps()
 	                          "testproject_user_role_assignment" => lang_get('desc_user_role_assignment')
 							  );						
 	
-	$g_rights_cf = array (	
-								"cfield_view" => lang_get('desc_cfield_view'),
-								"cfield_management" => lang_get('desc_cfield_management'));
+	$g_rights_cf = array("cfield_view" => lang_get('desc_cfield_view'),
+						 "cfield_management" => lang_get('desc_cfield_management'));
+	
+	
+	$g_rights_platforms = array("platforms_view" => lang_get('desc_platforms_view'),
+						        "platforms_management" => lang_get('desc_platforms_management'));
 	
 	// Global means test project independent.
-	$g_rights_users_global = array (	
-								"mgt_users" => lang_get('desc_mgt_modify_users'),
-								"role_management" => lang_get('desc_role_management'),
-								"user_role_assignment" => lang_get('desc_user_role_assignment')
-								); 
+	$g_rights_users_global = array ( "mgt_users" => lang_get('desc_mgt_modify_users'),
+								     "role_management" => lang_get('desc_role_management'),
+								     "user_role_assignment" => lang_get('desc_user_role_assignment')); 
 	
 	$g_rights_users = $g_rights_users_global;
 							

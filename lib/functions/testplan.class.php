@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.126 2009/08/05 07:27:26 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.127 2009/08/08 14:11:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -99,6 +99,7 @@ class testplan extends tlObjectWithAttachments
 
     	$this->cfield_mgr = new cfield_mgr($this->db);
     	$this->tcase_mgr = New testcase($this->db);
+		$this->platform_mgr = new tlPlatform($this->db);
    	
 	    tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
@@ -999,8 +1000,9 @@ class testplan extends tlObjectWithAttachments
                               this allow us to copy testplans to differents test projects.
         [copy_options]: default null
                         null: do a deep copy => copy following test plan child elements:
-                              builds,linked tcversions,milestones,
-                              user_roles,priorities.
+                              builds,linked tcversions,milestones,user_roles,priorities,
+                              platforms.
+                              
                         != null, a map with keys that controls what child elements to copy
 
         [tcversion_type]:  default null -> use same version present on source testplan
@@ -1010,18 +1012,20 @@ class testplan extends tlObjectWithAttachments
   	returns: N/A
 	*/
 	function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null,
-                 $copy_options=null,$tcversion_type=null)
+                     $copy_options=null,$tcversion_type=null)
 	{
 		// CoPy configuration
 		// Configure here only elements that has his own table.
 		// Exception example:
 		//                   test urgency information is not stored in a special table
 		//                   then key can set to 0, or better REMOVED.
-		$cp_options = array('copy_tcases' => 1,'copy_milestones' => 1, 'copy_user_roles' => 1, 'copy_builds' => 1);
+		$cp_options = array('copy_tcases' => 1,'copy_milestones' => 1, 'copy_user_roles' => 1, 
+		                    'copy_builds' => 1, 'copy_platforms_links' => 1);
 		$cp_methods = array('copy_tcases' => 'copy_linked_tcversions',
-			'copy_milestones' => 'copy_milestones',
-			'copy_user_roles' => 'copy_user_roles',
-			'copy_builds' => 'copy_builds');
+		                    'copy_milestones' => 'copy_milestones',
+			                'copy_user_roles' => 'copy_user_roles',
+			                'copy_platforms_links' => 'copy_platforms_links',
+			                'copy_builds' => 'copy_builds');
 		
 		
 		if( !is_null($copy_options) )
@@ -2237,6 +2241,26 @@ class testplan extends tlObjectWithAttachments
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		return $recordset;
 	}
+
+
+
+	/**
+	 * link platforms to a new Test Plan
+	 * 
+	 * @param int $original_tplan_id original Test Plan identificator
+	 * @param int $new_tplan_id new Test Plan identificator
+	 */
+	private function copy_platforms_links($original_tplan_id, $new_tplan_id)
+	{
+    	$sourceLinks = $this->platform_mgr->getLinkedToTestplanAsMap($original_tplan_id);
+    	if( !is_null($sourceLinks) )
+    	{
+    		$sourceLinks = array_keys($sourceLinks);
+    		$this->platform_mgr->linkToTestplan($sourceLinks,$new_tplan_id);
+    	}
+	}
+
+
 
 } // end class testplan
 

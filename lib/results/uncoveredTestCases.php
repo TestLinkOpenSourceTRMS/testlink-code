@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: uncoveredTestCases.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/08/08 14:11:50 $ by $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list test cases that has no requirement assigned
@@ -87,8 +87,14 @@ if($gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
         $uncovered[$key]['external_id'] = $value['tc_external_id'];  
     }
   
+    // $out = gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
+    //                    $uncovered,null,null,$testSet,1,0,0);
+    $opt = array('write_button_only_if_linked' => 1);
+    $filters = array('testcases' => $testSet);
     $out = gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
-                       $uncovered,null,null,$testSet,1,0,0);
+                       $uncovered,null,$filters,$opt);
+                       
+                       
     $gui->items = $out['spec_view'];
 }
 

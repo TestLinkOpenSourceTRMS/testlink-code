@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.41 2009/02/15 22:23:29 havlat Exp $     
+ $Id: mainPage.tpl,v 1.42 2009/08/08 14:08:20 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -67,7 +67,7 @@ window.onload=function()
 </head>
 
 <body>
-{if $securityNotes}
+{if $gui->securityNotes}
     {include file="inc_msg_from_array.tpl" array_of_msg=$securityNotes arg_css_class="warning"}
 {/if}
 

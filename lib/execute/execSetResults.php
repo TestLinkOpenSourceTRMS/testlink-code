@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.131 $
- * @modified $Date: 2009/07/18 17:42:34 $ $Author: franciscom $
+ * @version $Revision: 1.132 $
+ * @modified $Date: 2009/08/08 14:09:51 $ $Author: franciscom $
  *
  * rev:
+ *     20090808 - franciscom - gen_spec_view call refactoring
  *     20090526 - franciscom - now custom fields fo testplan_design are managed
  *     20090426 - franciscom - bad initialization of grants due to unclear
  *                             function return.
@@ -1111,9 +1112,12 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     $tsuite_mgr=new testsuite($dbHandler); 
     $tsuite_data = $tsuite_mgr->get_by_id($argsObj->id);
     
+    // 20090808 - franciscom
+    $opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
+    $filters = array('keywords' => $argsObj->keyword_id);
+        
     $out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
-                         $linked_tcversions,null,$argsObj->keyword_id,
-                         FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,DO_PRUNE);
+                         $linked_tcversions,null,$filters,$opt);
        
     $testSet->tcase_id = array();
     $testSet->tcversion_id = array();

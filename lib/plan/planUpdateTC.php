@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.35 2009/06/10 19:36:00 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.36 2009/08/08 14:11:50 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -62,9 +62,16 @@ switch($args->level)
 		$tsuite_data = $my_path[$idx_ts-1];
 		$linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->id);
 		
+		
+		// $out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+		//                      $linked_items,null,$args->keyword_id,
+		//                      FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,1,0);
+		
+		$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
+        $filters = array('keywords' => $args->keyword_id);
 		$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-		                     $linked_items,null,$args->keyword_id,
-		                     FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,1,0);
+		                     $linked_items,null,$filters,$opt);
+
 		break;
 
 	case 'testsuite':

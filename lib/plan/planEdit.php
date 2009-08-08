@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2009/06/25 19:47:15 $ by $Author: schlundus $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/08/08 14:11:50 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
- * rev : 20090513 - franciscom - manage is_public
+ * rev : 20090807 - franciscom - added platforms feature
+ *       20090513 - franciscom - manage is_public
  *       20080827 - franciscom - BUGID 1692
  *
  */
@@ -248,7 +249,8 @@ function init_args($request_hash)
 
 	$args->copy_options=array();
 	$boolean_keys = array('copy_tcases' => 0,'copy_priorities' => 0,
-                          'copy_milestones' => 0, 'copy_user_roles' => 0, 'copy_builds' => 0);
+                          'copy_milestones' => 0, 'copy_user_roles' => 0, 
+                          'copy_builds' => 0, 'copy_platforms_links' => 0);
 
 	foreach($boolean_keys as $key => $value)
 	{

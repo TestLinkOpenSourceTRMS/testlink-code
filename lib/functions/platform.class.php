@@ -6,11 +6,12 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: platform.class.php,v 1.2 2009/08/07 16:55:49 franciscom Exp $
+ * @version     CVS: $Id: platform.class.php,v 1.3 2009/08/08 14:09:51 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *	20090807 - franciscom - added check on empty name with exception (throwIfEmptyName())
+ *                          linkToTestplan(),unlinkFromTestplan() interface changes
  *	20090805 - Eloff    Updated code according to guidelines
  */
 
@@ -113,32 +114,52 @@ class tlPlatform extends tlObjectWithDB
 	}
 
 	/**
-	 * links a platform to a testplan
+	 * links one or more platforms to a testplan
 	 *
 	 * @return tl::OK if successfull otherwise E_DBERROR
 	 */
-	public function linkToTestplan($testplan_id, $platform_id)
+	public function linkToTestplan($id, $testplan_id)
 	{
-		$sql = "INSERT INTO {$this->tables['testplan_platforms']}
-				(testplan_id, platform_id)
-				VALUES ($testplan_id, $platform_id)";
-		$result = $this->db->exec_query($sql);
+		$idSet = (array)$id;
+		$result = true;
+		foreach ($idSet as $platform_id)
+		{
+			$sql = "INSERT INTO {$this->tables['testplan_platforms']}
+					(testplan_id, platform_id)
+					VALUES ($testplan_id, $platform_id)";
+			$result = $this->db->exec_query($sql);
+			
+			if( !$result )
+			{
+				break;
+			} 
+		}
 		return $result ? tl::OK : self::E_DBERROR;
 	}
 
 	/**
-	 * Removes a platform to a testplan
+	 * Removes one or more platforms from a testplan
 	 * @TODO: should this also remove testcases and executions?
 	 *
 	 * @return tl::OK if successfull otherwise E_DBERROR
 	 */
-	public function unlinkFromTestplan($testplan_id, $platform_id)
+	public function unlinkFromTestplan($id,$testplan_id)
 	{
-		$sql = "DELETE FROM {$this->tables['testplan_platforms']}
-				WHERE testplan_id = {$testplan_id}
-				AND platform_id = {$platform_id}
-				LIMIT 1";
-		$result = $this->db->exec_query($sql);
+		$idSet = (array)$id;
+	    $result = true;
+		foreach ($idSet as $platform_id)
+		{
+			$sql = " DELETE FROM {$this->tables['testplan_platforms']} " .
+				   " WHERE testplan_id = {$testplan_id} " .
+				   " AND platform_id = {$platform_id} ";
+		    
+		    $result = $this->db->exec_query($sql);
+			if( !$result )
+			{
+				break;
+			} 
+		
+		}	   
 		return $result ? tl::OK : self::E_DBERROR;
 	}
 
@@ -203,6 +224,7 @@ class tlPlatform extends tlObjectWithDB
 				WHERE  TP.testplan_id = {$testplanID}";
 		return $this->db->get_recordset($sql);
 	}
+
 
 	/**
 	 * @return array Returns all platforms associated to a given testplan

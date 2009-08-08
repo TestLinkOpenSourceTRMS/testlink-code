@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.33 2009/07/16 14:55:06 havlat Exp $
+ * @version    	CVS: $Id: specview.php,v 1.34 2009/08/08 14:09:51 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -148,6 +148,8 @@
  * 
  * @internal Revisions:
  * 
+ *  20090808 - franciscom - changed interface to reduce number of arguments
+ *
  *	20070707 - franciscom - BUGID 921 - problems with display order in execution screen
  *	20070630 - franciscom - added new logic to include in for inactive test cases, testcase version id.
  *			This is needed to show testcases linked to testplans, but after be linked to
@@ -159,13 +161,37 @@
  *                        If 0 => test case is considered INACTIVE
  * 	20090625 - Eloff - added priority output
  */
-function gen_spec_view(&$db,$spec_view_type='testproject',
-                       $tobj_id,$id,$name,&$linked_items,
-                       $map_node_tccount,$keyword_id = 0,$tcase_id = null,
-			           $write_button_only_if_linked = 0,
-					   $prune_unlinked_tcversions=0,$add_custom_fields=0,$tproject_id = null)
+
+
+function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$linked_items,
+                       $map_node_tccount,$filters=null, $options = null,$tproject_id = null)
+                       
+//                       $map_node_tccount,$keyword_id = 0,$tcase_id = null,
+//                       $options = null,$tproject_id = null)
+//
+//			           $write_button_only_if_linked = 0,
+//					   $prune_unlinked_tcversions=0,$add_custom_fields=0,$tproject_id = null)
+
 {
-	$write_status = $write_button_only_if_linked ? 'no' : 'yes';
+
+	$out = array(); 
+	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
+
+	$my = array();
+	$my['options'] = array('write_button_only_if_linked' => 0,
+	                       'prune_unlinked_tcversions' => 0,
+	                       'add_custom_fields' => 0);
+
+	$my['filters'] = array('keywords' => 0, 'testcases' => null);
+	foreach( $my as $key => $settings)
+	{
+		if( !is_null($$key) && is_array($$key) )
+		{
+			$my[$key] = array_merge($my[$key],$$key);
+		}
+	}	             
+	
+	$write_status = $my['options']['write_button_only_if_linked'] ? 'no' : 'yes';
 	$is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
 	$is_uncovered_view_type=$spec_view_type == 'uncoveredtestcases' ? 1 : 0;
 	
@@ -174,16 +200,13 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 		$tproject_id=$tobj_id;
 	}
 	
-	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
-	$out = array(); 
-	
 	$tcase_mgr = new testcase($db); 
-	
 	$hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
-	
-	$filters = array('keyword_id' => $keyword_id, 'tcase_id' => $tcase_id, 
-		'tcase_node_type_id' => $hash_descr_id['testcase']);
+
+	$filters = array('keyword_id' => $my['filters']['keywords'], 
+	                 'tcase_id' => $my['filters']['testcases'], 
+		             'tcase_node_type_id' => $hash_descr_id['testcase']);
 	$test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
 	
 	$idx = 0;
@@ -470,7 +493,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	if( count($result['spec_view']) > 0)
 	{
 		removeEmptyTestSuites($result['spec_view'],$tcase_mgr->tree_manager,
-			($prune_unlinked_tcversions && $is_tplan_view_type),$hash_descr_id);
+			($my['options']['prune_unlinked_tcversions'] && $is_tplan_view_type),$hash_descr_id);
 	}
 	
 	// Remove empty branches
@@ -507,7 +530,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',
 	// }
 	
 	// #1650 We want to manage custom fields when user is doing test case execution assigment
-	if( count($result['spec_view']) > 0 && $add_custom_fields)
+	if( count($result['spec_view']) > 0 && $my['options']['add_custom_fields'])
 	{    
 		addCustomFieldsToView($result['spec_view'],$tproject_id,$tcase_mgr);
 	}

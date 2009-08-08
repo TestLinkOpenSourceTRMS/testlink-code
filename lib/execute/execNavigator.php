@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2009/07/18 14:49:36 $ by $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2009/08/08 14:09:51 $ by $Author: franciscom $
  *
  * rev: 
+ *      20090828 - franciscom - added contribution platform feature
  *      20090828 - franciscom - BUGID 2296 - filter by Last Exec Result on Any of previous builds
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
  *      20081220 - franciscom - advanced/simple filters
@@ -21,7 +22,6 @@
  *      20080224 - franciscom - refactoring
  *      20080224 - franciscom - BUGID 1056
  **/
-//  JUST DEBUG
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once("users.inc.php");
@@ -36,7 +36,8 @@ $templateCfg = templateConfiguration();
 $cfg = getCfg();
 $args = init_args($db,$cfg);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
-$gui = initializeGui($db,$args,$cfg,$exec_cfield_mgr,$tplan_mgr);
+$platform_mgr = new tlPlatform($db, $args->tproject_id);
+$gui = initializeGui($db,$args,$cfg,$exec_cfield_mgr,$tplan_mgr,$platform_mgr);
 
 buildAssigneeFilter($db,$gui,$args,$cfg);
 
@@ -158,6 +159,8 @@ function init_args(&$dbHandler,$cfgObj)
     	$args->urgencyImportance = null;
     }
     $args->optBuildSelected = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : -1;
+    $args->optPlatformSelected = isset($_REQUEST['platform_id']) ? $_REQUEST['platform_id'] : -1;
+
     $args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
     $keyname = "resultAllPrevBuildsFilterType";
@@ -216,6 +219,7 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
 {
     $kl='';
     $settings = '&build_id=' . $argsObj->optBuildSelected .
+                '&platform_id=' . $argsObj->optPlatformSelected .
   	            '&include_unassigned=' . $argsObj->include_unassigned;
 
     if(is_array($argsObj->keyword_id))
@@ -357,19 +361,59 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
   returns: 
 
 */
-function initBuildInfo(&$dbHandler,&$guiObj,&$argsObj,&$tplanMgr)
+function initBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
 {
-    // 20070607 - franciscom - BUGID 887
+    $htmlSelect = array('items' => null, 'selected' => null);
+    $htmlSelect['items'] = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
+   
     $maxBuildID = $tplanMgr->get_max_build_id($argsObj->tplan_id,
                                               testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
+
     $argsObj->optBuildSelected = $argsObj->optBuildSelected > 0 ? $argsObj->optBuildSelected : $maxBuildID;
-    if (!$argsObj->optBuildSelected && sizeof($guiObj->optBuild))
+    if (!$argsObj->optBuildSelected && sizeof($htmlSelect['items']))
     {
-    	$argsObj->optBuildSelected = key($guiObj->optBuild);
+    	$argsObj->optBuildSelected = key($htmlSelect['items']);
     }
+    $htmlSelect['selected'] = $argsObj->optBuildSelected;
     
-    return $argsObj->optBuildSelected;
+    return $htmlSelect;
 }
+
+
+/*
+  function: initPlatformInfo
+
+  args :
+  
+  returns: 
+
+*/
+function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr)
+{
+    $htmlSelect = array('items' => null, 'selected' => null);
+    $htmlSelect['items'] = $platformMgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+    if( !is_null($htmlSelect['items']) && is_array($htmlSelect['items']) )
+    { 
+    	if ($argsObj->optPlatformSelected == -1) {
+    	    $argsObj->optPlatformSelected = key($htmlSelect['items']);
+    	}
+    	$htmlSelect['selected'] = $argsObj->optPlatformSelected;
+    } 
+    return $htmlSelect;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
   function: buildTree
@@ -476,6 +520,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $filters->hide_testcases = false;
     $filters->show_testsuite_contents = $cfgObj->exec->show_testsuite_contents;
     $filters->urgencyImportance = $argsObj->urgencyImportance;
+    $filters->platform_id = $argsObj->optPlatformSelected;
     
     $filters->cf_hash = $exec_cfield_mgr->get_set_values();
     $guiObj->args = initializeGetArguments($argsObj,$cfgObj,$filters->cf_hash);
@@ -509,7 +554,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 
   rev: 20080429 - franciscom
 */
-function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanMgr,&$platformMgr)
 {
     $gui = new stdClass();
     $gui_open = config_get('gui_separator_open');
@@ -532,9 +577,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->targetTestCase = $argsObj->targetTestCase;
     
     // Only active builds no matter user role
-    $gui->optBuild = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
-    $gui->optBuildSelected=initBuildInfo($dbHandler,$guiObj,$argsObj,$tplanMgr); 
-       
+    $gui->optBuild = initBuildInfo($dbHandler,$argsObj,$tplanMgr);    
+    $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr);    
        
     $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 

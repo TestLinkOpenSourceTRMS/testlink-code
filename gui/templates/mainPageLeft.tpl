@@ -1,9 +1,10 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.15 2009/08/07 06:58:10 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.16 2009/08/08 14:08:20 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
+      20090808 - franciscom - grouping rights on gui->grants
       20081228 - franciscom - new feature user can choose vertical order of link groups
       20070523 - franciscom - test case search link enabled only if session testproject
                               has test cases.
@@ -27,9 +28,9 @@
 {assign var="display_left_block_2" value=false}
 {assign var="display_left_block_3" value=false}
 {assign var="display_left_block_4" value=false}
-{if $sessionProductID && 
-	    ($rights_project_edit == "yes" || $tproject_user_role_assignment == "yes" ||
-       $cfield_management == "yes" || $rights_keywords_view == "yes")	}
+{if $gui->testprojectID && 
+	    ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
+       $gui->cfield_management == "yes" || $gui->grants.keywords_view == "yes")	}
     {assign var="display_left_block_1" value=true}
 
     <script  type="text/javascript">
@@ -53,7 +54,7 @@
 {/if}
 
 
-{if $usermanagement_rights == "yes" }
+{if $gui->grants.mgt_users == "yes" }
     {assign var="display_left_block_2" value=true}
 
     <script type="text/javascript">
@@ -76,7 +77,7 @@
 
 {/if}
 
-{if $sessionProductID && $opt_requirements == TRUE && ($rights_reqs_view == "yes" || $rights_reqs_edit == "yes")}
+{if $gui->testprojectID && $opt_requirements == TRUE && ($gui->grants.reqs_view == "yes" || $gui->grants.reqs_edit == "yes")}
     {assign var="display_left_block_3" value=true}
 
     <script type="text/javascript">
@@ -98,7 +99,7 @@
     </script>
 {/if}
 
-{if $sessionProductID && $view_tc_rights == "yes"}
+{if $gui->testprojectID && $gui->grants.view_tc == "yes"}
     {assign var="display_left_block_4" value=true}
 
     <script type="text/javascript">
@@ -130,26 +131,26 @@
   
 	{if $display_left_block_1 }
     <div id='testproject_topics'>
-	  {if $rights_project_edit == "yes"}
+	  {if $gui->grants.project_edit == "yes"}
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
         <a href="lib/project/projectView.php">{$labels.href_tproject_management}</a>
     {/if}
 
     {* 
-	  {if $rights_configuration == "yes"}
+	  {if $gui->grants.configuration == "yes"}
         <br />
    		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
         <a href="lib/admin/modules.php">{$labels.href_admin_modules}</a>
       {/if} 
     *}
     
-	  {if $tproject_user_role_assignment == "yes"}
+	  {if $gui->grants.tproject_user_role_assignment == "yes"}
         <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        <a href="lib/usermanagement/usersAssign.php?featureType=testproject&amp;featureID={$sessionProductID}">{$labels.href_assign_user_roles}</a>
+        <a href="lib/usermanagement/usersAssign.php?featureType=testproject&amp;featureID={$gui->testprojectID}">{$labels.href_assign_user_roles}</a>
 	  {/if}
 
-      {if $cfield_management == "yes"}
+      {if $gui->grants.cfield_management == "yes"}
 	      	<br />
 	      	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
           	<a href="lib/cfields/cfieldsView.php">{$labels.href_cfields_management}</a>
@@ -158,15 +159,15 @@
             <a href="lib/cfields/cfieldsTprojectAssign.php">{$labels.href_cfields_tproject_assign}</a>
       {/if}
 	  
-	    {* --- keywords management ---  *}
-	  {if $rights_keywords_view == "yes"}
+	  {* --- keywords management ---  *}
+	  {if $gui->grants.keywords_view == "yes"}
 			<br />
 	  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	        <a href="lib/keywords/keywordsView.php">{$labels.href_keywords_manage}</a>
 	  {/if} {* view_keys_rights *}
 	  
  		{* --- platforms management ---  *}
-		{if $platform_management == "yes" || 1}
+		{if $gui->grants.platform_management == "yes" || 1}
 			<br />
 	  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 				<a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>
@@ -194,11 +195,11 @@
   {* ---------------------------------------------------------------------------------------- *}
  	{if $display_left_block_3 }
     <div id="requirements_topics" >
-      {if $rights_reqs_view == "yes"}
+      {if $gui->grants.reqs_view == "yes"}
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        <a href="{$launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a>
+        <a href="{$gui->launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a>
 	   	{/if}
-		{if $rights_reqs_edit == "yes"}
+		{if $gui->grants.reqs_edit == "yes"}
 			<br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
        		<a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
@@ -212,30 +213,30 @@
  	{if $display_left_block_4 }
       <div id="testspecification_topics" >
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-  		<a href="{$launcher}?feature=editTc">
-    		{if $modify_tc_rights eq "yes"}
+  		<a href="{$gui->launcher}?feature=editTc">
+    		{if $gui->grants.modify_tc eq "yes"}
   	      {lang_get s='href_edit_tc'}
   	   {else}
   	      {lang_get s='href_browse_tc'}
   	   {/if}
   	  </a>
-      {if $hasTestCases}
+      {if $gui->hasTestCases}
       <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-          <a href="{$launcher}?feature=searchTc">{$labels.href_search_tc}</a>
+          <a href="{$gui->launcher}?feature=searchTc">{$labels.href_search_tc}</a>
       {/if}    
-  		 {if $modify_tc_rights eq "yes"}
+  		 {if $gui->grants.modify_tc eq "yes"}
   	        <br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-          	<a href="{$launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
+          	<a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
   		 {/if}
 
 	  {* --- keywords management ---  *}
-	  {if $rights_keywords_view == "yes"}
-	    {if $rights_keywords_edit == "yes"}
+	  {if $gui->grants.keywords_view == "yes"}
+	    {if $gui->grants.keywords_edit == "yes"}
 	        <br />
   			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        	<a href="{$launcher}?feature=keywordsAssign">{$labels.href_keywords_assign}</a>
+        	<a href="{$gui->launcher}?feature=keywordsAssign">{$labels.href_keywords_assign}</a>
 		  {/if}
 	  {/if}
     </div>

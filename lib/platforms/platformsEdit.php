@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/08/07 16:55:49 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/08/08 14:11:50 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  *
@@ -236,7 +236,7 @@ function do_delete(&$args,&$guiObj,&$platform_mgr)
 
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
-	$ret->status = $platform_mgr->deleteplatform($args->platform_id);
+	$ret->status = $platform_mgr->delete($args->platform_id);
 
 	return $ret;
 }

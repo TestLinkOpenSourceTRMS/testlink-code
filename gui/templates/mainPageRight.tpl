@@ -1,9 +1,10 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.16 2009/07/27 07:23:54 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.17 2009/08/08 14:08:20 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
+       20090807 - franciscom - platform feature
        20090131 - franciscom - new link to access to test cases assigned to logged user
        20081228 - franciscom - new feature user can choose vertical order of link groups
 *}
@@ -11,7 +12,7 @@
           s="title_test_plan,ok,testplan_role,msg_no_rights_for_tp,
              title_test_execution,href_execute_test,href_rep_and_metrics,
              href_update_tplan,href_newest_tcversions,
-             href_my_testcase_assignments,
+             href_my_testcase_assignments,href_platform_assign,
              href_tc_exec_assignment,href_plan_assign_urgency,
              href_upd_mod_tc,title_test_plan_mgmt,title_test_case_suite,
              href_plan_management,href_assign_user_roles,
@@ -24,8 +25,8 @@
 {assign var="display_right_block_2" value=false}
 {assign var="display_right_block_3" value=false}
 
-{if $testplan_planning == "yes" || $testplan_creating == "yes" ||
-	  $tp_user_role_assignment == "yes" or $testplan_create_build == "yes"}
+{if $gui->grants.testplan_planning == "yes" || $gui->grants.mgt_testplan_create == "yes" ||
+	  $gui->grants.testplan_user_role_assignment == "yes" or $gui->grants.testplan_create_build == "yes"}
    {assign var="display_right_block_1" value=true}
 
     <script  type="text/javascript">
@@ -49,7 +50,7 @@
 
 {/if}
 
-{if $countPlans > 0 }
+{if $gui->countPlans > 0 }
    {assign var="display_right_block_2" value=true}
 
     <script  type="text/javascript">
@@ -72,7 +73,7 @@
     </script>
 {/if}
 
-{if $countPlans > 0 && $testplan_planning == "yes"}
+{if $gui->countPlans > 0 && $gui->grants.testplan_planning == "yes"}
    {assign var="display_right_block_3" value=true}
 
     <script  type="text/javascript">
@@ -99,7 +100,7 @@
 {* ----- Right Column begin ---------------------------------------------------------- *}
 <div class="vertical_menu" style="float: right; margin:10px 10px 10px 10px">
 {* ----------------------------------------------------------------------------------- *}
-	{if $num_active_tplans > 0}
+	{if $gui->num_active_tplans > 0}
 	  <div class="testproject_title">
      {lang_get s='help' var='common_prefix'}
      {lang_get s='test_plan' var="xx_alt"}
@@ -110,27 +111,27 @@
 
 
  	   <form name="testplanForm" action="lib/general/mainPage.php">
-       {if $countPlans > 0}
+       {if $gui->countPlans > 0}
 		     {$labels.title_test_plan}
 		     <select style="width:50%;z-index:1"  name="testplan" onchange="this.form.submit();">
-		     	{section name=tPlan loop=$arrPlans}
-		     		<option value="{$arrPlans[tPlan].id}"
-		     		        {if $arrPlans[tPlan].selected} selected="selected" {/if}
-		     		        title="{$arrPlans[tPlan].name|escape}">
-		     		        {$arrPlans[tPlan].name|truncate:#TESTPLAN_TRUNCATE_SIZE#|escape}
+		     	{section name=tPlan loop=$gui->arrPlans}
+		     		<option value="{$gui->arrPlans[tPlan].id}"
+		     		        {if $gui->arrPlans[tPlan].selected} selected="selected" {/if}
+		     		        title="{$gui->arrPlans[tPlan].name|escape}">
+		     		        {$gui->arrPlans[tPlan].name|truncate:#TESTPLAN_TRUNCATE_SIZE#|escape}
 		     		</option>
 		     	{/section}
 		     </select>
 		     
-		     {if $countPlans == 1}
+		     {if $gui->countPlans == 1}
 		     	<input type="button" onclick="this.form.submit();" value="{$labels.ok}"/>
 		     {/if}
 		     
-		     {if $testPlanRole neq null}
-		     	<br />{$labels.testplan_role} {$testPlanRole|escape}
+		     {if $gui->testplanRole neq null}
+		     	<br />{$labels.testplan_role} {$gui->testplanRole|escape}
 		     {/if}
 	     {else}
-         {if $num_active_tplans > 0}{$labels.msg_no_rights_for_tp}{/if}
+         {if $gui->num_active_tplans > 0}{$labels.msg_no_rights_for_tp}{/if}
 		   {/if}
 	   </form>
 	  </div>
@@ -145,24 +146,24 @@
 	{if $display_right_block_1 }
     <div id='test_plan_mgmt_topics'>
     
-      {if $testplan_creating == "yes"}
+      {if $gui->grants.mgt_testplan_create == "yes"}
 	    	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
        		<a href="lib/plan/planView.php">{$labels.href_plan_management}</a>
 	    {/if}
 	    
-	    {if $testplan_create_build == "yes" and $countPlans > 0}
+	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}
 	    	<br />
 	    	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
            	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
       {/if} {* testplan_create_build *}
 	    
-	    {if $tp_user_role_assignment == "yes" && $countPlans > 0}
+	    {if $gui->grants.testplan_user_role_assignment == "yes" && $gui->countPlans > 0}
 	    	<br />
 	    	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-       	    <a href="lib/usermanagement/usersAssign.php?featureType=testplan&amp;featureID={$sessionTestPlanID}">{$labels.href_assign_user_roles}</a>
+       	    <a href="lib/usermanagement/usersAssign.php?featureType=testplan&amp;featureID={$gui->testplanID}">{$labels.href_assign_user_roles}</a>
 	    {/if}
       
-	    {if $testplan_planning == "yes" and $countPlans > 0 }
+	    {if $gui->grants.testplan_planning == "yes" and $gui->countPlans > 0 }
             <br />
         	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
            	<a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
@@ -176,22 +177,22 @@
 	{if $display_right_block_2 }
     <div id='test_execution_topics'>
 		  <p>
-		  {if $testplan_execute == "yes" }
+		  {if $gui->grants.testplan_execute == "yes" }
 		  	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	          <a href="{$launcher}?feature=executeTest">{$labels.href_execute_test}</a>
+	          <a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
 		  {/if} 
       
-  	  {if $testplan_metrics == "yes"}
+  	  {if $gui->grants.testplan_metrics == "yes"}
 	          <br />
 		  	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	          <a href="{$launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
+	          <a href="{$gui->launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
 		  {/if} 
  	    <br />
  		  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	         <a href="{$metrics_dashboard_url}">{$labels.href_metrics_dashboard}</a>
+	         <a href="{$gui->url.metrics_dashboard}">{$labels.href_metrics_dashboard}</a>
  	    <br />
  		  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	         <a href="{$my_testcase_assignments_url}">{$labels.href_my_testcase_assignments}</a>
+	         <a href="{$gui->url.testcase_assignments}">{$labels.href_my_testcase_assignments}</a>
 	    </p>
     </div>
 	{/if}
@@ -203,24 +204,28 @@
 		<p>
 		
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	    <a href="{$launcher}?feature=planAddTC">{$labels.href_add_remove_test_cases}</a>
+	    <a href="lib/platforms/platformsAssign.php?tplan_id={$gui->testplanID}">{$labels.href_platform_assign}</a>
+		  <br />
+		
+		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	    <a href="{$gui->launcher}?feature=planAddTC">{$labels.href_add_remove_test_cases}</a>
 	    <br />
 		
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   	<a href="{$launcher}?feature=planUpdateTC">{$labels.href_update_tplan}</a>
+	   	<a href="{$gui->launcher}?feature=planUpdateTC">{$labels.href_update_tplan}</a>
 	    <br />
 
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   	<a href="{$launcher}?feature=newest_tcversions">{$labels.href_newest_tcversions}</a>
+	   	<a href="{$gui->launcher}?feature=newest_tcversions">{$labels.href_newest_tcversions}</a>
 	    <br />
 
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   	<a href="{$launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
+	   	<a href="{$gui->launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
 	    <br />
 
 		{if $session['testprojectOptPriority']}
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-	   		<a href="{$launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
+	   		<a href="{$gui->launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
 		    <br />
 		{/if}
       

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsAssign.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/08/07 06:48:12 $ $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/08/08 14:11:50 $ $Author: franciscom $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -30,13 +30,17 @@ if ($args->edit == 'testproject')
 	exit();
 }
 
+
 $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $platform_mgr = new tlPlatform($db, $args->testproject_id);
 
-$result = null;
-$platform_assignment_subtitle = null;
-$can_do = false;
+$gui = new stdClass();
+$gui->platform_assignment_subtitle = null;
+$gui->tplan_id = $args->tplan_id;
+$gui->can_do = isset($args->tplan_id);
+$gui->mainTitle = lang_get('add_remove_platforms');
+
 if (isset($args->tplan_id))
 {
     $opt_cfg->global_lbl = '';
@@ -46,33 +50,31 @@ if (isset($args->tplan_id))
     $opt_cfg->from->map = $platform_mgr->getAllAsMap();
     $opt_cfg->to->map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
 
-    $can_do = true;
     $tplanData = $tplan_mgr->get_by_id($args->tplan_id);
     if (isset($tplanData))
     {
-        $platform_assignment_subtitle = lang_get('test_plan') . TITLE_SEP . $tplanData['name'];
+        $gui->mainTitle = sprintf($gui->mainTitle,$tplanData['name']);
     }
+
     if($args->doAssignPlatforms)
     {
-        $result = 'ok';
-        $tplan_mgr->add_platforms($args->tplan_id, (array)$args->platformsToAdd);
-        $tplan_mgr->remove_platforms($args->tplan_id, (array)$args->platformsToRemove);
+    	$platform_mgr->linkToTestplan($args->platformsToAdd,$args->tplan_id);
+    	$platform_mgr->unlinkFromTestplan($args->platformsToRemove,$args->tplan_id);
+
         // Update option panes with newly updated config
         $opt_cfg->from->map = $platform_mgr->getAllAsMap();
         $opt_cfg->to->map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
     }
 }
 
+
 $opt_cfg->from->desc_field = 'platform';
 $opt_cfg->to->desc_field = 'platform';
 item_opt_transf_cfg($opt_cfg, null);
 
-$smarty->assign('can_do', $can_do);
-$smarty->assign('sqlResult', $result);
-$smarty->assign('tplan_id', $args->tplan_id);
-$smarty->assign('level', $args->edit);
+$smarty->assign('gui', $gui);
 $smarty->assign('opt_cfg', $opt_cfg);
-$smarty->assign('platform_assignment_subtitle',$platform_assignment_subtitle);
+
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**

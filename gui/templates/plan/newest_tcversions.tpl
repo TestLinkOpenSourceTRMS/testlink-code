@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: newest_tcversions.tpl,v 1.10 2009/02/28 17:21:08 franciscom Exp $
+$Id: newest_tcversions.tpl,v 1.11 2009/08/08 14:08:20 franciscom Exp $
 Purpose: smarty template - 
 rev:
     20080126 - franciscom - external tcase id
@@ -60,7 +60,7 @@ rev:
   	</table>
   </div>
 {else}
-	<h2>{$user_feedback}</h2>
+	<h2>{$gui->user_feedback}</h2>
 {/if}
 
 </body>

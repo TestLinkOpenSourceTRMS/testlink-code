@@ -1,9 +1,10 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.38 2009/07/16 14:55:06 havlat Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.39 2009/08/08 14:11:50 franciscom Exp $ 
  * 
  * rev :
+ *       20090807 - franciscom - new feature platforms
  *       20090201 - franciscom - new feature send mail to tester
  *       20080312 - franciscom - BUGID 1427
  *       20080114 - franciscom - added testcase external_id management
@@ -141,8 +142,14 @@ switch($args->level)
 		$exec_assignment = $tcase_mgr->get_version_exec_assignment($args->version_id,$args->tplan_id);
 		$linked_items[$args->id]['user_id'] = $exec_assignment[$args->version_id]['user_id'];
 		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
+		// $my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+		// 				        $linked_items,null,$keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+		// 					   
+		$filters = array('keywords' => $keywordsFilter->items );	
+		$opt = array('write_button_only_if_linked' => 1 );	
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-						        $linked_items,null,$keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
+						        $linked_items,null,$filters,$opt);
+			
 							           
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.
@@ -226,8 +233,11 @@ function init_args()
 */
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
+	$platform_mgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
+	
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
+    $gui->show_platforms=$platform_mgr->platformVisibleForTestplan($argsObjs->tplan_id);
     $gui->send_mail=$argsObj->send_mail;
     $gui->glueChar=$tcase_cfg->glue_character;
     

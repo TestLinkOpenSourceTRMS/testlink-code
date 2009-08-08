@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.58 $ $Author: franciscom $
- * @modified $Date: 2009/07/27 07:26:14 $
+ * @version $Revision: 1.59 $ $Author: franciscom $
+ * @modified $Date: 2009/08/08 14:11:50 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -15,7 +15,8 @@
  * based upon the login. 
  * There is also some javascript that handles the form information.
  *
- * Rev: 20090426 - franciscom - BUGID - new right testproject_user_role_assignment
+ * Rev: 20090808 - franciscom - grants refactoring
+ *      20090426 - franciscom - BUGID - new right testproject_user_role_assignment
  *      20081030 - franciscom - BUGID 1698 - refixed
  *      20080905 - franciscom - BUGID 1698
  *      20080322 - franciscom - changes in $tproject_mgr->get_all_testplans()
@@ -41,10 +42,15 @@ $testprojectID = isset($_SESSION['testprojectID']) ? intval($_SESSION['testproje
 $currentUser = $_SESSION['currentUser'];
 $userID = $currentUser->dbID;
 
+$gui = new stdClass();
+$gui->grants=array();
+
+// User has test project rights
+$gui->grants['project_edit'] = $currentUser->hasRight($db,'mgt_modify_product'); 
+
 // ----------------------------------------------------------------------
 /** redirect admin to create testproject if not found */
-$can_manage_tprojects = has_rights($db,'mgt_modify_product');
-if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
+if ($gui->grants['project_edit'] && !isset($_SESSION['testprojectID']))
 {
 	tLog('No project found: Assume a new installation and redirect to create it','WARNING'); 
 	redirect($_SESSION['basehref'] . 'lib/project/projectEdit.php?doAction=create');
@@ -52,37 +58,25 @@ if ($can_manage_tprojects && !isset($_SESSION['testprojectID']))
 }
 // ----------------------------------------------------------------------
 
-// ----- Test Project Section ----------------------------------  
-$view_tc_rights = null;
-$modify_tc_rights = null;
-$hasTestCases = 0;
-if(has_rights($db,"mgt_view_tc"))
-{ 
-  	//user can view tcs
-  	$view_tc_rights = 'yes'; 
-    
-    //users can modify tcs
-    $modify_tc_rights = has_rights($db,"mgt_modify_tc"); 
-    
-	$hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
-}
-$smarty->assign('view_tc_rights', $view_tc_rights);
-$smarty->assign('modify_tc_rights', $modify_tc_rights); 
-$smarty->assign('hasTestCases',$hasTestCases);
+$gui->grants['reqs_view'] = $currentUser->hasRight($db,"mgt_view_req"); 
+$gui->grants['reqs_edit'] = $currentUser->hasRight($db,"mgt_modify_req"); 
+$gui->grants['keywords_view'] = $currentUser->hasRight($db,"mgt_view_key");
+$gui->grants['keywords_edit'] = $currentUser->hasRight($db,"mgt_modify_key");
+$gui->grants['platform_management'] = $currentUser->hasRight($db,"platform_management");
+$gui->grants['configuration'] = $currentUser->hasRight($db,"system_configuraton");
+$gui->grants['usergroups'] = $currentUser->hasRight($db,"mgt_view_usergroups");
+$gui->grants['view_tc'] = $currentUser->hasRight($db,"mgt_view_tc");
+$gui->grants['modify_tc'] = null; 
+$gui->hasTestCases = false;
 
-// REQS
-$smarty->assign('rights_reqs_view', has_rights($db,"mgt_view_req")); 
-$smarty->assign('rights_reqs_edit', has_rights($db,"mgt_modify_req")); 
+if($gui->grants['view_tc'])
+{ 
+    $gui->grants['modify_tc'] = $currentUser->hasRight($db,"mgt_modify_tc"); 
+	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
+}
+
 $smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 
 
-// view and modify Keywords 
-$smarty->assign('rights_keywords_view', has_rights($db,"mgt_view_key"));
-$smarty->assign('rights_keywords_edit', has_rights($db,"mgt_modify_key"));
-
-// User has test project rights
-$smarty->assign('rights_project_edit', $can_manage_tprojects);
-$smarty->assign('rights_configuration', has_rights($db,"system_configuraton"));
-$smarty->assign('rights_usergroups', has_rights($db,"mgt_view_usergroups"));
 
 // ----- Test Plan Section ----------------------------------
 //
@@ -91,14 +85,14 @@ $smarty->assign('rights_usergroups', has_rights($db,"mgt_view_usergroups"));
 // or is enough just call to getAccessibleTestPlans()
 // 
 $filters = array('plan_status' => ACTIVE);
-$num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
+$gui->num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
 
 // get Test Plans available for the user 
 $arrPlans = $currentUser->getAccessibleTestPlans($db,$testprojectID);
 
 // Need to set select test plan based on session information 
-$testPlanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-if($testPlanID > 0)
+$testplanID = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+if($testplanID > 0)
 {
 	// if this test plan is present on $arrPlans
 	//	  OK we will set it on $arrPlans as selected one.
@@ -106,66 +100,64 @@ if($testPlanID > 0)
 	//    need to set test plan on session
 	//
 	$index=0;
-	$testPlanFound=0;
+	$found=0;
 	$loop2do=count($arrPlans);
 	for($idx=0; $idx < $loop2do; $idx++)
 	{
-    	if( $arrPlans[$idx]['id'] == $testPlanID )
+    	if( $arrPlans[$idx]['id'] == $testplanID )
     	{
-        	$testPlanFound = 1;
+        	$found = 1;
         	$index = $idx;
         	$break;
         }
     }
-    if( $testPlanFound == 0 )
+    if( $found == 0 )
     {
         // update test plan id
-		$testPlanID = $arrPlans[0]['id'];
+		$testplanID = $arrPlans[0]['id'];
 		setSessionTestPlan($arrPlans[0]);     	
     } 
     $arrPlans[$index]['selected']=1;
 }
 
 
-$testPlanRole = null;
-if ($testPlanID && isset($currentUser->tplanRoles[$testPlanID]))
+$gui->testplanRole = null;
+if ($testplanID && isset($currentUser->tplanRoles[$testplanID]))
 {
-	$role = $currentUser->tplanRoles[$testPlanID];
-	$testPlanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
+	$role = $currentUser->tplanRoles[$testplanID];
+	$gui->testplanRole = $tlCfg->gui->role_separator_open . $role->getDisplayName() . $tlCfg->gui->role_separator_close;
 }
 
 
 $rights2check = array('testplan_execute','testplan_create_build',
                     'testplan_metrics','testplan_planning',
+                    'testplan_user_role_assignment',
+                    'mgt_testplan_create','mgt_users',
                     'cfield_view', 'cfield_management');
                         
 foreach($rights2check as $key => $the_right)
 {
-	$smarty->assign($the_right, has_rights($db,$the_right));
+    $gui->grants[$the_right] = $currentUser->hasRight($db,$the_right);
 }                         
 
 // 20090426 - franciscom - BUGID
-$tproject_user_role_assignment = "no";
-if( has_rights($db,"testproject_user_role_assignment",$testprojectID,-1) == "yes" ||
-    has_rights($db,"user_role_assignment",null,-1) == "yes" )
+$gui->grants['tproject_user_role_assignment'] = "no";
+if( $currentUser->hasRight($db,"testproject_user_role_assignment",$testprojectID,-1) == "yes" ||
+    $currentUser->hasRight($db,"user_role_assignment",null,-1) == "yes" )
 { 
-    $tproject_user_role_assignment = "yes";
+    $gui->grants['tproject_user_role_assignment'] = "yes";
 }
 
+$gui->url = array('metrics_dashboard' => 'lib/results/metricsDashboard.php',
+                  'testcase_assignments' => 'lib/testcases/tcAssignedToUser.php');
+$gui->launcher = 'lib/general/frmWorkArea.php';
+                   
+$gui->arrPlans = $arrPlans;                   
+$gui->countPlans = count($gui->arrPlans);
+$gui->securityNotes = getSecurityNotes($db);
+$gui->testprojectID = $testprojectID;
+$gui->testplanID = $testplanID;
 
-$smarty->assign('metrics_dashboard_url','lib/results/metricsDashboard.php');
-$smarty->assign('my_testcase_assignments_url','lib/testcases/tcAssignedToUser.php');
-$smarty->assign('testplan_creating', has_rights($db,"mgt_testplan_create"));
-$smarty->assign('tp_user_role_assignment', has_rights($db,"testplan_user_role_assignment"));
-$smarty->assign('tproject_user_role_assignment', $tproject_user_role_assignment);
-$smarty->assign('usermanagement_rights',has_rights($db,"mgt_users"));
-$smarty->assign('securityNotes',getSecurityNotes($db));
-$smarty->assign('arrPlans', $arrPlans);
-$smarty->assign('countPlans', count($arrPlans));
-$smarty->assign('num_active_tplans', $num_active_tplans);
-$smarty->assign('launcher','lib/general/frmWorkArea.php');
-$smarty->assign('sessionProductID',$testprojectID);	
-$smarty->assign('sessionTestPlanID',$testPlanID);
-$smarty->assign('testPlanRole',$testPlanRole);
+$smarty->assign('gui',$gui);
 $smarty->display('mainPage.tpl');
 ?>

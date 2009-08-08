@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.74 2009/06/11 15:42:54 schlundus Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.75 2009/08/08 14:11:50 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -101,22 +101,29 @@ if($do_display)
 			$testCaseSet = array_keys($keywordsTestCases);
 		}
 	}
-	define('DONT_PRUNE',0);
-	define('WRITE_BUTTON_ALWAYS',0);
 	
 	
 	// Choose enable/disable display of custom fields, analysing if this kind of custom fields
 	// exists on this test project.
 	$cfields=$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
-	$add_custom_fields=count($cfields) > 0 ? 1 : 0;
-	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
-	                     $tplan_linked_tcversions,null,$args->keyword_id,
-	                     $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,$add_custom_fields);
+    $opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
+    $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
+    $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet);
+
+
+	// define('DONT_PRUNE',0);
+	// define('WRITE_BUTTON_ALWAYS',0);
+	// $out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
+	//                      $tplan_linked_tcversions,null,$args->keyword_id,
+	//                      $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,$add_custom_fields);
   
-	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
+	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
+	                     $tplan_linked_tcversions,null,$filters,$opt);
+  
+  	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];
-	$gui->add_custom_fields = $add_custom_fields;
+	$gui->add_custom_fields = $opt['add_custom_fields'];
   
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');

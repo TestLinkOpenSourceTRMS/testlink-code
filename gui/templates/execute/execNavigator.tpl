@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.26 2009/07/17 08:33:40 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.27 2009/08/08 14:08:20 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+     20090808 - franciscom - added contribution platform
      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
      20081220 - franciscom - advanced/simple filters
      20080621 - franciscom - adding ext js treemenu
@@ -15,7 +16,7 @@ rev :
 *}
 {lang_get var="labels"
           s="filter_result,caption_nav_filter_settings,filter_owner,TestPlan,
-             filter_result_all_prev_builds,filter_result_any_prev_builds,
+             filter_result_all_prev_builds,filter_result_any_prev_builds,platform,
              btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases,priority"}
        
        
@@ -54,12 +55,12 @@ rev :
 {* ===================================================================== *}
 <body onLoad="show_hide('tplan_settings','tpn_view_settings',0);">
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
-{assign var="build_number" value=$gui->optBuildSelected }
+{assign var="build_number" value=$gui->optBuild.selected }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.TestPlan}{$tlCfg->gui_title_separator_1} {$gui->tplan_name|escape}
 {$tlCfg->gui_separator_open}{$labels.build}{$tlCfg->gui_title_separator_1}
-{$gui->optBuild.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
+{$gui->optBuild.items.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
 
 <div class="x-panel-header x-unselectable">
 	<div class="x-tool x-tool-toggle" style="background-position:0 -75px; float:left;"
@@ -83,7 +84,14 @@ rev :
 		<tr>
 			<td>{$labels.build}</td>
 			<td><select name="build_id">
-				{html_options options=$gui->optBuild selected=$gui->optBuildSelected}
+				{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>{$labels.platform}</td>
+			<td><select name="platform_id">
+				{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
 				</select>
 			</td>
 		</tr>

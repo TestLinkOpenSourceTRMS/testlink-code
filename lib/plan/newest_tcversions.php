@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.13 2009/07/27 07:26:14 franciscom Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.14 2009/08/08 14:11:50 franciscom Exp $ 
  * 
  *
  * rev :
@@ -24,7 +24,7 @@ $tcase_mgr = new testcase($db);
 
 $args = init_args();
 $gui = new stdClass();
-$gui->can_manage_testplans=has_rights($db,"mgt_testplan_create");
+$gui->can_manage_testplans=$_SESSION['currentUser']->hasRight($db,"mgt_testplan_create");
 $gui->tplans = array();
 $gui->show_details = 0;
 $gui->user_feedback = '';

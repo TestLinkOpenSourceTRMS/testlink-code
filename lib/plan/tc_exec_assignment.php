@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.39 2009/08/08 14:11:50 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.40 2009/08/09 12:26:10 franciscom Exp $ 
  * 
  * rev :
  *       20090807 - franciscom - new feature platforms
@@ -201,7 +201,6 @@ function init_args()
 	  $args->tproject_name = $_SESSION['testprojectName'];
       
 	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
-      
 	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
 	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
 	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => null);
@@ -237,7 +236,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
-    $gui->show_platforms=$platform_mgr->platformVisibleForTestplan($argsObjs->tplan_id);
+    $gui->show_platforms=$platform_mgr->platformVisibleForTestplan($argsObj->tplan_id);
     $gui->send_mail=$argsObj->send_mail;
     $gui->glueChar=$tcase_cfg->glue_character;
     

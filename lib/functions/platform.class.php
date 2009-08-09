@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: platform.class.php,v 1.3 2009/08/08 14:09:51 franciscom Exp $
+ * @version     CVS: $Id: platform.class.php,v 1.4 2009/08/09 12:26:10 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -212,6 +212,7 @@ class tlPlatform extends tlObjectWithDB
 		$num_tplans = $this->db->fetchOneValue($sql);
 		return ($num_tplans > 1);
 	}
+	
 	/**
 	 * @return array Returns all platforms associated to a given testplan
 	 */
@@ -257,4 +258,6 @@ class tlPlatform extends tlObjectWithDB
 	    }
         return $safeName;
     }
+
+
 }

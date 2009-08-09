@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.464 2009/08/07 06:49:28 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.465 2009/08/09 12:26:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1122,6 +1122,7 @@ $TLS_testplan_copy_builds = "Copy Builds";
 $TLS_testplan_copy_priorities = "Copy Priorities";
 $TLS_testplan_copy_milestones = "Copy Milestones";
 $TLS_testplan_copy_user_roles = "Copy User Roles";
+$TLS_testplan_copy_platforms_links = "Copy Platforms Links";
 
 
 // ----- gui/templates/planNew.tpl -----
@@ -1312,6 +1313,8 @@ $TLS_menu_assign_platform_to_testplan = "Assign to Test Plan";
 $TLS_title_platforms = "Platforms";
 $TLS_available_platforms = "Available platforms";
 $TLS_assigned_platforms = "Assigned platforms";
+$TLS_add_remove_platforms = "Add / Remove Platforms to Test Plan %s";
+
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Export requirements";

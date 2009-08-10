@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.249 2009/08/05 07:23:40 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.250 2009/08/10 20:40:09 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -91,7 +91,7 @@ $tlCfg->validation_cfg = new stdClass();
 
 
 
-/** Include database access definition (generated automatically by TL installer) */ 
+/** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
 
 if( !defined('DB_TABLE_PREFIX') )
@@ -109,34 +109,45 @@ require_once(TL_ABS_PATH . 'cfg' . DIRECTORY_SEPARATOR . 'const.inc.php');
 // ----------------------------------------------------------------------------
 /* [LOCALIZATION] */
 
-/** Default localization for users */
+/** @var string Default localization for users */
 // The value must be available in $g_locales (see cfg/const.inc.php).
 // Note: An attempt will be done to establish the default locale 
 // automatically using $_SERVER['HTTP_ACCEPT_LANGUAGE']
 $tlCfg->default_language = 'en_GB'; 
 
 /** 
- * Charset 'UTF-8' is only officially supported charset (Require MySQL version >= 4.1)
- * 'ISO-8859-1' or another Charset could be set for backward compatability by experienced 
- * users. However we have not resources to support such patches.
+ * @var string Charset 'UTF-8' is only officially supported charset (Require 
+ * MySQL version >= 4.1) 'ISO-8859-1' or another Charset could be set for  
+ * backward compatability by experienced users. However we have not resources 
+ * to support such patches.
  **/
 $tlCfg->charset = 'UTF-8';
 
-/** characters used to surround a description in the user interface (for example role)*/
+/** 
+ * @var string characters used to surround a description in the user interface 
+ * (for example role)
+ **/
 $tlCfg->gui_separator_open =  '[';
 $tlCfg->gui_separator_close = ']';
 
-/** Title separators are used when componing an title using several strings */
+/** @var string Title separators are used when componing an title using several strings */
 $tlCfg->gui_title_separator_1 = ' : '; // object : name (Test Specification : My best product)
 $tlCfg->gui_title_separator_2 = ' - '; // parent - child
 
-// used to create full external id in this way:
-// testCasePrefix . g_testcase_cfg->glue_character . external_id
-// CAN NOT BE EMPTY
+/** 
+ * @var string delimiter used to create DOC ID in this way:
+ * <test_project_Prefix> . g_testcase_cfg->glue_character . <doc_id>
+ * Could not be empty
+ */
 $tlCfg->testcase_cfg->glue_character = '-';
 
-// used to draw charts:
+/** 
+ * fonts set used to draw charts
+ **/
 $tlCfg->charts_font_path = TL_ABS_PATH . "third_party/pchart/Fonts/tahoma.ttf";
+/** 
+ * font size used to draw charts
+ **/
 $tlCfg->charts_font_size = 8;
 
 
@@ -147,12 +158,13 @@ $tlCfg->charts_font_size = 8;
 error_reporting(E_ALL);
 
 /** 
- * Set the session timeout for inactivity (in minutes).
+ * @var integer Set the session timeout for inactivity [minutes].
  * Default is 10 hours 
  */
 $tlCfg->sessionInactivityTimeout = 600;
 
-/** Set the session timeout value (in minutes).
+/** 
+ * Set the session timeout value (in minutes).
  * This will prevent sessions timing out after very short periods of time 
  * Warning: your server could block this settings
  **/
@@ -170,18 +182,18 @@ $tlCfg->sessionInactivityTimeout = 600;
 // ----------------------------------------------------------------------------
 /* [LOGGING] */
 
-/** Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
+/** @var string Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
 $tlCfg->log_level = 'ERROR';
 
-/** show smarty debug window */
+/** @var boolean show smarty debug window */
 $tlCfg->smarty_debug = false;
 
-/** Path to store logs */
+/** @var string Path to store logs */
 $tlCfg->log_path = TL_ABS_PATH . 'logs' . DIRECTORY_SEPARATOR ;
 
 
 /** 
- *  How to warning user when security weak points exists.
+ * @var string How to warning user when security weak points exists.
  *
  * 'SCREEN': messages will displayed on login screen, and tl desktop (default)
  * 'FILE': a file with a list is created but users are not notified via GUI
@@ -199,7 +211,7 @@ $tlCfg->config_check_warning_mode = 'FILE';
  */
 $g_loggerCfg = null;
 
-/** All events older this value [days] are removed from the db, during login */
+/**  @var integer All events older this value [days] are removed from the db, during login */
 $g_removeEventsOlderThan = 30;
 
 
@@ -226,11 +238,11 @@ $g_interface_bugs = 'NO';
 // ----------------------------------------------------------------------------
 /* [SMTP] */
 
-// Developer Note:
-// these config variable names has been choosed to maintain compatibility
-// with code taken from Mantis.
-// 
-// SMTP server Configuration ("localhost" is enough in the most cases)
+/** 
+ * @var string SMTP server name or IP address ("localhost" should work in the most cases)
+ * Configure using custom_config.inc.php
+ * @uses lib/functions/email_api.php
+ */
 $g_smtp_host        = '[smtp_host_not_configured]';  # SMTP server MUST BE configured  
 
 # Configure using custom_config.inc.php
@@ -238,17 +250,19 @@ $g_tl_admin_email     = '[testlink_sysadmin_email_not_configured]'; # for proble
 $g_from_email         = '[from_email_not_configured]';  # email sender
 $g_return_path_email  = '[return_path_email_not_configured]';
 
-# Urgent = 1, Not Urgent = 5, Disable = 0
+/** 
+ * Email notification priority (low by default) 
+ * Urgent = 1, Not Urgent = 5, Disable = 0 
+ **/
 $g_mail_priority = 5;   
 
 # Taken from mantis for phpmailer config
 define ("SMTP_SEND",2);
 $g_phpMailer_method = SMTP_SEND;
 
-// Configure only if SMTP server requires authentication
+/** Configure only if SMTP server requires authentication */
 $g_smtp_username    = '';  # user  
 $g_smtp_password    = '';  # password 
-
 
 
 // ----------------------------------------------------------------------------
@@ -256,8 +270,8 @@ $g_smtp_password    = '';  # password
 
 /** 
  * Login authentication method:
- * 		'MD5' => use password stored on db
- *    'LDAP' => use password from LDAP Server
+ * 	'MD5' => use password stored on db
+ *	'LDAP' => use password from LDAP Server
  */ 
 $tlCfg->authentication['method'] = 'MD5';
 
@@ -449,24 +463,12 @@ $g_use_ext_js_library = ENABLED;
 $g_sort_table_engine='kryogenix.org';
 
 
-// ----------------------------------------------------------------------------
-/* [Reports] */
-
 // --------------------------------------------------------------------------------------
 /* [Reports] */
 $tlCfg->reportsCfg=new stdClass();
 
-/** Displayed execution statuses to use on reports (ordered). */
-// Note: report generation must be changed to manage new statuses
-// 
-// BUGID 1785
-// With this change configuration is simplified
-// $tlCfg->reportsCfg->exec_status = array(
-//     'passed'  => 'test_status_passed',
-//     'failed'  => 'test_status_failed',
-//     'blocked' => 'test_status_blocked',
-//     'not_run' => 'test_status_not_run'
-// );
+/** @TODO unfinished changes by Francisco? */
+//Displayed execution statuses to use on reports (ordered). */
 $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 
 

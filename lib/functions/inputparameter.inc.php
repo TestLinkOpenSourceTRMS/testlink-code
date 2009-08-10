@@ -39,7 +39,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: inputparameter.inc.php,v 1.23 2009/07/13 18:37:51 franciscom Exp $
+ * @version    	CVS: $Id: inputparameter.inc.php,v 1.24 2009/08/10 18:57:58 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * 
@@ -207,9 +207,7 @@ function GPR_PARAM_STRING_N($inputSource,$name,$minLen = null,$maxLen = null,$re
     foreach($parameters as $parameter)
     {
         if (!is_null($$parameter))
-        {
             $vInfo->$parameter = $$parameter;
-        }    
     }
    
   	$pInfo = new tlParameterInfo($inputSource,$name);
@@ -237,9 +235,8 @@ function GPR_PARAM_INT($inputSource,$name,$minVal = null,$maxVal = null,$pfnVali
     $parameters = array("minVal","maxVal","pfnValidation");
 	foreach($parameters as $parameter)
     {
-        if (!is_null($$parameter)) {
+        if (!is_null($$parameter))
             $vInfo->$parameter = $$parameter;
-        }    
     }
 	$pInfo = new tlParameterInfo($inputSource,$name);
 	$iParam = new tlInputParameter($pInfo,$vInfo);
@@ -305,15 +302,14 @@ function GPR_PARAM_ARRAY_STRING_N($inputSource,$name,$pfnValidation = null)
 function GPR_PARAM_ARRAY($inputSource,$type,$name,$pfnValidation)
 {
 	$vInfo = new tlArrayValidationInfo();
-	if (!is_null($pfnValidation)) {
+	if (!is_null($pfnValidation))
 		$vInfo->pfnValidation = $pfnValidation;
-    }
-	if ($type == tlInputParameter::STRING_N) {
+    
+	if ($type == tlInputParameter::STRING_N)
     	$vInfo->validationInfo = new tlStringValidationInfo();
-	}
-	else {
+	else
 		$vInfo->validationInfo = new tlIntegerValidationInfo();
-	}
+	
 	$pInfo = new tlParameterInfo($inputSource,$name);
 	$iParam = new tlInputParameter($pInfo,$vInfo);
 	

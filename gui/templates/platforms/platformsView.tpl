@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.1 2009/08/07 06:58:10 franciscom Exp $
+$Id: platformsView.tpl,v 1.2 2009/08/10 18:57:58 schlundus Exp $
 Purpose: smarty template - View all platforms
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
@@ -55,7 +55,7 @@ var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
              title="{$labels.alt_delete_platform}"
              src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
 				     onclick="delete_confirmation({$gui->platforms[platform].id},
-				              '{$gui->platforms[platform]->name|escape:'javascript'|escape'}',
+				              '{$gui->platforms[platform].name|escape:'javascript'|escape}',
 				              '{$del_msgbox_title}','{$warning_msg}');" />
 			</td>
 			{/if}

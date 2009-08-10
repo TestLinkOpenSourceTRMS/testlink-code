@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.3 2009/07/17 17:18:23 franciscom Exp $
+ * $Id: db_schema_update.sql,v 1.4 2009/08/10 18:57:58 schlundus Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -20,10 +20,10 @@
  */
 
 /* testprojects */
-ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public tinyint NOT NULL DEFAULT '1',
+ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public tinyint NOT NULL DEFAULT '1';
 
 /* testplans */
-ALTER TABLE /*prefix*/testplans ADD COLUMN is_public tinyint NOT NULL DEFAULT '1',
+ALTER TABLE /*prefix*/testplans ADD COLUMN is_public tinyint NOT NULL DEFAULT '1';
 
 /* builds */
 ALTER TABLE /*prefix*/builds ADD COLUMN `creation_ts` datetime NOT NULL default NOW();

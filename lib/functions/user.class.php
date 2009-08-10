@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.50 2009/07/27 07:25:47 franciscom Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.51 2009/08/10 18:57:58 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -131,7 +131,7 @@ class tlUser extends tlDBObject
 	/**
 	 * Constructor, creates the user object
 	 * 
-	 * @param resource $db database handler  
+	 * @param resource $db database handler
 	 */
 	function __construct($dbID = null)
 	{
@@ -588,13 +588,10 @@ class tlUser extends tlDBObject
 		$tplans_role = $this->tplanRoles;
 		$effective_role = $this->globalRole;
 		if(!is_null($tplans_role) && isset($tplans_role[$tplan_id]))
-		{
 			$effective_role = $tplans_role[$tplan_id];  
-		}
 		else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
-		{
 			$effective_role = $tprojects_role[$tproject_id];  
-		}
+		
 		return $effective_role;
 	}
 
@@ -812,6 +809,5 @@ class tlUser extends tlDBObject
 		
 		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}
-	
 }
 ?>

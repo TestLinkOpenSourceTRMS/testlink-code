@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: keyword.class.php,v 1.23 2009/07/17 08:36:45 franciscom Exp $
+ * @version    	CVS: $Id: keyword.class.php,v 1.24 2009/08/10 18:57:58 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -52,9 +52,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = null;
 		$this->testprojectID = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
-		{
 			$this->dbID = null;
-		}	
 	}
 	
 	/**
@@ -279,9 +277,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			//we shouldnt allow " and , in keywords any longer
 			$dummy = null;
 			if (preg_match("/(\"|,)/",$name,$dummy))
-			{
 				$result = self::E_NAMENOTALLOWED;
-			}	
 		}
 		else
 		{
@@ -310,9 +306,8 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 			     "' AND testproject_id = " . $tprojectID ;
 		
 		if ($kwID)
-		{
 			$query .= " AND id <> " .$kwID;
-		}
+		
 		if ($db->fetchFirstRow($query))
 		{
 			$result = self::E_NAMEALREADYEXISTS;
@@ -373,21 +368,16 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = NULL;
 		
 		if (!$keyword || $keyword->getName() != 'keyword')
-		{
 			return self::E_WRONGFORMAT;
-		}
 			
 		$attributes = $keyword->attributes();
 		if (!isset($attributes['name']))
-		{
 			return self::E_WRONGFORMAT;
-		}
 			
 		$this->name = (string)$attributes['name'];
 		if ($keyword->notes)
-		{
 			$this->notes = (string)$keyword->notes[0];
-		}	
+			
 		return tl::OK;
 	}
 	//END interface iSerializationToXML

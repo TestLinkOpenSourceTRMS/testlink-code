@@ -33,7 +33,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.56 2009/08/07 06:58:10 franciscom Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.57 2009/08/10 18:57:58 schlundus Exp $
  * 
  *
  * @internal rev: 
@@ -107,8 +107,8 @@ function init_global_rights_maps()
 						 "cfield_management" => lang_get('desc_cfield_management'));
 	
 	
-	$g_rights_platforms = array("platforms_view" => lang_get('desc_platforms_view'),
-						        "platforms_management" => lang_get('desc_platforms_management'));
+	$g_rights_platforms = array("platform_view" => lang_get('desc_platforms_view'),
+						        "platform_management" => lang_get('desc_platforms_management'));
 	
 	// Global means test project independent.
 	$g_rights_users_global = array ( "mgt_users" => lang_get('desc_mgt_modify_users'),

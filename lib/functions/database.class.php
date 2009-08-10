@@ -5,10 +5,11 @@
  * 
  * @package 	TestLink
  * @author 		Francisco Mancardi
- * @copyright 	2006-2009, TestLink community 
+ * @author 		Mantis Team
+ * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.47 2009/07/21 06:50:26 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.48 2009/08/10 21:15:42 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -33,24 +34,11 @@
  *                          See ADODB manuals
  */
  
- # -------------------------------------------------------------------------------
- # This comments has to leave here in place
- # This piece of software has been taken from Mantis and modified
- # to be used on TestLink (franciscom@sourceforgeusers.com)
- # -------------------------------------------------------------------------------
- # Mantis - a php based bugtracking system
- # Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
- # Copyright (C) 2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
- # This program is distributed under the terms and conditions of the GPL
- # See the README and LICENSE files for details
- # -------------------------------------------------------------------------------
-
 /** 
  * As stated on ADODB documentation this set will improve performance but have a side
  * effect, for DBMS like POSTGRES method num_rows() will return ALWAYS -1, causing problems
  */
-// $ADODB_COUNTRECS=FALSE;
-$ADODB_COUNTRECS=TRUE;
+$ADODB_COUNTRECS = TRUE;
 
 // To use a different version of ADODB that provided with TL, use a similar bunch of lines
 // on custom_config.inc.php
@@ -107,13 +95,13 @@ class database
 	function database($db_type)
 	{
 		// 20080719 - franciscom
-		$fetch_mode=ADODB_FETCH_ASSOC;
+		$fetch_mode = ADODB_FETCH_ASSOC;
 		$this->db = NewADOConnection($db_type);
 		
 		// added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
 		if($db_type == 'mssql')
 		{
-			$fetch_mode=ADODB_FETCH_BOTH;
+			$fetch_mode = ADODB_FETCH_BOTH;
 		}
 		$this->db->SetFetchMode($fetch_mode);
 	}
@@ -218,23 +206,24 @@ class database
 			return false;
 		}		
 		
-		# mysql obeys FETCH_MODE_BOTH, hence ->fields works, other drivers do not support this
-		if( $this->db->databaseType == 'mysql' ) {	
-			$t_array = $p_result->fields;
-			
-			$p_result->MoveNext();
-			return $t_array;
-		} else { 
-			$test = $p_result->GetRowAssoc(false);
-			$p_result->MoveNext();
-			return $test;
+		// mysql obeys FETCH_MODE_BOTH, hence ->fields works, other drivers do not support this
+		// 20090713 - pmo - add oci8po
+		switch ($this->db->databaseType) 
+		{
+			case "mysql":
+			case "oci8po":
+				$t_array = $p_result->fields;
+				break;
+			default:
+				$t_array = $p_result->GetRowAssoc(false);
 		}
+		
+		$p_result->MoveNext();
+		return $t_array;
 	}
 
-	# --------------------
-    # 20080315 - franciscom
-    # Got new code from Mantis, that manages FETCH_MODE_ASSOC
-    #
+
+    // 20080315 - franciscom - Got new code from Mantis, that manages FETCH_MODE_ASSOC
 	function db_result( $p_result, $p_index1=0, $p_index2=0 ) {
 
 		if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) ) {
@@ -253,13 +242,20 @@ class database
 		return false;
 	}
 
-	# --------------------
-	# return the last inserted id
+
+	/** @return integer the last inserted id */
 	function insert_id($p_table = null) 
 	{
-		if ( isset($p_table) && $this->db_is_pgsql() ) 
+		if ( isset($p_table) && ($this->db_is_pgsql() || $this->db_is_oracle()))
 		{
-			$query = "SELECT currval('".$p_table."_id_seq')";
+			if ( $this->db_is_pgsql() ) 
+			{
+				$query = "SELECT currval('".$p_table."_id_seq')";
+			}
+			elseif ($this->db_is_oracle())
+			{
+				$query = "SELECT ".$p_table."_id_seq.currval from dual";
+			}
 			$result = $this->exec_query( $query );
 			return $this->db_result($result);
 		}
@@ -267,7 +263,7 @@ class database
 	}
 
 
-  # Check is the database is PostgreSQL
+	/** Check is the database is PostgreSQL */
 	function db_is_pgsql() {
 		$t_db_type = DB_TYPE;
 
@@ -283,28 +279,46 @@ class database
 	}
 
 
-	# --------------------
+	/** 
+	 * Check is the database is ORACLE 
+	 * @return boolean TRUE = Oracle type
+	 **/
+	function db_is_oracle() 
+	{
+		$t_db_type = DB_TYPE;
+		
+		switch( $t_db_type )
+		{
+			case 'oci8':
+			case 'oci8po':
+				return true;
+		}
+		
+		return false;
+	}
+
+
 	function db_table_exists( $p_table_name ) {
 		return in_array ( $p_table_name , $this->db->MetaTables( "TABLE" ) ) ;
 	}
 
-	# --------------------
+
 	function db_field_exists( $p_field_name, $p_table_name ) {
 		return in_array ( $p_field_name , $this->db->MetaColumnNames( $p_table_name ) ) ;
 	}
 
 
-
-
-	# --------------------
-	# Check if there is an index defined on the specified table/field and with
-	# the specified type.
-	#
-	# @@@ thraxisp - this only works with MySQL
-	#
-	# $p_table: Name of table to check
-	# $p_field: Name of field to check
-	# $p_key: key type to check for (eg: PRI, MUL, ...etc)
+	/** 
+	 * Check if there is an index defined on the specified table/field and with
+	 * the specified type.
+	 * Warning: only works with MySQL
+	 * 
+	 * @param string $p_table Name of table to check
+	 * @param string $p_field Name of field to check
+	 * @param string $p_key key type to check for (eg: PRI, MUL, ...etc)
+	 * 
+	 * @return boolean 
+	 */
 	function key_exists_on_field( $p_table, $p_field, $p_key ) {
 		$c_table = $this->db->prepare_string( $p_table );
 		$c_field = $this->db->prepare_string( $p_field );
@@ -325,7 +339,6 @@ class database
 	}
 
 
-	# --------------------
 	# prepare a string before DB insertion
 	# 20051226 - fm
 	function prepare_string( $p_string )
@@ -339,19 +352,17 @@ class database
 	}
 
 
-	# --------------------
 	# prepare an integer before DB insertion
 	function prepare_int( $p_int ) {
 		return (int)$p_int;
 	}
 
-	# --------------------
+
 	# prepare a boolean before DB insertion
 	function prepare_bool( $p_bool ) {
 		return (int)(bool)$p_bool;
 	}
 
-	# --------------------
 	# return current timestamp for DB
 	function db_now()
 	{
@@ -366,7 +377,7 @@ class database
 		}
 	}
 
-	# --------------------
+
 	# generate a unixtimestamp of a date
 	# > SELECT UNIX_TIMESTAMP();
 	#	-> 882226357
@@ -382,6 +393,7 @@ class database
 		return $this->db->DBTimeStamp($p_timestamp) ;
 	}
 
+
 	function db_unixtimestamp( $p_date=null ) {
 
 		if ( null !== $p_date ) {
@@ -393,15 +405,13 @@ class database
 	}
 
 
-
-	# --------------------
-	# count queries
+	/** @return integer count queries */
 	function count_queries () {
 		return count( $this->queries_array );
 		}
 
-	# --------------------
-	# count unique queries
+
+	/** @return integer count unique queries */
 	function count_unique_queries () {
 
 		$t_unique_queries = 0;
@@ -415,8 +425,8 @@ class database
 		return $t_unique_queries;
 		}
 
-	# --------------------
-	# get total time for queries
+
+	/** get total time for queries */
 	function time_queries () {
 		$t_count = count( $this->queries_array );
 		$t_total = 0;
@@ -427,17 +437,16 @@ class database
 	}
 
 
-
-	# --------------------
-	# close the connection.
-	# Not really necessary most of the time since a connection is
-	# automatically closed when a page finishes loading.
+	/** 
+	 * close the connection.
+	 * Not really necessary most of the time since a connection is
+	 * automatically closed when a page finishes loading.
+	 */
 	function close() {
 		$t_result = $this->db->Close();
 	}
 
 
-	# --------------------
 	function error_num() {
 		return $this->db->ErrorNo();
 	}

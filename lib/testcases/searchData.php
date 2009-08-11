@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.45 2009/07/09 19:02:55 schlundus Exp $
+ * $Id: searchData.php,v 1.46 2009/08/11 19:48:51 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -44,14 +44,17 @@ if ($args->tprojectID)
     $tables['testcase_keywords'] = DB_TABLE_PREFIX . 'testcase_keywords'; 
     $tables['tcversions'] = DB_TABLE_PREFIX . 'tcversions';
     
-    $gui->tcasePrefix=$tproject_mgr->getTestCasePrefix($args->tprojectID);
+    $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
     $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
     $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
     $filter = null;
     
-    if($args->targetTestCase && strcmp($args->targetTestCase,$gui->tcasePrefix) !=0 )
+    if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
     {
+     	if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
+    		$args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
+   	 
         $tcase_mgr = new testcase ($db);
         $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$tcase_cfg->glue_character); 
         $filter['by_tc_id'] = " AND NHB.parent_id = {$tcaseID} ";
@@ -137,39 +140,32 @@ if ($args->tprojectID)
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty=count($map);
+$gui->row_qty = count($map);
 if($gui->row_qty)
 {
 	$tpl = 'tcSearchResults.tpl';
-  $gui->pageTitle .= " - " . lang_get('match_count') . ":" . $gui->row_qty;
-  if($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
-  {	
-	    $tcase_mgr = new testcase($db);   
-      $tcase_set=array_keys($map);
-      $gui->path_info=$tproject_mgr->tree_manager->get_full_path_verbose($tcase_set);
-	    $gui->resultSet=$map;
+	$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
+  	if($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
+  	{	
+		$tcase_mgr = new testcase($db);   
+      	$tcase_set = array_keys($map);
+      	$gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set);
+	    $gui->resultSet = $map;
 	}
 	else
 	{
-	    $gui->warning_msg=lang_get('too_wide_search_criteria');
+	    $gui->warning_msg = lang_get('too_wide_search_criteria');
 	}
 }
 else
 {
 	$the_tpl = config_get('tpl');
-	$tpl=$the_tpl['tcView'];
+	$tpl = $the_tpl['tcView'];
 }
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
-/*
-  function: 
 
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
    	$args = new stdClass();

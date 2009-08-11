@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.39 2009/05/30 15:01:23 franciscom Exp $
+$Id: execSetResults.tpl,v 1.40 2009/08/11 19:48:51 schlundus Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
@@ -14,7 +14,6 @@ Rev:
                           BUGID 1635
   20081210 - franciscom - BUGID 1905 
 *}
-
 {assign var="attachment_model" value=$cfg->exec_cfg->att_model}
 {assign var="title_sep"  value=$smarty.const.TITLE_SEP}
 {assign var="title_sep_type3"  value=$smarty.const.TITLE_SEP_TYPE3}

@@ -5,8 +5,8 @@
  * 
  * Filename $RCSfile: logout.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/06/06 17:50:11 $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/08/11 19:48:50 $
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -25,8 +25,10 @@ exit();
 function init_args()
 {
 	$args = new stdClass();
+	
 	$args->userID = isset($_SESSION['userID']) ?  $_SESSION['userID'] : null;
 	$args->userName = $args->userID ? $_SESSION['currentUser']->getDisplayName() : "";
+	
 	return $args;
 }
 ?>

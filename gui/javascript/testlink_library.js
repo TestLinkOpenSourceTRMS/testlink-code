@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.82 2009/07/17 08:35:34 franciscom Exp $
+// $Id: testlink_library.js,v 1.83 2009/08/11 19:48:51 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -589,13 +589,26 @@ function dialog_onUnload(odialog)
 	odialog.refLocation = null;
 }
 
-function deleteBug_onClick(execution_id,bug_id,warning_msg)
+/**
+ * Calls the bug delete page when the 'yes' button in the delete confirmation dialog
+ * was clicked
+ * 
+ * @param btn string id of the button clicked
+ * @param text string not used
+ * @param combinedBugID string like <executionID-bugID>
+ */
+function deleteBug(btn,text,combinedBugID)
 {
-	if (confirm(warning_msg))
-	{
-		window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+execution_id+"&bug_id="+bug_id,
+	if (btn != 'yes')
+		return;
+	var idx = combinedBugID.indexOf('-');
+	if (idx < 0)
+		return;
+
+	var executionID = combinedBugID.substr(0,idx)
+	var bugID = combinedBugID.substr(idx+1);
+	window.open(fRoot+"lib/execute/bugDelete.php?exec_id="+executionID+"&bug_id="+bugID,
 		            "Delete","width=510,height=150,resizable=yes,dependent=yes");
-	}
 }
 
 // seems is not used => do more checks and remove

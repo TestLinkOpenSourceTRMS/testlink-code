@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.123 $
- * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
+ * @version $Revision: 1.124 $
+ * @modified $Date: 2009/08/14 21:03:10 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -155,6 +155,7 @@ $TLS_no_permissions_for_action = "Sie haben keine Berechtigung diese Aktion ausz
 $TLS_warning_numeric_cf = "Das Benutzerdefinierte Feld %s erlaubt nur numerische Werte";
 $TLS_warning_float_cf = "Das Benutzerdefinierte Feld %s erlaubt nur numerische oder Flieﬂkomma Werte";
 $TLS_warning_email_cf = "Das Benutzerdefinierte Feld %s erlaubt nur Email-Adressen";
+$TLS_warning_text_area_cf = "Das Benutzerdefinierte Feld %s erlaubt nur 255 Zeichen";
 
 
 // Installation/Migration

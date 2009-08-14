@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/08/14 21:03:10 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -60,8 +60,12 @@ switch($args->doAction)
 $events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
 									$args->object_type ? $args->object_type : null,null,500,$startTime,$endTime);
 
-$users = getUsersForHtmlOptions($db);
-$users[0] = false;
+$users = array();
+if ($events)
+{
+	$users = getUsersForHtmlOptions($db);
+	$users[0] = false;
+}
 
 $gui = new stdClass();
 $gui->canDelete = has_rights($db,"events_mgt") ? 1: 0;

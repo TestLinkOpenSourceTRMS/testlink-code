@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -28,11 +28,12 @@ $args = init_args();
 $startTime = null;
 $endTime = null;
 
+
 switch($args->doAction)
 {
     case 'clear':
 	    $g_tlLogger->deleteEventsFor();
-	    logAuditEvent(TLS("audit_events_deleted",$_SESSION['currentUser']->login),"DELETE",null,"events");
+	    logAuditEvent(TLS("audit_events_deleted",$args->currentUser->login),"DELETE",null,"events");
 	    break;
     
     case 'filter':
@@ -58,6 +59,7 @@ switch($args->doAction)
 
 $events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
 									$args->object_type ? $args->object_type : null,null,500,$startTime,$endTime);
+
 $users = getUsersForHtmlOptions($db);
 $users[0] = false;
 
@@ -76,6 +78,10 @@ $smarty->assign('startDate',$args->startDate);
 $smarty->assign('endDate',$args->endDate);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+/**
+ * 
+ * @return object returns the arguments of the page
+ */
 function init_args()
 {
 	$iParams = array(
@@ -88,18 +94,31 @@ function init_args()
 		);
 
 	$args = new stdClass();
-	$pParams = I_PARAMS($iParams,$args);
+	I_PARAMS($iParams,$args);
+	$args->currentUser = $_SESSION['currentUser'];
+	
 	return $args;
 }
 
-function checkRights(&$db,&$user)
+/**
+ * Checks the user rights for viewing the page
+ * 
+ * @param $db resource the database connection handle
+ * @param $user tlUser the object of the current user
+ *
+ * @return boolean return true if the page can be viewed, false if not
+ */
+function checkRights(&$db,&$user,$action)
 {
-	$action = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
-	
 	if (!$user->hasRight($db,"mgt_view_events"))
-	{
 		return false;
-	}
+	
+	$iParams = array(
+			"doAction" => array(tlInputParameter::STRING_N,0,100),
+		);
+	$rParams = R_PARAMS($iParams);
+	
+	$action = $rParams["doAction"];
 	if ($action == 'clear')
 	{
 		return $user->hasRight($db,'events_mgt');

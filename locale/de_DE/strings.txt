@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.122 $
- * @modified $Date: 2009/08/11 19:48:51 $ by $Author: schlundus $
+ * @version $Revision: 1.123 $
+ * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1716,7 +1716,7 @@ $TLS_Unknown = "Unbekannt";
 $TLS_duplicate_login = "Es gibt schon einen Benutzer mit diesem Benutzernamen!";
 $TLS_login_must_not_be_empty = "Der Benutzername darf nicht leer sein!";
 $TLS_wrong_old_password = "Das alte Passwort stimmt nicht!";
-
+$TLS_tag_for_inactive_users = "*";
 
 
 // lib/functions/email_api.php

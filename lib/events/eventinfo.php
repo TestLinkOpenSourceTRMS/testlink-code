@@ -5,19 +5,18 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/05/13 16:31:39 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
-$args = init_args();
-
 $user = null;
 $event = null;
 
+$args = init_args();
 if ($args->id)
 {
 	$event = new tlEvent($args->id);
@@ -25,14 +24,10 @@ if ($args->id)
 	{
 		$user = new tlUser($event->userID);
 		if ($user->readFromDB($db) < tl::OK)
-		{
 			$user = null;
-		}	
 	}
 	else
-	{
 		$event = null;
-	}	
 }
 
 $smarty = new TLSmarty();
@@ -40,17 +35,29 @@ $smarty->assign("event",$event);
 $smarty->assign("user",$user);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-function checkRights(&$db,&$user,&$action)
-{
-	return (!$user->hasRight($db,"mgt_view_events")) ? false : true;
-}
-
+/**
+ * 
+ * @return object returns the arguments of the page
+ */
 function init_args()
 {
 	$iParams = array("id" => array(tlInputParameter::STRING_N,0,50));
 	$args = new stdClass();
-	$pParams = P_PARAMS($iParams,$args);
+	P_PARAMS($iParams,$args);
 
 	return $args;
+}
+
+/**
+ * Checks the user rights for viewing the page
+ * 
+ * @param $db resource the database connection handle
+ * @param $user tlUser the object of the current user
+ *
+ * @return boolean return true if the page can be viewed, false if not
+ */
+function checkRights(&$db,&$user)
+{
+	return ($user->hasRight($db,"mgt_view_events")) ? true : false;
 }
 ?>

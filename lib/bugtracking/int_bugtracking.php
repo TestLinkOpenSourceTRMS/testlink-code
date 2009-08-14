@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/05/13 09:35:28 $ $Author: amkhullar $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/08/14 20:58:03 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -74,13 +74,13 @@ class bugtrackingInterface
 	{
 	    $this->tlCharSet = config_get('charset');
 		if (defined('BUG_TRACK_DB_CHARSET'))
-		  {
-	 	    	$this->dbCharSet = BUG_TRACK_DB_CHARSET;
-	 	  }
+		{
+	 		$this->dbCharSet = BUG_TRACK_DB_CHARSET;
+	 	}
  	  	else
-	 	  {
+	 	{
 			$this->dbCharSet = $this->tlCharSet;
-		  }
+		}
 	}
 
 	/**

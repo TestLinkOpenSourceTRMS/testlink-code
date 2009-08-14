@@ -5,20 +5,15 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/06/10 06:41:27 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
  *
  * Deletes an attachment by a given id
  */
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
-testlinkInitPage($db);
-
-if(!config_get("attachments")->enabled)
-{
-	exit();
-}
+testlinkInitPage($db,false,false,"checkRights");
 
 $args = init_args();	
 $deleteDone = false;
@@ -42,12 +37,29 @@ $smarty->assign('bDeleted',$deleteDone);
 $smarty->display('attachmentdelete.tpl');
 
 
+/**
+ * @return object returns the arguments for the page
+ */
 function init_args()
 {
-	//the id (attachments.id) of the attachment to be downloaded
-	$iParams = array("id" => array(tlInputParameter::INT_N));
+	//the id (attachments.id) of the attachment to be deleted
+	$iParams = array(
+		"id" => array(tlInputParameter::INT_N),
+	);
 	$args = new stdClass();
 	G_PARAMS($iParams,$args);
+	
 	return $args;
+}
+
+
+/**
+ * @param $db resource the database connection handle
+ * @param $user the current active user
+ * @return boolean returns true if the page can be accessed
+ */
+function checkRights(&$db,&$user)
+{
+	return (config_get("attachments")->enabled);
 }
 ?>

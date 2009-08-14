@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
  *
  * Upload dialog for attachments
  *
@@ -14,10 +14,7 @@
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
 require_once('../functions/attachments.inc.php');
-testlinkInitPage($db);
-
-if (!config_get("attachments")->enabled)
-	exit();
+testlinkInitPage($db,false,false,"checkRights");
 	
 $args = init_args();
 $bUploaded = false;
@@ -57,6 +54,9 @@ $smarty->assign('bUploaded',$bUploaded);
 $smarty->assign('msg',$msg);
 $smarty->display('attachmentupload.tpl');
 
+/**
+ * @return object returns the arguments for the page
+ */
 function init_args()
 {
 	$iParams = array(
@@ -73,5 +73,15 @@ function init_args()
 	$args->bPostBack = sizeof($_POST);
 	
 	return $args;
+}
+
+/**
+ * @param $db resource the database connection handle
+ * @param $user the current active user
+ * @return boolean returns true if the page can be accessed
+ */
+function checkRights(&$db,&$user)
+{
+	return (config_get("attachments")->enabled);
 }
 ?>

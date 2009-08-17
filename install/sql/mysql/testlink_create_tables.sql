@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.55 2009/08/07 06:49:52 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.56 2009/08/17 08:01:56 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -155,7 +155,7 @@ CREATE TABLE /*prefix*/executions (
   testplan_id int(10) unsigned NOT NULL default '0',
   tcversion_id int(10) unsigned NOT NULL default '0',
   tcversion_number smallint(5) unsigned NOT NULL default '1',
-  platform_id int(10) unsigned default '0',
+  platform_id int(10) unsigned NOT NULL default '0',
   execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
   notes text,
   PRIMARY KEY  (id),
@@ -323,12 +323,13 @@ CREATE TABLE /*prefix*/testplan_tcversions (
   tcversion_id int(10) unsigned NOT NULL default '0',
   node_order int(10) unsigned NOT NULL default '1',
   urgency smallint(5) NOT NULL default '2',
-  platform_id int(10) unsigned default '0',
+  platform_id int(10) unsigned NOT NULL default '0',
   author_id int(10) unsigned default NULL,
   creation_ts datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (id),
-  UNIQUE KEY /*prefix*/testplan_tcversions_tplan_tcversion (testplan_id,tcversion_id)
+  UNIQUE KEY /*prefix*/testplan_tcversions_tplan_tcversion (testplan_id,tcversion_id,platform_id)
 ) DEFAULT CHARSET=utf8;
+
 
 
 CREATE TABLE /*prefix*/testplans (

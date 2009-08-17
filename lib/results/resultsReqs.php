@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2009/08/17 08:01:25 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -64,8 +64,9 @@ $gui->tplan_name = $tplanInfo["name"];
 
 if(!is_null($args->req_spec_id))
 {
-
-	$tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,1);
+    $opt = array('only_executed' => true);
+	// $tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,1);
+	$tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,$opt);
 	
 	// BUGID 1063
     // 20090506 - franciscom - Requirements Refactoring

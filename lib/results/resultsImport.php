@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/06/10 19:36:00 $  by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/08/17 08:01:34 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
@@ -200,13 +200,14 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
    		
 	  if( $status_ok) 
 	  {
-	      $tcase_identity=$using_external_id ? $tcase_external_id : $tcase_id; 
+	  		$tcase_identity=$using_external_id ? $tcase_external_id : $tcase_id; 
 		    $result_code=strtolower($tcase_exec['result']);
 		    $result_is_acceptable=isset($resulstCfg['code_status'][$result_code]) ? true : false;
 		    		
 		    $notes=$tcase_exec['notes'];
 		    $message=null;
-		    $linked_cases=$tplan_mgr->get_linked_tcversions($tplan_id, $tcase_id);
+		    $filters = array('tcase_id' => $tcase_id);
+		    $linked_cases=$tplan_mgr->get_linked_tcversions($tplan_id,$filters);
 		    $info_on_case=$linked_cases[$tcase_id];
 
 		    if (!$linked_cases)

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/08/17 08:01:15 $ by $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
@@ -32,7 +32,9 @@ $msg_key = 'no_linked_tcversions';
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 {
     $msg_key = 'all_testcases_have_tester';
-    $testCaseSet = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,null,TL_USER_NOBODY);
+    $filters = array('assigned_to' => TL_USER_NOBODY);
+    // $testCaseSet = $tplan_mgr->get_linked_tcversions($args->tplan_id,null,0,null,TL_USER_NOBODY);
+    $testCaseSet = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters);
     if(($gui->row_qty = count($testCaseSet)) > 0)
     {
         $msg_key = '';

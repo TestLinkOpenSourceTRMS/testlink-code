@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: exec.inc.php,v 1.51 2009/06/30 10:59:53 havlat Exp $
+ * @version    	CVS: $Id: exec.inc.php,v 1.52 2009/08/17 07:52:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090815 - franciscom - write_execution() - interface changes 
  * 20081231 - franciscom - write_execution() changes to manage bulks exec notes
  * 20080528 - franciscom - BUGID 1504 - changes in write_execution
  *                                      using version_number
@@ -65,18 +66,16 @@ function createResultsMenu()
  * write execution result to DB
  * 
  * @param resource &$db reference to database handler
- * @param integer $user_id User identifier
+ * @param obj &$exec_signature object with tproject_id,tplan_id,build_id,platform_id,user_id
  * 
  * @internal Revisions:
- * 20080528 - franciscom - added tcversion_number
- * 20070105 - franciscom - added $tproject_id
  * 
- * @todo havlatm: move to a new class testExecution & refactore
+ * @todo havlatm: move to a new class testExecution & refactor
+ * @todo franciscom - no need for new class can be added to testplan or testcase class
  */
-function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build_id,$map_last_exec)
+function write_execution(&$db,&$exec_signature,&$exec_data,$map_last_exec)
 {
 	$executions_table = DB_TABLE_PREFIX . 'executions';
-	
 	$resultsCfg = config_get('results');
 	$bugInterfaceOn = config_get('bugInterfaceOn');
 	$db_now = $db->db_now();
@@ -87,7 +86,7 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 	$bulk_notes = '';
 	
 	$ENABLED = 1;
-	$cf_map = $cfield_mgr->get_linked_cfields_at_execution($tproject_id,$ENABLED,'testcase');
+	$cf_map = $cfield_mgr->get_linked_cfields_at_execution($exec_signature->tproject_id,$ENABLED,'testcase');
 	$has_custom_fields = is_null($cf_map) ? 0 : 1;
 	
 	// extract custom fields id.
@@ -127,10 +126,10 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 			$my_notes = $is_bulk_save ? $bulk_notes : $db->prepare_string(trim($exec_data['notes'][$tcversion_id]));		
 			$sql = "INSERT INTO {$executions_table} ".
 				"(build_id,tester_id,status,testplan_id,tcversion_id," .
-				" execution_ts,notes,tcversion_number)".
-				" VALUES ( {$build_id}, {$user_id}, '{$exec_data['status'][$tcversion_id]}',".
-				"{$tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
-				"{$version_number}" .
+				" execution_ts,notes,tcversion_number,platform_id)".
+				" VALUES ( {$exec_signature->build_id}, {$exec_signature->user_id}, '{$exec_data['status'][$tcversion_id]}',".
+				"{$exec_signature->tplan_id}, {$tcversion_id},{$db_now},'{$my_notes}'," .
+				"{$version_number},{$exec_signature->platform_id}" . 
 				")";
 			$db->exec_query($sql);  	
 			
@@ -150,13 +149,16 @@ function write_execution(&$db,$user_id, $exec_data,$tproject_id,$tplan_id,$build
 						$hash_cf[$cf_v]=$exec_data[$cf_v];
 					}  
 				}                                     
-				$cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $tplan_id,$cf_map);
+				$cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $exec_signature->tplan_id,$cf_map);
 			}                                     
 		}
 	}
 }
 
-
+/**
+ * 
+ *
+ */
 function write_execution_bug(&$db,$exec_id, $bug_id,$just_delete=false)
 {
 	$execution_bugs = DB_TABLE_PREFIX . 'execution_bugs';

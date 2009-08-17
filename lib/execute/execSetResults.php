@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.132 $
- * @modified $Date: 2009/08/08 14:09:51 $ $Author: franciscom $
+ * @version $Revision: 1.133 $
+ * @modified $Date: 2009/08/17 07:50:49 $ $Author: franciscom $
  *
  * rev:
+ *	   20090815 - franciscom - platform feature	
  *     20090808 - franciscom - gen_spec_view call refactoring
  *     20090526 - franciscom - now custom fields fo testplan_design are managed
  *     20090426 - franciscom - bad initialization of grants due to unclear
@@ -68,16 +69,12 @@ if ($do_show_instructions)
 
 $attachmentInfos = null;
 
-$get_mode = GET_ONLY_EXECUTED;
-if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
-	$get_mode = GET_ALSO_NOT_EXECUTED;
-
 // ---------------------------------------------------------
 // Testplan executions and result archiving. Checks whether execute cases button was clicked
 //
 if($args->doExec == 1)
 {
-	/** @note Retrive testcase ids in an array */
+	/** @note get testcase ids in an array */
 	if(!is_null($args->tc_versions) && count($args->tc_versions))
 	{
 		$status_and_notes=do_remote_execution($db,$args->tc_versions);
@@ -127,11 +124,26 @@ if($args->doExec == 1)
 // 20070914 - jbarchibald - added $cf_selected parameter
 //
 
-// 20081221 - franciscom
-$linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->tc_id,$args->keyword_id,$get_mode,
-                                                       $args->filter_assigned_to,
-                                                       $args->filter_status,$args->build_id,
-                                                       $args->cf_selected,$args->include_unassigned);
+// 20081221 - franciscom                              
+
+//$linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->tc_id,$args->keyword_id,$get_mode,
+//                                                       $args->filter_assigned_to,
+//                                                       $args->filter_status,$args->build_id,
+//                                                       $args->cf_selected,$args->include_unassigned);
+
+$options = array('only_executed' => true, 'include_unassigned' => $args->include_unassigned);
+if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
+{
+    $options['only_executed'] = false;
+}
+
+// Added platform_id filter
+$filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
+                 'assigned_to' => $args->filter_assigned_to, 'exec_status' => $args->filter_status,
+                 'build_id' => $args->build_id, 'cf_hash' => $args->cf_selected,
+                 'platform_id' => $args->platform_id);
+
+$linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 $tcase_id = 0;
 $userid_array = null;
 if(!is_null($linked_tcversions))
@@ -156,8 +168,7 @@ if(!is_null($linked_tcversions))
     // Results to DB
     if ($args->save_results || $args->do_bulk_save )
     {
-    	$submitResult = write_execution($db,$args->user->dbID,$_REQUEST,$args->tproject_id,
-    	                                $args->tplan_id,$args->build_id,$gui->map_last_exec);
+    	$submitResult = write_execution($db,$args,$_REQUEST,$gui->map_last_exec);
     }
 
     if ($args->doDelete)
@@ -168,12 +179,15 @@ if(!is_null($linked_tcversions))
     
     $gui->map_last_exec_any_build = null;
     $testerid = null;
+    
+    // @TODO 20090815 - franciscom check what to do with platform
     if( $cfg->exec_cfg->show_last_exec_any_build )
     {
     	// 20090716 - franciscom - get_last_execution() interface changes
 		$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
         $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
-                                                                       ANY_BUILD,$options);
+                                                                       testcase::ANY_BUILD,
+                                                                       $args->platform_id,$options);
         
         //Get UserID and Updater ID for current Version
         $tc_current = $gui->map_last_exec_any_build;
@@ -279,7 +293,6 @@ function init_args()
 {
     $args = new stdClass();
  	$_REQUEST = strings_stripSlashes($_REQUEST);
-
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
 	$args->doDelete = isset($_REQUEST['do_delete']) ? 1 : 0;
 	$args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
@@ -326,8 +339,9 @@ function init_args()
     }
 
 
-	$key2loop = array('id' => 0,'build_id' =>0, 'exec_to_delete' => 0, 
-	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1);
+	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 
+	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
+	   	              'platform_id' => 0);
 				            
 	foreach($key2loop as $key => $value)
 	{
@@ -358,7 +372,7 @@ function init_args()
 	//BUGID 2267
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->user = $_SESSION['currentUser'];
-
+    $args->user_id = $args->user->dbID;
 
 
 	return $args;  
@@ -863,6 +877,8 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
 function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 {
     $buildMgr = new build_mgr($dbHandler);
+    $platformMgr = new tlPlatform($dbHandler,$argsObj->tproject_id);
+    
     $gui = new stdClass();
     $gui->tplan_id=$argsObj->tplan_id;
     $gui->tproject_id=$argsObj->tproject_id;
@@ -879,7 +895,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     
     $gui->editorType=$cfgObj->editorCfg['type'];
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
-    $gui->tester_id=$argsObj->user->dbID;
+    $gui->tester_id=$argsObj->user_id;
     $gui->include_unassigned=$argsObj->include_unassigned;
     $gui->tpn_view_status=$argsObj->tpn_view_status;
     $gui->bn_view_status=$argsObj->bn_view_status;
@@ -943,7 +959,16 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     //                                        'btn_advanced','btn_simple','filterMode');
     // 
     // $gui->filter_mode_name = 
-
+    
+    $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
+    $gui->has_platforms = !is_null($dummy) ? 1 : 0;
+    
+    $platform_info['name']='';
+    if(!is_null($argsObj->platform_id) && $argsObj->platform_id > 0 )
+    { 
+    	$platform_info = $platformMgr->getByID($argsObj->platform_id);
+    }
+    $gui->platform_name = $platform_info['name'];  
 
     return $gui;
 }
@@ -1025,7 +1050,7 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
 	// 20090716 - franciscom - get_last_execution() interface changes
 	$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
     $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
-                                               $argsObj->build_id,$options);
+                                               $argsObj->build_id,$argsObj->platform_id,$options);
 
     if( !is_null($last_exec) )
     {
@@ -1034,7 +1059,7 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
         // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
         $can_execute=$guiObj->grants->execute && ($guiObj->build_is_open);
         $last_exec=setCanExecute($last_exec,$guiObj->exec_mode,
-                                 $can_execute,$argsObj->user->dbID);
+                                 $can_execute,$argsObj->user_id);
     }
     
     // Reorder executions to mantaing correct visualization order.
@@ -1061,22 +1086,28 @@ function getOtherExecutions(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj
     $other_execs = null;
     if($guiObj->history_on)
     {
-      // 20071113 - Contribution
-      $build_id_filter=$argsObj->build_id;
-      if($cfgObj->exec_cfg->show_history_all_builds )
-      {
-        $build_id_filter=ANY_BUILD;
-      }  
-      $other_execs = $tcaseMgr->get_executions($tcase_id,$tcversion_id,
-                                               $argsObj->tplan_id,$build_id_filter,
-                                               $cfgObj->exec_cfg->history_order);
+		$filters['build_id'] = $argsObj->build_id;
+      	$filters['platform_id'] = $argsObj->platform_id;
+      	
+      	if($cfgObj->exec_cfg->show_history_all_builds )
+      	{
+      	  $filters['build_id'] = ANY_BUILD;
+      	}  
+      	if($cfgObj->exec_cfg->show_history_all_platforms )
+      	{
+      	  $filters['platform_id'] = null;
+      	}  
+      	$options = array('exec_id_order' => $cfgObj->exec_cfg->history_order);
+      	$other_execs = $tcaseMgr->get_executions($tcase_id,$tcversion_id,$argsObj->tplan_id,
+      	                                         $filters['build_id'],$filters['platform_id'],$options);
     }    
     else
     {
         // Warning!!!:
         // we can't use the data we have got with previous call to get_last_execution()
         // because if user have asked to save results last execution data may be has changed
-        $aux_map = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,$argsObj->build_id);
+        $aux_map = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
+                                                 $argsObj->build_id,$argsObj->platform_id);
 
         if(!is_null($aux_map))
         {
@@ -1114,8 +1145,11 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     
     // 20090808 - franciscom
     $opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
+
+    // @TODO - 20090815 - franciscom
+    // why here we do not have filtered by tester ?
+    // same for platform_id
     $filters = array('keywords' => $argsObj->keyword_id);
-        
     $out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
                          $linked_tcversions,null,$filters,$opt);
        

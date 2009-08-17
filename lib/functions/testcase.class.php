@@ -6,10 +6,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.189 2009/08/05 07:25:49 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.190 2009/08/17 07:51:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20090815 - franciscom - get_executions() - added platform related info
+ *                                            interface changes.
+ *                         get_last_execution() - added platform related info
  *
  * 20090720 - franciscom - found bug in get_linked_cfields_at_execution()
  *                         when calling cfield_mgr class method
@@ -36,16 +40,12 @@
  * 20090214 - franciscom - when getting execution info, executions.execution_type will be returned
  *                         with alias execution_run_type
  * 
- * 20090208 - franciscom - fixed bug on get_last_execution() regarding double execution_type field
- * 20090205 - franciscom - exportTestCaseDataToXML() - added requirements info
- * 20090204 - franciscom - exportTestCaseDataToXML() - added node_order
  * 20090201 - franciscom - get_by_id_bulk() - added version_id filter
  * 20090131 - franciscom - new method get_assigned_to_user()
  * 20090120 - franciscom - create_tcase_only() - added new action_on_duplicate_name	     
  * 20090116 - franciscom - get_by_name() refactoring
  *                         get_linked_versions() - added tplan_id argument
  * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
- * 20081220 - franciscom - get_executions() - now build_id can be an array
  * 20081103 - franciscom - new method setKeywords() - added by schlundus
  *                         removed useless code from getTestProjectFromTestCase()
  *
@@ -70,16 +70,6 @@
  * 20080120 - franciscom - show() interface changes
  * 20080119 - franciscom - copy_tcversion() added missed logic to manage tc_external_id
  * 20080114 - franciscom - new method getPrefix()
- * 20080103 - franciscom - changes in:  get_last_execution()
- *                                      get_executions()
- *                         added execution_type column in output recordset
- *
- * 20071209 - franciscom - fixed bug - no display of custom fields when editing TC
- *                                   - no display of custom fields when executing TC
- *                         generated due to changes in get_path implementation
- *
- * 20071113 - franciscom - added contribution on get_executions()
- * 20070930 - franciscom - REQ - BUGID 1078 -> show() interface changes
  */
 
 /** related functionality */
@@ -116,6 +106,7 @@ class testcase extends tlObjectWithAttachments
     const ALL_TESTPLANS=null;
     const ANY_BUILD=null;
     const GET_NO_EXEC=1; 
+    const ANY_PLATFORM=null;
     
         
     
@@ -2215,9 +2206,11 @@ class testcase extends tlObjectWithAttachments
 	         version_id: tcversion id (node id) - can be single value or array.
 	         tplan_id: testplan id
 	         build_id: if null -> do not filter by build_id
-	         [exec_id_order] default: 'DESC' - range: ASC,DESC
-	         [exec_to_exclude]: default: null -> no filter
-	                            can be single value or array, this exec id will be EXCLUDED.
+	         platform_id: if null -> do not filter by build_id
+             options: default null, map with options.
+	                  [exec_id_order] default: 'DESC' - range: ASC,DESC
+	                  [exec_to_exclude]: default: null -> no filter
+	                                    can be single value or array, this exec id will be EXCLUDED.
 	
 	
 	  returns: map
@@ -2252,32 +2245,36 @@ class testcase extends tlObjectWithAttachments
 	                  build_name
 	                  build_is_active
 	                  build_is_open
+	                  platform_id
+	                  platform_name
 	
 	*/
-	function get_executions($id,$version_id,$tplan_id,$build_id,$exec_id_order='DESC',$exec_to_exclude=null)
+	function get_executions($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
 	{
-	  // Contribution
-	  // Can get execution for any build
-		$build_id_filter='';
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $my['options'] = array('exec_id_order' => 'DESC', 'exec_to_exclude' => null); 	
+	    $my['options'] = array_merge($my['options'], (array)$options);
 		
-		// use always IN CLAUSE, because theorically do not have performance impacts.
-		if ( !is_null($build_id) )
-		{
-		  $build_set = implode(',', (array)$build_id);
-			// $build_id_filter=" AND e.build_id = {$build_id} ";
-			$build_id_filter=" AND e.build_id IN ({$build_set}) ";
-		}
-	
+		$filterKeys = array('build_id','platform_id');
+        foreach($filterKeys as $key)
+        {
+        	$filterBy[$key] = '';
+        	if( !is_null($$key) )
+        	{
+        		$itemSet = implode(',', (array)$$key);
+        		$filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
+        	}
+        }
 	
 		// --------------------------------------------------------------------
 		if( is_array($id) )
 		{
-			  $tcid_list = implode(",",$id);
-				$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
+			$tcid_list = implode(",",$id);
+			$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
 		}
 		else
 		{
-				$where_clause = " WHERE NHA.parent_id = {$id} ";
+			$where_clause = " WHERE NHA.parent_id = {$id} ";
 		}
 	
 		if( is_array($version_id) )
@@ -2293,16 +2290,16 @@ class testcase extends tlObjectWithAttachments
 				}
 		}
 	
-	  if( !is_null($exec_to_exclude ) )
+	  if( !is_null($my['options']['exec_to_exclude']) )
 	  {
 	
-				if( is_array($exec_to_exclude))
+				if( is_array($my['options']['exec_to_exclude']))
 				{
-				    if(count($exec_to_exclude) > 0 )
+				    if(count($my['options']['exec_to_exclude']) > 0 )
 				    {
-				 	  	$exec_id_list = implode(",",$exec_to_exclude);
-		        	$where_clause  .= " AND e.id NOT IN ({$exec_id_list}) ";
-		        }
+				 	  	$exec_id_list = implode(",",$my['options']['exec_to_exclude']);
+		        		$where_clause  .= " AND e.id NOT IN ({$exec_id_list}) ";
+		        	}
 				}
 				else
 				{
@@ -2313,10 +2310,8 @@ class testcase extends tlObjectWithAttachments
 	  // 20090517 - to manage deleted users i need to change:
 	  //            users.id AS tester_id => e.tester_id AS tester_id
 	  // 20090214 - franciscom - e.execution_type -> e.execution_run_type
-	  // 20080103 - franciscom - added execution_type
-	  // 20071113 - franciscom - added JOIN builds b ON e.build_id=b.id
 	  //
-	  $sql="SELECT NHB.name,NHA.parent_id AS testcase_id, tcversions.*,
+	  $sql="/* $debugMsg */ SELECT NHB.name,NHA.parent_id AS testcase_id, tcversions.*,
 			    users.login AS tester_login,
 			    users.first AS tester_first_name,
 			    users.last AS tester_last_name,
@@ -2324,17 +2319,19 @@ class testcase extends tlObjectWithAttachments
 			    e.id AS execution_id, e.status,e.tcversion_number,
 			    e.notes AS execution_notes, e.execution_ts, e.execution_type AS execution_run_type,
 			    e.build_id AS build_id,
-			    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open
+			    b.name AS build_name, b.active AS build_is_active, b.is_open AS build_is_open,
+   			    e.platform_id,p.name AS platform_name
 		    FROM {$this->tables['nodes_hierarchy']} NHA
 	        JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id
 	        JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id
 	        JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id
-	                                     AND e.testplan_id = {$tplan_id}
-	                                     {$build_id_filter}
+	                                             AND e.testplan_id = {$tplan_id}
+	                                             {$filterBy['build_id']} {$filterBy['platform_id']}
 	        JOIN {$this->tables['builds']}  b ON e.build_id=b.id
-	        LEFT OUTER JOIN {$this->tables['users']} users ON e.tester_id = users.id
+	        LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id
+	        LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id
 	        $where_clause
-	        ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id {$exec_id_order}";
+	        ORDER BY NHA.node_order ASC, NHA.parent_id ASC, execution_id {$my['options']['exec_id_order']}";
 	
 	  $recordset = $this->db->fetchArrayRowsIntoMap($sql,'id');
 	  return($recordset ? $recordset : null);
@@ -2383,13 +2380,24 @@ class testcase extends tlObjectWithAttachments
 	            			build_is_open
 	
 	   rev:
+	       20090815 - franciscom - added platform_id argument
 	       20090716 - franciscom - added options argument, removed get_no_executions
 	       20080103 - franciscom - added execution_type
 	
 	*/
-	function get_last_execution($id,$version_id,$tplan_id,$build_id,$options=null)
+	function get_last_execution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
 	{
-		$build_id_filter='';
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$filterKeys = array('build_id','platform_id');
+        foreach($filterKeys as $key)
+        {
+        	$filterBy[$key] = '';
+        	if( !is_null($$key) )
+        	{
+        		$itemSet = implode(',', (array)$$key);
+        		$filterBy[$key] = " AND e.{$key} IN ({$itemSet}) ";
+        	}
+        }
 		$where_clause_1 = '';
 		$where_clause_2= '';
         $add_columns='';
@@ -2419,12 +2427,12 @@ class testcase extends tlObjectWithAttachments
 	
 		if( is_array($id) )
 		{
-			  $tcid_list = implode(",",$id);
-				$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
+			$tcid_list = implode(",",$id);
+			$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
 		}
 		else
 		{
-				$where_clause = " WHERE NHA.parent_id = {$id} ";
+			$where_clause = " WHERE NHA.parent_id = {$id} ";
 		}
 	
 		if( is_array($version_id) )
@@ -2444,25 +2452,44 @@ class testcase extends tlObjectWithAttachments
 		}
 	
 		// 20090716 - franciscom - BUGID 2692
-		if( !is_null($build_id) )
-		{
-			$build_id_filter=" AND e.build_id ";
-			if( is_array($build_id) )
-			{
-		    	$build_list = implode(",",$build_id);
-		  		$build_id_filter .= " IN ({$build_list}) ";
-		  	}
-		  	else
-		  	{
-		  		$build_id_filter .= " = {$build_id} ";
-		  	}
-		}
+		// if( !is_null($build_id) )
+		// {
+		// 	$build_id_filter=" AND e.build_id ";
+		// 	if( is_array($build_id) )
+		// 	{
+		//     	$build_list = implode(",",$build_id);
+		//   		$build_id_filter .= " IN ({$build_list}) ";
+		//   	}
+		//   	else
+		//   	{
+		//   		$build_id_filter .= " = {$build_id} ";
+		//   	}
+		// }
+        
+        // 20090815 - franciscom
+		// if( !is_null($platform_id) )
+		// {
+		// 	$platform_id_filter=" AND e.platform_id ";
+		// 	if( is_array($platform_id) )
+		// 	{
+		//     	$platform_list = implode(",",$platform_id);
+		//   		$platform_id_filter .= " IN ({$platform_id}) ";
+		//   	}
+		//   	else
+		//   	{
+		//   		$platform_id_filter .= " = {$platform_id} ";
+		//   	}
+		// }
+
+
 
       // get list of max exec id, to be used filter in next query
-	  $sql="SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id {$add_columns}" .
+	  $sql="/* $debugMsg */ " . 
+	       " SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id {$add_columns}" .
 	  	   " FROM {$this->tables['nodes_hierarchy']} NHA " .
-	       " JOIN {$this->tables['executions']}  e ON NHA.id = e.tcversion_id  AND e.testplan_id = {$tplan_id} " .
-	       " {$build_id_filter} AND e.status IS NOT NULL " .
+	       " JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id AND e.testplan_id = {$tplan_id} " .
+	       " {$filterBy['build_id']} {$filterBy['platform_id']}" .
+	       " AND e.status IS NOT NULL " .
 	       " $where_clause_1 GROUP BY tcversion_id {$add_groupby}";
    
       // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
@@ -2474,7 +2501,6 @@ class testcase extends tlObjectWithAttachments
 	  if( !is_null($recordset) )
 	  {
 	  	  $the_list = implode(",", array_keys($recordset));
-	  	  // $the_list = implode(",",$recordset);
 	  	  if( count($recordset) > 1 )
 	  	  {
 	  			$and_exec_id = " AND e.id IN ($the_list) ";
@@ -2485,10 +2511,10 @@ class testcase extends tlObjectWithAttachments
 	  	  }
 	  }
 	
-	  $executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id
-	                                           AND e.testplan_id = {$tplan_id}
-	                                           {$and_exec_id}
-	                                           {$build_id_filter} ";
+	  $executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id " .
+	                   " AND e.testplan_id = {$tplan_id} {$and_exec_id} {$filterBy['build_id']} " .
+	                   " {$filterBy['platform_id']} ";
+	                   
 	  if( $localOptions['getNoExecutions'] )
 	  {
 	     $executions_join = " LEFT OUTER " . $executions_join;
@@ -2511,7 +2537,7 @@ class testcase extends tlObjectWithAttachments
 	  // 20060921 - franciscom -
 	  // added NHB.parent_id  to get same order as in the navigator tree
 	  //
-	  $sql="SELECT e.id AS execution_id, e.status,e.execution_type AS execution_run_type,
+	  $sql="/* $debugMsg */ SELECT e.id AS execution_id, e.status,e.execution_type AS execution_run_type,
 	        NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id,
 	        tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary,
 	        tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id,
@@ -2520,14 +2546,16 @@ class testcase extends tlObjectWithAttachments
 	        users.login AS tester_login,users.first AS tester_first_name,
 			users.last AS tester_last_name, e.tester_id AS tester_id,
 			e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number,
-			builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open
+			builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open,
+	        e.platform_id,p.name AS platform_name
 		    FROM {$this->tables['nodes_hierarchy']} NHA
 	        JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id
 	        JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id
 	        {$executions_join}
-	        LEFT OUTER JOIN {$this->tables['builds']} builds     ON builds.id = e.build_id
-	                           AND builds.testplan_id = {$tplan_id}
-	        LEFT OUTER JOIN {$this->tables['users']} users ON e.tester_id = users.id
+	        LEFT OUTER JOIN {$this->tables['builds']} builds ON builds.id = e.build_id
+	                        AND builds.testplan_id = {$tplan_id}
+	        LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id 
+   	        LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id
 	        $where_clause_2
 	        ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
 	        
@@ -2674,6 +2702,7 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	*/
+	// @TODO must be refactored due to platform feature
 	function get_version_exec_assignment($tcversion_id,$tplan_id)
 	{
 		$sql =  "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
@@ -2734,7 +2763,8 @@ class testcase extends tlObjectWithAttachments
 	         "TCV.version,TCV.tc_external_id, NHB.id AS testcase_id, NHB.name, testprojects.prefix, " .
 	         "UA.creation_ts ,UA.deadline_ts " .
 	         "FROM {$this->tables['user_assignments']}  UA, {$this->tables['testplan_tcversions']}  TPTCV, " .
-	         "{$this->tables['tcversions']}  TCV, {$this->tables['nodes_hierarchy']} NHA, {$this->tables['nodes_hierarchy']} NHB, " .
+	         "{$this->tables['tcversions']}  TCV, {$this->tables['nodes_hierarchy']} NHA," .
+	         " {$this->tables['nodes_hierarchy']} NHB, " .
 	         "{$this->tables['nodes_hierarchy']} NHC, {$this->tables['testprojects']} testprojects " .
 	         "WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
 	         "AND UA.user_id = {$user_id} " .

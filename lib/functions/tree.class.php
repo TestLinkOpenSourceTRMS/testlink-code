@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.66 2009/08/03 08:15:43 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.67 2009/08/17 07:51:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -371,13 +371,14 @@ class tree extends tlObject
 	*/
 	function _get_path($node_id,&$node_list,$to_node_id=null,$format='full') 
 	{
-		
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
 		// look up the parent of this node
-		$sql = " SELECT * from {$this->object_table} 
-			WHERE id = {$node_id} ";
+		$sql = "/* $debugMsg */ " . 
+		       " SELECT * from {$this->object_table} " .
+			   " WHERE id = {$node_id} ";
 		
 		$result = $this->db->exec_query($sql);
-		
 		if( $this->db->num_rows($result) == 0 )
 		{
 			$node_list=null;
@@ -457,6 +458,7 @@ class tree extends tlObject
 	*/
 	function change_parent($node_id, $parent_id) 
 	{
+    	$debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
 		if( is_array($node_id) )
 		{
 			$id_list = implode(",",$node_id);
@@ -466,7 +468,7 @@ class tree extends tlObject
 		{
 			$where_clause=" WHERE id = {$node_id}";
 		}
-		$sql = "UPDATE {$this->object_table} SET parent_id = {$parent_id} {$where_clause}";
+		$sql = "/* $debugMsg */ UPDATE {$this->object_table} SET parent_id = {$parent_id} {$where_clause}";
 		
 		$result = $this->db->exec_query($sql);
 		
@@ -974,6 +976,10 @@ class tree extends tlObject
 	*/
 	function get_full_path_verbose(&$items,$options=null)
 	{
+    	$debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
+        // echo "DEBUG - $debugMsg";
+        // new dBug($items);
+        
 	    $goto_root=null;
 	    $path_to=null;
 	    $all_nodes=array();
@@ -993,7 +999,8 @@ class tree extends tlObject
         { 
 	        // get only different items, to get descriptions
 	    	$unique_nodes=implode(',',array_unique($all_nodes));
-	    	$sql="SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
+	    	$sql="/* $debugMsg */ " . 
+	    	     " SELECT id,name FROM {$this->tables['nodes_hierarchy']}  WHERE id IN ({$unique_nodes})"; 
 	    	$decode=$this->db->fetchRowsIntoMap($sql,'id');
 	    	foreach($path_to as $key => $elem)
 	    	{

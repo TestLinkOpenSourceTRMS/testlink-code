@@ -8,12 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.83 2009/07/17 08:36:45 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.84 2009/08/17 07:52:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
- * Revisions:
+ * 20090815 - franciscom - get_last_execution() call changes
  * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
  * 20090331 - amitkhullar - BUGFIX 2292
  * 20090304 - franciscom - BUGID 2171
@@ -787,7 +787,9 @@ function getLastExecutions(&$db,$tcaseSet,$tplanId)
 		foreach($tcaseSet as $tcaseId => $tcInfo)
 		{
 		    $execMap[$tcaseId] = $tcase_mgr->get_last_execution($tcaseId,$tcInfo['tcversion_id'],
-		                                                         $tplanId,ANY_BUILD,$options);
+		                                                         $tplanId,testcase::ANY_BUILD,
+		                                                         testcase::ANY_PLATFORM,$options);
+		                                                         
         	unset($path_info[$tcaseId][0]); // remove test project name
         	$path_info[$tcaseId][]='';
 		    $execMap[$tcaseId][$tcInfo['tcversion_id']]['tcase_path']=implode(' / ',$path_info[$tcaseId]);

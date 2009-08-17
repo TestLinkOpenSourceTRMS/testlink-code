@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2009/08/08 14:09:51 $ by $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2009/08/17 07:51:03 $ by $Author: franciscom $
  *
  * rev: 
  *      20090828 - franciscom - added contribution platform feature
@@ -29,12 +29,12 @@ require_once('treeMenu.inc.php');
 require_once('exec.inc.php');
 testlinkInitPage($db);
 
-$tplan_mgr = new testplan($db);
 
 $templateCfg = templateConfiguration();
-
 $cfg = getCfg();
 $args = init_args($db,$cfg);
+
+$tplan_mgr = new testplan($db);
 $exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
 $platform_mgr = new tlPlatform($db, $args->tproject_id);
 $gui = initializeGui($db,$args,$cfg,$exec_cfield_mgr,$tplan_mgr,$platform_mgr);
@@ -158,8 +158,11 @@ function init_args(&$dbHandler,$cfgObj)
     {
     	$args->urgencyImportance = null;
     }
+    
+    // CRITIC: values assigned here will be used on functions initBuildInfo(), initPlatformInfo()
+    //         if we can here we need to change functions
     $args->optBuildSelected = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : -1;
-    $args->optPlatformSelected = isset($_REQUEST['platform_id']) ? $_REQUEST['platform_id'] : -1;
+    $args->optPlatformSelected = isset($_REQUEST['platform_id']) ? $_REQUEST['platform_id'] : null;
 
     $args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
@@ -206,17 +209,18 @@ function init_args(&$dbHandler,$cfgObj)
 }
 
 
-/*
-  function: initializeGetArguments
-            build arguments that will be passed to execSetResults.php
-            with a http call
-
-  args:
-
-  returns:
-*/
+/**
+ * build arguments that will be passed to execSetResults.php
+ *           with a http call
+ *
+ *
+ * @internal Revisions:
+ * 20090815 - franciscom - added platform feature (contribution)
+ */
 function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
 {
+	// new dBug($argsObj);
+	
     $kl='';
     $settings = '&build_id=' . $argsObj->optBuildSelected .
                 '&platform_id=' . $argsObj->optPlatformSelected .
@@ -380,39 +384,31 @@ function initBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
 }
 
 
-/*
-  function: initPlatformInfo
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ * creates a map with platform information, useful to create on user
+ * interface an HTML select input.
+ * 
+ * @param resource &$dbHandler reference
+ * @param object &$argsObj reference contains user input
+ * @param tlPlatform &$platformMgr reference
+ *
+ */
 function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr)
 {
+	// echo __FUNCTION__;
+	// new dBug($argsObj);
     $htmlSelect = array('items' => null, 'selected' => null);
     $htmlSelect['items'] = $platformMgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
     if( !is_null($htmlSelect['items']) && is_array($htmlSelect['items']) )
     { 
-    	if ($argsObj->optPlatformSelected == -1) {
+    	if (is_null($argsObj->optPlatformSelected)) 
+    	{
     	    $argsObj->optPlatformSelected = key($htmlSelect['items']);
     	}
     	$htmlSelect['selected'] = $argsObj->optPlatformSelected;
     } 
     return $htmlSelect;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 /*
@@ -425,6 +421,8 @@ function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr)
 */
 function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 {
+	// new dBug($argsObj);
+
     $filters = new stdClass();
     $additionalInfo = new stdClass();
     

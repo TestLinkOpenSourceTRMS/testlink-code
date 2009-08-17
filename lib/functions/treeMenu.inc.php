@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.108 2009/08/03 08:15:43 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.109 2009/08/17 07:52:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *		
+ *		20090815 - franciscom - get_last_execution() call changes
  *      20090801 - franciscom - table prefix missed
  *		20090716 - franciscom - BUGID 2692
  * 		20090328 - franciscom - BUGID 2299 - introduced on 20090308.
@@ -567,6 +568,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$cf_hash = $filters->cf_hash;
 	$show_testsuite_contents = $filters->show_testsuite_contents;
 	$urgencyImportance = isset($filters->urgencyImportance) ? $filters->urgencyImportance : null;
+
 	
 	$useCounters=$additionalInfo->useCounters;
 	$useColors=$additionalInfo->useColours;
@@ -587,11 +589,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$tcase_prefix = $tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 	
 	$nt2exclude = array('testplan' => 'exclude_me',
-		'requirement_spec'=> 'exclude_me',
-		'requirement'=> 'exclude_me');
+		                'requirement_spec'=> 'exclude_me',
+		                'requirement'=> 'exclude_me');
 	
 	$nt2exclude_children = array('testcase' => 'exclude_my_children',
-		'requirement_spec'=> 'exclude_my_children');
+		                         'requirement_spec'=> 'exclude_my_children');
 	
 	$order_cfg = array("type" =>'exec_order',"tplan_id" => $tplan_id);
 	$test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
@@ -616,16 +618,27 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
-			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
-				                                              null,$assignedTo,$status,$build_id,
-				                                              $cf_hash,$filters->include_unassigned,
-				                                              $urgencyImportance);
 			
+			$opt = array('include_unassigned' => $filters->include_unassigned);
+			// $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
+			// 	                                              null,$assignedTo,$status,$build_id,
+			// 	                                              $cf_hash,$filters->include_unassigned,
+			// 	                                              $urgencyImportance);
+            $linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
+                                   'assigned_to' => $filters->assignedTo,
+                                   'exec_status' => $status,
+                                   'build_id' => $filters->build_id,
+                                   'cf_hash' =>  $filters->cf_hash,
+                                   'platform_id' => $filters->platform_id,
+                                   'urgencyImportance' => $urgencyImportance);
+			   
+			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
+			   
 			if($doFilterByKeyword && $keywordsFilterType == 'AND')
 			{
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
-				$testCaseSet = array_keys($filteredSet);   
-				$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$testCaseSet);
+				$linkedFilters = array('tcase_id' => array_keys($filteredSet));
+				$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
 			}
 		}   
 		
@@ -667,13 +680,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 					$tcversionSet[]=$tplan_tcases[$testCaseSet[$idx]]['tcversion_id'];
 		    	}
 				
-				// $lastExecSet = $tcase_mgr->get_last_execution($testCaseSet,$tcversionSet,$tplan_id,testcase::ANY_BUILD);
 				// we will get records only for executed test cases
 				$options=null;
 				$options=array('groupByBuild' => 
 				               $targetStatus == $resultsCfg['status_code']['not_run'] ? 1 : 0);
+				// 20090815 - franciscom - platform feature               
 				$lastExecSet = $tcase_mgr->get_last_execution($testCaseSet,$tcversionSet,
-				    	                                          $tplan_id,$buildIdList,$options);
+				    	                                      $tplan_id,$buildIdList,$filters->platform_id,$options);
 				                                              
 				$keySet=array_keys($lastExecSet);
 				$keySetQty=count($keySet);
@@ -882,7 +895,8 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 	
-	$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,0,$keywordsFilter->items);
+	$linkedFilters = array('keyword_id' => $keywordsFilter->items);
+	$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
 	if (is_null($tplan_tcases))
 	{
 		$tplan_tcases = array();

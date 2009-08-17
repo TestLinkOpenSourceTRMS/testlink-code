@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.161 2009/08/08 14:09:51 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.162 2009/08/17 08:13:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -103,7 +103,7 @@ function __autoload($class_name)
 	if ( isset($tlClasses[$classFileName]) )
 	{
     	$len = tlStringLen($classFileName) - $tlClassPrefixLen;
-		$classFileName = tlSubstr($classFileName,$tlClassPrefixLen,$len);
+		$classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));
 	} 
     require_once $classFileName . '.class.php';
 }

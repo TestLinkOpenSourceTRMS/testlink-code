@@ -18,61 +18,62 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.250 2009/08/10 20:40:09 havlat Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.251 2009/08/17 07:50:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
- *     20090804 - franciscom - moved report config here
- *     20090304 - franciscom - BUGID 2171
- *     20090211 - franciscom - added $tlCfg->exec_cfg->enable_tree_testcases_colouring
- *                                   $tlCfg->exec_cfg->enable_tree_counters_colouring
+ *	20090815 - franciscom - new option exec_cfg->show_history_all_platforms
+ *  20090804 - franciscom - moved report config here
+ *  20090304 - franciscom - BUGID 2171
+ *  20090211 - franciscom - added $tlCfg->exec_cfg->enable_tree_testcases_colouring
+ *                                $tlCfg->exec_cfg->enable_tree_counters_colouring
  *
- *     20090126 - franciscom - show_config_check_warning -> config_check_warning_mode
- *     20090103 - franciscom - $tlCfg->req_cfg->coverageStatusAlgorithm
- *     20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
- *     20090101 - franciscom - changes in regex used to validate an email address
- *     20081228 - franciscom - gui->layoutMainPageLeft,gui->layoutMainPageRight
- *     20081217 - franciscom - exec_cfg->simple_tester_roles
- *     20081213 - franciscom - more remove of old $g_* config parameters.
- *     20081122 - franciscom - removed some old $g_* config parameters.
- *     20081115 - franciscom - $tlCfg->testcase_cfg->search
- *     20081104 - franciscom - Added FOGBUGZ as BTS type
- *     20081103 - franciscom - Added GFORGE as BTS type
- *     20081006 - franciscom - config for rounding via nifty corners
- *     20080925 - franciscom - refactoring of urgencyImportance config
- *                             $tlCfg->req_cfg->child_requirements_mgmt
- *                             
- *     20080805 - franciscom - api configuration refactoring
- *     20080805 - franciscom - BUGID 1660 - extjs tree is default
- *     20080504 - franciscom - removed gui->enable_custom_fields
- * 		20080419 - havlatm - documentation update; minor refactorization
- *     20080326 - franciscom - restored configuration parameters removed without reasons.
+ *  20090126 - franciscom - show_config_check_warning -> config_check_warning_mode
+ *  20090103 - franciscom - $tlCfg->req_cfg->coverageStatusAlgorithm
+ *  20090103 - franciscom - BUGID 651 - $tlCfg->testcase_cfg->can_remove_executed
+ *  20090101 - franciscom - changes in regex used to validate an email address
+ *  20081228 - franciscom - gui->layoutMainPageLeft,gui->layoutMainPageRight
+ *  20081217 - franciscom - exec_cfg->simple_tester_roles
+ *  20081213 - franciscom - more remove of old $g_* config parameters.
+ *  20081122 - franciscom - removed some old $g_* config parameters.
+ *  20081115 - franciscom - $tlCfg->testcase_cfg->search
+ *  20081104 - franciscom - Added FOGBUGZ as BTS type
+ *  20081103 - franciscom - Added GFORGE as BTS type
+ *  20081006 - franciscom - config for rounding via nifty corners
+ *  20080925 - franciscom - refactoring of urgencyImportance config
+ *                          $tlCfg->req_cfg->child_requirements_mgmt
+ *                          
+ *  20080805 - franciscom - api configuration refactoring
+ *  20080805 - franciscom - BUGID 1660 - extjs tree is default
+ *  20080504 - franciscom - removed gui->enable_custom_fields
+ * 	20080419 - havlatm - documentation update; minor refactorization
+ *  20080326 - franciscom - restored configuration parameters removed without reasons.
  *
- * 	   20080423 - havlatm - added $tlCfg as standard configuration holder
- *     20080322 - franciscom - $g_exec_cfg->edit_notes
- *     20080308 - franciscom - changed initial values for email settings
- *     20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
- *     20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
- *     20071112 - franciscom - config changes due to upgrade of Smarty
- *     20071106 - franciscom - BUGID 1165 - $g_testcase_template
+ * 	20080423 - havlatm - added $tlCfg as standard configuration holder
+ *  20080322 - franciscom - $g_exec_cfg->edit_notes
+ *  20080308 - franciscom - changed initial values for email settings
+ *  20080304 - franciscom - $g_exec_cfg->show_testsuite_contents
+ *  20080208 - franciscom - added contribution seapine BTS (BUGID 1371)
+ *  20071112 - franciscom - config changes due to upgrade of Smarty
+ *  20071106 - franciscom - BUGID 1165 - $g_testcase_template
  *
- *     20071104 - franciscom - $g_exec_cfg->enable_test_automation
- *                             $g_gui->tprojects_combo_order_by (BUGID 498)
- *     20071006 - franciscom - $g_use_ext_js_library
- *     20070930 - franciscom - BUGID 1086 - configure order by in attachment
- *     20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
- *     20070505 - franciscom - following mantis bug tracking style, if file
- *                             custom_config.inc.php exists, il will be included
- *                             allowing users to customize TL configurations
- *                             managed using global variables, without need
- *                             of changing this file.
- *                             
- *     20070429 - franciscom - added contribution by Seweryn Plywaczyk
- *                             text area custom field
+ *  20071104 - franciscom - $g_exec_cfg->enable_test_automation
+ *                          $g_gui->tprojects_combo_order_by (BUGID 498)
+ *  20071006 - franciscom - $g_use_ext_js_library
+ *  20070930 - franciscom - BUGID 1086 - configure order by in attachment
+ *  20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
+ *  20070505 - franciscom - following mantis bug tracking style, if file
+ *                          custom_config.inc.php exists, il will be included
+ *                          allowing users to customize TL configurations
+ *                          managed using global variables, without need
+ *                          of changing this file.
+ *                          
+ *  20070429 - franciscom - added contribution by Seweryn Plywaczyk
+ *                          text area custom field
  *
- *     20070415 - franciscom -  added config for drag and drop feature
- *     20070301 - franciscom - #695 - $g_user_self_signup (fawel contribute)
+ *  20070415 - franciscom -  added config for drag and drop feature
+ *  20070301 - franciscom - #695 - $g_user_self_signup (fawel contribute)
  *
  **/
 
@@ -534,6 +535,10 @@ $tlCfg->exec_cfg->show_last_exec_any_build = FALSE;
 // TRUE  ->  History for all builds will be shown
 // FALSE ->  Only history of the current build will be shown  [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->show_history_all_builds = FALSE;
+
+// TRUE  ->  History for all platforms (if any exists for test plan) will be shown
+// FALSE ->  Only history of the current platform will be shown  [STANDARD BEHAVIOUR]
+$tlCfg->exec_cfg->show_history_all_platforms = FALSE;
 
 // different models for the attachments management on execution page
 // $att_model_m1 ->  shows upload button and title 

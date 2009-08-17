@@ -9,7 +9,7 @@
  * @copyright 	2007-2009, TestLink community
  * @copyright 	Copyright (C) 2002 - 2004  Mantis Team
  * 				The base for certain code was adapted from Mantis - a php based bugtracking system
- * @version    	CVS: $Id: string_api.php,v 1.10 2009/06/12 10:53:23 havlat Exp $
+ * @version    	CVS: $Id: string_api.php,v 1.11 2009/08/17 08:32:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal rev: 
@@ -358,9 +358,14 @@ function string_restore_valid_html_tags( $p_string, $p_multiline = true )
     }
     $tags = implode( '|', $tags);
 
-	$p_string = eregi_replace( '&lt;(' . $tags . ')[[:space:]]*&gt;', '<\\1>', $p_string );
-	$p_string = eregi_replace( '&lt;\/(' .$tags . ')[[:space:]]*&gt;', '</\\1>', $p_string );
-	$p_string = eregi_replace( '&lt;(' . $tags . ')[[:space:]]*\/&gt;', '<\\1 />', $p_string );
+	// $p_string = eregi_replace( '&lt;(' . $tags . ')[[:space:]]*&gt;', '<\\1>', $p_string );
+	// $p_string = eregi_replace( '&lt;\/(' .$tags . ')[[:space:]]*&gt;', '</\\1>', $p_string );
+	// $p_string = eregi_replace( '&lt;(' . $tags . ')[[:space:]]*\/&gt;', '<\\1 />', $p_string );
+
+	$p_string = preg_replace( '/&lt;(' . $tags . ')\s*&gt;/ui', '<\\1>', $p_string );
+	$p_string = preg_replace( '/&lt;\/(' . $tags . ')\s*&gt;/ui', '</\\1>', $p_string );
+	$p_string = preg_replace( '/&lt;(' . $tags . ')\s*\/&gt;/ui', '<\\1 />', $p_string );
+
 
 	return $p_string;
 }

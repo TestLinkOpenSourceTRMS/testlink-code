@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: platform.class.php,v 1.4 2009/08/09 12:26:10 franciscom Exp $
+ * @version     CVS: $Id: platform.class.php,v 1.5 2009/08/17 07:59:38 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -71,13 +71,18 @@ class tlPlatform extends tlObjectWithDB
 	 * Gets all info of a platform
 	 * @return array with keys id, name and notes
 	 */
-	public function getPlatform($id)
+	public function getByID($id)
 	{
 		$sql = "SELECT id, name, notes
 				FROM {$this->tables['platforms']}
 				WHERE id = {$id}";
 		return $this->db->fetchFirstRow($sql);
 	}
+	
+    public function getPlatform($id)
+    {
+    	return getByID($id);
+    }
 
 	/**
 	 * Updates values of a platform in database.

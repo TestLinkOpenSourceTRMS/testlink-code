@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.40 2009/08/11 19:48:51 schlundus Exp $
+$Id: execSetResults.tpl,v 1.41 2009/08/17 08:03:31 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+  20090815 - franciscom - platform feature
   20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
                           due to access to test spec to edit it.
 
@@ -40,7 +41,7 @@ Rev:
 	           no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
-             deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution'}
+             deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution,platform'}
 
 
 
@@ -62,14 +63,6 @@ var import_xml_results="{$labels.import_xml_results}";
 </script>
 
 {include file="inc_del_onclick.tpl"}
-
-{*  
-
-{if $smarty.const.USE_EXT_JS_LIBRARY}
-  {include file="inc_ext_js.tpl"}
-{/if}
-
-*}
 
 <script language="JavaScript" type="text/javascript">
 {literal}
@@ -201,7 +194,10 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               {if #ROUND_TC_TITLE# }Nifty('div.exec_tc_title');{/if}">
 
 <h1 class="title">
-	{$labels.title_t_r_on_build} {$my_build_name}
+	{$labels.title_t_r_on_build} {$gui->build_name|escape}
+	{if $gui->platform_name != ""}
+	  {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_name|escape}
+	{/if}
 	{if $gui->ownerDisplayName != ""}
 	  {$title_sep_type3}{$labels.only_test_cases_assigned_to}{$title_sep}{$gui->ownerDisplayName|escape}
 	  {if $gui->include_unassigned}

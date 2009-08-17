@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.143 2009/08/05 07:27:26 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.144 2009/08/17 08:00:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -1310,7 +1310,9 @@ class results extends tlObjectWithDB
 		$hash_descr_id = $tree_manager->get_available_node_types();
 	
 	    $test_spec = $tproject_mgr->get_subtree($this->tprojectID,$RECURSIVE_MODE);
-		$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,null,$keyword_id, null, $owner);
+		// $tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,null,$keyword_id, null, $owner);
+		$filters = array('keyword_id' => $keyword_id, 'assigned_to' => $owner);
+		$tp_tcs = $tplan_mgr->get_linked_tcversions($this->testPlanID,$filters);
 		
 		$this->linked_tcversions = &$tp_tcs;
 		if (is_null($tp_tcs)) {

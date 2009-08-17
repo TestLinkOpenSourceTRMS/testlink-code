@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.35 2009/08/09 12:26:10 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.36 2009/08/17 07:59:51 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -198,8 +198,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	
 	if( !$is_tplan_view_type && is_null($tproject_id) )
 	{
-		$tproject_id=$tobj_id;
+		$tproject_id = $tobj_id;
 	}
+	
+	$testplan_id = $is_tplan_view_type ? $tobj_id : null;
+	
 	
 	$tcase_mgr = new testcase($db); 
 	$hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
@@ -209,6 +212,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	                 'tcase_id' => $my['filters']['testcases'], 
 		             'tcase_node_type_id' => $hash_descr_id['testcase']);
 	$test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
+	
+	//new dBug($testplan_id);
 	
     $platforms = getPlatforms($db,$tproject_id,$testplan_id);
 
@@ -314,22 +319,23 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 */
 function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 {
-	define('DONT_FILTER_BY_TCASE_ID',null);
 	$doFilterByKeyword=(!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
 	
 	// Multiple step algoritm to apply keyword filter on type=AND
 	// get_linked_tcversions filters by keyword ALWAYS in OR mode.
-	$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,DONT_FILTER_BY_TCASE_ID,
-		$argsObj->keyword_id);
+	$filters = array('keyword_id' => $argsObj->keyword_id);
+	$options = array('output' => 'mapOfArray');
+	$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$options);
 	
 	// BUGID 2716
 	if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
 	{
 		$filteredSet=$tcaseMgr->filterByKeyword(array_keys($tplan_tcases),
-			$argsObj->keyword_id,$argsObj->keywordsFilterType);
+			                                    $argsObj->keyword_id,$argsObj->keywordsFilterType);
 		
 		$testCaseSet=array_keys($filteredSet);   
-		$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$testCaseSet);
+	    $filters = array('tcase_id' => $testCaseSet);
+		$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$options);
 	}
 	
 	return $tplan_tcases; 
@@ -338,7 +344,7 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 
 function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
-	define('PRUNE_REMOVE_UNLINKED_TCVERSIONS',1);
+	// define('PRUNE_REMOVE_UNLINKED_TCVERSIONS',1);
 	$tsuiteMgr = new testsuite($dbHandler); 
 	$tprojectMgr = new testproject($dbHandler); 
 	$tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
@@ -350,22 +356,36 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 	// $argsObj->keyword_id and $keywordsFilter
 
 	// BUGID 1041
-	$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
-			$argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF, $filterAssignedTo);
+	$filters = array('keyword_id' => $argsObj->keyword_id, 'assigned_to' => $filterAssignedTo);
+	
+	//$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
+	//		                                                    $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF, $filterAssignedTo);
+      
+	$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$options);
+      
+      
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
+
 	// With this pieces we implement the AND type of keyword filter.
 	$testCaseSet = null;
 	if(!is_null($keywordsFilter) && !is_null($keywordsFilter->items))
 	{ 
 		$keywordsTestCases = $tprojectMgr->get_keywords_tcases($argsObj->tproject_id,
-			$keywordsFilter->items,$keywordsFilter->type);
+			                                                   $keywordsFilter->items,$keywordsFilter->type);
 		$testCaseSet = array_keys($keywordsTestCases);
 	}
-	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
-		$tplan_linked_tcversions,null,$argsObj->keyword_id,
-		$testCaseSet,WRITE_BUTTON_ONLY_IF_LINKED,PRUNE_REMOVE_UNLINKED_TCVERSIONS);
 	
+	
+	// function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$linked_items,
+    //                    $map_node_tccount,$filters=null, $options = null,$tproject_id = null)
+    // 
+	$options = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
+	$filters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet);
+	
+	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
+		                 $tplan_linked_tcversions,null,$filters,$options);
+
 	return $out;
 }
 
@@ -641,12 +661,12 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 				$outRef['tcversions_execution_type'] = array();
 				$outRef['tcversions_qty'] = 0;
 				$outRef['linked_version_id'] = 0;
-				$outRef['executed'] = 'no';
+				$outRef['executed'] = null; 'no';
 	
 				// useful for tc_exec_assignment.php          
-				$outRef['user_id'] = 0;
-				$outRef['feature_id'] = 0;
-				$outRef['linked_by'] = 0;
+				$outRef['user_id'] = null; //0;
+				$outRef['feature_id'] = null; //0;
+				$outRef['linked_by'] = null; //0;
 				$outRef['linked_ts'] = null;
 			    $outRef['priority'] = 0;
 			    $outRef['platforms'] = $platforms;
@@ -738,6 +758,7 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	$pivot_id=-1;
 
+	//new dBug($testCaseSet);
 	foreach($testCaseSet as $the_k => $testCase)
 	{
 		$tc_id = $testCase['testcase_id'];
@@ -778,9 +799,12 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 		{
 			foreach($linked_items as $linked_testcase)
 			{
-				if(($linked_testcase['tc_id'] == $testCase['testcase_id']) &&
-				   ($linked_testcase['tcversion_id'] == $testCase['id']) )
+				//new dBug($linked_testcase);
+				if(($linked_testcase[0]['tc_id'] == $testCase['testcase_id']) &&
+				   ($linked_testcase[0]['tcversion_id'] == $testCase['id']) )
 				{
+					//echo 'DEBUG - HERE';
+					// This can be written only once no matter platform qty
 					if( !isset($outRef['tcversions'][$testCase['id']]) )
 					{
 						$outRef['tcversions'][$testCase['id']] = $testCase['version'];
@@ -788,35 +812,39 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 						$outRef['external_id'] = $testCase['tc_external_id'];
 						$outRef['tcversions_execution_type'][$testCase['id']] = $testCase['execution_type'];
 					}
-					$outRef['linked_version_id'] = $linked_testcase['tcversion_id'];
 					$exec_order= isset($linked_testcase['execution_order'])? $linked_testcase['execution_order']:0;
 					$outRef['execution_order'] = $exec_order;
-					
 					// 20090625 - Eloff
 					if( isset($linked_testcase['priority']) )
 					{
 						$outRef['priority'] = priority_to_level($linked_testcase['priority']);
 					}
+					$outRef['linked_version_id']= $testCase['id'];
 					$out[$parent_idx]['write_buttons'] = 'yes';
 					$out[$parent_idx]['linked_testcase_qty']++;
 					$result['has_linked_items'] = 1;
-					
-					if(intval($linked_testcase['executed']))
-					{
-						$outRef['executed']='yes';
-					}
 
-					if( isset($linked_testcase['linked_ts']))
-					{
-						$outRef['linked_ts']=$linked_testcase['linked_ts'];
-					}
-					
-					foreach ($optionalIntegerFields as $fieldKey )
-					{
-						if( isset($linked_testcase[$fieldKey]))
+                    foreach($linked_testcase as $item)
+                    {  
+                    	//new dBug($item);
+						// $outRef['linked_version_id'][$item['platform_id']] = $item['tcversion_id'];
+						if(intval($item['executed']))
 						{
-							$outRef[$fieldKey]=intval($linked_testcase[$fieldKey]);
+							$outRef['executed'][$item['platform_id']]='yes';
 						}
+                    	
+						if( isset($item['linked_ts']))
+						{
+							$outRef['linked_ts'][$item['platform_id']]=$item['linked_ts'];
+						}
+						
+						foreach ($optionalIntegerFields as $fieldKey )
+						{
+							if( isset($item[$fieldKey]))
+							{
+								$outRef[$fieldKey][$item['platform_id']]=intval($item[$fieldKey]);
+							}
+				    	}
 				    }
 					break;
 				}

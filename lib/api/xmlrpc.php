@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2009/08/05 07:25:49 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2009/08/17 08:00:45 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -2060,15 +2060,27 @@ class TestlinkXMLRPCServer extends IXR_Server
     // $exec_type=null ,
     // $details='simple')
     //  
-		$recordset=$this->tplanMgr->get_linked_tcversions($tplanid,                                      
-		                                                  $opt[self::$testCaseIDParamName],
-                                                    	  $keywordSet,
-		                                            	  $opt[self::$executedParamName],
-                                                    	  $opt[self::$assignedToParamName],
-                                                    	  $opt[self::$executeStatusParamName],
-	 	                                            	  $opt[self::$buildIDParamName],
-	 	                                            	  null,false,null,null,
-	 	                                            	  $opt[self::$executionTypeParamName],'full');
+       
+        $options = array('executed_only' => $opt[self::$executedParamName], 'details' => 'full');
+		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
+			             'keyword_id' => $opt[self::$keywordIDParamName],
+			             'assigned_to' => $opt[self::$assignedToParamName],
+			             'exec_status' => $opt[self::$executeStatusParamName],
+			             'build_id' => $opt[self::$buildIDParamName],
+			             'exec_type' => $opt[self::$executionTypeParamName]);
+		
+		
+		// $recordset=$this->tplanMgr->get_linked_tcversions($tplanid,                                      
+		//                                                   $opt[self::$testCaseIDParamName],
+        //                                             	  $keywordSet,
+		//                                             	  $opt[self::$executedParamName],
+        //                                             	  $opt[self::$assignedToParamName],
+        //                                             	  $opt[self::$executeStatusParamName],
+	 	//                                             	  $opt[self::$buildIDParamName],
+	 	//                                             	  null,false,null,null,
+	 	//                                             	  $opt[self::$executionTypeParamName],'full');
+	 	
+		$recordset=$this->tplanMgr->get_linked_tcversions($tplanid,$filters,$options);
 		return $recordset;
 	 }
 

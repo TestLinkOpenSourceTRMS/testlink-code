@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.9 2009/07/13 18:36:33 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.10 2009/08/17 08:02:35 franciscom Exp $
 Purpose: 
 Author: franciscom
 
@@ -156,6 +156,10 @@ Rev:
 				{if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
 				  <th style="text-align:left">{$labels.build}</th>
 				{/if}
+				{if $gui->has_platforms && 
+				    ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms) }
+				  <th style="text-align:left">{$labels.platform}</th>
+				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
 				<th style="text-align:center">{$labels.exec_status}</th>
 				<th style="text-align:center">{$labels.testcaseversion}</th>
@@ -203,6 +207,13 @@ Rev:
   				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">{/if}
   				    {$tc_old_exec.build_name|escape}
   				</td>
+  				{/if}
+
+				  {if $gui->has_platforms && 
+				      ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms) }
+  				  <td>
+					  {$tc_old_exec.platform_name}
+  				  </td>
   				{/if}
 
   				<td>

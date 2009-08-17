@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.27 2009/08/08 14:08:20 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.28 2009/08/17 08:02:35 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -88,13 +88,15 @@ rev :
 				</select>
 			</td>
 		</tr>
-		<tr>
-			<td>{$labels.platform}</td>
-			<td><select name="platform_id">
-				{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
-				</select>
-			</td>
-		</tr>
+		{if $gui->optPlatform.items != ''}
+		  <tr>
+		  	<td>{$labels.platform}</td>
+		  	<td><select name="platform_id">
+		  		{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
+		  		</select>
+		  	</td>
+		  </tr>
+		{/if}
 		<tr>
 			<td>{$labels.filter_tcID}</td>
 			<td><input type="text" name="targetTestCase" value="{$gui->targetTestCase}" 

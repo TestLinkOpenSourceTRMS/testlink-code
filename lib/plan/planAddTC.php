@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.75 2009/08/08 14:11:50 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.76 2009/08/17 08:00:18 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -27,6 +27,9 @@ $tcase_mgr = new testcase($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+
+//new dBug($_REQUEST);
+//new dBug($args);
 
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
@@ -54,16 +57,54 @@ switch($args->doAction)
 {
     case 'doAddRemove':
 		// Remember:  checkboxes exist only if are checked
+		// new dBug($args->tcversion_for_tcid);
+		// new dBug($args->linkedVersion);
+		// new dBug($args->testcases2add);
+		// new dBug($args->testcases2remove);
+		
 	    if(!is_null($args->testcases2add))
 	    {
-		    $items_to_link = my_array_intersect_keys($args->testcases2add,$args->tcversion_for_tcid);
+	    	// items_to_link structure:
+	    	// key: test case id , value: map 
+	    	//                            key: platform_id value: test case VERSION ID
+		    $items_to_link = null;
+            foreach ($args->testcases2add as $tcase_id => $info) 
+            {
+                foreach ($info as $platform_id => $tcase_id) 
+                {
+                    // $items_to_link[$tcase_id][$platform_id] = $args->tcversion_for_tcid[$tcase_id];
+                    if( isset($args->tcversion_for_tcid[$tcase_id]) )
+                    {
+                    	$tcversion_id = $args->tcversion_for_tcid[$tcase_id];
+                    }
+                    else
+                    {
+                    	$tcversion_id = $args->linkedVersion[$tcase_id];
+                    }
+                    $items_to_link['tcversion'][$tcase_id] = $tcversion_id;
+                    $items_to_link['platform'][$platform_id] = $platform_id;
+                    $items_to_link['items'][$tcase_id][$platform_id] = $tcversion_id;
+                }
+            }
+		new dBug($items_to_link);
 		    $tplan_mgr->link_tcversions($args->tplan_id,$items_to_link,$args->userID);
 	    }
 
 	    if(!is_null($args->testcases2remove))
 	    {
 		    // remove without warning
-		    $tplan_mgr->unlink_tcversions($args->tplan_id,$args->testcases2remove);
+		    $items_to_unlink=null;
+            foreach ($args->testcases2remove as $tcase_id => $info) 
+            {
+                foreach ($info as $platform_id => $tcversion_id) 
+                {
+                    $items_to_unlink['tcversion'][$tcase_id] = $tcversion_id;
+                    $items_to_unlink['platform'][$platform_id] = $platform_id;
+                    $items_to_unlink['items'][$tcase_id][$platform_id] = $tcversion_id;
+                }
+            }
+            // new dBug($items_to_unlink);
+		    $tplan_mgr->unlink_tcversions($args->tplan_id,$items_to_unlink);
 	    }
 	    doReorder($args,$tplan_mgr);
 	    $do_display = 1;
@@ -89,6 +130,8 @@ if($do_display)
 		
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
+	//new dBug($tplan_linked_tcversions);
+	
 	$testCaseSet = null;
 	if(!is_null($keywordsFilter))
 	{ 
@@ -120,6 +163,8 @@ if($do_display)
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$filters,$opt);
   
+    //new dBug($out);
+    
   	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];
@@ -185,6 +230,7 @@ function init_args()
 */
 function doReorder(&$argsObj,&$tplanMgr)
 {
+	// new dBug($argsObj->linkedVersion);
     $mapo = null;
     if(!is_null($argsObj->linkedVersion))
     {
@@ -201,10 +247,22 @@ function doReorder(&$argsObj,&$tplanMgr)
     // Now add info for new liked test cases if any
     if(!is_null($argsObj->testcases2add))
     {
-        foreach($argsObj->testcases2add as $tcid)
+        $tcaseSet = array_keys($argsObj->testcases2add);
+        // foreach($argsObj->testcases2add as $tcid)
+        foreach($tcaseSet as $tcid)
         {
-            $tcversion_id = $argsObj->tcversion_for_tcid[$tcid];
-            $mapo[$tcversion_id] = $argsObj->testcases2order[$tcid];
+        	// This check is needed because, after we have added test case
+        	// for a platform, this will not be present anymore
+        	// in tcversion_for_tcid, but it's present in  linkedVersion.
+        	// IMPORTANT:
+        	// We do not allow link of different test case version on a
+        	// testplan no matter we are using or not platform feature.
+        	//
+        	if( isset($argsObj->tcversion_for_tcid[$tcid]) )
+        	{
+            	$tcversion_id = $argsObj->tcversion_for_tcid[$tcid];
+            	$mapo[$tcversion_id] = $argsObj->testcases2order[$tcid];
+            }
         }
     }  
     
@@ -226,6 +284,7 @@ function doReorder(&$argsObj,&$tplanMgr)
 */
 function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 {
+	
     $tcase_cfg = config_get('testcase_cfg');
     $title_separator = config_get('gui_title_separator_1');
 
@@ -255,6 +314,9 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->pageTitle = lang_get('test_plan') . $title_separator . $tplan_info['name'];
     $gui->refreshTree = false;
 
+
+	$platform_mgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
+	$gui->platforms = $platform_mgr->getLinkedToTestplan($argsObj->tplan_id);
 
     return $gui;
 }

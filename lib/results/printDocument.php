@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/05/13 05:54:55 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/08/17 08:01:04 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -159,8 +159,13 @@ switch ($doc_info->type)
 					}
 					$branch_tsuites[]=$args->itemID;
     	   	       
-					$tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id, null, 
-							0,null,null,null,0,null,false,null, $branch_tsuites);
+					// $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id, null, 
+					// 		0,null,null,null,0,null,false,null, $branch_tsuites);
+					// 		
+    	   	        $filters = array( 'tsuites_id' => $branch_tsuites);
+	                $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
+							
+							
 					$tcase_filter=!is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
     	         
 					$tInfo['node_type_id'] = $hash_descr_id['testsuite'];

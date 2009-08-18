@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.465 2009/08/09 12:26:10 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.466 2009/08/18 19:58:15 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -275,14 +275,14 @@ $TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "User not found, please try again";
-$TLS_contact_admin = "\n\n If you have any further problems please contact your administrator.";
+$TLS_contact_admin = "<br /> If you have any further problems please contact your administrator.";
 $TLS_mail_empty_address = "You don't have specified an email address in your user profile! " .
                           " Please contact your TestLink administrator about resetting your password!";
 $TLS_mail_passwd_subject = "Your new TestLink password.";
 $TLS_mail_problems = "Errors in mail setup, please contact your administrator.";
 $TLS_page_title_lost_passwd = "TestLink - Lost password";
 $TLS_your_info_for_passwd = "Enter Your User Information so that your new password can be mailed to you.";
-$TLS_your_password_is = "Your new TestLink password is: \n";
+$TLS_your_password_is = "Your new TestLink password is: <br />";
 
 
 

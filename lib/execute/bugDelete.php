@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugDelete.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/08/18 19:58:14 $ by $Author: schlundus $
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
@@ -31,6 +31,10 @@ $smarty = new TLSmarty();
 $smarty->assign('msg',$msg);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+/**
+ * 
+ * @return object returns the arguments of the page
+ */
 function init_args()
 {
 	global $g_bugInterface;
@@ -47,8 +51,21 @@ function init_args()
 }
 
 
+/**
+ * Checks the user rights for viewing the page
+ * 
+ * @param $db resource the database connection handle
+ * @param $user tlUser the object of the current user
+ *
+ * @return boolean return true if the page can be viewed, false if not
+ */
 function checkRights(&$db,&$user)
 {
+	global $g_bugInterfaceOn;
+	
+	if (!$g_bugInterfaceOn)
+		return false;
+	
 	return $user->hasRight($db,"testplan_execute");
 }
 ?>

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.163 2009/08/18 06:47:56 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.164 2009/08/18 19:58:15 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -221,7 +221,7 @@ function checkSessionValid(&$db)
 	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
 		
 		$fName = "login.php";
-        $baseDir = dirname(__FILE__);
+        $baseDir = dirname($_SERVER['SCRIPT_FILENAME']);
         
         while(!file_exists($baseDir.DIRECTORY_SEPARATOR.$fName))
         {

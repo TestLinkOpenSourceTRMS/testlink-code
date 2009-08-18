@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.40 2009/08/17 08:37:11 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.41 2009/08/18 19:58:15 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -231,9 +231,7 @@ abstract class tlObject implements iSerialization
             $tableNames = array_flip($tableNames);			
 			$tables = array_intersect_key($tables,$tableNames);
 			if (sizeof($tables) != sizeof($tableNames))
-			{
 				throw new Exception("Wrong table name(s) for getDBTables() detected!");
-			}	
 		}
 		
 	    return $tables;

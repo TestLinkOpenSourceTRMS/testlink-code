@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jira.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/04/02 20:16:15 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/08/18 19:58:14 $ $Author: schlundus $
  *
  * @author (contributor) jbarchibald@gmail.com
  *
@@ -111,15 +111,15 @@ class jiraInterface extends bugtrackingInterface
 		//if the bug wasn't found the status is null and we simply display the bugID
 		if ($status !== false)
 		{
-      $str = $str . " - " . $status;
-      if (strcasecmp($status, 'closed') == 0 || strcasecmp($status, 'resolved') == 0 )
-      {
-        $str = "<del>" . $str . "</del>";
-      }  
+			$str = $str . " - " . $status;
+		    if (strcasecmp($status, 'closed') == 0 || strcasecmp($status, 'resolved') == 0 )
+		    {
+		    	$str = "<del>" . $str . "</del>";
+		    }  
 		}
 		else
 		{
-			$status	= null;
+			$str = $id;
 		}	
 		return $str;
 	}
@@ -157,22 +157,20 @@ class jiraInterface extends bugtrackingInterface
 	 **/
 	function checkBugID($id)
 	{
-		$status_ok = 1;	
-		if(trim($id) == "")
-		{
-      		$status_ok = 0;	
-    	}
-				  
-	  	if($status_ok)
-	  	{
-	    	$ereg_forbidden_chars = '[!|£%&/()=?]';
-
- 		  	if (eregi($ereg_forbidden_chars, $id))
-		  	{
-				$status_ok = 0;	
-		  	} 	
-	  	}
-		return $status_ok;
+		$status_ok = true;
+        if(trim($id) == "")
+        {
+            $status_ok = false;
+        }
+        if($status_ok)
+        {
+            $forbidden_chars = '/[!|£%&/()=?]/';
+            if (preg_match($forbidden_chars, $id))
+            {
+                $status_ok = false;
+            }
+        }
+        return $status_ok;
 	}	
 }
 ?>

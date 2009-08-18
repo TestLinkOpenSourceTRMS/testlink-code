@@ -4,7 +4,7 @@
  *
  * Filename $RCSfile: int_seapine.php,v $
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
  * @author needles - 20080207 - created
  * 20080207 - needles - created
@@ -54,9 +54,9 @@ class seapineInterface extends bugtrackingInterface
 	
 		$status = null;
 		$query = "SELECT Name as bug_status from {$this->m_dbName}.defects, {$this->m_dbName}.states
-		WHERE defects.status = states.idrecord AND DefectNum='" . $id."' 
-		AND states.projectid ='{$this->m_dbProjectID}' 
-		AND defects.projectid ='{$this->m_dbProjectID}'";
+				WHERE defects.status = states.idrecord AND DefectNum='" . $id."' 
+				AND states.projectid ='{$this->m_dbProjectID}' 
+				AND defects.projectid ='{$this->m_dbProjectID}'";
 		
 		$result = $this->m_dbConnection->exec_query($query);
 		if ($result)

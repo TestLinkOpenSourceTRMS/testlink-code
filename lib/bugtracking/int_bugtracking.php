@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/08/14 20:58:03 $ $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/08/18 19:58:14 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -256,17 +256,24 @@ class bugtrackingInterface
 	}
 
 	/**
-	 * checks a bug id for validity
+	 * checks a bug id for validity, that means numeric only
 	 *
 	 * @return bool returns true if the bugid has the right format, false else
 	 **/
 	function checkBugID($id)
 	{
-		return (intval($id) > 0);
+		$valid = true;	
+	  	$forbidden_chars = '/\D/i';  
+		if (preg_match($forbidden_chars, $id))
+			$valid = false;	
+		else 
+      		$valid = (intval($id) > 0);	
+
+      	return $valid;
 	}
 
 	/**
-	 * return the maximum length of a bug id
+	 * return the maximum length in chars of a bug id
 	 * @return int the maximum length of a bugID
 	 */
 	function getBugIDMaxLength()
@@ -318,7 +325,7 @@ class bugtrackingInterface
 	}
 
 	/**
-	* checks is bug id is present on BTS
+	* checks if bug id is present on BTS
 	*
 	* @return bool
 	**/

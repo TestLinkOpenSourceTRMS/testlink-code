@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_fogbugz.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/08/18 06:47:55 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/08/18 19:58:14 $ $Author: schlundus $
  *
  * @author Sjoerd Dirk Meijer
  *
@@ -54,13 +54,11 @@ class fogbugzInterface extends bugtrackingInterface
 		$status = false;
 		
 		$query = "SELECT ixStatus as s FROM bug WHERE ixBug ='" . $id."'";
-		
 		$result = $this->dbConnection->exec_query($query);
-
 		if ($result)
 		{
 			$status = $this->dbConnection->fetch_array($result);
-				if ($status)
+			if ($status)
 			{
 				$status = $status ['s'];
 			}	
@@ -78,13 +76,11 @@ class fogbugzInterface extends bugtrackingInterface
 		$open = false;
 		
 		$query = "SELECT fOpen as r FROM bug WHERE ixBug ='" . $id."'";
-		
 		$result = $this->dbConnection->exec_query($query);
-
 		if ($result)
 		{
 			$open = $this->dbConnection->fetch_array($result);
-				if ($open)
+			if ($open)
 			{
 				$open = $open ['r'];
 			}	
@@ -110,15 +106,16 @@ class fogbugzInterface extends bugtrackingInterface
 		
 		$str = htmlspecialchars($id);
 		//if the bug wasn't found the status is null and we simply display the bugID
-			if ($status !== false)
+		if ($status !== false)
 		{
 			//strike through all bugs that have a closed status.. 
-			if ($status > 1 and $open == 0)
-			{	$str = "[closed] <del>" . $id . "</del>";
+			if ($status > 1 && $open == 0)
+			{	
+				$str = "[closed] <del>" . $id . "</del>";
 			}
 			else
 			//strike through and bold all bugs that have a resolved status
-			if ($status > 1 and $open == 1)
+			if ($status > 1 && $open == 1)
 			{
 				$str = "<b>[resolv.]</b> <del>" . $id . "</del>";
 			}
@@ -139,10 +136,9 @@ class fogbugzInterface extends bugtrackingInterface
 			return false;
 
 		$status = null;
-		$query = "SELECT sTitle as t FROM bug WHERE ixBug ='" . $id."'";
-		
-		$result = $this->dbConnection->exec_query($query);
 
+		$query = "SELECT sTitle as t FROM bug WHERE ixBug ='" . $id."'";
+		$result = $this->dbConnection->exec_query($query);
 		if ($result)
 		{
 			$summary = $this->dbConnection->fetch_array($result);
@@ -155,42 +151,21 @@ class fogbugzInterface extends bugtrackingInterface
 		return $summary;
 	}
 
-  /**
-	 * checks a bug id for validity  
-	 * 
-	 * @return bool returns true if the bugid has the right format, false else
-	 **/
-	function checkBugID($id)
-	{
-	  	$status_ok=1;	
-	  	// $ereg_forbidden_chars='[a-zA-Z,$-+]';
- 		// if (eregi($ereg_forbidden_chars, $id))
-		$preg_forbidden_chars = '/[a-zA-Z,$-+]/i';  
-		if ($preg_match($preg_forbidden_chars, $id))
-		{
-			$status_ok=0;	
-		} 	
-    	else 
-    	{
-      		$status_ok=(intval($id) > 0);	
-    	}
-		return $status_ok;
-	}	
 
   /**
-	 * checks is bug id is present on BTS
+	 * checks if bug id is present on BTS
 	 * 
 	 * @return bool 
 	 **/
 	function checkBugID_existence($id)
 	{
-	  $status_ok=0;	
+	  	$status_ok = false;	
 		$query = "SELECT ixStatus FROM bug WHERE ixBug ='" . $id."'";
 		$result = $this->dbConnection->exec_query($query);
-		if ($result && ($this->dbConnection->num_rows($result) == 1) )
+		if ($result && ($this->dbConnection->num_rows($result) == 1))
 		{
-      $status_ok=1;    
-    }
+      		$status_ok = true;    
+    	}
 		return $status_ok;
 	}	
 }

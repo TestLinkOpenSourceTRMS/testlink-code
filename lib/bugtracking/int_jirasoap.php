@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_jirasoap.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/08/18 06:47:55 $ $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/08/18 19:58:14 $ $Author: schlundus $
  *
  * @author amitkhullar <amkhullar@gmail.com>
  *
@@ -222,8 +222,7 @@ class jirasoapInterface extends bugtrackingInterface
         {
             $status_desc = array_search($jira_id, $this->status_map);
 
-
-            if (strcasecmp($status_desc, 'closed') == 0 || strcasecmp($status_desc, 'resolved') == 0 )
+			if (strcasecmp($status_desc, 'closed') == 0 || strcasecmp($status_desc, 'resolved') == 0 )
             {
                 $status_desc = "<del>" . $status_desc . "</del>";
             }
@@ -259,7 +258,6 @@ class jirasoapInterface extends bugtrackingInterface
 
             $due_date = $this->parse_date($issue_due_date);
 
-
             $summary_string = $summary_string . '<b> [' . $due_date . ']</b> ';
         }
         return $summary_string;
@@ -274,7 +272,6 @@ class jirasoapInterface extends bugtrackingInterface
      **/
     function parse_date($due_date)
     {
-
         if (!is_null($due_date))
         {
             $due_date = date_parse($due_date);
@@ -347,17 +344,17 @@ class jirasoapInterface extends bugtrackingInterface
      **/
     function checkBugID($id)
     {
-        $status_ok = 1;
+        $status_ok = true;
         if(trim($id) == "")
         {
-            $status_ok = 0;
+            $status_ok = false;
         }
         if($status_ok)
         {
-            $regexp_forbidden_chars = '/[!|£%&/()=?]/';
-            if (preg_match($regexp_forbidden_chars, $id))
+            $forbidden_chars = '/[!|£%&/()=?]/';
+            if (preg_match($forbidden_chars, $id))
             {
-                $status_ok = 0;
+                $status_ok = false;
             }
         }
         return $status_ok;
@@ -376,7 +373,6 @@ class jirasoapInterface extends bugtrackingInterface
             $issue_exists = $this->getBugStatusString($id);
             if (!is_null($issue_exists))
             {
-
                 if ((stristr($issue_exists, "does not exist") == TRUE))
                 {
                     $status_ok = 0;

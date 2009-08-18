@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: user.class.php,v 1.51 2009/08/10 18:57:58 schlundus Exp $
+ * @version    	CVS: $Id: user.class.php,v 1.52 2009/08/18 19:58:15 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -726,15 +726,6 @@ class tlUser extends tlDBObject
 	}
 
 
-
-
-
-
-
-
-
-
-	
 	/**
 	 * Checks the correctness of an email address
 	 * 

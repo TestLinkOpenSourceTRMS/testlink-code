@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.98 2009/08/18 06:48:37 franciscom Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.99 2009/08/18 19:58:15 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -123,7 +123,7 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
 		$users = tlUser::getAll($db,$sqlWhere,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 	}
   
-	$the_users = $users;
+	//$the_users = $users;
 	
 	// if ($users)
 	// {
@@ -139,7 +139,7 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
 	// 		}
 	// 	}
 	// }
-	return buildUserMap($the_users,!is_null($additional_users),$additional_users);
+	return buildUserMap($users,!is_null($additional_users),$additional_users);
 }
 
 /*

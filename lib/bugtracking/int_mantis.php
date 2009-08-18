@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/08/18 06:47:55 $ $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/08/18 19:58:14 $ $Author: schlundus $
  *
  * @author Andreas Morsing
  *
@@ -169,28 +169,7 @@ class mantisInterface extends bugtrackingInterface
 		return $summary;
 	}
 
-  /**
-	 * checks a bug id for validity  
-	 * 
-	 * @return bool returns true if the bugid has the right format, false else
-	 **/
-	function checkBugID($id)
-	{
-	  	$status_ok = 1;	
-	  	// $ereg_forbidden_chars = '[a-zA-Z,$-+]';
- 		//if (eregi($ereg_forbidden_chars, $id))
-	  	$preg_forbidden_chars = '/[a-zA-Z,$-+]/i';
- 		if ($preg_match($preg_forbidden_chars, $id))
-		{
-			$status_ok = 0;	
-		} 	
-    	else 
-    	{
-      		$status_ok = (intval($id) > 0);	
-    	}
-		return $status_ok;
-	}	
-
+ 
   	/**
 	 * checks is bug id is present on BTS
 	 * 

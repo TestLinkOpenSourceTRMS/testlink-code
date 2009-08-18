@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_eventum.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/08/18 06:47:55 $ $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/08/18 19:58:14 $ $Author: schlundus $
  *
  * @author Stefan Stefanov
  *
@@ -53,7 +53,7 @@ class eventumInterface extends bugtrackingInterface
 
 		$status = false;
 		
-	$query = "SELECT eventum_status.sta_is_closed as status FROM eventum_status INNER JOIN eventum_issue ON eventum_issue.iss_sta_id = eventum_status.sta_id WHERE eventum_issue.iss_id='" . $id."'";
+		$query = "SELECT eventum_status.sta_is_closed as status FROM eventum_status INNER JOIN eventum_issue ON eventum_issue.iss_sta_id = eventum_status.sta_id WHERE eventum_issue.iss_id='" . $id."'";
 		
 		$result = $this->dbConnection->exec_query($query);
 		if ($result)
@@ -127,28 +127,7 @@ class eventumInterface extends bugtrackingInterface
 		return $summary;
 	}
 
-  /**
-	 * checks a bug id for validity  
-	 * 
-	 * @return bool returns true if the bugid has the right format, false else
-	 **/
-	function checkBugID($id)
-	{
-	  	$status_ok=1;	
-	  	// $ereg_forbidden_chars='[a-zA-Z,$-+]';
- 		// if (eregi($ereg_forbidden_chars, $id))
-		$preg_forbidden_chars = '/[a-zA-Z,$-+]/i';  
-		if ($preg_match($preg_forbidden_chars, $id))
-		{
-			$status_ok=0;	
-		} 	
-    	else 
-    	{
-    	  $status_ok=(intval($id) > 0);	
-    	}
-		return $status_ok;
-	}	
-
+ 
   /**
 	 * checks is bug id is present on BTS
 	 * 
@@ -156,14 +135,14 @@ class eventumInterface extends bugtrackingInterface
 	 **/
 	function checkBugID_existence($id)
 	{
-	  $status_ok=0;	
+	  	$status_ok = false;	
 	
 		$query = "SELECT eventum_status.sta_title as status FROM eventum_status INNER JOIN eventum_issue ON eventum_issue.iss_sta_id = eventum_status.sta_id WHERE eventum_issue.iss_id='" . $id."'";
 	
 		$result = $this->dbConnection->exec_query($query);
-		if ($result && ($this->dbConnection->num_rows($result) == 1) )
+		if ($result && ($this->dbConnection->num_rows($result) == 1))
 		{
-			$status_ok = 1;    
+			$status_ok = true;    
 		}
 		
 		return $status_ok;

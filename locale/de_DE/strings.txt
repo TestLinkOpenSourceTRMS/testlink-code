@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.124 $
- * @modified $Date: 2009/08/14 21:03:10 $ by $Author: schlundus $
+ * @version $Revision: 1.125 $
+ * @modified $Date: 2009/08/18 19:58:15 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -212,7 +212,7 @@ $TLS_wrong_keywords_file = "Fehlerhafte Stichwort-Datei (falsches Format)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "Der angegebene Benutzer konnte nicht gefunden werden. Versuchen Sie es bitte nochmal.";
-$TLS_contact_admin = "<br>Bei weiteren Probleme kontaktieren Sie bitte Ihren Systemadministrator.";
+$TLS_contact_admin = "<br />Bei weiteren Probleme kontaktieren Sie bitte Ihren Systemadministrator.";
 $TLS_mail_empty_address = "Sie haben in Ihrem Benutzerprofil keine Email-Adresse angegeben!  Bitte kontaktieren Sie Ihren Administrator, um Ihr Passwort zurückzusetzen!";
 $TLS_mail_passwd_subject = "Ihr neues TestLink Passwort";
 $TLS_mail_problems = "Das Emailsystem wurde nicht korrekt installiert. Bitte informieren Sie Ihren Administrator über dieses Problem";

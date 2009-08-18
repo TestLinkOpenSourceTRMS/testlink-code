@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.128 2009/08/17 07:51:37 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.129 2009/08/18 12:52:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1183,7 +1183,8 @@ class testplan extends tlObjectWithAttachments
 	*/
 	private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
 	{
-		$sql="/* copy_linked_tcversions */ " . 
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql="/* $debugMsg */ " . 
 		     " SELECT * FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id} ";
 		
 		$rs=$this->db->get_recordset($sql);
@@ -1198,15 +1199,15 @@ class testplan extends tlObjectWithAttachments
 				
 				if( !is_null($tcversion_type) )
 				{
-					$sql="SELECT * FROM {$this->tables['nodes_hierarchy']} WHERE id={$tcversion_id} ";
+					$sql="/* $debugMsg */ SELECT * FROM {$this->tables['nodes_hierarchy']} WHERE id={$tcversion_id} ";
 					$rs2=$this->db->get_recordset($sql);
 					$last_version_info = $tcase_mgr->get_last_version_info($rs2[0]['parent_id']);
 					$tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
 				}
 				
-				$sql="INSERT INTO {$this->tables['testplan_tcversions']} " .
-					"(testplan_id,tcversion_id) " .
-					"VALUES({$new_tplan_id},{$tcversion_id})";
+				$sql="/* $debugMsg */ INSERT INTO {$this->tables['testplan_tcversions']} " .
+					"(testplan_id,tcversion_id,platform_id) " .
+					"VALUES({$new_tplan_id},{$tcversion_id},{$elem['platform_id']})";
 				$this->db->exec_query($sql);
 			}
 		}

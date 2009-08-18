@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.162 2009/08/17 08:13:23 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.163 2009/08/18 06:47:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -488,10 +488,15 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 
 	$format = config_get($what);
 	if (!is_numeric($value))
+	{
 		$value = strtotime($value);
+	}
+	
 	$retVal = strftime($format, $value);
 	if(isset($params['var']))
+	{
 		$smarty->assign($params['var'],$retVal);
+	}
 	return $retVal;
 }
 
@@ -500,17 +505,17 @@ function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
 /**
  *
  * @param string $str2check
- * @param string  $ereg_forbidden_chars: regular expression
+ * @param string  $regexp_forbidden_chars: regular expression (perl format)
  *
  * @return  1: check ok, 0:check KO
  */
-function check_string($str2check, $ereg_forbidden_chars)
+function check_string($str2check, $regexp_forbidden_chars)
 {
 	$status_ok = 1;
 
-	if( $ereg_forbidden_chars != '' && !is_null($ereg_forbidden_chars))
+	if( $regexp_forbidden_chars != '' && !is_null($regexp_forbidden_chars))
 	{
-		if (eregi($ereg_forbidden_chars, $str2check))
+		if (preg_match($regexp_forbidden_chars, $str2check))
 		{
 			$status_ok=0;
 		}

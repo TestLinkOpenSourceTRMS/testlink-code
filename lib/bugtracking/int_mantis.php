@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_mantis.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/08/11 19:48:51 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/08/18 06:47:55 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -177,8 +177,10 @@ class mantisInterface extends bugtrackingInterface
 	function checkBugID($id)
 	{
 	  	$status_ok = 1;	
-	  	$ereg_forbidden_chars = '[a-zA-Z,$-+]';
- 		if (eregi($ereg_forbidden_chars, $id))
+	  	// $ereg_forbidden_chars = '[a-zA-Z,$-+]';
+ 		//if (eregi($ereg_forbidden_chars, $id))
+	  	$preg_forbidden_chars = '/[a-zA-Z,$-+]/i';
+ 		if ($preg_match($preg_forbidden_chars, $id))
 		{
 			$status_ok = 0;	
 		} 	

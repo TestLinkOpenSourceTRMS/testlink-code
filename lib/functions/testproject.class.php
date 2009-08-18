@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.127 2009/07/09 10:25:15 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.128 2009/08/18 06:47:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -640,7 +640,7 @@ function count_testcases($id)
 	 **/
 	function checkName($name)
 	{
-		global $g_ereg_forbidden;
+		$forbidden_pattern = config_get('ereg_forbidden');
 		$ret['status_ok'] = 1;
 		$ret['msg'] = 'ok';
 
@@ -650,7 +650,7 @@ function count_testcases($id)
 			$ret['status_ok'] = 0;
 		}
 		// BUGID 0000086
-		if ($ret['status_ok'] && !check_string($name,$g_ereg_forbidden))
+		if ($ret['status_ok'] && !check_string($name,$forbidden_pattern))
 		{
 			$ret['msg'] = lang_get('string_contains_bad_chars');
 			$ret['status_ok'] = 0;
@@ -666,7 +666,7 @@ function count_testcases($id)
 	 **/
 	function checkNameSintax($name)
 	{
-		global $g_ereg_forbidden;
+		$forbidden_pattern = config_get('ereg_forbidden');
 		$ret['status_ok'] = 1;
 		$ret['msg'] = 'ok';
 
@@ -675,7 +675,7 @@ function count_testcases($id)
 			$ret['msg'] = lang_get('info_product_name_empty');
 			$ret['status_ok'] = 0;
 		}
-		if ($ret['status_ok'] && !check_string($name,$g_ereg_forbidden))
+		if ($ret['status_ok'] && !check_string($name,$forbidden_pattern))
 		{
 			$ret['msg'] = lang_get('string_contains_bad_chars');
 			$ret['status_ok'] = 0;

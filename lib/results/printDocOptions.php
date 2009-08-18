@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/07/19 19:22:29 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/08/18 06:47:56 $ by $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -115,6 +115,7 @@ switch($args->doc_type)
   	  	$filters->assignedTo = null;
   	  	$filters->status = null;
   	  	$filters->cf_hash = null;
+		$filters->platform_id = null;
 
   	  	$filters->build_id = $latestBuild;
   	  	$filters->hide_testcases = HIDE_TESTCASES;

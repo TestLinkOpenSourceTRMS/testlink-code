@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.251 2009/08/17 07:50:20 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.252 2009/08/18 06:47:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -920,7 +920,8 @@ regexp used to check for chars not allowed in:
 test project, test suite and testcase names.
 @TODO martin: encode harm characters @see http://cz.php.net/urlencode (and remove the parameter)
 */
-$g_ereg_forbidden = "[|]";
+// now is preg pattern
+$g_ereg_forbidden = "/[|]/i";
 
 
 /** @TODO martin: remove from configuration and use a number in brackets after name ("My Test Title(2)") 

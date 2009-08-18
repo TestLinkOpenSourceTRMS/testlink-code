@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_fogbugz.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/11/04 19:58:04 $ $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/08/18 06:47:55 $ $Author: franciscom $
  *
  * @author Sjoerd Dirk Meijer
  *
@@ -162,16 +162,18 @@ class fogbugzInterface extends bugtrackingInterface
 	 **/
 	function checkBugID($id)
 	{
-	  $status_ok=1;	
-	  $ereg_forbidden_chars='[a-zA-Z,$-+]';
- 		if (eregi($ereg_forbidden_chars, $id))
+	  	$status_ok=1;	
+	  	// $ereg_forbidden_chars='[a-zA-Z,$-+]';
+ 		// if (eregi($ereg_forbidden_chars, $id))
+		$preg_forbidden_chars = '/[a-zA-Z,$-+]/i';  
+		if ($preg_match($preg_forbidden_chars, $id))
 		{
 			$status_ok=0;	
 		} 	
-    else 
-    {
-      $status_ok=(intval($id) > 0);	
-    }
+    	else 
+    	{
+      		$status_ok=(intval($id) > 0);	
+    	}
 		return $status_ok;
 	}	
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_eventum.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2007/12/19 18:27:06 $ $Author: schlundus $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/08/18 06:47:55 $ $Author: franciscom $
  *
  * @author Stefan Stefanov
  *
@@ -134,16 +134,18 @@ class eventumInterface extends bugtrackingInterface
 	 **/
 	function checkBugID($id)
 	{
-	  $status_ok=1;	
-	  $ereg_forbidden_chars='[a-zA-Z,$-+]';
- 		if (eregi($ereg_forbidden_chars, $id))
+	  	$status_ok=1;	
+	  	// $ereg_forbidden_chars='[a-zA-Z,$-+]';
+ 		// if (eregi($ereg_forbidden_chars, $id))
+		$preg_forbidden_chars = '/[a-zA-Z,$-+]/i';  
+		if ($preg_match($preg_forbidden_chars, $id))
 		{
 			$status_ok=0;	
 		} 	
-    else 
-    {
-      $status_ok=(intval($id) > 0);	
-    }
+    	else 
+    	{
+    	  $status_ok=(intval($id) > 0);	
+    	}
 		return $status_ok;
 	}	
 

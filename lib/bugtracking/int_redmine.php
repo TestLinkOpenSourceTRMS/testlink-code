@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_redmine.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/12/17 05:29:14 $ $Author: tosikawa $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/08/18 06:47:55 $ $Author: franciscom $
  * 
  * Constants used throughout TestLink are defined within this file
  * they should be changed for your environment
@@ -149,8 +149,11 @@ class redmineInterface extends bugtrackingInterface
 	function checkBugID($id)
 	{
 		$status_ok=1;	
-		$ereg_forbidden_chars='[a-zA-Z,$-+]';
- 		if (eregi($ereg_forbidden_chars, $id))
+		// $ereg_forbidden_chars='[a-zA-Z,$-+]';
+ 		// if (eregi($ereg_forbidden_chars, $id))
+	  	$preg_forbidden_chars = '/[a-zA-Z,$-+]/i';
+ 		if ($preg_match($preg_forbidden_chars, $id))
+
 		{
 			$status_ok=0;	
 		} 	

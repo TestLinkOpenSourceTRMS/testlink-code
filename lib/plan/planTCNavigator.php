@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.32 2009/07/27 07:26:14 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.33 2009/08/18 06:48:37 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -244,6 +244,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 
     $filters->keyword_id = $argsObj->keyword_id;
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
+    $filters->platform_id = null;
 
     $filters->include_unassigned=1;
     $filters->show_testsuite_contents=1;

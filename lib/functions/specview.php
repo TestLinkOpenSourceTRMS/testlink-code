@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.36 2009/08/17 07:59:51 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.37 2009/08/18 06:48:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -359,9 +359,9 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 	$filters = array('keyword_id' => $argsObj->keyword_id, 'assigned_to' => $filterAssignedTo);
 	
 	//$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
-	//		                                                    $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF, $filterAssignedTo);
+	//		                                                      $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF, $filterAssignedTo);
       
-	$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$options);
+	$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);
       
       
 	// This does filter on keywords ALWAYS in OR mode.

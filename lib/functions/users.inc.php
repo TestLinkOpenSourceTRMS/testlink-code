@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.97 2009/06/11 15:42:54 schlundus Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.98 2009/08/18 06:48:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
  * 
+ *  	20090817 - franciscom - getUsersForHtmlOptions() - implementation changes
  *  	20090517 - franciscom - getTestersForHtmlOptions() interface changes
  *                              buildUserMap() added prefix to tag inactive users
  *      20081221 - franciscom - buildUserMap() interface changes
@@ -114,24 +115,30 @@ function getUsersForHtmlOptions(&$db,$whereClause = null,$additional_users = nul
 	$users_map = null;
 	if (!$users)
 	{
-		$users = tlUser::getAll($db,$whereClause,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+		$sqlWhere = $whereClause;
+		if(!is_null($active_filter))
+		{
+			$whereClause .= ' AND active =' . ($active_filter > 0 ? 1 : 0) . ' ';
+		}
+		$users = tlUser::getAll($db,$sqlWhere,"id",null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 	}
   
 	$the_users = $users;
-	if ($users)
-	{
-		if(!is_null($active_filter))
-		{
-			$the_users = array();
-			foreach($users as $id => $user)
-			{
-				if($user->isActive == $active_filter)
-				{
-					$the_users[$id] = $users[$id];
-				}	
-			}
-		}
-	}
+	
+	// if ($users)
+	// {
+	// 	if(!is_null($active_filter))
+	// 	{
+	// 		$the_users = array();
+	// 		foreach($users as $id => $user)
+	// 		{
+	// 			if($user->isActive == $active_filter)
+	// 			{
+	// 				$the_users[$id] = $users[$id];
+	// 			}	
+	// 		}
+	// 	}
+	// }
 	return buildUserMap($the_users,!is_null($additional_users),$additional_users);
 }
 
@@ -164,14 +171,26 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
 			    $usersMap[$code] = $verbose_code;
 			}
 		}
-		foreach($users as $id => $user)
-		{
-			$usersMap[$id] = $user->getDisplayName();
-			if($user->isActive == 0)
+		$userSet = array_keys($users);
+		$loops2do = count($userSet);
+		
+		// foreach($users as $id => $user)
+		// {
+		// 	$usersMap[$id] = $user->getDisplayName();
+		// 	if($user->isActive == 0)
+		// 	{
+		// 	    $usersMap[$id] = $inactivePrefix . ' ' . $usersMap[$id];
+		// 	} 
+		// }
+        for( $idx=0; $idx < $loops2do ; $idx++)
+        {
+        	$userID = $userSet[$idx];
+			$usersMap[$userID] = $users[$userID]->getDisplayName();
+			if($users[$userID]->isActive == 0)
 			{
-			    $usersMap[$id] = $inactivePrefix . ' ' . $usersMap[$id];
+			    $usersMap[$userID] = $inactivePrefix . ' ' . $usersMap[$userID];
 			} 
-		}
+        }
 	}
 	return $usersMap;
 }

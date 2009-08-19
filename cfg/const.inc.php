@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.110 2009/08/05 07:24:13 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.111 2009/08/19 13:38:31 havlat Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -73,7 +73,7 @@ define('DSN', FALSE);  // for method connect() of database.class
 define('ANY_BUILD', null);
 define('GET_NO_EXEC', 1);
 
-// planTCNavigator.php
+/** @uses planTCNavigator.php */
 define('FILTER_BY_BUILD_OFF', 0);
 define('FILTER_BY_OWNER_OFF', 0);
 define('FILTER_BY_TC_STATUS_OFF', null);
@@ -155,9 +155,9 @@ define('TESTCASE_EXECUTION_TYPE_AUTO', 2);
  * @todo havlatm: remove (must be solved via css)
  * @uses planAddTC_m1-tpl 
  * 
- * @TODO Francisco - 20090802 -
- * @DISAGREE, if we want give user possibility to reconfigure
+ * @internal Francisco: DISAGREE, if we want give user possibility to reconfigure
  *                 how we can do this with CSS 
+ * 		Havlatm: User can create own theme with own colours
  **/
 define('TL_STYLE_FOR_ADDED_TC', 'background-color:yellow;');
 
@@ -330,17 +330,15 @@ $g_locales_html_select_date_field_order = array(
 
 
 
-
-
 // --------------------------------------------------------------------------------------
 /* ATTACHMENTS */
 
 /** Attachment key constants (do not change) */
-define('TL_REPOSITORY_TYPE_DB',1);
-define('TL_REPOSITORY_TYPE_FS',2);
+define('TL_REPOSITORY_TYPE_DB', 1);
+define('TL_REPOSITORY_TYPE_FS', 2);
 
-define('TL_REPOSITORY_COMPRESSIONTYPE_NONE',1);
-define('TL_REPOSITORY_COMPRESSIONTYPE_GZIP',2);
+define('TL_REPOSITORY_COMPRESSIONTYPE_NONE', 1);
+define('TL_REPOSITORY_COMPRESSIONTYPE_GZIP', 2);
 
 
 // Two models to manage attachment interface in the execution screen
@@ -410,7 +408,7 @@ $tlCfg->results['status_label'] = array(
 	'passed'   		=> 'test_status_passed',
 	'failed'   		=> 'test_status_failed',
 	'blocked'  		=> 'test_status_blocked'
-// 'all'      		=> 'test_status_all_status',
+//	'all'      		=> 'test_status_all_status',
 //	'not_available' => 'test_status_not_available',
 //	'unknown'       => 'test_status_unknown'
 );
@@ -445,17 +443,16 @@ $tlCfg->results['status_label_for_exec_ui'] = array(
  **/
 $tlCfg->results['default_status'] = 'not_run';
 
-
-// Status colours for charts - no way to use verbose just RGB
-$tlCfg->results['charts']=array();
-$tlCfg->results['charts']['status_colour']=array(
+/** 
+ * Status colours for charts - use just RGB (not colour names)
+ * Colours should be compiant with definition in CSS 
+ **/
+$tlCfg->results['charts']['status_colour'] = array(
  	'not_run'  		=> '000000',
-	'passed'   		=> '00FF00',
-	'failed'   		=> 'FF0000',
-	'blocked'  		=> '0000FF'
+	'passed'   		=> '006400',
+	'failed'   		=> 'B22222',
+	'blocked'  		=> '00008B'
 );
-
-
 
 
 // --------------------------------------------------------------------------------------
@@ -475,8 +472,6 @@ define('TL_ROLES_INHERITED', 0);
 
 // Roles with id > to this role can be deleted from user interface
 define('TL_LAST_SYSTEM_ROLE', 9);
-
-
 
 
 // used on user management page to give different colour 
@@ -536,33 +531,31 @@ $tlCfg->urgency['code_label'] = array(
 /* [States & Review] */
 
 /**
- * data status constants are applicable for data like requirement, test case 
- * <b>Warning: keys must be compliant with ENUM values for DB tables</b>: tcversions, requirements, testplan
- * @TODOD ENUM TYPE IS NOT ACCEPTED
- * 
+ * data status constants are applicable for data like requirement, test case, Test Plan 
  */
-/** Review status: data was reviewed and are available for using */
-define('TL_REVIEW_STATUS_FINAL', 	'FINAL');
 /** Review status: design phase; data are not available for review or using */ 
-define('TL_REVIEW_STATUS_DRAFT', 	'DRAFT');
+define('TL_REVIEW_STATUS_DRAFT', 	1);
+/** Review status: data was reviewed and are available for using */
+define('TL_REVIEW_STATUS_FINAL', 	2);
 /** Review status: data wait for review */ 
-define('TL_REVIEW_STATUS_REVIEW', 	'REVIEW');
+define('TL_REVIEW_STATUS_REVIEW', 	3);
 /** Review status: data are not applicable for using (not listed in reports and lists) */ 
-define('TL_REVIEW_STATUS_OBSOLETE', 'OBSOLETE'); 
-define('TL_REVIEW_STATUS_FUTURE', 	'FUTURE'); 
+define('TL_REVIEW_STATUS_OBSOLETE', 4); 
+define('TL_REVIEW_STATUS_FUTURE', 	5); 
 
 /** 
- * @var array localization identifiers for review statuses
- * @since 1.9 review process is not implemented yet (1.8)
+ * @var array localization identifiers for review states
+ * @since 1.9 
  **/
 $tlCfg->text_status_labels = array(
 		TL_REVIEW_STATUS_DRAFT => 'review_status_draft', 
-		TL_REVIEW_STATUS_REVIEW => 'review_status_review',
 		TL_REVIEW_STATUS_FINAL => 'review_status_final', 
+		TL_REVIEW_STATUS_REVIEW => 'review_status_review',
 		TL_REVIEW_STATUS_OBSOLETE => 'review_status_obsolete', 
 		TL_REVIEW_STATUS_FUTURE => 'review_status_future');
 
 /** 
+ * @deprecated 1.9
  * @TODO havlatm: obsolete - remove (use consts above) 
  * TL_REQ_STATUS_NOT_TESTABLE -> TL_REQ_TYPE_INFO
  * TL_REQ_STATUS_VALID -> TL_REQ_TYPE_FEATURE
@@ -586,6 +579,7 @@ $g_req_status = array(TL_REQ_STATUS_VALID => 'review_status_valid',
  * <li><b>Non-functional</b> - performance, infrastructure, robustness, security, safety, etc.</li>
  * <li><b>Constrain</b> - Constraints and Limitations</li>
  * </ul>
+ * @since 2.0 (?) - not used yet
  **/
 define('TL_REQ_TYPE_INFO','INFO');
 define('TL_REQ_TYPE_FEATURE','FEATURE');
@@ -594,7 +588,10 @@ define('TL_REQ_TYPE_INTERFACE','INTERFACE');
 define('TL_REQ_TYPE_NON_FUNCTIONAL','NON_FUNC');
 define('TL_REQ_TYPE_CONSTRAIN','CONSTRAIN');
 
-/** @var array localization identifiers for requirements types */
+/** 
+ * @var array localization identifiers for requirements types 
+ * @since 2.0 (?) - not used yet
+ **/
 $tlCfg->req_cfg->type_labels = array(
 		TL_REQ_TYPE_INFO => 'req_type_info', 
 		TL_REQ_TYPE_FEATURE => 'req_type_feature',
@@ -604,10 +601,12 @@ $tlCfg->req_cfg->type_labels = array(
 		TL_REQ_TYPE_CONSTRAIN => 'req_type_constrain');
 
 
-/** @todo havlatm: replace by $tlCfg->req_cfg->type_labels */
+/**
+ * @deprecated 1.9 
+ * @todo havlatm: replace by $tlCfg->req_cfg->type_labels 
+ **/
 define('TL_REQ_TYPE_1', 'V');
 define('TL_REQ_TYPE_2', 'N');
-
 define('NON_TESTABLE_REQ', 'n');
 define('VALID_REQ', 'v');
 
@@ -661,12 +660,8 @@ $tlCfg->gui->custom_fields->time_format = 'H:i:s';
 /* [MISC] */
 
 /** 
- * Review types
+ * Review types - user can define type for his review comment (disabled by default)
  * @since 1.9 
- *
- * @REFACTOR Francisco
- * @TODO explain better where, when and how value is used
- *       key must be a number.
  **/
 $tlCfg->review_types = array(1 => 'type_undefined',
 	                         2 => 'typo', 
@@ -681,8 +676,7 @@ define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
                                                        
 /** 
  * Bug tracking objects (do not change)
- * @TODO unknown meaning 
- * @TODO move to appropriate file - not configuration
+ * @TODO havlatm: move to appropriate file - not configuration
  **/
 $g_bugInterfaceOn = false;
 $g_bugInterface = null;

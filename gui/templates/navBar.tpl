@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.42 2009/06/03 19:51:45 schlundus Exp $
+	$Id: navBar.tpl,v 1.43 2009/08/19 19:56:25 schlundus Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -99,7 +99,7 @@
 		       title="{$labels.search_testcase}" name="targetTestCase" value="{$gui->tcasePrefix}" />
 
     {* useful to avoid a call to method to get test case prefix in called page*}
-		<input type="hidden" id="tcasePrefix" name="tcasePrefix" value="{$gui->tcasePrefix}">
+		<input type="hidden" id="tcasePrefix" name="tcasePrefix" value="{$gui->tcasePrefix}" />
 		       
 		<img src="{$smarty.const.TL_THEME_IMG_DIR}/magnifier.png"
 		     title="{$labels.search_testcase}" alt="{$labels.search_testcase}"

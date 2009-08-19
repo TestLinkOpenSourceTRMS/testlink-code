@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.21 2009/02/27 20:25:33 schlundus Exp $
+$Id: eventviewer.tpl,v 1.22 2009/08/19 19:56:25 schlundus Exp $
 
 Event Viewer
 *}
@@ -116,9 +116,6 @@ fieldset
 {/literal}
 
 </head>
-
-
-
 <body {$body_onload}>
 <h1 class="title">{$labels.event_viewer}</h1>
 

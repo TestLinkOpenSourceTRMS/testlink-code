@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.25 2009/01/03 17:26:39 franciscom Exp $
+$Id: login.tpl,v 1.26 2009/08/19 19:56:25 schlundus Exp $
 Purpose: smarty template - login page 
 -------------------------------------------------------------------------------------- *}
 {lang_get var='labels' s='login_name,password,btn_login,new_user_q,lost_password_q'}
@@ -30,8 +30,8 @@ window.onload=function()
 
 	<form method="post" name="login_form" action="login.php">
     {if $gui->login_disabled eq 0}		
-  	  <div class="messages" style="text-align:center;">{$gui->note}</div>
-		  <input type="hidden" name="reqURI" value="{$gui->reqURI}"/>
+  		<div class="messages" style="width:100%;text-align:center;">{$gui->note}</div>
+		<input type="hidden" name="reqURI" value="{$gui->reqURI}"/>
   		<p class="label">{$labels.login_name}<br />
 			<input type="text" name="tl_login" id="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
 		</p>
@@ -39,7 +39,7 @@ window.onload=function()
 			<input type="password" name="tl_password" size="{#PASSWD_SIZE#}" maxlength="{#PASSWD_SIZE#}" />
 		</p>
 		<input type="submit" name="login_submit" value="{$labels.btn_login}" />
-		{/if}
+	{/if}
 	</form>
 	
 	<p>
@@ -52,7 +52,6 @@ window.onload=function()
 		<a href="lostPassword.php">{$labels.lost_password_q}</a>
 	</p>
 	{/if}
-
 	
 	{include file="inc_copyrightnotice.tpl"}
 

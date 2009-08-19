@@ -12,7 +12,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2005-2009, TestLink community 
- * @version CVS: $Id: logger.class.php,v 1.45 2009/07/19 19:24:14 franciscom Exp $
+ * @version CVS: $Id: logger.class.php,v 1.46 2009/08/19 19:56:25 schlundus Exp $
  * @link http://www.teamst.org
  * @since 1.8
  * 
@@ -149,7 +149,7 @@ class tlLogger extends tlObject
 	 *            string representing a list of keys to access loggers map.
 	 * 
 	 */
-	public function enableLogging($logger=null)
+	public function enableLogging($logger = null)
 	{
 	    if(is_null($logger))
 	 	    $this->doLogging = false;
@@ -163,7 +163,7 @@ class tlLogger extends tlObject
 		}
 	}
 
-	public function getEnableLoggingStatus($logger=null)
+	public function getEnableLoggingStatus($logger = null)
 	{
 		if(is_null($logger))
 			return $this->doLogging;

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: bugAdd.tpl,v 1.5 2009/04/17 19:57:32 schlundus Exp $ *}
+{* $Id: bugAdd.tpl,v 1.6 2009/08/19 19:56:25 schlundus Exp $ *}
 {* Purpose: smarty template - the template for the attachment upload dialog 
 
 rev :
@@ -12,8 +12,8 @@ rev :
 
 <body onunload="dialog_onUnload(bug_dialog)" onload="dialog_onLoad(bug_dialog)">
 <h1 class="title">
- {lang_get s='title_bug_add'} 
- {include file="inc_help.tpl" helptopic="hlp_btsIntegration"}
+	{lang_get s='title_bug_add'} 
+	{include file="inc_help.tpl" helptopic="hlp_btsIntegration"}
 </h1>
 
 {include file="inc_update.tpl" user_feedback=$msg}

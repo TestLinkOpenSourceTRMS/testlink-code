@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/08/14 21:03:10 $ by $Author: schlundus $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/08/19 19:56:25 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
@@ -68,7 +68,7 @@ if ($events)
 }
 
 $gui = new stdClass();
-$gui->canDelete = has_rights($db,"events_mgt") ? 1: 0;
+$gui->canDelete = has_rights($db,"events_mgt") ? 1 : 0;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -99,6 +99,7 @@ function init_args()
 
 	$args = new stdClass();
 	I_PARAMS($iParams,$args);
+	
 	$args->currentUser = $_SESSION['currentUser'];
 	
 	return $args;

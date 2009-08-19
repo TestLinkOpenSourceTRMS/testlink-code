@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2009/08/17 08:00:45 $ by $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2009/08/19 19:56:25 $ by $Author: schlundus $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -120,7 +120,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     private $reqMgr = null;
 
 	/** Whether the server will run in a testing mode */
-	private  $testMode = false;
+	private $testMode = false;
 
 	/** userID associated with the devKey provided */
 	private $userID = null;
@@ -397,10 +397,10 @@ class TestlinkXMLRPCServer extends IXR_Server
     */
     protected function userHasRight($roleQuestion)
     {
-      $status_ok=true;
-    	if( !$this->user->hasRight($this->dbObj,$roleQuestion,$this->tprojectid, $this->tplanid))
+      	$status_ok = true;
+    	if(!$this->user->hasRight($this->dbObj,$roleQuestion,$this->tprojectid, $this->tplanid))
     	{
-    		$status_ok=false;
+    		$status_ok = false;
     		$this->errors[] = new IXR_Error(INSUFFICIENT_RIGHTS, INSUFFICIENT_RIGHTS_STR);
     	}
     	return $status_ok;
@@ -416,7 +416,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */        
     protected function checkTestCaseName()
     {
-        $status=true;
+        $status = true;
     	if(!$this->_isTestCaseNamePresent())
     	{
     	  	$this->errors[] = new IXR_Error(NO_TESTCASENAME, NO_TESTCASENAME_STR);

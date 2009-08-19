@@ -1,8 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: eventinfo.tpl,v 1.6 2008/09/21 19:35:47 schlundus Exp $ 
-
-rev:
+$Id: eventinfo.tpl,v 1.7 2009/08/19 19:56:25 schlundus Exp $ 
 *}
 {lang_get var="labels"
           s='th_loglevel,th_timestamp,th_source,th_description,

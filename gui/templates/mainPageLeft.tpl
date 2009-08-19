@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.16 2009/08/08 14:08:20 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.17 2009/08/19 19:56:25 schlundus Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -67,6 +67,7 @@
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'usermanagement_topics',
+                                baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
                                 renderTo: {/literal}'menu_left_block_{$menuLayout.userAdministration}'{literal},
                                 width:'100%'
@@ -90,6 +91,7 @@
                                 collapsed: false,
                                 draggable: true,
                                 contentEl: 'requirements_topics',
+                                baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
                                 renderTo: {/literal}'menu_left_block_{$menuLayout.requirements}'{literal},
                                 width:'100%'
@@ -112,6 +114,7 @@
                                 collapsed: false,
                                 draggable: true,
                                 contentEl: 'testspecification_topics',
+                                baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
                                 renderTo: {/literal}'menu_left_block_{$menuLayout.testSpecification}'{literal},
                                 width:'100%'

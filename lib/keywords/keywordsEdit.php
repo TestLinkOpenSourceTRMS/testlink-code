@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/04/07 18:55:29 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/08/19 19:56:25 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -48,13 +48,14 @@ switch ($action)
 		$op = $action($smarty,$args,$tprojectMgr);
 	break;
 }
-
 if($op->status == 1)
 	$default_template = $op->template;
 else
 	$msg = getKeywordErrorMessage($op->status);
 
-$keywords = $tprojectMgr->getKeywords($args->testproject_id);
+$keywords = null;
+if ($default_template == 'keywordsView.tpl')
+	$keywords = $tprojectMgr->getKeywords($args->testproject_id);
 
 $smarty->assign('user_feedback',$msg);
 $smarty->assign('canManage',$canManage);
@@ -63,18 +64,13 @@ $smarty->assign('name',$args->keyword);
 $smarty->assign('keyword',$args->keyword);
 $smarty->assign('notes',$args->notes);
 $smarty->assign('keywordID',$args->keyword_id);
-$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
+$smarty->assign('mgt_view_events',has_rights($db,"mgt_view_events"));
 $smarty->display($template_dir . $default_template);
 
 
-/*
-  function: init_args
-
-  args:
-  
-  returns: 
-
-*/
+/**
+ * @return object returns the arguments for the page
+ */
 function init_args()
 {
 	$args = new stdClass();
@@ -108,14 +104,8 @@ function init_args()
 }
 
 /*
-  function: create
-            initialize variables to launch user interface (smarty template)
-            to get information to accomplish create task.
-
-  args:
-  
-  returns: - 
-
+ *	initialize variables to launch user interface (smarty template)
+ *	to get information to accomplish create task.
 */
 function create(&$smarty,&$args)
 {
@@ -133,14 +123,8 @@ function create(&$smarty,&$args)
 
 
 /*
-  function: edit
-            initialize variables to launch user interface (smarty template)
-            to get information to accomplish edit task.
-
-  args:
-  
-  returns: - 
-
+ *	initialize variables to launch user interface (smarty template)
+ *  to get information to accomplish edit task.
 */
 function edit(&$smarty,&$args,&$tproject_mgr)
 {
@@ -166,14 +150,8 @@ function edit(&$smarty,&$args,&$tproject_mgr)
 }
 
 /*
-  function: do_create 
-            do operations on db
-
-  args :
-  
-  returns: 
-
-*/
+ * Creates the keyword
+ */
 function do_create(&$smarty,&$args,&$tproject_mgr)
 {
 	$smarty->assign('main_descr',lang_get('keyword_management'));
@@ -188,13 +166,7 @@ function do_create(&$smarty,&$args,&$tproject_mgr)
 }
 
 /*
-  function: do_update
-            do operations on db
-
-  args :
-  
-  returns: 
-
+ * Updates the keyword
 */
 function do_update(&$smarty,&$args,&$tproject_mgr)
 {
@@ -217,13 +189,7 @@ function do_update(&$smarty,&$args,&$tproject_mgr)
 }
 
 /*
-  function: do_delete
-            do operations on db
-
-  args :
-  
-  returns: 
-
+ * Deletes the keyword 
 */
 function do_delete(&$smarty,&$args,&$tproject_mgr)
 {
@@ -241,14 +207,7 @@ function do_delete(&$smarty,&$args,&$tproject_mgr)
 	return $ret;
 }
 
-/*
-  function: getKeywordErrorMessage
 
-  args:
-  
-  returns: 
-
-*/
 function getKeywordErrorMessage($code)
 {
 	switch($code)
@@ -276,6 +235,12 @@ function getKeywordErrorMessage($code)
   return $msg;
 }
 
+/**
+ * @param $db resource the database connection handle
+ * @param $user the current active user
+ * 
+ * @return boolean returns true if the page can be accessed
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_modify_key') && $user->hasRight($db,'mgt_view_key');

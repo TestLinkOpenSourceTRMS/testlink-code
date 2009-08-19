@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentdelete.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/08/19 19:56:25 $ by $Author: schlundus $
  *
  * Deletes an attachment by a given id
  */
@@ -56,6 +56,7 @@ function init_args()
 /**
  * @param $db resource the database connection handle
  * @param $user the current active user
+ * 
  * @return boolean returns true if the page can be accessed
  */
 function checkRights(&$db,&$user)

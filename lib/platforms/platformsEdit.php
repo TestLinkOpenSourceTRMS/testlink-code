@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/08/08 14:11:50 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/08/19 06:59:02 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  *
@@ -19,7 +19,7 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-require_once("platform.class.php");
+//require_once("platform.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

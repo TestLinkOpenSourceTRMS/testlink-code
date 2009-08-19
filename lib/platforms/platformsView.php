@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: platformsView.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/08/07 06:48:12 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/08/19 06:59:02 $ by $Author: franciscom $
  *
  * allows users to manage keywords. 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("platform.class.php");
+//require_once("platform.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

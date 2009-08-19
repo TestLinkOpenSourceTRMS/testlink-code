@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsAssign.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/08/08 14:11:50 $ $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/08/19 06:59:02 $ $Author: franciscom $
  *
  * Purpose:  Assign keywords to set of testcases in tree structure
  *
@@ -15,7 +15,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
-require_once("platform.class.php");
+// require_once("platform.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

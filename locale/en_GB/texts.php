@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.18 2009/06/17 21:17:40 havlat Exp $
+ * @version    	CVS: $Id: texts.php,v 1.19 2009/08/19 09:43:58 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -32,7 +32,7 @@ requirements and vice versa. Such traceability matrix helps to investigate test 
 of requirements and find out which ones successfully failed during a testing. This
 analyse serves as confirmation that all defined expectations are met.</p>
 
-<h2>Get Started:</h2>
+<h2>Getting Started:</h2>
 <ol>
 	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements
 	Specifications is shown at the top of the workarea.</li>
@@ -49,14 +49,14 @@ analyse serves as confirmation that all defined expectations are met.</p>
 
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "Test Specification";
-$TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
-<p>The <i>Test Specification</i> allows users to view and edit all of the existing " .
-		"<i>Test Suites</i> and <i>Test Cases</i>. Test Cases are versioned and all " .
-		"of the previous versions are available and can be viewed and managed here.</p>
-
+$TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to view " .
+		"and edit all of the existing <i>Test Suites</i> and <i>Test Cases</i>. " .
+		"Test Cases are versioned and all of the previous versions are available and can be " .
+		"viewed and managed here.</p>
+		
 <h2>Getting Started:</h2>
 <ol>
-	<li>Select your Test Project in the navigation tree (the root node). <i>Please note: " .
+	<li>Select your <i>Test Project</i> in the navigation tree (the root node). <i>Please note: " .
 	"You can always change the activate Test Project by selecting a different one from the " .
 	"drop-down list in the top-right corner.</i></li>
 	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b>. Test Suites can " .

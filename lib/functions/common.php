@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.164 2009/08/18 19:58:15 schlundus Exp $
+ * @version    	CVS: $Id: common.php,v 1.165 2009/08/19 06:57:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -97,7 +97,7 @@ function __autoload($class_name)
 {
 	// exceptions
 	$tlClassPrefixLen=2;
-	$tlClasses = array('tlPlatform' => true);
+	$tlClasses = null;
 	$classFileName = $class_name;
     
 	if ( isset($tlClasses[$classFileName]) )

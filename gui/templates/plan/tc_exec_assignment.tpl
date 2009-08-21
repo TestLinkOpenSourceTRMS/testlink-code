@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.18 2009/07/16 14:55:06 havlat Exp $
+$Id: tc_exec_assignment.tpl,v 1.19 2009/08/21 07:07:13 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -12,7 +12,7 @@ rev :
 
 {lang_get var="labels" s='user_bulk_assignment,btn_do,check_uncheck_all_checkboxes,th_id,
                           btn_update_selected_tc,show_tcase_spec,can_not_execute,
-                          send_mail_to_tester,
+                          send_mail_to_tester,platform,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority'}
 
@@ -100,63 +100,93 @@ function check_action_precondition(container_id,action)
   		<br />
 
     	{if $ts.write_buttons eq 'yes'}
-              	     
-
         {if $ts.testcase_qty gt 0 }
-		<table cellspacing="0" style="font-size:small;" width="100%">
-			<tr style="background-color:#059; font-weight:bold; color:white">
-				<td width="5" align="center">
-			           <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
-			                onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
-                      title="{$labels.check_uncheck_all_checkboxes}" />
-				</td>
-            	<td class="tcase_id_cell">{$labels.th_id}</td> 
-            	<td>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
-            		{$labels.version}{$gsmarty_gui->role_separator_close}</td>
-				{if $session['testprojectOptPriority']}<td align="center">{$labels.priority}</td>{/if}
-            	<td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
-            	<td align="center">&nbsp;&nbsp;{$labels.assign_to}</td>
+          <table cellspacing="0" style="font-size:small;" width="100%">
+			
+            {* ---------------------------------------------------------------------------------------------------- *}
+			      {* Heading *}
+			      <tr style="background-color:#059; font-weight:bold; color:white">
+			      	<td width="5" align="center">
+			          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
+                     title="{$labels.check_uncheck_all_checkboxes}" />
+			      	</td>
+              <td class="tcase_id_cell">{$labels.th_id}</td> 
+              <td>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
+              	{$labels.version}{$gsmarty_gui->role_separator_close}</td>
+              	
+              {if $gui->platforms != ''}
+			      	  <td>{$labels.platform}</td>
+              {/if}	
+			      	{if $session['testprojectOptPriority']}
+			      	  <td align="center">{$labels.priority}</td>
+			      	{/if}
+              <td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
+              <td align="center">&nbsp;&nbsp;{$labels.assign_to}</td>
             </tr>
+            {* ---------------------------------------------------------------------------------------------------- *}
+      
             {foreach from=$ts.testcases item=tcase }
-            	{if $tcase.linked_version_id ne 0}
-				<tr>
-					<td>
-          				<input type="checkbox"  name='{$add_cb}[{$tcase.id}]' align="middle"
-    	  			                            id='{$add_cb}_{$ts_id}_{$tcase.id}' 
-          				                        value="{$tcase.linked_version_id}" />
-			  			<input type="hidden" name="a_tcid[{$tcase.id}]" value="{$tcase.linked_version_id}" />
-			  			<input type="hidden" name="has_prev_assignment[{$tcase.id}]" value="{$tcase.user_id}" />
-			  			<input type="hidden" name="feature_id[{$tcase.id}]" value="{$tcase.feature_id}" />
-					</td>
-					<td>
-						{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
-					</td>
-					<td title="{$labels.show_tcase_spec}">
-						&nbsp;<a href="javascript:openTCaseWindow({$tcase.id})"><strong>{$tcase.name|escape}</strong></a>
-						&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
-						{$gsmarty_gui->role_separator_close}
-					</td>
-					{if $session['testprojectOptPriority']}
-						<td align="center">{$gui->priority_labels[$tcase.priority]}</td>
-					{/if}
-					<td align="center">
-					{if $tcase.user_id > 0}
-						{$gui->users[$tcase.user_id]|escape}
-						{if $gui->users[$tcase.user_id] != '' && $gui->testers[$tcase.user_id] == ''}{$labels.can_not_execute}{/if}
-					{/if}
-					</td>
-                  	<td align="center">
-        		  		<select name="tester_for_tcid[{$tcase.id}]" 
-        		  		        id="tester_for_tcid_{$tcase.id}"
-        		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}",1)' >
-        			   	{html_options options=$gui->testers selected=$tcase.user_id}
-        				  </select>
-                	</td>
-                </tr>
-    	        {/if}		
-    	  		{/foreach}
-            </table>
-        {/if}
+            
+              {* loop over platforms *}
+              {foreach from=$tcase.feature_id key=platform_id item=feature}
+                {if $tcase.linked_version_id != 0}
+                  {assign var="userID" value=0 }
+           	    	{if isset($tcase.user_id[$platform_id]) }
+            	    	  {assign var="userID" value=$tcase.user_id[$platform_id] } 
+                  {/if} 
+            	    <tr>
+            	    	<td>
+                    		<input type="checkbox"  name='{$add_cb}[{$tcase.id}][{$platform_id}]' align="middle"
+                  			                        id='{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}' 
+                    		                        value="{$tcase.linked_version_id}" />
+                  			<input type="hidden" name="a_tcid[{$tcase.id}][{$platform_id}]" 
+                  			                     value="{$tcase.linked_version_id}" />
+                  			<input type="hidden" name="has_prev_assignment[{$tcase.id}][{$platform_id}]" 
+                  			                     value="{$userID}" />
+                  			<input type="hidden" name="feature_id[{$tcase.id}][{$platform_id}]" 
+                  			                     value="{$tcase.feature_id[$platform_id]}" />
+            	    	</td>
+            	    	<td>
+            	    		{$gui->testCasePrefix|escape}{$tcase.external_id|escape}
+            	    	</td>
+            	    	<td title="{$labels.show_tcase_spec}">
+            	    		&nbsp;<a href="javascript:openTCaseWindow({$tcase.id})"><strong>{$tcase.name|escape}</strong></a>
+            	    		&nbsp;{$gsmarty_gui->role_separator_open} {$tcase.tcversions[$tcase.linked_version_id]}
+            	    		{$gsmarty_gui->role_separator_close}
+            	    	</td>
+                    {if $gui->platforms != ''}
+			      	        <td>{$gui->platforms[$platform_id]|escape}</td>
+                    {/if}	
+
+            	    	{if $session['testprojectOptPriority']}
+            	    		<td align="center">{if isset($gui->priority_labels[$tcase.priority])}{$gui->priority_labels[$tcase.priority]}{/if}</td>
+            	    	{/if}
+            	    	<td align="center">
+            	    	{if isset($tcase.user_id[$platform_id]) }
+            	    	  {assign var="userID" value=$tcase.user_id[$platform_id] } 
+                      userID::{$userID}
+            	    		{$gui->users[$userID]|escape}
+            	    		{if $gui->users[$userID] != '' && $gui->testers[$userID] == ''}{$labels.can_not_execute}{/if}
+            	    	{/if}
+            	    	</td>
+                    <td align="center">
+                  		  		<select name="tester_for_tcid[{$tcase.id}][{$platform_id}]" 
+                  		  		        id="tester_for_tcid_{$tcase.id}_{$platform_id}"
+                  		  		        onchange='javascript: set_checkbox("{$add_cb}_{$ts_id}_{$tcase.id}_{$platform_id}",1)' >
+                  			   	{*  {html_options options=$gui->testers selected=$tcase.user_id} *}
+                  			   	{html_options options=$gui->testers selected=$userID}
+                  				  </select>
+                    </td>
+                  </tr>
+                  {/if}		
+              {/foreach}            
+              {if $gui->platforms != ''}
+                <td colspan="8"><hr></td>
+              {/if}
+            {/foreach} {* {foreach from=$ts.testcases item=tcase } *}
+          </table>
+          {/if}
       {/if} {* write buttons*}
 
       {if $gui->items_qty eq $smarty.foreach.div_drawing.iteration }

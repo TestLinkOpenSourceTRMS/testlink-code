@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.129 2009/08/18 12:52:58 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.130 2009/08/21 07:07:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1205,9 +1205,11 @@ class testplan extends tlObjectWithAttachments
 					$tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
 				}
 				
-				$sql="/* $debugMsg */ INSERT INTO {$this->tables['testplan_tcversions']} " .
-					"(testplan_id,tcversion_id,platform_id) " .
-					"VALUES({$new_tplan_id},{$tcversion_id},{$elem['platform_id']})";
+				$sql = "/* $debugMsg */ " . 
+				       " INSERT INTO {$this->tables['testplan_tcversions']} " .
+					   " (testplan_id,tcversion_id,platform_id,node_order,urgency) " .
+					   " VALUES({$new_tplan_id},{$tcversion_id},{$elem['platform_id']}," .
+					   " {$elem['node_order']},{$elem['urgency']})";
 				$this->db->exec_query($sql);
 			}
 		}

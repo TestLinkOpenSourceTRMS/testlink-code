@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/08/17 08:01:34 $  by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/08/21 07:07:13 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
@@ -31,7 +31,7 @@ $args=init_args();
 $gui = new stdClass();
 
 $ref=$_SERVER['HTTP_REFERER'];
-$url_array=split('[?=&]',$ref);
+$url_array=preg_split('/[?=&]/',$ref);
 if( in_array('build_id',$url_array) ) 
 {
 	$buildIdIndex=array_search('build_id',$url_array) + 1;

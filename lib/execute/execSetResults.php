@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.133 $
- * @modified $Date: 2009/08/17 07:50:49 $ $Author: franciscom $
+ * @version $Revision: 1.134 $
+ * @modified $Date: 2009/08/21 07:07:13 $ $Author: franciscom $
  *
  * rev:
  *	   20090815 - franciscom - platform feature	
@@ -272,6 +272,7 @@ else
 //  future must be initialized in a right way
 
 
+new dBug($gui);
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$passeduserarray,'id'));

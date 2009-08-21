@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.40 2009/08/09 12:26:10 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.41 2009/08/21 07:07:13 franciscom Exp $ 
  * 
  * rev :
  *       20090807 - franciscom - new feature platforms
@@ -56,46 +56,49 @@ if(!is_null($args->doAction))
 	    $method2call = array( 'upd' => 'update', 'ins' => 'assign', 'del' => 'delete_by_feature_id');
 	    $called = array( 'upd' => false, 'ins' => false, 'del' => false);
 
-		foreach($args->achecked_tc as $key_tc => $value_tcversion)
+		foreach($args->achecked_tc as $key_tc => $platform_tcversion)
 		{
-			$feature_id = $args->feature_id[$key_tc];
-			if($args->has_prev_assignment[$key_tc] > 0)
+			foreach($platform_tcversion as $platform_id => $tcversion_id)
 			{
-         
-				if($args->tester_for_tcid[$key_tc] > 0)  
+				$feature_id = $args->feature_id[$key_tc][$platform_id];
+				if($args->has_prev_assignment[$key_tc][$platform_id] > 0)
 				{
-                    // Do only is tester has changed
-				    if( $args->has_prev_assignment[$key_tc] != $args->tester_for_tcid[$key_tc])
-				    {
-			            $op='upd';
-					    $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
-					    $features2[$op][$feature_id]['type'] = $task_test_execution;
-					    $features2[$op][$feature_id]['status'] = $open;
-					    $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-					    $features2[$op][$feature_id]['tcase_id'] = $key_tc;
-					    $features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
-                        $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc];					    
-					}
-				} 
-				else
+					if($args->tester_for_tcid[$key_tc][$platform_id] > 0)  
+					{
+            	        // Do only is tester has changed
+					    if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
+					    {
+				            $op='upd';
+						    $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
+						    $features2[$op][$feature_id]['type'] = $task_test_execution;
+						    $features2[$op][$feature_id]['status'] = $open;
+						    $features2[$op][$feature_id]['assigner_id'] = $args->user_id;
+						    $features2[$op][$feature_id]['tcase_id'] = $key_tc;
+						    $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+            	            $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];					    
+						}
+					} 
+					else
+					{
+            	        $op='del';
+						$features2[$op][$feature_id]['tcase_id'] = $key_tc;
+						$features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+            	        $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];					    
+					}	
+				}
+				else if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
 				{
-                    $op='del';
+				    $op='ins';
+					$features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
+					$features2[$op][$feature_id]['type'] = $task_test_execution;
+					$features2[$op][$feature_id]['status'] = $open;
+					$features2[$op][$feature_id]['creation_ts'] = $db_now;
+					$features2[$op][$feature_id]['assigner_id'] = $args->user_id;
 					$features2[$op][$feature_id]['tcase_id'] = $key_tc;
-					$features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
-                    $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc];					    
-				}	
+					$features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+				}
 			}
-			else if($args->tester_for_tcid[$key_tc] > 0)
-			{
-			    $op='ins';
-				$features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
-				$features2[$op][$feature_id]['type'] = $task_test_execution;
-				$features2[$op][$feature_id]['status'] = $open;
-				$features2[$op][$feature_id]['creation_ts'] = $db_now;
-				$features2[$op][$feature_id]['assigner_id'] = $args->user_id;
-				$features2[$op][$feature_id]['tcase_id'] = $key_tc;
-				$features2[$op][$feature_id]['tcversion_id'] = $value_tcversion;
-			}
+			
 		}
     foreach($features2 as $key => $values)
     {
@@ -117,8 +120,8 @@ if(!is_null($args->doAction))
 		{
 		    foreach($called as $ope => $ope_status)
 		    {
-            if($ope_status)
-            {
+            	if($ope_status)
+            	{
                 send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
 		        }
 		    }
@@ -142,9 +145,6 @@ switch($args->level)
 		$exec_assignment = $tcase_mgr->get_version_exec_assignment($args->version_id,$args->tplan_id);
 		$linked_items[$args->id]['user_id'] = $exec_assignment[$args->version_id]['user_id'];
 		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
-		// $my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-		// 				        $linked_items,null,$keywordsFilter->items,FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED);
-		// 					   
 		$filters = array('keywords' => $keywordsFilter->items );	
 		$opt = array('write_button_only_if_linked' => 1 );	
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
@@ -174,7 +174,8 @@ $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
 
-if ($_SESSION['testprojectOptPriority']) {
+if ($_SESSION['testprojectOptPriority']) 
+{
 	$urgencyCfg = config_get('urgency');
 	$gui->priority_labels = init_labels($urgencyCfg["code_label"]);
 }
@@ -237,6 +238,8 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
     $gui->show_platforms=$platform_mgr->platformVisibleForTestplan($argsObj->tplan_id);
+    $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+    
     $gui->send_mail=$argsObj->send_mail;
     $gui->glueChar=$tcase_cfg->glue_character;
     

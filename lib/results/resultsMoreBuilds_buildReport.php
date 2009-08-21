@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.67 2009/05/26 19:06:04 schlundus Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.68 2009/08/21 07:07:13 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -115,7 +115,7 @@ function initializeGui(&$dbHandler,&$argsObj)
     $tsuites_qty = sizeOf($argsObj->testsuitesSelected);
     for ($id = 0; $id < $tsuites_qty ; $id++)
     {
-    	list($suiteId, $suiteName) = split("\,", $argsObj->testsuitesSelected[$id], 2);
+    	list($suiteId, $suiteName) = preg_split("/\,/", $argsObj->testsuitesSelected[$id], 2);
     	$testsuiteIds[$id] = $suiteId;
     	$testsuiteNames[$id] = $suiteName;	
     }

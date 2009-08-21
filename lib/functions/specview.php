@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.37 2009/08/18 06:48:37 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.38 2009/08/21 07:07:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -799,11 +799,9 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 		{
 			foreach($linked_items as $linked_testcase)
 			{
-				//new dBug($linked_testcase);
 				if(($linked_testcase[0]['tc_id'] == $testCase['testcase_id']) &&
 				   ($linked_testcase[0]['tcversion_id'] == $testCase['id']) )
 				{
-					//echo 'DEBUG - HERE';
 					// This can be written only once no matter platform qty
 					if( !isset($outRef['tcversions'][$testCase['id']]) )
 					{

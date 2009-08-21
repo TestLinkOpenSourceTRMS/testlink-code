@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.69 2009/08/03 08:15:43 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.70 2009/08/21 16:45:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090821 - franciscom - BUGID 0002781
  * 20090801 - franciscom - BUGID 2767 Duplicate testsuite name error message issue 
  * 20090514 - franciscom - typo bug on html_table_of_custom_field_inputs()
  * 20090503 - franciscom - bug in read_file()
@@ -569,7 +570,7 @@ class testsuite extends tlObjectWithAttachments
 	           id: new created if everything OK, -1 if problems.
 	
 	  rev :
-	       20080105 - franciscom - changed return type
+           20090821 - franciscom - BUGID 0002781
 	       20070324 - BUGID 710
 	*/
 	function copy_to($id, $parent_id, $user_id,
@@ -577,34 +578,31 @@ class testsuite extends tlObjectWithAttachments
 					         $action_on_duplicate_name = 'allow_repeat',
 					         $copyKeywords = 0 )
 	{
-	  $exclude_children_of=array('testcase' => 'exclude my children');
+    	$copyOptions = array('keyword_assignments' => $copyKeywords);
+	  	$exclude_children_of=array('testcase' => 'exclude my children');
 		$tcase_mgr = new testcase($this->db);
 		
 		$tsuite_info = $this->get_by_id($id);
 		$op = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
-		                    $tsuite_info['node_order'], 
-						            $check_duplicate_name,$action_on_duplicate_name);
+		                    $tsuite_info['node_order'],$check_duplicate_name,$action_on_duplicate_name);
 		
 		
 		$new_tsuite_id = $op['id'];
-	  $tcase_mgr->copy_attachments($id,$new_tsuite_id);
+	  	$tcase_mgr->copy_attachments($id,$new_tsuite_id);
 		
 		$subtree = $this->tree_manager->get_subtree($id,self::NODE_TYPE_FILTER_OFF,$exclude_children_of);
 		if (!is_null($subtree))
 		{
 		  
-		  $parent_decode=array();
-	    // key: original parent id
-		  // value: new parent id
-		  $parent_decode[$id]=$new_tsuite_id;
-			
+			$parent_decode=array();
+		  	$parent_decode[$id]=$new_tsuite_id;
 			foreach($subtree as $the_key => $elem)
 			{
 			  $the_parent_id=$parent_decode[$elem['parent_id']];
 				switch ($elem['node_type_id'])
 				{
 					case $this->node_types_descr_id['testcase']:
-						$tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyKeywords);
+						$tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyOptions);
 						break;
 						
 					case $this->node_types_descr_id['testsuite']:

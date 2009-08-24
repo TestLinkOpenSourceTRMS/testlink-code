@@ -1,10 +1,13 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
-// $Id: validate.js,v 1.8 2009/04/29 21:23:06 havlat Exp $
+// $Id: validate.js,v 1.9 2009/08/24 16:42:15 franciscom Exp $
 //
 // Functions for validation of input on client side
 //
 // rev: 20080210 - franciscom - validatePassword() refactoring
 //
+//
+// rev:
+// 20090824 - franciscom - fixed typo error on textCounter()
 // 20061228 - franciscom - added function get from Eventum Open Source Project
 //
 
@@ -229,7 +232,7 @@ function getForm(form_name)
 // Usage: <textarea name=myField
 // 		onKeyDown="textCounter(this.form.message,this.form.remLen,125);" 
 //		onKeyUp="textCounter(this.form.message,this.form.remLen,125);"></textarea>
-function textCounter(field, counterField, maxlimit) 
+function textCounter(field, counterField, maxLimit) 
 {
 	if (field.value.length > maxLimit) {
 		field.value = field.value.substring(0, maxLimit); // if too long...trim it

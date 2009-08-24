@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.76 2009/08/17 08:00:18 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.77 2009/08/24 07:38:33 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -28,9 +28,6 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
-//new dBug($_REQUEST);
-//new dBug($args);
-
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
 {
@@ -52,16 +49,10 @@ switch($args->item_level)
 	    break;
 }
 
-
 switch($args->doAction)
 {
     case 'doAddRemove':
 		// Remember:  checkboxes exist only if are checked
-		// new dBug($args->tcversion_for_tcid);
-		// new dBug($args->linkedVersion);
-		// new dBug($args->testcases2add);
-		// new dBug($args->testcases2remove);
-		
 	    if(!is_null($args->testcases2add))
 	    {
 	    	// items_to_link structure:
@@ -86,7 +77,6 @@ switch($args->doAction)
                     $items_to_link['items'][$tcase_id][$platform_id] = $tcversion_id;
                 }
             }
-		new dBug($items_to_link);
 		    $tplan_mgr->link_tcversions($args->tplan_id,$items_to_link,$args->userID);
 	    }
 
@@ -103,7 +93,6 @@ switch($args->doAction)
                     $items_to_unlink['items'][$tcase_id][$platform_id] = $tcversion_id;
                 }
             }
-            // new dBug($items_to_unlink);
 		    $tplan_mgr->unlink_tcversions($args->tplan_id,$items_to_unlink);
 	    }
 	    doReorder($args,$tplan_mgr);
@@ -112,6 +101,11 @@ switch($args->doAction)
 	
     case 'doReorder':
 		doReorder($args,$tplan_mgr);
+		$do_display = 1;
+		break;
+
+    case 'doSavePlatforms':
+		doSavePlatforms($args,$tplan_mgr);
 		$do_display = 1;
 		break;
 
@@ -130,8 +124,6 @@ if($do_display)
 		
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
-	//new dBug($tplan_linked_tcversions);
-	
 	$testCaseSet = null;
 	if(!is_null($keywordsFilter))
 	{ 
@@ -152,19 +144,9 @@ if($do_display)
     $opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
     $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
     $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet);
-
-
-	// define('DONT_PRUNE',0);
-	// define('WRITE_BUTTON_ALWAYS',0);
-	// $out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
-	//                      $tplan_linked_tcversions,null,$args->keyword_id,
-	//                      $testCaseSet,WRITE_BUTTON_ALWAYS,DONT_PRUNE,$add_custom_fields);
-  
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$filters,$opt);
   
-    //new dBug($out);
-    
   	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];
@@ -212,6 +194,8 @@ function init_args()
 	$args->linkedVersion = isset($_REQUEST['linked_version']) ? $_REQUEST['linked_version'] : null;
 	$args->linkedWithCF = isset($_REQUEST['linked_with_cf']) ? $_REQUEST['linked_with_cf'] : null;
 	
+	$args->feature2fix = isset($_REQUEST['feature2fix']) ? $_REQUEST['feature2fix'] : null;
+	
 	$args->userID = $_SESSION['currentUser']->dbID;
 
 	return $args;
@@ -230,7 +214,6 @@ function init_args()
 */
 function doReorder(&$argsObj,&$tplanMgr)
 {
-	// new dBug($argsObj->linkedVersion);
     $mapo = null;
     if(!is_null($argsObj->linkedVersion))
     {
@@ -317,7 +300,15 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 
 	$platform_mgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
 	$gui->platforms = $platform_mgr->getLinkedToTestplan($argsObj->tplan_id);
-
+	$gui->platformsForHtmlOptions = null;
+	if( !is_null($gui->platforms) )
+	{
+		$gui->platformsForHtmlOptions[0]='';
+		foreach($gui->platforms as $elem)
+		{
+			$gui->platformsForHtmlOptions[$elem['id']] =$elem['name'];
+		}
+	}
     return $gui;
 }
 
@@ -391,5 +382,29 @@ function doSaveCustomFields(&$argsObj,&$userInput,&$tplanMgr,&$tcaseMgr)
         }  
         $tcaseMgr->cfield_mgr->testplan_design_values_to_db($cfvalues,null,$link_id);
     }
+}
+
+
+/*
+  function: doSavePlatforms
+            writes to DB execution ... of test case versions linked to testplan.
+
+  args: argsObj: user input data collected via HTML inputs
+        tplanMgr: testplan manager object
+
+  returns: -
+
+*/
+function doSavePlatforms(&$argsObj,&$tplanMgr)
+{
+	foreach($argsObj->feature2fix as $feature_id => $tcversion_platform)
+	{
+		$tcversion_id = key($tcversion_platform);
+		$platform_id = current($tcversion_platform);
+		if( $platform_id != 0 )
+		{
+			$tplanMgr->changeLinkedTCVersionsPlatform($argsObj->tplan_id,0,$platform_id,$tcversion_id);
+		}	
+	}
 }
 ?>

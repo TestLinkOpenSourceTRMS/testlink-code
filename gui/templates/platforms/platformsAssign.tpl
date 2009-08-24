@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsAssign.tpl,v 1.2 2009/08/08 14:08:20 franciscom Exp $
+$Id: platformsAssign.tpl,v 1.3 2009/08/24 07:37:41 franciscom Exp $
 Purpose: smarty template - assign platforms to testplans
 *}
 {lang_get var="labels"
@@ -28,6 +28,12 @@ Purpose: smarty template - assign platforms to testplans
 
 <div class="workBack">
 	<h1 class="title">{$gui->mainTitle}</h1>
+
+{if $gui->warning != ''}
+  {* do not escape *}
+  {$gui->warning}
+{/if}
+
 {if $gui->can_do}
 		<div style="margin-top: 25px;">
 			<form method="post" action="lib/platforms/platformsAssign.php?tplan_id={$gui->tplan_id}">

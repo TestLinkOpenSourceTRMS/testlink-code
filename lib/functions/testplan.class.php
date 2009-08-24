@@ -9,12 +9,14 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.130 2009/08/21 07:07:13 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.131 2009/08/24 07:38:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ * 	20090822 - franciscom - changeLinkedTCVersionsPlatform() - new method
+ *                          countLinkedTCVersionsByPlatform() - new method
  *  20090814 - franciscom - link_tcversions() - interface changes - due to platform feature
  *  20090516 - franciscom - BUGID - is_public
  *                          create(),update() changed
@@ -344,15 +346,21 @@ class testplan extends tlObjectWithAttachments
 
 	  args: id: testplan id
 
+            [platform_id]: null => do not filter by platform
+            
 	  returns: number
-	  
-	  @TODO when Platform development will be added this must be changed
-	        adding new argument $platform_id=0
 	*/
-	public function count_testcases($id)
+	public function count_testcases($id,$platform_id=null)
 	{
-		$sql = " SELECT COUNT(testplan_id) AS qty FROM {$this->tables['testplan_tcversions']} " .
-			   " WHERE testplan_id={$id}";
+		$sql_filter = '';
+		if( !is_null($platform_id) )
+		{
+			$sql_filter = " AND platform_id={$platform_id} ";
+		}
+		
+		$sql = " SELECT COUNT(testplan_id) AS qty " .
+		       " FROM {$this->tables['testplan_tcversions']} " .
+			   " WHERE testplan_id={$id} {$sql_filter}";
 		$recordset = $this->db->get_recordset($sql);
 		$qty = 0;
 		if(!is_null($recordset))
@@ -2357,6 +2365,68 @@ class testplan extends tlObjectWithAttachments
     {
     	return $this->platform_mgr->getLinkedToTestplan($id);
     }
+
+    /**
+     * changes platform id on a test plan linked test case versions for
+     * a target platform.
+     * Corresponding executions information is also updated
+     *
+	 * @param id: test plan id
+	 * @param from: plaftorm id to update (used as filter criteria).
+	 * @param to: new plaftorm id value
+	 * @param tcversionSet: default null, can be array with tcversion id
+	 *                      (used as filter criteria).
+	 *
+ 	 *
+ 	 */
+    function changeLinkedTCVersionsPlatform($id,$from,$to,$tcversionSet=null)
+    {
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    	$sqlFilter = '';
+    	if( !is_null($tcversionSet) )
+    	{
+			$sqlFilter = " AND tcversion_id IN (" . implode(',',(array)$tcversionSet) . " ) ";
+    	}
+    	$whereClause = " WHERE testplan_id = {$id} AND platform_id = {$from} {$sqlFilter}";
+
+        $sqlStm = array();
+		$sqlStm[] = "/* {$debugMsg} */ " . 
+		            " UPDATE {$this->tables['testplan_tcversions']} " .
+			        " SET platform_id = {$to} " . $whereClause;
+
+		$sqlStm[] = "/* {$debugMsg} */" .
+		            " UPDATE {$this->tables['executions']} " .
+			        " SET platform_id = {$to} " . $whereClause;
+
+        foreach($sqlStm as $sql)
+        {
+			$this->db->exec_query($sql);		
+		}
+    }
+
+    /**
+     *
+	 * @param id: test plan id
+	 * @param platformSet: default null, used as filter criteria.
+	 * @return map: key platform id, values count,platform_id
+ 	 */
+	public function countLinkedTCVersionsByPlatform($id,$platformSet=null)
+	{
+		$sqlFilter = '';
+		if( !is_null($platformSet) )
+		{
+			$sqlFilter = " AND platform_id IN (" . implode(',',(array)$platformSet). ") ";
+		}
+		$sql = " SELECT COUNT(testplan_id) AS qty,platform_id " .
+		       " FROM {$this->tables['testplan_tcversions']} " .
+			   " WHERE testplan_id={$id} {$sqlFilter} " .
+			   " GROUP BY platform_id ";
+		$rs = $this->db->fetchRowsIntoMap($sql,'platform_id');
+		return $rs;
+	}
+
+
+
 
 } // end class testplan
 

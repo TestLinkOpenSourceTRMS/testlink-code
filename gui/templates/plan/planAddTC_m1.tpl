@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.24 2009/08/17 08:03:47 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.25 2009/08/24 07:37:41 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev: 20090610 - franciscom - display date when test case version was linked to test plan
@@ -13,7 +13,7 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
              th_id,th_test_case,version,execution_order,th_platform,
              no_testcase_available,btn_save_custom_fields,
              has_been_executed,inactive_testcase,btn_save_exec_order,
-             executed_can_not_be_removed,added_on_date,
+             executed_can_not_be_removed,added_on_date,btn_save_platform,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
 
@@ -40,6 +40,11 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
     {assign var="executed_warning" value=$labels.executed_can_not_be_removed}                         
 {/if}   
 
+{* prefix for checkbox named , ADD and ReMove *}   
+{assign var="add_cb" value="achecked_tc"} 
+{assign var="rm_cb" value="remove_checked_tc"}
+{assign var="drawSavePlatformsButton" value=0}
+
 
 {config_load file="input_dimensions.conf" section="planAddTC"}
 
@@ -53,6 +58,9 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
 {include file="inc_update.tpl" result=$sqlResult}
 
 {if $gui->has_tc }
+
+
+
 <form name="addTcForm" id="addTcForm" method="post">
 
 <div class="workBack">
@@ -63,10 +71,6 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
 		</div>
 	{/if}
      
-	{* prefix for checkbox named , ADD and ReMove *}   
-	{assign var="add_cb" value="achecked_tc"} 
-	{assign var="rm_cb" value="remove_checked_tc"}
-  
 	{assign var="item_number" value=0}
 	<input type="hidden" name="add_all_value" id="add_all_value"  value="0" />
 	<input type="hidden" name="rm_all_value" id="rm_all_value" value="0" />
@@ -81,7 +85,7 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
 	        {if $item_number == 1}
 	        	<span style="margin: 0 30px;" id="box_add_all"
 	        			onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');">
-					{if $gui->full_control}
+					      {if $gui->full_control}
 		          		<img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
 		               		alt="{$labels.check_uncheck_all_checkboxes_for_add}" 
 	                 		title="{$labels.check_uncheck_all_checkboxes_for_add}" />
@@ -90,13 +94,12 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
 	        	</span>
 	        	<span style="margin: 0 30px;" id="box_remove_all"
 	        			onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');">
-					<img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-						alt="{$labels.check_uncheck_all_checkboxes_for_rm}" 
-						title="{$labels.check_uncheck_all_checkboxes_for_rm}" />
+					      <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
+						         alt="{$labels.check_uncheck_all_checkboxes_for_rm}" 
+						         title="{$labels.check_uncheck_all_checkboxes_for_rm}" />
 	            	{lang_get s='select_all_to_remove'}
 	        	</span>
-	          	<hr />
-
+	          <hr />
 	        {/if}
    
      {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -108,7 +111,6 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
         
         <table cellspacing="0" border="0" style="font-size:small;" width="100%">
           <tr style="background-color:blue;font-weight:bold;color:white">
-
 			     <td width="5" align="center">
               {if $gui->full_control}
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
@@ -139,21 +141,19 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
 				      {$labels.added_on_date}
 				      </td>
            {/if}
-           
           </tr>   
           
           {foreach from=$ts.testcases item=tcase}
-            
             {assign var='is_active' value=0}
             {assign var='linked_version_id' value=$tcase.linked_version_id}
             {assign var='tcID' value=$tcase.id}
             
-            {if $linked_version_id neq 0}
+            {if $linked_version_id != 0}
                {if $tcase.tcversions_active_status[$linked_version_id] eq 1}             
                  {assign var='is_active' value=1}
                {/if}
             {else}
-               {if $tcase.tcversions_qty neq 0}
+               {if $tcase.tcversions_qty != 0}
                  {assign var='is_active' value=1}
                {/if}
             {/if}      
@@ -162,17 +162,30 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
             {if $is_active || $linked_version_id != 0 }  
    				    
    				    {if $gui->full_control || $linked_version_id != 0 }
-     			    <tr {if $linked_version_id != 0 && $gui->platforms == ''}	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
+   				      {assign var="drawPlatformChecks" value=0}
+                {if $gui->platforms != '' }
+                   {if isset($tcase.feature_id[0])}
+                    {if !$drawSavePlatformsButton }
+                      {* do this JUST once *}
+                      {assign var="drawSavePlatformsButton" value=1}
+                    {/if}
+                   {else} 
+                     {assign var="drawPlatformChecks" value=1}
+                   {/if}
+                {/if}
+   				    
+     			    <tr {if $linked_version_id != 0 && $drawPlatformChecks == 0}	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
     			      <td width="20">
                    
-    			        {if $gui->platforms == ''} {* ------------------------------------------ *}
+                  {* ------------------------------------------ *} 
+    			        {* {if $gui->platforms == '' || $drawPlatformChecks == 0}  *}
+    			        {if $gui->platforms == '' || $drawPlatformChecks == 0 }
     				        {if $gui->full_control}
 	      				        {if $is_active == 0 || $linked_version_id != 0 }
 	      				           &nbsp;&nbsp;
 	      				        {else}
 	      				            {* 20090814 - franciscom - added [0] - to have uniform structure
-	      				               no matter if you work with or without platform feature
-	      				            *}
+	      				               no matter if you work with or without platform feature  *}
 	      				           <input type="checkbox"  name="{$add_cb}[{$tcID}][0]" 
 	      				                  id="{$add_cb}{$tcID}[0]" value="{$tcID}" /> 
 	      				        {/if}
@@ -180,10 +193,19 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
     				        {else}
 							        &nbsp;&nbsp;
     				        {/if}
-    				      {/if}  {* ------------------------------------------ *}
+    				      {/if}  
+    				      {* ------------------------------------------ *}
     			      </td>
                 {if $gui->platforms != ''}
-                  <td>&nbsp;</td> 
+                  <td>
+                  {if $drawPlatformChecks }
+                     &nbsp;
+                  {else}
+         				    <select name="feature2fix[{$tcase.feature_id[0]}][{$linked_version_id}]">
+         				        {html_options options=$gui->platformsForHtmlOptions selected=0}
+         				    </select>
+                  {/if}  
+                  </td>
                 {/if}
     			      <td>
     				    {$gui->testCasePrefix|escape}{$tcase.external_id}
@@ -200,43 +222,34 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
                 </td>
 
                 <td style="text-align:center;">
-                  <input type="text" name="exec_order[{$tcID}]"
-                         {$execution_order_html_disabled}
-                         style="text-align:right;"
-                  			 size="{#EXECUTION_ORDER_SIZE#}" 
+                  <input type="text" name="exec_order[{$tcID}]" {$execution_order_html_disabled}
+                         style="text-align:right;" size="{#EXECUTION_ORDER_SIZE#}" 
  			                   maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
                          value="{$tcase.execution_order}" />
                   
                   {if $linked_version_id != 0}  
-                    <input type="hidden" name="linked_version[{$tcID}]"
-                                         value="{$linked_version_id}" />
-                          
-                    <input type="hidden" name="linked_exec_order[{$tcID}]"
-                                         value="{$tcase.execution_order}" />
+                    <input type="hidden" name="linked_version[{$tcID}]" value="{$linked_version_id}" />
+                    <input type="hidden" name="linked_exec_order[{$tcID}]"  value="{$tcase.execution_order}" />
                   {/if}
                 </td>
 
         
                 {* ------------------------------------------------------------------------- *}      
-                {if $ts.linked_testcase_qty gt 0  && $gui->platforms == ''}
+                {if $ts.linked_testcase_qty gt 0 && $drawPlatformChecks==0}
           				<td>&nbsp;</td>
           				<td>
           				   {* BUGID 1970 *}
         				     {assign var="show_remove_check" value=0}
           				   {if $linked_version_id }
           				      {assign var="show_remove_check" value=1}
-          				      
        				          {if $tcase.executed[0] == 'yes' }
-       				            {assign var="show_remove_check" 
-       				                    value=$gui->can_remove_executed_testcases}
+       				            {assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
           				      {/if}      
                     {/if} 
           				    
           					{if $show_remove_check }
-          						<input type='checkbox' 
-          						       name='{$rm_cb}[{$tcID}][0]' 
-          						       id='{$rm_cb}{$tcID}[0]' 
-          				           value='{$linked_version_id}' />
+          						<input type='checkbox' name='{$rm_cb}[{$tcID}][0]' 
+          						       id='{$rm_cb}{$tcID}[0]' value='{$linked_version_id}' />
           				   {else}
           						&nbsp;
           				  {/if}
@@ -270,7 +283,7 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
             {/if} 
 
 
-           {if $gui->platforms != ''}
+           {if $gui->platforms != '' && $drawPlatformChecks}
                {foreach from=$gui->platforms item=platform}
                
                <tr {if isset($tcase.feature_id[$platform.id]) }	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if} >
@@ -290,7 +303,8 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
     				        <td>
     				        {$platform.name}
     				        </td>
-    				        <td> &nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+    				        <td> &nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+
 
                {* ========================================================== *}
 	      			 {if $is_active == 1 && isset($tcase.feature_id[$platform.id]) }
@@ -309,7 +323,7 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
                
                </tr>
                {/foreach}
-             <tr><td colspan="7"><hr></td></tr>
+             <tr><td colspan="9"><hr></td></tr>
            {/if}             
            {/if} {* if $is_active || $linked_version_id ne 0 *}
   	      {/foreach}
@@ -334,7 +348,12 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
 			{if $show_write_custom_fields eq 1}
              	<input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}" 
                      onclick="doAction.value=this.name" />
-            {/if}
+      {/if}
+			{if $drawSavePlatformsButton}
+             	<input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}" 
+                     onclick="doAction.value=this.name" />
+      {/if}
+
 		{/if}
 	</div>
 

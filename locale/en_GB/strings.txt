@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.466 2009/08/18 19:58:15 schlundus Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.467 2009/08/24 07:38:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1045,6 +1045,7 @@ $TLS_btn_add_remove_selected_tc = "Add / Remove selected";
 $TLS_btn_add_selected_tc = "Add selected";
 $TLS_btn_save_exec_order = "Save order";
 $TLS_btn_save_custom_fields ="Save custom fields";
+$TLS_btn_save_platform ="Save platform";
 $TLS_check_uncheck_tc = "All Test Cases in the Test Suite.";
 $TLS_check_uncheck_all_checkboxes = "check/uncheck all";
 $TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
@@ -1992,10 +1993,20 @@ $TLS_update_tp_failed1 = "Update of Test Plan '";
 $TLS_update_tp_failed2 = "' failed";
 $TLS_warning_duplicate_tplan_name = "There is already a Test Plan with this name. " .
 		"Please choose another name!";
+
 $TLS_platform_default_suffix = "Default Platform %s";
 $TLS_platform_default_notes = "Automatically created platform for Test Plan %s";
 
-
+// ----- lib/platforms/platformsAssign.php -----
+$TLS_unknown_platform="Warning/Critic<br>" .
+		                  " In this test plan exist test case versions with platform_id=0 <br>" .
+						          " This means that probably you have worked on this test plan before " .
+						          " assigning platforms.<br>" .
+						          " After you have assigned platforms to this test plan you MUST NEED " .
+						          " to go to add/remove test cases feature to assign right platform " .
+						          " to your linked test cases<br>".
+						          " To ease your work if you assign now here ONE platform to a test plan " .
+						          " without platorms, all linked test cases will be updated with this platform ";
 
 // ----- lib/results/printDocOptions.php -----
 $TLS_opt_show_toc = "Table of Contents";

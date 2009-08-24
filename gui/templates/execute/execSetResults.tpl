@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.42 2009/08/21 07:07:12 franciscom Exp $
+$Id: execSetResults.tpl,v 1.43 2009/08/24 07:37:41 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090815 - franciscom - platform feature
@@ -112,7 +112,7 @@ function validateForm(f)
 {
   var status_ok=true;
   var cfields_inputs='';
-  var cfChecks;
+  var cfValidityChecks;
   var cfield_container;
   var access_key;
   cfield_container=document.getElementById('save_button_clicked').value;
@@ -121,11 +121,11 @@ function validateForm(f)
   if( document.getElementById(access_key) != null )
   {    
  	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
-      cfChecks=validateCustomFields(cfields_inputs);
-      if( !cfChecks.status_ok )
+      cfValidityChecks=validateCustomFields(cfields_inputs);
+      if( !cfValidityChecks.status_ok )
       {
-          var warning_msg=cfMessages[cfChecks.msg_id];
-          alert_message(alert_box_title,warning_msg.replace(/%s/, cfChecks.cfield_label));
+          var warning_msg=cfMessages[cfValidityChecks.msg_id];
+          alert_message(alert_box_title,warning_msg.replace(/%s/, cfValidityChecks.cfield_label));
           return false;
       }
   }

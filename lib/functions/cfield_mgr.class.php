@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.69 2009/07/28 17:31:52 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.70 2009/08/24 07:38:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090823 - franciscom - added logic to remove 255 size limit
  * 20090718 - franciscom - buildLocationMap()
  * 20090717 - franciscom - get_linked_cfields_at_design() - added filter by location
  *                         get_linked_cfields_at_execution() - location argument
@@ -246,18 +247,16 @@ class cfield_mgr extends tlObject
     var $name_prefix='custom_field_';
     var $sizes = null;
     
-    // EDIT HERE IF YOU CUSTOMIZE YOUR DB
     // must be equal to the lenght of:
     // value column on cfield_*_values tables
     // default_value column on custom_fields table
     // 0 -> no limit
-    var $max_length_value=255;
+    var $max_length_value;
     
-    // EDIT HERE IF YOU CUSTOMIZE YOUR DB
     // must be equal to the lenght of:
     // possible_values column on custom_fields table
     // 0 -> no limit
-    var $max_length_possible_values=255;
+    var $max_length_possible_values;
     
     
 	/**
@@ -273,7 +272,6 @@ class cfield_mgr extends tlObject
 		$this->tree_manager = new tree($this->db);
 
 		global $tlCfg;    // NO GOOD global coupling, config_get() must be used instead.
-		
 		$gui_cfg = $tlCfg->gui;
 		$this->sizes = $gui_cfg->custom_fields->sizes;
 		
@@ -288,6 +286,11 @@ class cfield_mgr extends tlObject
 		    $this->possible_values_cfg +=$gui_cfg->custom_fields->possible_values_cfg;
 		}
         $this->object_table=$this->tables["custom_fields"];
+
+        $this->max_length_value = config_get('custom_field_max_length');
+        $this->max_length_possible_values = $this->max_length_value;
+    	// $this->textarea_max_size = 
+
 	}
 
     function getSizeLimit()
@@ -607,22 +610,22 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		$t_id = $p_field_def['id'];
 		$t_type = $p_field_def['type'];
 
-	  $t_custom_field_value = $p_field_def['default_value'];
-	  if( isset($p_field_def['value']) )
+	  	$t_custom_field_value = $p_field_def['default_value'];
+	  	if( isset($p_field_def['value']) )
 		{
 		  $t_custom_field_value = $p_field_def['value'];
 		}
 
 
-    $verbose_type=trim($this->custom_field_types[$t_type]);
-  	$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
-
-    $input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
-    $size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
-    if( $field_size > 0)
-    {
-      $size=$field_size;
-    }
+    	$verbose_type=trim($this->custom_field_types[$t_type]);
+  		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
+    	
+    	$input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
+    	$size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
+    	if( $field_size > 0)
+    	{
+    	  $size=$field_size;
+    	}
 
 		switch ($verbose_type)
 		{
@@ -710,23 +713,36 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				$rows = self::TEXTAREA_DEFAULT_ROWS;
 			}
 			
-			$counterId = $input_name . '_counter';
-			$cf_current_size = self::TEXTAREA_MAX_SIZE - tlStringLen($t_custom_field_value);
-			// call JS function for check max. size (255) from validate.js
-			$js_function = '"textCounter(this.form.' . $input_name . ',document.getElementById(\''.
-					$counterId.'\'),'.self::TEXTAREA_MAX_SIZE.');" ';
-			$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
-					'onKeyDown=' . $js_function . ' onKeyUp=' . $js_function . 'cols="' .
-					$cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
-			// show character counter
-			$str_out .= '<span style="vertical-align: top; padding: 5px;">' .
-					sprintf(lang_get('text_counter_feedback'), self::TEXTAREA_MAX_SIZE) .
-					' <span id="' . $counterId .'">'.$cf_current_size.'</span>.</span>';
+			if( $this->max_length_value > 0 )
+			{
+				$counterId = $input_name . '_counter';
+				$cf_current_size = $this->max_length_value - tlStringLen($t_custom_field_value);
+            	
+				// call JS function for check max. size from validate.js
+				$js_function = '"textCounter(this.form.' . $input_name . 
+				               ',document.getElementById(\''. $counterId.'\'),' . $this->max_length_value .');" ';
+			
+				$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
+					    	'onKeyDown=' . $js_function . ' onKeyUp=' . $js_function . 'cols="' .
+					        $cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
+
+			    // show character counter
+			    $str_out .= '<span style="vertical-align: top; padding: 5px;">' .
+				    	    sprintf(lang_get('text_counter_feedback'), $this->max_length_value) .
+					        ' <span id="' . $counterId .'">'.$cf_current_size.'</span>.</span>';
+			}		
+            else
+            {
+            	// unlimited
+				$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
+					    	'cols="' . $cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
+            		
+            }
 		break;
 
 		case 'date':
       		$str_out .= create_date_selection_set($input_name,config_get('date_format'),
-                                           $t_custom_field_value, false, true) ;
+                                                  $t_custom_field_value, false, true) ;
 		break;
       
       case 'datetime':
@@ -822,6 +838,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
         $result = $this->db->exec_query($sql);
 
+        // max_length_value = 0 => no limit
         if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
         {
            $value = substr($value,0,$this->max_length_value);
@@ -1605,6 +1622,7 @@ function name_is_unique($id,$name)
         $rs = $this->db->get_recordset($sql); 			   
         // file_put_contents('c:\sql-dd.txt',serialize($rs));
 
+        // max_length_value = 0 => no limit
         if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
         {
            $value = substr($value,0,$this->max_length_value);
@@ -2051,6 +2069,7 @@ function getXMLServerParams($node_id)
 
         $result = $this->db->exec_query($sql);
 
+        // max_length_value = 0 => no limit
         if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
         {
            $value = substr($value,0,$this->max_length_value);

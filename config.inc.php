@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.252 2009/08/18 06:47:55 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.253 2009/08/24 07:37:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20090823 - franciscom - new option custom_field_max_length
  *	20090815 - franciscom - new option exec_cfg->show_history_all_platforms
  *  20090804 - franciscom - moved report config here
  *  20090304 - franciscom - BUGID 2171
@@ -792,6 +793,12 @@ $tlCfg->import_max_row = '10000'; // in chars
 // - created from the login page.
 // - created using user management features
 $tlCfg->default_roleid = TL_ROLES_GUEST;
+
+
+/** used to check size in char for text type custom fields */
+// can not be greater that column definition on DB
+// 0 => do not check.
+$tlCfg->custom_field_max_length = 255;
 
 
 /** 

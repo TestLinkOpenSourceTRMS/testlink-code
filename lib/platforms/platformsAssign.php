@@ -1,21 +1,25 @@
 <?php
-/**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later.
+ /**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: platformsAssign.php,v $
- *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/08/19 06:59:02 $ $Author: franciscom $
- *
- * Purpose:  Assign keywords to set of testcases in tree structure
- *
+ * Platform link/unlink from a test plan
+ * 
+ * @package 	TestLink
+ * @author 		eloff
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: platformsAssign.php,v 1.4 2009/08/24 07:38:33 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ * 
+ * @internal Revisions:
+ *	20090822 - franciscom - added logic to give warning to user when adding platforms
+ *							to a test plan that has 0 platforms, but has linked test cases.
  *
  **/
+ 
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
-// require_once("platform.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -43,6 +47,20 @@ $gui->mainTitle = lang_get('add_remove_platforms');
 
 if (isset($args->tplan_id))
 {
+	// do follwing check to give warning to user
+	// if test plan has test case versions with platform_id=0
+	// this means that right now there are not platforms linked to test plan.
+	// Give message to user with following info:
+	// Till you are not going to assign a platform to this linked tcversions
+	// and it's execution results he/she will not be able to execute
+	//
+	$qtyByPlatform = $tplan_mgr->countLinkedTCVersionsByPlatform($args->tplan_id);
+	$qtyLinked2Unknown = isset($qtyByPlatform[0]['qty']) ? $qtyByPlatform[0]['qty'] : 0;
+	if( ($fix_needed = ($qtyLinked2Unknown > 0)) )
+	{
+		
+		$gui->warning = lang_get('unknown_platform');
+	}
     $opt_cfg->global_lbl = '';
     $opt_cfg->additional_global_lbl = null;
     $opt_cfg->from->lbl = lang_get('available_platforms');
@@ -60,7 +78,12 @@ if (isset($args->tplan_id))
     {
     	$platform_mgr->linkToTestplan($args->platformsToAdd,$args->tplan_id);
     	$platform_mgr->unlinkFromTestplan($args->platformsToRemove,$args->tplan_id);
-
+       
+        if( $fix_needed && count($args->platformsToAdd) == 1)
+        {
+    	    reset($args->platformsToAdd);
+        	$tplan_mgr->changeLinkedTCVersionsPlatform($args->tplan_id,0,current($args->platformsToAdd));
+        }
         // Update option panes with newly updated config
         $opt_cfg->from->map = $platform_mgr->getAllAsMap();
         $opt_cfg->to->map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: keywordsImport.tpl,v 1.3 2008/05/09 20:15:14 schlundus Exp $ *}
+{* $Id: keywordsImport.tpl,v 1.4 2009/08/24 19:18:45 schlundus Exp $ *}
 {* Purpose: smarty template - keyword import initial page *}
 {* revisions:
    20051231 - scs - fixed incorrect cancel button link
@@ -35,7 +35,7 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-			{lang_get s='max_file_size_is'} {$importLimit/1024} {lang_get s='max_size_cvs_file2'}
+			{$fileSizeLimitMsg}
 		</td>
 	</tr>
 	</table>

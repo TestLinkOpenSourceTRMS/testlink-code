@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.41 2009/08/18 19:58:15 schlundus Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.42 2009/08/24 19:18:45 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -454,22 +454,65 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 	                                           $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$items = null;
-		for($i = 0;$i < sizeof($ids);$i++)
+		
+		if (in_array("iDBBulkReadSerialization",class_implements($className)))
+			$items = self::bulkCreateObjectsFromDB($db,$ids,$className,$returnAsMap,$detailLevel);
+		else
 		{
-			$id = $ids[$i];
-			$item = self::createObjectFromDB($db,$id,$className,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
-			if ($item)
+			for($i = 0;$i < sizeof($ids);$i++)
 			{
-				if ($returnAsMap)
+				$id = $ids[$i];
+				$item = self::createObjectFromDB($db,$id,$className,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
+				if ($item)
 				{
-					$items[$id] = $item;
-				}
-				else
-				{
-					$items[] = $item;
+					if ($returnAsMap)
+					{
+						$items[$id] = $item;
+					}
+					else
+					{
+						$items[] = $item;
+					}
 				}
 			}
 		}
+		return $items;
+	}
+	
+	/**
+	 * used to bulk-create tl-managed objects which support the "iDBBulkReadSerialization"-Interface
+	 * 
+ 	 * @param object [ref] $db the database connection
+	 * @param array $ids the ids of the objects to be created
+	 * @param string $className the class name of the objects
+	 * @param boolean $returnAsMap if set to true, to objects are returned in a 
+	 *                map whose keys are the ids, else they are returned in a normal array.
+	 * @param integer $detailLevel the detail level of the object
+	 * 
+	 * @return mixed the newly created objects on success, or null else
+	 */
+	static public function bulkCreateObjectsFromDB(&$db,$ids,$className,$returnAsMap = false,
+	                                           $detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
+	{
+		$items = null;
+		if (sizeof($ids))
+		{	
+			$dummyItem = new $className();
+			$query = $dummyItem->getReadFromDBQuery($ids,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
+			$result = $db->exec_query($query);
+			if ($result)
+			{
+				while($row = $db->fetch_array($result))
+				{
+					$item = new $className();
+					$item->readFromDBRow($row);
+					if ($returnAsMap)
+						$items[$item->dbID] = $item;
+					else
+						$items[] = $item;
+				}
+			}
+		}		
 		return $items;
 	}
 	

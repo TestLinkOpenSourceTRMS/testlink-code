@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: int_serialization.php,v 1.8 2009/06/16 22:21:09 havlat Exp $
+ * @version    	CVS: $Id: int_serialization.php,v 1.9 2009/08/24 19:18:45 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @TODO example of using
@@ -36,6 +36,25 @@ interface iSerialization
 	public function getSupportedSerializationFormatDescriptions();
 }
 
+/** 
+ * Bulk db read serialization interface 
+ * @package 	TestLink
+ **/
+interface iDBBulkReadSerialization
+{
+	/**
+	 * Initializes the object from a single result row of a query, obtained by getReadFromDBQuery
+	 * 
+	 */
+	public function readFromDBRow($row);
+
+	/**
+	 * Returns a query which can be used to read an arbitrary number of objects
+	 * 
+	 * @return string the query
+	 */
+	public function getReadFromDBQuery($ids,$options = self::TLOBJ_O_SEARCH_BY_ID);
+}
 
 /**
  * Any objects which support serialization from or to CSV should implement this interface

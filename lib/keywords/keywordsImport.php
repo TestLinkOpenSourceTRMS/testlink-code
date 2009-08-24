@@ -6,11 +6,10 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/05/14 19:01:57 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
  */
 require_once('../../config.inc.php');
-require_once('keyword.class.php');
 require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
@@ -43,7 +42,6 @@ if(!$msg && $args->UploadFile)
 			{
 				$tproject = new testproject($db);
 				$result = $tproject->$pfn($args->testproject_id,$dest);
-				@unlink($dest);
 				if ($result != tl::OK)
 					$msg = lang_get('wrong_keywords_file'); 
 				else
@@ -52,6 +50,7 @@ if(!$msg && $args->UploadFile)
 					exit();		
 				}
 			}
+			@unlink($dest);
 		}
 	} 
 	else
@@ -69,10 +68,13 @@ $smarty->assign('keywordFormatStrings',$formatStrings);
 $smarty->assign('importTypes',$importTypes);
 $smarty->assign('tproject_name', $args->testproject_name);
 $smarty->assign('tproject_id', $args->testproject_id);
+$smarty->assign('fileSizeLimitMsg',sprintf(lang_get('max_file_size_is'), TL_IMPORT_LIMIT/1024 . ' KB '));
 $smarty->assign('importLimit',TL_IMPORT_LIMIT);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
+/**
+ * @return object returns the arguments for the page
+ */
 function init_args()
 {
 	$iParams = array(
@@ -81,7 +83,7 @@ function init_args()
 		);
 	$args = new stdClass();
 		
-	$pParams = P_PARAMS($iParams,$args);
+	P_PARAMS($iParams,$args);
 
 	$args->UploadFile = ($args->UploadFile != "") ? 1 : 0; 
 	
@@ -94,9 +96,14 @@ function init_args()
 	return $args;
 }
 
+/**
+ * @param $db resource the database connection handle
+ * @param $user the current active user
+ * 
+ * @return boolean returns true if the page can be accessed
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_modify_key') && $user->hasRight($db,'mgt_modify_key');
 }
 ?>
-	

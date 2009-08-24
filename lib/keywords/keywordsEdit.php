@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/08/19 19:56:25 $ by $Author: schlundus $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  *
@@ -19,7 +19,6 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-require_once("keyword.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $smarty = new TLSmarty();
@@ -99,7 +98,7 @@ function init_args()
 	
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-
+	
 	return $args;
 }
 

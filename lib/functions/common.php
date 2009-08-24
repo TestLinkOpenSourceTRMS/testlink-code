@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.165 2009/08/19 06:57:09 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.166 2009/08/24 19:18:45 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -70,7 +70,6 @@ require_once("testproject.class.php");
 
 /** @TODO use the next include only if it is used -> must be removed */
 require_once("user.class.php");
-require_once("keyword.class.php");
 require_once("treeMenu.inc.php");
 require_once("exec_cfield_mgr.class.php");
 require_once("inputparameter.inc.php");
@@ -96,11 +95,11 @@ $db = 0;
 function __autoload($class_name) 
 {
 	// exceptions
-	$tlClassPrefixLen=2;
 	$tlClasses = null;
+	$tlClassPrefixLen = 2;
 	$classFileName = $class_name;
     
-	if ( isset($tlClasses[$classFileName]) )
+	if (isset($tlClasses[$classFileName]))
 	{
     	$len = tlStringLen($classFileName) - $tlClassPrefixLen;
 		$classFileName = strtolower(tlSubstr($classFileName,$tlClassPrefixLen,$len));

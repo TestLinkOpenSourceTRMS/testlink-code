@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: keyword.class.php,v 1.24 2009/08/10 18:57:58 schlundus Exp $
+ * @version    	CVS: $Id: tlKeyword.class.php,v 1.1 2009/08/24 19:18:45 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -24,7 +24,7 @@ require_once('xml.inc.php');
  * Support for keywords management
  * @package 	TestLink
  */ 
-class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML,iSerializationToCSV
+class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML,iSerializationToCSV,iDBBulkReadSerialization
 {
 	/** @var string the name of the keyword */
 	public $name;
@@ -44,7 +44,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	
 	/* 
 	 * Brings the object to a clean state
-	 * @param interger $options additional initialization options, can be TLOBJ_O_SEARCH_BY_ID
+	 * @param integer $options additional initialization options, can be TLOBJ_O_SEARCH_BY_ID
 	 */
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
@@ -77,12 +77,14 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	/**
 	 * Initializes the keyword object
 	 * 
-	 * @param interger $testprojectID the id of the testproject the keywords belongs to
+	 * @param integer $dbID the database id of the keyword
+	 * @param integer $testprojectID the id of the testproject the keywords belongs to
 	 * @param string $name the name of the keyword
 	 * @param string $notes the notes for the keywords
 	 */
-	function initialize($testprojectID,$name,$notes)
+	function initialize($dbID, $testprojectID,$name,$notes)
 	{
+		$this->dbID = $dbID;
 		$this->name = $name;
 		$this->notes = $notes;
 		$this->testprojectID = $testprojectID;
@@ -99,28 +101,49 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->_clean($options);
+		
+		$query = $this->getReadFromDBQuery($this->dbID,$options);
+		$info = $db->fetchFirstRow($query);
+		if ($info)
+			$this->readFromDBRow($info);
+		
+		return $info ? tl::OK : tl::ERROR;
+	}
+
+	/* Initializes a keyword object, from a single row read by a query obtained by getReadFromDBQuery 
+	 * @see lib/functions/iDBBulkReadSerialization#readFromDBRow($row)
+	 * @param $row array map with keys 'id','testproject_id','keyword','notes'
+	 */
+	public function readFromDBRow($row)
+	{
+		$this->initialize($row['id'],$row['testproject_id'],$row['keyword'],$row['notes']);
+	}
+	
+	/* Returns a query which can be used to read one or multiple keywords from a db
+	 * @param $ids array integer array of db ids (from keywords)
+	 * @param integer $options any combination of TLOBJ_O_ Flags
+	 * @see lib/functions/iDBBulkReadSerialization#getReadFromDBQuery($ids, $options)
+	 */
+	public function getReadFromDBQuery($ids,$options = self::TLOBJ_O_SEARCH_BY_ID)
+	{
 		$query = " SELECT id,keyword,notes,testproject_id FROM {$this->tables['keywords']} ";
 		
 		$clauses = null;
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
 		{
-			$clauses[] = "id = {$this->dbID}";		
+			if (!is_array($ids))
+				$clauses[] = "id = {$ids}";
+			else		
+				$clauses[] = "id IN (".implode(",",$ids).")";
 		}
 		if ($clauses)
 		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
 		}
-		$info = $db->fetchFirstRow($query);			 
-		if ($info)
-		{
-			$this->dbID = $info['id'];
-			$this->name = $info['keyword'];
-			$this->notes = $info['notes'];
-			$this->testprojectID = $info['testproject_id'];
-		}
-		return $info ? tl::OK : tl::ERROR;
+		
+		return $query;
 	}
-
+	
 	/* 
 	 * Writes an keyword into the database
 	 * 
@@ -229,7 +252,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 	 */
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-		return self::handleNotImplementedMethod(__FUNCTION__);
+		return tlDBObject::createObjectsFromDB($db,$ids,__CLASS__,false,$detailLevel);
 	}
 
 	/**

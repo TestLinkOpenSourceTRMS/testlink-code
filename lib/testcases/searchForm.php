@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchForm.php,v 1.21 2009/02/28 17:19:29 franciscom Exp $
+ * $Id: searchForm.php,v 1.22 2009/08/24 19:18:45 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev: 20090228 - franciscom - improvement on management of test case prefix
@@ -10,7 +10,6 @@
  *
 **/
 require_once("../../config.inc.php");
-require_once("../functions/keyword.class.php");
 require_once("../functions/common.php");
 testlinkInitPage($db);
 

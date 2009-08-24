@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.128 2009/08/18 06:47:56 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.129 2009/08/24 19:18:45 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -50,7 +50,6 @@
 
 /** related functions */ 
 require_once('attachments.inc.php');
-require_once('keyword.class.php');
 
 /**
  * class is responsible to get project related data and CRUD test project
@@ -817,7 +816,7 @@ function setPublicStatus($id,$status)
 	public function addKeyword($testprojectID,$keyword,$notes)
 	{
 		$kw = new tlKeyword();
-		$kw->initialize($testprojectID,$keyword,$notes);
+		$kw->initialize(null,$testprojectID,$keyword,$notes);
 		$result = $kw->writeToDB($this->db);
 		if ($result >= tl::OK)
 			logAuditEvent(TLS("audit_keyword_created",$keyword),"CREATE",$kw->dbID,"keywords");
@@ -836,7 +835,7 @@ function setPublicStatus($id,$status)
 	function updateKeyword($testprojectID,$id,$keyword,$notes)
 	{
 		$kw = new tlKeyword($id);
-		$kw->initialize($testprojectID,$keyword,$notes);
+		$kw->initialize($id,$testprojectID,$keyword,$notes);
 		$result = $kw->writeToDB($this->db);
 		if ($result >= tl::OK)
 			logAuditEvent(TLS("audit_keyword_saved",$keyword),"SAVE",$kw->dbID,"keywords");
@@ -850,7 +849,7 @@ function setPublicStatus($id,$status)
 	 **/
 	public function getKeyword($id)
 	{
-		return tlDBObject::createObjectFromDB($this->db,$id,"tlKeyword");
+		return tlKeyword::getByID($this->db,$id);
 	}
 	
 	/**
@@ -867,7 +866,8 @@ function setPublicStatus($id,$status)
 	public function getKeywords($testproject_id)
 	{
 		$ids = $this->getKeywordIDsFor($testproject_id);
-		return tlDBObject::createObjectsFromDB($this->db,$ids,"tlKeyword");
+
+		return tlKeyword::getByIDs($this->db,$ids);
 	}
 
 	/**
@@ -974,12 +974,12 @@ function setPublicStatus($id,$status)
 		{
 			while($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $delim))
 			{
-				$k = new tlKeyword();
-				$k->initialize($testproject_id,NULL,NULL);
-				if ($k->readFromCSV(implode($delim,$data)) >= tl::OK)
+				$kw = new tlKeyword();
+				$kw->initialize(null,$testproject_id,NULL,NULL);
+				if ($kw->readFromCSV(implode($delim,$data)) >= tl::OK)
 				{
-					if ($k->writeToDB($this->db) >= tl::OK)
-						logAuditEvent(TLS("audit_keyword_created",$k->name),"CREATE",$k->dbID,"keywords");
+					if ($kw->writeToDB($this->db) >= tl::OK)
+						logAuditEvent(TLS("audit_keyword_created",$kw->name),"CREATE",$kw->dbID,"keywords");
 				}
 			}
 			fclose($handle);
@@ -1011,12 +1011,12 @@ function setPublicStatus($id,$status)
 		{
 			foreach($xml->keyword as $keyword)
 			{
-				$k = new tlKeyword();
-				$k->initialize($testproject_id,NULL,NULL);
-				if ($k->readFromSimpleXML($keyword) >= tl::OK)
+				$kw = new tlKeyword();
+				$kw->initialize(null,$testproject_id,NULL,NULL);
+				if ($kw->readFromSimpleXML($keyword) >= tl::OK)
 				{
-					if ($k->writeToDB($this->db) >= tl::OK)
-						logAuditEvent(TLS("audit_keyword_created",$k->name),"CREATE",$k->dbID,"keywords");
+					if ($kw->writeToDB($this->db) >= tl::OK)
+						logAuditEvent(TLS("audit_keyword_created",$kw->name),"CREATE",$kw->dbID,"keywords");
 				}
 				else
 					return tlKeyword::E_WRONGFORMAT;

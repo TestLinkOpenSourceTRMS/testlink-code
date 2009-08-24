@@ -5,14 +5,13 @@
  *
  * Filename $RCSfile: keywordsView.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/08/19 19:56:25 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
  *
  * allows users to manage keywords. 
  */
 require_once("../../config.inc.php");
 require_once("common.php");
-require_once("keyword.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

@@ -5,15 +5,14 @@
  *
  * Filename $RCSfile: keywordsExport.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/05/09 17:59:19 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
  *
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-require_once("keyword.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();

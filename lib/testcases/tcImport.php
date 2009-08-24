@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2009/07/13 18:40:44 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -26,7 +26,6 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
-require_once('keyword.class.php');
 require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);

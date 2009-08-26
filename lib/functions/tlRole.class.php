@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: role.class.php,v 1.33 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: tlRole.class.php,v 1.1 2009/08/26 19:10:28 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -23,16 +23,34 @@
  */
 class tlRole extends tlDBObject
 {
+	/**
+	 * @var string the name of the role
+	 */
 	public $name;
+	/**
+	 * @var string a description for the role
+	 */
+	
 	public $description;
+	/**
+	 * @var array the tlRights of the role
+	 */
 	public $rights;
 
-	private $object_table = "";
+	
+	/**
+	 * @var string the name of the database table a role is store to
+	 */
+	protected $object_table;
+	/**
+	 * @var integer the replacement roleID, if assigned roles get deleted
+	 */
 	protected $replacementRoleID;
 	
 	const ROLE_O_SEARCH_BYNAME = 2;
 	const TLOBJ_O_GET_DETAIL_RIGHTS = 1;
-		
+
+	//some error code
 	const E_DBERROR = -2;	
 	const E_NAMELENGTH = -3;
 	const E_NAMEALREADYEXISTS = -4;
@@ -40,16 +58,25 @@ class tlRole extends tlDBObject
 		
 	/** 
 	 * class constructor 
-	 * @param resource &$db reference to database handler
+	 * @param integer $dbID the database id of the role 
 	 **/    
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
+		
 		$this->object_table = $this->tables['roles']; 
 		$this->replacementRoleID = config_get('role_replace_for_deleted_roles');
 		$this->activateCaching = true;
 	}
 
+	/* Used to clean up the tlRole object
+	 * 
+	 * @param $options array any combination of TLOBJ_O_SEARCH_BY_ID or ROLE_O_SEARCH_BYNAME
+	 * 
+	 * @return integer always returns tl::OK
+	 * 
+	 * @see lib/functions/tlObject#_clean()
+	 */
 	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		$this->description = null;
@@ -61,9 +88,18 @@ class tlRole extends tlDBObject
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
 		{
 			$this->dbID = null;
-		}	
+		}
+
+		return tl::OK;
 	}
 	
+	/* Copies a tlRole object from another
+	 * 
+	 * @param $role tlRole the role which should be used to initialize this role 
+	 * 
+	 * @return integer always returns tl::OK
+	 * @see lib/functions/tlDBObject#copyFromCache($object)
+	 */
 	public function copyFromCache($role)
 	{
 		$this->description = $role->description;
@@ -73,8 +109,14 @@ class tlRole extends tlDBObject
 		return tl::OK;
 	}
 	
-	
-	//BEGIN interface iDBSerialization
+	/* Read a role from the database 
+	 * @param $db resource [ref] the database connection
+	 * @param $options integer any combination of TLOBJ_O_ or ROLE_O - Flags
+	 * 
+	 * @return integer returns tl::OK on success, tl::ERROR else
+	 * 
+	 * @see lib/functions/iDBSerialization#readFromDB($db, $options)
+	 */
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
 		if ($this->readFromCache() >= tl::OK)
@@ -447,7 +489,7 @@ class tlRole extends tlDBObject
 	static public function getAll(&$db,$whereClause = null,$column = null,
 	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
-	    $tables['roles'] = DB_TABLE_PREFIX . 'roles';
+		$tables  = tlObject::getDBTables("roles");
 		$sql = "SELECT id FROM {$tables['roles']} ";
 		if (!is_null($whereClause))
 			$sql .= ' '.$whereClause;
@@ -467,143 +509,4 @@ class tlRole extends tlDBObject
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 }
-
-/**
- * class which represents a right in TestLink
- * @package 	TestLink
- */
-class tlRight extends tlDBObject
-{
-	/**
-	 * @var string the name of the right
-	 */
-	public $name;
-	
-	/**
-	 * constructor
-	 * 
-	 * @param resource $db database handler
-	 */
-	function __construct($dbID = null)
-	{
-		parent::__construct($dbID);
-	}
-	
-	/** 
-	 * brings the object to a clean state
-	 * 
-	 * @param integer $options any combination of TLOBJ_O_ Flags
-	 */
-	protected function _clean($options = self::TLOBJ_O_SEARCH_BY_ID)
-	{
-		$this->name = null;
-		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
-			$this->dbID = null;
-	}
-	
-	/** 
-	 * Magic function, called by PHP whenever right object should be printed
-	 * 
-	 * @return string returns the name of the right
-	 */
-	public function __toString()
-	{
-		return $this->name;
-	}
-	
-	//BEGIN interface iDBSerialization
-	/** 
-	 * Read a right object from the database
-	 *
-	 * @param resource &$db reference to database handler
-	 * @param interger $option any combination of TLOBJ_O_ flags
-	 * 
-	 * @return integer returns tl::OK on success, tl::ERROR else
-	 */
-	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
-	{
-		$this->_clean($options);
-		$sql = "SELECT id,description FROM {$this->tables['rights']} ";
-		
-		$clauses = null;
-		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
-			$clauses[] = "id = {$this->dbID}";		
-		if ($clauses)
-			$sql .= " WHERE " . implode(" AND ",$clauses);
-			
-		$info = $db->fetchFirstRow($sql);			 
-		if ($info)
-			$this->name = $info['description'];
-
-		return $info ? tl::OK : tl::ERROR;
-	}
-
-	/**
-	 * Get a right by its database id
-	 * 
-	 * @param resource &$db reference to database handler
-	 * @param integer $id the database identifier
-	 * @param integer $detailLevel the detail level, any combination TLOBJ_O_GET_DETAIL_ flags
-	 *
-	 * @return tlRight returns the create right or null
-	 */
-	static public function getByID(&$db,$id,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
-	{
-		return tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
-	}
-	
-	/** 
-	 * @param resource &$db reference to database handler
-	 **/    
-	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
-	{
-		if (!sizeof($ids))
-			return null;
-
-		$sql = "SELECT id,description FROM {$this->tables['rights']} " .
-		       " WHERE id IN (".implode(",",$ids).")";
-		$rows = $db->fetchArrayRowsIntoMap($sql,"id");
-		$rights = null;
-		foreach($rows as $id => $row)
-		{
-			$right = new tlRight($id);
-			$right->name = $row[0]["description"];
-			$rights[$id] = $right;
-		}
-		return $rights;
-	}
-
-	/** 
-	 * @param resource &$db reference to database handler
-	 **/    
-	static public function getAll(&$db,$whereClause = null,$column = null,
-	                              $orderBy = null,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
-	{
-		$tables = tlObject::getDBTables('rights');
-		$sql = " SELECT id FROM {$tables['rights']} ";
-		if (!is_null($whereClause))
-			$sql .= ' '.$whereClause;
-	
-		$sql .= is_null($orderBy) ? " ORDER BY id ASC " : $orderBy;
-		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
-	}
-
-	/** 
-	 * @param resource &$db reference to database handler
-	 **/    
-	public function writeToDB(&$db)
-	{
-		return self::handleNotImplementedMethod(__FUNCTION__);
-	}
-	
-	/** 
-	 * @param resource &$db reference to database handler
-	 **/    
-	public function deleteFromDB(&$db)
-	{
-		return self::handleNotImplementedMethod(__FUNCTION__);
-	}
-}
-
-
 ?>

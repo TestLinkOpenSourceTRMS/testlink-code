@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlKeyword.class.php,v 1.1 2009/08/24 19:18:45 schlundus Exp $
+ * @version    	CVS: $Id: tlKeyword.class.php,v 1.2 2009/08/26 19:10:28 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -137,9 +137,7 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 				$clauses[] = "id IN (".implode(",",$ids).")";
 		}
 		if ($clauses)
-		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
-		}
 		
 		return $query;
 	}

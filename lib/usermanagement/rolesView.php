@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesView.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/08/26 19:10:28 $ by $Author: schlundus $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -60,6 +60,9 @@ $smarty->assign('affectedUsers',$affectedUsers);
 $smarty->assign('role_id_replacement',config_get('role_replace_for_deleted_roles'));
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+/**
+ * @return object returns the arguments for the page
+ */
 function init_args()
 {
 	$iParams = array(
@@ -75,6 +78,13 @@ function init_args()
     return $args;
 }
 
+
+/**
+ * @param $db resource the database connection handle
+ * @param $user the current active user
+ * 
+ * @return boolean returns true if the page can be accessed
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,"role_management");

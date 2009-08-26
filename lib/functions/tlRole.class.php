@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlRole.class.php,v 1.1 2009/08/26 19:10:28 schlundus Exp $
+ * @version    	CVS: $Id: tlRole.class.php,v 1.2 2009/08/26 20:01:11 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -123,13 +123,11 @@ class tlRole extends tlDBObject
 			return tl::OK;
 
 		$this->_clean($options);
+
 		$getFullDetails = ($this->detailLevel & self::TLOBJ_O_GET_DETAIL_RIGHTS);
-		
 		$sql = "SELECT a.id AS role_id,a.description AS role_desc, a.notes ";
 		if ($getFullDetails)
-		{
 			$sql .= " ,c.id AS right_id,c.description ";
-		}
 		
 		$sql .= " FROM {$this->object_table} a ";
 		
@@ -141,18 +139,14 @@ class tlRole extends tlDBObject
 		
 		$clauses = null;
 		if ($options & self::ROLE_O_SEARCH_BYNAME)
-		{
 			$clauses[] = "a.description = '".$db->prepare_string($this->name)."'";
-		}
+
 		if ($options & self::TLOBJ_O_SEARCH_BY_ID)
-		{
 			$clauses[] = "a.id = {$this->dbID}";		
-		}
+		
 		if ($clauses)
-		{
 			$sql .= " WHERE " . implode(" AND ",$clauses);
-		}
-			
+		
 		$rightInfo = $db->get_recordset($sql);			 
 		if ($rightInfo)
 		{
@@ -161,9 +155,7 @@ class tlRole extends tlDBObject
 			$this->description = $rightInfo[0]['notes'];
 
 			if ($getFullDetails)
-			{
 				$this->rights = $this->buildRightsArray($rightInfo);
-			}	
 		}
 		$readSucceeded = $rightInfo ? tl::OK : tl::ERROR;
 		if ($readSucceeded >= tl::OK)
@@ -178,7 +170,7 @@ class tlRole extends tlDBObject
 	public function writeToDB(&$db)
 	{
 		//@TODO schlundus, now i removed the potentially modified object from the cache
-		//another optimization could be read the new contents if storing was successfully into the
+		//another optimization could be: read the new contents if storing was successfully into the
 		//cache
 		$this->removeFromCache();
 		
@@ -204,15 +196,12 @@ class tlRole extends tlDBObject
 					   "'" . $db->prepare_string($this->description)."')";
 				$result = $db->exec_query($sql);	
 				if($result)
-				{
 					$this->dbID = $db->insert_id($this->object_table);
-				}	
 			}
+			
 			$result = $result ? tl::OK : self::E_DBERROR;
 			if ($result >= tl::OK)
-			{
 				$result = $this->addRightsToDB($db);
-			}	
 		}
 		
 		return $result;
@@ -245,9 +234,8 @@ class tlRole extends tlDBObject
 		$role = new tlRole();
 		$role->name = $name;
 		if ($role->readFromDB($db,self::ROLE_O_SEARCH_BYNAME) >= tl::OK && $role->dbID != $id)
-		{
 			return $role->dbID;
-		}
+
 		return null;
 	}
 	
@@ -295,8 +283,7 @@ class tlRole extends tlDBObject
 		$tables = array('users','user_testproject_roles','user_testplan_roles');
 		foreach($tables as $table)
 		{
-		    $table_name = DB_TABLE_PREFIX . $table;
-			$sql = "UPDATE {$table_name} SET role_id = {$newRole} WHERE role_id = {$this->dbID}";
+			$sql = "UPDATE {$this->tables[$table]} SET role_id = {$newRole} WHERE role_id = {$this->dbID}";
 			$result = $result && ($db->exec_query($sql) ? true : false);
 		}
 		return $result ? tl::OK : tl::ERROR;
@@ -465,6 +452,7 @@ class tlRole extends tlDBObject
 		         "WHERE role_id = {$this->dbID}";
 		$rightInfo = $db->get_recordset($sql);
 		$this->rights = buildRightsArray($rightInfo);
+		
 		return tl::OK;
 	}	
 	

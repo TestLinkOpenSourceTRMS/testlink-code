@@ -18,6 +18,7 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	function __construct($dbID = null)
 	{
 		parent::__construct($dbID);
+		$this->activateCaching = true;
 	}
 	
 	/** 
@@ -54,6 +55,19 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 		$this->name = $name;
 	}
 	
+	/* Copies a tlRole object from another
+	 * 
+	 * @param $role tlRole the role which should be used to initialize this role 
+	 * 
+	 * @return integer always returns tl::OK
+	 * @see lib/functions/tlDBObject#copyFromCache($object)
+	 */
+	public function copyFromCache($right)
+	{
+		$this->name = $right->name;
+		
+		return tl::OK;
+	}
 	/** 
 	 * Read a right object from the database
 	 *
@@ -64,12 +78,19 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	 */
 	public function readFromDB(&$db,$options = self::TLOBJ_O_SEARCH_BY_ID)
 	{
+		if ($this->readFromCache() >= tl::OK)
+			return tl::OK;
+
+		$readSucceeded = tl::ERROR;	
 		$this->_clean($options);
 		$query = $this->getReadFromDBQuery($this->dbID,$options);
 		$info = $db->fetchFirstRow($query);
 		if ($info)
-			$this->readFromDBRow($info);
+			$readSucceeded = $this->readFromDBRow($info);
 		
+		if ($readSucceeded >= tl::OK)
+			$this->addToCache();	
+			
 		return $info ? tl::OK : tl::ERROR;
 	}
 
@@ -80,6 +101,8 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	public function readFromDBRow($row)
 	{
 		$this->initialize($row['id'],$row['description']);
+		
+		return tl::OK;
 	}
 	
 	/* Returns a query which can be used to read one or multiple rights from a db
@@ -154,6 +177,10 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	 **/    
 	public function writeToDB(&$db)
 	{
+		//@TODO schlundus, now i removed the potentially modified object from the cache
+		//another optimization could be read the new contents if storing was successfully into the
+		//cache
+		$this->removeFromCache();
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 	
@@ -162,6 +189,7 @@ class tlRight extends tlDBObject implements iDBBulkReadSerialization
 	 **/    
 	public function deleteFromDB(&$db)
 	{
+		$this->removeFromCache();
 		return self::handleNotImplementedMethod(__FUNCTION__);
 	}
 }

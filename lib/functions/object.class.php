@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.42 2009/08/24 19:18:45 schlundus Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.43 2009/08/26 20:01:10 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -582,8 +582,8 @@ abstract class tlDBObject extends tlObject implements iDBSerialization
 
 		if (isset(self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID]))
 		{
-			$role = self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID];
-			return $this->copyFromCache($role);
+			$object = self::$objectCache[get_class($this)][$this->detailLevel][$this->dbID];
+			return $this->copyFromCache($object);
 			
 		}
 		return tl::ERROR;

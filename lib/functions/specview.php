@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.38 2009/08/21 07:07:13 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.39 2009/08/27 17:22:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -810,12 +810,12 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 						$outRef['external_id'] = $testCase['tc_external_id'];
 						$outRef['tcversions_execution_type'][$testCase['id']] = $testCase['execution_type'];
 					}
-					$exec_order= isset($linked_testcase['execution_order'])? $linked_testcase['execution_order']:0;
+					$exec_order= isset($linked_testcase[0]['execution_order'])? $linked_testcase[0]['execution_order']:0;
 					$outRef['execution_order'] = $exec_order;
 					// 20090625 - Eloff
 					if( isset($linked_testcase['priority']) )
 					{
-						$outRef['priority'] = priority_to_level($linked_testcase['priority']);
+						$outRef['priority'] = priority_to_level($linked_testcase[0]['priority']);
 					}
 					$outRef['linked_version_id']= $testCase['id'];
 					$out[$parent_idx]['write_buttons'] = 'yes';

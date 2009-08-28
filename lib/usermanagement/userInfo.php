@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: userInfo.php,v $
 *
-* @version $Revision: 1.29 $
-* @modified $Date: 2009/04/17 19:57:32 $
+* @version $Revision: 1.30 $
+* @modified $Date: 2009/08/28 20:37:04 $
 *
 * Displays the users' information and allows users to change
 * their passwords and user info.
@@ -85,14 +85,7 @@ $smarty->assign('user_feedback', $op->user_feedback);
 $smarty->assign('update_title_bar',0);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-/*
-  function:
 
-  args :
-
-  returns:
-
-*/
 function init_args()
 {
 	$iParams = array(
@@ -148,14 +141,7 @@ function changePassword(&$argsObj,&$userMgr)
     return $op;
 }
 
-/*
-  function: generateApiKey
 
-  args :
-
-  returns:
-
-*/
 function generateApiKey(&$argsObj,&$user)
 {
 	$op = new stdClass();

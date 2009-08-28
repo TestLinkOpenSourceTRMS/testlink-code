@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/08/10 18:57:58 $ by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/08/28 20:37:04 $ by $Author: schlundus $
  *
  * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
  *      20080827 - franciscom - BUGID 1692
@@ -60,14 +60,6 @@ $smarty->assign('gui',$gui);
 $smarty->assign('highlight',$gui->highlight);
 renderGui($smarty,$args,$templateCfg);
 
-/*
-  function: init_args
-
-  args:
-
-  returns:
-
-*/
 function init_args()
 {
 	$iParams = array(
@@ -87,14 +79,6 @@ function init_args()
 }
 
 
-/*
-  function: doOperation
-
-  args:
-
-  returns:
-
-*/
 function doOperation(&$dbHandler,$argsObj,$operation)
 {
 	$rights = implode("','",array_keys($argsObj->grant));
@@ -136,14 +120,7 @@ function doOperation(&$dbHandler,$argsObj,$operation)
 	return $op;
 }
 
-/*
-  function: renderGui
 
-  args :
-
-  returns:
-
-*/
 function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 {
     $doRender = false;
@@ -203,14 +180,6 @@ function getRightsCfg()
 }
 
 
-/*
-  function: initialize_gui
-
-  args : -
-
-  returns:
-
-*/
 function initialize_gui($editorType)
 {
     $gui = new stdClass();
@@ -223,14 +192,7 @@ function initialize_gui($editorType)
     return $gui;
 }
 
-/*
-  function: initialize_op
 
-  args : -
-
-  returns:
-
-*/
 function initialize_op()
 {
     $op = new stdClass();
@@ -240,14 +202,6 @@ function initialize_op()
     return $op;
 }
 
-/*
-  function: complete_gui
-
-  args :
-
-  returns:
-
-*/
 function complete_gui(&$dbHandler,&$guiObj,&$argsObj,&$roleObj,&$webEditorObj)
 {
     $actionCfg['operation'] = array('create' => 'doCreate', 'edit' => 'doUpdate',

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/04/16 11:10:49 $ by $Author: havlat $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/08/28 20:37:03 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -35,21 +35,20 @@ $gui = initializeGui($args,$req_spec_mgr,$_SESSION);
 $importResult = null;
 $arrImport = null;
 
-
 switch($args->doAction)
 {
     case 'uploadFile':
-        $dummy=doUploadFile($db,$gui->fileName,$args,$req_spec_mgr);
-        $gui->items=$dummy->items;
-        $gui->file_check=$dummy->file_check;
-        if($gui->file_check['status_ok']==0)
+        $dummy = doUploadFile($db,$gui->fileName,$args,$req_spec_mgr);
+        $gui->items = $dummy->items;
+        $gui->file_check = $dummy->file_check;
+        if($gui->file_check['status_ok'] == 0)
         {
-            $gui->doAction='askFileName';
+            $gui->doAction = 'askFileName';
         }
     break;
     
     case 'executeImport':
-        $dummy=doExecuteImport($db,$gui->fileName,$args,$req_spec_mgr);
+        $dummy = doExecuteImport($db,$gui->fileName,$args,$req_spec_mgr);
     break;
     
         
@@ -59,24 +58,23 @@ switch($args->doAction)
  * doExecuteImport
  *
  */
-function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
+function doExecuteImport(&$dbHandler,$fileName,&$args,&$reqSpecMgr)
 {
-    $retval=new stdClass();
+    $retval = new stdClass();
     $retval->items = null;
     $retval->msg = '';
     
-
-	if( strcasecmp($argsObj->importType,'XML') == 0 )
+	if($args->importType == 'XML')
 	{
-	    $file_check['status_ok']=!(($xml=@simplexml_load_file($gui->fileName)) === FALSE);
+		$xml = simplexml_load_file($fileName);
 	    // if achecked_req is null => user has not selected any requirement, anyway we are going to create reqspec tree
-	    $filter['requirements']=$args->achecked_req;
+	    $filter['requirements'] = $args->achecked_req;
 	    $reqSpecMgr->createFromXML($xml->req_spec,$args->tproject_id,$args->req_spec_id,$args->user_id);
 	}
 	else
 	{
-	    $retval->items = doImport($dbHandler,$argsObj->user_id,$argsObj->req_spec_id,$fileName,
- 	    				          $argsObj->importType,$argsObj->emptyScope,$argsObj->conflictSolution,true);
+	    $retval->items = doImport($dbHandler,$args->user_id,$args->req_spec_id,$fileName,
+ 	    				          $args->importType,$args->emptyScope,$args->conflictSolution,true);
 	}
 	unlink($fileName);
 	$retval->msg = lang_get('req_import_finished');

@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.17 2009/08/08 14:08:20 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.18 2009/08/28 20:37:03 schlundus Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -9,7 +9,7 @@
        20081228 - franciscom - new feature user can choose vertical order of link groups
 *}
 {lang_get var="labels"
-          s="title_test_plan,ok,testplan_role,msg_no_rights_for_tp,
+          s="current_test_plan,ok,testplan_role,msg_no_rights_for_tp,
              title_test_execution,href_execute_test,href_rep_and_metrics,
              href_update_tplan,href_newest_tcversions,
              href_my_testcase_assignments,href_platform_assign,
@@ -112,8 +112,8 @@
 
  	   <form name="testplanForm" action="lib/general/mainPage.php">
        {if $gui->countPlans > 0}
-		     {$labels.title_test_plan}
-		     <select style="width:50%;z-index:1"  name="testplan" onchange="this.form.submit();">
+		     {$labels.current_test_plan}:<br/>
+		     <select style="width:99%;z-index:1"  name="testplan" onchange="this.form.submit();">
 		     	{section name=tPlan loop=$gui->arrPlans}
 		     		<option value="{$gui->arrPlans[tPlan].id}"
 		     		        {if $gui->arrPlans[tPlan].selected} selected="selected" {/if}

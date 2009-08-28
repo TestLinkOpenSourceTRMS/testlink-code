@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/01/06 15:34:06 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/08/28 20:37:04 $ by $Author: schlundus $
  *
  * Scope: test case and test suites export
  * 
  * Revisions:
  * 20081027 - martin - cleanup
- * 20070113 - franciscom - added logic to create messagexportDataToXMLexportDataToXMLe when there is 
+ * 20070113 - franciscom - added logic to create message when there is 
  *                         nothing to export.
  *
  * 20061118 - franciscom - using different file name, depending the
@@ -23,6 +23,7 @@
 
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
+require_once("../functions/xml.inc.php");
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 

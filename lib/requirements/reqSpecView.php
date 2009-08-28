@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/01/12 21:53:43 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/08/28 20:37:03 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -50,20 +50,14 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
+	$iParams = array(
+			"req_spec_id" => array(tlInputParameter::INT_N),
+	);
     $args = new stdClass();
+    R_PARAMS($iParams,$args);
 
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-    $args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
     

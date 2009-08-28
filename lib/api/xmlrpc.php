@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2009/08/19 19:56:25 $ by $Author: schlundus $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2009/08/28 20:37:03 $ by $Author: schlundus $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -79,7 +79,7 @@ require_once("APIErrors.php");
 require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
 require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
 require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
-require_once(dirname(__FILE__) . "/../functions/user.class.php");
+//require_once(dirname(__FILE__) . "/../functions/user.class.php");
 
 /**
  * The entry class for serving XML-RPC Requests

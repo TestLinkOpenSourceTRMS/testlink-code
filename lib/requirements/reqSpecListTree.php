@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: reqSpecListTree.php,v 1.11 2009/06/08 17:40:22 schlundus Exp $
+* 	@version 	$Id: reqSpecListTree.php,v 1.12 2009/08/28 20:37:03 schlundus Exp $
 * 	@author 	Francisco Mancardi (francisco.mancardi@gmail.com)
 * 
 * 	Tree menu with requirement specifications.
@@ -17,27 +17,20 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initializeGui($args,$_SESSION['basehref']);
+$gui = initializeGui($args,$args->basehref);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->assign('tree', null);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-
-/*
-  function: init_args
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
     $args = new stdClass();
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 'undefned';
+    $args->basehref = $_SESSION['basehref'];
+    
     return $args;
 }
 

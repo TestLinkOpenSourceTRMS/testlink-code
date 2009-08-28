@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.167 2009/08/26 19:10:27 schlundus Exp $
+ * @version    	CVS: $Id: common.php,v 1.168 2009/08/28 20:37:03 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -68,7 +68,6 @@ require_once("attachment.class.php");
 require_once("testproject.class.php"); 
 
 /** @TODO use the next include only if it is used -> must be removed */
-require_once("user.class.php");
 require_once("treeMenu.inc.php");
 require_once("exec_cfield_mgr.class.php");
 require_once("inputparameter.inc.php");

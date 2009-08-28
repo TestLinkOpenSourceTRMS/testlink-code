@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.7 2009/03/25 20:53:12 schlundus Exp $ 
+$Id: reqSpecListTree.tpl,v 1.8 2009/08/28 20:37:03 schlundus Exp $ 
 show requirement specifications tree menu
 
 rev: 20080831 - franciscom - treeCfg
@@ -39,18 +39,17 @@ rev: 20080831 - franciscom - treeCfg
 </head>
 
 <body>
-
 <h1 class="title">{$gui->tree_title}</h1>
 <div style="margin: 3px;">
-  <form>
-  	<table class="smallGrey" width="100%">
-  		<tr>
-  			<td>&nbsp;</td>
-  	    <td><input type="button" value="{lang_get s='button_update_tree'}" style="font-size: 90%;"
-  	               onClick="javascript: parent.treeframe.location.reload();" />
-  	    </td>   
-  	  </tr>  
-    </table>
+	<form>
+  		<table class="smallGrey" width="100%">
+	  		<tr>
+	  			<td>&nbsp;</td>
+	  	    	<td><input type="button" value="{lang_get s='button_update_tree'}" style="font-size: 90%;"
+	  	               onClick="javascript: parent.treeframe.location.reload();" />
+	  	    	</td>   
+	  	  	</tr>  
+    	</table>
   </form>
 </div>
 

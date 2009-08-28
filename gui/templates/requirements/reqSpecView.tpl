@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.25 2009/04/27 10:20:51 havlat Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.26 2009/08/28 20:37:03 schlundus Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -48,9 +48,7 @@
 </script>
 </head>
 
-
 <body {$body_onload}>
-
 <h1 class="title">
 	{$gui->main_descr|escape}
 	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
@@ -72,35 +70,32 @@
 		</td>
 	</tr>
   {if $gui->req_spec.total_req != 0}
-  <tr>
-  <td>{lang_get s='req_total'}{$smarty.const.TITLE_SEP}{$gui->req_spec.total_req}</td>
-   </tr>
+  	<tr>
+  		<td>{lang_get s='req_total'}{$smarty.const.TITLE_SEP}{$gui->req_spec.total_req}</td>
+   	</tr>
   {/if}
 	<tr>
 		<td>&nbsp;</td>
 	</tr>
-
 	<tr>
-	  <td>
-  	{$gui->cfields}
-  	</td>
+		<td>
+  			{$gui->cfields}
+  		</td>
 	</tr>
-
- <tr class="time_stamp_creation">
-  <td colspan="2">
-      {lang_get s='title_created'}&nbsp;{localize_timestamp ts=$gui->req_spec.creation_ts }&nbsp;
-      		{lang_get s='by'}&nbsp;{$gui->req_spec.author|escape}
-  </td>
-  </tr>
+	<tr class="time_stamp_creation">
+		<td colspan="2">
+	    	{lang_get s='title_created'}&nbsp;{localize_timestamp ts=$gui->req_spec.creation_ts}&nbsp;
+	      	{lang_get s='by'}&nbsp;{$gui->req_spec.author|escape}
+	  	</td>
+	 </tr>
   {if $gui->req_spec.modifier != ""}
     <tr class="time_stamp_creation">
-    <td colspan="2">
-    {lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$gui->req_spec.modification_ts}
-		  &nbsp;{lang_get s='by'}&nbsp;{$gui->req_spec.modifier|escape}
-    </td>
+    	<td colspan="2">
+    		{lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$gui->req_spec.modification_ts}
+		  	&nbsp;{lang_get s='by'}&nbsp;{$gui->req_spec.modifier|escape}
+    	</td>
     </tr>
   {/if}
-
 </table>
 
 {assign var="bDownloadOnly" value=true}

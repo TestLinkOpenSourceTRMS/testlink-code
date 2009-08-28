@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.111 2009/08/19 13:38:31 havlat Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.112 2009/08/28 20:37:03 schlundus Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -300,7 +300,7 @@ $g_locales_timestamp_format = array(
 	'it_IT' => '%d/%m/%Y %H:%M:%S',
 	'ja_JP' => '%Y/%m/%d %H:%M:%S',
 	'ko_KR' => '%Y/%m/%d %H:%M:%S',
-	'nl_NL' => '%d-%m-%Y %H.%M:%S',
+	'nl_NL' => '%d-%m-%Y %H:%M:%S',
 	'pl_PL' => '%d.%m.%Y %H:%M:%S',
 	'pt_BR' => '%d/%m/%Y %H:%M:%S',
 	'ru_RU' => '%d/%m/%Y %H:%M:%S',

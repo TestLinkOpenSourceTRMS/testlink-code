@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.101 2009/08/19 19:56:25 schlundus Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.102 2009/08/28 20:37:03 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -27,9 +27,6 @@
 
 /** core functions */
 require_once("common.php");
-
-/** conqueror of user functionality */
-require_once("user.class.php");
 
 $authCfg = config_get('authentication');
 if( 'LDAP' == $authCfg['method'] )
@@ -384,15 +381,6 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null,
 	return buildUserMap($userFilter,true,$additional_testers);
 }
 
-
-/*
-  function: initialize_tabsmenu
-
-  args:
-
-  returns:
-
-*/
 function initialize_tabsmenu()
 {
 	$hl = new stdClass();

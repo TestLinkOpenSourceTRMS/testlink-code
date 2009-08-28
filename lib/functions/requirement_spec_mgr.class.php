@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/07/22 17:29:43 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/08/28 20:37:03 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1175,47 +1175,47 @@ function html_table_of_custom_field_values($id,$tproject_id)
   *
   *  
   */
-function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters=null)
+function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
 {
-    $items=$this->xmlToMapReqSpec($xml);
+	$items = $this->xmlToMapReqSpec($xml);
     $req_mgr = new requirement_mgr($this->db);
-    $copy_reqspec=null;
-    $copy_req=null;
-    $has_filters=!is_null($filters);
+    $copy_reqspec = null;
+    $copy_req = null;
+    $has_filters = !is_null($filters);
     
     if($has_filters)
     {
-        if( !is_null($filters['requirements']) )
+        if(!is_null($filters['requirements']))
         {
             foreach($filters['requirements'] as $reqspec_pos => $requirements_pos)
             {
-                $copy_req[$reqspec_pos]=!is_null($requirements_pos) ? array_keys($requirements_pos) : null;
+                $copy_req[$reqspec_pos] = is_null($requirements_pos) ? null : array_keys($requirements_pos);
             }
         }
     }
    
-    $loop2do=count($items);
-    $container_id[0]=is_null($parent_id) || $parent_id==0 ? $tproject_id : $parent_id;
+    $loop2do = count($items);
+    $container_id[0] = (is_null($parent_id) || $parent_id == 0) ? $tproject_id : $parent_id;
     
     for($idx = 0;$idx < $loop2do; $idx++)
     {
-        $elem=$items[$idx]['req_spec'];
-        $depth=$elem['level'];
+        $elem = $items[$idx]['req_spec'];
+        $depth = $elem['level'];
         
-        echo "Going to create reqspec:" . $copy_reqspec[$idx] . ":" . $elem['title'] . "<br>";
-        $result=$this->create($tproject_id,$container_id[$depth], $elem['title'],$elem['scope'],0,$author_id);
+        //echo "Going to create reqspec:" . $copy_reqspec[$idx] . ":" . $elem['title'] . "<br>";
+        $result = $this->create($tproject_id,$container_id[$depth], $elem['title'],$elem['scope'],0,$author_id);
         if($result['status_ok'])
         {
-            $container_id[$depth+1]=$result['id']; 
-            $requirementSet=$items[$idx]['requirements'];
-            $create_requirements=(!$has_filters || isset($copy_req[$idx])) && !is_null($requirementSet);
+            $container_id[$depth+1] = $result['id']; 
+            $requirementSet = $items[$idx]['requirements'];
+            $create_requirements = (!$has_filters || isset($copy_req[$idx])) && !is_null($requirementSet);
             if($create_requirements)
             {
-                $items_qty=isset($copy_req[$idx]) ? count($copy_req[$idx]) : count($requirementSet);
-                $keys2insert=isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($requirementSet);
+                $items_qty = isset($copy_req[$idx]) ? count($copy_req[$idx]) : count($requirementSet);
+                $keys2insert = isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($requirementSet);
                 for($jdx = 0;$jdx < $items_qty; $jdx++)
                 {
-                     $req=$requirementSet[$keys2insert[$jdx]];
+                     $req = $requirementSet[$keys2insert[$jdx]];
                      $req_mgr->create($result['id'],$req['docid'],$req['title'],
                                       $req['description'],$author_id,$req['status'],$req['type']);
                 } 

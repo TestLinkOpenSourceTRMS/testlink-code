@@ -1,12 +1,12 @@
-<?php
+#<?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
 * This script is distributed under the GNU General Public License 2 or later.
 *
 * Filename $RCSfile: usersAssign.php,v $
 *
-* @version $Revision: 1.24 $
-* @modified $Date: 2009/06/10 19:36:00 $ $Author: franciscom $
+* @version $Revision: 1.25 $
+* @modified $Date: 2009/08/28 20:37:04 $ $Author: schlundus $
 *
 * Allows assigning users roles to testplans or testprojects
 *
@@ -109,10 +109,6 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-/**
- * init_args
- *
- */
 function init_args()
 {
 	$iParams = array(
@@ -338,10 +334,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
  	return array($effectiveRoles,$features,$argsObj->featureID);
 }
 
-/**
- * doUpdate
- *
- */
+
 function doUpdate(&$dbHandler,&$argsObj,&$featureMgr)
 {
 	$featureMgr->deleteUserRoles($argsObj->featureID);

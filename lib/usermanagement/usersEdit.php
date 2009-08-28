@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.34 $
-* @modified $Date: 2009/06/03 17:46:41 $ $Author: franciscom $
+* @version $Revision: 1.35 $
+* @modified $Date: 2009/08/28 20:37:04 $ $Author: schlundus $
 *
 * Allows editing a user
 */
@@ -64,7 +64,6 @@ switch($args->doAction)
 }
 
 $op->operation = $actionOperation[$args->doAction];
-
 $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
 unset($roles[TL_ROLES_UNDEFINED]);
 
@@ -79,15 +78,6 @@ $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
 renderGui($smarty,$args,$templateCfg);
 
-
-/*
-  function:
-
-  args:
-
-  returns:
-
-*/
 function init_args()
 {
 	$iParams = array(
@@ -108,11 +98,10 @@ function init_args()
 	);
 
 	$args = new stdClass();
-  	$pParams = R_PARAMS($iParams,$args);
+  	R_PARAMS($iParams,$args);
  	
   	return $args;
 }
-
 
 /*
   function: doCreate
@@ -161,14 +150,6 @@ function doCreate(&$dbHandler,&$argsObj)
 }
 
 
-/*
-  function: doUpdate
-
-  args:
-
-  returns:
-
-*/
 function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 {
     $op = new stdClass();
@@ -177,19 +158,12 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
 	$op->status = $op->user->readFromDB($dbHandler);
 	if ($op->status >= tl::OK)
 	{
-		//$changes = checkUserPropertiesChanges($dbHandler,$op->user,$argsObj);
-
 		initializeUserProperties($op->user,$argsObj);
 		$op->status = $op->user->writeToDB($dbHandler);
 		if ($op->status >= tl::OK)
 		{
 			logAuditEvent(TLS("audit_user_saved",$op->user->login),"SAVE",$op->user->dbID,"users");
-			/*
-		  	foreach($changes as $key => $value)
-			{
-			    logAuditEvent($value['msg'],$value['activity'],$op->user->dbID,"users");
-			}
-			*/
+
 			if ($sessionUserID == $argsObj->user_id)
 			{
 				$_SESSION['currentUser'] = $op->user;
@@ -208,15 +182,6 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
     return $op;
 }
 
-
-/*
-  function: createNewPassword
-
-  args :
-
-  returns: -
-
-*/
 function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 {
 	$op = new stdClass();
@@ -230,75 +195,6 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 
 	return $op;
 }
-
-
-
-
-
-/*
-  function: checkUserPropertiesChanges
-            do checks on selected properties and return information
-            about changed members useful for audit log porpuses.
-
-  args: dbHandler
-        userObj: data read from DB
-        argsObj: data entry from User Interface
-
-  returns: null or array where each element is a map with following structure:
-
-           ['property']= property name, just for debug usage
-           ['msg']= message for logAudit call
-           ['activity']= activityCode for logAudit call
-
-*/
-function checkUserPropertiesChanges(&$dbHandler,&$userObj,&$argsObj)
-{
-
-  $idx=0;
-  $key2compare=array();
-  $key2compare['numeric'][]=array('old' => 'globalRoleID',
-                                  'new' => 'rights_id',
-                                  'decode' => 'decodeRoleId',
-                                  'label' => 'audit_user_role_changed');
-
-  $key2compare['numeric'][]=array('old' => 'isActive',
-                                  'new' => 'user_is_active',
-                                  'label' => 'audit_user_active_status_changed');
-
-
-  foreach($key2compare['numeric'] as $key => $value)
-  {
-      $old=$value['old'];
-      $new=$value['new'];
-      $oldValue=$userObj->$old;
-      $newValue=$argsObj->$new;
-
-      if( $oldValue != $newValue )
-      {
-          if( isset($value['decode']) )
-          {
-              $oldValue=$value['decode']($dbHandler,$userObj->$old);
-              $newValue=$value['decode']($dbHandler,$argsObj->$new);
-          }
-          $changes[$idx]['property']=$old;
-          $changes[$idx]['msg']=TLS($value['label'],$userObj->login,$oldValue,$newValue);
-          $changes[$idx]['activity']='CHANGE';
-          $idx++;
-      }
-  }
-
-	// Add general message only if no important change registered
-	if($idx == 0)
-	{
-		$changes[$idx]['property']='general';
-		$changes[$idx]['msg']=TLS('audit_user_saved',$userObj->login);
-		$changes[$idx]['activity']='SAVE';
-	}
-
-	return $changes;
-}
-
-
 
 /*
   function: initializeUserProperties
@@ -323,29 +219,12 @@ function initializeUserProperties(&$userObj,&$argsObj)
 	$userObj->isActive = $argsObj->user_is_active;
 }
 
-
-/*
-  function:
-
-  args:
-
-  returns:
-
-*/
 function decodeRoleId(&$dbHandler,$roleID)
 {
     $roleInfo = tlRole::getByID($dbHandler,$roleID);
     return $roleInfo->name;
 }
 
-/*
-  function: renderGui
-
-  args :
-
-  returns:
-
-*/
 function renderGui(&$smartyObj,&$argsObj,$templateCfg)
 {
     $doRender = false;

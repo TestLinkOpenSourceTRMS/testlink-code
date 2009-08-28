@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/06/08 17:40:22 $ -  $Author: schlundus $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/08/28 20:37:04 $ -  $Author: schlundus $
  *
  * shows all users
  *
@@ -175,10 +175,10 @@ function init_args()
   returns: map
 
 */
-function getRoleColourCfg(&$dbHandler)
+function getRoleColourCfg(&$db)
 {
     $role_colour = config_get('role_colour');
-    $roles = tlRole::getAll($dbHandler,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
+    $roles = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_MINIMUM);
     unset($roles[TL_ROLES_UNDEFINED]);
     foreach($roles as $roleObj)
     {

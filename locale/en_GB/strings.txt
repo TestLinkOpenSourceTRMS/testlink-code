@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.470 2009/08/29 21:40:50 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.471 2009/08/29 23:18:02 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -218,6 +218,7 @@ $TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
 $TLS_warning_text_area_cf = "Custom Field %s accepts only 255 characters";
 $TLS_warning_countreq_numeric = "The count of REQs must be numeric!";
 $TLS_warn_session_timeout = "Your TestLink session expired.";
+$TLS_warn_demo = "We are sorry. This feature is disabled for Demo.";
 
 
 // Installation/Migration (TODO remove - migration is English only)

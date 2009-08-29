@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.16 2009/04/17 19:57:32 schlundus Exp $
+$Id: userInfo.tpl,v 1.17 2009/08/29 23:18:02 havlat Exp $
 
 rev: 20080908 - franciscom - email validity check
 *}
@@ -119,7 +119,12 @@ function checkPasswords(oldp,newp,newp_check)
 
 
 <h2>{lang_get s="title_personal_data"}</h2>
-<form method="post" action="{$action_mgmt}" onsubmit="return validatePersonalData(this)">
+<form method="post" action="{$action_mgmt}"
+	{if $tlCfg->demoMode}
+		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
+	{else}
+		onsubmit="return validatePersonalData(this)">
+	{/if}
 	<input type="hidden" name="doAction" value="editUser" />
 	<table class="common">
 		<tr>
@@ -165,7 +170,11 @@ function checkPasswords(oldp,newp,newp_check)
 <h2>{lang_get s="title_personal_passwd"}</h2>
 {if $external_password_mgmt eq 0 }
 	<form name="changePass" method="post" action="{$action_mgmt}"
+		{if $tlCfg->demoMode}
+		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
+		{else}
 		onsubmit="return checkPasswords('oldpassword','newpassword','newpassword_check');">
+		{/if}
 		<input type="hidden" name="doAction" value="changePassword" />
 		<table class="common">
 			<tr><th>{$labels.th_old_passwd}</th>

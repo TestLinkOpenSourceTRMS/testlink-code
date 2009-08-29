@@ -1,20 +1,22 @@
-#<?php
+<?php
 /**
-* TestLink Open Source Project - http://testlink.sourceforge.net/
-* This script is distributed under the GNU General Public License 2 or later.
-*
-* Filename $RCSfile: usersAssign.php,v $
-*
-* @version $Revision: 1.25 $
-* @modified $Date: 2009/08/28 20:37:04 $ $Author: schlundus $
-*
-* Allows assigning users roles to testplans or testprojects
-*
-* Development note:
-* Assign Test plans user roles do not allow Test Project selection,
-* then to change Test Project user need to use main Test Project Combo
-*
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * Allows assigning users roles to testplans or testprojects
+ *
+ * Development note:
+ * Assign Test plans user roles do not allow Test Project selection,
+ * then to change Test Project user need to use main Test Project Combo
+ * 
+ * @package 	TestLink
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: usersAssign.php,v 1.26 2009/08/29 23:18:02 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
+ *	None.
+ */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
 testlinkInitPage($db,false,false,"checkRights");

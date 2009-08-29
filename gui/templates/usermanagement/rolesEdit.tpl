@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.19 2009/08/07 06:58:10 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.20 2009/08/29 23:18:02 havlat Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -76,10 +76,14 @@ function validateForm(f)
 
 	<form name="rolesedit" id="rolesedit"
 		method="post" action="lib/usermanagement/rolesEdit.php"
-	{if $gui->grants->role_mgmt == "yes"}
-	  onSubmit="javascript:return validateForm(this);"
+	{if $tlCfg->demoMode}
+		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
 	{else}
+		{if $gui->grants->role_mgmt == "yes"}
+		onSubmit="javascript:return validateForm(this);"
+		{else}
 		onsubmit="return false"
+		{/if}
 	{/if}
 	>
 	<input type="hidden" name="roleid" value="{$gui->role->dbID}" />

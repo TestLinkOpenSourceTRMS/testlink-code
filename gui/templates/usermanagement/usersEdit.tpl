@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.24 2009/06/03 19:51:45 schlundus Exp $
+$Id: usersEdit.tpl,v 1.25 2009/08/29 23:18:02 havlat Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -146,8 +146,12 @@ function validateForm(f,check_password)
 {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
 <div class="workBack">
-<form method="post" action="lib/usermanagement/usersEdit.php" class="x-form"
-      name="useredit" onSubmit="javascript:return validateForm(this,{$check_password});">
+<form method="post" action="lib/usermanagement/usersEdit.php" class="x-form" name="useredit" 
+	{if $tlCfg->demoMode}
+		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">
+	{else}
+		onSubmit="javascript:return validateForm(this,{$check_password});">
+	{/if}
 
 	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="hidden" id="user_login" name="user_login" value="{$user_login}" />
@@ -260,7 +264,10 @@ function validateForm(f,check_password)
 
 {if $reset_password_enabled}
 <br />
-<form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password">
+<form method="post" action="lib/usermanagement/usersEdit.php" name="user_reset_password"
+	{if $tlCfg->demoMode}
+		onsubmit="alert('{lang_get s="warn_demo"}'); return false;"
+	{/if}>
 	<input type="hidden" name="doAction" id="doActionResetPassword" value="resetPassword" />
 	<input type="hidden" name="user_id" value="{$user_id}" />
 	<input type="submit" id="do_reset_password" name="do_reset_password" value="{$labels.button_reset_password}" />

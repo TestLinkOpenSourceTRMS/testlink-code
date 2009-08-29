@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.14 2009/06/03 19:51:45 schlundus Exp $ 
+$Id: usersAssign.tpl,v 1.15 2009/08/29 23:18:02 havlat Exp $ 
 
 rev:
     20090426 - franciscom - BUGID 2442- added bulk setting management
@@ -71,11 +71,14 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
    during refresh feature, and then we have a bad refresh on page getting a bug.
 *}
 {if $gui->features neq ''}
-  <form method="get" action="{$umgmt}/usersAssign.php">
-  	<input type="hidden" name="featureID" value="{$gui->featureID}" />
-  	<input type="hidden" name="featureType" value="{$gui->featureType}" />
-    <div>
-    	<table border='0'>
+<form method="get" action="{$umgmt}/usersAssign.php"
+	{if $tlCfg->demoMode}
+		onsubmit="alert('{lang_get s="warn_demo"}'); return false;"
+	{/if}>
+	<input type="hidden" name="featureID" value="{$gui->featureID}" />
+	<input type="hidden" name="featureType" value="{$gui->featureType}" />
+	<div>
+		<table border='0'>
     	{if $gui->featureType == 'testproject'}
     		<tr><td class="labelHolder">{$labels.TestProject}</td><td>&nbsp;</td>
     	{else}

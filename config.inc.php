@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.254 2009/08/29 19:21:42 schlundus Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.255 2009/08/29 23:18:02 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -843,6 +843,10 @@ $tlCfg->urgencyImportance = new stdClass();
 $tlCfg->urgencyImportance->threshold['low'] = 3;
 $tlCfg->urgencyImportance->threshold['high'] = 6;
 
+/**
+ * @var boolean Demo mode disables some functionality
+ */
+$tlCfg->demoMode = OFF;
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------

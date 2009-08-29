@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.468 2009/08/28 20:37:04 schlundus Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.469 2009/08/29 19:21:42 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -216,6 +216,7 @@ $TLS_warning_numeric_cf = "Custom Field %s accepts only numeric values";
 $TLS_warning_float_cf = "Custom Field %s accepts only numeric or float values";
 $TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
 $TLS_warning_text_area_cf = "Custom Field %s accepts only 255 characters";
+$TLS_warning_countreq_numeric = "The count of REQs must be numeric!";
 
 
 // Installation/Migration (TODO remove - migration is English only)

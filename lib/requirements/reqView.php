@@ -4,13 +4,11 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/07/09 10:25:30 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/08/29 19:21:42 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
- *
- * rev: 20080512 - franciscom - added showReqSpecTitle
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -35,6 +33,7 @@ function init_args()
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
+	
     $args->req_id = $args->requirement_id;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
@@ -57,13 +56,11 @@ function initialize_gui(&$dbHandler,$argsObj)
     
     $gui->req_id = $argsObj->req_id;
     $gui->req = $req_mgr->get_by_id($gui->req_id);
-    $gui->main_descr = lang_get('req') . TITLE_SEP . $gui->req['title'];
+    $gui->main_descr = lang_get('req') . $gui->pieceSep . $gui->req['title'];
     
-    $gui->showReqSpecTitle = $argsObj->showReqSpecTitle ;
+    $gui->showReqSpecTitle = $argsObj->showReqSpecTitle;
     if($gui->showReqSpecTitle)
-    {
-        $gui->parent_descr = lang_get('req_spec') . TITLE_SEP . $gui->req['req_spec_title'];
-    }
+        $gui->parent_descr = lang_get('req_spec') . $gui->pieceSep . $gui->req['req_spec_title'];
   
     $gui->req['coverage'] = $req_mgr->get_coverage($gui->req_id);
     $gui->cfields = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);

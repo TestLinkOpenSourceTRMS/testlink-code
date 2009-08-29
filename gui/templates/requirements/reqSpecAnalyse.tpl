@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.9 2009/06/08 17:40:21 schlundus Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.10 2009/08/29 19:21:42 schlundus Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 
 {lang_get var="labels"
@@ -37,7 +37,7 @@
 <tr><td>{$labels.req_total_count}</td><td>{$metrics.expectedTotal}</td></tr>
 <tr><td>{$labels.req_title_in_tl}</td><td>{$metrics.total}</td></tr>
 <tr><td>{$labels.req_title_covered}</td><td>{$metrics.covered}</td></tr>
-<tr><td>{$labels.req_title_uncovered}</td><td>{$metrics.total-$metrics.covered}</td></tr>
+<tr><td>{$labels.req_title_uncovered}</td><td>{$metrics.total-$metrics.notTestable-$metrics.covered}</td></tr>
 <tr><td>{$labels.req_title_not_in_tl}</td><td>{$metrics.uncovered}</td></tr>
 <tr><td>{$labels.req_title_nottestable}</td><td>{$metrics.notTestable}</td></tr>
 </table>
@@ -46,7 +46,7 @@
 
 
 <div class="workBack">
-<h2>{$labels.req_title_covered} - {$metrics.coveredTestPlan}</h2>
+<h2>{$labels.req_title_covered} - {$metrics.covered}</h2>
 
 {section name=row loop=$coverage.covered}
 {if $smarty.section.row.first}
@@ -76,7 +76,7 @@
 
 
 <div class="workBack">
-<h2>{$labels.req_title_uncovered} - {$metrics.coveredTestPlan}</h2>
+<h2>{$labels.req_title_uncovered} - {$metrics.total-$metrics.notTestable-$metrics.covered}</h2>
 {section name=row2 loop=$coverage.uncovered}
 {if $smarty.section.row2.first}
 <table class="simple">
@@ -98,7 +98,7 @@
 </div>
 
 <div class="workBack">
-<h2>{$labels.req_title_nottestable}</h2>
+<h2>{$labels.req_title_nottestable}  - {$metrics.notTestable}</h2>
 
 {section name=row3 loop=$coverage.nottestable}
 {if $smarty.section.row3.first}

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.84 2009/08/17 07:52:07 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.85 2009/08/29 19:21:42 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -41,9 +41,7 @@ $g_reqFormatStrings = array (
  * @author Martin Havlat
  * 
  * @param resource &$db reference to database handler
- * @param object &$db reference to testProject class instance
  * @param integer $srs_id requirements specification identifier
- * @param string $tproject_name
  * @param string $tproject_id
  * @param string $user_id
  * @param string $base_href
@@ -54,19 +52,20 @@ $g_reqFormatStrings = array (
  * @todo havlatm: refactore and move to other printing functions
  *  
  **/
-function renderSRS(&$db,&$tproject_mgr,$srs_id, $tproject_name, $tproject_id, $user_id, $base_href)
+function renderSRS(&$db,$srs_id, $tproject_id, $user_id, $base_href)
 {
+	$tproject_mgr = new testproject($db);
 	$tprojectInfo = $tproject_mgr->get_by_id($tproject_id);
 	
 	$doc_info = new stdClass(); 
-	$doc_info->tproject_name = htmlspecialchars($tproject_name);
+	$doc_info->tproject_name = htmlspecialchars($tprojectInfo["name"]);
 	$doc_info->tproject_scope = $tprojectInfo['notes'];
-	$doc_info->author='';
-	$doc_info->title='';
-	$doc_info->type_name='';
-	
+	$doc_info->title = '';
+	$doc_info->type_name = '';
 	
 	$arrSpec = $tproject_mgr->getReqSpec($tproject_id,$srs_id);
+	$doc_info->author =  gendocGetUserName($db, $arrSpec[0]['author_id']);
+	
 	$output =  renderHTMLHeader($arrSpec[0]['title'],$base_href);
 	$output .= renderFirstPage($doc_info);
 	
@@ -80,11 +79,10 @@ function renderSRS(&$db,&$tproject_mgr,$srs_id, $tproject_name, $tproject_id, $u
 /**
  * render Requirement for SRS
  *
+ * @param resource &$db reference to database handler
  * @param integer $srs_id
  *
  * @author Martin Havlat
- * 20051125 - scs - added escaping of req names
- * 20051202 - scs - fixed 241
  **/
 function renderRequirements(&$db,$srs_id)
 {
@@ -102,9 +100,7 @@ function renderRequirements(&$db,$srs_id)
 		}
 	}
 	else
-	{
 		$output .= '<p>' . lang_get('none') . '</p>';
-  }
 	$output .= "\n</div>";
 
 	return $output;
@@ -265,8 +261,7 @@ function loadImportedReq($CSVfile, $importType)
 		case 'XML':
 			$pfn = "importReqDataFromXML";
 			break;
-			
-		// 20081103 - sisajr
+
 		case 'DocBook':
 			$pfn = "importReqDataFromDocBook";
 			break;
@@ -319,9 +314,9 @@ function importReqDataFromCSV($fileName)
  */
 function importReqDataFromCSVDoors($fileName)
 {
-  $delimiter=',';
-  $bWithHeader = true;
-  $bDontSkipHeader = false;
+	$delimiter = ',';
+  	$bWithHeader = true;
+  	$bDontSkipHeader = false;
 
 	$destKeys = array("Object Identifier" => "title","Object Text" => "description",
 					          "Created By","Created On","Last Modified By","Last Modified On");
@@ -340,14 +335,12 @@ function importReqDataFromXML($fileName)
 	$dom = domxml_open_file($fileName);
 	$xmlReqs = null;
 	$xmlData = null;
-  $field_size=config_get('field_size');
+  	$field_size = config_get('field_size');
 
 	if ($dom)
-	{
 		$xmlReqs = $dom->get_elements_by_tagname("requirement");
-  }
   
-	$num_elem=sizeof($xmlReqs);
+	$num_elem = sizeof($xmlReqs);
 
 	for($i = 0;$i < $num_elem ;$i++)
 	{
@@ -872,8 +865,6 @@ function check_syntax_csv($fileName)
   return($ret);
 }
 
-
-
 // Must be implemented !!!
 function check_syntax_csv_doors($fileName)
 {
@@ -884,14 +875,4 @@ function check_syntax_csv_doors($fileName)
   return($ret);
 }
 
-
-// 20061224 - francisco.mancardi@gruppotesi.com
-function get_srs_by_id(&$db,$srs_id)
-{
-	$output=null;
-
-	$sql = "SELECT * FROM req_specs WHERE id={$srs_id}";
-	$output = $db->fetchRowsIntoMap($sql,'id');
-	return($output);
-}
 ?>

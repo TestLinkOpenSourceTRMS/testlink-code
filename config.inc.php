@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.253 2009/08/24 07:37:40 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.254 2009/08/29 19:21:42 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -497,8 +497,8 @@ $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
  * Image is expected in directory <testlink_root>/gui/themes/<your_theme>/images/
  * Leave text values empty if you would like to hide parameters.
  */
-$tlCfg->document_generator->company_name = 'Testlink Community [configure $tlCfg->document_generator->company_name]';
-$tlCfg->document_generator->company_copyright = '2009 &copy; Testlink Community';
+$tlCfg->document_generator->company_name = 'TestLink Community [configure $tlCfg->document_generator->company_name]';
+$tlCfg->document_generator->company_copyright = '2009 &copy; TestLink Community';
 $tlCfg->document_generator->confidential_msg = '';
 
 /** CSS used in printed html documents */

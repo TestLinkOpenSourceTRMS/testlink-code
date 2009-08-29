@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecPrint.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/03/03 07:48:12 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2009/08/29 19:21:42 $
  *
  * @author Martin Havlat
  *
@@ -19,30 +19,22 @@ require_once('requirements.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $args = init_args();
-$tproject = new testproject($db);
-print renderSRS($db,$tproject,$args->idSRS, $args->tproject_name, 
-                $args->tproject_id, $args->my_userID,$_SESSION['basehref']);
+echo renderSRS($db,$args->req_spec_id, $args->tproject_id, $args->my_userID,$args->basehref);
 
 
-/**
- * init_args
- *
- */
 function init_args()
 {
-    $args = new stdClass();
+	$args = new stdClass();
+	$iParams = array("req_spec_id" => array(tlInputParameter::INT_N));	
+	R_PARAMS($iParams,$args);
     
-    $args->idSRS = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
-    $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
     $args->my_userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : null;
+    $args->basehref = $_SESSION['basehref'];
+    
     return $args;
 }
 
-/**
- * checkRights
- *
- */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_view_req');

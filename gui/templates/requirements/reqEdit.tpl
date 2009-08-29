@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.16 2008/12/13 19:22:38 franciscom Exp $
+$Id: reqEdit.tpl,v 1.17 2009/08/29 19:21:42 schlundus Exp $
 Purpose: smarty template - create / edit a req  
 *}
 {* ------------------------------------------------------------------------- *}
@@ -13,40 +13,40 @@ Purpose: smarty template - create / edit a req
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-var alert_box_title = "{lang_get s='warning'}";
-var warning_empty_req_docid = "{lang_get s='warning_empty_reqdoc_id'}";
-var warning_empty_req_title = "{lang_get s='warning_empty_req_title'}";
-{literal}
-function validateForm(f)
-{
-  if (isWhitespace(f.reqDocId.value)) 
-  {
-      alert_message(alert_box_title,warning_empty_req_docid);
-      selectField(f, 'reqDocId');
-      return false;
-  }
-  
-  if (isWhitespace(f.req_title.value)) 
-  {
-      alert_message(alert_box_title,warning_empty_req_title);
-      selectField(f, 'req_title');
-      return false;
-  }
-  return true;
-}
-
-window.onload=function()
-{
- focusInputField('reqDocId');
-}
-{/literal}
+	var alert_box_title = "{lang_get s='warning'}";
+	var warning_empty_req_docid = "{lang_get s='warning_empty_reqdoc_id'}";
+	var warning_empty_req_title = "{lang_get s='warning_empty_req_title'}";
+	{literal}
+	function validateForm(f)
+	{
+		if (isWhitespace(f.reqDocId.value)) 
+	  	{
+	    	alert_message(alert_box_title,warning_empty_req_docid);
+			selectField(f, 'reqDocId');
+			return false;
+		}
+	  
+		if (isWhitespace(f.req_title.value)) 
+		{
+			alert_message(alert_box_title,warning_empty_req_title);
+			selectField(f, 'req_title');
+			return false;
+	  	}
+		return true;
+	}
+	
+	window.onload = function()
+		{
+			focusInputField('reqDocId');
+		}
+	{/literal}
 </script>
 </head>
-{* ------------------------------------------------------------------------- *}
+
 <body>
-<h1 class="title">{$gui->main_descr|escape}
+<h1 class="title">{$gui->main_descr|escape}xx
 	{if $gui->action_descr != ''}
-	{$tlCfg->gui_title_separator_2}{$gui->action_descr|escape}
+		{$tlCfg->gui_title_separator_2}{$gui->action_descr|escape}
 	{/if}
 </h1>
 

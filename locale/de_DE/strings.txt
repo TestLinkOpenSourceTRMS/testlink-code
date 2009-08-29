@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.125 $
- * @modified $Date: 2009/08/18 19:58:15 $ by $Author: schlundus $
+ * @version $Revision: 1.126 $
+ * @modified $Date: 2009/08/29 19:21:42 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -1735,7 +1735,7 @@ $TLS_XMLRPC_error_number = "XML-RPC Fehlercode:- ";
 $TLS_attachments_dir = "Verzeichnis für Anhänge:";
 $TLS_bts_connection_problems = "Verbindung zum Bug Traking System ist fehlgeschlagen:<br> 
                                 Bitte überprüfen Sie die Konfiguration.<br>
-                                Bitte beachten Sie, dieses Problem verringert die Testlink Performance.";
+                                Bitte beachten Sie, dieses Problem verringert die TestLink Performance.";
 $TLS_but_directory_is_not_writable = "Das Verzeichnis ist nicht beschreibbar!";
 $TLS_check_email_config="Check following parameters of email feature:";
 $TLS_directory_is_writable = "das Verzeichnis ist beschreibbar";

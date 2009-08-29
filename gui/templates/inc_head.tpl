@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.30 2009/08/03 08:14:54 franciscom Exp $
+$Id: inc_head.tpl,v 1.31 2009/08/29 21:40:50 havlat Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -59,6 +59,8 @@ rev :
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';
+	var sessionDurationMin = '{$session.maxlifetime_min}';
+	var sessionDurationSec = '{$session.maxlifetime_sec}';
 	
 	// To solve problem diplaying help
 	var SP_html_help_file  = '{$SP_html_help_file}';
@@ -71,10 +73,12 @@ rev :
 	// bug management (using logic similar to attachment)
 	var bug_dialog = new bug_dialog();
 
-  // for ext js
-  var extjsLocation = '{$smarty.const.TL_EXTJS_RELATIVE_PATH}';
-	</script> 
+	// for ext js
+	var extjsLocation = '{$smarty.const.TL_EXTJS_RELATIVE_PATH}';
 	
+	// reset session time counter
+	updateTimeCounter();
+	</script> 
 {if $openHead == "no"} {* 'no' is default defined in config *}
 </head>
 {/if}

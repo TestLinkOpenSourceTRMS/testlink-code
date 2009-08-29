@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.43 2009/08/19 19:56:25 schlundus Exp $
+	$Id: navBar.tpl,v 1.44 2009/08/29 21:40:50 havlat Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -13,7 +13,7 @@
 {lang_get var="labels"
           s="title_events,event_viewer,home,testproject,title_specification,title_execute,
              title_edit_personal_data,th_tcid,link_logout,navbar_user_management,
-             search_testcase,title_results,title_user_mgmt"}
+             search_testcase,title_results,title_user_mgmt, warn_session_timeout"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {literal}
@@ -34,11 +34,13 @@
 {assign var="action_user_create" value="lib/usermanagement/usersEdit.php?doAction=create"}
 {assign var="action_user_mgmt" value=$action_users_view}
 
-<body style="min-width: 800px;">
-<div style="float:left; height: 100%;"><a href="index.php" target="_parent">
+<body style="min-width: 800px;" onload="timeIt(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
+<div style="float:left; height: 100%;">
+	<a href="index.php" target="_parent">
 	<img alt="Company logo"	title="logo" style="width: 115px; height: 53px;" 
-	src="{$smarty.const.TL_THEME_IMG_DIR}{$tlCfg->company_logo}" /></a></div>
-
+	src="{$smarty.const.TL_THEME_IMG_DIR}{$tlCfg->company_logo}" /></a>
+</div>
+	
 <div class="menu_title">
 
 	{if $gui->TestProjects != ""}
@@ -65,7 +67,8 @@
 	<span style="float: right;">
    		<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i"
       		tabindex="6">{$labels.title_edit_personal_data}</a>
-	 | 	<a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}</a>
+	 | 	<a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}
+		<span id="clockan"></span></a>
 	</span>
 
 	<a href="index.php" target="_parent" accesskey="h" tabindex="1">{$labels.home}</a> |

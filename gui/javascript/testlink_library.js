@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.83 2009/08/11 19:48:51 schlundus Exp $
+// $Id: testlink_library.js,v 1.84 2009/08/29 21:40:50 havlat Exp $
 //
 // Javascript functions commonly used through the GUI
 // This library is automatically loaded with inc_header.tpl
@@ -26,6 +26,7 @@
 //
 // ----------------------------------------------------------------------------
 //
+// 20090821 - havlatm - added support for session timeout
 // 20090530 - franciscom - openExecEditWindow()
 // 20090419 - franciscom - BUGID 2364 - added std_dialog()
 //                         added some comments to explain how a bug has been solved
@@ -920,4 +921,82 @@ function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id)
   var windowCfg="width=510,height=270,resizable=yes,dependent=yes,scrollbars=yes";
 	window.open(fRoot+target_url+"?exec_id="+exec_id+"&tcversion_id="+tcversion_id+"&tplan_id="+tplan_id+"&tproject_id="+tproject_id,
 	            "execution_notes",windowCfg);
+}
+
+// -------- Session Timeout Warning functions ----------------------------------------------
+/** 
+ * Session Timeout Warning functions: timeDisplay()
+ * @return string time for display
+ * @used function Down()
+ */
+function timeDisplay(min, sec) 
+{
+	var disp;
+	if (min <= 9) disp = " 0";
+	else disp = " ";
+	disp += min + ":";
+	if (sec <= 9) disp += "0" + sec;
+	else disp += sec;
+	return (disp);
+}
+
+/** 
+ * Session Timeout Warning functions: Down() - decrease timer value, diplay it and warn
+ * @used function timeIt()
+ */
+function Down() 
+{
+	sec--;
+	if (sec == -1) 
+	{ 
+		sec = 59; min--; 
+	}
+	if (min < 5) 
+	{
+		timerObject.innerHTML = timeDisplay(min, sec);
+	}
+	if (min == 0 && sec == 0) 
+	{
+		alert(timerWarning);
+	}
+	else
+	{ 
+		down = setTimeout("Down()", 1000);
+	}
+}
+
+/* 
+ * Session Timeout Warning functions: timeIt()
+ * @used HTML: 
+ * <body onload="timeIt(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
+ * ...
+ *	<form name="timerform">
+ *	<input type="text" name="clock" size="7" value="0:10"><p>
+ *	</form>
+ */
+function timeIt(displayedTimer,sessionWarning) 
+{
+	min = sessionDurationMin;
+	sec = sessionDurationSec;
+	timerObject = displayedTimer;
+	timerWarning = sessionWarning;
+	Down();
+}
+
+/* 
+ * Session Timeout Warning functions: updateTimeCounter()
+ * update counter from different frames (counter runs in navBar frame)
+ */
+function updateTimeCounter()
+{
+	if (window.parent.name == "mainframe")
+	{
+		timeCounterFrame = window.parent.parent.titlebar;
+	}
+	else
+	{
+		timeCounterFrame = window.parent.titlebar;
+	}
+	timeCounterFrame.min = timeCounterFrame.sessionDurationMin;
+	timeCounterFrame.sec = timeCounterFrame.sessionDurationSec;
 }

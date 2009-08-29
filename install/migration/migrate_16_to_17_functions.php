@@ -1,75 +1,74 @@
 <?php
-/*
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: migrate_16_to_17_functions.php,v 1.10 2008/12/13 19:23:01 franciscom Exp $
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * rev :
+ * @package 	TestLink
+ * @copyright 	2007, TestLink community 
+ * @version    	CVS: $Id: migrate_16_to_17_functions.php,v 1.11 2009/08/29 23:57:28 havlat Exp $
+ *
+ * @internal Revisions:
+ * 		20080830 - havlatm - 0002699: Update of 1.7 to 1.8 fails because connect_2_db() is MySQL specific
  *      20071103 - franciscom - BUGID 771 - utf-8 issue - contributed by eagleas
  *
  *      20071008 - asielb - fixed bug 1110, keywords migration
  *      20070829 - jbarchibald - fixed bug 1010, results Migration
  */
 
-// -----------------------------------   Auxiliary Functions -------------------------
-//
-//
-//
-// Tries to connect to a database, displaying ALWAYS an status message.
-//
+/**
+ * Tries to connect to a database, displaying ALWAYS an status message.
+ */
 // args   :
 //         cfg=array('db_type' => 'mysql',
 //                   'db_server' => 'localhost',
 //                   'db_admin_name' => 'root',
 //                   'db_admin_pass' => 'mysqlroot',
 //                   'log_level' => );
-//
-//
 // returns: 
 //          if connection OK -> a database object
 //          if connection KO -> null
 //
 // rev :
 //      20080219 - franciscom - added log_level
-//
-//      20061203 - franciscom
-//      removed warning due to constant redefinition
-//
+//      20061203 - franciscom - removed warning due to constant redefinition
 function connect_2_db($cfg)
 {
 
-if( !defined('NO_DSN') )
-{
-  define('NO_DSN',FALSE);
-}
+	if( !defined('NO_DSN') )
+	{
+  		define('NO_DSN',FALSE);
+	}
 
-if(strlen(trim($cfg['db_name']))== 0)
-{
-  echo '<span class="notok">Failed!</span><p />Database Name is empty';
-  $db=null;
-}
-else
-{  
-  $db = new database($cfg['db_type']);
-  @$conn_result = $db->connect(NO_DSN,$cfg['db_server'], 
-                                      $cfg['db_admin_name'], $cfg['db_admin_pass'],$cfg['db_name']); 
+	if(strlen(trim($cfg['db_name']))== 0)
+	{
+		echo '<span class="notok">Failed!</span><p />Database Name is empty';
+		$db=null;
+	}
+	else
+	{  
+		$db = new database($cfg['db_type']);
+		@$conn_result = $db->connect(NO_DSN,$cfg['db_server'], 
+				$cfg['db_admin_name'], $cfg['db_admin_pass'],$cfg['db_name']); 
   
-  if( $conn_result['status'] == 0 ) 
-  {
-  	echo '<span class="notok">Failed!</span><p />Please check the database login details and try again.';
-  	echo '<br>Database Error Message: ' . $db->error_msg() . "<br>";
-  	$db=null;
-  } 
-  else 
-  {
-    // 20071103 - BUGID 771 eagleas
-    $db->exec_query("SET CHARACTER SET utf8;");
-    $db->exec_query("SET collation_connection = 'utf8_general_ci';");
+		if( $conn_result['status'] == 0 ) 
+		{
+			echo '<span class="notok">Failed!</span><p />Please check the database login details and try again.';
+			echo '<br>Database Error Message: ' . $db->error_msg() . "<br>";
+			$db=null;
+		} 
+		else 
+		{
+			if (!isset($cfg['db_type']) || strtolower($cfg['db_type']) == 'mysql') 
+			{
+			    // 20071103 - BUGID 771 eagleas
+    			$db->exec_query("SET CHARACTER SET utf8;");
+	    		$db->exec_query("SET collation_connection = 'utf8_general_ci';");
+			}
+			echo "<span class='ok'>OK!</span><p />";
+		}
+	}
 
-  	echo "<span class='ok'>OK!</span><p />";
-  }
-}
-
-return ($db);
+	return ($db);
 }
 
 // determine if the version of the db being used is > 5.x

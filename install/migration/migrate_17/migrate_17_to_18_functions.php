@@ -1,37 +1,31 @@
 <?php
-/*
-TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_17_to_18_functions.php,v 1.9 2009/01/28 09:43:22 franciscom Exp $ 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Support functions for migration from 1.7.2 to 1.8.0
+ * 
+ * @package 	TestLink
+ * @author 		franciscom
+ * @copyright 	2008, TestLink community 
+ * @version    	CVS: $Id: migrate_17_to_18_functions.php,v 1.10 2009/08/30 00:56:06 havlat Exp $
+ *
+ * @internal 
+ * rev: 20090127 - franciscom - added checkTableFields()
+ *    20081210 - BUGID 1921 - missing update of attachment table
+ *    	added updateExecutionsTCVersionInfo()
+ */
 
-Support function for migration from 1.7.2 to 1.8.0
-
-Author: franciscom
-
-rev: 20090127 - franciscom - added checkTableFields()
-
-     20081210 - BUGID 1921 - missing update of attachment table
-     added updateExecutionsTCVersionInfo()
-*/
-?>
-
-<?php
-/*
-  function: 
-
-  args:
-  
-  returns: 
-
-*/
 function reqSpecMigration(&$source_db,&$treeMgr)
 {
+	$mapping_old_new = null;
 	$hhmmss=date("H:i:s");
 	$msg_click_to_show="click to show";
 	echo "<a onclick=\"return DetailController.toggle('details-req_spec_table')\" href=\"tplan/\">
 	<img src='../../img/icon-foldout.gif' align='top' title='show/hide'> Requirement Specification: {$msg_click_to_show} {$hhmmss}</a>";
 	echo '<div class="detail-container" id="details-req_spec_table" style="display: none;">';
 	
-  $sql="SELECT * from req_specs";
+	$sql="SELECT * from req_specs";
 	$rspec=$source_db->fetchRowsIntoMap($sql,'id');
 	if(is_null($rspec)) 
 	{
@@ -69,17 +63,9 @@ function migrateReqSpecs(&$source_db,&$treeMgr,&$rspec)
     }
     
     return $oldNewMapping;  
-} // end function
+}
 
 
-/*
-  function: requirementsMigration
-
-  args:
-  
-  returns: 
-
-*/
 function requirementsMigration(&$source_db,&$treeMgr,&$oldNewMapping)
 {
   	$msg_click_to_show="click to show";
@@ -103,14 +89,7 @@ function requirementsMigration(&$source_db,&$treeMgr,&$oldNewMapping)
 	  return $oldNewMapping;
 }
 
-/*
-  function: migrateRequirements
 
-  args:
-  
-  returns: 
-
-*/
 function migrateRequirements(&$source_db,&$treeMgr,&$req,&$oldNewMapping)
 {
   
@@ -127,17 +106,9 @@ function migrateRequirements(&$source_db,&$treeMgr,&$req,&$oldNewMapping)
         $oldNewMapping->req[$req_id]=$nodeID;
     }
     return $oldNewMapping;  
-} // end function
+}
 
 
-/*
-  function: updateReqInfo
-
-  args:
-  
-  returns: 
-
-*/
 function updateReqInfo(&$source_db,&$treeMgr,&$oldNewMapping)
 {
 
@@ -183,14 +154,6 @@ function updateReqInfo(&$source_db,&$treeMgr,&$oldNewMapping)
 }
 
 
-/*
-  function: updateTProjectInfo
-
-  args:
-  
-  returns: 
-
-*/
 function updateTProjectInfo(&$source_db,&$tprojectMgr)
 {
     $all_tprojects=$tprojectMgr->get_all();
@@ -203,14 +166,6 @@ function updateTProjectInfo(&$source_db,&$tprojectMgr)
 }
 
 
-/*
-  function: initNewTProjectProperties
-
-  args:
-  
-  returns: 
-
-*/
 function initNewTProjectProperties(&$db,&$tprojectMap,&$tprojectMgr)
 {
     if( !is_null($tprojectMap) )
@@ -229,14 +184,6 @@ function initNewTProjectProperties(&$db,&$tprojectMap,&$tprojectMgr)
 }
 
 
-/*
-  function: updateTestCaseExternalID
-
-  args:
-  
-  returns: 
-
-*/ 
 function updateTestCaseExternalID(&$db,&$all_tprojects,&$tprojectMgr)
 {
     $show_memory=true;
@@ -288,26 +235,25 @@ function updateTestCaseExternalID(&$db,&$all_tprojects,&$tprojectMgr)
                     "SET tc_counter={$eid} " .
                     "WHERE id={$tproject_value['id']}";
                $db->exec_query($sql);
-            }
-           unset($tcaseSet);
+			}
+			unset($tcaseSet);
         }
     }
-  
 }
 
-/*
-  function: updateExecutionsTCVersionInfo
 
-  args:
-  
-  returns: 
-
-*/ 
 function updateExecutionsTCVersionInfo(&$db)
 {
-    $sql="update executions E,tcversions TCV " .
-         "set tcversion_number=TCV.version " .
-         "where TCV.id = E.tcversion_id";
+	if (!isset($cfg['db_type']) || strtolower($cfg['db_type']) == 'postgres') 
+	{
+		// Bug #2325
+    	$sql = "UPDATE executions SET tcversion_number = " .
+    	 "(SELECT version FROM tcversions WHERE id = executions.tcversion_id)";
+	} else {
+    	$sql = "UPDATE executions E,tcversions TCV " .
+			"SET tcversion_number=TCV.version " .
+			"WHERE TCV.id = E.tcversion_id";
+	}
     $db->exec_query($sql);
 }
 

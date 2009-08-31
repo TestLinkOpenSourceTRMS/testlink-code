@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.56 2009/08/17 08:01:56 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.57 2009/08/31 16:19:33 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20090831 - franciscom - added preconditions
 # 20090806 - franciscom - added testplan_platforms,platforms
 #                         platform_id to tables
 # 20090717 - franciscom - added cfield_testprojects.location field
@@ -303,6 +304,7 @@ CREATE TABLE /*prefix*/tcversions (
   `tc_external_id` int(10) unsigned NULL,
   `version` smallint(5) unsigned NOT NULL default '1',
   `summary` text,
+  `preconditions` text,
   `steps` text,
   `expected_results` text,
   `importance` smallint(5) unsigned NOT NULL default '2',

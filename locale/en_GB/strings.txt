@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.471 2009/08/29 23:18:02 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.472 2009/09/01 07:31:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -776,6 +776,7 @@ $TLS_req_list_docs = "Requirement Specification Documents";
 // ----- gui/templates/tcEdit_New_viewer.tpl -----
 $TLS_alt_add_tc_name = "Add Test Case name. This value is mandatory.";
 $TLS_expected_results = "Expected Results";
+$TLS_preconditions = "Preconditions";
 $TLS_steps = "Steps";
 $TLS_summary = "Summary";
 $TLS_tc_title = "Test Case Title";

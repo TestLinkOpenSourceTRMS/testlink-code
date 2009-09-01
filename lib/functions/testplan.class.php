@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.131 2009/08/24 07:38:33 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.132 2009/09/01 07:32:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -478,9 +478,9 @@ class testplan extends tlObjectWithAttachments
 		{
 			$execOrder=intval($execOrder);
 			$sql="UPDATE {$this->tables['testplan_tcversions']} " .
-				"SET node_order={$execOrder} " .
-				"WHERE testplan_id={$id} " .
-				"AND tcversion_id={$tcVersionID}";
+				 "SET node_order={$execOrder} " .
+				 "WHERE testplan_id={$id} " .
+				 "AND tcversion_id={$tcVersionID}";
 			$result = $this->db->exec_query($sql);
 		}
 	}
@@ -517,7 +517,8 @@ class testplan extends tlObjectWithAttachments
 		 	[tsuites_id]: default null.
 		 	              If present only tcversions that are children of this testsuites
 		 	              will be included
-		 	[exec_type] default null -> all types              
+		 	[exec_type] default null -> all types
+		 	[platform_id]              
 		     		
          [options]: map with following keys
          	[output]: controls data type returned
@@ -572,8 +573,6 @@ class testplan extends tlObjectWithAttachments
         // echo 'DEBUG - ' . $debugMsg;
         // new dBug($filters);
         // new dBug($options);
-        
-        
 		$resultsCfg = config_get('results');
 		$status_not_run=$resultsCfg['status_code']['not_run'];
 		$sql_subquery='';

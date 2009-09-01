@@ -1,17 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.13 2009/07/18 14:43:04 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.14 2009/09/01 07:31:28 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
+    20090831 - franciscom - preconditions
     20090718 - franciscom - added management of custom field location
-    20080512 - franciscom - BUGID 
     20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
 *}
 
 {* ---------------------------------------------------------------- *}
 {lang_get var='labels' 
           s='tc_title,alt_add_tc_name,summary,steps,expected_results,
+             preconditions,
              execution_type,test_importance,tc_keywords,assign_requirements'}
 
 {* Steps and results Layout management *}
@@ -45,7 +46,11 @@ Rev:
 
 		<div class="labelHolder">{$labels.summary}</div>
 		<div>{$summary}</div>
+    <br />
 
+		<div class="labelHolder">{$labels.preconditions}</div>
+		<div>{$preconditions}</div>
+    
 	  {* Custom fields - with before steps & results location - 20090718 - franciscom *}
     <br />
 	  {if $cf.before_steps_results neq ""}

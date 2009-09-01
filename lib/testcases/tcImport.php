@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/09/01 07:31:29 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *	20090831 - franciscom - preconditions
  *  20090506 - Requirements refactoring
  *  20090221 - BUGID - Improvement on messages to user when XML file contains
  *                     Custom Field Information.
@@ -317,19 +318,19 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		return;
 	}
 
-  $tprojectHas=array('customFields' => false, 'reqSpec' => false);
-  $hasCustomFieldsInfo=false;
-  $hasRequirements=false;
-  $cf_warning_msg=lang_get('no_cf_defined_can_not_import');
-  $reqspec_warning_msg=lang_get('no_reqspec_defined_can_not_import');
+	$tprojectHas=array('customFields' => false, 'reqSpec' => false);
+  	$hasCustomFieldsInfo=false;
+  	$hasRequirements=false;
+  	$cf_warning_msg=lang_get('no_cf_defined_can_not_import');
+  	$reqspec_warning_msg=lang_get('no_reqspec_defined_can_not_import');
   
   
 	$resultMap = array();
 	$fieldSizeCfg=config_get('field_size');
-  $feedbackMsg['cfield']=lang_get('cf_value_not_imported_missing_cf_on_testproject');
-  $feedbackMsg['tcase'] = lang_get('testcase');
-  $feedbackMsg['req'] = lang_get('req_not_in_req_spec_on_tcimport');
-  $feedbackMsg['req_spec'] = lang_get('req_spec_ko_on_tcimport');
+  	$feedbackMsg['cfield']=lang_get('cf_value_not_imported_missing_cf_on_testproject');
+  	$feedbackMsg['tcase'] = lang_get('testcase');
+  	$feedbackMsg['req'] = lang_get('req_not_in_req_spec_on_tcimport');
+  	$feedbackMsg['req_spec'] = lang_get('req_spec_ko_on_tcimport');
 
   
 	// because name can be changed automatically during item creation
@@ -369,6 +370,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$steps = $tc['steps'];
 		$node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
 		$externalid = $tc['externalid'];
+		$preconditions = $tc['preconditions'];
 				
     
 		$name_len = tlStringLen($name);  
@@ -399,15 +401,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		       switch($tcase_qty)
 		       {
 		           case 1:
-		               $doCreate=false;
-		               $tcase_id = key($info); 
-                   $last_version=$tcase_mgr->get_last_version_info($tcase_id);
-                   $tcversion_id=$last_version['id'];
-                   $ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,$steps,
-                                             $expected_results,$userID,$kwIDs,$node_order);
-                                             
-                   $resultMap[] = array($name,lang_get('already_exists_updated'));
-	             break;
+		           		$doCreate=false;
+		           		$tcase_id = key($info); 
+                   		$last_version=$tcase_mgr->get_last_version_info($tcase_id);
+                   		$tcversion_id=$last_version['id'];
+                   		$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
+                   		                          $preconditions,$steps,
+                   		                          $expected_results,$userID,$kwIDs,$node_order);
+                   		                          
+                   		$resultMap[] = array($name,lang_get('already_exists_updated'));
+	               break;
 		           
 		           case 0:
 		               $doCreate=true; 
@@ -423,10 +426,10 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		
 		if( $doCreate )
 		{
-		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$steps,
+		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
 		                                  $expected_results,$userID,$kwIDs,
 		                                  $node_order,testcase::AUTOMATIC_ID,
-                                      testcase::CHECK_DUPLICATE_NAME,$actionOnDuplicatedName))
+                                          testcase::CHECK_DUPLICATE_NAME,$actionOnDuplicatedName))
         {
             $resultMap[] = array($name,$ret['msg']);
         }                              
@@ -574,19 +577,19 @@ function importTCFromXML(&$xmlTC)
 		return null;
 	}
 	
-	$keyContent=array("summary","steps","expectedresults");
+	$keyContent=array("summary","steps","expectedresults","preconditions");
 	$tc = null;
 	$tc['name'] = $xmlTC->get_attribute("name");
-  foreach($keyContent as $key)
-  {
-      $tc[$key] = trim(getNodeContent($xmlTC,$key));
-  }
+  	foreach($keyContent as $key)
+  	{
+  	    $tc[$key] = trim(getNodeContent($xmlTC,$key));
+  	}
   
-  $keyContent=array("node_order","externalid");
+  	$keyContent=array("node_order","externalid");
 	foreach($keyContent as $key)
-  {
-      $tc[$key] = intval(trim(getNodeContent($xmlTC,$key)));
-  }
+  	{
+  	    $tc[$key] = intval(trim(getNodeContent($xmlTC,$key)));
+  	}
 	
 	return $tc; 		
 }
@@ -596,7 +599,7 @@ function importTCFromXML(&$xmlTC)
 /*
   function: Check if at least the file starts seems OK
 */
-function check_xml_tc_tsuite($fileName,$bRecursive)
+function check_xml_tc_tsuite($fileName,$recursiveMode)
 {
 	$dom = domxml_open_file($fileName);
 	$file_check = array('status_ok' => 0, 'msg' => 'dom_ko');    		  
@@ -605,16 +608,19 @@ function check_xml_tc_tsuite($fileName,$bRecursive)
 	{
 		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  
 		$root = $dom->document_element();
-		if($bRecursive)
+		if($recursiveMode)
 		{
 			if($root->tagname != 'testsuite')
+			{
 				$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tsuite_file'));
+			}	
 		}
 		else
 		{
-		  // 20070127 - franciscom 
 			if($root->tagname != 'testcases' && $root->tagname != 'testcase')
+			{
 				$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tcase_file'));
+			}	
 		}
 	}
 	return $file_check;

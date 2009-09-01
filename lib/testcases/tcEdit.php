@@ -4,33 +4,34 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.108 $
- * @modified $Date: 2009/08/03 08:15:43 $  by $Author: franciscom $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2009/09/01 07:31:29 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
- *     20090401 - franciscom - BUGID 2364 - edit while executing
- *     20090401 - franciscom - BUGID 2316
- *     20090325 - franciscom - BUGID - problems with add to testplan
- *     20090302 - franciscom - BUGID 2163 - Create test case with same title, after submit, all data lost 
- *     20080827 - franciscom - BUGID 1692 
- *     20080706 - franciscom - force refresh tree when operation can put tree on
- *                             situation that lead to errors if user click on deleted element.
- *     20080203 - franciscom - changes on $tcase_mgr->show() interface
- *     20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
- *     
- *     20071201 - franciscom - new web editor code
- *     20071106 - BUGID 1165
- *     20070826 - franciscom - is automatic tree refresh is disable,
- *                             do not refresh if test case changes during update
- *     
- *     20070701 - franciscom - feedback improvement on new version operation
- *     20070302 - franciscom - BUGID
- *     20070220 - franciscom - automatic tree refresh management
- *     20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the refresh tree logic
+ *	20090831 - franciscom - preconditions
+ *	20090401 - franciscom - BUGID 2364 - edit while executing
+ *  20090401 - franciscom - BUGID 2316
+ *  20090325 - franciscom - BUGID - problems with add to testplan
+ *  20090302 - franciscom - BUGID 2163 - Create test case with same title, after submit, all data lost 
+ *  20080827 - franciscom - BUGID 1692 
+ *  20080706 - franciscom - force refresh tree when operation can put tree on
+ *                          situation that lead to errors if user click on deleted element.
+ *  20080203 - franciscom - changes on $tcase_mgr->show() interface
+ *  20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
+ *  
+ *  20071201 - franciscom - new web editor code
+ *  20071106 - BUGID 1165
+ *  20070826 - franciscom - is automatic tree refresh is disable,
+ *                          do not refresh if test case changes during update
+ *  
+ *  20070701 - franciscom - feedback improvement on new version operation
+ *  20070302 - franciscom - BUGID
+ *  20070220 - franciscom - automatic tree refresh management
+ *  20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the refresh tree logic
  *
  *
-* -------------------------------------------------------------------------------- */
+ * -------------------------------------------------------------------------------- */
 
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -137,6 +138,7 @@ if($args->edit_tc)
     keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
 
   	$tc_data = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
+  	new dBug($tc_data);
   	foreach ($oWebEditor->cfg as $key => $value)
    	{
   	  	// Warning:
@@ -149,20 +151,9 @@ if($args->edit_tc)
   	  	$smarty->assign($key, $of->CreateHTML($rows,$cols));
   	}
 
-    // -----------------------------------------------------------------------------	
-	// $dummy = $tcase_mgr->cfield_mgr->getLocations();
-	// $verboseLocationCode = array_flip($dummy['testcase']);
-	// $filters=null;
-    // foreach($verboseLocationCode as $key => $value)
-    // {
-    // 	$filters[$key]['location']=$value;
-    // }
     $filters=$tcase_mgr->buildCFLocationMap();
 	foreach($filters as $locationKey => $locationFilter)
 	{ 
-		// 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
-	    //                                        $link_id=null,$tplan_id=null,
-	    //                                        $tproject_id = null,$filters=null)
 		$cf_smarty[$locationKey] = 
 			$tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,null,'design','',
 			                                              null,null,null,$locationFilter);
@@ -187,7 +178,10 @@ else if($args->do_create)
 	{
 		$user_feedback = lang_get('error_tc_add');
         $sqlResult = 'ko';
-		$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,$args->steps,
+        
+        new dBug($args);
+		$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,
+		                            $args->preconditions,$args->steps,
 		                            $args->expected_results,$args->user_id,$args->assigned_keywords_list,
 		                            $cfg->treemenu_default_testcase_order,testcase::AUTOMATIC_ID,
 		                            config_get('check_names_for_duplicates'),'block',$args->exec_type,
@@ -455,24 +449,28 @@ if ($show_newTC_form)
       // 20071106 - BUGID 1165
 	    foreach ($oWebEditor->cfg as $key => $value)
 	    {
-	    	  switch($cfg->tcase_template->$key->type)
-	    	  {
-	    	  	case 'string':
-	    	  		$the_value = $cfg->tcase_template->$key->value;
-	    	  		break;
-          
-	    	  	case 'string_id':
-	    	  		$the_value = lang_get($cfg->tcase_template->$key->value);
-	    	  		break;
-          
-	    	  	case 'file':
-	    	  		$the_value = read_file($cfg->tcase_template->$key->value);
-	    	  		break;
-          
-	    	  	default:
-	    	  		$the_value = '';
-	    	  		break;
-	    	  }
+	    	$the_value = '';
+	    	if(	property_exists($cfg->tcase_template,$key) )
+	    	{
+	    		switch($cfg->tcase_template->$key->type)
+	    	  	{
+	    	  		case 'string':
+	    	  			$the_value = $cfg->tcase_template->$key->value;
+	    	  			break;
+                	
+	    	  		case 'string_id':
+	    	  			$the_value = lang_get($cfg->tcase_template->$key->value);
+	    	  			break;
+                	
+	    	  		case 'file':
+	    	  			$the_value = read_file($cfg->tcase_template->$key->value);
+	    	  			break;
+                	
+	    	  		default:
+	    	  			$the_value = '';
+	    	  			break;
+	    	  	}
+	    	}  
 	        $of = &$oWebEditor->editor[$key];
 	        $rows = $oWebEditor->cfg[$key]['rows'];
 	        $cols = $oWebEditor->cfg[$key]['cols'];
@@ -557,6 +555,7 @@ function init_args($spec_cfg,$otName)
     
     $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
     $args->summary = isset($_REQUEST['summary']) ? $_REQUEST['summary'] : null;
+    $args->preconditions = isset($_REQUEST['preconditions']) ? $_REQUEST['preconditions'] : null;
     $args->steps = isset($_REQUEST['steps']) ? $_REQUEST['steps'] : null;
     
     $args->expected_results = isset($_REQUEST['expected_results']) ? $_REQUEST['expected_results'] : null;
@@ -655,6 +654,7 @@ function createWebEditors($basehref,$editorCfg)
     
     // Rows and Cols configuration
     $owe->cfg = array('summary' => array('rows'=> null,'cols' => null),
+                      'preconditions' => array('rows'=> null,'cols' => null) ,
                       'steps' => array('rows'=> null,'cols' => $cols['steps'][$layout]) ,
                       'expected_results' => array('rows'=> null, 'cols' => $cols['expected_results'][$layout]));
     

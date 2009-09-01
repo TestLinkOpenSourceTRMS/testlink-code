@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.30 2009/07/18 14:43:05 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.31 2009/09/01 07:31:29 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20090831 - franciscom - preconditions
     20090418 - franciscom - BUGID 2364 - added fine grain control of button enable/disable
     20090414 - franciscom - BUGID 2378 - check for active test plan existence to display btn_add_to_testplan
     20090308 - franciscom - added logic to display button that allow assign test case version 
@@ -17,7 +18,7 @@ rev:
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
-             execution_type,test_importance,none"}
+             execution_type,test_importance,none,preconditions"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -193,10 +194,17 @@ rev:
 	<tr>
 		<td class="bold" colspan="2">{$labels.summary}</td>
 	</tr>
-
 	<tr>
 		<td colspan="2">{$args_testcase.summary}</td>
 	</tr>
+
+	<tr>
+		<td class="bold" colspan="2">{$labels.preconditions}</td>
+	</tr>
+	<tr>
+		<td colspan="2">{$args_testcase.preconditions}</td>
+	</tr>
+
 	{* 20090718 - franciscom *}
 	{if $args_cf.before_steps_results neq ''}
 	<tr>

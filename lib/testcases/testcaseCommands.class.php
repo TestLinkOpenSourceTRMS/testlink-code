@@ -4,12 +4,14 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/05/30 15:03:49 $  by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/09/01 07:31:29 $  by $Author: franciscom $
  * testcases commands
  *
- * rev: BUGID 2364 - changes in show() calls
- *      BUGID - doAdd2testplan() - added user id, con call to link_tcversions()
+ * rev:
+ *	20090831 - franciscom - preconditions 
+ *	BUGID 2364 - changes in show() calls
+ *  BUGID - doAdd2testplan() - added user id, con call to link_tcversions()
  *
 **/
 class testcaseCommands
@@ -83,9 +85,10 @@ class testcaseCommands
         $tc_old = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 
         $ret=$this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
-		                               $argsObj->summary, $argsObj->steps, $argsObj->expected_results,
-		                               $argsObj->user_id, $argsObj->assigned_keywords_list,
-		                               TC_DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
+		                             $argsObj->summary, $argsObj->preconditions, $argsObj->steps, 
+		                             $argsObj->expected_results, $argsObj->user_id, 
+		                             $argsObj->assigned_keywords_list,
+		                             TC_DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
         $smartyObj->assign('attachments',null);
         if($ret['status_ok'])
@@ -113,7 +116,6 @@ class testcaseCommands
         $smartyObj->assign('has_been_executed',$argsObj->has_been_executed);
         $smartyObj->assign('execution_types',$this->tcaseMgr->get_execution_types());
       
-        // 20090419 - BUGID
 	    $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
 	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args,null,$argsObj->show_mode);
  

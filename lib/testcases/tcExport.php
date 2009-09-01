@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/08/28 20:37:04 $ by $Author: schlundus $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/09/01 07:31:29 $ by $Author: franciscom $
  *
  * Scope: test case and test suites export
  * 
@@ -105,10 +105,11 @@ if ($args->bExport)
 	switch($args->exportType)
 	{
 		case 'XML':
+		    $pfn = 'exportTestSuiteDataToXML';
 			if ($exporting_just_one_tc)
+			{
 				$pfn = 'exportTestCaseDataToXML';
-			else
-				$pfn = 'exportTestSuiteDataToXML';				
+			}
 			break;
 	}
 	if ($pfn)

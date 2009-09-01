@@ -6,10 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.190 2009/08/17 07:51:53 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.191 2009/09/01 07:29:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20090831 - franciscom - added management of new field: preconditions
+ *                         create(),update(),exportTestCaseDataToXML()
  *
  * 20090815 - franciscom - get_executions() - added platform related info
  *                                            interface changes.
@@ -211,19 +214,19 @@ class testcase extends tlObjectWithAttachments
 	/**
 	 * create a test case
 	 */
-	function create($parent_id,$name,$summary,$steps,
-                $expected_results,$author_id,$keywords_id='',
-                $tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-                $check_duplicate_name=self::DONT_CHECK_DUPLICATE_NAME,
-                $action_on_duplicate_name='generate_new',
-                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
+	function create($parent_id,$name,$summary,$preconditions,$steps,
+                    $expected_results,$author_id,$keywords_id='',
+                    $tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
+                    $check_duplicate_name=self::DONT_CHECK_DUPLICATE_NAME,
+                    $action_on_duplicate_name='generate_new',
+                    $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 	{
 		$status_ok = 1;
 		
 		
 		$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,
-			$check_duplicate_name,
-			$action_on_duplicate_name);
+			                            $check_duplicate_name,
+			                            $action_on_duplicate_name);
 		// if($ret['msg'] == 'ok')
 		if($ret["status_ok"])
 		{
@@ -247,8 +250,9 @@ class testcase extends tlObjectWithAttachments
 				// BUGID 2204
 				$ret['version_number']=$version_number;
 			}
-			$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,$steps,
-				$expected_results,$author_id,$execution_type,$importance);
+			$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
+			                              $preconditions,$steps,$expected_results,$author_id,
+			                              $execution_type,$importance);
 			
 			$ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
 		}
@@ -353,7 +357,7 @@ class testcase extends tlObjectWithAttachments
 	  rev: 20080113 - franciscom - interface changes added tc_ext_id
 	
 	*/
-	function create_tcversion($id,$tc_ext_id,$version,$summary,$steps,
+	function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
 	                          $expected_results,$author_id,
 	                          $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 	{
@@ -361,10 +365,12 @@ class testcase extends tlObjectWithAttachments
 		$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
 		$sql = "INSERT INTO {$this->tables['tcversions']} " .
-		     " (id,tc_external_id,version,summary,steps,expected_results,author_id,creation_ts," .
-	  	     "execution_type,importance) VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
+		     " (id,tc_external_id,version,summary,steps,expected_results,preconditions," . 
+		     "author_id,creation_ts,execution_type,importance) " . 
+	  	     " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
 	  	     $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
-		  	 "'" . $this->db->prepare_string($expected_results) . "'," . $author_id . "," .
+		  	 "'" . $this->db->prepare_string($expected_results) .  "','" . 
+		  	 $this->db->prepare_string($preconditions) . "'," . $author_id . "," .
 	         $this->db->db_now() . ", {$execution_type},{$importance} )";
 		$result = $this->db->exec_query($sql);
 		$ret['msg']='ok';
@@ -374,8 +380,8 @@ class testcase extends tlObjectWithAttachments
 		if (!$result)
 		{
 			$ret['msg'] = $this->db->error_msg();
-		  $ret['status_ok']=0;
-		  $ret['id']=-1;
+		  	$ret['status_ok']=0;
+		  	$ret['id']=-1;
 		}
 	
 		return $ret;
@@ -732,7 +738,7 @@ class testcase extends tlObjectWithAttachments
 	//                         create(), update()
 	//
 	// 20060424 - franciscom - interface changes added $keywords_id
-	function update($id,$tcversion_id,$name,$summary,$steps,
+	function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
 	                $expected_results,$user_id,$keywords_id='',
 	                $tc_order=self::DEFAULT_ORDER,
 	                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
@@ -764,7 +770,8 @@ class testcase extends tlObjectWithAttachments
 		    		 " steps='" . $this->db->prepare_string($steps) . "'," .
 		    		 " expected_results='" . $this->db->prepare_string($expected_results) . "'," .
 		    		 " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
-		    		 " execution_type={$execution_type}, importance={$importance} " .
+		    		 " execution_type={$execution_type}, importance={$importance} " . "," .
+		    		 " preconditions='" . $this->db->prepare_string($preconditions) . "' " .
 		    		 " WHERE tcversions.id = {$tcversion_id}";
 	
 	      foreach($sql as $stm)
@@ -1185,14 +1192,14 @@ class testcase extends tlObjectWithAttachments
 		{
 			$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
 			                                   $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
-	                                       $check_duplicate_name,$action_on_duplicate_name);
+	                                           $check_duplicate_name,$action_on_duplicate_name);
 			if ($new_tc['status_ok'])
 			{
 		        $ret['status_ok']=1;
 	 			foreach($tcase_info as $tcversion)
 				{
 					$this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
-					                        $tcversion['summary'],$tcversion['steps'],
+					                        $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
 					                        $tcversion['expected_results'],$tcversion['author_id']);
 				}
 				
@@ -2587,8 +2594,6 @@ class testcase extends tlObjectWithAttachments
 	  }
 	
 		$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
-	  
-		// 20090106 - franciscom - custom fields
 		if (!$tproject_id)
 		{
 			$tproject_id = $this->getTestProjectFromTestCase($tcase_id);
@@ -2598,7 +2603,7 @@ class testcase extends tlObjectWithAttachments
 		
 		if( !is_null($cfMap) && count($cfMap) > 0 )
 		{
-	      $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+	      	$cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
 		    $cfElemTemplate = "\t" . "<custom_field>\n" .
 		                             "\t<name><![CDATA[||NAME||]]></name>\n" .
 		    	                       "\t<value><![CDATA[||VALUE||\n]]></value>\n</custom_field>\n";
@@ -2621,8 +2626,8 @@ class testcase extends tlObjectWithAttachments
 	  $requirements = $reqMgr->get_all_for_tcase($tcase_id);
 	  if( !is_null($requirements) && count($requirements) > 0 )
 	  {
-	      $reqRootElem = "\t<requirements>\n{{XMLCODE}}\t</requirements>\n";
-		    $reqElemTemplate = "\t\t<requirement>\n" .
+	  	$reqRootElem = "\t<requirements>\n{{XMLCODE}}\t</requirements>\n";
+		$reqElemTemplate = "\t\t<requirement>\n" .
 		                       "\t\t\t<req_spec_title><![CDATA[||REQ_SPEC_TITLE||]]></req_spec_title>\n" .
 		                       "\t\t\t<doc_id><![CDATA[||REQ_DOC_ID||]]></doc_id>\n" .
 		    	                 "\t\t\t<title><![CDATA[||REQ_TITLE||]]></title>\n" .
@@ -2639,25 +2644,26 @@ class testcase extends tlObjectWithAttachments
 			$rootElem = $optExport['ROOTELEM'];
 		}
 		$elemTpl = "\n".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">' . "\n" .
-							 "\t<node_order><![CDATA[||NODE_ORDER||]]></node_order>\n" .
-							 "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
-							 "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
-							 "\t<steps><![CDATA[||STEPS||]]></steps>\n" .
-							 "\t<expectedresults><![CDATA[||RESULTS||]]></expectedresults>\n" .
-							 "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
+				   "\t<node_order><![CDATA[||NODE_ORDER||]]></node_order>\n" .
+				   "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
+		           "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
+		           "\t<preconditions><![CDATA[||PRECONDITIONS||]]></preconditions>\n" .
+		           "\t<steps><![CDATA[||STEPS||]]></steps>\n" .
+		           "\t<expectedresults><![CDATA[||RESULTS||]]></expectedresults>\n" .
+		           "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
 	
-	  // ||yyy||-> tags,  {{xxx}} -> attribute 
-		$info = array (
-								"{{TESTCASE_ID}}" => "testcase_id",
-								"{{NAME}}" => "name",
-								"||NODE_ORDER||" => "node_order",
-								"||EXTERNALID||" => "tc_external_id",
-								"||SUMMARY||" => "summary",
-								"||STEPS||" => "steps",
-								"||RESULTS||" => "expected_results",
-								"||KEYWORDS||" => "xmlkeywords",
-								"||CUSTOMFIELDS||" => "xmlcustomfields",
-								"||REQUIREMENTS||" => "xmlrequirements"
+	    // ||yyy||-> tags,  {{xxx}} -> attribute 
+		$info = array("{{TESTCASE_ID}}" => "testcase_id",
+					  "{{NAME}}" => "name",
+					  "||NODE_ORDER||" => "node_order",
+					  "||EXTERNALID||" => "tc_external_id",
+					  "||SUMMARY||" => "summary",
+					  "||PRECONDITIONS||" => "preconditions",
+					  "||STEPS||" => "steps",
+					  "||RESULTS||" => "expected_results",
+				      "||KEYWORDS||" => "xmlkeywords",
+					  "||CUSTOMFIELDS||" => "xmlcustomfields",
+					  "||REQUIREMENTS||" => "xmlrequirements"
 							);
 		$xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info,$bNoXMLHeader);
 		return $xmlTC;
@@ -2938,8 +2944,8 @@ class testcase extends tlObjectWithAttachments
 				{
 					$attachment = new tlAttachment();
 					$attachment->create($target_id,$table_name,$value['file_name'],
-						$destFPath,$file_contents,$value['file_type'],
-						$value['file_size'],$value['title']);
+						                $destFPath,$file_contents,$value['file_type'],
+						                $value['file_size'],$value['title']);
 					$attachment->writeToDb($this->db);
 				}
 			}

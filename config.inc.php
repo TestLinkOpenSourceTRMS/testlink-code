@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.255 2009/08/29 23:18:02 havlat Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.256 2009/09/02 08:33:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20090901 - franciscom - new option exec_cfg->steps_results_layout
  *  20090823 - franciscom - new option custom_field_max_length
  *	20090815 - franciscom - new option exec_cfg->show_history_all_platforms
  *  20090804 - franciscom - moved report config here
@@ -599,6 +600,9 @@ $tlCfg->exec_cfg->exec_mode->tester='assigned_to_me';
 $tlCfg->exec_cfg->user_filter_default='none';
 
 
+// 'horizontal' ->  step and results on the same row
+// 'vertical'   ->  steps on one row, results in the row bellow
+$tlCfg->exec_cfg->steps_results_layout = 'horizontal';
 
 
 // ----------------------------------------------------------------------------
@@ -845,6 +849,7 @@ $tlCfg->urgencyImportance->threshold['high'] = 6;
 
 /**
  * @var boolean Demo mode disables some functionality
+ * @TODO list with feature are disabled.
  */
 $tlCfg->demoMode = OFF;
 

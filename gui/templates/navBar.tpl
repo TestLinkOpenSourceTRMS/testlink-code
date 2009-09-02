@@ -1,19 +1,23 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.44 2009/08/29 21:40:50 havlat Exp $
+	$Id: navBar.tpl,v 1.45 2009/09/02 11:14:26 havlat Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
-       20080504 - layout changes to add access to local documentation
-	     20080211 - changes action for user management
-	     20070331 - BUGID 760 - added truncate to fix
-*}
-
-{*******************************************************************}
+		20090902 - timeout warning 
+		20080504 - access to local documentation
+		20080211 - changes action for user management
+		20070331 - BUGID 760 - added truncate to fix
+* ----------------------------------------------------------------- *}
 {lang_get var="labels"
           s="title_events,event_viewer,home,testproject,title_specification,title_execute,
              title_edit_personal_data,th_tcid,link_logout,navbar_user_management,
              search_testcase,title_results,title_user_mgmt, warn_session_timeout"}
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+{assign var="action_users_view" value="lib/usermanagement/usersView.php"}
+{assign var="action_user_create" value="lib/usermanagement/usersEdit.php?doAction=create"}
+{assign var="action_user_mgmt" value=$action_users_view}
 
 {include file="inc_head.tpl" openHead="yes"}
 {literal}
@@ -24,16 +28,69 @@
             w.location = server_name + '/docs/' + name;
         }
     }
+
+// -------- Session Timeout Warning functions -------
+/** 
+ * Session Timeout Warning functions: timeDisplay()
+ * @return string time for display
+ * @used function Down()
+ */
+function timeDisplay(min, sec) 
+{
+	var disp;
+	if (min <= 9) disp = " 0";
+	else disp = " ";
+	disp += min + ":";
+	if (sec <= 9) disp += "0" + sec;
+	else disp += sec;
+	return (disp);
+}
+
+/** 
+ * Session Timeout Warning functions: Down() - decrease timer value, diplay it and warn
+ * @used function timeIt()
+ */
+function Down() 
+{
+	sec--;
+	if (sec == -1) 
+	{ 
+		sec = 59; min--; 
+	}
+	if (min < 5) 
+	{
+		timerObject.innerHTML = timeDisplay(min, sec);
+	}
+	if (min == 0 && sec == 0) 
+	{
+		alert(timerWarning);
+	}
+	else
+	{ 
+		down = setTimeout("Down()", 1000);
+	}
+}
+
+/* 
+ * Session Timeout Warning functions: timeIt()
+ * @used HTML: 
+ * <body onload="timeIt(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
+ * ...
+ *	<form name="timerform">
+ *	<input type="text" name="clock" size="7" value="0:10"><p>
+ *	</form>
+ */
+function timeIt(displayedTimer,sessionWarning) 
+{
+	min = sessionDurationMin;
+	sec = sessionDurationSec;
+	timerObject = displayedTimer;
+	timerWarning = sessionWarning;
+	Down();
+}
 </script>
 {/literal}
 </head>
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
-{config_load file="input_dimensions.conf" section=$cfg_section}
-
-{assign var="action_users_view" value="lib/usermanagement/usersView.php"}
-{assign var="action_user_create" value="lib/usermanagement/usersEdit.php?doAction=create"}
-{assign var="action_user_mgmt" value=$action_users_view}
-
 <body style="min-width: 800px;" onload="timeIt(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
 <div style="float:left; height: 100%;">
 	<a href="index.php" target="_parent">

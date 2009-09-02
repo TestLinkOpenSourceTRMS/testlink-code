@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.10 2009/08/17 08:02:35 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.11 2009/09/02 08:32:34 franciscom Exp $
 Purpose: 
 Author: franciscom
 
-Rev:  
+Rev:           
+    20090901 - franciscom - exec_cfg->steps_results_layout
     20090713 - franciscom - refactoring of edit execution.
                             layout changed, added check on buid is open
     20090526 - franciscom -  inc_exec_test_spec.tpl, added args_testplan_design_time_cf
@@ -374,7 +375,8 @@ Rev:
              args_testplan_design_time_cf=$gui->testplan_design_time_cfields
              args_execution_types=$gui->execution_types
              args_tcAttachments=$gui->tcAttachments
-	           args_req_details=$gui->req_details}
+	           args_req_details=$gui->req_details
+	           args_cfg=$cfg}
     {if $tc_exec.can_be_executed}
       {include file="execute/inc_exec_controls.tpl"
                args_save_type='single'

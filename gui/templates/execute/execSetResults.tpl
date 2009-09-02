@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.43 2009/08/24 07:37:41 franciscom Exp $
+$Id: execSetResults.tpl,v 1.44 2009/09/02 08:32:34 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+  20090901 - franciscom - preconditions
   20090815 - franciscom - platform feature
   20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
                           due to access to test spec to edit it.
@@ -41,7 +42,8 @@ Rev:
 	           no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
-             deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution,platform'}
+             deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution,
+             preconditions,platform'}
 
 
 

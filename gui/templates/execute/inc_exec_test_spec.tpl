@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.12 2009/07/18 17:42:34 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.13 2009/09/02 08:32:34 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
+    20090901 - franciscom - preconditions + exec_cfg->steps_results_layout
     20090718 - franciscom - added design time custom field location management
     20090526 - franciscom - added testplan_design custom field management
 *}	
@@ -47,6 +48,13 @@ Rev:
 			<td colspan="2">{$args_tc_exec.summary}</td>
 		</tr>
 
+		<tr>
+			<th colspan="2" class="title">{$args_labels.preconditions}</th>
+		</tr>
+		<tr>
+			<td colspan="2">{$args_tc_exec.preconditions}</td>
+		</tr>
+
 		{* 20090718 - franciscom - CF location management*}
     {if $args_design_time_cf[$testcase_id].before_steps_results != ''}
 		<tr>
@@ -54,14 +62,30 @@ Rev:
 		</tr>
 		{/if}
 
-		<tr>
-			<th width="50%">{$args_labels.test_exec_steps}</th>
-			<th width="50%">{$args_labels.test_exec_expected_r}</th>
-		</tr>
-		<tr>
-			<td style="vertical-align:top;">{$args_tc_exec.steps}</td>
-			<td style="vertical-align:top;">{$args_tc_exec.expected_results}</td>
-		</tr>
+    {if $args_cfg->exec_cfg->steps_results_layout == 'horizontal'}
+		  <tr>
+		  	<th width="50%">{$args_labels.test_exec_steps}</th>
+		  	<th width="50%">{$args_labels.test_exec_expected_r}</th>
+		  </tr>
+		  <tr>
+		  	<td style="vertical-align:top;">{$args_tc_exec.steps}</td>
+		  	<td style="vertical-align:top;">{$args_tc_exec.expected_results}</td>
+		  </tr>
+		{else}
+		  <tr>
+		  	<th width="100%">{$args_labels.test_exec_steps}</th>
+		  </tr>
+		  <tr>
+		  	<td style="vertical-align:top;">{$args_tc_exec.steps}</td>
+		  </tr>
+		  <tr>
+		  	<th width="50%">{$args_labels.test_exec_expected_r}</th>
+		  </tr>
+		  <tr>
+		  	<td style="vertical-align:top;">{$args_tc_exec.expected_results}</td>
+		  </tr>
+		{/if}
+
 		<tr>
       		<td colspan="2">{$args_labels.execution_type}
 			                {$smarty.const.TITLE_SEP}

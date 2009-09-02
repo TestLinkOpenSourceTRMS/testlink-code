@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.45 2009/09/02 11:14:26 havlat Exp $
+	$Id: navBar.tpl,v 1.46 2009/09/02 14:47:17 havlat Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -31,11 +31,11 @@
 
 // -------- Session Timeout Warning functions -------
 /** 
- * Session Timeout Warning functions: timeDisplay()
+ * Session Timeout Warning functions: timeoutDisplay()
  * @return string time for display
- * @used function Down()
+ * @used function timeoutDown()
  */
-function timeDisplay(min, sec) 
+function timeoutDisplay(min, sec) 
 {
 	var disp;
 	if (min <= 9) disp = " 0";
@@ -47,32 +47,33 @@ function timeDisplay(min, sec)
 }
 
 /** 
- * Session Timeout Warning functions: Down() - decrease timer value, diplay it and warn
- * @used function timeIt()
+ * Session Timeout Warning functions: timeoutDown() 
+ * decrease timer value, diplay it and warn
+ * @used function timeoutInit()
  */
-function Down() 
+function timeoutDown() 
 {
-	sec--;
-	if (sec == -1) 
+	timeoutSec--;
+	if (timeoutSec == -1) 
 	{ 
-		sec = 59; min--; 
+		timeoutSec = 59; timeoutMin--; 
 	}
-	if (min < 5) 
+	if (timeoutMin < 5) 
 	{
-		timerObject.innerHTML = timeDisplay(min, sec);
+		timerObject.innerHTML = timeoutDisplay(timeoutMin, timeoutSec);
 	}
-	if (min == 0 && sec == 0) 
+	if (timeoutMin == 0 && timeoutSec == 0) 
 	{
 		alert(timerWarning);
 	}
 	else
 	{ 
-		down = setTimeout("Down()", 1000);
+		timeoutDown = setTimeout("timeoutDown()", 1000);
 	}
 }
 
 /* 
- * Session Timeout Warning functions: timeIt()
+ * Session Timeout Warning functions: timeoutInit()
  * @used HTML: 
  * <body onload="timeIt(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
  * ...
@@ -80,18 +81,18 @@ function Down()
  *	<input type="text" name="clock" size="7" value="0:10"><p>
  *	</form>
  */
-function timeIt(displayedTimer,sessionWarning) 
+function timeoutInit(displayedTimer,sessionWarning) 
 {
-	min = sessionDurationMin;
-	sec = sessionDurationSec;
+	timeoutMin = sessionDurationMin;
+	timeoutSec = sessionDurationSec;
 	timerObject = displayedTimer;
 	timerWarning = sessionWarning;
-	Down();
+	timeoutDown();
 }
 </script>
 {/literal}
 </head>
-<body style="min-width: 800px;" onload="timeIt(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
+<body style="min-width: 800px;" onload="timeoutInit(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
 <div style="float:left; height: 100%;">
 	<a href="index.php" target="_parent">
 	<img alt="Company logo"	title="logo" style="width: 115px; height: 53px;" 

@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.85 2009/09/02 11:14:26 havlat Exp $
+// $Id: testlink_library.js,v 1.86 2009/09/02 14:47:17 havlat Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -941,6 +941,6 @@ function updateTimeCounter()
 		timeCounterFrame = window.parent.titlebar;
 	}
 
-	timeCounterFrame.min = timeCounterFrame.sessionDurationMin;
-	timeCounterFrame.sec = timeCounterFrame.sessionDurationSec;
+	timeCounterFrame.timeoutMin = timeCounterFrame.sessionDurationMin;
+	timeCounterFrame.timeoutSec = timeCounterFrame.sessionDurationSec;
 }

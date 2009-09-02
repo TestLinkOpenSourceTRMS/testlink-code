@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.191 2009/09/01 07:29:58 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.192 2009/09/02 08:36:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2547,6 +2547,7 @@ class testcase extends tlObjectWithAttachments
 	  $sql="/* $debugMsg */ SELECT e.id AS execution_id, e.status,e.execution_type AS execution_run_type,
 	        NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id,
 	        tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary,
+	        tcversions.preconditions,
 	        tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id,
 	        tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active,
 	        tcversions.is_open,tcversions.execution_type,

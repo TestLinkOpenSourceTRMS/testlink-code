@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.77 2009/08/24 07:38:33 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.78 2009/09/02 08:37:37 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -151,7 +151,8 @@ if($do_display)
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];
 	$gui->add_custom_fields = $opt['add_custom_fields'];
-  
+
+    //new dBug($gui);  
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
@@ -215,6 +216,7 @@ function init_args()
 function doReorder(&$argsObj,&$tplanMgr)
 {
     $mapo = null;
+    
     if(!is_null($argsObj->linkedVersion))
     {
         // Using memory of linked test case, try to get order
@@ -226,6 +228,12 @@ function doReorder(&$argsObj,&$tplanMgr)
             }    
         }
     }
+    
+    // new dBug($argsObj->testcases2order);
+    // new dBug($argsObj->linkedOrder);
+    // new dBug($argsObj->linkedVersion);
+    // new dBug($mapo);
+    
     
     // Now add info for new liked test cases if any
     if(!is_null($argsObj->testcases2add))

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/08/17 08:01:04 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/09/03 07:36:17 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -17,7 +17,6 @@
  *  20090309 - franciscom - BUGID 2205 - use test case execution while printing test plan
  * 	20090213 - havlatm - support for OpenOffice
  *	20081207 - franciscom - BUGID 1910 - fixed estimated execution time computation.  
- *	20070509 - franciscom - added Contribution BUGID
  *
  */
 require_once('../../config.inc.php');
@@ -39,8 +38,8 @@ $doc_info->content_range = $args->level;
 
 // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
 $printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0, 
-		'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0, 'cfields' => 0, 
-		'testplan' => 0, 'metrics' => 0  );
+		                   'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0, 
+		                   'cfields' => 0, 'testplan' => 0, 'metrics' => 0  );
 foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));

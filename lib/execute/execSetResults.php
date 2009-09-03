@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.134 $
- * @modified $Date: 2009/08/21 07:07:13 $ $Author: franciscom $
+ * @version $Revision: 1.135 $
+ * @modified $Date: 2009/09/03 07:36:17 $ $Author: franciscom $
  *
  * rev:
  *	   20090815 - franciscom - platform feature	
@@ -272,7 +272,7 @@ else
 //  future must be initialized in a right way
 
 
-new dBug($gui);
+//new dBug($gui);
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$passeduserarray,'id'));
@@ -470,6 +470,10 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
 {
   $fpath=$tree_mgr->get_full_path_verbose($tcase_id);
   $tsuite_info = get_ts_name_details($db,$tcase_id);
+  
+  // new dBug($fpath);
+  // new dBug($tsuite_info);
+  
   foreach($fpath as $key => $value)
   {
       unset($value[0]);  // Remove test plan name
@@ -508,7 +512,7 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
     $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
     $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
  
-	  $smarty->assign('ts_cf_smarty',$ts_cf_smarty);
+	$smarty->assign('ts_cf_smarty',$ts_cf_smarty);
   }
 
 }  

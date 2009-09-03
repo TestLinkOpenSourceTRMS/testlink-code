@@ -8,50 +8,52 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.85 2009/07/19 19:23:37 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.86 2009/09/03 07:36:17 franciscom Exp $
  * @uses printDocument.php
+ *
  *
  * @internal 
  *
  * Revisions:
- *      20090719 - franciscom - added Test Case CF location management 
- *                              added utility functions to clean up code
- *                              and have  a more modular design
+ *  20090902 - franciscom - preconditions (printed only if not empty).
+ *  20090719 - franciscom - added Test Case CF location management 
+ *                          added utility functions to clean up code
+ *                          and have  a more modular design
  *
- *      20090330 - franciscom - fixed internal bug when decoding user names
- *		20090410 - amkhullar - BUGID 2368
- *      20090330 - franciscom - renderTestSpecTreeForPrinting() - 
- *                              added logic to print ALWAYS test plan custom fields
- *      20090329 - franciscom - renderTestCaseForPrinting() refactoring of code regarding custom fields
- *                              renderTestSuiteNodeForPrinting() - print ALWAYS custom fields
- * 		20090326 - amkhullar - BUGID 2207 - Code to Display linked bugs to a TC in Test Report
- *		20090322 - amkhullar - added check box for Test Case Custom Field display on Test Plan/Report
- *  	20090223 - havlatm - estimated execution moved to extra chapter, refactoring a few functions
- * 		20090129 - havlatm - removed base tag from header (problems with internal links for some browsers)
- *  	20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
- *                              added code to display CF with scope='execution'
+ *  20090330 - franciscom - fixed internal bug when decoding user names
+ *	20090410 - amkhullar - BUGID 2368
+ *  20090330 - franciscom - renderTestSpecTreeForPrinting() - 
+ *                          added logic to print ALWAYS test plan custom fields
+ *  20090329 - franciscom - renderTestCaseForPrinting() refactoring of code regarding custom fields
+ *                          renderTestSuiteNodeForPrinting() - print ALWAYS custom fields
+ * 	20090326 - amkhullar - BUGID 2207 - Code to Display linked bugs to a TC in Test Report
+ *	20090322 - amkhullar - added check box for Test Case Custom Field display on Test Plan/Report
+ *  20090223 - havlatm - estimated execution moved to extra chapter, refactoring a few functions
+ * 	20090129 - havlatm - removed base tag from header (problems with internal links for some browsers)
+ *  20081207 - franciscom - BUGID 1910 - changes on display of estimated execution time
+ *                          added code to display CF with scope='execution'
  * 
- *  	20080820 - franciscom - added contribution (BUGID 1670)
- *                             Test Plan report:
- *                             Total Estimated execution time will be printed
- *                             on table of contents. 
- *                             Compute of this time can be done if: 
- *                             - Custom Field with Name CF_ESTIMATED_EXEC_TIME exists
- *                             - Custom Field is managed at design time
- *                             - Custom Field is assigned to Test Cases
- *                             
- *                             Important Note:
- *                             Lots of controls must be developed to avoid problems 
- *                             presenting with results, when user use time with decimal part.
- *                             Example:
- *                             14.6 minuts what does means? 
- *                             a) 14 min and 6 seconds?  
- *                             b) 14 min and 6% of 1 minute => 14 min 3.6 seconds ?
+ *  20080820 - franciscom - added contribution (BUGID 1670)
+ *                         Test Plan report:
+ *                         Total Estimated execution time will be printed
+ *                         on table of contents. 
+ *                         Compute of this time can be done if: 
+ *                         - Custom Field with Name CF_ESTIMATED_EXEC_TIME exists
+ *                         - Custom Field is managed at design time
+ *                         - Custom Field is assigned to Test Cases
+ *                         
+ *                         Important Note:
+ *                         Lots of controls must be developed to avoid problems 
+ *                         presenting with results, when user use time with decimal part.
+ *                         Example:
+ *                         14.6 minuts what does means? 
+ *                         a) 14 min and 6 seconds?  
+ *                         b) 14 min and 6% of 1 minute => 14 min 3.6 seconds ?
  *
- *                             Implementation at (20080820) is very simple => is user
- *                             responsibility to use good times (may be always interger values)
- *                             to avoid problems.
- *                             Another choice: TL must round individual times before doing sum.
+ *                         Implementation at (20080820) is very simple => is user
+ *                         responsibility to use good times (may be always interger values)
+ *                         to avoid problems.
+ *                         Another choice: TL must round individual times before doing sum.
  *
  *	20080819 - franciscom - renderTestCaseForPrinting() - removed mysql only code
  *	20080602 - franciscom - display testcase external id
@@ -446,6 +448,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     
     if (($printingOptions['body']))
     {
+        // 20090902 - franciscom
+        $tcase_pieces[]='preconditions';
         $tcase_pieces[]='steps';
         $tcase_pieces[]='expected_results';        
     }
@@ -749,9 +753,10 @@ function initRenderTestCaseCfg(&$tcaseMgr)
         }    
     }
 
+    // 20090902 - franciscom - preconditions
     $labelsKeys=array('last_exec_result', 'testnotes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
-                      'test_status_not_run', 'not_aplicable', 'bugs','tester');
+                      'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions');
     $labelsQty=count($labelsKeys);         
     for($idx=0; $idx < $labelsQty; $idx++)
     {

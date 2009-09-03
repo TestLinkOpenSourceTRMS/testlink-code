@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.67 2009/08/17 07:51:22 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.68 2009/09/03 07:36:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -744,14 +744,18 @@ class tree extends tlObject
 	    	$not_in_clause = " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
 	  	}
 	    if ($bRecursive)
+	    {
 		    $this->_get_subtree_rec($node_id,$the_subtree,$not_in_clause,
 		                            $exclude_children_of,$exclude_branches,
 		                            $order_cfg,$key_type);
+		}
 		else
+		{
 		    $this->_get_subtree($node_id,$the_subtree,$not_in_clause,
 		                        $exclude_children_of,$exclude_branches,$order_cfg);
+	    }
 	
-	
+	  // new dBug($the_subtree);
 	  return $the_subtree;
 	}
 	
@@ -778,8 +782,9 @@ class tree extends tlObject
 			           " ORDER BY node_order,id";
 			    break;
 			    
-			    case 'exec_order':
-	        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
+			case 'exec_order':
+			// Added DISTINCT to remove duplicates due to platforms
+	        $sql="SELECT DISTINCT * FROM ( SELECT NH.node_order AS spec_order," . 
 	             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
 	             "                NH.name, NH.node_type_id" .
 	             "                FROM {$this->object_table} NH, {$this->tables['node_types']} NT" .
@@ -801,7 +806,7 @@ class tree extends tlObject
 	             "                ORDER BY node_order,spec_order,id";
 			    break;
 	    }
-	 
+	    // new dBug($sql);
 	    $result = $this->db->exec_query($sql);
 	  
 	    if( $this->db->num_rows($result) == 0 )
@@ -815,12 +820,12 @@ class tree extends tlObject
 	      {  
 	          
 	        	$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-	          $node_list[] = array('id'        => $row['id'],
-	                               'parent_id' => $row['parent_id'],
-	                               'node_type_id' => $row['node_type_id'],
-	                               'node_order' => $row['node_order'],
-	                               'node_table' => $node_table,
-	                               'name' => $row['name']);
+	            $node_list[] = array('id'        => $row['id'],
+	                                 'parent_id' => $row['parent_id'],
+	                                 'node_type_id' => $row['node_type_id'],
+	                                 'node_order' => $row['node_order'],
+	                                 'node_table' => $node_table,
+	                                 'name' => $row['name']);
 	          
 	          // Basically we use this because:
 	          // 1. Sometimes we don't want the children if the parent is a testcase,
@@ -872,16 +877,16 @@ class tree extends tlObject
 			    break;
 			    
 			    case 'exec_order':
-			        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
+			        $sql="SELECT * FROM ( SELECT  NH.node_order AS spec_order," . 
 			             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
-			             "                NH.name, NH.node_type_id" .
+			             "                NH.name, NH.node_type_id " .
 			             "                FROM {$this->tables['nodes_hierarchy']}  NH" .
 			             "                WHERE parent_id = {$node_id}" .
 			             "                AND node_type_id <> {$s_testCaseNodeTypeID} {$and_not_in_clause}" .
 			             "                UNION" .
 			             "                SELECT NHA.node_order AS spec_order, " .
 			             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
-			             "                       NHA.name, NHA.node_type_id" .
+			             "                       NHA.name, NHA.node_type_id " .
 			             "                FROM {$this->tables['nodes_hierarchy']} NHA, " .
 			             "                     {$this->tables['nodes_hierarchy']} NHB," .
 			             "                     {$this->tables['testplan_tcversions']} T" .
@@ -892,9 +897,12 @@ class tree extends tlObject
 			             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
 			             "                ORDER BY node_order,spec_order,id";
 			    break;
+			    
 	    }
 	  	$children_key = 'childNodes';
 	  	$result = $this->db->exec_query($sql);
+        // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
 	    while($row = $this->db->fetch_array($result))
 	    {
 	  		$rowID = $row['id'];
@@ -909,22 +917,22 @@ class tree extends tlObject
 	  		    	        $node_table = $this->node_tables[$nodeType];
 	  		    	        
 	  		    	        $node =  array('id' => $rowID,
-	                                   'parent_id' => $row['parent_id'],
-	                                   'node_type_id' => $nodeTypeID,
-	                                   'node_order' => $row['node_order'],
-	                                   'node_table' => $node_table,
-	                                   'name' => $row['name'],
-	  		    	           			       $children_key => null);
+	                                       'parent_id' => $row['parent_id'],
+	                                       'node_type_id' => $nodeTypeID,
+	                                       'node_order' => $row['node_order'],
+	                                       'node_table' => $node_table,
+	                                       'name' => $row['name'],
+	  		    	           			   $children_key => null);
 	  		    	    	break;
 	  		    	    
 				    	   case 'extjs':
 	  		    	        $node =  array('text' => $row['name'],
 	  		    	                       'id' => $rowID,
-	                                   'parent_id' => $row['parent_id'],
-	                                   'node_type_id' => $nodeTypeID,
-	                                   'position' => $row['node_order'],
-	  		    	           			       $children_key => null,
-	                                   'leaf' => false);
+	                                       'parent_id' => $row['parent_id'],
+	                                       'node_type_id' => $nodeTypeID,
+	                                       'position' => $row['node_order'],
+	  		    	           			   $children_key => null,
+	                                       'leaf' => false);
 	          
 		                    switch($nodeType)
 		                    {

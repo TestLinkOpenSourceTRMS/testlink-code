@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2009/08/28 20:37:03 $ by $Author: schlundus $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2009/09/03 07:36:17 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,50 +22,51 @@
  * 
  *
  * rev : 
- *      20090804 - franciscom - deleteExecution() - new method (need more work)
- *      20090801 - franciscom - getTestCasesForTestPlan() allows keyword passed by name
- *      20090727 - franciscom - added contribution BUGID  - reportTCResult() accepts CF info
- *      20090726 - franciscom - added contribution BUGID 2719 - getFullPath()
- *      20090609 - franciscom - createTestPlan() - new method
- *                              WORK TO BE DONE, limit lenght of any limited string (names, prefix, etc)
- *
- *      20090521 - franciscom - refactoring to manage DB_TABLE_PREFIX
- *      20090521 - franciscom - getTestCase() - development started
- *      20090426 - franciscom - getLastExecutionResult(), changed return type when there is not execution.
- *                              getTestCaseAttachments(), test case external id can be used on call
- *                              BUGID 2441 - getTestProjectByName(), getTestPlanByName() - new methods.
- * 
- *      20090420 - franciscom - BUGID 2158 - full implementation of getTestCaseCustomFieldDesignValue()
- *      20090411 - franciscom - BUGID 2369 - changes in addTestCaseToTestPlan()
- *      20090314 - franciscom - createTestSuite()
- *      20090303 - franciscom - BUGID 2179
- *      20090218 - franciscom - Contribution by JaskaJ - BUGID 2127 - getTestCaseAttachments() Refactored 
- *                               
- *      20090214 - franciscom - BUGID 2098 - getTestCasesForTestPlan() - added executiontype parameter
- *      20090209 - franciscom - getTestCasesForTestPlan()
- *                              added summary,steps,expected_results,tsuite_name in returned info
- *                              reportTCResult() - contribution by hnishiyama - optional bug id 
- *
- *      20090209 - franciscom - getTestCasesForTestSuite() - refactoring
- *      20090208 - franciscom - reading status from configuration using config_get()
- *                              fixed bad check on checkBuildID()
- *      20090126 - franciscom - added some contributions by hnishiyama. 
- *      20090125 - franciscom - getLastTestResult() -> getLastExecutionResult()
- *      20090122 - franciscom - assignRequirements()
- *      20090117 - franciscom - createTestProject()
- *      20090116 - franciscom - getFirstLevelTestSuitesForTestProject()
- *                              getTestCaseIDByName() - added testprojectname param
- *
- *      20090113 - franciscom - BUGID 1982 - addTestCaseToTestPlan()
- *      20090106 - franciscom - createTestCase() - first implementation
- * 		20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
- *      20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
- *      20080307 - franciscom - now is possible to use test case external or internal ID
- *                              when calling reportTCResult()
- *      20080306 - franciscom - BUGID 1421
- *      20080305 - franciscom - minor code refactoring
- *      20080103 - franciscom - fixed minor bugs due to refactoring
- * 		20080115 - havlatm - 0001296: API table refactoring 
+ *	20090902 - franciscom -  test case preconditions field
+ *	20090804 - franciscom - deleteExecution() - new method (need more work)
+ *	20090801 - franciscom - getTestCasesForTestPlan() allows keyword passed by name
+ *	20090727 - franciscom - added contribution BUGID  - reportTCResult() accepts CF info
+ *	20090726 - franciscom - added contribution BUGID 2719 - getFullPath()
+ *	20090609 - franciscom - createTestPlan() - new method
+ *	                        WORK TO BE DONE, limit lenght of any limited string (names, prefix, etc)
+ *	
+ *	20090521 - franciscom - refactoring to manage DB_TABLE_PREFIX
+ *	20090521 - franciscom - getTestCase() - development started
+ *	20090426 - franciscom - getLastExecutionResult(), changed return type when there is not execution.
+ *	                        getTestCaseAttachments(), test case external id can be used on call
+ *	                        BUGID 2441 - getTestProjectByName(), getTestPlanByName() - new methods.
+ *	
+ *	20090420 - franciscom - BUGID 2158 - full implementation of getTestCaseCustomFieldDesignValue()
+ *	20090411 - franciscom - BUGID 2369 - changes in addTestCaseToTestPlan()
+ *	20090314 - franciscom - createTestSuite()
+ *	20090303 - franciscom - BUGID 2179
+ *	20090218 - franciscom - Contribution by JaskaJ - BUGID 2127 - getTestCaseAttachments() Refactored 
+ *	                         
+ *	20090214 - franciscom - BUGID 2098 - getTestCasesForTestPlan() - added executiontype parameter
+ *	20090209 - franciscom - getTestCasesForTestPlan()
+ *	                        added summary,steps,expected_results,tsuite_name in returned info
+ *	                        reportTCResult() - contribution by hnishiyama - optional bug id 
+ *	
+ *	20090209 - franciscom - getTestCasesForTestSuite() - refactoring
+ *	20090208 - franciscom - reading status from configuration using config_get()
+ *	                        fixed bad check on checkBuildID()
+ *	20090126 - franciscom - added some contributions by hnishiyama. 
+ *	20090125 - franciscom - getLastTestResult() -> getLastExecutionResult()
+ *	20090122 - franciscom - assignRequirements()
+ *	20090117 - franciscom - createTestProject()
+ *	20090116 - franciscom - getFirstLevelTestSuitesForTestProject()
+ *	                        getTestCaseIDByName() - added testprojectname param
+ *	
+ *	20090113 - franciscom - BUGID 1982 - addTestCaseToTestPlan()
+ *	20090106 - franciscom - createTestCase() - first implementation
+ *	20080409 - azl - implement using the testsuitename param with the getTestCaseIDByName method
+ *	20080309 - sbouffard - contribution - BUGID 1420: added getTestCasesForTestPlan (refactored by franciscom)
+ *	20080307 - franciscom - now is possible to use test case external or internal ID
+ *	                        when calling reportTCResult()
+ *	20080306 - franciscom - BUGID 1421
+ *	20080305 - franciscom - minor code refactoring
+ *	20080103 - franciscom - fixed minor bugs due to refactoring
+ *	20080115 - havlatm - 0001296: API table refactoring 
  */
 
 /** 
@@ -76,9 +77,11 @@ require_once("api.const.inc.php");
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once(dirname(__FILE__) . "/../functions/common.php");
 require_once("APIErrors.php");
-require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
-require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
-require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
+
+// Can we use autoload ?
+//require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
+//require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
+//require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
 //require_once(dirname(__FILE__) . "/../functions/user.class.php");
 
 /**
@@ -196,6 +199,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $nodeIDParamName = "nodeid";
     public static $customFieldsParamName = "customfields";
     public static $executionIDParamName = "executionid";
+    public static $preconditionsParamName = "preconditions";
 
 
 	// public static $executionRunTypeParamName		= "executionruntype";
@@ -1732,7 +1736,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                        self::$orderParamName => testcase::DEFAULT_ORDER,
                        self::$internalIDParamName => testcase::AUTOMATIC_ID,
                        self::$checkDuplicatedNameParamName => testcase::DONT_CHECK_DUPLICATE_NAME,
-                       self::$actionOnDuplicatedNameParamName => 'generate_new');
+                       self::$actionOnDuplicatedNameParamName => 'generate_new',
+                       self::$preconditionsParamName => '');
         
 		        foreach($opt as $key => $value)
 		        {
@@ -1749,6 +1754,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
                                                $this->args[self::$testCaseNameParamName],
                                                $this->args[self::$summaryParamName],
+                                               $opt[self::$preconditionsParamName]
                                                $this->args[self::$stepsParamName],
                                                $this->args[self::$expectedResultsParamName],
                                                $author_id,$keywordSet,

@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.18 2009/08/28 20:37:03 schlundus Exp $
+ $Id: mainPageRight.tpl,v 1.19 2009/09/04 12:18:16 havlat Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -113,7 +113,7 @@
  	   <form name="testplanForm" action="lib/general/mainPage.php">
        {if $gui->countPlans > 0}
 		     {$labels.current_test_plan}:<br/>
-		     <select style="width:99%;z-index:1"  name="testplan" onchange="this.form.submit();">
+		     <select style="z-index:1"  name="testplan" onchange="this.form.submit();">
 		     	{section name=tPlan loop=$gui->arrPlans}
 		     		<option value="{$gui->arrPlans[tPlan].id}"
 		     		        {if $gui->arrPlans[tPlan].selected} selected="selected" {/if}

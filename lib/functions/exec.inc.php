@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: exec.inc.php,v 1.52 2009/08/17 07:52:35 franciscom Exp $
+ * @version    	CVS: $Id: exec.inc.php,v 1.53 2009/09/04 19:22:37 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -275,5 +275,20 @@ function delete_execution(&$db,$exec_id)
 	return $result;
 }
 
+/**
+ * @param $db resource the database connecton
+ * @param $execID integer the execution id whose notes should be set
+ * @param $notes string the execution notes to set
+ * @return unknown_type
+ */
+function updateExecutionNotes(&$db,$execID,$notes)
+{
+    $table = tlObjectWithDB::getDBTables('executions');
+    $sql = "UPDATE {$table['executions']} " .
+           "SET notes = '" . $db->prepare_string($notes) . "' " .
+           "WHERE id = {$execID}";
+    
+    return $db->exec_query($sql) ? tl::OK : tl::ERROR;     
+}
 
 ?>

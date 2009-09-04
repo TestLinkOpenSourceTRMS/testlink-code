@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/06/08 17:40:22 $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/09/04 19:22:37 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -40,18 +40,9 @@ $pFn = $args->doAction;
 $op = null;
 if(method_exists($commandMgr,$pFn))
 	$op = $commandMgr->$pFn($args,$_REQUEST);
-
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
 function init_args()
 {
 	$iParams = array(
@@ -82,15 +73,6 @@ function init_args()
 	return $args;
 }
 
-
-/*
-  function: renderGui
-
-  args :
-
-  returns:
-
-*/
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
@@ -155,14 +137,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 
 }
 
-/*
-  function: initialize_gui
-
-  args : -
-
-  returns:
-
-*/
 function initialize_gui(&$dbHandler,&$argsObj)
 {
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);

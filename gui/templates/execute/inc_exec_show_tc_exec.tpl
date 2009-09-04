@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.11 2009/09/02 08:32:34 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.12 2009/09/04 19:22:37 schlundus Exp $
 Purpose: 
 Author: franciscom
 
@@ -301,18 +301,16 @@ Rev:
    			</tr>
  			  {/if}
 
-  			{* 20080322 - franciscom - edit execution notes *}
-  			{* 
   			{if $gui->grants->edit_exec_notes }
-  			<tr>
-  			<td colspan="{$my_colspan}">
-  		    <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_notes}"
-  		         onclick="javascript: openExecEditWindow({$tc_old_exec.execution_id},{$tc_old_exec.id},
-  		                                                 {$gui->tplan_id},{$gui->tproject_id});">
-  			</td>
-  			</tr>
- 			  {/if}
- 			  *}
+			<tr>
+				<td colspan="{$my_colspan}">
+			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_notes}"
+			         onclick="javascript: openExecEditWindow({$tc_old_exec.execution_id},{$tc_old_exec.id},
+			                                                 {$gui->tplan_id},{$gui->tproject_id});">
+				</td>
+			</tr>
+			{/if}
+
 
   			{* 20070105 - Custom field values  *}
   			<tr>

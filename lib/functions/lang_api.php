@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: lang_api.php,v 1.23 2009/07/27 08:22:37 franciscom Exp $
+ * @version    	CVS: $Id: lang_api.php,v 1.24 2009/09/04 19:22:37 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -172,8 +172,6 @@ function lang_load( $p_lang ) {
 
 	$t_vars = get_defined_vars();
 	foreach ( array_keys( $t_vars ) as $t_var ) {
-		// BUGID 1953 - php deprecated functions
-		// $t_lang_var = ereg_replace( '^TLS_', '', $t_var );
 		$t_lang_var = preg_replace( '/^TLS_/', '', $t_var );
 		if ( $t_lang_var != $t_var) {
 			$g_lang_strings[ $p_lang ][ $t_lang_var ] = $$t_var;

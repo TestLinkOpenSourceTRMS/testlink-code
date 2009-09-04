@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.135 $
- * @modified $Date: 2009/09/03 07:36:17 $ $Author: franciscom $
+ * @version $Revision: 1.136 $
+ * @modified $Date: 2009/09/04 19:22:37 $ $Author: schlundus $
  *
  * rev:
  *	   20090815 - franciscom - platform feature	
@@ -848,7 +848,7 @@ function getCfg()
 */
 function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
 {
-    $exec_cfg=config_get('exec_cfg');
+    $exec_cfg = config_get('exec_cfg');
     $grants = new stdClass();
     
     $grants->execute = $userObj->hasRight($dbHandler,"testplan_execute",$tproject_id,$tplan_id);
@@ -861,7 +861,7 @@ function initializeRights(&$dbHandler,&$userObj,$tproject_id,$tplan_id)
     // may be in the future this can be converted to a role right
     // Important:
     // Execution right must be present to consider this configuration option.
-    $grants->edit_exec_notes=$grants->execute && $exec_cfg->edit_notes;
+    $grants->edit_exec_notes = $grants->execute && $exec_cfg->edit_notes;
     
     // 20090419 - franciscom - BUGID 
     $grants->edit_testcase = $userObj->hasRight($dbHandler,"mgt_modify_tc",$tproject_id,$tplan_id);

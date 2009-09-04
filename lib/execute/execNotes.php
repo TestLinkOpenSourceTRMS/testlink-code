@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: execNotes.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/07/15 17:28:04 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/09/04 19:22:37 $ by $Author: schlundus $
  *
  * Edit an execution note
+ *
+ * @ TODO schlundus. seems to be no longer used
  *
  * rev: 20080827 - franciscom - BUGID 1692
 **/

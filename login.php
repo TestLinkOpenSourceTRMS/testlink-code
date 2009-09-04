@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/04/28 19:22:33 $ by $Author: schlundus $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/09/04 19:22:36 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -41,18 +41,14 @@ if(!is_null($args->login))
 	if(doAuthorize($db,$args->login,$args->pwd,$msg) < tl::OK)
 	{
 		if (!$msg)
-		{
 			$gui->note = lang_get('bad_user_passwd');
-		}
 		else
-		{
 			$gui->note = $msg;
-		}	
 	}
 	else
 	{
 		logAuditEvent(TLS("audit_login_succeeded",$args->login,
-		                  $_SERVER['REMOTE_ADDR']),"LOGIN",$_SESSION['currentUser']->dbID,"users");
+		                  $_SERVER['REMOTE_ADDR']),"LOGIN",$args->currentUser->dbID,"users");
 		redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
 		exit();
 	}
@@ -65,14 +61,7 @@ $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display('login.tpl');
 
-/*
-  function: 
 
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
 	$iParams = array("note" => array(tlInputParameter::STRING_N,0,255),
@@ -89,6 +78,7 @@ function init_args()
     $args->pwd = $pParams['tl_password'];
     $args->reqURI = $pParams['req'];
     $args->preqURI = $pParams['reqURI'];
+	$args->currentUser = $_SESSION['currentUser'];
 
     return $args;
 }
@@ -100,7 +90,7 @@ function init_gui(&$db,$args)
 	$authCfg = config_get('authentication');
 	$gui->securityNotes = getSecurityNotes($db);
 	$gui->external_password_mgmt = ('LDAP' == $authCfg['method']) ? 1 : 0;
-	$gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1:0;
+	$gui->login_disabled = ($gui->external_password_mgmt && !checkForLDAPExtension()) ? 1 : 0;
 	$gui->user_self_signup = config_get('user_self_signup');
 
 	switch($args->note)

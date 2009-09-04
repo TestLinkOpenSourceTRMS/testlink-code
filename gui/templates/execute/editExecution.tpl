@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: editExecution.tpl,v 1.1 2009/05/30 15:00:04 franciscom Exp $
+$Id: editExecution.tpl,v 1.2 2009/09/04 19:22:36 schlundus Exp $
 Authot: francisco.mancardi@gmail.com
 
 Purpose:  
@@ -10,32 +10,32 @@ Purpose:
 <h1 class="title">{lang_get s='title_execution_notes'}</h1>
 <div class="workBack">
 	<form method="post">
-	{* memory *}
-	<input type="hidden" name="tplan_id" value={$gui->tplan_id}>
-	<input type="hidden" name="tproject_id" value={$gui->tproject_id}>
-	<input type="hidden" name="exec_id"  value={$gui->exec_id}>
-	<input type="hidden" name="tcversion_id"  value={$gui->tcversion_id}>
-	
-	<table border="0" width="100%">
+		{* memory *}
+		<input type="hidden" name="tplan_id" value="{$gui->tplan_id}">
+		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}">
+		<input type="hidden" name="exec_id" value="{$gui->exec_id}">
+		<input type="hidden" name="tcversion_id" value="{$gui->tcversion_id}">
+		
+		<table width="100%">
 		<tr>
-			<td align="center">
-      {$gui->notes}
+			<td>
+	      		{$gui->notes}
 			</td>
 		</tr>	
-    {if $gui->cfields_exec neq ''}
-  	  <tr>
-  	  	<td colspan="2">
-  	  		<div id="cfields_exec" class="custom_field_container" 
-  	  			style="background-color:#dddddd;">{$gui->cfields_exec}
-  	  		</div>
-  	  	</td>
-  	  </tr>
-    {/if}
-	
-	</table>
+	    {if $gui->cfields_exec neq ''}
+	  	<tr>
+	  	  	<td colspan="2">
+	  	  		<div id="cfields_exec" class="custom_field_container" 
+	  	  			style="background-color:#dddddd;">{$gui->cfields_exec}
+	  	  		</div>
+	  	  	</td>
+	  	</tr>
+	    {/if}
+		
+		</table>
 		<div class="groupBtn">
-		  <input type="hidden" name="doAction" value="doUpdate">
-			<input type="submit" value="{lang_get s='btn_save'}"/>
+			<input type="hidden" name="doAction" value="doUpdate" />
+			<input type="submit" value="{lang_get s='btn_save'}" />
 			<input type="button" value="{lang_get s='btn_close'}" onclick="window.close()" />
 		</div>
 	</form>

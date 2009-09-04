@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.46 2009/09/02 14:47:17 havlat Exp $
+	$Id: navBar.tpl,v 1.47 2009/09/04 19:22:36 schlundus Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -37,13 +37,18 @@
  */
 function timeoutDisplay(min, sec) 
 {
-	var disp;
-	if (min <= 9) disp = " 0";
-	else disp = " ";
+	var disp = "";
+	if (min <= 9) 
+		disp = " 0";
+	else
+		disp = " ";
 	disp += min + ":";
-	if (sec <= 9) disp += "0" + sec;
-	else disp += sec;
-	return (disp);
+	if (sec <= 9) 
+		disp += "0" + sec;
+	else 
+		disp += sec;
+	
+	return disp;
 }
 
 /** 
@@ -56,7 +61,8 @@ function timeoutDown()
 	timeoutSec--;
 	if (timeoutSec == -1) 
 	{ 
-		timeoutSec = 59; timeoutMin--; 
+		timeoutSec = 59; 
+		timeoutMin--; 
 	}
 	if (timeoutMin < 5) 
 	{
@@ -68,7 +74,7 @@ function timeoutDown()
 	}
 	else
 	{ 
-		timeoutDown = setTimeout("timeoutDown()", 1000);
+		setTimeout("timeoutDown()", 1000);
 	}
 }
 

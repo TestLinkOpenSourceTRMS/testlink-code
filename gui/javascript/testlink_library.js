@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.86 2009/09/02 14:47:17 havlat Exp $
+// $Id: testlink_library.js,v 1.87 2009/09/04 19:22:36 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -916,8 +916,8 @@ function toggleInput(oid)
 */
 function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id)
 {
-  var target_url="lib/execute/editExecution.php";
-  var windowCfg="width=510,height=270,resizable=yes,dependent=yes,scrollbars=yes";
+	var target_url = "lib/execute/editExecution.php";
+	var windowCfg = "width=510,height=270,resizable=yes,dependent=yes,scrollbars=yes";
 	window.open(fRoot+target_url+"?exec_id="+exec_id+"&tcversion_id="+tcversion_id+"&tplan_id="+tplan_id+"&tproject_id="+tproject_id,
 	            "execution_notes",windowCfg);
 }

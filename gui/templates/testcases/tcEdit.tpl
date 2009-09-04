@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.16 2009/07/18 14:42:22 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.17 2009/09/04 19:33:58 schlundus Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -66,6 +66,7 @@ function validateForm(f)
 		    }
 
 	  }
+	  IGNORE_UNLOAD = TRUE;
 	  return true;
 }
 </script>

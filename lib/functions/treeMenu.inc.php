@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.109 2009/08/17 07:52:21 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.110 2009/09/04 20:00:36 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -634,7 +634,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			   
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 			   
-			if($doFilterByKeyword && $keywordsFilterType == 'AND')
+			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'AND')
 			{
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
 				$linkedFilters = array('tcase_id' => array_keys($filteredSet));

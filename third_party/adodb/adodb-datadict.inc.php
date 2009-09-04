@@ -519,7 +519,8 @@ class ADODB_DataDict {
 			// genfields can return FALSE at times
 			if ($lines == null) $lines = array();
 			list(,$first) = each($lines);
-			list(,$column_def) = split("[\t ]+",$first,2);
+			// list(,$column_def) = split("[\t ]+",$first,2);
+			list(,$column_def) = preg_split("/[\t ]+/",$first,2);
 		}
 		return array(sprintf($this->renameColumn,$tabname,$this->NameQuote($oldcolumn),$this->NameQuote($newcolumn),$column_def));
 	}

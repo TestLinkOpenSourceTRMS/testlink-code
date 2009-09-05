@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/08/28 20:37:03 $ by $Author: schlundus $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2009/09/05 18:19:07 $ by $Author: schlundus $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -41,7 +41,6 @@
  * 
  *      20080309 - franciscom - changed return value for get_by_id()
 */
-require_once("attachment.class.php");
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
 class requirement_spec_mgr extends tlObjectWithAttachments

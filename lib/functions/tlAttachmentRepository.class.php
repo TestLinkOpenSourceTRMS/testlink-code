@@ -6,15 +6,12 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachmentrepository.class.php,v 1.23 2009/06/15 20:40:47 schlundus Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.1 2009/09/05 18:19:07 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
  *
  */
-
-/** attachment management */
-require_once( dirname(__FILE__) . '/attachment.class.php' );
 
 /**
  * class store and load attachments

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.85 2009/08/29 19:21:42 schlundus Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.86 2009/09/05 18:19:07 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -642,7 +642,7 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
 		{
 			  $first_key=key($req_tcase_set);
 			  $item_qty = count($req_tcase_set);
-			  $req = array("id" => $requirement_id, "title" => $req_tcase_set[$first_key]['req_title']);
+			  $req = array("id" => $requirement_id, "title" => $req_tcase_set[$first_key]['req_title'],"req_doc_id" => $req_tcase_set[$first_key]["req_doc_id"]);
 			  foreach($status_counters as $key => $value)
 			  {
 			      $status_counters[$key]=0;

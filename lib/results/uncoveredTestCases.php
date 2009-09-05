@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: uncoveredTestCases.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/08/08 14:11:50 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/09/05 18:19:07 $ by $Author: schlundus $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list test cases that has no requirement assigned
@@ -46,7 +46,6 @@ if($gui->has_reqspec)
     }
     unset($reqSpecMgr);
 }    
-    
 if($gui->has_requirements)
 {    
     // get all test cases id (active/inactive) in test project
@@ -68,6 +67,7 @@ if($gui->has_requirements)
    }
 }
 
+
 if($gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
 {
     // Get external  ID
@@ -86,14 +86,12 @@ if($gui->has_tc = (!is_null($uncovered) && count($uncovered) > 0) )
     {
         $uncovered[$key]['external_id'] = $value['tc_external_id'];  
     }
-  
-    // $out = gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
+  	// $out = gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
     //                    $uncovered,null,null,$testSet,1,0,0);
     $opt = array('write_button_only_if_linked' => 1);
     $filters = array('testcases' => $testSet);
     $out = gen_spec_view($db,'uncoveredtestcases',$args->tproject_id,$args->tproject_id,null,
                        $uncovered,null,$filters,$opt);
-                       
                        
     $gui->items = $out['spec_view'];
 }
@@ -110,7 +108,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
-    $args = new stdClass();
+	$args = new stdClass();
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachment.class.php,v 1.20 2009/06/12 20:40:04 schlundus Exp $
+ * @version    	CVS: $Id: tlAttachment.class.php,v 1.1 2009/09/05 18:19:07 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  */

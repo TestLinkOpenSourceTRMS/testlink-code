@@ -7,15 +7,13 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachments.inc.php,v 1.18 2009/07/09 19:02:55 schlundus Exp $
+ * @version    	CVS: $Id: attachments.inc.php,v 1.19 2009/09/05 18:19:07 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
 
 /** core functions */
 require_once('common.php');
-require_once( dirname(__FILE__) . '/attachment.class.php' );
-require_once( dirname(__FILE__) . '/attachmentrepository.class.php' );
 require_once( dirname(__FILE__) . '/files.inc.php' );
 
 /**

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.168 2009/08/28 20:37:03 schlundus Exp $
+ * @version    	CVS: $Id: common.php,v 1.169 2009/09/05 18:19:07 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -64,7 +64,6 @@ if ($g_interface_bugs != 'NO')
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
 }
-require_once("attachment.class.php");
 require_once("testproject.class.php"); 
 
 /** @TODO use the next include only if it is used -> must be removed */

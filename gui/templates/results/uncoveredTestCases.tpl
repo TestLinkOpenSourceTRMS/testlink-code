@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: uncoveredTestCases.tpl,v 1.2 2008/11/09 21:38:26 franciscom Exp $
+$Id: uncoveredTestCases.tpl,v 1.3 2009/09/05 18:19:07 schlundus Exp $
 
 Purpose: For a test project, list test cases that has no requirement assigned
 
@@ -39,7 +39,7 @@ rev: 20081109 - franciscom - BUGID 512
                 {assign var='tcID' value=$tcase.id}
                 <tr>
        			      <td>
-        				    {$gui->testCasePrefix|escape}{$tcase.external_id} &nbsp;
+        				    {$gui->testCasePrefix|escape}{$tcase.external_id|escape} &nbsp;
          				     <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
        			      </td>
                 </tr>

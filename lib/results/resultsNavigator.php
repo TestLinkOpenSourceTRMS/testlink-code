@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.54 2009/06/10 19:36:00 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.55 2009/09/05 18:19:07 schlundus Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -90,6 +90,9 @@ function init_args($tlCfg)
 		$args->format = sizeof($tlCfg->reports_formats) ? key($tlCfg->reports_formats) : null;
 	if (is_null($args->tplan_id))
 		$args->tplan_id = $_SESSION['testplanID'];
+	
+	$_SESSION['resultsNavigator_testplanID'] = $args->tplan_id;
+	$_SESSION['resultsNavigator_format'] = $args->format;
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
    	$args->userID = $_SESSION['userID'];

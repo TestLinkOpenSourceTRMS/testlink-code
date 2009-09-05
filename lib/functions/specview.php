@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.39 2009/08/27 17:22:19 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.40 2009/09/05 18:19:07 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -194,7 +194,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	
 	$write_status = $my['options']['write_button_only_if_linked'] ? 'no' : 'yes';
 	$is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
-	$is_uncovered_view_type=$spec_view_type == 'uncoveredtestcases' ? 1 : 0;
+	$is_uncovered_view_type = ($spec_view_type == 'uncoveredtestcases') ? 1 : 0;
 	
 	if( !$is_tplan_view_type && is_null($tproject_id) )
 	{
@@ -212,10 +212,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	                 'tcase_id' => $my['filters']['testcases'], 
 		             'tcase_node_type_id' => $hash_descr_id['testcase']);
 	$test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
-	
-	//new dBug($testplan_id);
-	
-    $platforms = getPlatforms($db,$tproject_id,$testplan_id);
+
+	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
 
 	$idx = 0;
 	$a_tcid = array();
@@ -250,14 +248,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 			}
 		}
 	}
-	
 	// Collect information related to linked testcase versions
-	if( !is_null($out[0]) && !$is_uncovered_view_type && count($a_tcid))
+	if(!is_null($out[0]) && count($a_tcid))
 	{
 		$tcaseSet = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS);
-        $result = addLinkedVersionsInfo($tcaseSet,$a_tsuite_idx,$out,$linked_items);
-	} 
-	unset($out);
+		$result = addLinkedVersionsInfo($tcaseSet,$a_tsuite_idx,$out,$linked_items);
+	}
 	
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
 	// that do not need to be displayed on user interface.

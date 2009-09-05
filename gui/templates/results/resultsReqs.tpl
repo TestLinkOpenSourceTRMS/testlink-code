@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.15 2009/04/10 10:37:33 amkhullar Exp $
+$Id: resultsReqs.tpl,v 1.16 2009/09/05 18:19:07 schlundus Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -12,7 +12,7 @@ rev: 20090305 - franciscom - added test case path on displayy
 {lang_get var='labels'
           s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcase,th_version,
              req_without_tcase,
-             req_title_covered,req_title_uncovered,req,req_title_not_in_tl,req_title_nottestable,none'}
+             req_title_covered,req_title_uncovered,req,req_title_not_in_tl,req_title_nottestable,none,req_doc_id'}
 
 {* Configure Actions *}
 {assign var="reqViewAction" value="lib/requirements/reqView.php?item=requirement&requirement_id="}
@@ -40,19 +40,21 @@ rev: 20090305 - franciscom - added test case path on displayy
 {if $gui->reqSpecSet != '' }
   <form method="get">
   <table class="invisible">
-    <tr><td>{$labels.req_spec}
-      	<select name="req_spec_id" onchange="form.submit()">
-  		{html_options options=$gui->reqSpecSet selected=$gui->req_spec_id}
-  	</select></td></tr>
-  
+    <tr>
+    	<td>{$labels.req_spec}
+      		<select name="req_spec_id" onchange="form.submit()">
+  				{html_options options=$gui->reqSpecSet selected=$gui->req_spec_id}
+  			</select>
+  		</td>
+  	</tr>
     <tr><td>&nbsp;</td></tr>
     <tr><td>{$labels.req_total_count}</td><td>{$gui->metrics.expectedTotal}</td></tr>
     <tr><td>{$labels.req_title_in_tl}</td><td>{$gui->metrics.total}</td></tr>
     <tr><td>{$labels.req_title_covered}</td><td>{$gui->metrics.covered}</td></tr>
-    <tr><td>{$labels.req_title_uncovered}</td><td>{$gui->metrics.total-$gui->metrics.covered}</td></tr>
+    <tr><td>{$labels.req_title_uncovered}</td><td>{$gui->metrics.total-$gui->metrics.notTestable-$gui->metrics.covered}</td></tr>
     <tr><td>{$labels.req_title_not_in_tl}</td><td>{$gui->metrics.uncovered}</td></tr>
     <tr><td>{$labels.req_title_nottestable}</td><td>{$gui->metrics.notTestable}</td></tr>
-    </table>
+  </table>
   </form>  
 </div>
 {* --------------------------------------------------------------------------------------------------- *}  
@@ -67,11 +69,13 @@ rev: 20090305 - franciscom - added test case path on displayy
     {if $smarty.section.row.first}
     <table class="simple">
     	<tr>
+    		<th>{$labels.req_doc_id}</th>
     		<th>{$labels.req}</th>
     		<th>{$labels.testcase}</th>
     	</tr>
     {/if}
     	<tr>
+    		<td>{$gui->coverage.$key[row].req_doc_id|escape}</td>
     		<td><span class="bold"><a href="{$reqViewAction}{$gui->coverage.$key[row].id}">
     			  {$gui->coverage.$key[row].title|escape}</a></span></td>
     		<td>{assign var=tcList value=$gui->coverage.$key[row].tcList}
@@ -97,10 +101,12 @@ rev: 20090305 - franciscom - added test case path on displayy
     {if $gui->withoutTestCase != ''}
        <table class="simple">
        	<tr>
+       		<th>{$labels.req_doc_id}</th>
        		<th>{$labels.req}</th>
        	</tr>
          {foreach item=reqnotest from=$gui->withoutTestCase}
          	<tr>
+         		<td>{$reqnotest.req_doc_id|escape}</td>
          		<td><span class="bold"><a href="{$reqViewAction}{$reqnotest.id}">
          			  {$reqnotest.title|escape}</a></span></td>
          	</tr>

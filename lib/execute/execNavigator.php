@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.92 $
- * @modified $Date: 2009/08/17 07:51:03 $ by $Author: franciscom $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2009/09/07 06:47:20 $ by $Author: franciscom $
  *
  * rev: 
  *      20090828 - franciscom - added contribution platform feature
@@ -219,8 +219,6 @@ function init_args(&$dbHandler,$cfgObj)
  */
 function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
 {
-	// new dBug($argsObj);
-	
     $kl='';
     $settings = '&build_id=' . $argsObj->optBuildSelected .
                 '&platform_id=' . $argsObj->optPlatformSelected .
@@ -395,8 +393,6 @@ function initBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
  */
 function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr)
 {
-	// echo __FUNCTION__;
-	// new dBug($argsObj);
     $htmlSelect = array('items' => null, 'selected' => null);
     $htmlSelect['items'] = $platformMgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
     if( !is_null($htmlSelect['items']) && is_array($htmlSelect['items']) )
@@ -421,8 +417,6 @@ function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr)
 */
 function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 {
-	// new dBug($argsObj);
-
     $filters = new stdClass();
     $additionalInfo = new stdClass();
     

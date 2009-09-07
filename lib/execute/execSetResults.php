@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.136 $
- * @modified $Date: 2009/09/04 19:22:37 $ $Author: schlundus $
+ * @version $Revision: 1.137 $
+ * @modified $Date: 2009/09/07 06:49:39 $ $Author: franciscom $
  *
  * rev:
  *	   20090815 - franciscom - platform feature	
@@ -270,9 +270,6 @@ else
 }
 // To silence smarty errors
 //  future must be initialized in a right way
-
-
-//new dBug($gui);
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
 $smarty->assign('users',tlUser::getByIDs($db,$passeduserarray,'id'));
@@ -468,18 +465,21 @@ function get_ts_name_details(&$db,$tcase_id)
 */
 function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
 {
-  $fpath=$tree_mgr->get_full_path_verbose($tcase_id);
+  $fpath=$tree_mgr->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
+
   $tsuite_info = get_ts_name_details($db,$tcase_id);
-  
-  // new dBug($fpath);
-  // new dBug($tsuite_info);
-  
   foreach($fpath as $key => $value)
   {
-      unset($value[0]);  // Remove test plan name
-      $tsuite_info[$key]['tsuite_name']=implode('/',$value);  
+      unset($value['name'][0]);  // Remove test plan name
+      unset($value['node_id'][0]);  // Remove test plan name
+      $str='';
+      foreach($value['name'] as $jdx => $elem)
+      {
+      	$str .= "<a href=\"javascript:openTestSuiteWindow(" . $value['node_id'][$jdx] . ")\"> ";
+      	$str .= htmlentities($elem) . '</a>/';
+      }
+      $tsuite_info[$key]['tsuite_name']=$str;  
   }
-  
   $smarty->assign('tsuite_info',$tsuite_info);
   
   // --------------------------------------------------------------------------------
@@ -490,7 +490,6 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
     $a_tsval=array();
    
     $tsuite_mgr = New testsuite($db);
-    
     foreach($tsuite_info as $key => $elem)
     {
       $main_k = 'tsdetails_view_status_' . $key;

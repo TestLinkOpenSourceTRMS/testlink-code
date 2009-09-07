@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.51 2009/07/15 18:16:06 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.52 2009/09/07 06:45:30 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -40,7 +40,14 @@ switch($args->feature)
 		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachmentInfos',$attachments);
-		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id);
+		if( $args->feature == 'testproject' )
+		{
+			$item_mgr->show($smarty,$templateCfg->template_dir,$args->id);
+		}
+		else
+		{
+			$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,array('show_mode' => $args->show_mode));
+		}
 		break;
 
 	case 'testcase':

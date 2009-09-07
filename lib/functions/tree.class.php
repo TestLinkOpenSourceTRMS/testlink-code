@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.68 2009/09/03 07:36:17 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.69 2009/09/07 06:45:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090905 - franciscom - get_full_path_verbose() new options
  * 20090801 - franciscom - new method nodeNameExists()
  * 20090726 - franciscom - BUGID 2728 
  * 20090607 - franciscom - refactoring to manage table prefix
@@ -992,14 +993,17 @@ class tree extends tlObject
 	    $path_to=null;
 	    $all_nodes=array();
 	    $path_format = 'simple';
+	    $output_format = 'simple';
 	    if( !is_null($options) )
 	    {
 	        $path_format = isset($options['include_starting_point']) ? 'points' : $path_format;
+	        $output_format = isset($options['output_format']) ? $options['output_format'] : $output_format;
 	    }
+	    
 	    foreach((array)$items as $item_id)
 	    {
-	        $path_to[$item_id]=$this->get_path($item_id,$goto_root,$path_format);
-	        $all_nodes = array_merge($all_nodes,$path_to[$item_id]);
+	        $path_to[$item_id]['name']=$this->get_path($item_id,$goto_root,$path_format);
+	        $all_nodes = array_merge($all_nodes,$path_to[$item_id]['name']);
 	    }
 	    
 	    // BUGID 2728 - added check to avoid crash
@@ -1012,9 +1016,10 @@ class tree extends tlObject
 	    	$decode=$this->db->fetchRowsIntoMap($sql,'id');
 	    	foreach($path_to as $key => $elem)
 	    	{
-	    	     foreach($elem as $idx => $node_id)
+	    	     foreach($elem['name'] as $idx => $node_id)
 	    	     {
-	    	           $path_to[$key][$idx]=$decode[$node_id]['name'];
+	   	     		$path_to[$key]['name'][$idx]=$decode[$node_id]['name'];
+	   	     		$path_to[$key]['node_id'][$idx]=$node_id;
 	    	     }
 	    	}
 	    }  
@@ -1022,6 +1027,19 @@ class tree extends tlObject
 	    {
 	    	$path_to=null;
 	    } 
+        if( !is_null($path_to) )
+        {
+        	switch ($output_format)
+        	{
+        		case 'id_name':
+        		break;
+        		
+        		case 'simple':	
+        		default:
+        			$path_to[$key] = $path_to[$key]['name'];
+        		break;
+        	}	
+        }
 	    return $path_to; 
 	}
 

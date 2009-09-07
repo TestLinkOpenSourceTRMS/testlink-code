@@ -1,10 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_show_hide_mgmt.tpl,v 1.4 2008/05/04 10:30:39 franciscom Exp $
+$Id: inc_show_hide_mgmt.tpl,v 1.5 2009/09/07 06:46:42 franciscom Exp $
 Purpose: manage show/hide contanier logics
 Author : franciscom
 
 Rev:
+  20090905 - franciscom - removed escape on show_hide_container_title, because
+                          it can contains html with javascript
+                          escaping on name has to be done on php page
 *}
 {assign var="show_hide_container_draw" value=$show_hide_container_draw|default:false}
 {assign var="show_hide_container_class" value=$show_hide_container_class|default:"exec_additional_info"}
@@ -23,7 +26,7 @@ Rev:
 	              '{$show_hide_container_view_status_id}',
 	              document.getElementById('{$show_hide_container_id}').style.display=='none')">
 	</div>
-	<span style="padding:2px;">{$show_hide_container_title|escape}</span>
+	<span style="padding:2px;">{$show_hide_container_title}</span>
 </div>
 
 {if $show_hide_container_draw}

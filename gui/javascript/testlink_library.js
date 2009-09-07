@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.87 2009/09/04 19:22:36 schlundus Exp $
+// $Id: testlink_library.js,v 1.88 2009/09/07 06:46:13 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20090906 - franciscom - added openTestSuiteWindow()
 // 20090821 - havlatm - added support for session timeout
 // 20090530 - franciscom - openExecEditWindow()
 // 20090419 - franciscom - BUGID 2364 - added std_dialog()
@@ -943,4 +944,21 @@ function updateTimeCounter()
 
 	timeCounterFrame.timeoutMin = timeCounterFrame.sessionDurationMin;
 	timeCounterFrame.timeoutSec = timeCounterFrame.sessionDurationSec;
+}
+
+
+/* 
+ * use to display test suite content (read only mode) on execution feature
+ * on user request
+ */
+function openTestSuiteWindow(tsuite_id)
+{ 
+  var windowCfg='';                       
+	var feature_url = "lib/testcases/archiveData.php";
+
+	feature_url +="?show_mode=readonly&print_scope=test_specification&edit=testsuite&level=testsuite&id="+tsuite_id;
+
+	// second parameter(window name) with spaces generate bug on IE
+	windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+feature_url,"TestSuite",windowCfg);
 }

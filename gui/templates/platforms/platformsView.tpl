@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.2 2009/08/10 18:57:58 schlundus Exp $
+$Id: platformsView.tpl,v 1.3 2009/09/07 17:52:38 schlundus Exp $
 Purpose: smarty template - View all platforms
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
@@ -27,34 +27,34 @@ var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
 <h1 class="title">{$labels.menu_manage_platforms}</h1>
 
 <div class="workBack">
-  {if $gui->platforms neq ''}
+{if $gui->platforms neq ''}
 	<table class="simple sortable" style="width:95%">
 		<tr>
 			<th width="30%">{$sortHintIcon}{$labels.th_platform}</th>
 			<th>{$sortHintIcon}{$labels.th_notes}</th>
 			{if $gui->canManage != ""}
-			<th>{$labels.th_delete}</th>
+				<th>{$labels.th_delete}</th>
 			{/if}
 		</tr>
 		{section name=platform loop=$gui->platforms}
 		<tr>
 			<td>
 				{if $gui->canManage != ""}
-				<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}">
+					<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}">
 				{/if}
 				{$gui->platforms[platform].name|escape}
 				{if $gui->canManage != ""}
-				</a>
+					</a>
 				{/if}
 			</td>
 			<td>{$gui->platforms[platform].notes|escape|nl2br}</td>
 			{if $gui->canManage ne ""}
 			<td class="clickable_icon">
-			  <img style="border:none;cursor: pointer;"
-			       alt="{$labels.alt_delete_platform}"
-             title="{$labels.alt_delete_platform}"
-             src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
-				     onclick="delete_confirmation({$gui->platforms[platform].id},
+				<img style="border:none;cursor: pointer;"
+			       	alt="{$labels.alt_delete_platform}"
+             		title="{$labels.alt_delete_platform}"
+             		src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
+				    onclick="delete_confirmation({$gui->platforms[platform].id},
 				              '{$gui->platforms[platform].name|escape:'javascript'|escape}',
 				              '{$del_msgbox_title}','{$warning_msg}');" />
 			</td>
@@ -62,24 +62,19 @@ var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
 		</tr>
 		{/section}
 	</table>
-  {/if}
+ {/if}
 	
 
 	<div class="groupBtn">	
-
-	<form name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
-  	  <input type="hidden" name="doAction" value="" />
-
-		  {if $gui->canManage ne ""}
-	    <input type="submit" id="create_platform" name="create_platform"
-	           value="{$labels.btn_create_platform}"
-	           onclick="doAction.value='create'"/>
-
-		  {/if}
-
-	</form>
+		<form name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
+	  		<input type="hidden" name="doAction" value="" />
+		  	{if $gui->canManage ne ""}
+		    	<input type="submit" id="create_platform" name="create_platform"
+		        	value="{$labels.btn_create_platform}"
+		           	onclick="doAction.value='create'"/>
+			  {/if}	
+		</form>
 	</div>
 </div>
-
 </body>
 </html>

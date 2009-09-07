@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/08/19 06:59:02 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/09/07 17:52:38 $ by $Author: schlundus $
  *
  * allows users to manage platforms. 
  *
@@ -19,11 +19,9 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("csv.inc.php");
 require_once("xml.inc.php");
-//require_once("platform.class.php");
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-
 $smarty = new TLSmarty();
 
 
@@ -31,8 +29,8 @@ $op = new stdClass();
 $op->status = 0;
 
 $args = init_args();
-$gui = init_gui($db,$args,$_SESSION['currentUser']);
-$platform_mgr= new tlPlatform($db, $args->testproject_id);
+$gui = init_gui($db,$args);
+$platform_mgr = new tlPlatform($db, $args->testproject_id);
 
 $action = $args->doAction;
 switch ($action)
@@ -102,7 +100,9 @@ function init_args()
 	
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : 0;
-
+	$args->currentUser = $_SESSION['currentUser'];
+	
+	
 	return $args;
 }
 
@@ -116,15 +116,15 @@ function init_args()
   returns: - 
 
 */
-function create(&$args,&$guiObj)
+function create(&$args,&$gui)
 {
 	$ret = new stdClass();
 	$ret->template = 'platformsEdit.tpl';
 	$ret->status = 1;
-	$guiObj->submit_button_label = lang_get('btn_save');
-	$guiObj->submit_button_action = 'do_create';
-    $guiObj->main_descr = lang_get('platform_management');
-	$guiObj->action_descr = lang_get('create_platform');
+	$gui->submit_button_label = lang_get('btn_save');
+	$gui->submit_button_action = 'do_create';
+    $gui->main_descr = lang_get('platform_management');
+	$gui->action_descr = lang_get('create_platform');
 	
 	return $ret;
 }
@@ -140,27 +140,28 @@ function create(&$args,&$guiObj)
   returns: - 
 
 */
-function edit(&$args,&$guiObj,&$platform_mgr)
+function edit(&$args,&$gui,&$platform_mgr)
 {
 	$ret = new stdClass();
 	$ret->template = 'platformsEdit.tpl';
 	$ret->status = 1;
 
-	$guiObj->action_descr = lang_get('edit_platform');
+	$gui->action_descr = lang_get('edit_platform');
 	$platform = $platform_mgr->getPlatform($args->platform_id);
 	
 	if ($platform)
 	{
 		$args->name = $platform['name'];
 		$args->notes = $platform['notes'];
-		$guiObj->name = $args->name;
-		$guiObj->notes = $args->notes;
-		$guiObj->action_descr .= TITLE_SEP . $platform['name'];
+		$gui->name = $args->name;
+		$gui->notes = $args->notes;
+		$gui->action_descr .= TITLE_SEP . $platform['name'];
 	}
 	
-	$guiObj->submit_button_label = lang_get('btn_save');
-	$guiObj->submit_button_action = 'do_update';
-	$guiObj->main_descr = lang_get('platform_management');
+	$gui->submit_button_label = lang_get('btn_save');
+	$gui->submit_button_action = 'do_update';
+	$gui->main_descr = lang_get('platform_management');
+	
 	return $ret;
 }
 
@@ -173,16 +174,17 @@ function edit(&$args,&$guiObj,&$platform_mgr)
   returns: 
 
 */
-function do_create(&$args,&$guiObj,&$platform_mgr)
+function do_create(&$args,&$gui,&$platform_mgr)
 {
-	$guiObj->main_descr = lang_get('platform_management');
-	$guiObj->action_descr = lang_get('create_platform');
-	$guiObj->submit_button_label = lang_get('btn_save');
-	$guiObj->submit_button_action = 'do_create';
+	$gui->main_descr = lang_get('platform_management');
+	$gui->action_descr = lang_get('create_platform');
+	$gui->submit_button_label = lang_get('btn_save');
+	$gui->submit_button_action = 'do_create';
 
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
 	$ret->status = $platform_mgr->create($args->name,$args->notes);
+	
 	return $ret;
 }
 
@@ -195,18 +197,17 @@ function do_create(&$args,&$guiObj,&$platform_mgr)
   returns: 
 
 */
-function do_update(&$args,&$guiObj,&$platform_mgr)
+function do_update(&$args,&$gui,&$platform_mgr)
 {
 	$action_descr = lang_get('edit_platform');
 	$platform = $platform_mgr->getPlatform($args->platform_id);
 	if ($platform)
-	{
 		$action_descr .= TITLE_SEP . $platform['name'];
-    }
-	$guiObj->submit_button_label = lang_get('btn_save');
-	$guiObj->submit_button_action = 'do_update';
-	$guiObj->main_descr = lang_get('platform_management');
-	$guiObj->action_descr = $action_descr;
+    
+	$gui->submit_button_label = lang_get('btn_save');
+	$gui->submit_button_action = 'do_update';
+	$gui->main_descr = lang_get('platform_management');
+	$gui->action_descr = $action_descr;
 
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
@@ -225,14 +226,14 @@ function do_update(&$args,&$guiObj,&$platform_mgr)
   returns: 
 
 */
-function do_delete(&$args,&$guiObj,&$platform_mgr)
+function do_delete(&$args,&$gui,&$platform_mgr)
 {
-	$guiObj->main_descr = lang_get('testproject') . TITLE_SEP . 
+	$gui->main_descr = lang_get('testproject') . TITLE_SEP . 
 	                      $args->testproject_name;
 
-	$guiObj->submit_button_label = lang_get('btn_save');
-	$guiObj->submit_button_action = 'do_update';
-	$guiObj->action_descr = lang_get('edit_platform');
+	$gui->submit_button_label = lang_get('btn_save');
+	$gui->submit_button_action = 'do_update';
+	$gui->action_descr = lang_get('edit_platform');
 
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
@@ -286,20 +287,20 @@ function checkRights(&$db,&$user)
 	return $user->hasRight($db,'platform_management');
 }
 
-
 /**
  * 
  *
  */
-function init_gui(&$dbHandler,&$argsObj,&$currentUser)
+function init_gui(&$db,&$args)
 {
-	$guiObj = new stdClass();
-	$guiObj->canManage = $currentUser->hasRight($dbHandler,"platform_management");
-    $guiObj->mgt_view_events = $currentUser->hasRight($dbHandler,"mgt_view_events");
-	$guiObj->user_feedback = '';
-    $guiObj->name = $argsObj->name;
-    $guiObj->notes = $argsObj->notes;
-    $guiObj->platformID = $argsObj->platform_id;
-    return $guiObj;
+	$gui = new stdClass();
+	$gui->canManage = $args->currentUser->hasRight($db,"platform_management");
+    $gui->mgt_view_events = $args->currentUser->hasRight($db,"mgt_view_events");
+	$gui->user_feedback = '';
+    $gui->name = $args->name;
+    $gui->notes = $args->notes;
+    $gui->platformID = $args->platform_id;
+    
+    return $gui;
 }
 ?>

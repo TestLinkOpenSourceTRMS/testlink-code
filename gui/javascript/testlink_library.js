@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.88 2009/09/07 06:46:13 franciscom Exp $
+// $Id: testlink_library.js,v 1.89 2009/09/07 17:52:37 schlundus Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -953,12 +953,12 @@ function updateTimeCounter()
  */
 function openTestSuiteWindow(tsuite_id)
 { 
-  var windowCfg='';                       
+	var windowCfg = '';                       
 	var feature_url = "lib/testcases/archiveData.php";
 
 	feature_url +="?show_mode=readonly&print_scope=test_specification&edit=testsuite&level=testsuite&id="+tsuite_id;
 
 	// second parameter(window name) with spaces generate bug on IE
-	windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
+	windowCfg = "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+feature_url,"TestSuite",windowCfg);
 }

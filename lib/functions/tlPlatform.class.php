@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.1 2009/08/19 06:57:54 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.2 2009/09/07 17:52:38 schlundus Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -60,7 +60,7 @@ class tlPlatform extends tlObjectWithDB
 			$sql = "INSERT INTO {$this->tables['platforms']} " .
 				   "(name, testproject_id, notes) " .
 				   " VALUES ('" . $this->db->prepare_string($safeName) . 
-				   "', $this->tproject_id, '{$notes}')";
+				   "', $this->tproject_id, '".$this->db->prepare_string($notes)."')";
 			$result = $this->db->exec_query($sql);
 			$status = $result ? tl::OK : self::E_DBERROR;
 		}
@@ -102,7 +102,7 @@ class tlPlatform extends tlObjectWithDB
 		$safeName = $this->throwIfEmptyName($name);
 		$sql = " UPDATE {$this->tables['platforms']} " .
 		       " SET name = '" . $this->db->prepare_string($name) . "' " .
-		       ", notes = '{$notes}' " .
+		       ", notes =  '". $this->db->prepare_string($notes) . "' " .
 			   " WHERE id = {$id}";
 		$result =  $this->db->exec_query($sql);
 		return $result ? tl::OK : self::E_DBERROR;
@@ -120,6 +120,7 @@ class tlPlatform extends tlObjectWithDB
 	{
 		$sql = "DELETE FROM {$this->tables['platforms']} WHERE id = {$id}";
 		$result = $this->db->exec_query($sql);
+		
 		return $result ? tl::OK : self::E_DBERROR;
 	}
 
@@ -139,10 +140,8 @@ class tlPlatform extends tlObjectWithDB
 					VALUES ($testplan_id, $platform_id)";
 			$result = $this->db->exec_query($sql);
 			
-			if( !$result )
-			{
+			if(!$result)
 				break;
-			} 
 		}
 		return $result ? tl::OK : self::E_DBERROR;
 	}
@@ -164,11 +163,8 @@ class tlPlatform extends tlObjectWithDB
 				   " AND platform_id = {$platform_id} ";
 		    
 		    $result = $this->db->exec_query($sql);
-			if( !$result )
-			{
+			if(!$result)
 				break;
-			} 
-		
 		}	   
 		return $result ? tl::OK : self::E_DBERROR;
 	}

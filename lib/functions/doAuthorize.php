@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Chad Rosen, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: doAuthorize.php,v 1.31 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: doAuthorize.php,v 1.32 2009/09/07 12:08:46 havlat Exp $
  * @link 		http://www.teamst.org/
  *
  * @todo Setting up cookies so that the user can automatically login next time
@@ -48,6 +48,10 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 					//Setting user's session information
 					$_SESSION['currentUser'] = $user;
 					$_SESSION['lastActivity'] = time();
+					// get session duration to indicate session end
+					$timeout = ini_get("session.gc_maxlifetime");
+					$_SESSION['maxlifetime_min'] = floor($timeout/60);
+					$_SESSION['maxlifetime_sec'] = $timeout % 60;
 					global $g_tlLogger;
 					$g_tlLogger->endTransaction();
 					$g_tlLogger->startTransaction();

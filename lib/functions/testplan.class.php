@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.132 2009/09/01 07:32:45 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.133 2009/09/07 06:50:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2360,9 +2360,10 @@ class testplan extends tlObjectWithAttachments
 	 * 
  	 *
  	 */
-    function getPlatforms($id)
+    function getPlatforms($id,$outputFormat='array')
     {
-    	return $this->platform_mgr->getLinkedToTestplan($id);
+    	$method2call = $outputFormat='map' ? 'getLinkedToTestplanAsMap' : 'getLinkedToTestplan';
+    	return  $this->platform_mgr->$method2call($id);
     }
 
     /**

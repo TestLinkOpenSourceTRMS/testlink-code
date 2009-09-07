@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/09/03 07:36:17 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/09/07 06:51:12 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ *	20090906 - franciscom - added platform contribution
  *	20090922 - amkhullar - added a check box to enable/disable display of TC custom fields.
  *  20090309 - franciscom - BUGID 2205 - use test case execution while printing test plan
  * 	20090213 - havlatm - support for OpenOffice
@@ -27,7 +28,9 @@ require_once('displayMgr.php');
 
 $dummy = null;
 $tree = null;
-$generatedText = null;					
+$docText = '';					
+$topText = '';
+
 $doc_info = new stdClass(); // gather title, author, product, test plan, etc.
 $doc_data = new stdClass(); // gather content and tests related data
 
@@ -53,7 +56,6 @@ $tproject = new testproject($db);
 $tree_manager = &$tproject->tree_manager;
 $hash_descr_id = $tree_manager->get_available_node_types();
 $hash_id_descr = array_flip($hash_descr_id);
-
 $decoding_hash = array('node_id_descr' => $hash_id_descr,
                      'status_descr_code' =>  $status_descr_code,
                      'status_code_descr' =>  $status_code_descr);
@@ -128,53 +130,74 @@ switch ($doc_info->type)
 		    $doc_info->testplan_name = htmlspecialchars($tplan_info['name']);
 		    $doc_info->testplan_scope = $tplan_info['notes'];
 		    $doc_info->title = $doc_info->testplan_name;
-		
+
+            $platforms = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+            if( is_null($platforms))
+            {
+            	// needed for algorithm
+            	$platforms[0]='';
+            }		
+			
 			$tcase_filter = null;
 			$execid_filter = null;
 			$executed_qty = 0;
+			$treeForPlatform=array();
          
 			switch($doc_info->content_range)
 			{
-				case 'testproject': // all
-    	   	      $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id);
-    	   	      $tree = &$test_spec;
-    	   	      if (!$tp_tcs)
-    	   	      {
-    	   	    	   $tree['childNodes'] = null;
-    	   	      }
-    	   	      //@TODO:REFACTOR	
-    	   	      prepareNode($db,$tree,$decoding_hash,$dummy,
-    	   	                  $dummy,$tp_tcs,SHOW_TESTCASES,null,null,0,1,0);
+				case 'testproject':
+					foreach ($platforms as $platform_id => $platform_name)
+					{
+					  $filters = array('platform_id' => $platform_id);	
+    	   	    	  $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters);
+    	   	    	  
+    	   	    	  // IMPORTANTE NOTE:
+    	   	    	  // We are in a loop and we use tree on prepareNode, that changes it,
+    	   	    	  // then we can not use anymore a reference to test_spec
+    	   	    	  // $tree = &$test_spec;
+    	   	    	  $tree = $test_spec;
+    	   	    	  if (!$tp_tcs)
+    	   	    	  {
+    	   	    		   $tree['childNodes'] = null;
+    	   	    	  }
+    	   	    	  //@TODO:REFACTOR	
+    	   	    	  $dummy = null;
+    	   	    	  prepareNode($db,$tree,$decoding_hash,$dummy,
+    	   	    	              $dummy,$tp_tcs,SHOW_TESTCASES,null,null,0,1,0);
+    	   	    	  $treeForPlatform[$platform_id] = $tree;            
+    	   	    	  
+    	   	    	  
+    	   	    	}              
             	break;
     	       
 				case 'testsuite':
-					$tsuite = new testsuite($db);
-					$tInfo = $tsuite->get_by_id($args->itemID);
-                 
-					$children_tsuites = $tree_manager->get_subtree_list($args->itemID,$hash_descr_id['testsuite']);
-					if( !is_null($children_tsuites) and trim($children_tsuites) != "")
+					foreach ($platforms as $platform_id => $platform_name)
 					{
-						$branch_tsuites = explode(',',$children_tsuites);
-					}
-					$branch_tsuites[]=$args->itemID;
-    	   	       
-					// $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id, null, 
-					// 		0,null,null,null,0,null,false,null, $branch_tsuites);
-					// 		
-    	   	        $filters = array( 'tsuites_id' => $branch_tsuites);
-	                $tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
-							
-							
-					$tcase_filter=!is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
-    	         
-					$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
-					$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
-    	   	       
-					//@TODO: schlundus, can we speed up with NO_EXTERNAL?
-					prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
-					$doc_info->title = isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name;
-                  
-					$tree['childNodes'] = array($tInfo);
+
+						$tsuite = new testsuite($db);
+						$tInfo = $tsuite->get_by_id($args->itemID);
+                    	
+						$children_tsuites = $tree_manager->get_subtree_list($args->itemID,$hash_descr_id['testsuite']);
+						if( !is_null($children_tsuites) and trim($children_tsuites) != "")
+						{
+							$branch_tsuites = explode(',',$children_tsuites);
+						}
+						$branch_tsuites[]=$args->itemID;
+    	   	        	
+    	   	        	$filters = array( 'tsuites_id' => $branch_tsuites,'platform_id' => $platform_id);
+	                	$tp_tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters); 
+						$tcase_filter=!is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
+    	            	
+						$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
+						$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+    	   	        	
+						//@TODO: schlundus, can we speed up with NO_EXTERNAL?
+						$dummy = null;
+						prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
+						$doc_info->title = isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name;
+						$tree['childNodes'] = array($tInfo);
+    	   	    	    $treeForPlatform[$platform_id] = $tree;            
+                    }
 				break;
 			}  // switch($doc_info->content_range)
          
@@ -215,42 +238,66 @@ switch ($doc_info->type)
 
 
 // ----- rendering logic -----
-$generatedText = renderHTMLHeader($doc_info->type.' '.$doc_info->title,$_SESSION['basehref']);
-$generatedText .= renderFirstPage($doc_info);
-// @TODO move TOC here
-//$generatedText .= renderToc($doc_data);
+$topText = renderHTMLHeader($doc_info->type.' '.$doc_info->title,$_SESSION['basehref']);
+$topText .= renderFirstPage($doc_info);
 
-if($tree)
+// Init table of content (TOC) data
+renderTOC($printingOptions);
+$tocPrefix = null;
+if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) )
 {
-	$tree['name'] = $args->tproject_name;
-	$tree['id'] = $args->tproject_id;
-	$tree['node_type_id'] = $hash_descr_id['testproject'];
-	switch ($doc_info->type)
-	{
-		case DOC_TEST_SPEC:
-			$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
-			$generatedText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
-						$printingOptions, null, 0, 1, $args->user_id);
-		break;
-	
-		case DOC_TEST_PLAN:
-			if ($printingOptions['testplan'])
-			{
-				$generatedText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
-			}
-				
-		case DOC_TEST_REPORT:
-			$generatedText .= renderTestPlanForPrinting($db, $tree, $doc_info->content_range, 
-				$printingOptions,null,0,1, $args->user_id,$args->tplan_id,$args->tproject_id);
-			if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
-			{
-				$generatedText .= buildTestPlanMetrics($doc_data->statistics);
-			}	
-		break;
-	}
-
-	$generatedText .= renderEof();
+	$tocPrefix = 0;
 }
+$tree=null;
+foreach ( $treeForPlatform as $platform_id => $tree )            
+{
+	if($tree)
+	{
+		$tree['name'] = $args->tproject_name;
+		$tree['id'] = $args->tproject_id;
+		$tree['node_type_id'] = $hash_descr_id['testproject'];
+		switch ($doc_info->type)
+		{
+			case DOC_TEST_SPEC:
+				$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
+				$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
+							$printingOptions, null, 0, 1, $args->user_id);
+			break;
+		
+			case DOC_TEST_PLAN:
+				if ($printingOptions['testplan'])
+				{
+					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
+				}
+					
+			case DOC_TEST_REPORT:
+			    $tocPrefix++;
+		    	if ($showPlatforms)
+				{
+					$docText .= renderPlatformHeading($tocPrefix, $platform_id, $platforms[$platform_id], 
+					                                  $printingOptions);
+				}
+				$docText .= renderTestPlanForPrinting($db, $tree, $doc_info->content_range, 
+					                                  $printingOptions,$tocPrefix,0,1, $args->user_id,
+					                                  $args->tplan_id,$args->tproject_id);
+				if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
+				{
+					$docText .= buildTestPlanMetrics($doc_data->statistics);
+				}	
+			break;
+		}
+	}
+}
+$docText .= renderEOF();
+
+// Needed for platform feature
+if ($printingOptions['toc'])
+{
+	$printingOptions['tocCode'] .= '</div>';
+	$topText .= $printingOptions['tocCode'];
+}
+$docText = $topText . $docText;
+
 
 // add application header to HTTP 
 if (($args->format == FORMAT_ODT) || ($args->format == FORMAT_MSWORD))
@@ -259,7 +306,7 @@ if (($args->format == FORMAT_ODT) || ($args->format == FORMAT_MSWORD))
 }
 
 // send out the data
-echo $generatedText;
+echo $docText;
 
 
 /** 

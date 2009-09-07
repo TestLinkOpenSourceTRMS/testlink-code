@@ -8,13 +8,18 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.86 2009/09/03 07:36:17 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.87 2009/09/07 06:50:22 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20090906 - franciscom - added contribution by Eloff:
+ *                          - regarding platforms feature
+ *                          - Moved toc to be outside of report content
+ *                          - Changed the anchor ids
+ *
  *  20090902 - franciscom - preconditions (printed only if not empty).
  *  20090719 - franciscom - added Test Case CF location management 
  *                          added utility functions to clean up code
@@ -192,6 +197,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 {
 	static $tree_mgr;
 	static $map_id_descr;
+	static $tplan_mgr;
  	$code = null;
 
 	if( !$tree_mgr )
@@ -216,7 +222,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 	            	$code .= '<p>' . $cfields . '</p>';
 	       		}
 		    }
-			$code .= renderToc($printingOptions);
+			// platform changes - $code .= renderTOC($printingOptions);
 		break;
 
 		case 'testsuite':
@@ -260,7 +266,8 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 	{
 		if ($printingOptions['toc'])
 		{
-			$printingOptions['tocCode'] .= '</div><hr />';
+			// remove for platforms feature  
+			// $printingOptions['tocCode'] .= '</div><hr />';
 			$code = str_replace("{{INSERT_TOC}}",$printingOptions['tocCode'],$code);
 		}
 	}
@@ -409,9 +416,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	if ($printingOptions['toc'])
 	{
 	      $printingOptions['tocCode'] .= '<p style="padding-left: ' . 
-	                                     (15*$level).'px;"><a href="#tc' . $id . '">' .
+	                                     (15*$level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
 	       	                             $name . '</a></p>';
-		$code .= "<a name=\"tc{$id}\"></a>\n";
+		$code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
 	}
       
  	  $code .= '<p>&nbsp;</p><div> <table class="tc" width="90%">';
@@ -547,15 +554,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 /**
  * Remaining part of renderProjectNodeForPrinting
  * 
- * @todo havlatm: refactore
+ * @todo havlatm: refactor
  */
-function renderToc(&$printingOptions)
+function renderTOC(&$printingOptions)
 {
 	$code = '';
 	$printingOptions['toc_numbers'][1] = 0;
 	if ($printingOptions['toc'])
 	{
-		$printingOptions['tocCode'] = '<h1 class="doclevel">'.lang_get('title_toc').'</h1><div class="toc">';
+		$printingOptions['tocCode'] = '<h1 class="doclevel">' . lang_get('title_toc').'</h1><div class="toc">';
 		$code .= "{{INSERT_TOC}}";
 	}
 
@@ -585,8 +592,8 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 	if ($printingOptions['toc'])
 	{
 	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;">' .
-				'<a href="#cat' . $node['id'] . '">' . $name . "</a></p>\n";
-		$code .= "<a name='cat{$node['id']}'></a>\n";
+				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $name . "</a></p>\n";
+		$code .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
 	}
  	$code .= "<h1 class='doclevel'>{$tocPrefix} ". $labels['test_suite'].$title_separator. $name. "</h1>\n";
 
@@ -708,7 +715,7 @@ function renderTestDuration($statistics)
  * 
  * @return string HTML 
  **/
-function renderEof()
+function renderEOF()
 {
 	return "\n</body>\n</html>";
 }
@@ -809,6 +816,29 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
 	}
 	
 	return $out;
+}
+
+
+/**
+ * Render HTML header for a given platform. 
+ * Also adds code to $printingOptions['tocCode']
+ */
+function renderPlatformHeading($tocPrefix, $platform_id, $platform_name, &$printingOptions)
+{
+	$platformLabel=lang_get('platform');
+	$printingOptions['tocCode'] .= '<p><a href="#' . prefixToHTMLID($tocPrefix) . '">' .
+	                               $platformLabel . ':' . $platform_name . '</a></p>';
+	return '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) . "\">$tocPrefix $platformLabel: $platform_name</h1>";
+}
+
+
+/**
+ * simple utility function, to avoid lot of copy and paste
+ * given an string, return an string useful to jump to an anchor on document
+ */
+function prefixToHTMLID($string2convert,$anchor_prefix='toc_')
+{
+	return $anchor_prefix . str_replace('.', '_', $string2convert);
 }
 
 ?>

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.70 2009/08/21 16:45:02 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.71 2009/09/07 06:51:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -397,12 +397,19 @@ class testsuite extends tlObjectWithAttachments
 	 * returns: -
 	 *
 	 **/
-	function show(&$smarty,$template_dir, $id, $sqlResult = '', $action = 'update',$modded_item_id = 0)
+	function show(&$smarty,$template_dir, $id, $options=null,
+	              $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	{
 		$cf_smarty = '';
-	  
-		$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
-	
+  	    $my['options'] = array('show_mode' => 'readonly'); 	
+	    $my['options'] = array_merge($my['options'], (array)$options);
+
+        $smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
+        if($my['options']['show_mode'] == 'readonly')
+        {  	    
+			$smarty->assign('modify_tc_rights', 'no');
+	    }
+	    
 		if($sqlResult)
 		{ 
 			$smarty->assign('sqlResult', $sqlResult);

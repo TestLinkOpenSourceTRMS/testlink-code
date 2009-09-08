@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.17 2009/09/04 19:33:58 schlundus Exp $ 
+$Id: tcEdit.tpl,v 1.18 2009/09/08 14:44:51 havlat Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -147,7 +147,7 @@ function checkFCKEditorChanged()
 
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
-		       onclick="doAction.value='doUpdate'"  value="{$labels.btn_save}" />
+		       onclick="IGNORE_UNLOAD = true; doAction.value='doUpdate'"  value="{$labels.btn_save}" />
 		
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 		       onclick="javascript: history.back();"/>

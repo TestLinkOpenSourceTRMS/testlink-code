@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.28 2009/08/17 08:02:35 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.29 2009/09/10 09:53:27 havlat Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -79,10 +79,9 @@ rev :
   <input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
 	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 	
-	<table class="smallGrey" width="100%">
-		<caption>{$labels.caption_nav_filter_settings}</caption>
+	<table class="smallGrey" style="width:98%">
 		<tr>
-			<td>{$labels.build}</td>
+			<th>{$labels.build}</th>
 			<td><select name="build_id">
 				{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
 				</select>
@@ -97,13 +96,16 @@ rev :
 		  	</td>
 		  </tr>
 		{/if}
+	</table>
+
+	<table class="smallGrey" width="98%">
 		<tr>
 			<td>{$labels.filter_tcID}</td>
 			<td><input type="text" name="targetTestCase" value="{$gui->targetTestCase}" 
 			           maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
 		</tr>
 		<tr style="{$keywordsFilterDisplayStyle}">
-			<td>{$labels.keyword}</td>
+			<th>{$labels.keyword}</th>
 			<td>
 				<select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
@@ -111,7 +113,7 @@ rev :
 			</td>
 		</tr>
 		<tr>
-			<td>{$labels.priority}</td>
+			<th>{$labels.priority}</th>
 			<td>
 				<select name="urgencyImportance">
 				<option value="">{$gui->str_option_any}</option>
@@ -120,7 +122,7 @@ rev :
 			</td>
 		</tr>
 		<tr>
-				<td>{$labels.filter_result}</td>
+			<th>{$labels.filter_result}</th>
 			<td>
 			  {if $gui->advancedFilterMode }
 			  	<select name="filter_status[]" multiple="multiple" size={$gui->statusFilterItemQty}>
@@ -133,13 +135,12 @@ rev :
 		</tr>
 		
 		<tr>
-			<td>{$labels.filter_result_all_prev_builds}</td>
+			<th>{$labels.filter_result_all_prev_builds}</th>
 			<td>
 				<select name="filter_status_all_prev_builds">
 			  	{html_options options=$gui->resultAllPrevBuilds selected=$gui->resultAllPrevBuildsSelected}
 			  	</select>
-			</td>
-			<td>
+				<br />
 			  	{html_radios name='resultAllPrevBuildsFilterType' 
                 	options=$gui->resultAllPrevBuildsFilterType->options
                    	selected=$gui->resultAllPrevBuildsFilterType->selected }
@@ -147,7 +148,7 @@ rev :
 		</tr>
 		
 		<tr>
-			<td>{$labels.filter_result_any_prev_builds}</td>
+			<th>{$labels.filter_result_any_prev_builds}</th>
 			<td>
 				<select name="statusAnyOfPrevBuilds">
 			  	{html_options options=$gui->statusAnyOfPrevBuilds selected=$gui->statusAnyOfPrevBuildsSelected}
@@ -159,7 +160,7 @@ rev :
 
 		
 		<tr>
-			<td>{$labels.filter_owner}</td>
+			<th>{$labels.filter_owner}</th>
 			<td>
  			{if $gui->disable_filter_assigned_to}
 			  {$gui->assigned_to_user}
@@ -172,34 +173,28 @@ rev :
 					{html_options options=$gui->users selected=$gui->filter_assigned_to}
 			  </select>
 			{/if}
-			</td>
+			<br />
+			<input type="checkbox" id="include_unassigned" name="include_unassigned"
+  		           value="1" {if $gui->include_unassigned} checked="checked" {/if} />
+			{$labels.include_unassigned_testcases}
+ 			</td>
 		</tr>
-  	<tr>
-   		<td>{$labels.include_unassigned_testcases}</td>
-  		<td>
-  		   <input type="checkbox"
-  		           id="include_unassigned" name="include_unassigned"
-  		           value="1"
-  		           {if $gui->include_unassigned} checked="checked" {/if} />
-  		</td>
-  	</tr>
-    {$gui->design_time_cfields}
-		
-		<tr>
-			<td>&nbsp;</td>
-			<td><input type="submit" name="submitOptions" value="{$labels.btn_apply_filter}" style="font-size: 90%;" /></td>
-			<td><input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
-			           value="{$gui->toggleFilterModeLabel}"  
-			           onclick="toggleInput('advancedFilterMode');"
-			           style="font-size: 90%;"  /></td>
-		</tr>
+		{$gui->design_time_cfields}
 	</table>
+		
+		<div>
+			<input type="submit" name="submitOptions" value="{$labels.btn_apply_filter}" 
+					style="font-size: 90%;" />
+			<input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
+					value="{$gui->toggleFilterModeLabel}" style="font-size: 90%;"  
+					onclick="toggleInput('advancedFilterMode');" />
+		</div>
 </form>
 </div>
 
 
 {* ===================================================================== *}
-<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
+<div id="tree" style="overflow:auto; height:500px;border:1px solid #c3daf9;"></div>
 
 {if $gui->src_workframe != ''}
 <script type="text/javascript">

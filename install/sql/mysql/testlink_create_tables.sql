@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.58 2009/09/10 09:47:25 havlat Exp $
+# $Id: testlink_create_tables.sql,v 1.59 2009/09/10 16:19:39 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20090910 - franciscom - added milestones.start_date
 # 20090831 - franciscom - added preconditions
 # 20090806 - franciscom - added testplan_platforms,platforms
 #                         platform_id to tables
@@ -176,14 +177,15 @@ CREATE TABLE /*prefix*/keywords (
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE /*prefix*/milestones (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `testplan_id` int(10) unsigned NOT NULL default '0',
-  `target_date` date NOT NULL default '0000-00-00',
-  `a` tinyint(3) unsigned NOT NULL default '0',
-  `b` tinyint(3) unsigned NOT NULL default '0',
-  `c` tinyint(3) unsigned NOT NULL default '0',
-  `name` varchar(100) NOT NULL default 'undefined',
-  PRIMARY KEY  (`id`),
+  id int(10) unsigned NOT NULL auto_increment,
+  testplan_id int(10) unsigned NOT NULL default '0',
+  target_date date NULL,
+  start_date date NOT NULL default '0000-00-00',
+  a tinyint(3) unsigned NOT NULL default '0',
+  b tinyint(3) unsigned NOT NULL default '0',
+  c tinyint(3) unsigned NOT NULL default '0',
+  name varchar(100) NOT NULL default 'undefined',
+  PRIMARY KEY  (id),
   KEY /*prefix*/testplan_id (`testplan_id`),
   UNIQUE KEY /*prefix*/name_testplan_id (`name`,`testplan_id`)
 ) DEFAULT CHARSET=utf8;

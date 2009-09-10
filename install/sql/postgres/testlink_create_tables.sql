@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.40 2009/07/17 17:08:35 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.41 2009/09/10 16:21:55 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -13,6 +13,8 @@
 --
 -- 
 -- Rev :
+--      20090910 - franciscom - tcversions.preconditions
+--                              milestones.start_date
 --      20090717 - franciscom - added cfield_testprojects.location field
 --      20090611 - franciscom - builds.closed_on_date 
 --      20090512 - franciscom - BUGID - is_public attribute for testprojects and testplans
@@ -152,6 +154,7 @@ CREATE TABLE /*prefix*/tcversions(
   "tc_external_id" INT NULL,
   "version" INTEGER NOT NULL DEFAULT '1',
   "summary" TEXT NULL DEFAULT NULL,
+  "preconditions" TEXT NULL DEFAULT NULL,
   "steps" TEXT NULL DEFAULT NULL,
   "expected_results" TEXT NULL DEFAULT NULL,
   "importance" INT2 NOT NULL DEFAULT '2',
@@ -424,6 +427,7 @@ CREATE TABLE /*prefix*/milestones(
   "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   "target_date" DATE NOT NULL ,
+  "start_date" DATE NULL ,
   "a" SMALLINT NOT NULL DEFAULT '0',
   "b" SMALLINT NOT NULL DEFAULT '0',
   "c" SMALLINT NOT NULL DEFAULT '0',

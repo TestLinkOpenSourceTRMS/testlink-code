@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2009/09/07 06:47:20 $ by $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2009/09/10 09:12:58 $ by $Author: havlat $
  *
  * rev: 
  *      20090828 - franciscom - added contribution platform feature
@@ -555,7 +555,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
     $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
         
-    $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs();
+    $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
     $gui->menuUrl = 'lib/execute/execSetResults.php';
     $gui->src_workframe = null;    
     $gui->getArguments = null;

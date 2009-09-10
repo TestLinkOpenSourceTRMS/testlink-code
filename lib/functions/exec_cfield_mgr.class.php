@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * 
+ * Custom fields for Test execution 
  *
  * @package 	TestLink
  * @author 		jbarchibald
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.10 2009/07/10 21:21:44 havlat Exp $
+ * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.11 2009/09/10 09:12:58 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -47,17 +47,14 @@ class exec_cfield_mgr extends cfield_mgr
 
 	}
 
-/*
-function: html_table_of_custom_field_inputs
-
-args: -
-
-returns: html string
-
-notes: string_custom_field_input is being called from the parent class.
-
-*/
-function html_table_of_custom_field_inputs()
+/**
+ * generate HTML of table rows for list of custom field imput
+ * 
+ * @param integer $htmlInputSize (optional) size of input field [chars]
+ * @return string HTML 
+ * @uses function string_custom_field_input() from the parent class.
+ */
+function html_table_of_custom_field_inputs($htmlInputSize=0)
 {
     $cf_smarty = '';
     if( !is_null($this->cf_map) )
@@ -67,25 +64,23 @@ function html_table_of_custom_field_inputs()
             // true => do not create input in audit log
             $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
             $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-                          $this->string_custom_field_input($cf_info) . "</td></tr>\n";
+                          $this->string_custom_field_input($cf_info,'',$htmlInputSize) . "</td></tr>\n";
         }
     }
     
     return($cf_smarty);
 }
 
-    /*
-      function: get_linked_cfields
-
-      args: tproject_id
-
-      returns: array
-
-      rev :
-           20080811 - franciscom - BUGID 1650 (REQ)
-           20071006 - franciscom - interface changed
-
-    */
+    /**
+     *      function: get_linked_cfields
+     * 
+     * @param integer $tproject_id
+     * @return array
+     * 
+     * @internal rev :
+     *      20080811 - franciscom - BUGID 1650 (REQ)
+     *      20071006 - franciscom - interface changed
+     */
     function get_linked_cfields($tproject_id)
     {
 

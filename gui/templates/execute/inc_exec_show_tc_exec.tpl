@@ -1,10 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.12 2009/09/04 19:22:37 schlundus Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.13 2009/09/10 09:13:00 franciscom Exp $
 Purpose: 
 Author: franciscom
 
 Rev:           
+    20090909 - franciscom - removed code regarding $gui->grants->edit_exec_notes,
+                            that on 1.11 was commented, and on 1.12 uncommented
+                            creating an empty row with icon and link to edit notes.
+                            
     20090901 - franciscom - exec_cfg->steps_results_layout
     20090713 - franciscom - refactoring of edit execution.
                             layout changed, added check on buid is open
@@ -148,10 +152,6 @@ Rev:
 
 		  <table cellspacing="0" class="exec_history">
 			 <tr>
-			  {* Only if Any of Builds under analisys is Open *}
-				{if $gui->grants->edit_exec_notes}				
-        {* <th style="text-align:left">&nbsp;</th> *}
-        {/if}
 				<th style="text-align:left">{$labels.date_time_run}</th>
         
 				{if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
@@ -188,9 +188,7 @@ Rev:
 			{* ----------------------------------------------------------------------------------- *}
 			{foreach item=tc_old_exec from=$gui->other_execs.$tcversion_id}
   	     {assign var="tc_status_code" value=$tc_old_exec.status}
-
    			<tr style="border-top:1px solid black; background-color:{cycle values='#eeeeee,#d0d0d0'}">
-
   			  <td>
           {* Check also that Build is Open *}
   			  {if $gui->grants->edit_exec_notes && $tc_old_exec.build_is_open}
@@ -200,9 +198,6 @@ Rev:
  			    {/if}
   			  {localize_timestamp ts=$tc_old_exec.execution_ts}
   			  </td>
-
-  				{* <td>{localize_timestamp ts=$tc_old_exec.execution_ts}</td> *}
-
 				  {if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}
   				<td>{if !$tc_old_exec.build_is_open}
   				    <img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">{/if}
@@ -300,17 +295,6 @@ Rev:
   			 </td>
    			</tr>
  			  {/if}
-
-  			{if $gui->grants->edit_exec_notes }
-			<tr>
-				<td colspan="{$my_colspan}">
-			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_notes}"
-			         onclick="javascript: openExecEditWindow({$tc_old_exec.execution_id},{$tc_old_exec.id},
-			                                                 {$gui->tplan_id},{$gui->tproject_id});">
-				</td>
-			</tr>
-			{/if}
-
 
   			{* 20070105 - Custom field values  *}
   			<tr>

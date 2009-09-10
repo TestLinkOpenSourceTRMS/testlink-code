@@ -6,11 +6,15 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id $
+ * @version CVS: $Id: exttable.class.php,v 1.2 2009/09/10 09:13:28 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
+ * @internal Revision:
+ *	20090909 - franciscom - changed to allow multiple tables
+ *	new method renderCommonGlobals()
+ * 
  **/
 
 require_once('table.class.php');
@@ -77,13 +81,20 @@ class tlExtTable extends tlTable
 		$s = '[';
 		foreach ($this->data as $row => $rowData) {
 			$row_string = '[';
-			foreach ($rowData as $key => $val) {
+			foreach ($rowData as $key => $val) 
+			{
 				// Escape data
-				if (is_string($val)) {
-					$row_string .= "\"$val\",";
-				} else if (is_array($val)) {
+				if (is_string($val)) 
+				{
+					// $row_string .= "\"$val\",";
+					$row_string .= "'" . $val . "',";
+				} 
+				else if (is_array($val)) 
+				{
 					$row_string .= "\"{$val[0]}\",";
-				} else {
+				} 
+				else 
+				{
 					$row_string .= "{$val},";
 				}
 			}
@@ -200,24 +211,34 @@ class tlExtTable extends tlTable
 	 * Outputs all js that is needed to render the table. This inlcludes
 	 * rendering of "inc_ext_table.tpl"
 	 */
-	public function renderHeadSection()
+	public function renderHeadSection($tableID)
 	{
-		$smarty = new TLSmarty;
-		$smarty->assign('table', $this);
-		// performance tweak: display template at once instead of allocating memory
-		$smarty->display('inc_ext_table.tpl');
+		$s = '<script type="text/javascript">' . "\n\n";
+		$s .= "tableData['{$tableID}'] = " . $this->buildContent() . "\n\n";
+		$s .= "fields['{$tableID}'] = " . $this->buildFields() . "\n\n";
+		$s .= "columnData['{$tableID}'] = " . $this->buildColumns() . "\n\n";
+		$s .= '</script>' . "\n\n";
+		return $s;
+	}
 
-		$s = '<script type="text/javascript">';
+	/**
+	 * Outputs all js that is common.
+	 */
+	public function renderCommonGlobals()
+	{
+		$s = '<script type="text/javascript">'. "\n\n";
 		$s .= $this->buildCodeLabels() . "\n\n";
 		$s .= $this->buildCfg() . "\n\n";
-		
-		$s .= 'tableData = ' . $this->buildContent() . "\n\n";
-		$s .= 'fields = '. $this->buildFields() . "\n\n";
-		$s .= 'columnData = '. $this->buildColumns() . "\n\n";
-		$s .= '</script>';
+		$s .= "var store = new Array()\n\n";
+		$s .= "var grid = new Array()\n\n";
+		$s .= "var tableData = new Array()\n\n";
+		$s .= "var fields = new Array()\n\n";
+		$s .= "var columnData = new Array()\n\n";
+		$s .= '</script>' . "\n\n";
 
 		return $s;
 	}
+
 
 	/**
 	 * Build a string with the extra settings passed to the GridPanel
@@ -247,9 +268,9 @@ class tlExtTable extends tlTable
 	/**
 	 * Outputs the div tag to hold the table.
 	 */
-	public function renderBodySection()
+	public function renderBodySection($tableID='table')
 	{
-		return '<div id="table"></div>';
+		return '<div id="' . $tableID . '"></div>';
 	}
 
 

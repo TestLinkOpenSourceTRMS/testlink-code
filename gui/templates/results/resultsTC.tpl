@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.8 2009/08/05 07:27:26 franciscom Exp $ *}
+{* $Id: resultsTC.tpl,v 1.9 2009/09/10 09:14:22 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070919 - franciscom - BUGID
@@ -7,13 +7,20 @@
 *}
 
 {lang_get var="labels"
-          s="title,date,printed_by,title_test_suite_name,
+          s="title,date,printed_by,title_test_suite_name,platform,
              title_test_case_title,version,generated_by_TestLink_on, priority"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
+{include file="inc_ext_table.tpl"}
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+  {assign var=tableID value=table_$idx}
+  {if $smarty.foreach.initializer.first}
+    {$matrix->renderCommonGlobals()}
+  {/if}
+  {$matrix->renderHeadSection($tableID)}
+{/foreach}
 
-{$gui->table->renderHeadSection()}
 </head>
 <body>
 
@@ -32,7 +39,14 @@
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
 
-{$gui->table->renderBodySection()}
+{foreach from=$gui->tableSet key=idx item=matrix}
+  {assign var=tableID value=table_$idx}
+  {if $idx != 0}
+  <br />{$labels.platform}:{$gui->platforms[$idx]|escape}
+  {/if}
+  {$matrix->renderBodySection($tableID)}
+{/foreach}
+
 
 {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div>

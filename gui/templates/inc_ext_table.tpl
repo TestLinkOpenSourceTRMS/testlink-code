@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.1 2009/08/03 08:14:55 franciscom Exp $
+$Id: inc_ext_table.tpl,v 1.2 2009/09/10 09:13:00 franciscom Exp $
 Purpose: rendering of Ext Js table
 
 rev :
@@ -62,21 +62,25 @@ function priorityRenderer(val)
 }
 
 Ext.onReady(function() {
+  {/literal}
+	{foreach from=$gui->tableSet key=idx item=matrix}
+    {assign var=tableID value=table_$idx}
+	   store['{$tableID}'] = {literal}new Ext.data.ArrayStore({fields: fields['{/literal}{$tableID}{literal}']});{/literal}
+     store['{$tableID}'].loadData(tableData['{$tableID}']);
+	  {literal}grid['{/literal}{$tableID}{literal}'] = new Ext.grid.GridPanel({{/literal}
+	  	store: store['{/literal}{$tableID}'],
+	  	viewConfig: {ldelim}
+	  		forceFit: true
+	  	{rdelim},columns: columnData['{$tableID}']
+	  	{/literal}{$matrix->getGridSettings()}{literal}
+	  });
+	  {/literal}
+  {/foreach}
 
-	var store = new Ext.data.ArrayStore({
-		fields: fields
-	});
-	store.loadData(tableData);
-	var grid = new Ext.grid.GridPanel({
-		store: store,
-		viewConfig: {
-			forceFit: true
-		},
-		columns: columnData
-		{/literal}{$table->getGridSettings()}{/literal}
-	});
-
-	grid.render('table');
+	{foreach from=$gui->tableSet key=idx item=matrix}
+    {assign var=tableID value=table_$idx}
+	  grid['{$tableID}'].render('{$tableID}');
+  {/foreach}
 
 });
 </script>

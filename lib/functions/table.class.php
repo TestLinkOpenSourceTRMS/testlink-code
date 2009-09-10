@@ -60,10 +60,10 @@ abstract class tlTable
 	/**
 	 * Outputs the code that should be in <head>
 	 */
-	public abstract function renderHeadSection();
+	public abstract function renderHeadSection($tableID);
 
 	/**
 	 * Outputs the code that should be in <body>
 	 */
-	public abstract function renderBodySection();
+	public abstract function renderBodySection($tableID);
 }

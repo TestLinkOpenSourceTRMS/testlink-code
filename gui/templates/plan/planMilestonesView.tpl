@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesView.tpl,v 1.6 2009/05/26 19:06:04 schlundus Exp $
+$Id: planMilestonesView.tpl,v 1.7 2009/09/10 17:17:16 franciscom Exp $
 
 Rev:
+  20090910 - franciscom - added start_date
 *}
 {lang_get var='labels' s='no_milestones,title_milestones,title_existing_milestones,th_name,
                          th_date_format,th_perc_a_prio,th_perc_b_prio,th_perc_c_prio,
-                         btn_new_milestone,
+                         btn_new_milestone,start_date,
                          th_perc_testcases,th_delete,alt_delete_milestone,no_milestones'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -42,6 +43,7 @@ var del_action=fRoot+'{$deleteAction}';
 		<tr>
 			<th>{$labels.th_name}</th>
 			<th>{$labels.th_date_format}</th>
+			<th>{$labels.start_date}</th>
 			{if $session['testprojectOptPriority']}
 				<th>{$labels.th_perc_a_prio}</th>
 				<th>{$labels.th_perc_b_prio}</th>
@@ -59,6 +61,11 @@ var del_action=fRoot+'{$deleteAction}';
 			</td>
 			<td>
 				{$milestone.target_date|date_format:$gsmarty_date_format}
+			</td>
+			<td>
+			  {if $milestone.start_date != '' && $milestone.start_date != '0000-00-00' }
+				  {$milestone.start_date|date_format:$gsmarty_date_format}
+				{/if}
 			</td>
 			{if $session['testprojectOptPriority']}
 				<td style="text-align: right">{$milestone.high_percentage|escape}</td>

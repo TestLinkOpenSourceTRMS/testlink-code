@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesView.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/09/10 17:17:16 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
 **/
@@ -33,10 +33,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
 	$args = new stdClass();
-	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
-
 	$args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
 	$args->tplan_name = isset($_SESSION['testplanName']) ? $_SESSION['testplanName'] : "";
 

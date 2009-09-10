@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.133 2009/09/07 06:50:22 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.134 2009/09/10 17:17:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1231,9 +1231,11 @@ class testplan extends tlObjectWithAttachments
 
   returns:
 
-  rev : 20070519 - franciscom
+  rev : 
+        20090910 - franciscom - added start_date
+        
+        20070519 - franciscom
         changed date to target_date, because date is an Oracle reverved word.
-
 */
 	private function copy_milestones($tplan_id,$new_tplan_id)
 	{
@@ -1242,10 +1244,11 @@ class testplan extends tlObjectWithAttachments
 		{
 			foreach($rs as $mstone)
 			{
-				$sql="INSERT INTO {$this->tables['milestones']} (name,a,b,c,target_date,testplan_id) " .
-					"VALUES ('" . $this->db->prepare_string($mstone['name']) ."'," .
-					$mstone['high_percentage'] . "," . $mstone['medium_percentage'] . "," . 
-					$mstone['low_percentage'] . ",'" . $mstone['target_date'] . "',{$new_tplan_id})";
+				$sql="INSERT INTO {$this->tables['milestones']} (name,a,b,c,target_date,start_date,testplan_id) " .
+					 "VALUES ('" . $this->db->prepare_string($mstone['name']) ."'," .
+					 $mstone['high_percentage'] . "," . $mstone['medium_percentage'] . "," . 
+					 $mstone['low_percentage'] . ",'" . $mstone['target_date'] . "','" . $mstone['start_date'] .
+					 "',{$new_tplan_id})";
 				$this->db->exec_query($sql);
 			}
 		}
@@ -1260,7 +1263,7 @@ class testplan extends tlObjectWithAttachments
 	function get_milestones($tplan_id)
 	{
 		$sql="SELECT id, name, a AS high_percentage, b AS medium_percentage, c AS low_percentage, " .
-		     "target_date, testplan_id " .       
+		     "target_date, start_date,testplan_id " .       
 		     "FROM {$this->tables['milestones']} " .
 		     "WHERE testplan_id={$tplan_id} ORDER BY target_date,name";
 		return $this->db->get_recordset($sql);
@@ -2678,12 +2681,15 @@ class milestone_mgr extends tlObject
     returns:
 
   */
-	function create($tplan_id,$name,$date,$low_priority,$medium_priority,$high_priority)
+	function create($tplan_id,$name,$target_date,$start_date,$low_priority,$medium_priority,$high_priority)
 	{
 		$new_milestone_id=0;
-		$sql = "INSERT INTO {$this->tables['milestones']} (testplan_id,name,target_date,a,b,c) " .
-			" VALUES (" . $tplan_id . ",'{$this->db->prepare_string($name)}','{$this->db->prepare_string($date)}'," . 
-			$low_priority . "," .  $medium_priority . "," . $high_priority . ")";
+		$sql = "INSERT INTO {$this->tables['milestones']} " .
+		       " (testplan_id,name,target_date,start_date,a,b,c) " .
+			   " VALUES (" . $tplan_id . ",'{$this->db->prepare_string($name)}'," .
+			   " '{$this->db->prepare_string($target_date)}'," . 
+			   " '{$this->db->prepare_string($start_date)}'," .
+				$low_priority . "," .  $medium_priority . "," . $high_priority . ")";
 		$result = $this->db->exec_query($sql);
 		
 		if ($result)
@@ -2710,11 +2716,13 @@ class milestone_mgr extends tlObject
 
     rev :
   */
-	function update($id,$name,$date,$low_priority,$medium_priority,$high_priority)
+	function update($id,$name,$target_date,$start_date,$low_priority,$medium_priority,$high_priority)
 	{
-		$sql = "UPDATE {$this->tables['milestones']} SET name='{$this->db->prepare_string($name)}', " .
-			" target_date='{$this->db->prepare_string($date)}', " .
-			" a={$low_priority}, b={$medium_priority}, c={$high_priority} WHERE id={$id}";
+		$sql = "UPDATE {$this->tables['milestones']} " . 
+		       " SET name='{$this->db->prepare_string($name)}', " .
+			   " target_date='{$this->db->prepare_string($target_date)}', " .
+			   " start_date='{$this->db->prepare_string($start_date)}', " .
+			   " a={$low_priority}, b={$medium_priority}, c={$high_priority} WHERE id={$id}";
 		$result = $this->db->exec_query($sql);
 		return $result ? 1 : 0;
 	}
@@ -2751,9 +2759,9 @@ class milestone_mgr extends tlObject
 	function get_by_id($id)
 	{
 		$sql=" SELECT M.id, M.name, M.a AS high_percentage, M.b AS medium_percentage, M.c AS low_percentage, " .
-			" M.target_date, M.testplan_id, NH.name as testplan_name " .   
-			" FROM {$this->tables['milestones']} M, {$this->tables['nodes_hierarchy']} NH " .
-			" WHERE M.id = {$id} AND NH.id=M.testplan_id";
+			 " M.target_date, M.start_date, M.testplan_id, NH.name as testplan_name " .   
+			 " FROM {$this->tables['milestones']} M, {$this->tables['nodes_hierarchy']} NH " .
+			 " WHERE M.id = {$id} AND NH.id=M.testplan_id";
 		$myrow = $this->db->fetchRowsIntoMap($sql,'id');
 		return $myrow;
 	}
@@ -2772,9 +2780,8 @@ class milestone_mgr extends tlObject
 	 */
 	function check_name_existence($tplan_id,$milestone_name,$milestone_id=null,$case_sensitive=0)
 	{
-		$sql = " SELECT id, name" .
-			" FROM {$this->tables['milestones']} " .
-			" WHERE testplan_id = {$tplan_id} ";
+		$sql = " SELECT id, name FROM {$this->tables['milestones']} " .
+			   " WHERE testplan_id = {$tplan_id} ";
 		
 		if($case_sensitive)
 		{
@@ -2813,10 +2820,10 @@ class milestone_mgr extends tlObject
 	function get_all_by_testplan($tplan_id)
 	{
 		$sql=" SELECT M.id, M.name, M.a AS high_percentage, M.b AS medium_percentage, M.c AS low_percentage, " .
-			" M.target_date, M.testplan_id, NH.name as testplan_name " .   
-			" FROM {$this->tables['milestones']} M, {$this->tables['nodes_hierarchy']} NH " .
-			" WHERE testplan_id={$tplan_id} AND NH.id = testplan_id " .
-			" ORDER BY M.target_date,M.name";
+			 " M.target_date, M.start_date, M.testplan_id, NH.name as testplan_name " .   
+			 " FROM {$this->tables['milestones']} M, {$this->tables['nodes_hierarchy']} NH " .
+			 " WHERE testplan_id={$tplan_id} AND NH.id = testplan_id " .
+			 " ORDER BY M.target_date,M.name";
 		$rs=$this->db->get_recordset($sql);
 		return $rs;
 	}

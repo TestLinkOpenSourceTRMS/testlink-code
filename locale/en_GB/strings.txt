@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.472 2009/09/01 07:31:56 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.473 2009/09/10 16:41:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1144,6 +1144,7 @@ $TLS_alt_delete_milestone = "Delete milestone?";
 $TLS_btn_edit_milestone = "Edit";
 $TLS_btn_new_milestone = "Create";
 $TLS_info_milestones_date = "Milestones must be created at today's date or greater";
+$TLS_info_milestones_start_date='';
 $TLS_no_milestones = "There are no Milestones for this Test Plan!";
 $TLS_popup_delete_milestones = "Are you sure you want to delete milestone %NAME% ?";
 $TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
@@ -1167,7 +1168,7 @@ $TLS_warning_empty_low_priority_tcases = "Value can not be empty";
 $TLS_warning_empty_medium_priority_tcases = "Value can not be empty";
 $TLS_warning_empty_high_priority_tcases = "Value can not be empty";
 $TLS_milestone_created = "Milestone Created";
-
+$TLS_start_date = 'Start Date';
 
 
 // ----- gui/templates/projectEdit.tpl -----

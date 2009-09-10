@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.57 2009/08/31 16:19:33 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.58 2009/09/10 09:47:25 havlat Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -110,7 +110,7 @@ CREATE TABLE /*prefix*/builds (
   `notes` text,
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
-  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `release_date` date NULL,
   `closed_on_date` date NULL,
   PRIMARY KEY  (`id`),
@@ -327,7 +327,7 @@ CREATE TABLE /*prefix*/testplan_tcversions (
   urgency smallint(5) NOT NULL default '2',
   platform_id int(10) unsigned NOT NULL default '0',
   author_id int(10) unsigned default NULL,
-  creation_ts datetime NOT NULL default '0000-00-00 00:00:00',
+  creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY  (id),
   UNIQUE KEY /*prefix*/testplan_tcversions_tplan_tcversion (testplan_id,tcversion_id,platform_id)
 ) DEFAULT CHARSET=utf8;

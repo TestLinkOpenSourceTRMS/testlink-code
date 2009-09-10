@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.4 2009/08/10 18:57:58 schlundus Exp $
+ * $Id: db_schema_update.sql,v 1.5 2009/09/10 09:47:24 havlat Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -26,14 +26,14 @@ ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public tinyint NOT NULL DEFAULT
 ALTER TABLE /*prefix*/testplans ADD COLUMN is_public tinyint NOT NULL DEFAULT '1';
 
 /* builds */
-ALTER TABLE /*prefix*/builds ADD COLUMN `creation_ts` datetime NOT NULL default NOW();
+ALTER TABLE /*prefix*/builds ADD COLUMN `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE /*prefix*/builds ADD COLUMN `release_date` date NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN `closed_on_date` date NULL;
 
 
 /* testplan_tcversions */
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN author_id int(10) unsigned default NULL;
-ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN creation_ts datetime default NOW();
+ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 
 /* cfield_testprojects */
 ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location tinyint NOT NULL DEFAULT '1';

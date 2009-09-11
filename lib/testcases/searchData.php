@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.46 2009/08/11 19:48:51 schlundus Exp $
+ * $Id: searchData.php,v 1.47 2009/09/11 20:35:10 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -32,18 +32,15 @@ $gui->refresh_tree = false;
 $gui->hilite_testcase_name = false;
 $gui->show_match_count = false;
 $gui->tc_current_version = null;
-
+$gui->row_qty = 0;
 $map = null;
 $args = init_args();
 if ($args->tprojectID)
 {
-    $tables['cfield_design_values'] = DB_TABLE_PREFIX . 'cfield_design_values';
-    $tables['nodes_hierarchy'] = DB_TABLE_PREFIX . 'nodes_hierarchy';
-    $tables['requirements'] = DB_TABLE_PREFIX . 'requirements';
-    $tables['req_coverage'] = DB_TABLE_PREFIX . 'req_coverage';
-    $tables['testcase_keywords'] = DB_TABLE_PREFIX . 'testcase_keywords'; 
-    $tables['tcversions'] = DB_TABLE_PREFIX . 'tcversions';
-    
+	$tables = tlObjectWithDB::getDBTables(
+							array("cfield_design_values",'nodes_hierarchy',
+								'requirements','req_coverage','testcase_keywords','tcversions'
+							));
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
     $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
@@ -64,7 +61,6 @@ if ($args->tprojectID)
         $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
         $filter['by_tc_id'] = " AND NHB.parent_id IN (" . implode(",",$a_tcid) . ") ";
     }
-    
     if($args->version)
     {
         $filter['by_version'] = " AND version = {$args->version} ";
@@ -96,12 +92,10 @@ if ($args->tprojectID)
     
     if($args->expected_results != "")
     {
-        $args->expected_results = $db->prepare_string($args->expected_results);
+		$args->expected_results = $db->prepare_string($args->expected_results);
         $filter['by_expected_results'] = " AND expected_results like '%{$args->expected_results}%' ";	
     }    
     
-    // ------------------------------------------------------------------------------------
-    // BUGID
     if($args->custom_field_id > 0)
     {
         $args->custom_field_id = $db->prepare_string($args->custom_field_id);
@@ -114,47 +108,48 @@ if ($args->tprojectID)
    
    	if($args->requirement_doc_id != "")
     {
-       $args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
-       $from['by_requirement_doc_id']= " , {$tables['requirements']} REQ, " .
+    	$args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
+     	$from['by_requirement_doc_id'] = " , {$tables['requirements']} REQ, " .
                                        " {$tables['req_coverage']}  RC";  
-       $filter['by_requirement_doc_id']=" AND RC.testcase_id = NHA.id " .
+    	$filter['by_requirement_doc_id'] = " AND RC.testcase_id = NHA.id " .
                                         " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' " .
                                         " AND REQ.id=RC.req_id "; 
     }   
     
-    
-    // ------------------------------------------------------------------------------------
     $sql = " SELECT NHA.id AS testcase_id,NHA.name,TCV.id AS tcversion_id," .
-           " summary,steps,expected_results,version,tc_external_id".
-           " FROM {$tables['nodes_hierarchy']} NHA, " .
+           " summary,steps,expected_results,version,tc_external_id";
+    
+    $sqlCount  = "SELECT COUNT(NHA.id) ";
+    
+    $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NHA, " .
            " {$tables['nodes_hierarchy']} NHB, {$tables['tcversions']} TCV " .
            " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']}".
            " WHERE NHA.id = NHB.parent_id AND NHB.id = TCV.id ";
            
     if ($filter)
-    {
-        $sql .= implode("",$filter);
-    }
+        $sqlPart2 .= implode("",$filter);
     
-    $map = $db->fetchRowsIntoMap($sql,'testcase_id');	
+    $gui->row_qty = $db->fetchOneValue($sqlCount.$sqlPart2); 
+    if ($gui->row_qty)
+    {
+    	if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
+    		$map = $db->fetchRowsIntoMap($sql.$sqlPart2,'testcase_id');	
+		else
+			$gui->warning_msg = lang_get('too_wide_search_criteria');
+	}
 }
 
 $smarty = new TLSmarty();
-$gui->row_qty = count($map);
 if($gui->row_qty)
 {
 	$tpl = 'tcSearchResults.tpl';
 	$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
-  	if($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
-  	{	
-		$tcase_mgr = new testcase($db);   
-      	$tcase_set = array_keys($map);
-      	$gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set);
-	    $gui->resultSet = $map;
-	}
-	else
+	if ($map)
 	{
-	    $gui->warning_msg = lang_get('too_wide_search_criteria');
+		$tcase_mgr = new testcase($db);   
+	    $tcase_set = array_keys($map);
+	    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set);
+		$gui->resultSet = $map;
 	}
 }
 else
@@ -168,23 +163,23 @@ $smarty->display($templateCfg->template_dir . $tpl);
 
 function init_args()
 {
-   	$args = new stdClass();
-    $_REQUEST = strings_stripSlashes($_REQUEST);
-  
-    $strnull = array('name','summary','steps','expected_results','custom_field_value',
-                     'targetTestCase','requirement_doc_id');
-    foreach($strnull as $keyvar)
-    {
-        $args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;  
-    }
+	$args = new stdClass();
+	$iParams = array("keyword_id" => array(tlInputParameter::INT_N),
+			         "version" => array(tlInputParameter::INT_N,999),
+					 "custom_field_id" => array(tlInputParameter::INT_N),
+					 "name" => array(tlInputParameter::STRING_N,0,50),
+					 "summary" => array(tlInputParameter::STRING_N,0,50),
+					 "steps" => array(tlInputParameter::STRING_N,0,50),
+					 "expected_results" => array(tlInputParameter::STRING_N,0,50),
+					 "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
+					 "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
+					 "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
+	);	
+		
+	$args = new stdClass();
+	R_PARAMS($iParams,$args);
 
-    $int0 = array('keyword_id','version','custom_field_id');
-    foreach($int0 as $keyvar)
-    {
-        $args->$keyvar = isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;  
-    }
-    
-    $args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
     return $args;

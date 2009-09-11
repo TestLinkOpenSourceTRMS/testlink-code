@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.18 2009/09/08 14:44:51 havlat Exp $ 
+$Id: tcEdit.tpl,v 1.19 2009/09/11 20:35:09 schlundus Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -39,35 +39,34 @@ function validateForm(f)
 	
   	if (isWhitespace(f.testcase_name.value)) 
   	{
-    	  alert_message(alert_box_title,warning_empty_testcase_name);
-		    selectField(f,'testcase_name');
-		    return false;
-	  }
-	  var cf_designTime = document.getElementById('cfields_design_time');
-	  if (cf_designTime)
- 	  {
- 		    var cfields_container = cf_designTime.getElementsByTagName('input');
- 		    var cfieldsChecks = validateCustomFields(cfields_container);
-		    if(!cfieldsChecks.status_ok)
-	  	  {
-	    	    var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	  alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	  return false;
-		    }
+    	alert_message(alert_box_title,warning_empty_testcase_name);
+		selectField(f,'testcase_name');
+		return false;
+	}
+	var cf_designTime = document.getElementById('cfields_design_time');
+	if (cf_designTime)
+ 	{
+ 		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
 
         // 20090421 - franciscom - BUGID 
- 		    cfields_container = cf_designTime.getElementsByTagName('textarea');
- 		    cfieldsChecks = validateCustomFields(cfields_container);
-		    if(!cfieldsChecks.status_ok)
-	  	  {
-	    	    var warning_msg = cfMessages[cfieldsChecks.msg_id];
-	      	  alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
-	      	  return false;
-		    }
-
-	  }
-	  IGNORE_UNLOAD = TRUE;
-	  return true;
+ 		cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 		cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
+	}
+	IGNORE_UNLOAD = true;
+	return true;
 }
 </script>
 
@@ -81,27 +80,18 @@ var IGNORE_UNLOAD = true;
 
 function doBeforeUnload() 
 {
-   checkFCKEditorChanged(); //check FCKeditors 
-   if(IGNORE_UNLOAD) return; // Let the page unload
-
-   if(window.event)
-   {
-      window.event.returnValue = UNLOAD_MSG; // IE
-   }
-   else
-   {
-      return UNLOAD_MSG; // FX
-   }   
+	checkFCKEditorChanged(); //check FCKeditors 
+	if(IGNORE_UNLOAD) return ; // Let the page unload
+	if(window.event)
+		window.event.returnValue = UNLOAD_MSG; // IE
+	else
+   		return UNLOAD_MSG; // FX
 }
 
 if(window.body)
-{
-   window.body.onbeforeunload = doBeforeUnload; // IE
-}
+	window.body.onbeforeunload = doBeforeUnload; // IE
 else
-{
-   window.onbeforeunload = doBeforeUnload; // FX
-}
+	window.onbeforeunload = doBeforeUnload; // FX
 
 // verify if content of any editor changed
 function checkFCKEditorChanged()
@@ -114,7 +104,7 @@ function checkFCKEditorChanged()
 
 		if(edSummary.IsDirty() || edSteps.IsDirty() || edExpResults.IsDirty()) 
 		{
-		  // ABSOLUTELY BAD naming convention, why has to be UPPER CASE ????
+			// ABSOLUTELY BAD naming convention, why has to be UPPER CASE ????
 			IGNORE_UNLOAD = false;
 		}	
 	}
@@ -137,29 +127,30 @@ function checkFCKEditorChanged()
 {/if}
 
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
-      onSubmit="javascript:return validateForm(this);">
+      onSubmit="return validateForm(this);">
 
 	<input type="hidden" name="testcase_id" value="{$tc.testcase_id}" />
 	<input type="hidden" name="tcversion_id" value="{$tc.id}" />
 	<input type="hidden" name="version" value="{$tc.version}" />
 	<input type="hidden" name="doAction" value="" />
-  <input type="hidden" name="show_mode" value="{$gui->show_mode}" />
+  	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
-		       onclick="IGNORE_UNLOAD = true; doAction.value='doUpdate'"  value="{$labels.btn_save}" />
+		       onclick="doAction.value='doUpdate'" value="{$labels.btn_save}" />
 		
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-		       onclick="javascript: history.back();"/>
+		       onclick="history.back();"/>
 	</div>	
 
 	{assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
+	
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
-		       onclick="IGNORE_UNLOAD = true; doAction.value='doUpdate'"   value="{$labels.btn_save}" />
+		       onclick="doAction.value='doUpdate'" value="{$labels.btn_save}" />
 		<input type="button" name="go_back" value="{$labels.cancel}" 
-		       onclick="javascript: history.back();"/>
+		       onclick="history.back();"/>
 	</div>	
 </form>
 

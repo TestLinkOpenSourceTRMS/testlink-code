@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/09/11 20:35:09 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -41,7 +41,7 @@ $req_cfg = config_get('req_cfg');
 $aa_tfp = array( 
      'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
      'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
-     'searchTc' => 'lib/testcases/searchForm.php',
+     'searchTc' => 'lib/testcases/tcSearchForm.php',
      'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
      'planAddTC'    => 'lib/plan/planAddTCNavigator.php',

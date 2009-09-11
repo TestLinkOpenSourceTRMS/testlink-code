@@ -20,7 +20,7 @@
  *		"HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,null,'checkFunction','normFunction'),
  *		//non negativ integer, from GET['HelloInt2'], minValue = 20, maxValue = 40. checked to 	
  *		//ensure it's odd by using a chechkFunction
- *		"HelloInt2" =>  array("POST",tlInputParameter::INT_N.20,40,'checkOdd'),
+ *		"HelloInt2" =>  array("POST",tlInputParameter::INT,20,40,'checkOdd'),
  * 	);
  * 
  * 	$pageParams = I_PARAMS($params)
@@ -31,7 +31,7 @@
  * 		"HelloInt1" =>  array(tlInputParameter::INT_N),
  * 		"HelloString2" => array(tlInputParameter::STRING_N,1,15,'/^aaaa$/'),
  * 		"HelloString3" => 			array(,tlInputParameter::STRING_N,1,15,null,'checkFunction','normFunction'),
- * 		"HelloInt2" =>  array(tlInputParameter::INT_N.20,40,'checkOdd'),
+ * 		"HelloInt2" =>  array(tlInputParameter::INT,20,40,'checkOdd'),
  * 	);
  * 
  * $pageParams = P_PARAMS($params);
@@ -39,7 +39,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: inputparameter.inc.php,v 1.24 2009/08/10 18:57:58 schlundus Exp $
+ * @version    	CVS: $Id: inputparameter.inc.php,v 1.25 2009/09/11 20:35:09 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * 

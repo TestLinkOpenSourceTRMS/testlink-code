@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.109 $
- * @modified $Date: 2009/09/01 07:31:29 $  by $Author: franciscom $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2009/09/11 20:35:10 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -38,9 +38,7 @@ require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
 
-// echo __FILE__;
-
-$cfg=getCfg();
+$cfg = getCfg();
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 
 testlinkInitPage($db);
@@ -49,9 +47,9 @@ $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
-$templateCfg=templateConfiguration();
+$templateCfg = templateConfiguration();
 
-$commandMgr=new testcaseCommands($db);
+$commandMgr = new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
 $oWebEditor=createWebEditors($_SESSION['basehref'],$cfg->webEditorCfg);
@@ -60,16 +58,16 @@ $sqlResult = "";
 $init_inputs=true; // BUGID 2163 - Create test case with same title, after submit, all data lost 
 
 $show_newTC_form = 0;
-$optionTransferName='ot';
+$optionTransferName = 'ot';
 $args = init_args($cfg->spec,$optionTransferName);
 
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
-$gui=new stdClass();
-$gui->editorType=$cfg->webEditorCfg['type'];
-$gui->grants=getGrants($db);
-$gui->opt_requirements=$args->opt_requirements; 
-$gui->action_on_duplicated_name='generate_new';
-$gui->show_mode=$args->show_mode;
+$gui = new stdClass();
+$gui->editorType = $cfg->webEditorCfg['type'];
+$gui->grants = getGrants($db);
+$gui->opt_requirements = $args->opt_requirements; 
+$gui->action_on_duplicated_name = 'generate_new';
+$gui->show_mode = $args->show_mode;
 
 
 $smarty = new TLSmarty();
@@ -138,7 +136,6 @@ if($args->edit_tc)
     keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
 
   	$tc_data = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
-  	new dBug($tc_data);
   	foreach ($oWebEditor->cfg as $key => $value)
    	{
   	  	// Warning:
@@ -179,8 +176,7 @@ else if($args->do_create)
 		$user_feedback = lang_get('error_tc_add');
         $sqlResult = 'ko';
         
-        new dBug($args);
-		$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,
+       	$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,
 		                            $args->preconditions,$args->steps,
 		                            $args->expected_results,$args->user_id,$args->assigned_keywords_list,
 		                            $cfg->treemenu_default_testcase_order,testcase::AUTOMATIC_ID,

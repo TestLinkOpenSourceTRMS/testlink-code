@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.192 2009/09/02 08:36:05 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.193 2009/09/11 20:35:09 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1918,7 +1918,7 @@ class testcase extends tlObjectWithAttachments
 				$tproject_id = $recordset[0]['id'];
 	
 				$tprojectSet = array();
-				foreach($testCases as $tcaseID => $value )
+				foreach($testCases as $tcaseID => $value)
 				{
 	        		$path2root = $this->tree_manager->get_path($tcaseID);
 					if($tproject_id == $path2root[0]['parent_id'])

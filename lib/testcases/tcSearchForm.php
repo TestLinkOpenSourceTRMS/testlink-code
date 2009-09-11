@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchForm.php,v 1.22 2009/08/24 19:18:45 schlundus Exp $
+ * $Id: tcSearchForm.php,v 1.1 2009/09/11 20:35:10 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev: 20090228 - franciscom - improvement on management of test case prefix
@@ -12,15 +12,12 @@
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
 testlinkInitPage($db);
-
-
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
 $args = init_args();
 $gui = new stdClass();
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . config_get('testcase_cfg')->glue_character;
- 
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
 
 $enabled = 1;
@@ -39,14 +36,7 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . 'tcSearchForm.tpl');
 
-/*
-  function: 
 
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {              
   	$args = new stdClass();

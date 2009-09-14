@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.134 2009/09/10 17:17:16 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.135 2009/09/14 13:20:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -528,8 +528,14 @@ class testplan extends tlObjectWithAttachments
          	                          
          	                   mapOfArray -> indexed by test case id but with an array
          	                                 where each element contains information
-         	                                 according to Platform
-         	                  array -> indexed sequentially                
+         	                                 according to Platform.
+         	                                 Be carefull ifyou have multiple executions
+         	                                 for same 8testcase,platform) you will get
+         	                                 multiple elements in array
+         	                                 
+         	                  array -> indexed sequentially 
+         	                  
+         	                  mapOfMap: first key testcase_id, second key platform_id               
          	          
          	[executed]: default NULL => get executed and NOT executed
          	                            get only executed tcversions
@@ -799,6 +805,12 @@ class testplan extends tlObjectWithAttachments
 
 			case 'mapOfArray':
 			$recordset = $this->db->fetchRowsIntoMap($sql,'tc_id',database::CUMULATIVE);
+			break;
+			
+			case 'mapOfMap':
+			// with this option we got just one record for each 8testcase,platform)
+			// no matter how many executions has been done
+			$recordset = $this->db->fetchMapRowsIntoMap($sql,'tc_id','platform_id');
 			break;
 			
 			case 'map':
@@ -2362,6 +2374,7 @@ class testplan extends tlObjectWithAttachments
     /**
 	 * 
  	 *
+ 	 * outputFormat: possible . 'array','map'
  	 */
     function getPlatforms($id,$outputFormat='array')
     {

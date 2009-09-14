@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.11 2009/06/25 19:47:15 schlundus Exp $
+$Id: resultsGeneral.tpl,v 1.12 2009/09/14 13:22:59 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -10,7 +10,7 @@ Revisions:
        	 th_tc_priority_high, th_tc_priority_medium, th_tc_priority_low,
          title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites,
          title_gen_test_rep,title_report_tc_priorities,title_report_milestones,
-         title_metrics_x_build'
+         title_metrics_x_build,title_res_by_platform,th_platform'
 }
 
 
@@ -69,8 +69,8 @@ Revisions:
            args_first_column_header=$labels.trep_comp
            args_first_column_key='tsuite_name'
            args_show_percentage=false
-           args_column_definition=$columnsDefinition->testsuites
-           args_column_data=$statistics->testsuites}
+           args_column_definition=$gui->columnsDefinition->testsuites
+           args_column_data=$gui->statistics->testsuites}
 
   
   	{* by Tester *}
@@ -79,8 +79,18 @@ Revisions:
            args_first_column_header=$labels.trep_owner
            args_first_column_key='tester_name'
            args_show_percentage=true
-           args_column_definition=$columnsDefinition->testers
-           args_column_data=$statistics->testers}
+           args_column_definition=$gui->columnsDefinition->testers
+           args_column_data=$gui->statistics->testers}
+
+    {if $gui->showPlatforms}
+      {include file="$this_template_dir/inc_results_show_table.tpl"
+             args_title=$labels.title_res_by_platform
+             args_first_column_header=$labels.th_platform
+             args_first_column_key='platform'
+             args_show_percentage=true
+             args_column_definition=$gui->columnsDefinition->platform
+             args_column_data=$gui->statistics->platform}
+    {/if}
   
   	{* Keywords 
      Warning: args_first_column_key='keyword_name' is related to name used 
@@ -91,8 +101,8 @@ Revisions:
            args_first_column_header=$labels.trep_kw
            args_first_column_key='keyword_name'
            args_show_percentage=true
-           args_column_definition=$columnsDefinition->keywords
-           args_column_data=$statistics->keywords}
+           args_column_definition=$gui->columnsDefinition->keywords
+           args_column_data=$gui->statistics->keywords}
 
 
   	{* ----- results by milestones / priorities -------------------------------------- *}
@@ -107,22 +117,22 @@ Revisions:
 		</tr>
   		<tr>
 			<td>{$labels.th_tc_priority_high}</td>
- 			<td>{$statistics->priority_overall.3} {$tlCfg->gui_separator_open}
-  					{$statistics->priority_overall.high_percentage} %{$tlCfg->gui_separator_close}</td>
+ 			<td>{$gui->statistics->priority_overall.3} {$tlCfg->gui_separator_open}
+  					{$gui->statistics->priority_overall.high_percentage} %{$tlCfg->gui_separator_close}</td>
   		</tr>
   		<tr>
 			<td>{$labels.th_tc_priority_medium}</td>
-  			<td>{$statistics->priority_overall.2} {$tlCfg->gui_separator_open}
-  					{$statistics->priority_overall.medium_percentage} %{$tlCfg->gui_separator_close}</td>
+  			<td>{$gui->statistics->priority_overall.2} {$tlCfg->gui_separator_open}
+  					{$gui->statistics->priority_overall.medium_percentage} %{$tlCfg->gui_separator_close}</td>
   		</tr>
   		<tr>
 			<td>{$labels.th_tc_priority_low}</td>
-  			<td>{$statistics->priority_overall.1} {$tlCfg->gui_separator_open}
-  					{$statistics->priority_overall.low_percentage} %{$tlCfg->gui_separator_close}</td>
+  			<td>{$gui->statistics->priority_overall.1} {$tlCfg->gui_separator_open}
+  					{$gui->statistics->priority_overall.low_percentage} %{$tlCfg->gui_separator_close}</td>
   		</tr>
 		</table>
 
-		{if $statistics->milestones ne ""}
+		{if $gui->statistics->milestones != ""}
 
 			<h2>{$labels.title_report_milestones}</h2>
 
@@ -137,7 +147,7 @@ Revisions:
 				<th>{$labels.th_expected}</th>
 				<th>{$labels.th_overall}</th>
 			</tr>
- 			{foreach item=res from=$statistics->milestones}
+ 			{foreach item=res from=$gui->statistics->milestones}
   			<tr>
   				<td>{$res.name|escape} {$tlCfg->gui_separator_open} 
   						{$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
@@ -160,7 +170,7 @@ Revisions:
 
 	{/if}
 		
-	{elseif $statistics->milestones ne ""}
+	{elseif $gui->statistics->milestones != ""}
 		<h2>{$labels.title_report_milestones}</h2>
 
 		<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
@@ -172,7 +182,7 @@ Revisions:
 			<th>{lang_get s='th_goal'}</th>
 		</tr>
 
- 		{foreach item=res from=$statistics->milestones}
+ 		{foreach item=res from=$gui->statistics->milestones}
   		<tr>
   			<td>{$res.name|escape} {$tlCfg->gui_separator_open}
   					{$res.target_date|escape} {$tlCfg->gui_separator_close}</td>

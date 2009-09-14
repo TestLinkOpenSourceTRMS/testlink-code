@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.68 2009/08/21 07:07:13 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.69 2009/09/14 13:21:55 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -87,7 +87,17 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui = new stdClass();  
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
-    
+ 
+    $gui->platformSet = $tplan_mgr->getPlatforms($argsObj->tplan_id,'map');
+    $gui->showPlatforms=true;
+	if( is_null($gui->platformSet) )
+	{
+		$gui->platformSet = array('');
+		$gui->showPlatforms=false;
+	}
+
+   
+   
     $gui->resultsCfg = config_get('results');
 
     $date_range = get_date_range($_REQUEST);
@@ -111,7 +121,7 @@ function initializeGui(&$dbHandler,&$argsObj)
 
     $testsuiteIds = null;
     $testsuiteNames = null;
-    
+            
     $tsuites_qty = sizeOf($argsObj->testsuitesSelected);
     for ($id = 0; $id < $tsuites_qty ; $id++)
     {
@@ -135,10 +145,10 @@ function initializeGui(&$dbHandler,&$argsObj)
     $assignee = $argsObj->ownerSelected ? TL_USER_ANYBODY : null;
     $tester = $argsObj->executorSelected ? TL_USER_ANYBODY : null;
     $re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
-                      $testsuiteIds, $buildsToQuery, $statusForClass, $latest_resultset,
-                      $argsObj->keywordSelected,$assignee, 
-                      $date_range->start->time, $date_range->end->time, 
-                      $tester, $argsObj->search_notes_string, null);
+                      	 $testsuiteIds, $buildsToQuery, $statusForClass, $latest_resultset,
+                      	 $argsObj->keywordSelected,$assignee, 
+                      	 $date_range->start->time, $date_range->end->time, 
+                      	 $tester, $argsObj->search_notes_string, null);
                       
     $gui->suiteList = $re->getSuiteList();  // test executions results
     $gui->flatArray = $re->getFlatArray();

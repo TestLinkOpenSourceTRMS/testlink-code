@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.473 2009/09/10 16:41:37 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.474 2009/09/14 13:24:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1013,6 +1013,7 @@ $TLS_version = "Version";
 $TLS_warning_delete_execution = "You are going to delete execution<br /><br /> Are you sure?";;
 $TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
 $TLS_edit_execution = "edit execution";
+$TLS_platform_description = "Platform description";
 
 
 // ----- gui/templates/inc_testsuite_viewer_ro.tpl -----

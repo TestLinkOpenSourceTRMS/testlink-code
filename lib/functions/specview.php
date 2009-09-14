@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.40 2009/09/05 18:19:07 schlundus Exp $
+ * @version    	CVS: $Id: specview.php,v 1.41 2009/09/14 13:23:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -191,7 +191,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 			$my[$key] = array_merge($my[$key],$$key);
 		}
 	}	             
-	
+
 	$write_status = $my['options']['write_button_only_if_linked'] ? 'no' : 'yes';
 	$is_tplan_view_type=$spec_view_type == 'testplan' ? 1 : 0;
 	$is_uncovered_view_type = ($spec_view_type == 'uncoveredtestcases') ? 1 : 0;
@@ -212,9 +212,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	                 'tcase_id' => $my['filters']['testcases'], 
 		             'tcase_node_type_id' => $hash_descr_id['testcase']);
 	$test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
-
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
-
 	$idx = 0;
 	$a_tcid = array();
 	$a_tsuite_idx = array();
@@ -233,7 +231,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	// May be this can be done (as noted by schlundus during performance
 	// analisys done on october 2008) in a better way, or better can be absolutely avoided.
 	// 
-	// This process is neede to prune whole branches that are empty
+	// This process is needed to prune whole branches that are empty
 	// Need to look for every call in TL and understand if this can be removed
 	//
 	if(!is_null($map_node_tccount))
@@ -248,6 +246,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 			}
 		}
 	}
+	
 	// Collect information related to linked testcase versions
 	if(!is_null($out[0]) && count($a_tcid))
 	{
@@ -642,7 +641,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 			
 			if($is_uncovered_view_type)
 			{
-				// @TODO understand impacts of paltforms
+				// @TODO understand impacts of platforms
 				$outRef['external_id'] = $linked_items[$tc_id]['external_id'];      
 			} 
 			else
@@ -753,11 +752,11 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
     $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	$pivot_id=-1;
-
-	//new dBug($testCaseSet);
 	foreach($testCaseSet as $the_k => $testCase)
 	{
 		$tc_id = $testCase['testcase_id'];
+		
+		// Needed when having multiple platforms
 		if($pivot_id != $tc_id )
 		{
 			$pivot_id=$tc_id;
@@ -820,8 +819,6 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 
                     foreach($linked_testcase as $item)
                     {  
-                    	//new dBug($item);
-						// $outRef['linked_version_id'][$item['platform_id']] = $item['tcversion_id'];
 						if(intval($item['executed']))
 						{
 							$outRef['executed'][$item['platform_id']]='yes';

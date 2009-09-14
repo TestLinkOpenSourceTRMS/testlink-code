@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.145 2009/09/10 09:15:20 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.146 2009/09/14 13:21:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -311,8 +311,7 @@ class results extends tlObjectWithDB
 			                                                 $owner, $startTime, $endTime, $executor,
 			                                                 $search_notes_string, $linkExecutionBuild,
 			                                                 $all_results);
-      
-             
+            
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
 			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $keywords_in_tplan);
 			$this->aggregateOwnerResults = $this->tallyOwnerResults($this->mapOfLastResultByOwner, $arrOwners);
@@ -660,10 +659,9 @@ class results extends tlObjectWithDB
 	 */
 	public function getAggregatePlatformResults()
 	{
-		if ($this->aggregatePlatformResults == null) {
-			require_once("platform.class.php");
-			$platform_mgr = new tlPlatform($this->db);
-			$platforms = $platform_mgr->getLinkedToTestplanAsMap($this->testPlanID);
+		if ($this->aggregatePlatformResults == null) 
+		{
+			$platforms = $this->tplanMgr->getPlatforms($this->testPlanID,'map');
 			$this->aggregatePlatformResults = $this->tallyPlatformResults($this->mapOfLastResultByPlatform, $platforms);
 		}
 		return $this->aggregatePlatformResults;
@@ -1224,6 +1222,7 @@ class results extends tlObjectWithDB
 		}
 		
 		$suffixLink = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character);
+		
 		foreach($this->linked_tcversions as $tcase_info)
 		{
 			foreach($tcase_info as $index => $info) 
@@ -1250,23 +1249,23 @@ class results extends tlObjectWithDB
 
 				// BUGID - 2374: Show Assigned User in the Not Run Test Cases Report 
 				$infoToSave = array('testcaseID' => $testcaseID,
-					'platform_id' => $info['platform_id'],
-					'testcasePrefix' => $this->testCasePrefix . $this->testCaseCfg->glue_character,
-					'external_id' => $info['external_id'],
-					'tcversion_id' => $info['tcversion_id'],
-					'version' => $version,
-					'build_id' => '',
-					'tester_id' => $owner_id,
-					'execution_ts' => '',
-					'status' => $this->map_tc_status['not_run'],
-					'executions_id' => '',
-					'notes' => '',
-					'bugString' => '',
-					'name' => $info['name'],
-					'suiteName' => $allSuites[$info['testsuite_id']],
-					'assigner_id' => $info['assigner_id'],
-					'feature_id' => $info['feature_id'],
-					'execute_link' => '');
+									'platform_id' => $info['platform_id'],
+									'testcasePrefix' => $this->testCasePrefix . $this->testCaseCfg->glue_character,
+									'external_id' => $info['external_id'],
+									'tcversion_id' => $info['tcversion_id'],
+									'version' => $version,
+									'build_id' => '',
+									'tester_id' => $owner_id,
+									'execution_ts' => '',
+									'status' => $this->map_tc_status['not_run'],
+									'executions_id' => '',
+									'notes' => '',
+									'bugString' => '',
+									'name' => $info['name'],
+									'suiteName' => $allSuites[$info['testsuite_id']],
+									'assigner_id' => $info['assigner_id'],
+									'feature_id' => $info['feature_id'],
+									'execute_link' => '');
 				
 				if ($info['tcversion_id'] != $info['executed'])
 				{
@@ -1274,6 +1273,7 @@ class results extends tlObjectWithDB
 					if (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) 
 					{
 						// Initialize information on testcaseID to be "not run"
+						echo 'NOTRUN - DEBUG- Added Not Run info <br>';
 						array_push($currentSuite, $infoToSave);
 					}
 				}
@@ -1284,8 +1284,8 @@ class results extends tlObjectWithDB
 					// over multiple test plans - by modifying this select statement slightly
 					// to include multiple test plan ids
 					$sql = "SELECT * FROM {$this->tables['executions']} executions " .
-						"WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID " .
-						"AND platform_id = " . $info['platform_id'];
+						   "WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID " .
+						   "AND platform_id = " . $info['platform_id'];
 					
 					$sql .= $sqlFilters;
 					
@@ -1463,7 +1463,8 @@ class results extends tlObjectWithDB
 	    $test_spec = $tproject_mgr->get_subtree($this->tprojectID,$RECURSIVE_MODE);
 
 		$filters = array('keyword_id' => $keyword_id, 'assigned_to' => $owner);
-	    $options = array('output' => 'mapOfArray'); // needed to have platform info
+	    // $options = array('output' => 'mapOfArray'); // needed to have platform info
+	    $options = array('output' => 'mapOfMap'); // needed to have platform info
 		$tplan_tcversions = $tplan_mgr->get_linked_tcversions($this->testPlanID,$filters,$options);
 		
 		

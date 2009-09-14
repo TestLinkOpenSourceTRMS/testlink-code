@@ -4,33 +4,29 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.137 $
- * @modified $Date: 2009/09/07 06:49:39 $ $Author: franciscom $
+ * @version $Revision: 1.138 $
+ * @modified $Date: 2009/09/14 13:23:32 $ $Author: franciscom $
  *
  * rev:
- *	   20090815 - franciscom - platform feature	
- *     20090808 - franciscom - gen_spec_view call refactoring
- *     20090526 - franciscom - now custom fields fo testplan_design are managed
- *     20090426 - franciscom - bad initialization of grants due to unclear
- *                             function return.
+ *	20090913 - franciscom - fixed bug on filter_status initialization
+ *                          fixed bug on bulk execution due to bad option
+ *                          on get_linked_tcversions() call.
+ *                         
+ *	20090815 - franciscom - platform feature	
+ *  20090808 - franciscom - gen_spec_view call refactoring
+ *  20090526 - franciscom - now custom fields for testplan_design are managed
  *
- *     20090419 - franciscom - BUGID 2364 - added management of refreshTree
- *                             initializeRights() refactored
- *     20090409 - amkhullar - updated code not written properly.
- *     20090330 - franciscom - fixed bug on test plan custom field get.
- *     20090325 - amkhullar - BUGID 2267
- *     20090210 - amkhullar - BUGID 2068
- *     20081230 - franciscom - display full path on test suite name
- *     20081217 - franciscom - initializeExecMode() - algorithm changed.
- *     20081122 - franciscom - added some comments
- *     20080827 - franciscom - BUGID 1692
- *     20080811 - franciscom - BUGID 1650 (REQ)
- *     20080224 - franciscom - to avoid performance problems
- *                             clicking on root node will NOT try to display
- *                             all testcases in testplan.
- *     
- *     20080104 - franciscom - REQ 1232 - web editor on execution notes
- *                             added createExecNotesWebEditor()
+ *  20090419 - franciscom - BUGID 2364 - added management of refreshTree
+ *                          initializeRights() refactored
+ *  20090409 - amkhullar - updated code not written properly.
+ *  20090330 - franciscom - fixed bug on test plan custom field get.
+ *  20090325 - amkhullar - BUGID 2267
+ *  20090210 - amkhullar - BUGID 2068
+ *  20080827 - franciscom - BUGID 1692
+ *  20080811 - franciscom - BUGID 1650 (REQ)
+ *  
+ *  20080104 - franciscom - REQ 1232 - web editor on execution notes
+ *                          added createExecNotesWebEditor()
  *
 **/
 require_once('../../config.inc.php');
@@ -131,7 +127,8 @@ if($args->doExec == 1)
 //                                                       $args->filter_status,$args->build_id,
 //                                                       $args->cf_selected,$args->include_unassigned);
 
-$options = array('only_executed' => true, 'include_unassigned' => $args->include_unassigned);
+$options = array('only_executed' => true, 'output' => 'mapOfArray',
+                 'include_unassigned' => $args->include_unassigned);
 if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
 {
     $options['only_executed'] = false;
@@ -146,6 +143,7 @@ $filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
 $linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 $tcase_id = 0;
 $userid_array = null;
+
 if(!is_null($linked_tcversions))
 {
 	$items_to_exec = array();
@@ -160,7 +158,6 @@ if(!is_null($linked_tcversions))
         list($tcase_id,$tcversion_id) = processTestSuite($db,$gui,$args,$linked_tcversions,
                                                          $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
-    
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
     $gui->map_last_exec=getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     
@@ -200,7 +197,6 @@ if(!is_null($linked_tcversions))
 
     $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id); //Bug 2068
     $gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
-
     // Get attachment,bugs, etc
     if(!is_null($gui->other_execs))
     {
@@ -285,7 +281,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
   
   rev:
-      schlundus: changed the user_id to the currentUser of the session
+	20090913 - franciscom - fixed bug on filter_status initialization
 */
 function init_args()
 {
@@ -305,7 +301,8 @@ function init_args()
 	}
 
     // See details on: "When nullify filter_status - 20080504" in this file
-    if(trim($args->filter_status) || $args->level == 'testcase')
+    
+    if(is_null($args->filter_status) || trim($args->filter_status) || $args->level == 'testcase')
     {
         $args->filter_status = null;  
     }
@@ -339,7 +336,7 @@ function init_args()
 
 	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 
 	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
-	   	              'platform_id' => 0);
+	   	              'platform_notes_view_status' => 0,'platform_id' => 0);
 				            
 	foreach($key2loop as $key => $value)
 	{
@@ -466,7 +463,6 @@ function get_ts_name_details(&$db,$tcase_id)
 function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tcase_id,$tproject_id)
 {
   $fpath=$tree_mgr->get_full_path_verbose($tcase_id, array('output_format' => 'id_name'));
-
   $tsuite_info = get_ts_name_details($db,$tcase_id);
   foreach($fpath as $key => $value)
   {
@@ -904,6 +900,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->tpn_view_status=$argsObj->tpn_view_status;
     $gui->bn_view_status=$argsObj->bn_view_status;
     $gui->bc_view_status=$argsObj->bc_view_status;
+    $gui->platform_notes_view_status=$argsObj->platform_notes_view_status;
+
     $gui->refreshTree=$argsObj->refreshTree;
     $gui->map_last_exec_any_build=null;
     $gui->map_last_exec=null;
@@ -967,12 +965,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
     $gui->has_platforms = !is_null($dummy) ? 1 : 0;
     
-    $platform_info['name']='';
+    $gui->platform_info['id']=0;
+    $gui->platform_info['name']='';
     if(!is_null($argsObj->platform_id) && $argsObj->platform_id > 0 )
     { 
-    	$platform_info = $platformMgr->getByID($argsObj->platform_id);
+    	$gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
     }
-    $gui->platform_name = $platform_info['name'];  
+      
+    //$gui->platform_name = $platform_info['name'];  
+    // $gui->$platform_info
 
     return $gui;
 }
@@ -986,6 +987,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
   returns: 
 
   rev: 
+    20090913 - franciscom - changes due to platform feature
   	20090718 - franciscom - cfield location management
   	20080811 - franciscom - BUGID 1650 (REQ)
   
@@ -993,17 +995,19 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
 function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
                          &$treeMgr,&$tcaseMgr,&$docRepository)
 {     
+
+  	// IMPORTANT due  to platform feature
+  	// every element on linked_tcversions will be an array.
     $cf_filters=array('show_on_execution' => 1); // BUGID 1650 (REQ)
     $locationFilters=$tcaseMgr->buildCFLocationMap();
-
-    
     $guiObj->design_time_cfields='';
   	$guiObj->testplan_design_time_cfields='';
   	
   	$tcase_id = $argsObj->id;
-  	$items_to_exec[$argsObj->id] = $linked_tcversions[$argsObj->id]['tcversion_id'];    
-  	$tcversion_id = $linked_tcversions[$argsObj->id]['tcversion_id'];
-  	$link_id = $linked_tcversions[$argsObj->id]['feature_id'];
+  	$items_to_exec[$argsObj->id] = $linked_tcversions[$argsObj->id][0]['tcversion_id'];    
+  	
+  	$tcversion_id = $linked_tcversions[$argsObj->id][0]['tcversion_id'];
+  	$link_id = $linked_tcversions[$argsObj->id][0]['feature_id'];
   	$guiObj->tcAttachments[$argsObj->id] = getAttachmentInfos($docRepository,$argsObj->id,'nodes_hierarchy',1);
 
 	foreach($locationFilters as $locationKey => $filterValue)
@@ -1053,9 +1057,9 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
 {      
 	// 20090716 - franciscom - get_last_execution() interface changes
 	$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
+	
     $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
                                                $argsObj->build_id,$argsObj->platform_id,$options);
-
     if( !is_null($last_exec) )
     {
         $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,$argsObj->tplan_id);

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.44 2009/09/02 08:32:34 franciscom Exp $
+$Id: execSetResults.tpl,v 1.45 2009/09/14 13:22:52 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090901 - franciscom - preconditions
@@ -43,7 +43,7 @@ Rev:
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
              deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution,
-             preconditions,platform'}
+             preconditions,platform,platform_description'}
 
 
 
@@ -183,11 +183,13 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 {assign var="tplan_notes_view_memory_id" value="tpn_view_status"}
 {assign var="build_notes_view_memory_id" value="bn_view_status"}
 {assign var="bulk_controls_view_memory_id" value="bc_view_status"}
+{assign var="platform_notes_view_memory_id" value="platform_notes_view_status"}
 
 
 <body onLoad="show_hide('tplan_notes','{$tplan_notes_view_memory_id}',{$gui->tpn_view_status});
               show_hide('build_notes','{$build_notes_view_memory_id}',{$gui->bn_view_status});
               show_hide('bulk_controls','{$bulk_controls_view_memory_id}',{$gui->bc_view_status});
+              show_hide('platform_notes','{$platform_notes_view_memory_id}',{$gui->platform_notes_view_status});
               multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
                                  '{$tsd_val_for_hidden_list}');
               {if $round_enabled}Nifty('div.exec_additional_info');{/if}
@@ -197,8 +199,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
 <h1 class="title">
 	{$labels.title_t_r_on_build} {$gui->build_name|escape}
-	{if $gui->platform_name != ""}
-	  {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_name|escape}
+	{if $gui->platform_info.name != ""}
+	  {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_info.name|escape}
 	{/if}
 	{include file="inc_help.tpl" helptopic="hlp_executeMain"}
 </h1>
@@ -250,7 +252,24 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     {$gui->testplan_notes}
     {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
   </div>
+  {* -------------------------------------------------------------------------------- *}
 
+  {* -------------------------------------------------------------------------------- *}
+  {* Platforms notes show/hide management                                                 *}
+  {* -------------------------------------------------------------------------------- *}
+  {if $gui->platform_info.id > 0}
+  {lang_get s='platform_description' var='container_title'}
+  {assign var="div_id" value='platform_notes'}
+  {assign var="memstatus_id" value=$platform_notes_view_memory_id}
+
+  {include file="inc_show_hide_mgmt.tpl"
+           show_hide_container_title=$container_title
+           show_hide_container_id=$div_id
+           show_hide_container_view_status_id=$memstatus_id
+           show_hide_container_draw=true
+           show_hide_container_class='exec_additional_info'
+           show_hide_container_html=$gui->platform_info.notes}
+  {/if}         
   {* -------------------------------------------------------------------------------- *}
 
   {* -------------------------------------------------------------------------------- *}

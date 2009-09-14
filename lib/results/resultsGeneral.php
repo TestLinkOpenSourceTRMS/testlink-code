@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/06/25 19:47:15 $ by $Author: schlundus $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/09/14 13:23:32 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -28,22 +28,36 @@ testlinkInitPage($db,true,false,"checkRights");
 $args = init_args();
 $templateCfg = templateConfiguration();
 
+$gui = new stdClass();
+$gui->showPlatforms=true;
+
 $arrDataSuite = array();
 $do_report = array();
-$colDefinition = array();
-$columnsDefinition = new stdClass();
-$columnsDefinition->keywords = null;
-$columnsDefinition->testers = null;
-$statistics = new stdClass();
-$statistics->keywords = null;
-$statistics->testers = null;
-$statistics->milestones = null;
+$gui->colDefinition = array();
+$gui->columnsDefinition = new stdClass();
+$gui->columnsDefinition->keywords = null;
+$gui->columnsDefinition->testers = null;
+$gui->columnsDefinition->platform = null;
+
+$gui->statistics = new stdClass();
+$gui->statistics->keywords = null;
+$gui->statistics->testers = null;
+$gui->statistics->milestones = null;
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
+$gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+
+if( is_null($gui->platformSet) )
+{
+	$gui->platformSet = array('');
+	$gui->showPlatforms=false;
+}
+
+
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
 // ----------------------------------------------------------------------------
@@ -88,16 +102,16 @@ else // do report
       		$arrDataSuiteIndex++;
       	} 
 
-    	$statistics->testsuites = $arrDataSuite;
+    	$gui->statistics->testsuites = $arrDataSuite;
 
       	// Get labels
-    	$dummy = current($statistics->testsuites);
+    	$dummy = current($gui->statistics->testsuites);
       	foreach($dummy['details'] as $status_verbose => $value)
     	{
           	$dummy['details'][$status_verbose]['qty'] = 
           			lang_get($tlCfg->results['status_label'][$status_verbose]);
       	}
-      	$columnsDefinition->testsuites = $dummy['details'];
+      	$gui->columnsDefinition->testsuites = $dummy['details'];
   	}
 
 	// ----------------------------------------------------------------------------
@@ -127,7 +141,7 @@ else // do report
       		foreach($keys2display as $status_verbose => $value)
       		{
             	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
-                          lang_get($status_verbose); 
+                              lang_get($status_verbose); 
             
             	$colDefinition[$status_verbose]['qty'] = $l18n_label;
             	$colDefinition[$status_verbose]['percentage'] = '[%]';
@@ -143,13 +157,14 @@ else // do report
 	// collect prioritized results for whole Test Plan
 	if ($_SESSION['testprojectOptPriority'])
 	{
-		$statistics->priority_overall = $re->getPrioritizedResults();
-		$statistics->priority_overall['high_percentage'] = get_percentage($planMetrics['total'],
-				$statistics->priority_overall[HIGH]); 
-		$statistics->priority_overall['medium_percentage'] = get_percentage($planMetrics['total'],
-				$statistics->priority_overall[MEDIUM]); 
-		$statistics->priority_overall['low_percentage'] = get_percentage($planMetrics['total'],
-				$statistics->priority_overall[LOW]); 
+		$set2loop = array('high_percentage' => HIGH,'medium_percentage' => MEDIUM,
+		                  'low_percentage' => LOW);
+		$gui->statistics->priority_overall = $re->getPrioritizedResults();
+		foreach( $set2loop as $key => $value )
+		{
+			$gui->statistics->priority_overall[$key] = get_percentage($planMetrics['total'],
+				                                                      $gui->statistics->priority_overall[$value]); 
+		}
 	}
 	// collect milestones
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
@@ -200,41 +215,47 @@ else // do report
         
 		    $item['low_percentage'] = number_format($item['low_percentage'], 2);
 		    
-		    $statistics->milestones[$item['target_date']] = $item;
+		    $gui->statistics->milestones[$item['target_date']] = $item;
 	  	}
 	}
 
  	// ----------------------------------------------------------------------------
-	/* Keywords report */
 	$items2loop = array('keywords' => 'getAggregateKeywordResults',
-                    'testers' => 'getAggregateOwnerResults');
+                        'testers' => 'getAggregateOwnerResults');
+
+    // platform feature contribution
+    if( $gui->showPlatforms )
+    {
+		$items2loop['platform'] = 'getAggregatePlatformResults';
+    }       
                     
 	foreach($items2loop as $item => $aggregateMethod)
 	{
-      	$statistics->$item = $re->$aggregateMethod();
-      	if( !is_null($statistics->$item) )
+      	$gui->statistics->$item = $re->$aggregateMethod();
+      	if( !is_null($gui->statistics->$item) )
       	{
         	// Get labels
-          	$dummy = current($statistics->$item);
+          	$dummy = current($gui->statistics->$item);
           	foreach($dummy['details'] as $status_verbose => $value)
           	{
               	$dummy['details'][$status_verbose]['qty'] = 
               			lang_get($tlCfg->results['status_label'][$status_verbose]);
             	$dummy['details'][$status_verbose]['percentage'] = "[%]";
             }
-          	$columnsDefinition->$item = $dummy['details'];
+          	$gui->columnsDefinition->$item = $dummy['details'];
          } 
   	} 
 } 
 
 // ----------------------------------------------------------------------------
 $smarty = new TLSmarty;
+$smarty->assign('gui', $gui);
 $smarty->assign('do_report', $do_report);
 $smarty->assign('tplan_name', $tplan_info['name']);
-$smarty->assign('columnsDefinition', $columnsDefinition);
+// $smarty->assign('columnsDefinition', $columnsDefinition);
 $smarty->assign('buildColDefinition', $colDefinition);
 $smarty->assign('buildResults',$results);
-$smarty->assign('statistics', $statistics);
+// $smarty->assign('statistics', $statistics);
 
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
 

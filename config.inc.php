@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.256 2009/09/02 08:33:19 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.257 2009/09/14 13:22:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20090912 - franciscom - BUGID 2796 - contribution reportsCfg->start_time
  *  20090901 - franciscom - new option exec_cfg->steps_results_layout
  *  20090823 - franciscom - new option custom_field_max_length
  *	20090815 - franciscom - new option exec_cfg->show_history_all_platforms
@@ -481,6 +482,9 @@ $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
  */
 $tlCfg->reportsCfg->start_date_offset = (7*24*60*60); // one week
 
+// minutes part is ignored but must be configured.
+// Hint: set always to :00
+$tlCfg->reportsCfg->start_time = '00:00';
 
 // Result matrix (resultsTC.php)
 // Shows an extra column which gives the status of the last executed build

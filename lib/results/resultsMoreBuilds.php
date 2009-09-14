@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuilds.php,v 1.67 2009/06/04 19:22:01 schlundus Exp $
+* $Id: resultsMoreBuilds.php,v 1.68 2009/09/14 13:23:32 franciscom Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -9,11 +9,8 @@
 * the builds they would like to query results against.
 *
 * rev:
-*      20090122 - franciscom - BUGID 2012 
-*      20090107 - franciscom - show [any] instead of blank option on assigned to, executed by
-*      20080517 - franciscom - refactoring
-*      20070901 - franciscom - refactoring
-*                              using reports_cfg
+*	20090912 - franciscom - BUGID 2796 - configuration start_time
+*	20090122 - franciscom - BUGID 2012 
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -126,7 +123,7 @@ function initializeGui(&$dbHandler,$args)
     $reports_cfg = config_get('reportsCfg');
     $startDate = time() - ($reports_cfg->start_date_offset);
     $gui->selected_start_date = $startDate;
-    $gui->selected_start_time = '00:00';
+    $gui->selected_start_time = $reports_cfg->start_time;
 
     $gui->selected_end_date = null;
     $gui->selected_end_time = null;

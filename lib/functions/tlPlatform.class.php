@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.4 2009/09/11 20:35:09 schlundus Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.5 2009/09/14 16:58:27 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -139,9 +139,10 @@ class tlPlatform extends tlObjectWithDB
 					(testplan_id, platform_id)
 					VALUES ($testplan_id, $platform_id)";
 			$result = $this->db->exec_query($sql);
-			
 			if(!$result)
+			{
 				break;
+			}	
 		}
 		return $result ? tl::OK : self::E_DBERROR;
 	}
@@ -164,7 +165,9 @@ class tlPlatform extends tlObjectWithDB
 		    
 		    $result = $this->db->exec_query($sql);
 			if(!$result)
+			{
 				break;
+			}	
 		}	   
 		return $result ? tl::OK : self::E_DBERROR;
 	}

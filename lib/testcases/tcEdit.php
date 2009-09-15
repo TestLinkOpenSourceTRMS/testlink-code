@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.110 $
- * @modified $Date: 2009/09/11 20:35:10 $  by $Author: schlundus $
+ * @version $Revision: 1.111 $
+ * @modified $Date: 2009/09/15 18:48:53 $  by $Author: schlundus $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -42,6 +42,10 @@ $cfg = getCfg();
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 
 testlinkInitPage($db);
+
+$optionTransferName = 'ot';
+$args = init_args($cfg->spec,$optionTransferName);
+
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
@@ -52,14 +56,13 @@ $templateCfg = templateConfiguration();
 $commandMgr = new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
-$oWebEditor=createWebEditors($_SESSION['basehref'],$cfg->webEditorCfg);
+$oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg);
 
 $sqlResult = "";
 $init_inputs=true; // BUGID 2163 - Create test case with same title, after submit, all data lost 
 
 $show_newTC_form = 0;
-$optionTransferName = 'ot';
-$args = init_args($cfg->spec,$optionTransferName);
+
 
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 $gui = new stdClass();
@@ -599,7 +602,7 @@ function init_args($spec_cfg,$otName)
     	$args->do_refresh=$_SESSION['tcspec_refresh_on_action'] == "yes" ? 1 : 0 ;
     }
     $args->opt_requirements = isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null; 
-
+	$args->basehref = $_SESSION['basehref'];
     return $args;
 }
 

@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.52 2009/09/07 06:45:30 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.53 2009/09/15 18:48:52 schlundus Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -14,10 +14,6 @@
  *      20090326 - franciscom - solved bug related to forced READ ONLY when called as 
  *                 result of search on Navigator bar.
  *      20090228 - franciscom - this page is called when search option on Navigation Bar is used.
- *      20080425 - franciscom - refactoring
- *      20080120 - franciscom - show() method for test cases - interface changes
- *      20070930 - franciscom - REQ - BUGID 1078
- *
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -28,7 +24,6 @@ $templateCfg = templateConfiguration();
 $viewerArgs = null;
 $args = init_args($viewerArgs);
 
-$path_info = null;
 $smarty = new TLSmarty();
 $smarty->assign('page_title',lang_get('container_title_' . $args->feature));
 
@@ -40,17 +35,15 @@ switch($args->feature)
 		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachmentInfos',$attachments);
-		if( $args->feature == 'testproject' )
-		{
+		if($args->feature == 'testproject')
 			$item_mgr->show($smarty,$templateCfg->template_dir,$args->id);
-		}
 		else
-		{
 			$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,array('show_mode' => $args->show_mode));
-		}
+
 		break;
 
 	case 'testcase':
+		$path_info = null;
 		$get_path_info = false;
 		$item_mgr = new testcase($db);
     	
@@ -72,11 +65,9 @@ switch($args->feature)
 		}
 		
 		if($get_path_info || $args->show_path)
-		{
 		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
-		}
 			
-		$attachments[$args->id] = $args->id > 0 ? getAttachmentInfosFrom($item_mgr,$args->id): null ;
+		$attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
 	
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
@@ -89,15 +80,6 @@ switch($args->feature)
 		trigger_error($_SESSION['currentUser']->login.'> Argument "edit" has invalid value.', E_USER_ERROR);
 }
 
-
-/*
-  function: init_args
-
-  args:
-
-  returns:
-
-*/
 function init_args(&$viewerCfg)
 {
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
@@ -106,7 +88,8 @@ function init_args(&$viewerCfg)
 			         "targetTestCase" => array(tlInputParameter::STRING_N,0,100),
 			         "show_path" => array(tlInputParameter::INT_N),
 			         "show_mode" => array(tlInputParameter::STRING_N,0,50),
-			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16));
+			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),
+	 				 "tcspec_refresh_on_action" => array(tlInputParameter::STRING_N,0,1));
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
@@ -116,34 +99,30 @@ function init_args(&$viewerCfg)
     $args->feature = $args->edit;
 
    	if (!$args->tcversion_id)
-   	{
    		 $args->tcversion_id = testcase::ALL_VERSIONS;
-    }
-    switch($args->feature)
+
+   	switch($args->feature)
     {
 		case 'testsuite':
-        	$_SESSION['tcspec_refresh_on_action'] = isset($_REQUEST['tcspec_refresh_on_action'])? "yes":"no";
+        	$_SESSION['tcspec_refresh_on_action'] = ($args->tcspec_refresh_on_action == 'y') ? "yes" : "no";
         	break;
      
         case 'testcase':
 			$args->id = is_null($args->id) ? 0 : $args->id;
 			$spec_cfg = config_get('spec_cfg');
 			$viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
-			$viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh?"yes":"no";
+			$viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh ? "yes" : "no";
 			$viewerCfg['disable_edit'] = 0;
 
 			if(isset($_SESSION['tcspec_refresh_on_action']))
-			{
 				$viewerCfg['refresh_tree'] = $_SESSION['tcspec_refresh_on_action'];
-			}
-        	break;
+
+			break;
     }
     $cfg = config_get('testcase_cfg');
     if (strpos($args->targetTestCase,$cfg->glue_character) === false)
-    {
     	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
-    }
-	
+ 	
     return $args;
 }
 ?>

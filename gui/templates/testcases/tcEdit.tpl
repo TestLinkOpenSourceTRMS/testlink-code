@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.19 2009/09/11 20:35:09 schlundus Exp $ 
+$Id: tcEdit.tpl,v 1.20 2009/09/15 18:50:12 schlundus Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -65,7 +65,11 @@ function validateForm(f)
 	      	return false;
 		}
 	}
-	IGNORE_UNLOAD = true;
+	if(window.body)
+		window.body.onbeforeunload = null; // IE
+	else
+		window.onbeforeunload = null; // FX
+		
 	return true;
 }
 </script>
@@ -81,7 +85,8 @@ var IGNORE_UNLOAD = true;
 function doBeforeUnload() 
 {
 	checkFCKEditorChanged(); //check FCKeditors 
-	if(IGNORE_UNLOAD) return ; // Let the page unload
+	if(IGNORE_UNLOAD) 
+		return ; // Let the page unload
 	if(window.event)
 		window.event.returnValue = UNLOAD_MSG; // IE
 	else

@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.25 2009/08/05 07:25:49 franciscom Exp $
+ * $Id: APIErrors.php,v 1.26 2009/09/16 17:02:16 franciscom Exp $
  */
 
 /** 
@@ -129,6 +129,10 @@ define('TESTPLANNAME_DOESNOT_EXIST_STR', lang_get('API_TESTPLANNAME_DOESNOT_EXIS
 
 define('TESTPLANNAME_ALREADY_EXISTS', 3034);
 define('TESTPLANNAME_ALREADY_EXISTS_STR', lang_get('API_TESTPLANNAME_ALREADY_EXISTS',null,1));
+
+
+define('PLATFORM_NOT_LINKED_TO_TESTPLAN', 3040);
+define('PLATFORM_NOT_LINKED_TO_TESTPLAN_STR', lang_get('API_PLATFORM_NOT_LINKED_TO_TESTPLAN',null,1));
 
 
 /**

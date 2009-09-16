@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2009/09/03 07:36:17 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2009/09/16 15:29:15 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -635,7 +635,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 			if($this->_isBuildNamePresent())
 			{
                 $buildInfo=$this->tplanMgr->get_build_by_name($tplan_id,
-                                                          trim($this->args[self::$buildNameParamName])); 
+                                                              trim($this->args[self::$buildNameParamName])); 
                 if( !is_null($buildInfo) )
                 {
                     $this->args[self::$buildIDParamName]=$buildInfo['id'];
@@ -646,22 +646,22 @@ class TestlinkXMLRPCServer extends IXR_Server
 	   	
 	   	if($try_again)
 	   	{
-			    // this means we aren't supposed to guess the buildid
-			    if(false == $this->checkGuess())   		
-			    {
-			    	  $this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
-			    	  $this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);				
-    	    		$status=false;
-			    }
-			    else
-			    {
-			    	$setBuildResult = $this->_setBuildID2Latest();
-			    	if(false == $setBuildResult)
-			    	{
-			    		$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
-			    		$status=false;
-			    	}
-			    }
+			// this means we aren't supposed to guess the buildid
+			if(false == $this->checkGuess())   		
+			{
+				$this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
+				$this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);				
+    	    	$status=false;
+			}
+			else
+			{
+				$setBuildResult = $this->_setBuildID2Latest();
+				if(false == $setBuildResult)
+				{
+					$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
+					$status=false;
+				}
+			}
 	   	}
 	   	
 	   	if( $status)

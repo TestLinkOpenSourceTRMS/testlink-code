@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2009/09/04 19:22:36 $ by $Author: schlundus $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2009/09/16 19:52:59 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -47,6 +47,7 @@ if(!is_null($args->login))
 	}
 	else
 	{
+		$args->currentUser = $_SESSION['currentUser'];
 		logAuditEvent(TLS("audit_login_succeeded",$args->login,
 		                  $_SERVER['REMOTE_ADDR']),"LOGIN",$args->currentUser->dbID,"users");
 		redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
@@ -78,8 +79,7 @@ function init_args()
     $args->pwd = $pParams['tl_password'];
     $args->reqURI = $pParams['req'];
     $args->preqURI = $pParams['reqURI'];
-	$args->currentUser = $_SESSION['currentUser'];
-
+	
     return $args;
 }
 

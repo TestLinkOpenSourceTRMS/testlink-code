@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: searchData.php,v 1.47 2009/09/11 20:35:10 schlundus Exp $
+ * $Id: tcSearch.php,v 1.1 2009/09/16 19:53:01 schlundus Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -80,7 +80,7 @@ if ($args->tprojectID)
     
     if($args->summary != "")
     {
-        $summary = $db->prepare_string($args->summary);
+        $args->summary = $db->prepare_string($args->summary);
         $filter['by_summary'] = " AND summary like '%{$args->summary}%' ";
     }    
     

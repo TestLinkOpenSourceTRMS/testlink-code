@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.31 2009/08/29 21:40:50 havlat Exp $
+$Id: inc_head.tpl,v 1.32 2009/09/16 19:53:00 schlundus Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -56,6 +56,7 @@ rev :
 	{/if}
 
 	<script type="text/javascript" language="javascript">
+	<!--
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';
@@ -78,6 +79,7 @@ rev :
 	
 	// reset session time counter
 	updateTimeCounter();
+	//-->
 	</script> 
 {if $openHead == "no"} {* 'no' is default defined in config *}
 </head>

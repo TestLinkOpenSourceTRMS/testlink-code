@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.474 2009/09/14 13:24:37 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.475 2009/09/16 19:53:01 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1496,7 +1496,7 @@ $TLS_doc_opt_guide = 'Modify options for required structure of document. ' .
                      '<br />Select the top line in tree menu for all or a required ' .
                      'suite to generate a document content.';
 $TLS_tr_td_show_as = "Show as";
-$TLS_check_uncheck_all_options = "check/uncheck all";
+$TLS_check_uncheck_all_options = "check / uncheck all";
 
 
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/09/07 06:51:12 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/09/16 19:53:01 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -100,8 +100,7 @@ if ($user)
 {
 	$doc_info->author = htmlspecialchars($user->getDisplayName());
 }
-
-
+$treeForPlatform = null;
 switch ($doc_info->type)
 {
     case DOC_TEST_SPEC: // test specification
@@ -110,18 +109,19 @@ switch ($doc_info->type)
 			case 'testproject':
 				$tree = &$test_spec;
 				$doc_info->title = $doc_info->tproject_name;
-			break;
+				break;
     	      
 			case 'testsuite':
     	      	$tsuite = new testsuite($db);
     	  	    $tInfo = $tsuite->get_by_id($args->itemID);
     	  	    $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
     	  	    $tree['childNodes'] = array($tInfo);
-				$doc_info->title = isset($tInfo['name']) ? $args->tproject_name .
-    	  	      	               $tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name;
-    	  	  break;    
+				$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $args->tproject_name .
+    	  	      	               $tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name);
+    	  	  	break;    
     	} // $doc_info->content_range
-    break;
+    	$treeForPlatform[0] = $tree;
+    	break;
     
     case DOC_TEST_PLAN:
     case DOC_TEST_REPORT:
@@ -141,7 +141,7 @@ switch ($doc_info->type)
 			$tcase_filter = null;
 			$execid_filter = null;
 			$executed_qty = 0;
-			$treeForPlatform=array();
+			$treeForPlatform = array();
          
 			switch($doc_info->content_range)
 			{
@@ -194,7 +194,7 @@ switch ($doc_info->type)
 						//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 						$dummy = null;
 						prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
-						$doc_info->title = isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name;
+						$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name);
 						$tree['childNodes'] = array($tInfo);
     	   	    	    $treeForPlatform[$platform_id] = $tree;            
                     }
@@ -248,43 +248,45 @@ if( ($showPlatforms = !isset($treeForPlatform[0]) ? true : false) )
 {
 	$tocPrefix = 0;
 }
-$tree=null;
-foreach ( $treeForPlatform as $platform_id => $tree )            
+if ($treeForPlatform)
 {
-	if($tree)
+	foreach ($treeForPlatform as $platform_id => $tree)            
 	{
-		$tree['name'] = $args->tproject_name;
-		$tree['id'] = $args->tproject_id;
-		$tree['node_type_id'] = $hash_descr_id['testproject'];
-		switch ($doc_info->type)
+		if($tree)
 		{
-			case DOC_TEST_SPEC:
-				$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
-				$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
-							$printingOptions, null, 0, 1, $args->user_id);
-			break;
-		
-			case DOC_TEST_PLAN:
-				if ($printingOptions['testplan'])
-				{
-					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
-				}
-					
-			case DOC_TEST_REPORT:
-			    $tocPrefix++;
-		    	if ($showPlatforms)
-				{
-					$docText .= renderPlatformHeading($tocPrefix, $platform_id, $platforms[$platform_id], 
-					                                  $printingOptions);
-				}
-				$docText .= renderTestPlanForPrinting($db, $tree, $doc_info->content_range, 
-					                                  $printingOptions,$tocPrefix,0,1, $args->user_id,
-					                                  $args->tplan_id,$args->tproject_id);
-				if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
-				{
-					$docText .= buildTestPlanMetrics($doc_data->statistics);
-				}	
-			break;
+			$tree['name'] = $args->tproject_name;
+			$tree['id'] = $args->tproject_id;
+			$tree['node_type_id'] = $hash_descr_id['testproject'];
+			switch ($doc_info->type)
+			{
+				case DOC_TEST_SPEC:
+					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
+					$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
+								$printingOptions, null, 0, 1, $args->user_id);
+				break;
+			
+				case DOC_TEST_PLAN:
+					if ($printingOptions['testplan'])
+					{
+						$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->testplan_scope);
+					}
+						
+				case DOC_TEST_REPORT:
+				    $tocPrefix++;
+			    	if ($showPlatforms)
+					{
+						$docText .= renderPlatformHeading($tocPrefix, $platform_id, $platforms[$platform_id], 
+						                                  $printingOptions);
+					}
+					$docText .= renderTestPlanForPrinting($db, $tree, $doc_info->content_range, 
+						                                  $printingOptions,$tocPrefix,0,1, $args->user_id,
+						                                  $args->tplan_id,$args->tproject_id);
+					if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
+					{
+						$docText .= buildTestPlanMetrics($doc_data->statistics);
+					}	
+				break;
+			}
 		}
 	}
 }

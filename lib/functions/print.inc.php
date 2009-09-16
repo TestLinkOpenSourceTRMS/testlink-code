@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.87 2009/09/07 06:50:22 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.88 2009/09/16 19:53:01 schlundus Exp $
  * @uses printDocument.php
  *
  *
@@ -90,7 +90,7 @@ function renderHTMLHeader($title,$base_href)
 
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
-	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '" />';
+	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '">';
 	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
 	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $docCfg->css_template ."\" />\n";
 	// way to add CSS directly to the exported file (not used - test required)
@@ -369,7 +369,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	$external_id = $tcase_prefix . $cfg['testcase']->glue_character . $tcInfo['tc_external_id'];
 	$name = htmlspecialchars($node['name']);
 
-  	$cfields = array('specScope' => '', 'execScope' => '');
+  	$cfields = array('specScope' => null, 'execScope' => null);
 
 	// get custom fields that has specification scope
   	if ($printingOptions['cfields'])
@@ -825,7 +825,7 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
  */
 function renderPlatformHeading($tocPrefix, $platform_id, $platform_name, &$printingOptions)
 {
-	$platformLabel=lang_get('platform');
+	$platformLabel = lang_get('platform');
 	$printingOptions['tocCode'] .= '<p><a href="#' . prefixToHTMLID($tocPrefix) . '">' .
 	                               $platformLabel . ':' . $platform_name . '</a></p>';
 	return '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) . "\">$tocPrefix $platformLabel: $platform_name</h1>";

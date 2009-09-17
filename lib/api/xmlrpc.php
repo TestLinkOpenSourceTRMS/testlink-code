@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2009/09/17 16:53:09 $ by $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2009/09/17 17:29:28 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,7 +22,8 @@
  * 
  *
  * rev : 
- *	20090902 - franciscom -  test case preconditions field
+ *  20090917 - franciscom - reportTCResult() manages platform info
+ *	20090902 - franciscom - test case preconditions field
  *	20090804 - franciscom - deleteExecution() - new method (need more work)
  *	20090801 - franciscom - getTestCasesForTestPlan() allows keyword passed by name
  *	20090727 - franciscom - added contribution BUGID  - reportTCResult() accepts CF info
@@ -200,6 +201,9 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $customFieldsParamName = "customfields";
     public static $executionIDParamName = "executionid";
     public static $preconditionsParamName = "preconditions";
+    public static $platformNameParamName = "platformname";
+    public static $platformIDParamName = "platformid";
+
 
 
 	// public static $executionRunTypeParamName		= "executionruntype";
@@ -1221,6 +1225,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$testplan_id =	$this->args[self::$testPlanIDParamName];
 		$tcversion_id =	$this->tcVersionID;
 		$db_now=$this->dbObj->db_now();
+		$platform_id = 0;
+		
+		if( isset($this->args[self::$platformIDParamName]) )
+		{
+			$platform_id = $this->args[self::$platformIDParamName]; 	
+	    }
 		
 		$notes='';
         $notes_field="";
@@ -1241,9 +1251,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 		$query = "INSERT INTO {$this->tables['executions']} " .
 		         " (build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, " .
+		         " platform_id, " .
 		         " execution_type {$notes_field} ) " .
 				 " VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
-				 " {$tcversion_id},{$execution_type} {$notes_value})";
+				 " {$tcversion_id},{$platform_id}, {$execution_type} {$notes_value})";
 
 		$this->dbObj->exec_query($query);
 		return $this->dbObj->insert_id($this->tables['executions']);		
@@ -1846,9 +1857,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$resultInfo[0]["status"] = true;
 		
         $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestPlanID',
-                                'checkBuildID','checkStatus','_checkTCIDAndTPIDValid');       
+                                'checkBuildID','checkStatus','_checkTCIDAndTPIDValid');
                                 
         $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+
+   	    if($status_ok)
+		{			
+	    	$status_ok=$this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],$msg_prefix);
+	    }
 	
 		if($status_ok && $this->userHasRight("testplan_execute"))
 		{			
@@ -2827,7 +2843,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         
             if( is_null($this->dbObj->fetchRowsIntoMap($sql, 'execution_id')) )
             {
-            	     $sql = "INSERT INTO {$this->tables['execution_bugs']} " .
+            	$sql = "INSERT INTO {$this->tables['execution_bugs']} " .
                        "(execution_id,bug_id) VALUES({$executionID},'{$safeBugID}')";
                 $result = $this->dbObj->exec_query($sql); 
                 $status_ok=$result ? true : false ;
@@ -3462,6 +3478,65 @@ public function getTestCase($args)
         $status=true;
     	return $status;
     }
+
+
+
+	/**
+	 * Helper method to see if the testcase identity provided is valid 
+	 * Identity can be specified in one of these modes:
+	 *
+	 * test case internal id
+	 * test case external id  (PREFIX-NNNN) 
+	 * 
+	 * This is the only method that should be called directly to check test case identoty
+	 * 	
+	 * If everything OK, test case internal ID is setted.
+	 *
+	 * @return boolean
+	 * @access private
+	 */    
+    protected function checkPlatformIdentity($tplanID,$messagePrefix='')
+    {
+        $status=true;
+        $platformID=0;
+        $myErrors=array();
+
+        // // if platform name is present get ID
+        $status=$this->_isParamPresent(self::$platformNameParamName,$messagePrefix);
+        if($status)
+        {
+        	// get test plan name is useful for error messages
+        	$tplanInfo = $this->tplanMgr->get_by_id($tplanID);
+        	$platformInfo = $this->tplanMgr->getPlatforms($tplanID);  
+        	if( !is_null($platformInfo))
+        	{
+        		$status = in_array($this->args[self::$platformNameParamName],$platformInfo);
+        	
+        		if( !$status )
+        		{
+        			// Platform does not exist in target testplan
+   				    $msg = sprintf($messagePrefix . PLATFORM_NOT_LINKED_TO_TESTPLAN_STR,
+        	                       $this->args[self::$platformNameParamName],$tplanInfo['name']);
+   					$this->errors[] = new IXR_Error(PLATFORM_NOT_LINKED_TO_TESTPLAN, $msg);
+        		}	
+        	}
+            else
+            {
+        		$status = false;
+   				$msg = sprintf($messagePrefix . TESTPLAN_HAS_NO_PLATFORMS_STR,$tplanInfo['name']);
+   				$this->errors[] = new IXR_Error(TESTPLAN_HAS_NO_PLATFORMS, $msg);
+            }
+            
+        } 
+        
+        if($status)
+        {
+        	$dummy = array_flip($platformInfo);
+        	$this->args[self::$platformIDParamName]=$dummy[$this->args[self::$platformNameParamName]];
+        }
+	    return $status;
+    }   
+
 
 
 

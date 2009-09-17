@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2009/09/16 15:29:15 $ by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2009/09/17 16:53:09 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1754,7 +1754,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
                                                $this->args[self::$testCaseNameParamName],
                                                $this->args[self::$summaryParamName],
-                                               $opt[self::$preconditionsParamName]
+                                               $opt[self::$preconditionsParamName],
                                                $this->args[self::$stepsParamName],
                                                $this->args[self::$expectedResultsParamName],
                                                $author_id,$keywordSet,

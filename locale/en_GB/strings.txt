@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.475 2009/09/16 19:53:01 schlundus Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.476 2009/09/17 17:14:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2388,6 +2388,10 @@ $TLS_API_NODEID_IS_NOT_INTEGER = "Node id is not an positive interger value.";
 $TLS_API_NODEID_DOESNOT_EXIST="Node with id (%s) does not exist on system.";
 
 $TLS_API_CFG_DELETE_EXEC_DISABLED = "Configuration does not allow delete executions";
+
+$TLS_API_PLATFORM_NOT_LINKED_TO_TESTPLAN = "Platform (name=%s) is not linked to test plan (name:%s).";
+$TLS_API_TESTPLAN_HAS_NO_PLATFORMS = "Test plan (name:%s) has no platforms linked";
+
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

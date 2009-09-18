@@ -24,28 +24,54 @@ $tcaseStatusCode['departed']='d';
 
 // Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
-$testPlanID=446;
-$testCaseExternalID='AA-1';
+$testPlanID=2;
+$testCaseExternalID='ST-4';
 $testCaseID=null;
-$buildID=2;
-// $status=$tcaseStatusCode['departed'];
+$buildID=1;
 $status=$tcaseStatusCode['blocked'];
-// $status=$tcaseStatusCode['wrong'];
-// $exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status={$status}";
 $exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
-$bug_id='999FF';
-$customfields=array('CF_EXE1' => 'COMODORE64','CF_DT' => mktime(10,10,0,7,29,2009));
+//$platformName='NO PLATFORM LINKED';
+$platformName='Solaris';
 
 $debug=false;
 echo $unitTestDescription;
 $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
-                         $buildID,null,$status,$exec_notes,$bug_id,$customfields,$debug);
+                         $buildID,null,$status,$exec_notes,$bug_id,$customfields,
+                         $platformName,$debug);
 
 echo "<br> Result was: ";
 // Typically you'd want to validate the result here and probably do something more useful with it
 // print_r($response);
 new dBug($response);
 echo "<br>";
+
+
+// Substitute for tcid and tpid that apply to your project
+// $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
+// $testPlanID=446;
+// $testCaseExternalID='AA-1';
+// $testCaseID=null;
+// $buildID=2;
+// // $status=$tcaseStatusCode['departed'];
+// $status=$tcaseStatusCode['blocked'];
+// // $status=$tcaseStatusCode['wrong'];
+// // $exec_notes="Call using all INTERNAL ID's ({$testCaseID}) - status={$status}";
+// $exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
+// $bug_id='999FF';
+// $customfields=array('CF_EXE1' => 'COMODORE64','CF_DT' => mktime(10,10,0,7,29,2009));
+// 
+// $debug=false;
+// echo $unitTestDescription;
+// $response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
+//                          $buildID,null,$status,$exec_notes,$bug_id,$customfields,$debug);
+// 
+// echo "<br> Result was: ";
+// // Typically you'd want to validate the result here and probably do something more useful with it
+// // print_r($response);
+// new dBug($response);
+// echo "<br>";
+
+
 
 /*
   function: 
@@ -56,7 +82,8 @@ echo "<br>";
 
 */
 function reportResult($server_url,$tcaseid=null, $tcaseexternalid=null,$tplanid, $buildid=null, 
-                      $buildname=null, $status,$notes=null,$bugid=null,$customfields=null,$debug=false)
+                      $buildname=null, $status,$notes=null,$bugid=null,$customfields=null,
+                      $platformname=null,$debug=false)
 {
 
 	$client = new IXR_Client($server_url);
@@ -101,6 +128,10 @@ function reportResult($server_url,$tcaseid=null, $tcaseexternalid=null,$tplanid,
        $data["customfields"]=$customfields;
     }
     
+    if( !is_null($platformname) )
+    {
+       $data["platformname"]=$platformname;
+    }
     
 
   new dBug($data);

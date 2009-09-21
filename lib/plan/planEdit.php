@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/08/08 14:11:50 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/09/21 09:29:15 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
@@ -163,9 +163,11 @@ switch($args->do_action)
                 
 				if($args->copy)
 				{
+					
 					$tplan_mgr->copy_as($args->source_tplanid, $new_tplan_id,
 					                    $args->testplan_name,$args->tproject_id,
-					                    $args->copy_options,$args->tcversion_type);
+					                    $args->copy_options,$args->tcversion_type,
+					                    $args->copy_assigned_to,$args->user_id);
 				}
 			}
 		}
@@ -257,6 +259,7 @@ function init_args($request_hash)
 	    $args->copy_options[$key]=isset($request_hash[$key]) ? 1 : 0;
 	}
 
+	$args->copy_assigned_to = isset($request_hash['copy_assigned_to']) ? 1 : 0;
 	$args->tcversion_type = isset($request_hash['tcversion_type']) ? $request_hash['tcversion_type'] : null;
 	$args->tproject_id = $session_hash['testprojectID'];
 	$args->tproject_name = $session_hash['testprojectName'];

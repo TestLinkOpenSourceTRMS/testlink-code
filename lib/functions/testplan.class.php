@@ -9,11 +9,16 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.135 2009/09/14 13:20:26 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.136 2009/09/21 09:29:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *
+ *  20090920 - franciscom - getStatusTotals(), will replace some result.class method
+ *	20090920 - franciscom - getNotExecutedLinkedTCVersions()
+ *  20090919 - franciscom - copy_as(), copy_linked_tcversions() added contribution (refactored)
+ *                          to copy user assignment.
  *
  * 	20090822 - franciscom - changeLinkedTCVersionsPlatform() - new method
  *                          countLinkedTCVersionsByPlatform() - new method
@@ -529,16 +534,19 @@ class testplan extends tlObjectWithAttachments
          	                   mapOfArray -> indexed by test case id but with an array
          	                                 where each element contains information
          	                                 according to Platform.
-         	                                 Be carefull ifyou have multiple executions
-         	                                 for same 8testcase,platform) you will get
+         	                                 Be carefull if you have multiple executions
+         	                                 for same (testcase,platform) you will get
          	                                 multiple elements in array
          	                                 
          	                  array -> indexed sequentially 
          	                  
          	                  mapOfMap: first key testcase_id, second key platform_id               
          	          
-         	[executed]: default NULL => get executed and NOT executed
-         	                            get only executed tcversions
+         	[only_executed]: default false => get executed and NOT executed
+         	                                  get only executed tcversions
+         	[execution_details]: default NULL => by platftorm
+         	                     add_build => by build AND platform
+         	                             
          	
          	[include_unassigned]: has effects only if [assigned_to] <> null.
          	                      default: false
@@ -547,6 +555,7 @@ class testplan extends tlObjectWithAttachments
          	[details]: controls columns returned
          	           default 'simple'
          	           'full': add summary, steps and expected_results
+		 	    
 		 	    
 	  returns: changes according options['output'] (see above)
 
@@ -570,7 +579,7 @@ class testplan extends tlObjectWithAttachments
                                'platform_id' => null, 'exec_type' => null);
                                
         $my['options'] = array('only_executed' => false, 'include_unassigned' => false,
-                               'output' => 'map', 'details' => 'simple');
+                               'output' => 'map', 'details' => 'simple', 'execution_details' => null);
 
  		// Cast to array to handle $options = null
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -654,14 +663,13 @@ class testplan extends tlObjectWithAttachments
 			
 			if(count($my['filters']['exec_status']) > 0)
 			{
-				// @TODO - 20090814 - franciscom - check if is OK do not use platform_id on GROUP BY
 				$otherexec['filter']=" E.status IN ('" . implode("','",$my['filters']['exec_status']) . "') ";
+				$groupByPlatform=($my['options']['output']=='mapOfMap') ? ',platform_id' : '';
+                $groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
 				$sql_subquery=" AND E.id IN ( SELECT MAX(id) " .
 					          "               FROM  {$this->tables['executions']} executions " .
 					          "               WHERE testplan_id={$id} " .
-					          "               GROUP BY tcversion_id,testplan_id )";
-				
-				
+					          " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
 			}
 			if( !is_null($otherexec['filter']) )
 			{
@@ -698,9 +706,6 @@ class testplan extends tlObjectWithAttachments
 			                   " (NHA.id = E.tcversion_id AND " .
 			                   " E.platform_id=T.platform_id AND " .
 			                   " E.testplan_id=T.testplan_id {$build['filter']}) ";
-		
-
-        
 		// --------------------------------------------------------------
 		$more_tcase_fields = '';
 		$join_for_parent = '';
@@ -712,6 +717,13 @@ class testplan extends tlObjectWithAttachments
 			$more_parent_fields = 'NHC.name as tsuite_name,';
 		}
 		
+		$more_exec_fields='';
+		if($my['options']['execution_details'] == 'add_build')
+		{
+			$more_exec_fields = 'E.build_id,';	
+	    }
+		
+		
 		// 20090719 - added SQL comment on query text to make debug simpler.
 		$sql = "/* get_linked_tcversions */ " .
 		    " SELECT NHB.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
@@ -721,7 +733,7 @@ class testplan extends tlObjectWithAttachments
 			" TCV.version AS version, TCV.active," .
 			" TCV.tc_external_id AS external_id, TCV.execution_type," .
 			" E.id AS exec_id, E.tcversion_number," .
-			" E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, " .
+			" E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, {$more_exec_fields}" .
 			" E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, " .
 			" UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
 			" COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ".
@@ -808,7 +820,7 @@ class testplan extends tlObjectWithAttachments
 			break;
 			
 			case 'mapOfMap':
-			// with this option we got just one record for each 8testcase,platform)
+			// with this option we got just one record for each (testcase,platform)
 			// no matter how many executions has been done
 			$recordset = $this->db->fetchMapRowsIntoMap($sql,'tc_id','platform_id');
 			break;
@@ -1103,7 +1115,7 @@ class testplan extends tlObjectWithAttachments
         [copy_options]: default null
                         null: do a deep copy => copy following test plan child elements:
                               builds,linked tcversions,milestones,user_roles,priorities,
-                              platforms.
+                              platforms,execution assignment.
                               
                         != null, a map with keys that controls what child elements to copy
 
@@ -1114,7 +1126,7 @@ class testplan extends tlObjectWithAttachments
   	returns: N/A
 	*/
 	function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null,
-                     $copy_options=null,$tcversion_type=null)
+                     $copy_options=null,$tcversion_type=null,$copy_assigned_to=0,$user_id=null)
 	{
 		// CoPy configuration
 		// Configure here only elements that has his own table.
@@ -1160,7 +1172,7 @@ class testplan extends tlObjectWithAttachments
 				if( isset($cp_methods[$key]) )
 				{
 					$copy_method=$cp_methods[$key];
-					$this->$copy_method($id,$new_tplan_id,$tcversion_type);
+					$this->$copy_method($id,$new_tplan_id,$tcversion_type,$copy_assigned_to,$user_id);
 				}
 			}
 		}
@@ -1195,17 +1207,33 @@ class testplan extends tlObjectWithAttachments
         [tcversion_type]: default null -> use same version present on source testplan
                           'lastest' -> for every testcase linked to source testplan
                                       use lastest available version
+        [copy_assigned_to]: 1 -> copy execution assignments without role control                              
 
   	returns:
   
  	 Note: test urgency is set to default in the new Test plan (not copied)
 	*/
-	private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null)
+	private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null,
+	                                        $copy_assigned_to=0,$user_id=-1)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$sql="/* $debugMsg */ " . 
-		     " SELECT * FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id} ";
-		
+        $now_ts = $this->db->db_now();
+
+		$sql="/* $debugMsg */ "; 
+		if($copy_assigned_to)
+		{
+			$sql .= " SELECT TPTCV.*, COALESCE(UA.user_id,-1) AS tester " .
+			        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			        " LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON " .
+			        " UA.feature_id = TPTCV.id " .
+			        " WHERE testplan_id={$id} ";
+		}
+		else
+		{
+			$sql .= " SELECT TPTCV.* FROM {$this->tables['testplan_tcversions']} TPTCV" .
+			        " WHERE testplan_id={$id} ";
+	    }
+
 		$rs=$this->db->get_recordset($sql);
 		
 		if(!is_null($rs))
@@ -1215,7 +1243,7 @@ class testplan extends tlObjectWithAttachments
 			foreach($rs as $elem)
 			{
 				$tcversion_id = $elem['tcversion_id'];
-				
+				$feature_id = $elem['id'];
 				if( !is_null($tcversion_type) )
 				{
 					$sql="/* $debugMsg */ SELECT * FROM {$this->tables['nodes_hierarchy']} WHERE id={$tcversion_id} ";
@@ -1230,6 +1258,20 @@ class testplan extends tlObjectWithAttachments
 					   " VALUES({$new_tplan_id},{$tcversion_id},{$elem['platform_id']}," .
 					   " {$elem['node_order']},{$elem['urgency']})";
 				$this->db->exec_query($sql);
+				$new_feature_id = $this->db->insert_id($this->tables['testplan_tcversions']);
+				
+				if($copy_assigned_to && $elem['tester'] > 0)
+				{
+					$features_map = array();
+					$feature_id=$new_feature_id;
+					$features_map[$feature_id]['user_id'] = $elem['tester'];
+					$features_map[$feature_id]['type'] = $this->assignment_types['testcase_execution']['id'];
+					$features_map[$feature_id]['status']  = $this->assignment_status['open']['id'];
+					$features_map[$feature_id]['creation_ts'] = $now_ts;
+					$features_map[$feature_id]['assigner_id'] = $user_id;
+					$this->assignment_mgr->assign($features_map);
+				}
+				
 			}
 		}
 	}
@@ -2442,7 +2484,78 @@ class testplan extends tlObjectWithAttachments
 	}
 
 
+    /**
+     *
+	 * @param id: test plan id
+	 * @return map: 
+ 	 */
+	public function getNotExecutedLinkedTCVersionsDetailed($id,$filters=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$resultsCfg = config_get('results');
+		$status_not_run=$resultsCfg['status_code']['not_run'];
 
+        $my['filters'] = array('build_id' => 0,'platform_id' => null);
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+
+		$sqlFilter = "";
+        foreach($my['filters'] as $key => $value)
+        {
+        	if( !is_null($value) && $value > 0)
+        	{
+        		$sqlFilter .= " AND {$key} = {$value} "; 
+        	}	
+        } 
+
+		$sql = "/* {$debugMsg} */ ";
+		$sql .= "SELECT COALESCE(E.status,'" . $status_not_run . "') AS status, " .
+		        " B.id AS build_id, B.name AS build_name ,TPTCV.* " . 
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				" JOIN {$this->tables['builds']} B ON " .
+				" B.testplan_id=TPTCV.testplan_id " .
+				" LEFT OUTER JOIN {$this->tables['executions']} E ON " .
+				" E.build_id=B.id and E.tcversion_id=TPTCV.tcversion_id " . 
+				" where TPTCV.testplan_id={$id} {$sqlFilter} AND status IS NULL " .
+				
+
+        $result = $this->db->get_recordset($sql);
+ 		return $result;
+	}
+
+    /**
+     *
+	 * @param id: test plan id
+	 * @return map: 
+ 	 */
+	public function getStatusTotals($id)
+	{
+    	// This will be used to create dynamically counters if user add new status
+		$resultsCfg = config_get('results');
+    	foreach( $resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
+    	{
+        	$code_verbose[$resultsCfg['status_code'][$tc_status_verbose]] = $tc_status_verbose;
+    	}
+    	if( !isset($resultsCfg['status_label_for_exec_ui']['not_run']) )
+    	{
+        	$code_verbose[$resultsCfg['status_code']['not_run']] = 'not_run';  
+    	}
+		
+		$filters=null;
+		$options=array('output' => 'map');
+    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
+	
+		$totals = array('total' => 0,'not_run' => 0);
+		foreach($code_verbose as $status_code => $status_verbose)
+		{
+			$totals[$status_verbose]=0;
+		}
+		foreach($execResults as $key => $elem)
+		{
+			$totals['total']++;
+			$totals[$code_verbose[$elem['exec_status']]]++;			
+		}
+        return $totals;
+    }
 
 } // end class testplan
 
@@ -2842,5 +2955,4 @@ class milestone_mgr extends tlObject
 	}
 
 } // end class milestone_mgr
-
 ?>

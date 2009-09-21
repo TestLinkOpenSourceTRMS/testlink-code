@@ -4,16 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: _cf_radio_head.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2008/08/16 13:34:52 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/09/21 09:27:53 $ by $Author: franciscom $
  *
  * Example of user defined custom fields
  *
  * 
  * IMPORTANT: 
  *           You also need to add configuration in custom_config.inc.php
- *           $tlCfg->gui->custom_fields->types = array(100 => 'radio head');
- *           $tlCfg->gui->custom_fields->possible_values_cfg = array('radio head' => 1);
+ *           $tlCfg->custom_fields->types = array(100 => 'radio head');
+ *           $tlCfg->custom_fields->possible_values_cfg = array('radio head' => 1);
  *
  * 
  * 

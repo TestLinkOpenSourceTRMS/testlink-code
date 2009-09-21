@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsTprojectAssign.tpl,v 1.6 2009/07/18 17:42:34 franciscom Exp $
+$Id: cfieldsTprojectAssign.tpl,v 1.7 2009/09/21 09:27:53 franciscom Exp $
 Purpose: management Custom fields assignment to a test project
 
 rev :
@@ -17,7 +17,7 @@ rev :
           s='name,label,display_order,location,cfields_active,testproject,btn_assign,
              cfields_tproject_assign,title_assigned_cfields,check_uncheck_all_checkboxes,
              manage_cfield,btn_unassign,btn_cfields_active_mgmt,btn_cfields_display_order,
-             btn_cfields_display_attr'}
+             btn_cfields_display_attr,title_available_cfields'}
 
 <body>
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }

@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.59 2009/09/10 16:19:39 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.60 2009/09/21 09:27:53 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20090919 - franciscom - custom field values increased to 4000
 # 20090910 - franciscom - added milestones.start_date
 # 20090831 - franciscom - added preconditions
 # 20090806 - franciscom - added testplan_platforms,platforms
@@ -417,7 +418,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
 CREATE TABLE /*prefix*/cfield_design_values (
   `field_id` int(10) NOT NULL default '0',
   `node_id` int(10) NOT NULL default '0',
-  `value` varchar(255) NOT NULL default '',
+  `value` varchar(4000) NOT NULL default '',
   PRIMARY KEY  (`field_id`,`node_id`),
   KEY /*prefix*/idx_cfield_design_values (`node_id`)
 ) DEFAULT CHARSET=utf8;
@@ -427,14 +428,14 @@ CREATE TABLE /*prefix*/cfield_execution_values (
   `execution_id` int(10) NOT NULL default '0',
   `testplan_id` int(10) NOT NULL default '0',
   `tcversion_id` int(10) NOT NULL default '0',
-  `value` varchar(255) NOT NULL default '',
+  `value` varchar(4000) NOT NULL default '',
   PRIMARY KEY  (`field_id`,`execution_id`,`testplan_id`,`tcversion_id`)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE /*prefix*/cfield_testplan_design_values (
   `field_id` int(10) NOT NULL default '0',
   `link_id` int(10) NOT NULL default '0' COMMENT 'point to testplan_tcversion id',   
-  `value` varchar(255) NOT NULL default '',
+  `value` varchar(4000) NOT NULL default '',
   PRIMARY KEY  (`field_id`,`link_id`),
   KEY /*prefix*/idx_cfield_tplan_design_val (`link_id`)
 ) DEFAULT CHARSET=utf8;
@@ -447,8 +448,8 @@ CREATE TABLE /*prefix*/custom_fields (
   `name` varchar(64) NOT NULL default '',
   `label` varchar(64) NOT NULL default '' COMMENT 'label to display on user interface' ,
   `type` smallint(6) NOT NULL default '0',
-  `possible_values` varchar(255) NOT NULL default '',
-  `default_value` varchar(255) NOT NULL default '',
+  `possible_values` varchar(4000) NOT NULL default '',
+  `default_value` varchar(4000) NOT NULL default '',
   `valid_regexp` varchar(255) NOT NULL default '',
   `length_min` int(10) NOT NULL default '0',
   `length_max` int(10) NOT NULL default '0',

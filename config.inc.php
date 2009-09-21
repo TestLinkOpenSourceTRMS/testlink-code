@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.257 2009/09/14 13:22:32 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.258 2009/09/21 09:27:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -92,6 +92,7 @@ $tlCfg->gui = new stdClass();
 $tlCfg->testcase_cfg = new stdClass();
 $tlCfg->req_cfg = new stdClass();
 $tlCfg->validation_cfg = new stdClass();
+$tlCfg->custom_fields = new stdClass();
 
 
 
@@ -806,8 +807,20 @@ $tlCfg->default_roleid = TL_ROLES_GUEST;
 /** used to check size in char for text type custom fields */
 // can not be greater that column definition on DB
 // 0 => do not check.
-$tlCfg->custom_field_max_length = 255;
+$tlCfg->custom_fields->max_length = 255;
 
+// sizes for HTML INPUTS
+// for list, multiselection list => number of items
+// for checkbox,radio is useless
+$tlCfg->custom_fields->sizes = array('string' => 255,
+                                     'numeric' => 10,
+                                     'float' => 10,
+                                     'email' => 255,
+                                     'list' => 5,
+                                     'multiselection list' => 5,
+		  					         'text area' => array('rows' => 6, 'cols' => 80),
+							         'script' => 255,
+							         'server' => 255);
 
 /** 
  * Check unique titles of Test Project, Test Suite and Test Case

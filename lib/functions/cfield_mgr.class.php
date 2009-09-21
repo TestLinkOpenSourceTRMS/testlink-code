@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.70 2009/08/24 07:38:33 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.71 2009/09/21 09:27:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -271,26 +271,25 @@ class cfield_mgr extends tlObject
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
 
-		global $tlCfg;    // NO GOOD global coupling, config_get() must be used instead.
-		$gui_cfg = $tlCfg->gui;
-		$this->sizes = $gui_cfg->custom_fields->sizes;
+		$cfConfig = config_get('custom_fields');
+		$this->sizes = $cfConfig->sizes;
 		
-		if( !is_null($gui_cfg->custom_fields->types) )
+        if( property_exists($cfConfig,'types') && 
+		    !is_null($cfConfig->types) )
 		{
-		    $this->custom_field_types +=$gui_cfg->custom_fields->types;
+		    $this->custom_field_types +=$cfConfig->types;
 		    ksort($this->custom_field_types);
 		}
     
-		if( !is_null($gui_cfg->custom_fields->possible_values_cfg) )
+        if( property_exists($cfConfig,'possible_values_cfg') && 
+		    !is_null($cfConfig->possible_values_cfg) )
 		{
-		    $this->possible_values_cfg +=$gui_cfg->custom_fields->possible_values_cfg;
+		    $this->possible_values_cfg +=$cfConfig->possible_values_cfg;
 		}
         $this->object_table=$this->tables["custom_fields"];
 
-        $this->max_length_value = config_get('custom_field_max_length');
+        $this->max_length_value = $cfConfig->max_length;
         $this->max_length_possible_values = $this->max_length_value;
-    	// $this->textarea_max_size = 
-
 	}
 
     function getSizeLimit()
@@ -632,28 +631,27 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		case 'list':
   		case 'multiselection list':
    			$t_values = explode( '|', $p_field_def['possible_values']);
-        if( $verbose_type == 'list' )
-        {
-           $t_multiple=' ';
-           $t_list_size = intval($size) > 0 ? $size :1;
-           $t_name_suffix=' ';
-        }
-        else
-        {
-           $window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
-           $t_name_suffix='[]';
-           $t_multiple=' multiple="multiple" ';
-           $t_list_size = count( $t_values );
-           if($t_list_size > $window_size)
-           {
-            $t_list_size=$window_size;
-           }
-        }
-        $html_identity=$input_name . $t_name_suffix;
-        
+        	if( $verbose_type == 'list' )
+        	{
+        	   $t_multiple=' ';
+        	   $t_list_size = intval($size) > 0 ? $size :1;
+        	   $t_name_suffix=' ';
+        	}
+        	else
+        	{
+        	   $window_size = intval($size) > 1 ? $size : self::MULTISELECTIONLIST_WINDOW_SIZE;
+        	   $t_name_suffix='[]';
+        	   $t_multiple=' multiple="multiple" ';
+        	   $t_list_size = count( $t_values );
+        	   if($t_list_size > $window_size)
+        	   {
+        	    $t_list_size=$window_size;
+        	   }
+        	}
+        	$html_identity=$input_name . $t_name_suffix;
   			$str_out .="<select name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
   			$str_out .= ' size="' . $t_list_size . '">';
-
+        	
   			$t_selected_values = explode( '|', $t_custom_field_value );
    			foreach( $t_values as $t_option ) {
   				if( in_array( $t_option, $t_selected_values ) ) {
@@ -663,42 +661,30 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
    				}
    			}
    			$str_out .='</select>';
-			  break;
+		break;
 
-		  case 'checkbox':
-			  $t_values = explode( '|', $p_field_def['possible_values']);
-        $t_checked_values = explode( '|', $t_custom_field_value );
-			  foreach( $t_values as $t_option )
-			  {
-				  $str_out .= '<input type="checkbox" name="' . $input_name . '[]"' . " id=\"{$input_name}\"";
-				  if( in_array( $t_option, $t_checked_values ) )
-				  {
+		case 'checkbox':
+			$t_values = explode( '|', $p_field_def['possible_values']);
+        	$t_checked_values = explode( '|', $t_custom_field_value );
+			foreach( $t_values as $t_option )
+			{
+				$str_out .= '<input type="checkbox" name="' . $input_name . '[]"' . " id=\"{$input_name}\"";
+				if( in_array( $t_option, $t_checked_values ) )
+				{
 					  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
-				  }
-				  else
-				  {
+				}
+				else
+				{
 					  $str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
-				  }
-			  }
- 			  break;
+				}
+			}
+ 	    break;
 
   		case 'string':
   		case 'email':
   		case 'float':
   		case 'numeric':
 			$str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
-  		  
-  		  // $size = intval($size) > 0 ? $size : self::DEFAULT_INPUT_SIZE;
-  			// $str_out .= '<input type="text" name="' . $input_name . '" size="' . $size .'"';
-			  // if( 0 < $p_field_def['length_max'] )
-			  // {
-				//   $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
-			  // }
-			  // else
-			  // {
-				//    $str_out .= ' maxlength="255"';
-			  // }
-			  // $str_out .= ' value="' . $t_custom_field_value .'"></input>';
 			break ;
 
 		case 'text area':
@@ -727,9 +713,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 					        $cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
 
 			    // show character counter
-			    $str_out .= '<span style="vertical-align: top; padding: 5px;">' .
+			    $str_out .= '<br><span style="vertical-align: top; padding: 5px;">' .
 				    	    sprintf(lang_get('text_counter_feedback'), $this->max_length_value) .
-					        ' <span id="' . $counterId .'">'.$cf_current_size.'</span>.</span>';
+					        ' <span id="' . $counterId .'">'.$cf_current_size.'</span>.</span><br>';
 			}		
             else
             {
@@ -850,7 +836,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
           $sql = "UPDATE {$this->tables['cfield_design_values']} " .
                  " SET value='{$safe_value}' " .
-    		 			   " WHERE field_id={$field_id} AND	node_id={$node_id}";
+    	         " WHERE field_id={$field_id} AND	node_id={$node_id}";
         }
         else
         {
@@ -2312,19 +2298,19 @@ function getXMLServerParams($node_id)
   */
   function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size) 
   {
-      $str_out='';
-    	$size = intval($p_size) > 0 ? $p_size : self::DEFAULT_INPUT_SIZE;
-  		$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" ";
-			if( 0 < $p_field_def['length_max'] )
-			{
-			  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
-			}
-			else
-			{
-			   $str_out .= ' maxlength="255"';
-			}
-			$str_out .= ' value="' . $p_custom_field_value .'"></input>';
-      return $str_out;
+  	$str_out='';
+    $size = intval($p_size) > 0 ? $p_size : self::DEFAULT_INPUT_SIZE;
+  	$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" ";
+	if( 0 < $p_field_def['length_max'] )
+	{
+	  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
+	}
+	else
+	{
+	   $str_out .= ' maxlength="255"';
+	}
+	$str_out .= ' value="' . $p_custom_field_value .'"></input>';
+    return $str_out;
   }               
 
 

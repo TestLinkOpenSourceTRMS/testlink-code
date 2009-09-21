@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.5 2009/09/10 09:47:24 havlat Exp $
+ * $Id: db_schema_update.sql,v 1.6 2009/09/21 09:27:53 franciscom Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -13,11 +13,26 @@
  * USE SEMICOLONS ONLY to signal END of SQL Statements.
  *
  * internal revision:
+ *
+ *  20090919 - franciscom
+ *  value size for custom fields
+ *
  *  20090717 - franciscom
  *  cfield_testprojects new field location
  *  testprojects new fiels is_public
  *  testplans new fiels is_public
  */
+
+/* cfield* */
+
+ALTER TABLE /*prefix*/cfield_design_values MODIFY COLUMN value varchar(4000) NOT NULL default '';
+ALTER TABLE /*prefix*/cfield_execution_values MODIFY COLUMN value varchar(4000) NOT NULL default '';
+ALTER TABLE /*prefix*/cfield_testplan_design_values MODIFY COLUMN value varchar(4000) NOT NULL default '';
+  
+
+ALTER TABLE /*prefix*/custom_fields MODIFY COLUMN possible_values varchar(4000) NOT NULL default '';
+ALTER TABLE /*prefix*/custom_fields MODIFY COLUMN default_value varchar(4000) NOT NULL default '';
+
 
 /* testprojects */
 ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public tinyint NOT NULL DEFAULT '1';

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.476 2009/09/17 17:14:07 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.477 2009/09/21 09:27:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -162,6 +162,9 @@ $TLS_req_type_non_functional = 'Non functional';
 $TLS_req_type_constrain 	= 'Constrain';
 
 $TLS_req_status_not_testable = "Not testable"; // defined for historical reason (should be replaced by $TLS_req_type_info)
+
+$TLS_reserved_system_role_1 = 'reserved system role 1';
+$TLS_reserved_system_role_2 = 'reserved system role 2';
 
 
 // ----- unsorted (TODO move) -------------------------------------
@@ -1129,6 +1132,7 @@ $TLS_testplan_copy_priorities = "Copy Priorities";
 $TLS_testplan_copy_milestones = "Copy Milestones";
 $TLS_testplan_copy_user_roles = "Copy User Roles";
 $TLS_testplan_copy_platforms_links = "Copy Platforms Links";
+$TLS_testplan_copy_assigned_to = "Copy Assigned To";
 
 
 // ----- gui/templates/planNew.tpl -----

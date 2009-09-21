@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.111 $
- * @modified $Date: 2009/09/15 18:48:53 $  by $Author: schlundus $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2009/09/21 09:30:28 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -526,7 +526,9 @@ function read_file($file_name)
 {
 	$fContents = getFileContents($fName);
 	if (is_null($fContents))
+	{
 		$fContents = lang_get('problems_trying_to_access_template') . " {$file_name} ";
+	}	
 }
 
 /*

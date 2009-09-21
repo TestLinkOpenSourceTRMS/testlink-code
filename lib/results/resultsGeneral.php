@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/09/14 13:23:32 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/09/21 09:29:56 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -152,7 +152,7 @@ else // do report
 
 	// ----------------------------------------------------------------------------
   	/* MILESTONE & PRIORITY REPORT */
-	$planMetrics = $re->getTotalsForPlan();
+    $planMetrics = $tplan_mgr->getStatusTotals($args->tplan_id);
 
 	// collect prioritized results for whole Test Plan
 	if ($_SESSION['testprojectOptPriority'])

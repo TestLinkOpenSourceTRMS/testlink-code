@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/04/16 11:11:59 $ by $Author: havlat $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/09/21 09:29:56 $ by $Author: franciscom $
  * @author kevin
  *
  * Revisions:
@@ -45,6 +45,10 @@ if($gui->can_use_charts == 'OK')
     $_SESSION['statistics']['getAggregateMap'] = $re->getAggregateMap();
     $_SESSION['statistics']['getAggregateOwnerResults'] = $re->getAggregateOwnerResults();
     $_SESSION['statistics']['getAggregateKeywordResults']= $re->getAggregateKeywordResults();
+    
+    
+    new dBug($_SESSION['statistics']['getTotalsForPlan']);
+    
     
     $pathToScripts = "lib/results/";
     $chartsUrl=new stdClass();

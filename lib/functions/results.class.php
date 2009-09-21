@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.146 2009/09/14 13:21:30 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.147 2009/09/21 09:29:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -711,7 +711,8 @@ class results extends tlObjectWithDB
 	/**
 	 * @return array
 	 */
-	public function getTotalsForPlan(){
+	public function getTotalsForPlan()
+	{
 		return $this->totalsForPlan;
 	}
 
@@ -1273,7 +1274,7 @@ class results extends tlObjectWithDB
 					if (($lastResult == 'a') || ($lastResult == $this->map_tc_status['not_run'])) 
 					{
 						// Initialize information on testcaseID to be "not run"
-						echo 'NOTRUN - DEBUG- Added Not Run info <br>';
+						// echo 'NOTRUN - DEBUG- Added Not Run info <br>';
 						array_push($currentSuite, $infoToSave);
 					}
 				}

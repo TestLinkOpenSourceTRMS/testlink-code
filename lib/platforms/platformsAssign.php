@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		eloff
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.4 2009/08/24 07:38:33 franciscom Exp $
+ * @version    	CVS: $Id: platformsAssign.php,v 1.5 2009/09/22 08:01:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -44,6 +44,7 @@ $gui->platform_assignment_subtitle = null;
 $gui->tplan_id = $args->tplan_id;
 $gui->can_do = isset($args->tplan_id);
 $gui->mainTitle = lang_get('add_remove_platforms');
+$gui->warning='';
 
 if (isset($args->tplan_id))
 {

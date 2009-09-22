@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.136 2009/09/21 09:29:15 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.137 2009/09/22 08:01:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20090921 - franciscom - get_linked_tcversions() new options
  *  20090920 - franciscom - getStatusTotals(), will replace some result.class method
  *	20090920 - franciscom - getNotExecutedLinkedTCVersions()
  *  20090919 - franciscom - copy_as(), copy_linked_tcversions() added contribution (refactored)
@@ -509,7 +510,8 @@ class testplan extends tlObjectWithAttachments
          	               array() with user id to be used on filter
          	
          	[exec_status]: default NULL => do not filter by execution status
-         	               character    => filter by execution status=character
+         	               character or array   => filter by execution status=character
+         	                                       
          	
          	[build_id]: default 0 => do not filter by build id
          	            numeric   => filter by build id
@@ -544,10 +546,13 @@ class testplan extends tlObjectWithAttachments
          	          
          	[only_executed]: default false => get executed and NOT executed
          	                                  get only executed tcversions
+         
          	[execution_details]: default NULL => by platftorm
          	                     add_build => by build AND platform
          	                             
-         	
+         	[last_execution]: default false => return all executions
+         	                          true => last execution ( MAX(E.id))
+         	                          
          	[include_unassigned]: has effects only if [assigned_to] <> null.
          	                      default: false
          	                      true: also testcase not assigned will be retreived
@@ -572,6 +577,13 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class: ' . __CLASS__ . ' - Method:' . __FUNCTION__;
 		
         $my = array ('filters' => '', 'options' => '');
+		$tcversion_exec_type = array('join' => '', 'filter' => '');
+		$tc_id = array('join' => '', 'filter' => '');
+		$build = array('join' => '', 'filter' => '');
+		$keywords = array('join' => '', 'filter' => '');
+		$executions = array('join' => '', 'filter' => '');
+		$platforms = array('join' => '', 'filter' => '');
+
         $my['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
                                'assigned_to' => null, 'exec_status' => null,
                                'build_id' => 0, 'cf_hash' => null,
@@ -579,26 +591,28 @@ class testplan extends tlObjectWithAttachments
                                'platform_id' => null, 'exec_type' => null);
                                
         $my['options'] = array('only_executed' => false, 'include_unassigned' => false,
-                               'output' => 'map', 'details' => 'simple', 'execution_details' => null);
+                               'output' => 'map', 'details' => 'simple', 
+                               'execution_details' => null, 'last_execution' => false);
 
  		// Cast to array to handle $options = null
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 		$my['options'] = array_merge($my['options'], (array)$options);
         
-        // echo 'DEBUG - ' . $debugMsg;
-        // new dBug($filters);
-        // new dBug($options);
+		$groupByPlatform=($my['options']['output']=='mapOfMap') ? ',platform_id' : '';
+        $groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
+		$last_exec_subquery = " AND E.id IN ( SELECT MAX(id) " .
+			 		          "               FROM  {$this->tables['executions']} executions " .
+					          "               WHERE testplan_id={$id} " .
+					          " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
+
 		$resultsCfg = config_get('results');
 		$status_not_run=$resultsCfg['status_code']['not_run'];
 		$sql_subquery='';
 		
-		$tcversion_exec_type = array('join' => '', 'filter' => '');
-		$tc_id = array('join' => '', 'filter' => '');
-		$build = array('join' => '', 'filter' => '');
-		$keywords = array('join' => '', 'filter' => '');
-		$executions = array('join' => '', 'filter' => '');
-		$platforms = array('join' => '', 'filter' => '');
-		
+		if( $my['options']['last_execution'] )
+		{
+			$executions['filter'] = " {$last_exec_subquery} ";
+		}
 		
 		if( !is_null($my['filters']['platform_id']) )
 		{
@@ -664,12 +678,7 @@ class testplan extends tlObjectWithAttachments
 			if(count($my['filters']['exec_status']) > 0)
 			{
 				$otherexec['filter']=" E.status IN ('" . implode("','",$my['filters']['exec_status']) . "') ";
-				$groupByPlatform=($my['options']['output']=='mapOfMap') ? ',platform_id' : '';
-                $groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
-				$sql_subquery=" AND E.id IN ( SELECT MAX(id) " .
-					          "               FROM  {$this->tables['executions']} executions " .
-					          "               WHERE testplan_id={$id} " .
-					          " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
+				$sql_subquery = $last_exec_subquery;
 			}
 			if( !is_null($otherexec['filter']) )
 			{
@@ -684,7 +693,6 @@ class testplan extends tlObjectWithAttachments
 				$executions['filter'] .= $notrun['filter'];
 			}
 			
-			// @TODO understand if this is not a bug - franciscom
 			if($executions['filter'] != "")
 			{
 				$executions['filter'] = " AND ({$executions['filter']} )";     
@@ -722,7 +730,6 @@ class testplan extends tlObjectWithAttachments
 		{
 			$more_exec_fields = 'E.build_id,';	
 	    }
-		
 		
 		// 20090719 - added SQL comment on query text to make debug simpler.
 		$sql = "/* get_linked_tcversions */ " .
@@ -807,8 +814,6 @@ class testplan extends tlObjectWithAttachments
 		
 		// BUGID 989 - added NHB.node_order
 		$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,E.id ASC";
-		
-        // new dBug($options);
 		switch($my['options']['output'])
 		{ 
 			case 'array':

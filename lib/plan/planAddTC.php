@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.78 2009/09/02 08:37:37 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.79 2009/09/22 08:01:37 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -229,6 +229,7 @@ function doReorder(&$argsObj,&$tplanMgr)
         }
     }
     
+    new dBug($mapo);
     // new dBug($argsObj->testcases2order);
     // new dBug($argsObj->linkedOrder);
     // new dBug($argsObj->linkedVersion);
@@ -239,7 +240,6 @@ function doReorder(&$argsObj,&$tplanMgr)
     if(!is_null($argsObj->testcases2add))
     {
         $tcaseSet = array_keys($argsObj->testcases2add);
-        // foreach($argsObj->testcases2add as $tcid)
         foreach($tcaseSet as $tcid)
         {
         	// This check is needed because, after we have added test case
@@ -256,6 +256,7 @@ function doReorder(&$argsObj,&$tplanMgr)
             }
         }
     }  
+    new dBug($mapo);
     
     if(!is_null($mapo))
     {

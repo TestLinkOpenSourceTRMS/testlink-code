@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.69 2009/09/07 06:45:30 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.70 2009/09/22 08:01:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -784,8 +784,8 @@ class tree extends tlObject
 			    break;
 			    
 			case 'exec_order':
-			// Added DISTINCT to remove duplicates due to platforms
-	        $sql="SELECT DISTINCT * FROM ( SELECT NH.node_order AS spec_order," . 
+			// REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION
+	        $sql="SELECT s* FROM ( SELECT NH.node_order AS spec_order," . 
 	             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
 	             "                NH.name, NH.node_type_id" .
 	             "                FROM {$this->object_table} NH, {$this->tables['node_types']} NT" .
@@ -805,7 +805,10 @@ class tree extends tlObject
 	             "                AND NHA.parent_id = {$node_id}" .
 	             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
 	             "                ORDER BY node_order,spec_order,id";
+                echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 			    break;
+			    
+    
 	    }
 	    // new dBug($sql);
 	    $result = $this->db->exec_query($sql);
@@ -863,11 +866,11 @@ class tree extends tlObject
 	                          $order_cfg = array("type" =>'spec_order'),
 	                          $key_type = 'std')
 	{
-		  static $s_testCaseNodeTypeID;
-		  if (!$s_testCaseNodeTypeID)
-		  {
+		static $s_testCaseNodeTypeID;
+		if (!$s_testCaseNodeTypeID)
+		{
 		  	$s_testCaseNodeTypeID = $this->node_descr_id['testcase'];
-		  }
+		}
 			
 	    switch($order_cfg['type'])
 	    {
@@ -875,29 +878,31 @@ class tree extends tlObject
 	  	    	$sql = " SELECT * FROM {$this->object_table} " .
 	  	           	   " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
 			           " ORDER BY node_order,id";
-			    break;
+		    break;
 			    
-			    case 'exec_order':
-			        $sql="SELECT * FROM ( SELECT  NH.node_order AS spec_order," . 
-			             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
-			             "                NH.name, NH.node_type_id " .
-			             "                FROM {$this->tables['nodes_hierarchy']}  NH" .
-			             "                WHERE parent_id = {$node_id}" .
-			             "                AND node_type_id <> {$s_testCaseNodeTypeID} {$and_not_in_clause}" .
-			             "                UNION" .
-			             "                SELECT NHA.node_order AS spec_order, " .
-			             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
-			             "                       NHA.name, NHA.node_type_id " .
-			             "                FROM {$this->tables['nodes_hierarchy']} NHA, " .
-			             "                     {$this->tables['nodes_hierarchy']} NHB," .
-			             "                     {$this->tables['testplan_tcversions']} T" .
-			             "                WHERE NHA.id=NHB.parent_id " .
-			             "                AND NHA.node_type_id = {$s_testCaseNodeTypeID}" .
-			             "                AND NHB.id=T.tcversion_id " .
-			             "                AND NHA.parent_id = {$node_id}" .
-			             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
-			             "                ORDER BY node_order,spec_order,id";
-			    break;
+		    case 'exec_order':
+			// REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION
+			$sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
+			     "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
+			     "                NH.name, NH.node_type_id " .
+			     "                FROM {$this->tables['nodes_hierarchy']}  NH" .
+			     "                WHERE parent_id = {$node_id}" .
+			     "                AND node_type_id <> {$s_testCaseNodeTypeID} {$and_not_in_clause}" .
+			     "                UNION" .
+			     "                SELECT NHA.node_order AS spec_order, " .
+			     "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
+			     "                       NHA.name, NHA.node_type_id " .
+			     "                FROM {$this->tables['nodes_hierarchy']} NHA, " .
+			     "                     {$this->tables['nodes_hierarchy']} NHB," .
+			     "                     {$this->tables['testplan_tcversions']} T" .
+			     "                WHERE NHA.id=NHB.parent_id " .
+			     "                AND NHA.node_type_id = {$s_testCaseNodeTypeID}" .
+			     "                AND NHB.id=T.tcversion_id " .
+			     "                AND NHA.parent_id = {$node_id}" .
+			     "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
+			     "                ORDER BY node_order,spec_order,id";
+            //    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+			break;
 			    
 	    }
 	  	$children_key = 'childNodes';

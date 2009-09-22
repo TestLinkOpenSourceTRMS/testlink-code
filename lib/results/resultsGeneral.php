@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/09/21 09:29:56 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/09/22 08:01:37 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -116,6 +116,15 @@ else // do report
 
 	// ----------------------------------------------------------------------------
   	/* BUILDS REPORT */
+    // $filters=null;
+    // $options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true, 'execution_details' => 'add_build');
+    // $myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+    // new dBug($myRBB);
+    // 
+    // $options=array('output' => 'map' , 'last_execution' => true, 'only_executed' => true, 'execution_details' => 'add_build');
+    // $myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+    // new dBug($myRBB);
+    
 
 	$colDefiniton = null;
 	$results = null;

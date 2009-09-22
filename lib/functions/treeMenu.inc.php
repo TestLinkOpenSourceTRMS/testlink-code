@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.110 2009/09/04 20:00:36 schlundus Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.111 2009/09/22 08:01:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -596,9 +596,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		                         'requirement_spec'=> 'exclude_my_children');
 	
 	$order_cfg = array("type" =>'exec_order',"tplan_id" => $tplan_id);
-	$test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
+    $test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
 		                                    null,'',RECURSIVE_MODE,$order_cfg);
 	
+
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
@@ -606,11 +607,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	$tplan_tcases = null;
     $apply_other_filters=true;
+
 	if($test_spec)
 	{
 		if(is_null($tc_id) || $tc_id >= 0)
 		{
 			$doFilterByKeyword = (!is_null($keyword_id) && $keyword_id > 0);
+		    // echo "DEBUG - \$doFilterByKeyword:" . ($doFilterByKeyword ? 'ON' : 'OFF') . "<br>";
 			if($doFilterByKeyword)
 			{
 				$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id,$keywordsFilterType);
@@ -633,9 +636,15 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                    'urgencyImportance' => $urgencyImportance);
 			   
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
+		    // echo "DEBUG - First Call to get_linked_tcversions()<br>";
+			// new dBug($tplan_tcases);   
+			// new dBug($test_spec);   
 			   
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'AND')
 			{
+			    // echo "DEBUG - \$doFilterByKeyword:" . ($doFilterByKeyword ? 'ON' : 'OFF') . "<br>";
+			    // echo "DEBUG - with AND Condition<br>";
+			
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
 				$linkedFilters = array('tcase_id' => array_keys($filteredSet));
 				$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
@@ -652,6 +661,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		    !is_null($filters->statusAllPrevBuilds) &&
 			!in_array($resultsCfg['status_code']['all'],(array)$filters->statusAllPrevBuilds) )
 		{
+			
+			// echo "DEBUG - Applying filter_by_same_status_for_build_set()<br>";
 			$tplan_tcases = filter_by_same_status_for_build_set($tplan_mgr,$tplan_tcases,$tplan_id,$filters);
 			if (is_null($tplan_tcases))
 			{
@@ -730,17 +741,24 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
 
+        // echo "DEBUG - AFTER prepareNode()<br>";
+        // new dBug($tplan_tcases); 
 		foreach($testcase_counters as $key => $value)
 		{
 			$test_spec[$key] = $testcase_counters[$key];
 		}
 		
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$getArguments,
-			$hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
-			$showTestCaseID,$tcase_prefix,$show_testsuite_contents);
+			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
+			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
 		
+		// echo "DEBUG - AFTER renderExecTreeNode()<br>";
+        // new dBug($tplan_tcases); 
+        // new dBug($menustring);
+        
 	}  // if($test_spec)
 	
+		
 	$treeMenu->rootnode=new stdClass();
 	$treeMenu->rootnode->name=$test_spec['text'];
 	$treeMenu->rootnode->id=$test_spec['id'];
@@ -751,6 +769,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	if( !is_null($menustring) )
 	{  
+		// echo 'Remove null';
+		
 		// Change key ('childNodes')  to the one required by Ext JS tree.
 		$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));   
 		
@@ -790,7 +810,14 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
                                    $useCounters,$useColors,$showTestCaseID,$testCasePrefix,
                                    $showTestSuiteContents);
 	
-	unset($tcase_node[$node['id']]);
+	
+	if( isset($tcase_node[$node['id']]) )
+	{
+		// echo "Removing: {$node['id']} <br>";
+		unset($tcase_node[$node['id']]);
+	}
+	// new dBug($tcase_node);
+	
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 	    // 20080615 - franciscom - need to work always original object
@@ -949,7 +976,7 @@ function create_counters_info(&$node,$useColors)
 		{
 			$css_class= $useColors ? (" class=\"light_{$key}\" ") : '';   
 			$add_html .= "<span {$css_class} " . ' title="' . lang_get($status_verbose[$key]) . '">' . 
-				$node[$key] . ",</span>";
+				         $node[$key] . ",</span>";
 		}
 	}
 	$add_html = "(" . rtrim($add_html,",</span>") . "</span>)"; 
@@ -968,11 +995,20 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
                                         $bForPrinting,$useCounters=1,$useColors=null,
                                         $showTestCaseID=1,$testCasePrefix,$showTestSuiteContents=1)
 {
-	$resultsCfg=config_get('results');
+	static $resultsCfg;
+	static $status_descr_code;
+	static $status_code_descr;
+	static $status_verbose;
 	
-	$status_descr_code=$resultsCfg['status_code'];
-	$status_code_descr=$resultsCfg['code_status'];
-	$status_verbose=$resultsCfg['status_label'];
+	if(!$resultsCfg)
+	{ 
+		$resultsCfg=config_get('results');
+		$status_descr_code=$resultsCfg['status_code'];
+		$status_code_descr=$resultsCfg['code_status'];
+		$status_verbose=$resultsCfg['status_label'];
+	}
+	
+	// new dBug($node);
 	
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
@@ -990,7 +1026,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		$countersColouring=$useColors->counters;
 	}
 	
-	
+	// $doIt=true;
 	switch($node_type)
 	{
 		case 'testproject':
@@ -1013,26 +1049,29 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			break;
 			
 		case 'testcase':
-			$node['leaf'] = true;
-			$buildLinkTo = $tc_action_enabled;
-			if (!$buildLinkTo)
-			{
-				$pfn = null;
-			}
-			
-			$status_code = $tcase_node[$node['id']]['exec_status'];
-			$status_descr = $status_code_descr[$status_code];
-			$status_text = lang_get($status_verbose[$status_descr]);
-			$css_class = $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
-			$label = "<span {$css_class} " . '  title="' . $status_text .	'" alt="' . $status_text . '">';
-			
-			if($showTestCaseID)
-			{
-				$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
-			} 
-			$label .= "{$name}</span>";
-			
-			$versionID = $node['tcversion_id'];
+		    	// $doIt=true;
+		    	//echo 'RE-TC<br>';
+				$node['leaf'] = true;
+				$buildLinkTo = $tc_action_enabled;
+				if (!$buildLinkTo)
+				{
+					$pfn = null;
+				}
+				
+				//echo "DEBUG - Test Case rendering: \$node['id']:{$node['id']}<br>";
+				$status_code = $tcase_node[$node['id']]['exec_status'];
+				$status_descr = $status_code_descr[$status_code];
+				$status_text = lang_get($status_verbose[$status_descr]);
+				$css_class = $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
+				$label = "<span {$css_class} " . '  title="' . $status_text .	'" alt="' . $status_text . '">';
+				
+				if($showTestCaseID)
+				{
+					$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
+				} 
+				$label .= "{$name}</span>";
+				
+				$versionID = $node['tcversion_id'];
 			break;
 	}
 	
@@ -1045,7 +1084,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			$label .= $add_html; 
 		}
 	}
-
+    
 	$node['text'] = $label;
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['href'] = is_null($pfn)? '' : "javascript:{$pfn}({$node['id']},{$versionID})";
@@ -1060,7 +1099,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	}
 	
 	$key2del = array('node_type_id','parent_id','node_order','node_table',
-		'tcversion_id','external_id','version','testcase_count');  
+		             'tcversion_id','external_id','version','testcase_count');  
 	foreach($key2del as $key)
 	{
 		if(isset($node[$key]))

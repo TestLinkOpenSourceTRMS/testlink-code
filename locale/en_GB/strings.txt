@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.478 2009/09/22 08:01:38 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.479 2009/09/23 08:19:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -160,6 +160,9 @@ $TLS_req_type_use_case	 	= 'Use Case';
 $TLS_req_type_interface 	= 'Interface';
 $TLS_req_type_non_functional = 'Non functional';
 $TLS_req_type_constrain 	= 'Constrain';
+
+$TLS_exec_not_run_result_note = "Important Notice: Once a Result is updated from 'Not Run' to another value, " .
+                                "you cannot set it back to 'Not Run'. <br />You can still set the Result to any other value.";
 
 $TLS_req_status_not_testable = "Not testable"; // defined for historical reason (should be replaced by $TLS_req_type_info)
 
@@ -1063,6 +1066,7 @@ $TLS_executed_can_not_be_removed = "Executed test cases can not be removed.";
 $TLS_execution_order = "Execution order";
 $TLS_select_all_to_add = "Select/deselect all Test Cases to add";
 $TLS_select_all_to_remove = "Select/deselect all Test Cases to remove";
+$TLS_tester_assignment_on_add="Assign to user on add";
 
 $TLS_has_been_executed = "has been executed";
 $TLS_inactive_testcase = "inactive";

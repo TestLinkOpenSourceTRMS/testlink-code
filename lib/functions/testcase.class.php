@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.193 2009/09/11 20:35:09 schlundus Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.194 2009/09/23 08:20:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090922 - franciscom - get_last_execution() - used COALESCE() to return code
+ *                                                also code for NOT RUN status.
  * 20090831 - franciscom - added management of new field: preconditions
  *                         create(),update(),exportTestCaseDataToXML()
  *
@@ -2395,6 +2397,10 @@ class testcase extends tlObjectWithAttachments
 	function get_last_execution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$resultsCfg = config_get('results');
+		$status_not_run=$resultsCfg['status_code']['not_run'];
+
 		$filterKeys = array('build_id','platform_id');
         foreach($filterKeys as $key)
         {
@@ -2458,38 +2464,6 @@ class testcase extends tlObjectWithAttachments
 				}
 		}
 	
-		// 20090716 - franciscom - BUGID 2692
-		// if( !is_null($build_id) )
-		// {
-		// 	$build_id_filter=" AND e.build_id ";
-		// 	if( is_array($build_id) )
-		// 	{
-		//     	$build_list = implode(",",$build_id);
-		//   		$build_id_filter .= " IN ({$build_list}) ";
-		//   	}
-		//   	else
-		//   	{
-		//   		$build_id_filter .= " = {$build_id} ";
-		//   	}
-		// }
-        
-        // 20090815 - franciscom
-		// if( !is_null($platform_id) )
-		// {
-		// 	$platform_id_filter=" AND e.platform_id ";
-		// 	if( is_array($platform_id) )
-		// 	{
-		//     	$platform_list = implode(",",$platform_id);
-		//   		$platform_id_filter .= " IN ({$platform_id}) ";
-		//   	}
-		//   	else
-		//   	{
-		//   		$platform_id_filter .= " = {$platform_id} ";
-		//   	}
-		// }
-
-
-
       // get list of max exec id, to be used filter in next query
 	  $sql="/* $debugMsg */ " . 
 	       " SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id {$add_columns}" .
@@ -2498,9 +2472,6 @@ class testcase extends tlObjectWithAttachments
 	       " {$filterBy['build_id']} {$filterBy['platform_id']}" .
 	       " AND e.status IS NOT NULL " .
 	       " $where_clause_1 GROUP BY tcversion_id {$add_groupby}";
-   
-      // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
       // 20090716 - order of columns changed
 	  $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
 	  $rs = $this->db->fetchRowsIntoMap($sql,'execution_id');
@@ -2544,29 +2515,30 @@ class testcase extends tlObjectWithAttachments
 	  // 20060921 - franciscom -
 	  // added NHB.parent_id  to get same order as in the navigator tree
 	  //
-	  $sql="/* $debugMsg */ SELECT e.id AS execution_id, e.status,e.execution_type AS execution_run_type,
-	        NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id,
-	        tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary,
-	        tcversions.preconditions,
-	        tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id,
-	        tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active,
-	        tcversions.is_open,tcversions.execution_type,
-	        users.login AS tester_login,users.first AS tester_first_name,
-			users.last AS tester_last_name, e.tester_id AS tester_id,
-			e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number,
-			builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open,
-	        e.platform_id,p.name AS platform_name
-		    FROM {$this->tables['nodes_hierarchy']} NHA
-	        JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id
-	        JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id
-	        {$executions_join}
-	        LEFT OUTER JOIN {$this->tables['builds']} builds ON builds.id = e.build_id
-	                        AND builds.testplan_id = {$tplan_id}
-	        LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id 
-   	        LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id
-	        $where_clause_2
-	        ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
-	        
+	  $sql= "/* $debugMsg */ SELECT e.id AS execution_id, " .
+   			" COALESCE(e.status,'{$status_not_run}') AS status, " .
+	        " e.execution_type AS execution_run_type," .
+	        " NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id," .
+	        " tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary," .
+	        " tcversions.preconditions," .
+	        " tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id," .
+	        " tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active," .
+	        " tcversions.is_open,tcversions.execution_type," .
+	        " users.login AS tester_login,users.first AS tester_first_name," .
+			" users.last AS tester_last_name, e.tester_id AS tester_id," .
+			" e.notes AS execution_notes, e.execution_ts, e.build_id,e.tcversion_number," .
+			" builds.name AS build_name, builds.active AS build_is_active, builds.is_open AS build_is_open," .
+	        " e.platform_id,p.name AS platform_name" .
+		    " FROM {$this->tables['nodes_hierarchy']} NHA" .
+	        " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id" .
+	        " JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id" .
+	        " {$executions_join}" .
+	        " LEFT OUTER JOIN {$this->tables['builds']} builds ON builds.id = e.build_id" .
+	        "                 AND builds.testplan_id = {$tplan_id}" .
+	        " LEFT OUTER JOIN {$this->tables['users']} users ON users.id = e.tester_id " .
+   	        " LEFT OUTER JOIN {$this->tables['platforms']} p ON p.id = e.platform_id" .
+	        " $where_clause_2" .
+	        " ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
       
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
 	  

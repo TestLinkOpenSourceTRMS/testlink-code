@@ -4,10 +4,13 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.138 $
- * @modified $Date: 2009/09/14 13:23:32 $ $Author: franciscom $
+ * @version $Revision: 1.139 $
+ * @modified $Date: 2009/09/23 08:20:30 $ $Author: franciscom $
  *
  * rev:
+ *  20090922 - franciscom - added contribution idea, when using bulk operation
+ *                          display last execution status.
+ *
  *	20090913 - franciscom - fixed bug on filter_status initialization
  *                          fixed bug on bulk execution due to bad option
  *                          on get_linked_tcversions() call.
@@ -166,6 +169,9 @@ if(!is_null($linked_tcversions))
     if ($args->save_results || $args->do_bulk_save )
     {
     	$submitResult = write_execution($db,$args,$_REQUEST,$gui->map_last_exec);
+        
+        // Need to re-read to update test case status
+        $gui->map_last_exec=getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     }
 
     if ($args->doDelete)
@@ -175,60 +181,65 @@ if(!is_null($linked_tcversions))
     // --------------------------------------------------------------------------------------------
     
     $gui->map_last_exec_any_build = null;
+    $gui->other_execs=null;
     $testerid = null;
     
-    // @TODO 20090815 - franciscom check what to do with platform
-    if( $cfg->exec_cfg->show_last_exec_any_build )
+    
+    if($args->level == 'testcase')
     {
-    	// 20090716 - franciscom - get_last_execution() interface changes
-		$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
-        $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
-                                                                       testcase::ANY_BUILD,
-                                                                       $args->platform_id,$options);
-        
-        //Get UserID and Updater ID for current Version
-        $tc_current = $gui->map_last_exec_any_build;
-        foreach ($tc_current as $key => $value)
-        {
-			$testerid = $value['tester_id'];
-		    $userid_array[$testerid] = $testerid;
-        }	    
-    }
-
-    $gui->req_details = $req_mgr->get_all_for_tcase($tcase_id); //Bug 2068
-    $gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
-    // Get attachment,bugs, etc
-    if(!is_null($gui->other_execs))
-    {
-    	//Get the Tester ID for all previous executions
-		  foreach ($gui->other_execs as $key => $execution)
-		  {    	
-	      	foreach ($execution as $singleExecution)
-	      	{    			  
-		  	      $testerid = $singleExecution['tester_id'];
-		  	      $userid_array[$testerid] = $testerid;
-	      	}    	
-		  }
-
-      $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,$args->tplan_id,$args->tproject_id);
-      $gui->attachments=$other_info['attachment'];
-      $gui->bugs=$other_info['bugs'];
-      $gui->other_exec_cfields=$other_info['cfexec_values'];
-     
-      // this piece of code is useful to avoid error on smarty template due to undefined value   
-      if( is_array($tcversion_id) && 
-          (count($gui->other_execs) != count($gui->map_last_exec)) )
-      {
-        foreach($tcversion_id as $version_id)
-        {
-            if( !isset($gui->other_execs[$version_id]) )
-            {
-                $gui->other_execs[$version_id]=null;  
-            }  
-        }
-      }
-
-    } // if(!is_null($gui->other_execs))
+    	// @TODO 20090815 - franciscom check what to do with platform
+    	if( $cfg->exec_cfg->show_last_exec_any_build )
+    	{
+    		// 20090716 - franciscom - get_last_execution() interface changes
+			$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
+    	    $gui->map_last_exec_any_build = $tcase_mgr->get_last_execution($tcase_id,$tcversion_id,$args->tplan_id,
+    	                                                                   testcase::ANY_BUILD,
+    	                                                                   $args->platform_id,$options);
+    	    
+    	    //Get UserID and Updater ID for current Version
+    	    $tc_current = $gui->map_last_exec_any_build;
+    	    foreach ($tc_current as $key => $value)
+    	    {
+				$testerid = $value['tester_id'];
+			    $userid_array[$testerid] = $testerid;
+    	    }	    
+    	}
+    	
+    	$gui->req_details = $req_mgr->get_all_for_tcase($tcase_id); //Bug 2068
+    	$gui->other_execs=getOtherExecutions($db,$tcase_id,$tcversion_id,$gui,$args,$cfg,$tcase_mgr);
+    	// Get attachment,bugs, etc
+    	if(!is_null($gui->other_execs))
+    	{
+    		//Get the Tester ID for all previous executions
+			  foreach ($gui->other_execs as $key => $execution)
+			  {    	
+		      	foreach ($execution as $singleExecution)
+		      	{    			  
+			  	      $testerid = $singleExecution['tester_id'];
+			  	      $userid_array[$testerid] = $testerid;
+		      	}    	
+			  }
+    	
+    	  $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,$args->tplan_id,$args->tproject_id);
+    	  $gui->attachments=$other_info['attachment'];
+    	  $gui->bugs=$other_info['bugs'];
+    	  $gui->other_exec_cfields=$other_info['cfexec_values'];
+    	 
+    	  // this piece of code is useful to avoid error on smarty template due to undefined value   
+    	  if( is_array($tcversion_id) && 
+    	      (count($gui->other_execs) != count($gui->map_last_exec)) )
+    	  {
+    	    foreach($tcversion_id as $version_id)
+    	    {
+    	        if( !isset($gui->other_execs[$version_id]) )
+    	        {
+    	            $gui->other_execs[$version_id]=null;  
+    	        }  
+    	    }
+    	  }
+    	
+    	} // if(!is_null($gui->other_execs))
+    } 	
 
 } // if(!is_null($linked_tcversions))
 
@@ -264,6 +275,7 @@ else
 {
     $gui->exec_notes_editors=createExecNotesWebEditor($gui->map_last_exec,$_SESSION['basehref'],$cfg->editorCfg);
 }
+
 // To silence smarty errors
 //  future must be initialized in a right way
 $smarty->assign('test_automation_enabled',0);

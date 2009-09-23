@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.45 2009/09/14 13:22:52 franciscom Exp $
+$Id: execSetResults.tpl,v 1.46 2009/09/23 08:20:30 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090901 - franciscom - preconditions
@@ -43,7 +43,7 @@ Rev:
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
              deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution,
-             preconditions,platform,platform_description'}
+             preconditions,platform,platform_description,exec_not_run_result_note'}
 
 
 
@@ -348,10 +348,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{/if}
 
   {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op }
+      <div class="messages" style="align:center;">
+      {$labels.exec_not_run_result_note}
+      </div>
       <div>
+      <br />
  	    <table class="mainTable-x" width="100%">
  	    <tr>
- 	    <th>{$labels.th_testsuite}</th>{* <th>&nbsp;</th> *}<th>{$labels.title_test_case}</th><th>{$labels.test_exec_result}</th>
+ 	    <th>{$labels.th_testsuite}</th><th>{$labels.title_test_case}</th>
+ 	    <th>{$labels.exec_status}</th><th>{$labels.test_exec_result}</th>
  	    </tr>
  	    {foreach item=tc_exec from=$gui->map_last_exec name="tcSet"}
       
@@ -373,6 +378,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         <a href="javascript:openTCaseWindow({$tc_exec.testcase_id},{$tc_exec.id})" title="{$labels.show_tcase_spec}">
         {$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape}::{$labels.version}: {$tc_exec.version}::{$tc_exec.name|escape}
         </a>
+        </td>
+        <td class="{$tlCfg->results.code_status[$tc_exec.status]}">
+        {$gui->execStatusValues[$tc_exec.status]}
         </td>
    			<td><select name="status[{$tcversion_id}]" id="status_{$tcversion_id}">
 				    {html_options options=$gui->execStatusValues}

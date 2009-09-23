@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.7 2008/12/31 15:06:00 franciscom Exp $
+$Id: inc_exec_controls.tpl,v 1.8 2009/09/23 08:20:30 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -13,7 +13,7 @@ Rev: 20080503 - franciscom - use of tlCfg
       {else}
         {assign var="radio_id_prefix" value="status"}
       {/if}
-      
+
   		<table class="invisible">
   		<tr>
   			<th rowspan="2" style="text-align: center;">
@@ -52,3 +52,6 @@ Rev: 20080503 - franciscom - use of tlCfg
     			</td>
     		</tr>
   		</table>
+      <div class="messages" style="align:center;">
+      {$labels.exec_not_run_result_note}
+      </div>

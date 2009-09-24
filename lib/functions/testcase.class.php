@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.194 2009/09/23 08:20:30 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.195 2009/09/24 07:25:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1342,13 +1342,13 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function get_by_id_bulk($id,$version_id=self::ALL_VERSIONS, $get_active=0, $get_open=0)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$where_clause="";
 		$where_clause_names="";
 		$tcid_list ="";
 		$tcversion_id_filter="";
 		$sql = "";
 		$the_names = null;
-	
 		if( is_array($id) )
 		{
 			$tcid_list = implode(",",$id);
@@ -1360,16 +1360,16 @@ class testcase extends tlObjectWithAttachments
 			$where_clause = " WHERE nodes_hierarchy.parent_id = {$id} ";
 			$where_clause_names = " WHERE nodes_hierarchy.id = {$id} ";
 		}
-	  if( $version_id != self::ALL_VERSIONS )
-	  {
-	      $tcversion_id_filter=" AND tcversions.id IN (" . implode(",",(array)$version_id) . ") ";
-	  }
+	  	if( $version_id != self::ALL_VERSIONS )
+	  	{
+	  	    $tcversion_id_filter=" AND tcversions.id IN (" . implode(",",(array)$version_id) . ") ";
+	  	}
 	
-		$sql = " SELECT nodes_hierarchy.parent_id AS testcase_id, ".
+		$sql = " /* $debugMsg */ SELECT nodes_hierarchy.parent_id AS testcase_id, ".
 		       " tcversions.*, users.first AS author_first_name, users.last AS author_last_name, " .
 		       " '' AS updater_first_name, '' AS updater_last_name " .
 		       " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
-		       " JOIN {$this->tables['tcversions']}  ON nodes_hierarchy.id = tcversions.id " .
+		       " JOIN {$this->tables['tcversions']} tcversions ON nodes_hierarchy.id = tcversions.id " .
 	           " LEFT OUTER JOIN {$this->tables['users']} users ON tcversions.author_id = users.id " .
 	           " {$where_clause} {$tcversion_id_filter} ORDER BY tcversions.version DESC";
 	  $recordset = $this->db->get_recordset($sql);
@@ -1377,28 +1377,30 @@ class testcase extends tlObjectWithAttachments
 	  if($recordset)
 	  {
 	  	 // get the names
-		   $sql = " SELECT nodes_hierarchy.id AS testcase_id, nodes_hierarchy.name
-		            FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy {$where_clause_names} ";
+		 $sql = " /* $debugMsg */ " . 
+		        " SELECT nodes_hierarchy.id AS testcase_id, nodes_hierarchy.name " .
+		        " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy {$where_clause_names} ";
 	
-		   $the_names = $this->db->get_recordset($sql);
+		 $the_names = $this->db->get_recordset($sql);
 	     if($the_names)
 	     {
 	    	  foreach ($recordset as  $the_key => $row )
 	    	  {
-	          reset($the_names);
-	          foreach($the_names as $row_n)
-	          {
-	          	  if( $row['testcase_id'] == $row_n['testcase_id'])
-	          	  {
-	          	    $recordset[$the_key]['name']= $row_n['name'];
-	          	    break;
-	          	  }
-	          }
+	          	reset($the_names);
+	          	foreach($the_names as $row_n)
+	          	{
+	          		  if( $row['testcase_id'] == $row_n['testcase_id'])
+	          		  {
+	          		    $recordset[$the_key]['name']= $row_n['name'];
+	          		    break;
+	          		  }
+	          	}
 	  	    }
 	  	 }
 	
 	
-		 $sql = " SELECT updater_id, users.first AS updater_first_name, users.last  AS updater_last_name " .
+		 $sql = " /* $debugMsg */ " . 
+		        " SELECT updater_id, users.first AS updater_first_name, users.last  AS updater_last_name " .
 		        " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
 		        " JOIN {$this->tables['tcversions']} tcversions ON nodes_hierarchy.id = tcversions.id " .
 	            " LEFT OUTER JOIN {$this->tables['users']} users ON tcversions.updater_id = users.id " .

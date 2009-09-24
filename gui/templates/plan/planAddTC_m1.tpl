@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.25 2009/08/24 07:37:41 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.26 2009/09/24 07:25:38 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev: 20090610 - franciscom - display date when test case version was linked to test plan
@@ -11,11 +11,11 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
 {lang_get var="labels" 
           s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
              th_id,th_test_case,version,execution_order,th_platform,
-             no_testcase_available,btn_save_custom_fields,
+             no_testcase_available,btn_save_custom_fields,send_mail_to_tester,
              has_been_executed,inactive_testcase,btn_save_exec_order,
              executed_can_not_be_removed,added_on_date,btn_save_platform,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
-             check_uncheck_all_checkboxes_for_rm'}
+             tester_assignment_on_add,check_uncheck_all_checkboxes_for_rm'}
 
 {assign var="show_write_custom_fields" value=0}
 {if $gui->full_control eq 1}
@@ -339,7 +339,17 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
   <hr />
 
 	<div class="groupBtn">   
-	    <input type="hidden" name="doAction" id="doAction" value="default" />
+  	{$labels.tester_assignment_on_add}  	
+  	<select name="testerID"  id="testerID">
+      		{html_options options=$gui->testers selected=$gui->testerID}
+   	</select>
+    {*  to be done *}
+		<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
+		{$labels.send_mail_to_tester}
+		</span>
+    
+    <br />
+    <input type="hidden" name="doAction" id="doAction" value="default" />
 		<input type="submit" name="doAddRemove" style="padding-right: 20px;"
                    onclick="doAction.value=this.name" value="{$buttonValue}" />
 		{if $gui->full_control eq 1}

@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.137 2009/09/22 08:01:36 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.138 2009/09/24 07:25:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20090923 - franciscom - link_tcversions() - will return data
  *  20090921 - franciscom - get_linked_tcversions() new options
  *  20090920 - franciscom - getStatusTotals(), will replace some result.class method
  *	20090920 - franciscom - getNotExecutedLinkedTCVersions()
@@ -443,6 +444,7 @@ class testplan extends tlObjectWithAttachments
 			   "(testplan_id,author_id,creation_ts,tcversion_id,platform_id) " . 
 			   " VALUES ({$id},{$userId},{$this->db->db_now()},";
 
+        $features=null;
 		foreach($items_to_link['items'] as $tcase_id => $items)
 		{
 			foreach($items as $platform_id => $tcversion)
@@ -451,6 +453,7 @@ class testplan extends tlObjectWithAttachments
 				$result = $this->db->exec_query($sql . "{$tcversion}, {$platform_id})");
 				if ($result)
 				{
+                    $features[$platform_id][$tcversion]=$this->db->insert_id($this->tables['testplan_tcversions']);					
 					if( isset($platformInfo[$platform_id]) )
 					{
 						$addInfo = ' - ' . $platformLabel . ':' . $platformInfo[$platform_id];
@@ -465,6 +468,7 @@ class testplan extends tlObjectWithAttachments
 				}	
 			}
 		}
+		return $features;
 	}
 
 

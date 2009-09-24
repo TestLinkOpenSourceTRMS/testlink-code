@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.41 2009/08/21 07:07:13 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.42 2009/09/24 07:26:59 franciscom Exp $ 
  * 
  * rev :
  *       20090807 - franciscom - new feature platforms
@@ -122,7 +122,7 @@ if(!is_null($args->doAction))
 		    {
             	if($ope_status)
             	{
-                send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
+                	send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
 		        }
 		    }
 		}	// if($args->send_mail)

@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.33 2009/08/18 06:48:37 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.34 2009/09/24 07:26:59 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -26,6 +26,7 @@ $args = init_args($tplan_mgr);
 $gui = initializeGui($db,$args,$tplan_mgr);
 $gui->additional_string = '';
 $gui->tree = buildTree($db,$gui,$args);
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.70 2009/09/22 08:01:37 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.71 2009/09/24 07:26:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090923 - franciscom - get_full_path_verbose() - fixed bug
  * 20090905 - franciscom - get_full_path_verbose() new options
  * 20090801 - franciscom - new method nodeNameExists()
  * 20090726 - franciscom - BUGID 2728 
@@ -755,8 +756,6 @@ class tree extends tlObject
 		    $this->_get_subtree($node_id,$the_subtree,$not_in_clause,
 		                        $exclude_children_of,$exclude_branches,$order_cfg);
 	    }
-	
-	  // new dBug($the_subtree);
 	  return $the_subtree;
 	}
 	
@@ -810,7 +809,6 @@ class tree extends tlObject
 			    
     
 	    }
-	    // new dBug($sql);
 	    $result = $this->db->exec_query($sql);
 	  
 	    if( $this->db->num_rows($result) == 0 )
@@ -991,9 +989,6 @@ class tree extends tlObject
 	function get_full_path_verbose(&$items,$options=null)
 	{
     	$debugMsg='Class:' .__CLASS__ . ' - Method:' . __FUNCTION__ . ' :: ';
-        // echo "DEBUG - $debugMsg";
-        // new dBug($items);
-        
 	    $goto_root=null;
 	    $path_to=null;
 	    $all_nodes=array();
@@ -1032,6 +1027,7 @@ class tree extends tlObject
 	    {
 	    	$path_to=null;
 	    } 
+        
         if( !is_null($path_to) )
         {
         	switch ($output_format)
@@ -1041,7 +1037,11 @@ class tree extends tlObject
         		
         		case 'simple':	
         		default:
+        		$keySet = array_keys($path_to);
+        		foreach($keySet as $key)
+        		{
         			$path_to[$key] = $path_to[$key]['name'];
+        		}
         		break;
         	}	
         }

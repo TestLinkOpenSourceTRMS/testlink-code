@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.1 2009/08/28 20:37:03 schlundus Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.2 2009/09/24 07:26:59 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -777,12 +777,15 @@ class tlUser extends tlDBObject
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$users = null;
-		for($i = 0;$i < sizeof($ids);$i++)
+        $loop2do = sizeof($ids);
+		for($i = 0;$i < $loop2do ;$i++)
 		{
 			$id = $ids[$i];
 			$user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 			if ($user)
+			{
 				$users[$id] = $user;
+			}	
 		}
 		return $users ? $users : null;
 	}

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/09/05 18:19:07 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/09/28 08:44:20 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -46,7 +46,8 @@ $gui->pieceSep = config_get('gui_title_separator_1');
 $req_spec_mgr = new requirement_spec_mgr($db); 
 
 //get list of available Req Specification
-$gui->reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tproject_id);
+// $gui->reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tproject_id);
+$gui->reqSpecSet = $tproject_mgr->genComboReqSpec($args->tproject_id);
 
 //set the first ReqSpec if not defined via request
 if (!$args->req_spec_id && count($gui->reqSpecSet))

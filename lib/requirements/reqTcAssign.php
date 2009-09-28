@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/07/09 10:25:30 $  $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/09/28 08:43:22 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -61,7 +61,6 @@ if(!is_null($pfn))
 {
     $gui = doSingleTestCaseOperation($db,$args,$gui,$pfn);
 }
-
 
 switch($args->edit)
 {
@@ -148,8 +147,7 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
     $tsuite_info = $tproject_mgr->tree_manager->get_node_hierachy_info($guiObj->tsuite_id);
     $guiObj->pageTitle = lang_get('test_suite') . config_get('gui_title_separator_1') . $tsuite_info['name'];
      
-    $get_not_empty = 1;
-	$guiObj->req_specs = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,$get_not_empty);
+	$guiObj->req_specs = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);
     $guiObj->selectedReqSpec = $argsObj->idReqSpec;
     $guiObj->tcase_number = 0;
     $guiObj->has_req_spec = false;
@@ -217,11 +215,16 @@ function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn)
 	return $guiObj;
 } 
 
+/**
+ * processTestCase
+ *
+ */
 function processTestCase(&$dbHandler,&$argsObj,&$guiObj)
 {
-	$get_not_empty = 1;
    	$tproject_mgr = new testproject($dbHandler);
-	$guiObj->arrReqSpec = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,$get_not_empty);
+	// $guiObj->arrReqSpec = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);
+    
+    $guiObj->arrReqSpec = $tproject_mgr->genComboReqSpec($argsObj->tproject_id);
 	$SRS_qty = count($guiObj->arrReqSpec);
   
 	if($SRS_qty > 0)

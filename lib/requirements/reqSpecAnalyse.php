@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecAnalyse.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2008/12/16 20:11:53 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/09/28 08:43:22 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Analyse coverage of a req. specification.
@@ -28,7 +28,10 @@ $tcprefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . $tcasecfg->glu
 
 // get list of ReqSpec
 $ns = new stdClass();
-$ns->reqSpec = $tproject_mgr->getOptionReqSpec($args->tprojectID);
+// $ns->reqSpec = $tproject_mgr->getOptionReqSpec($args->tprojectID);
+$ns->reqSpec = $tproject_mgr->genComboReqSpec($args->tprojectID);
+
+
 
 //get first ReqSpec if not defined
 if($args->reqSpecID == 0 && count($ns->reqSpec))

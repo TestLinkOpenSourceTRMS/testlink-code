@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: uncoveredTestCases.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/09/05 18:19:07 $ by $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/09/28 08:44:20 $ by $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list test cases that has no requirement assigned
@@ -26,7 +26,8 @@ $args = init_args();
 $tproject_mgr = new testproject($db);
 
 // get list of available Req Specification
-$reqSpec = $tproject_mgr->getOptionReqSpec($args->tproject_id);
+// $reqSpec = $tproject_mgr->getOptionReqSpec($args->tproject_id);
+$reqSpec = $tproject_mgr->genComboReqSpec($args->tproject_id);
 $uncovered = null;
 $gui = new stdClass();
 $gui->items = null;

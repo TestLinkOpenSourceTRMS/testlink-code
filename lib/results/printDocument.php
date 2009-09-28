@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/09/16 19:53:01 $ by $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/09/28 08:44:20 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -85,12 +85,21 @@ switch ($doc_info->type)
 		die ('printDocument.php> Invalid document type $_REQUEST["type"] = '.$doc_info->type);
 }
 
-$test_spec = $tree_manager->get_subtree($args->itemID,
-				array('testplan'=>'exclude me', 'requirement_spec'=>'exclude me', 
-					'requirement'=>'exclude me'),
-				array('testcase'=>'exclude my children', 
-					'requirement_spec'=> 'exclude my children'),
-				null, null, RECURSIVE_MODE, $order_cfg);
+$my['options']=array('recursive' => true, 'order_cfg' => $order_cfg );
+$my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me', 
+                                                      'requirement_spec'=>'exclude me', 
+					                                  'requirement'=>'exclude me'),
+                       'exclude_children_of' => array('testcase'=>'exclude my children',
+                                                      'requirement_spec'=> 'exclude my children'));      
+
+// $test_spec = $tree_manager->get_subtree($args->itemID,
+// 				array('testplan'=>'exclude me', 'requirement_spec'=>'exclude me', 
+// 					'requirement'=>'exclude me'),
+// 				array('testcase'=>'exclude my children','requirement_spec'=> 'exclude my children'),
+// 				null, null, RECURSIVE_MODE, $order_cfg);
+$test_spec = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
+
+
 $tproject_info = $tproject->get_by_id($args->tproject_id);
 $doc_info->tproject_name = htmlspecialchars($tproject_info['name']);
 $doc_info->tproject_scope = $tproject_info['notes'];

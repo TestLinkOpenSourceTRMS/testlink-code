@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.147 2009/09/21 09:29:56 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.148 2009/09/28 08:45:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -311,6 +311,8 @@ class results extends tlObjectWithDB
 			                                                 $owner, $startTime, $endTime, $executor,
 			                                                 $search_notes_string, $linkExecutionBuild,
 			                                                 $all_results);
+            
+            new dBug($this->executionsMap);
             
 			$this->createMapOfLastResult($this->suiteStructure, $this->executionsMap, $lastResult);
 			$this->aggregateKeywordResults = $this->tallyKeywordResults($this->mapOfLastResultByKeyword, $keywords_in_tplan);
@@ -1192,6 +1194,8 @@ class results extends tlObjectWithDB
 		
 		// map for adding SuiteName directly to every TC
 		$allSuites = $this->getAllSuites();
+		
+		new dBug($allSuites);
 		
 		// for execution link
 		$canExecute = has_rights($this->db,"tp_execute");

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.102 2009/08/28 20:37:03 schlundus Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.103 2009/09/28 08:45:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -221,10 +221,12 @@ function resetPassword(&$db,$userID,&$errorMsg)
 			{
 				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');
 				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,
-		                           lang_get('mail_passwd_subject'), $msgBody);
+		                               lang_get('mail_passwd_subject'), $msgBody);
 
 				if ($mail_op->status_ok)
+				{
 					$result = $user->writeToDB($db);
+				}
 				else
 				{
 					$result = tl::ERROR;
@@ -234,8 +236,9 @@ function resetPassword(&$db,$userID,&$errorMsg)
 		}
 	}
 	if ($errorMsg != "")
+	{
 		$errorMsg = getUserErrorMessage($result);
-
+    }
 	return $result;
 }
 

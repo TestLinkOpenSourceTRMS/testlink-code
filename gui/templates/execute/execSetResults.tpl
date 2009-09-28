@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.46 2009/09/23 08:20:30 franciscom Exp $
+$Id: execSetResults.tpl,v 1.47 2009/09/28 08:41:52 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090901 - franciscom - preconditions
@@ -348,9 +348,11 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{/if}
 
   {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op }
+      {* this message will be displate dby inc_exec_controls.tpl 
       <div class="messages" style="align:center;">
       {$labels.exec_not_run_result_note}
       </div>
+      *}
       <div>
       <br />
  	    <table class="mainTable-x" width="100%">

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.71 2009/09/24 07:26:59 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.72 2009/09/28 08:45:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090926 - franciscom - get_subtree() - interface changes
  * 20090923 - franciscom - get_full_path_verbose() - fixed bug
  * 20090905 - franciscom - get_full_path_verbose() new options
  * 20090801 - franciscom - new method nodeNameExists()
@@ -648,6 +649,8 @@ class tree extends tlObject
 	            
 	
 	  args :
+			[filters] map with following keys	
+	
 	        [exclude_node_types]: map/hash. 
 	                              default: null -> no exclusion filter will be applied.
 	                              Branches starting with nodes of type detailed, will not be
@@ -689,7 +692,9 @@ class tree extends tlObject
 	        [and_not_in_clause]: sql filter to include in sql sentence used to retrieve nodes.
 	                             default: null -> no action taken.
 	                              
-	        [bRecursive]: changes structure of returned structure.
+	        [options]: map with following keys
+	                              
+	        [recursive]: changes structure of returned structure.
 	                      default: false -> a flat array will be generated
 	                               true  -> a map with recursive structure will be generated.
 	                      
@@ -727,34 +732,48 @@ class tree extends tlObject
 	       added key_type arguments, useful only fo recursive mode
 	
 	*/
-	function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null,
-	                              $exclude_branches=null,$and_not_in_clause='',
-	                              $bRecursive = false,
-	                              $order_cfg=array("type" =>'spec_order'),$key_type='std')
+	// function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null,
+	//                               $exclude_branches=null,$and_not_in_clause='',
+	//                               $bRecursive = false,
+	//                               $order_cfg=array("type" =>'spec_order'),$key_type='std')
+	function get_subtree($node_id,$filters=null,$options=null)
 	{
+        $my['filters'] = array('exclude_node_types' => null, 'exclude_children_of' => null,
+	                           'exclude_branches' => null,'and_not_in_clause' => '');
+                               
+        $my['options'] = array('recursive' => false, 'order_cfg' => array("type" =>'spec_order'),
+	                           'key_type' => 'std');
+	
+		// Cast to array to handle $options = null
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+		$my['options'] = array_merge($my['options'], (array)$options);
+		
 		$the_subtree = array();
 	 		
 		// Generate NOT IN CLAUSE to exclude some node types
-	 	$not_in_clause = '';
-	 	if(!is_null($exclude_node_types))
+	 	$not_in_clause = $my['filters']['and_not_in_clause'];
+	 	if(!is_null($my['filters']['exclude_node_types']))
 	  	{
 	  		$exclude = array();
-			foreach($exclude_node_types as $the_key => $elem)
+			foreach($my['filters']['exclude_node_types'] as $the_key => $elem)
 	    	{
 	      		$exclude[] = $this->node_descr_id[$the_key];
 	    	}
-	    	$not_in_clause = " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
+	    	$not_in_clause .= " AND node_type_id NOT IN (" . implode(",",$exclude) . ")";
 	  	}
-	    if ($bRecursive)
+
+	    if ($my['options']['recursive'])
 	    {
 		    $this->_get_subtree_rec($node_id,$the_subtree,$not_in_clause,
-		                            $exclude_children_of,$exclude_branches,
-		                            $order_cfg,$key_type);
+		                            $my['filters']['exclude_children_of'],
+		                            $my['filters']['exclude_branches'],
+		                            $my['options']['order_cfg'],$my['options']['key_type']);
 		}
 		else
 		{
 		    $this->_get_subtree($node_id,$the_subtree,$not_in_clause,
-		                        $exclude_children_of,$exclude_branches,$order_cfg);
+		                        $my['filters']['exclude_children_of'],
+		                        $my['filters']['exclude_branches'],$my['options']['order_cfg']);
 	    }
 	  return $the_subtree;
 	}
@@ -779,7 +798,7 @@ class tree extends tlObject
 	        case 'spec_order':
 	  	    $sql = " SELECT * from {$this->object_table} " .
 	  	           " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
-			           " ORDER BY node_order,id";
+			       " ORDER BY node_order,id";
 			    break;
 			    
 			case 'exec_order':
@@ -845,10 +864,8 @@ class tree extends tlObject
 	              !isset($exclude_branches[$row['id']])
 	            )
 	          {
-	        	  $this->_get_subtree($row['id'],$node_list,
-	        	                                 $and_not_in_clause,
-	        	                                 $exclude_children_of,
-	        	                                 $exclude_branches,$order_cfg);	
+	        	  $this->_get_subtree($row['id'],$node_list,$and_not_in_clause,
+	        	                      $exclude_children_of,$exclude_branches,$order_cfg);	
 	         	  
 	        	}
 	    	}
@@ -859,10 +876,8 @@ class tree extends tlObject
 	// 20061008 - franciscom - added ID in order by clause
 	// 
 	function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
-	                          $exclude_children_of = null,
-	                          $exclude_branches = null,
-	                          $order_cfg = array("type" =>'spec_order'),
-	                          $key_type = 'std')
+	                          $exclude_children_of = null,$exclude_branches = null,
+	                          $order_cfg = array("type" =>'spec_order'),$key_type = 'std')
 	{
 		static $s_testCaseNodeTypeID;
 		if (!$s_testCaseNodeTypeID)
@@ -967,10 +982,8 @@ class tree extends tlObject
 		        if(!isset($exclude_children_of[$nodeType]) && 
 		           !isset($exclude_branches[$rowID]))
 		  			{
-		  				$this->_get_subtree_rec($rowID,$node,
-		                                  $and_not_in_clause,
-		                                  $exclude_children_of,
-		                                  $exclude_branches,
+		  				$this->_get_subtree_rec($rowID,$node,$and_not_in_clause,
+		                                  $exclude_children_of,$exclude_branches,
 		                                  $order_cfg,$key_type);	
 		        	}
 	  			$pnode[$children_key][] = $node;
@@ -1141,10 +1154,9 @@ class tree extends tlObject
 		}
 		
 		$sql = " SELECT NH.* FROM {$this->object_table} NH " .
-			" WHERE NH.parent_id = {$node_id} {$and_not_in_clause} ";
+			   " WHERE NH.parent_id = {$node_id} {$and_not_in_clause} ";
 		
 		$rs = $this->db->get_recordset($sql);
-		
 		if( !is_null($rs) )
 		{
 			foreach($rs as $row)
@@ -1164,7 +1176,7 @@ class tree extends tlObject
 					if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
 					{
 						$this->delete_subtree_objects($rowID,$and_not_in_clause,
-							$exclude_children_of,$exclude_branches);
+							                          $exclude_children_of,$exclude_branches);
 					}
 					else
 					{

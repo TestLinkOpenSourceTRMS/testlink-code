@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.112 $
- * @modified $Date: 2009/09/21 09:30:28 $  by $Author: franciscom $
+ * @version $Revision: 1.113 $
+ * @modified $Date: 2009/09/28 08:43:45 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -323,13 +323,6 @@ else if($args->move_copy_tc)
 	$tproject_id = $tcase_mgr->get_testproject($args->tcase_id);
 	$the_tc_node = $tree_mgr->get_node_hierachy_info($args->tcase_id);
 	$tc_parent_id = $the_tc_node['parent_id'];
-
-	// 20080105 - franciscom - seems to be useless
-	// 20071111 - franciscom
-	// $the_tree = $tree_mgr->get_subtree($tproject_id, array("testplan"=>"exclude me",
-	//                                                        "requirement_spec"=>"exclude me",
-	//                                                        "requirement"=>"exclude me",
-	//                                                        "testcase"=>"exclude me"));
 	$the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
 
 	$the_xx[$the_tc_node['parent_id']] .= ' (' . lang_get('current') . ')';

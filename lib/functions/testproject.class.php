@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.129 2009/08/24 19:18:45 schlundus Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.130 2009/09/28 08:45:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -500,17 +500,18 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
                      $exclude_branches=null, $and_not_in_clause='')
 {
   
-  $exclude_node_types=$this->nt2exclude;
-  if($exclude_testcases)
-  {
-    $exclude_node_types['testcase']='exclude me';
-  }
-	$subtree = $this->tree_manager->get_subtree($id,$exclude_node_types,
-	                                                $this->nt2exclude_children,
-	                                                $exclude_branches,
-	                                                $and_not_in_clause,
-	                                                $recursive_mode);
-  return $subtree;
+  	$my['options']=array('recursive' => $recursive_mode);
+ 	$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
+ 	                       'exclude_children_of' => $this->nt2exclude_children,
+ 	                       'exclude_branches' => $exclude_branches,
+ 	                       'and_not_in_clause' => $and_not_in_clause);      
+ 
+  	if($exclude_testcases)
+  	{
+  	  $my['filters']['testcase']='exclude me';
+  	}
+	$subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
+	return $subtree;
 }
 
 
@@ -1086,15 +1087,16 @@ function setPublicStatus($id,$status)
 	function genComboReqSpec($id,$mode='dotted')
 	{
 		$ret = array();
-    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
-	                            'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+    	$exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
+	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
 
-	  $subtree = $this->tree_manager->get_subtree($id,$exclude_node_types,null,null,null,false);
+ 		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
+
+	  	$subtree = $this->tree_manager->get_subtree($id,$my['filters']);
  		if(count($subtree))
 		{
 		  $ret = $this->_createHierarchyMap($subtree);
-    }
-
+        }
 		return $ret;
 	}
 

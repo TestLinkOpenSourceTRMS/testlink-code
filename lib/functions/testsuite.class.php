@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.71 2009/09/07 06:51:12 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.72 2009/09/28 08:45:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -580,24 +580,21 @@ class testsuite extends tlObjectWithAttachments
            20090821 - franciscom - BUGID 0002781
 	       20070324 - BUGID 710
 	*/
-	function copy_to($id, $parent_id, $user_id,
-	                 $check_duplicate_name = 0,
-					         $action_on_duplicate_name = 'allow_repeat',
-					         $copyKeywords = 0 )
+	function copy_to($id, $parent_id, $user_id,$check_duplicate_name = 0,
+			         $action_on_duplicate_name = 'allow_repeat',$copyKeywords = 0 )
 	{
     	$copyOptions = array('keyword_assignments' => $copyKeywords);
-	  	$exclude_children_of=array('testcase' => 'exclude my children');
 		$tcase_mgr = new testcase($this->db);
-		
 		$tsuite_info = $this->get_by_id($id);
 		$op = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
 		                    $tsuite_info['node_order'],$check_duplicate_name,$action_on_duplicate_name);
 		
-		
 		$new_tsuite_id = $op['id'];
 	  	$tcase_mgr->copy_attachments($id,$new_tsuite_id);
 		
-		$subtree = $this->tree_manager->get_subtree($id,self::NODE_TYPE_FILTER_OFF,$exclude_children_of);
+		
+ 		$my['filters'] = array('exclude_children_of' => array('testcase' => 'exclude my children'));
+		$subtree = $this->tree_manager->get_subtree($id,$my['filters']);
 		if (!is_null($subtree))
 		{
 		  
@@ -643,15 +640,12 @@ class testsuite extends tlObjectWithAttachments
 	*/
 	function get_subtree($id,$recursive_mode=false)
 	{
-	  $exclude_branches=null; 
-	  $and_not_in_clause='';
+	    $my['options']=array('recursive' => $recursive_mode);
+ 		$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
+ 	                           'exclude_children_of' => $this->nt2exclude_children);
 	  
-		$subtree = $this->tree_manager->get_subtree($id,$this->nt2exclude,
-		                                                $this->nt2exclude_children,
-		                                                $exclude_branches,
-		                                                $and_not_in_clause,
-		                                                $recursive_mode);
-	  return $subtree;
+		$subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
+	  	return $subtree;
 	}
 	
 	

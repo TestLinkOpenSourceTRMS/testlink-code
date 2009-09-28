@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.195 2009/09/24 07:25:38 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.196 2009/09/28 08:44:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20090927 - franciscom - new methods: getPathLayered(),getPathTopSuite()
  * 20090922 - franciscom - get_last_execution() - used COALESCE() to return code
  *                                                also code for NOT RUN status.
  * 20090831 - franciscom - added management of new field: preconditions
@@ -3548,6 +3549,74 @@ class testcase extends tlObjectWithAttachments
 		return $ret;
     }
 	
-} // end class
+	
+	/**
+	 * given a set of test cases, will return a map with 
+	 * test suites name that form test case path to root test suite.
+	 *
+	 *                  example:
+	 *
+	 *                  communication devices [ID 4]
+	 *                      |__ Subspace channels [ID 20]
+	 *                             |
+	 *                             |__ TestCase100
+	 *                             |  
+	 *                             |__ short range devices [ID 21]
+	 *	                                    |__ TestCase1
+	 *                                      |__ TestCase2
+     *
+     * if test case set: TestCase100,TestCase1
+     *
+     *   4  Communications
+     *  20 	Communications/Subspace channels
+     *  21 	Communications/Subspace channels/short range devices
+     *                
+     *                
+	 * returns map with key: test suite id
+	 *                  value: test suite path to root
+	 *
+	 *
+	 */
+	function getPathLayered($tcaseSet)
+	{
+		$xtmas=null;
+		foreach($tcaseSet as $item)
+    	{
+			$path_info = $this->tree_manager->get_path($item); 
+    		$testcase = end($path_info);
+    		if( !isset($xtmas[$testcase['parent_id']]) )
+    		{
+				foreach($path_info as $elem)
+				{
+					$prefix = isset($xtmas[$elem['parent_id']]) ? ($xtmas[$elem['parent_id']] . '/') : '';
+					if( $elem['node_table'] == 'testsuites' )
+					{
+						$xtmas[$elem['id']] = $prefix . $elem['name'];
+					}	
+				}
+			}
+		}	
+		return $xtmas;
+	} // getPathLayered($tcaseSet)
 
+
+
+    /**
+	 * 
+ 	 *
+ 	 */
+	function getPathTopSuite($tcaseSet)
+	{
+		$xtmas=null;
+		foreach($tcaseSet as $item)
+    	{
+			$path_info = $this->tree_manager->get_path($item); 
+    		$top = current($path_info);
+    		$xtmas[$item] = array( 'name' => $top['name'], 'id' => $top['id']);
+		}	
+		return $xtmas;
+	} // getPathTopSuite($tcaseSet)
+
+	
+} // end class
 ?>

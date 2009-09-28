@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: tcSearchForm.php,v 1.1 2009/09/11 20:35:10 schlundus Exp $
+ * $Id: tcSearchForm.php,v 1.2 2009/09/28 08:43:45 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev: 20090228 - franciscom - improvement on management of test case prefix
@@ -26,7 +26,8 @@ $gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args-
                                                                              $no_filters,'testcase');
 
 $gui->keywords = $tproject_mgr->getKeywords($args->tprojectID);
-$reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tprojectID,testproject::GET_NOT_EMPTY_REQSPEC);
+// $reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tprojectID,testproject::GET_NOT_EMPTY_REQSPEC);
+$reqSpecSet = $tproject_mgr->genComboReqSpec($args->tprojectID);
 
 $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
 $gui->filter_by['keyword'] = !is_null($gui->keywords);

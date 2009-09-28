@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reassign_tc_id.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/01/26 19:52:04 $  $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/09/28 08:46:21 $  $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
  * utility to align Test Case External ID to Test Case INTERNAL ID
@@ -19,14 +19,18 @@ $tproject_mgr = new testproject($db);
 
 $testProjects = $tproject_mgr->get_all();
 
-$exclude_node_types=array('testplan' => 1,'requirement_spec' => 1 );
-$exclude_children=array('testcase' =>1);
+// $exclude_node_types=array('testplan' => 1,'requirement_spec' => 1 );
+// $exclude_children=array('testcase' =>1);
+
+$my['filters']=array('exclude_node_types' => array('testplan' => 1,'requirement_spec' => 1),
+                     'exclude_children' => array('testcase' =>1) );
                           
 foreach( $testProjects as $item )
 {
     $tproject_id=$item['id'];
-  	$elements = $tproject_mgr->tree_manager->get_subtree($tproject_id,$exclude_node_types,
-	                                                       $exclude_children,null,null,null);
+  	// $elements = $tproject_mgr->tree_manager->get_subtree($tproject_id,$exclude_node_types,
+	//                                                        $exclude_children,null,null,null);
+  	$elements = $tproject_mgr->tree_manager->get_subtree($tproject_id,$my['filters']);,
     $tcaseSet=null;
     foreach($elements as $elem)
     {

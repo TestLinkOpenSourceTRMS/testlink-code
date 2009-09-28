@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlRole.class.php,v 1.2 2009/08/26 20:01:11 schlundus Exp $
+ * @version    	CVS: $Id: tlRole.class.php,v 1.3 2009/09/28 08:45:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -24,14 +24,15 @@
 class tlRole extends tlDBObject
 {
 	/**
-	 * @var string the name of the role
+	 * @var string role name
 	 */
 	public $name;
-	/**
-	 * @var string a description for the role
-	 */
 	
+	/**
+	 * @var string role description 
+	 */
 	public $description;
+
 	/**
 	 * @var array the tlRights of the role
 	 */
@@ -42,6 +43,7 @@ class tlRole extends tlDBObject
 	 * @var string the name of the database table a role is store to
 	 */
 	protected $object_table;
+	
 	/**
 	 * @var integer the replacement roleID, if assigned roles get deleted
 	 */

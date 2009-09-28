@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.111 2009/09/22 08:01:37 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.112 2009/09/28 08:45:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -100,7 +100,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$bForPri
 	
 	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,testproject::RECURSIVE_MODE,
-		testproject::INCLUDE_TESTCASES,$exclude_branches);
+		                                    testproject::INCLUDE_TESTCASES,$exclude_branches);
 	
 	// Added root node for test specification -> testproject
 	$test_spec['name'] = $tproject_name;
@@ -595,11 +595,17 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$nt2exclude_children = array('testcase' => 'exclude_my_children',
 		                         'requirement_spec'=> 'exclude_my_children');
 	
-	$order_cfg = array("type" =>'exec_order',"tplan_id" => $tplan_id);
-    $test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
-		                                    null,'',RECURSIVE_MODE,$order_cfg);
+  	$my['options']=array('recursive' => true,
+  	                     'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id));
+ 	$my['filters'] = array('exclude_node_types' => $nt2exclude,
+ 	                       'exclude_children_of' => $nt2exclude_children);
 	
-
+	// $order_cfg = array("type" =>'exec_order',"tplan_id" => $tplan_id);
+    // $test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
+	// 	                                    null,'',RECURSIVE_MODE,$order_cfg);
+	// 
+    $test_spec = $tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
+     
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
 	$test_spec['id'] = $tproject_id;
 	$test_spec['node_type_id'] = $hash_descr_id['testproject'];

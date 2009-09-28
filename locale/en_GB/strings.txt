@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.479 2009/09/23 08:19:35 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.480 2009/09/28 08:42:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -251,6 +251,8 @@ $TLS_user_name_exists = "Login/User name is already in use, please select anothe
 $TLS_valid_user_name_format = "Login/User name can only contain letters, numbers, spaces, hyphens and underscores.";
 $TLS_warning_empty_pwd = "Your password should not be empty!";
 $TLS_your_info_please = "Enter Your User Information";
+$TLS_new_account = "TestLink - New Account Created";
+
 
 
 // ----- archiveData.php -----

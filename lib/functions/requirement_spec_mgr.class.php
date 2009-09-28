@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2009/09/05 18:19:07 $ by $Author: schlundus $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2009/09/28 08:45:46 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -772,11 +772,9 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
  */
 function getReqTree($id)
 {
-    // function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null,
-    //                           $exclude_branches=null,$and_not_in_clause='',
-    //                           $bRecursive = false,
-    //                           $order_cfg=array("type" =>'spec_order'),$key_type='std')
-    $map = $this->tree_mgr->get_subtree($id,null,null,null,'',true);
+    $filters=null;
+    $opetions=array('recursive' => true);
+    $map = $this->tree_mgr->get_subtree($id,$filters,$options);
     return $map;  
 }
 

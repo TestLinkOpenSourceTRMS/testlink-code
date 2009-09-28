@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.41 2009/09/14 13:23:32 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.42 2009/09/28 08:44:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -248,7 +248,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	}
 	
 	// Collect information related to linked testcase versions
-	if(!is_null($out[0]) && count($a_tcid))
+	if(!is_null($out) && count($out) > 0 && !is_null($out[0]) && count($a_tcid))
 	{
 		$tcaseSet = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS);
 		$result = addLinkedVersionsInfo($tcaseSet,$a_tsuite_idx,$out,$linked_items);

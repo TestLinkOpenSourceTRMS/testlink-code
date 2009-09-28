@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.138 2009/09/24 07:25:38 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.139 2009/09/28 08:44:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -536,17 +536,23 @@ class testplan extends tlObjectWithAttachments
          	          default: map -> map indexed by test case id (original return type)
          	                          Using this option is (in a certain way) as having
          	                          added DISTINCT on SQL clause.
+         	                          YOU WILL GET ONLY LAST EXECUTION (means one record)
+         	                          of each test case.
          	                          
+         	                   mapOfMap: first key testcase_id, second key platform_id               
+         	                            You GET ONLY LAST EXECUTION (means one record)
+         	                            of each test case.
+
          	                   mapOfArray -> indexed by test case id but with an array
          	                                 where each element contains information
          	                                 according to Platform.
          	                                 Be carefull if you have multiple executions
-         	                                 for same (testcase,platform) you will get
-         	                                 multiple elements in array
+         	                                 for same (testcase,platform) YOU WILL GET
+         	                                 MULTIPLE ELEMENTS IN ARRAY
          	                                 
-         	                  array -> indexed sequentially 
+         	                  array -> indexed sequentially. 
          	                  
-         	                  mapOfMap: first key testcase_id, second key platform_id               
+         	                            
          	          
          	[only_executed]: default false => get executed and NOT executed
          	                                  get only executed tcversions
@@ -2565,6 +2571,23 @@ class testplan extends tlObjectWithAttachments
 		}
         return $totals;
     }
+
+
+	public function getStatusForReports()
+	{
+    	// This will be used to create dynamically counters if user add new status
+		$resultsCfg = config_get('results');
+    	foreach( $resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
+    	{
+        	$code_verbose[$resultsCfg['status_code'][$tc_status_verbose]] = $tc_status_verbose;
+    	}
+    	if( !isset($resultsCfg['status_label_for_exec_ui']['not_run']) )
+    	{
+        	$code_verbose[$resultsCfg['status_code']['not_run']] = 'not_run';  
+    	}
+    	return $code_verbose;
+   }
+
 
 } // end class testplan
 

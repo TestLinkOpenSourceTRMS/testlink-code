@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/06/06 17:50:11 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/09/28 08:40:21 $ $Author: franciscom $
  *
 **/
 require_once('config.inc.php');
@@ -72,7 +72,6 @@ function init_args()
 	$iParams = array("login" => array(tlInputParameter::STRING_N,0,30));
 	
 	$args = new stdClass();
-	// $pParams = P_PARAMS($iParams,$args); // WHY TO ASSIGN A VALUE THAT IS NEVER USED ?????
     P_PARAMS($iParams,$args);
 	return $args;
 }

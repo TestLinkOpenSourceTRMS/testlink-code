@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.258 2009/09/21 09:27:53 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.259 2009/09/28 08:40:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20090926 - franciscom - new default for $tlCfg->req_cfg->child_requirements_mgmt
  *  20090912 - franciscom - BUGID 2796 - contribution reportsCfg->start_time
  *  20090901 - franciscom - new option exec_cfg->steps_results_layout
  *  20090823 - franciscom - new option custom_field_max_length
@@ -749,7 +750,7 @@ $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from 
 
 // ENABLED: allow N level depth tree 
 // DISABLED: just one level
-$tlCfg->req_cfg->child_requirements_mgmt = DISABLED;
+$tlCfg->req_cfg->child_requirements_mgmt = ENABLED;
 
 // 20090111 - franciscom
 // Order of test cases status in this array, is used to undestand

@@ -3,16 +3,24 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: firstLogin.php,v $
+ * @package 	TestLink
+ * @copyright 	2004-2009, TestLink community 
+ * @version    	CVS: $Id: firstLogin.php,v 1.34 2009/09/28 08:40:21 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/06/06 17:50:10 $ $Author: franciscom $
- *
+ * @internal Revisions:
+ * 
+ *	20090927 - franciscom - added feature: 
+ *                          send mail notification to users with administrator role, 
+ *                          when user creates her/his acccount.
+ * 
  */
 require_once('config.inc.php');
 require_once('common.php');
 require_once('users.inc.php');
+require_once('email_api.php');
 
+$templateCfg = templateConfiguration();
 if (!config_get('user_self_signup'))
 {
 	$smarty = new TLSmarty();
@@ -24,7 +32,6 @@ if (!config_get('user_self_signup'))
 	exit();
 }
 $args = init_args();
-
 doDBConnect($db);
 
 $message = lang_get('your_info_please');
@@ -48,6 +55,7 @@ if($args->doEditUser)
 		}
 		if ($result >= tl::OK)
 		{
+			mail2admins($db,$user);
 			logAuditEvent(TLS("audit_users_self_signup",$args->login),"CREATE",$user->dbID,"users");
 			redirect(TL_BASE_HREF . "login.php?note=first");
 			exit();
@@ -60,18 +68,19 @@ if($args->doEditUser)
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('external_password_mgmt',tlUser::isPasswordMgtExternal());
-$smarty->assign('login', $args->login);
-$smarty->assign('firstName', $args->first);
-$smarty->assign('lastName', $args->last);
-$smarty->assign('email', $args->email);
-$smarty->assign('message',$message);
-$smarty->display('loginFirst.tpl');
+$gui = $args;
+$gui->external_password_mgmt = tlUser::isPasswordMgtExternal();
+$gui->message = $message;
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->default_template);
 
 
+/**
+ * get input from user and return it in some sort of namespace
+ *
+ */
 function init_args()
 {
-    //@TODO   REMOVE ALL MAGIC NUMBERS => NOT COMPLIANT WITH DEVELOPMENT STANDARDS
 	$iParams = array("doEditUser" => array(tlInputParameter::STRING_N,0,1),
 		             "login" => array(tlInputParameter::STRING_N,0,30),
 		             "password" => array(tlInputParameter::STRING_N,0,32),
@@ -81,8 +90,34 @@ function init_args()
 		             "email" => array(tlInputParameter::STRING_N,0,100),
 	);
 	$args = new stdClass();
-	$pParams = P_PARAMS($iParams,$args);
-	
+	P_PARAMS($iParams,$args);
 	return $args;
+}
+
+/**
+ * send mail to administrators to warn about new user created
+ *
+ */
+function mail2admins(&$dbHandler,&$userObj)
+{
+	// Get email addresses for all users that have default role = administrator
+	$roleMgr = new tlRole(TL_ROLES_ADMIN);
+	$userSet = $roleMgr->getAllUsersWithRole($dbHandler);
+	$mail['subject'] = lang_get('new_account');
+	$key2loop = array_keys($userSet);
+	foreach($key2loop as $userID)
+	{
+		$mail['to'][$userID] = $userSet[$userID]->emailAddress;	
+    }
+    // email_api uses ',' as list separator
+    $mail['to'] = implode(',',$mail['to']);
+    
+    $mail['body'] = lang_get('new_account') . "\n";
+    $mail['body'] .= " user:$userObj->login\n"; 
+    $mail['body'] .= " first name:$userObj->firstName surname:$userObj->lastName\n";
+    $mail['body'] .= " email:{$userObj->emailAddress}\n";
+    
+    // silence errors
+	@email_send(config_get('from_email'), $mail['to'], $mail['subject'], $mail['body']);
 }
 ?>

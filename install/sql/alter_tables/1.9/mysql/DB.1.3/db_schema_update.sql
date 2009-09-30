@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.6 2009/09/21 09:27:53 franciscom Exp $
+ * $Id: db_schema_update.sql,v 1.7 2009/09/30 17:45:32 franciscom Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -22,6 +22,25 @@
  *  testprojects new fiels is_public
  *  testplans new fiels is_public
  */
+
+/* New Tables */
+CREATE TABLE /*prefix*/platforms (
+  id INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  testproject_id INTEGER UNSIGNED NOT NULL,
+  notes text NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY /*prefix*/idx_platforms (testproject_id,name)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/testplan_platforms (
+  id int(10) unsigned NOT NULL auto_increment,
+  testplan_id int(10) unsigned NOT NULL,
+  platform_id int(10) unsigned NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY /*prefix*/idx_testplan_platforms(testplan_id,platform_id)
+) DEFAULT CHARSET=utf8 COMMENT='Connects a testplan with platforms';
+
 
 /* cfield* */
 
@@ -49,9 +68,22 @@ ALTER TABLE /*prefix*/builds ADD COLUMN `closed_on_date` date NULL;
 /* testplan_tcversions */
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN author_id int(10) unsigned default NULL;
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN platform_id int(10) unsigned NOT NULL default '0';
+
+/* NEED TO ALTER INDEX */
+/* 1 - drop old index */
+DROP INDEX /*prefix*/tp_tcversion ON /*prefix*/testplan_tcversions;
+CREATE UNIQUE INDEX /*prefix*/testplan_tcversions_tplan_tcversion ON /*prefix*/testplan_tcversions (testplan_id,tcversion_id,platform_id);
+
 
 /* cfield_testprojects */
 ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location tinyint NOT NULL DEFAULT '1';
+
+
+/* executions */
+ALTER TABLE /*prefix*/executions  ADD COLUMN platform_id int(10) unsigned NOT NULL default '0';
+
+
 
 /* data update */
 INSERT INTO /*prefix*/rights (id,description) VALUES (24,'project_review');

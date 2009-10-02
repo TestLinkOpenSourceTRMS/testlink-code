@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.259 2009/09/28 08:40:21 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.260 2009/10/02 11:00:20 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -165,9 +165,9 @@ error_reporting(E_ALL);
 
 /** 
  * @var integer Set the session timeout for inactivity [minutes].
- * Default is 10 hours 
+ * Default high value disables this feature.
  */
-$tlCfg->sessionInactivityTimeout = 600;
+$tlCfg->sessionInactivityTimeout = 9900;
 
 /** 
  * Set the session timeout value (in minutes).

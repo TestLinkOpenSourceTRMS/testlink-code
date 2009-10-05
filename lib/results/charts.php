@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * 
  * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/09/21 09:29:56 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/10/05 08:47:11 $ by $Author: franciscom $
  * @author kevin
  *
  * Revisions:
@@ -28,6 +28,9 @@ $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 
 $gui->can_use_charts = checkLibGd();
 
+
+// $tplan_mgr->
+
 if($gui->can_use_charts == 'OK')  
 {
     $gui->tplan_name = $tplan_info['name'];
@@ -45,10 +48,6 @@ if($gui->can_use_charts == 'OK')
     $_SESSION['statistics']['getAggregateMap'] = $re->getAggregateMap();
     $_SESSION['statistics']['getAggregateOwnerResults'] = $re->getAggregateOwnerResults();
     $_SESSION['statistics']['getAggregateKeywordResults']= $re->getAggregateKeywordResults();
-    
-    
-    new dBug($_SESSION['statistics']['getTotalsForPlan']);
-    
     
     $pathToScripts = "lib/results/";
     $chartsUrl=new stdClass();

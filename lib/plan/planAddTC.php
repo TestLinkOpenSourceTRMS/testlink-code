@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.80 2009/09/24 07:25:38 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.81 2009/10/05 08:47:11 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -80,7 +80,7 @@ switch($args->doAction)
                     $items_to_link['items'][$tcase_id][$platform_id] = $tcversion_id;
                 }
             }
-
+           
 		    $linked_features=$tplan_mgr->link_tcversions($args->tplan_id,$items_to_link,$args->userID);
 		    if( $args->testerID > 0 )
 		    {
@@ -266,7 +266,8 @@ function init_args()
 function doReorder(&$argsObj,&$tplanMgr)
 {
     $mapo = null;
-    
+  
+    // Do this to avoid update if order has not been changed on already linked items      
     if(!is_null($argsObj->linkedVersion))
     {
         // Using memory of linked test case, try to get order
@@ -292,13 +293,25 @@ function doReorder(&$argsObj,&$tplanMgr)
         	// We do not allow link of different test case version on a
         	// testplan no matter we are using or not platform feature.
         	//
+            $tcversion_id=null;
         	if( isset($argsObj->tcversion_for_tcid[$tcid]) )
         	{
             	$tcversion_id = $argsObj->tcversion_for_tcid[$tcid];
+            	//$mapo[$tcversion_id] = $argsObj->testcases2order[$tcid];
+            }
+            else if( isset($argsObj->linkedVersion[$tcid]) && 
+                     !isset($mapo[$argsObj->linkedVersion[$tcid]]))
+            {
+            	// $mapo[$argsObj->linkedVersion[$tcid]]=$argsObj->testcases2order[$tcid];
+            	$tcversion_id = $argsObj->linkedVersion[$tcid];
+            }
+            if( !is_null($tcversion_id))
+            {
             	$mapo[$tcversion_id] = $argsObj->testcases2order[$tcid];
             }
         }
     }  
+    
     if(!is_null($mapo))
     {
         $tplanMgr->setExecutionOrder($argsObj->tplan_id,$mapo);  
@@ -505,7 +518,7 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
     {
         $tcnames[$value['testcase_id']] = $guiObj->testCasePrefix . $value['tc_external_id'] . ' ' . $value['name'];    
     }
-    
+
     $path_info = $tcaseMgr->tree_manager->get_full_path_verbose($tcaseSet,array('output_format' => 'simple'));
     $flat_path=null;
     foreach($path_info as $tcase_id => $pieces)

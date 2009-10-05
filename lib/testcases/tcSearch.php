@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: tcSearch.php,v 1.1 2009/09/16 19:53:01 schlundus Exp $
+ * $Id: tcSearch.php,v 1.2 2009/10/05 08:47:11 franciscom Exp $
  * Purpose:  This page presents the search results. 
  *
  * rev:
@@ -155,7 +155,9 @@ if($gui->row_qty)
 else
 {
 	$the_tpl = config_get('tpl');
-	$tpl = $the_tpl['tcView'];
+	// $tpl = $the_tpl['tcView'];
+    $tpl = isset($the_tpl['tcSearchView']) ? $the_tpl['tcSearchView'] : 'tcView.tpl'; 
+
 }
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);

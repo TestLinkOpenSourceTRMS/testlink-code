@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: usersView.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/08/28 20:37:04 $ -  $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/10/05 08:47:11 $ -  $Author: franciscom $
  *
  * shows all users
  *
@@ -91,7 +91,8 @@ $smarty->assign('result',$sqlResult);
 $smarty->assign('action',$action);
 $smarty->assign('base_href', $args->basehref);
 $smarty->assign('grants',$grants);
-$smarty->display($templateCfg->template_dir . $g_tpl['usersview']);
+
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 function toggle_order_by_dir($which_order_by,$order_by_dir_map)

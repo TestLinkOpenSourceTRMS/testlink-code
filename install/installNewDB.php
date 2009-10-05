@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: installNewDB.php,v 1.49 2009/07/15 18:16:05 franciscom Exp $ */
+/* $Id: installNewDB.php,v 1.50 2009/10/05 08:47:11 franciscom Exp $ */
 /*
 Parts of this file has been taken from:
 Etomite Content Management System
@@ -8,6 +8,7 @@ Copyright 2003, 2004 Alexander Andrew Butter
 */
 
 /*
+20091003 - franciscom - migration from 1.8.x (DB 1.2) to 1.9 Beta 1 (DB 1.3)
 20090715 - franciscom - changed way to manage replace of table prefix on
                         SQL statements to run.
                         Improvements on Drop of table if Datat Base Exists
@@ -325,58 +326,16 @@ if ( $inst_type == "upgrade")
       
       switch ($schema_version)
       {
-      	case '1.7.0 Beta 1':
-      	case '1.7.0 Beta 2':
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_3/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
-        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
-        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
-      	break;
-
-      	case '1.7.0 Beta 3':
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_4/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
-        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
-        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
-      	break;
-      	
-      	case '1.7.0 Beta 4':
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/beta_5/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
-        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
-        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
-      	break;
-
-      	case '1.7.0 Beta 5':
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_2/";
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
-        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
-        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
-      	break;
-      	
-      	case '1.7.0 RC 2':
-      	$a_sql_upd_dir[] = "sql/alter_tables/1.7/{$db_type}/rc_3/";
-        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
-        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
-      	break;
-      	
-      	case '1.7.0 RC 3':
-        $a_sql_upd_dir[] = "sql/alter_tables/1.7.1/{$db_type}/";      	
-        $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
-        break;
-
       	case 'DB 1.1':
         $a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
+        $a_sql_upd_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/";      	
         break;
 
-      	
       	case 'DB 1.2':
+        $a_sql_upd_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/";      	
+      	break;
+
+      	case 'DB 1.3':
       	echo "<br>Your DB Schema {$schema_version} is the last available, then you don't need to do any upgrade.";
         echo "<br>bye!";
         close_html_and_exit();          

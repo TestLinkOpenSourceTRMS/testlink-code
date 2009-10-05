@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.7 2009/09/30 17:45:32 franciscom Exp $
+ * $Id: db_schema_update.sql,v 1.8 2009/10/05 08:47:11 franciscom Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -43,12 +43,10 @@ CREATE TABLE /*prefix*/testplan_platforms (
 
 
 /* cfield* */
-
 ALTER TABLE /*prefix*/cfield_design_values MODIFY COLUMN value varchar(4000) NOT NULL default '';
 ALTER TABLE /*prefix*/cfield_execution_values MODIFY COLUMN value varchar(4000) NOT NULL default '';
 ALTER TABLE /*prefix*/cfield_testplan_design_values MODIFY COLUMN value varchar(4000) NOT NULL default '';
   
-
 ALTER TABLE /*prefix*/custom_fields MODIFY COLUMN possible_values varchar(4000) NOT NULL default '';
 ALTER TABLE /*prefix*/custom_fields MODIFY COLUMN default_value varchar(4000) NOT NULL default '';
 
@@ -83,12 +81,19 @@ ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location tinyint NOT NULL 
 /* executions */
 ALTER TABLE /*prefix*/executions  ADD COLUMN platform_id int(10) unsigned NOT NULL default '0';
 
+/* tcversions */
+ALTER TABLE /*prefix*/tcversions ADD COLUMN preconditions text;
+
+/* milestones */
+ALTER TABLE /*prefix*/milestones ADD COLUMN start_date date NOT NULL default '0000-00-00';
 
 
-/* data update */
-INSERT INTO /*prefix*/rights (id,description) VALUES (24,'project_review');
+/* system data update */
+INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (25 ,'platform_view');
 
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 
 /* database version update */
 INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.3', 'TestLink 1.9',CURRENT_TIMESTAMP());

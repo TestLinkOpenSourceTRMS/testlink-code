@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.50 2009/08/03 08:15:43 franciscom Exp $
+ * @version    	CVS: $Id: configCheck.php,v 1.51 2009/10/05 08:47:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
@@ -769,7 +769,7 @@ function checkPhpVersion(&$errCounter)
  * @return string html row with result 
  * @author Martin Havlat
  */
-function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bCritical=FALSE)
+function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $isCritical=FALSE)
 {
 	$checked_path = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..');
 	$checked_file = $checked_path.DIRECTORY_SEPARATOR.$checked_filename;
@@ -783,7 +783,7 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bC
   				$out .= "<td><span class='tab-success'>OK (writable)</span></td></tr>\n"; 
   			else
   			{
- 				if ($bCritical)
+ 				if ($isCritical)
  				{
  					$out .= "<td><span class='tab-error'>Failed! Please fix the file " .
  							$checked_file . " permissions and reload the page.</span></td></tr>"; 
@@ -800,7 +800,7 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bC
   				$out .= "<td><span class='tab-success'>OK</span></td></tr>\n"; 
   			else
   			{
- 				if ($bCritical)
+ 				if ($isCritical)
  				{
 	 				$out .= "<td><span class='tab-error'>Directory is not writable! Please fix " .
  							$checked_path . " permissions and reload the page.</span></td></tr>"; 
@@ -825,7 +825,7 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $bC
   		} 
 		else 
 		{
-			if ($bCritical)
+			if ($isCritical)
 			{
 				$out .= "<td><span class='tab-error'>Failed! The file is not on place.</span></td></tr>"; 
 				$errCounter += 1;
@@ -974,16 +974,22 @@ function reportCheckingWeb(&$errCounter)
  * print table with system checking results
  *  
  * @param integer &$errCounter pointer to error counter
- * @param string inst_type: useful when this function is used on installer
+ * @param string installationType: useful when this function is used on installer
  * 
  * @author Martin Havlat
  **/
-function reportCheckingPermissions(&$errCounter,$inst_type='none')
+function reportCheckingPermissions(&$errCounter,$installationType='none')
 {
 	echo '<h2>Read/write permissions</h2><table class="common" style="width: 100%;">';
 	echo check_dir_permissions($errCounter);
-	echo check_file_permissions($errCounter,$inst_type,'config_db.inc.php', TRUE);
-	echo check_file_permissions($errCounter,$inst_type,'custom_config.inc.php');
+	
+	// for $installationType='upgrade' existence of config_db.inc.php is not needed
+	$blockingCheck=$installationType=='upgrade' ? FALSE : TRUE;
+	if($installationType=='new')
+	{
+		echo check_file_permissions($errCounter,$installationType,'config_db.inc.php', $blockingCheck);
+	}
+	echo check_file_permissions($errCounter,$installationType,'custom_config.inc.php');
 	echo '</table>';
 }
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2009/09/16 19:52:59 $ by $Author: schlundus $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/10/05 08:47:10 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Login management
@@ -17,6 +17,8 @@ checkConfiguration();
 require_once('config.inc.php');
 require_once('common.php');
 require_once('doAuthorize.php');
+
+$templateCfg = templateConfiguration();
 
 $op = doDBConnect($db);
 if (!$op['status'])
@@ -60,9 +62,12 @@ $g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
-$smarty->display('login.tpl');
+$smarty->display($templateCfg->default_template);
 
-
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$iParams = array("note" => array(tlInputParameter::STRING_N,0,255),

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.196 2009/09/28 08:44:57 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.197 2009/10/05 08:47:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091003 - franciscom - show() changes in template get logic
  * 20090927 - franciscom - new methods: getPathLayered(),getPathTopSuite()
  * 20090922 - franciscom - get_last_execution() - used COALESCE() to return code
  *                                                also code for NOT RUN status.
@@ -545,6 +546,8 @@ class testcase extends tlObjectWithAttachments
 	
 		$gui_cfg = config_get('gui');
 		$the_tpl = config_get('tpl');
+		$my_template = isset($the_tpl['tcView']) ? $the_tpl['tcView'] : 'tcView.tpl'; 
+
 		$tcase_cfg = config_get('testcase_cfg');
 	
 		$req_mgr = new requirement_mgr($this->db);
@@ -731,7 +734,7 @@ class testcase extends tlObjectWithAttachments
 		$smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req"));
 		$smarty->assign('opt_requirements',$requirements_feature);
 		$smarty->assign('keywords_map',$keywords_map);
-		$smarty->display($template_dir . $the_tpl['tcView']);
+		$smarty->display($template_dir . $my_template);
 	}
 	
 	

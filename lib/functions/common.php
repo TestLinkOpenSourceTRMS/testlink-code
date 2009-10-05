@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.169 2009/09/05 18:19:07 schlundus Exp $
+ * @version    	CVS: $Id: common.php,v 1.170 2009/10/05 08:47:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -976,15 +976,23 @@ function show_instructions($key, $refreshTree=0)
   function: templateConfiguration
   args :
   returns:
+
+  @TODO: franciscom - 20091003 - document return value
 */
-function templateConfiguration()
+function templateConfiguration($template2get=null)
 {
+	$custom_templates = config_get('tpl');
+	$access_key = $template2get;
+	if( is_null($access_key) )
+	{
+		$access_key = str_replace('.php','',basename($_SERVER['SCRIPT_NAME']));
+	}
+	
 	$path_parts=explode("/",dirname($_SERVER['SCRIPT_NAME']));
     $last_part=array_pop($path_parts);
-    
     $tcfg = new stdClass();
     $tcfg->template_dir = "{$last_part}/";
-    $tcfg->default_template = str_replace('.php','.tpl',basename($_SERVER['SCRIPT_NAME']));
+    $tcfg->default_template = isset($custom_templates[$access_key]) ? $custom_templates[$access_key] : ($access_key . '.tpl');
     $tcfg->template = null;
     return $tcfg;
 }

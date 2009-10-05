@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: newInstallStart_TL.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/07/15 17:25:58 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/10/05 08:47:11 $ by $Author: franciscom $
  * 
  * Verify environment and collect DB input data
  *
@@ -274,20 +274,6 @@ else
 						' have the following login for TestLink Administrator:<br />' .
 				        'login name: admin <br /> password  : admin </p>';
 				?>
-				
-				<!--
-				<p>
-					Now you'll need to enter some details for the main TestLink administrator account.<br />
-					You can fill in your own name here, and a password you're not likely to forget. <br />
-					You'll need these to log into TestLink once setup is complete.
-				</p>
-				<p>
-					<div class="labelHolder"><label for="cmsadmin">Administrator username:</label></div><input type="text" id="cmsadmin" name="cmsadmin" style="width:200px" value="admin" /><br />
-					<div class="labelHolder"><label for="cmspassword">Administrator password:</label></div><input type="password" id="cmspassword" name="cmspassword" style="width:200px" value="" /><br />
-					<div class="labelHolder"><label for="cmspasswordconfirm">Confirm password:</label></div><input type="password" id="cmspasswordconfirm" name="cmspasswordconfirm" style="width:200px" value="" /><br />
-				</p>
-        -->
-        
 				<p>
 					<input type="submit" value="Process TestLink Setup!">
 				</p>

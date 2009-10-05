@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/09/01 07:31:29 $  by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/10/05 08:47:11 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -42,26 +42,26 @@ class testcaseCommands
   */
 	function edit(&$argsObj,&$otCfg,$oWebEditorKeys)
 	{
-	  $tpl_cfg=config_get('tpl');
-	  
-    $guiObj = new stdClass();
-    $otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
-
-    keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
-
-  	$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
-
-    
-  	foreach ($oWebEditorKeys as $key => $value)
-   	{
-  	  	$guiObj->$key = $tc_data[0][$key];
-  	}
-
+    	$guiObj = new stdClass();
+    	$otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
+    	
+    	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
+    	
+  		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
+    	
+    	
+  		foreach ($oWebEditorKeys as $key => $value)
+   		{
+  		  	$guiObj->$key = $tc_data[0][$key];
+  		}
+    	
 		$guiObj->cfields = $this->tcaseMgr->html_table_of_custom_field_inputs($argsObj->tcase_id);
-    $guiObj->tc=$tc_data[0];
-    $guiObj->opt_cfg=$otCfg;
-    $guiObj->template=$tpl_cfg['tcEdit'];
-    return $guiObj;
+    	$guiObj->tc=$tc_data[0];
+    	$guiObj->opt_cfg=$otCfg;
+    	//$guiObj->template=$tpl_cfg['tcEdit'];
+		$tpl_cfg=config_get('tpl');
+		$guiObj->template=isset($tpl_cfg['tcEdit']) ? $tpl_cfg['tcEdit'] : 'tcEdit.tpl'; 
+    	return $guiObj;
   }
 
 

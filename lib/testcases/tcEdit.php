@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.113 $
- * @modified $Date: 2009/09/28 08:43:45 $  by $Author: franciscom $
+ * @version $Revision: 1.114 $
+ * @modified $Date: 2009/10/05 08:47:11 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -42,7 +42,6 @@ $cfg = getCfg();
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 
 testlinkInitPage($db);
-
 $optionTransferName = 'ot';
 $args = init_args($cfg->spec,$optionTransferName);
 
@@ -51,7 +50,6 @@ $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
-$templateCfg = templateConfiguration();
 
 $commandMgr = new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
@@ -162,7 +160,8 @@ if($args->edit_tc)
     $smarty->assign('cf',$cf_smarty);
    	$smarty->assign('tc', $tc_data[0]);
   	$smarty->assign('opt_cfg', $opt_cfg);
-  	$smarty->display($templateCfg->template_dir . $g_tpl['tcEdit']);
+    $templateCfg = templateConfiguration('tcEdit');
+  	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
 else if($args->create_tc)
 {
@@ -234,7 +233,9 @@ else if($args->delete_tc)
 	$smarty->assign('tcversion_id', testcase::ALL_VERSIONS);
 	$smarty->assign('delete_message', $msg);
 	$gui->refresh_tree = "yes";
-	$smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
+    $templateCfg = templateConfiguration('tcDelete');
+    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+	// $smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->delete_tc_version)
 {
@@ -271,7 +272,9 @@ else if($args->delete_tc_version)
 	$smarty->assign('delete_message', $msg);
 	$smarty->assign('exec_status_quo',$sq);
 	$gui->refresh_tree = "no";
-	$smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
+    $templateCfg = templateConfiguration('tcDelete');
+    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+	// $smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->do_delete)
 {
@@ -315,7 +318,9 @@ else if($args->do_delete)
 	$smarty->assign('testcase_id', $args->tcase_id);
 	$smarty->assign('delete_message', $msg);
 	$smarty->assign('action',$action_result);
-	$smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
+    $templateCfg = templateConfiguration('tcDelete');
+    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+	// $smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->move_copy_tc)
 {
@@ -343,7 +348,10 @@ else if($args->move_copy_tc)
 	$smarty->assign('testcase_id', $args->tcase_id);
 	$smarty->assign('move_enabled',$move_enabled);
 	$smarty->assign('name', $tc_info[0]['name']);
-	$smarty->display($templateCfg->template_dir . 'tcMove.tpl');
+
+    $templateCfg = templateConfiguration('tcMove');
+    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+	// $smarty->display($templateCfg->template_dir . 'tcMove.tpl');
 	// move test case to another category
 }
 else if($args->do_move)
@@ -505,7 +513,9 @@ if ($show_newTC_form)
 
 	$smarty->assign('cf',$cf_smarty);
 	$smarty->assign('tc',$tc_default);
-	$smarty->display($templateCfg->template_dir . $g_tpl['tcNew']);
+    $templateCfg = templateConfiguration('tcNew');
+  	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+	// $smarty->display($templateCfg->template_dir . $g_tpl['tcNew']);
 }
 
 /*

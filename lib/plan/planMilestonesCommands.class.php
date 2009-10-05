@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/09/10 17:17:16 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/10/05 08:47:11 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * @internal revisions
@@ -97,8 +97,7 @@ class planMilestonesCommands
       	$op_ok = 1;
 
       	// Check name do not exists
-      	$name_exists = $this->milestone_mgr->check_name_existence($argsObj->tplan_id,
-                                                                $argsObj->name);
+      	$name_exists = $this->milestone_mgr->check_name_existence($argsObj->tplan_id,$argsObj->name);
 		if($name_exists)
 		{
 			$guiObj->user_feedback = sprintf(lang_get('milestone_name_already_exists'),$argsObj->name);
@@ -109,7 +108,7 @@ class planMilestonesCommands
 		if($op_ok)
 		{
         	$timestamp=array();
-			$timestamp['target'] = strtotime($argsObj->target_date ." 23:59:59");
+			$timestamp['target'] = strtotime($argsObj->target_date . " 23:59:59");
 			$timestamp['now'] = strtotime("now");
           
 			if( $timestamp['target'] < $timestamp['now'] )
@@ -124,7 +123,8 @@ class planMilestonesCommands
 	        $argsObj->id = $this->milestone_mgr->create($argsObj->tplan_id,$argsObj->name,
 	                                                    $argsObj->target_date,$argsObj->start_date,
 	                                                    $argsObj->low_priority_tcases,
-	                                                    $argsObj->medium_priority_tcases,$argsObj->high_priority_tcases);
+	                                                    $argsObj->medium_priority_tcases,
+	                                                    $argsObj->high_priority_tcases);
 	        
 		      $guiObj->user_feedback = 'ok';
 		      if($argsObj->id > 0)

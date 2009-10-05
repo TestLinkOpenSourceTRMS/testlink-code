@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.112 2009/08/28 20:37:03 schlundus Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.113 2009/10/05 08:47:10 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -174,16 +174,17 @@ define('TL_COOKIE_KEEPTIME', (time()+60*60*24*30)); // 30 days
 /** 
  * Configurable templates this can help if you want to use a non standard template.
  * i.e. you want to develop a new one without loosing the original template.
+ * key: original TL template name WITHOUT extension
+ * value: whatever name you want, only constrain you have to copy your template
+ *        ON SAME FOLDER where original template is. 
+ * See example below        
  */
-$g_tpl = array(
-	'tcView' 		=> 'tcView.tpl',
-	'tcSearchView' 	=> 'tcSearchView.tpl',
-	'tcEdit' 		=> 'tcEdit.tpl',
-	'tcNew' 		=> 'tcNew.tpl',
-	// 'execSetResults' => 'execSetResults.tpl',
-	'tcSearchView' 	=> 'tcView.tpl',
-	'usersview' 	=> 'usersView.tpl'
-);
+$g_tpl = array();
+ 
+// Example 
+// $g_tpl = array('tcView'	=> 'custom_tcView.tpl',
+// 	              'tcSearchView' => 'myOwnTCSearchView.tpl',
+// 	              'tcEdit' => 'tcEdit_ultraCool.tpl');
 
 // needed for drap and drop feature
 define('TL_DRAG_DROP_DIR', 'gui/drag_and_drop/');

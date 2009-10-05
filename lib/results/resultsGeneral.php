@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2009/09/22 08:01:37 $ by $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2009/10/05 08:47:11 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -116,14 +116,42 @@ else // do report
 
 	// ----------------------------------------------------------------------------
   	/* BUILDS REPORT */
+    // $buildSet = $tplan_mgr->get_builds($args->tplan_id); //,testplan::ACTIVE_BUILDS);
+    // 
+    // 
     // $filters=null;
     // $options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true, 'execution_details' => 'add_build');
     // $myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+    // $loop2do=count($myRBB);
+    // $code_verbose=$tplan_mgr->getStatusForReports();
+    // foreach($buildSet as $key => $elem )
+    // {
+    // 	foreach($code_verbose as $code => $verbose)
+    // 	{
+    // 		$buildResults[$key][$code]=0;		
+    // 	}	
+    // }
+    // 
+    // for($idx=0; $idx < $loop2do; $idx++)
+    // {
+    // 	$buildID=$myRBB[$idx]['build_id'];
+    // 	$exec_status=$myRBB[$idx]['exec_status'];
+    // 	$buildResults[$buildID][$exec_status]++;
+    // 	// $buildResults[$buildID]	
+    // }  
+    // 
+    // foreach($buildResults as $key => $value)
+    // {
+    // 
+    // }
+    //      
+    // new dBug($buildResults);
+    // 
+    // new dBug($options);
     // new dBug($myRBB);
     // 
-    // $options=array('output' => 'map' , 'last_execution' => true, 'only_executed' => true, 'execution_details' => 'add_build');
-    // $myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    // new dBug($myRBB);
+	// $results = $re->getAggregateBuildResults();
+    // new dBug($results);    
     
 
 	$colDefiniton = null;
@@ -131,6 +159,8 @@ else // do report
 	if($do_report['status_ok'])
 	{
   		$results = $re->getAggregateBuildResults();
+
+
   		if ($results != null) 
   		{
       		// Get labels
@@ -162,6 +192,31 @@ else // do report
 	// ----------------------------------------------------------------------------
   	/* MILESTONE & PRIORITY REPORT */
     $planMetrics = $tplan_mgr->getStatusTotals($args->tplan_id);
+    new dBug($planMetrics);
+
+
+	$filters=null;
+	$options=array('output' => 'map', 'only_executed' => true, 'execution_details' => 'add_build');
+    $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+    new dBug($options);
+    new dBug($execResults);
+    
+    $options=array('output' => 'mapOfArray', 'only_executed' => true, 'execution_details' => 'add_build');
+    $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+    new dBug($options);
+    new dBug($execResults);
+    
+    $options=array('output' => 'mapOfMap', 'only_executed' => true, 'execution_details' => 'add_build');
+    $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+    new dBug($options);
+    new dBug($execResults);
+    
+    $options=array('output' => 'array', 'only_executed' => true, 'execution_details' => 'add_build');
+    $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+    new dBug($options);
+    new dBug($execResults);
+    
+    
 
 	// collect prioritized results for whole Test Plan
 	if ($_SESSION['testprojectOptPriority'])

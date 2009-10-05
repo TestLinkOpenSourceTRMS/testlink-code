@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: index.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/05/29 11:01:53 $ by $Author: havlat $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/10/05 08:47:11 $ by $Author: franciscom $
  *
  * SCOPE: Navigation for installation scripts
  *
  * Revisions:
+ *  20091003 - franciscom - removed option to upgrade/migrate from 1.6.x and 1.7.x
  *	20090127 - franciscom - removed upgrade block
  *	20080120 - franciscom - added link to README
  *	20080103 - franciscom - minor adjustments on link descriptions
@@ -50,12 +51,7 @@ $_SESSION['testlink_version'] = TL_VERSION;
 		</p>
 		<ul>
 		<li><a href="newInstallStart_TL.php?installationType=new">New installation</a></li>
-   		<li>Upgrade from 1.7.1 (and later hot-fix) to 1.8.0 (and later hot-fix)<br />
-   		<ol>
-   			<li><a href="newInstallStart_TL.php?installationType=upgrade">Upgrade Database schema</a></li>
-			<li><a href="./migration/migrate_17/index.php">Data migration </a></li>
-		</ol></li>
-		<li><a href="./migration/index.php">Migration from 1.6.2 to 1.7.x </a></li>
+   		<li><a href="newInstallStart_TL.php?installationType=upgrade">Upgrade from 1.8.0 (and later hot-fix) to 1.9.x <br />
 		</ul>
 		<p style="margin-top: 100px;">&nbsp;</p>
 			

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.480 2009/09/28 08:42:24 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.481 2009/10/06 15:31:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2511,6 +2511,7 @@ $TLS_th_user = "User";
 $TLS_show_event_history = "Show the event history";
 $TLS_btn_clear_events = "Clear All Events";
 $TLS_th_event_description = "Description";
+$TLS_select_user = "User (Default All)";
 
 
 // ----- int_mantis.php -----

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.22 2009/08/19 19:56:25 schlundus Exp $
+$Id: eventviewer.tpl,v 1.23 2009/10/06 15:30:37 franciscom Exp $
 
 Event Viewer
 *}
@@ -10,7 +10,7 @@ Event Viewer
 {lang_get var='labels'
           s='event_viewer,th_loglevel,th_timestamp,th_description,title_eventdetails,
              title_eventinfo,label_startdate,label_enddate,btn_apply,click_on_event_info,
-             btn_clear_events,th_event_description,
+             btn_clear_events,th_event_description,select_user,
              message_please_wait,btn_close,th_role_description,th_user'}
 
 
@@ -137,6 +137,15 @@ fieldset
 					{/foreach}
 				</select>
 			</fieldset>
+
+			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.select_user}</legend>
+                    <select name="tester[]" size="5" multiple="multiple">
+                    	{foreach key=row item=userid from=$gui->tester}
+                    	<option value="{$row}" selected="selected">{$gui->tester[$row]|escape}</option>
+                    	{/foreach}
+                    </select>
+			</fieldset>
+
 			<fieldset class="x-fieldset"><legend>{$labels.th_timestamp}</legend>
 			{$labels.label_startdate}:&nbsp;<input type="text" name="startDate" id="startDate" value="{$startDate}" />
 			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','startDate');" value="^" />

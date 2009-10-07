@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.23 2009/10/06 15:30:37 franciscom Exp $
+$Id: eventviewer.tpl,v 1.24 2009/10/07 06:13:32 franciscom Exp $
 
 Event Viewer
 *}
@@ -21,11 +21,11 @@ Event Viewer
 var strPleaseWait = "{$labels.message_please_wait|escape:javascript}";
 var strCloseButton = "{$labels.btn_close|escape:javascript}";
 {literal}
-var prgBar = null;
+var progressBar = null;
 
 function showEventDetails(id)
 {
-	prgBar = Ext.Msg.wait(strPleaseWait);
+	progressBar = Ext.Msg.wait(strPleaseWait);
 	Ext.Ajax.request(
 				{
 					url : 'lib/events/eventinfo.php' ,
@@ -37,8 +37,10 @@ function showEventDetails(id)
 							 },
 					failure: function (result, request)
 						{
-							if (prgBar)
-								prgBar.hide();
+							if (progressBar)
+							{
+								progressBar.hide();
+							}	
 						}
 				}
 			);
@@ -48,8 +50,10 @@ function showDetailWindow(info)
 {
 	var item = document.getElementById('eventDetails');
 	item.innerHTML = info;
-	if (prgBar)
-		prgBar.hide();
+	if (progressBar)
+	{
+		progressBar.hide();
+	}
 	if(!infoWin)
 	{
 		infoWin = new Ext.Window({
@@ -121,15 +125,15 @@ fieldset
 
 <div class="workBack">
 		<form method="post" action="lib/events/eventviewer.php">
-			<input type="hidden" name="object_id" value="{$object_id}" />
-			<input type="hidden" name="object_type" value="{$object_type|escape}" />
+			<input type="hidden" name="object_id" value="{$gui->object_id}" />
+			<input type="hidden" name="object_type" value="{$gui->object_type|escape}" />
 			<input type="hidden" name="doAction" id="doAction" value="filter" />
 			
 			<div style="height:125px;">
 			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.th_loglevel}</legend>
-				<select size="5" multiple="multiple" name="logLevel[]">
-					{foreach from=$logLevels item=desc key=value}
-					{if in_array((string)$value,$selectedLogLevels) neq false}
+				<select name="logLevel[]" size="5" multiple="multiple" >
+					{foreach from=$gui->logLevels item=desc key=value}
+					{if in_array((string)$value,$gui->selectedLogLevels) neq false}
 						<option selected="selected" value="{$value}">{$desc}</option>
 					{else}
 						<option value="{$value}">{$desc}</option>
@@ -139,18 +143,22 @@ fieldset
 			</fieldset>
 
 			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.select_user}</legend>
-                    <select name="tester[]" size="5" multiple="multiple">
-                    	{foreach key=row item=userid from=$gui->tester}
-                    	<option value="{$row}" selected="selected">{$gui->tester[$row]|escape}</option>
-                    	{/foreach}
-                    </select>
+        <select name="testers[]" size="5" multiple="multiple">
+        	{foreach from=$gui->testers item=userid key=row  }
+			      {if in_array((string)$row,$gui->selectedTesters) neq false}
+        	    <option value="{$row}" selected="selected">{$gui->testers[$row]|escape}</option>
+        	  {else}
+        	    <option value="{$row}" >{$gui->testers[$row]|escape}</option>
+        	  {/if}  
+        	{/foreach}
+        </select>
 			</fieldset>
 
 			<fieldset class="x-fieldset"><legend>{$labels.th_timestamp}</legend>
-			{$labels.label_startdate}:&nbsp;<input type="text" name="startDate" id="startDate" value="{$startDate}" />
+			{$labels.label_startdate}:&nbsp;<input type="text" name="startDate" id="startDate" value="{$gui->startDate}" />
 			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','startDate');" value="^" />
 			<div id="startDate-cal" style="position:absolute;width:240px;left:300px"></div>
-			{$labels.label_enddate}:&nbsp;<input type="text" name="endDate" id="endDate" value="{$endDate}" />
+			{$labels.label_enddate}:&nbsp;<input type="text" name="endDate" id="endDate" value="{$gui->endDate}" />
 			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','endDate');" value="^" />
 			<input type="submit" value="{$labels.btn_apply}" onclick="doAction.value='filter'" />
 			<br />
@@ -173,7 +181,7 @@ fieldset
 				<th>{$sortHintIcon}{$labels.th_user}</th>
 			</tr>
 			{assign var=transID value="-1"}
-			{foreach from=$events item=event}
+			{foreach from=$gui->events item=event}
 			{assign var=userID value=$event->userID}
 			{if $event->transactionID neq $transID}
 				{assign var=transID value=$event->transactionID}
@@ -185,8 +193,8 @@ fieldset
 					<td>{$event->getLogLevel()|escape}</td>
 					<td>{$event->description|escape|truncate:#EVENT_DESCRIPTION_TRUNCATE_LEN#}</td>
 					<td>
-					{if $users[$userID] neq false}
-						{$users[$userID]|escape}
+					{if $gui->users[$userID] neq false}
+						{$gui->users[$userID]|escape}
 					{else}
 						&nbsp;
 					{/if}

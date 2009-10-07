@@ -12,12 +12,13 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2005-2009, TestLink community 
- * @version CVS: $Id: logger.class.php,v 1.46 2009/08/19 19:56:25 schlundus Exp $
+ * @version CVS: $Id: logger.class.php,v 1.47 2009/10/07 06:13:33 franciscom Exp $
  * @link http://www.teamst.org
  * @since 1.8
  * 
  * @internal Revisions:
  * 
+ *      20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
  * 		20090603 - franciscom - adding table prefix management
  *      20080517 - franciscom - exclude mktime() logs 
  *      20080316 - franciscom - added getEnableLoggingStatus() methods
@@ -89,17 +90,18 @@ class tlLogger extends tlObject
 	{
 		parent::__destruct();
 	}
-	public function getAuditEventsFor($objectIDs = null,$objectTypes = null,
-	                                  $activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
+	public function getAuditEventsFor($objectIDs = null,$objectTypes = null,$activityCodes = null,
+	                                  $limit = -1,$startTime = null,$endTime = null, $users = null)
 	{
 		return $this->eventManager->getEventsFor(tlLogger::AUDIT,$objectIDs,$objectTypes,$activityCodes,
-		                                         $limit,$startTime,$endTime);
+		                                         $limit,$startTime,$endTime,$users);
 	}
 	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,
-	                             $activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
+	                             $activityCodes = null,$limit = -1,$startTime = null,
+	                             $endTime = null, $users = null)
 	{
 		return $this->eventManager->getEventsFor($logLevels,$objectIDs,$objectTypes,$activityCodes,
-		                                          $limit,$startTime,$endTime);
+		                                          $limit,$startTime,$endTime,$users);
 	}
 	
 	public function deleteEventsFor($logLevels = null,$startTime = null)
@@ -131,7 +133,9 @@ class tlLogger extends tlObject
 	public function disableLogging($logger = null)
 	{
 	    if(is_null($logger))
+	    {
 	    	$this->doLogging = false;
+		}
 		else
 		{
 			$loggerSet = explode(",",$logger);
@@ -152,7 +156,9 @@ class tlLogger extends tlObject
 	public function enableLogging($logger = null)
 	{
 	    if(is_null($logger))
+	    {
 	 	    $this->doLogging = false;
+		}
 		else
 		{
 		    $loggerSet = explode(",",$logger);
@@ -165,10 +171,13 @@ class tlLogger extends tlObject
 
 	public function getEnableLoggingStatus($logger = null)
 	{
-		if(is_null($logger))
-			return $this->doLogging;
-		else
-			return $this->loggers[$logger]->getEnableLoggingStatus();
+		$status=is_null($logger) ? $this->doLogging : $this->loggers[$logger]->getEnableLoggingStatus();
+		return $status;
+		
+		// if(is_null($logger))
+		// 	return $this->doLogging;
+		// else
+		// 	return $this->loggers[$logger]->getEnableLoggingStatus();
 	}
 
 	/**
@@ -177,7 +186,9 @@ class tlLogger extends tlObject
 	public function getTransaction($name = "DEFAULT")
 	{
 		if (isset($this->transactions[$name]))
+		{
 			return $this->transactions[$name];
+		}
 		return null;
 	}
 	
@@ -469,9 +480,11 @@ class tlEventManager extends tlObjectWithDB
 
   */
 	public function getEventsFor($logLevels = null,$objectIDs = null,$objectTypes = null,
-	                             $activityCodes = null,$limit = -1,$startTime = null,$endTime = null)
+	                             $activityCodes = null,$limit = -1,$startTime = null,
+	                             $endTime = null, $users = null)
 	{
 		$clauses = null;
+        $usersFilter = null;
 		if (!is_null($logLevels))
 		{
 			$logLevels = (array) $logLevels;
@@ -498,15 +511,23 @@ class tlEventManager extends tlObjectWithDB
 		}
 		if (!is_null($startTime))
 			$clauses[] = "fired_at >= {$startTime}";
-
+     
 		if (!is_null($endTime))
 			$clauses[] = "fired_at <= {$endTime}";
 
-		$query = "SELECT id FROM {$this->tables['events']} ";
-		if ($clauses)
-			$query .= " WHERE " . implode(" AND ",$clauses);
+	    if (!is_null($users))
+	    {
+	        $usersFilter = " JOIN Transactions T ON T.id = E.transaction_id";
+	        $usersFilter .= " AND T.user_id IN ({$users}) ";
+	    }
+		$query = "SELECT E.id FROM {$this->tables['events']} E {$usersFilter}";
+	    if ($clauses)
+	    {
+	        $query .= " WHERE " . implode(" AND ",$clauses);
+	    }
 
 		$query .= " ORDER BY transaction_id DESC,fired_at DESC";
+	
 		return tlEvent::createObjectsFromDBbySQL($this->db,$query,'id',"tlEvent",true,
 		                                         tlEvent::TLOBJ_O_GET_DETAIL_FULL,$limit);
 	}

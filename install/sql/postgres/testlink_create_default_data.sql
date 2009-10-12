@@ -1,9 +1,10 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.23 2009/07/19 19:24:14 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.24 2009/10/12 07:04:00 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
 --
+--  20091010 - franciscom - platform feature
 --  20090126 - havlatm - role definition update
 --  20090101 - franciscom - found some problem with serial column fo role table.
 --                          Postgers 8.2 Windows, seem do not increment serial
@@ -68,6 +69,8 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO /*prefix*/rights (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO /*prefix*/rights (id,description) VALUES (22,'events_mgt');
 INSERT INTO /*prefix*/rights (id,description) VALUES (23 ,'testproject_user_role_assignment');
+INSERT INTO /*prefix*/rights (id,description) VALUES (24 ,'platform_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (25 ,'platform_view');
 
 
 
@@ -95,6 +98,9 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,21);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,22);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,23);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
+
 
 --  Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3 );
@@ -155,8 +161,10 @@ INSERT INTO /*prefix*/assignment_status ("id","description") VALUES (2,'closed')
 INSERT INTO /*prefix*/assignment_status ("id","description") VALUES (3,'completed');
 INSERT INTO /*prefix*/assignment_status ("id","description") VALUES (4,'todo_urgent');
 INSERT INTO /*prefix*/assignment_status ("id","description") VALUES (5,'todo');
+SELECT setval('assignment_status_id_seq', 5);           
+
 
 -- assignment_types
 INSERT INTO /*prefix*/assignment_types ("id","fk_table","description") VALUES (1,'testplan_tcversions','testcase_execution');
 INSERT INTO /*prefix*/assignment_types ("id","fk_table","description") VALUES (2,'tcversions','testcase_review');
-SELECT setval('assignment_types_seq', 2);           
+SELECT setval('assignment_types_id_seq', 2);           

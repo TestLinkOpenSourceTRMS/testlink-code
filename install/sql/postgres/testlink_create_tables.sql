@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.41 2009/09/10 16:21:55 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.42 2009/10/12 07:04:00 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -13,6 +13,8 @@
 --
 -- 
 -- Rev :
+--      20091010 - franciscom - added testplan_platforms,platforms
+--                              platform_id to tables
 --      20090910 - franciscom - tcversions.preconditions
 --                              milestones.start_date
 --      20090717 - franciscom - added cfield_testprojects.location field
@@ -215,6 +217,7 @@ CREATE TABLE /*prefix*/executions(
   "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),
   "tcversion_number" INTEGER NOT NULL DEFAULT '1',
+  "platform_id" BIGINT NOT NULL DEFAULT '0',
   "execution_type" INT2 NOT NULL DEFAULT '1',
   "notes" TEXT NULL DEFAULT NULL,
   PRIMARY KEY ("id")
@@ -229,12 +232,13 @@ CREATE TABLE /*prefix*/testplan_tcversions(
   "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   "tcversion_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),  
+  "platform_id" BIGINT NOT NULL DEFAULT '0',
   "node_order" BIGINT NOT NULL DEFAULT 1,
   "urgency" INT2 NOT NULL DEFAULT '2',
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   PRIMARY KEY ("id"),
-  UNIQUE ("testplan_id","tcversion_id")
+  UNIQUE ("testplan_id","tcversion_id","platform_id")
 ); 
 
 
@@ -246,8 +250,8 @@ CREATE TABLE /*prefix*/custom_fields(
   "name" VARCHAR(64) NOT NULL DEFAULT '',
   "label" VARCHAR(64) NOT NULL DEFAULT '',
   "type" SMALLINT NOT NULL DEFAULT '0',
-  "possible_values" VARCHAR(255) NOT NULL DEFAULT '',
-  "default_value" VARCHAR(255) NOT NULL DEFAULT '',
+  "possible_values" VARCHAR(4000) NOT NULL DEFAULT '',
+  "default_value" VARCHAR(4000) NOT NULL DEFAULT '',
   "valid_regexp" VARCHAR(255) NOT NULL DEFAULT '',
   "length_min" INTEGER NOT NULL DEFAULT '0',
   "length_max" INTEGER NOT NULL DEFAULT '0',
@@ -304,7 +308,7 @@ CREATE TABLE /*prefix*/cfield_testprojects(
 CREATE TABLE /*prefix*/cfield_design_values(  
   "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
   "node_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "value" VARCHAR(255) NOT NULL DEFAULT '',
+  "value" VARCHAR(4000) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","node_id")
 ); 
 CREATE INDEX /*prefix*/IX_cfield_design_values ON /*prefix*/cfield_design_values ("node_id");
@@ -318,7 +322,7 @@ CREATE TABLE /*prefix*/cfield_execution_values(
   "execution_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/executions (id),
   "testplan_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   "tcversion_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/tcversions (id),
-  "value" VARCHAR(255) NOT NULL DEFAULT '',
+  "value" VARCHAR(4000) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","execution_id","testplan_id","tcversion_id")
 ); 
 
@@ -328,7 +332,7 @@ CREATE TABLE /*prefix*/cfield_execution_values(
 CREATE TABLE /*prefix*/cfield_testplan_design_values(  
   "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
   "link_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplan_tcversions (id),
-  "value" VARCHAR(255) NOT NULL DEFAULT '',
+  "value" VARCHAR(4000) NOT NULL DEFAULT '',
   PRIMARY KEY ("field_id","link_id")
 ); 
 CREATE INDEX /*prefix*/IX_cfield_tplan_design_val ON /*prefix*/cfield_testplan_design_values ("link_id");
@@ -359,7 +363,8 @@ CREATE TABLE /*prefix*/assignment_status(
 --
 -- Table structure for table `assignment_types`
 --
-CREATE TABLE /*prefix*/assignment_types(  "id" BIGSERIAL NOT NULL ,
+CREATE TABLE /*prefix*/assignment_types(  
+  "id" BIGSERIAL NOT NULL ,
   "fk_table" VARCHAR(30) NULL DEFAULT '',
   "description" VARCHAR(100) NOT NULL DEFAULT 'unknown',
   PRIMARY KEY ("id")
@@ -636,4 +641,22 @@ CREATE TABLE /*prefix*/user_group(
 CREATE TABLE /*prefix*/user_group_assign(
   usergroup_id BIGINT NOT NULL REFERENCES  /*prefix*/user_group (id),
   user_id BIGINT NOT NULL REFERENCES  /*prefix*/users (id)
+);
+
+
+CREATE TABLE /*prefix*/platforms (
+  id BIGSERIAL NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  notes text NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE (testproject_id,name)
+);
+
+CREATE TABLE /*prefix*/testplan_platforms (
+  id BIGSERIAL NOT NULL,
+  testplan_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
+  platform_id BIGINT NOT NULL DEFAULT '0',
+  PRIMARY KEY (id),
+  UNIQUE (testplan_id,platform_id)
 );

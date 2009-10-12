@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.197 2009/10/05 08:47:11 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.198 2009/10/12 07:04:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -3582,24 +3582,48 @@ class testcase extends tlObjectWithAttachments
 	 */
 	function getPathLayered($tcaseSet)
 	{
-		$xtmas=null;
+		$xtree=null;
 		foreach($tcaseSet as $item)
     	{
 			$path_info = $this->tree_manager->get_path($item); 
     		$testcase = end($path_info);
-    		if( !isset($xtmas[$testcase['parent_id']]) )
+    		
+    		// This check is useful when you have several test cases with same parent test suite
+    		if( !isset($xtree[$testcase['parent_id']]['value']) )
     		{
+    			$level=0;
 				foreach($path_info as $elem)
 				{
-					$prefix = isset($xtmas[$elem['parent_id']]) ? ($xtmas[$elem['parent_id']] . '/') : '';
+                    $level++;
+					$prefix = isset($xtree[$elem['parent_id']]['value']) ? ($xtree[$elem['parent_id']]['value'] . '/') : '';
 					if( $elem['node_table'] == 'testsuites' )
 					{
-						$xtmas[$elem['id']] = $prefix . $elem['name'];
+						$xtree[$elem['id']]['value'] = $prefix . $elem['name'];
+						$xtree[$elem['id']]['level']=$level;
 					}	
 				}
 			}
+			
+    		// if( !isset($xtree[$testcase['parent_id']]) )
+    		// {
+    		// 	// $xtree[$testcase['parent_id']]['level']=0;
+			//     new dBug($xtree);
+			// 	foreach($path_info as $elem)
+			// 	{
+			// 	    new dBug($xtree);
+			// 		$prefix = isset($xtree[$elem['parent_id']]) ? ($xtree[$elem['parent_id']] . '/') : '';
+			// 		if( $elem['node_table'] == 'testsuites' )
+			// 		{
+			// 			$xtree[$elem['id']] = $prefix . $elem['name'];
+			// 			// $xtree[$testcase['parent_id']]['level']++;
+			// 		}	
+			// 	}
+			// 	
+			// }
+			
+			
 		}	
-		return $xtmas;
+		return $xtree;
 	} // getPathLayered($tcaseSet)
 
 

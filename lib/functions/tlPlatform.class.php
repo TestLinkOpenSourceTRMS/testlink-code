@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.5 2009/09/14 16:58:27 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.6 2009/10/12 07:04:30 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -185,8 +185,7 @@ class tlPlatform extends tlObjectWithDB
 	}
 
 	/**
-	 * @return array all available platforms in the active
-	 * test project
+	 * @return array all available platforms in test project
 	 */
 	public function getAll()
 	{
@@ -200,12 +199,20 @@ class tlPlatform extends tlObjectWithDB
 	 * @return array Returns all available platforms in the active testproject
 	 *               as array($platform_id => $platform_name)
 	 */
-	public function getAllAsMap()
+	public function getAllAsMap($accessKey='id',$output='columns')
 	{
 		$sql = "SELECT id, name
 				FROM {$this->tables['platforms']}
 				WHERE testproject_id = {$this->tproject_id}";
-		return $this->db->fetchColumnsIntoMap($sql, 'id', 'name');
+		if( $output == 'columns' )
+		{
+			$rs = $this->db->fetchColumnsIntoMap($sql, $accessKey, 'name');
+		}
+		else
+		{
+			$rs = $this->db->fetchRowsIntoMap($sql, $accessKey);
+		}	
+		return $rs;
 	}
 
 	/**

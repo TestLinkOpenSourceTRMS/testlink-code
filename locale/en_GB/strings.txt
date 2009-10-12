@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.481 2009/10/06 15:31:11 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.482 2009/10/12 07:04:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1324,6 +1324,11 @@ $TLS_warning_enter_at_least1 = "Please enter at least ";
 $TLS_warning_enter_at_least2 = " chars.";
 $TLS_warning_enter_less1 = "Please enter less than";
 $TLS_warning_enter_less2 = " chars.";
+$TLS_export_platforms = "Export platforms";
+$TLS_import_platforms = "Import platforms";
+$TLS_platform_updated = "Platform %s Updated";
+$TLS_platform_imported = "Platform %s Imported";
+
 
 // ----- gui/templates/platformsAssign.tpl -----
 $TLS_platform_assignment_no_testplan = "There is no Test Plan selected.";
@@ -1362,8 +1367,8 @@ $TLS_title_test_suite_name = $TLS_test_suite;
 
 // ----- gui/templates/resultsByStatus.tpl -----
 $TLS_info_test_results = "There are only last test results listed. " .
-		"I.e. Test Case is not shown if test result for later " .
-		"build has another status (except not run).";
+		                     "i.e. Test Case is not shown if test result for latest execution " .
+		                     "has another status (except not run).";
 $TLS_th_bugs = "Bugs";
 $TLS_th_date = "Date";
 $TLS_th_run_by = "Run by";

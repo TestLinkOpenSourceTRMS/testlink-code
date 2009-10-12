@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.72 2009/09/28 08:45:21 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.73 2009/10/12 07:04:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -625,13 +625,13 @@ class tree extends tlObject
 	*/
 	function getBottomOrder($parentID)
 	{
-	    $sql="SELECT MAX(node_order) AS TOP_ORDER" .
+	    $sql="SELECT MAX(node_order) AS top_order" .
 	         " FROM {$this->object_table} " . 
 	         " WHERE parent_id={$parentID} " .
 	         " GROUP BY parent_id";
 	    $rs=$this->db->get_recordset($sql);
 	    
-	    return $rs[0]['TOP_ORDER'];     
+	    return $rs[0]['top_order'];     
 	}
 	
 	

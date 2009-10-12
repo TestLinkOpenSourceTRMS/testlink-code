@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.70 2009/10/05 08:47:11 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.71 2009/10/12 07:04:30 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -9,6 +9,7 @@
 *
 *
 * rev : 
+*   20091011 - franciscom - refactoring to do not use result.class
 *   20090517 - franciscom - fixed management of deleted testers
 * 	20090414 - amikhullar - BUGID: 2374 - Show Assigned User in the Not Run Test Cases Report 
 * 	20090325 - amkhullar  - BUGID 2249
@@ -18,13 +19,11 @@
 */
 require('../../config.inc.php');
 require_once('common.php');
-require_once("results.class.php");
 require_once('displayMgr.php');
 require_once('users.inc.php');
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-
 $resultsCfg = config_get('results');
 $statusCode = $resultsCfg['status_code'];
 
@@ -50,151 +49,134 @@ $gui->tproject_name = $tproject_info['name'];
 
 $testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
-
-$buildSet = $tplan_mgr->get_builds($args->tplan_id);
-$lastBuildID = $tplan_mgr->get_max_build_id($args->tplan_id,1,1);
-
 $arrOwners = getUsersForHtmlOptions($db);
-$canExecute = has_rights($db,"tp_execute");
+
+$fl=$tproject_mgr->tree_manager->get_children($args->tproject_id,
+                                        array( 'testcase', 'exclude_me',
+                                               'testplan' => 'exclude_me',
+                                               'requirement_spec' => 'exclude_me' ));
+
+$loop2do = count($fl);
+$topLevelSuites=null;
+for($idx=0 ; $idx < $loop2do; $idx++)
+{
+	$topLevelSuites[$fl[$idx]['id']]=array('name' => $fl[$idx]['name'], 'items' => null);
+}
 
 if( $args->type == $statusCode['not_run'] )
 {
-	$results = new results($db, $tplan_mgr, $tproject_info, $tplan_info, ALL_TEST_SUITES, ALL_BUILDS);
-	$mapOfLastResult = $results->getMapOfLastResult();
-
-	if (is_array($mapOfLastResult)) 
-	{
-		foreach($mapOfLastResult as $suiteId => $suiteContents)
-	    {
-	    	foreach($suiteContents as $tcId => $platformData)
-	      	{
-				foreach($platformData as $platform_id => $tcaseContent)
-				{
-	  	        	$lastBuildIdExecuted = $tcaseContent['buildIdLastExecuted'];
-		  	    	if ($tcaseContent['result'] == $args->type)
-		  	    	{
-		  	    		$bugString = null; 
-		  	    		$currentBuildInfo = null;
-		  	    		if ($lastBuildIdExecuted) 
-		  	    		{
-		  	    			$currentBuildInfo = $buildSet[$lastBuildIdExecuted];
-		  	    		}
-		  	    		else if ($args->type == $statusCode['not_run'])
-		  	    		{
-		  	    			$lastBuildIdExecuted = $lastBuildID;
-		  	    		}
-	            	
-		  	    		$buildName = $currentBuildInfo['name'];
-		  	    		$notes = $tcaseContent['notes'];
-		  	    		$suiteName = $tcaseContent['suiteName'];
-		  	    		$name = $tcaseContent['name'];
-		  	    		$tester_id = $tcaseContent['tester_id'];
-		  	    		$executions_id = $tcaseContent['executions_id'];
-		  	    		$tcversion_id = $tcaseContent['tcversion_id'];
-		        	    $testVersion = $tcaseContent['version'];
-	                    $platformName = $gui->platformSet[$platform_id];
-		        	       
-		  	    		// ------------------------------------------------------------------------------------
-		  	    		// 20070623 - BUGID 911 - no need to localize, is already localized
-		  	    		$execution_ts = $tcaseContent['execution_ts'];
-		  	    		$localizedTS = '';
-		  	    		if ($execution_ts != null) 
-		  	    		{
-		  	    		   $localizedTS = $execution_ts;
-		  	    		}
-		  	    		// ------------------------------------------------------------------------------------
-	            	
-	            	    if($gui->bugInterfaceOn)
-	            	    {
-		  	    			$bugString = $results->buildBugString($db, $executions_id);
-		  	    			//20090325 - amkhullar  - BUGID 2249 - find missing bug links with TC
-		  	    			if (is_null($bugString))
-		  	    			{
-		  	    				$gui->without_bugs_counter += 1;
-		  	    			}
-		  	    		} 
-		  	    		$testTitle = buildTCLink($tcId,$tcversion_id,$name,$lastBuildIdExecuted,
-		  	    		                         $testCasePrefix . $tcaseContent['external_id'],$args->tplan_id);
-	            	
-	            	    
-	            	    $testerName = '';
-	            	    if(!is_null($tester_id) && $tester_id > 0 )
-	            	    {
-		  	    		    if (array_key_exists($tester_id, $arrOwners))
-		  	    		    {
-		  	    		       $testerName = $arrOwners[$tester_id];
-		  	    		    }
-		  	    		    else
-		  	    		    {
-		  	    		        // user id has been deleted
-		  	    		        $testerName = sprintf($deleted_user_label,$tester_id);
-		  	    		    }
-		  	    		}
-		  	    		
-		  	    		// we escape here , because on smarty template we use a simple loop algorithm
-		  	    		$suiteName = htmlspecialchars($suiteName);
-		  	    		$platformName = htmlspecialchars($platformName);
-		  	    		if($args->type == $statusCode['not_run'])
-		  	    		{
-		  	    			//amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
-		  	    			$gui->dataSet[] = array('suiteName' => $suiteName,'testTitle' => $testTitle,
-		  	    			                        'testVersion' => $testVersion, 'platformName' => $platformName,
-		  	    			                        'testerName' => htmlspecialchars($testerName));
-		  	    		}
-		  	    		else
-						{
-		  	    			$gui->dataSet[] = array('suiteName' => $suiteName, 'testTitle' => $testTitle,
-		  	    			                        'testVersion' => $testVersion, 'platformName' => $platformName,
-		  	    			                        'buildName' => htmlspecialchars($buildName),
-	            	                                'testerName' => htmlspecialchars($testerName),
-	            	                                'localizedTS' => htmlspecialchars($localizedTS),
-	        			                            'notes' => strip_tags($notes),'bugString' => $bugString);
-	      				}
-		  	    	}
-		  	    }
-		    } //foreach $suiteContents
-	    } //foreach $mapOfLastResult
-	} // end if
+    $filters=null;
+    $options=array('group_by_platform_tcversion' => true);
+	$myRBB = $tplan_mgr->getNotExecutedLinkedTCVersionsDetailed($args->tplan_id,$filters,$options);
+	$user_key='assigned_to';
 }
 else
 {
-	// franciscom - refactoring wrok in progress
 	$filters = array('exec_status' => array($args->type));
 	$options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true, 'details' => 'summary',
 	               'execution_details' => 'add_build');
 	$myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    foreach($myRBB as $item)
-    {
-        $bugString='';	                                 
-        $suiteName='';
-	    if (array_key_exists($item['tester_id'], $arrOwners))
-		{
-		   $testerName = $arrOwners[$item['tester_id']];
-		}
-		else
-		{
-		    // user id has been deleted
-		    $testerName = sprintf($deleted_user_label,$item['tester_id']);
-		}
-		$tcaseName = $testCasePrefix . $item['external_id'] . ':' . $item['name'];
-        $verbosePath = implode('/',$tcase_mgr->getPathLayered(array($item['tc_id'])));		
-		$gui->dataSet[] = array('suiteName' => $verbosePath, 'testTitle' => htmlspecialchars($tcaseName),
-		                        'testVersion' => $item['version'], 
-		                        'platformName' => htmlspecialchars($item['platform_name']),
-		                        'buildName' => htmlspecialchars($item['build_name']),
-		                        'testerName' => htmlspecialchars($testerName),
-		                        'localizedTS' => $item['execution_ts'],
-		                        'notes' => strip_tags($item['summary']),'bugString' => $bugString);
-
-    }
+	$user_key='tester_id';
 }
 
-// $args->user->
+if( !is_null($myRBB) and count($myRBB) > 0 )
+{
+	$bugString='';
+    $pathCache=null;
+    $topCache=null;
+    $levelCache=null;
+    $gdx=0;
+	foreach($myRBB as $item)
+	{
+	    $suiteName='';
+	    if( $item[$user_key] == 0 )
+	    {
+	    	$testerName = '';
+	    }
+	    else
+	    {
+	    	if (array_key_exists($item[$user_key], $arrOwners))
+			{
+			   $testerName = $arrOwners[$item[$user_key]];
+			}
+			else
+			{
+			    // user id has been deleted
+			    $testerName = sprintf($deleted_user_label,$item[$user_key]);
+			}
+		}
+		$tcaseName = $testCasePrefix . $item['external_id'] . ':' . $item['name'];
+		if( !isset($pathCache[$item['tc_id']]) )
+		{
+			$dummy=$tcase_mgr->getPathLayered(array($item['tc_id']));	
+			$pathCache[$item['tc_id']] = $dummy[$item['testsuite_id']]['value'];
+			$levelCache[$item['tc_id']] = $dummy[$item['testsuite_id']]['level'];
+            $ky=current(array_keys($dummy)); 
+            $topCache[$item['tc_id']]=$ky;
+		}
+	    $verbosePath = $pathCache[$item['tc_id']];
+	    $level = $levelCache[$item['tc_id']];
+		if( $args->type == $statusCode['not_run'] )
+		{
+			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
+							array('suiteName' => $verbosePath, 'level' => $level,
+							      'testTitle' => htmlspecialchars($tcaseName),
+							      'testVersion' => $item['version'], 
+							      'platformName' => htmlspecialchars($item['platform_name']),
+							      'testerName' => htmlspecialchars($testerName),
+							      'notes' => strip_tags($item['summary']),
+							      'platformID' => $item['platform_id']);
+		}			
+		else
+		{
+			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
+							array('suiteName' => $verbosePath, 'testTitle' => htmlspecialchars($tcaseName),
+			                      'testVersion' => $item['version'], 
+			                      'platformName' => htmlspecialchars($item['platform_name']),
+			                      'buildName' => htmlspecialchars($item['build_name']),
+			                      'testerName' => htmlspecialchars($testerName),
+			                      'localizedTS' => $item['execution_ts'],
+			                      'notes' => strip_tags($item['summary']),'bugString' => $bugString,
+			                      'platformID' => $item['platform_id']);
+		}	      
+	}
 
+    // Rearrange for display
+	$key2loop=array_keys($topLevelSuites);
+	foreach($key2loop as $key)
+	{
+		if(	is_null($topLevelSuites[$key]['items']) )
+		{
+			unset($topLevelSuites[$key]);
+		}
+	}
+	$key2loop=array_keys($topLevelSuites);
+	$idx=0;
+	foreach($key2loop as $key)
+	{
+		$elem=&$topLevelSuites[$key]['items'];
+		$levelSet=array_keys($topLevelSuites[$key]['items']);
+		foreach($levelSet as $level)
+		{
+			//$loop2do=count($topLevelSuites[$key]['items'][$level]);
+			$loop2do=count($elem[$level]);
+			for($jdx=0 ; $jdx < $loop2do ; $jdx++)
+			{
+				// $gui->dataSet[$idx]=$topLevelSuites[$key]['items'][$level][$jdx];
+				$gui->dataSet[$idx]=$elem[$level][$jdx];
+				unset($gui->dataSet[$idx]['level']);
+				unset($gui->dataSet[$idx]['platformID']);
+		        
+		        $accessKey = $elem[$level][$jdx]['platformID'];
+		        $gui->dataSetByPlatform[$accessKey][]=$gui->dataSet[$idx];
+		        $idx++;
+			}  		
+		}
+    }    	
+}    	
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui );
-
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
 
 /**
@@ -214,6 +196,10 @@ function buildTCLink($tcID,$tcversionID, $title, $buildID,$testCaseExternalId, $
 }
 
 
+/**
+ * 
+ *
+ */
 function init_args($statusCode)
 {
     $iParams = array("format" => array(tlInputParameter::INT_N),
@@ -239,6 +225,7 @@ function initializeGui($statusCode,&$argsObj)
     // Count for the Failed Issues whose bugs have to be raised/not linked. 
     $guiObj->without_bugs_counter = 0; 
     $guiObj->dataSet = null;
+    $guiObj->dataSetByPlatform = null;
     $guiObj->title = null;
     $guiObj->type = $argsObj->type;
 
@@ -256,7 +243,6 @@ function initializeGui($statusCode,&$argsObj)
     	tlog('wrong value of GET type');
     	exit();
     }
-
     
     return $guiObj;    
 }

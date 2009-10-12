@@ -1,0 +1,105 @@
+<?php
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later.
+ *  
+ * Platforms definition export management
+ *
+ * @package 	TestLink
+ * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: platformsExport.php,v 1.1 2009/10/12 07:03:14 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ * @uses 		config.inc.php
+ *
+ * @internal Revisions:
+ *	
+ *
+ */
+require_once("../../config.inc.php");
+require_once("common.php");
+require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
+
+testlinkInitPage($db,false,false,"checkRights");
+$gui = new stdClass();
+$templateCfg = templateConfiguration();
+
+$gui->page_title = lang_get('export_platforms');
+$gui->do_it = 1;
+$gui->nothing_todo_msg = '';
+
+$args = init_args();
+if( is_null($args->export_filename)  )
+{
+	$args->export_filename = trim($args->testproject_name) . "-platforms.xml";
+    
+    // space diet !
+    $args->export_filename = str_ireplace(" ", "", $args->export_filename);
+}
+$gui->export_filename=trim($args->export_filename);
+$gui->exportTypes = array('XML' => 'XML');
+
+switch( $args->doAction )
+{
+    case 'doExport':
+	    doExport($db,$gui->export_filename,$args->testproject_id);
+	    break;  
+    
+    default:
+    	break;  
+}
+
+$smarty = new TLSmarty();
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+/*
+  function: init_args()
+
+  args:
+  
+  returns: 
+
+*/
+function init_args()
+{
+	$args = new stdClass();
+	$_REQUEST = strings_stripSlashes($_REQUEST);
+	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
+	$args->export_filename=isset($_REQUEST['export_filename']) ? trim($_REQUEST['export_filename']) : null;
+	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
+	return $args;
+}
+
+
+
+/*
+  function: doExport()
+
+  args: dbHandler
+        filename: where to export
+  
+  returns: -
+
+*/
+function doExport(&$dbHandler,$filename,$testproject_id)
+{
+	$tables = tlObjectWithDB::getDBTables(array('platforms'));
+    $adodbXML = new ADODB_XML("1.0", "ISO-8859-1");
+    $sql = " SELECT name,testproject_id,notes " .
+		   " FROM {$tables['platforms']} PLAT " .
+		   " WHERE PLAT.testproject_id={$testproject_id}";
+
+    $adodbXML->setRootTagName('platforms');
+    $adodbXML->setRowTagName('platform');
+    $content = $adodbXML->ConvertToXMLString($dbHandler->db, $sql);
+    downloadContentsToFile($content,$filename);
+	exit();
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,"platform_view");
+}
+?>

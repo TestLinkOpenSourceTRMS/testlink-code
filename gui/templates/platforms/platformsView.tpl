@@ -1,7 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.3 2009/09/07 17:52:38 schlundus Exp $
+$Id: platformsView.tpl,v 1.4 2009/10/12 07:02:04 franciscom Exp $
 Purpose: smarty template - View all platforms
+
+20091010 - franciscom - export XML feature
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -13,6 +15,11 @@ Purpose: smarty template - View all platforms
 
 {lang_get s='warning_delete_platform' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
+
+{assign var="viewAction" value="lib/platforms/platformsView.php"}
+{assign var="dummy" value="lib/platforms/platformsImport.php?goback_url="}
+{assign var="importAction" value="$basehref$dummy$basehref$viewAction"}
+
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
@@ -66,6 +73,7 @@ var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
 	
 
 	<div class="groupBtn">	
+    <span style="float: left">
 		<form name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
 	  		<input type="hidden" name="doAction" value="" />
 		  	{if $gui->canManage ne ""}
@@ -74,6 +82,18 @@ var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
 		           	onclick="doAction.value='create'"/>
 			  {/if}	
 		</form>
+    </span>
+
+    <span>
+ 	  <form name="platformsExport" id="platformsExport" method="post" action="lib/platforms/platformsExport.php" >
+		  <input type="submit" name="export_platforms" id="export_platforms"
+		         style="margin-left: 3px;" value="{$labels.btn_export}" />
+		         
+		  <input type="button" name="import_platforms" id="import_platforms" 
+		         onclick="location='{$importAction}'" value="{$labels.btn_import}" />
+       
+	  </form>
+    </span>
 	</div>
 </div>
 </body>

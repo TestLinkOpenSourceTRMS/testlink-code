@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.45 2009/09/10 09:14:51 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.46 2009/10/16 16:52:15 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -10,6 +10,7 @@
 *
 * @author 
 * 
+* 20091016 - franciscom - fix bug on URL to test case execution
 * 20090909 - franciscom - refactored to manage multiple tables when more that one
 *                         platform exists.
 *
@@ -53,10 +54,17 @@ if ($gui->buildInfoSet)
 {
 	$buildIDSet = array_keys($gui->buildInfoSet);
 }
+
+// Get Results on map with access key = test case's parent test suite id
 $executionsMap = $re->getSuiteList();
+new dBug($executionsMap);
 
 // lastResultMap provides list of all test cases in plan - data set includes title and suite names
 $lastResultMap = $re->getMapOfLastResult();
+new dBug($lastResultMap);
+
+
+
 $indexOfArrData = 0;
 $resultsCfg = config_get('results');
 $urgencyCfg = config_get('urgency');
@@ -101,7 +109,9 @@ if ($lastResultMap != null)
 				$testCaseVersion = $tcase['version'];
 				$external_id = $testCasePrefix . $tcase['external_id'];
 
-				$link = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' .
+                // URL must be absolute or relative to this page, in this case
+                // we are on <TL_ROOT>/lib/results/, then we go back two levels 
+				$link = '<a href="../../lib/execute/execSetResults.php?level=testcase&build_id=' .
 				        $tcase['buildIdLastExecuted'] . '&id=' . $testCaseId . '&version_id=' .
 				        $tcase['tcversion_id'] . '&tplan_id=' . $args->tplan_id . '">' .
 				        htmlspecialchars("{$external_id}:{$name}",ENT_QUOTES) . '</a>';
@@ -111,6 +121,8 @@ if ($lastResultMap != null)
 				if ($_SESSION['testprojectOptPriority']) 
 				{
 					$prio = $re->getPriority($args->tplan_id, $tcase['tcversion_id']);
+					
+					new dBug($prio);
 					
 					// is better to use code to do reorder instead of localized string
 					// $rowArray[] = lang_get($urgencyCfg["code_label"][$prio]);

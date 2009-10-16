@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.71 2009/10/12 07:04:30 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.72 2009/10/16 16:52:14 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -9,6 +9,7 @@
 *
 *
 * rev : 
+*   20091016 - franciscom - work still is needed to display LINK to BUG
 *   20091011 - franciscom - refactoring to do not use result.class
 *   20090517 - franciscom - fixed management of deleted testers
 * 	20090414 - amikhullar - BUGID: 2374 - Show Assigned User in the Not Run Test Cases Report 

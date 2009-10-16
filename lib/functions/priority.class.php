@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: priority.class.php,v 1.11 2009/06/17 22:04:35 havlat Exp $
+ * @version    	CVS: $Id: priority.class.php,v 1.12 2009/10/16 16:52:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -40,7 +40,7 @@ class testPlanUrgency extends testPlan
 	public function setTestUrgency($testplan_id, $tc_id, $urgency)
 	{
 		$sql = "UPDATE {$this->tables['testplan_tcversions']} SET urgency={$urgency} " .
-			"WHERE testplan_id={$testplan_id} AND tcversion_id={$tc_id}";
+			   "WHERE testplan_id={$testplan_id} AND tcversion_id={$tc_id}";
 		$result = $this->db->exec_query($sql);
 
 		return $result ? tl::OK : tl::ERROR;
@@ -67,16 +67,16 @@ class testPlanUrgency extends testPlan
 	public function setSuiteUrgency($testplan_id, $node_id, $urgency)
 	{
 		$sql = " UPDATE {$this->tables['testplan_tcversions']} " . 
-			" SET urgency={$urgency} ".
-			" WHERE testplan_id= {$testplan_id} " .
-			" AND tcversion_id IN (" .
-			" SELECT NHB.id " . 
-			" FROM {$this->tables['nodes_hierarchy']}  NHA, " .
-			" {$this->tables['nodes_hierarchy']} NHB, {$this->tables['node_types']} NT " .
-			" WHERE NHA.node_type_id = NT.id " .
-			" AND NT.description='testcase' " . 
-			" AND NHB.parent_id = NHA.id " . 
-			" AND NHA.parent_id = {$node_id} )";
+			   " SET urgency={$urgency} ".
+			   " WHERE testplan_id= {$testplan_id} " .
+			   " AND tcversion_id IN (" .
+			   " SELECT NHB.id " . 
+			   " FROM {$this->tables['nodes_hierarchy']}  NHA, " .
+			   " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['node_types']} NT " .
+			   " WHERE NHA.node_type_id = NT.id " .
+			   " AND NT.description='testcase' " . 
+			   " AND NHB.parent_id = NHA.id " . 
+			   " AND NHA.parent_id = {$node_id} )";
 		$result = $this->db->exec_query($sql);
 		
 		$retval=$result ? OK : ERROR;
@@ -103,7 +103,7 @@ class testPlanUrgency extends testPlan
 		$testcase_cfg = config_get('testcase_cfg');  
 		
 		$sql = " SELECT testprojects.prefix  FROM {$this->tables['testprojects']} testprojects " .
-			" WHERE testprojects.id = ";
+			   " WHERE testprojects.id = ";
 		
 		if( !is_null($testproject_id) )
 		{
@@ -112,25 +112,63 @@ class testPlanUrgency extends testPlan
 		else
 		{
 			$sql .= "( SELECT parent_id AS testproject_id FROM {$this->tables['nodes_hierarchy']} " .
-				" WHERE id={$testplan_id} ) ";
+				    " WHERE id={$testplan_id} ) ";
 		}
 		
 		$tcprefix = $this->db->fetchOneValue($sql) . $testcase_cfg->glue_character;
 		$tcprefix = $this->db->prepare_string($tcprefix);
 		
 		$sql = " SELECT DISTINCT '{$tcprefix}' AS tcprefix, NHB.name, NHB.node_order," .
-			" NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.tcversion_id, testplan_tcversions.urgency".
-			" FROM {$this->tables['nodes_hierarchy']} NHA " .
-			" JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
-			" JOIN {$this->tables['testplan_tcversions']} testplan_tcversions " .
-			" ON testplan_tcversions.tcversion_id=NHA.id " .
-			" JOIN {$this->tables['tcversions']}  TCV ON TCV.id = testplan_tcversions.tcversion_id " .
-			" WHERE testplan_tcversions.testplan_id={$testplan_id}" .
-			" AND NHB.parent_id={$node_id}" . 
-			" ORDER BY NHB.node_order";
+			   " NHA.parent_id AS testcase_id, TCV.tc_external_id, testplan_tcversions.tcversion_id, testplan_tcversions.urgency".
+			   " FROM {$this->tables['nodes_hierarchy']} NHA " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
+			   " JOIN {$this->tables['testplan_tcversions']} testplan_tcversions " .
+			   " ON testplan_tcversions.tcversion_id=NHA.id " .
+			   " JOIN {$this->tables['tcversions']}  TCV ON TCV.id = testplan_tcversions.tcversion_id " .
+			   " WHERE testplan_tcversions.testplan_id={$testplan_id}" .
+			   " AND NHB.parent_id={$node_id}" . 
+			   " ORDER BY NHB.node_order";
 		
 		return $this->db->get_recordset($sql);
 	}
+	
+    /**
+	 * Returns priority (urgency * importance) as HIGH, MEDUIM or LOW depending on value
+	 * @return HIGH, MEDIUM or LOW
+	 */
+	public function getPriority($testplan_id, $tcversion_id=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$ret = LOW;
+		
+		$tcversion_id_filter = is_null($tcversion_id) ? '' : implode(',',(array)$tcversion_id);
+        if( $tcversion_id_filter != '')
+        {
+        	$tcversion_id_filter = " AND TPTCV.tcversion_id IN ({$itemFilter}) ";
+        }
+        
+		$sql = "/* $debugMsg */ ";
+		$sql .=	" SELECT (urgency * importance) AS priority,  TPTCV.tcversion_id " .
+		        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
+			    " JOIN {$this->tables['tcversions']} TCV ON TPTCV.tcversion_id = TCV.id " .
+			    " WHERE TPTCV.testplan_id = {$tplan_id} {$tcversion_id_filter}";
+		$rs = $this->db->fetchOneValue($sql,'tcversion_id');
+		
+		if ($prio >= $this->priorityLevelsCfg[HIGH])
+		{
+			$ret = HIGH;
+		}
+		else if ($prio >= $this->priorityLevelsCfg[MEDIUM])
+		{
+			$ret = MEDIUM;
+		}
+        return $ret;
+	}
+
+	
+	
+	
+	
 	
 } // end of class
 

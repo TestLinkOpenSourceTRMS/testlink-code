@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.46 2009/10/16 16:52:15 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.47 2009/10/18 16:27:39 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -35,7 +35,9 @@ $gui->matrixCfg  = config_get('resultMatrixReport');
 $gui->matrixData = array();
 
 $buildIDSet = null;
-$tplan_mgr = new testplan($db);
+// $tplan_mgr = new testplan($db);
+$tplan_mgr = new testPlanUrgency($db);
+
 $tproject_mgr = new testproject($db);
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
@@ -98,6 +100,7 @@ if ($gui->matrixCfg->buildColumns['latestBuildOnLeft'])
 $gui->matrixSet = array();
 if ($lastResultMap != null) 
 {
+	$priorityCache  = null;
 	foreach ($lastResultMap as $suiteId => $tsuite) 
 	{
 		foreach ($tsuite as $testCaseId => $platform) 
@@ -120,13 +123,13 @@ if ($lastResultMap != null)
 
 				if ($_SESSION['testprojectOptPriority']) 
 				{
-					$prio = $re->getPriority($args->tplan_id, $tcase['tcversion_id']);
-					
-					new dBug($prio);
-					
+					if( !isset($priorityCache[$tcase['tcversion_id']]) )
+					{
+						$dummy = $tplan_mgr->getPriority($args->tplan_id, array('tcversion_id' => $tcase['tcversion_id']));
+						$priorityCache[$tcase['tcversion_id']] = $dummy[$tcase['tcversion_id']];
+					}
 					// is better to use code to do reorder instead of localized string
-					// $rowArray[] = lang_get($urgencyCfg["code_label"][$prio]);
-					$rowArray[] = $prio;
+					$rowArray[] = $priorityCache[$tcase['tcversion_id']]['priority_level'];
 				}
 
 				$suiteExecutions = $executionsMap[$suiteId];

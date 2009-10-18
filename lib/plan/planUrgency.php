@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planUrgency.php,v 1.14 2009/06/18 16:03:03 schlundus Exp $
+ * @version    	CVS: $Id: planUrgency.php,v 1.15 2009/10/18 16:27:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -20,7 +20,6 @@
  
 require('../../config.inc.php');
 require_once('common.php');
-require_once('priority.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 $args = init_args();
 
@@ -32,6 +31,16 @@ if($args->show_help)
 $templateCfg = templateConfiguration();
 $tplan_mgr = new testPlanUrgency($db);
 $gui = new stdClass();
+
+// $filters = null;
+// // $options = null;
+// $options = array('details' => 'platform');
+// $xx=$tplan_mgr->getPriority($args->tplan_id,$filters,$options);
+// new dBug($xx);
+
+// $options = null;
+// $xx=$tplan_mgr->getPriority($args->tplan_id,$filters,$options);
+// new dBug($xx);
 
 $node_info = $tplan_mgr->tree_manager->get_node_hierachy_info($args->node_id);
 $gui->urgencyCfg = config_get('urgency');

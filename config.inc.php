@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.260 2009/10/02 11:00:20 havlat Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.261 2009/10/18 16:25:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20091018 - franciscom - added contribution LDAP with TLS
  *  20090926 - franciscom - new default for $tlCfg->req_cfg->child_requirements_mgmt
  *  20090912 - franciscom - BUGID 2796 - contribution reportsCfg->start_time
  *  20090901 - franciscom - new option exec_cfg->steps_results_layout
@@ -282,15 +283,15 @@ $g_smtp_password    = '';  # password
 $tlCfg->authentication['method'] = 'MD5';
 
 /** LDAP authentication credentials */
-$tlCfg->authentication['ldap_server']		= 'localhost';
-$tlCfg->authentication['ldap_port']			= '389';
-$tlCfg->authentication['ldap_version']		= '3'; // could be '2' in some cases
-$tlCfg->authentication['ldap_root_dn']		= 'dc=mycompany,dc=com';
+$tlCfg->authentication['ldap_server'] = 'localhost';
+$tlCfg->authentication['ldap_port'] = '389';
+$tlCfg->authentication['ldap_version'] = '3'; // could be '2' in some cases
+$tlCfg->authentication['ldap_root_dn'] = 'dc=mycompany,dc=com';
 $tlCfg->authentication['ldap_organization']	= '';    // e.g. '(organizationname=*Traffic)'
-$tlCfg->authentication['ldap_uid_field']	= 'uid'; // Use 'sAMAccountName' for Active Directory
-$tlCfg->authentication['ldap_bind_dn']		= ''; // Left empty for anonymous LDAP binding 
-$tlCfg->authentication['ldap_bind_passwd']	= ''; // Left empty for anonymous LDAP binding 
-
+$tlCfg->authentication['ldap_uid_field'] = 'uid'; // Use 'sAMAccountName' for Active Directory
+$tlCfg->authentication['ldap_bind_dn'] = ''; // Left empty for anonymous LDAP binding 
+$tlCfg->authentication['ldap_bind_passwd'] = ''; // Left empty for anonymous LDAP binding 
+$tlCfg->authentication['ldap_tls'] = false; // true -> use tls
 
 /** Enable/disable Users to create accounts on login page */
 $tlCfg->user_self_signup = TRUE; 

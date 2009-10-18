@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: ldap_api.php,v $
  * 
- * @version $Revision: 1.3 $
- * @modified $Date: 2008/08/07 14:27:13 $ by $Author: havlat $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/10/18 16:26:09 $ by $Author: franciscom $
  * @author This piece of software has been copied and adapted from:
  * 		Mantis - a php based bugtracking system (GPL)
  * 		Copyright (C) 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
@@ -17,6 +17,7 @@
  *
  *
  * Revisions:
+ *  20091018 - franciscom - BUGID - contribution to use TLS as secure method
  * 	20080807 - havlatm - config update, refactorization
  * 
  ************************************************************************************* */
@@ -30,16 +31,21 @@
 		$ret->handler 	= null;
 	  
 		$authCfg = config_get('authentication');
-
 		$t_ds = ldap_connect ( $authCfg['ldap_server'], $authCfg['ldap_port'] );
 		
 		// BUGID 1247
 		ldap_set_option($t_ds, LDAP_OPT_PROTOCOL_VERSION, $authCfg['ldap_version']);
     	ldap_set_option($t_ds, LDAP_OPT_REFERRALS, 0);
 
+        // Contribution 
+        $bind_method = 'ldap_bind';
+        if ($authCfg['ldap_tls'])
+        {
+        	$bind_method = 'ldap_start_tls';	
+        }
+
 		if ( $t_ds > 0 ) 
 		{
-		  
 			$ret->handler=$t_ds;
 	  
 			# If no Bind DN and Password is set, attempt to login as the configured
@@ -52,10 +58,10 @@
 
 			if ( !is_blank( $p_binddn ) && !is_blank( $p_password ) ) 
 			{
-				$t_br = ldap_bind( $t_ds, $p_binddn, $p_password );
+				$t_br = $bind_method( $t_ds, $p_binddn, $p_password );
 			} else {
 				# Either the Bind DN or the Password are empty, so attempt an anonymous bind.
-				$t_br = ldap_bind( $t_ds );
+				$t_br = $bind_method( $t_ds );
 			}
 			
 			if ( !$t_br ) 
@@ -87,15 +93,15 @@
    		$t_authenticated = new stdClass();
    		$t_authenticated->status_ok = TRUE;
        	$t_authenticated->status_code = null;
-		$authCfg 			= config_get('authentication');
+		$authCfg = config_get('authentication');
 		$t_ldap_organization = $authCfg['ldap_organization'];
-		$t_ldap_root_dn		= $authCfg['ldap_root_dn'];
-		$t_ldap_uid_field	= $authCfg['ldap_uid_field'];	// 'uid' by default
+		$t_ldap_root_dn = $authCfg['ldap_root_dn'];
+		$t_ldap_uid_field = $authCfg['ldap_uid_field'];	// 'uid' by default
 
-		$t_username      	= $p_login_name;
-		$t_search_filter 	= "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
-		$t_search_attrs  	= array( $t_ldap_uid_field, 'dn' );
-		$t_connect       	= ldap_connect_bind();
+		$t_username = $p_login_name;
+		$t_search_filter = "(&$t_ldap_organization($t_ldap_uid_field=$t_username))";
+		$t_search_attrs = array( $t_ldap_uid_field, 'dn' );
+		$t_connect = ldap_connect_bind();
 
     	if( !is_null($t_connect->handler) )
     	{

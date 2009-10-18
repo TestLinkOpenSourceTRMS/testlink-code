@@ -9,7 +9,7 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.48 2009/08/10 21:15:42 havlat Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.49 2009/10/18 15:13:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -94,7 +94,6 @@ class database
   
 	function database($db_type)
 	{
-		// 20080719 - franciscom
 		$fetch_mode = ADODB_FETCH_ASSOC;
 		$this->db = NewADOConnection($db_type);
 		
@@ -250,13 +249,13 @@ class database
 		{
 			if ( $this->db_is_pgsql() ) 
 			{
-				$query = "SELECT currval('".$p_table."_id_seq')";
+				$sql = "SELECT currval('".$p_table."_id_seq')";
 			}
 			elseif ($this->db_is_oracle())
 			{
-				$query = "SELECT ".$p_table."_id_seq.currval from dual";
+				$sql = "SELECT ".$p_table."_id_seq.currval from dual";
 			}
-			$result = $this->exec_query( $query );
+			$result = $this->exec_query( $sql );
 			return $this->db_result($result);
 		}
 		return $this->db->Insert_ID( );
@@ -324,8 +323,8 @@ class database
 		$c_field = $this->db->prepare_string( $p_field );
 		$c_key   = $this->db->prepare_string( $p_key );
 
-		$query = "DESCRIBE $c_table";
-		$result = $this->exec_query( $query );
+		$sql = "DESCRIBE $c_table";
+		$result = $this->exec_query( $sql );
 		
 		$count = $this->num_rows( $result );
 		for ( $i=0 ; $i < $count ; $i++ ) {
@@ -486,15 +485,15 @@ class database
 	/**
 	 * Fetches the first column first row 
 	 *
-	 * @param string $query the query to be executed
+	 * @param string $sql the query to be executed
 	 * @param string $column the name of the column which shall be returned
 	 * 
 	 * @return mixed the value of the column
 	 **/
-	function fetchFirstRowSingleColumn($query,$column)
+	function fetchFirstRowSingleColumn($sql,$column)
 	{
 		$value = null;
-		$row = $this->fetchFirstRow($query);
+		$row = $this->fetchFirstRow($sql);
 		
 		// BUGID 1318
 		if ($row && array_key_exists($column, $row))
@@ -507,12 +506,12 @@ class database
 	/**
 	 * Fetches the first row (in a assoc-array)
 	 *
-	 * @param string $query the query to be executed
+	 * @param string $sql the query to be executed
 	 * @return array the first row
 	 **/
-	function fetchFirstRow($query)
+	function fetchFirstRow($sql)
 	{
-		$result = $this->exec_query($query);
+		$result = $this->exec_query($sql);
 		$row = null;
 		if ($result)
 			$row = $this->fetch_array($result);
@@ -525,12 +524,12 @@ class database
 	 * Get one value (no array)
 	 * for example: SELECT COUNT(*) FROM table 
 	 *
-	 * @param string $query the query to be executed
+	 * @param string $sql the query to be executed
 	 * @return string of one value || null
 	 **/
-	public function fetchOneValue($query)
+	public function fetchOneValue($sql)
 	{
-	  	$row = $this->fetchFirstRow($query);
+	  	$row = $this->fetchFirstRow($sql);
 		if ($row)
     	{
 			$fieldName = array_keys($row);   
@@ -543,15 +542,16 @@ class database
 	/**
 	 * Fetches all values for a given column of all returned rows
 	 *
-	 * @param string $query the query to be executed
+	 * @param string $sql the query to be executed
 	 * @param string $column the name of the column
-	 * 
+	 * @param integer $limit (optional) number of rows
+     *
 	 * @return array an enumerated array, which contains all the values
 	 **/
-	function fetchColumnsIntoArray($query,$column,$limit = -1)
+	function fetchColumnsIntoArray($sql,$column,$limit = -1)
 	{
 		$items = null;
-		$result = $this->exec_query($query,$limit);
+		$result = $this->exec_query($sql,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
@@ -565,17 +565,32 @@ class database
 	/**
 	 * Fetches all rows into a map whose keys are the values of columns
 	 *
-	 * @param string $query the query to be executed
+	 * @param string $sql the query to be executed
 	 * @param string $column the name of the column
 	 * @param booleam $cumulative default 0
+	 *                useful in situations with results set with multiple
+	 *                rows with same value on key column like this:
+	 *
+	 *                col1   col2  col3 ...
+	 *                 X      A     C
+	 *                 X      B     Z
+	 *                 Y      B     0
+	 *
+	 *        cumulative=0 -> return items= array('X' => array('A','C'), 'Y' => array('B','0') )
+	 *
+	 *        cumulative=1 -> return items= 
+	 *                        array('X' => array( 0 => array('A','C'), 1 => array('B','>')),
+	 *                              'Y' => array( 0 => array('B','0')I )
+	 *
+	 * @param integer $limit (optional) number of rows
 	 *
 	 * @return array an assoc array whose keys are the values from the columns
 	 * 				 of the rows
 	 **/
-	function fetchRowsIntoMap($query,$column,$cumulative = 0,$limit = -1)
+	function fetchRowsIntoMap($sql,$column,$cumulative = 0,$limit = -1)
 	{
 		$items = null;
-		$result = $this->exec_query($query,$limit);
+		$result = $this->exec_query($sql,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
@@ -602,7 +617,7 @@ class database
                 {
                 	// new dBug(debug_backtrace());
                 	// die();
-    			    $errorMsg .= ' - SQL:' . $query;
+    			    $errorMsg .= ' - SQL:' . $sql;
     				trigger_error($errorMsg,E_USER_NOTICE);
     				return null;
     			}	
@@ -627,7 +642,7 @@ class database
 	/**
 	 * Fetches the values of two columns from all rows into a map
 	 *
-	 * @param string $query the query to be executed
+	 * @param string $sql the query to be executed
 	 * @param string $column1 the name of the column (keys for the map)
 	 * @param string $column2 the name of the second column (values of the map)
 	 * @param boolean $cumulative
@@ -641,15 +656,17 @@ class database
 	 *
 	 *        cumulative=1 -> return items= array('X' => array('A','B'), 'Y' => array('B') )
 	 *               
+	 * @param integer $limit (optional) number of rows
+	 *               
 	 * @return assoc array whose keys are the values of column1 and the values are:
 	 *
 	 *         cumulative=0  => the values of column2 
 	 *         cumulative=1  => array with the values of column2 
 	 *
 	 **/
-	function fetchColumnsIntoMap($query,$column1,$column2,$cumulative=0,$limit = -1)
+	function fetchColumnsIntoMap($sql,$column1,$column2,$cumulative=0,$limit = -1)
 	{
-		$result = $this->exec_query($query,$limit);
+		$result = $this->exec_query($sql,$limit);
 		$items = null;
 		if ($result)
 		{
@@ -683,7 +700,8 @@ class database
 	}
 
 
-	// the old selectData with new name.
+	/**
+	 **/
 	function get_recordset($sql,$fetch_mode = null,$limit = -1)
 	{
 		$output = null;
@@ -703,16 +721,17 @@ class database
 	/**
 	 * Fetches all rows into a map whose keys are the values of columns
 	 *
-	 * @param string $query the query to be executed
+	 * @param string $sql the query to be executed
 	 * @param string $column the name of the column
-	 * 
+	 * @param integer $limit (optional) number of rows
+     *
 	 * @return array an assoc array whose keys are the values from the columns
 	 * 				 of the rows
 	 **/
-	function fetchArrayRowsIntoMap($query,$column,$limit = -1)
+	function fetchArrayRowsIntoMap($sql,$column,$limit = -1)
 	{
 		$items = null;
-		$result = $this->exec_query($query,$limit);
+		$result = $this->exec_query($sql,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
@@ -725,10 +744,21 @@ class database
 	}
 
 
-	function fetchMapRowsIntoMap($query,$column_main_key,$column_sec_key,$limit = -1)
+	/**
+	 * Fetches all rows into a map whose keys are the values of columns
+	 *
+	 * @param string $sql the query to be executed
+	 * @param string $column_main_key the name of the column
+	 * @param string $column_sec_key the name of the column
+	 * @param integer $limit (optional) number of rows
+	 * 
+	 * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
+	 * 
+	 **/
+	function fetchMapRowsIntoMap($sql,$column_main_key,$column_sec_key,$limit = -1)
 	{
 		$items = null;
-		$result = $this->exec_query($query,$limit);
+		$result = $this->exec_query($sql,$limit);
 		if ($result)
 		{
 			while($row = $this->fetch_array($result))
@@ -736,11 +766,12 @@ class database
 				$items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
 			}
 		}
-		
 		return $items;
 	}
 
-
+	/** 
+	 * 
+	 **/
 	function build_sql_create_db($db_name)
 	{
 		$db_type = $this->db->databaseType;

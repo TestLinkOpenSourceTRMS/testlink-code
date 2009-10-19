@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/04/04 22:35:13 $ $Author: havlat $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/10/19 19:54:05 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -138,7 +138,12 @@ $TLS_req_type_interface 	= 'Interface';
 $TLS_req_type_non_functional = 'Non functional';
 $TLS_req_type_constrain 	= 'Constrain';
 
+$TLS_exec_not_run_result_note = "Important Notice: Once a Result is updated from 'Not Run' to another value, " .
+                                "you cannot set it back to 'Not Run'. <br />You can still set the Result to any other value.";
+
 $TLS_req_status_not_testable = "Not testable"; // defined for historical reason (should be replaced by $TLS_req_type_info)
+$TLS_reserved_system_role_1 = 'reserved system role 1';
+$TLS_reserved_system_role_2 = 'reserved system role 2';
 
 
 // ----- unsorted (TODO move) -------------------------------------
@@ -177,6 +182,14 @@ $TLS_testplan_usage="Test Plan usage";
 $TLS_add_tcversion_to_plans = "Add Test Case Version to Test Plans";
 $TLS_please_select_one_testplan = "Please select at least one Test Plan.";
 
+$TLS_deleted_user = "[deleted user - id=%s]";
+$TLS_tag_for_inactive_users = "*";
+
+$TLS_design = "Test Spec Design";
+$TLS_execution = "Test Execution";
+$TLS_testplan_design = "Test Plan Desing";
+$TLS_enable_on = "Enable on";
+$TLS_closed_on_date="Closed on ";
 
 
 // ----- JAVASCRIPT -----
@@ -282,6 +295,8 @@ $TLS_report_tplan_has_no_tcases = "Test Plan has no Test Cases linked, <br />".
                                 "then no execution data can exist => no report can be created";
 
 // ----- tcEdit.php -----
+$TLS_copy_keyword_assignments = "Copy Keyword Assignments";
+$TLS_copy_requirement_assignments = "Copy Requirement Assignments";
 $TLS_tc_copied = "Test Case %s was successfully copied to <br /> Test Suite %s";
 $TLS_tc_created = "Test Case %s was successfully created";
 $TLS_tc_deleted = "Test Case %s was successfully deleted";
@@ -445,12 +460,15 @@ $TLS_filter_tcID = "Test Case ID";
 $TLS_include_unassigned_testcases = " - include unassigned Test Cases";
 $TLS_test_status_all_status = $TLS_test_status_all;
 $TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
+$TLS_In = "In";
+$TLS_Out = "Not In";
 
 
 // ----- gui/templates/mainPage.tpl -----
 $TLS_th_my_perc_completed = "My completed [%]";
 $TLS_th_perc_completed = "Completed [%]";
 $TLS_title_your_tp_metrics = "Your Test Plan Metrics";
+$TLS_error_no_testprojects_present = "There are currently no testproject defined!";
 
 
 // ----- gui/templates/metrics_dashbord.tpl -----
@@ -1276,6 +1294,8 @@ $TLS_info_test_results = "There are only last test results listed. " .
 $TLS_th_bugs = "Bugs";
 $TLS_th_date = "Date";
 $TLS_th_run_by = "Run by";
+$TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
+$TLS_th_assigned_to = "Assigned To";
 
 
 
@@ -1797,6 +1817,8 @@ $TLS_sec_note_remove_install_dir = "Install directory should be removed!";
 $TLS_error_domxml_missing = "Domxml doesn't seem to be present. Importing XML stuff will not work!";
 $TLS_error_gd_missing = "GD PHP extension doesn't seem to be present. Charts will not work!";
 
+// ----- lib/functions/cfield_mgr.class.php -----
+$TLS_text_counter_feedback = "You may enter up to %d characters. Left ";
 
 // ----- lib/general/frmWorkArea.php -----
 $TLS_create_a_build = "Create a new build";
@@ -1978,10 +2000,12 @@ $TLS_list_of_blocked = "Blocked Test Cases";
 $TLS_list_of_failed = "Failed Test Cases";
 $TLS_list_of_not_run = "Not Run Test Cases";
 
-
+// ----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 
 // ----- lib/results/resultsTC.php -----
-
+$TLS_result_on_last_build = '[Last Build]';
 
 
 // ----- lib/results/resultsNavigator.php -----

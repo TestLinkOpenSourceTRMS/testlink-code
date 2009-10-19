@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.42 2009/09/24 07:26:59 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.43 2009/10/19 09:47:45 franciscom Exp $ 
  * 
  * rev :
  *       20090807 - franciscom - new feature platforms
@@ -133,9 +133,12 @@ switch($args->level)
 {
 	case 'testcase':
 		// build the data need to call gen_spec_view
-		$my_path = $tree_mgr->get_path($args->id);
-		$idx_ts = count($my_path) - 1;
-		$tsuite_data = $my_path[$idx_ts - 1];
+		// $my_path = $tree_mgr->get_path($args->id);
+		// $idx_ts = count($my_path) - 1;
+		// $tsuite_data = $my_path[$idx_ts - 1];
+        $xx=$tcase_mgr->getPathLayered(array($args->id));
+        $tsuite_data['id'] = end(array_keys($xx));
+        $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
 		
 		$status_quo = $tcase_mgr->get_versions_status_quo($args->id, $args->version_id);
 		$linked_items[$args->id] = $status_quo[$args->version_id];
@@ -147,10 +150,12 @@ switch($args->level)
 		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
 		$filters = array('keywords' => $keywordsFilter->items );	
 		$opt = array('write_button_only_if_linked' => 1 );	
+		
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 						        $linked_items,null,$filters,$opt);
 			
-							           
+
+        // new dBug($my_out);							           
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.
 		$out = array();

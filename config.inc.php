@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.261 2009/10/18 16:25:42 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.262 2009/10/20 16:57:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -537,9 +537,9 @@ $tlCfg->exec_cfg->history_order = 'DESC';
 // FALSE -> just last execution for the choosen build will be showed [STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->history_on = FALSE;
 
-// TRUE  ->  test case VERY LAST (i.e. in any build) execution status will be displayed
-// FALSE -> only last result on current build.  [STANDARD BEHAVIOUR]
-$tlCfg->exec_cfg->show_last_exec_any_build = FALSE;
+// TRUE  ->  test case VERY LAST (i.e. in any build) execution status will be displayed [STANDARD BEHAVIOUR]
+// FALSE -> only last result on current build.  
+$tlCfg->exec_cfg->show_last_exec_any_build = TRUE;
 
 // TRUE  ->  History for all builds will be shown
 // FALSE ->  Only history of the current build will be shown  [STANDARD BEHAVIOUR]

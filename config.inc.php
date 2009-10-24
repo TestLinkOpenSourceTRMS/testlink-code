@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.262 2009/10/20 16:57:25 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.263 2009/10/24 18:23:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -478,7 +478,6 @@ $tlCfg->reportsCfg=new stdClass();
 //Displayed execution statuses to use on reports (ordered). */
 $tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
 
-
 /** 
  * Default Offset in seconds for reporting start date (reports with date range)
  * @uses lib/results/resultsMoreBuilds.php
@@ -890,7 +889,15 @@ define('TL_BASE_HREF', get_home_url());
 
 clearstatcache();
 if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) ) 
+{
   require_once( TL_ABS_PATH . 'custom_config.inc.php' ); 
+}
+
+// BUGID 2914
+// Important to do this only after custom_* to use (if exists) redefinition of
+// $tlCfg->results['status_label_for_exec_ui']
+$tlCfg->reportsCfg->exec_status = $tlCfg->results['status_label_for_exec_ui'];
+
 
 /** Support for localization */
 //	@TODO schlundus, move the code out of config and do it only once and not always in any include!

@@ -9,11 +9,15 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.141 2009/10/12 07:04:30 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.142 2009/10/25 19:22:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *
+ *  20091025 - franciscom - new method - getStatusTotalsByPlatform()
+ *                          bug found on getNotExecutedLinkedTCVersionsDetailed()
+ *                          missing testplan_id on execution join
  *
  *	20091010 - franciscom - getNotExecutedLinkedTCVersionsDetailed() new options
  *  20091004 - franciscom - get_linked_tcversions() - fixed query when requesting exec status filtering.
@@ -2542,11 +2546,12 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$resultsCfg = config_get('results');
 		$status_not_run=$resultsCfg['status_code']['not_run'];
+        $executions_join = "";
 
         $my['filters'] = array('build_id' => 0,'platform_id' => null);
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 
-        $my['options'] = array('group_by_platform' => false);
+        $my['options'] = array('group_by_platform_tcversion' => false);
 		$my['options'] = array_merge($my['options'], (array)$options);
 
 		$sqlFilter = "";
@@ -2562,7 +2567,8 @@ class testplan extends tlObjectWithAttachments
         {
 			$build_fields = " ";
             $build_join = " ";
-			$executions_join = " E.tcversion_id=TPTCV.tcversion_id ";
+			$executions_join = " E.tcversion_id=TPTCV.tcversion_id " .
+			                   " AND E.testplan_id = TPTCV.testplan_id ";
 		    $sqlFilter = "";
         }
         else
@@ -2571,7 +2577,8 @@ class testplan extends tlObjectWithAttachments
 			                " B.release_date AS build_release_date, " .
 			                " B.closed_on_date AS build_closed_on_date,";
             $build_join = " JOIN {$this->tables['builds']} B ON  B.testplan_id=TPTCV.testplan_id " ;
-			$executions_join = " E.build_id=B.id AND E.tcversion_id=TPTCV.tcversion_id ";
+			$executions_join = " E.build_id=B.id AND E.tcversion_id=TPTCV.tcversion_id " .
+			                   " AND E.testplan_id = TPTCV.testplan_id ";
         }
 
 		$sql = "/* {$debugMsg} */ ";
@@ -2657,6 +2664,54 @@ class testplan extends tlObjectWithAttachments
     	}
     	return $code_verbose;
    }
+
+    /**
+     *
+	 * @param id: test plan id
+	 * @return map: 
+ 	 */
+	public function getStatusTotalsByPlatform($id)
+	{
+		$code_verbose = $this->getStatusForReports();
+		
+        // Get platforms
+        $platformSet = $this->getPlatforms($id);
+        $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
+        foreach($platformIDSet as $platformID)
+        {
+        	$totals[$platformID] = array('total' => 0,'not_run' => 0);
+			foreach($code_verbose as $status_code => $status_verbose)
+			{
+				$totals[$platformID][$status_verbose]=0;
+			}
+        }
+       
+		// First step - get not run
+		$filters=null;
+        $options=array('group_by_platform_tcversion' => true);
+        $notRunResults = $this->getNotExecutedLinkedTCVersionsDetailed($id,$filters,$options);
+
+        $loop2do = count($notRunResults);
+        for($idx=0; $idx < $loop2do ; $idx++)
+        {
+        	$totals[$notRunResults[$idx]['platform_id']]['total']++;
+        	$totals[$notRunResults[$idx]['platform_id']]['not_run']++;
+        }
+        	
+		// Second step - get other results
+		$filters = null;
+	    $options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true);
+	    $execResults = $this->get_linked_tcversions($id,$filters,$options);
+        $loop2do = count($execResults);
+        for($idx=0; $idx < $loop2do ; $idx++)
+        {
+        	$key=$code_verbose[$execResults[$idx]['exec_status']];
+        	$totals[$execResults[$idx]['platform_id']]['total']++;
+        	$totals[$execResults[$idx]['platform_id']][$key]++;
+        }
+        return $totals;
+    }
+
 
 
 } // end class testplan

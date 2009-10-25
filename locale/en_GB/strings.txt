@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.482 2009/10/12 07:04:30 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.483 2009/10/25 19:24:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2077,6 +2077,7 @@ $TLS_chart_report = "Report";
 $TLS_chart_assigned_testers = "Owners";
 $TLS_chart_keywords = "Keywords";
 $TLS_chart_testsuites = "Test Suites";
+$TLS_overall_metrics_for_platform = "Overall Metrics - Platform: ";
 
 
 // ----- lib/req/reqImport.php -----

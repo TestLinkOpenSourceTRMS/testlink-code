@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.69 2009/09/14 13:21:55 franciscom Exp $ 
+* $Id: resultsMoreBuilds_buildReport.php,v 1.70 2009/10/27 15:41:23 franciscom Exp $ 
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 * 
@@ -9,11 +9,12 @@
 * the builds they would like to query results against.
 *
 * rev :
-*      20090409 - amitkhullar- code refactor for results object
-*      20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
-*      20090122 - franciscom - BUGID 2012 
-*      20080524 - franciscom - BUGID 1430
-*      20070901 - franciscom - refactoring
+*	20091027 - franciscom - BUGID 2500
+*	20090409 - amitkhullar- code refactor for results object
+*	20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
+*	20090122 - franciscom - BUGID 2012 
+*	20080524 - franciscom - BUGID 1430
+*	20070901 - franciscom - refactoring
 * 
 **/
 require_once('../../config.inc.php');
@@ -142,8 +143,12 @@ function initializeGui(&$dbHandler,&$argsObj)
     // amitkhullar - added this parameter to get the latest results. 
 	$latest_resultset = $argsObj->display->latest_results;
 	
-    $assignee = $argsObj->ownerSelected ? TL_USER_ANYBODY : null;
-    $tester = $argsObj->executorSelected ? TL_USER_ANYBODY : null;
+	// BUGID 2500
+    // $assignee = $argsObj->ownerSelected ? TL_USER_ANYBODY : null;
+    // $tester = $argsObj->executorSelected ? TL_USER_ANYBODY : null;
+    $assignee = $argsObj->ownerSelected > 0 ? $argsObj->ownerSelected : TL_USER_ANYBODY;
+    $tester = $argsObj->executorSelected > 0 ? $argsObj->executorSelected : TL_USER_ANYBODY  ;
+    
     $re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
                       	 $testsuiteIds, $buildsToQuery, $statusForClass, $latest_resultset,
                       	 $argsObj->keywordSelected,$assignee, 

@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.142 2009/10/25 19:22:28 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.143 2009/10/27 15:33:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20091027 - franciscom - BUGID 2500 - get_linked_tcversions()
  *  20091025 - franciscom - new method - getStatusTotalsByPlatform()
  *                          bug found on getNotExecutedLinkedTCVersionsDetailed()
  *                          missing testplan_id on execution join
@@ -819,7 +820,8 @@ class testplan extends tlObjectWithAttachments
 					$sql .= "(";
 					$sql_unassigned=" OR UA.user_id IS NULL)";
 				}
-				$sql .= " UA.user_id IN (" . implode(",",$my['filters']['assigned_to']) . ") " . $sql_unassigned;
+				// BUGID 2500
+				$sql .= " UA.user_id IN (" . implode(",",(array)$my['filters']['assigned_to']) . ") " . $sql_unassigned;
 			}
 		}
 		

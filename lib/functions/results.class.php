@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.149 2009/10/16 16:52:57 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.150 2009/10/27 15:55:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -1219,7 +1219,9 @@ class results extends tlObjectWithDB
 		if (($builds_to_query != -1) && ($builds_to_query != 'a')) {
 			$sqlFilters .= " AND build_id IN ($builds_to_query) ";
 		}
-		if (!is_null($executor)) {
+        // BUGID 2023
+		if (!is_null($executor) && $executor != '' && $executor != TL_USER_ANYBODY) 
+		{
 			$sqlFilters .= " AND tester_id = $executor ";
 		}
 		if ($search_notes_string != null) {

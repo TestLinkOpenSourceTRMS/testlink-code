@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.198 2009/10/12 07:04:30 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.199 2009/10/30 10:47:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2029,14 +2029,17 @@ class testcase extends tlObjectWithAttachments
 			$bCumulative = 1;
 		}
 		else
+		{
 			$sql .=  "= {$tcID}";
+		}
 		if (!is_null($kwID))
 		{
 			$sql .= " AND keyword_id = {$kwID}";
 		}
 		if (!is_null($orderByClause))
+		{
 			$sql .= $orderByClause;
-			
+		}	
 		$tcKeywords = $this->db->fetchRowsIntoMap($sql,$column,$bCumulative);
 	
 		return $tcKeywords;

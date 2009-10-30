@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2009/10/05 08:47:11 $ by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2009/10/30 10:46:46 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -190,6 +190,11 @@ else // do report
 
 
 	// ----------------------------------------------------------------------------
+	$kwr=$tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
+	
+	
+    new dBug($kwr);
+	
   	/* MILESTONE & PRIORITY REPORT */
     $planMetrics = $tplan_mgr->getStatusTotals($args->tplan_id);
     new dBug($planMetrics);

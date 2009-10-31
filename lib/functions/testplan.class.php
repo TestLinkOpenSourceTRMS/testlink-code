@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.145 2009/10/31 16:42:42 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.146 2009/10/31 17:27:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2707,9 +2707,13 @@ class testplan extends tlObjectWithAttachments
     }
 
     /**
-     *
+     * get last execution status analised by keyword, used to build reports.
+     * 
 	 * @param id: test plan id
-	 * @return map: 
+	 * @return map: key: keyword id
+	 *              value: map with following structure
+	 *
+	 *             
  	 */
 	public function getStatusTotalsByKeyword($id)
 	{
@@ -2722,7 +2726,7 @@ class testplan extends tlObjectWithAttachments
 	    if( !is_null($execResults) )
 	    {
 	    	$tcaseSet = array_keys($execResults);
-            $kw=$this->tcase_mgr->getKeywords($tcaseSet,null,$column = 'keyword_id');
+            $kw=$this->tcase_mgr->getKeywords($tcaseSet,null,'keyword_id',' ORDER BY keyword ASC ');
             if( !is_null($kw) )
             {
             	$keywordSet = array_keys($kw);
@@ -2735,7 +2739,6 @@ class testplan extends tlObjectWithAttachments
 					foreach($code_verbose as $status_code => $status_verbose)
 					{
 						$totals[$keywordID]['details'][$status_verbose]['qty']=0;
-						// $totals[$keywordID]['details'][$status_verbose]['percentage']=0;
 					}
             	} 
             	
@@ -2785,7 +2788,7 @@ class testplan extends tlObjectWithAttachments
             		$assignedTo = !is_null($assignedTo) && $assignedTo > 0 ? $assignedTo : TL_USER_NOBODY;
             		$execStatus = $testcaseInfo[$platformID]['exec_status'];
             		
-            		if( !$info[$assignedTo][$platformID] )
+            		if( !isset($info[$assignedTo][$platformID]) )
             		{
             			$info[$assignedTo][$platformID]['total']=0;
             		}
@@ -2834,18 +2837,12 @@ class testplan extends tlObjectWithAttachments
         return $info;
     }
 
-	function tallyResultsForReport($results,$totalCases)
+	function tallyResultsForReport($results)
 	{
 		if ($results == null)
 		{
 			return null;
 		}
-		
-		// not_run is an special status
-		$total['not_run'] = abs($totalCases - $dummy);
-		$percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);
-		
-		new dBug($results);
 		$keySet = array_keys($results);
 		foreach($keySet as $keyID)
 		{

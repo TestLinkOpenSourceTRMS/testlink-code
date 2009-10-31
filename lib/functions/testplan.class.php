@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.144 2009/10/30 10:47:38 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.145 2009/10/31 16:42:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20091031 - franciscom - tallyResultsForReport()
  *  20091027 - franciscom - BUGID 2500 - get_linked_tcversions()
  *  20091025 - franciscom - new method - getStatusTotalsByPlatform()
  *                          bug found on getNotExecutedLinkedTCVersionsDetailed()
@@ -2717,7 +2718,6 @@ class testplan extends tlObjectWithAttachments
 		$filters=null;
 		$options=array('output' => 'map');
     	$execResults = $this->get_linked_tcversions($id,$filters,$options);
-        new dBug($execResults);
 	 
 	    if( !is_null($execResults) )
 	    {
@@ -2726,19 +2726,16 @@ class testplan extends tlObjectWithAttachments
             if( !is_null($kw) )
             {
             	$keywordSet = array_keys($kw);
-            	new dBug($keywordSet);
-            	new dBug($kw);
-            	
             	foreach($keywordSet as $keywordID)
             	{
-            		$totals[$keywordID]['keyword']=$kw[$keywordID][0];
-            		unset($totals[$keywordID]['keyword']['testcase_id']);
-            		unset($totals[$keywordID]['keyword']['keyword_id']);
-            		
-            		$totals[$keywordID]['counters'] = array('total' => 0,'not_run' => 0);
+            		$totals[$keywordID]['type'] = 'keyword';                                                                     
+            		$totals[$keywordID]['name']=$kw[$keywordID][0]['keyword'];
+            		$totals[$keywordID]['notes']=$kw[$keywordID][0]['notes'];
+            		$totals[$keywordID]['total_tc'] = 0;                                                                     
 					foreach($code_verbose as $status_code => $status_verbose)
 					{
-						$totals[$keywordID]['counters'][$status_verbose]=0;
+						$totals[$keywordID]['details'][$status_verbose]['qty']=0;
+						// $totals[$keywordID]['details'][$status_verbose]['percentage']=0;
 					}
             	} 
             	
@@ -2747,8 +2744,8 @@ class testplan extends tlObjectWithAttachments
             		foreach($kw[$keywordID] as $kw_tcase)
             		{
             			$status = $execResults[$kw_tcase['testcase_id']]['exec_status'];
-            			$totals[$keywordID]['counters']['total']++;
-            			$totals[$keywordID]['counters'][$code_verbose[$status]]++;
+            			$totals[$keywordID]['total_tc']++;
+            			$totals[$keywordID]['details'][$code_verbose[$status]]['qty']++;
             		}
             	}
             }
@@ -2756,6 +2753,121 @@ class testplan extends tlObjectWithAttachments
 	    
         return $totals;
     }
+
+    /**
+     * 
+	 * @param id: test plan id
+	 * @return map: 
+ 	 */
+	public function getStatusTotalsByAssignedTesterPlatform($id)
+	{
+		$code_verbose = $this->getStatusForReports();
+		$totals = null;
+		$filters = null;
+		$info = null;
+		$options = array('output' => 'mapOfMap');
+    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
+        new dBug($execResults);
+	 
+	    if( !is_null($execResults) )
+	    {
+	    	$tcaseSet = array_keys($execResults);
+            // $platformSet = $this->getPlatforms($id);
+            // $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
+            
+            foreach($tcaseSet as $tcaseID)
+            {
+            	$testcaseInfo=$execResults[$tcaseID];
+            	$platformIDSet = array_keys($execResults[$tcaseID]);
+            	foreach($platformIDSet as $platformID)
+            	{
+            		$assignedTo = $testcaseInfo[$platformID]['user_id'];
+            		$assignedTo = !is_null($assignedTo) && $assignedTo > 0 ? $assignedTo : TL_USER_NOBODY;
+            		$execStatus = $testcaseInfo[$platformID]['exec_status'];
+            		
+            		if( !$info[$assignedTo][$platformID] )
+            		{
+            			$info[$assignedTo][$platformID]['total']=0;
+            		}
+            		
+            		if( !isset($info[$assignedTo][$platformID][$execStatus]) )
+            		{
+            			$info[$assignedTo][$platformID][$execStatus]=0;
+            		}   
+            		$info[$assignedTo][$platformID]['total']++;
+            		$info[$assignedTo][$platformID][$execStatus]++;
+				}
+            } 
+            new dBug($info);
+        }
+	    
+        return $totals;
+    }
+
+    /**
+     * 
+	 * @param id: test plan id
+	 * @return map: 
+ 	 */
+	public function getStatusByAssignedTesterPlatform($id)
+	{
+		$filters = null;
+		$info = null;
+		$options = array('output' => 'mapOfMap');
+    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
+	    if( !is_null($execResults) )
+	    {
+	    	$tcaseSet = array_keys($execResults);
+            foreach($tcaseSet as $tcaseID)
+            {
+            	$testcaseInfo=$execResults[$tcaseID];
+            	$platformIDSet = array_keys($execResults[$tcaseID]);
+            	foreach($platformIDSet as $platformID)
+            	{
+            		$assignedTo = $testcaseInfo[$platformID]['user_id'];
+            		$assignedTo = !is_null($assignedTo) && $assignedTo > 0 ? $assignedTo : TL_USER_NOBODY;   
+					$info[$assignedTo][$tcaseID][$platformID] = $testcaseInfo[$platformID]['exec_status'];
+				}
+            } 
+        }
+	    
+        return $info;
+    }
+
+	function tallyResultsForReport($results,$totalCases)
+	{
+		if ($results == null)
+		{
+			return null;
+		}
+		
+		// not_run is an special status
+		$total['not_run'] = abs($totalCases - $dummy);
+		$percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);
+		
+		new dBug($results);
+		$keySet = array_keys($results);
+		foreach($keySet as $keyID)
+		{
+			$results[$keyID]['percentage_completed'] = 0;
+			$totalCases = $results[$keyID]['total_tc'];
+			$target = &$results[$keyID]['details']; 
+			if ($totalCases != 0)
+			{
+				$results[$keyID]['percentage_completed'] = 
+						number_format((($totalCases - $target['not_run']['qty']) / $totalCases) * 100,2);
+						
+			}
+			foreach($target as $status_verbose => $qty)
+			{
+				$target[$status_verbose]['percentage']=(($target[$status_verbose]['qty']) / $totalCases) * 100;
+				$target[$status_verbose]['percentage']=number_format($target[$status_verbose]['percentage'],2);
+			}
+		}
+		return $results;
+	} // end function
+
+
 
 
 } // end class testplan

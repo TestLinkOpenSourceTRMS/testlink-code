@@ -6,10 +6,12 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.6 2009/10/12 07:04:30 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.7 2009/10/31 19:00:41 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
+ *
+ *	20091031 - franciscom - getAll(),getAllAsMap(),getLinkedToTestplanAsMap() - added orderBy
  *	20090807 - franciscom - added check on empty name with exception (throwIfEmptyName())
  *                          linkToTestplan(),unlinkFromTestplan() interface changes
  *	20090805 - Eloff    Updated code according to guidelines
@@ -69,6 +71,7 @@ class tlPlatform extends tlObjectWithDB
 
 	/**
 	 * Gets all info of a platform
+	 *
 	 * @return array with keys id, name and notes
 	 */
 	public function getByID($id)
@@ -185,25 +188,27 @@ class tlPlatform extends tlObjectWithDB
 	}
 
 	/**
+	 * @param string $orderBy
 	 * @return array all available platforms in test project
 	 */
-	public function getAll()
+	public function getAll($orderBy=' ORDER BY name ')
 	{
 		$sql = "SELECT id, name, notes
 				FROM {$this->tables['platforms']}
-				WHERE testproject_id = {$this->tproject_id}";
+				WHERE testproject_id = {$this->tproject_id} {$orderBy}";
 		return $this->db->get_recordset($sql);
 	}
 
 	/**
+	 * @param string $orderBy
 	 * @return array Returns all available platforms in the active testproject
 	 *               as array($platform_id => $platform_name)
 	 */
-	public function getAllAsMap($accessKey='id',$output='columns')
+	public function getAllAsMap($accessKey='id',$output='columns',$orderBy=' ORDER BY name ')
 	{
 		$sql = "SELECT id, name
 				FROM {$this->tables['platforms']}
-				WHERE testproject_id = {$this->tproject_id}";
+				WHERE testproject_id = {$this->tproject_id} {$orderBy}";
 		if( $output == 'columns' )
 		{
 			$rs = $this->db->fetchColumnsIntoMap($sql, $accessKey, 'name');
@@ -230,30 +235,32 @@ class tlPlatform extends tlObjectWithDB
 	}
 	
 	/**
+	 * @param string $orderBy
 	 * @return array Returns all platforms associated to a given testplan
 	 */
-	public function getLinkedToTestplan($testplanID)
+	public function getLinkedToTestplan($testplanID,$orderBy=' ORDER BY name ')
 	{
 		$sql = "SELECT P.id, P.name, P.notes
 				FROM {$this->tables['platforms']} P
 				JOIN {$this->tables['testplan_platforms']} TP
 				ON P.id = TP.platform_id
-				WHERE  TP.testplan_id = {$testplanID}";
+				WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
 		return $this->db->get_recordset($sql);
 	}
 
 
 	/**
+	 * @param string $orderBy
 	 * @return array Returns all platforms associated to a given testplan
 	 *	             on the form $platform_id => $platform_name
 	 */
-	public function getLinkedToTestplanAsMap($testplanID)
+	public function getLinkedToTestplanAsMap($testplanID,$orderBy=' ORDER BY name ')
 	{
 		$sql = "SELECT P.id, P.name
 				FROM {$this->tables['platforms']} P
 				JOIN {$this->tables['testplan_platforms']} TP
 				ON P.id = TP.platform_id
-				WHERE  TP.testplan_id = {$testplanID}";
+				WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
 		return $this->db->fetchColumnsIntoMap($sql, 'id', 'name');
 	}
 

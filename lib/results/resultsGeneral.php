@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2009/10/30 10:46:46 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2009/10/31 19:11:28 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -190,36 +190,85 @@ else // do report
 
 
 	// ----------------------------------------------------------------------------
-	$kwr=$tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
-	
-	
-    new dBug($kwr);
+	$kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
+    $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
+    // $item = 'keywords';
+	// if( !is_null($gui->statistics->$item) )
+    // {
+    // 	// Get labels
+    //   	$dummy = current($gui->statistics->$item);
+    //   	foreach($dummy['details'] as $status_verbose => $value)
+    //   	{
+    //       	$dummy['details'][$status_verbose]['qty'] = 
+    //       			lang_get($tlCfg->results['status_label'][$status_verbose]);
+    //     	$dummy['details'][$status_verbose]['percentage'] = "[%]";
+    //     }
+    //   	$gui->columnsDefinition->$item = $dummy['details'];
+    // } 
+	// ----------------------------------------------------------------------------
+
+	// ----------------------------------------------------------------------------
+	$items2loop = array('keywords');
+	if( $gui->showPlatforms )
+	{
+		$items2loop[] = 'platform';
+	    $platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
+        $gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
+	}
+
+    new dBug($gui->statistics);	
+	foreach($items2loop as $item)
+	{
+      	if( !is_null($gui->statistics->$item) )
+      	{
+        	// Get labels
+          	$dummy = current($gui->statistics->$item);
+          	foreach($dummy['details'] as $status_verbose => $value)
+          	{
+              	$dummy['details'][$status_verbose]['qty'] = 
+              			lang_get($tlCfg->results['status_label'][$status_verbose]);
+            	$dummy['details'][$status_verbose]['percentage'] = "[%]";
+            }
+          	$gui->columnsDefinition->$item = $dummy['details'];
+         } 
+  	} 
+
+
+
+
+
+    $testerres=$tplan_mgr->getStatusByAssignedTesterPlatform($args->tplan_id);
+    new dBug($testerres);
+    
+	$counter_testerres=$tplan_mgr->getStatusTotalsByAssignedTesterPlatform($args->tplan_id);
+	new dBug($counter_testerres);
+
 	
   	/* MILESTONE & PRIORITY REPORT */
     $planMetrics = $tplan_mgr->getStatusTotals($args->tplan_id);
-    new dBug($planMetrics);
+    // new dBug($planMetrics);
 
 
 	$filters=null;
 	$options=array('output' => 'map', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    new dBug($options);
-    new dBug($execResults);
+    // new dBug($options);
+    // new dBug($execResults);
     
     $options=array('output' => 'mapOfArray', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    new dBug($options);
-    new dBug($execResults);
+    // new dBug($options);
+    // new dBug($execResults);
     
     $options=array('output' => 'mapOfMap', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    new dBug($options);
-    new dBug($execResults);
+    // new dBug($options);
+    // new dBug($execResults);
     
     $options=array('output' => 'array', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    new dBug($options);
-    new dBug($execResults);
+    // new dBug($options);
+    // new dBug($execResults);
     
     
 
@@ -289,14 +338,17 @@ else // do report
 	}
 
  	// ----------------------------------------------------------------------------
-	$items2loop = array('keywords' => 'getAggregateKeywordResults',
-                        'testers' => 'getAggregateOwnerResults');
+	// $items2loop = array('keywords' => 'getAggregateKeywordResults',
+    //                     'testers' => 'getAggregateOwnerResults');
+	$items2loop = array('testers' => 'getAggregateOwnerResults');
 
+       
+       
     // platform feature contribution
-    if( $gui->showPlatforms )
-    {
-		$items2loop['platform'] = 'getAggregatePlatformResults';
-    }       
+    // if( $gui->showPlatforms )
+    // {
+	// 	$items2loop['platform'] = 'getAggregatePlatformResults';
+    // }       
                     
 	foreach($items2loop as $item => $aggregateMethod)
 	{
@@ -314,6 +366,8 @@ else // do report
           	$gui->columnsDefinition->$item = $dummy['details'];
          } 
   	} 
+
+
 } 
 
 // ----------------------------------------------------------------------------
@@ -321,11 +375,8 @@ $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
 $smarty->assign('do_report', $do_report);
 $smarty->assign('tplan_name', $tplan_info['name']);
-// $smarty->assign('columnsDefinition', $columnsDefinition);
 $smarty->assign('buildColDefinition', $colDefinition);
 $smarty->assign('buildResults',$results);
-// $smarty->assign('statistics', $statistics);
-
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
 
 

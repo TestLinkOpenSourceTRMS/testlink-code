@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.150 2009/10/27 15:55:13 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.151 2009/10/31 19:11:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -406,7 +406,8 @@ class results extends tlObjectWithDB
 	 * IMPORTANT: keys on details map dependends of configuration map $tlCfg->results['status_label']
 	 */
 	private function tallyKeywordResults($keywordResults, $keywordIdNamePairs)
-	{
+	{                                   
+		echo __FUNCTION__;
 		if ($keywordResults == null)
 		{
 			return null;
@@ -417,7 +418,9 @@ class results extends tlObjectWithDB
 	  	{
 	    	$item_name = 'keyword_name';
       		$element = $this->tallyResults($results,sizeOf($results),$item_name);
+      		
 		  	$element[$item_name] = $keywordIdNamePairs[$keywordId];
+      		// new dBug($element);
 			$rValue[$keywordId] = $element;
 		}
 
@@ -470,7 +473,8 @@ class results extends tlObjectWithDB
 	 * IMPORTANT: keys on details map dependends of configuration map $tlCfg->results['status_label']
 	 */
 	private function tallyOwnerResults($ownerResults, $ownerIdNamePairs)
-	{
+	{                     
+		echo __FUNCTION__;
 		if ($ownerResults == null)
 		{
 			return;
@@ -508,7 +512,8 @@ class results extends tlObjectWithDB
 	 * <code>Array ( [owner id] => Array ( total, passed, failed, blocked, not run))</code>
 	 */
 	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults)
-	{
+	{                     
+		echo __FUNCTION__;
 		if ($buildResults == null)
 		{
 			return null;
@@ -545,7 +550,8 @@ class results extends tlObjectWithDB
 	 * <code>Array ( [priority] => Array ( total, passed, failed, blocked, not run))</code>
 	 */
 	private function tallyPriorityResults($prioResults)
-	{
+	{                     
+		echo __FUNCTION__;
 		if ($prioResults == null)
 		{
 			return null;
@@ -588,38 +594,38 @@ class results extends tlObjectWithDB
 	 * @return array map
 	 * <code>Array ( [priority] => Array ( total, passed, failed, blocked, not run))</code>
 	 */
-	private function tallyPlatformResults($platformResults, $platforms)
-	{
-		if ($platformResults == null)
-		{
-			return null;
-		}
-
-		$urgencyCfg = config_get('urgency');
-		$rValue = null;
-		foreach($platformResults as $platform_id => $results)
-		{
-			$item_name='platform';
-			// Calculates number of tc in this platform.
-			$num = 0;
-			foreach($results as $tc_id => $tc_info) {
-				foreach ($tc_info as $platform) {
-					$num++;
-				}
-			}
-			$element=$this->tallyResults($results,$num,$item_name);
-			if (!is_null ($element))
-			{
-				$element[$item_name]=$platforms[$platform_id];
-				$rValue[$platform_id] = $element;
-			}
-		} // end  foreach
-
-		unset($element);
-		unset($results);
-
-		return $rValue;
-	}
+	// private function tallyPlatformResults($platformResults, $platforms)
+	// {                     
+	// 	echo __FUNCTION__;
+	// 	if ($platformResults == null)
+	// 	{
+	// 		return null;
+	// 	}
+    // 
+	// 	$rValue = null;
+	// 	foreach($platformResults as $platform_id => $results)
+	// 	{
+	// 		$item_name='platform';
+	// 		// Calculates number of tc in this platform.
+	// 		$num = 0;
+	// 		foreach($results as $tc_id => $tc_info) {
+	// 			foreach ($tc_info as $platform) {
+	// 				$num++;
+	// 			}
+	// 		}
+	// 		$element=$this->tallyResults($results,$num,$item_name);
+	// 		if (!is_null ($element))
+	// 		{
+	// 			$element[$item_name]=$platforms[$platform_id];
+	// 			$rValue[$platform_id] = $element;
+	// 		}
+	// 	} // end  foreach
+    // 
+	// 	unset($element);
+	// 	unset($results);
+    // 
+	// 	return $rValue;
+	// }
 
 	/**
 	 * @return array total / pass / fail / blocked / not run results for each keyword id
@@ -659,15 +665,15 @@ class results extends tlObjectWithDB
 	 * Aggregates and returns results grouped by platform
 	 * @return array total / pass / fail / blocked / not run results for each build id
 	 */
-	public function getAggregatePlatformResults()
-	{
-		if ($this->aggregatePlatformResults == null) 
-		{
-			$platforms = $this->tplanMgr->getPlatforms($this->testPlanID,'map');
-			$this->aggregatePlatformResults = $this->tallyPlatformResults($this->mapOfLastResultByPlatform, $platforms);
-		}
-		return $this->aggregatePlatformResults;
-	}
+	// public function getAggregatePlatformResults()
+	// {
+	// 	if ($this->aggregatePlatformResults == null) 
+	// 	{
+	// 		$platforms = $this->tplanMgr->getPlatforms($this->testPlanID,'map');
+	// 		$this->aggregatePlatformResults = $this->tallyPlatformResults($this->mapOfLastResultByPlatform, $platforms);
+	// 	}
+	// 	return $this->aggregatePlatformResults;
+	// }
 
 	/**
 	 * @TODO rename this method to getExecutionsMap()
@@ -715,7 +721,7 @@ class results extends tlObjectWithDB
 	 */
 	public function getTotalsForPlan()
 	{
-		return $this->totalsForPlan;
+		return $this->totalbsForPlan;
 	}
 
 	/**
@@ -731,6 +737,10 @@ class results extends tlObjectWithDB
 	 */
 	private function tallyResults($results,$totalCases,$item_name=null)
 	{
+		// new dBug($item_name);
+		// 
+		// new dBug($results);
+		
 		if ($results == null)
 		{
 			return null;
@@ -799,6 +809,40 @@ class results extends tlObjectWithDB
 		
 		return $element;
 	} // end function
+
+	function tallyResults2($results,$totalCases)
+	{
+		if ($results == null)
+		{
+			return null;
+		}
+		
+		// not_run is an special status
+		$total['not_run'] = abs($totalCases - $dummy);
+		$percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);
+		
+		new dBug($results);
+		$keySet = array_keys($results);
+		foreach($keySet as $keyID)
+		{
+			$results[$keyID]['percentage_completed'] = 0;
+			$totalCases = $results[$keyID]['total_tc'];
+			$target = &$results[$keyID]['details']; 
+			if ($totalCases != 0)
+			{
+				$results[$keyID]['percentage_completed'] = 
+						number_format((($totalCases - $target['not_run']['qty']) / $totalCases) * 100,2);
+						
+			}
+			foreach($target as $status_verbose => $qty)
+			{
+				$target[$status_verbose]['percentage']=(($target[$status_verbose]['qty']) / $totalCases) * 100;
+				$target[$status_verbose]['percentage']=number_format($target[$status_verbose]['percentage'],2);
+			}
+		}
+		return $results;
+	} // end function
+
 
 
 	/**
@@ -922,7 +966,7 @@ class results extends tlObjectWithDB
 
 			// 20090804 - Eloff
 			// This structure might look weird, but is needed to reuse aggregation code
-			$this->mapOfLastResultByPlatform[$platform_id][$testcase_id][$platform_id] = $result;
+			// $this->mapOfLastResultByPlatform[$platform_id][$testcase_id][$platform_id] = $result;
 
 			$qta_loops=sizeof($associatedKeywords);
 			for ($i = 0;$i <$qta_loops ; $i++)

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.146 2009/10/31 17:27:14 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.147 2009/10/31 19:01:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2663,20 +2663,29 @@ class testplan extends tlObjectWithAttachments
      *
 	 * @param id: test plan id
 	 * @return map: 
- 	 */
+	 *
+	 *	'type' => 'platform'
+	 *	'total_tc => ZZ
+	 *	'details' => array ( 'passed' => array( 'qty' => X)
+	 *	                     'failed' => array( 'qty' => Y) 	
+	 *	                     'blocked' => array( 'qty' => U) 	 	
+	 *                       ....)
+	 */
 	public function getStatusTotalsByPlatform($id)
 	{
 		$code_verbose = $this->getStatusForReports();
-		
-        // Get platforms
         $platformSet = $this->getPlatforms($id);
+        new dBug($platformSet);
+        
         $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
         foreach($platformIDSet as $platformID)
         {
-        	$totals[$platformID] = array('total' => 0,'not_run' => 0);
+        	$totals[$platformID]=array('type' => 'platform', 
+        	                           'name' => $platformSet[$platformID],
+        	                           'total_tc' => 0);
 			foreach($code_verbose as $status_code => $status_verbose)
 			{
-				$totals[$platformID][$status_verbose]=0;
+				$totals[$platformID]['details'][$status_verbose]['qty']=0;
 			}
         }
        
@@ -2688,8 +2697,8 @@ class testplan extends tlObjectWithAttachments
         $loop2do = count($notRunResults);
         for($idx=0; $idx < $loop2do ; $idx++)
         {
-        	$totals[$notRunResults[$idx]['platform_id']]['total']++;
-        	$totals[$notRunResults[$idx]['platform_id']]['not_run']++;
+        	$totals[$notRunResults[$idx]['platform_id']]['total_tc']++;
+        	$totals[$notRunResults[$idx]['platform_id']]['details']['not_run']['qty']++;
         }
         	
 		// Second step - get other results
@@ -2700,8 +2709,8 @@ class testplan extends tlObjectWithAttachments
         for($idx=0; $idx < $loop2do ; $idx++)
         {
         	$key=$code_verbose[$execResults[$idx]['exec_status']];
-        	$totals[$execResults[$idx]['platform_id']]['total']++;
-        	$totals[$execResults[$idx]['platform_id']][$key]++;
+        	$totals[$execResults[$idx]['platform_id']]['total_tc']++;
+        	$totals[$execResults[$idx]['platform_id']]['details'][$key]['qty']++;
         }
         return $totals;
     }

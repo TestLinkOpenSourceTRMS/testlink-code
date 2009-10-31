@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.12 2009/09/14 13:22:59 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.13 2009/10/31 16:40:46 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -99,7 +99,7 @@ Revisions:
   	{include file="$this_template_dir/inc_results_show_table.tpl"
            args_title=$labels.title_res_by_kw
            args_first_column_header=$labels.trep_kw
-           args_first_column_key='keyword_name'
+           args_first_column_key='name'
            args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->keywords
            args_column_data=$gui->statistics->keywords}

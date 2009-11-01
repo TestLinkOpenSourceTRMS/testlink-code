@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/06/07 13:04:27 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/11/01 21:55:02 $ by $Author: erikeloff $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -748,7 +748,7 @@ function get_all_for_tcase($testcase_id, $srs_id = 'all')
 {                         
     
   	$sql = " SELECT REQ.id,REQ.req_doc_id,NHA.name AS title, " .
-  	       " NHB.name AS req_spec_title,req_coverage.testcase_id " .
+  	       " NHB.name AS req_spec_title,REQ_COVERAGE.testcase_id " .
   	       " FROM {$this->object_table} REQ, " .
   	       "      {$this->tables['req_coverage']} REQ_COVERAGE," .
   	       "      {$this->tables['nodes_hierarchy']} NHA," .

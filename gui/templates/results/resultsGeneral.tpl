@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.14 2009/10/31 19:06:22 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.15 2009/11/04 08:09:34 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -10,7 +10,8 @@ Revisions:
        	 th_tc_priority_high, th_tc_priority_medium, th_tc_priority_low,
          title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites,
          title_gen_test_rep,title_report_tc_priorities,title_report_milestones,
-         title_metrics_x_build,title_res_by_platform,th_platform'
+         title_metrics_x_build,title_res_by_platform,th_platform,important_notice,
+         report_tcase_platorm_relationship'
 }
 
 
@@ -26,7 +27,13 @@ Revisions:
          arg_tproject_name=$session.testprojectName arg_tplan_name=$tplan_name}	
 
 {if $do_report.status_ok}
-  
+
+  {if $gui->showPlatforms}
+   <hr>
+   <h2> {$labels.important_notice}</h2>
+   {$labels.report_tcase_platorm_relationship}
+   <hr>
+  {/if}  
   	{* ----- results by builds -------------------------------------- *}
 	<h2>{$labels.title_metrics_x_build}</h1>
 
@@ -73,14 +80,14 @@ Revisions:
            args_column_data=$gui->statistics->testsuites}
 
   
-  	{* by Tester *}
+  	{* by ASSIGNED Tester that is not the same that EFFECTIVE TESTER *}
   	{include file="$this_template_dir/inc_results_show_table.tpl"
            args_title=$labels.title_res_by_owner
            args_first_column_header=$labels.trep_owner
-           args_first_column_key='tester_name'
+           args_first_column_key='name'
            args_show_percentage=true
-           args_column_definition=$gui->columnsDefinition->testers
-           args_column_data=$gui->statistics->testers}
+           args_column_definition=$gui->columnsDefinition->assigned_testers
+           args_column_data=$gui->statistics->assigned_testers}
 
     {if $gui->showPlatforms}
       {include file="$this_template_dir/inc_results_show_table.tpl"

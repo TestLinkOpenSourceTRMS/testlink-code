@@ -4,13 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2009/10/31 19:11:28 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2009/11/04 08:09:34 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
  *
  * Revisions:
+ *  20091103 - franciscom - keywords, assigned testers, platform results refactored,
+ *                          noew use method from test plan class.
+ *
  *  20090209 - franciscom - BUGID 2080
  *  20080928 - franciscom - removed useless requires
  * 	20050807 - fm - refactoring:  changes in getTestSuiteReport() call
@@ -57,6 +60,7 @@ if( is_null($gui->platformSet) )
 	$gui->showPlatforms=false;
 }
 
+$metricsMgr = new tlTestPlanMetrics($db);
 
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
                   ALL_TEST_SUITES,ALL_BUILDS);
@@ -74,6 +78,42 @@ else // do report
 {
 	$do_report['status_ok'] = 1;
 	$do_report['msg'] = '';
+
+	$items2loop = array('keywords','assigned_testers');
+
+	$kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
+    $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
+
+    $usr=$tplan_mgr->getStatusTotalsByAssignedTester($args->tplan_id);
+    $gui->statistics->assigned_testers = $tplan_mgr->tallyResultsForReport($usr);
+
+	if( $gui->showPlatforms )
+	{
+		$items2loop[] = 'platform';
+	    $platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
+        $gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
+	}
+
+    // new dBug($gui->statistics);	
+	foreach($items2loop as $item)
+	{
+      	if( !is_null($gui->statistics->$item) )
+      	{
+        	// Get labels
+          	$dummy = current($gui->statistics->$item);
+          	foreach($dummy['details'] as $status_verbose => $value)
+          	{
+              	$dummy['details'][$status_verbose]['qty'] = 
+              			lang_get($tlCfg->results['status_label'][$status_verbose]);
+            	$dummy['details'][$status_verbose]['percentage'] = "[%]";
+            }
+          	$gui->columnsDefinition->$item = $dummy['details'];
+         } 
+  	} 
+
+
+
+
 
   	$mapOfAggregate = $re->getAggregateMap();
   	$arrDataSuite = null;
@@ -189,60 +229,6 @@ else // do report
 	}  
 
 
-	// ----------------------------------------------------------------------------
-	$kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
-    $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
-    // $item = 'keywords';
-	// if( !is_null($gui->statistics->$item) )
-    // {
-    // 	// Get labels
-    //   	$dummy = current($gui->statistics->$item);
-    //   	foreach($dummy['details'] as $status_verbose => $value)
-    //   	{
-    //       	$dummy['details'][$status_verbose]['qty'] = 
-    //       			lang_get($tlCfg->results['status_label'][$status_verbose]);
-    //     	$dummy['details'][$status_verbose]['percentage'] = "[%]";
-    //     }
-    //   	$gui->columnsDefinition->$item = $dummy['details'];
-    // } 
-	// ----------------------------------------------------------------------------
-
-	// ----------------------------------------------------------------------------
-	$items2loop = array('keywords');
-	if( $gui->showPlatforms )
-	{
-		$items2loop[] = 'platform';
-	    $platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
-        $gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
-	}
-
-    new dBug($gui->statistics);	
-	foreach($items2loop as $item)
-	{
-      	if( !is_null($gui->statistics->$item) )
-      	{
-        	// Get labels
-          	$dummy = current($gui->statistics->$item);
-          	foreach($dummy['details'] as $status_verbose => $value)
-          	{
-              	$dummy['details'][$status_verbose]['qty'] = 
-              			lang_get($tlCfg->results['status_label'][$status_verbose]);
-            	$dummy['details'][$status_verbose]['percentage'] = "[%]";
-            }
-          	$gui->columnsDefinition->$item = $dummy['details'];
-         } 
-  	} 
-
-
-
-
-
-    $testerres=$tplan_mgr->getStatusByAssignedTesterPlatform($args->tplan_id);
-    new dBug($testerres);
-    
-	$counter_testerres=$tplan_mgr->getStatusTotalsByAssignedTesterPlatform($args->tplan_id);
-	new dBug($counter_testerres);
-
 	
   	/* MILESTONE & PRIORITY REPORT */
     $planMetrics = $tplan_mgr->getStatusTotals($args->tplan_id);
@@ -277,24 +263,35 @@ else // do report
 	{
 		$set2loop = array('high_percentage' => HIGH,'medium_percentage' => MEDIUM,
 		                  'low_percentage' => LOW);
-		$gui->statistics->priority_overall = $re->getPrioritizedResults();
+		$gui->statistics->priority_overall = $metricsMgr->getPrioritizedResults($args->tplan_id);
 		foreach( $set2loop as $key => $value )
 		{
 			$gui->statistics->priority_overall[$key] = get_percentage($planMetrics['total'],
 				                                                      $gui->statistics->priority_overall[$value]); 
 		}
+		// echo 'OPI';
+		// new dBug($gui->statistics);
+		
 	}
 	// collect milestones
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
+    // new dBug($milestonesList);
 
+	if (!empty($milestonesList))
+	{
+		$xx = $metricsMgr->getMilestonesMetrics($args->tplan_id,$milestonesList);
+		// new dBug($xx);
+    }
+        
 	// get test results for milestones
 	if (!empty($milestonesList))
 	{
-		$arrPrioritizedTCs = $re->getPrioritizedTestCases();
+	
+		$arrPrioritizedTCs = $metricsMgr->getPrioritizedTestCaseCounters($args->tplan_id);
 		foreach($milestonesList as $item)
 		{
 		    $item['tc_total'] = $planMetrics['total'];
-		    $item['results'] = $re->getPrioritizedResults($item['target_date']);
+		    $item['results'] = $metricsMgr->getPrioritizedResults($item['target_date']);
         
         	$low_percentage = get_percentage($arrPrioritizedTCs[LOW], $item['results'][LOW]); 
 		    $item['result_low_percentage'] = $low_percentage;
@@ -335,39 +332,9 @@ else // do report
 		    
 		    $gui->statistics->milestones[$item['target_date']] = $item;
 	  	}
+	  	// new dBug($gui->statistics->milestones);
+	  	
 	}
-
- 	// ----------------------------------------------------------------------------
-	// $items2loop = array('keywords' => 'getAggregateKeywordResults',
-    //                     'testers' => 'getAggregateOwnerResults');
-	$items2loop = array('testers' => 'getAggregateOwnerResults');
-
-       
-       
-    // platform feature contribution
-    // if( $gui->showPlatforms )
-    // {
-	// 	$items2loop['platform'] = 'getAggregatePlatformResults';
-    // }       
-                    
-	foreach($items2loop as $item => $aggregateMethod)
-	{
-      	$gui->statistics->$item = $re->$aggregateMethod();
-      	if( !is_null($gui->statistics->$item) )
-      	{
-        	// Get labels
-          	$dummy = current($gui->statistics->$item);
-          	foreach($dummy['details'] as $status_verbose => $value)
-          	{
-              	$dummy['details'][$status_verbose]['qty'] = 
-              			lang_get($tlCfg->results['status_label'][$status_verbose]);
-            	$dummy['details'][$status_verbose]['percentage'] = "[%]";
-            }
-          	$gui->columnsDefinition->$item = $dummy['details'];
-         } 
-  	} 
-
-
 } 
 
 // ----------------------------------------------------------------------------

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.151 2009/10/31 19:11:28 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.152 2009/11/04 08:09:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -407,7 +407,6 @@ class results extends tlObjectWithDB
 	 */
 	private function tallyKeywordResults($keywordResults, $keywordIdNamePairs)
 	{                                   
-		echo __FUNCTION__;
 		if ($keywordResults == null)
 		{
 			return null;
@@ -474,7 +473,6 @@ class results extends tlObjectWithDB
 	 */
 	private function tallyOwnerResults($ownerResults, $ownerIdNamePairs)
 	{                     
-		echo __FUNCTION__;
 		if ($ownerResults == null)
 		{
 			return;
@@ -513,7 +511,6 @@ class results extends tlObjectWithDB
 	 */
 	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults)
 	{                     
-		echo __FUNCTION__;
 		if ($buildResults == null)
 		{
 			return null;
@@ -551,7 +548,6 @@ class results extends tlObjectWithDB
 	 */
 	private function tallyPriorityResults($prioResults)
 	{                     
-		echo __FUNCTION__;
 		if ($prioResults == null)
 		{
 			return null;
@@ -1633,51 +1629,51 @@ class results extends tlObjectWithDB
 	 * @param timestamp $milestoneDate - (optional) milestone deadline
 	 * @return array with three priority counters
 	 */
-	public function getPrioritizedResults($milestoneDate = null)
-	{
-		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
-		
-		for($urgency=1; $urgency <= 3; $urgency++)
-		{
-			for($importance=1; $importance <= 3; $importance++)
-			{	
-				$sql = "SELECT COUNT(DISTINCT(TPTCV.id )) " .
-					" FROM {$this->tables['testplan_tcversions']} TPTCV " .
-					" JOIN {$this->tables['executions']} E ON " .
-					" TPTCV.tcversion_id = E.tcversion_id " .
-					" JOIN {$this->tables['tcversions']} TCV ON " .
-					" TPTCV.tcversion_id = TCV.id " .
-					" WHERE TPTCV.testplan_id = {$this->testPlanID} " .
-					" AND TPTCV.platform_id = E.platform_id " .
-					" AND E.testplan_id = {$this->testPlanID} " .
-					" AND NOT E.status = '{$this->map_tc_status['not_run']}' " . 
-					" AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
-				
-				if( !is_null($milestoneDate) )
-					$sql .= " AND execution_ts < '{$milestoneDate}'";
-				
-				$tmpResult = $this->db->fetchOneValue($sql);
-				// parse results into three levels of priority
-				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
-				{
-					$output[HIGH] = $output[HIGH] + $tmpResult;
-					tLog("getPrioritizedResults> Result-priority HIGH: $urgency, $importance = " . $output[HIGH]);
-				}
-				elseif (($urgency*$importance) >= $this->priorityLevelsCfg[MEDIUM])
-				{
-					$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
-					tLog("getPrioritizedResults> Result-priority MEDIUM: $urgency, $importance = " . $output[MEDIUM]);
-				}
-				else
-				{
-					$output[LOW] = $output[LOW] + $tmpResult;
-					tLog("getPrioritizedResults> Result-priority LOW: $urgency, $importance = " . $output[LOW]);
-				}	
-			}
-		}
-		
-		return $output;
-	}
+	// public function getPrioritizedResults($milestoneDate = null)
+	// {
+	// 	$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
+	// 	
+	// 	for($urgency=1; $urgency <= 3; $urgency++)
+	// 	{
+	// 		for($importance=1; $importance <= 3; $importance++)
+	// 		{	
+	// 			$sql = "SELECT COUNT(DISTINCT(TPTCV.id )) " .
+	// 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+	// 				" JOIN {$this->tables['executions']} E ON " .
+	// 				" TPTCV.tcversion_id = E.tcversion_id " .
+	// 				" JOIN {$this->tables['tcversions']} TCV ON " .
+	// 				" TPTCV.tcversion_id = TCV.id " .
+	// 				" WHERE TPTCV.testplan_id = {$this->testPlanID} " .
+	// 				" AND TPTCV.platform_id = E.platform_id " .
+	// 				" AND E.testplan_id = {$this->testPlanID} " .
+	// 				" AND NOT E.status = '{$this->map_tc_status['not_run']}' " . 
+	// 				" AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
+	// 			
+	// 			if( !is_null($milestoneDate) )
+	// 				$sql .= " AND execution_ts < '{$milestoneDate}'";
+	// 			
+	// 			$tmpResult = $this->db->fetchOneValue($sql);
+	// 			// parse results into three levels of priority
+	// 			if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
+	// 			{
+	// 				$output[HIGH] = $output[HIGH] + $tmpResult;
+	// 				tLog("getPrioritizedResults> Result-priority HIGH: $urgency, $importance = " . $output[HIGH]);
+	// 			}
+	// 			elseif (($urgency*$importance) >= $this->priorityLevelsCfg[MEDIUM])
+	// 			{
+	// 				$output[MEDIUM] = $output[MEDIUM] + $tmpResult;	
+	// 				tLog("getPrioritizedResults> Result-priority MEDIUM: $urgency, $importance = " . $output[MEDIUM]);
+	// 			}
+	// 			else
+	// 			{
+	// 				$output[LOW] = $output[LOW] + $tmpResult;
+	// 				tLog("getPrioritizedResults> Result-priority LOW: $urgency, $importance = " . $output[LOW]);
+	// 			}	
+	// 		}
+	// 	}
+	// 	
+	// 	return $output;
+	// }
 
 
 	/**

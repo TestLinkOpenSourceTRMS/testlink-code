@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.147 2009/10/31 19:01:13 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.148 2009/11/04 08:09:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2675,8 +2675,7 @@ class testplan extends tlObjectWithAttachments
 	{
 		$code_verbose = $this->getStatusForReports();
         $platformSet = $this->getPlatforms($id);
-        new dBug($platformSet);
-        
+        $totals = null;
         $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
         foreach($platformIDSet as $platformID)
         {
@@ -2770,23 +2769,24 @@ class testplan extends tlObjectWithAttachments
      * 
 	 * @param id: test plan id
 	 * @return map: 
+ 	 *             key: user id
+ 	 *             value: map with key=platform id
+ 	 *                             value: map with keys: 'total' and verbose status
+ 	 *                                             values: test case count.
+ 	 *                              
  	 */
 	public function getStatusTotalsByAssignedTesterPlatform($id)
 	{
+        // echo __FUNCTION__ . '<br>';
 		$code_verbose = $this->getStatusForReports();
-		$totals = null;
 		$filters = null;
-		$info = null;
+		$user_platform = null;
 		$options = array('output' => 'mapOfMap');
     	$execResults = $this->get_linked_tcversions($id,$filters,$options);
-        new dBug($execResults);
-	 
+ 
 	    if( !is_null($execResults) )
 	    {
 	    	$tcaseSet = array_keys($execResults);
-            // $platformSet = $this->getPlatforms($id);
-            // $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
-            
             foreach($tcaseSet as $tcaseID)
             {
             	$testcaseInfo=$execResults[$tcaseID];
@@ -2797,24 +2797,80 @@ class testplan extends tlObjectWithAttachments
             		$assignedTo = !is_null($assignedTo) && $assignedTo > 0 ? $assignedTo : TL_USER_NOBODY;
             		$execStatus = $testcaseInfo[$platformID]['exec_status'];
             		
-            		if( !isset($info[$assignedTo][$platformID]) )
+            		// to avoid errors due to bad or missing config
+            		$verboseStatus = isset($code_verbose[$execStatus]) ? $code_verbose[$execStatus] : $execStatus;
+            		
+            		if( !isset($user_platform[$assignedTo][$platformID]) )
             		{
-            			$info[$assignedTo][$platformID]['total']=0;
+            			$user_platform[$assignedTo][$platformID]['total']=0;
             		}
             		
-            		if( !isset($info[$assignedTo][$platformID][$execStatus]) )
+            		if( !isset($user_platform[$assignedTo][$platformID][$verboseStatus]) )
             		{
-            			$info[$assignedTo][$platformID][$execStatus]=0;
+            			$user_platform[$assignedTo][$platformID][$verboseStatus]=0;
             		}   
-            		$info[$assignedTo][$platformID]['total']++;
-            		$info[$assignedTo][$platformID][$execStatus]++;
+            		$user_platform[$assignedTo][$platformID]['total']++;
+            		$user_platform[$assignedTo][$platformID][$verboseStatus]++;
 				}
             } 
-            new dBug($info);
         }
 	    
-        return $totals;
+        return $user_platform;
     }
+
+    /**
+     * 
+	 * @param id: test plan id
+	 * @return map: 
+ 	 *             key: user id
+ 	 *             value: map with key=platform id
+ 	 *                             value: map with keys: 'total' and verbose status
+ 	 *                                             values: test case count.
+ 	 *                              
+ 	 */
+	public function getStatusTotalsByAssignedTester($id)
+	{
+		$data_set = $this->getStatusTotalsByAssignedTesterPlatform($id);
+	    if( !is_null($data_set) )
+	    {
+			$code_verbose = $this->getStatusForReports();
+
+	    	$userSet = array_keys($data_set);
+	    	// need to find a better way (with less overhead and data movement) to do this
+            $userCol=tlUser::getByIDs($this->db,$userSet,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+            foreach($userSet as $assignedTo)
+            {
+            	$user_platform[$assignedTo]['type'] = 'assignedTester';
+            	$user_platform[$assignedTo]['name'] = $userCol[$assignedTo]->getDisplayName();;
+            	$user_platform[$assignedTo]['total_tc'] = 0;
+            	
+   				foreach($code_verbose as $status_code => $status_verbose)
+			    {
+					$user_platform[$assignedTo]['details'][$status_verbose]['qty']=0;
+			    }
+            	
+            	// this will be removed from final result
+            	$user_platform[$assignedTo]['details']['total']['qty'] = 0;
+            	
+            	$platformIDSet = array_keys($data_set[$assignedTo]);
+            	foreach($platformIDSet as $platformID)
+            	{
+            		foreach( $data_set[$assignedTo][$platformID] as $verboseStatus => $counter)
+            		{
+            			if( !isset($user_platform[$assignedTo]['details'][$verboseStatus]) )
+            			{
+            				$user_platform[$assignedTo]['details'][$verboseStatus]['qty']=0;
+            			}   
+            		    $user_platform[$assignedTo]['details'][$verboseStatus]['qty'] += $counter;
+            		}
+				}
+				$user_platform[$assignedTo]['total_tc']=$user_platform[$assignedTo]['details']['total']['qty'];
+				unset($user_platform[$assignedTo]['details']['total']);
+            } 
+        }
+        return $user_platform;
+    }
+
 
     /**
      * 
@@ -2842,7 +2898,7 @@ class testplan extends tlObjectWithAttachments
 				}
             } 
         }
-	    
+
         return $info;
     }
 

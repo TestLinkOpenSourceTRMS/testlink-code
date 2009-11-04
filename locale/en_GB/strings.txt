@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.483 2009/10/25 19:24:41 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.484 2009/11/04 08:09:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -56,6 +56,7 @@ $TLS_help = "Help";
 $TLS_hour = "Hour";
 $TLS_importance	= "Importance";
 $TLS_imported = "Imported";
+$TLS_important_notice = "Important Notice";
 $TLS_keyword = "Keyword";
 $TLS_manual = "Manual";
 $TLS_Milestone = "Milestone";
@@ -313,9 +314,17 @@ $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please 
 
 // ----- newest_tcversions.php -----
 $TLS_no_linked_tcversions = "no linked Test Case versions";
+
 // resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites = "There are no Test Suites defined for Test Project, <br />".
                                  "then no execution data can exist => no report can be created";
+
+$TLS_report_tcase_platorm_relationship = "Platforms has been defined for this test plan.<br />" .
+                                         "Use of platforms has impact on metrics, because <br />" .
+                                         "a test case that must be executed in N platforms " .
+                                         "is considered as N test cases on metrics.<br />" .
+                                         "Example: if user U1 has been assigned execution of Test Case TC1 <br />" .
+                                         "on platform X and Y, then user U1 has TWO test cases to execute NOT ONE ";  
 
 // ----- resultsNavigator.php -----
 $TLS_title_nav_results = "Reports and Metrics";
@@ -734,15 +743,10 @@ $TLS_trep_total = "Total";
 $TLS_title_res_by_kw = "Results by Keyword";
 $TLS_trep_kw = $TLS_keyword;
 
-
-
-// gui/templates/inc_res_by_owner.tpl
-$TLS_title_res_by_owner = "Results by Tester";
+$TLS_title_res_by_owner = "Results by Assigned Tester";
 $TLS_trep_owner = "Tester";
 $TLS_title_res_by_tester = "Results by Tester";
 $TLS_trep_tester = "Tester";
-
-
 
 // gui/templates/inc_res_by_prio.tpl
 $TLS_tit_end_date = "End date";

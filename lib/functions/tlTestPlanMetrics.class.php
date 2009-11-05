@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.1 2009/11/04 08:10:14 franciscom Exp $
+ * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.2 2009/11/05 16:43:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -176,7 +176,7 @@ class tlTestPlanMetrics extends testPlan
 		$milestones =  is_null($milestoneSet) ? $this->get_milestones($tplanID) : $milestoneSet;			
 		$priorityCounters = $this->getPrioritizedTestCaseCounters($tplanID);
 
-        $pc = array(LOW => 'result_low_percentage', MEDIUM => 'result_high_percentage',
+        $pc = array(LOW => 'result_low_percentage', MEDIUM => 'result_medium_percentage',
                     HIGH => 'result_high_percentage' );
         
         $checks = array(LOW => 'low_percentage', MEDIUM => 'medium_percentage',
@@ -199,19 +199,12 @@ class tlTestPlanMetrics extends testPlan
             	$item[$item_key] = number_format($pc[$key],1);
             	$item['tc_completed'] = $item['results'][$key];
             }
+            $item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
+
 		    		    
-       		// $item['low_incomplete'] = OFF;
-        	// $item['medium_incomplete'] = OFF;
-	    	// $item['high_incomplete'] = OFF;
 	    	$item['all_incomplete'] = OFF;
-            
             foreach( $checks as $key => $item_key)
             {
-            	// echo $key . '<br>';
-            	// echo $on_off[$key] . '<br>';
-            	// echo $pc[$key] . '<br>';
-            	// echo $checks[$item_key] . '<br>';
-            	
             	$item[$on_off[$key]] = ($pc[$key] < $item[$checks[$key]]) ? ON : OFF; 
             }
 
@@ -228,5 +221,21 @@ class tlTestPlanMetrics extends testPlan
 	  	}
 		return $results;
 	}
+	
+	
+	/**
+	 * calculate percentage and format
+	 * 
+	 * @param int $total Total count
+	 * @param int $parameter a parameter count
+	 * @return string formatted percentage
+	 */
+	function get_percentage($total, $parameter)
+	{
+		$percentCompleted = $total > 0 ? (($parameter / $total) * 100) : 0;
+		return number_format($percentCompleted,1);
+	}
+
+	
 }
 ?>

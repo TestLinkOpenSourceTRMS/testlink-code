@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2009/11/04 08:09:34 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2009/11/05 16:46:14 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -232,8 +232,6 @@ else // do report
 	
   	/* MILESTONE & PRIORITY REPORT */
     $planMetrics = $tplan_mgr->getStatusTotals($args->tplan_id);
-    // new dBug($planMetrics);
-
 
 	$filters=null;
 	$options=array('output' => 'map', 'only_executed' => true, 'execution_details' => 'add_build');
@@ -269,72 +267,13 @@ else // do report
 			$gui->statistics->priority_overall[$key] = get_percentage($planMetrics['total'],
 				                                                      $gui->statistics->priority_overall[$value]); 
 		}
-		// echo 'OPI';
-		// new dBug($gui->statistics);
-		
 	}
-	// collect milestones
+
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
-    // new dBug($milestonesList);
-
 	if (!empty($milestonesList))
 	{
-		$xx = $metricsMgr->getMilestonesMetrics($args->tplan_id,$milestonesList);
-		// new dBug($xx);
+		$gui->statistics->milestones = $metricsMgr->getMilestonesMetrics($args->tplan_id,$milestonesList);
     }
-        
-	// get test results for milestones
-	if (!empty($milestonesList))
-	{
-	
-		$arrPrioritizedTCs = $metricsMgr->getPrioritizedTestCaseCounters($args->tplan_id);
-		foreach($milestonesList as $item)
-		{
-		    $item['tc_total'] = $planMetrics['total'];
-		    $item['results'] = $metricsMgr->getPrioritizedResults($item['target_date']);
-        
-        	$low_percentage = get_percentage($arrPrioritizedTCs[LOW], $item['results'][LOW]); 
-		    $item['result_low_percentage'] = $low_percentage;
-		    $medium_percentage = get_percentage($arrPrioritizedTCs[MEDIUM], $item['results'][MEDIUM]); 
-		    $item['result_medium_percentage'] = $medium_percentage;
-		    $high_percentage = get_percentage($arrPrioritizedTCs[HIGH], $item['results'][HIGH]); 
-		    $item['result_high_percentage'] = $high_percentage;
-		    		    
-		    $item['tc_completed'] = $item['results'][HIGH] + $item['results'][MEDIUM] + $item['results'][LOW];
-		    $item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
-        
-       		$item['low_incomplete'] = OFF;
-        	$item['medium_incomplete'] = OFF;
-	    	$item['high_incomplete'] = OFF;
-	    	$item['all_incomplete'] = OFF;
-        
-		    if ($low_percentage < $item['low_percentage'])
-		    {
-		    	$item['low_incomplete'] = ON;
-		    }	
-
-		    if ($medium_percentage < $item['medium_percentage'])
-		    {
-		    	$item['medium_incomplete'] = ON;
-		    }	
-		    	
-		    if ($high_percentage < $item['high_percentage'])
-		    {
-		    	$item['high_incomplete'] = ON;
-		    }	
-
-		    if ($item['percentage_completed'] < $item['low_percentage'])
-		    {
-		    	$item['all_incomplete'] = ON;
-        	}
-        
-		    $item['low_percentage'] = number_format($item['low_percentage'], 2);
-		    
-		    $gui->statistics->milestones[$item['target_date']] = $item;
-	  	}
-	  	// new dBug($gui->statistics->milestones);
-	  	
-	}
 } 
 
 // ----------------------------------------------------------------------------

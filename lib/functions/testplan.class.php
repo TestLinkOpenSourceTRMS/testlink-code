@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.148 2009/11/04 08:09:34 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.149 2009/11/05 16:09:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2830,6 +2830,7 @@ class testplan extends tlObjectWithAttachments
  	 */
 	public function getStatusTotalsByAssignedTester($id)
 	{
+		$unassigned = lang_get('unassigned');
 		$data_set = $this->getStatusTotalsByAssignedTesterPlatform($id);
 	    if( !is_null($data_set) )
 	    {
@@ -2841,7 +2842,11 @@ class testplan extends tlObjectWithAttachments
             foreach($userSet as $assignedTo)
             {
             	$user_platform[$assignedTo]['type'] = 'assignedTester';
-            	$user_platform[$assignedTo]['name'] = $userCol[$assignedTo]->getDisplayName();;
+            	$user_platform[$assignedTo]['name'] = $unassigned; 
+            	if( $assignedTo > 0 )
+            	{
+            		$user_platform[$assignedTo]['name'] = $userCol[$assignedTo]->getDisplayName();;
+            	}
             	$user_platform[$assignedTo]['total_tc'] = 0;
             	
    				foreach($code_verbose as $status_code => $status_verbose)

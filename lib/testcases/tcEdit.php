@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.114 $
- * @modified $Date: 2009/10/05 08:47:11 $  by $Author: franciscom $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2009/11/08 17:21:15 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -50,6 +50,7 @@ $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
+$templateCfg = templateConfiguration('tcEdit');
 
 $commandMgr = new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
@@ -235,7 +236,6 @@ else if($args->delete_tc)
 	$gui->refresh_tree = "yes";
     $templateCfg = templateConfiguration('tcDelete');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-	// $smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->delete_tc_version)
 {
@@ -274,7 +274,6 @@ else if($args->delete_tc_version)
 	$gui->refresh_tree = "no";
     $templateCfg = templateConfiguration('tcDelete');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-	// $smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->do_delete)
 {
@@ -320,7 +319,6 @@ else if($args->do_delete)
 	$smarty->assign('action',$action_result);
     $templateCfg = templateConfiguration('tcDelete');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-	// $smarty->display($templateCfg->template_dir . 'tcDelete.tpl');
 }
 else if($args->move_copy_tc)
 {
@@ -351,8 +349,6 @@ else if($args->move_copy_tc)
 
     $templateCfg = templateConfiguration('tcMove');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-	// $smarty->display($templateCfg->template_dir . 'tcMove.tpl');
-	// move test case to another category
 }
 else if($args->do_move)
 {
@@ -424,8 +420,8 @@ else if($args->do_create_new_version)
 	
 	// 20090419 - BUGID - 
 	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
-	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,
-	                 $testcase_version, $viewer_args,null, $args->show_mode);
+	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,$testcase_version, 
+	                 $viewer_args,null, $args->show_mode);
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
@@ -596,7 +592,7 @@ function init_args($spec_cfg,$otName)
     
     
     // 20090419 - franciscom - BUGID - edit while executing
-    $args->show_mode = isset($_REQUEST['show_mode']) ? $_REQUEST['show_mode'] : null;
+    $args->show_mode = (isset($_REQUEST['show_mode']) && $_REQUEST['show_mode'] != '') ? $_REQUEST['show_mode'] : null;
         
     // from session
     $args->testproject_id = $_SESSION['testprojectID'];

@@ -1,11 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.26 2009/09/24 07:25:38 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.27 2009/11/09 07:24:48 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
-rev: 20090610 - franciscom - display date when test case version was linked to test plan
-     20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
-     20090103 - franciscom - BUGID 651 - $gui->can_remove_executed_testcases
+rev:
+    20091109 - franciscom - BUGID 0002937 - add/remove test case hover over test case 
+                                            tooltip replacement with summary     
+    20090610 - franciscom - display date when test case version was linked to test plan
+    20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
+    20090103 - franciscom - BUGID 651 - $gui->can_remove_executed_testcases
 *}
 
 {lang_get var="labels" 
@@ -50,6 +53,54 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
+
+{* BUGID 0002937 *}
+{include file="inc_ext_js.tpl"}
+{literal}
+<script type="text/javascript">
+Ext.onReady(function(){ 
+{/literal}
+{foreach from=$gui->items key=idx item=info}
+  {foreach from=$info.testcases key=tcidx item=tcversionInfo}
+   {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
+   {literal}
+   new Ext.ToolTip({
+        target: 'tooltip-{/literal}{$tcidx}{literal}',
+        width: 200,
+        autoLoad: 
+        {url: fRoot+'lib/ajax/gettestcasesummary.php?tcase_id={/literal}{$tcidx}{literal}&tcversion_id={/literal}{$tcversionLinked}{literal}'},
+    });
+   {/literal}
+  {/foreach}  
+{/foreach}
+{literal}
+});
+</script>
+{/literal}
+
+{*
+{foreach from=$gui->items key=idx item=info}
+  {assign var=tcases value=$info.testcases}
+  {foreach from=$info.testcases key=tcidx item=tcversionInfo}
+   {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
+    tcidx: {$tcidx}<br>
+    tcversionLinked: {$tcversionLinked}<br>
+  {/foreach}  
+{/foreach}
+
+
+{/literal}
+{foreach from=$gui->items key=idx item=info}
+  {foreach from=$info.testcases key=tcidx item=tcversionInfo}
+   {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
+   {literal}
+   alert('tooltip-{/literal}{$tableID}{literal}');
+  {/foreach}  
+{/foreach}
+
+*}
+
+
 </head>
 <body>
 <h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$actionTitle}
@@ -207,9 +258,10 @@ rev: 20090610 - franciscom - display date when test case version was linked to t
                   {/if}  
                   </td>
                 {/if}
-    			      <td>
+    			      <td id="tooltip-{$tcID}">
     				    {$gui->testCasePrefix|escape}{$tcase.external_id}
     			      </td>
+    			      {*  *}
     				    <td title="{$labels.show_tcase_spec}">
      				     <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
     			      </td>

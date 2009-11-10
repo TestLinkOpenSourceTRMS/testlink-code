@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reassign_tc_id.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/09/28 08:46:21 $  $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/11/10 16:11:58 $  $Author: havlat $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
  * utility to align Test Case External ID to Test Case INTERNAL ID
@@ -30,7 +30,7 @@ foreach( $testProjects as $item )
     $tproject_id=$item['id'];
   	// $elements = $tproject_mgr->tree_manager->get_subtree($tproject_id,$exclude_node_types,
 	//                                                        $exclude_children,null,null,null);
-  	$elements = $tproject_mgr->tree_manager->get_subtree($tproject_id,$my['filters']);,
+  	$elements = $tproject_mgr->tree_manager->get_subtree($tproject_id,$my['filters']);
     $tcaseSet=null;
     foreach($elements as $elem)
     {

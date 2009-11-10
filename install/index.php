@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: index.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/10/05 08:47:11 $ by $Author: franciscom $
+ * Navigation for installation scripts
+ * 
+ * @package 	TestLink
+ * @copyright 	2007, TestLink community 
+ * @version    	CVS: $Id: index.php,v 1.16 2009/11/10 16:10:20 havlat Exp $
  *
- * SCOPE: Navigation for installation scripts
- *
- * Revisions:
+ * @internal Revisions:
+ *  20091103 - havlatm - Total GUI redesign
  *  20091003 - franciscom - removed option to upgrade/migrate from 1.6.x and 1.7.x
  *	20090127 - franciscom - removed upgrade block
  *	20080120 - franciscom - added link to README
@@ -26,40 +27,34 @@ $_SESSION['testlink_version'] = TL_VERSION;
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<title>Testlink <?php echo $_SESSION['testlink_version'] ?> Install</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<title>Testlink <?php echo $_SESSION['testlink_version'] ?> Installation procedure</title>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<link href="../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
 	<style type="text/css">@import url('./css/style.css');</style>
 </head>	
 
 <body>
-<table border="0" cellpadding="0" cellspacing="0" class="mainTable">
-  <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />
-    &nbsp;TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</span></td>
-  </tr>
-  <tr class="fancyRow2">
-    <td class="border-top-bottom smallText">&nbsp;</td>
-  </tr>
-  <tr align="left" valign="top">
-    <td>
-
-		<p>You are installing TestLink. Open Installation manual and select your case 'New installation' 
-		or 'Migration from older version'.</p>
-		<p>Show <a target="_blank" href="../docs/installation_manual.pdf">Installation manual</a>,
-		<a href="../README">README</a> and
-		<a href="../CHANGELOG">Changes Log</a>
+<div class="tlPager">
+<h1><img src="./img/dot.gif" alt="Dot" style="margin: 0px 10px;" />
+    TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</h1>
+<div class="tlLiner">&nbsp;</div>
+<div class="tlStory">
+		<p>You are installing TestLink. Select your case 'New installation' 
+		or 'Upgrade from older version'.</p>
+		<p>Open <a target="_blank" href="../docs/installation_manual.pdf">Installation manual</a>  
+		for more information or troubleshooting. You could also look at 
+		<a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>. 
+		You are welcome to visit our <a target="_blank" href="http://www.teamst.org">
+		forum</a> to browse or discuss. 
 		</p>
-		<ul>
-		<li><a href="newInstallStart_TL.php?installationType=new">New installation</a></li>
-   		<li><a href="newInstallStart_TL.php?installationType=upgrade">Upgrade from 1.8.0 (and later hot-fix) to 1.9.x <br />
-		</ul>
-		<p style="margin-top: 100px;">&nbsp;</p>
-			
-    </td>
-  </tr>
-  <tr class="fancyRow2">
-    <td class="border-top-bottom smallText">&nbsp;</td>
-  </tr>
-</table>
+		<p><ul>
+		<li><a href="installIntro.php?type=new">New installation</a></li>
+   		<li><a href="installIntro.php?type=upgrade_1.8_to_1.9">Upgrade from 1.8.x 
+   		versions to 1.9.x </a>. Older releases should be migrated to 1.8 version at first.</li>
+		</ul></p>
+</div>
+<div class="tlLiner">&nbsp;</div>
+
+</div>
 </body>
 </html>

@@ -1,9 +1,108 @@
+/*
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * CVS: $Id: style.css,v 1.4 2009/11/10 16:10:20 havlat Exp $
+ */
+
 body {
-	text-align: center;
-	background-color: #FFFFFF;
+/*	background: #fff url(../img/treeback.jpg) repeat-x top;*/
+	background-color: #fff;
 	color: #000000;
 	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 12px;
+	border-width: 0px;
 }
+
+h1 {
+	background: #fff url(../img/buttonbar_gs.gif) repeat-x top;
+	margin: 0px auto;
+	padding: 4px;
+	font-size: 12px;
+}
+
+p {
+	margin: 20px 0px;
+}
+
+
+a { 
+	color: #821517; 
+	text-decoration: none;
+}
+
+a:hover {
+	color: #821517; 
+	text-decoration: underline;
+}
+
+img { 
+	border: 0px;
+}
+
+li {
+	padding: 2px;
+	margin: 6px 0px 0px 15px;
+	list-style: disc outside url("../img/li.gif");
+}
+
+ul {
+	margin: 0px 0px 0px 20px;
+}
+
+
+.tlPager {
+	border-top: 1px solid #003399;
+	border-left: 1px solid #003399;
+	border-right: 1px solid #003399;
+	width: 740px;
+	background-color: #f7f7ff;
+/*	background: #fff url(../img/section.jpg) no-repeat top right; */
+	margin: 0px auto;
+	padding: 0px;
+	text-align: left;
+}
+
+.tlLiner {
+	background: #fff url(../img/buttonbar.gif) repeat-x top;
+	width: 100%;
+}
+
+.tlStory {
+	padding: 20px;
+	padding-bottom: 70px;
+}
+
+.tlBox {
+	background-color: #ffd; 
+	padding: 10px; 
+	overflow: auto; 
+	margin-bottom: 50px; 
+	font-style:italic
+}
+
+.tlPhases {
+	padding: 10px 20px;
+}
+
+h1, .tlStory, .tlPhases, .tlLiner {
+	border-bottom: 1px solid #003399;
+}
+
+/* ------ old style in table ----- */
+/* havlatm: todo clean unused */
+
+/* 20050803 */
+.ok {
+	color : #006400; /* darkgreen */
+}
+.notok {
+	color : #B22222; /* firebrick (red) */
+}
+.labelHolder {
+	width : 180px;
+	float : left;
+	font-weight: bold;
+}
+
 
 .w22 {
 	width: 22%;
@@ -23,25 +122,6 @@ body {
 	padding: 4px;
 }
 
-body,td,th {
-	/* font-family: Verdana, Arial, Helvetica, sans-serif; */
-	font-size: 11px;
-	color: #000;
-}
-
-a,a:hover { 
-	text-decoration: underline;
-}
-
-a { 
-	color: #821517; 
-	text-decoration: none;
-}
-
-a:hover {
-	color: #821517; 
-	text-decoration: underline;
-}
 
 .navigation { 
 	padding: 0px;
@@ -94,10 +174,6 @@ a:hover {
 	background: #fff url(../img/buttonbar.gif) repeat-x top;
 }
 
-body {
-	background: #fff url(../img/treeback.jpg) repeat-x top;
-}
-
 .border-top-bottom {
 	border-top: 1px solid #003399;
 	border-bottom: 1px solid #003399;
@@ -117,20 +193,6 @@ body {
 
 .text { 
 	width: 154px; 
-}
-
-img { 
-	border: 0px;
-}
-
-li {
-	padding: 0px;
-	margin: 6px 0px 0px 15px;
-	list-style: disc outside url("../img/li.gif");
-}
-
-ul {
-	margin: 0px 0px 0px 20px;
 }
 
 .silent { 
@@ -197,15 +259,6 @@ td.basic {background-color: #FFFFFF; vertical-align:top;}
 
 .boldtext {font-weight: bold;}
 
-h1 {
-	font-size: 13px;
-	color: #003399;
-	margin-left: 0px;
-	margin-top: 0px;
-	margin-right: 0px;
-	margin-bottom: 6px;
-}
-
 .boldtitle {
 	font-size: 12px;
 font-weight: bold;
@@ -220,27 +273,7 @@ p.notop{
 margin-top: 0px;
 }
 
-acronym { cursor: hand; border-bottom: dashed 1px #000000; }
 
-#countdown1{
-font-weight: bold;
-font-size: 16px;}
-
-
-/* 20050803 */
-.ok {
-	color : green;
-}
-
-.notok {
-	color : red;
-}
-	 
-.labelHolder {
-	width : 180px;
-	float : left;
-	font-weight: bold;
-}
 
 
 .fancy{

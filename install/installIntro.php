@@ -1,45 +1,56 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: license.php,v 1.5 2006/09/09 07:11:43 franciscom Exp $ */
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Basic description of steps and license confirmation
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2009, TestLink community 
+ * @version    	CVS: $Id: installIntro.php,v 1.1 2009/11/10 16:10:20 havlat Exp $
+ *
+ * @internal Revisions:
+ * 	None.
+ */
 session_start();
-foreach($_POST as $key => $val) {
-	$_SESSION[$key] = $val;
-}
+
+$inst_phase = 'license';
 $inst_type = $_SESSION['installationType'];
-$tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
+$_SESSION['title'] = "TestLink {$_SESSION['testlink_version']} ";
+
+if (isset($_GET['type']))
+{
+	$_SESSION['installation_type'] = $_GET['type'];
+	if ($_SESSION['installation_type'] == 'new')
+	{
+		$_SESSION['title'] .= " - New installation"; 
+		$_SESSION['isNew'] .= TRUE; 
+	}
+	elseif ($_SESSION['installation_type'] == 'upgrade_1.8_to_1.9')
+	{
+		$_SESSION['title'] .= " - Upgrade"; 
+		$_SESSION['isNew'] .= FALSE; 
+	}
+	else
+	{
+		$_SESSION['title'] .= " - Upgrade"; 
+		$_SESSION['isNew'] .= FALSE; 
+	}
+}
+else
+{
+	header( 'Location: index.php' );
+	exit;
+}
+
+include 'installHead.inc';
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
-  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-	<title><?php echo $tl_and_version ?> Install</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-        <style type="text/css">
-             @import url('./css/style.css');
-			 
-		 ul li { margin-top: 7px; }
-        </style>
-</head>	
+<div class="tlStory">
+<p><b>TestLink</b> is developed and shared under GPL license. You are welcome to share your changes
+with community. Please, confirm your understanding below.</p>
 
-<body>
-<table border="0" cellpadding="0" cellspacing="0" class="mainTable">
-  <tr class="fancyRow">
-    <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;<?php echo $tl_and_version ?></span></td>
-    <td align="right"><span class="headers">Installation - <?php echo $inst_type; ?></span></td>
-  </tr>
-  <tr class="fancyRow2">
-    <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
-  </tr>
-  <tr align="left" valign="top">
-    <td colspan="2"><table width="100%"  border="0" cellspacing="0" cellpadding="1">
-      <tr align="left" valign="top">
-        <td class="pad" id="content" colspan="2">
-
-<p>
-Usage of this software is subject to the GPL license. To help you understand what the GPL licence is and how it affects your ability to use the software, we have provided the following summary:
-</p>
-
-<p>
+<div class="tlBox" style="height: 300px;">
 	<b>The GNU General Public License is a Free Software license. </b>
 	<p />
 	Like any Free Software license, it grants to you the four following freedoms:<p />
@@ -61,7 +72,8 @@ Usage of this software is subject to the GPL license. To help you understand wha
 	</ul>
 	<p />
 	The above is a summary of the  GNU General Public License. By proceeding, you are agreeing to the GNU General Public Licence, not the above. The above is simply a summary of the GNU General Public Licence, and it's accuracy is not guaranteed. It is strongly recommended you read the <a href="http://www.gnu.org/copyleft/gpl.html" target="_blank">GNU General Public License</a> in full before proceeding, which can also be found in the LICENCE file distributed with TestLink.
-</p>
+</div>
+
 <script>
 function ableButton() {
 	check = document.getElementById("licenseOK");
@@ -72,21 +84,16 @@ function ableButton() {
 	} else {
 		button.disabled = true;	
 	}
-	
 }
-
-
 </script>
-		</td>
-      </tr>
-    </table></td>
-  </tr>
-  <tr class="fancyRow2">
-  	<form action="<?php echo $_SESSION['page2launch'] ?>" method="post">
-		<td class="border-top-bottom" style="padding:0px"><input type="checkbox" id="licenseOK" name="licenseOK" onClick="ableButton()" /><label for="licenseOK">I agree to the terms set out in this license.</label></td>
-		<td class="border-top-bottom smallText" align="right" style="padding:0px"><input type="submit" id="submit" value="Proceed" disabled="disabled" class="button" style="border: 0px;" /></td>
-	</form>
-  </tr>
-</table>
-</body>
-</html>
+<p>
+  	<form action="installCheck.php">
+	<div style="float:right;"><input type="submit" id="submit" value="Continue" 
+			disabled="disabled" /></div>
+	<div><input type="checkbox" id="licenseOK" name="licenseOK" onClick="ableButton()" />
+	<label for="licenseOK">I agree to the terms set out in this license.</label>
+	</div></form>
+<p>
+
+</div>
+<?php include 'installFooter.inc'; ?>

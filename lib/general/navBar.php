@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/07/27 07:26:14 $ $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/11/11 14:07:16 $ $Author: havlat $
  *
  * This file manages the navigation bar. 
  *
@@ -42,7 +42,6 @@ $userID = $user->dbID;
 $gui->TestProjects = $tproject_mgr->get_accessible_for_user($userID,'map',$tlCfg->gui->tprojects_combo_order_by);
 $gui->TestProjectCount = sizeof($gui->TestProjects);
 $gui->TestPlanCount = 0; 
-$gui->docs = getUserDocumentation();
 
 if ($gui->tprojectID)
 {
@@ -112,15 +111,10 @@ $smarty->assign('gui',$gui);
 $smarty->display('navBar.tpl');
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function getGrants($dbHandler)
+/**
+ * @todo havlatm: project rights should be get from $_SESSION
+ */
+function getGrants(&$db)
 {
     $grants = new stdClass();
     $grants->view_events_mgmt = has_rights($db,"mgt_view_events");
@@ -131,37 +125,6 @@ function getGrants($dbHandler)
     $grants->user_mgmt = has_rights($db,"mgt_users");
     
     return $grants;  
-}
-
-/*
-  function: getUserDocumentation
-            based on contribution by Eugenia Drosdezki
-  args :
-  
-  returns: 
-
-*/
-function getUserDocumentation()
-{
-    $target_dir = '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'docs';
-    $documents = null;
-    
-    if ($handle = opendir($target_dir)) 
-    {
-        while (false !== ($file = readdir($handle))) 
-        {
-            clearstatcache();
-            if (($file != ".") && ($file != "..")) 
-            {
-               if (is_file($target_dir . DIRECTORY_SEPARATOR . $file))
-               {
-                   $documents[] = $file;
-               }    
-            }
-        }
-        closedir($handle);
-    }
-    return $documents;
 }
 
 function init_args()

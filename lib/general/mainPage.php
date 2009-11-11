@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.59 $ $Author: franciscom $
- * @modified $Date: 2009/08/08 14:11:50 $
+ * @version $Revision: 1.60 $ $Author: havlat $
+ * @modified $Date: 2009/11/11 14:07:16 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -157,7 +157,36 @@ $gui->countPlans = count($gui->arrPlans);
 $gui->securityNotes = getSecurityNotes($db);
 $gui->testprojectID = $testprojectID;
 $gui->testplanID = $testplanID;
+$gui->docs = getUserDocumentation();
 
 $smarty->assign('gui',$gui);
 $smarty->display('mainPage.tpl');
+
+/**
+ * Get User Documentation 
+ * based on contribution by Eugenia Drosdezki
+ */
+function getUserDocumentation()
+{
+    $target_dir = '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'docs';
+    $documents = null;
+    
+    if ($handle = opendir($target_dir)) 
+    {
+        while (false !== ($file = readdir($handle))) 
+        {
+            clearstatcache();
+            if (($file != ".") && ($file != "..")) 
+            {
+               if (is_file($target_dir . DIRECTORY_SEPARATOR . $file))
+               {
+                   $documents[] = $file;
+               }    
+            }
+        }
+        closedir($handle);
+    }
+    return $documents;
+}
+
 ?>

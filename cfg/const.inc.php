@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.114 2009/10/25 19:25:41 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.115 2009/11/11 14:07:17 havlat Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -675,6 +675,61 @@ $tlCfg->review_types = array(1 => 'type_undefined',
 	                         5 => 'unclear', 
 	                         6 => 'major problem'
 );
+
+/**
+ * Top Menu definition
+ * @since 1.9 
+ */
+$tlCfg->guiTopMenu = array();
+$tlCfg->guiTopMenu[1] = array(
+		label => 'home',
+		url => 'index.php',
+		right => 'all',
+		condition=>'',
+		shortcut=>'h',
+		target=>'_parent'
+); 
+$tlCfg->guiTopMenu[2] = array(
+		label => 'title_specification',
+		url => 'lib/general/frmWorkArea.php?feature=editTc',
+		right => 'mgt_view_tc',
+		condition=>'',
+		shortcut=>'s',
+		target=>'mainframe'
+); 
+$tlCfg->guiTopMenu[3] = array(
+		label => 'title_execute',
+		url => 'lib/general/frmWorkArea.php?feature=executeTest',
+		right => 'testplan_execute',
+		condition=>'TestPlanAvailable',
+		shortcut=>'e',
+		target=>'mainframe'
+); 
+$tlCfg->guiTopMenu[4] = array(
+		label => 'title_results',
+		url => 'lib/general/frmWorkArea.php?feature=showMetrics',
+		right => 'testplan_metrics',
+		condition=>'TestPlanAvailable',
+		shortcut=>'r',
+		target=>'mainframe'
+); 
+$tlCfg->guiTopMenu[5] = array(
+		label => 'title_admin',
+		url => 'lib/usermanagement/usersView.php',
+		right => 'mgt_users',
+		condition=>'',
+		shortcut=>'u',
+		target=>'mainframe'
+); 
+$tlCfg->guiTopMenu[6] = array(
+		label => 'title_events',
+		url => 'lib/events/eventviewer.php',
+		right => 'events_mgt',
+		condition=>'',
+		shortcut=>'v',
+		target=>'mainframe'
+); 
+
 
 /**  @TODO havlatm: remove const; in addition the text should refer to Install manual */  
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');

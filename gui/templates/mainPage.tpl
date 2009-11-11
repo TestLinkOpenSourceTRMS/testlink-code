@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.43 2009/08/10 18:57:58 schlundus Exp $     
+ $Id: mainPage.tpl,v 1.44 2009/11/11 14:07:17 havlat Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -45,6 +45,8 @@ window.onload=function()
     {
         display_left_block_4();
     }
+
+    display_left_block_5();
 
     if( typeof display_right_block_1 != 'undefined')
     {

@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.17 2009/08/19 19:56:25 schlundus Exp $     
+ $Id: mainPageLeft.tpl,v 1.18 2009/11/11 14:07:17 havlat Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -28,6 +28,7 @@
 {assign var="display_left_block_2" value=false}
 {assign var="display_left_block_3" value=false}
 {assign var="display_left_block_4" value=false}
+{assign var="display_left_block_5" value=true}
 {if $gui->testprojectID && 
 	    ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
        $gui->cfield_management == "yes" || $gui->grants.keywords_view == "yes")	}
@@ -122,8 +123,26 @@
      }
     {/literal}
     </script>
-
 {/if}
+
+    <script type="text/javascript">
+    {literal}
+    function display_left_block_5()
+    {
+        var p5 = new Ext.Panel({
+                                title: 'TestLink',
+                                collapsible:false,
+                                collapsed: false,
+                                draggable: true,
+                                contentEl: 'testlink_application',
+                                baseCls: 'x-tl-panel',
+                                bodyStyle: "background:#c8dce8;padding:3px;",
+                                renderTo: {/literal}'menu_left_block_{$menuLayout.testSpecification}'{literal},
+                                width:'100%'
+                                });
+	}
+    {/literal}
+    </script>
 
 <div class="vertical_menu" style="float: left">
   {* ---------------------------------------------------------------------------------------- *}
@@ -131,6 +150,7 @@
   <div id='menu_left_block_2'></div><br />
   <div id="menu_left_block_3"></div><br />
   <div id="menu_left_block_4"></div><br />
+  <div id="menu_left_block_5"></div><br />
   
 	{if $display_left_block_1 }
     <div id='testproject_topics'>
@@ -244,4 +264,22 @@
 	  {/if}
     </div>
   {/if}
+
+    <div id='testlink_application'>
+  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		<form style="display:inline;">
+    	<select class="menu_combo" style="font-weight:normal;" name="docs" size="1"
+            	onchange="javascript:get_docs(this.form.docs.options[this.form.docs.selectedIndex].value, 
+            	'{$basehref}');" >
+        	<option value="leer"> -{lang_get s='access_doc'}-</option>
+        	{if $gui->docs}
+            {foreach from=$gui->docs item=doc}
+                <option value="{$doc}">{$doc}</option>
+            {/foreach}
+        	{/if}
+    	</select>
+		</form>
+    </div>
+
+
 </div>

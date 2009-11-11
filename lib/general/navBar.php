@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/11/11 14:07:16 $ $Author: havlat $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/11/11 14:10:29 $ $Author: havlat $
  *
  * This file manages the navigation bar. 
  *
@@ -117,12 +117,7 @@ $smarty->display('navBar.tpl');
 function getGrants(&$db)
 {
     $grants = new stdClass();
-    $grants->view_events_mgmt = has_rights($db,"mgt_view_events");
-    $grants->view_testcases = has_rights($db,"mgt_view_tc");
     $grants->view_testcase_spec = has_rights($db,"mgt_view_tc");
-    $grants->testplan_execute = has_rights($db,"testplan_execute");
-    $grants->testplan_metrics = has_rights($db,"testplan_metrics");
-    $grants->user_mgmt = has_rights($db,"mgt_users");
     
     return $grants;  
 }

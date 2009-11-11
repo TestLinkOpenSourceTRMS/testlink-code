@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.170 2009/10/05 08:47:11 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.171 2009/11/11 14:07:17 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Load core functions for TestLink GUI
@@ -229,29 +229,76 @@ function checkSessionValid(&$db)
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
- * start session
+ * Start session
  */
 function doSessionStart()
 {
 	session_set_cookie_params(99999);
-
 	if(!isset($_SESSION))
 	{
 		session_start();
 	}
 }
 
-// --------------------------------------------------------------------------------------
-// If we receive TestPlan ID in the _SESSION
-//    then do some checks and if everything OK
-//    Update this value at Session Level, to set it available in other
-//    pieces of the application
-//
-// rev :
-//      20090726 - franciscom - getAccessibleTestPlans() now is method on user class
-function upd_session_tplan_tproject(&$db,$hash_user_sel)
+
+/**
+ * Initialize structure of top menu for the user and the project.
+ * 
+ * @param integer $db DB connection identifier
+ * @uses $_SESSION Requires initialized project, test plan and user data.
+ * @since 1.9
+ */
+function initTopMenu(&$db)
+{
+	global $tlCfg;
+	$_SESSION['testProjectTopMenu'] = '';
+	$i = 1;	
+
+	//check if Project is available
+	if ($_SESSION['testprojectID'] > 0)
+	{
+		foreach ($tlCfg->guiTopMenu as $element)
+		{
+			//check if Test Plan is available
+			if ((!isset($element['condition'])) || ($element['condition'] == '') ||
+					(($element['condition'] == 'TestPlanAvailable') && isset($_SESSION['testplanID'])
+					&& $_SESSION['testplanID'] > 0))
+			{
+				$bCondition = TRUE;
+			}
+			else
+			{
+				$bCondition = FALSE;
+			}
+			
+			if ((has_rights($db,$element['right']) == "yes") && $bCondition)
+			{
+				$_SESSION['testProjectTopMenu'] .= "<a href='{$element['url']}' " .
+						"target='{$element['target']}' accesskey='{$element['shortcut']}'" .
+	     				"tabindex=''".$i++."''>".lang_get($element['label'])."</a> |";
+			}
+		}
+	}
+}
+
+
+/**
+ * Update Project and Test Plan data on Project change or startup
+ * Data are stored in $_SESSION array
+ * 
+ * If we receive TestPlan ID in the _SESSION then do some checks and if everything OK
+ * Update this value at Session Level, to set it available in other pieces of the application
+ * 
+ * @param integer $db DB connection identifier
+ * @param array $hash_user_sel input data for the page ($_REQUEST)
+ * 
+ * @uses initMenu() 
+ * @internal Revisions:
+ * 	20091111 - havlatm - menu generation added, name changed (from upd_session_tplan_tproject)
+ *	20090726 - franciscom - getAccessibleTestPlans() now is method on user class
+ **/
+function initProject(&$db,$hash_user_sel)
 {
 	$tproject = new testproject($db);
 	$user_sel = array("tplan_id" => 0, "tproject_id" => 0 );
@@ -300,23 +347,25 @@ function upd_session_tplan_tproject(&$db,$hash_user_sel)
 		$tplan_data = $tplan_data[0];
 		setSessionTestPlan($tplan_data);
 	}
+	
+	// initialize structure of top menu for the user and the project
+	initTopMenu($db);
    
 }
 
 
-// --------------------------------------------------------------------------------------
-/**
-* General page initialization procedure
-* - init session
-* - init database
-* - check rights
-* 
-* @param integer $db DB connection identifier
-* @param boolean $initProject (optional) Set true if adjustment of Product or
-* 		Test Plan is required; default is FALSE
-* @param boolean $bDontCheckSession (optional) Set to true if no session should be
-* 		 started
-*/
+ /**
+  * General page initialization procedure
+  * - init session
+  * - init database
+  * - check rights
+  * 
+  * @param integer $db DB connection identifier
+  * @param boolean $initProject (optional) Set true if adjustment of Product or
+  * 		Test Plan is required; default is FALSE
+  * @param boolean $bDontCheckSession (optional) Set to true if no session should be
+  * 		 started
+  */
 function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false,$userRightsCheckFunction = null)
 {
 	doSessionStart();
@@ -338,7 +387,7 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 	// adjust Product and Test Plan to $_SESSION
 	if ($initProject)
 	{
-		upd_session_tplan_tproject($db,$_REQUEST);
+		initProject($db,$_REQUEST);
     }
    
 	// used to disable the attachment feature if there are problems with repository path

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Noņemt stilus",
 InsertLinkLbl		: "Hipersaite",
 InsertLink			: "Ievietot/Labot hipersaiti",
 RemoveLink			: "Noņemt hipersaiti",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Ievietot/Labot iezīmi",
+AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Attēls",
 InsertImage			: "Ievietot/Labot Attēlu",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "Izlīdzināt pa labi",
 BlockJustify		: "Izlīdzināt malas",
 DecreaseIndent		: "Samazināt atkāpi",
 IncreaseIndent		: "Palielināt atkāpi",
+Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Atcelt",
 Redo				: "Atkārtot",
 NumberedListLbl		: "Numurēts saraksts",
@@ -103,20 +109,27 @@ SelectionField	: "Iezīmēšanas lauks",
 ImageButton		: "Attēlpoga",
 
 FitWindow		: "Maksimizēt redaktora izmēru",
+ShowBlocks		: "Show Blocks",	//MISSING
 
 // Context Menu
 EditLink			: "Labot hipersaiti",
 CellCM				: "Šūna",
 RowCM				: "Rinda",
 ColumnCM			: "Kolonna",
-InsertRow			: "Ievietot rindu",
+InsertRowAfter		: "Insert Row After",	//MISSING
+InsertRowBefore		: "Insert Row Before",	//MISSING
 DeleteRows			: "Dzēst rindas",
-InsertColumn		: "Ievietot kolonnu",
+InsertColumnAfter	: "Insert Column After",	//MISSING
+InsertColumnBefore	: "Insert Column Before",	//MISSING
 DeleteColumns		: "Dzēst kolonnas",
-InsertCell			: "Ievietot rūtiņu",
+InsertCellAfter		: "Insert Cell After",	//MISSING
+InsertCellBefore	: "Insert Cell Before",	//MISSING
 DeleteCells			: "Dzēst rūtiņas",
 MergeCells			: "Apvienot rūtiņas",
-SplitCell			: "Sadalīt rūtiņu",
+MergeRight			: "Merge Right",	//MISSING
+MergeDown			: "Merge Down",	//MISSING
+HorizontalSplitCell	: "Split Cell Horizontally",	//MISSING
+VerticalSplitCell	: "Split Cell Vertically",	//MISSING
 TableDelete			: "Dzēst tabulu",
 CellProperties		: "Rūtiņas īpašības",
 TableProperties		: "Tabulas īpašības",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "Iezīmēšanas lauka īpašības",
 TextareaProp		: "Teksta laukuma īpašības",
 FormProp			: "Formas īpašības",
 
-FontFormats			: "Normāls teksts;Formatēts teksts;Adrese;Virsraksts 1;Virsraksts 2;Virsraksts 3;Virsraksts 4;Virsraksts 5;Virsraksts 6;Rindkopa (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normāls teksts;Formatēts teksts;Adrese;Virsraksts 1;Virsraksts 2;Virsraksts 3;Virsraksts 4;Virsraksts 5;Virsraksts 6;Rindkopa (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Tiek apstrādāts XHTML. Lūdzu uzgaidiet...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "Rīku joslas komplekts \"%1\" neeksistē",
 NoActiveX			: "Interneta pārlūkprogrammas drošības uzstādījumi varētu ietekmēt dažas no redaktora īpašībām. Jābūt aktivizētai sadaļai \"Run ActiveX controls and plug-ins\". Savādāk ir iespējamas kļūdas darbībā un kļūdu paziņojumu parādīšanās.",
 BrowseServerBlocked : "Resursu pārlūks nevar tikt atvērts. Pārliecinieties, ka uznirstošo logu bloķētāji ir atslēgti.",
 DialogBlocked		: "Nav iespējams atvērt dialoglogu. Pārliecinieties, ka uznirstošo logu bloķētāji ir atslēgti.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "Darīts!",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Izvēlēties iezīmi",
 DlgLnkAnchorByName	: "Pēc iezīmes nosaukuma",
 DlgLnkAnchorById	: "Pēc elementa ID",
-DlgLnkNoAnchors		: "<Šajā dokumentā nav iezīmju>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Šajā dokumentā nav iezīmju)",
 DlgLnkEMail			: "E-pasta adrese",
 DlgLnkEMailSubject	: "Ziņas tēma",
 DlgLnkEMailBody		: "Ziņas saturs",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Rūtiņu atstatums",
 DlgTableCellPad		: "Rūtiņu nobīde",
 DlgTableCaption		: "Leģenda",
 DlgTableSummary		: "Anotācija",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Rūtiņas īpašības",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Augša",
 DlgCellVerAlignMiddle	: "Vidus",
 DlgCellVerAlignBottom	: "Apakša",
 DlgCellVerAlignBaseline	: "Pamatrindā",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Rindu pārnese",
 DlgCellCollSpan		: "Kolonnu pārnese",
 DlgCellBackColor	: "Fona krāsa",
 DlgCellBorderColor	: "Rāmja krāsa",
 DlgCellBtnSelect	: "Iezīmē...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Find and Replace",	//MISSING
 
 // Find Dialog
 DlgFindTitle		: "Meklētājs",
@@ -347,7 +372,6 @@ DlgPasteMsg2	: "Lūdzu, ievietojiet tekstu šajā laukumā, izmantojot klaviatū
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorēt iepriekš norādītos fontus",
 DlgPasteRemoveStyles	: "Noņemt norādītos stilus",
-DlgPasteCleanBox		: "Apstrādāt laukuma saturu",
 
 // Color Picker
 ColorAutomatic	: "Automātiska",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "Par",
 DlgAboutBrowserInfoTab	: "Informācija par pārlūkprogrammu",
 DlgAboutLicenseTab	: "Licence",
 DlgAboutVersion		: "versija",
-DlgAboutInfo		: "Papildus informācija ir pieejama"
+DlgAboutInfo		: "Papildus informācija ir pieejama",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style",	//MISSING
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

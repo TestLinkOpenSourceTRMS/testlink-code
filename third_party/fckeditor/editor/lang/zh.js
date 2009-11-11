@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "清除格式",
 InsertLinkLbl		: "超連結",
 InsertLink			: "插入/編輯超連結",
 RemoveLink			: "移除超連結",
+VisitLink			: "開啟超連結",
 Anchor				: "插入/編輯錨點",
+AnchorDelete		: "移除錨點",
 InsertImageLbl		: "影像",
 InsertImage			: "插入/編輯影像",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "靠右對齊",
 BlockJustify		: "左右對齊",
 DecreaseIndent		: "減少縮排",
 IncreaseIndent		: "增加縮排",
+Blockquote			: "引用文字",
+CreateDiv			: "新增 Div 標籤",
+EditDiv				: "變更 Div 標籤",
+DeleteDiv			: "移除 Div 標籤",
 Undo				: "復原",
 Redo				: "重複",
 NumberedListLbl		: "編號清單",
@@ -103,20 +109,27 @@ SelectionField	: "清單/選單",
 ImageButton		: "影像按鈕",
 
 FitWindow		: "編輯器最大化",
+ShowBlocks		: "顯示區塊",
 
 // Context Menu
 EditLink			: "編輯超連結",
 CellCM				: "儲存格",
 RowCM				: "列",
 ColumnCM			: "欄",
-InsertRow			: "插入列",
+InsertRowAfter		: "向下插入列",
+InsertRowBefore		: "向上插入列",
 DeleteRows			: "刪除列",
-InsertColumn		: "插入欄",
+InsertColumnAfter	: "向右插入欄",
+InsertColumnBefore	: "向左插入欄",
 DeleteColumns		: "刪除欄",
-InsertCell			: "插入儲存格",
+InsertCellAfter		: "向右插入儲存格",
+InsertCellBefore	: "向左插入儲存格",
 DeleteCells			: "刪除儲存格",
 MergeCells			: "合併儲存格",
-SplitCell			: "分割儲存格",
+MergeRight			: "向右合併儲存格",
+MergeDown			: "向下合併儲存格",
+HorizontalSplitCell	: "橫向分割儲存格",
+VerticalSplitCell	: "縱向分割儲存格",
 TableDelete			: "刪除表格",
 CellProperties		: "儲存格屬性",
 TableProperties		: "表格屬性",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "清單/選單屬性",
 TextareaProp		: "文字區域屬性",
 FormProp			: "表單屬性",
 
-FontFormats			: "本文;已格式化;位址;標題 1;標題 2;標題 3;標題 4;標題 5;標題 6;本文 (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "一般;已格式化;位址;標題 1;標題 2;標題 3;標題 4;標題 5;標題 6;一般 (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "處理 XHTML 中，請稍候…",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "工具列設定 \"%1\" 不存在",
 NoActiveX			: "瀏覽器的安全性設定限制了本編輯器的某些功能。您必須啟用安全性設定中的「執行ActiveX控制項與外掛程式」項目，否則本編輯器將會出現錯誤並缺少某些功能",
 BrowseServerBlocked : "無法開啟資源瀏覽器，請確定所有快顯視窗封鎖程式是否關閉",
 DialogBlocked		: "無法開啟對話視窗，請確定所有快顯視窗封鎖程式是否關閉",
+VisitLinkBlocked	: "無法開啟新視窗，請確定所有快顯視窗封鎖程式是否關閉",
 
 // Dialogs
 DlgBtnOK			: "確定",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "請選擇錨點",
 DlgLnkAnchorByName	: "依錨點名稱",
 DlgLnkAnchorById	: "依元件 ID",
-DlgLnkNoAnchors		: "<本文件尚無可用之錨點>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(本文件尚無可用之錨點)",
 DlgLnkEMail			: "電子郵件",
 DlgLnkEMailSubject	: "郵件主旨",
 DlgLnkEMailBody		: "郵件內容",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "間距",
 DlgTableCellPad		: "內距",
 DlgTableCaption		: "標題",
 DlgTableSummary		: "摘要",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "儲存格屬性",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "靠上對齊",
 DlgCellVerAlignMiddle	: "置中",
 DlgCellVerAlignBottom	: "靠下對齊",
 DlgCellVerAlignBaseline	: "基準線",
+DlgCellType		: "儲存格類型",
+DlgCellTypeData		: "資料",
+DlgCellTypeHeader	: "標題",
 DlgCellRowSpan		: "合併列數",
 DlgCellCollSpan		: "合併欄数",
 DlgCellBackColor	: "背景顏色",
 DlgCellBorderColor	: "邊框顏色",
 DlgCellBtnSelect	: "請選擇…",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "尋找與取代",
 
 // Find Dialog
 DlgFindTitle		: "尋找",
@@ -344,10 +369,9 @@ PasteAsText		: "貼為純文字格式",
 PasteFromWord	: "自 Word 貼上",
 
 DlgPasteMsg2	: "請使用快捷鍵 (<strong>Ctrl+V</strong>) 貼到下方區域中並按下 <strong>確定</strong>",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "因為瀏覽器的安全性設定，本編輯器無法直接存取您的剪貼簿資料，請您自行在本視窗進行貼上動作。",
 DlgPasteIgnoreFont		: "移除字型設定",
 DlgPasteRemoveStyles	: "移除樣式設定",
-DlgPasteCleanBox		: "清除文字區域",
 
 // Color Picker
 ColorAutomatic	: "自動",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "關於",
 DlgAboutBrowserInfoTab	: "瀏覽器資訊",
 DlgAboutLicenseTab	: "許可證",
 DlgAboutVersion		: "版本",
-DlgAboutInfo		: "想獲得更多資訊請至 "
+DlgAboutInfo		: "想獲得更多資訊請至 ",
+
+// Div Dialog
+DlgDivGeneralTab	: "一般",
+DlgDivAdvancedTab	: "進階",
+DlgDivStyle		: "樣式",
+DlgDivInlineStyle	: "CSS 樣式",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

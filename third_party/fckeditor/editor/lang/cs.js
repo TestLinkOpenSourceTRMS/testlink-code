@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Odstranit formátování",
 InsertLinkLbl		: "Odkaz",
 InsertLink			: "Vložit/změnit odkaz",
 RemoveLink			: "Odstranit odkaz",
+VisitLink			: "Otevřít odkaz",
 Anchor				: "Vložít/změnit záložku",
+AnchorDelete		: "Odstranit kotvu",
 InsertImageLbl		: "Obrázek",
 InsertImage			: "Vložit/změnit obrázek",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "Zarovnat vpravo",
 BlockJustify		: "Zarovnat do bloku",
 DecreaseIndent		: "Zmenšit odsazení",
 IncreaseIndent		: "Zvětšit odsazení",
+Blockquote			: "Citace",
+CreateDiv			: "Vytvořit Div kontejner",
+EditDiv				: "Upravit Div kontejner",
+DeleteDiv			: "Odstranit Div kontejner",
 Undo				: "Zpět",
 Redo				: "Znovu",
 NumberedListLbl		: "Číslování",
@@ -103,20 +109,27 @@ SelectionField	: "Seznam",
 ImageButton		: "Obrázkové tlačítko",
 
 FitWindow		: "Maximalizovat velikost editoru",
+ShowBlocks		: "Ukázat bloky",
 
 // Context Menu
 EditLink			: "Změnit odkaz",
 CellCM				: "Buňka",
 RowCM				: "Řádek",
 ColumnCM			: "Sloupec",
-InsertRow			: "Vložit řádek",
-DeleteRows			: "Smazat řádek",
-InsertColumn		: "Vložit sloupec",
+InsertRowAfter		: "Vložit řádek za",
+InsertRowBefore		: "Vložit řádek před",
+DeleteRows			: "Smazat řádky",
+InsertColumnAfter	: "Vložit sloupec za",
+InsertColumnBefore	: "Vložit sloupec před",
 DeleteColumns		: "Smazat sloupec",
-InsertCell			: "Vložit buňku",
+InsertCellAfter		: "Vložit buňku za",
+InsertCellBefore	: "Vložit buňku před",
 DeleteCells			: "Smazat buňky",
 MergeCells			: "Sloučit buňky",
-SplitCell			: "Rozdělit buňku",
+MergeRight			: "Sloučit doprava",
+MergeDown			: "Sloučit dolů",
+HorizontalSplitCell	: "Rozdělit buňky vodorovně",
+VerticalSplitCell	: "Rozdělit buňky svisle",
 TableDelete			: "Smazat tabulku",
 CellProperties		: "Vlastnosti buňky",
 TableProperties		: "Vlastnosti tabulky",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "Vlastnosti seznamu",
 TextareaProp		: "Vlastnosti textové oblasti",
 FormProp			: "Vlastnosti formuláře",
 
-FontFormats			: "Normální;Formátovaný;Adresa;Nadpis 1;Nadpis 2;Nadpis 3;Nadpis 4;Nadpis 5;Nadpis 6",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normální;Naformátováno;Adresa;Nadpis 1;Nadpis 2;Nadpis 3;Nadpis 4;Nadpis 5;Nadpis 6;Normální (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Probíhá zpracování XHTML. Prosím čekejte...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "Panel nástrojů \"%1\" neexistuje",
 NoActiveX			: "Nastavení bezpečnosti Vašeho prohlížeče omezuje funkčnost některých jeho možností. Je třeba zapnout volbu \"Spouštět ovládáací prvky ActiveX a moduly plug-in\", jinak nebude možné využívat všechny dosputné schopnosti editoru.",
 BrowseServerBlocked : "Průzkumník zdrojů nelze otevřít. Prověřte, zda nemáte aktivováno blokování popup oken.",
 DialogBlocked		: "Nelze otevřít dialogové okno. Prověřte, zda nemáte aktivováno blokování popup oken.",
+VisitLinkBlocked	: "Není možné otevřít nové okno. Prověřte, zda všechny nástroje pro blokování vyskakovacích oken jsou vypnuty.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Vybrat kotvu",
 DlgLnkAnchorByName	: "Podle jména kotvy",
 DlgLnkAnchorById	: "Podle Id objektu",
-DlgLnkNoAnchors		: "<Ve stránce žádná kotva není definována>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Ve stránce není definována žádná kotva!)",
 DlgLnkEMail			: "E-Mailová adresa",
 DlgLnkEMailSubject	: "Předmět zprávy",
 DlgLnkEMailBody		: "Tělo zprávy",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Vzdálenost buněk",
 DlgTableCellPad		: "Odsazení obsahu",
 DlgTableCaption		: "Popis",
 DlgTableSummary		: "Souhrn",
+DlgTableHeaders		: "Záhlaví",
+DlgTableHeadersNone		: "Žádné",
+DlgTableHeadersColumn	: "První sloupec",
+DlgTableHeadersRow		: "První řádek",
+DlgTableHeadersBoth		: "Oboje",
 
 // Table Cell Dialog
 DlgCellTitle		: "Vlastnosti buňky",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Nahoru",
 DlgCellVerAlignMiddle	: "Doprostřed",
 DlgCellVerAlignBottom	: "Dolů",
 DlgCellVerAlignBaseline	: "Na účaří",
+DlgCellType		: "Typ buňky",
+DlgCellTypeData		: "Data",
+DlgCellTypeHeader	: "Zálaví",
 DlgCellRowSpan		: "Sloučené řádky",
 DlgCellCollSpan		: "Sloučené sloupce",
 DlgCellBackColor	: "Barva pozadí",
 DlgCellBorderColor	: "Barva ohraničení",
 DlgCellBtnSelect	: "Výběr...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Najít a nahradit",
 
 // Find Dialog
 DlgFindTitle		: "Hledat",
@@ -344,10 +369,9 @@ PasteAsText		: "Vložit jako čistý text",
 PasteFromWord	: "Vložit text z Wordu",
 
 DlgPasteMsg2	: "Do následujícího pole vložte požadovaný obsah pomocí klávesnice (<STRONG>Ctrl+V</STRONG>) a stiskněte <STRONG>OK</STRONG>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "Z důvodů nastavení bezpečnosti Vašeho prohlížeče nemůže editor přistupovat přímo do schránky. Obsah schránky prosím vložte znovu do tohoto okna.",
 DlgPasteIgnoreFont		: "Ignorovat písmo",
 DlgPasteRemoveStyles	: "Odstranit styly",
-DlgPasteCleanBox		: "Vyčistit",
 
 // Color Picker
 ColorAutomatic	: "Automaticky",
@@ -432,7 +456,7 @@ DlgHiddenValue	: "Hodnota",
 // Bulleted List Dialog
 BulletedListProp	: "Vlastnosti odrážek",
 NumberedListProp	: "Vlastnosti číslovaného seznamu",
-DlgLstStart			: "Start",	//MISSING
+DlgLstStart			: "Začátek",
 DlgLstType			: "Typ",
 DlgLstTypeCircle	: "Kružnice",
 DlgLstTypeDisc		: "Kruh",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "O aplikaci",
 DlgAboutBrowserInfoTab	: "Informace o prohlížeči",
 DlgAboutLicenseTab	: "Licence",
 DlgAboutVersion		: "verze",
-DlgAboutInfo		: "Více informací získáte na"
+DlgAboutInfo		: "Více informací získáte na",
+
+// Div Dialog
+DlgDivGeneralTab	: "Obecné",
+DlgDivAdvancedTab	: "Rozšířené",
+DlgDivStyle		: "Styl",
+DlgDivInlineStyle	: "Vložený styl",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

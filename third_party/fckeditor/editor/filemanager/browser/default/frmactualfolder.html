@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -23,14 +23,42 @@
 -->
 <html>
 	<head>
+		<title>Folder path</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<link href="browser.css" type="text/css" rel="stylesheet">
 		<script type="text/javascript">
-
-function OnResize()
+// Automatically detect the correct document.domain (#1919).
+(function()
 {
-	divName.style.width = "1px" ;
-	divName.style.width = tdName.offsetWidth + "px" ;
-}
+	var d = document.domain ;
+
+	while ( true )
+	{
+		// Test if we can access a parent property.
+		try
+		{
+			var test = window.top.opener.document.domain ;
+			break ;
+		}
+		catch( e )
+		{}
+
+		// Remove a domain part: www.mytest.example.com => mytest.example.com => example.com ...
+		d = d.replace( /.*?(?:\.|$)/, '' ) ;
+
+		if ( d.length == 0 )
+			break ;		// It was not able to detect the domain.
+
+		try
+		{
+			document.domain = d ;
+		}
+		catch (e)
+		{
+			break ;
+		}
+	}
+})() ;
 
 function SetCurrentFolder( resourceType, folderPath )
 {
@@ -44,8 +72,8 @@ window.onload = function()
 
 		</script>
 	</head>
-	<body bottomMargin="0" topMargin="0">
-		<table height="100%" cellSpacing="0" cellPadding="0" width="100%" border="0">
+	<body>
+		<table class="fullHeight" cellSpacing="0" cellPadding="0" width="100%" border="0">
 			<tr>
 				<td>
 					<button style="WIDTH: 100%" type="button">
@@ -55,7 +83,7 @@ window.onload = function()
 								<td>&nbsp;</td>
 								<td id="tdName" width="100%" nowrap class="ActualFolder">/</td>
 								<td>&nbsp;</td>
-								<td><img height="8" src="images/ButtonArrow.gif" width="12"></td>
+								<td><img height="8" src="images/ButtonArrow.gif" width="12" alt=""></td>
 								<td>&nbsp;</td>
 							</tr>
 						</table>

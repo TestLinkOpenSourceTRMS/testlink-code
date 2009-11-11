@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "إزالة التنسيقات",
 InsertLinkLbl		: "رابط",
 InsertLink			: "إدراج/تحرير رابط",
 RemoveLink			: "إزالة رابط",
+VisitLink			: "افتح الرابط",
 Anchor				: "إدراج/تحرير إشارة مرجعية",
+AnchorDelete		: "إزالة إشارة مرجعية",
 InsertImageLbl		: "صورة",
 InsertImage			: "إدراج/تحرير صورة",
 InsertFlashLbl		: "فلاش",
@@ -70,6 +72,10 @@ RightJustify		: "محاذاة إلى اليمين",
 BlockJustify		: "ضبط",
 DecreaseIndent		: "إنقاص المسافة البادئة",
 IncreaseIndent		: "زيادة المسافة البادئة",
+Blockquote			: "اقتباس",
+CreateDiv			: "إنشاء حاوية Div",
+EditDiv				: "تعديل حاوية Div",
+DeleteDiv			: "إزالة حاوية Div",
 Undo				: "تراجع",
 Redo				: "إعادة",
 NumberedListLbl		: "تعداد رقمي",
@@ -103,20 +109,27 @@ SelectionField	: "قائمة منسدلة",
 ImageButton		: "زر صورة",
 
 FitWindow		: "تكبير حجم المحرر",
+ShowBlocks		: "مخطط تفصيلي",
 
 // Context Menu
 EditLink			: "تحرير رابط",
 CellCM				: "خلية",
 RowCM				: "صف",
 ColumnCM			: "عمود",
-InsertRow			: "إدراج صف",
+InsertRowAfter		: "إدراج صف بعد",
+InsertRowBefore		: "إدراج صف قبل",
 DeleteRows			: "حذف صفوف",
-InsertColumn		: "إدراج عمود",
+InsertColumnAfter	: "إدراج عمود بعد",
+InsertColumnBefore	: "إدراج عمود قبل",
 DeleteColumns		: "حذف أعمدة",
-InsertCell			: "إدراج خلية",
+InsertCellAfter		: "إدراج خلية بعد",
+InsertCellBefore	: "إدراج خلية قبل",
 DeleteCells			: "حذف خلايا",
 MergeCells			: "دمج خلايا",
-SplitCell			: "تقسيم خلية",
+MergeRight			: "دمج لليمين",
+MergeDown			: "دمج للأسفل",
+HorizontalSplitCell	: "تقسيم الخلية أفقياً",
+VerticalSplitCell	: "تقسيم الخلية عمودياً",
 TableDelete			: "حذف الجدول",
 CellProperties		: "خصائص الخلية",
 TableProperties		: "خصائص الجدول",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "خصائص القائمة المنسدلة",
 TextareaProp		: "خصائص ناحية النص",
 FormProp			: "خصائص النموذج",
 
-FontFormats			: "عادي;منسّق;دوس;العنوان 1;العنوان  2;العنوان  3;العنوان  4;العنوان  5;العنوان  6",		//REVIEW : Check _getfontformat.html
+FontFormats			: "عادي;منسّق;دوس;العنوان 1;العنوان  2;العنوان  3;العنوان  4;العنوان  5;العنوان  6",
 
 // Alerts and Messages
 ProcessingXHTML		: "إنتظر قليلاً ريثما تتم   معالَجة‏ XHTML. لن يستغرق طويلاً...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "لم أتمكن من العثور على طقم الأدو�
 NoActiveX			: "لتأمين متصفحك يجب أن تحدد بعض مميزات المحرر. يتوجب عليك تمكين الخيار \"Run ActiveX controls and plug-ins\". قد تواجة أخطاء وتلاحظ مميزات مفقودة",
 BrowseServerBlocked : "لايمكن فتح مصدر المتصفح. فضلا يجب التأكد بأن جميع موانع النوافذ المنبثقة معطلة",
 DialogBlocked		: "لايمكن فتح نافذة الحوار . فضلا تأكد من أن  مانع النوافذ المنبثة معطل .",
+VisitLinkBlocked	: "لا يمكن فتح نافذة جديدة. تأكد من إيقاف كل مانعي فتح النوافذ من العمل.",
 
 // Dialogs
 DlgBtnOK			: "موافق",
@@ -229,7 +243,7 @@ DlgLnkURL			: "الموقع",
 DlgLnkAnchorSel		: "اختر علامة مرجعية",
 DlgLnkAnchorByName	: "حسب اسم العلامة",
 DlgLnkAnchorById	: "حسب تعريف العنصر",
-DlgLnkNoAnchors		: "<لا يوجد علامات مرجعية في هذا المستند>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(لا يوجد علامات مرجعية في هذا المستند)",
 DlgLnkEMail			: "عنوان بريد إلكتروني",
 DlgLnkEMailSubject	: "موضوع الرسالة",
 DlgLnkEMailBody		: "محتوى الرسالة",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "تباعد الخلايا",
 DlgTableCellPad		: "المسافة البادئة",
 DlgTableCaption		: "الوصف",
 DlgTableSummary		: "الخلاصة",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "خصائص الخلية",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "أعلى",
 DlgCellVerAlignMiddle	: "وسط",
 DlgCellVerAlignBottom	: "أسفل",
 DlgCellVerAlignBaseline	: "على السطر",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "إمتداد الصفوف",
 DlgCellCollSpan		: "إمتداد الأعمدة",
 DlgCellBackColor	: "لون الخلفية",
 DlgCellBorderColor	: "لون الحدود",
 DlgCellBtnSelect	: "حدّد...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "بحث واستبدال",
 
 // Find Dialog
 DlgFindTitle		: "بحث",
@@ -344,10 +369,9 @@ PasteAsText		: "لصق كنص بسيط",
 PasteFromWord	: "لصق من وورد",
 
 DlgPasteMsg2	: "الصق داخل الصندوق بإستخدام زرّي (<STRONG>Ctrl+V</STRONG>) في لوحة المفاتيح، ثم اضغط زر  <STRONG>موافق</STRONG>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "نظراً لإعدادات الأمان الخاصة بمتصفحك، لن يتمكن هذا المحرر من الوصول لمحتوى حافظتك، لذا وجب عليك لصق المحتوى مرة أخرى في هذه النافذة.",
 DlgPasteIgnoreFont		: "تجاهل تعريفات أسماء الخطوط",
 DlgPasteRemoveStyles	: "إزالة تعريفات الأنماط",
-DlgPasteCleanBox		: "نظّف محتوى الصندوق",
 
 // Color Picker
 ColorAutomatic	: "تلقائي",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "نبذة",
 DlgAboutBrowserInfoTab	: "معلومات متصفحك",
 DlgAboutLicenseTab	: "الترخيص",
 DlgAboutVersion		: "الإصدار",
-DlgAboutInfo		: "لمزيد من المعلومات تفضل بزيارة"
+DlgAboutInfo		: "لمزيد من المعلومات تفضل بزيارة",
+
+// Div Dialog
+DlgDivGeneralTab	: "عام",
+DlgDivAdvancedTab	: "متقدم",
+DlgDivStyle		: "المظهر",
+DlgDivInlineStyle	: "المظهر المضمن",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

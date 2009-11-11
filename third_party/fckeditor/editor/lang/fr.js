@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Supprimer le format",
 InsertLinkLbl		: "Lien",
 InsertLink			: "Insérer/modifier le lien",
 RemoveLink			: "Supprimer le lien",
+VisitLink			: "Suivre le lien",
 Anchor				: "Insérer/modifier l'ancre",
+AnchorDelete		: "Supprimer l'ancre",
 InsertImageLbl		: "Image",
 InsertImage			: "Insérer/modifier l'image",
 InsertFlashLbl		: "Animation Flash",
@@ -70,6 +72,10 @@ RightJustify		: "Aligné à Droite",
 BlockJustify		: "Texte justifié",
 DecreaseIndent		: "Diminuer le retrait",
 IncreaseIndent		: "Augmenter le retrait",
+Blockquote			: "Citation",
+CreateDiv			: "Créer Balise Div",
+EditDiv				: "Modifier Balise Div",
+DeleteDiv			: "Supprimer Balise Div",
 Undo				: "Annuler",
 Redo				: "Refaire",
 NumberedListLbl		: "Liste numérotée",
@@ -103,20 +109,27 @@ SelectionField	: "Liste/menu",
 ImageButton		: "Bouton image",
 
 FitWindow		: "Edition pleine page",
+ShowBlocks		: "Afficher les blocs",
 
 // Context Menu
 EditLink			: "Modifier le lien",
 CellCM				: "Cellule",
 RowCM				: "Ligne",
 ColumnCM			: "Colonne",
-InsertRow			: "Insérer une ligne",
+InsertRowAfter		: "Insérer une ligne après",
+InsertRowBefore		: "Insérer une ligne avant",
 DeleteRows			: "Supprimer des lignes",
-InsertColumn		: "Insérer une colonne",
+InsertColumnAfter	: "Insérer une colonne après",
+InsertColumnBefore	: "Insérer une colonne avant",
 DeleteColumns		: "Supprimer des colonnes",
-InsertCell			: "Insérer une cellule",
+InsertCellAfter		: "Insérer une cellule après",
+InsertCellBefore	: "Insérer une cellule avant",
 DeleteCells			: "Supprimer des cellules",
 MergeCells			: "Fusionner les cellules",
-SplitCell			: "Scinder les cellules",
+MergeRight			: "Fusionner à droite",
+MergeDown			: "Fusionner en bas",
+HorizontalSplitCell	: "Scinder la cellule horizontalement",
+VerticalSplitCell	: "Scinder la cellule verticalement",
 TableDelete			: "Supprimer le tableau",
 CellProperties		: "Propriétés de cellule",
 TableProperties		: "Propriétés du tableau",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "Propriétés de la liste/du menu",
 TextareaProp		: "Propriétés de la zone de texte",
 FormProp			: "Propriétés du formulaire",
 
-FontFormats			: "Normal;Formaté;Adresse;En-tête 1;En-tête 2;En-tête 3;En-tête 4;En-tête 5;En-tête 6;Normal (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normal;Formaté;Adresse;En-tête 1;En-tête 2;En-tête 3;En-tête 4;En-tête 5;En-tête 6;Normal (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Calcul XHTML. Veuillez patienter...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "La barre d'outils \"%1\" n'existe pas",
 NoActiveX			: "Les paramètres de sécurité de votre navigateur peuvent limiter quelques fonctionnalités de l'éditeur. Veuillez activer l'option \"Exécuter les contrôles ActiveX et les plug-ins\". Il se peut que vous rencontriez des erreurs et remarquiez quelques limitations.",
 BrowseServerBlocked : "Le navigateur n'a pas pu être ouvert. Assurez-vous que les bloqueurs de popups soient désactivés.",
 DialogBlocked		: "La fenêtre de dialogue n'a pas pu s'ouvrir. Assurez-vous que les bloqueurs de popups soient désactivés.",
+VisitLinkBlocked	: "Impossible d'ouvrir une nouvelle fenêtre. Assurez-vous que les bloqueurs de popups soient désactivés.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Sélectionner une ancre",
 DlgLnkAnchorByName	: "Par nom",
 DlgLnkAnchorById	: "Par id",
-DlgLnkNoAnchors		: "<Pas d'ancre disponible dans le document>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Pas d'ancre disponible dans le document)",
 DlgLnkEMail			: "Adresse E-Mail",
 DlgLnkEMailSubject	: "Sujet du message",
 DlgLnkEMailBody		: "Corps du message",
@@ -237,7 +251,7 @@ DlgLnkUpload		: "Télécharger",
 DlgLnkBtnUpload		: "Envoyer sur le serveur",
 
 DlgLnkTarget		: "Destination",
-DlgLnkTargetFrame	: "<cadre>",
+DlgLnkTargetFrame	: "<Cadre>",
 DlgLnkTargetPopup	: "<fenêtre popup>",
 DlgLnkTargetBlank	: "Nouvelle fenêtre (_blank)",
 DlgLnkTargetParent	: "Fenêtre mère (_parent)",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Espacement",
 DlgTableCellPad		: "Contour",
 DlgTableCaption		: "Titre",
 DlgTableSummary		: "Résumé",
+DlgTableHeaders		: "Entêtes",
+DlgTableHeadersNone		: "Sans",
+DlgTableHeadersColumn	: "Première colonne",
+DlgTableHeadersRow		: "Première Ligne",
+DlgTableHeadersBoth		: "Les 2",
 
 // Table Cell Dialog
 DlgCellTitle		: "Propriétés de la cellule",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Haut",
 DlgCellVerAlignMiddle	: "Milieu",
 DlgCellVerAlignBottom	: "Bas",
 DlgCellVerAlignBaseline	: "Bas du texte",
+DlgCellType		: "Type de Cellule",
+DlgCellTypeData		: "Données",
+DlgCellTypeHeader	: "Entête",
 DlgCellRowSpan		: "Lignes fusionnées",
 DlgCellCollSpan		: "Colonnes fusionnées",
 DlgCellBackColor	: "Fond",
 DlgCellBorderColor	: "Bordure",
 DlgCellBtnSelect	: "Choisir...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Chercher et Remplacer",
 
 // Find Dialog
 DlgFindTitle		: "Chercher",
@@ -344,10 +369,9 @@ PasteAsText		: "Coller comme texte",
 PasteFromWord	: "Coller à partir de Word",
 
 DlgPasteMsg2	: "Veuillez coller dans la zone ci-dessous en utilisant le clavier (<STRONG>Ctrl+V</STRONG>) et cliquez sur <STRONG>OK</STRONG>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "A cause des paramètres de sécurité de votre navigateur, l'éditeur ne peut accéder au presse-papier directement. Vous devez coller à nouveau le contenu dans cette fenêtre.",
 DlgPasteIgnoreFont		: "Ignorer les polices de caractères",
 DlgPasteRemoveStyles	: "Supprimer les styles",
-DlgPasteCleanBox		: "Effacer le contenu",
 
 // Color Picker
 ColorAutomatic	: "Automatique",
@@ -459,7 +483,7 @@ DlgDocCharSetCE		: "Europe Centrale",
 DlgDocCharSetCT		: "Chinois Traditionnel (Big5)",
 DlgDocCharSetCR		: "Cyrillique",
 DlgDocCharSetGR		: "Grec",
-DlgDocCharSetJP		: "Japanais",
+DlgDocCharSetJP		: "Japonais",
 DlgDocCharSetKR		: "Coréen",
 DlgDocCharSetTR		: "Turc",
 DlgDocCharSetUN		: "Unicode (UTF-8)",
@@ -498,7 +522,18 @@ DlgTemplatesReplace	: "Remplacer tout le contenu",
 // About Dialog
 DlgAboutAboutTab	: "A propos de",
 DlgAboutBrowserInfoTab	: "Navigateur",
-DlgAboutLicenseTab	: "License",
-DlgAboutVersion		: "version",
-DlgAboutInfo		: "Pour plus d'informations, aller à"
+DlgAboutLicenseTab	: "Licence",
+DlgAboutVersion		: "Version",
+DlgAboutInfo		: "Pour plus d'informations, aller à",
+
+// Div Dialog
+DlgDivGeneralTab	: "Général",
+DlgDivAdvancedTab	: "Avancé",
+DlgDivStyle		: "Style",
+DlgDivInlineStyle	: "Attribut Style",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

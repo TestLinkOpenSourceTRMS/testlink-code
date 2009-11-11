@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Formatierungen entfernen",
 InsertLinkLbl		: "Link",
 InsertLink			: "Link einfügen/editieren",
 RemoveLink			: "Link entfernen",
+VisitLink			: "Link aufrufen",
 Anchor				: "Anker einfügen/editieren",
+AnchorDelete		: "Anker entfernen",
 InsertImageLbl		: "Bild",
 InsertImage			: "Bild einfügen/editieren",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "Rechtsbündig",
 BlockJustify		: "Blocksatz",
 DecreaseIndent		: "Einzug verringern",
 IncreaseIndent		: "Einzug erhöhen",
+Blockquote			: "Zitatblock",
+CreateDiv			: "Erzeuge Div Block",
+EditDiv				: "Bearbeite Div Block",
+DeleteDiv			: "Entferne Div Block",
 Undo				: "Rückgängig",
 Redo				: "Wiederherstellen",
 NumberedListLbl		: "Nummerierte Liste",
@@ -85,7 +91,7 @@ FontSize			: "Größe",
 TextColor			: "Textfarbe",
 BGColor				: "Hintergrundfarbe",
 Source				: "Quellcode",
-Find				: "Finden",
+Find				: "Suchen",
 Replace				: "Ersetzen",
 SpellCheck			: "Rechtschreibprüfung",
 UniversalKeyboard	: "Universal-Tastatur",
@@ -103,38 +109,45 @@ SelectionField	: "Auswahlfeld",
 ImageButton		: "Bildbutton",
 
 FitWindow		: "Editor maximieren",
+ShowBlocks		: "Blöcke anzeigen",
 
 // Context Menu
 EditLink			: "Link editieren",
 CellCM				: "Zelle",
 RowCM				: "Zeile",
 ColumnCM			: "Spalte",
-InsertRow			: "Zeile einfügen",
+InsertRowAfter		: "Zeile unterhalb einfügen",
+InsertRowBefore		: "Zeile oberhalb einfügen",
 DeleteRows			: "Zeile entfernen",
-InsertColumn		: "Spalte einfügen",
+InsertColumnAfter	: "Spalte rechts danach einfügen",
+InsertColumnBefore	: "Spalte links davor einfügen",
 DeleteColumns		: "Spalte löschen",
-InsertCell			: "Zelle einfügen",
+InsertCellAfter		: "Zelle danach einfügen",
+InsertCellBefore	: "Zelle davor einfügen",
 DeleteCells			: "Zelle löschen",
-MergeCells			: "Zellen vereinen",
-SplitCell			: "Zelle teilen",
+MergeCells			: "Zellen verbinden",
+MergeRight			: "nach rechts verbinden",
+MergeDown			: "nach unten verbinden",
+HorizontalSplitCell	: "Zelle horizontal teilen",
+VerticalSplitCell	: "Zelle vertikal teilen",
 TableDelete			: "Tabelle löschen",
-CellProperties		: "Zellen Eigenschaften",
-TableProperties		: "Tabellen Eigenschaften",
-ImageProperties		: "Bild Eigenschaften",
-FlashProperties		: "Flash Eigenschaften",
+CellProperties		: "Zellen-Eigenschaften",
+TableProperties		: "Tabellen-Eigenschaften",
+ImageProperties		: "Bild-Eigenschaften",
+FlashProperties		: "Flash-Eigenschaften",
 
-AnchorProp			: "Anker Eigenschaften",
-ButtonProp			: "Button Eigenschaften",
-CheckboxProp		: "Checkbox Eigenschaften",
-HiddenFieldProp		: "Verstecktes Feld Eigenschaften",
-RadioButtonProp		: "Optionsfeld Eigenschaften",
-ImageButtonProp		: "Bildbutton Eigenschaften",
+AnchorProp			: "Anker-Eigenschaften",
+ButtonProp			: "Button-Eigenschaften",
+CheckboxProp		: "Checkbox-Eigenschaften",
+HiddenFieldProp		: "Verstecktes Feld-Eigenschaften",
+RadioButtonProp		: "Optionsfeld-Eigenschaften",
+ImageButtonProp		: "Bildbutton-Eigenschaften",
 TextFieldProp		: "Textfeld (einzeilig) Eigenschaften",
-SelectionFieldProp	: "Auswahlfeld Eigenschaften",
+SelectionFieldProp	: "Auswahlfeld-Eigenschaften",
 TextareaProp		: "Textfeld (mehrzeilig) Eigenschaften",
-FormProp			: "Formular Eigenschaften",
+FormProp			: "Formular-Eigenschaften",
 
-FontFormats			: "Normal;Formatiert;Addresse;Überschrift 1;Überschrift 2;Überschrift 3;Überschrift 4;Überschrift 5;Überschrift 6;Normal (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normal;Formatiert;Addresse;Überschrift 1;Überschrift 2;Überschrift 3;Überschrift 4;Überschrift 5;Überschrift 6;Normal (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Bearbeite XHTML. Bitte warten...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "Menüleiste \"%1\" existiert nicht",
 NoActiveX			: "Die Sicherheitseinstellungen Ihres Browsers beschränken evtl. einige Funktionen des Editors. Aktivieren Sie die Option \"ActiveX-Steuerelemente und Plugins ausführen\" in den Sicherheitseinstellungen, um diese Funktionen nutzen zu können",
 BrowseServerBlocked : "Ein Auswahlfenster konnte nicht geöffnet werden. Stellen Sie sicher, das alle Popup-Blocker ausgeschaltet sind.",
 DialogBlocked		: "Das Dialog-Fenster konnte nicht geöffnet werden. Stellen Sie sicher, das alle Popup-Blocker ausgeschaltet sind.",
+VisitLinkBlocked	: "Es war leider nicht möglich ein neues Fenster zu öffnen. Bitte versichern Sie sich das der Popup-Blocker ausgeschaltet ist.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -160,24 +174,24 @@ DlgInfoTab			: "Info",
 DlgAlertUrl			: "Bitte tragen Sie die URL ein",
 
 // General Dialogs Labels
-DlgGenNotSet		: "< nichts >",
+DlgGenNotSet		: "<nichts>",
 DlgGenId			: "ID",
 DlgGenLangDir		: "Schreibrichtung",
 DlgGenLangDirLtr	: "Links nach Rechts (LTR)",
 DlgGenLangDirRtl	: "Rechts nach Links (RTL)",
 DlgGenLangCode		: "Sprachenkürzel",
-DlgGenAccessKey		: "Schlüssel",
+DlgGenAccessKey		: "Zugriffstaste",
 DlgGenName			: "Name",
-DlgGenTabIndex		: "Tab Index",
+DlgGenTabIndex		: "Tab-Index",
 DlgGenLongDescr		: "Langform URL",
 DlgGenClass			: "Stylesheet Klasse",
 DlgGenTitle			: "Titel Beschreibung",
-DlgGenContType		: "Content Beschreibung",
+DlgGenContType		: "Inhaltstyp",
 DlgGenLinkCharset	: "Ziel-Zeichensatz",
 DlgGenStyle			: "Style",
 
 // Image Dialog
-DlgImgTitle			: "Bild Eigenschaften",
+DlgImgTitle			: "Bild-Eigenschaften",
 DlgImgInfoTab		: "Bild-Info",
 DlgImgBtnUpload		: "Zum Server senden",
 DlgImgURL			: "Bildauswahl",
@@ -188,8 +202,8 @@ DlgImgHeight		: "Höhe",
 DlgImgLockRatio		: "Größenverhältniss beibehalten",
 DlgBtnResetSize		: "Größe zurücksetzen",
 DlgImgBorder		: "Rahmen",
-DlgImgHSpace		: "H-Abstand",
-DlgImgVSpace		: "V-Abstand",
+DlgImgHSpace		: "Horizontal-Abstand",
+DlgImgVSpace		: "Vertikal-Abstand",
 DlgImgAlign			: "Ausrichtung",
 DlgImgAlignLeft		: "Links",
 DlgImgAlignAbsBottom: "Abs Unten",
@@ -205,7 +219,7 @@ DlgImgAlertUrl		: "Bitte geben Sie die Bild-URL an",
 DlgImgLinkTab		: "Link",
 
 // Flash Dialog
-DlgFlashTitle		: "Flash Eigenschaften",
+DlgFlashTitle		: "Flash-Eigenschaften",
 DlgFlashChkPlay		: "autom. Abspielen",
 DlgFlashChkLoop		: "Endlosschleife",
 DlgFlashChkMenu		: "Flash-Menü aktivieren",
@@ -216,7 +230,7 @@ DlgFlashScaleFit	: "Passgenau",
 
 // Link Dialog
 DlgLnkWindowTitle	: "Link",
-DlgLnkInfoTab		: "Link Info",
+DlgLnkInfoTab		: "Link-Info",
 DlgLnkTargetTab		: "Zielseite",
 
 DlgLnkType			: "Link-Typ",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Anker auswählen",
 DlgLnkAnchorByName	: "nach Anker Name",
 DlgLnkAnchorById	: "nach Element Id",
-DlgLnkNoAnchors		: "<keine Anker im Dokument vorhanden>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(keine Anker im Dokument vorhanden)",
 DlgLnkEMail			: "E-Mail Addresse",
 DlgLnkEMailSubject	: "Betreffzeile",
 DlgLnkEMailBody		: "Nachrichtentext",
@@ -243,9 +257,9 @@ DlgLnkTargetBlank	: "Neues Fenster (_blank)",
 DlgLnkTargetParent	: "Oberes Fenster (_parent)",
 DlgLnkTargetSelf	: "Gleiches Fenster (_self)",
 DlgLnkTargetTop		: "Oberstes Fenster (_top)",
-DlgLnkTargetFrameName	: "Ziel-Fenster Name",
-DlgLnkPopWinName	: "Pop-up Fenster Name",
-DlgLnkPopWinFeat	: "Pop-up Fenster Eigenschaften",
+DlgLnkTargetFrameName	: "Ziel-Fenster-Name",
+DlgLnkPopWinName	: "Pop-up Fenster-Name",
+DlgLnkPopWinFeat	: "Pop-up Fenster-Eigenschaften",
 DlgLnkPopResize		: "Vergrößerbar",
 DlgLnkPopLocation	: "Adress-Leiste",
 DlgLnkPopMenu		: "Menü-Leiste",
@@ -277,12 +291,12 @@ DlgSmileyTitle		: "Smiley auswählen",
 DlgSpecialCharTitle	: "Sonderzeichen auswählen",
 
 // Table Dialog
-DlgTableTitle		: "Tabellen Eigenschaften",
+DlgTableTitle		: "Tabellen-Eigenschaften",
 DlgTableRows		: "Zeile",
 DlgTableColumns		: "Spalte",
 DlgTableBorder		: "Rahmen",
 DlgTableAlign		: "Ausrichtung",
-DlgTableAlignNotSet	: "<nichts>",
+DlgTableAlignNotSet	: "<keine>",
 DlgTableAlignLeft	: "Links",
 DlgTableAlignCenter	: "Zentriert",
 DlgTableAlignRight	: "Rechts",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Zellenabstand außen",
 DlgTableCellPad		: "Zellenabstand innen",
 DlgTableCaption		: "Überschrift",
 DlgTableSummary		: "Inhaltsübersicht",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Zellen-Eigenschaften",
@@ -302,25 +321,31 @@ DlgCellWidthPx		: "Pixel",
 DlgCellWidthPc		: "%",
 DlgCellHeight		: "Höhe",
 DlgCellWordWrap		: "Umbruch",
-DlgCellWordWrapNotSet	: "<nichts>",
+DlgCellWordWrapNotSet	: "<keiner>",
 DlgCellWordWrapYes	: "Ja",
 DlgCellWordWrapNo	: "Nein",
 DlgCellHorAlign		: "Horizontale Ausrichtung",
-DlgCellHorAlignNotSet	: "<nichts>",
+DlgCellHorAlignNotSet	: "<keine>",
 DlgCellHorAlignLeft	: "Links",
 DlgCellHorAlignCenter	: "Zentriert",
 DlgCellHorAlignRight: "Rechts",
 DlgCellVerAlign		: "Vertikale Ausrichtung",
-DlgCellVerAlignNotSet	: "<nichts>",
+DlgCellVerAlignNotSet	: "<keine>",
 DlgCellVerAlignTop	: "Oben",
 DlgCellVerAlignMiddle	: "Mitte",
 DlgCellVerAlignBottom	: "Unten",
 DlgCellVerAlignBaseline	: "Grundlinie",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Zeilen zusammenfassen",
 DlgCellCollSpan		: "Spalten zusammenfassen",
 DlgCellBackColor	: "Hintergrundfarbe",
 DlgCellBorderColor	: "Rahmenfarbe",
 DlgCellBtnSelect	: "Auswahl...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Suchen und Ersetzen",
 
 // Find Dialog
 DlgFindTitle		: "Finden",
@@ -343,21 +368,20 @@ PasteErrorCopy	: "Die Sicherheitseinstellungen Ihres Browsers lassen es nicht zu
 PasteAsText		: "Als Text einfügen",
 PasteFromWord	: "Aus Word einfügen",
 
-DlgPasteMsg2	: "Bitte fügen Sie den Text in der folgenden Box über die Tastatur (mit <STRONG>Ctrl+V</STRONG>) ein und bestätigen Sie mit <STRONG>OK</STRONG>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteMsg2	: "Bitte fügen Sie den Text in der folgenden Box über die Tastatur (mit <STRONG>Strg+V</STRONG>) ein und bestätigen Sie mit <STRONG>OK</STRONG>.",
+DlgPasteSec		: "Aufgrund von Sicherheitsbeschränkungen Ihres Browsers kann der Editor nicht direkt auf die Zwischenablage zugreifen. Bitte fügen Sie den Inhalt erneut in diesem Fenster ein.",
 DlgPasteIgnoreFont		: "Ignoriere Schriftart-Definitionen",
 DlgPasteRemoveStyles	: "Entferne Style-Definitionen",
-DlgPasteCleanBox		: "Inhalt aufräumen",
 
 // Color Picker
 ColorAutomatic	: "Automatisch",
 ColorMoreColors	: "Weitere Farben...",
 
 // Document Properties
-DocProps		: "Dokument Eigenschaften",
+DocProps		: "Dokument-Eigenschaften",
 
 // Anchor Dialog
-DlgAnchorTitle		: "Anker Eigenschaften",
+DlgAnchorTitle		: "Anker-Eigenschaften",
 DlgAnchorName		: "Anker Name",
 DlgAnchorErrorName	: "Bitte geben Sie den Namen des Ankers ein",
 
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "Über",
 DlgAboutBrowserInfoTab	: "Browser-Info",
 DlgAboutLicenseTab	: "Lizenz",
 DlgAboutVersion		: "Version",
-DlgAboutInfo		: "Für weitere Informationen siehe"
+DlgAboutInfo		: "Für weitere Informationen siehe",
+
+// Div Dialog
+DlgDivGeneralTab	: "Allgemein",
+DlgDivAdvancedTab	: "Erweitert",
+DlgDivStyle		: "Style",
+DlgDivInlineStyle	: "Inline Style",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

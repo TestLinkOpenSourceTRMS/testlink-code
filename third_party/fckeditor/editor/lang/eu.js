@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -41,11 +41,13 @@ PasteText			: "Itsatsi testu bezala",
 PasteWord			: "Itsatsi Word-etik",
 Print				: "Inprimatu",
 SelectAll			: "Hautatu dena",
-RemoveFormat		: "Kendu Formatoa",
+RemoveFormat		: "Kendu Formatua",
 InsertLinkLbl		: "Esteka",
 InsertLink			: "Txertatu/Editatu Esteka",
 RemoveLink			: "Kendu Esteka",
+VisitLink			: "Ireki Esteka",
 Anchor				: "Aingura",
+AnchorDelete		: "Ezabatu Aingura",
 InsertImageLbl		: "Irudia",
 InsertImage			: "Txertatu/Editatu Irudia",
 InsertFlashLbl		: "Flasha",
@@ -71,6 +73,10 @@ RightJustify		: "Lerrokatu Eskuman",
 BlockJustify		: "Justifikatu",
 DecreaseIndent		: "Txikitu Koska",
 IncreaseIndent		: "Handitu Koska",
+Blockquote			: "Aipamen blokea",
+CreateDiv			: "Sortu Div Edukitzailea",
+EditDiv				: "Editatu Div Edukitzailea",
+DeleteDiv			: "Ezabatu Div Edukitzailea",
 Undo				: "Desegin",
 Redo				: "Berregin",
 NumberedListLbl		: "Zenbakidun Zerrenda",
@@ -80,7 +86,7 @@ BulletedList		: "Txertatu/Kendu Buletdun zerrenda",
 ShowTableBorders	: "Erakutsi Taularen Ertzak",
 ShowDetails			: "Erakutsi Xehetasunak",
 Style				: "Estiloa",
-FontFormat			: "Formatoa",
+FontFormat			: "Formatua",
 Font				: "Letra-tipoa",
 FontSize			: "Tamaina",
 TextColor			: "Testu Kolorea",
@@ -104,20 +110,27 @@ SelectionField	: "Hautespen Eremua",
 ImageButton		: "Irudi Botoia",
 
 FitWindow		: "Maximizatu editorearen tamaina",
+ShowBlocks		: "Blokeak erakutsi",
 
 // Context Menu
 EditLink			: "Aldatu Esteka",
 CellCM				: "Gelaxka",
 RowCM				: "Errenkada",
 ColumnCM			: "Zutabea",
-InsertRow			: "Txertatu Errenkada",
+InsertRowAfter		: "Txertatu Lerroa Ostean",
+InsertRowBefore		: "Txertatu Lerroa Aurretik",
 DeleteRows			: "Ezabatu Errenkadak",
-InsertColumn		: "Txertatu Zutabea",
+InsertColumnAfter	: "Txertatu Zutabea Ostean",
+InsertColumnBefore	: "Txertatu Zutabea Aurretik",
 DeleteColumns		: "Ezabatu Zutabeak",
-InsertCell			: "Txertatu Gelaxka",
+InsertCellAfter		: "Txertatu Gelaxka Ostean",
+InsertCellBefore	: "Txertatu Gelaxka Aurretik",
 DeleteCells			: "Kendu Gelaxkak",
 MergeCells			: "Batu Gelaxkak",
-SplitCell			: "Zatitu Gelaxka",
+MergeRight			: "Elkartu Eskumara",
+MergeDown			: "Elkartu Behera",
+HorizontalSplitCell	: "Banatu Gelaxkak Horizontalki",
+VerticalSplitCell	: "Banatu Gelaxkak Bertikalki",
 TableDelete			: "Ezabatu Taula",
 CellProperties		: "Gelaxkaren Ezaugarriak",
 TableProperties		: "Taularen Ezaugarriak",
@@ -135,20 +148,21 @@ SelectionFieldProp	: "Hautespen Eremuaren Ezaugarriak",
 TextareaProp		: "Testu-arearen Ezaugarriak",
 FormProp			: "Formularioaren Ezaugarriak",
 
-FontFormats			: "Arrunta;Formateatua;Helbidea;Izenburua 1;Izenburua 2;Izenburua 3;Izenburua 4;Izenburua 5;Izenburua 6;Paragrafoa (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Arrunta;Formateatua;Helbidea;Izenburua 1;Izenburua 2;Izenburua 3;Izenburua 4;Izenburua 5;Izenburua 6;Paragrafoa (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "XHTML Prozesatzen. Itxaron mesedez...",
 Done				: "Eginda",
-PasteWordConfirm	: "Itsatsi nahi duzun textua Wordetik hartua dela dirudi. Itsatsi baino lehen garbitu nahi duzu?",
+PasteWordConfirm	: "Itsatsi nahi duzun testua Wordetik hartua dela dirudi. Itsatsi baino lehen garbitu nahi duzu?",
 NotCompatiblePaste	: "Komando hau Internet Explorer 5.5 bertsiorako edo ondorengoentzako erabilgarria dago. Garbitu gabe itsatsi nahi duzu?",
 UnknownToolbarItem	: "Ataza barrako elementu ezezaguna \"%1\"",
 UnknownCommand		: "Komando izen ezezaguna \"%1\"",
 NotImplemented		: "Komando ez inplementatua",
 UnknownToolbarSet	: "Ataza barra \"%1\" taldea ez da existitzen",
-NoActiveX			: "Zure nabigatzailearen segustasun hobespenak editore honen zenbait ezaugarri mugatu ditzake. \"ActiveX kontrolak eta plug-inak\" aktibatu beharko zenituzke, bestela erroreak eta ezaugarrietan mugak egon daitezke.",
+NoActiveX			: "Zure nabigatzailearen segurtasun hobespenak editore honen zenbait ezaugarri mugatu ditzake. \"ActiveX kontrolak eta pluginak\" aktibatu beharko zenituzke, bestela erroreak eta ezaugarrietan mugak egon daitezke.",
 BrowseServerBlocked : "Baliabideen arakatzailea ezin da ireki. Ziurtatu popup blokeatzaileak desgaituta dituzula.",
 DialogBlocked		: "Ezin da elkarrizketa-leihoa ireki. Ziurtatu popup blokeatzaileak desgaituta dituzula.",
+VisitLinkBlocked	: "Ezin da leiho berri bat ireki. Ziurtatu popup blokeatzaileak desgaituta dituzula.",
 
 // Dialogs
 DlgBtnOK			: "Ados",
@@ -183,7 +197,7 @@ DlgImgInfoTab		: "Irudi informazioa",
 DlgImgBtnUpload		: "Zerbitzarira bidalia",
 DlgImgURL			: "URL",
 DlgImgUpload		: "Gora Kargatu",
-DlgImgAlt			: "Textu Alternatiboa",
+DlgImgAlt			: "Ordezko Testua",
 DlgImgWidth			: "Zabalera",
 DlgImgHeight		: "Altuera",
 DlgImgLockRatio		: "Erlazioa Blokeatu",
@@ -212,7 +226,7 @@ DlgFlashChkLoop		: "Begizta",
 DlgFlashChkMenu		: "Flasharen Menua Gaitu",
 DlgFlashScale		: "Eskalatu",
 DlgFlashScaleAll	: "Dena erakutsi",
-DlgFlashScaleNoBorder	: "Ertzarik gabe",
+DlgFlashScaleNoBorder	: "Ertzik gabe",
 DlgFlashScaleFit	: "Doitu",
 
 // Link Dialog
@@ -222,7 +236,7 @@ DlgLnkTargetTab		: "Helburua",
 
 DlgLnkType			: "Esteka Mota",
 DlgLnkTypeURL		: "URL",
-DlgLnkTypeAnchor	: "Aingura horrialde honentan",
+DlgLnkTypeAnchor	: "Aingura orrialde honetan",
 DlgLnkTypeEMail		: "ePosta",
 DlgLnkProto			: "Protokoloa",
 DlgLnkProtoOther	: "<Beste batzuk>",
@@ -230,7 +244,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Aingura bat hautatu",
 DlgLnkAnchorByName	: "Aingura izenagatik",
 DlgLnkAnchorById	: "Elementuaren ID-gatik",
-DlgLnkNoAnchors		: "<Ez daude aingurak eskuragarri dokumentuan>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Ez daude aingurak eskuragarri dokumentuan)",
 DlgLnkEMail			: "ePosta Helbidea",
 DlgLnkEMailSubject	: "Mezuaren Gaia",
 DlgLnkEMailBody		: "Mezuaren Gorputza",
@@ -239,14 +253,14 @@ DlgLnkBtnUpload		: "Zerbitzarira bidali",
 
 DlgLnkTarget		: "Target (Helburua)",
 DlgLnkTargetFrame	: "<marko>",
-DlgLnkTargetPopup	: "<popup lehioa>",
-DlgLnkTargetBlank	: "Lehio Berria (_blank)",
-DlgLnkTargetParent	: "Lehio Gurasoa (_parent)",
-DlgLnkTargetSelf	: "Lehio Berdina (_self)",
-DlgLnkTargetTop		: "Goiko Lehioa (_top)",
+DlgLnkTargetPopup	: "<popup leihoa>",
+DlgLnkTargetBlank	: "Leiho Berria (_blank)",
+DlgLnkTargetParent	: "Leiho Gurasoa (_parent)",
+DlgLnkTargetSelf	: "Leiho Berdina (_self)",
+DlgLnkTargetTop		: "Goiko Leihoa (_top)",
 DlgLnkTargetFrameName	: "Marko Helburuaren Izena",
-DlgLnkPopWinName	: "Popup Lehioaren Izena",
-DlgLnkPopWinFeat	: "Popup Lehioaren Ezaugarriak",
+DlgLnkPopWinName	: "Popup Leihoaren Izena",
+DlgLnkPopWinFeat	: "Popup Leihoaren Ezaugarriak",
 DlgLnkPopResize		: "Tamaina Aldakorra",
 DlgLnkPopLocation	: "Kokaleku Barra",
 DlgLnkPopMenu		: "Menu Barra",
@@ -263,7 +277,7 @@ DlgLnkPopTop		: "Goiko Posizioa",
 DlnLnkMsgNoUrl		: "Mesedez URL esteka idatzi",
 DlnLnkMsgNoEMail	: "Mesedez ePosta helbidea idatzi",
 DlnLnkMsgNoAnchor	: "Mesedez aingura bat aukeratu",
-DlnLnkMsgInvPopName	: "The popup name must begin with an alphabetic character and must not contain spaces",	//MISSING
+DlnLnkMsgInvPopName	: "Popup leihoaren izenak karaktere alfabetiko batekin hasi behar du eta eta ezin du zuriunerik izan",
 
 // Color Dialog
 DlgColorTitle		: "Kolore Aukeraketa",
@@ -295,6 +309,11 @@ DlgTableCellSpace	: "Gelaxka arteko tartea",
 DlgTableCellPad		: "Gelaxken betegarria",
 DlgTableCaption		: "Epigrafea",
 DlgTableSummary		: "Laburpena",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Gelaxken Ezaugarriak",
@@ -306,7 +325,7 @@ DlgCellWordWrap		: "Itzulbira",
 DlgCellWordWrapNotSet	: "<Ezarri gabe>",
 DlgCellWordWrapYes	: "Bai",
 DlgCellWordWrapNo	: "Ez",
-DlgCellHorAlign		: "Horizontal Alignment",
+DlgCellHorAlign		: "Lerrokatu Horizontalki",
 DlgCellHorAlignNotSet	: "<Ezarri gabe>",
 DlgCellHorAlignLeft	: "Ezkerrean",
 DlgCellHorAlignCenter	: "Erdian",
@@ -316,12 +335,18 @@ DlgCellVerAlignNotSet	: "<Ezarri gabe>",
 DlgCellVerAlignTop	: "Goian",
 DlgCellVerAlignMiddle	: "Erdian",
 DlgCellVerAlignBottom	: "Behean",
-DlgCellVerAlignBaseline	: "Oinan",
+DlgCellVerAlignBaseline	: "Oinean",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Lerroak Hedatu",
 DlgCellCollSpan		: "Zutabeak Hedatu",
 DlgCellBackColor	: "Atzeko Kolorea",
 DlgCellBorderColor	: "Ertzako Kolorea",
-DlgCellBtnSelect	: "Aukertau...",
+DlgCellBtnSelect	: "Aukeratu...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Bilatu eta Ordeztu",
 
 // Find Dialog
 DlgFindTitle		: "Bilaketa",
@@ -345,10 +370,9 @@ PasteAsText		: "Testu Arrunta bezala Itsatsi",
 PasteFromWord	: "Word-etik itsatsi",
 
 DlgPasteMsg2	: "Mesedez teklatua erabilita (<STRONG>Ctrl+V</STRONG>) ondorego eremuan testua itsatsi eta <STRONG>OK</STRONG> sakatu.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "Nabigatzailearen segurtasun ezarpenak direla eta, editoreak ezin du arbela zuzenean erabili. Leiho honetan berriro itsatsi behar duzu.",
 DlgPasteIgnoreFont		: "Letra Motaren definizioa ezikusi",
 DlgPasteRemoveStyles	: "Estilo definizioak kendu",
-DlgPasteCleanBox		: "Testu-eremua Garbitu",
 
 // Color Picker
 ColorAutomatic	: "Automatikoa",
@@ -382,9 +406,9 @@ IeSpellDownload			: "Zuzentzaile ortografikoa ez dago instalatuta. Deskargatu na
 // Button Dialog
 DlgButtonText		: "Testua (Balorea)",
 DlgButtonType		: "Mota",
-DlgButtonTypeBtn	: "Button",	//MISSING
-DlgButtonTypeSbm	: "Submit",	//MISSING
-DlgButtonTypeRst	: "Reset",	//MISSING
+DlgButtonTypeBtn	: "Botoia",
+DlgButtonTypeSbm	: "Bidali",
+DlgButtonTypeRst	: "Garbitu",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Izena",
@@ -394,7 +418,7 @@ DlgCheckboxSelected	: "Hautatuta",
 // Form Dialog
 DlgFormName		: "Izena",
 DlgFormAction	: "Ekintza",
-DlgFormMethod	: "Method",
+DlgFormMethod	: "Metodoa",
 
 // Select Field Dialog
 DlgSelectName		: "Izena",
@@ -433,7 +457,7 @@ DlgHiddenValue	: "Balorea",
 // Bulleted List Dialog
 BulletedListProp	: "Buletdun Zerrendaren Ezarpenak",
 NumberedListProp	: "Zenbakidun Zerrendaren Ezarpenak",
-DlgLstStart			: "Start",	//MISSING
+DlgLstStart			: "Hasiera",
 DlgLstType			: "Mota",
 DlgLstTypeCircle	: "Zirkulua",
 DlgLstTypeDisc		: "Diskoa",
@@ -446,7 +470,7 @@ DlgLstTypeLRoman	: "Erromatar zenbaki larriak (I, II, III)",
 
 // Document Properties Dialog
 DlgDocGeneralTab	: "Orokorra",
-DlgDocBackTab		: "Atzekaldea",
+DlgDocBackTab		: "Atzealdea",
 DlgDocColorsTab		: "Koloreak eta Marjinak",
 DlgDocMetaTab		: "Meta Informazioa",
 
@@ -456,23 +480,23 @@ DlgDocLangDirLTR	: "Ezkerretik eskumara (LTR)",
 DlgDocLangDirRTL	: "Eskumatik ezkerrera (RTL)",
 DlgDocLangCode		: "Hizkuntzaren Kodea",
 DlgDocCharSet		: "Karaktere Multzoaren Kodeketa",
-DlgDocCharSetCE		: "Central European",	//MISSING
-DlgDocCharSetCT		: "Chinese Traditional (Big5)",	//MISSING
-DlgDocCharSetCR		: "Cyrillic",	//MISSING
-DlgDocCharSetGR		: "Greek",	//MISSING
-DlgDocCharSetJP		: "Japanese",	//MISSING
-DlgDocCharSetKR		: "Korean",	//MISSING
-DlgDocCharSetTR		: "Turkish",	//MISSING
-DlgDocCharSetUN		: "Unicode (UTF-8)",	//MISSING
-DlgDocCharSetWE		: "Western European",	//MISSING
-DlgDocCharSetOther	: "Beste Karaktere Multzoaren Kodeketa",
+DlgDocCharSetCE		: "Erdialdeko Europakoa",
+DlgDocCharSetCT		: "Txinatar Tradizionala (Big5)",
+DlgDocCharSetCR		: "Zirilikoa",
+DlgDocCharSetGR		: "Grekoa",
+DlgDocCharSetJP		: "Japoniarra",
+DlgDocCharSetKR		: "Korearra",
+DlgDocCharSetTR		: "Turkiarra",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "Mendebaldeko Europakoa",
+DlgDocCharSetOther	: "Beste Karaktere Multzoko Kodeketa",
 
 DlgDocDocType		: "Document Type Goiburua",
 DlgDocDocTypeOther	: "Beste Document Type Goiburua",
 DlgDocIncXHTML		: "XHTML Ezarpenak",
 DlgDocBgColor		: "Atzeko Kolorea",
 DlgDocBgImage		: "Atzeko Irudiaren URL-a",
-DlgDocBgNoScroll	: "Korritze gabeko Atzekaldea",
+DlgDocBgNoScroll	: "Korritze gabeko Atzealdea",
 DlgDocCText			: "Testua",
 DlgDocCLink			: "Estekak",
 DlgDocCVisited		: "Bisitatutako Estekak",
@@ -494,12 +518,23 @@ DlgTemplatesTitle	: "Eduki Txantiloiak",
 DlgTemplatesSelMsg	: "Mesedez txantiloia aukeratu editorean kargatzeko<br>(orain dauden edukiak galduko dira):",
 DlgTemplatesLoading	: "Txantiloiak kargatzen. Itxaron mesedez...",
 DlgTemplatesNoTpl	: "(Ez dago definitutako txantiloirik)",
-DlgTemplatesReplace	: "Replace actual contents",	//MISSING
+DlgTemplatesReplace	: "Ordeztu oraingo edukiak",
 
 // About Dialog
 DlgAboutAboutTab	: "Honi buruz",
 DlgAboutBrowserInfoTab	: "Nabigatzailearen Informazioa",
 DlgAboutLicenseTab	: "Lizentzia",
 DlgAboutVersion		: "bertsioa",
-DlgAboutInfo		: "Informazio gehiago eskuratzeko hona joan"
+DlgAboutInfo		: "Informazio gehiago eskuratzeko hona joan",
+
+// Div Dialog
+DlgDivGeneralTab	: "Orokorra",
+DlgDivAdvancedTab	: "Aurreratua",
+DlgDivStyle		: "Estiloa",
+DlgDivInlineStyle	: "Inline Estiloa",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

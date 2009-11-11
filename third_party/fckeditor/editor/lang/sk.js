@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -30,7 +30,7 @@ ToolbarCollapse		: "Skryť panel nástrojov",
 ToolbarExpand		: "Zobraziť panel nástrojov",
 
 // Toolbar Items and Context Menu
-Save				: "Uložit",
+Save				: "Uložiť",
 NewPage				: "Nová stránka",
 Preview				: "Náhľad",
 Cut					: "Vystrihnúť",
@@ -44,7 +44,9 @@ RemoveFormat		: "Odstrániť formátovanie",
 InsertLinkLbl		: "Odkaz",
 InsertLink			: "Vložiť/zmeniť odkaz",
 RemoveLink			: "Odstrániť odkaz",
+VisitLink			: "Ísť na odkaz",
 Anchor				: "Vložiť/zmeniť kotvu",
+AnchorDelete		: "Odstrániť kotvu",
 InsertImageLbl		: "Obrázok",
 InsertImage			: "Vložiť/zmeniť obrázok",
 InsertFlashLbl		: "Flash",
@@ -57,7 +59,7 @@ InsertSpecialCharLbl: "Špeciálne znaky",
 InsertSpecialChar	: "Vložiť špeciálne znaky",
 InsertSmileyLbl		: "Smajlíky",
 InsertSmiley		: "Vložiť smajlíka",
-About				: "O aplikáci FCKeditor",
+About				: "O aplikácii FCKeditor",
 Bold				: "Tučné",
 Italic				: "Kurzíva",
 Underline			: "Podčiarknuté",
@@ -70,10 +72,14 @@ RightJustify		: "Zarovnať vpravo",
 BlockJustify		: "Zarovnať do bloku",
 DecreaseIndent		: "Zmenšiť odsadenie",
 IncreaseIndent		: "Zväčšiť odsadenie",
+Blockquote			: "Citácia",
+CreateDiv			: "Vytvoriť Div kontajner",
+EditDiv				: "Editovať Div kontajner",
+DeleteDiv			: "Odstrániť Div kontajner",
 Undo				: "Späť",
 Redo				: "Znovu",
 NumberedListLbl		: "Číslovanie",
-NumberedList		: "Vložiť/odstrániť číslovaný zoznam",
+NumberedList		: "Vložiť/odstrániť číslovanie",
 BulletedListLbl		: "Odrážky",
 BulletedList		: "Vložiť/odstraniť odrážky",
 ShowTableBorders	: "Zobraziť okraje tabuliek",
@@ -98,25 +104,32 @@ RadioButton		: "Prepínač",
 TextField		: "Textové pole",
 Textarea		: "Textová oblasť",
 HiddenField		: "Skryté pole",
-Button			: "Tlačíidlo",
+Button			: "Tlačidlo",
 SelectionField	: "Rozbaľovací zoznam",
 ImageButton		: "Obrázkové tlačidlo",
 
 FitWindow		: "Maximalizovať veľkosť okna editora",
+ShowBlocks		: "Ukázať bloky",
 
 // Context Menu
 EditLink			: "Zmeniť odkaz",
 CellCM				: "Bunka",
 RowCM				: "Riadok",
 ColumnCM			: "Stĺpec",
-InsertRow			: "Vložiť riadok",
+InsertRowAfter		: "Vložiť riadok pred",
+InsertRowBefore		: "Vložiť riadok za",
 DeleteRows			: "Vymazať riadok",
-InsertColumn		: "Vložiť stĺpec",
+InsertColumnAfter	: "Vložiť stĺpec pred",
+InsertColumnBefore	: "Vložiť stĺpec za",
 DeleteColumns		: "Zmazať stĺpec",
-InsertCell			: "Vložiť bunku",
+InsertCellAfter		: "Vložiť bunku za",
+InsertCellBefore	: "Vložiť bunku pred",
 DeleteCells			: "Vymazať bunky",
 MergeCells			: "Zlúčiť bunky",
-SplitCell			: "Rozdeliť bunku",
+MergeRight			: "Zlúčiť doprava",
+MergeDown			: "Zlúčiť dole",
+HorizontalSplitCell	: "Rozdeliť bunky horizontálne",
+VerticalSplitCell	: "Rozdeliť bunky vertikálne",
 TableDelete			: "Vymazať tabuľku",
 CellProperties		: "Vlastnosti bunky",
 TableProperties		: "Vlastnosti tabuľky",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "Vlastnosti rozbaľovacieho zoznamu",
 TextareaProp		: "Vlastnosti textovej oblasti",
 FormProp			: "Vlastnosti formulára",
 
-FontFormats			: "Normálny;Formátovaný;Adresa;Nadpis 1;Nadpis 2;Nadpis 3;Nadpis 4;Nadpis 5;Nadpis 6;Odsek (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normálny;Formátovaný;Adresa;Nadpis 1;Nadpis 2;Nadpis 3;Nadpis 4;Nadpis 5;Nadpis 6;Odsek (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Prebieha spracovanie XHTML. Čakajte prosím...",
@@ -146,8 +159,9 @@ UnknownCommand		: "Neznámy príkaz \"%1\"",
 NotImplemented		: "Príkaz nie je implementovaný",
 UnknownToolbarSet	: "Panel nástrojov \"%1\" neexistuje",
 NoActiveX			: "Bezpečnostné nastavenia vášho prehliadača môžu obmedzovať niektoré funkcie editora. Pre ich plnú funkčnosť musíte zapnúť voľbu \"Spúšťať ActiveX moduly a zásuvné moduly\", inak sa môžete stretnúť s chybami a nefunkčnosťou niektorých funkcií.",
-BrowseServerBlocked : "Prehliadač zdrojových prvkov nebolo možné otvoriť. Uistite sa, že máte vypnuté všetky blokovače vyskakujúcich okien.",
-DialogBlocked		: "Dialógové okno nebolo možné otvoriť. Uistite sa, že máte vypnuté všetky blokovače vyskakujúcich okien.",
+BrowseServerBlocked : "Prehliadač zdrojových prvkov nebolo možné otvoriť. Uistite sa, že máte vypnutú službu blokovania popup okien.",
+DialogBlocked		: "Dialógové okno nebolo možné otvoriť. Uistite sa, že máte vypnutú službu blokovania popup okien.",
+VisitLinkBlocked	: "Nebolo možné otvoriť nové okno. Uistite sa, že máte vypnutú službu blokovania popup okien.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Vybrať kotvu",
 DlgLnkAnchorByName	: "Podľa mena kotvy",
 DlgLnkAnchorById	: "Podľa Id objektu",
-DlgLnkNoAnchors		: "<V stránke nie je definovaná žiadna kotva>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(V stránke nie je definovaná žiadna kotva)",
 DlgLnkEMail			: "E-Mailová adresa",
 DlgLnkEMailSubject	: "Predmet správy",
 DlgLnkEMailBody		: "Telo správy",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Vzdialenosť buniek",
 DlgTableCellPad		: "Odsadenie obsahu",
 DlgTableCaption		: "Popis",
 DlgTableSummary		: "Prehľad",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Vlastnosti bunky",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Nahor",
 DlgCellVerAlignMiddle	: "Doprostred",
 DlgCellVerAlignBottom	: "Dole",
 DlgCellVerAlignBaseline	: "Na základňu",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Zlúčené riadky",
 DlgCellCollSpan		: "Zlúčené stĺpce",
 DlgCellBackColor	: "Farba pozadia",
 DlgCellBorderColor	: "Farba ohraničenia",
 DlgCellBtnSelect	: "Výber...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Nájsť a nahradiť",
 
 // Find Dialog
 DlgFindTitle		: "Hľadať",
@@ -337,17 +362,16 @@ DlgReplaceReplAllBtn	: "Nahradiť všetko",
 DlgReplaceWordChk		: "Len celé slová",
 
 // Paste Operations / Dialog
-PasteErrorCut	: "Bezpečnostné nastavenie Vášho prehliadača nedovoľujú editoru spustiť funkciu pre vystrihnutie zvoleného textu do schránky. Prosím vystrihnite zvolený text do schránky pomocou klávesnice (Ctrl+X).",
-PasteErrorCopy	: "Bezpečnostné nastavenie Vášho prehliadača nedovoľujú editoru spustiť funkciu pre kopírovanie zvoleného textu do schránky. Prosím skopírujte zvolený text do schránky pomocou klávesnice (Ctrl+C).",
+PasteErrorCut	: "Bezpečnostné nastavenia Vášho prehliadača nedovoľujú editoru spustiť funkciu pre vystrihnutie zvoleného textu do schránky. Prosím vystrihnite zvolený text do schránky pomocou klávesnice (Ctrl+X).",
+PasteErrorCopy	: "Bezpečnostné nastavenia Vášho prehliadača nedovoľujú editoru spustiť funkciu pre kopírovanie zvoleného textu do schránky. Prosím skopírujte zvolený text do schránky pomocou klávesnice (Ctrl+C).",
 
 PasteAsText		: "Vložiť ako čistý text",
 PasteFromWord	: "Vložiť text z Wordu",
 
 DlgPasteMsg2	: "Prosím vložte nasledovný rámček použitím klávesnice (<STRONG>Ctrl+V</STRONG>) a stlačte <STRONG>OK</STRONG>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "Bezpečnostné nastavenia Vášho prehliadača nedovoľujú editoru pristupovať priamo k datám v schránke. Musíte ich vložiť znovu do tohto okna.",
 DlgPasteIgnoreFont		: "Ignorovať nastavenia typu písma",
 DlgPasteRemoveStyles	: "Odstrániť formátovanie",
-DlgPasteCleanBox		: "Vyčistiť schránku",
 
 // Color Picker
 ColorAutomatic	: "Automaticky",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "O aplikáci",
 DlgAboutBrowserInfoTab	: "Informácie o prehliadači",
 DlgAboutLicenseTab	: "Licencia",
 DlgAboutVersion		: "verzia",
-DlgAboutInfo		: "Viac informácií získate na"
+DlgAboutInfo		: "Viac informácií získate na",
+
+// Div Dialog
+DlgDivGeneralTab	: "Hlavné",
+DlgDivAdvancedTab	: "Rozšírené",
+DlgDivStyle		: "Štýl",
+DlgDivInlineStyle	: "Inline štýl",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

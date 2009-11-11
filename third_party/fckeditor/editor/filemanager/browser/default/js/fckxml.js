@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -31,8 +31,8 @@ var FCKXml = function()
 FCKXml.prototype.GetHttpRequest = function()
 {
 	// Gecko / IE7
-	if ( typeof(XMLHttpRequest) != 'undefined' )
-		return new XMLHttpRequest() ;
+	try { return new XMLHttpRequest(); }
+	catch(e) {}
 
 	// IE6
 	try { return new ActiveXObject( 'Msxml2.XMLHTTP' ) ; }
@@ -61,7 +61,25 @@ FCKXml.prototype.LoadUrl = function( urlToCall, asyncFunctionPointer )
 		{
 			if ( oXmlHttp.readyState == 4 )
 			{
-				if ( ( oXmlHttp.status != 200 && oXmlHttp.status != 304 ) || oXmlHttp.responseXML == null || oXmlHttp.responseXML.firstChild == null )
+				var oXml ;
+				try
+				{
+					// this is the same test for an FF2 bug as in fckxml_gecko.js
+					// but we've moved the responseXML assignment into the try{}
+					// so we don't even have to check the return status codes.
+					var test = oXmlHttp.responseXML.firstChild ;
+					oXml = oXmlHttp.responseXML ;
+				}
+				catch ( e )
+				{
+					try
+					{
+						oXml = (new DOMParser()).parseFromString( oXmlHttp.responseText, 'text/xml' ) ;
+					}
+					catch ( e ) {}
+				}
+
+				if ( !oXml || !oXml.firstChild || oXml.firstChild.nodeName == 'parsererror' )
 				{
 					alert( 'The server didn\'t send back a proper XML response. Please contact your system administrator.\n\n' +
 							'XML request error: ' + oXmlHttp.statusText + ' (' + oXmlHttp.status + ')\n\n' +
@@ -70,7 +88,7 @@ FCKXml.prototype.LoadUrl = function( urlToCall, asyncFunctionPointer )
 					return ;
 				}
 
-				oFCKXml.DOMDocument = oXmlHttp.responseXML ;
+				oFCKXml.DOMDocument = oXml ;
 				asyncFunctionPointer( oFCKXml ) ;
 			}
 		}

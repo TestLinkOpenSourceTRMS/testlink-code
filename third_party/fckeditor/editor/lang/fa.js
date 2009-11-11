@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "برداشتن فرمت",
 InsertLinkLbl		: "پیوند",
 InsertLink			: "گنجاندن/ویرایش ِپیوند",
 RemoveLink			: "برداشتن پیوند",
+VisitLink			: "باز کردن پیوند",
 Anchor				: "گنجاندن/ویرایش ِلنگر",
+AnchorDelete		: "برداشتن لنگر",
 InsertImageLbl		: "تصویر",
 InsertImage			: "گنجاندن/ویرایش ِتصویر",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "راست‌چین",
 BlockJustify		: "بلوک‌چین",
 DecreaseIndent		: "کاهش تورفتگی",
 IncreaseIndent		: "افزایش تورفتگی",
+Blockquote			: "بلوک نقل قول",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "واچیدن",
 Redo				: "بازچیدن",
 NumberedListLbl		: "فهرست شماره‌دار",
@@ -103,20 +109,27 @@ SelectionField	: "فیلد چندگزینه‌ای",
 ImageButton		: "دکمهٴ تصویری",
 
 FitWindow		: "بیشینه‌سازی ِاندازهٴ ویرایشگر",
+ShowBlocks		: "نمایش بلوک‌ها",
 
 // Context Menu
 EditLink			: "ویرایش پیوند",
 CellCM				: "سلول",
 RowCM				: "سطر",
 ColumnCM			: "ستون",
-InsertRow			: "گنجاندن سطر",
+InsertRowAfter		: "افزودن سطر بعد از",
+InsertRowBefore		: "افزودن سطر قبل از",
 DeleteRows			: "حذف سطرها",
-InsertColumn		: "گنجاندن ستون",
+InsertColumnAfter	: "افزودن ستون بعد از",
+InsertColumnBefore	: "افزودن ستون قبل از",
 DeleteColumns		: "حذف ستونها",
-InsertCell			: "گنجاندن سلول",
+InsertCellAfter		: "افزودن سلول بعد از",
+InsertCellBefore	: "افزودن سلول قبل از",
 DeleteCells			: "حذف سلولها",
 MergeCells			: "ادغام سلولها",
-SplitCell			: "جداسازی سلول",
+MergeRight			: "ادغام به راست",
+MergeDown			: "ادغام به پایین",
+HorizontalSplitCell	: "جدا کردن افقی سلول",
+VerticalSplitCell	: "جدا کردن عمودی سلول",
 TableDelete			: "پاک‌کردن جدول",
 CellProperties		: "ویژگیهای سلول",
 TableProperties		: "ویژگیهای جدول",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "ویژگیهای فیلد چندگزینه‌ای",
 TextareaProp		: "ویژگیهای ناحیهٴ متنی",
 FormProp			: "ویژگیهای فرم",
 
-FontFormats			: "نرمال;فرمت‌شده;آدرس;سرنویس 1;سرنویس 2;سرنویس 3;سرنویس 4;سرنویس 5;سرنویس 6;بند;(DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "نرمال;فرمت‌شده;آدرس;سرنویس 1;سرنویس 2;سرنویس 3;سرنویس 4;سرنویس 5;سرنویس 6;بند;(DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "پردازش XHTML. لطفا صبر کنید...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "مجموعهٴ نوارابزار \"%1\" وجود ندار�
 NoActiveX			: "تنظیمات امنیتی مرورگر شما ممکن است در بعضی از ویژگیهای مرورگر محدودیت ایجاد کند. شما باید گزینهٴ \"Run ActiveX controls and plug-ins\" را فعال کنید. ممکن است شما با خطاهایی روبرو باشید و متوجه کمبود ویژگیهایی شوید.",
 BrowseServerBlocked : "توانایی بازگشایی مرورگر منابع فراهم نیست. اطمینان حاصل کنید که تمامی برنامه‌های پیشگیری از نمایش popup را از کار بازداشته‌اید.",
 DialogBlocked		: "توانایی بازگشایی پنجرهٴ کوچک ِگفتگو فراهم نیست. اطمینان حاصل کنید که تمامی برنامه‌های پیشگیری از نمایش popup را از کار بازداشته‌اید.",
+VisitLinkBlocked	: "امکان بازکردن یک پنجره جدید نیست. اطمینان حاصل کنید که تمامی برنامه‌های پیشگیری از نمایش popup را از کار بازداشته‌اید.",
 
 // Dialogs
 DlgBtnOK			: "پذیرش",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "یک لنگر برگزینید",
 DlgLnkAnchorByName	: "با نام لنگر",
 DlgLnkAnchorById	: "با شناسهٴ المان",
-DlgLnkNoAnchors		: "(در این سند لنگری دردسترس نیست)",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(در این سند لنگری دردسترس نیست)",
 DlgLnkEMail			: "نشانی پست الکترونیکی",
 DlgLnkEMailSubject	: "موضوع پیام",
 DlgLnkEMailBody		: "متن پیام",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "فاصلهٴ میان سلولها",
 DlgTableCellPad		: "فاصلهٴ پرشده در سلول",
 DlgTableCaption		: "عنوان",
 DlgTableSummary		: "خلاصه",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "ویژگیهای سلول",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "بالا",
 DlgCellVerAlignMiddle	: "میان",
 DlgCellVerAlignBottom	: "پائین",
 DlgCellVerAlignBaseline	: "خط‌پایه",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "گستردگی سطرها",
 DlgCellCollSpan		: "گستردگی ستونها",
 DlgCellBackColor	: "رنگ پس‌زمینه",
 DlgCellBorderColor	: "رنگ لبه",
 DlgCellBtnSelect	: "برگزینید...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "جستجو و جایگزینی",
 
 // Find Dialog
 DlgFindTitle		: "یافتن",
@@ -347,7 +372,6 @@ DlgPasteMsg2	: "لطفا متن را با کلیدهای (<STRONG>Ctrl+V</STRONG
 DlgPasteSec		: "به خاطر تنظیمات امنیتی مرورگر شما، ویرایشگر نمی‌تواند دسترسی مستقیم به داده‌های clipboard داشته باشد. شما باید دوباره آنرا در این پنجره بچسبانید.",
 DlgPasteIgnoreFont		: "چشم‌پوشی از تعاریف نوع قلم",
 DlgPasteRemoveStyles	: "چشم‌پوشی از تعاریف سبک (style)",
-DlgPasteCleanBox		: "پاک‌کردن ناحیه",
 
 // Color Picker
 ColorAutomatic	: "خودکار",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "درباره",
 DlgAboutBrowserInfoTab	: "اطلاعات مرورگر",
 DlgAboutLicenseTab	: "گواهینامه",
 DlgAboutVersion		: "نگارش",
-DlgAboutInfo		: "برای آگاهی بیشتر به این نشانی بروید"
+DlgAboutInfo		: "برای آگاهی بیشتر به این نشانی بروید",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style",	//MISSING
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

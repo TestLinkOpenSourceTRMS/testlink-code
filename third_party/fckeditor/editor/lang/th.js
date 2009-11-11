@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "ล้างรูปแบบ",
 InsertLinkLbl		: "ลิงค์เชื่อมโยงเว็บ อีเมล์ รูปภาพ หรือไฟล์อื่นๆ",
 InsertLink			: "แทรก/แก้ไข ลิงค์",
 RemoveLink			: "ลบ ลิงค์",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "แทรก/แก้ไข Anchor",
+AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "รูปภาพ",
 InsertImage			: "แทรก/แก้ไข รูปภาพ",
 InsertFlashLbl		: "ไฟล์ Flash",
@@ -70,6 +72,10 @@ RightJustify		: "จัดชิดขวา",
 BlockJustify		: "จัดพอดีหน้ากระดาษ",
 DecreaseIndent		: "ลดระยะย่อหน้า",
 IncreaseIndent		: "เพิ่มระยะย่อหน้า",
+Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "ยกเลิกคำสั่ง",
 Redo				: "ทำซ้ำคำสั่ง",
 NumberedListLbl		: "ลำดับรายการแบบตัวเลข",
@@ -103,20 +109,27 @@ SelectionField	: "แถบตัวเลือก",
 ImageButton		: "ปุ่มแบบรูปภาพ",
 
 FitWindow		: "ขยายขนาดตัวอีดิตเตอร์",
+ShowBlocks		: "Show Blocks",	//MISSING
 
 // Context Menu
 EditLink			: "แก้ไข ลิงค์",
 CellCM				: "ช่องตาราง",
 RowCM				: "แถว",
 ColumnCM			: "คอลัมน์",
-InsertRow			: "แทรกแถว",
+InsertRowAfter		: "Insert Row After",	//MISSING
+InsertRowBefore		: "Insert Row Before",	//MISSING
 DeleteRows			: "ลบแถว",
-InsertColumn		: "แทรกสดมน์",
+InsertColumnAfter	: "Insert Column After",	//MISSING
+InsertColumnBefore	: "Insert Column Before",	//MISSING
 DeleteColumns		: "ลบสดมน์",
-InsertCell			: "แทรกช่อง",
+InsertCellAfter		: "Insert Cell After",	//MISSING
+InsertCellBefore	: "Insert Cell Before",	//MISSING
 DeleteCells			: "ลบช่อง",
 MergeCells			: "ผสานช่อง",
-SplitCell			: "แยกช่อง",
+MergeRight			: "Merge Right",	//MISSING
+MergeDown			: "Merge Down",	//MISSING
+HorizontalSplitCell	: "Split Cell Horizontally",	//MISSING
+VerticalSplitCell	: "Split Cell Vertically",	//MISSING
 TableDelete			: "ลบตาราง",
 CellProperties		: "คุณสมบัติของช่อง",
 TableProperties		: "คุณสมบัติของตาราง",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "คุณสมบัติของ แถบตัวเ
 TextareaProp		: "คุณสมบัติของ เท็กแอเรีย",
 FormProp			: "คุณสมบัติของ แบบฟอร์ม",
 
-FontFormats			: "Normal;Formatted;Address;Heading 1;Heading 2;Heading 3;Heading 4;Heading 5;Heading 6;Paragraph (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normal;Formatted;Address;Heading 1;Heading 2;Heading 3;Heading 4;Heading 5;Heading 6;Paragraph (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "โปรแกรมกำลังทำงานด้วยเทคโนโลยี XHTML กรุณารอสักครู่...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "ไม่มีการติดตั้งชุดค�
 NoActiveX			: "โปรแกรมท่องอินเตอร์เน็ตของท่านไม่อนุญาติให้อีดิตเตอร์ทำงาน \"Run ActiveX controls and plug-ins\". หากไม่อนุญาติให้ใช้งาน ActiveX controls ท่านจะไม่สามารถใช้งานได้อย่างเต็มประสิทธิภาพ.",
 BrowseServerBlocked : "เปิดหน้าต่างป๊อบอัพเพื่อทำงานต่อไม่ได้ กรุณาปิดเครื่องมือป้องกันป๊อบอัพในโปรแกรมท่องอินเตอร์เน็ตของท่านด้วย",
 DialogBlocked		: "เปิดหน้าต่างป๊อบอัพเพื่อทำงานต่อไม่ได้ กรุณาปิดเครื่องมือป้องกันป๊อบอัพในโปรแกรมท่องอินเตอร์เน็ตของท่านด้วย",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "ตกลง",
@@ -229,7 +243,7 @@ DlgLnkURL			: "ที่อยู่อ้างอิงออนไลน์ (
 DlgLnkAnchorSel		: "ระบุข้อมูลของจุดเชื่อมโยง (Anchor)",
 DlgLnkAnchorByName	: "ชื่อ",
 DlgLnkAnchorById	: "ไอดี",
-DlgLnkNoAnchors		: "(ยังไม่มีจุดเชื่อมโยงภายในหน้าเอกสารนี้)",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(ยังไม่มีจุดเชื่อมโยงภายในหน้าเอกสารนี้)",
 DlgLnkEMail			: "อีเมล์ (E-Mail)",
 DlgLnkEMailSubject	: "หัวเรื่อง",
 DlgLnkEMailBody		: "ข้อความ",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "ระยะแนวนอนน",
 DlgTableCellPad		: "ระยะแนวตั้ง",
 DlgTableCaption		: "หัวเรื่องของตาราง",
 DlgTableSummary		: "สรุปความ",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "คุณสมบัติของ ช่อง",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "บนสุด",
 DlgCellVerAlignMiddle	: "กึ่งกลาง",
 DlgCellVerAlignBottom	: "ล่างสุด",
 DlgCellVerAlignBaseline	: "อิงบรรทัด",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "จำนวนแถวที่คร่อมกัน",
 DlgCellCollSpan		: "จำนวนสดมน์ที่คร่อมกัน",
 DlgCellBackColor	: "สีพื้นหลัง",
 DlgCellBorderColor	: "สีเส้นขอบ",
 DlgCellBtnSelect	: "เลือก..",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Find and Replace",	//MISSING
 
 // Find Dialog
 DlgFindTitle		: "ค้นหา",
@@ -347,7 +372,6 @@ DlgPasteMsg2	: "กรุณาใช้คีย์บอร์ดเท่า�
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "ไม่สนใจ Font Face definitions",
 DlgPasteRemoveStyles	: "ลบ Styles definitions",
-DlgPasteCleanBox		: "ล้างข้อมูลใน Box",
 
 // Color Picker
 ColorAutomatic	: "สีอัตโนมัติ",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "เกี่ยวกับโปรแกรม",
 DlgAboutBrowserInfoTab	: "โปรแกรมท่องเว็บที่ท่านใช้",
 DlgAboutLicenseTab	: "ลิขสิทธิ์",
 DlgAboutVersion		: "รุ่น",
-DlgAboutInfo		: "For further information go to"	//MISSING
+DlgAboutInfo		: "For further information go to",	//MISSING
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style",	//MISSING
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

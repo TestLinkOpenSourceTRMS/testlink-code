@@ -1,4 +1,4 @@
-<cfsilent>
+<cfsetting enablecfoutputonly="true">
 <!---
 This code uses a CF User Defined Function and should work in CF version 5.0
 and up without alteration.
@@ -9,136 +9,110 @@ the use of that tag for security reasons. Clients would be able to access each
 others files in certain cases.
 --->
 
-<!---
-The following variables values must reflect your installation needs.
---->
-<cfset apsell_dir	= "C:\Program Files\Aspell\bin">
-
-<cfset lang			= "en_US">
-<cfset aspell_opts	= "-a --lang=#lang# --encoding=utf-8 -H --rem-sgml-check=alt">
-
-<!--- Be sure the temporary folder exists --->
-<cfset tempFolder	= "C:\Windows\Temp">
-<cfset tempfile		= "spell_#randrange(1,10000)#">
-
-<cfset spellercss	= "../spellerStyle.css">
-<cfset word_win_src	= "../wordWindow.js">
+<!--- The following variables values must reflect your installation. --->
+<cfset aspell_dir	  = "C:\Program Files\Aspell\bin">
+<cfset lang         = "en_US">
+<cfset aspell_opts  = "-a --lang=#lang# --encoding=utf-8 -H --rem-sgml-check=alt">
+<cfset tempfile_in  = GetTempFile(GetTempDirectory(), "spell_")>
+<cfset tempfile_out = GetTempFile(GetTempDirectory(), "spell_")>
+<cfset spellercss   = "../spellerStyle.css">
+<cfset word_win_src = "../wordWindow.js">
 
 <cfset form.checktext = form["textinputs[]"]>
 
-<cfscript>
-  function LastIndexOf(subs, str)
-  {
-    return Len(str) - Find(subs, Reverse(str)) + 1;
-  }
-</cfscript>
+<!--- make no difference between URL and FORM scopes --->
+<cfparam name="url.checktext"  default="">
+<cfparam name="form.checktext" default="#url.checktext#">
 
 <!--- Takes care of those pesky smart quotes from MS apps, replaces them with regular quotes --->
-<cfparam name="url.checktext" default="">
-<cfparam name="form.checktext" default="#url.checktext#">
-<cfset submitted_text = replacelist(form.checktext,"%u201C,%u201D","%22,%22")>
+<cfset submitted_text = ReplaceList(form.checktext,"%u201C,%u201D","%22,%22")>
 
 <!--- submitted_text now is ready for processing --->
 
 <!--- use carat on each line to escape possible aspell commands --->
 <cfset text = "">
-<cfset crlf = Chr(13) & Chr(10)>
+<cfset CRLF = Chr(13) & Chr(10)>
 
 <cfloop list="#submitted_text#" index="field" delimiters=",">
-  <cfset text = text & "%" & crlf
-                     & "^A" & crlf
-                     & "!" & crlf>
-  <cfset field = URLDecode(field)>
-  <cfloop list="#field#" index="line" delimiters="#crlf#">
-<!---     <cfset submitted_text = replace(submitted_text,"'","\'","All")>
-    <cfset submitted_text = replace(submitted_text,"""","\""","All")> --->
-  	<cfset text = text & "^" & Trim(JSStringFormat(line)) & "#crlf#">
-  </cfloop>
+	<cfset text = text & "%"  & CRLF
+                      & "^A" & CRLF
+                      & "!"  & CRLF>
+	<!--- Strip all tags for the text. (by FredCK - #339 / #681) --->
+	<cfset field = REReplace(URLDecode(field), "<[^>]+>", " ", "all")>
+	<cfloop list="#field#" index="line" delimiters="#CRLF#">
+		<cfset text = ListAppend(text, "^" & Trim(JSStringFormat(line)), CRLF)>
+	</cfloop>
 </cfloop>
 
-
-<!--- need to escape special javascript characters such as ' --->
-<cfset unaltered_text = submitted_text>
-
 <!--- create temp file from the submitted text, this will be passed to aspell to be check for misspelled words --->
-<cffile action="write" file="#tempFolder#\#tempfile#.txt" output="#text#" charset="utf-8">
+<cffile action="write" file="#tempfile_in#" output="#text#" charset="utf-8">
 
-<!--- cfsavecontent is used to set the variable that will be returned with the results from aspell.
-If your using the new version of mx 6.1 you can  use the following cfexecute tag instead:
-<cfexecute name="C:\WINDOWS\SYSTEM32\cmd.exe" arguments="/c type c:\test\#tempfile#.txt | c:\aspell\bin\aspell #aspell_opts#" timeout="100" variable="results"></cfexecute> --->
+<!--- execute aspell in an UTF-8 console and redirect output to a file. UTF-8 encoding is lost if done differently --->
+<cfexecute name="cmd.exe" arguments='/c type "#tempfile_in#" | "#aspell_dir#\aspell.exe" #aspell_opts# > "#tempfile_out#"' timeout="100"/>
 
+<!--- read output file for further processing --->
+<cffile action="read" file="#tempfile_out#" variable="food" charset="utf-8">
 
-
-<cfsavecontent variable="food">
-<cfexecute name="C:\WINDOWS\SYSTEM32\cmd.exe" arguments='/c type #tempFolder#\#tempfile#.txt | "#apsell_dir#\aspell" #aspell_opts#' timeout="100"></cfexecute>
-</cfsavecontent>
-
-
-
-<!--- remove temp file --->
-<cffile action="delete" file="#tempFolder#\#tempfile#.txt">
+<!--- remove temp files --->
+<cffile action="delete" file="#tempfile_in#">
+<cffile action="delete" file="#tempfile_out#">
 
 <cfset texts = StructNew()>
 <cfset texts.textinputs = "">
-<cfset texts.words = "">
-<cfset texts.abort = "">
+<cfset texts.words      = "">
+<cfset texts.abort      = "">
 
 <!--- Generate Text Inputs --->
-
-<cfset i = "0">
-<cfloop index="text" list="#form.checktext#">
-  <cfset texts.textinputs = ListAppend(texts.textinputs, 'textinputs[#i#] = decodeURIComponent("#text#");', '#Chr(13)##Chr(10)#')>
-  <cfset i = i + "1">
+<cfset i = 0>
+<cfloop list="#submitted_text#" index="textinput">
+  <cfset texts.textinputs = ListAppend(texts.textinputs, 'textinputs[#i#] = decodeURIComponent("#textinput#");', CRLF)>
+  <cfset i = i + 1>
 </cfloop>
 
 <!--- Generate Words Lists --->
-
-<cfset cnt = "1">
-<cfset word_cnt = "0">
-<cfset input_cnt = "-1">
-<cfloop list="#food#" index="list" delimiters="#chr(10)##chr(13)#">
-	<!--- removes the first line of the aspell output "@(#) International Ispell Version 3.1.20 (but really Aspell 0.50.3)" --->
-	<cfif NOT cnt IS "1">
-		<cfif Find("&", list) OR Find("##", list)>
+<cfset word_cnt  = 0>
+<cfset input_cnt = -1>
+<cfloop list="#food#" index="aspell_line" delimiters="#CRLF#">
+    <cfset leftChar = Left(aspell_line, 1)>
+	<cfif leftChar eq "*">
+			<cfset input_cnt   = input_cnt + 1>
+			<cfset word_cnt    = 0>
+			<cfset texts.words = ListAppend(texts.words, "words[#input_cnt#] = [];", CRLF)>
+			<cfset texts.words = ListAppend(texts.words, "suggs[#input_cnt#] = [];", CRLF)>
+    <cfelse>
+        <cfif leftChar eq "&" or leftChar eq "##">
 			<!--- word that misspelled --->
-			<cfset bad_word = listGetAt(list, "2", " ")>
+			<cfset bad_word    = Trim(ListGetAt(aspell_line, 2, " "))>
+			<cfset bad_word    = Replace(bad_word, "'", "\'", "ALL")>
 			<!--- sugestions --->
-			<cfset wrdList = mid(list,(LastIndexOf(':', list) + 2),(len(list) - (LastIndexOf(':', list) + 2)))>
-			<cfset wrdsList = "">
-			<cfloop list="#wrdList#" index="idx">
-				<cfset wrdsList = ListAppend(wrdsList, " '" & trim(replace(idx,"'","\'","All")) & "'", ", ")>
-			</cfloop>
-      <cfset wrdsList = Right(wrdsList, Len(wrdsList) - 1)>
+			<cfset sug_list    = Trim(ListRest(aspell_line, ":"))>
+			<cfset sug_list    = ListQualify(Replace(sug_list, "'", "\'", "ALL"), "'")>
 			<!--- javascript --->
-			<cfset texts.words = ListAppend(texts.words, "words[#input_cnt#][#word_cnt#] = '#trim(replace(bad_word,"'","\'","All"))#';", "#Chr(13)##Chr(10)#")>
-			<cfset texts.words = ListAppend(texts.words, "suggs[#input_cnt#][#word_cnt#] = [#trim(wrdsList)#];", "#Chr(13)##Chr(10)#")>
-			<cfset word_cnt = word_cnt + 1>
-		<cfelseif find("*", list)>
-      <cfset input_cnt = input_cnt + "1">
-      <cfset word_cnt = "0">
-      <cfset texts.words = ListAppend(texts.words, "words[#input_cnt#] = [];", "#crlf#")>
-      <cfset texts.words = ListAppend(texts.words, "suggs[#input_cnt#] = [];", "#crlf#")>
+			<cfset texts.words = ListAppend(texts.words, "words[#input_cnt#][#word_cnt#] = '#bad_word#';", CRLF)>
+			<cfset texts.words = ListAppend(texts.words, "suggs[#input_cnt#][#word_cnt#] = [#sug_list#];", CRLF)>
+			<cfset word_cnt    = word_cnt + 1>
 		</cfif>
-	</cfif>
-	<cfset cnt = cnt + 1>
+     </cfif>
 </cfloop>
 
-<cfif texts.words IS "">
-  <cfset texts.abort = "alert('Spell check complete.\n\nNo misspellings found.');#crlf#top.window.close();">
+<cfif texts.words eq "">
+  <cfset texts.abort = "alert('Spell check complete.\n\nNo misspellings found.'); top.window.close();">
 </cfif>
 
-</cfsilent><cfoutput><cfcontent type="text/html"><html>
+<cfcontent type="text/html; charset=utf-8">
+
+<cfoutput><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" type="text/css" href="#spellercss#" />
 <script language="javascript" src="#word_win_src#"></script>
 <script language="javascript">
-var suggs = new Array();
-var words = new Array();
+var suggs      = new Array();
+var words      = new Array();
 var textinputs = new Array();
 var error;
 
-#texts.textinputs##Chr(13)##Chr(10)#
+#texts.textinputs##CRLF#
 #texts.words#
 #texts.abort#
 
@@ -160,7 +134,6 @@ function init_spell() {
 		}
 	}
 }
-
 </script>
 
 </head>
@@ -172,3 +145,4 @@ wordWindowObj.writeBody();
 
 </body>
 </html></cfoutput>
+<cfsetting enablecfoutputonly="false">

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Forigi Formaton",
 InsertLinkLbl		: "Ligilo",
 InsertLink			: "Enmeti/Ŝanĝi Ligilon",
 RemoveLink			: "Forigi Ligilon",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Enmeti/Ŝanĝi Ankron",
+AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Bildo",
 InsertImage			: "Enmeti/Ŝanĝi Bildon",
 InsertFlashLbl		: "Flash",	//MISSING
@@ -70,6 +72,10 @@ RightJustify		: "Dekstrigi",
 BlockJustify		: "Ĝisrandigi Ambaŭflanke",
 DecreaseIndent		: "Malpligrandigi Krommarĝenon",
 IncreaseIndent		: "Pligrandigi Krommarĝenon",
+Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Malfari",
 Redo				: "Refari",
 NumberedListLbl		: "Numera Listo",
@@ -103,20 +109,27 @@ SelectionField	: "Elekta Kampo",
 ImageButton		: "Bildbutono",
 
 FitWindow		: "Maximize the editor size",	//MISSING
+ShowBlocks		: "Show Blocks",	//MISSING
 
 // Context Menu
 EditLink			: "Modifier Ligilon",
 CellCM				: "Cell",	//MISSING
 RowCM				: "Row",	//MISSING
 ColumnCM			: "Column",	//MISSING
-InsertRow			: "Enmeti Linion",
+InsertRowAfter		: "Insert Row After",	//MISSING
+InsertRowBefore		: "Insert Row Before",	//MISSING
 DeleteRows			: "Forigi Liniojn",
-InsertColumn		: "Enmeti Kolumnon",
+InsertColumnAfter	: "Insert Column After",	//MISSING
+InsertColumnBefore	: "Insert Column Before",	//MISSING
 DeleteColumns		: "Forigi Kolumnojn",
-InsertCell			: "Enmeti Ĉelon",
+InsertCellAfter		: "Insert Cell After",	//MISSING
+InsertCellBefore	: "Insert Cell Before",	//MISSING
 DeleteCells			: "Forigi Ĉelojn",
 MergeCells			: "Kunfandi Ĉelojn",
-SplitCell			: "Dividi Ĉelojn",
+MergeRight			: "Merge Right",	//MISSING
+MergeDown			: "Merge Down",	//MISSING
+HorizontalSplitCell	: "Split Cell Horizontally",	//MISSING
+VerticalSplitCell	: "Split Cell Vertically",	//MISSING
 TableDelete			: "Delete Table",	//MISSING
 CellProperties		: "Atributoj de Ĉelo",
 TableProperties		: "Atributoj de Tabelo",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "Atributoj de Elekta Kampo",
 TextareaProp		: "Atributoj de Teksta Areo",
 FormProp			: "Formularaj Atributoj",
 
-FontFormats			: "Normala;Formatita;Adreso;Titolo 1;Titolo 2;Titolo 3;Titolo 4;Titolo 5;Titolo 6;Paragrafo (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normala;Formatita;Adreso;Titolo 1;Titolo 2;Titolo 3;Titolo 4;Titolo 5;Titolo 6;Paragrafo (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Traktado de XHTML. Bonvolu pacienci...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "La ilobreto \"%1\" ne ekzistas",
 NoActiveX			: "Your browser's security settings could limit some features of the editor. You must enable the option \"Run ActiveX controls and plug-ins\". You may experience errors and notice missing features.",	//MISSING
 BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",	//MISSING
 DialogBlocked		: "It was not possible to open the dialog window. Make sure all popup blockers are disabled.",	//MISSING
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "Akcepti",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Elekti Ankron",
 DlgLnkAnchorByName	: "Per Ankronomo",
 DlgLnkAnchorById	: "Per Elementidentigilo",
-DlgLnkNoAnchors		: "<Ne disponeblas ankroj en la dokumento>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "<Ne disponeblas ankroj en la dokumento>",
 DlgLnkEMail			: "Retadreso",
 DlgLnkEMailSubject	: "Temlinio",
 DlgLnkEMailBody		: "Mesaĝa korpo",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Interspacigo de Ĉeloj",
 DlgTableCellPad		: "Ĉirkaŭenhava Plenigado",
 DlgTableCaption		: "Titolo",
 DlgTableSummary		: "Summary",	//MISSING
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Atributoj de Celo",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Supre",
 DlgCellVerAlignMiddle	: "Centre",
 DlgCellVerAlignBottom	: "Malsupre",
 DlgCellVerAlignBaseline	: "Je Malsupro de Teksto",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Linioj Kunfanditaj",
 DlgCellCollSpan		: "Kolumnoj Kunfanditaj",
 DlgCellBackColor	: "Fono",
 DlgCellBorderColor	: "Bordero",
 DlgCellBtnSelect	: "Elekti...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Find and Replace",	//MISSING
 
 // Find Dialog
 DlgFindTitle		: "Serĉi",
@@ -347,7 +372,6 @@ DlgPasteMsg2	: "Please paste inside the following box using the keyboard (<stron
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignore Font Face definitions",	//MISSING
 DlgPasteRemoveStyles	: "Remove Styles definitions",	//MISSING
-DlgPasteCleanBox		: "Clean Up Box",	//MISSING
 
 // Color Picker
 ColorAutomatic	: "Aŭtomata",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "Pri",
 DlgAboutBrowserInfoTab	: "Informoj pri TTT-legilo",
 DlgAboutLicenseTab	: "License",	//MISSING
 DlgAboutVersion		: "versio",
-DlgAboutInfo		: "Por pli da informoj, vizitu"
+DlgAboutInfo		: "Por pli da informoj, vizitu",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style",	//MISSING
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

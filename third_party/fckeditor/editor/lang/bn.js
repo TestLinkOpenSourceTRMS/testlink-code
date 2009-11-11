@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "ফরমেট সরাও",
 InsertLinkLbl		: "লিংকের যুক্ত করার লেবেল",
 InsertLink			: "লিংক যুক্ত কর",
 RemoveLink			: "লিংক সরাও",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "নোঙ্গর",
+AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "ছবির লেবেল যুক্ত কর",
 InsertImage			: "ছবি যুক্ত কর",
 InsertFlashLbl		: "ফ্লাশ লেবেল যুক্ত কর",
@@ -70,6 +72,10 @@ RightJustify		: "ডান দিকে ঘেঁষা",
 BlockJustify		: "ব্লক জাস্টিফাই",
 DecreaseIndent		: "ইনডেন্ট কমাও",
 IncreaseIndent		: "ইনডেন্ট বাড়াও",
+Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "আনডু",
 Redo				: "রি-ডু",
 NumberedListLbl		: "সাংখ্যিক লিস্টের লেবেল",
@@ -103,20 +109,27 @@ SelectionField	: "বাছাই ফীল্ড",
 ImageButton		: "ছবির বাটন",
 
 FitWindow		: "উইন্ডো ফিট কর",
+ShowBlocks		: "Show Blocks",	//MISSING
 
 // Context Menu
 EditLink			: "লিংক সম্পাদন",
 CellCM				: "সেল",
 RowCM				: "রো",
 ColumnCM			: "কলাম",
-InsertRow			: "রো যুক্ত কর",
+InsertRowAfter		: "Insert Row After",	//MISSING
+InsertRowBefore		: "Insert Row Before",	//MISSING
 DeleteRows			: "রো মুছে দাও",
-InsertColumn		: "কলাম যুক্ত কর",
+InsertColumnAfter	: "Insert Column After",	//MISSING
+InsertColumnBefore	: "Insert Column Before",	//MISSING
 DeleteColumns		: "কলাম মুছে দাও",
-InsertCell			: "সেল যুক্ত কর",
+InsertCellAfter		: "Insert Cell After",	//MISSING
+InsertCellBefore	: "Insert Cell Before",	//MISSING
 DeleteCells			: "সেল মুছে দাও",
 MergeCells			: "সেল জোড়া দাও",
-SplitCell			: "সেল আলাদা কর",
+MergeRight			: "Merge Right",	//MISSING
+MergeDown			: "Merge Down",	//MISSING
+HorizontalSplitCell	: "Split Cell Horizontally",	//MISSING
+VerticalSplitCell	: "Split Cell Vertically",	//MISSING
 TableDelete			: "টেবিল ডিলীট কর",
 CellProperties		: "সেলের প্রোপার্টিজ",
 TableProperties		: "টেবিল প্রোপার্টি",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "বাছাই ফীল্ড প্রোপার্�
 TextareaProp		: "টেক্সট এরিয়া প্রোপার্টি",
 FormProp			: "ফর্ম প্রোপার্টি",
 
-FontFormats			: "সাধারণ;ফর্মেটেড;ঠিকানা;শীর্ষক ১;শীর্ষক ২;শীর্ষক ৩;শীর্ষক ৪;শীর্ষক ৫;শীর্ষক ৬;শীর্ষক (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "সাধারণ;ফর্মেটেড;ঠিকানা;শীর্ষক ১;শীর্ষক ২;শীর্ষক ৩;শীর্ষক ৪;শীর্ষক ৫;শীর্ষক ৬;শীর্ষক (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "XHTML প্রসেস করা হচ্ছে",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "টুলবার সেট \"%1\" এর অস্তি�
 NoActiveX			: "আপনার ব্রাউজারের সুরক্ষা সেটিংস কারনে এডিটরের কিছু ফিচার পাওয়া নাও যেতে পারে। আপনাকে অবশ্যই \"Run ActiveX controls and plug-ins\" এনাবেল করে নিতে হবে। আপনি ভুলভ্রান্তি কিছু কিছু ফিচারের অনুপস্থিতি উপলব্ধি করতে পারেন।",
 BrowseServerBlocked : "রিসোর্স ব্রাউজার খোলা গেল না। নিশ্চিত করুন যে সব পপআপ ব্লকার বন্ধ করা আছে।",
 DialogBlocked		: "ডায়ালগ ইউন্ডো খোলা গেল না। নিশ্চিত করুন যে সব পপআপ ব্লকার বন্ধ করা আছে।",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "ওকে",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "নোঙর বাছাই",
 DlgLnkAnchorByName	: "নোঙরের নাম দিয়ে",
 DlgLnkAnchorById	: "নোঙরের আইডি দিয়ে",
-DlgLnkNoAnchors		: "<ডকুমেন্টে আর কোন নোঙর নেই>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(No anchors available in the document)",	//MISSING
 DlgLnkEMail			: "ইমেইল ঠিকানা",
 DlgLnkEMailSubject	: "মেসেজের বিষয়",
 DlgLnkEMailBody		: "মেসেজের দেহ",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "সেল স্পেস",
 DlgTableCellPad		: "সেল প্যাডিং",
 DlgTableCaption		: "শীর্ষক",
 DlgTableSummary		: "সারাংশ",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "সেল প্রোপার্টি",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "উপর",
 DlgCellVerAlignMiddle	: "মধ্য",
 DlgCellVerAlignBottom	: "নীচে",
 DlgCellVerAlignBaseline	: "মূলরেখা",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "রো স্প্যান",
 DlgCellCollSpan		: "কলাম স্প্যান",
 DlgCellBackColor	: "ব্যাকগ্রাউন্ড রং",
 DlgCellBorderColor	: "বর্ডারের রং",
 DlgCellBtnSelect	: "বাছাই কর",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Find and Replace",	//MISSING
 
 // Find Dialog
 DlgFindTitle		: "খোঁজো",
@@ -347,7 +372,6 @@ DlgPasteMsg2	: "অনুগ্রহ করে নীচের বাক্স�
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "ফন্ট ফেস ডেফিনেশন ইগনোর করুন",
 DlgPasteRemoveStyles	: "স্টাইল ডেফিনেশন সরিয়ে দিন",
-DlgPasteCleanBox		: "বাক্স পরিষ্কার করুন",
 
 // Color Picker
 ColorAutomatic	: "অটোমেটিক",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "কে বানিয়েছে",
 DlgAboutBrowserInfoTab	: "ব্রাউজারের ব্যাপারে তথ্য",
 DlgAboutLicenseTab	: "লাইসেন্স",
 DlgAboutVersion		: "ভার্সন",
-DlgAboutInfo		: "আরও তথ্যের জন্য যান"
+DlgAboutInfo		: "আরও তথ্যের জন্য যান",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style",	//MISSING
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

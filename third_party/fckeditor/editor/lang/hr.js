@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Ukloni formatiranje",
 InsertLinkLbl		: "Link",
 InsertLink			: "Ubaci/promijeni link",
 RemoveLink			: "Ukloni link",
+VisitLink			: "Otvori link",
 Anchor				: "Ubaci/promijeni sidro",
+AnchorDelete		: "Ukloni sidro",
 InsertImageLbl		: "Slika",
 InsertImage			: "Ubaci/promijeni sliku",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "Desno poravnanje",
 BlockJustify		: "Blok poravnanje",
 DecreaseIndent		: "Pomakni ulijevo",
 IncreaseIndent		: "Pomakni udesno",
+Blockquote			: "Blockquote",
+CreateDiv			: "Napravi Div kontejner",
+EditDiv				: "Uredi Div kontejner",
+DeleteDiv			: "Ukloni Div kontejner",
 Undo				: "Poništi",
 Redo				: "Ponovi",
 NumberedListLbl		: "Brojčana lista",
@@ -103,20 +109,27 @@ SelectionField	: "Selection Field",
 ImageButton		: "Image Button",
 
 FitWindow		: "Povećaj veličinu editora",
+ShowBlocks		: "Prikaži blokove",
 
 // Context Menu
 EditLink			: "Promijeni link",
 CellCM				: "Ćelija",
 RowCM				: "Red",
 ColumnCM			: "Kolona",
-InsertRow			: "Ubaci red",
+InsertRowAfter		: "Ubaci red poslije",
+InsertRowBefore		: "Ubaci red prije",
 DeleteRows			: "Izbriši redove",
-InsertColumn		: "Ubaci kolonu",
+InsertColumnAfter	: "Ubaci kolonu poslije",
+InsertColumnBefore	: "Ubaci kolonu prije",
 DeleteColumns		: "Izbriši kolone",
-InsertCell			: "Ubaci ćelije",
+InsertCellAfter		: "Ubaci ćeliju poslije",
+InsertCellBefore	: "Ubaci ćeliju prije",
 DeleteCells			: "Izbriši ćelije",
 MergeCells			: "Spoji ćelije",
-SplitCell			: "Razdvoji ćelije",
+MergeRight			: "Spoji desno",
+MergeDown			: "Spoji dolje",
+HorizontalSplitCell	: "Podijeli ćeliju vodoravno",
+VerticalSplitCell	: "Podijeli ćeliju okomito",
 TableDelete			: "Izbriši tablicu",
 CellProperties		: "Svojstva ćelije",
 TableProperties		: "Svojstva tablice",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "Selection svojstva",
 TextareaProp		: "Textarea svojstva",
 FormProp			: "Form svojstva",
 
-FontFormats			: "Normal;Formatted;Address;Heading 1;Heading 2;Heading 3;Heading 4;Heading 5;Heading 6;Normal (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normal;Formatted;Address;Heading 1;Heading 2;Heading 3;Heading 4;Heading 5;Heading 6;Normal (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Obrađujem XHTML. Molimo pričekajte...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "Traka s alatima \"%1\" ne postoji",
 NoActiveX			: "Vaše postavke pretraživača mogle bi ograničiti neke od mogućnosti editora. Morate uključiti opciju \"Run ActiveX controls and plug-ins\" u postavkama. Ukoliko to ne učinite, moguće su razliite greške tijekom rada.",
 BrowseServerBlocked : "Pretraivač nije moguće otvoriti. Provjerite da li je uključeno blokiranje pop-up prozora.",
 DialogBlocked		: "Nije moguće otvoriti novi prozor. Provjerite da li je uključeno blokiranje pop-up prozora.",
+VisitLinkBlocked	: "Nije moguće otvoriti novi prozor. Provjerite da li je uključeno blokiranje pop-up prozora.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Odaberi sidro",
 DlgLnkAnchorByName	: "Po nazivu sidra",
 DlgLnkAnchorById	: "Po Id elementa",
-DlgLnkNoAnchors		: "<Nema dostupnih sidra>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Nema dostupnih sidra)",
 DlgLnkEMail			: "E-Mail adresa",
 DlgLnkEMailSubject	: "Naslov",
 DlgLnkEMailBody		: "Sadržaj poruke",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Prostornost ćelija",
 DlgTableCellPad		: "Razmak ćelija",
 DlgTableCaption		: "Naslov",
 DlgTableSummary		: "Sažetak",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Svojstva ćelije",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Gornje",
 DlgCellVerAlignMiddle	: "Srednišnje",
 DlgCellVerAlignBottom	: "Donje",
 DlgCellVerAlignBaseline	: "Bazno",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Spajanje redova",
 DlgCellCollSpan		: "Spajanje kolona",
 DlgCellBackColor	: "Boja pozadine",
 DlgCellBorderColor	: "Boja okvira",
 DlgCellBtnSelect	: "Odaberi...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Pronađi i zamijeni",
 
 // Find Dialog
 DlgFindTitle		: "Pronađi",
@@ -344,10 +369,9 @@ PasteAsText		: "Zalijepi kao čisti tekst",
 PasteFromWord	: "Zalijepi iz Worda",
 
 DlgPasteMsg2	: "Molimo zaljepite unutar doljnjeg okvira koristeći tipkovnicu (<STRONG>Ctrl+V</STRONG>) i kliknite <STRONG>OK</STRONG>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "Zbog sigurnosnih postavki Vašeg pretraživača, editor nema direktan pristup Vašem međuspremniku. Potrebno je ponovno zalijepiti tekst u ovaj prozor.",
 DlgPasteIgnoreFont		: "Zanemari definiciju vrste fonta",
 DlgPasteRemoveStyles	: "Ukloni definicije stilova",
-DlgPasteCleanBox		: "Očisti okvir",
 
 // Color Picker
 ColorAutomatic	: "Automatski",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "O FCKEditoru",
 DlgAboutBrowserInfoTab	: "Podaci o pretraživaču",
 DlgAboutLicenseTab	: "Licenca",
 DlgAboutVersion		: "inačica",
-DlgAboutInfo		: "Za više informacija posjetite"
+DlgAboutInfo		: "Za više informacija posjetite",
+
+// Div Dialog
+DlgDivGeneralTab	: "Općenito",
+DlgDivAdvancedTab	: "Napredno",
+DlgDivStyle		: "Stil",
+DlgDivInlineStyle	: "Stil u redu",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

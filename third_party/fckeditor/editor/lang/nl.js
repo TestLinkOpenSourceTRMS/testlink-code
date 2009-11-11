@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Opmaak verwijderen",
 InsertLinkLbl		: "Link",
 InsertLink			: "Link invoegen/wijzigen",
 RemoveLink			: "Link verwijderen",
+VisitLink			: "Link volgen",
 Anchor				: "Interne link",
+AnchorDelete		: "Anker verwijderen",
 InsertImageLbl		: "Afbeelding",
 InsertImage			: "Afbeelding invoegen/wijzigen",
 InsertFlashLbl		: "Flash",
@@ -52,7 +54,7 @@ InsertFlash			: "Flash invoegen/wijzigen",
 InsertTableLbl		: "Tabel",
 InsertTable			: "Tabel invoegen/wijzigen",
 InsertLineLbl		: "Lijn",
-InsertLine			: "Invoegen horizontale lijn",
+InsertLine			: "Horizontale lijn invoegen",
 InsertSpecialCharLbl: "Speciale tekens",
 InsertSpecialChar	: "Speciaal teken invoegen",
 InsertSmileyLbl		: "Smiley",
@@ -70,6 +72,10 @@ RightJustify		: "Rechts uitlijnen",
 BlockJustify		: "Uitvullen",
 DecreaseIndent		: "Inspringen verkleinen",
 IncreaseIndent		: "Inspringen vergroten",
+Blockquote			: "Citaatblok",
+CreateDiv			: "DIV aanmaken",
+EditDiv				: "DIV wijzigen",
+DeleteDiv			: "DIV verwijderen",
 Undo				: "Ongedaan maken",
 Redo				: "Opnieuw uitvoeren",
 NumberedListLbl		: "Genummerde lijst",
@@ -103,20 +109,27 @@ SelectionField	: "Selectieveld",
 ImageButton		: "Afbeeldingsknop",
 
 FitWindow		: "De editor maximaliseren",
+ShowBlocks		: "Toon blokken",
 
 // Context Menu
 EditLink			: "Link wijzigen",
 CellCM				: "Cel",
 RowCM				: "Rij",
 ColumnCM			: "Kolom",
-InsertRow			: "Rij invoegen",
+InsertRowAfter		: "Voeg rij in achter",
+InsertRowBefore		: "Voeg rij in voor",
 DeleteRows			: "Rijen verwijderen",
-InsertColumn		: "Kolom invoegen",
+InsertColumnAfter	: "Voeg kolom in achter",
+InsertColumnBefore	: "Voeg kolom in voor",
 DeleteColumns		: "Kolommen verwijderen",
-InsertCell			: "Cel",
+InsertCellAfter		: "Voeg cel in achter",
+InsertCellBefore	: "Voeg cel in voor",
 DeleteCells			: "Cellen verwijderen",
 MergeCells			: "Cellen samenvoegen",
-SplitCell			: "Cellen splitsen",
+MergeRight			: "Voeg samen naar rechts",
+MergeDown			: "Voeg samen naar beneden",
+HorizontalSplitCell	: "Splits cellen horizontaal",
+VerticalSplitCell	: "Splits cellen verticaal",
 TableDelete			: "Tabel verwijderen",
 CellProperties		: "Eigenschappen cel",
 TableProperties		: "Eigenschappen tabel",
@@ -134,20 +147,21 @@ SelectionFieldProp	: "Eigenschappen selectieveld",
 TextareaProp		: "Eigenschappen tekstvak",
 FormProp			: "Eigenschappen formulier",
 
-FontFormats			: "Normaal;Met opmaak;Adres;Kop 1;Kop 2;Kop 3;Kop 4;Kop 5;Kop 6;Normaal (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normaal;Met opmaak;Adres;Kop 1;Kop 2;Kop 3;Kop 4;Kop 5;Kop 6;Normaal (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Bezig met verwerken XHTML. Even geduld aub...",
 Done				: "Klaar",
-PasteWordConfirm	: "De tekst die je plakte lijkt gekopieerd uit te zijn Word. Wil je de tekst opschonen voordat deze geplakt wordt?",
-NotCompatiblePaste	: "Deze opdracht is beschikbaar voor Internet Explorer versie 5.5 of hoger. Wil je plakken zonder op te schonen?",
+PasteWordConfirm	: "De tekst die u plakte lijkt gekopieerd te zijn vanuit Word. Wilt u de tekst opschonen voordat deze geplakt wordt?",
+NotCompatiblePaste	: "Deze opdracht is beschikbaar voor Internet Explorer versie 5.5 of hoger. Wilt u plakken zonder op te schonen?",
 UnknownToolbarItem	: "Onbekend item op menubalk \"%1\"",
 UnknownCommand		: "Onbekende opdrachtnaam: \"%1\"",
 NotImplemented		: "Opdracht niet geïmplementeerd.",
 UnknownToolbarSet	: "Menubalk \"%1\" bestaat niet.",
-NoActiveX			: "De beveilingsinstellingen van je browser zouden sommige functies van de editor kunnen beperken. De optie \"Activeer ActiveX-elementen en plug-ins\" dient ingeschakeld te worden. Het kan zijn dat er nu functies ontbreken of niet werken.",
+NoActiveX			: "De beveilingsinstellingen van uw browser zouden sommige functies van de editor kunnen beperken. De optie \"Activeer ActiveX-elementen en plug-ins\" dient ingeschakeld te worden. Het kan zijn dat er nu functies ontbreken of niet werken.",
 BrowseServerBlocked : "De bestandsbrowser kon niet geopend worden. Zorg ervoor dat pop-up-blokkeerders uit staan.",
 DialogBlocked		: "Kan het dialoogvenster niet weergeven. Zorg ervoor dat pop-up-blokkeerders uit staan.",
+VisitLinkBlocked	: "Het was niet mogelijk een nieuw venster te openen. Controleer of er geen pop-up-blocker aktief is.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Kies een interne link",
 DlgLnkAnchorByName	: "Op naam interne link",
 DlgLnkAnchorById	: "Op kenmerk interne link",
-DlgLnkNoAnchors		: "(Geen interne links in document gevonden)",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Geen interne links in document gevonden)",
 DlgLnkEMail			: "E-mailadres",
 DlgLnkEMailSubject	: "Onderwerp bericht",
 DlgLnkEMailBody		: "Inhoud bericht",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Afstand tussen cellen",
 DlgTableCellPad		: "Afstand vanaf rand cel",
 DlgTableCaption		: "Naam",
 DlgTableSummary		: "Samenvatting",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Eigenschappen cel",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Boven",
 DlgCellVerAlignMiddle	: "Midden",
 DlgCellVerAlignBottom	: "Beneden",
 DlgCellVerAlignBaseline	: "Basislijn",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Overkoepeling rijen",
 DlgCellCollSpan		: "Overkoepeling kolommen",
 DlgCellBackColor	: "Achtergrondkleur",
 DlgCellBorderColor	: "Randkleur",
 DlgCellBtnSelect	: "Selecteren...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Zoeken en vervangen",
 
 // Find Dialog
 DlgFindTitle		: "Zoeken",
@@ -343,11 +368,10 @@ PasteErrorCopy	: "De beveiligingsinstelling van de browser verhinderen het autom
 PasteAsText		: "Plakken als platte tekst",
 PasteFromWord	: "Plakken als Word-gegevens",
 
-DlgPasteMsg2	: "Plak de tekst in het volgende vak gebruik makend van je toetstenbord (<STRONG>Ctrl+V</STRONG>) en klik op <STRONG>OK</STRONG>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteMsg2	: "Plak de tekst in het volgende vak gebruik makend van uw toetsenbord (<strong>Ctrl+V</strong>) en klik op <strong>OK</strong>.",
+DlgPasteSec		: "Door de beveiligingsinstellingen van uw browser is het niet mogelijk om direct vanuit het klembord in de editor te plakken. Middels opnieuw plakken in dit venster kunt u de tekst alsnog plakken in de editor.",
 DlgPasteIgnoreFont		: "Negeer \"Font Face\"-definities",
 DlgPasteRemoveStyles	: "Verwijder \"Style\"-definities",
-DlgPasteCleanBox		: "Vak opschonen",
 
 // Color Picker
 ColorAutomatic	: "Automatisch",
@@ -376,7 +400,7 @@ DlgSpellNoChanges		: "Klaar met spellingscontrole: geen woorden aangepast",
 DlgSpellOneChange		: "Klaar met spellingscontrole: één woord aangepast",
 DlgSpellManyChanges		: "Klaar met spellingscontrole: %1 woorden aangepast",
 
-IeSpellDownload			: "De spellingscontrole niet geïnstalleerd. Wil je deze nu downloaden?",
+IeSpellDownload			: "De spellingscontrole niet geïnstalleerd. Wilt u deze nu downloaden?",
 
 // Button Dialog
 DlgButtonText		: "Tekst (waarde)",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "Over",
 DlgAboutBrowserInfoTab	: "Browserinformatie",
 DlgAboutLicenseTab	: "Licentie",
 DlgAboutVersion		: "Versie",
-DlgAboutInfo		: "Voor meer informatie ga naar "
+DlgAboutInfo		: "Voor meer informatie ga naar ",
+
+// Div Dialog
+DlgDivGeneralTab	: "Algemeen",
+DlgDivAdvancedTab	: "Geavanceerd",
+DlgDivStyle		: "Style",
+DlgDivInlineStyle	: "Inline Style",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Usuń formatowanie",
 InsertLinkLbl		: "Hiperłącze",
 InsertLink			: "Wstaw/edytuj hiperłącze",
 RemoveLink			: "Usuń hiperłącze",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Wstaw/edytuj kotwicę",
+AnchorDelete		: "Usuń kotwicę",
 InsertImageLbl		: "Obrazek",
 InsertImage			: "Wstaw/edytuj obrazek",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "Wyrównaj do prawej",
 BlockJustify		: "Wyrównaj do lewej i prawej",
 DecreaseIndent		: "Zmniejsz wcięcie",
 IncreaseIndent		: "Zwiększ wcięcie",
+Blockquote			: "Cytat",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Cofnij",
 Redo				: "Ponów",
 NumberedListLbl		: "Lista numerowana",
@@ -93,30 +99,37 @@ PageBreakLbl		: "Odstęp",
 PageBreak			: "Wstaw odstęp",
 
 Form			: "Formularz",
-Checkbox		: "Checkbox",
-RadioButton		: "Pole wyboru",
+Checkbox		: "Pole wyboru (checkbox)",
+RadioButton		: "Pole wyboru (radio)",
 TextField		: "Pole tekstowe",
 Textarea		: "Obszar tekstowy",
 HiddenField		: "Pole ukryte",
 Button			: "Przycisk",
 SelectionField	: "Lista wyboru",
-ImageButton		: "Przycisk obrazek",
+ImageButton		: "Przycisk-obrazek",
 
 FitWindow		: "Maksymalizuj rozmiar edytora",
+ShowBlocks		: "Pokaż bloki",
 
 // Context Menu
 EditLink			: "Edytuj hiperłącze",
 CellCM				: "Komórka",
 RowCM				: "Wiersz",
 ColumnCM			: "Kolumna",
-InsertRow			: "Wstaw wiersz",
+InsertRowAfter		: "Wstaw wiersz poniżej",
+InsertRowBefore		: "Wstaw wiersz powyżej",
 DeleteRows			: "Usuń wiersze",
-InsertColumn		: "Wstaw kolumnę",
+InsertColumnAfter	: "Wstaw kolumnę z prawej",
+InsertColumnBefore	: "Wstaw kolumnę z lewej",
 DeleteColumns		: "Usuń kolumny",
-InsertCell			: "Wstaw komórkę",
+InsertCellAfter		: "Wstaw komórkę z prawej",
+InsertCellBefore	: "Wstaw komórkę z lewej",
 DeleteCells			: "Usuń komórki",
 MergeCells			: "Połącz komórki",
-SplitCell			: "Podziel komórkę",
+MergeRight			: "Połącz z komórką z prawej",
+MergeDown			: "Połącz z komórką poniżej",
+HorizontalSplitCell	: "Podziel komórkę poziomo",
+VerticalSplitCell	: "Podziel komórkę pionowo",
 TableDelete			: "Usuń tabelę",
 CellProperties		: "Właściwości komórki",
 TableProperties		: "Właściwości tabeli",
@@ -125,16 +138,16 @@ FlashProperties		: "Właściwości elementu Flash",
 
 AnchorProp			: "Właściwości kotwicy",
 ButtonProp			: "Właściwości przycisku",
-CheckboxProp		: "Checkbox - właściwości",
+CheckboxProp		: "Właściwości pola wyboru (checkbox)",
 HiddenFieldProp		: "Właściwości pola ukrytego",
-RadioButtonProp		: "Właściwości pola wyboru",
+RadioButtonProp		: "Właściwości pola wyboru (radio)",
 ImageButtonProp		: "Właściwości przycisku obrazka",
 TextFieldProp		: "Właściwości pola tekstowego",
 SelectionFieldProp	: "Właściwości listy wyboru",
 TextareaProp		: "Właściwości obszaru tekstowego",
 FormProp			: "Właściwości formularza",
 
-FontFormats			: "Normalny;Tekst sformatowany;Adres;Nagłówek 1;Nagłówek 2;Nagłówek 3;Nagłówek 4;Nagłówek 5;Nagłówek 6",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normalny;Tekst sformatowany;Adres;Nagłówek 1;Nagłówek 2;Nagłówek 3;Nagłówek 4;Nagłówek 5;Nagłówek 6",
 
 // Alerts and Messages
 ProcessingXHTML		: "Przetwarzanie XHTML. Proszę czekać...",
@@ -146,8 +159,9 @@ UnknownCommand		: "Nieznana komenda \"%1\"",
 NotImplemented		: "Komenda niezaimplementowana",
 UnknownToolbarSet	: "Pasek narzędzi \"%1\" nie istnieje",
 NoActiveX			: "Ustawienia zabezpieczeń twojej przeglądarki mogą ograniczyć niektóre funkcje edytora. Musisz włączyć opcję \"Uruchamianie formantów Activex i dodatków plugin\". W przeciwnym wypadku mogą pojawiać się błędy.",
-BrowseServerBlocked : "Okno menadżera plików nie może zostać otwarte. Upewnij się, że wszystkie blokady popup są wyłączone.",
-DialogBlocked		: "Nie można otworzyć okna dialogowego. Upewnij się, że wszystkie blokady popup są wyłączone.",
+BrowseServerBlocked : "Nie można otworzyć okno menadżera plików. Upewnij się, że wszystkie blokady wyskakujących okienek są wyłączone.",
+DialogBlocked		: "Nie można otworzyć okna dialogowego. Upewnij się, że wszystkie blokady wyskakujących okienek są wyłączone.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -160,7 +174,7 @@ DlgInfoTab			: "Informacje",
 DlgAlertUrl			: "Proszę podać URL",
 
 // General Dialogs Labels
-DlgGenNotSet		: "<nieustawione>",
+DlgGenNotSet		: "<nie ustawione>",
 DlgGenId			: "Id",
 DlgGenLangDir		: "Kierunek tekstu",
 DlgGenLangDirLtr	: "Od lewej do prawej (LTR)",
@@ -169,17 +183,17 @@ DlgGenLangCode		: "Kod języka",
 DlgGenAccessKey		: "Klawisz dostępu",
 DlgGenName			: "Nazwa",
 DlgGenTabIndex		: "Indeks tabeli",
-DlgGenLongDescr		: "Long Description URL",
-DlgGenClass			: "Stylesheet Classes",
-DlgGenTitle			: "Advisory Title",
-DlgGenContType		: "Advisory Content Type",
-DlgGenLinkCharset	: "Linked Resource Charset",
+DlgGenLongDescr		: "Długi opis hiperłącza",
+DlgGenClass			: "Nazwa klasy CSS",
+DlgGenTitle			: "Opis obiektu docelowego",
+DlgGenContType		: "Typ MIME obiektu docelowego",
+DlgGenLinkCharset	: "Kodowanie znaków obiektu docelowego",
 DlgGenStyle			: "Styl",
 
 // Image Dialog
 DlgImgTitle			: "Właściwości obrazka",
 DlgImgInfoTab		: "Informacje o obrazku",
-DlgImgBtnUpload		: "Syślij",
+DlgImgBtnUpload		: "Wyślij",
 DlgImgURL			: "Adres URL",
 DlgImgUpload		: "Wyślij",
 DlgImgAlt			: "Tekst zastępczy",
@@ -202,7 +216,7 @@ DlgImgAlignTextTop	: "Do góry tekstu",
 DlgImgAlignTop		: "Do góry",
 DlgImgPreview		: "Podgląd",
 DlgImgAlertUrl		: "Podaj adres obrazka.",
-DlgImgLinkTab		: "Link",
+DlgImgLinkTab		: "Hiperłącze",
 
 // Flash Dialog
 DlgFlashTitle		: "Właściwości elementu Flash",
@@ -229,11 +243,11 @@ DlgLnkURL			: "Adres URL",
 DlgLnkAnchorSel		: "Wybierz etykietę",
 DlgLnkAnchorByName	: "Wg etykiety",
 DlgLnkAnchorById	: "Wg identyfikatora elementu",
-DlgLnkNoAnchors		: "<W dokumencie nie zdefiniowano żadnych etykiet>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(W dokumencie nie zdefiniowano żadnych etykiet)",
 DlgLnkEMail			: "Adres e-mail",
 DlgLnkEMailSubject	: "Temat",
 DlgLnkEMailBody		: "Treść",
-DlgLnkUpload		: "Upload",
+DlgLnkUpload		: "Wyślij",
 DlgLnkBtnUpload		: "Wyślij",
 
 DlgLnkTarget		: "Cel",
@@ -262,7 +276,7 @@ DlgLnkPopTop		: "Pozycja w pionie",
 DlnLnkMsgNoUrl		: "Podaj adres URL",
 DlnLnkMsgNoEMail	: "Podaj adres e-mail",
 DlnLnkMsgNoAnchor	: "Wybierz etykietę",
-DlnLnkMsgInvPopName	: "The popup name must begin with an alphabetic character and must not contain spaces",	//MISSING
+DlnLnkMsgInvPopName	: "Nazwa wyskakującego okienka musi zaczynać się od znaku alfanumerycznego i nie może zawierać spacji",
 
 // Color Dialog
 DlgColorTitle		: "Wybierz kolor",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Odstęp pomiędzy komórkami",
 DlgTableCellPad		: "Margines wewnętrzny komórek",
 DlgTableCaption		: "Tytuł",
 DlgTableSummary		: "Podsumowanie",
+DlgTableHeaders		: "Nagłówki",
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Właściwości komórki",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Do góry",
 DlgCellVerAlignMiddle	: "Do środka",
 DlgCellVerAlignBottom	: "Do dołu",
 DlgCellVerAlignBaseline	: "Do linii bazowej",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Zajętość wierszy",
 DlgCellCollSpan		: "Zajętość kolumn",
 DlgCellBackColor	: "Kolor tła",
 DlgCellBorderColor	: "Kolor ramki",
 DlgCellBtnSelect	: "Wybierz...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Znajdź i zamień",
 
 // Find Dialog
 DlgFindTitle		: "Znajdź",
@@ -344,10 +369,9 @@ PasteAsText		: "Wklej jako czysty tekst",
 PasteFromWord	: "Wklej z Worda",
 
 DlgPasteMsg2	: "Proszę wkleić w poniższym polu używając klawiaturowego skrótu (<STRONG>Ctrl+V</STRONG>) i kliknąć <STRONG>OK</STRONG>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "Zabezpieczenia przeglądarki uniemożliwiają wklejenie danych bezpośrednio do edytora. Proszę dane wkleić ponownie w tym okienku.",
 DlgPasteIgnoreFont		: "Ignoruj definicje 'Font Face'",
 DlgPasteRemoveStyles	: "Usuń definicje Stylów",
-DlgPasteCleanBox		: "Wyczyść",
 
 // Color Picker
 ColorAutomatic	: "Automatycznie",
@@ -368,7 +392,7 @@ DlgSpellBtnIgnore		: "Ignoruj",
 DlgSpellBtnIgnoreAll	: "Ignoruj wszystkie",
 DlgSpellBtnReplace		: "Zmień",
 DlgSpellBtnReplaceAll	: "Zmień wszystkie",
-DlgSpellBtnUndo			: "Undo",
+DlgSpellBtnUndo			: "Cofnij",
 DlgSpellNoSuggestions	: "- Brak sugestii -",
 DlgSpellProgress		: "Trwa sprawdzanie ...",
 DlgSpellNoMispell		: "Sprawdzanie zakończone: nie znaleziono błędów",
@@ -381,14 +405,14 @@ IeSpellDownload			: "Słownik nie jest zainstalowany. Chcesz go ściągnąć?",
 // Button Dialog
 DlgButtonText		: "Tekst (Wartość)",
 DlgButtonType		: "Typ",
-DlgButtonTypeBtn	: "Button",	//MISSING
-DlgButtonTypeSbm	: "Submit",	//MISSING
-DlgButtonTypeRst	: "Reset",	//MISSING
+DlgButtonTypeBtn	: "Przycisk",
+DlgButtonTypeSbm	: "Wyślij",
+DlgButtonTypeRst	: "Wyzeruj",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Nazwa",
 DlgCheckboxValue	: "Wartość",
-DlgCheckboxSelected	: "Zaznaczony",
+DlgCheckboxSelected	: "Zaznaczone",
 
 // Form Dialog
 DlgFormName		: "Nazwa",
@@ -432,7 +456,7 @@ DlgHiddenValue	: "Wartość",
 // Bulleted List Dialog
 BulletedListProp	: "Właściwości listy punktowanej",
 NumberedListProp	: "Właściwości listy numerowanej",
-DlgLstStart			: "Start",	//MISSING
+DlgLstStart			: "Początek",
 DlgLstType			: "Typ",
 DlgLstTypeCircle	: "Koło",
 DlgLstTypeDisc		: "Dysk",
@@ -455,18 +479,18 @@ DlgDocLangDirLTR	: "Od lewej do prawej (LTR)",
 DlgDocLangDirRTL	: "Od prawej do lewej (RTL)",
 DlgDocLangCode		: "Kod języka",
 DlgDocCharSet		: "Kodowanie znaków",
-DlgDocCharSetCE		: "Central European",	//MISSING
-DlgDocCharSetCT		: "Chinese Traditional (Big5)",	//MISSING
-DlgDocCharSetCR		: "Cyrillic",	//MISSING
-DlgDocCharSetGR		: "Greek",	//MISSING
-DlgDocCharSetJP		: "Japanese",	//MISSING
-DlgDocCharSetKR		: "Korean",	//MISSING
-DlgDocCharSetTR		: "Turkish",	//MISSING
-DlgDocCharSetUN		: "Unicode (UTF-8)",	//MISSING
-DlgDocCharSetWE		: "Western European",	//MISSING
+DlgDocCharSetCE		: "Środkowoeuropejskie",
+DlgDocCharSetCT		: "Chińskie tradycyjne (Big5)",
+DlgDocCharSetCR		: "Cyrylica",
+DlgDocCharSetGR		: "Greckie",
+DlgDocCharSetJP		: "Japońskie",
+DlgDocCharSetKR		: "Koreańskie",
+DlgDocCharSetTR		: "Tureckie",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "Zachodnioeuropejskie",
 DlgDocCharSetOther	: "Inne kodowanie znaków",
 
-DlgDocDocType		: "Nagłowek typu dokumentu",
+DlgDocDocType		: "Nagłówek typu dokumentu",
 DlgDocDocTypeOther	: "Inny typ dokumentu",
 DlgDocIncXHTML		: "Dołącz deklarację XHTML",
 DlgDocBgColor		: "Kolor tła",
@@ -484,21 +508,32 @@ DlgDocMaBottom		: "Dolny",
 DlgDocMeIndex		: "Słowa kluczowe (oddzielone przecinkami)",
 DlgDocMeDescr		: "Opis dokumentu",
 DlgDocMeAuthor		: "Autor",
-DlgDocMeCopy		: "Copyright",
+DlgDocMeCopy		: "Prawa autorskie",
 DlgDocPreview		: "Podgląd",
 
 // Templates Dialog
-Templates			: "Sablony",
+Templates			: "Szablony",
 DlgTemplatesTitle	: "Szablony zawartości",
 DlgTemplatesSelMsg	: "Wybierz szablon do otwarcia w edytorze<br>(obecna zawartość okna edytora zostanie utracona):",
 DlgTemplatesLoading	: "Ładowanie listy szablonów. Proszę czekać...",
 DlgTemplatesNoTpl	: "(Brak zdefiniowanych szablonów)",
-DlgTemplatesReplace	: "Replace actual contents",	//MISSING
+DlgTemplatesReplace	: "Zastąp aktualną zawartość",
 
 // About Dialog
 DlgAboutAboutTab	: "O ...",
 DlgAboutBrowserInfoTab	: "O przeglądarce",
 DlgAboutLicenseTab	: "Licencja",
 DlgAboutVersion		: "wersja",
-DlgAboutInfo		: "Więcej informacji uzyskasz pod adresem"
+DlgAboutInfo		: "Więcej informacji uzyskasz pod adresem",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style",	//MISSING
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

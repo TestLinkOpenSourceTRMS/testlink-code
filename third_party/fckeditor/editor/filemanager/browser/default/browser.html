@@ -1,7 +1,8 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN"
+   "http://www.w3.org/TR/html4/frameset.dtd">
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -24,9 +25,42 @@
 <html>
 	<head>
 		<title>FCKeditor - Resources Browser</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<link href="browser.css" type="text/css" rel="stylesheet">
 		<script type="text/javascript" src="js/fckxml.js"></script>
-		<script language="javascript">
+		<script type="text/javascript">
+// Automatically detect the correct document.domain (#1919).
+(function()
+{
+	var d = document.domain ;
+
+	while ( true )
+	{
+		// Test if we can access a parent property.
+		try
+		{
+			var test = window.opener.document.domain ;
+			break ;
+		}
+		catch( e )
+		{}
+
+		// Remove a domain part: www.mytest.example.com => mytest.example.com => example.com ...
+		d = d.replace( /.*?(?:\.|$)/, '' ) ;
+
+		if ( d.length == 0 )
+			break ;		// It was not able to detect the domain.
+
+		try
+		{
+			document.domain = d ;
+		}
+		catch (e)
+		{
+			break ;
+		}
+	}
+})() ;
 
 function GetUrlParam( paramName )
 {
@@ -67,6 +101,9 @@ oConnector.SendCommand = function( command, params, callBackFunction )
 	sUrl += '&CurrentFolder=' + encodeURIComponent( this.CurrentFolder ) ;
 
 	if ( params ) sUrl += '&' + params ;
+
+	// Add a random salt to avoid getting a cached version of the command execution
+	sUrl += '&uuid=' + new Date().getTime() ;
 
 	var oXML = new FCKXml() ;
 
@@ -134,6 +171,15 @@ oIcons.GetIcon = function( fileName )
 	else
 		return 'default.icon' ;
 }
+
+function OnUploadCompleted( errorNumber, fileUrl, fileName, customMsg )
+{
+	if (errorNumber == "1")
+		window.frames['frmUpload'].OnUploadCompleted( errorNumber, customMsg ) ;
+	else
+		window.frames['frmUpload'].OnUploadCompleted( errorNumber, fileName ) ;
+}
+
 		</script>
 	</head>
 	<frameset cols="150,*" class="Frame" framespacing="3" bordercolor="#f1f1e3" frameborder="1">

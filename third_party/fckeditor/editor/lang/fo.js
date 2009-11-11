@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Strika sniðgeving",
 InsertLinkLbl		: "Tilknýti",
 InsertLink			: "Ger/broyt tilknýti",
 RemoveLink			: "Strika tilknýti",
+VisitLink			: "Opna tilknýti",
 Anchor				: "Ger/broyt marknastein",
+AnchorDelete		: "Strika marknastein",
 InsertImageLbl		: "Myndir",
 InsertImage			: "Set inn/broyt mynd",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "Høgrasett",
 BlockJustify		: "Javnir tekstkantar",
 DecreaseIndent		: "Minka reglubrotarinntriv",
 IncreaseIndent		: "Økja reglubrotarinntriv",
+Blockquote			: "Blockquote",
+CreateDiv			: "Ger DIV øki",
+EditDiv				: "Broyt DIV øki",
+DeleteDiv			: "Strika DIV øki",
 Undo				: "Angra",
 Redo				: "Vend aftur",
 NumberedListLbl		: "Talmerktur listi",
@@ -103,20 +109,27 @@ SelectionField	: "Valskrá",
 ImageButton		: "Myndaknøttur",
 
 FitWindow		: "Set tekstviðgera til fulla stødd",
+ShowBlocks		: "Vís blokkar",
 
 // Context Menu
 EditLink			: "Broyt tilknýti",
 CellCM				: "Meski",
 RowCM				: "Rað",
 ColumnCM			: "Kolonna",
-InsertRow			: "Nýtt rað",
+InsertRowAfter		: "Set rað inn aftaná",
+InsertRowBefore		: "Set rað inn áðrenn",
 DeleteRows			: "Strika røðir",
-InsertColumn		: "Nýggj kolonna",
+InsertColumnAfter	: "Set kolonnu inn aftaná",
+InsertColumnBefore	: "Set kolonnu inn áðrenn",
 DeleteColumns		: "Strika kolonnur",
-InsertCell			: "Nýggjur meski",
+InsertCellAfter		: "Set meska inn aftaná",
+InsertCellBefore	: "Set meska inn áðrenn",
 DeleteCells			: "Strika meskar",
 MergeCells			: "Flætta meskar",
-SplitCell			: "Být sundur meskar",
+MergeRight			: "Flætta meskar til høgru",
+MergeDown			: "Flætta saman",
+HorizontalSplitCell	: "Kloyv meska vatnrætt",
+VerticalSplitCell	: "Kloyv meska loddrætt",
 TableDelete			: "Strika tabell",
 CellProperties		: "Meskueginleikar",
 TableProperties		: "Tabelleginleikar",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "Eginleikar fyri valskrá",
 TextareaProp		: "Eginleikar fyri tekstumráði",
 FormProp			: "Eginleikar fyri Form",
 
-FontFormats			: "Vanligt;Sniðgivið;Adressa;Yvirskrift 1;Yvirskrift 2;Yvirskrift 3;Yvirskrift 4;Yvirskrift 5;Yvirskrift 6",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Vanligt;Sniðgivið;Adressa;Yvirskrift 1;Yvirskrift 2;Yvirskrift 3;Yvirskrift 4;Yvirskrift 5;Yvirskrift 6",
 
 // Alerts and Messages
 ProcessingXHTML		: "XHTML verður viðgjørt. Bíða við...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "Amboðsbjálkin \"%1\" finst ikki",
 NoActiveX			: "Trygdaruppsetingin í alnótskaganum kann sum er avmarka onkrar hentleikar í tekstviðgeranum. Tú mást loyva møguleikanum \"Run/Kør ActiveX controls and plug-ins\". Tú kanst uppliva feilir og ávaringar um tvørrandi hentleikar.",
 BrowseServerBlocked : "Ambætarakagin kundi ikki opnast. Tryggja tær, at allar pop-up forðingar eru óvirknar.",
 DialogBlocked		: "Tað eyðnaðist ikki at opna samskiftisrútin. Tryggja tær, at allar pop-up forðingar eru óvirknar.",
+VisitLinkBlocked	: "Tað eyðnaðist ikki at opna nýggjan rút. Tryggja tær, at allar pop-up forðingar eru óvirknar.",
 
 // Dialogs
 DlgBtnOK			: "Góðkent",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Vel ein marknastein",
 DlgLnkAnchorByName	: "Eftir navni á marknasteini",
 DlgLnkAnchorById	: "Eftir element Id",
-DlgLnkNoAnchors		: "(Eingir marknasteinar eru í hesum dokumentið)",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Eingir marknasteinar eru í hesum dokumentið)",
 DlgLnkEMail			: "Teldupost-adressa",
 DlgLnkEMailSubject	: "Evni",
 DlgLnkEMailBody		: "Breyðtekstur",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Fjarstøða millum meskar",
 DlgTableCellPad		: "Meskubreddi",
 DlgTableCaption		: "Tabellfrágreiðing",
 DlgTableSummary		: "Samandráttur",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Mesku eginleikar",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Ovast",
 DlgCellVerAlignMiddle	: "Miðjan",
 DlgCellVerAlignBottom	: "Niðast",
 DlgCellVerAlignBaseline	: "Basislinja",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Røðir, meskin fevnir um",
 DlgCellCollSpan		: "Kolonnur, meskin fevnir um",
 DlgCellBackColor	: "Bakgrundslitur",
 DlgCellBorderColor	: "Litur á borda",
 DlgCellBtnSelect	: "Vel...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Finn og broyt",
 
 // Find Dialog
 DlgFindTitle		: "Finn",
@@ -337,20 +362,19 @@ DlgReplaceReplAllBtn	: "Yvirskriva alt",
 DlgReplaceWordChk		: "Bert heil orð",
 
 // Paste Operations / Dialog
-PasteErrorCut	: "Trygdaruppseting alnótskagans forðar tekstviðgeranum í at kvetta tekstin. vinarliga nýt knappaborðið til at kvetta tekstin (CTRL+X).",
+PasteErrorCut	: "Trygdaruppseting alnótskagans forðar tekstviðgeranum í at kvetta tekstin. Vinarliga nýt knappaborðið til at kvetta tekstin (CTRL+X).",
 PasteErrorCopy	: "Trygdaruppseting alnótskagans forðar tekstviðgeranum í at avrita tekstin. Vinarliga nýt knappaborðið til at avrita tekstin (CTRL+C).",
 
 PasteAsText		: "Innrita som reinan tekst",
 PasteFromWord	: "Innrita fra Word",
 
 DlgPasteMsg2	: "Vinarliga koyr tekstin í hendan rútin við knappaborðinum (<strong>CTRL+V</strong>) og klikk á <strong>Góðtak</strong>.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "Trygdaruppseting alnótskagans forðar tekstviðgeranum í beinleiðis atgongd til avritingarminnið. Tygum mugu royna aftur í hesum rútinum.",
 DlgPasteIgnoreFont		: "Forfjóna Font definitiónirnar",
-DlgPasteRemoveStyles	: "Strika Styles definitiónir",
-DlgPasteCleanBox		: "Reinskanarkassi",
+DlgPasteRemoveStyles	: "Strika typografi definitiónir",
 
 // Color Picker
-ColorAutomatic	: "Av sær sjálvum",
+ColorAutomatic	: "Automatiskt",
 ColorMoreColors	: "Fleiri litir...",
 
 // Document Properties
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "Um",
 DlgAboutBrowserInfoTab	: "Upplýsingar um alnótskagan",
 DlgAboutLicenseTab	: "License",
 DlgAboutVersion		: "version",
-DlgAboutInfo		: "Fyri fleiri upplýsingar, far til"
+DlgAboutInfo		: "Fyri fleiri upplýsingar, far til",
+
+// Div Dialog
+DlgDivGeneralTab	: "Generelt",
+DlgDivAdvancedTab	: "Fjølbroytt",
+DlgDivStyle		: "Typografi",
+DlgDivInlineStyle	: "Inline typografi",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

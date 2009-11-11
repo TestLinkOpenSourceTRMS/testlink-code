@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "清除格式",
 InsertLinkLbl		: "超链接",
 InsertLink			: "插入/编辑超链接",
 RemoveLink			: "取消超链接",
+VisitLink			: "打开超链接",
 Anchor				: "插入/编辑锚点链接",
+AnchorDelete		: "清除锚点链接",
 InsertImageLbl		: "图象",
 InsertImage			: "插入/编辑图象",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "右对齐",
 BlockJustify		: "两端对齐",
 DecreaseIndent		: "减少缩进量",
 IncreaseIndent		: "增加缩进量",
+Blockquote			: "块引用",
+CreateDiv			: "插入 Div 标签",
+EditDiv				: "编辑 Div 标签",
+DeleteDiv			: "删除 Div 标签",
 Undo				: "撤消",
 Redo				: "重做",
 NumberedListLbl		: "编号列表",
@@ -103,20 +109,27 @@ SelectionField	: "列表/菜单",
 ImageButton		: "图像域",
 
 FitWindow		: "全屏编辑",
+ShowBlocks		: "显示区块",
 
 // Context Menu
 EditLink			: "编辑超链接",
 CellCM				: "单元格",
 RowCM				: "行",
 ColumnCM			: "列",
-InsertRow			: "插入行",
+InsertRowAfter		: "在下方插入行",
+InsertRowBefore		: "在上方插入行",
 DeleteRows			: "删除行",
-InsertColumn		: "插入列",
+InsertColumnAfter	: "在右侧插入列",
+InsertColumnBefore	: "在左侧插入列",
 DeleteColumns		: "删除列",
-InsertCell			: "插入单元格",
+InsertCellAfter		: "在右侧插入单元格",
+InsertCellBefore	: "在左侧插入单元格",
 DeleteCells			: "删除单元格",
 MergeCells			: "合并单元格",
-SplitCell			: "拆分单元格",
+MergeRight			: "向右合并单元格",
+MergeDown			: "向下合并单元格",
+HorizontalSplitCell	: "水平拆分单元格",
+VerticalSplitCell	: "垂直拆分单元格",
 TableDelete			: "删除表格",
 CellProperties		: "单元格属性",
 TableProperties		: "表格属性",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "菜单/列表属性",
 TextareaProp		: "多行文本属性",
 FormProp			: "表单属性",
 
-FontFormats			: "普通;已编排格式;地址;标题 1;标题 2;标题 3;标题 4;标题 5;标题 6;段落(DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "普通;已编排格式;地址;标题 1;标题 2;标题 3;标题 4;标题 5;标题 6;段落(DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "正在处理 XHTML，请稍等...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "工具栏设置 \"%1\" 不存在",
 NoActiveX			: "浏览器安全设置限制了本编辑器的某些功能。您必须启用安全设置中的“运行 ActiveX 控件和插件”，否则将出现某些错误并缺少功能。",
 BrowseServerBlocked : "无法打开资源浏览器，请确认是否启用了禁止弹出窗口。",
 DialogBlocked		: "无法打开对话框窗口，请确认是否启用了禁止弹出窗口或网页对话框（IE）。",
+VisitLinkBlocked	: "无法打开新窗口，请确认是否启用了禁止弹出窗口或网页对话框（IE）。",
 
 // Dialogs
 DlgBtnOK			: "确定",
@@ -229,7 +243,7 @@ DlgLnkURL			: "地址",
 DlgLnkAnchorSel		: "选择一个锚点",
 DlgLnkAnchorByName	: "按锚点名称",
 DlgLnkAnchorById	: "按锚点 ID",
-DlgLnkNoAnchors		: "<此文档没有可用的锚点>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(此文档没有可用的锚点)",
 DlgLnkEMail			: "地址",
 DlgLnkEMailSubject	: "主题",
 DlgLnkEMailBody		: "内容",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "间距",
 DlgTableCellPad		: "边距",
 DlgTableCaption		: "标题",
 DlgTableSummary		: "摘要",
+DlgTableHeaders		: "标题单元格",
+DlgTableHeadersNone		: "无",
+DlgTableHeadersColumn	: "第一列",
+DlgTableHeadersRow		: "第一行",
+DlgTableHeadersBoth		: "第一列和第一行",
 
 // Table Cell Dialog
 DlgCellTitle		: "单元格属性",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "顶端",
 DlgCellVerAlignMiddle	: "居中",
 DlgCellVerAlignBottom	: "底部",
 DlgCellVerAlignBaseline	: "基线",
+DlgCellType		: "单元格类型",
+DlgCellTypeData		: "资料",
+DlgCellTypeHeader	: "标题",
 DlgCellRowSpan		: "纵跨行数",
 DlgCellCollSpan		: "横跨列数",
 DlgCellBackColor	: "背景颜色",
 DlgCellBorderColor	: "边框颜色",
 DlgCellBtnSelect	: "选择...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "查找和替换",
 
 // Find Dialog
 DlgFindTitle		: "查找",
@@ -344,10 +369,9 @@ PasteAsText		: "粘贴为无格式文本",
 PasteFromWord	: "从 MS Word 粘贴",
 
 DlgPasteMsg2	: "请使用键盘快捷键(<STRONG>Ctrl+V</STRONG>)把内容粘贴到下面的方框里，再按 <STRONG>确定</STRONG>。",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "因为你的浏览器的安全设置原因，本编辑器不能直接访问你的剪贴板内容，你需要在本窗口重新粘贴一次。",
 DlgPasteIgnoreFont		: "忽略 Font 标签",
 DlgPasteRemoveStyles	: "清理 CSS 样式",
-DlgPasteCleanBox		: "清空上面内容",
 
 // Color Picker
 ColorAutomatic	: "自动",
@@ -490,7 +514,7 @@ DlgDocPreview		: "预览",
 // Templates Dialog
 Templates			: "模板",
 DlgTemplatesTitle	: "内容模板",
-DlgTemplatesSelMsg	: "请选择编辑器内容模板<br>(当前内容将会被清除替换):",
+DlgTemplatesSelMsg	: "请选择编辑器内容模板:",
 DlgTemplatesLoading	: "正在加载模板列表，请稍等...",
 DlgTemplatesNoTpl	: "(没有模板)",
 DlgTemplatesReplace	: "替换当前内容",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "关于",
 DlgAboutBrowserInfoTab	: "浏览器信息",
 DlgAboutLicenseTab	: "许可证",
 DlgAboutVersion		: "版本",
-DlgAboutInfo		: "要获得更多信息请访问 "
+DlgAboutInfo		: "要获得更多信息请访问 ",
+
+// Div Dialog
+DlgDivGeneralTab	: "常规",
+DlgDivAdvancedTab	: "高级",
+DlgDivStyle		: "样式",
+DlgDivInlineStyle	: "CSS 样式",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

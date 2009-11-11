@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -42,15 +42,17 @@ Print				: "Prindi",
 SelectAll			: "Vali kõik",
 RemoveFormat		: "Eemalda vorming",
 InsertLinkLbl		: "Link",
-InsertLink			: "Sisesta/Muuda link",
+InsertLink			: "Sisesta link / Muuda linki",
 RemoveLink			: "Eemalda link",
-Anchor				: "Sisesta/Muuda ankur",
+VisitLink			: "Open Link",	//MISSING
+Anchor				: "Sisesta ankur / Muuda ankrut",
+AnchorDelete		: "Eemalda ankur",
 InsertImageLbl		: "Pilt",
-InsertImage			: "Sisesta/Muuda pilt",
+InsertImage			: "Sisesta pilt / Muuda pilti",
 InsertFlashLbl		: "Flash",
-InsertFlash			: "Sisesta/Muuda flash",
+InsertFlash			: "Sisesta flash / Muuda flashi",
 InsertTableLbl		: "Tabel",
-InsertTable			: "Sisesta/Muuda tabel",
+InsertTable			: "Sisesta tabel / Muuda tabelit",
 InsertLineLbl		: "Joon",
 InsertLine			: "Sisesta horisontaaljoon",
 InsertSpecialCharLbl: "Erimärgid",
@@ -58,10 +60,10 @@ InsertSpecialChar	: "Sisesta erimärk",
 InsertSmileyLbl		: "Emotikon",
 InsertSmiley		: "Sisesta emotikon",
 About				: "FCKeditor teave",
-Bold				: "Rasvane kiri",
-Italic				: "Kursiiv kiri",
-Underline			: "Allajoonitud kiri",
-StrikeThrough		: "Läbijoonitud kiri",
+Bold				: "Paks",
+Italic				: "Kursiiv",
+Underline			: "Allajoonitud",
+StrikeThrough		: "Läbijoonitud",
 Subscript			: "Allindeks",
 Superscript			: "Ülaindeks",
 LeftJustify			: "Vasakjoondus",
@@ -70,6 +72,10 @@ RightJustify		: "Paremjoondus",
 BlockJustify		: "Rööpjoondus",
 DecreaseIndent		: "Vähenda taanet",
 IncreaseIndent		: "Suurenda taanet",
+Blockquote			: "Blokktsitaat",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Võta tagasi",
 Redo				: "Korda toimingut",
 NumberedListLbl		: "Nummerdatud loetelu",
@@ -90,7 +96,7 @@ Replace				: "Asenda",
 SpellCheck			: "Kontrolli õigekirja",
 UniversalKeyboard	: "Universaalne klaviatuur",
 PageBreakLbl		: "Lehepiir",
-PageBreak			: "Sisesta lehevahetus koht",
+PageBreak			: "Sisesta lehevahetuskoht",
 
 Form			: "Vorm",
 Checkbox		: "Märkeruut",
@@ -103,24 +109,31 @@ SelectionField	: "Valiklahter",
 ImageButton		: "Piltnupp",
 
 FitWindow		: "Maksimeeri redaktori mõõtmed",
+ShowBlocks		: "Näita blokke",
 
 // Context Menu
 EditLink			: "Muuda linki",
 CellCM				: "Lahter",
 RowCM				: "Rida",
 ColumnCM			: "Veerg",
-InsertRow			: "Lisa rida",
-DeleteRows			: "Eemalda ridu",
-InsertColumn		: "Lisa veerg",
+InsertRowAfter		: "Sisesta rida peale",
+InsertRowBefore		: "Sisesta rida enne",
+DeleteRows			: "Eemalda read",
+InsertColumnAfter	: "Sisesta veerg peale",
+InsertColumnBefore	: "Sisesta veerg enne",
 DeleteColumns		: "Eemalda veerud",
-InsertCell			: "Lisa lahter",
+InsertCellAfter		: "Sisesta lahter peale",
+InsertCellBefore	: "Sisesta lahter enne",
 DeleteCells			: "Eemalda lahtrid",
 MergeCells			: "Ühenda lahtrid",
-SplitCell			: "Lahuta lahtrid",
+MergeRight			: "Ühenda paremale",
+MergeDown			: "Ühenda alla",
+HorizontalSplitCell	: "Poolita lahter horisontaalselt",
+VerticalSplitCell	: "Poolita lahter vertikaalselt",
 TableDelete			: "Kustuta tabel",
 CellProperties		: "Lahtri atribuudid",
 TableProperties		: "Tabeli atribuudid",
-ImageProperties		: "Pildi  atribuudid",
+ImageProperties		: "Pildi atribuudid",
 FlashProperties		: "Flash omadused",
 
 AnchorProp			: "Ankru omadused",
@@ -134,20 +147,21 @@ SelectionFieldProp	: "Valiklahtri omadused",
 TextareaProp		: "Tekstiala omadused",
 FormProp			: "Vormi omadused",
 
-FontFormats			: "Tavaline;Vormindatud;Aadress;Pealkiri 1;Pealkiri 2;Pealkiri 3;Pealkiri 4;Pealkiri 5;Pealkiri 6;Tavaline (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Tavaline;Vormindatud;Aadress;Pealkiri 1;Pealkiri 2;Pealkiri 3;Pealkiri 4;Pealkiri 5;Pealkiri 6;Tavaline (DIV)",
 
 // Alerts and Messages
-ProcessingXHTML		: "Töötlen XHTML. Palun oota...",
+ProcessingXHTML		: "Töötlen XHTML'i. Palun oota...",
 Done				: "Tehtud",
-PasteWordConfirm	: "Tekst, mida soovid lisada paistab pärinevat Wordist. Kas soovid seda enne kleepimist puhastada?",
+PasteWordConfirm	: "Tekst, mida soovid lisada paistab pärinevat Word'ist. Kas soovid seda enne kleepimist puhastada?",
 NotCompatiblePaste	: "See käsk on saadaval ainult Internet Explorer versioon 5.5 või uuema puhul. Kas soovid kleepida ilma puhastamata?",
-UnknownToolbarItem	: "Tundmatu tööriistariba üksus \"%1\"",
+UnknownToolbarItem	: "Tundmatu tööriistarea üksus \"%1\"",
 UnknownCommand		: "Tundmatu käsunimi \"%1\"",
 NotImplemented		: "Käsku ei täidetud",
 UnknownToolbarSet	: "Tööriistariba \"%1\" ei eksisteeri",
-NoActiveX			: "Sinu veebisirvija turvalisuse seaded võivad limiteerida mõningaid tekstirdaktori kasutus võimalusi. Sa peaksid võimaldama valiku \"Run ActiveX controls and plug-ins\" oma sirvija seadetes. Muidu võid sa täheldada vigu tekstiredaktori töös ja märgata puuduvaid funktsioone.",
+NoActiveX			: "Sinu veebisirvija turvalisuse seaded võivad limiteerida mõningaid tekstirdaktori kasutusvõimalusi. Sa peaksid võimaldama valiku \"Run ActiveX controls and plug-ins\" oma veebisirvija seadetes. Muidu võid sa täheldada vigu tekstiredaktori töös ja märgata puuduvaid funktsioone.",
 BrowseServerBlocked : "Ressursside sirvija avamine ebaõnnestus. Võimalda pop-up akende avanemine.",
 DialogBlocked		: "Ei olenud võimalik avada dialoogi akent. Võimalda pop-up akende avanemine.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Vali ankur",
 DlgLnkAnchorByName	: "Ankru nime järgi",
 DlgLnkAnchorById	: "Elemendi id järgi",
-DlgLnkNoAnchors		: "(Selles dokumendis ei ole ankruid)",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Selles dokumendis ei ole ankruid)",
 DlgLnkEMail			: "E-posti aadress",
 DlgLnkEMailSubject	: "Sõnumi teema",
 DlgLnkEMailBody		: "Sõnumi tekst",
@@ -240,7 +254,7 @@ DlgLnkTarget		: "Sihtkoht",
 DlgLnkTargetFrame	: "<raam>",
 DlgLnkTargetPopup	: "<hüpikaken>",
 DlgLnkTargetBlank	: "Uus aken (_blank)",
-DlgLnkTargetParent	: "Vanem aken (_parent)",
+DlgLnkTargetParent	: "Esivanem aken (_parent)",
 DlgLnkTargetSelf	: "Sama aken (_self)",
 DlgLnkTargetTop		: "Pealmine aken (_top)",
 DlgLnkTargetFrameName	: "Sihtmärk raami nimi",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Lahtri vahe",
 DlgTableCellPad		: "Lahtri täidis",
 DlgTableCaption		: "Tabeli tiitel",
 DlgTableSummary		: "Kokkuvõte",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Lahtri atribuudid",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Üles",
 DlgCellVerAlignMiddle	: "Keskele",
 DlgCellVerAlignBottom	: "Alla",
 DlgCellVerAlignBaseline	: "Baasjoonele",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Reaulatus",
 DlgCellCollSpan		: "Veeruulatus",
 DlgCellBackColor	: "Tausta värv",
 DlgCellBorderColor	: "Joone värv",
 DlgCellBtnSelect	: "Vali...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Otsi ja asenda",
 
 // Find Dialog
 DlgFindTitle		: "Otsi",
@@ -347,7 +372,6 @@ DlgPasteMsg2	: "Palun kleebi järgnevasse kasti kasutades klaviatuuri klahvikomb
 DlgPasteSec		: "Sinu veebisirvija turvaseadete tõttu, ei oma redaktor otsest ligipääsu lõikelaua andmetele. Sa pead kleepima need uuesti siia aknasse.",
 DlgPasteIgnoreFont		: "Ignoreeri kirja definitsioone",
 DlgPasteRemoveStyles	: "Eemalda stiilide definitsioonid",
-DlgPasteCleanBox		: "Puhasta ära kast",
 
 // Color Picker
 ColorAutomatic	: "Automaatne",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "Teave",
 DlgAboutBrowserInfoTab	: "Veebisirvija info",
 DlgAboutLicenseTab	: "Litsents",
 DlgAboutVersion		: "versioon",
-DlgAboutInfo		: "Täpsema info saamiseks mine"
+DlgAboutInfo		: "Täpsema info saamiseks mine",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style",	//MISSING
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "Radera formatering",
 InsertLinkLbl		: "Länk",
 InsertLink			: "Infoga/Redigera länk",
 RemoveLink			: "Radera länk",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Infoga/Redigera ankarlänk",
+AnchorDelete		: "Radera ankarlänk",
 InsertImageLbl		: "Bild",
 InsertImage			: "Infoga/Redigera bild",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "Högerjustera",
 BlockJustify		: "Justera till marginaler",
 DecreaseIndent		: "Minska indrag",
 IncreaseIndent		: "Öka indrag",
+Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Ångra",
 Redo				: "Gör om",
 NumberedListLbl		: "Numrerad lista",
@@ -103,20 +109,27 @@ SelectionField	: "Flervalslista",
 ImageButton		: "Bildknapp",
 
 FitWindow		: "Anpassa till fönstrets storlek",
+ShowBlocks		: "Show Blocks",	//MISSING
 
 // Context Menu
 EditLink			: "Redigera länk",
 CellCM				: "Cell",
 RowCM				: "Rad",
 ColumnCM			: "Kolumn",
-InsertRow			: "Infoga rad",
+InsertRowAfter		: "Lägg till Rad Efter",
+InsertRowBefore		: "Lägg till Rad Före",
 DeleteRows			: "Radera rad",
-InsertColumn		: "Infoga kolumn",
+InsertColumnAfter	: "Lägg till Kolumn Efter",
+InsertColumnBefore	: "Lägg till Kolumn Före",
 DeleteColumns		: "Radera kolumn",
-InsertCell			: "Infoga cell",
+InsertCellAfter		: "Lägg till Cell Efter",
+InsertCellBefore	: "Lägg till Cell Före",
 DeleteCells			: "Radera celler",
 MergeCells			: "Sammanfoga celler",
-SplitCell			: "Separera celler",
+MergeRight			: "Sammanfoga Höger",
+MergeDown			: "Sammanfoga Ner",
+HorizontalSplitCell	: "Dela Cell Horisontellt",
+VerticalSplitCell	: "Dela Cell Vertikalt",
 TableDelete			: "Radera tabell",
 CellProperties		: "Cellegenskaper",
 TableProperties		: "Tabellegenskaper",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "Egenskaper för flervalslista",
 TextareaProp		: "Egenskaper för textruta",
 FormProp			: "Egenskaper för formulär",
 
-FontFormats			: "Normal;Formaterad;Adress;Rubrik 1;Rubrik 2;Rubrik 3;Rubrik 4;Rubrik 5;Rubrik 6;Normal (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "Normal;Formaterad;Adress;Rubrik 1;Rubrik 2;Rubrik 3;Rubrik 4;Rubrik 5;Rubrik 6;Normal (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Bearbetar XHTML. Var god vänta...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "Verktygsfält \"%1\" finns ej",
 NoActiveX			: "Din webläsares säkerhetsinställningar kan begränsa funktionaliteten. Du bör aktivera \"Kör ActiveX kontroller och plug-ins\". Fel och avsaknad av funktioner kan annars uppstå.",
 BrowseServerBlocked : "Kunde Ej öppna resursfönstret. Var god och avaktivera alla popup-blockerare.",
 DialogBlocked		: "Kunde Ej öppna dialogfönstret. Var god och avaktivera alla popup-blockerare.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Välj ett ankare",
 DlgLnkAnchorByName	: "efter ankarnamn",
 DlgLnkAnchorById	: "efter objektid",
-DlgLnkNoAnchors		: "(Inga ankare kunde hittas)",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(Inga ankare kunde hittas)",
 DlgLnkEMail			: "E-postadress",
 DlgLnkEMailSubject	: "Ämne",
 DlgLnkEMailBody		: "Innehåll",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "Cellavstånd",
 DlgTableCellPad		: "Cellutfyllnad",
 DlgTableCaption		: "Rubrik",
 DlgTableSummary		: "Sammanfattning",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Cellegenskaper",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "Topp",
 DlgCellVerAlignMiddle	: "Mitten",
 DlgCellVerAlignBottom	: "Nederkant",
 DlgCellVerAlignBaseline	: "Underst",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Radomfång",
 DlgCellCollSpan		: "Kolumnomfång",
 DlgCellBackColor	: "Bakgrundsfärg",
 DlgCellBorderColor	: "Kantfärg",
 DlgCellBtnSelect	: "Välj...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "Sök och ersätt",
 
 // Find Dialog
 DlgFindTitle		: "Sök",
@@ -347,7 +372,6 @@ DlgPasteMsg2	: "Var god och klistra in Er text i rutan nedan genom att använda 
 DlgPasteSec		: "På grund av din webläsares säkerhetsinställningar kan verktyget inte få åtkomst till urklippsdatan. Var god och använd detta fönster istället.",
 DlgPasteIgnoreFont		: "Ignorera typsnittsdefinitioner",
 DlgPasteRemoveStyles	: "Radera Stildefinitioner",
-DlgPasteCleanBox		: "Töm rutans innehåll",
 
 // Color Picker
 ColorAutomatic	: "Automatisk",
@@ -432,7 +456,7 @@ DlgHiddenValue	: "Värde",
 // Bulleted List Dialog
 BulletedListProp	: "Egenskaper för punktlista",
 NumberedListProp	: "Egenskaper för numrerad lista",
-DlgLstStart			: "Start",	//MISSING
+DlgLstStart			: "Start",
 DlgLstType			: "Typ",
 DlgLstTypeCircle	: "Cirkel",
 DlgLstTypeDisc		: "Punkt",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "Om",
 DlgAboutBrowserInfoTab	: "Webläsare",
 DlgAboutLicenseTab	: "Licens",
 DlgAboutVersion		: "version",
-DlgAboutInfo		: "För mer information se"
+DlgAboutInfo		: "För mer information se",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style",	//MISSING
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,9 @@ RemoveFormat		: "フォーマット削除",
 InsertLinkLbl		: "リンク",
 InsertLink			: "リンク挿入/編集",
 RemoveLink			: "リンク削除",
+VisitLink			: "リンクを開く",
 Anchor				: "アンカー挿入/編集",
+AnchorDelete		: "アンカー削除",
 InsertImageLbl		: "イメージ",
 InsertImage			: "イメージ挿入/編集",
 InsertFlashLbl		: "Flash",
@@ -70,6 +72,10 @@ RightJustify		: "右揃え",
 BlockJustify		: "両端揃え",
 DecreaseIndent		: "インデント解除",
 IncreaseIndent		: "インデント",
+Blockquote			: "ブロック引用",
+CreateDiv			: "Div 作成",
+EditDiv				: "Div 編集",
+DeleteDiv			: "Div 削除",
 Undo				: "元に戻す",
 Redo				: "やり直し",
 NumberedListLbl		: "段落番号",
@@ -103,20 +109,27 @@ SelectionField	: "選択フィールド",
 ImageButton		: "画像ボタン",
 
 FitWindow		: "エディタサイズを最大にします",
+ShowBlocks		: "ブロック表示",
 
 // Context Menu
 EditLink			: "リンク編集",
 CellCM				: "セル",
 RowCM				: "行",
 ColumnCM			: "カラム",
-InsertRow			: "行挿入",
+InsertRowAfter		: "列の後に挿入",
+InsertRowBefore		: "列の前に挿入",
 DeleteRows			: "行削除",
-InsertColumn		: "列挿入",
+InsertColumnAfter	: "カラムの後に挿入",
+InsertColumnBefore	: "カラムの前に挿入",
 DeleteColumns		: "列削除",
-InsertCell			: "セル挿入",
+InsertCellAfter		: "セルの後に挿入",
+InsertCellBefore	: "セルの前に挿入",
 DeleteCells			: "セル削除",
 MergeCells			: "セル結合",
-SplitCell			: "セル分割",
+MergeRight			: "右に結合",
+MergeDown			: "下に結合",
+HorizontalSplitCell	: "セルを水平方向分割",
+VerticalSplitCell	: "セルを垂直方向に分割",
 TableDelete			: "テーブル削除",
 CellProperties		: "セル プロパティ",
 TableProperties		: "テーブル プロパティ",
@@ -134,7 +147,7 @@ SelectionFieldProp	: "選択フィールド プロパティ",
 TextareaProp		: "テキストエリア プロパティ",
 FormProp			: "フォーム プロパティ",
 
-FontFormats			: "標準;書式付き;アドレス;見出し 1;見出し 2;見出し 3;見出し 4;見出し 5;見出し 6;標準 (DIV)",		//REVIEW : Check _getfontformat.html
+FontFormats			: "標準;書式付き;アドレス;見出し 1;見出し 2;見出し 3;見出し 4;見出し 5;見出し 6;標準 (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "XHTML処理中. しばらくお待ちください...",
@@ -148,6 +161,7 @@ UnknownToolbarSet	: "ツールバー設定 \"%1\" 存在しません。",
 NoActiveX			: "エラー、警告メッセージなどが発生した場合、ブラウザーのセキュリティ設定によりエディタのいくつかの機能が制限されている可能性があります。セキュリティ設定のオプションで\"ActiveXコントロールとプラグインの実行\"を有効にするにしてください。",
 BrowseServerBlocked : "サーバーブラウザーを開くことができませんでした。ポップアップ・ブロック機能が無効になっているか確認してください。",
 DialogBlocked		: "ダイアログウィンドウを開くことができませんでした。ポップアップ・ブロック機能が無効になっているか確認してください。",
+VisitLinkBlocked	: "新しいウィンドウを開くことができませんでした。ポップアップ・ブロック機能が無効になっているか確認してください。",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -229,7 +243,7 @@ DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "アンカーを選択",
 DlgLnkAnchorByName	: "アンカー名",
 DlgLnkAnchorById	: "エレメントID",
-DlgLnkNoAnchors		: "<ドキュメントにおいて利用可能なアンカーはありません。>",		//REVIEW : Change < and > with ( and )
+DlgLnkNoAnchors		: "(ドキュメントにおいて利用可能なアンカーはありません。)",
 DlgLnkEMail			: "E-Mail アドレス",
 DlgLnkEMailSubject	: "件名",
 DlgLnkEMailBody		: "本文",
@@ -294,6 +308,11 @@ DlgTableCellSpace	: "セル内余白",
 DlgTableCellPad		: "セル内間隔",
 DlgTableCaption		: "ｷｬﾌﾟｼｮﾝ",
 DlgTableSummary		: "テーブル目的/構造",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "セル プロパティ",
@@ -316,11 +335,17 @@ DlgCellVerAlignTop	: "上",
 DlgCellVerAlignMiddle	: "中央",
 DlgCellVerAlignBottom	: "下",
 DlgCellVerAlignBaseline	: "ベースライン",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "縦幅(行数)",
 DlgCellCollSpan		: "横幅(列数)",
 DlgCellBackColor	: "背景色",
 DlgCellBorderColor	: "ボーダーカラー",
 DlgCellBtnSelect	: "選択...",
+
+// Find and Replace Dialog
+DlgFindAndReplaceTitle	: "検索して置換",
 
 // Find Dialog
 DlgFindTitle		: "検索",
@@ -344,10 +369,9 @@ PasteAsText		: "プレーンテキスト貼り付け",
 PasteFromWord	: "ワード文章から貼り付け",
 
 DlgPasteMsg2	: "キーボード(<STRONG>Ctrl+V</STRONG>)を使用して、次の入力エリア内で貼って、<STRONG>OK</STRONG>を押してください。",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "ブラウザのセキュリティ設定により、エディタはクリップボード・データに直接アクセスすることができません。このウィンドウは貼り付け操作を行う度に表示されます。",
 DlgPasteIgnoreFont		: "FontタグのFace属性を無視します。",
 DlgPasteRemoveStyles	: "スタイル定義を削除します。",
-DlgPasteCleanBox		: "入力エリアクリア",
 
 // Color Picker
 ColorAutomatic	: "自動",
@@ -500,5 +524,16 @@ DlgAboutAboutTab	: "バージョン情報",
 DlgAboutBrowserInfoTab	: "ブラウザ情報",
 DlgAboutLicenseTab	: "ライセンス",
 DlgAboutVersion		: "バージョン",
-DlgAboutInfo		: "より詳しい情報はこちらで"
+DlgAboutInfo		: "より詳しい情報はこちらで",
+
+// Div Dialog
+DlgDivGeneralTab	: "全般",
+DlgDivAdvancedTab	: "高度な設定",
+DlgDivStyle		: "スタイル",
+DlgDivInlineStyle	: "インラインスタイル",
+
+ScaytTitle			: "SCAYT",	//MISSING
+ScaytTitleOptions	: "Options",	//MISSING
+ScaytTitleLangs		: "Languages",	//MISSING
+ScaytTitleAbout		: "About"	//MISSING
 };

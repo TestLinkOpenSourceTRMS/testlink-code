@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.484 2009/11/04 08:09:34 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.485 2009/11/12 06:24:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -977,6 +977,7 @@ $TLS_btn_history_off_any_build = "Show only last execution (any Build)";
 $TLS_btn_history_on = "Show complete execution history";
 $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
+$TLS_btn_save_exec_and_movetonext = "Save and move to next";
 $TLS_bug_mgmt = "BUG management";
 $TLS_build_is_closed = "Build is closed";
 $TLS_builds_notes = "Build description";

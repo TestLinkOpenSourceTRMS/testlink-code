@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.139 $
- * @modified $Date: 2009/09/23 08:20:30 $ $Author: franciscom $
+ * @version $Revision: 1.140 $
+ * @modified $Date: 2009/11/12 06:41:59 $ $Author: franciscom $
  *
  * rev:
+ *  20091111 - franciscom - BUGID 2938 - Feature: Save and Go to next test case in test suite.
  *  20090922 - franciscom - added contribution idea, when using bulk operation
  *                          display last execution status.
  *
@@ -58,15 +59,15 @@ $req_mgr = new requirement_mgr($db);
 
 $gui = initializeGui($db,$args,$cfg,$tplan_mgr,$tcase_mgr);
 $_SESSION['history_on'] = $gui->history_on;
+$attachmentInfos = null;
 
 $do_show_instructions = ($args->level == "" || $args->level == 'testproject') ? 1 : 0;
 if ($do_show_instructions)
 {
     show_instructions('executeTest');
-	  exit();
+    exit();
 }
 
-$attachmentInfos = null;
 
 // ---------------------------------------------------------
 // Testplan executions and result archiving. Checks whether execute cases button was clicked
@@ -166,11 +167,24 @@ if(!is_null($linked_tcversions))
     
     // --------------------------------------------------------------------------------------------
     // Results to DB
-    if ($args->save_results || $args->do_bulk_save )
+    if ($args->save_results || $args->do_bulk_save || $args->save_and_next)
     {
+    	// this has to be done to do not break logic present on write_execution()
+    	$args->save_results = $args->save_and_next ? $args->save_and_next : $args->save_results;
+    	$_REQUEST['save_results'] = $args->save_results;
     	$submitResult = write_execution($db,$args,$_REQUEST,$gui->map_last_exec);
         
         // Need to re-read to update test case status
+        if ($args->save_and_next) 
+        {
+			$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
+			if( !is_null($nextItem) )
+			{
+				$tcase_id = $nextItem['tcase_id'];
+				$tcversion_id = $nextItem['tcversion_id'];
+			}
+			
+        }
         $gui->map_last_exec=getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     }
 
@@ -299,13 +313,18 @@ function init_args()
 {
     $args = new stdClass();
  	$_REQUEST = strings_stripSlashes($_REQUEST);
+
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
-	$args->doDelete = isset($_REQUEST['do_delete']) ? 1 : 0;
+	// $args->doDelete = isset($_REQUEST['do_delete']) ? 1 : 0;
+	$args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
 	$args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
+	
+	// can be a list, will arrive via form POST
 	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
   
-	$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 
-	                  'save_results' => 0, 'filter_status' => null,'filter_assigned_to' => null);
+	$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 'save_results' => 0, 
+	                  'save_and_next' => 0,
+	                  'filter_status' => null,'filter_assigned_to' => null);
 
 	foreach($key2loop as $key => $value)
 	{
@@ -331,11 +350,30 @@ function init_args()
     {
         $args->filter_assigned_to = unserialize($args->filter_assigned_to);
     }
+
+	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 
+	                  'version_id' => 0,
+	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
+	   	              'platform_notes_view_status' => 0,'platform_id' => 0);
+				            
+	foreach($key2loop as $key => $value)
+	{
+		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
+	}
+
   
     switch($args->level)
     {
         case 'testcase':
         $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+        
+        // some problems with $_GET that has impact on logic 'Save and Go to next test case';
+        if( !is_null($args->tc_versions) )
+        {
+        	$args->tc_id = current($args->tc_versions);
+        	$args->id = $args->tc_id;
+        	$args->version_id = key($args->tc_versions);
+        } 
         $args->tsuite_id = null;
         break;
           
@@ -346,14 +384,6 @@ function init_args()
     }
 
 
-	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 
-	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
-	   	              'platform_notes_view_status' => 0,'platform_id' => 0);
-				            
-	foreach($key2loop as $key => $value)
-	{
-		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
-	}
 
     if( isset($_REQUEST['keyword_id']) )
     {
@@ -983,10 +1013,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     { 
     	$gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
     }
-      
-    //$gui->platform_name = $platform_info['name'];  
-    // $gui->$platform_info
-
     return $gui;
 }
 

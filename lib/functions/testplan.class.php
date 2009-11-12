@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.149 2009/11/05 16:09:02 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.150 2009/11/12 06:41:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20091111 - franciscom - BUGID 2938 - getTestCaseSiblings(), getTestCaseNextSibling()
  *  20091031 - franciscom - tallyResultsForReport()
  *  20091027 - franciscom - BUGID 2500 - get_linked_tcversions()
  *  20091025 - franciscom - new method - getStatusTotalsByPlatform()
@@ -2934,6 +2935,53 @@ class testplan extends tlObjectWithAttachments
 		return $results;
 	} // end function
 
+
+	/**
+	 * getTestCaseSiblings()
+	 *
+	 */
+	function getTestCaseSiblings($id,$tcversion_id,$platform_id)
+	{
+		$sql = 	" SELECT NHTSET.name as testcase_name,NHTSET.id AS testcase_id , NHTCVSET.id AS tcversion_id," .
+        		" NHTC.parent_id AS testsuite_id, " .
+        		// " TPTCVMAIN.tcversion_id AS target_tcversion_id, " .
+        		// " NHTCV.parent_id  " .
+        		" TPTCVX.id AS feature_id, TPTCVX.node_order " .
+				" from {$this->tables['testplan_tcversions']} TPTCVMAIN " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCVMAIN.tcversion_id " . 
+				" JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " . 
+				" JOIN {$this->tables['nodes_hierarchy']} NHTSET ON NHTSET.parent_id = NHTC.parent_id " .
+				" JOIN {$this->tables['nodes_hierarchy']} NHTCVSET ON NHTCVSET.parent_id = NHTSET.id " .
+				" JOIN {$this->tables['testplan_tcversions']} TPTCVX ON TPTCVX.tcversion_id = NHTCVSET.id " .
+				" AND TPTCVX.testplan_id = TPTCVMAIN.testplan_id " .
+				" WHERE TPTCVMAIN.testplan_id = {$id} AND TPTCVMAIN.tcversion_id = {$tcversion_id} " .
+				" AND TPTCVMAIN.platform_id = {$platform_id} " .
+				" ORDER BY node_order,testcase_name ";
+		$siblings = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+		return $siblings;
+	}
+
+
+	/**
+	 * getTestCaseNextSibling()
+	 *
+	 */
+	function getTestCaseNextSibling($id,$tcversion_id,$platform_id)
+	{
+		$sibling = null;
+    	$brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id);
+    	$tcversionSet = array_keys($brothers_and_sisters);
+    	$elemQty = count($tcversionSet);
+    	$dummy = array_flip($tcversionSet);
+        $pos = $dummy[$tcversion_id]+1;
+        $sibling_tcversion = $pos < $elemQty ? $tcversionSet[$pos] : 0;
+        if( $sibling_tcversion > 0 )
+        {
+        	$sibling = array('tcase_id' => $brothers_and_sisters[$sibling_tcversion]['testcase_id'],
+        	                 'tcversion_id' => $sibling_tcversion);
+        }
+        return $sibling;
+    }
 
 
 

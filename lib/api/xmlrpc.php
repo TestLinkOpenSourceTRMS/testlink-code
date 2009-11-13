@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2009/09/17 17:29:28 $ by $Author: franciscom $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2009/11/13 06:33:10 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *  20091113 - franciscom - work for adding overwrite argument to reportTCResult() started.
  *  20090917 - franciscom - reportTCResult() manages platform info
  *	20090902 - franciscom - test case preconditions field
  *	20090804 - franciscom - deleteExecution() - new method (need more work)
@@ -203,6 +204,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $preconditionsParamName = "preconditions";
     public static $platformNameParamName = "platformname";
     public static $platformIDParamName = "platformid";
+	public static $overwriteParamName = "overwrite";
 
 
 
@@ -1801,7 +1803,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @param struct $args
 	 * @param string $args["devKey"]
-	 * @param int $args["testcaseid"]: optional, if does not is present           
+	 * @param int $args["testcaseid"]: optional, if not present           
      *                                 testcaseexternalid must be present
      *
      * @param int $args["testcaseexternalid"]: optional, if does not is present           
@@ -1828,6 +1830,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @param string $args["bugid"] - optional
      *
+     * @param string $args["platformid"] - optional, if not present platformname must be present
+	 * @param string $args["platformname"] - optional, if not present platformid must be present
+     *    
+     *
      * @param string $args["customfields"] - optional
      *               contains an map with key:Custom Field Name, value: value for CF.
      *               VERY IMPORTANT: value must be formatted in the way it's written to db,
@@ -1840,6 +1846,9 @@ class TestlinkXMLRPCServer extends IXR_Server
      *
      *               these custom fields must be configured to be writte during execution.
      *               If custom field do not meet condition value will not be written
+     *
+     * @param boolean $args["overwrite"] - optional, if present and true, then last execution
+     *                for (testcase,testplan,build,platform) will be overwritten.            
      *
 	 * @return mixed $resultInfo 
 	 * 				[status]	=> true/false of success

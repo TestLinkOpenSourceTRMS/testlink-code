@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.95 $
- * @modified $Date: 2009/09/22 08:01:35 $ by $Author: franciscom $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2009/11/17 18:11:15 $ by $Author: franciscom $
  *
  * rev: 
  *      20090828 - franciscom - added contribution platform feature
@@ -536,6 +536,10 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
                                  $argsObj->tproject_id,$argsObj->tproject_name,
                                  $argsObj->tplan_id,$argsObj->tplan_name,
                                  $guiObj->args,$filters,$additionalInfo);
+
+    new dBug($treeMenu);
+    $xx = json_decode($treeMenu->menustring);
+    new dBug($xx);
  	return $treeMenu;
 }
 

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.199 2009/10/30 10:47:37 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.200 2009/11/17 18:11:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091113 - franciscom - get_last_execution() - fixed bug when using self::ALL_VERSIONS
  * 20091003 - franciscom - show() changes in template get logic
  * 20090927 - franciscom - new methods: getPathLayered(),getPathTopSuite()
  * 20090922 - franciscom - get_last_execution() - used COALESCE() to return code
@@ -2421,10 +2422,13 @@ class testcase extends tlObjectWithAttachments
         	}
         }
 		$where_clause_1 = '';
-		$where_clause_2= '';
+		$where_clause_2 = '';
         $add_columns='';
 	    $add_groupby='';
         $cumulativeMode=0;
+       	$group_by = '';
+	    $set_group_by = false;
+
         
 		// getNoExecutions: 1 -> if testcase/version_id has not been executed return anyway
 		//                       standard return stricture.
@@ -2456,7 +2460,7 @@ class testcase extends tlObjectWithAttachments
 		{
 			$where_clause = " WHERE NHA.parent_id = {$id} ";
 		}
-	
+
 		if( is_array($version_id) )
 		{
 		    $versionid_list = implode(",",$version_id);
@@ -2466,23 +2470,31 @@ class testcase extends tlObjectWithAttachments
 		}
 		else
 		{
-				if($version_id != self::ALL_VERSIONS)
-				{
-					$where_clause_1 = $where_clause . " AND NHA.id = {$version_id} ";
-					$where_clause_2 = $where_clause . " AND tcversions.id = {$version_id} ";
-				}
+			if($version_id != self::ALL_VERSIONS)
+			{
+				$where_clause_1 = $where_clause . " AND NHA.id = {$version_id} ";
+				$where_clause_2 = $where_clause . " AND tcversions.id = {$version_id} ";
+			}
 		}
-	
-      // get list of max exec id, to be used filter in next query
-	  $sql="/* $debugMsg */ " . 
-	       " SELECT MAX(e.id) AS execution_id, e.tcversion_id AS tcversion_id {$add_columns}" .
-	  	   " FROM {$this->tables['nodes_hierarchy']} NHA " .
-	       " JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id AND e.testplan_id = {$tplan_id} " .
-	       " {$filterBy['build_id']} {$filterBy['platform_id']}" .
-	       " AND e.status IS NOT NULL " .
-	       " $where_clause_1 GROUP BY tcversion_id {$add_groupby}";
-      // 20090716 - order of columns changed
-	  $recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
+		
+		$group_by = $set_group_by ? ' GROUP BY tcversion_id ' : '';
+		$group_by = ($group_by == '' && $add_groupby != '') ? ' GROUP BY ' : $group_by;  
+		$add_field = $set_group_by ? ', e.tcversion_id AS tcversion_id' : '';
+	    $where_clause_1 = $set_group_by ? $where_clause_1 : $where_clause;
+
+	    
+      	// get list of max exec id, to be used filter in next query
+	  	$sql="/* $debugMsg */ " . 
+	  	     " SELECT MAX(e.id) AS execution_id {$add_field} {$add_columns}" .
+	  		 " FROM {$this->tables['nodes_hierarchy']} NHA " .
+	  	     " JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id AND e.testplan_id = {$tplan_id} " .
+	  	     " {$filterBy['build_id']} {$filterBy['platform_id']}" .
+	  	     " AND e.status IS NOT NULL " .
+	  	     " $where_clause_1 {$group_by} {$add_groupby}";
+	  	     
+      	// 20090716 - order of columns changed
+	  	$recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
+	  
 	  $rs = $this->db->fetchRowsIntoMap($sql,'execution_id');
 	  $and_exec_id='';
 	  if( !is_null($recordset) )
@@ -3646,7 +3658,5 @@ class testcase extends tlObjectWithAttachments
 		}	
 		return $xtmas;
 	} // getPathTopSuite($tcaseSet)
-
-	
 } // end class
 ?>

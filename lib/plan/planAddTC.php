@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.81 2009/10/05 08:47:11 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.82 2009/11/17 18:11:15 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -201,6 +201,8 @@ if($do_display)
 	$gui->has_linked_items = $out['has_linked_items'];
 	$gui->add_custom_fields = $opt['add_custom_fields'];
 
+    //new dBug($gui);
+    
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }

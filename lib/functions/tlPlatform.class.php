@@ -6,11 +6,12 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.7 2009/10/31 19:00:41 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.8 2009/11/18 19:50:52 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *
+ *  20091118 - franciscom - getID() - fixed added testproject id in where clause
  *	20091031 - franciscom - getAll(),getAllAsMap(),getLinkedToTestplanAsMap() - added orderBy
  *	20090807 - franciscom - added check on empty name with exception (throwIfEmptyName())
  *                          linkToTestplan(),unlinkFromTestplan() interface changes
@@ -55,7 +56,7 @@ class tlPlatform extends tlObjectWithDB
 		$alreadyExists = $this->getID($name);
 		if ($alreadyExists)
 		{
-			$status = self::E_DBERROR;
+			$status = self::E_NAMEALREADYEXISTS;
 		}
 		else
 		{
@@ -183,7 +184,8 @@ class tlPlatform extends tlObjectWithDB
 	public function getID($name)
 	{
 		$sql = " SELECT id FROM {$this->tables['platforms']} " .
-			   " WHERE name = '" . $this->db->prepare_string($name) . "'";
+			   " WHERE name = '" . $this->db->prepare_string($name) . "'" . 
+			   " AND testproject_id = {$this->tproject_id} ";
 		return $this->db->fetchOneValue($sql);
 	}
 

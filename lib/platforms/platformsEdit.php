@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/09/07 17:52:38 $ by $Author: schlundus $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/11/18 19:50:31 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  *
@@ -23,7 +23,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $smarty = new TLSmarty();
-
+$default_template = $templateCfg->default_template;
 
 $op = new stdClass();
 $op->status = 0;
@@ -57,7 +57,6 @@ else
 {
 	$gui->user_feedback = getErrorMessage($op->status);
 }
-
 $gui->platforms = $platform_mgr->getAll();
 
 $smarty->assign('gui',$gui);

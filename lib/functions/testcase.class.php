@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.200 2009/11/17 18:11:15 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.201 2009/11/18 21:43:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091118 - franciscom - get_last_execution() - still working ond fixing bug when using self::ALL_VERSIONS
  * 20091113 - franciscom - get_last_execution() - fixed bug when using self::ALL_VERSIONS
  * 20091003 - franciscom - show() changes in template get logic
  * 20090927 - franciscom - new methods: getPathLayered(),getPathTopSuite()
@@ -2481,6 +2482,7 @@ class testcase extends tlObjectWithAttachments
 		$group_by = ($group_by == '' && $add_groupby != '') ? ' GROUP BY ' : $group_by;  
 		$add_field = $set_group_by ? ', e.tcversion_id AS tcversion_id' : '';
 	    $where_clause_1 = $set_group_by ? $where_clause_1 : $where_clause;
+	    $where_clause_2 = $set_group_by ? $where_clause_2 : $where_clause;
 
 	    
       	// get list of max exec id, to be used filter in next query
@@ -2497,16 +2499,19 @@ class testcase extends tlObjectWithAttachments
 	  
 	  $rs = $this->db->fetchRowsIntoMap($sql,'execution_id');
 	  $and_exec_id='';
-	  if( !is_null($recordset) )
+	  if( !is_null($recordset) && count($recordset) > 0)
 	  {
 	  	  $the_list = implode(",", array_keys($recordset));
-	  	  if( count($recordset) > 1 )
+	  	  if($the_list != '')
 	  	  {
-	  			$and_exec_id = " AND e.id IN ($the_list) ";
-	  	  }
-	  	  else
-	  	  {
-	  		  $and_exec_id = " AND e.id = $the_list ";
+	  	  	if( count($recordset) > 1 )
+	  	  	{
+	  				$and_exec_id = " AND e.id IN ($the_list) ";
+	  	  	}
+	  	  	else
+	  	  	{
+	  			  $and_exec_id = " AND e.id = $the_list ";
+	  	  	}
 	  	  }
 	  }
 	
@@ -2561,6 +2566,7 @@ class testcase extends tlObjectWithAttachments
 	        " $where_clause_2" .
 	        " ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
       
+  
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
 	  
 	  	return($recordset ? $recordset : null);

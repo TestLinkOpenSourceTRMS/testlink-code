@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.4 2009/08/07 16:55:49 franciscom Exp $
+$Id: platformsEdit.tpl,v 1.5 2009/11/18 19:58:22 franciscom Exp $
 Purpose: smarty template - View all platforms
 
 rev:
@@ -55,7 +55,7 @@ function validateForm(f)
 	{/if}
   
   </div><br />
-  {include file="inc_update.tpl" user_feedback=$user_feedback }
+  {include file="inc_update.tpl" user_feedback=$gui->user_feedback }
 
   	<form id="addPlatform" name="addPlatform" method="post" action="{$platform_edit_url}"
  		      onSubmit="javascript:return validateForm(this);">

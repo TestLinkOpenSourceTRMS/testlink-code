@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/11/18 19:50:31 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/11/18 22:21:55 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  *
@@ -55,7 +55,7 @@ if($op->status == 1)
 }
 else
 {
-	$gui->user_feedback = getErrorMessage($op->status);
+	$gui->user_feedback = getErrorMessage($op->status, $args->name);
 }
 $gui->platforms = $platform_mgr->getAll();
 
@@ -249,7 +249,7 @@ function do_delete(&$args,&$gui,&$platform_mgr)
   returns: 
 
 */
-function getErrorMessage($code)
+function getErrorMessage($code,$platform_name)
 {
 	switch($code)
 	{
@@ -263,11 +263,11 @@ function getErrorMessage($code)
 
 		case tlPlatform::E_DBERROR:
 		case ERROR: 
-			$msg = lang_get('kw_update_fails');
+			$msg = lang_get('platform_update_failed');
 			break;
 
 		case tlPlatform::E_NAMEALREADYEXISTS:
-			$msg = lang_get('platform_already_exists');
+			$msg = sprintf(lang_get('platform_name_already_exists'),$platform_name);
 			break;
 
 		default:

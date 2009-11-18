@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/01/17 08:31:00 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2009/11/18 21:43:14 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -26,6 +26,21 @@ testlinkInitPage($db);
 echo "<pre> testcase - constructor - testcase(&\$db)";echo "</pre>";
 $tcase_mgr=new testcase($db);
 // new dBug($tcase_mgr);
+
+$tcase_id=318;
+$tplan_id=389;
+$build_id=21;
+$platform_id=5;
+$version_id=testcase::ALL_VERSIONS;
+// $options = array('getNoExecutions' => true);
+$options = null;
+
+// function get_last_execution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
+echo "<pre> testcase - get_last_execution(\$id,\$version_id,\$tplan_id,\$build_id,\$platform_id\$options=null)";echo "</pre>";
+echo "<pre>            get_last_execution($tcase_id,$version_id,$tplan_id,$build_id,$platform_id,$options)";echo "</pre>";
+$last_execution=$tcase_mgr->get_last_execution($tcase_id,$version_id,$tplan_id,$build_id,$platform_id,$options);
+new dBug($last_execution);
+die();
 
 $tcase_id=4;
 echo "<pre> testcase - get_by_id(\$id,\$version_id = TC_ALL_VERSIONS, \$active_status='ALL',\$open_status='ALL')";echo "</pre>";

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2009/11/13 06:33:10 $ by $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2009/11/18 22:19:04 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1876,12 +1876,24 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    }
 	
 		if($status_ok && $this->userHasRight("testplan_execute"))
-		{			
-			$executionID = $this->_insertResultToDB();			
-    	    $resultInfo[0]["status"] = true;
-			$resultInfo[0]["id"] = $executionID;	
-			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
+		{		
+			$executionID = 0;	
 			$resultInfo[0]["operation"] = $operation;
+    	    $resultInfo[0]["overwrite"] = false;
+		    $resultInfo[0]["status"] = true;
+			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
+
+    	    if($this->_isParamPresent(self::$overwriteParamName))
+    	    {
+    	    	$executionID = $this->_updateResult();
+    	    	$resultInfo[0]["overwrite"] = true;			
+    	    }
+    	    if($executionID == 0)
+            {
+            	$executionID = $this->_insertResultToDB();			
+            } 
+
+			$resultInfo[0]["id"] = $executionID;	
 			
 			// Do we need to insert a bug ?
     	    if($this->_isParamPresent(self::$bugIDParamName))
@@ -3548,6 +3560,54 @@ public function getTestCase($args)
 
 
 
+	private function _updateResult()
+	{
+		
+		$platform_id = 0;
+		$exec_id = 0;
+		$build_id = $this->args[self::$buildIDParamName];
+		$tester_id =  $this->userID;
+		$status = $this->args[self::$statusParamName];
+		$testplan_id =	$this->args[self::$testPlanIDParamName];
+		$tcversion_id =	$this->tcVersionID;
+    	$tcase_id = $this->args[self::$testCaseIDParamName];
+    	$db_now=$this->dbObj->db_now();
+    
+    	if( isset($this->args[self::$platformIDParamName]) )
+		{
+			$platform_id = $this->args[self::$platformIDParamName]; 	
+		}
+
+		$last_exec = $this->tcaseMgr->get_last_execution($tcase_id,testcase::ALL_VERSIONS,
+		                                                 $testplan_id,$build_id,$platform_id);
+    	
+    	if( !is_null($last_exec) )
+    	{
+    		$last_exec = current($last_exec);
+			$execution_type = constant("TESTCASE_EXECUTION_TYPE_AUTO");
+            $exec_id = $last_exec['execution_id'];
+			$notes = '';
+    		$notes_update = '';
+			
+			if($this->_isNotePresent())
+			{
+				$notes = $this->dbObj->prepare_string($this->args[self::$noteParamName]);
+			}
+			
+			if(trim($notes) != "")
+			{
+			    $notes_update = ",notes='{$notes}'";  
+			}
+    		
+			$sql = " UPDATE {$this->tables['executions']} " .
+			       " SET tester_id={$tester_id}, execution_ts={$db_now}," . 
+			       " status='{$status}', execution_type= {$execution_type} " . 
+			       " {$notes_update}  WHERE id = {$exec_id}";
+			
+            $this->dbObj->exec_query($sql);
+    	}
+		return $exec_id;
+	}	
 
 } // class end
 

@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.2 2009/09/24 07:26:59 franciscom Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.3 2009/11/19 09:40:39 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -599,11 +599,19 @@ class tlUser extends tlDBObject
 	/**
      * check right on effective role for user, using test project and test plan,
      * means that check right on effective role.
+     * 
+     * @param string $roleQuestion  key for user right.
+     * 								<br /> Value 'all' is used in function initTopMenu()
      *
      * @return string|null 'yes' or null
      */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{
+		if ($roleQuestion == 'all')
+		{
+			return 'yes';
+		}
+		
 		global $g_propRights_global;
 		global $g_propRights_product;
 		

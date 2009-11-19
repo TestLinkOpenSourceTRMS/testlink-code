@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: lang_api.php,v 1.24 2009/09/04 19:22:37 schlundus Exp $
+ * @version    	CVS: $Id: lang_api.php,v 1.25 2009/11/19 09:40:38 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -38,6 +38,8 @@ $g_lang_overrides = array();
  * This function will return one of (in order of preference):
  *   1. The string in the current user's preferred language (if defined)
  *   2. The string in English
+ * 
+ * @param mixed $p_string string or array of string with term keys
  * 
  * @internal Revisions:
  *      20070501 - franciscom - added TL_LOCALIZE_TAG in order to
@@ -84,6 +86,8 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 
 
 /**
+ * Get localized string on key
+ * 
  * When you choose to have translation results assigned to a smarty variable
  * now you can send a list (string with ',' as element separator) of labels
  * to be translated.
@@ -99,7 +103,7 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
  * 
  * and on smarty template you will access in this way: $labels.details
  * 
- * 
+ * @internal Revisions:
  * 20050708 - fm
  * Modified to cope with situation where you need
  * to assign a Smarty Template variable instead
@@ -183,7 +187,6 @@ function lang_load( $p_lang ) {
 
 /** 
  * Ensures that a language file has been loaded
- * 
  */
 function lang_ensure_loaded( $p_lang ) {
 	global $g_lang_strings;
@@ -192,6 +195,7 @@ function lang_ensure_loaded( $p_lang ) {
 		lang_load( $p_lang );
 	}
 }
+
 
 /** 
  * localize strings in array (used for example in html options element in form)
@@ -207,4 +211,65 @@ function localize_array( $input_array ) {
 
 	return $input_array;
 }
+
+
+/**
+ * Add a date in smarty template (registered to Smarty class)
+ * 
+ * @tutorial usage: if registered as localize_date()
+ *        {localize_date d='the date to localize'}
+ * @uses localize_dateOrTimeStamp()
+ * @internal Revisions:
+ * 20050708 - fm - Modified to cope with situation where you need to assign 
+ * a Smarty Template variable instead of generate output.
+ * Now you can use this function in both situatuons.
+ * 
+ * if the key 'var' is found in the associative array instead of return a value,
+ * this value is assigned to $params['var`]
+ */
+function localize_date_smarty($params, &$smarty)
+{
+	return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
+}
+
+
+/**
+ * Add a time in smarty template (registered to Smarty class)
+ * @uses localize_dateOrTimeStamp()
+ */
+function localize_timestamp_smarty($params, &$smarty)
+{
+	return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
+}
+
+
+/**
+ * @param array $params used only if you call this from an smarty template
+ *                or a wrapper in an smarty function.
+ * @param integer $smarty: when not used in an smarty template, pass NULL.
+ * @param $what: give info about what kind of value is contained in value.
+ *              possible values: timestamp_format || date_format
+ * @param $value: must be a date or time stamp in ISO format
+ * 
+ * @return string localized date or time
+ */
+function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
+{
+	// to supress E_STRICT messages
+	setlocale(LC_ALL, TL_DEFAULT_LOCALE);
+
+	$format = config_get($what);
+	if (!is_numeric($value))
+	{
+		$value = strtotime($value);
+	}
+	
+	$retVal = strftime($format, $value);
+	if(isset($params['var']))
+	{
+		$smarty->assign($params['var'],$retVal);
+	}
+	return $retVal;
+}
+
 ?>

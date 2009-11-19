@@ -3,18 +3,18 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @package 	TestLink
- * @author 		Martin Havlat, Chad Rosen
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.171 2009/11/11 14:07:17 havlat Exp $
- * @link 		http://www.teamst.org/index.php
- *
  * Load core functions for TestLink GUI
  * Common functions: database connection, session and data initialization,
  * maintain $_SESSION data, redirect page, log, etc.
  * 
  * Note: this file cannot include a feature specific code for performance and 
  * readability reason
+ *
+ * @package 	TestLink
+ * @author 		Martin Havlat, Chad Rosen
+ * @copyright 	2005, TestLink community 
+ * @version    	CVS: $Id: common.php,v 1.172 2009/11/19 09:40:39 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
@@ -105,7 +105,6 @@ function __autoload($class_name)
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
  * TestLink connects to the database
  *
@@ -128,29 +127,29 @@ function doDBConnect(&$db)
 		echo $result['dbms_msg'];
 		$result['status'] = 0;
 		tLog('Connect to database fails!!! ' . $result['dbms_msg'], 'ERROR');
-  }
-  else
+	}
+	else
 	{
 		if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
 		{
-				$db->exec_query("SET CHARACTER SET utf8");
-				$db->exec_query("SET collation_connection = 'utf8_general_ci'");
+			$db->exec_query("SET CHARACTER SET utf8");
+			$db->exec_query("SET collation_connection = 'utf8_general_ci'");
 		}
 	}
-
-	//if we establish a DB connection, we reopen the session, to attach the db connection
+	
+	// if we establish a DB connection, we reopen the session, 
+	// to attach the db connection
 	$g_tlLogger->endTransaction();
 	$g_tlLogger->startTransaction();
-
- 	return $result;
+	
+	return $result;
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
  * Set session data related to the current test plan
+ * 
  * @param array $tplan_info result of DB query
- * @TODO move to testPlan class
  */
 function setSessionTestPlan($tplan_info)
 {
@@ -169,10 +168,9 @@ function setSessionTestPlan($tplan_info)
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
  * Set home URL path
- * @todo solve problems after session expires
+ * @internal Revisions:
  * 200806 - havlatm - removed rpath
  */
 function setPaths()
@@ -184,8 +182,10 @@ function setPaths()
 }
 
 
-// --------------------------------------------------------------------------------------
-/** Verify if user is log in. Redirect to login page if not. */
+/** 
+ * Verify if user is log in. Redirect to login page if not.
+ * @param integer $db DB identifier 
+ **/
 function checkSessionValid(&$db)
 {
 	$isValidSession = false;
@@ -359,6 +359,7 @@ function initProject(&$db,$hash_user_sel)
   * - init session
   * - init database
   * - check rights
+  * - initialize project data (if requested)
   * 
   * @param integer $db DB connection identifier
   * @param boolean $initProject (optional) Set true if adjustment of Product or
@@ -408,7 +409,6 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
  * Redirect page to another one
  *
@@ -426,9 +426,9 @@ function redirect($path, $level = 'location')
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
  * Security parser for input strings
+ * 
  * @param string $parameter
  * @return string cleaned parameter
  */
@@ -453,7 +453,9 @@ function strings_stripSlashes($parameter,$bGPC = true)
 		return $retParameter;
 	}
 	else
+	{
 		return stripslashes($parameter);
+	}
 }
 
 
@@ -477,72 +479,6 @@ function to_boolean($alt_boolean)
 	}
 
 	return $the_val;
-}
-
-
-// --------------------------------------------------------------------------------------
-/*
-20050708 - fm
-Modified to cope with situation where you need to assign a Smarty Template variable instead
-of generate output.
-Now you can use this function in both situatuons.
-
-if the key 'var' is found in the associative array instead of return a value,
-this value is assigned to $params['var`]
-
-usage: Important: if registered as localize_date()
-       {localize_date d='the date to localize'}
-------------------------------------------------------------------------------------------
-*/
-function localize_date_smarty($params, &$smarty)
-{
-	return localize_dateOrTimeStamp($params,$smarty,'date_format',$params['d']);
-}
-
-
-// --------------------------------------------------------------------------------------
-/*
-  function:
-  args:
-  returns:
-*/
-function localize_timestamp_smarty($params, &$smarty)
-{
-	return localize_dateOrTimeStamp($params,$smarty,'timestamp_format',$params['ts']);
-}
-
-// --------------------------------------------------------------------------------------
-/*
-  function:
-  args :
-         $params: used only if you call this from an smarty template
-                  or a wrapper in an smarty function.
-
-         $smarty: when not used in an smarty template, pass NULL.
-         $what: give info about what kind of value is contained in value.
-                possible values: timestamp_format
-                                 date_format
-         $value: must be a date or time stamp in ISO format
-
-  returns:
-*/
-function localize_dateOrTimeStamp($params,&$smarty,$what,$value)
-{
-	// to supress E_STRICT messages
-	setlocale(LC_ALL, TL_DEFAULT_LOCALE);
-
-	$format = config_get($what);
-	if (!is_numeric($value))
-	{
-		$value = strtotime($value);
-	}
-	
-	$retVal = strftime($format, $value);
-	if(isset($params['var']))
-	{
-		$smarty->assign($params['var'],$retVal);
-	}
-	return $retVal;
 }
 
 

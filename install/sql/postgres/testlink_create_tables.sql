@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.42 2009/10/12 07:04:00 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.43 2009/11/19 13:50:13 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -13,6 +13,7 @@
 --
 -- 
 -- Rev :
+--      20091119 - franciscom - req_specs added doc_id field
 --      20091010 - franciscom - added testplan_platforms,platforms
 --                              platform_id to tables
 --      20090910 - franciscom - tcversions.preconditions
@@ -462,7 +463,8 @@ CREATE TABLE /*prefix*/object_keywords(
 --
 CREATE TABLE /*prefix*/req_specs(  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),  
+  "doc_id" VARCHAR(32) NULL DEFAULT NULL,
   "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
   "total_req" INTEGER NOT NULL DEFAULT '0',
@@ -471,7 +473,8 @@ CREATE TABLE /*prefix*/req_specs(
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "modifier_id" BIGINT NULL DEFAULT NULL,
   "modification_ts" TIMESTAMP NULL,
-  PRIMARY KEY ("id")
+  PRIMARY KEY ("id"),
+  UNIQUE ("doc_id","testproject_id")
 ); 
 CREATE INDEX /*prefix*/req_specs_testproject_id ON /*prefix*/req_specs ("testproject_id");
 

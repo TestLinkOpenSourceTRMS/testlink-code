@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.60 2009/09/21 09:27:53 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.61 2009/11/19 13:50:13 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20091119 - franciscom - req_specs added doc_id field
 # 20090919 - franciscom - custom field values increased to 4000
 # 20090910 - franciscom - added milestones.start_date
 # 20090831 - franciscom - added preconditions
@@ -218,6 +219,7 @@ CREATE TABLE /*prefix*/req_coverage (
 CREATE TABLE /*prefix*/req_specs (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
+  `doc_id` varchar(32) default NULL,
   `title` varchar(100) NOT NULL,
   `scope` text,
   `total_req` int(10) NOT NULL default '0',
@@ -227,7 +229,8 @@ CREATE TABLE /*prefix*/req_specs (
   `modifier_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
-  KEY /*prefix*/testproject_id (`testproject_id`)
+  KEY /*prefix*/testproject_id (`testproject_id`),
+  UNIQUE KEY /*prefix*/req_spec_uk1(`doc_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 
 CREATE TABLE /*prefix*/requirements (

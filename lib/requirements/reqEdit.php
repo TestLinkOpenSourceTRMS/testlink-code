@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/09/04 19:22:37 $ by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -149,7 +149,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
 		$gui->req_spec = $req_spec_mgr->get_by_id($gui->req_spec_id);
 	}
     $gui->user_feedback = null;
-    $gui->main_descr = lang_get('req_spec');
+    $gui->main_descr = lang_get('req_spec_short');
     if (isset($gui->req_spec))
      	$gui->main_descr .= config_get('gui_title_separator_1') . $gui->req_spec['title'];
     $gui->action_descr = null;

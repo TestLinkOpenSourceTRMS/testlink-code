@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/08/28 20:37:03 $ by $Author: schlundus $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -38,7 +38,10 @@ $gui->req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 $gui->req_spec_id = $args->req_spec_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->name = $gui->req_spec['title'];
-$gui->main_descr = lang_get('req_spec') . config_get('gui_title_separator_1') . $gui->req_spec['title'];
+
+// 20091119 - francisco.mancardi@gruppotesi.com
+$gui->main_descr = lang_get('req_spec_short') . config_get('gui_title_separator_1') . 
+                   "[{$gui->req_spec['doc_id']}] :: " .$gui->req_spec['title'];
 $gui->refresh_tree = 'no';
 $gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
 $gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);

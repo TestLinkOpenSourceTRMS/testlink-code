@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/11/01 21:55:02 $ by $Author: erikeloff $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/11/19 17:51:44 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -47,7 +47,7 @@ class requirement_mgr extends tlObjectWithAttachments
     returns: instance of requirement_mgr
 
   */
-	function requirement_mgr(&$db)
+	function __construct(&$db)
 	{
 		$this->db = &$db;
 		$this->cfield_mgr=new cfield_mgr($this->db);

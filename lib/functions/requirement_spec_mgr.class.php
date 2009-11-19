@@ -5,13 +5,15 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2009/09/28 08:45:46 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/11/19 17:51:44 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
- * rev:  
+ * @internal revision:  
+ *	20091119 - franciscom - added doc_id management
+ *
  *      20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
  *      20090514 - franciscom - BUGID 2491
  *      20090427 - amitkhullar- BUGID : 2439 Modified query to handle lower case status codes.
@@ -60,15 +62,14 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   var $my_node_type;
 
   /*
-    function: requirement_spec_mgr
-              contructor
+    contructor
 
     args: db: reference to db object
 
     returns: instance of requirement_spec_mgr
 
   */
-	function requirement_spec_mgr(&$db)
+	function __construct(&$db)
 	{
 		$this->db = &$db;
 		$this->cfield_mgr = new cfield_mgr($this->db);
@@ -121,6 +122,7 @@ class requirement_spec_mgr extends tlObjectWithAttachments
     args:
           tproject_id:  requirement spec parent (till we will manage unlimited tree depth)
           parent_id:
+          doc_id
           title
           scope
           countReq
@@ -136,7 +138,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         20080318 - franciscom - removed code to get last inserted id
 
   */
-function create($tproject_id,$parent_id,$title, $scope, $countReq,$user_id,$type = 'n',$node_order=null)
+function create($tproject_id,$parent_id,$doc_id,$title, $scope, 
+                $countReq,$user_id,$type = 'n',$node_order=null)
 {
     $result=array('status_ok' => 0, 'msg' => 'ko', 'id' => 0);
     $title=trim($title);
@@ -145,8 +148,9 @@ function create($tproject_id,$parent_id,$title, $scope, $countReq,$user_id,$type
     {
         $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$title,$node_order);
         $sql = "INSERT INTO {$this->object_table} " .
-			   " (id, testproject_id,scope, type, total_req, author_id, creation_ts) " .
+			   " (id, testproject_id, doc_id, scope, type, total_req, author_id, creation_ts) " .
                " VALUES (" . $req_spec_id . "," . $tproject_id . ",'" . 
+               $this->db->prepare_string($doc_id) . "','" .
                $this->db->prepare_string($scope) .  "','" . $this->db->prepare_string($type) . "','" .
                $this->db->prepare_string($countReq) . "'," . $user_id . ", " . $this->db->db_now() . ")";
             
@@ -184,7 +188,7 @@ function get_by_id($id)
 {
     $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title";
+                "RSPEC.modification_ts,NH.name AS title,RSPEC.doc_id";
     
     $sql = " SELECT {$fields2get}, '' AS author, '' AS modifier, NH.node_order " .
     	   " FROM {$this->object_table} RSPEC,  {$this->tables['nodes_hierarchy']} NH" .
@@ -384,7 +388,8 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
              msg -> some simple message, useful when status_ok ==0
 
   */
-  function update($id,$title, $scope, $countReq, $user_id,$type = TL_REQ_STATUS_NOT_TESTABLE)
+  function update($id,$doc_id,$title, $scope, $countReq, 
+                  $user_id,$type = TL_REQ_STATUS_NOT_TESTABLE)
   {
 	  $result['status_ok'] = 1;
 	  $result['msg'] = 'ok';
@@ -403,6 +408,7 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 	    $db_now = $this->db->db_now();
         $sql = " UPDATE {$this->object_table} " .
                " SET scope='" . $this->db->prepare_string($scope) . "', " .
+		       " doc_id='" . $this->db->prepare_string($doc_id) . "', " .
 		       " type='" . $this->db->prepare_string($type) . "', " .
 		       " total_req ='" . $this->db->prepare_string($countReq) . "', " .
 		       " modifier_id={$user_id},modification_ts={$db_now} WHERE id={$id}";

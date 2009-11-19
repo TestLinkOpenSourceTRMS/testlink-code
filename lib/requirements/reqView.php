@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/08/29 19:21:42 $ by $Author: schlundus $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -60,8 +60,9 @@ function initialize_gui(&$dbHandler,$argsObj)
     
     $gui->showReqSpecTitle = $argsObj->showReqSpecTitle;
     if($gui->showReqSpecTitle)
-        $gui->parent_descr = lang_get('req_spec') . $gui->pieceSep . $gui->req['req_spec_title'];
-  
+    {
+        $gui->parent_descr = lang_get('req_spec_short') . $gui->pieceSep . $gui->req['req_spec_title'];
+    }
     $gui->req['coverage'] = $req_mgr->get_coverage($gui->req_id);
     $gui->cfields = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);
     $gui->attachments = getAttachmentInfosFrom($req_mgr,$gui->req_id);

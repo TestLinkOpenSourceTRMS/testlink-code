@@ -3,18 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/08/29 19:21:42 $ $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/11/19 17:52:13 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.
  *
- * rev: 20080830 - franciscom - added code to manage unlimited depth tree
- *                              (will be not enabled yet)
+ * rev: 
+ *	20091119 - franciscom - doc_id
+ *	20080830 - franciscom - added code to manage unlimited depth tree
+ *                         (will be not enabled yet)
  *
- *      20080827 - franciscom - BUGID 1692 
- *      20071106 - franciscom - custom field management
+ *  20080827 - franciscom - BUGID 1692 
  *
  */
 require_once("../../config.inc.php");
@@ -28,6 +29,9 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+
+new dBug($args);
+
 $gui = initialize_gui($db);
 $commandMgr = new reqSpecCommands($db);
 
@@ -52,6 +56,7 @@ function init_args()
 					 "doAction" => array(tlInputParameter::STRING_N,0,250),
 					 "title" => array(tlInputParameter::STRING_N,0,100),
 					 "scope" => array(tlInputParameter::STRING_N),
+					 "doc_id" => array(tlInputParameter::STRING_N,1,32),
 					 "nodes_order" => array(tlInputParameter::ARRAY_INT),
 	);	
 		
@@ -62,7 +67,6 @@ function init_args()
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->basehref = $_SESSION['basehref'];
-	
 	$args->reqParentID = is_null($args->reqParentID) ? $args->tproject_id : $args->reqParentID;
 
 	return $args;

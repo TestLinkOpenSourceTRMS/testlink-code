@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/09/04 19:22:37 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -40,7 +40,7 @@ class reqCommands
 	    $obj = new stdClass();
 		  $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
         
-		  $obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		  $obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
 		  $obj->action_descr = lang_get('create_req');
 		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
       $obj->template = 'reqEdit.tpl';
@@ -92,7 +92,7 @@ class reqCommands
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 		$obj=new stdClass();
       	$obj->req = null;
-		$obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
 		$obj->action_descr = lang_get('create_req');
 		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
 		$obj->submit_button_label=lang_get('btn_save');
@@ -214,7 +214,7 @@ class reqCommands
 		$guiObj = new stdClass();
 		$guiObj->template = 'reqCreateTestCases.tpl';
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-		$guiObj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$guiObj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
 		$guiObj->action_descr = lang_get('create_testcase_from_req');
       
 		$guiObj->all_reqs = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id);

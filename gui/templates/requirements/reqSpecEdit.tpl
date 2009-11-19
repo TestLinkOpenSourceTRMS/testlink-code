@@ -1,13 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.16 2009/08/29 19:21:42 schlundus Exp $
+$Id: reqSpecEdit.tpl,v 1.17 2009/11/19 17:50:09 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 *}
 {* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
-          s='warning,warning_empty_req_spec_title,title,scope,req_total,cancel,show_event_history,warning_countreq_numeric'}
+          s='warning,warning_empty_req_spec_title,title,scope,req_total,
+             doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -17,10 +18,18 @@ Purpose: smarty template - create a new req document
 <script type="text/javascript">
 	var alert_box_title = "{$labels.warning}";
 	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title}";
+	var warning_empty_req_spec_docid = "{$labels.warning_empty_doc_id}";
 	var warning_countreq_numeric = "{$labels.warning_countreq_numeric}";
 	{literal}
 	function validateForm(f)
 	{
+		if (isWhitespace(f.doc_id.value)) 
+  	{
+    	alert_message(alert_box_title,warning_empty_doc_id);
+			selectField(f, 'doc_id');
+			return false;
+		}
+
 		if (isWhitespace(f.title.value))
 		{
 			alert_message(alert_box_title,warning_empty_req_spec_title);
@@ -50,6 +59,14 @@ Purpose: smarty template - create a new req document
 <div class="workBack">
 	<form name="reqSpecEdit" id="reqSpecEdit" method="post" onSubmit="javascript:return validateForm(this);">
 	    <input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+
+  	<div class="labelHolder"><label for="doc_id">{$labels.doc_id}</label>
+  	</div>
+	  <div><input type="text" name="doc_id" id="reqDocId"
+  		        size="{#REQSPEC_DOCID_SIZE#}" maxlength="{#REQSPEC_DOCID_MAXLEN#}"
+  		        value="{$gui->req_spec_doc_id|escape}" />
+  				{include file="error_icon.tpl" field="doc_id"}
+  	</div>
 	
 		<div class="labelHolder"><label for="req_spec_title">{$labels.title}</label>
 	   		{if $mgt_view_events eq "yes" and $gui->req_spec_id}

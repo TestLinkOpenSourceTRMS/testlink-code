@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.115 2009/11/11 14:07:17 havlat Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.116 2009/11/19 17:50:37 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -666,7 +666,7 @@ $tlCfg->gui->custom_fields->time_format = 'H:i:s';
 
 /** 
  * Review types - user can define type for his review comment (disabled by default)
- * @since 1.9 
+ * @since TestLink version 1.9 
  **/
 $tlCfg->review_types = array(1 => 'type_undefined',
 	                         2 => 'typo', 
@@ -678,7 +678,7 @@ $tlCfg->review_types = array(1 => 'type_undefined',
 
 /**
  * Top Menu definition
- * @since 1.9 
+ * @since TestLink version 1.9 
  */
 $tlCfg->guiTopMenu = array();
 $tlCfg->guiTopMenu[1] = array(

@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.48 2009/11/11 14:07:17 havlat Exp $
+	$Id: navBar.tpl,v 1.49 2009/11/19 12:00:16 franciscom Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -132,7 +132,7 @@ function timeoutInit(displayedTimer,sessionWarning)
 		<span id="clockan"></span></a>
 	</span>
 
-	{$session.testProjectTopMenu}
+	{$session.testprojectTopMenu}
 
 {if $gui->tprojectID}
 

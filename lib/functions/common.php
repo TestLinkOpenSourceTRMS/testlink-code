@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.172 2009/11/19 09:40:39 havlat Exp $
+ * @version    	CVS: $Id: common.php,v 1.173 2009/11/19 12:00:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -248,35 +248,36 @@ function doSessionStart()
  * @param integer $db DB connection identifier
  * @uses $_SESSION Requires initialized project, test plan and user data.
  * @since 1.9
+ *
+ * @internal Revisions
+ *	20091119 - franciscom - removed global coupling 
+ *
  */
 function initTopMenu(&$db)
 {
-	global $tlCfg;
-	$_SESSION['testProjectTopMenu'] = '';
-	$i = 1;	
-
+	$_SESSION['testprojectTopMenu'] = '';
+	$idx = 1;	
+    $guiTopMenu = config_get('guiTopMenu');
+    
 	//check if Project is available
 	if ($_SESSION['testprojectID'] > 0)
 	{
-		foreach ($tlCfg->guiTopMenu as $element)
+		foreach ($guiTopMenu as $element)
 		{
 			//check if Test Plan is available
+			$bCondition = FALSE;
 			if ((!isset($element['condition'])) || ($element['condition'] == '') ||
 					(($element['condition'] == 'TestPlanAvailable') && isset($_SESSION['testplanID'])
 					&& $_SESSION['testplanID'] > 0))
 			{
 				$bCondition = TRUE;
 			}
-			else
-			{
-				$bCondition = FALSE;
-			}
 			
 			if ((has_rights($db,$element['right']) == "yes") && $bCondition)
 			{
-				$_SESSION['testProjectTopMenu'] .= "<a href='{$element['url']}' " .
+				$_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
 						"target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-	     				"tabindex=''".$i++."''>".lang_get($element['label'])."</a> |";
+	     				"tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> |";
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsExport.tpl,v 1.1 2009/10/12 07:03:14 franciscom Exp $ 
+$Id: platformsExport.tpl,v 1.2 2009/11/19 20:05:39 schlundus Exp $ 
 Purpose: smarty template - platforms export
 rev:
 
@@ -41,36 +41,35 @@ function validateForm(f)
 {if $gui->do_it eq 1}
   <form method="post" id="export_xml" enctype="multipart/form-data" 
         action="lib/platforms/platformsExport.php"
-        onSubmit="javascript:return validateForm(this);">
+        onsubmit="javascript:return validateForm(this);">
   
     <table>
-    <tr>
-    <td>
-    {$labels.export_filename}
-    </td>
-    <td>
-  	<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
-			           value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
-			  				{include file="error_icon.tpl" field="export_filename"}
-  	</td>
-  	<tr>
-  	<td>{$labels.file_type}</td>
-  	<td>
-  	<select name="exportType">
-  		{html_options options=$gui->exportTypes}
-  	</select>
-	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{$labels.view_file_format_doc}</a>
-  	</td>
-  	</tr>
-  
+	    <tr>
+	    	<td>{$labels.export_filename}</td>
+	    	<td>
+	  			<input type="text" name="export_filename" maxlength="{#FILENAME_MAXLEN#}" 
+				       value="{$gui->export_filename|escape}" size="{#FILENAME_SIZE#}"/>
+			  	{include file="error_icon.tpl" field="export_filename"}
+	  		</td>
+	  	</tr>
+	  	<tr>
+	  		<td>{$labels.file_type}</td>
+	  		<td>
+	  			<select name="exportType">
+	  				{html_options options=$gui->exportTypes}
+	  			</select>
+		  		<a href="{$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}">{$labels.view_file_format_doc}</a>
+	  		</td>
+	  	</tr>
   	</table>
   	
   	<div class="groupBtn">
-  	  <input type="hidden" name="doAction" id="doAction" value="" />
+  	  	<input type="hidden" name="doAction" id="doAction" value="" />
   		<input type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
   		                     onclick="doAction.value=this.id" />
-  		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-  			                   onclick="javascript:history.back();" />
+    	<input type="button" name="cancel" value="{$labels.btn_cancel}"
+    		  {if $gui->goback_url  != ''}  onclick="location='{$gui->goback_url }'"
+    		  {else}  onclick="javascript:history.back();" {/if} />
   	</div>
   </form>
 {else}

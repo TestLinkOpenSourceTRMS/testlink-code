@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.3 2009/11/19 09:40:39 havlat Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.4 2009/11/19 20:05:39 schlundus Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -599,19 +599,11 @@ class tlUser extends tlDBObject
 	/**
      * check right on effective role for user, using test project and test plan,
      * means that check right on effective role.
-     * 
-     * @param string $roleQuestion  key for user right.
-     * 								<br /> Value 'all' is used in function initTopMenu()
      *
      * @return string|null 'yes' or null
      */
 	function hasRight(&$db,$roleQuestion,$tprojectID = null,$tplanID = null)
 	{
-		if ($roleQuestion == 'all')
-		{
-			return 'yes';
-		}
-		
 		global $g_propRights_global;
 		global $g_propRights_product;
 		
@@ -785,15 +777,12 @@ class tlUser extends tlDBObject
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		$users = null;
-        $loop2do = sizeof($ids);
-		for($i = 0;$i < $loop2do ;$i++)
+		for($i = 0;$i < sizeof($ids);$i++)
 		{
 			$id = $ids[$i];
 			$user = tlDBObject::createObjectFromDB($db,$id,__CLASS__,self::TLOBJ_O_SEARCH_BY_ID,$detailLevel);
 			if ($user)
-			{
 				$users[$id] = $user;
-			}	
 		}
 		return $users ? $users : null;
 	}

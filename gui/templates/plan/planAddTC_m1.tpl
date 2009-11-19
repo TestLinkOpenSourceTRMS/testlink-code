@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.27 2009/11/09 07:24:48 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.28 2009/11/19 20:05:39 schlundus Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -58,23 +58,35 @@ rev:
 {include file="inc_ext_js.tpl"}
 {literal}
 <script type="text/javascript">
+<!--
+function tTip(tcID,vID)
+{
+	var fUrl = fRoot+'lib/ajax/gettestcasesummary.php?tcase_id=';
+	new Ext.ToolTip({
+        target: 'tooltip-'+tcID,
+        width: 200,
+        autoLoad: 
+        {url: fUrl+tcID+'&tcversion_id='+vID},
+    });
+}
+
+function showTT(e)
+{
+	alert(e);
+}
+
 Ext.onReady(function(){ 
 {/literal}
 {foreach from=$gui->items key=idx item=info}
   {foreach from=$info.testcases key=tcidx item=tcversionInfo}
    {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
-   {literal}
-   new Ext.ToolTip({
-        target: 'tooltip-{/literal}{$tcidx}{literal}',
-        width: 200,
-        autoLoad: 
-        {url: fRoot+'lib/ajax/gettestcasesummary.php?tcase_id={/literal}{$tcidx}{literal}&tcversion_id={/literal}{$tcversionLinked}{literal}'},
-    });
+	   tTip({$tcidx},{$tcversionLinked});
    {/literal}
   {/foreach}  
 {/foreach}
 {literal}
 });
+//-->
 </script>
 {/literal}
 
@@ -175,7 +187,6 @@ Ext.onReady(function(){
            {if $gui->platforms != ''}
            <td>{$labels.th_platform}</td> 
            {/if}
-			     <td>{$labels.th_id}</td> 
 			     <td>{$labels.th_test_case}</td>
 			     <td>{$labels.version}</td>
            <td>{$labels.execution_order}</td>
@@ -194,194 +205,136 @@ Ext.onReady(function(){
            {/if}
           </tr>   
           
-          {foreach from=$ts.testcases item=tcase}
-            {assign var='is_active' value=0}
-            {assign var='linked_version_id' value=$tcase.linked_version_id}
-            {assign var='tcID' value=$tcase.id}
-            
-            {if $linked_version_id != 0}
-               {if $tcase.tcversions_active_status[$linked_version_id] eq 1}             
-                 {assign var='is_active' value=1}
-               {/if}
-            {else}
-               {if $tcase.tcversions_qty != 0}
-                 {assign var='is_active' value=1}
-               {/if}
-            {/if}      
-
+			{foreach from=$ts.testcases item=tcase}
+    			{assign var='is_active' value=0}
+            	{assign var='linked_version_id' value=$tcase.linked_version_id}
+            	{assign var='tcID' value=$tcase.id}
+				{if $linked_version_id != 0}
+               		{if $tcase.tcversions_active_status[$linked_version_id] eq 1}             
+                 		{assign var='is_active' value=1}
+               		{/if}
+            	{else}
+               		{if $tcase.tcversions_qty != 0}
+                 		{assign var='is_active' value=1}
+               		{/if}
+            	{/if}      
             {* ---------------------------------------------------------------------------------------- *}
-            {if $is_active || $linked_version_id != 0 }  
-   				    
-   				    {if $gui->full_control || $linked_version_id != 0 }
-   				      {assign var="drawPlatformChecks" value=0}
-                {if $gui->platforms != '' }
-                   {if isset($tcase.feature_id[0])}
-                    {if !$drawSavePlatformsButton }
-                      {* do this JUST once *}
-                      {assign var="drawSavePlatformsButton" value=1}
-                    {/if}
-                   {else} 
-                     {assign var="drawPlatformChecks" value=1}
-                   {/if}
-                {/if}
-   				    
-     			    <tr {if $linked_version_id != 0 && $drawPlatformChecks == 0}	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if}>
-    			      <td width="20">
-                   
-                  {* ------------------------------------------ *} 
-    			        {* {if $gui->platforms == '' || $drawPlatformChecks == 0}  *}
+            {if $is_active || $linked_version_id != 0}  
+   				{if $gui->full_control || $linked_version_id != 0}
+   					{assign var="drawPlatformChecks" value=0}
+                	{if $gui->platforms != '' }
+                   		{if isset($tcase.feature_id[0])}
+                    		{if !$drawSavePlatformsButton }
+                      			{* do this JUST once *}
+                      			{assign var="drawSavePlatformsButton" value=1}
+                    		{/if}
+                   		{else} 
+                     		{assign var="drawPlatformChecks" value=1}
+                   		{/if}
+                	{/if}
+   				    <tr{if $linked_version_id != 0 && $drawPlatformChecks == 0} style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}"{/if}>
+    			    	<td width="20">
+                  		{* ------------------------------------------ *} 
     			        {if $gui->platforms == '' || $drawPlatformChecks == 0 }
     				        {if $gui->full_control}
 	      				        {if $is_active == 0 || $linked_version_id != 0 }
 	      				           &nbsp;&nbsp;
 	      				        {else}
-	      				            {* 20090814 - franciscom - added [0] - to have uniform structure
-	      				               no matter if you work with or without platform feature  *}
-	      				           <input type="checkbox"  name="{$add_cb}[{$tcID}][0]" 
-	      				                  id="{$add_cb}{$tcID}[0]" value="{$tcID}" /> 
+	      				           <input type="checkbox" name="{$add_cb}[{$tcID}][0]" id="{$add_cb}{$tcID}[0]" value="{$tcID}" /> 
 	      				        {/if}
 	      				        <input type="hidden" name="a_tcid[{$tcID}]" value="{$tcID}" />
     				        {else}
-							        &nbsp;&nbsp;
+								&nbsp;&nbsp;
     				        {/if}
     				      {/if}  
     				      {* ------------------------------------------ *}
-    			      </td>
+    			      	</td>
                 {if $gui->platforms != ''}
-                  <td>
-                  {if $drawPlatformChecks }
-                     &nbsp;
-                  {else}
-         				    <select name="feature2fix[{$tcase.feature_id[0]}][{$linked_version_id}]">
-         				        {html_options options=$gui->platformsForHtmlOptions selected=0}
-         				    </select>
-                  {/if}  
-                  </td>
+                  	<td>{if $drawPlatformChecks}&nbsp;
+                  		{else}
+         				<select name="feature2fix[{$tcase.feature_id[0]}][{$linked_version_id}]">
+         					{html_options options=$gui->platformsForHtmlOptions selected=0}
+						</select>
+                  		{/if}  
+                  	</td>
                 {/if}
-    			      <td id="tooltip-{$tcID}">
-    				    {$gui->testCasePrefix|escape}{$tcase.external_id}
-    			      </td>
-    			      {*  *}
-    				    <td title="{$labels.show_tcase_spec}">
-     				     <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
-    			      </td>
-    			      
-                <td>
-         				  <select name="tcversion_for_tcid[{$tcID}]"
-      			          {if $linked_version_id != 0} disabled	{/if}>
-         				      {html_options options=$tcase.tcversions selected=$linked_version_id}
-         				  </select>
-                </td>
-
-                <td style="text-align:center;">
-                  <input type="text" name="exec_order[{$tcID}]" {$execution_order_html_disabled}
-                         style="text-align:right;" size="{#EXECUTION_ORDER_SIZE#}" 
- 			                   maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
+    			    <td id="tooltip-{$tcID}">
+     					{$gui->testCasePrefix|escape}{$tcase.external_id}: <a href="javascript:openTCaseWindow({$tcID})">{$tcase.name|escape}</a>
+    			    </td>
+                	<td>
+         				<select name="tcversion_for_tcid[{$tcID}]"{if $linked_version_id != 0} disabled{/if}>
+         				{html_options options=$tcase.tcversions selected=$linked_version_id}
+         				</select>
+                	</td>
+                	<td style="text-align:center;">
+                  		<input name="exec_order[{$tcID}]" {$execution_order_html_disabled}
+                         style="text-align:right;" size="{#EXECUTION_ORDER_SIZE#}" maxlength="{#EXECUTION_ORDER_MAXLEN#}" 
                          value="{$tcase.execution_order}" />
-                  
-                  {if $linked_version_id != 0}  
-                    <input type="hidden" name="linked_version[{$tcID}]" value="{$linked_version_id}" />
-                    <input type="hidden" name="linked_exec_order[{$tcID}]"  value="{$tcase.execution_order}" />
-                  {/if}
-                </td>
-
-        
+                  		{if $linked_version_id != 0}  
+                    	<input type="hidden" name="linked_version[{$tcID}]" value="{$linked_version_id}" />
+                    	<input type="hidden" name="linked_exec_order[{$tcID}]"  value="{$tcase.execution_order}" />
+                  		{/if}
+                	</td>
                 {* ------------------------------------------------------------------------- *}      
                 {if $ts.linked_testcase_qty gt 0 && $drawPlatformChecks==0}
-          				<td>&nbsp;</td>
-          				<td>
-          				   {* BUGID 1970 *}
-        				     {assign var="show_remove_check" value=0}
-          				   {if $linked_version_id }
-          				      {assign var="show_remove_check" value=1}
-       				          {if $tcase.executed[0] == 'yes' }
-       				            {assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
-          				      {/if}      
-                    {/if} 
-          				    
-          					{if $show_remove_check }
-          						<input type='checkbox' name='{$rm_cb}[{$tcID}][0]' 
-          						       id='{$rm_cb}{$tcID}[0]' value='{$linked_version_id}' />
-          				   {else}
-          						&nbsp;
-          				  {/if}
-                    
-                    {if $tcase.executed[0] eq 'yes'}
-                         &nbsp;&nbsp;&nbsp;{$executed_warning}
-                    {/if}    
-                    {if $is_active eq 0}
-                           &nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}
-                    {/if}
-          				</td>
-          				<td>
-          				{if $tcase.linked_ts[0] != ''}
-          				  {localize_date d=$tcase.linked_ts[0]}
-          				{else} &nbsp;  
-          				{/if}  
-          				</td>
+          			<td>&nbsp;</td>
+          			<td>{assign var="show_remove_check" value=0}
+          				{if $linked_version_id}
+          					{assign var="show_remove_check" value=1}
+       				        {if $tcase.executed[0] == 'yes' }
+       				        	{assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
+          				    {/if}      
+                    	{/if} 
+          				{if $show_remove_check}
+          					<input type='checkbox' name='{$rm_cb}[{$tcID}][0]' id='{$rm_cb}{$tcID}[0]' value='{$linked_version_id}' />
+						{else}
+          					&nbsp;
+          				{/if}
+                   		{if $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;{$executed_warning}{/if}
+                    	{if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
+          			</td>
+          			<td>
+          				{if $tcase.linked_ts[0] != ''}{localize_date d=$tcase.linked_ts[0]}{else}&nbsp;{/if}  
+          			</td>
                 {/if}
-                {* ------------------------------------------------------------------------- *}      
- 
               </tr>
-      				
-      				{* --------------------------------------------------------------------------- *}
-      				{if isset($tcase.custom_fields)}
-      				    <input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
-                  {assign var="show_write_custom_fields" value=1}
-              <tr> <td colspan="7">{$tcase.custom_fields}</td> </tr>
+			 {if isset($tcase.custom_fields)}
+      			<input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
+                {assign var="show_write_custom_fields" value=1}
+              <tr><td colspan="7">{$tcase.custom_fields}</td></tr>
               {/if}
-      				{* --------------------------------------------------------------------------- *}
-
             {/if} 
-
-
            {if $gui->platforms != '' && $drawPlatformChecks}
                {foreach from=$gui->platforms item=platform}
-               
                <tr {if isset($tcase.feature_id[$platform.id]) }	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if} >
-                    <td>
-    				        {if $gui->full_control}
-	      				        {if $is_active == 0 || isset($tcase.feature_id[$platform.id]) }
-	      				           &nbsp;&nbsp;
-	      				        {else}
-	      				           <input type="checkbox"  name="{$add_cb}[{$tcID}][{$platform.id}]" 
-	      				                  id="{$add_cb}{$tcID}" value="{$tcID}" /> 
-	      				        {/if}
-	      				        <input type="hidden" name="a_tcid[{$tcID}][{$platform.id}]" value="{$tcID}" />
-    				        {else}
-							        &nbsp;&nbsp;
-    				        {/if}
-    				        </td>
-    				        <td>
-    				        {$platform.name}
-    				        </td>
-    				        <td> &nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
-
-
-               {* ========================================================== *}
-	      			 {if $is_active == 1 && isset($tcase.feature_id[$platform.id]) }
-          				<td>&nbsp;</td>
-       						<td><input type='checkbox' 
-          						       name='{$rm_cb}[{$tcID}][{$platform.id}]' 
-          						       id='{$rm_cb}{$tcID}[{$platform.id}]' 
-          				           value='{$linked_version_id}' />
-                  </td>
-                  <td>
-          				  {localize_date d=$tcase.linked_ts[$platform.id]}
-                 </td>
- 
+               	<td>
+    				{if $gui->full_control}
+	      				{if $is_active == 0 || isset($tcase.feature_id[$platform.id])}
+	      					&nbsp;&nbsp;
+	      				{else}
+	      					<input type="checkbox"  name="{$add_cb}[{$tcID}][{$platform.id}]" id="{$add_cb}{$tcID}" value="{$tcID}" /> 
+						{/if}
+	      				<input type="hidden" name="a_tcid[{$tcID}][{$platform.id}]" value="{$tcID}" />
+					{else}
+						&nbsp;&nbsp;
+    				{/if}
+    			</td>
+    			<td>{$platform.name|escape}</td>
+				<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+				{if $is_active == 1 && isset($tcase.feature_id[$platform.id])}
+	      			<td>&nbsp;</td>
+	   				<td><input type='checkbox' name='{$rm_cb}[{$tcID}][{$platform.id}]' id='{$rm_cb}{$tcID}[{$platform.id}]' 
+	      					value='{$linked_version_id}' />
+	              	</td>
+	              	<td>{localize_date d=$tcase.linked_ts[$platform.id]}</td>
                {/if}
-               {* ========================================================== *}
-               
                </tr>
                {/foreach}
-             <tr><td colspan="9"><hr></td></tr>
+             	<tr><td colspan="9"><hr/></td></tr>
            {/if}             
            {/if} {* if $is_active || $linked_version_id ne 0 *}
   	      {/foreach}
-      
         </table>
-        
         <br />
      {/if}  {* there are test cases to show ??? *}
     </div>

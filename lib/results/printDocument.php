@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/09/28 08:44:20 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/11/19 20:05:39 $ by $Author: schlundus $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -47,7 +47,7 @@ foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));
 }					
-
+$printingOptions['docType'] = $doc_info->type;
 $resultsCfg = config_get('results');
 $status_descr_code = $resultsCfg['status_code'];
 $status_code_descr = array_flip($status_descr_code);
@@ -80,9 +80,6 @@ switch ($doc_info->type)
 	case DOC_REQ_SPEC: 
 		$doc_info->type_name = lang_get('req_spec');
 		break;
-		
-	default:
-		die ('printDocument.php> Invalid document type $_REQUEST["type"] = '.$doc_info->type);
 }
 
 $my['options']=array('recursive' => true, 'order_cfg' => $order_cfg );
@@ -271,7 +268,7 @@ if ($treeForPlatform)
 				case DOC_TEST_SPEC:
 					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
 					$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
-								$printingOptions, null, 0, 1, $args->user_id);
+								$printingOptions, null, 0, 1, $args->user_id,0,null,$args->tproject_id);
 				break;
 			
 				case DOC_TEST_PLAN:

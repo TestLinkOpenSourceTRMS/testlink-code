@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.126 $
- * @modified $Date: 2009/08/29 19:21:42 $ by $Author: schlundus $
+ * @version $Revision: 1.127 $
+ * @modified $Date: 2009/11/19 20:05:39 $ by $Author: schlundus $
  *
  * @copyright Copyright (c) 2008, TestLink community
  * @author Francisco Mancardi
@@ -144,6 +144,7 @@ $TLS_th_name = "Name";
 $TLS_th_notes = "Notizen";
 $TLS_th_testcase = $TLS_test_case;
 $TLS_th_requirement_feature = "Anforderungsverwaltung";
+$TLS_th_platform = "Plattform";
 
 $TLS_import_file_type = "Import Dateiart";
 $TLS_max_file_size_is = "Max. Dateigröße ";

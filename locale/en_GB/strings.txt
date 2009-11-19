@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.487 2009/11/19 13:56:29 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.488 2009/11/19 20:05:39 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2328,7 +2328,7 @@ $TLS_warning_empty_keyword = "Keyword must not be empty!";
 $TLS_platform_management = "Platform management";
 $TLS_create_platform = "Create platform";
 $TLS_edit_platform = "Edit platform";
-$TLS_platform_name_already_exists = "Platform Name %s Already Exists";
+$TLS_platform_name_already_exists = "Platform Name %s already Exists";
 $TLS_platform_update_failed = "Platform update failed";
 $TLS_warning_empty_platform = "Platform can not be empty!";
 

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.116 2009/11/19 17:50:37 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.117 2009/11/19 20:05:39 schlundus Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -682,52 +682,52 @@ $tlCfg->review_types = array(1 => 'type_undefined',
  */
 $tlCfg->guiTopMenu = array();
 $tlCfg->guiTopMenu[1] = array(
-		label => 'home',
-		url => 'index.php',
-		right => 'all',
-		condition=>'',
-		shortcut=>'h',
-		target=>'_parent'
+		'label' => 'home',
+		'url' => 'index.php',
+		'right' => null,
+		'condition'=>'',
+		'shortcut'=>'h',
+		'target'=>'_parent'
 ); 
 $tlCfg->guiTopMenu[2] = array(
-		label => 'title_specification',
-		url => 'lib/general/frmWorkArea.php?feature=editTc',
-		right => 'mgt_view_tc',
-		condition=>'',
-		shortcut=>'s',
-		target=>'mainframe'
+		'label' => 'title_specification',
+		'url' => 'lib/general/frmWorkArea.php?feature=editTc',
+		'right' => 'mgt_view_tc',
+		'condition'=>'',
+		'shortcut'=>'s',
+		'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[3] = array(
-		label => 'title_execute',
-		url => 'lib/general/frmWorkArea.php?feature=executeTest',
-		right => 'testplan_execute',
-		condition=>'TestPlanAvailable',
-		shortcut=>'e',
-		target=>'mainframe'
+		'label' => 'title_execute',
+		'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
+		'right' => 'testplan_execute',
+		'condition'=>'TestPlanAvailable',
+		'shortcut'=>'e',
+		'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[4] = array(
-		label => 'title_results',
-		url => 'lib/general/frmWorkArea.php?feature=showMetrics',
-		right => 'testplan_metrics',
-		condition=>'TestPlanAvailable',
-		shortcut=>'r',
-		target=>'mainframe'
+		'label' => 'title_results',
+		'url' => 'lib/general/frmWorkArea.php?feature=showMetrics',
+		'right' => 'testplan_metrics',
+		'condition'=>'TestPlanAvailable',
+		'shortcut'=>'r',
+		'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[5] = array(
-		label => 'title_admin',
-		url => 'lib/usermanagement/usersView.php',
-		right => 'mgt_users',
-		condition=>'',
-		shortcut=>'u',
-		target=>'mainframe'
+		'label' => 'title_admin',
+		'url' => 'lib/usermanagement/usersView.php',
+		'right' => 'mgt_users',
+		'condition'=>'',
+		'shortcut'=>'u',
+		'target'=>'mainframe'
 ); 
 $tlCfg->guiTopMenu[6] = array(
-		label => 'title_events',
-		url => 'lib/events/eventviewer.php',
-		right => 'events_mgt',
-		condition=>'',
-		shortcut=>'v',
-		target=>'mainframe'
+		'label' => 'title_events',
+		'url' => 'lib/events/eventviewer.php',
+		'right' => 'events_mgt',
+		'condition'=>'',
+		'shortcut'=>'v',
+		'target'=>'mainframe'
 ); 
 
 

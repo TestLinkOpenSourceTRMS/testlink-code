@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		eloff
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.5 2009/09/22 08:01:37 franciscom Exp $
+ * @version    	CVS: $Id: platformsAssign.php,v 1.6 2009/11/19 20:05:39 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -16,7 +16,6 @@
  *							to a test plan that has 0 platforms, but has linked test cases.
  *
  **/
- 
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
@@ -44,7 +43,7 @@ $gui->platform_assignment_subtitle = null;
 $gui->tplan_id = $args->tplan_id;
 $gui->can_do = isset($args->tplan_id);
 $gui->mainTitle = lang_get('add_remove_platforms');
-$gui->warning='';
+$gui->warning = '';
 
 if (isset($args->tplan_id))
 {
@@ -101,10 +100,6 @@ $smarty->assign('opt_cfg', $opt_cfg);
 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-/**
- * 
- *
- */
 function init_args(&$opt_cfg)
 {
     $added = $opt_cfg->js_ot_name . "_addedRight";

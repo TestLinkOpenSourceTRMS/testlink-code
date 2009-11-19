@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/11/18 22:21:55 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/11/19 20:05:39 $ by $Author: schlundus $
  *
  * allows users to manage platforms. 
  *
@@ -63,14 +63,6 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $default_template);
 
 
-/*
-  function: init_args
-
-  args:
-  
-  returns: 
-
-*/
 function init_args()
 {
 	$args = new stdClass();
@@ -241,14 +233,7 @@ function do_delete(&$args,&$gui,&$platform_mgr)
 	return $ret;
 }
 
-/*
-  function: getErrorMessage
 
-  args:
-  
-  returns: 
-
-*/
 function getErrorMessage($code,$platform_name)
 {
 	switch($code)
@@ -276,20 +261,6 @@ function getErrorMessage($code,$platform_name)
   return $msg;
 }
 
-
-/**
- * 
- *
- */
-function checkRights(&$db,&$user)
-{
-	return $user->hasRight($db,'platform_management');
-}
-
-/**
- * 
- *
- */
 function init_gui(&$db,&$args)
 {
 	$gui = new stdClass();
@@ -301,5 +272,10 @@ function init_gui(&$db,&$args)
     $gui->platformID = $args->platform_id;
     
     return $gui;
+}
+
+function checkRights(&$db,&$user)
+{
+	return $user->hasRight($db,'platform_management');
 }
 ?>

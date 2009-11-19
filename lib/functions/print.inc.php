@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.88 2009/09/16 19:53:01 schlundus Exp $
+ * @version $Id: print.inc.php,v 1.89 2009/11/19 20:05:39 schlundus Exp $
  * @uses printDocument.php
  *
  *
@@ -200,18 +200,17 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 	static $tplan_mgr;
  	$code = null;
 
-	if( !$tree_mgr )
+	if(!$tree_mgr)
 	{ 
  	    $tplan_mgr = new testplan($db);
 	    $tree_mgr = new tree($db);
  	    $map_id_descr = $tree_mgr->node_types;
  	}
  	$verbose_node_type = $map_id_descr[intval($node['node_type_id'])];
-
     switch($verbose_node_type)
 	{
 		case 'testproject':
-		    if($tplan_id != 0 )
+		    if($tplan_id != 0)
 		    {
 		        // 20090330 - franciscom
 		        // we are printing a test plan, get it's custom fields
@@ -325,7 +324,7 @@ function gendocGetUserName(&$db, $userId)
  *      20090517 - havlatm - fixed execution layot; added tester name
  */
 function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
-                                   $tplan_id=0,$prefix = null,$tprojectID = 0)
+                                   $tplan_id = 0,$prefix = null,$tprojectID = 0)
 {
     static $req_mgr;
 	static $tc_mgr;
@@ -334,51 +333,49 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     static $userMap = array();
     static $cfg;
     static $locationFilters;
+    static $tables = null;
+    
+    if (!$tables)
+    	$tables = tlDBObject::getDBTables(array('executions','builds'));
     
 	$code = null;
 	$tcInfo = null;
     $tcResultInfo = null;
-    $tcase_pieces=null;
-	$cfieldFormatting=array('td_css_style' => '','add_table' => false);
+    $tcase_pieces = null;
+	$cfieldFormatting = array('td_css_style' => '','add_table' => false);
     
     // init static elements
-	if( !$cfg )
+    $id = $node['id'];
+	if(!$cfg)
 	{
  	    $tc_mgr = new testcase($db);
-        $locationFilters = $tc_mgr->buildCFLocationMap();
-
- 	    list($cfg,$labels)=initRenderTestCaseCfg($tc_mgr);
-	    if( !is_null($prefix) )
-	    {
+ 	    list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
+	    if(!is_null($prefix))
 	        $tcase_prefix = $prefix;
-	    }
-	    
+	    else
+	    	$tcase_prefix = $tc_mgr->getPrefix($id);
+	    $tcase_prefix .= $cfg['testcase']->glue_character;
 	}
-	
-    $versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
-    $id = $node['id'];
+	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
     $tcInfo = $tc_mgr->get_by_id($id,$versionID);
     if ($tcInfo)
-    {
     	$tcInfo = $tcInfo[0];  
-    }
-    if( !$tcase_prefix )
-    {
-    	$tcase_prefix = $tc_mgr->getPrefix($id);
-    }
-	$external_id = $tcase_prefix . $cfg['testcase']->glue_character . $tcInfo['tc_external_id'];
+
+    $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
 	$name = htmlspecialchars($node['name']);
 
   	$cfields = array('specScope' => null, 'execScope' => null);
 
-	// get custom fields that has specification scope
+  	// get custom fields that has specification scope
   	if ($printingOptions['cfields'])
 	{
-        // 20090719 - franciscom - cf location
+		if (!$locationFilters)
+        	$locationFilters = $tc_mgr->buildCFLocationMap();
+		// 20090719 - franciscom - cf location
      	foreach($locationFilters as $fkey => $fvalue)
 		{ 
-   			$cfields['specScope'][$fkey] = 
-				$tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
+			$cfields['specScope'][$fkey] = 
+					$tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
 			                                               $tprojectID,$cfieldFormatting);
 		}	                                               
 	}
@@ -388,51 +385,51 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
  * using existent methods - franciscom - 20090329 
  * Need to get CF with execution scope
  */
-    $tables['executions'] = DB_TABLE_PREFIX . 'executions';
-    $tables['builds'] = DB_TABLE_PREFIX . 'builds';
-     
-	$sql =  " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
-	        " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
-	        " B.name AS build_name " .
-	        " FROM {$tables['executions']} E, {$tables['builds']} B" .
-	        " WHERE E.build_id= B.id " . 
-	        " AND E.tcversion_id = {$versionID} " .
-	        " AND E.testplan_id = {$tplan_id} " .
-	  		" ORDER BY execution_id DESC";
-	$exec_info = $db->get_recordset($sql,null,1);
-
-    if(!is_null($exec_info ))
-    { 
-        $execution_id=$exec_info[0]['execution_id'];
-        // Added condition for the display on/off of the custom fields on test cases.
-        if ($printingOptions['cfields'])
-        {
-        	$cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
-        	                                                                   $execution_id, $tplan_id,
-        	                                                                   $tprojectID,$cfieldFormatting);
-        }
+	$exec_info = null;
+	$bGetExecutions = false;
+	if ($printingOptions["docType"] != DOC_TEST_SPEC)
+		$bGetExecutions = ($printingOptions['cfields'] || $printingOptions['passfail']);
+	if ($bGetExecutions)
+	{
+		$sql =  " SELECT E.id AS execution_id, E.status, E.execution_ts, E.tester_id," .
+		        " E.notes, E.build_id, E.tcversion_id,E.tcversion_number,E.testplan_id," .
+		        " B.name AS build_name " .
+		        " FROM {$tables['executions']} E, {$tables['builds']} B" .
+		        " WHERE E.build_id= B.id " . 
+		        " AND E.tcversion_id = {$versionID} " .
+		        " AND E.testplan_id = {$tplan_id} " .
+		  		" ORDER BY execution_id DESC";
+		$exec_info = $db->get_recordset($sql,null,1);
+	}
+	// Added condition for the display on/off of the custom fields on test cases.
+    if ($printingOptions['cfields'] && !is_null($exec_info))
+    {
+    	$execution_id = $exec_info[0]['execution_id'];
+        $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
+                                                                           $execution_id, $tplan_id,
+                                                                           $tprojectID,$cfieldFormatting);
     }
 	  
 	if ($printingOptions['toc'])
 	{
-	      $printingOptions['tocCode'] .= '<p style="padding-left: ' . 
+		$printingOptions['tocCode'] .= '<p style="padding-left: ' . 
 	                                     (15*$level).'px;"><a href="#' . prefixToHTMLID('tc'.$id) . '">' .
 	       	                             $name . '</a></p>';
 		$code .= '<a name="' . prefixToHTMLID('tc'.$id) . '"></a>';
 	}
       
- 	  $code .= '<p>&nbsp;</p><div> <table class="tc" width="90%">';
- 	  $code .= '<tr><th colspan="2">' . $labels['test_case'] . " " . 
- 	  		   htmlspecialchars($external_id) . ": " . $name;
+ 	$code .= '<p>&nbsp;</p><div> <table class="tc" width="90%">';
+ 	$code .= '<tr><th colspan="2">' . $labels['test_case'] . " " . 
+ 			htmlspecialchars($external_id) . ": " . $name;
     
-	  // add test case version
-	  if($cfg['doc']->tc_version_enabled && isset($node['version']) ) 
-	  {
-	  	$code .= '&nbsp;<span style="font-size: 80%;"' . $cfg['gui']->role_separator_open . 
-	  	         $labels['version'] . $cfg['gui']->title_separator_1 .  $node['version'] . 
-	  	         $cfg['gui']->role_separator_close . '</span>';
-	  }
- 	  $code .= "</th></tr>\n";
+	// add test case version
+	if($cfg['doc']->tc_version_enabled && isset($node['version'])) 
+	{
+		$code .= '&nbsp;<span style="font-size: 80%;"' . $cfg['gui']->role_separator_open . 
+        	   	$labels['version'] . $cfg['gui']->title_separator_1 .  $node['version'] . 
+           		$cfg['gui']->role_separator_close . '</span>';
+  	}
+   	$code .= "</th></tr>\n";
 
   	if ($printingOptions['author'])
   	{
@@ -448,22 +445,21 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 		$code .= "</td></tr>\n";
   	}
 
-    if (($printingOptions['body'] || $printingOptions['summary']))
+    if ($printingOptions['body'] || $printingOptions['summary'])
     {
-        $tcase_pieces=array('summary');
+        $tcase_pieces = array('summary');
     }
     
-    if (($printingOptions['body']))
+    if ($printingOptions['body'])
     {
-        // 20090902 - franciscom
-        $tcase_pieces[]='preconditions';
-        $tcase_pieces[]='steps';
-        $tcase_pieces[]='expected_results';        
+        $tcase_pieces[] = 'preconditions';
+        $tcase_pieces[] = 'steps';
+        $tcase_pieces[] = 'expected_results';        
     }
     
-    if( !is_null($tcase_pieces) )
+    if(!is_null($tcase_pieces))
     {
-        foreach( $tcase_pieces as $key )
+        foreach($tcase_pieces as $key)
         {
             // 20090719 - franciscom - cf location
             if( $key == 'steps' && isset($cfields['specScope']['before_steps_results']))
@@ -483,14 +479,14 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     // 20090719 - franciscom - cf location
     $code .= $cfields['specScope']['standard_location'] . $cfields['execScope'];
 	
-	// ----- generate test results data for test report -----
+	// generate test results data for test report 
 	if ($printingOptions['passfail'])
 	{
 		if ($exec_info) 
 		{
 			$code .= buildTestExecResults($db,$cfg,$labels,$exec_info);
 		}
-		else	// no execution
+		else
 		{
 		  	$code .= '<tr><td width="20%" valign="top">' . 
 		  			'<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
@@ -498,15 +494,12 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 		}
 	}
 
-
-	  // collect REQ for TC
-	  // based on contribution by JMU (#1045)
-	  if ($printingOptions['requirement'])
-	  {
+	// collect REQ for TC
+	// based on contribution by JMU (#1045)
+	if ($printingOptions['requirement'])
+	{
 	    if(!$req_mgr)
-	    { 
 	        $req_mgr = new requirement_mgr($db);
-	  	}
 	  	
 	  	$requirements = $req_mgr->get_all_for_tcase($id);
 	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['reqs'].'</span><td>';
@@ -518,17 +511,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  		}
 	  	}
 	  	else
-	  	{
 	  		$code .= '&nbsp;' . $labels['none'] . '<br />';
-	  	}
 	  	
 	  	$code .= "</td></tr>\n";
-	  }
+	}
 	  
-	  // collect keywords for TC
-	  // based on contribution by JMU (#1045)
-	  if ($printingOptions['keyword'])
-	  {
+	// collect keywords for TC
+	// based on contribution by JMU (#1045)
+	if ($printingOptions['keyword'])
+	{
 	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['keywords'].':</span><td>';
     
 	  	$arrKeywords = $tc_mgr->getKeywords($id);
@@ -540,9 +531,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  		}
 	  	}
 	  	else
-	  	{
 	  		$code .= '&nbsp;' . $labels['none'] . '<br>';
-	  	}
 	  	$code .= "</td></tr>\n";
 	  }
 
@@ -788,7 +777,7 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
 			'<span class="label">' . $labels['last_exec_result'] . ':</span></td>' .
 			'<td><b>' . $testStatus . "</b></td></tr>\n" .
     		'<tr><td width="20%" valign="top">' . $labels['build'] .'</td>' . 
-    		'<td>' . $exec_info[0]['build_name'] . "</b></td></tr>\n" .
+    		'<td>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n" .
     		'<tr><td width="20%" valign="top">' . $labels['tester'] .'</td>' . 
     		'<td>' . $testerName . "</b></td></tr>\n";
 
@@ -826,6 +815,7 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
 function renderPlatformHeading($tocPrefix, $platform_id, $platform_name, &$printingOptions)
 {
 	$platformLabel = lang_get('platform');
+	$platform_name = htmlspecialchars($platform_name);
 	$printingOptions['tocCode'] .= '<p><a href="#' . prefixToHTMLID($tocPrefix) . '">' .
 	                               $platformLabel . ':' . $platform_name . '</a></p>';
 	return '<h1 class="doclevel" id="' . prefixToHTMLID($tocPrefix) . "\">$tocPrefix $platformLabel: $platform_name</h1>";

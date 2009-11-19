@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.5 2009/11/18 19:58:22 franciscom Exp $
+$Id: platformsEdit.tpl,v 1.6 2009/11/19 20:05:39 schlundus Exp $
 Purpose: smarty template - View all platforms
 
 rev:
@@ -25,13 +25,13 @@ var warning_empty_platform = "{$labels.warning_empty_platform}";
 {literal}
 function validateForm(f)
 {
-  if (isWhitespace(f.name.value))
-  {
-      alert_message(alert_box_title,warning_empty_platform);
-      selectField(f, 'name');
-      return false;
-  }
-  return true;
+	if (isWhitespace(f.name.value))
+  	{
+    	alert_message(alert_box_title,warning_empty_platform);
+      	selectField(f, 'name');
+      	return false;
+  	}
+	return true;
 }
 </script>
 {/literal}
@@ -55,10 +55,10 @@ function validateForm(f)
 	{/if}
   
   </div><br />
-  {include file="inc_update.tpl" user_feedback=$gui->user_feedback }
+  {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
   	<form id="addPlatform" name="addPlatform" method="post" action="{$platform_edit_url}"
- 		      onSubmit="javascript:return validateForm(this);">
+ 		      onsubmit="javascript:return validateForm(this);">
 
   	<table class="common" style="width:50%">
   		<tr>
@@ -76,11 +76,11 @@ function validateForm(f)
   		</tr>
   	</table>
   	<div class="groupBtn">	
-  	<input type="hidden" name="doAction" value="" />
-    <input type="submit" id="submitButton" name="submitButton" value="{$gui->submit_button_label}"
-	         onclick="doAction.value='{$gui->submit_button_action}'" />
-  	<input type="button" value="{$labels.btn_cancel}"
-	         onclick="javascript:location.href=fRoot+'lib/platforms/platformsView.php'" />
+	  	<input type="hidden" name="doAction" value="" />
+	    <input type="submit" id="submitButton" name="submitButton" value="{$gui->submit_button_label}"
+		         onclick="doAction.value='{$gui->submit_button_action}'" />
+	  	<input type="button" value="{$labels.btn_cancel}"
+		         onclick="javascript:location.href=fRoot+'lib/platforms/platformsView.php'" />
   	</div>
   	</form>
   </div>

@@ -52,18 +52,21 @@ class ADODB_XML
 	*	@access		public
 	*	@return 	string      XML with table contents 	
 	*/	
-	function ConvertToXMLString($dbConnection,$strSQL,$write_header=1)  
+	function ConvertToXMLString(&$dbConnection,$strSQL,$write_header=1)  
 	{
-	  $temp_dir=sys_get_temp_dir();
-    $tmpfname = tempnam($temp_dir,'AGS');
+	  	$temp_dir = sys_get_temp_dir();
+	    $tmpfname = tempnam($temp_dir,'AGS');
+	
+	    $this->ConvertToXML($dbConnection, $strSQL, $tmpfname, $write_header);
+	    $handle = fopen($tmpfname, "r");
+	    if ($handle)
+	    {
+	    	$contents = fread($handle, filesize($tmpfname));
+	    	fclose($handle);
+	    }
+	    unlink($tmpfname);
 
-    $this->ConvertToXML($dbConnection, $strSQL, $tmpfname,$write_header);
-    $handle = fopen($tmpfname, "r");
-    $contents = fread($handle, filesize($tmpfname));
-    fclose($handle);
-    unlink($tmpfname);
-
-	  return $contents;
+	  	return $contents;
 	}
 	
 	

@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.173 2009/11/19 12:00:57 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.174 2009/11/19 20:05:39 schlundus Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -256,13 +256,13 @@ function doSessionStart()
 function initTopMenu(&$db)
 {
 	$_SESSION['testprojectTopMenu'] = '';
-	$idx = 1;	
-    $guiTopMenu = config_get('guiTopMenu');
+	$guiTopMenu = config_get('guiTopMenu');
     
 	//check if Project is available
 	if ($_SESSION['testprojectID'] > 0)
 	{
-		foreach ($guiTopMenu as $element)
+		$idx = 1;	
+    	foreach ($guiTopMenu as $element)
 		{
 			//check if Test Plan is available
 			$bCondition = FALSE;
@@ -270,14 +270,12 @@ function initTopMenu(&$db)
 					(($element['condition'] == 'TestPlanAvailable') && isset($_SESSION['testplanID'])
 					&& $_SESSION['testplanID'] > 0))
 			{
-				$bCondition = TRUE;
-			}
-			
-			if ((has_rights($db,$element['right']) == "yes") && $bCondition)
-			{
-				$_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
+				if (is_null($element['right']) || has_rights($db,$element['right']) == "yes")
+				{
+					$_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
 						"target='{$element['target']}' accesskey='{$element['shortcut']}'" .
 	     				"tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> |";
+				}
 			}
 		}
 	}
@@ -454,9 +452,7 @@ function strings_stripSlashes($parameter,$bGPC = true)
 		return $retParameter;
 	}
 	else
-	{
 		return stripslashes($parameter);
-	}
 }
 
 

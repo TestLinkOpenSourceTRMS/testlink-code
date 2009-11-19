@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.4 2009/10/12 07:02:04 franciscom Exp $
+$Id: platformsView.tpl,v 1.5 2009/11/19 20:05:39 schlundus Exp $
 Purpose: smarty template - View all platforms
 
 20091010 - franciscom - export XML feature
@@ -22,8 +22,10 @@ Purpose: smarty template - View all platforms
 
 
 <script type="text/javascript">
-/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
+<!--
+	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+	var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
+//-->
 </script>
  
 </head>
@@ -71,10 +73,8 @@ var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
 	</table>
  {/if}
 	
-
 	<div class="groupBtn">	
-    <span style="float: left">
-		<form name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
+   		<form style="float:left" name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
 	  		<input type="hidden" name="doAction" value="" />
 		  	{if $gui->canManage ne ""}
 		    	<input type="submit" id="create_platform" name="create_platform"
@@ -82,19 +82,16 @@ var del_action=fRoot+'lib/platforms/platformsEdit.php?doAction=do_delete&id=';
 		           	onclick="doAction.value='create'"/>
 			  {/if}	
 		</form>
-    </span>
-
-    <span>
- 	  <form name="platformsExport" id="platformsExport" method="post" action="lib/platforms/platformsExport.php" >
-		  <input type="submit" name="export_platforms" id="export_platforms"
+     	<form name="platformsExport" id="platformsExport" method="post" action="lib/platforms/platformsExport.php">
+     		<input type="hidden" name="goback_url" value="{$basehref|escape}{$viewAction|escape}"/>
+			<input type="submit" name="export_platforms" id="export_platforms"
 		         style="margin-left: 3px;" value="{$labels.btn_export}" />
-		         
-		  <input type="button" name="import_platforms" id="import_platforms" 
-		         onclick="location='{$importAction}'" value="{$labels.btn_import}" />
-       
-	  </form>
-    </span>
-	</div>
+		  	{if $gui->canManage ne ""}       
+		  		<input type="button" name="import_platforms" id="import_platforms" 
+		         	onclick="location='{$importAction}'" value="{$labels.btn_import}" />
+       	  	{/if}
+	  	</form>
+    </div>
 </div>
 </body>
 </html>

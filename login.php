@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: login.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/10/05 08:47:10 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/11/19 20:05:39 $ by $Author: schlundus $
  * @author Martin Havlat
  * 
  * Login management
@@ -64,10 +64,6 @@ $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->default_template);
 
-/**
- * 
- *
- */
 function init_args()
 {
 	$iParams = array("note" => array(tlInputParameter::STRING_N,0,255),

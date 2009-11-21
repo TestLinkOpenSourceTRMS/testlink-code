@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2009/11/21 09:01:13 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -55,26 +55,16 @@ $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'updateTCorder' => 'containerView.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl');
 
-$a_actions = array ('edit_testsuite' => 0,
-					          'new_testsuite' => 0,
-                    'delete_testsuite' => 0,
-					          'do_move' => 0,
-					          'do_copy' => 0,
-					          'reorder_testsuites' => 1,
-					          'do_testsuite_reorder' => 0,
-                    'add_testsuite' => 1,
-					          'move_testsuite_viewer' => 0,
-					          'update_testsuite' => 1,
-                    'move_testcases_viewer' => 0,
-	                  'do_move_tcase_set' => 0,
-                    'do_copy_tcase_set' => 0 );
+$a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
+					'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
+                    'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
+                    'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,'do_copy_tcase_set' => 0 );
 
-$a_init_opt_transfer=array('edit_testsuite' => 1,
-					                 'new_testsuite'  => 1,
-					                 'add_testsuite'  => 1,
+$a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
 
 $the_tpl = null;
+$action = null;
 foreach ($a_actions as $the_key => $the_val)
 {
 	if (isset($_POST[$the_key]) )

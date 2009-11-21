@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/11/21 19:19:52 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -83,7 +83,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                            'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
 
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
-    $owebEditor->Value = $argsObj->scope;
+    // $owebEditor->Value = $argsObj->scope;
+    $owebEditor->Value = getItemTemplateContents('requirement_template', 
+                                                 $of->InstanceName, $argsObj->scope);
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];
       

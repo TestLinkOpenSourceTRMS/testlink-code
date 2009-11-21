@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.115 $
- * @modified $Date: 2009/11/08 17:21:15 $  by $Author: franciscom $
+ * @version $Revision: 1.116 $
+ * @modified $Date: 2009/11/21 19:26:38 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -523,7 +523,7 @@ if ($show_newTC_form)
 //@TODO: schlundus, a really duplicate of testsuite->read_file, should be remove
 function read_file($file_name)
 {
-	$fContents = getFileContents($fName);
+	$fContents = getFileContents($file_name);
 	if (is_null($fContents))
 	{
 		$fContents = lang_get('problems_trying_to_access_template') . " {$file_name} ";

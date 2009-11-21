@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.175 2009/11/21 18:08:32 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.176 2009/11/21 18:27:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1071,10 +1071,6 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
 {
     $editorTemplate = config_get($itemTemplate);
     $value=$defaultText;
-    new dBug($itemTemplate);
-    new dBug($webEditorName);
-    new dBug($defaultText);
-     
     if( !is_null($editorTemplate) )
     {
       if (property_exists($editorTemplate, $webEditorName)) 

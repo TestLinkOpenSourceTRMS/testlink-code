@@ -5,16 +5,13 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/07/28 07:07:40 $ $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/11/21 18:28:44 $ $Author: franciscom $
  *
- * rev :
- *      20090611 - franciscom - closed on date
- *      20090509 - franciscom - BUGID - release_date
- *      20080827 - franciscom - BUGID 1692
- *      20080217 - franciscom - refactoring
- *      20080213 - franciscom - fixed bad template names
- *
+ * @internal revision
+ *	20091121 - franciscom - BUGID - contribution
+ *  20090509 - franciscom - BUGID - release_date
+ *  20080827 - franciscom - BUGID 1692
 */
 require('../../config.inc.php');
 require_once("common.php");
@@ -40,7 +37,8 @@ $args = init_args($_REQUEST,$_SESSION);
 $gui = new stdClass();
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
-$of->Value = null;
+$of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args->notes);
+
 
 $main_descr = lang_get('title_build_2') . config_get('gui_title_sep_type2') . 
               lang_get('test_plan') . config_get('gui_title_sep_type1') . $args->tplan_name;

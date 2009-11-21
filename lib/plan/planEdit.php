@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: planEdit.php,v $
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/09/21 09:29:15 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/11/21 18:28:44 $ by $Author: franciscom $
  *
  * Purpose:  ability to edit and delete test plans
  *-------------------------------------------------------------------------
- * rev : 20090807 - franciscom - added platforms feature
- *       20090513 - franciscom - manage is_public
- *       20080827 - franciscom - BUGID 1692
+ * @internal revision
+ *  20091121 - franciscom - BUGID - contribution
+ *	20090807 - franciscom - added platforms feature
+ *  20090513 - franciscom - manage is_public
+ *  20080827 - franciscom - BUGID 1692
  *
  */
 require_once('../../config.inc.php');
@@ -41,7 +43,7 @@ if (!$args->tproject_id)
 
 $gui = initializeGui($db,$args,$editorCfg,$tproject_mgr);
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
-$of->Value = null;
+$of->Value = getItemTemplateContents('testplan_template', $of->InstanceName, $args->notes);
 
 
 // Checks on testplan name, and testplan name<=>testplan id

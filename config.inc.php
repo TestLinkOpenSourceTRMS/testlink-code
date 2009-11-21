@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.265 2009/11/21 18:28:18 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.266 2009/11/21 19:23:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -700,6 +700,15 @@ $tlCfg->bulk_exec_notes_template->bulk_exec_notes->value = '';
 $tlCfg->build_template = new stdClass();
 $tlCfg->build_template->notes->type = 'none';
 $tlCfg->build_template->notes->value = '';
+
+$tlCfg->requirement_template = new stdClass();
+$tlCfg->requirement_template->scope->type = 'none';
+$tlCfg->requirement_template->scope->value = '';
+
+$tlCfg->req_spec_template = new stdClass();
+$tlCfg->req_spec_template->scope->type = 'none';
+$tlCfg->req_spec_template->scope->value = '';
+
 
 
 

@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.264 2009/11/21 18:05:20 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.265 2009/11/21 18:28:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -686,8 +686,8 @@ $tlCfg->testsuite_template->details->value = '';
 // Contribution - Julian
 // BUGID 0002968,0002961,0002962,0002963
 $tlCfg->project_template = new stdClass();
-$tlCfg->project_template->notes->type = 'string';
-$tlCfg->project_template->notes->value = 'Projetc';
+$tlCfg->project_template->notes->type = 'none';
+$tlCfg->project_template->notes->value = '';
 
 $tlCfg->testplan_template = new stdClass();
 $tlCfg->testplan_template->notes->type = 'none';

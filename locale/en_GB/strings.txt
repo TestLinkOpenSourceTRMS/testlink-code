@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.488 2009/11/19 20:05:39 schlundus Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.489 2009/11/21 09:18:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -51,6 +51,7 @@ $TLS_days	= "days";
 $TLS_desc = "Descending";
 $TLS_description = "Description";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
+$TLS_doc_id = "Document ID";
 $TLS_file_type = 'File type';
 $TLS_help = "Help";
 $TLS_hour = "Hour";
@@ -74,6 +75,8 @@ $TLS_requirement = "Requirement";
 $TLS_reqs = "Requirements";
 $TLS_req_spec = "Requirements Specification Document";
 $TLS_req_spec_short = "Req. Spec.";
+$TLS_requirements_spec = "Requirements Spec.";
+$TLS_req_specification = "Req. Specification";
 $TLS_srs = "SRS";
 $TLS_Role = "Role";
 $TLS_sort_table_by_column = "Click to change sort order";
@@ -90,6 +93,8 @@ $TLS_test_report = "Test Report";
 $TLS_test_suite = "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_title = "Title";
+$TLS_title_admin = "Administration";
+
 $TLS_total = "Total";
 $TLS_Unknown = "Unknown";
 $TLS_urgency = "Urgency";
@@ -2296,6 +2301,7 @@ $TLS_req_spec_created = "Requirement Specification: %s was successfully created"
 $TLS_req_spec_deleted = "Requirement Specification: %s was successfully deleted";
 $TLS_title_req_spec = "Requirement Specifications";
 $TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty!";
+$TLS_warning_empty_doc_id = "Document ID can not be empty";
 $TLS_create_req_spec = "Create Requirements Specification";
 $TLS_create_child_req_spec = "Create Child Req Specification";
 $TLS_edit_req_spec = "Edit Requirements Specification";

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.140 $
- * @modified $Date: 2009/11/12 06:41:59 $ $Author: franciscom $
+ * @version $Revision: 1.141 $
+ * @modified $Date: 2009/11/21 19:31:47 $ $Author: franciscom $
  *
  * rev:
  *  20091111 - franciscom - BUGID 2938 - Feature: Save and Go to next test case in test suite.
@@ -279,7 +279,8 @@ if( $gui->can_use_bulk_op )
     }
 
     $of=web_editor("bulk_exec_notes",$_SESSION['basehref'],$cfg->editorCfg);
-    $of->Value = null;
+    // $of->Value = null;
+   	$of->Value = getItemTemplateContents('bulk_exec_notes_template', $of->InstanceName, null);
     
     // Magic numbers that can be determined by trial and error
     $gui->bulk_exec_notes_editor=$of->CreateHTML(10,60);         

@@ -18,11 +18,14 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.263 2009/10/24 18:23:24 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.264 2009/11/21 18:05:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ * 20091121 - franciscom - added contribution by Julian - BUGID 0002968,0002961,0002962,0002963
+ *                         (refactored)
+ *
  *  20091018 - franciscom - added contribution LDAP with TLS
  *  20090926 - franciscom - new default for $tlCfg->req_cfg->child_requirements_mgmt
  *  20090912 - franciscom - BUGID 2796 - contribution reportsCfg->start_time
@@ -642,13 +645,17 @@ $tlCfg->testcase_cfg->can_remove_executed = ENABLED;
 $tlCfg->testcase_cfg->search=new stdClass();
 $tlCfg->testcase_cfg->search->max_qty_for_display=200;
         
-/** text template for a new Test Case summary, steps and expected_results */
+/** text template for a new items:
+    Test Case: summary, steps, expected_results, preconditions 
+
+*/
 // object members has SAME NAME that FCK editor objects.
 // the logic present on tcEdit.php is dependent of this rule.
 // every text object contains an object with following members: type and value
 // 
 // Possible values for type member: 
 // none: template will not be used, default will be a clean editor screen.
+// 
 // string: value of value member is assigned to FCK object
 // string_id: value member is used in a lang_get() call, and return value 
 //       is assigned to FCK object. Configure string_id on custom_strings.txt
@@ -657,18 +664,43 @@ $tlCfg->testcase_cfg->search->max_qty_for_display=200;
 //
 // any other value for type, results on '' assigned to FCK object
 
-$g_testcase_template->summary->type = 'none';
-$g_testcase_template->summary->value = '';
+$tlCfg->testcase_template = new stdClass();
+$tlCfg->testcase_template->summary->type = 'none';
+$tlCfg->testcase_template->summary->value = '';
 
-$g_testcase_template->steps->type = 'none';
-$g_testcase_template->steps->value = '';
+$tlCfg->testcase_template->steps->type = 'none';
+$tlCfg->testcase_template->steps->value = '';
 
-$g_testcase_template->expected_results->type = 'none';
-$g_testcase_template->expected_results->value = '';
+$tlCfg->testcase_template->expected_results->type = 'none';
+$tlCfg->testcase_template->expected_results->value = '';
+
+$tlCfg->testcase_template->preconditions->type = 'none';
+$tlCfg->testcase_template->preconditions->value = '';
+
 
 /** text template for a new Test Suite description */
-$g_testsuite_template->details->type = 'none';
-$g_testsuite_template->details->value = '';
+$tlCfg->testsuite_template->details->type = 'none';
+$tlCfg->testsuite_template->details->value = '';
+
+
+// Contribution - Julian
+// BUGID 0002968,0002961,0002962,0002963
+$tlCfg->project_template = new stdClass();
+$tlCfg->project_template->notes->type = 'string';
+$tlCfg->project_template->notes->value = 'Projetc';
+
+$tlCfg->testplan_template = new stdClass();
+$tlCfg->testplan_template->notes->type = 'none';
+$tlCfg->testplan_template->notes->value = '';
+
+$tlCfg->bulk_exec_notes_template = new stdClass();
+$tlCfg->bulk_exec_notes_template->bulk_exec_notes->type = 'none';
+$tlCfg->bulk_exec_notes_template->bulk_exec_notes->value = '';
+
+$tlCfg->build_template = new stdClass();
+$tlCfg->build_template->notes->type = 'none';
+$tlCfg->build_template->notes->value = '';
+
 
 
 

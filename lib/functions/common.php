@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.176 2009/11/21 18:27:30 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.177 2009/11/21 19:15:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1086,7 +1086,12 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
       			break;
       			 
       		case 'file':
-      			$value = read_template_file($editorTemplate->$webEditorName->value);
+      			$value = getFileContents($editorTemplate->$webEditorName->value);
+				if (is_null($value))
+				{
+					$value = lang_get('problems_trying_to_access_template') . 
+					         " {$editorTemplate->$webEditorName->value} ";
+				}	
       			break;
       			 
       		default:

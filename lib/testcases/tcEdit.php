@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.116 $
- * @modified $Date: 2009/11/21 19:26:38 $  by $Author: franciscom $
+ * @version $Revision: 1.117 $
+ * @modified $Date: 2009/11/21 19:29:04 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -459,7 +459,12 @@ if ($show_newTC_form)
 	    	  			break;
                 	
 	    	  		case 'file':
-	    	  			$the_value = read_file($cfg->tcase_template->$key->value);
+	    	  			$the_value = getFileContents($cfg->tcase_template->$key->value);
+						if (is_null($the_value))
+						{
+							$the_value = lang_get('problems_trying_to_access_template') . 
+							             " {$cfg->tcase_template->$key->value} ";
+						}	
 	    	  			break;
                 	
 	    	  		default:

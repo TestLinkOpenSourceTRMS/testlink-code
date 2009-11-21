@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/06/06 17:51:40 $ $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/11/21 19:16:27 $ $Author: uid189872 $
  *
  * @author Martin Havlat
  *
@@ -14,9 +14,9 @@
  *
  * @todo Verify dependency before delete testplan
  *
- * rev: 20080827 - franciscom - BUGID 1692
- *      20080203 - franciscom - fixed bug on active management
- *      20080112 - franciscom - adding testcase prefix management
+ * @internal revision
+ * 20091121 - franciscom - BUGID - Julian Contribution
+ * 20080827 - franciscom - BUGID 1692
 **/
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -45,7 +45,7 @@ $reloadType = 'none';
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
-$of->Value = null;
+// $of->Value = getItemTemplateContents('project_template', $of->name, $args->notes);
 
 $found = 'yes';
 $status_ok = 1;
@@ -116,7 +116,7 @@ switch($args->doAction)
 
     case "ErrorOnAction":
     default:
-        $of->Value = $args->notes;
+    	$of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
 
         foreach($ui as $prop => $value)
         {

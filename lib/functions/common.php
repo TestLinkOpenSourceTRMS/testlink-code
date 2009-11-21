@@ -13,11 +13,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.174 2009/11/19 20:05:39 schlundus Exp $
+ * @version    	CVS: $Id: common.php,v 1.175 2009/11/21 18:08:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ * 20091121 - franciscom - getItemTemplateContents() - contribution refactored
  * 20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
  * 20090409 - amitkhullar- BUGID 2354
  * 20090111 - franciscom - commented some required_once and some global coupling
@@ -1045,5 +1046,59 @@ function tlSubStr($str,$start,$length = null)
 		$length = iconv_strlen($str,$charset);
 	}	
 	return iconv_substr($str,$start,$length,$charset);
+}
+
+/**
+ * get text from a configured item template for editor objects
+ * 
+ * @param $itemTemplate identifies a TestLink item that can have
+ *        templates that can be loaded when creating an item to semplify
+ *        or guide user's work.
+ *        $itemTemplate is a property (of type stdClass) of $tlCfg configuration object.
+ *
+ *        supported values:
+ *        testcase_template
+ *
+ * @param $webEditorName webeditor name, that identifies a propety of $tlCfg->$itemTemplate
+ *        that holds input tenmplate configuration
+ * 
+ * @param $defaultText text to use if:
+ *        $tlCfg->itemTemplate OR $tlCfg->itemTemplate->$webEditorName 
+ *        does not exists.
+ *
+ */
+function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='') 
+{
+    $editorTemplate = config_get($itemTemplate);
+    $value=$defaultText;
+    new dBug($itemTemplate);
+    new dBug($webEditorName);
+    new dBug($defaultText);
+     
+    if( !is_null($editorTemplate) )
+    {
+      if (property_exists($editorTemplate, $webEditorName)) 
+      {
+      	switch($editorTemplate->$webEditorName->type)
+      	{
+      		case 'string':
+      			$value = $editorTemplate->$webEditorName->value;
+      			break;
+      			 
+      		case 'string_id':
+      			$value = lang_get($editorTemplate->$webEditorName->value);
+      			break;
+      			 
+      		case 'file':
+      			$value = read_template_file($editorTemplate->$webEditorName->value);
+      			break;
+      			 
+      		default:
+      			$value = '';
+      			break;
+      	}
+      }
+    }
+    return $value; 
 }
 ?>

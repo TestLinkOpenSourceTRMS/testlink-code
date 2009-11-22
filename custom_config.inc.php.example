@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php.example,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/10/05 08:47:10 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2009/11/22 11:16:22 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -147,4 +147,23 @@
 // ); 
 // 
 // $tlCfg->results['default_status'] = "not_run"; 
+//
+// -------------------------------------------------------------------------------------------------
+// Item templates
+//
+// $tlCfg->testplan_template->notes->type = 'string';
+// $tlCfg->testplan_template->notes->value = 'this is a test plan';
+// 
+// $tlCfg->build_template->notes->type = 'string';
+// $tlCfg->build_template->notes->value = 'what a build';
+// $tlCfg->requirement_template->scope->type = 'string';
+// $tlCfg->requirement_template->scope->value = 'what a Requirement';
+// $tlCfg->requirement_template->scope->type = 'file';
+// $tlCfg->requirement_template->scope->value = 'c:\usr\local\xampp-1.7.2\xampp\htdocs\head-20090909\item_templates\requirement.txt';
+// $tlCfg->req_spec_template->scope->type = 'string';
+// $tlCfg->req_spec_template->scope->value = 'what a req_spec';
+// $tlCfg->req_spec_template->scope->type = 'file';
+// $tlCfg->req_spec_template->scope->value = 'c:\usr\local\xampp-1.7.2\xampp\htdocs\head-20090909\item_templates\req_spec.txt';
+
+
 ?>

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/11/21 19:25:02 $ $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2009/11/22 11:16:18 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -29,8 +29,6 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-
-new dBug($args);
 
 $gui = initialize_gui($db);
 $commandMgr = new reqSpecCommands($db);

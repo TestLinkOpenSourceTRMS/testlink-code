@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.177 2009/11/21 19:15:44 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.178 2009/11/22 11:04:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -259,18 +259,18 @@ function initTopMenu(&$db)
 	$_SESSION['testprojectTopMenu'] = '';
 	$guiTopMenu = config_get('guiTopMenu');
     
-	//check if Project is available
+	// check if Project is available
 	if ($_SESSION['testprojectID'] > 0)
 	{
 		$idx = 1;	
     	foreach ($guiTopMenu as $element)
 		{
-			//check if Test Plan is available
-			$bCondition = FALSE;
+			// check if Test Plan is available
 			if ((!isset($element['condition'])) || ($element['condition'] == '') ||
-					(($element['condition'] == 'TestPlanAvailable') && isset($_SESSION['testplanID'])
-					&& $_SESSION['testplanID'] > 0))
+				(($element['condition'] == 'TestPlanAvailable') && 
+				  isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0))
 			{
+				// (is_null($element['right']) => no right needed => display always
 				if (is_null($element['right']) || has_rights($db,$element['right']) == "yes")
 				{
 					$_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .

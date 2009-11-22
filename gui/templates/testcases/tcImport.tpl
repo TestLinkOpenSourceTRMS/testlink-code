@@ -1,21 +1,22 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.6 2009/04/21 10:08:34 franciscom Exp $
+$Id: tcImport.tpl,v 1.7 2009/11/22 15:59:15 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
-rev: 20080329 - franciscom - lang_get() refactoring
+rev: 20091122 - franciscom - refayoting to use alert_message()
 *}
 
 {lang_get var="labels"
           s='file_type,view_file_format_doc,local_file,
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
-             action_on_duplicated_name,
-             btn_cancel,title_imp_tc_data'}
+             action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
+{include file="inc_del_onclick.tpl"}
+</head>
 <body>
 
 <h1 class="title">{$container_description}{$smarty.const.TITLE_SEP}{$container_name|escape}</h1>
@@ -71,11 +72,11 @@ rev: 20080329 - franciscom - lang_get() refactoring
 	{include file="inc_refreshTree.tpl"}
 {/if}
 
-{* 20061114 - franciscom *}
 {if $file_check.status_ok eq 0}
-    <script>
-    alert("{$file_check.msg}");
-    </script>
+  <script type="text/javascript">
+  alert_message("{$labels.warning}","{$file_check.msg}");
+  // alert("{$file_check.msg}");
+  </script>
 {/if}  
 
 

@@ -1,20 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.7 2009/03/08 11:46:24 franciscom Exp $
+$Id: tcNew.tpl,v 1.8 2009/11/22 15:54:27 franciscom Exp $
 Purpose: smarty template - create new testcase
 
+20091122 - franciscom - refactoring to use ext-js alert
 20070214 - franciscom -
 BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed.
-
-20070104 - franciscom - added javascript validation for testcase_name
-
-20061231 - franciscom - use of $gsmarty_href_keywordsView
-                        use a class for the labels
-
  ----------------------------------------------------------------- *}
 
-{lang_get var='labels' s='btn_create,cancel'}
+{lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,
+                          warning_empty_tc_title'}
+
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
@@ -31,13 +29,14 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {literal}
 <script type="text/javascript">
 {/literal}
-var warning_empty_testcase_name = "{lang_get s='warning_empty_tc_title'}";
+var alert_box_title = "{$labels.warning}";
+var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 {literal}
 function validateForm(f)
 {
   if (isWhitespace(f.testcase_name.value)) 
   {
-      alert(warning_empty_testcase_name);
+      alert_message(alert_box_title,warning_empty_testcase_name);
       selectField(f, 'testcase_name');
       return false;
   }
@@ -52,7 +51,7 @@ function validateForm(f)
 {config_load file="input_dimensions.conf" section="tcNew"} {* Constant definitions *}
 
 <h1 class="title">{$parent_info.description}{$tlCfg->gui_title_separator_1}
-	{$parent_info.name|escape}{$tlCfg->gui_title_separator_2}{lang_get s='title_new_tc'}</h1>
+	{$parent_info.name|escape}{$tlCfg->gui_title_separator_2}{$labels.title_new_tc}</h1>
 
 <div class="workBack">
 

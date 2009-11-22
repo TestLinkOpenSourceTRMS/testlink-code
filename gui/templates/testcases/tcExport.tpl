@@ -1,27 +1,31 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcExport.tpl,v 1.7 2009/01/06 15:34:05 franciscom Exp $ 
-Purpose: smarty template - keyword export initial page 
+$Id: tcExport.tpl,v 1.8 2009/11/22 16:02:58 franciscom Exp $ 
+
+test case export initial page 
+
 Revisions:
-       20071013 - franciscom - file name management
-       20070113 - franciscom - added message when there is nothing to export 
+20091122 - franciscom - refacoting to use alert_message()
+
 * ----------------------------------------------------------------- *}
 {lang_get var="labels" 
-          s='export_filename,warning_empty_filename,file_type,
+          s='export_filename,warning_empty_filename,file_type,warning,
              view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
+var alert_box_title = "{$labels.warning}";
 var warning_empty_filename = "{$labels.warning_empty_filename}";
 {literal}
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
   {
-      alert(warning_empty_filename);
+      alert_message(alert_box_title,warning_empty_filename);
       selectField(f, 'export_filename');
       return false;
   }

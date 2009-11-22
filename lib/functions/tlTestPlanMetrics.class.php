@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.2 2009/11/05 16:43:19 franciscom Exp $
+ * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.3 2009/11/22 17:45:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -46,7 +46,7 @@ class tlTestPlanMetrics extends testPlan
 	 **/    
 	function __construct(&$db)
 	{
-    $this->priorityLevelsCfg = config_get('priority_levels');
+    	$this->priorityLevelsCfg = config_get('priority_levels');
 		$this->resultsCfg = config_get('results');
 		$this->testCaseCfg = config_get('testcase_cfg');
 

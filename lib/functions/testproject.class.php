@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.130 2009/09/28 08:45:46 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.131 2009/11/22 17:45:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -83,7 +83,7 @@ class testproject extends tlObjectWithAttachments
 	 * 
 	 * @param resource &$db reference to database handler
 	 */
-	function testproject(&$db)
+	function __construct(&$db)
 	{
 		$this->db = &$db;
 		$this->tree_manager = new tree($this->db);
@@ -91,6 +91,7 @@ class testproject extends tlObjectWithAttachments
 		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
         $this->object_table=$this->tables['testprojects'];
 	}
+
 
 /**
  * Create a new test project

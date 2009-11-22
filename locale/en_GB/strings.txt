@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.489 2009/11/21 09:18:07 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.490 2009/11/22 17:27:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1854,7 +1854,12 @@ $TLS_req_import_format_description2 = " - CSV exported from DOORS requires heade
 $TLS_req_import_format_docbook = " - DocBook XML format";
 $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
-$TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
+$TLS_warning_duplicate_reqdoc_id = "Duplicated document id";
+
+
+//  ----- lib/functions/requirement_spec_mgr.class.php -----
+$TLS_warning_duplicated_req_spec_doc_id = "There's already a req. spec (title:%s) with this doc id (%s)";
+$TLS_warning_duplicated_req_spec_title = "There's already a req. spec (doc id:%s) with this title (%s)";
 
 
 // ----- lib/functions/testcase.class.php -----

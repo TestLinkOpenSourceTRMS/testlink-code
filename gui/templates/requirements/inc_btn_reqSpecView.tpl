@@ -1,13 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.12 2009/11/22 18:50:44 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.13 2009/11/22 18:54:50 franciscom Exp $
 
 rev: 20090321 - franciscom 
      20080925 - franciscom - child requirements/folder management 
      20080924 - franciscom - if req spec has no requirements then disable certain features
 *}
 {lang_get var='labels'
-          s='btn_req_create,btn_generate_doc,btn_new_req_spec,btn_analyse,
+          s='btn_req_create,btn_generate_doc,btn_new_req_spec,btn_analyse,btn_export,
              req_select_create_tc,btn_import,btn_export_reqs,btn_edit_spec,btn_delete_spec'}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -47,11 +47,11 @@ rev: 20090321 - franciscom
 		<input type="button" name="importReq" value="{$labels.btn_import}"
 		       onclick="location='{$req_import_url}'" />
 	        {if $gui->requirements_count > 0}
-  			<input type="button" name="create_tcases" value="{$labels.req_select_create_tc}"
-		               onclick="location='{$req_create_tc_url}'" />
-    		<input type="button" name="exportReq" value="{$labels.btn_export_reqs}"
-		               onclick="location='{$req_export_url}'" />
-  		    {/if}
+  			      <input type="button" name="create_tcases" value="{$labels.req_select_create_tc}"
+		                 onclick="location='{$req_create_tc_url}'" />
+    		  {/if}    
+ 		      <input type="button" name="exportReq" value="{$labels.btn_export}"
+		             onclick="location='{$req_export_url}'" />
 	  	{/if}
 	</div>
   </form>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/11/22 18:33:22 $ by $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/11/22 18:42:26 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -860,7 +860,7 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
 function getReqTree($id)
 {
     $filters=null;
-    $opetions=array('recursive' => true);
+    $options=array('recursive' => true);
     $map = $this->tree_mgr->get_subtree($id,$filters,$options);
     return $map;  
 }
@@ -920,11 +920,14 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	    	}
 	    	else if ($cNode['node_table'] == 'requirements')
 	    	{
-	    	  if( is_null($req_mgr) )
-	    	  {
+	    	  	if( is_null($req_mgr) )
+	    	  	{
 	    	      $req_mgr = new requirement_mgr($this->db);
 	    		}
+	    		$reqXMLData = $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
 	    		$xmlData .= $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
+	    		
+	    		new dBug($reqXMLData);
 	    	}
 	    }
 	}    

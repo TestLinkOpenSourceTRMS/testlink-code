@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.117 $
- * @modified $Date: 2009/11/21 19:29:04 $  by $Author: franciscom $
+ * @version $Revision: 1.118 $
+ * @modified $Date: 2009/11/22 11:41:51 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -438,53 +438,23 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 if ($show_newTC_form)
 {
 	$smarty->assign('containerID', $args->container_id);
-
-  // BUGID 2163 - Create test case with same title, after submit, all data lost 
-  if( $init_inputs)
-  {
-      // 20071106 - BUGID 1165
+	
+	// BUGID 2163 - Create test case with same title, after submit, all data lost 
+	if( $init_inputs)
+	{
 	    foreach ($oWebEditor->cfg as $key => $value)
 	    {
-	    	$the_value = '';
-	    	if(	property_exists($cfg->tcase_template,$key) )
-	    	{
-	    		switch($cfg->tcase_template->$key->type)
-	    	  	{
-	    	  		case 'string':
-	    	  			$the_value = $cfg->tcase_template->$key->value;
-	    	  			break;
-                	
-	    	  		case 'string_id':
-	    	  			$the_value = lang_get($cfg->tcase_template->$key->value);
-	    	  			break;
-                	
-	    	  		case 'file':
-	    	  			$the_value = getFileContents($cfg->tcase_template->$key->value);
-						if (is_null($the_value))
-						{
-							$the_value = lang_get('problems_trying_to_access_template') . 
-							             " {$cfg->tcase_template->$key->value} ";
-						}	
-	    	  			break;
-                	
-	    	  		default:
-	    	  			$the_value = '';
-	    	  			break;
-	    	  	}
-	    	}  
 	        $of = &$oWebEditor->editor[$key];
 	        $rows = $oWebEditor->cfg[$key]['rows'];
 	        $cols = $oWebEditor->cfg[$key]['cols'];
-      
-	    	$of->Value = $the_value;
-	        $smarty->assign($key, $of->CreateHTML($rows,$cols));
-	    } // foreach ($a_oWebEditor_cfg as $key)
-      // ------------------------------------------------------------------------
-      
-      $tc_default=array('id' => 0, 'name' => '', 
-                        'importance' => $tlCfg->testcase_importance_default,
-                        'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
+	       	$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');
 	    
+	        $smarty->assign($key, $of->CreateHTML($rows,$cols));
+	  	} // foreach ($a_oWebEditor_cfg as $key)
+
+      	$tc_default=array('id' => 0, 'name' => '', 
+                          'importance' => $tlCfg->testcase_importance_default,
+                          'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
   	}
   	else
   	{
@@ -495,12 +465,11 @@ if ($show_newTC_form)
 	  	    $rows = $oWebEditor->cfg[$key]['rows'];
 	  	    $cols = $oWebEditor->cfg[$key]['cols'];
       	
-	  		  $of->Value = $args->$key;
+	  		$of->Value = $args->$key;
 	  	    $smarty->assign($key, $of->CreateHTML($rows,$cols));
-	  	} // foreach ($a_oWebEditor_cfg as $key)
-      	
+	  	}
       	$tc_default=array('id' => 0, 'name' => '', 'importance' => $args->importance, 
-      	                'execution_type' => $args->exec_type);
+      	                  'execution_type' => $args->exec_type);
   	}
 
 	$filters=$tcase_mgr->buildCFLocationMap();
@@ -516,23 +485,6 @@ if ($show_newTC_form)
 	$smarty->assign('tc',$tc_default);
     $templateCfg = templateConfiguration('tcNew');
   	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-	// $smarty->display($templateCfg->template_dir . $g_tpl['tcNew']);
-}
-
-/*
-  function: read_file
-  args: file_name
-  returns: if file exist and can be read -> file contents
-           else error message
-*/
-//@TODO: schlundus, a really duplicate of testsuite->read_file, should be remove
-function read_file($file_name)
-{
-	$fContents = getFileContents($file_name);
-	if (is_null($fContents))
-	{
-		$fContents = lang_get('problems_trying_to_access_template') . " {$file_name} ";
-	}	
 }
 
 /*

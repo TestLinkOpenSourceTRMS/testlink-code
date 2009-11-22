@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2009/11/22 17:27:43 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
@@ -109,6 +109,7 @@ class reqSpecCommands
 		$guiObj->submit_button_label=$this->submit_button_label;
       	$guiObj->template = $this->defaultTemplate;
       	$guiObj->req_spec_id=null;
+      	$guiObj->req_spec_doc_id=null;
 		$guiObj->req_spec_title=null;
 		$guiObj->total_req_counter=null;
 
@@ -116,7 +117,7 @@ class reqSpecCommands
 		$ret = $this->reqSpecMgr->create($argsObj->tproject_id,$argsObj->reqParentID,
 		                                 $argsObj->doc_id,$argsObj->title,$argsObj->scope,
 		                                 $argsObj->countReq,$argsObj->user_id);
-      
+
 		$guiObj->user_feedback = $ret['msg'];
 		if($ret['status_ok'])
 		{
@@ -186,6 +187,11 @@ class reqSpecCommands
 		   $guiObj->main_descr = $descr_prefix . $guiObj->req_spec['title'];
 		   $guiObj->action_descr = lang_get('edit_req_spec');
 		   $guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_values($argsObj->req_spec_id,$argsObj->tproject_id);
+
+           // Do not loose user's input
+		   $guiObj->req_spec_doc_id=$argsObj->doc_id;
+		   $guiObj->req_spec_title=$argsObj->title;
+		   $guiObj->total_req_counter=$argsObj->countReq;
 		}
 
 

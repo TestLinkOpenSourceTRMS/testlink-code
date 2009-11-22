@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2009/11/21 09:01:13 $ by $Author: franciscom $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2009/11/22 15:48:39 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * rev:
@@ -88,7 +88,7 @@ if($init_opt_transfer)
     $opt_cfg = initializeOptionTransfer($tproject_mgr,$tsuite_mgr,$args,$action);
 }
 // create  web editor objects
-list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateCfg)=initWebEditors($a_keys,$level,$editorCfg);
+list($oWebEditor,$webEditorHtmlNames,$webEditorTemplateKey)=initWebEditors($a_keys,$level,$editorCfg);
 
 if($get_c_data)
 {
@@ -115,7 +115,7 @@ switch($action)
 		keywords_opt_transf_cfg($opt_cfg, $args->assigned_keyword_list);
 		$smarty->assign('opt_cfg', $opt_cfg);
 		$tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames,$oWebEditor,$action,
-		                             $args->containerID, $args->testsuiteID,null,$webEditorTemplateCfg);
+		                             $args->containerID, $args->testsuiteID,null,$webEditorTemplateKey);
 		break;
 
     case 'delete_testsuite':
@@ -173,7 +173,7 @@ switch($action)
       	$smarty->assign('opt_cfg', $opt_cfg);
   	    $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
 	                                 $args->containerID, null,$messages,
-	                                 $webEditorTemplateCfg,$userInput);
+	                                 $webEditorTemplateKey,$userInput);
     	break;
 
 
@@ -750,11 +750,13 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
     switch($containerType)
     {
         case 'testsuite':
-            $cfg=config_get('testsuite_template');
+            // $cfg=config_get('testsuite_template');
+            $itemTemplateKey='testsuite_template';
         break;    
         
         default:
-            $cfg=null;
+            //$cfg=null;
+            $itemTemplateKey=null;
         break;    
     }
     
@@ -765,6 +767,6 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
     {
       $oWebEditor[$key] = web_editor($key,$_SESSION['basehref'],$editorCfg);
     }
-    return array($oWebEditor,$htmlNames,$cfg);
+    return array($oWebEditor,$htmlNames,$itemTemplateKey);
  }
 ?>

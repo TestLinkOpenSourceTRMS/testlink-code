@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/11/22 17:28:29 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/11/22 17:59:26 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -132,13 +132,14 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 function create($tproject_id,$parent_id,$doc_id,$title, $scope, 
                 $countReq,$user_id,$type = 'n',$node_order=null)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $result=array('status_ok' => 0, 'msg' => 'ko', 'id' => 0);
     $title=trim($title);
     $chk=$this->check_main_data($title,$doc_id,$tproject_id,$parent_id);
     if ($chk['status_ok'])
     {
         $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$title,$node_order);
-        $sql = "INSERT INTO {$this->object_table} " .
+        $sql = "/* $debugMsg */ INSERT INTO {$this->object_table} " .
 			   " (id, testproject_id, doc_id, scope, type, total_req, author_id, creation_ts) " .
                " VALUES (" . $req_spec_id . "," . $tproject_id . ",'" . 
                $this->db->prepare_string($doc_id) . "','" .
@@ -672,11 +673,23 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
 
   /*
     function: check_main_data
-              Do checks on req spec title, to understand if can be used.
+              Do checks on req spec title and doc id, to understand if can be used.
 
               Checks:
               1. title is empty ?
-              2. does already exist a req spec with this title?
+              2. doc is is empty ?
+              3. does already exist a req spec with this title?
+              4. does already exist a req spec with this doc id?
+              
+              VERY IMPORTANT:
+  	          $tlCfg->req_cfg->child_requirements_mgmt has effects on check on already
+  	          existent title or doc id.
+  	          
+              $tlCfg->req_cfg->child_requirements_mgmt == ENABLED  => N level tree
+                 title and doc id can not repited on ANY level of tree
+                 
+              This is important due to unique index present on Database
+              
 
     args : title: req spec title
            doc_id: req spec document id / code / short title
@@ -693,6 +706,9 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   function check_main_data($title,$doc_id,$tproject_id=null,$parent_id=null,$id=null,
                            $case_analysis=self::CASE_SENSITIVE)
   {
+  	$cfg = config_get('req_cfg');
+  	$my_parent_id = $cfg->child_requirements_mgmt == ENABLED ? null : $parent_id;
+
     $ret['status_ok'] = 1;
     $ret['msg'] = '';
 
@@ -714,7 +730,7 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   	if($ret['status_ok'])
   	{
 		$ret['msg']='ok';
-      	$rs = $this->get_by_title($title,$tproject_id,$parent_id,$case_analysis);
+      	$rs = $this->get_by_title($title,$tproject_id,$my_parent_id,$case_analysis);
   		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
       	{
       		$info = current($rs);
@@ -726,7 +742,7 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   	if($ret['status_ok'])
   	{
 		$ret['msg']='ok';
-      	$rs = $this->getByDocID($doc_id,$tproject_id,$parent_id,$case_analysis);
+      	$rs = $this->getByDocID($doc_id,$tproject_id,$my_parent_id,$case_analysis);
   		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
       	{
       		$info = current($rs);

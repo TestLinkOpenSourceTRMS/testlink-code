@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.8 2009/07/09 10:23:40 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.9 2009/11/22 18:19:09 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -18,8 +18,9 @@
 *   - Assign keywords to test cases
 *   - Assign requirements to test cases
 *
-*   rev: 
-*       20090502 - franciscom - BUGID 2309 - display requirement doc id
+*	@internal revision
+*	20091122 - franciscom - manage rep spec doc id
+*	20090502 - franciscom - BUGID 2309 - display requirement doc id
 *        
 */
 require_once('../../config.inc.php');
@@ -43,7 +44,7 @@ echo json_encode($nodes);
 function display_children($dbHandler,$root_node,$parent,$filter_node,
                           $show_children=ON,$operation='manage') 
 {             
-    $tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy','node_types'));
+    $tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy','node_types','req_specs'));
     
     switch($operation)
     {
@@ -55,19 +56,30 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
         case 'manage':
         default:
             $js_function = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
-                                'requirement_spec' =>'REQ_SPEC_MGMT', 'requirement' => 'REQ_MGMT');
+                                 'requirement_spec' =>'REQ_SPEC_MGMT', 'requirement' => 'REQ_MGMT');
         	break;  
     }
     
     $nodes = null;
     $filter_node_type = $show_children ? '' : ",'requirement'";
 
-    $sql = " SELECT NHA.*, NT.description AS node_type " . 
-           " FROM {$tables['nodes_hierarchy']} NHA, {$tables['node_types']}  NT " .
-           " WHERE NHA.node_type_id=NT.id " .
-           " AND parent_id = {$parent} " .
-           " AND NT.description NOT IN " .
-           " ('testcase','testsuite','testcase_version','testplan'{$filter_node_type}) ";
+    // $sql = " SELECT NHA.*, NT.description AS node_type " . 
+    //        " FROM {$tables['nodes_hierarchy']} NHA, {$tables['node_types']}  NT " .
+    //        " WHERE NHA.node_type_id=NT.id " .
+    //        " AND parent_id = {$parent} " .
+    //        " AND NT.description NOT IN " .
+    //        " ('testcase','testsuite','testcase_version','testplan'{$filter_node_type}) ";
+
+
+    $sql = " SELECT NHA.*, NT.description AS node_type, RSPEC.doc_id " . 
+           " FROM {$tables['nodes_hierarchy']} NHA JOIN {$tables['node_types']}  NT " .
+           " ON NHA.node_type_id=NT.id " .
+           " AND NT.description NOT IN ('testcase','testsuite','testcase_version','testplan'{$filter_node_type}) " .
+           " LEFT OUTER JOIN {$tables['req_specs']} RSPEC " .
+           " ON RSPEC.id = NHA.id " . 
+           " WHERE parent_id = {$parent} ";
+    
+    // file_put_contents('c:\getrequirementnodes.php.txt', $sql);                            
 
     if(!is_null($filter_node) && $filter_node > 0 && $parent == $root_node)
     {
@@ -79,7 +91,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	if(!is_null($nodeSet)) 
 	{
         // BUGID 2309
-        $sql =  " SELECT DISTINCT req_doc_id AS docid,NHA.id" .
+        $sql =  " SELECT DISTINCT req_doc_id AS doc_id,NHA.id" .
                 " FROM {$tables['requirements']} REQ JOIN {$tables['nodes_hierarchy']} NHA ON NHA.id = REQ.id  " .
                 " JOIN {$tables['nodes_hierarchy']}  NHB ON NHA.parent_id = NHB.id " . 
                 " JOIN {$tables['node_types']} NT ON NT.id = NHA.node_type_id " .
@@ -110,11 +122,12 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 
                 case 'requirement_spec':
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
+	                $path['text'] = htmlspecialchars($row['doc_id'] . "::") . $path['text'];
 	                break;
 
                 case 'requirement':
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
-	                $path['text'] = htmlspecialchars($requirements[$row['id']]['docid'] . ":") . $path['text'];
+	                $path['text'] = htmlspecialchars($requirements[$row['id']]['doc_id'] . ":") . $path['text'];
 	                $path['leaf']	= true;
 	                break;
             }

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2009/11/22 18:42:26 $ by $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2009/11/22 18:43:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -926,8 +926,6 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	    		}
 	    		$reqXMLData = $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
 	    		$xmlData .= $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
-	    		
-	    		new dBug($reqXMLData);
 	    	}
 	    }
 	}    

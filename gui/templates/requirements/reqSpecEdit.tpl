@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.17 2009/11/19 17:50:09 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.18 2009/11/22 18:46:43 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 *}
@@ -18,11 +18,12 @@ Purpose: smarty template - create a new req document
 <script type="text/javascript">
 	var alert_box_title = "{$labels.warning}";
 	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title}";
-	var warning_empty_req_spec_docid = "{$labels.warning_empty_doc_id}";
+	var warning_empty_doc_id = "{$labels.warning_empty_doc_id}";
 	var warning_countreq_numeric = "{$labels.warning_countreq_numeric}";
 	{literal}
 	function validateForm(f)
 	{
+   
 		if (isWhitespace(f.doc_id.value)) 
   	{
     	alert_message(alert_box_title,warning_empty_doc_id);
@@ -62,7 +63,7 @@ Purpose: smarty template - create a new req document
 
   	<div class="labelHolder"><label for="doc_id">{$labels.doc_id}</label>
   	</div>
-	  <div><input type="text" name="doc_id" id="reqDocId"
+	  <div><input type="text" name="doc_id" id="doc_id"
   		        size="{#REQSPEC_DOCID_SIZE#}" maxlength="{#REQSPEC_DOCID_MAXLEN#}"
   		        value="{$gui->req_spec_doc_id|escape}" />
   				{include file="error_icon.tpl" field="doc_id"}
@@ -113,7 +114,7 @@ Purpose: smarty template - create a new req document
 </div>
 
 <script type="text/javascript" defer="1">
-   	document.forms[0].req_spec_title.focus()
+   	document.forms[0].doc_id.focus()
 </script>
 
 </body>

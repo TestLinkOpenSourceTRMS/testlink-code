@@ -1,13 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.10 2009/05/02 15:18:21 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.11 2009/11/22 18:48:47 franciscom Exp $
 
 rev: 20090321 - franciscom 
      20080925 - franciscom - child requirements/folder management 
      20080924 - franciscom - if req spec has no requirements then disable certain features
 *}
 {lang_get var='labels'
-          s='btn_req_create,btn_generate_doc,btn_new_req_spec'}
+          s='btn_req_create,btn_generate_doc,btn_new_req_spec,btn_edit_spec,btn_delete_spec'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -25,10 +25,9 @@ rev: 20090321 - franciscom
   	               value="{$labels.btn_new_req_spec}"
 		               onclick="location='{$req_spec_new_url}'" />  
         	{/if}
-  		<input type="submit" name="edit_req_spec" 
-  	       value="{lang_get s='btn_edit_spec'}" 
-  	       onclick="doAction.value='edit'"/>
-  		<input type="button" name="deleteSRS" value="{lang_get s='btn_delete_spec'}"
+  		<input type="submit" name="edit_req_spec"  value="{$labels.btn_edit_spec}" 
+  	         onclick="doAction.value='edit'"/>
+  		<input type="button" name="deleteSRS" value="{$labels.btn_delete_spec}"
   	       onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'|escape}',
                                         '{$del_msgbox_title}','{$warning_msg}');"	/>
   		{/if}

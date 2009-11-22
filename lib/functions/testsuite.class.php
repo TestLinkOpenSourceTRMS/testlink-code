@@ -6,15 +6,15 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.72 2009/09/28 08:45:46 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.73 2009/11/22 15:47:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091122 - franciscom - item template logic refactored - read_file() removed
  * 20090821 - franciscom - BUGID 0002781
  * 20090801 - franciscom - BUGID 2767 Duplicate testsuite name error message issue 
  * 20090514 - franciscom - typo bug on html_table_of_custom_field_inputs()
- * 20090503 - franciscom - bug in read_file()
  * 20090330 - franciscom - changes in calls to get_linked_cfields_at_design()
  * 20090329 - franciscom - html_table_of_custom_field_values()
  * 20090209 - franciscom - new method - get_children_testcases()
@@ -459,7 +459,8 @@ class testsuite extends tlObjectWithAttachments
 	                     [result_msg]: default: null used to give information to user
 	                     [user_feedback]: default: null used to give information to user
 	                     
-	         [$userTemplateCfg]: configurations, Example: testsuite template usage
+	         // [$userTemplateCfg]: configurations, Example: testsuite template usage
+	         [$userTemplateKey]: main Key to access item template configuration
 	         [$userInput]
 	                          
 	  returns: -
@@ -470,7 +471,7 @@ class testsuite extends tlObjectWithAttachments
 	       20071202 - franciscom - interface changes -> template_dir
 	*/
 	function viewer_edit_new(&$smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action, $parent_id, 
-	                         $id=null, $messages=null, $userTemplateCfg=null, $userInput=null)
+	                         $id=null, $messages=null, $userTemplateKey=null, $userInput=null)
 	{
 	
 		$internalMsg = array('result_msg' => null,  'user_feedback' => null);
@@ -524,10 +525,10 @@ class testsuite extends tlObjectWithAttachments
 		// presenting a new test suite with all other fields empty.
    		if( !$useUserInput )
         {
-			if( ($action == 'new_testsuite' || $action == 'add_testsuite') && !is_null($userTemplateCfg) )
+			if( ($action == 'new_testsuite' || $action == 'add_testsuite') && !is_null($userTemplateKey) )
 			{
 			   // need to understand if need to use templates
-			   $webEditorData=$this->_initializeWebEditors($webEditorHtmlNames,$userTemplateCfg);
+			   $webEditorData=$this->_initializeWebEditors($webEditorHtmlNames,$userTemplateKey);
 			   
 			} 
 		}
@@ -809,54 +810,15 @@ class testsuite extends tlObjectWithAttachments
 	  returns: 
 	
 	*/
-	private function _initializeWebEditors($WebEditors,$templateCfg)
+	private function _initializeWebEditors($WebEditors,$itemTemplateCfgKey)
 	{
 	  $wdata=array();
 	  foreach ($WebEditors as $key => $html_name)
 	  {
-	    switch($templateCfg->$html_name->type)
-	    {
-	      case 'string':
-	    	$wdata[$html_name] = $templateCfg->$html_name->value;
-	      break;
-	      
-	      case 'string_id':
-	    	$wdata[$html_name] = lang_get($templateCfg->$html_name->value);
-	      break;
-	      
-	      
-	      case 'file':
-	    	$wdata[$html_name] = $this->read_file($templateCfg->$html_name->value);
-	      break;
-	      
-	      default:
-	      $wdata[$html_name] = '';
-	      break;
-	    }
-	  } // foreach  
+	  	$wdata[$html_name] = getItemTemplateContents($itemTemplateCfgKey, $html_name, '');
+	  } 
 	  return $wdata;
 	}
-	
-	
-	/*
-	  function: read_file
-	
-	  args: file_name 
-	  
-	  returns: if file exist and can be read -> file contents
-	           else error message
-	
-	*/
-	private function read_file($file_name)
-	{
-		$fContents = getFileContents($file_name);
-		if (is_null($fContents))
-		{
-			$fContents = lang_get('problems_trying_to_access_template') . " {$file_name} ";
-		}	
-		return $fContents;
-	}
-	
 	
 	
 	/*

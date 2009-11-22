@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.5 2009/11/21 08:58:09 franciscom Exp $
+$Id: containerNew.tpl,v 1.6 2009/11/22 15:47:05 franciscom Exp $
 Purpose: smarty template - create containers
 
 20070214 - franciscom -
@@ -10,7 +10,8 @@ BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pres
 20060804 - franciscom - changes to add option transfer
 *}
 {lang_get var="labels"
-          s="warning_empty_testsuite_name,title_create,tc_keywords,btn_create_testsuite"}
+          s="warning_empty_testsuite_name,title_create,tc_keywords,
+             warning,btn_create_testsuite"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 

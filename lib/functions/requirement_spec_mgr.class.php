@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/11/22 17:59:26 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/11/22 18:33:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -874,32 +874,36 @@ function getReqTree($id)
  *  - children: can be other req spec  or requirements (tree leaves)
  *
  * Developed using exportTestSuiteDataToXML() as model
+ *
+ * @internal revision
+ * 20091122 - franciscom - added doc id management  
  */
 function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 {
-  static $req_mgr;
-   
-  // manage missing keys
-  $optionsForExport=array('RECURSIVE' => true);
-  foreach($optionsForExport as $key => $value)
-  {
-      $optionsForExport[$key]=isset($optExport[$key]) ? $optExport[$key] : $value;      
-  }
-
-  $cfXML=null;
+	static $req_mgr;
+	 
+	// manage missing keys
+	$optionsForExport=array('RECURSIVE' => true);
+	foreach($optionsForExport as $key => $value)
+	{
+	    $optionsForExport[$key]=isset($optExport[$key]) ? $optExport[$key] : $value;      
+	}
+	
+	$cfXML=null;
 	$xmlData = null;
 	if($optionsForExport['RECURSIVE'])
 	{
-    $cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
+	  	$cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
 		$containerData = $this->get_by_id($id);
-    $xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']). '" >' .
-               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
-	             "<scope><![CDATA[{$containerData['scope']}]]> \n</scope>{$cfXML}";
+	  	$xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']) . '" ' .
+	  	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" >' .
+	               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
+	               "<scope><![CDATA[{$containerData['scope']}]]> \n</scope>{$cfXML}";
 	}
 	else
 	{
 		$xmlData = "<requirement>";
-  }
+	}
   
 	$req_spec = $this->getReqTree($id);
 	$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
@@ -1287,7 +1291,8 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
         $depth = $elem['level'];
         
         //echo "Going to create reqspec:" . $copy_reqspec[$idx] . ":" . $elem['title'] . "<br>";
-        $result = $this->create($tproject_id,$container_id[$depth], $elem['title'],$elem['scope'],0,$author_id);
+        $result = $this->create($tproject_id,$container_id[$depth], 
+                                $elem['doc_id'],$elem['title'],$elem['scope'],0,$author_id);
         if($result['status_ok'])
         {
             $container_id[$depth+1] = $result['id']; 
@@ -1372,9 +1377,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=sel
 
   	return $output;
   }
-
-
-
 
 } // class end
 ?>

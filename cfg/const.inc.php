@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.117 2009/11/19 20:05:39 schlundus Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.118 2009/11/22 11:01:18 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -681,6 +681,16 @@ $tlCfg->review_types = array(1 => 'type_undefined',
  * @since TestLink version 1.9 
  */
 $tlCfg->guiTopMenu = array();
+
+// structure
+// label: label to display, will be localized
+// url: resource to access when users click on menu item
+// right: user right need to display menu item.
+//        null => no right check needed
+//
+// condition: @TODO Martin please document
+// shortcut: keyboard shortcut
+// target: window name
 $tlCfg->guiTopMenu[1] = array(
 		'label' => 'home',
 		'url' => 'index.php',

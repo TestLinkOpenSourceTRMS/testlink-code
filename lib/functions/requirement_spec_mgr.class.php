@@ -5,43 +5,34 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/11/19 17:51:44 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/11/22 17:28:29 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ *  20091122 - franciscom - new methods getByDocID(), check_main_data()
  *	20091119 - franciscom - added doc_id management
  *
- *      20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
- *      20090514 - franciscom - BUGID 2491
- *      20090427 - amitkhullar- BUGID : 2439 Modified query to handle lower case status codes.
- *      20090322 - franciscom - create() - added node_order.
- *                              check_title() - improvements now manages test project id and parent id.
- *                              get_by_title() - improvements now manages test project id and parent id.
+ *  20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
+ *  20090514 - franciscom - BUGID 2491
+ *  20090427 - amitkhullar- BUGID : 2439 Modified query to handle lower case status codes.
+ *  20090322 - franciscom - create() - added node_order.
+ *                          check_title() - improvements now manages test project id and parent id.
+ *                          get_by_title() - improvements now manages test project id and parent id.
  *
- *      20090322 - franciscom - xmlToMapReqSpec()
- *      20090321 - franciscom - added customFieldValuesAsXML() to improve exportReqSpecToXML()
+ *  20090322 - franciscom - xmlToMapReqSpec()
+ *  20090321 - franciscom - added customFieldValuesAsXML() to improve exportReqSpecToXML()
  *
- *      20090315 - franciscom - added delete_deep();
+ *  20090315 - franciscom - added delete_deep();
  *
- *      20090222 - franciscom - added getReqTree(), get_by_id() added node_order in result
- *                              exportReqSpecToXML() (will be available on TL 1.9)
+ *  20090222 - franciscom - added getReqTree(), get_by_id() added node_order in result
+ *                          exportReqSpecToXML() (will be available on TL 1.9)
  *
- *      20090111 - franciscom - BUGID 1967 - html_table_of_custom_field_inputs()
- *                                           get_linked_cfields()
+ *  20090111 - franciscom - BUGID 1967 - html_table_of_custom_field_inputs()
+ *                                       get_linked_cfields()
  *
- *      20080830 - franciscom - changes in create() for future use
- *                              changes to use node_order field from nodes hierachy
- *                              table when manage requirements. (get_requirements())
- * 
- *      20080419 - franciscom - bug on update(), no control for duplicate.
- *
- *      20080318 - franciscom - thanks to Postgres have found code that must be removed
- *                              after req_specs get it's id from nodes hierarchy
- * 
- *      20080309 - franciscom - changed return value for get_by_id()
 */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
 
@@ -143,7 +134,7 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,
 {
     $result=array('status_ok' => 0, 'msg' => 'ko', 'id' => 0);
     $title=trim($title);
-    $chk=$this->check_title($title,$tproject_id,$parent_id);  // NEED TO BE REFACTORED
+    $chk=$this->check_main_data($title,$doc_id,$tproject_id,$parent_id);
     if ($chk['status_ok'])
     {
         $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$title,$node_order);
@@ -388,20 +379,19 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
              msg -> some simple message, useful when status_ok ==0
 
   */
-  function update($id,$doc_id,$title, $scope, $countReq, 
-                  $user_id,$type = TL_REQ_STATUS_NOT_TESTABLE)
+  function update($id,$doc_id,$title, $scope, $countReq,$user_id,$type = TL_REQ_STATUS_NOT_TESTABLE)
   {
 	  $result['status_ok'] = 1;
 	  $result['msg'] = 'ok';
 
     $title=trim_and_limit($title);
+    $doc_id=trim_and_limit($doc_id);
      
     $path=$this->tree_mgr->get_path($id); 
-    // $tproject_id = $this->tree_mgr->getTreeRoot($id);    
-    // $nhinfo = $this->tree_mgr->get_node_hierachy_info($id); 
     $last_idx=count($path)-1;
     $parent_id = $last_idx==0 ? null : $path[$last_idx]['parent_id'];
-    $chk=$this->check_title($title,$path[0]['parent_id'],$parent_id,$id);
+    // $chk=$this->check_title($title,$path[0]['parent_id'],$parent_id,$id);
+    $chk=$this->check_main_data($title,$doc_id,$path[0]['parent_id'],$parent_id,$id);
     
     if ($chk['status_ok'])
     {
@@ -584,6 +574,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
              value: srs info,  map with folowing keys:
                     id
                     testproject_id
+                    doc_id
                     title
                     scope
                     total_req
@@ -595,7 +586,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
   */
 function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=self::CASE_SENSITIVE)
 {
-    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+    $fields2get="RSPEC.id,testproject_id,RSPEC,doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
                 "RSPEC.modification_ts,NH.name AS title";
     
@@ -677,6 +668,80 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
 	}
 	return $ret;
   } //function end
+
+
+  /*
+    function: check_main_data
+              Do checks on req spec title, to understand if can be used.
+
+              Checks:
+              1. title is empty ?
+              2. does already exist a req spec with this title?
+
+    args : title: req spec title
+           doc_id: req spec document id / code / short title
+           [parent_id]: default null -> do check for tile uniqueness system wide.
+                        valid id: only inside parent_id with this id.
+           
+           [id]: req spec id. 
+           [case_analysis]: control case sensitive search.
+                            default 0 -> case sensivite search
+
+    returns:
+
+  */
+  function check_main_data($title,$doc_id,$tproject_id=null,$parent_id=null,$id=null,
+                           $case_analysis=self::CASE_SENSITIVE)
+  {
+    $ret['status_ok'] = 1;
+    $ret['msg'] = '';
+
+    $title = trim($title);
+    $doc_id = trim($doc_id);
+
+  	if ($title == "")
+  	{
+		$ret['status_ok'] = 0;
+  		$ret['msg'] = lang_get("warning_empty_req_title");
+  	}
+
+  	if ($doc_id == "")
+  	{
+		$ret['status_ok'] = 0;
+  		$ret['msg'] = lang_get("warning_empty_doc_id");
+  	}
+  	
+  	if($ret['status_ok'])
+  	{
+		$ret['msg']='ok';
+      	$rs = $this->get_by_title($title,$tproject_id,$parent_id,$case_analysis);
+  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
+      	{
+      		$info = current($rs);
+  			$ret['msg'] = sprintf(lang_get("warning_duplicated_req_spec_title"),$info['doc_id'],$title);
+        	$ret['status_ok'] = 0;
+  		}
+	}
+
+  	if($ret['status_ok'])
+  	{
+		$ret['msg']='ok';
+      	$rs = $this->getByDocID($doc_id,$tproject_id,$parent_id,$case_analysis);
+  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
+      	{
+      		$info = current($rs);
+  			$ret['msg'] = sprintf(lang_get("warning_duplicated_req_spec_doc_id"),$info['title'],$doc_id);
+        	$ret['status_ok'] = 0;
+  		}
+	}
+
+	return $ret;
+  } //function end
+
+
+
+
+
 
 
   /*
@@ -1229,7 +1294,71 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
 
 
 
+  /*
+    function: getByDocID
+              get req spec information using document ID as access key.
+
+    args : doc_id:
+           [tproject_id] 
+           [parent_id] 
+           [case_analysis]: control case sensitive search.
+                            default 0 -> case sensivite search
+
+    returns: map.
+             key: req spec id
+             value: srs info,  map with folowing keys:
+                    id
+                    testproject_id
+                    title
+                    scope
+                    total_req
+                    type
+                    author_id
+                    creation_ts
+                    modifier_id
+                    modification_ts
+  */
+function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=self::CASE_SENSITIVE)
+{
+    $fields2get="RSPEC.id,testproject_id,RSPEC,doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+                "RSPEC.modification_ts,NH.name AS title";
+    
+  	$output=null;
+    $the_doc_id=$this->db->prepare_string(trim($doc_id));
+  	$sql = "SELECT {$fields2get} FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH";
+
+    switch ($case_analysis)
+    {
+        case self::CASE_SENSITIVE:
+            $sql .= " WHERE RSPEC.doc_id='{$the_doc_id}'";
+        break;
+
+        case self::CASE_INSENSITIVE:
+            $sql .= " WHERE UPPER(RSPEC.doc_id)='" . strtoupper($the_doc_id) . "'";    
+        break;
+    }
+  	$sql .= " AND RSPEC.id=NH.id ";
+
+
+  	if( !is_null($tproject_id) )
+  	{
+  	  $sql .= " AND RSPEC.testproject_id={$tproject_id}";
+    }
+
+  	if( !is_null($parent_id) )
+  	{
+  	  $sql .= " AND NH.parent_id={$parent_id}";
+    }
+
+    $sql .= " AND RSPEC.id=NH.id ";
+    $output = $this->db->fetchRowsIntoMap($sql,'id');
+
+  	return $output;
+  }
+
+
+
+
 } // class end
-
-
 ?>

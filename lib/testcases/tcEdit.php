@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.118 $
- * @modified $Date: 2009/11/22 11:41:51 $  by $Author: franciscom $
+ * @version $Revision: 1.119 $
+ * @modified $Date: 2009/11/22 11:51:14 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -440,37 +440,58 @@ if ($show_newTC_form)
 	$smarty->assign('containerID', $args->container_id);
 	
 	// BUGID 2163 - Create test case with same title, after submit, all data lost 
-	if( $init_inputs)
-	{
-	    foreach ($oWebEditor->cfg as $key => $value)
-	    {
-	        $of = &$oWebEditor->editor[$key];
-	        $rows = $oWebEditor->cfg[$key]['rows'];
-	        $cols = $oWebEditor->cfg[$key]['cols'];
-	       	$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');
-	    
-	        $smarty->assign($key, $of->CreateHTML($rows,$cols));
-	  	} // foreach ($a_oWebEditor_cfg as $key)
-
-      	$tc_default=array('id' => 0, 'name' => '', 
-                          'importance' => $tlCfg->testcase_importance_default,
-                          'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
-  	}
-  	else
+	// if( $init_inputs)
+	// {
+	//     foreach ($oWebEditor->cfg as $key => $value)
+	//     {
+	//         $of = &$oWebEditor->editor[$key];
+	//         $rows = $oWebEditor->cfg[$key]['rows'];
+	//         $cols = $oWebEditor->cfg[$key]['cols'];
+	//        	$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');
+	//     
+	//         $smarty->assign($key, $of->CreateHTML($rows,$cols));
+	//   	} // foreach ($a_oWebEditor_cfg as $key)
+    // 
+    //   	$tc_default=array('id' => 0, 'name' => '', 
+    //                       'importance' => $tlCfg->testcase_importance_default,
+    //                       'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
+  	// }
+  	// else
+  	// {
+    //   	// Preserve values edited by user
+    //   	foreach ($oWebEditor->cfg as $key => $value)
+	//   	{
+	//   	    $of = &$oWebEditor->editor[$key];
+	//   	    $rows = $oWebEditor->cfg[$key]['rows'];
+	//   	    $cols = $oWebEditor->cfg[$key]['cols'];
+    //   	
+	//   		$of->Value = $args->$key;
+	//   	    $smarty->assign($key, $of->CreateHTML($rows,$cols));
+	//   	}
+    //   	$tc_default=array('id' => 0, 'name' => '', 'importance' => $args->importance, 
+    //   	                  'execution_type' => $args->exec_type);
+  	// }
+  	$tc_default=array('id' => 0, 'name' => '');
+  	$tc_default['importance'] = $init_inputs ? $tlCfg->testcase_importance_default : $args->importance;
+  	$tc_default['execution_type'] = $init_inputs ? TESTCASE_EXECUTION_TYPE_MANUAL : $args->exec_type;
+  	foreach ($oWebEditor->cfg as $key => $value)
   	{
-      	// Preserve values edited by user
-      	foreach ($oWebEditor->cfg as $key => $value)
-	  	{
-	  	    $of = &$oWebEditor->editor[$key];
-	  	    $rows = $oWebEditor->cfg[$key]['rows'];
-	  	    $cols = $oWebEditor->cfg[$key]['cols'];
-      	
-	  		$of->Value = $args->$key;
-	  	    $smarty->assign($key, $of->CreateHTML($rows,$cols));
-	  	}
-      	$tc_default=array('id' => 0, 'name' => '', 'importance' => $args->importance, 
-      	                  'execution_type' => $args->exec_type);
-  	}
+  	    $of = &$oWebEditor->editor[$key];
+  	    $rows = $oWebEditor->cfg[$key]['rows'];
+  	    $cols = $oWebEditor->cfg[$key]['cols'];
+  	    if( $init_inputs)
+  	    {
+  	      $of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');
+  	    }
+  	    else
+  	    {
+  	  		$of->Value = $args->$key;
+		}
+		$smarty->assign($key, $of->CreateHTML($rows,$cols));
+  	} // foreach ($a_oWebEditor_cfg as $key)
+
+
+
 
 	$filters=$tcase_mgr->buildCFLocationMap();
 	foreach($filters as $locationKey => $locationFilter)

@@ -1,5 +1,5 @@
--- $Revision: 1.4 $
--- $Date: 2009/11/24 20:00:16 $
+-- $Revision: 1.5 $
+-- $Date: 2009/11/24 20:03:36 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -55,6 +55,9 @@ COMMENT ON TABLE /*prefix*/builds IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
 -- cfield_testprojects
 ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location INT2 NOT NULL DEFAULT '1';
+
+-- req_spec
+ALTER TABLE /*prefix*/req_specs ADD COLUMN doc_id VARCHAR(32) NULL DEFAULT NULL;
 
 -- requirements
 ALTER TABLE /*prefix*/requirements ADD COLUMN expected_coverage INTEGER NOT NULL DEFAULT 1;

@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.267 2009/11/22 11:33:16 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.268 2009/11/24 07:39:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -702,10 +702,14 @@ $tlCfg->testplan_template->notes = new stdClass();
 $tlCfg->testplan_template->notes->type = 'none';
 $tlCfg->testplan_template->notes->value = '';
 
-$tlCfg->bulk_exec_notes_template = new stdClass();
-$tlCfg->bulk_exec_notes_template->bulk_exec_notes = new stdClass();
-$tlCfg->bulk_exec_notes_template->bulk_exec_notes->type = 'none';
-$tlCfg->bulk_exec_notes_template->bulk_exec_notes->value = '';
+$tlCfg->execution_template = new stdClass();
+$tlCfg->execution_template->bulk_exec_notes = new stdClass();
+$tlCfg->execution_template->bulk_exec_notes->type = 'none';
+$tlCfg->execution_template->bulk_exec_notes->value = '';
+
+$tlCfg->execution_template->notes = new stdClass();
+$tlCfg->execution_template->notes->type = 'none';
+$tlCfg->execution_template->notes->value = '';
 
 $tlCfg->build_template = new stdClass();
 $tlCfg->build_template->notes = new stdClass();

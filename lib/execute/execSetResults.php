@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.141 $
- * @modified $Date: 2009/11/21 19:31:47 $ $Author: franciscom $
+ * @version $Revision: 1.142 $
+ * @modified $Date: 2009/11/24 07:52:16 $ $Author: franciscom $
  *
  * rev:
  *  20091111 - franciscom - BUGID 2938 - Feature: Save and Go to next test case in test suite.
@@ -279,8 +279,7 @@ if( $gui->can_use_bulk_op )
     }
 
     $of=web_editor("bulk_exec_notes",$_SESSION['basehref'],$cfg->editorCfg);
-    // $of->Value = null;
-   	$of->Value = getItemTemplateContents('bulk_exec_notes_template', $of->InstanceName, null);
+   	$of->Value = getItemTemplateContents('execution_template', $of->InstanceName, null);
     
     // Magic numbers that can be determined by trial and error
     $gui->bulk_exec_notes_editor=$of->CreateHTML(10,60);         
@@ -827,14 +826,15 @@ function createExecNotesWebEditor(&$tcversions,$basehref,$editorCfg)
     //
     // Rows and Cols values are useless for FCKeditor.
     //
+    $itemTemplateValue = getItemTemplateContents('execution_template', 'notes', null);
     foreach($tcversions as $key => $tcv)
     {
         $tcversion_id=$tcv['id'];
         $tcase_id=$tcv['testcase_id'];
 
         $of=web_editor("notes[{$tcversion_id}]",$basehref,$editorCfg) ;
-        $of->Value = null;
-        
+        $of->Value = $itemTemplateValue;
+       
         // Magic numbers that can be determined by trial and error
         $editors[$tcase_id]=$of->CreateHTML(10,60);         
         unset($of);

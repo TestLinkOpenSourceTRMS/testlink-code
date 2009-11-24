@@ -5,11 +5,13 @@
  *
  * Filename $RCSfile: rolesEdit.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/08/28 20:37:04 $ by $Author: schlundus $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/11/24 19:40:15 $ by $Author: franciscom $
  *
- * rev: 20081030 - franciscom - added system_mgmt member on getRightsCfg()
- *      20080827 - franciscom - BUGID 1692
+ * @internal revision 
+ *	20091124 - franciscom - added contribution item template
+ *	20081030 - franciscom - added system_mgmt member on getRightsCfg()
+ *	20080827 - franciscom - BUGID 1692
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -27,7 +29,7 @@ $gui = initialize_gui($editorCfg['type']);
 $op = initialize_op();
 
 $owebeditor = web_editor('notes',$args->basehref,$editorCfg) ;
-$owebeditor->Value = null;
+$owebeditor->Value = getItemTemplateContents('role_template', $owebeditor->InstanceName, null);
 $canManage = has_rights($db,"role_management") ? true : false;
 
 switch($args->doAction)

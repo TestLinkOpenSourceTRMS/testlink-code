@@ -1,6 +1,6 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.61 2009/11/19 13:50:13 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.62 2009/11/24 19:52:31 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
@@ -8,6 +8,7 @@
 #
 # Rev :
 #
+# 20091119 - franciscom - requirements table - new field expected_coverage
 # 20091119 - franciscom - req_specs added doc_id field
 # 20090919 - franciscom - custom field values increased to 4000
 # 20090910 - franciscom - added milestones.start_date
@@ -241,6 +242,7 @@ CREATE TABLE /*prefix*/requirements (
   `scope` text,
   `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,
+  `expected_coverage` int(10) NOT NULL default '1',
   `author_id` int(10) unsigned default NULL,
   `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifier_id` int(10) unsigned default NULL,

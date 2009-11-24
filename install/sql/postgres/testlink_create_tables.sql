@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.43 2009/11/19 13:50:13 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.44 2009/11/24 19:55:31 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -12,54 +12,56 @@
 --        convention regarding case and spaces between DDL keywords.
 --
 -- 
--- Rev :
---      20091119 - franciscom - req_specs added doc_id field
---      20091010 - franciscom - added testplan_platforms,platforms
---                              platform_id to tables
---      20090910 - franciscom - tcversions.preconditions
---                              milestones.start_date
---      20090717 - franciscom - added cfield_testprojects.location field
---      20090611 - franciscom - builds.closed_on_date 
---      20090512 - franciscom - BUGID - is_public attribute for testprojects and testplans
---      20090507 - franciscom - BUGID  new builds structure
---      20090411 - franciscom - BUGID 2369 - testplan_tcversions
---
---      20090315 - franciscom - req_spec, requirements id can not be big serial
---                              because are nodes on nodes_hierarchy.
---
---      20090204 - franciscom - object_keywords - bad type for ID column
---      20090103 - franciscom - milestones table - added new unique index
---                              custom_fields - added missing unique constraint
---      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
---      20080831 - franciscom - BUGID 1650 (REQ)
---                 custom_fields.show_on_testplan_design
---                 custom_fields.enable_on_testplan_design
---                 new table cfield_testplan_design_values 
---
---      20080709 - franciscom - Added Foreing Keys (REFERENCES)
---      20080102 - franciscom - added changes for API feature (DB 1.2)
---                              added notes fields on db_version
---
---      20071202 - franciscom - added tcversions.execution_type
---      20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
---      20070519 - franciscom - milestones table date -> target_date, because
---                              date is reserved word for Oracle
---
---      20070414 - franciscom - table requirements: added field node_order 
---      20070204 - franciscom - changes in tables priorities, risk_assignments 
---      20070131 - franciscom - requirements -> req_doc_id(32), 
---
---      20070120 - franciscom - following BUGID 458 ( really a new feature request)
---                              two new fields on builds table
---                              active, open
---
---      20070117 - franciscom - create_ts -> creation_ts
---
---      20070116 - franciscom - fixed BUGID 545
---
---      20070113 - franciscom - table cfield_testprojects added fields
---                              required_on_design,required_on_execution
---      20060515 - franciscom - creation
+--  Rev :
+-- 
+--  20091124 - franciscom - requirements table - new field expected_coverage
+--  20091119 - franciscom - req_specs added doc_id field
+--  20091010 - franciscom - added testplan_platforms,platforms
+--                          platform_id to tables
+--  20090910 - franciscom - tcversions.preconditions
+--                          milestones.start_date
+--  20090717 - franciscom - added cfield_testprojects.location field
+--  20090611 - franciscom - builds.closed_on_date 
+--  20090512 - franciscom - BUGID - is_public attribute for testprojects and testplans
+--  20090507 - franciscom - BUGID  new builds structure
+--  20090411 - franciscom - BUGID 2369 - testplan_tcversions
+--  
+--  20090315 - franciscom - req_spec, requirements id can not be big serial
+--                          because are nodes on nodes_hierarchy.
+--  
+--  20090204 - franciscom - object_keywords - bad type for ID column
+--  20090103 - franciscom - milestones table - added new unique index
+--                          custom_fields - added missing unique constraint
+--  20081018 - franciscom - new indexes (suggested by schlundus) on events table 
+--  20080831 - franciscom - BUGID 1650 (REQ)
+--             custom_fields.show_on_testplan_design
+--             custom_fields.enable_on_testplan_design
+--             new table cfield_testplan_design_values 
+--  
+--  20080709 - franciscom - Added Foreing Keys (REFERENCES)
+--  20080102 - franciscom - added changes for API feature (DB 1.2)
+--                          added notes fields on db_version
+--  
+--  20071202 - franciscom - added tcversions.execution_type
+--  20071010 - franciscom - open -> is_open due to MSSQL reserved word problem
+--  20070519 - franciscom - milestones table date -> target_date, because
+--                          date is reserved word for Oracle
+--  
+--  20070414 - franciscom - table requirements: added field node_order 
+--  20070204 - franciscom - changes in tables priorities, risk_assignments 
+--  20070131 - franciscom - requirements -> req_doc_id(32), 
+--  
+--  20070120 - franciscom - following BUGID 458 ( really a new feature request)
+--                          two new fields on builds table
+--                          active, open
+--  
+--  20070117 - franciscom - create_ts -> creation_ts
+--  
+--  20070116 - franciscom - fixed BUGID 545
+--  
+--  20070113 - franciscom - table cfield_testprojects added fields
+--                          required_on_design,required_on_execution
+--  20060515 - franciscom - creation
 --
 
 --
@@ -500,6 +502,7 @@ CREATE TABLE /*prefix*/requirements(
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
+  "expected_coverage" INTEGER NOT NULL DEFAULT 1,
   "node_order" BIGINT NOT NULL DEFAULT 0,
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/11/21 19:25:02 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/11/25 21:21:28 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -45,20 +45,20 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 function init_args()
 {
-	$iParams = array(
-			"requirement_id" => array(tlInputParameter::INT_N),
-			"req_spec_id" => array(tlInputParameter::INT_N),
-			"reqDocId" => array(tlInputParameter::STRING_N,0,32),
-			"req_title" => array(tlInputParameter::STRING_N,0,100),
-			"scope" => array(tlInputParameter::STRING_N),
-			"reqStatus" => array(tlInputParameter::STRING_N,0,1),
-			"countReq" => array(tlInputParameter::INT_N),
-			"doAction" => array(tlInputParameter::STRING_N,0,100),
-			"req_id_cbox" => array(tlInputParameter::ARRAY_INT),
-	);	
+	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
+					 "req_spec_id" => array(tlInputParameter::INT_N),
+					 "reqDocId" => array(tlInputParameter::STRING_N,0,32),
+					 "req_title" => array(tlInputParameter::STRING_N,0,100),
+					 "scope" => array(tlInputParameter::STRING_N),
+					 "reqStatus" => array(tlInputParameter::STRING_N,0,1),
+					 "reqType" => array(tlInputParameter::STRING_N,0,1),
+					 "countReq" => array(tlInputParameter::INT_N),
+					 "expected_coverage" => array(tlInputParameter::INT_N),
+					 "doAction" => array(tlInputParameter::STRING_N,0,100),
+					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT));	
 		
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
+	R_PARAMS($iParams,$args);
 
 	$args->req_id = $args->requirement_id;
 	$args->title = $args->req_title;
@@ -142,6 +142,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
 {
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
     $gui = new stdClass();
+    $gui->req_cfg = config_get('req_cfg');
     
   	$gui->req_spec_id = $argsObj->req_spec_id;
 	if ($argsObj->req_spec_id)
@@ -152,7 +153,9 @@ function initialize_gui(&$dbHandler,&$argsObj)
     $gui->user_feedback = null;
     $gui->main_descr = lang_get('req_spec_short');
     if (isset($gui->req_spec))
+    {
      	$gui->main_descr .= config_get('gui_title_separator_1') . $gui->req_spec['title'];
+    }
     $gui->action_descr = null;
 
     $gui->grants = new stdClass();

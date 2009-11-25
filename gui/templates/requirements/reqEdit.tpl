@@ -1,11 +1,16 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.17 2009/08/29 19:21:42 schlundus Exp $
+$Id: reqEdit.tpl,v 1.18 2009/11/25 21:19:44 franciscom Exp $
 Purpose: smarty template - create / edit a req  
+internal revision
+20091125 - franciscom - 
 *}
 {* ------------------------------------------------------------------------- *}
 
-{lang_get var='labels' s='btn_save,cancel,status,scope'}
+{lang_get var='labels' 
+          s='show_event_history,btn_save,cancel,status,scope,warning,req_doc_id,
+             title,warning_expected_coverage,
+             warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -13,15 +18,16 @@ Purpose: smarty template - create / edit a req
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-	var alert_box_title = "{lang_get s='warning'}";
-	var warning_empty_req_docid = "{lang_get s='warning_empty_reqdoc_id'}";
-	var warning_empty_req_title = "{lang_get s='warning_empty_req_title'}";
+	var alert_box_title = "{$labels.warning}";
+	var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id}";
+	var warning_empty_req_title = "{$labels.warning_empty_req_title}";
+	var warning_expected_coverage = "{$labels.warning_expected_coverage}";
 	{literal}
 	function validateForm(f)
 	{
 		if (isWhitespace(f.reqDocId.value)) 
-	  	{
-	    	alert_message(alert_box_title,warning_empty_req_docid);
+	  {
+	    alert_message(alert_box_title,warning_empty_req_docid);
 			selectField(f, 'reqDocId');
 			return false;
 		}
@@ -31,14 +37,29 @@ Purpose: smarty template - create / edit a req
 			alert_message(alert_box_title,warning_empty_req_title);
 			selectField(f, 'req_title');
 			return false;
-	  	}
+	  }
+    {/literal}
+		
+    {if $gui->req_cfg->expected_coverage_management  }
+		  {literal}
+		  if (isNaN(parseInt(f.expected_coverage.value)))
+		  {
+		  	alert_message(alert_box_title,warning_expected_coverage);
+		  	selectField(f,'expected_coverage');
+		  	return false;
+		  }
+		  {/literal}
+		{/if}
+		
+		{literal}
 		return true;
 	}
 	
+	
 	window.onload = function()
-		{
+  {
 			focusInputField('reqDocId');
-		}
+  }
 	{/literal}
 </script>
 </head>
@@ -58,11 +79,11 @@ Purpose: smarty template - create / edit a req
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 
-  	<div class="labelHolder"><label for="reqDocId">{lang_get s='req_doc_id'}</label>
+  	<div class="labelHolder"><label for="reqDocId">{$labels.req_doc_id}</label>
   	   		{if $gui->grants->mgt_view_events eq "yes" and $gui->req_id}
 			<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
 			     onclick="showEventHistoryFor('{$gui->req_id}','requirements')" 
-			     alt="{lang_get s='show_event_history'}" title="{lang_get s='show_event_history'}"/>
+			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 		{/if}
   	</div>
 	<div><input type="text" name="reqDocId" id="reqDocId"
@@ -71,7 +92,7 @@ Purpose: smarty template - create / edit a req
   				{include file="error_icon.tpl" field="reqDocId"}
   	</div>
  	<br />
- 	<div class="labelHolder"> <label for="req_title">{lang_get s='title'}</label></div>
+ 	<div class="labelHolder"> <label for="req_title">{$labels.title}</label></div>
   	<div><input type="text" name="req_title"
   		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}"
   		        value="{$gui->req.title|escape}" />
@@ -87,6 +108,17 @@ Purpose: smarty template - create / edit a req
   		</select>
   	</div>
   	<br />
+ 	<br />
+ 	
+    {if $gui->req_cfg->expected_coverage_management  }
+  	<div class="labelHolder"> <label for="expected_coverage">{$labels.expected_coverage}</label>
+  	<input type="text" name="expected_coverage" id="expected_coverage"
+  		        size="{#REQ_EXPECTED_COVERAGE_SIZE#}" maxlength="{#REQ_EXPECTED_COVERAGE_MAXLEN#}"
+  		        value="{$gui->req.expected_coverage}" />
+  		    {include file="error_icon.tpl" field="req_title"}
+ 	  </div>
+  	<br />
+    {/if}  	
    	{* Custom fields *}
    	{if $gui->cfields != ""}
     	<div class="custom_field_container">

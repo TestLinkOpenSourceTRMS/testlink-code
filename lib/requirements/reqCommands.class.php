@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/11/25 21:21:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -37,19 +37,19 @@ class reqCommands
   */
 	function create(&$argsObj)
 	{
-	    $obj = new stdClass();
-		  $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		$obj = new stdClass();
+		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
         
-		  $obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
-		  $obj->action_descr = lang_get('create_req');
-		  $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
-      $obj->template = 'reqEdit.tpl';
-		  $obj->submit_button_label = lang_get('btn_save');
-      $obj->reqStatusDomain = $this->reqStatusDomain;
- 		  $obj->req_spec_id = $argsObj->req_spec_id;
-      $obj->req_id = null;
-      $obj->req = null;
-      	
+		$obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
+		$obj->action_descr = lang_get('create_req');
+		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+      	$obj->template = 'reqEdit.tpl';
+		$obj->submit_button_label = lang_get('btn_save');
+		$obj->reqStatusDomain = $this->reqStatusDomain;
+		$obj->req_spec_id = $argsObj->req_spec_id;
+		$obj->req_id = null;
+		$obj->req = null;
+		$obj->expected_coverage = null;
  		return $obj;	
 	}
 
@@ -75,7 +75,8 @@ class reqCommands
 	  	$obj->reqStatusDomain = $this->reqStatusDomain;
 		$obj->req_spec_id = $argsObj->req_spec_id;
 		$obj->req_id = $argsObj->req_id;
-
+		$obj->expected_coverage = $argsObj->expected_coverage;
+		
 		return $obj;	
 	}
 
@@ -99,11 +100,12 @@ class reqCommands
 		$obj->template = null;
       	$obj->reqStatusDomain=$this->reqStatusDomain;
  		$obj->req_spec_id = $argsObj->req_spec_id;
+	    $obj->expected_coverage = $argsObj->expected_coverage;
 	
 	    // 20090719 - franciscom - seems that TYPE has been removed from user interface
 		$ret = $this->reqMgr->create($argsObj->req_spec_id,$argsObj->reqDocId,$argsObj->title,
-		                             $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus);
-		                             // ,$argsObj->reqType);
+		                             $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
+		                             $argsObj->reqType,$argsObj->expected_coverage);
 
 		$obj->user_feedback = $ret['msg'];
 		if($ret['status_ok'])
@@ -133,7 +135,8 @@ class reqCommands
 		$obj = new stdClass();
 	    $descr_prefix = lang_get('req') . TITLE_SEP;
 		$ret = $this->reqMgr->update($argsObj->req_id,trim($argsObj->reqDocId),$argsObj->title,
-	  				                 $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus);
+	  				                 $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
+	  				                 $argsObj->reqType,$argsObj->expected_coverage);
 
       	$obj = $this->edit($argsObj);
       	$obj->user_feedback = $ret['msg'];

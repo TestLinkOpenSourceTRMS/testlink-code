@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.491 2009/11/22 18:57:14 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.492 2009/11/25 21:20:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -633,6 +633,8 @@ $TLS_requirement_spec = "Requirement Specification Document";
 $TLS_test_case_id = "ID";
 $TLS_title_created = "Created on";
 $TLS_title_last_mod = "Last modified on ";
+$TLS_expected_coverage = "Number of test cases needed";
+$TLS_warning_expected_coverage = $TLS_expected_coverage . " must be a number ";
 
 
 
@@ -2319,6 +2321,7 @@ $TLS_delete_req = "Delete Requirement";
 $TLS_edit_req = "Edit Requirement";
 $TLS_req_created = "Requirement: %s was successfully created";
 $TLS_req_deleted = "Requirement: %s was successfully deleted";
+
 
 
 // ----- reqSpecReorder.tpl -----

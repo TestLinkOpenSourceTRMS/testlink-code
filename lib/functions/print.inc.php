@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.89 2009/11/19 20:05:39 schlundus Exp $
+ * @version $Id: print.inc.php,v 1.90 2009/11/25 14:08:18 havlat Exp $
  * @uses printDocument.php
  *
  *
@@ -584,7 +584,11 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $name . "</a></p>\n";
 		$code .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
 	}
- 	$code .= "<h1 class='doclevel'>{$tocPrefix} ". $labels['test_suite'].$title_separator. $name. "</h1>\n";
+	$docHeadingLevel = $level - 1; //we would like to have html top heading H1 - H6
+	$docHeadingLevel = ($docHeadingLevel > 6) ? 6 : $docHeadingLevel;
+	$docHeadingNumbering = $printingOptions['headerNumbering'] ? $tocPrefix : '';
+ 	$code .= "<h{$docHeadingLevel} class='doclevel'>{$docHeadingNumbering} ". $labels['test_suite'] .
+ 			$title_separator . $name . "</h{$docHeadingLevel}>\n";
 
 	// ----- get Test Suite text -----------------
 	if ($printingOptions['header'])

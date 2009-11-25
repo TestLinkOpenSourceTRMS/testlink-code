@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsImport.php,v 1.2 2009/11/19 20:05:39 schlundus Exp $
+ * @version    	CVS: $Id: platformsImport.php,v 1.3 2009/11/25 18:16:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -55,8 +55,7 @@ function init_args()
 	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
 	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048));
 		
-	$pParams = R_PARAMS($iParams,$args);
-	
+	R_PARAMS($iParams,$args);
 	$args->userID = $_SESSION['userID'];
   	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->testproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';

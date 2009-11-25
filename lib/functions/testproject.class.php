@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.131 2009/11/22 17:45:09 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.132 2009/11/25 22:25:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1213,15 +1213,16 @@ function setPublicStatus($id,$status)
 	 **/
 	public function getReqSpec($testproject_id, $id = null, $fields=null,$access_key=null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
     	$fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
                 "RSPEC.modification_ts,NH.name AS title";
     
 	    $fields = is_null($fields) ? $fields2get : implode(',',$fields);
-    	$sql = " SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
-       			" {$this->tables['nodes_hierarchy']} NH " .
-           		" WHERE testproject_id={$testproject_id} " .
-				" AND RSPEC.id=NH.id ";
+    	$sql = "  /* $debugMsg */ SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
+       		   " {$this->tables['nodes_hierarchy']} NH " .
+           	   " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id ";
            
 		if (!is_null($id))
 	    {

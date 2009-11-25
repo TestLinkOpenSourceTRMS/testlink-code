@@ -5,28 +5,27 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/11/19 17:51:44 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/11/25 22:25:39 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:  
- *       20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
- *       20090514 - franciscom - BUGID 2491
- *       20090506 - franciscom - refactoring continued
- *       20090505 - franciscom - refactoring started.
- *                               removed use of REQ.node_order and title.
- *                               this fields must be managed on NH table
- *   
- *       20090401 - franciscom - BUGID 2316
- *       20090315 - franciscom - added require_once '/attachments.inc.php' to avoid autoload() bug
- *                               delete() - fixed delete order due to FK.
- *       20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
- *       20081129 - franciscom - BUGID 1852 - bulk_assignment() 
- *       20080318 - franciscom - thanks to Postgres have found code that must be removed
- *                               after requirements get it's id from nodes hierarchy
+ *	20091125 - franciscom - expected_coverage management 
+ *  20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
+ *  20090514 - franciscom - BUGID 2491
+ *  20090506 - franciscom - refactoring continued
+ *  20090505 - franciscom - refactoring started.
+ *                          removed use of REQ.node_order and title.
+ *                          this fields must be managed on NH table
+ *  
+ *  20090401 - franciscom - BUGID 2316
+ *  20090315 - franciscom - added require_once '/attachments.inc.php' to avoid autoload() bug
+ *                          delete() - fixed delete order due to FK.
+ *  20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
+ *  20081129 - franciscom - BUGID 1852 - bulk_assignment() 
 */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
@@ -76,10 +75,11 @@ class requirement_mgr extends tlObjectWithAttachments
 */
 function get_by_id($id)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $field2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,REQ.type,REQ.author_id," .
-               "REQ.creation_ts,REQ.modifier_id,REQ.modification_ts,NH_REQ.name AS title";
+               "REQ.expected_coverage,REQ.creation_ts,REQ.modifier_id,REQ.modification_ts,NH_REQ.name AS title";
   
-	$sql = " SELECT {$field2get}, REQ_SPEC.testproject_id, NH_RSPEC.name AS req_spec_title, " .
+	$sql = " /* $debugMsg */ SELECT {$field2get}, REQ_SPEC.testproject_id, NH_RSPEC.name AS req_spec_title, " .
 	       " NH_REQ.node_order " .
 	       " FROM {$this->object_table} REQ, {$this->tables['req_specs']} REQ_SPEC," .
 	       " {$this->tables['nodes_hierarchy']} NH_REQ, {$this->tables['nodes_hierarchy']} NH_RSPEC " .
@@ -146,8 +146,9 @@ function get_by_id($id)
 
 
   */
-function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
-                $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE)
+function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
+                $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE,
+                $expected_coverage=1)
 {
     $result['id'] = 0;
 	$result['status_ok'] = 0;
@@ -166,11 +167,11 @@ function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
 		$req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
 		$db_now = $this->db->db_now();
 		$sql = " INSERT INTO {$this->object_table} " .
-		       " (id, srs_id, req_doc_id, scope, status, type, author_id, creation_ts)" .
+		       " (id, srs_id, req_doc_id, scope, status, type, author_id, creation_ts,expected_coverage)" .
                " VALUES ({$req_id}, {$srs_id},'" . $this->db->prepare_string($reqdoc_id) . "','" .
 		  	   $this->db->prepare_string($scope) . "','" .
 		  	   $this->db->prepare_string($status) . "','" . $this->db->prepare_string($type) . "',"  .
-		  	   "{$user_id}, {$db_now})";
+		  	   "{$user_id}, {$db_now}, {$expected_coverage})";
 
 
         if (!$this->db->exec_query($sql))
@@ -199,6 +200,7 @@ function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
           user_id: author
           status
           type
+          $expected_coverage
           [skip_controls]
 
 
@@ -206,7 +208,8 @@ function create($srs_id,$reqdoc_id,$title, $scope,  $user_id,
 
   */
 
-function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_controls=0)
+function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,
+                $expected_coverage,$skip_controls=0)
 {
     $result['status_ok'] = 1;
     $result['msg'] = 'ok';
@@ -227,7 +230,8 @@ function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_co
 	  	       " status='" . $this->db->prepare_string($status) . "', " .
 	  	       " type='" . $this->db->prepare_string($type) . "', " .
 	  	       " modifier_id={$user_id}, req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "', " .
-	  	       " modification_ts={$db_now}  WHERE id={$id}";
+	  	       " modification_ts={$db_now}, expected_coverage={$expected_coverage}  " . 
+	  	       " WHERE id={$id}";
 
 	  	if ($this->db->exec_query($sql))
 	  	{
@@ -337,6 +341,7 @@ function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,$skip_co
  */
 function get_coverage($id)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id " .
   	       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
   	       " {$this->tables['nodes_hierarchy']} NHB, " .
@@ -416,7 +421,8 @@ function get_coverage($id)
  */
 function get_by_docid($reqdoc_id,$srs_id=null)
 {
-    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,type," .
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,type,REQ.expected_coverage," .
                 "NH.node_order,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
                 "REQ.modification_ts,NH.name AS title";
 
@@ -441,11 +447,13 @@ function get_by_docid($reqdoc_id,$srs_id=null)
   */
 function get_by_title($title,$ignore_case=0)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,REQ.type,NH.node_order,"  .
-                "REQ.author_id,REQ.creation_ts,REQ.modifier_id,REQ.modification_ts,NH.name AS title";
+                "REQ.expected_coverage,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
+                "REQ.modification_ts,NH.name AS title";
 
   	$output = array();
-    $sql = "SELECT SELECT {$fields2get} FROM {$this->object_table} REQ, " .
+    $sql = " /* $debugMsg */ SELECT {$fields2get} FROM {$this->object_table} REQ, " .
   	       "{$this->tables['nodes_hierarchy']} NH ";
 
     $the_title=$this->db->prepare_string($title);
@@ -483,6 +491,7 @@ function get_by_title($title,$ignore_case=0)
   */
 function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
                 "RSPEC.modification_ts,NH.name AS title";
@@ -505,7 +514,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   	if ( $req_cfg->use_req_spec_as_testsuite_name )
   	{
   	    // SRS Title
-        $sql = " SELECT {$fields2get} FROM {$this->tables['req_specs']} RSPEC," .
+        $sql = " /* $debugMsg */ SELECT {$fields2get} FROM {$this->tables['req_specs']} RSPEC," .
   	           " {$this->tables['nodes_hierarchy']} NH " .
                " WHERE RSPEC.id = {$srs_id} AND RSPEC.id=NH.id ";
     	$arrSpec = $this->db->get_recordset($sql);
@@ -516,7 +525,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   	// find container with the following characteristics:
   	// 1. testproject_id is its father
   	// 2. has the searched name
-  	$sql="SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
+  	$sql=" /* $debugMsg */ SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
   	     " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " .
   	     " AND parent_id=" . $testproject_id . " " .
   	     " AND node_type_id=" . $node_descr_type['testsuite'];
@@ -582,12 +591,14 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   */
   function assign_to_tcase($req_id,$testcase_id)
   {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
   	$output = 0;
     if($testcase_id && $req_id)
     {
         $items = (array)$req_id;
   	    $in_clause = implode(",",$items);
-    	$sql = " SELECT req_id,testcase_id FROM {$this->tables['req_coverage']} " .
+    	$sql = " /* $debugMsg */ SELECT req_id,testcase_id FROM {$this->tables['req_coverage']} " .
   		       " WHERE req_id IN ({$in_clause}) AND testcase_id = {$testcase_id}";
  	    $coverage = $this->db->fetchRowsIntoMap($sql,'req_id');
    	    
@@ -669,6 +680,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   */
   function bulk_assignment($req_id,$testcase_id)
   {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
     $insertCounter=0;  // just for debug
   	$requirementSet=$req_id;
   	$tcaseSet=$testcase_id;
@@ -687,7 +700,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
     
     // Get coverage for this set of requirements and testcase, to be used
     // to understand if insert if needed
-    $sql = " SELECT req_id,testcase_id FROM {$this->tables['req_coverage']} " .
+    $sql = " /* $debugMsg */ SELECT req_id,testcase_id FROM {$this->tables['req_coverage']} " .
   		   " WHERE req_id IN ({$req_list}) AND testcase_id IN ({$tcase_list})";
     $coverage = $this->db->fetchMapRowsIntoMap($sql,'req_id','testcase_id');
    
@@ -719,11 +732,13 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   */
   function get_relationships($req_id)
   {
-  	$sql = " SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+  	$sql = " /* $debugMsg */ SELECT nodes_hierarchy.id,nodes_hierarchy.name " .
   	       " FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy, " .
   	       "      {$this->tables['req_coverage']} req_coverage " .
-  			   " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
-  			   " AND  req_coverage.req_id={$req_id}";
+		   " WHERE req_coverage.testcase_id = nodes_hierarchy.id " .
+  		   " AND  req_coverage.req_id={$req_id}";
 
   	return ($this->db->get_recordset($sql));
   }
@@ -746,8 +761,9 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
   */
 function get_all_for_tcase($testcase_id, $srs_id = 'all')
 {                         
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
-  	$sql = " SELECT REQ.id,REQ.req_doc_id,NHA.name AS title, " .
+  	$sql = " /* $debugMsg */ SELECT REQ.id,REQ.req_doc_id,NHA.name AS title, " .
   	       " NHB.name AS req_spec_title,REQ_COVERAGE.testcase_id " .
   	       " FROM {$this->object_table} REQ, " .
   	       "      {$this->tables['req_coverage']} REQ_COVERAGE," .
@@ -862,14 +878,14 @@ function xmlToMapRequirement($xml_item)
         return null;      
     }
         
-	  $dummy=array();
-	  foreach($xml_item->attributes() as $key => $value)
-	  {
-	     $dummy[$key] = (string)$value;  // See PHP Manual SimpleXML documentation.
-	  }    
-	  
-	  $dummy['node_order'] = (int)$xml_item->node_order;
-	  $dummy['title'] = (string)$xml_item->title;
+	$dummy=array();
+	foreach($xml_item->attributes() as $key => $value)
+	{
+	   $dummy[$key] = (string)$value;  // See PHP Manual SimpleXML documentation.
+	}    
+	
+	$dummy['node_order'] = (int)$xml_item->node_order;
+	$dummy['title'] = (string)$xml_item->title;
     $dummy['docid'] = (string)$xml_item->docid;
     $dummy['description'] = (string)$xml_item->description;
     $dummy['status'] = (string)$xml_item->status;
@@ -882,13 +898,9 @@ function xmlToMapRequirement($xml_item)
 	      {
 	         $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
 	      }    
-	  }
-	  return $dummy;
+	}
+	return $dummy;
 }
-
-
-
-
 
 
 

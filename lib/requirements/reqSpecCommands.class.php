@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/11/22 17:27:43 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/11/25 22:24:47 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
@@ -160,8 +160,7 @@ class reqSpecCommands
 		$ret = $this->reqSpecMgr->update($argsObj->req_spec_id,$argsObj->doc_id,$argsObj->title,
 		                                 $argsObj->scope,$argsObj->countReq,$argsObj->user_id);
 		$guiObj->user_feedback = $ret['msg'];
-
-
+        
 		if($ret['status_ok'])
 		{
 			$guiObj->main_descr = '';

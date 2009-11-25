@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/11/22 11:16:18 $ $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2009/11/25 22:24:48 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -122,9 +122,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 	    case "doUpdate": 
 	    	$pos = strpos($tpl, '.php');
             if($pos === false)
+            {
             	$tpl = $templateCfg->template_dir . $tpl;      
+            }
             else
+            {
                 $renderType = 'redirect';  
+			}
 			break;  
     }
     switch($renderType)

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/11/25 22:33:35 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/11/25 22:47:17 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -41,9 +41,6 @@ $op = null;
 if(method_exists($commandMgr,$pFn))
 {
 	$op = $commandMgr->$pFn($args,$_REQUEST);
-	// new dBug($pFn);
-    // new dBug($op);
-    // die();
 }
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 

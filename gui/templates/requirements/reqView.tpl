@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.19 2009/08/03 08:15:43 franciscom Exp $
+$Id: reqView.tpl,v 1.20 2009/11/25 22:47:01 franciscom Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -9,7 +9,7 @@ rev: 20080512 - franciscom - added paremt_descr
 {* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
-          s="req,scope,status,coverage,req_msg_notestcase,
+          s="req,scope,status,coverage,req_msg_notestcase,expected_coverage,
              title_created,by,title_last_mod,btn_edit,btn_delete"}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -64,6 +64,12 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
   <tr>
   <td>{$labels.status}{$smarty.const.TITLE_SEP}{$gui->reqStatus[$gui->req.status]}</td>
   </tr>
+
+  {if $gui->req_cfg->expected_coverage_management}
+  <tr>
+  <td>{$labels.expected_coverage}{$smarty.const.TITLE_SEP}{$gui->req.expected_coverage}</td>
+  </tr>
+  {/if}
 
   <tr class="time_stamp_creation">
   <td colspan="2">

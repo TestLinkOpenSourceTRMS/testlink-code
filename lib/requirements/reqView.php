@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/11/25 22:47:18 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -47,6 +47,8 @@ function initialize_gui(&$dbHandler,$argsObj)
     $req_mgr = new requirement_mgr($dbHandler);
  
     $gui = new stdClass();
+    $gui->req_cfg = config_get('req_cfg');
+
     $gui->grants = new stdClass();
     $gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
     

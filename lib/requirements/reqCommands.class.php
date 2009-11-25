@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/11/25 21:21:28 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/11/25 22:33:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -147,6 +147,7 @@ class reqCommands
         	$obj->main_descr = '';
 		    $obj->action_descr = '';
           	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
+          	// $obj->template = "reqView.php";
 		  	$cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id);
 		  	$this->reqMgr->values_to_db($request,$argsObj->req_id,$cf_map);
 

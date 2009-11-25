@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/11/25 21:21:28 $ by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/11/25 22:33:35 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -39,10 +39,19 @@ $commandMgr = new reqCommands($db);
 $pFn = $args->doAction;
 $op = null;
 if(method_exists($commandMgr,$pFn))
+{
 	$op = $commandMgr->$pFn($args,$_REQUEST);
+	// new dBug($pFn);
+    // new dBug($op);
+    // die();
+}
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 
+/**
+ * init_args
+ *
+ */
 function init_args()
 {
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
@@ -77,10 +86,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
     $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                           'doDelete' => '', 'doReorder' => '', 'reorder' => '',
-                           'createTestCases' => 'doCreateTestCases',
-                           'doCreateTestCases' => 'doCreateTestCases',
-                           'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
+                             'doDelete' => '', 'doReorder' => '', 'reorder' => '',
+                             'createTestCases' => 'doCreateTestCases',
+                             'doCreateTestCases' => 'doCreateTestCases',
+                             'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
 
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
     $owebEditor->Value = getItemTemplateContents('requirement_template', 
@@ -113,10 +122,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
             
             $pos = strpos($tpl, '.php');
            	if($pos === false)
+           	{
                 $tpl = $tplDir . $tpl;      
+            }
             else
+            {
                 $renderType = 'redirect';  
-
+            } 
             break;
     }
 

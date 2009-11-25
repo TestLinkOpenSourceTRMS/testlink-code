@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.26 2009/08/28 20:37:03 schlundus Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.27 2009/11/25 22:38:52 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -8,6 +8,8 @@
         20071106 - franciscom - added ext js library
         20070102 - franciscom - added javascript validation of checked requirements
 *}
+
+{lang_get var="label" s="scope,req_total,by,title,title_last_mod"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -64,14 +66,14 @@
 	</tr>
 	<tr>
 		<td>
-			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{lang_get s='scope'}</legend>
+			<fieldset class="x-fieldset x-form-label-left"><legend class="legend_container">{$labels.scope}</legend>
 			{$gui->req_spec.scope}
 			</fieldset>
 		</td>
 	</tr>
   {if $gui->req_spec.total_req != 0}
   	<tr>
-  		<td>{lang_get s='req_total'}{$smarty.const.TITLE_SEP}{$gui->req_spec.total_req}</td>
+  		<td>{$labels.req_total}{$smarty.const.TITLE_SEP}{$gui->req_spec.total_req}</td>
    	</tr>
   {/if}
 	<tr>
@@ -84,15 +86,15 @@
 	</tr>
 	<tr class="time_stamp_creation">
 		<td colspan="2">
-	    	{lang_get s='title_created'}&nbsp;{localize_timestamp ts=$gui->req_spec.creation_ts}&nbsp;
-	      	{lang_get s='by'}&nbsp;{$gui->req_spec.author|escape}
+	    	  {$labels.title_created}&nbsp;{localize_timestamp ts=$gui->req_spec.creation_ts}&nbsp;
+	      	{$labels.by}&nbsp;{$gui->req_spec.author|escape}
 	  	</td>
 	 </tr>
   {if $gui->req_spec.modifier != ""}
     <tr class="time_stamp_creation">
     	<td colspan="2">
-    		{lang_get s='title_last_mod'}&nbsp;{localize_timestamp ts=$gui->req_spec.modification_ts}
-		  	&nbsp;{lang_get s='by'}&nbsp;{$gui->req_spec.modifier|escape}
+    		{$labels.title_last_mod}&nbsp;{localize_timestamp ts=$gui->req_spec.modification_ts}
+		  	&nbsp;{$labels.by}&nbsp;{$gui->req_spec.modifier|escape}
     	</td>
     </tr>
   {/if}

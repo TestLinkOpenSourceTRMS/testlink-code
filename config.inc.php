@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.269 2009/11/24 19:39:46 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.270 2009/11/25 21:21:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ * 	20091125 - franciscom - req_cfg->expected_coverage_management added 
  *	20091121 - franciscom - added contribution by Julian - BUGID 0002968,0002961,0002962,0002963
  *                         (refactored)
  *
@@ -811,6 +812,11 @@ $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from 
 // ENABLED: allow N level depth tree 
 // DISABLED: just one level
 $tlCfg->req_cfg->child_requirements_mgmt = ENABLED;
+
+
+// ENABLED: ask for this value on user interface and use on several features
+// DISABLED: do not ask, do not use
+$tlCfg->req_cfg->expected_coverage_management = ENABLED;
 
 // 20090111 - franciscom
 // Order of test cases status in this array, is used to undestand

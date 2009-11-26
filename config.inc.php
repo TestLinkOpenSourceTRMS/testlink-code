@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.270 2009/11/25 21:21:00 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.271 2009/11/26 17:03:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20091126 - franciscom - added contribution req internal links
  * 	20091125 - franciscom - req_cfg->expected_coverage_management added 
  *	20091121 - franciscom - added contribution by Julian - BUGID 0002968,0002961,0002962,0002963
  *                         (refactored)
@@ -853,6 +854,15 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('not_run','pa
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkFail']['all']='failed';
 $tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
 
+// Contribution 
+// ENABLED: links to other requirements/requirement specifications are
+//          automatically generated from the corresponding Document ID.
+// usage:
+// link to requirements: [req]req_doc_id[/req]
+// link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]
+// 
+// DISABLED: no links are automatically created.
+$tlCfg->req_cfg->internal_links = ENABLED; 
 
 
 // ----------------------------------------------------------------------------

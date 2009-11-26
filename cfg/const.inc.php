@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.118 2009/11/22 11:01:18 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.119 2009/11/26 12:53:39 havlat Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -586,12 +586,12 @@ $g_req_status = array(TL_REQ_STATUS_VALID => 'review_status_valid',
  * </ul>
  * @since 2.0 (?) - not used yet
  **/
-define('TL_REQ_TYPE_INFO','INFO');
-define('TL_REQ_TYPE_FEATURE','FEATURE');
-define('TL_REQ_TYPE_USE_CASE','USE_CASE'); 
-define('TL_REQ_TYPE_INTERFACE','INTERFACE');
-define('TL_REQ_TYPE_NON_FUNCTIONAL','NON_FUNC');
-define('TL_REQ_TYPE_CONSTRAIN','CONSTRAIN');
+define('TL_REQ_TYPE_INFO', 1);
+define('TL_REQ_TYPE_FEATURE',2);
+define('TL_REQ_TYPE_USE_CASE',3); 
+define('TL_REQ_TYPE_INTERFACE',4);
+define('TL_REQ_TYPE_NON_FUNCTIONAL',5);
+define('TL_REQ_TYPE_CONSTRAIN',6);
 
 /** 
  * @var array localization identifiers for requirements types 
@@ -678,19 +678,18 @@ $tlCfg->review_types = array(1 => 'type_undefined',
 
 /**
  * Top Menu definition
+ *
+ * structure
+ * - label: label to display, will be localized
+ * - url: resource to access when users click on menu item
+ * - right: user right need to display menu item.
+ *        null => no right check needed
+ * - condition: specific condition = ['','TestPlanAvailable']
+ * - shortcut: keyboard HTML shortcut
+ * - target: window/frame name (mainframe in the most of cases)
+ * 
  * @since TestLink version 1.9 
  */
-$tlCfg->guiTopMenu = array();
-
-// structure
-// label: label to display, will be localized
-// url: resource to access when users click on menu item
-// right: user right need to display menu item.
-//        null => no right check needed
-//
-// condition: @TODO Martin please document
-// shortcut: keyboard shortcut
-// target: window name
 $tlCfg->guiTopMenu[1] = array(
 		'label' => 'home',
 		'url' => 'index.php',

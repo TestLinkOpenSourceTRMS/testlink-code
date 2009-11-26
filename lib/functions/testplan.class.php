@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.150 2009/11/12 06:41:43 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.151 2009/11/26 21:50:49 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -322,7 +322,7 @@ class testplan extends tlObjectWithAttachments
 			   " WHERE testplans.testproject_id = " . $projectId;
 		if ($activeOnly)
 		{
-			$sql .= 'AND testplans.active = 1 ';
+			$sql .= ' AND testplans.active = 1 ';
 		}
 		$sql .= ' ORDER BY NH.name';
 		

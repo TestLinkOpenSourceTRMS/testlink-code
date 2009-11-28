@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.201 2009/11/18 21:43:42 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.202 2009/11/28 15:46:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091127 - franciscom - getByPathName() new method
  * 20091118 - franciscom - get_last_execution() - still working ond fixing bug when using self::ALL_VERSIONS
  * 20091113 - franciscom - get_last_execution() - fixed bug when using self::ALL_VERSIONS
  * 20091003 - franciscom - show() changes in template get logic
@@ -3664,5 +3665,48 @@ class testcase extends tlObjectWithAttachments
 		}	
 		return $xtmas;
 	} // getPathTopSuite($tcaseSet)
+	
+	
+	
+    /*
+	  function: getByPathName
+	            pathname format
+	            Test Project Name::SuiteName::SuiteName::...::Test case name
+	
+	  args: $pathname
+	  returns: hash
+	*/
+	function getByPathName($pathName,$pathSeparator='::')
+	{
+	    $recordset = null;
+		$retval=null;
+	
+        // First get root -> test project name and leaf => test case name	    
+	    $parts = explode($pathSeparator,$pathName);
+	    $partsQty = count($parts);
+	    $tprojectName = $parts[0];
+	    $tsuiteName = $parts[$partsQty-2];
+	    $tcaseName = end($parts);
+
+	    // get all testcases on test project with this name and parent test suite
+        $recordset = $this->get_by_name($tcaseName, $tsuiteName ,$tprojectName);
+        if( !is_null($recordset) && count($recordset) > 0 )
+        {
+        	foreach($recordset as $value)
+        	{
+  		        $dummy = $this->tree_manager->get_full_path_verbose($value['id']);
+                $sx = implode($pathSeparator,current($dummy)) . $pathSeparator . $tcaseName;
+                if( strcmp($pathName,$sx ) == 0 )
+                {
+                	
+                	$retval = $value;
+                	break;
+                }
+        	}
+	    }
+	    return $retval;
+	}
+	
+	
 } // end class
 ?>

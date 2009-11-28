@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/11/18 21:43:14 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2009/11/28 15:46:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -26,6 +26,18 @@ testlinkInitPage($db);
 echo "<pre> testcase - constructor - testcase(&\$db)";echo "</pre>";
 $tcase_mgr=new testcase($db);
 // new dBug($tcase_mgr);
+
+
+// getByPathName
+// function getByPathName($pathName,$pathSeparator='::')
+$pathName='ZATHURA::Holodeck::Apollo 10 Simulation::Unload::Full speed unload';
+$fname = 'getByPathName';
+echo "<pre> testcase - $fname(\$pathName,\$pathSeparator='::')";echo "</pre>";
+echo "<pre>            $fname($pathName)";echo "</pre>";
+$result=$tcase_mgr->$fname($pathName);
+new dBug($result);
+die();
+
 
 $tcase_id=318;
 $tplan_id=389;

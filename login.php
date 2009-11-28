@@ -3,15 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: login.php,v $
+ * Login page with configuratin checking and authorization
  *
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/11/19 20:05:39 $ by $Author: schlundus $
- * @author Martin Havlat
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2006, TestLink community 
+ * @version    	CVS: $Id: login.php,v 1.53 2009/11/28 23:16:14 havlat Exp $
+ * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/login.php?view=markup
+ * @link 		http://www.teamst.org/index.php
  * 
- * Login management
- *
  **/
+
 require_once('lib/functions/configCheck.php');
 checkConfiguration();
 require_once('config.inc.php');
@@ -78,8 +80,8 @@ function init_args()
     $args->note = $pParams['note'];
     $args->login = $pParams['tl_login'];
     $args->pwd = $pParams['tl_password'];
-    $args->reqURI = $pParams['req'];
-    $args->preqURI = $pParams['reqURI'];
+    $args->reqURI = urlencode($pParams['req']);
+    $args->preqURI = urlencode($pParams['reqURI']);
 	
     return $args;
 }

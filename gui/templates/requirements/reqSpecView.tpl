@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.28 2009/11/25 22:44:36 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.29 2009/11/29 18:44:04 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -9,7 +9,7 @@
         20070102 - franciscom - added javascript validation of checked requirements
 *}
 
-{lang_get var="labels" s="scope,req_total,by,title,title_last_mod"}
+{lang_get var="labels" s="scope,req_total,by,title,title_last_mod,title_created"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.119 2009/11/26 12:53:39 havlat Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.120 2009/11/29 19:17:18 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -619,22 +619,22 @@ define('VALID_REQ', 'v');
 // --------------------------------------------------------------------------------------
 /* [CUSTOM FIELDS] */
 
-/**
- * Custom field constrains for HTML inputs use values to created to get/show custom field contents
- * <ul>
- * <li>for string,numeric,float,email: size & maxlenght of the input type text.</li>
- * <li>for list,email size of the select input.</li>
- * </ul>
- */
-$tlCfg->gui->custom_fields->sizes = array( 
-	'string' => 50,
-	'numeric'=> 10,
-	'float'  => 10,
-	'email'  => 50,
-	'list'   => 1,
-	'multiselection list' => 5,
-	'text area' => array('cols' => 40, 'rows' => 6)
-);
+// /**
+//  * Custom field constrains for HTML inputs use values to created to get/show custom field contents
+//  * <ul>
+//  * <li>for string,numeric,float,email: size & maxlenght of the input type text.</li>
+//  * <li>for list,email size of the select input.</li>
+//  * </ul>
+//  */
+// $tlCfg->gui->custom_fields->sizes = array( 
+// 	'string' => 50,
+// 	'numeric'=> 10,
+// 	'float'  => 10,
+// 	'email'  => 50,
+// 	'list'   => 1,
+// 	'multiselection list' => 5,
+// 	'text area' => array('cols' => 40, 'rows' => 6)
+// );
 
 
 
@@ -644,7 +644,7 @@ $tlCfg->gui->custom_fields->sizes = array(
 //           check $custom_field_types property on cfield_mgr.class.php 
 //           to avoid overwrite of standard types.
 //
-$tlCfg->gui->custom_fields->types = null;
+// $tlCfg->gui->custom_fields->types = null;
 
 // Use this variable (on custom_config.inc.php)
 // to define possible values behaviour for new Custom Field types.
@@ -653,7 +653,7 @@ $tlCfg->gui->custom_fields->types = null;
 //           check $possible_values_cfg property on cfield_mgr.class.php 
 //           to avoid overwrite of standard values.
 //
-$tlCfg->gui->custom_fields->possible_values_cfg = null;
+// $tlCfg->gui->custom_fields->possible_values_cfg = null;
 
 // Format string follows date() spec - see PHP Manual
 // We can not use $g_timestamp_format, because format strings for date() and strftime() 

@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.272 2009/11/29 16:24:24 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.273 2009/11/29 19:16:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -888,7 +888,7 @@ $tlCfg->import_max_row = '10000'; // in chars
 $tlCfg->default_roleid = TL_ROLES_GUEST;
 
 
-/** used to check size in char for text type custom fields */
+/** used to check size in char for TEXT AREA type custom fields */
 // can not be greater that column definition on DB
 // 0 => do not check.
 $tlCfg->custom_fields->max_length = 255;
@@ -896,15 +896,34 @@ $tlCfg->custom_fields->max_length = 255;
 // sizes for HTML INPUTS
 // for list, multiselection list => number of items
 // for checkbox,radio is useless
-$tlCfg->custom_fields->sizes = array('string' => 255,
+// Hint: more than 120 produce weird effects on user interface
+//
+$tlCfg->custom_fields->sizes = array('string' => 100,
                                      'numeric' => 10,
                                      'float' => 10,
-                                     'email' => 255,
+                                     'email' => 100,
                                      'list' => 5,
                                      'multiselection list' => 5,
 		  					         'text area' => array('rows' => 6, 'cols' => 80),
-							         'script' => 255,
-							         'server' => 255);
+							         'script' => 100,
+							         'server' => 100);
+
+// Use this variable (on custom_config.inc.php) to define new Custom Field types.
+// IMPORTANT:
+//           check $custom_field_types property on cfield_mgr.class.php 
+//           to avoid overwrite of standard types.
+//
+$tlCfg->gui->custom_fields->types = null;
+
+// Use this variable (on custom_config.inc.php)
+// to define possible values behaviour for new Custom Field types.
+//
+// IMPORTANT:
+//           check $possible_values_cfg property on cfield_mgr.class.php 
+//           to avoid overwrite of standard values.
+//
+$tlCfg->gui->custom_fields->possible_values_cfg = null;
+
 
 /** 
  * Check unique titles of Test Project, Test Suite and Test Case

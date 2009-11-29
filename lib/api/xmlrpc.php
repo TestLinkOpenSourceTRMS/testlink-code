@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2009/11/18 22:19:04 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2009/11/29 09:05:51 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *  20091128 - franciscom - getTestCaseIDBy() - added testcasepathname
  *  20091113 - franciscom - work for adding overwrite argument to reportTCResult() started.
  *  20090917 - franciscom - reportTCResult() manages platform info
  *	20090902 - franciscom - test case preconditions field
@@ -205,7 +206,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $platformNameParamName = "platformname";
     public static $platformIDParamName = "platformid";
 	public static $overwriteParamName = "overwrite";
-
+	public static $testCasePathNameParamName = "testcasepathname";
 
 
 	// public static $executionRunTypeParamName		= "executionruntype";
@@ -1660,41 +1661,55 @@ class TestlinkXMLRPCServer extends IXR_Server
   * @param string $args["testcasename"]
   * @param string $args["testsuitename"] - optional
   * @param string $args["testprojectname"] - optional
+  * @param string $args["testcasepathname"] - optional
+  *               Full test case path name, starts with test project name
+  *               pieces separator -> :: -> default value of getByPathName()
   * @return mixed $resultInfo
   */
   public function getTestCaseIDByName($args)
   {
-      $msg_prefix="(" .__FUNCTION__ . ") - ";
-      $status_ok=true;
-      $this->_setArgs($args);
+		$msg_prefix="(" .__FUNCTION__ . ") - ";
+		$status_ok=true;
+      	$this->_setArgs($args);
+        $result = null;
       
-      $checkFunctions = array('authenticate','checkTestCaseName');       
-      $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");       
+      	$checkFunctions = array('authenticate','checkTestCaseName');       
+      	$status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");       
       
-      if( $status_ok )
-      {			
-          $testCaseName = $this->args[self::$testCaseNameParamName];
-          $testCaseMgr = new testcase($this->dbObj);
-  
-          $keys2check = array(self::$testSuiteNameParamName,
-                              self::$testProjectNameParamName);
-  		    foreach($keys2check as $key)
+      	if( $status_ok )
+      	{			
+          	$testCaseName = $this->args[self::$testCaseNameParamName];
+          	$testCaseMgr = new testcase($this->dbObj);
+ 
+          	$keys2check = array(self::$testSuiteNameParamName,self::$testCasePathNameParamName,
+          	                    self::$testProjectNameParamName);
+			foreach($keys2check as $key)
   		    {
   		        $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : '';
   		    }
   
-          $result = $testCaseMgr->get_by_name($testCaseName,
-                                              $optional[self::$testSuiteNameParamName],
-                                              $optional[self::$testProjectNameParamName]);
-          if(0 == sizeof($result))
-          {
-              $status_ok=false;
-              $this->errors[] = new IXR_ERROR(NO_TESTCASE_BY_THIS_NAME, 
-                                              $msg_prefix . NO_TESTCASE_BY_THIS_NAME_STR);
-              return $this->errors;
-          }
+            // 20091128 - franciscom
+            if( $optional[self::$testCasePathNameParamName] != '' )
+            {
+          		$dummy = $testCaseMgr->getByPathName($optional[self::$testCasePathNameParamName]);
+          		if( !is_null($dummy) )
+          		{
+          			$result[0] = $dummy;
+          		}
+            }
+            else
+            {
+          		$result = $testCaseMgr->get_by_name($testCaseName,$optional[self::$testSuiteNameParamName],
+            	                                    $optional[self::$testProjectNameParamName]);
+          	}
+          	if(0 == sizeof($result))
+          	{
+          	    $status_ok=false;
+          	    $this->errors[] = new IXR_ERROR(NO_TESTCASE_BY_THIS_NAME, 
+          	                                    $msg_prefix . NO_TESTCASE_BY_THIS_NAME_STR);
+          	    return $this->errors;
+          	}
       }
-  
       return $status_ok ? $result : $this->errors; 
   }
 	 

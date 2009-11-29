@@ -5,14 +5,15 @@
  *
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlRole.class.php,v 1.3 2009/09/28 08:45:21 franciscom Exp $
+ * @version    	CVS: $Id: tlRole.class.php,v 1.4 2009/11/29 16:24:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
- *     20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
- *     20090101 - franciscom - writeToDB() problems with Postgres
- *                             due to wrong table name in insert_id() call.
+ *	20091129 - franciscom - new method getRoleColourCfg() used by contribution
+ *	20090221 - franciscom - hasRight() - BUG - function parameter name crashes with local variable
+ *	20090101 - franciscom - writeToDB() problems with Postgres
+ *                          due to wrong table name in insert_id() call.
  * 
  * @TODO Improve description  
  */
@@ -497,6 +498,28 @@ class tlRole extends tlDBObject
 	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
 	{
 		return self::handleNotImplementedMethod(__FUNCTION__);
+	}
+
+
+    /**
+ 	 * get roles present on system and return map with colour associations
+ 	 * if there is no colour configured for role '' is returned as colour.
+ 	 *
+ 	 */
+	static public function getRoleColourCfg(&$db)
+	{
+    	$role_colour = config_get('role_colour');
+		$tables  = tlObject::getDBTables("roles");
+		$sql = "SELECT description FROM {$tables['roles']} ";
+        $roles = $db->fetchColumnsIntoArray($sql,"description");
+    	foreach($roles as $description)
+    	{
+    	    if(!isset($role_colour[$description]))
+    	    {
+    	        $role_colour[$description] = '';
+    	    }
+    	}
+    	return $role_colour;
 	}
 }
 ?>

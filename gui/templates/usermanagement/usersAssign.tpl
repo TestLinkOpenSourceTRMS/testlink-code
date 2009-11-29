@@ -1,8 +1,9 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.15 2009/08/29 23:18:02 havlat Exp $ 
+$Id: usersAssign.tpl,v 1.16 2009/11/29 16:26:03 franciscom Exp $ 
 
 rev:
+    20091129 - franciscom - ISSUE 2554 - coloruing
     20090426 - franciscom - BUGID 2442- added bulk setting management
     20070818 - franciscom
     added logic to display effective role for test project and test plan
@@ -14,7 +15,7 @@ rev:
 *}
 {lang_get var="labels" 
           s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,
-             User,btn_upd_user_data,btn_do,title_assign_roles'}
+             warn_demo,User,btn_upd_user_data,btn_do,title_assign_roles'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
 {include file="inc_ext_js.tpl" css_only=1}
@@ -73,7 +74,7 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
 {if $gui->features neq ''}
 <form method="get" action="{$umgmt}/usersAssign.php"
 	{if $tlCfg->demoMode}
-		onsubmit="alert('{lang_get s="warn_demo"}'); return false;"
+		onsubmit="alert('{$labels.warn_demo}'); return false;"
 	{/if}>
 	<input type="hidden" name="featureID" value="{$gui->featureID}" />
 	<input type="hidden" name="featureType" value="{$gui->featureType}" />
@@ -130,8 +131,11 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
     		<th>{$sortHintIcon}{lang_get s=th_roles_$featureVerbose} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$gui->users item=user}
+    	{assign var="globalRoleName" value=$user->globalRole->name}
     	<tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
-    		<td>{$user->getDisplayName()|escape}</td>
+    		<td {if $gui->role_colour != '' && $gui->role_colour[$globalRoleName] != ''}  		
+    		      style="background-color: {$gui->role_colour[$globalRoleName]};" {/if}>
+    		    {$user->getDisplayName()|escape}</td>
     		<td>
     			{assign var=uID value=$user->dbID}
           {* --------------------------------------------------------------------- *}

@@ -11,11 +11,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: usersAssign.php,v 1.26 2009/08/29 23:18:02 havlat Exp $
+ * @version    	CVS: $Id: usersAssign.php,v 1.27 2009/11/29 16:25:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *	None.
+ *	20091129 - franciscom - ISSUE 2554 - colouring
+ *
  */
 require_once('../../config.inc.php');
 require_once('users.inc.php');
@@ -27,6 +28,7 @@ $assignRolesFor = null;
 $featureMgr = null;
 $userFeatureRoles = null;
 $doInitGui = true;
+$guiCfg = config_get('gui');
 
 $tprojectMgr = new testproject($db);
 $tplanMgr = new testplan($db);
@@ -43,6 +45,13 @@ $gui->optRights = tlRole::getAll($db,null,null,null,tlRole::TLOBJ_O_GET_DETAIL_M
 $gui->features = null;
 $gui->featureType = $args->featureType;
 $gui->featureID = null;
+
+$gui->role_colour = null;
+if($guiCfg->usersAssignGlobalRoleColoring == ENABLED) 
+{
+	$gui->role_colour = tlRole::getRoleColourCfg($db);
+}
+
 $target = new stdClass();
 $target->testprojectID = null;
 $target->testplanID = null;
@@ -106,6 +115,7 @@ if(is_null($gui->features) || count($gui->features) == 0)
     $gui->features = null;
 	$gui->user_feedback = $gui->not_for_you;
 }
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.271 2009/11/26 17:03:58 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.272 2009/11/29 16:24:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20091129 - franciscom - ISSUE 2554 - gui->usersAssignGlobalRoleColoring
  *  20091126 - franciscom - added contribution req internal links
  * 	20091125 - franciscom - req_cfg->expected_coverage_management added 
  *	20091121 - franciscom - added contribution by Julian - BUGID 0002968,0002961,0002962,0002963
@@ -356,6 +357,12 @@ $tlCfg->gui->testproject_coloring = 'none'; // I'm sorry default is not coloring
 /** default background color */
 $tlCfg->gui->background_color = '#9BD';
 
+// ENABLED: on features that assign user role to test projects and test plan, colour user name
+//          according GLOBAL role 
+// DISABLED: do not color [STANDARD BEHAVIOUR]          
+$tlCfg->gui->usersAssignGlobalRoleColoring = DISABLED;
+
+
 // Enable/disable rounded corners via javascript
 $tlCfg->gui->round_corners = new stdClass();
 $tlCfg->gui->round_corners->exec_history = ENABLED;
@@ -525,7 +532,7 @@ $tlCfg->document_generator->tc_version_enabled = FALSE;
 /* [Test Executions] */
 
 // ENABLED -> enable XML-RPC calls to external test automation server
-//      new buttons will be displayed on execution pages
+//            new buttons will be displayed on execution pages
 // DISABLED -> disable
 $tlCfg->exec_cfg->enable_test_automation = DISABLED;
 

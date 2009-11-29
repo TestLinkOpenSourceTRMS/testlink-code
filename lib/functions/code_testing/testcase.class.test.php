@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/11/28 15:46:45 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2009/11/29 19:18:42 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -27,6 +27,31 @@ echo "<pre> testcase - constructor - testcase(&\$db)";echo "</pre>";
 $tcase_mgr=new testcase($db);
 // new dBug($tcase_mgr);
 
+
+// $old_article = file_get_contents('./old_article.txt');
+// $new_article = $_REQUEST['article']; /* Let's say that someone pasted a new article to html form */
+// 
+// $diff = xdiff_string_diff($old_article, $new_article, 1);
+// if (is_string($diff)) {
+//    echo "Differences between two articles:\n";
+//    echo $diff;
+// }
+   
+$version_a=1;
+$version_b=2;
+
+$tcase_id=88;   
+$va = $tcase_mgr->get_by_id($tcase_id,null,'ALL','ALL',$version_a);
+$vb = $tcase_mgr->get_by_id($tcase_id,null,'ALL','ALL',$version_b);
+
+new dBug($va);
+new dBug($vb);
+$diff = xdiff_string_diff($va[0]['summary'], $vb[0]['summary'], 1);
+echo "Differences between two articles:\n";
+echo $diff;
+die();
+
+   
 
 // getByPathName
 // function getByPathName($pathName,$pathSeparator='::')

@@ -1,18 +1,17 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- *
- * Filename $RCSfile: staticPage.php,v $
- *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/05/13 16:31:39 $  $Author: schlundus $
- * @author 	Martin Havlat
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
  * manage launch of static pages (help, instructions).
  *
- * 20090512 - franciscom - fixed typo errors and refactoring
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2009, TestLink community 
+ * @version    	CVS: $Id: staticPage.php,v 1.8 2009/11/30 20:53:37 havlat Exp $
+ * @link 		http://www.teamst.org/index.php
  *
-**/
+ **/
 require('../../config.inc.php');
 require('../functions/common.php');
 testlinkInitPage($db);
@@ -24,7 +23,7 @@ $gui->pageTitle = '';
 $gui->pageContent = '';
 $gui->refreshTree = $args->refreshTree;
 
-$pageKey = $args->key;
+$pageKey = htmlspecialchars($args->key);
 if ($pageKey == "") 
 {
 	exit ("Error: Invalid page parameter.");

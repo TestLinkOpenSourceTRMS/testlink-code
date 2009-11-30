@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/11/19 20:05:39 $ by $Author: schlundus $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/11/30 21:52:19 $ by $Author: erikeloff $
  *
  * allows users to manage platforms. 
  *
@@ -57,7 +57,7 @@ else
 {
 	$gui->user_feedback = getErrorMessage($op->status, $args->name);
 }
-$gui->platforms = $platform_mgr->getAll();
+$gui->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $default_template);
@@ -138,7 +138,7 @@ function edit(&$args,&$gui,&$platform_mgr)
 	$ret->status = 1;
 
 	$gui->action_descr = lang_get('edit_platform');
-	$platform = $platform_mgr->getPlatform($args->platform_id);
+	$platform = $platform_mgr->getById($args->platform_id);
 	
 	if ($platform)
 	{
@@ -203,7 +203,7 @@ function do_update(&$args,&$gui,&$platform_mgr)
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
 	$ret->status = $platform_mgr->update($args->platform_id,
-						 		         $args->name,$args->notes);
+								         $args->name,$args->notes);
 
 	return $ret;
 }
@@ -228,7 +228,8 @@ function do_delete(&$args,&$gui,&$platform_mgr)
 
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
-	$ret->status = $platform_mgr->delete($args->platform_id);
+	// This also removes all exec data on this platform
+	$ret->status = $platform_mgr->delete($args->platform_id,true);
 
 	return $ret;
 }

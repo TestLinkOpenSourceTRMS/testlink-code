@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.492 2009/11/25 21:20:30 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.493 2009/11/30 21:52:19 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1332,7 +1332,8 @@ $TLS_btn_create_platform = "Create platform";
 $TLS_btn_edit_platform = "Edit";
 $TLS_th_platform = "Platform";
 $TLS_menu_manage_platforms = "Platform Management";
-$TLS_warning_delete_platform = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_warning_delete_platform = "You are going to delete: %s <br /> This will remove <b>ALL</b> execution data in all testplans<br />You cannot undo this operation<br/>Are you sure?";
+$TLS_warning_cannot_delete_platform = "<b>%s</b> is being used!<br/>You cannot remove it now. You must first remove it from the testplans using it";
 $TLS_warning_enter_at_least1 = "Please enter at least ";
 $TLS_warning_enter_at_least2 = " chars.";
 $TLS_warning_enter_less1 = "Please enter less than";
@@ -1349,8 +1350,10 @@ $TLS_menu_assign_platform_to_testplan = "Assign to Test Plan";
 $TLS_title_platforms = "Platforms";
 $TLS_available_platforms = "Available platforms";
 $TLS_assigned_platforms = "Assigned platforms";
-$TLS_add_remove_platforms = "Add / Remove Platforms to Test Plan %s";
-
+$TLS_add_remove_platforms = "Add / Remove Platforms to Test Plan: %s";
+$TLS_platform_linked_count = " (Used in %s testcases)";
+$TLS_platform_unlink_warning_title = "Platform is in use";
+$TLS_platform_unlink_warning_message = "The selected platform(s) are being used.<br/>If you continue <b/>all execution data will be lost</b>.<br/>Are you sure you want to remove the selected platform(s)?";
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Export requirements";

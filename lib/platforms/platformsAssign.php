@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		eloff
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.6 2009/11/19 20:05:39 schlundus Exp $
+ * @version    	CVS: $Id: platformsAssign.php,v 1.7 2009/11/30 21:52:19 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -65,8 +65,7 @@ if (isset($args->tplan_id))
     $opt_cfg->additional_global_lbl = null;
     $opt_cfg->from->lbl = lang_get('available_platforms');
     $opt_cfg->to->lbl = lang_get('assigned_platforms');
-    $opt_cfg->from->map = $platform_mgr->getAllAsMap();
-    $opt_cfg->to->map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+    $gui->platform_count_js = init_option_panels($tplan_mgr, $platform_mgr, $opt_cfg, $args);
 
     $tplanData = $tplan_mgr->get_by_id($args->tplan_id);
     if (isset($tplanData))
@@ -85,8 +84,7 @@ if (isset($args->tplan_id))
         	$tplan_mgr->changeLinkedTCVersionsPlatform($args->tplan_id,0,current($args->platformsToAdd));
         }
         // Update option panes with newly updated config
-        $opt_cfg->from->map = $platform_mgr->getAllAsMap();
-        $opt_cfg->to->map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+        $gui->platform_count_js = init_option_panels($tplan_mgr, $platform_mgr, $opt_cfg, $args);
     }
 }
 
@@ -99,6 +97,31 @@ $smarty->assign('gui', $gui);
 $smarty->assign('opt_cfg', $opt_cfg);
 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+/**
+ * This function initializes the option transfer items, by appending a text
+ * with number linked TC:s for every assigned platform.
+ * It also builds a js map platform_name => linked_count. This map is used
+ * to show warning dialog only when trying to unlink platforms with assigned TCs
+ */
+function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
+{
+    $opt_cfg->from->map = $platform_mgr->getAllAsMap();
+
+    $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+    $platform_count_js = "platform_count_map = new Array();\n";
+    foreach ($map as $platform_id => &$platform_name) {
+        $count = $tplan_mgr->count_testcases($args->tplan_id,$platform_id);
+        $platform_name .= sprintf(lang_get('platform_linked_count'), $count);
+        $platform_count_js .= "platform_count_map['$platform_name'] = $count;\n";
+
+        // Removal of duplicates is NOT handles automatically since we just
+        // modified their names.
+        unset($opt_cfg->from->map[$platform_id]);
+    }
+    $opt_cfg->to->map = $map;
+    return $platform_count_js;
+}
 
 function init_args(&$opt_cfg)
 {

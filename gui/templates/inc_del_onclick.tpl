@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_del_onclick.tpl,v 1.8 2009/08/11 19:48:51 schlundus Exp $
+$Id: inc_del_onclick.tpl,v 1.9 2009/11/30 21:52:19 erikeloff Exp $
 Purpose: include files for:
 
 
@@ -91,6 +91,13 @@ rev :
   function alert_message(title,msg)
   {
     Ext.MessageBox.alert(title.escapeHTML(), msg.escapeHTML());
+  }
+  /**
+   * Displays an alert message. title and message must be escaped.
+   */
+  function alert_message_html(title,msg)
+  {
+    Ext.MessageBox.alert(title, msg);
   }
   {/literal}
   </script>

@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.8 2009/11/18 19:50:52 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.9 2009/11/30 21:52:19 erikeloff Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -190,14 +190,41 @@ class tlPlatform extends tlObjectWithDB
 	}
 
 	/**
-	 * @param string $orderBy
-	 * @return array all available platforms in test project
+	 * @options array $options Optional params
+	 *                         ['include_linked_count'] => adds the number of
+	 *                         testplans this platform is used in
+	 *
+	 * @return array of all available platforms
 	 */
-	public function getAll($orderBy=' ORDER BY name ')
+	public function getAll($options = null)
 	{
-		$sql = "SELECT id, name, notes
-				FROM {$this->tables['platforms']}
-				WHERE testproject_id = {$this->tproject_id} {$orderBy}";
+		$default = array(
+			'include_linked_count' => false
+		);
+		$options = array_merge($default, (array)$options);
+		if (!$options['include_linked_count'])
+		{
+			$sql = "SELECT id, name, notes
+					FROM {$this->tables['platforms']}";
+			if (!is_null($whereClause)) {
+				$sql .= $whereClause;
+			}
+		}
+		else
+		{
+			$sql = "SELECT p.id,p.name,p.notes,
+					COUNT(tp.testplan_id) as linked_count
+					FROM {$this->tables['platforms']} p
+					LEFT JOIN {$this->tables['testplan_platforms']} tp
+					ON tp.platform_id = p.id";
+
+			if (!is_null($whereClause)) {
+				$sql .= $whereClause;
+			}
+
+			$sql .= " GROUP BY p.id";
+		}
+		$sql .= " ORDER BY name";
 		return $this->db->get_recordset($sql);
 	}
 

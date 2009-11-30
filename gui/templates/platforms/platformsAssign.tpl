@@ -1,18 +1,23 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsAssign.tpl,v 1.3 2009/08/24 07:37:41 franciscom Exp $
+$Id: platformsAssign.tpl,v 1.4 2009/11/30 21:52:18 erikeloff Exp $
 Purpose: smarty template - assign platforms to testplans
 *}
 {lang_get var="labels"
           s="title_platforms,menu_assign_platform_to_testplan,
+             platform_unlink_warning_title,platform_unlink_warning_message,
              platform_assignment_no_testplan,btn_save"}
 
 {include file="inc_head.tpl" openHead='yes'}
+{include file="inc_ext_js.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
 {if $gui->can_do}
   <script type="text/javascript" language="JavaScript">
+{* Used to show warnings when trying to remove platform with testcases *}
+{$gui->platform_count_js}
+
   var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
   {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
   {$opt_cfg->js_ot_name}.saveRemovedRightOptions("{$opt_cfg->js_ot_name}_removedRight");
@@ -20,6 +25,35 @@ Purpose: smarty template - assign platforms to testplans
   {$opt_cfg->js_ot_name}.saveAddedRightOptions("{$opt_cfg->js_ot_name}_addedRight");
   {$opt_cfg->js_ot_name}.saveNewLeftOptions("{$opt_cfg->js_ot_name}_newLeft");
   {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
+
+
+/* This function checks if any of the removed platforms has linked testcases.
+ * If that is the case, a warning dialog is displayed
+ */
+{$opt_cfg->js_ot_name}.transferLeft={literal}function(){
+	options = this.right.options;
+	num_with_linked_to_move = 0;
+	for(i=0;i<options.length;i++) {
+		if(options[i].selected && platform_count_map[options[i].text] > 0) {
+			num_with_linked_to_move++;
+		}
+	}
+    // Trying to remove platforms with linked TCs. Show warning/confirm dialog
+	if (num_with_linked_to_move > 0) {
+		function callback(btn,text)
+		{
+			if (btn == "yes") {
+				moveSelectedOptions(this.right,this.left,this.autoSort,this.staticOptionRegex); this.update();
+			}
+		}
+		Ext.Msg.confirm("{/literal}{$labels.platform_unlink_warning_title}{literal}","{/literal}{$labels.platform_unlink_warning_message}{literal}", callback, this);
+	}
+	else {
+		// this is the default call from option transfer
+		moveSelectedOptions(this.right,this.left,this.autoSort,this.staticOptionRegex); this.update();
+	}
+};
+{/literal}
   </script>
 {/if}
 </head>

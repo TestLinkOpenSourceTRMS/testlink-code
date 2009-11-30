@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.5 2009/11/19 20:05:39 schlundus Exp $
+$Id: platformsView.tpl,v 1.6 2009/11/30 21:52:18 erikeloff Exp $
 Purpose: smarty template - View all platforms
 
 20091010 - franciscom - export XML feature
@@ -14,6 +14,7 @@ Purpose: smarty template - View all platforms
              menu_assign_kw_to_tc,btn_create_platform'}
 
 {lang_get s='warning_delete_platform' var="warning_msg" }
+{lang_get s='warning_cannot_delete_platform' var="warning_msg_cannot_del" }
 {lang_get s='delete' var="del_msgbox_title" }
 
 {assign var="viewAction" value="lib/platforms/platformsView.php"}
@@ -59,13 +60,22 @@ Purpose: smarty template - View all platforms
 			<td>{$gui->platforms[platform].notes|escape|nl2br}</td>
 			{if $gui->canManage ne ""}
 			<td class="clickable_icon">
+				{if $gui->platforms[platform].linked_count eq 0}
 				<img style="border:none;cursor: pointer;"
-			       	alt="{$labels.alt_delete_platform}"
-             		title="{$labels.alt_delete_platform}"
-             		src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
-				    onclick="delete_confirmation({$gui->platforms[platform].id},
-				              '{$gui->platforms[platform].name|escape:'javascript'|escape}',
+						alt="{$labels.alt_delete_platform}"
+						title="{$labels.alt_delete_platform}"
+						src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+						onclick="delete_confirmation({$gui->platforms[platform].id},
+							'{$gui->platforms[platform].name|escape:'javascript'|escape}',
 				              '{$del_msgbox_title}','{$warning_msg}');" />
+				{else}
+					<img style="border:none;cursor: pointer;"
+						alt="{$labels.alt_delete_platform}"
+						title="{$labels.alt_delete_platform}"
+						src="{$smarty.const.TL_THEME_IMG_DIR}/trash_greyed.png"
+						onclick="alert_message_html(
+							'{$del_msgbox_title}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name}');" />
+				{/if}
 			</td>
 			{/if}
 		</tr>

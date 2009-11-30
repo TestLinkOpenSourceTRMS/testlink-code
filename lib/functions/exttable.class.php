@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.2 2009/09/10 09:13:28 franciscom Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.3 2009/11/30 21:52:19 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -268,7 +268,7 @@ class tlExtTable extends tlTable
 	/**
 	 * Outputs the div tag to hold the table.
 	 */
-	public function renderBodySection($tableID='table')
+	public function renderBodySection($tableID)
 	{
 		return '<div id="' . $tableID . '"></div>';
 	}

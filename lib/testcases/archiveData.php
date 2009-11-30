@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.53 2009/09/15 18:48:52 schlundus Exp $
+ * @version $Id: archiveData.php,v 1.54 2009/11/30 22:19:37 havlat Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -85,7 +85,7 @@ function init_args(&$viewerCfg)
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
 			         "id" => array(tlInputParameter::INT_N),
 			         "tcversion_id" => array(tlInputParameter::INT_N),
-			         "targetTestCase" => array(tlInputParameter::STRING_N,0,100),
+			         "targetTestCase" => array(tlInputParameter::STRING_N,0,24),
 			         "show_path" => array(tlInputParameter::INT_N),
 			         "show_mode" => array(tlInputParameter::STRING_N,0,50),
 			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),

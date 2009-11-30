@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/10/07 06:13:33 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/11/30 21:19:03 $ by $Author: havlat $
  *
  * rev: 20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
  *      20081029 - franciscom - added 'clear' action to delete all events and transactions
@@ -62,7 +62,7 @@ function init_args()
 					 "endDate" => array("POST",tlInputParameter::STRING_N,0,10),
 					 "doAction" => array("POST",tlInputParameter::STRING_N,0,100),
 					 "object_id" => array("REQUEST",tlInputParameter::INT_N),
-					 "object_type" => array("REQUEST",tlInputParameter::STRING_N),
+					 "object_type" => array("REQUEST",tlInputParameter::STRING_N,0,15),
 					 "logLevel" => array("POST",tlInputParameter::ARRAY_INT),
 					 "testers" => array("REQUEST",tlInputParameter::ARRAY_INT));
 

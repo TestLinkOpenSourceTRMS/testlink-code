@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.11 2009/12/01 19:38:55 erikeloff Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.12 2009/12/01 21:06:58 erikeloff Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -212,7 +212,7 @@ class tlPlatform extends tlObjectWithDB
 					" FROM {$this->tables['platforms']} p " .
 					" LEFT JOIN {$this->tables['testplan_platforms']} tp " .
 					" ON tp.platform_id = p.id" .
-					" GROUP BY p.id";
+					" GROUP BY p.id, p.name, p.notes";
 		}
 		else
 		{

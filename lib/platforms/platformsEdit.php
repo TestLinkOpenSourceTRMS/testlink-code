@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/11/30 21:52:19 $ by $Author: erikeloff $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/12/01 17:31:25 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  *
  * This is a fully commented model of How I think we need to develop new
  * pages of this kind, and how we need to refactor old pages.
  *
+ * @internal Revision:
+ * 20091201 - franciscom - minor code layout and standard coding changes 
  *
 **/
 require_once("../../config.inc.php");
@@ -193,7 +195,9 @@ function do_update(&$args,&$gui,&$platform_mgr)
 	$action_descr = lang_get('edit_platform');
 	$platform = $platform_mgr->getPlatform($args->platform_id);
 	if ($platform)
+	{
 		$action_descr .= TITLE_SEP . $platform['name'];
+    }
     
 	$gui->submit_button_label = lang_get('btn_save');
 	$gui->submit_button_action = 'do_update';
@@ -202,8 +206,7 @@ function do_update(&$args,&$gui,&$platform_mgr)
 
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
-	$ret->status = $platform_mgr->update($args->platform_id,
-								         $args->name,$args->notes);
+	$ret->status = $platform_mgr->update($args->platform_id,$args->name,$args->notes);
 
 	return $ret;
 }
@@ -219,8 +222,7 @@ function do_update(&$args,&$gui,&$platform_mgr)
 */
 function do_delete(&$args,&$gui,&$platform_mgr)
 {
-	$gui->main_descr = lang_get('testproject') . TITLE_SEP . 
-	                      $args->testproject_name;
+	$gui->main_descr = lang_get('testproject') . TITLE_SEP . $args->testproject_name;
 
 	$gui->submit_button_label = lang_get('btn_save');
 	$gui->submit_button_action = 'do_update';

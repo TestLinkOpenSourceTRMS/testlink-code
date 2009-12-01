@@ -6,13 +6,14 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.10 2009/12/01 18:56:14 erikeloff Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.11 2009/12/01 19:38:55 erikeloff Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *
  *  20091201 - Eloff      - added options to getAll() to include linked_count
  *                          Use positive logic in getAll()
+ *                          Rewrite SQL queries to coding conventions (no newline in string)
  *  20091118 - franciscom - getID() - fixed added testproject id in where clause
  *	20091031 - franciscom - getAll(),getAllAsMap(),getLinkedToTestplanAsMap() - added orderBy
  *	20090807 - franciscom - added check on empty name with exception (throwIfEmptyName())
@@ -79,9 +80,9 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function getByID($id)
 	{
-		$sql = "SELECT id, name, notes
-				FROM {$this->tables['platforms']}
-				WHERE id = {$id}";
+		$sql =  " SELECT id, name, notes " .
+				" FROM {$this->tables['platforms']} " .
+				" WHERE id = {$id}";
 		return $this->db->fetchFirstRow($sql);
 	}
 	
@@ -141,9 +142,9 @@ class tlPlatform extends tlObjectWithDB
 		$result = true;
 		foreach ($idSet as $platform_id)
 		{
-			$sql = "INSERT INTO {$this->tables['testplan_platforms']}
-					(testplan_id, platform_id)
-					VALUES ($testplan_id, $platform_id)";
+			$sql = " INSERT INTO {$this->tables['testplan_platforms']} " .
+					" (testplan_id, platform_id) " .
+					" VALUES ($testplan_id, $platform_id)";
 			$result = $this->db->exec_query($sql);
 			if(!$result)
 			{
@@ -186,7 +187,7 @@ class tlPlatform extends tlObjectWithDB
 	public function getID($name)
 	{
 		$sql = " SELECT id FROM {$this->tables['platforms']} " .
-			   " WHERE name = '" . $this->db->prepare_string($name) . "'" . 
+			   " WHERE name = '" . $this->db->prepare_string($name) . "'" .
 			   " AND testproject_id = {$this->tproject_id} ";
 		return $this->db->fetchOneValue($sql);
 	}
@@ -206,25 +207,17 @@ class tlPlatform extends tlObjectWithDB
 		$options = array_merge($default, (array)$options);
 		if ($options['include_linked_count'])
 		{
-			$sql = "SELECT p.id,p.name,p.notes,
-					COUNT(tp.testplan_id) AS linked_count
-					FROM {$this->tables['platforms']} p
-					LEFT JOIN {$this->tables['testplan_platforms']} tp
-					ON tp.platform_id = p.id";
-
-			if (!is_null($whereClause)) {
-				$sql .= $whereClause;
-			}
-
-			$sql .= " GROUP BY p.id";
+			$sql =  " SELECT p.id,p.name,p.notes, " .
+					" COUNT(tp.testplan_id) AS linked_count " .
+					" FROM {$this->tables['platforms']} p " .
+					" LEFT JOIN {$this->tables['testplan_platforms']} tp " .
+					" ON tp.platform_id = p.id" .
+					" GROUP BY p.id";
 		}
 		else
 		{
-			$sql = "SELECT id, name, notes
-					FROM {$this->tables['platforms']}";
-			if (!is_null($whereClause)) {
-				$sql .= $whereClause;
-			}
+			$sql =  " SELECT id, name, notes " .
+					" FROM {$this->tables['platforms']}";
 		}
 		$sql .= " ORDER BY name";
 		return $this->db->get_recordset($sql);
@@ -237,9 +230,9 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function getAllAsMap($accessKey='id',$output='columns',$orderBy=' ORDER BY name ')
 	{
-		$sql = "SELECT id, name
-				FROM {$this->tables['platforms']}
-				WHERE testproject_id = {$this->tproject_id} {$orderBy}";
+		$sql =  " SELECT id, name " .
+				" FROM {$this->tables['platforms']} " .
+				" WHERE testproject_id = {$this->tproject_id} {$orderBy}";
 		if( $output == 'columns' )
 		{
 			$rs = $this->db->fetchColumnsIntoMap($sql, $accessKey, 'name');
@@ -258,9 +251,9 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function platformVisibleForTestplan($testplan_id)
 	{
-		$sql = "SELECT COUNT(0) as num
-				FROM {$this->tables['testplan_platforms']}
-				WHERE testplan_id = {$testplan_id}";
+		$sql =  " SELECT COUNT(0) AS num " .
+				" FROM {$this->tables['testplan_platforms']} " .
+				" WHERE testplan_id = {$testplan_id}";
 		$num_tplans = $this->db->fetchOneValue($sql);
 		return ($num_tplans > 1);
 	}
@@ -271,11 +264,11 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function getLinkedToTestplan($testplanID,$orderBy=' ORDER BY name ')
 	{
-		$sql = "SELECT P.id, P.name, P.notes
-				FROM {$this->tables['platforms']} P
-				JOIN {$this->tables['testplan_platforms']} TP
-				ON P.id = TP.platform_id
-				WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
+		$sql =  " SELECT P.id, P.name, P.notes " .
+				" FROM {$this->tables['platforms']} P " .
+				" JOIN {$this->tables['testplan_platforms']} TP " .
+				" ON P.id = TP.platform_id " .
+				" WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
 		return $this->db->get_recordset($sql);
 	}
 
@@ -287,11 +280,11 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function getLinkedToTestplanAsMap($testplanID,$orderBy=' ORDER BY name ')
 	{
-		$sql = "SELECT P.id, P.name
-				FROM {$this->tables['platforms']} P
-				JOIN {$this->tables['testplan_platforms']} TP
-				ON P.id = TP.platform_id
-				WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
+		$sql =  " SELECT P.id, P.name " .
+				" FROM {$this->tables['platforms']} P " .
+				" JOIN {$this->tables['testplan_platforms']} TP " .
+				" ON P.id = TP.platform_id " .
+				" WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
 		return $this->db->fetchColumnsIntoMap($sql, 'id', 'name');
 	}
 

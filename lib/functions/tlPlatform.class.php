@@ -6,11 +6,13 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.9 2009/11/30 21:52:19 erikeloff Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.10 2009/12/01 18:56:14 erikeloff Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *
+ *  20091201 - Eloff      - added options to getAll() to include linked_count
+ *                          Use positive logic in getAll()
  *  20091118 - franciscom - getID() - fixed added testproject id in where clause
  *	20091031 - franciscom - getAll(),getAllAsMap(),getLinkedToTestplanAsMap() - added orderBy
  *	20090807 - franciscom - added check on empty name with exception (throwIfEmptyName())
@@ -202,18 +204,10 @@ class tlPlatform extends tlObjectWithDB
 			'include_linked_count' => false
 		);
 		$options = array_merge($default, (array)$options);
-		if (!$options['include_linked_count'])
-		{
-			$sql = "SELECT id, name, notes
-					FROM {$this->tables['platforms']}";
-			if (!is_null($whereClause)) {
-				$sql .= $whereClause;
-			}
-		}
-		else
+		if ($options['include_linked_count'])
 		{
 			$sql = "SELECT p.id,p.name,p.notes,
-					COUNT(tp.testplan_id) as linked_count
+					COUNT(tp.testplan_id) AS linked_count
 					FROM {$this->tables['platforms']} p
 					LEFT JOIN {$this->tables['testplan_platforms']} tp
 					ON tp.platform_id = p.id";
@@ -223,6 +217,14 @@ class tlPlatform extends tlObjectWithDB
 			}
 
 			$sql .= " GROUP BY p.id";
+		}
+		else
+		{
+			$sql = "SELECT id, name, notes
+					FROM {$this->tables['platforms']}";
+			if (!is_null($whereClause)) {
+				$sql .= $whereClause;
+			}
 		}
 		$sql .= " ORDER BY name";
 		return $this->db->get_recordset($sql);

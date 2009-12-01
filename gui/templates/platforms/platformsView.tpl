@@ -1,8 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.6 2009/11/30 21:52:18 erikeloff Exp $
+$Id: platformsView.tpl,v 1.7 2009/12/01 18:56:14 erikeloff Exp $
 Purpose: smarty template - View all platforms
 
+20091201 - Eloff      - show grey trash icon on platforms that use used
+                        and show warning when deleting platforms
 20091010 - franciscom - export XML feature
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}

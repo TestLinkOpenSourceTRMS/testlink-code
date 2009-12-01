@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsAssign.tpl,v 1.4 2009/11/30 21:52:18 erikeloff Exp $
+$Id: platformsAssign.tpl,v 1.5 2009/12/01 18:56:14 erikeloff Exp $
 Purpose: smarty template - assign platforms to testplans
 *}
 {lang_get var="labels"
@@ -29,6 +29,8 @@ Purpose: smarty template - assign platforms to testplans
 
 /* This function checks if any of the removed platforms has linked testcases.
  * If that is the case, a warning dialog is displayed
+ *
+ * 20091201 - Eloff - Added transferleft function
  */
 {$opt_cfg->js_ot_name}.transferLeft={literal}function(){
 	options = this.right.options;

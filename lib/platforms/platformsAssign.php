@@ -8,10 +8,11 @@
  * @package 	TestLink
  * @author 		eloff
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.7 2009/11/30 21:52:19 erikeloff Exp $
+ * @version    	CVS: $Id: platformsAssign.php,v 1.8 2009/12/01 18:56:14 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ *  20091201 - Eloff      - added function init_option_panels
  *	20090822 - franciscom - added logic to give warning to user when adding platforms
  *							to a test plan that has 0 platforms, but has linked test cases.
  *

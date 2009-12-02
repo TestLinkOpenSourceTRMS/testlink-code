@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/11/25 22:25:39 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/12/02 22:18:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:  
+ *	20091202 - franciscom - create(), update() 
+ *                          added contribution by asimon83/mx-julian that creates
+ *                          links inside scope field.
  *	20091125 - franciscom - expected_coverage management 
  *  20090525 - franciscom - avoid getDisplayName() crash due to deleted user 
  *  20090514 - franciscom - BUGID 2491
@@ -144,6 +147,8 @@ function get_by_id($id)
              msg -> some simple message, useful when status_ok ==0
              id -> id of new requirement.
 
+	@internal revision
+	20091202 - franciscom -  added contribution by asimon83/mx-julian 
 
   */
 function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
@@ -162,6 +167,14 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 	$result = $this->check_basic_data($srs_id,$title,$reqdoc_id);
 	if($result['status_ok'])
 	{
+    	/* contribution by asimon83/mx-julian */
+		if (config_get('req_cfg')->internal_links) 
+		{
+			$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
+			$scope = req_link_replace($this->db, $scope, $tproject_id);
+		}
+		/* end contribution by asimon83/mx-julian */
+    
         $parent_id=$srs_id;
 		$name=$title;
 		$req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
@@ -206,6 +219,9 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 
     returns: map: keys : status_ok, msg
 
+	@internal revision
+	20091202 - franciscom - 
+	
   */
 
 function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,
@@ -220,6 +236,15 @@ function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,
     // get SRSid, needed to do controls
     $rs=$this->get_by_id($id);
     $srs_id=$rs['srs_id'];
+
+    /* contribution by asimon83/mx-julian */
+	if (config_get('req_cfg')->internal_links) 
+	{
+		$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
+		$scope = req_link_replace($this->db, $scope, $tproject_id);
+	}
+	/* end contribution by asimon83/mx-julian */
+    
 	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title=trim_and_limit($title,$field_size->req_title);
     $chk=$this->check_basic_data($srs_id,$title,$reqdoc_id,$id);

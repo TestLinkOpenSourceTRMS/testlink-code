@@ -5,13 +5,17 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2009/11/22 18:43:18 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/12/02 22:18:26 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ *	20091202 - franciscom - create(), update() 
+ *                          added contribution by asimon83/mx-julian that creates
+ *                          links inside scope field.
+ *
  *  20091122 - franciscom - new methods getByDocID(), check_main_data()
  *	20091119 - franciscom - added doc_id management
  *
@@ -125,7 +129,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
              msg -> some simple message, useful when status_ok ==0
              id -> id of requirement specification
 
-    rev:20080830 - franciscom -  added new argument parent_id
+    rev:
+    	20091202 - franciscom -  added contribution by asimon83/mx-julian 
+    	20080830 - franciscom -  added new argument parent_id
         20080318 - franciscom - removed code to get last inserted id
 
   */
@@ -138,6 +144,14 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,
     $chk=$this->check_main_data($title,$doc_id,$tproject_id,$parent_id);
     if ($chk['status_ok'])
     {
+    	/* contribution by asimon83/mx-julian */
+		if( config_get('req_cfg')->internal_links ) 
+		{
+			$scope = req_link_replace($this->db, $scope, $tproject_id);
+		}
+		/* end contribution by asimon83/mx-julian */
+
+    	
         $req_spec_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$title,$node_order);
         $sql = "/* $debugMsg */ INSERT INTO {$this->object_table} " .
 			   " (id, testproject_id, doc_id, scope, type, total_req, author_id, creation_ts) " .
@@ -382,52 +396,61 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
   */
   function update($id,$doc_id,$title, $scope, $countReq,$user_id,$type = TL_REQ_STATUS_NOT_TESTABLE)
   {
-	  $result['status_ok'] = 1;
-	  $result['msg'] = 'ok';
+		$result['status_ok'] = 1;
+	  	$result['msg'] = 'ok';
 
-    $title=trim_and_limit($title);
-    $doc_id=trim_and_limit($doc_id);
+		$title=trim_and_limit($title);
+    	$doc_id=trim_and_limit($doc_id);
      
-    $path=$this->tree_mgr->get_path($id); 
-    $last_idx=count($path)-1;
-    $parent_id = $last_idx==0 ? null : $path[$last_idx]['parent_id'];
-    // $chk=$this->check_title($title,$path[0]['parent_id'],$parent_id,$id);
-    $chk=$this->check_main_data($title,$doc_id,$path[0]['parent_id'],$parent_id,$id);
+    	$path=$this->tree_mgr->get_path($id); 
+    	$tproject_id = $path[0]['parent_id'];
+    	$last_idx=count($path)-1;
+    	$parent_id = $last_idx==0 ? null : $path[$last_idx]['parent_id'];
+    	$chk=$this->check_main_data($title,$doc_id,$path[0]['parent_id'],$parent_id,$id);
     
-    if ($chk['status_ok'])
-    {
-	    $db_now = $this->db->db_now();
-        $sql = " UPDATE {$this->object_table} " .
-               " SET scope='" . $this->db->prepare_string($scope) . "', " .
-		       " doc_id='" . $this->db->prepare_string($doc_id) . "', " .
-		       " type='" . $this->db->prepare_string($type) . "', " .
-		       " total_req ='" . $this->db->prepare_string($countReq) . "', " .
-		       " modifier_id={$user_id},modification_ts={$db_now} WHERE id={$id}";
-        if (!$this->db->exec_query($sql))
+    	if ($chk['status_ok'])
+    	{
+    		
+    		/* contribution by asimon83/mx-julian */
+			if( config_get('req_cfg')->internal_links ) 
+			{
+				$scope = req_link_replace($this->db, $scope, $tproject_id);
+			}
+			/* end contribution by asimon83/mx-julian */
+    	
+    		
+		    $db_now = $this->db->db_now();
+    	    $sql = " UPDATE {$this->object_table} " .
+    	           " SET scope='" . $this->db->prepare_string($scope) . "', " .
+			       " doc_id='" . $this->db->prepare_string($doc_id) . "', " .
+			       " type='" . $this->db->prepare_string($type) . "', " .
+			       " total_req ='" . $this->db->prepare_string($countReq) . "', " .
+			       " modifier_id={$user_id},modification_ts={$db_now} WHERE id={$id}";
+    	    if (!$this->db->exec_query($sql))
+			{
+    	        $result['msg']=lang_get('error_updating_reqspec');
+  		        $result['status_ok'] = 0;
+		    }
+    	    if( $result['status_ok'] )
+    	    {
+  		        // need to update node on tree
+    	        $sql = " UPDATE {$this->tables['nodes_hierarchy']} " .
+  		    	       " SET name='" . $this->db->prepare_string($title) . "'" .
+  		    	       " WHERE id={$id}";
+    	    
+  		    	if (!$this->db->exec_query($sql))
+  		    	{
+  		    		$result['msg']=lang_get('error_updating_reqspec');
+    	    	    $result['status_ok'] = 0;
+  		        }
+		    }
+    	}    
+		else
 		{
-            $result['msg']=lang_get('error_updating_reqspec');
-  	        $result['status_ok'] = 0;
-	    }
-        if( $result['status_ok'] )
-        {
-  	        // need to update node on tree
-            $sql = " UPDATE {$this->tables['nodes_hierarchy']} " .
-  	    	       " SET name='" . $this->db->prepare_string($title) . "'" .
-  	    	       " WHERE id={$id}";
-        
-  	    	if (!$this->db->exec_query($sql))
-  	    	{
-  	    		$result['msg']=lang_get('error_updating_reqspec');
-        	    $result['status_ok'] = 0;
-  	        }
-	    }
-    }    
-	else
-	{
-	    $result['status_ok']=$chk['status_ok'];
-	    $result['msg']=$chk['msg'];
-	}
-    return $result;
+		    $result['status_ok']=$chk['status_ok'];
+		    $result['msg']=$chk['msg'];
+		}
+    	return $result;
 }
 
 

@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.86 2009/09/05 18:19:07 schlundus Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.87 2009/12/02 22:18:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091202 - franciscom - added contribution req_link_replace()
  * 20090815 - franciscom - get_last_execution() call changes
  * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
  * 20090331 - amitkhullar - BUGFIX 2292
@@ -873,6 +874,65 @@ function check_syntax_csv_doors($fileName)
   $ret['msg']='ok';
 
   return($ret);
+}
+
+function req_link_replace($dbHandler, $scope, $tprojectID) 
+{
+	$tree_mgr = new tree($dbHandler);
+	$tables = tlObjectWithDB::getDBTables(array('requirements', 'req_specs'));
+	
+	$patterns2search = array();
+	$patterns2search['req'] = "#\[req\](.*)\[/req\]#iU";
+	$patterns2search['req_spec'] = "#\[req_spec\](.*)\[/req_spec\]#iU";
+
+	$string2search = array();
+	$string2search['req'] = "[req]%s[/req]";
+	$string2search['req_spec'] = "[req_spec]%s[/req_spec]";
+	
+	$string2replace = array();
+	$string2replace['req'] = '<a href="lib/requirements/reqView.php?' .
+	                         'item=requirement&requirement_id=%s">' . 'Req: %s</a>';
+	
+	$string2replace['req_spec'] = '<a href="lib/requirements/reqSpecView.php?' .
+	                              'item=req_spec&req_spec_id=%s">' . 'Req. Spec.: %s</a>';
+	
+	$sql2exec = array();
+	$sql2exec['req'] = " SELECT id, req_doc_id AS doc_id " .
+	                   " FROM {$tables['requirements']} WHERE req_doc_id in ";
+	            
+	$sql2exec['req_spec'] = " SELECT id, doc_id FROM {$tables['req_specs']} " .
+	                        " WHERE doc_id in " ;
+  
+	foreach($patterns2search as $accessKey => $pattern )
+	{
+  		$matches = array();
+    	preg_match_all($pattern, $scope, $matches);
+	  
+	    if( count($matches[1]) == 0 )
+	    {
+	    	continue;
+	    }
+
+	  	foreach ($matches[1] as $key => $value) 
+	  	{
+	  		$matches[1][$key] = "'" . $value . "'";
+	  	}
+	  	$list = implode(",", $matches[1]);
+
+	  	$sql = $sql2exec[$accessKey] . "({$list})";
+    	$rs = $dbHandler->get_recordset($sql);
+	  	foreach ($rs as $row) 
+	  	{
+	  		$root = $tree_mgr->getTreeRoot($row['id']);
+	  		if ($tprojectID == $root) 
+	  		{
+	  			$target = sprintf($string2search[$accessKey],$row['doc_id']);
+	  			$urlString = sprintf($string2replace[$accessKey],$row['id'],$row['doc_id']);
+	  		    $scope = str_replace($target,$urlString,$scope);
+	  		}
+	  	}
+	}
+	return $scope;
 }
 
 ?>

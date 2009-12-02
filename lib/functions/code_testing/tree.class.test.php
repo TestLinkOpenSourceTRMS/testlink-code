@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.test.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2007/10/21 16:02:11 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2009/12/02 22:20:10 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
@@ -17,7 +17,7 @@
 require_once('../../../config.inc.php');
 require_once('common.php');
 require_once('tree.class.php');
-require_once('dBug.php');
+
 
 testlinkInitPage($db);
 
@@ -60,11 +60,17 @@ echo "<pre> get_subtree_list($node_id)";echo "</pre>";
 $subtree_list = $tree_mgr->get_subtree_list($node_id);
 new dBug($subtree_list);
 
-$path_begin_node_id=4;
+$path_begin_node_id=285;
 $path_end_node_id=2;
 define('TREE_ROOT',null);
 define('FORMAT_FULL','full');
 define('FORMAT_SIMPLE','simple');
+
+echo "<pre> tree - get_path(\$node_id,\$to_node_id = null,\$format = 'full') ";echo "</pre>";
+echo "<pre> tree - get_path($path_begin_node_id) ";echo "</pre>";
+$path=$tree_mgr->get_path($path_begin_node_id); 
+new dBug($path);
+
 
 echo "<pre> tree - get_path(\$node_id,\$to_node_id = null,\$format = 'full') ";echo "</pre>";
 echo "<pre> tree - get_path($path_begin_node_id,TREE_ROOT,FORMAT_FULL) ";echo "</pre>";

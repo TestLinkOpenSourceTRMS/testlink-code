@@ -4,16 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/11/25 22:47:17 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2009/12/03 07:07:32 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
- * rev: 20080827 - franciscom - BUGID 1692
- *      20080411 - franciscom - BUGID 1476
- *      20070415 - franciscom - custom field manager
- *      20070415 - franciscom - added reorder feature
+ * @internal revision
+ *	20091202 - franciscom - fixed bug on webeditor value init.
+ *	20080827 - franciscom - BUGID 1692
+ *	20080411 - franciscom - BUGID 1476
  *
 **/
 require_once("../../config.inc.php");
@@ -79,22 +79,41 @@ function init_args()
 	return $args;
 }
 
+/**
+ * 
+ *
+ */
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
+    $renderType = 'none';
     $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                              'doDelete' => '', 'doReorder' => '', 'reorder' => '',
                              'createTestCases' => 'doCreateTestCases',
                              'doCreateTestCases' => 'doCreateTestCases',
                              'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
 
+
+
+
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
-    $owebEditor->Value = getItemTemplateContents('requirement_template', 
-                                                 $owebEditor->InstanceName, $argsObj->scope);
+	switch($argsObj->doAction)
+    {
+        case "edit":
+        case "create":
+        $owebEditor->Value = $argsObj->scope;
+        break;
+        
+        default:
+    	$owebEditor->Value = getItemTemplateContents('requirement_template',$owebEditor->InstanceName, 
+    	                                             $argsObj->scope);
+        break;
+    }
+
+
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];
       
-    $renderType = 'none';
     switch($argsObj->doAction)
     {
         case "edit":

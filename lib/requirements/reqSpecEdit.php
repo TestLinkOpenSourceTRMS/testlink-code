@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2009/11/25 22:24:48 $ $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2009/12/03 07:07:32 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.
  *
  * rev: 
+ *	20091202 - franciscom - fixed bug on webeditor value init.
  *	20091119 - franciscom - doc_id
  *	20080830 - franciscom - added code to manage unlimited depth tree
  *                         (will be not enabled yet)
@@ -45,6 +46,11 @@ if(method_exists($commandMgr,$pFn))
 }
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
+
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$args = new stdClass();
@@ -55,8 +61,7 @@ function init_args()
 					 "title" => array(tlInputParameter::STRING_N,0,100),
 					 "scope" => array(tlInputParameter::STRING_N),
 					 "doc_id" => array(tlInputParameter::STRING_N,1,32),
-					 "nodes_order" => array(tlInputParameter::ARRAY_INT),
-	);	
+					 "nodes_order" => array(tlInputParameter::ARRAY_INT));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -70,23 +75,39 @@ function init_args()
 	return $args;
 }
 
+
+/**
+ * renderGui
+ *
+ */
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
+    $renderType = 'none';
+    $tpl = $tpd = null;
+
     $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
-                           'doDelete' => '', 'doReorder' => '', 'reorder' => '',
-                           'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                           'createChild' => 'doCreate');
+                             'doDelete' => '', 'doReorder' => '', 'reorder' => '',
+                             'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                             'createChild' => 'doCreate');
 
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
-    $owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName, $argsObj->scope);
-    
+	switch($argsObj->doAction)
+    {
+        case "edit":
+        case "create":
+        $owebEditor->Value = $argsObj->scope;
+        break;
+        
+        default:
+        $owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName, $argsObj->scope);
+        break;
+    }
+
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];  
-      
-    $renderType = 'none';
-    
-    $tpl = $tpd = null;
+
+
     switch($argsObj->doAction)
     {
         case "edit":
@@ -108,6 +129,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
             $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
     		break;
     }
+    
 	switch($argsObj->doAction)
     {
         case "edit":
@@ -118,6 +140,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "doReorder":
         	$tpl = $tpd . $tpl;
             break;
+    
         case "doCreate":
 	    case "doUpdate": 
 	    	$pos = strpos($tpl, '.php');
@@ -131,6 +154,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 			}
 			break;  
     }
+    
     switch($renderType)
     {
         case 'template':
@@ -149,6 +173,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     }
 }
 
+/**
+ * 
+ *
+ */
 function initialize_gui(&$dbHandler)
 {
     $gui = new stdClass();
@@ -163,6 +191,10 @@ function initialize_gui(&$dbHandler)
     return $gui;
 }
 
+/**
+ * 
+ *
+ */
 function checkRights(&$db,&$user)
 {
 	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));

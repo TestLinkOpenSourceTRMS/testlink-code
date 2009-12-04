@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.11 2009/09/14 13:22:59 franciscom Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.12 2009/12/04 12:59:58 havlat Exp $
 
 rev :
      20090409 - amitkhullar - BUGID 2156 - added new option on 	Query Metrics for latest results
@@ -75,13 +75,13 @@ progress();
 				{/foreach}
       </td>
 
-			<td>{$gui->startTime}</td>
-			<td>{$gui->endTime}</td>
+			<td>{$gui->startTime|escape}</td>
+			<td>{$gui->endTime|escape}</td>
 			<td>
 			  {$gui->executorSelected|escape}
 				&nbsp;
 			</td>
-			<td>{$gui->search_notes_string}</td>
+			<td>{$gui->search_notes_string|escape}</td>
 			{if ($gui->display->latest_results == 0) }
 			<td>{$labels.results_latest}</td>
 			{else}

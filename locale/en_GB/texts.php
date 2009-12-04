@@ -18,10 +18,18 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.19 2009/08/19 09:43:58 havlat Exp $
+ * @version    	CVS: $Id: texts.php,v 1.20 2009/12/04 10:47:26 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
+
+
+// --------------------------------------------------------------------------------------
+$TLS_htmltext_title['error']	= "Application error";
+$TLS_htmltext['error'] 		= "<p>Unexpected error happens. Please check event viewer or " .
+		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
+		"<a href='http://www.teamst.org'>website</a>.</p>";
+
 
 
 $TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";

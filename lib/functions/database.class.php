@@ -9,7 +9,7 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.49 2009/10/18 15:13:47 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.50 2009/12/04 10:49:00 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -185,13 +185,9 @@ class database
 			array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
 		}
 
-		/** 
-		 * @TODO havlatm: we should avoid direct write to screen; a page should get error
-		 * message from $db object 
-		 **/ 		
 		if ( !$t_result ) {
-			echo "ERROR ON exec_query() - database.class.php <br>" . $this->error($p_query) . "<br>";
-			echo "<br> THE MESSAGE :: $message <br>";			
+			tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) . 
+					"<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");			
 			return false;
 		} else {
 			return $t_result;

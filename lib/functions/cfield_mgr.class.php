@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.71 2009/09/21 09:27:53 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.72 2009/12/06 08:26:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -251,6 +251,7 @@ class cfield_mgr extends tlObject
     // value column on cfield_*_values tables
     // default_value column on custom_fields table
     // 0 -> no limit
+    // Is used on text area types
     var $max_length_value;
     
     // must be equal to the lenght of:
@@ -621,11 +622,13 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     	
     	$input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
     	$size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
+    	
     	if( $field_size > 0)
     	{
     	  $size=$field_size;
     	}
 
+        
 		switch ($verbose_type)
 		{
   		case 'list':
@@ -1578,8 +1581,6 @@ function name_is_unique($id,$name)
        return;
     }
 
-    // new dBug($hash);
-    
     if( is_null($hash_type) )
     {
       $cfield=$this->_build_cfield($hash,$cf_map);
@@ -1588,7 +1589,6 @@ function name_is_unique($id,$name)
     {
       $cfield=$hash;
     }
-    // file_put_contents('c:\request.txt', serialize($cfield));                            
 
     if( !is_null($cfield) )
     {

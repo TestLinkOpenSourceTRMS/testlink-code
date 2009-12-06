@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.142 $
- * @modified $Date: 2009/11/24 07:52:16 $ $Author: franciscom $
+ * @version $Revision: 1.143 $
+ * @modified $Date: 2009/12/06 08:25:52 $ $Author: franciscom $
  *
  * rev:
+ *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
  *  20091111 - franciscom - BUGID 2938 - Feature: Save and Go to next test case in test suite.
  *  20090922 - franciscom - added contribution idea, when using bulk operation
  *                          display last execution status.
@@ -47,7 +48,7 @@ $templateCfg = templateConfiguration();
 
 $tcversion_id = null;
 $submitResult = null;
-$args = init_args();
+$args = init_args($cfg);
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -309,13 +310,14 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   rev:
 	20090913 - franciscom - fixed bug on filter_status initialization
 */
-function init_args()
+function init_args($cfgObj)
 {
     $args = new stdClass();
  	$_REQUEST = strings_stripSlashes($_REQUEST);
 
+    // new dBug($_REQUEST);
+    
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
-	// $args->doDelete = isset($_REQUEST['do_delete']) ? 1 : 0;
 	$args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
 	$args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
 	
@@ -332,7 +334,6 @@ function init_args()
 	}
 
     // See details on: "When nullify filter_status - 20080504" in this file
-    
     if(is_null($args->filter_status) || trim($args->filter_status) || $args->level == 'testcase')
     {
         $args->filter_status = null;  
@@ -351,17 +352,51 @@ function init_args()
         $args->filter_assigned_to = unserialize($args->filter_assigned_to);
     }
 
-	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 
-	                  'version_id' => 0,
+ 	$args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+    $cookiePrefix = 'TL_execSetResults_';
+    // $key4cookies = array('tpn_view_status' => array( 'cfg_key' => 'testplan_notes', 'suffix' => ''),
+    //                      'tsdetails_view_status' => array( 'cfg_key' => 'testsuite_details', 'suffix' => "_" . $args->id)
+    //                      'bn_view_status' => array( 'cfg_key' => 'build_description', 'suffix' => ''));
+       
+    // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
+    //            see smarty_assign_tsuite_info() in this file.  
+    $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description');
+       
+	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
 	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
 	   	              'platform_notes_view_status' => 0,'platform_id' => 0);
-				            
+			
+	foreach($key4cookies as $key => $cfgKey)
+	{
+		$cookieKey = $cookiePrefix . $key;
+		if( !isset($_REQUEST[$key]) )
+		{
+			// First time we are entered here => we can need to understand how to proceed
+		    switch($cfgObj->exec_cfg->expand_collapse->$cfgKey )
+		    {
+		    	case LAST_USER_CHOICE:
+					if (isset($_COOKIE[$cookieKey]) ) 
+    				{
+    					$key2loop[$key] = $_COOKIE[$cookieKey];
+					}
+				break;	
+
+				default:
+					$key2loop[$key] = $cfgObj->exec_cfg->expand_collapse->$cfgKey;
+				break;
+		    } 
+		}
+    }
+    				            
 	foreach($key2loop as $key => $value)
 	{
-		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
+ 		$args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
+        if( isset($key4cookies[$key]) )
+		{
+			setcookie($cookiePrefix . $key,$args->$key,TL_COOKIE_KEEPTIME, '/');
+		}
 	}
 
-  
     switch($args->level)
     {
         case 'testcase':
@@ -521,36 +556,60 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
   $smarty->assign('tsuite_info',$tsuite_info);
   
   // --------------------------------------------------------------------------------
-  if(!is_null($tsuite_info))
-  {
-    $a_tsvw=array();
-    $a_ts=array();
-    $a_tsval=array();
-   
-    $tsuite_mgr = New testsuite($db);
-    foreach($tsuite_info as $key => $elem)
-    {
-      $main_k = 'tsdetails_view_status_' . $key;
-      $a_tsvw[] = $main_k;
-      $a_ts[] = 'tsdetails_' . $key;
-      $a_tsval[] = isset($request_hash[$main_k]) ? $request_hash[$main_k] : 0;
-   
-      $tsuite_id = $elem['tsuite_id'];
-      $tc_id = $elem['tc_id'];
-      if(!isset($cached_cf[$tsuite_id]))
-      {
-      	$cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id,'design',null,$tproject_id);
-      }
-      $ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
-   
-    }
-   
-    $smarty->assign('tsd_div_id_list',implode(",",$a_ts));
-    $smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
-    $smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
- 
-	$smarty->assign('ts_cf_smarty',$ts_cf_smarty);
-  }
+	if(!is_null($tsuite_info))
+  	{
+        $cookieKey = 'TL_execSetResults_tsdetails_view_status';
+		$exec_cfg = config_get('exec_cfg');
+
+    	$a_tsvw=array();
+    	$a_ts=array();
+    	$a_tsval=array();
+    	
+    	$tsuite_mgr = New testsuite($db);
+    	
+    	foreach($tsuite_info as $key => $elem)
+    	{
+    	  	$main_k = 'tsdetails_view_status_' . $key;
+    	  	$a_tsvw[] = $main_k;
+    	  	$a_ts[] = 'tsdetails_' . $key;
+            $expand_collapse = 0;
+			if( !isset($request_hash[$main_k]) )
+			{
+				// First time we are entered here => we can need to understand how to proceed
+			    switch($exec_cfg->expand_collapse->testsuite_details)
+			    {
+			    	case LAST_USER_CHOICE:
+						if (isset($_COOKIE[$cookieKey]) ) 
+    					{
+    						$expand_collapse = $_COOKIE[$cookieKey];
+						}
+					break;	
+        	
+					default:
+						$expand_collapse = $exec_cfg->expand_collapse->testsuite_details;
+					break;
+			    } 
+			}
+    	  	$a_tsval[] = isset($request_hash[$main_k]) ? $request_hash[$main_k] : $expand_collapse;
+    	  	$tsuite_id = $elem['tsuite_id'];
+    	  	$tc_id = $elem['tc_id'];
+    	  	if(!isset($cached_cf[$tsuite_id]))
+    	  	{
+    	  		$cached_cf[$tsuite_id] = $tsuite_mgr->html_table_of_custom_field_values($tsuite_id,'design',null,$tproject_id);
+    	  	}
+    	  	$ts_cf_smarty[$tc_id] = $cached_cf[$tsuite_id];
+    	}
+    	if( count($a_tsval) > 0 )
+    	{
+			setcookie($cookieKey,$a_tsval[0],TL_COOKIE_KEEPTIME, '/');
+    	}
+    	
+    	$smarty->assign('tsd_div_id_list',implode(",",$a_ts));
+    	$smarty->assign('tsd_hidden_id_list',implode(",",$a_tsvw));
+    	$smarty->assign('tsd_val_for_hidden_list',implode(",",$a_tsval));
+    	
+		$smarty->assign('ts_cf_smarty',$ts_cf_smarty);
+	}
 
 }  
 // --------------------------------------------------------------------------------

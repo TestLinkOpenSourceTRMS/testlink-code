@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.28 2009/11/19 20:05:39 schlundus Exp $
+$Id: planAddTC_m1.tpl,v 1.29 2009/12/06 17:19:02 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -142,7 +142,7 @@ Ext.onReady(function(){
 		{assign var="item_number" value=$item_number+1}
 		{assign var="ts_id" value=$ts.testsuite.id}
 		{assign var="div_id" value=div_$ts_id}
-	  
+	  {strip}
 		<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
 	    	<h2 class="testlink">{$ts.testsuite.name|escape}</h2> 
 	        {if $item_number == 1}
@@ -337,6 +337,7 @@ Ext.onReady(function(){
         </table>
         <br />
      {/if}  {* there are test cases to show ??? *}
+    {/strip}
     </div>
 
 	{/foreach}

@@ -18,12 +18,13 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.273 2009/11/29 19:16:36 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.274 2009/12/06 08:26:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
- *  20091129 - franciscom - ISSUE 2554 - gui->usersAssignGlobalRoleColoring
+ *  20091205 - franciscom - BUGID 0002469: $tlCfg->exec_cfg->expand_collapse
+ *  20091129 - franciscom - BUGID 2554 - gui->usersAssignGlobalRoleColoring
  *  20091126 - franciscom - added contribution req internal links
  * 	20091125 - franciscom - req_cfg->expected_coverage_management added 
  *	20091121 - franciscom - added contribution by Julian - BUGID 0002968,0002961,0002962,0002963
@@ -621,6 +622,17 @@ $tlCfg->exec_cfg->user_filter_default='none';
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
 $tlCfg->exec_cfg->steps_results_layout = 'horizontal';
+
+
+// Parameters to show notes/details when entering test execution feature
+// EXPAND: show expanded/open 
+// COLLAPSE: show collapsed/closede
+// LAST_USER_CHOICE: get status from cookie that holds last user choice.[STANDARD BEHAVIOUR]
+$tlCfg->exec_cfg->expand_collapse = new stdClass();
+$tlCfg->exec_cfg->expand_collapse->testplan_notes = LAST_USER_CHOICE;
+$tlCfg->exec_cfg->expand_collapse->build_description = LAST_USER_CHOICE;
+$tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE; 
+
 
 
 // ----------------------------------------------------------------------------

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.120 2009/11/29 19:17:18 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.121 2009/12/06 08:26:06 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -51,9 +51,17 @@ define('OPEN',		1 );
 define('CLOSED',	0 );
 define('OK',		1 );
 define('ERROR',		0 );
+
+/** More Descriptive constant names */
 define('HIGH',		3 );
 define('MEDIUM', 	2 );
 define('LOW', 		1 );
+
+/** user for notes - see BUGID 0002469: $tlCfg->exec_cfg->expand_collapse 
+	very important do not change values, logic depends on values*/
+define('LAST_USER_CHOICE',2);
+define('COLLAPSE', 0);
+define('EXPAND',1 );
 
 
 /** @TODO havlatm: use ON || 'OFF' constant */

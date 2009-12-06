@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.132 2009/11/25 22:25:39 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.133 2009/12/06 18:17:31 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091206 - franciscom - fixed bug on get_subtree() created furing refactoring
  * 20090606 - franciscom - get_by_prefix() interface changes
  * 20090512 - franciscom - added setPublicStatus()
  * 20090412 - franciscom - BUGID 2363 - getTCasesLinkedToAnyTPlan()
@@ -509,8 +510,11 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
  
   	if($exclude_testcases)
   	{
-  	  $my['filters']['testcase']='exclude me';
+  	  $my['filters']['exclude_node_types']['testcase']='exclude me';
   	}
+  	
+  	new dBug($my['filters']);
+  	
 	$subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
 	return $subtree;
 }

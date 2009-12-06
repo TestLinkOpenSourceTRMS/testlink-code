@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.42 2009/09/28 08:44:57 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.43 2009/12/06 10:29:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -78,9 +78,9 @@
  *                              [type] =>              
  *                              [status] =>            
  *                              [assigner_id] =>       
- *                              [urgency] => 2         
+ *                              [urgency] => 2    IMPORTANT: exists ONLY FOR LINKED TEST CASES     
  *                              [exec_status] => b
- *                              [priority] => 4		// urgency*importance 
+ *                              [priority] => 4	// urgency*importance IMPORTANT: exists ONLY FOR LINKED TEST CASES
  *    
  * @param array $map_node_tccount
  * @TODO probably this argument ($map_node_tccount) is not needed, but it will depend
@@ -170,7 +170,6 @@
  * 	20090625 - Eloff - added priority output
  */
 
-
 function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$linked_items,
                        $map_node_tccount,$filters=null, $options = null,$tproject_id = null)
 {
@@ -253,7 +252,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 		$tcaseSet = $tcase_mgr->get_by_id($a_tcid,TC_ALL_VERSIONS);
 		$result = addLinkedVersionsInfo($tcaseSet,$a_tsuite_idx,$out,$linked_items);
 	}
-	
+
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
 	// that do not need to be displayed on user interface.
 	if( count($result['spec_view']) > 0)
@@ -337,9 +336,12 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 }
 
 
+/**
+ * 
+ *
+ */
 function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
 {
-	// define('PRUNE_REMOVE_UNLINKED_TCVERSIONS',1);
 	$tsuiteMgr = new testsuite($dbHandler); 
 	$tprojectMgr = new testproject($dbHandler); 
 	$tsuite_data = $tsuiteMgr->get_by_id($argsObj->id);
@@ -352,12 +354,7 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 
 	// BUGID 1041
 	$filters = array('keyword_id' => $argsObj->keyword_id, 'assigned_to' => $filterAssignedTo);
-	
-	//$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,FILTER_BY_TC_OFF,
-	//		                                                      $argsObj->keyword_id,FILTER_BY_EXECUTE_STATUS_OFF, $filterAssignedTo);
-      
 	$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);
-      
       
 	// This does filter on keywords ALWAYS in OR mode.
 	$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
@@ -428,13 +425,29 @@ function getTestSpecFromNode(&$dbHandler,$masterContainerId,$nodeId,$specViewTyp
 	
 	if( $applyFilters )
 	{
-		foreach($test_spec as $key => $node)
+		$key2loop = array_keys($test_spec);
+		
+		// foreach($test_spec as $key => $node)
+		// {
+		// 	if( ($node['node_type_id'] == $filters['tcase_node_type_id']) && 
+		// 			( 
+		// 					($useFilter['keyword_id'] && !isset($tck_map[$node['id']]) ) ||
+		// 					($useFilter['tcase_id'] && !in_array($node['id'],$testCaseSet))
+		// 			)  
+		// 	)
+		// 	{
+		// 		$test_spec[$key]=null; 
+		// 	}
+		// }
+		
+        // 20091206 - franciscom 
+		foreach($key2loop as $key)
 		{
-			if( ($node['node_type_id'] == $filters['tcase_node_type_id']) && 
-					( 
-							($useFilter['keyword_id'] && !isset($tck_map[$node['id']]) ) ||
-							($useFilter['tcase_id'] && !in_array($node['id'],$testCaseSet))
-					)  
+			if( ($test_spec[$key]['node_type_id'] == $filters['tcase_node_type_id']) && 
+				( 
+					($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$key]['id']]) ) ||
+					($useFilter['tcase_id'] && !in_array($test_spec[$key]['id'],$testCaseSet))
+				)  
 			)
 			{
 				$test_spec[$key]=null; 
@@ -611,6 +624,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 	$out[$idx]['linked_ts'] = null;                                          
 	$out[$idx]['linked_by'] = 0;                                          
     $out[$idx]['priority'] = 0;
+    // $out[$idx]['importance'] = 0;
 
 	$the_level = $out[0]['level']+1;
 	$idx++;
@@ -618,7 +632,8 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 	$parent_idx=-1;
 	
 	
-	
+    // new dBug($test_spec);
+    	
 	foreach ($test_spec as $current)
 	{
 		if(is_null($current))
@@ -665,7 +680,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 				$outRef['linked_ts'] = null;
 			    $outRef['priority'] = 0;
 			    $outRef['platforms'] = $platforms;
-
+			    // $outRef['importance'] = 0;
 			}
 			$out[$parent_idx]['testcase_qty']++;
 			$a_tcid[] = $current['id'];

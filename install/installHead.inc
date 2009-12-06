@@ -8,14 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installHead.inc,v 1.1 2009/11/10 16:10:20 havlat Exp $
+ * @version    	CVS: $Id: installHead.inc,v 1.2 2009/12/06 21:44:25 havlat Exp $
  *
  * @internal Revisions:
  * 	None.
  */
-function getPhaseAttr($phase)
+function getPhaseAttr($inst_phase, $phase)
 {
-	global $inst_phase;
 	if ($phase == $inst_phase)
 	{
 		echo ' style="font-weight: bold;"';
@@ -40,16 +39,17 @@ function getPhaseAttr($phase)
 <div class="tlLiner">&nbsp;</div>
 <div class="tlPhases">
 <ul>
-	<li<?php echo getPhaseAttr('license')?> >Acceptance of License</li>
-	<li<?php echo getPhaseAttr('checking')?> >Verification of System and 
+	<li<?php echo getPhaseAttr($inst_phase,'license')?> >Acceptance of License</li>
+	<li<?php echo getPhaseAttr($inst_phase,'checking')?> >Verification of System and 
 			configuration requirements</li>
-	<li<?php echo getPhaseAttr('dbaccess')?> >Definition of DB access</li>
-	<li<?php echo getPhaseAttr('dbprocess')?> >
+	<li<?php echo getPhaseAttr($inst_phase,'dbaccess')?> >Definition of DB access</li>
+	<li<?php echo getPhaseAttr($inst_phase,'dbprocess')?> >
 	<?php if ($_SESSION['isNew'])
 	echo "Create DB, testlink DB user, structures and default data & create configuration file.";
 	else echo "Update DB structures and migrate data."; ?>
 	</li>
-	<li<?php echo getPhaseAttr('final') ?>>Verify the procedure result and continue to TestLink login.</li>
+	<li<?php echo getPhaseAttr($inst_phase,'final') ?>>Verify the procedure result and continue 
+			to TestLink login.</li>
 </ul>
 </div>
 <div class="tlLiner">&nbsp;</div>

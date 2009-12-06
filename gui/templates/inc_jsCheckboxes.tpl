@@ -1,4 +1,4 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_jsCheckboxes.tpl,v 1.2 2005/08/16 17:59:13 franciscom Exp $ *}
-{* Purpose: smarty template - include color picker *}
-<script type="text/javascript" src='gui/javascript/checkboxes.js'></script>
+{* $Id: inc_jsCheckboxes.tpl,v 1.3 2009/12/06 11:41:06 franciscom Exp $ *}
+{* Purpose: smarty template -  *}
+<script type="text/javascript" src="{$basehref}gui/javascript/checkboxes.js"></script>

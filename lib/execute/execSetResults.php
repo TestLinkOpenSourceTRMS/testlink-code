@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.143 $
- * @modified $Date: 2009/12/06 08:25:52 $ $Author: franciscom $
+ * @version $Revision: 1.144 $
+ * @modified $Date: 2009/12/07 16:08:33 $ $Author: franciscom $
  *
  * rev:
  *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
@@ -270,7 +270,10 @@ if ($userid_array)
 	}
 }
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
-$gui->can_use_bulk_op=(!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
+
+
+$gui->can_use_bulk_op=$args->level == 'testsuite' &&
+                      (!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
 if( $gui->can_use_bulk_op )
 {
     $gui->execStatusValues=createResultsMenu();
@@ -315,8 +318,6 @@ function init_args($cfgObj)
     $args = new stdClass();
  	$_REQUEST = strings_stripSlashes($_REQUEST);
 
-    // new dBug($_REQUEST);
-    
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
 	$args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
 	$args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
@@ -1155,9 +1156,9 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
 {      
 	// 20090716 - franciscom - get_last_execution() interface changes
 	$options=array('getNoExecutions' => 1, 'groupByBuild' => 0);
-	
     $last_exec = $tcaseMgr->get_last_execution($tcase_id,$tcversion_id,$argsObj->tplan_id,
                                                $argsObj->build_id,$argsObj->platform_id,$options);
+    
     if( !is_null($last_exec) )
     {
         $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,$argsObj->tplan_id);

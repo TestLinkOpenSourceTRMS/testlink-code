@@ -3,21 +3,18 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2009/11/22 15:48:39 $ by $Author: franciscom $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2009/12/07 08:49:53 $ by $Author: franciscom $
  * @author Martin Havlat
  *
- * rev:
- *     20081225 - franciscom - Postgres SQL Error
- *     20080827 - franciscom - BUGID 1692
- *     20080602 - franciscom - doTestSuiteReorder() - fixed typo error
- *     20080504 - franciscom - removed references to gui->enable_custom_fields
- *     20080329 - franciscom - added contribution by Eugenia Drosdezki
- *                             Move/copy testcases
- *
- *     20080223 - franciscom - BUGID 1408
- *     20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
- *     20080122 - franciscom - BUGID 1312
+ *	@internal revisions
+ *	20091206 - franciscom - addTestSuite() - new test suites are order set to last on tree branch
+ *	20081225 - franciscom - Postgres SQL Error
+ *	20080827 - franciscom - BUGID 1692
+ *	20080329 - franciscom - added contribution by Eugenia Drosdezki - Move/copy testcases
+ *	20080223 - franciscom - BUGID 1408
+ *	20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
+ *	20080122 - franciscom - BUGID 1312
 */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -407,14 +404,24 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
   args:
 
   returns: map with messages and status
+  
+  revision: 20091206 - franciscom - new items are created as last element of tree branch
 
 */
 function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 {
+    $new_order = null;
 
+    // compute order
+    $nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+    $siblings = $tsuiteMgr->tree_manager->get_children($argsObj->containerID,$nt2exclude);
+    if( !is_null($siblings) )
+    {
+    	$dummy = end($siblings);
+    	$new_order = $dummy['node_order']+1;
+    }
 	$ret = $tsuiteMgr->create($argsObj->containerID,$container['container_name'],$container['details'],
-	                         null,config_get('check_names_for_duplicates'),
-	                         config_get('action_on_duplicate_name'));
+	                         $new_order,config_get('check_names_for_duplicates'),config_get('action_on_duplicate_name'));
 		                         
     $op['messages']= array('msg' => $ret['msg'], 'user_feedback' => '');
     $op['status']=$ret['status_ok'];
@@ -449,7 +456,6 @@ function  moveTestSuiteViewer(&$smartyObj,&$tprojectMgr,$argsObj)
 {
 	$testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID,
 	                                                  array($argsObj->testsuiteID => 'exclude'));
-
 	// Added the Test Project as the FIRST Container where is possible to copy
 	$testsuites = array($argsObj->tprojectID => $argsObj->tprojectName) + $testsuites;
 

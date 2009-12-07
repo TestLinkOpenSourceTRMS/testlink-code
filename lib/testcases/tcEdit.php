@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.119 $
- * @modified $Date: 2009/11/22 11:51:14 $  by $Author: franciscom $
+ * @version $Revision: 1.120 $
+ * @modified $Date: 2009/12/07 08:49:53 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -179,10 +179,20 @@ else if($args->do_create)
 		$user_feedback = lang_get('error_tc_add');
         $sqlResult = 'ko';
         
+        $new_order = $cfg->treemenu_default_testcase_order;
+
+    	// compute order
+    	$nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+    	$siblings = $tcase_mgr->tree_manager->get_children($args->container_id,$nt2exclude);
+    	if( !is_null($siblings) )
+    	{
+    		$dummy = end($siblings);
+    		$new_order = $dummy['node_order']+1;
+    	}
        	$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,
 		                            $args->preconditions,$args->steps,
 		                            $args->expected_results,$args->user_id,$args->assigned_keywords_list,
-		                            $cfg->treemenu_default_testcase_order,testcase::AUTOMATIC_ID,
+		                            $new_order,testcase::AUTOMATIC_ID,
 		                            config_get('check_names_for_duplicates'),'block',$args->exec_type,
 		                            $args->importance);
 

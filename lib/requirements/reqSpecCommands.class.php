@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/11/25 22:24:47 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2009/12/07 18:14:47 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
  * 
- * rev: 20090324 - franciscom - added logic to avoid losing user work if title already exists.
+ *	@internal revisions
+ *	20091207 - franciscom - logic to get order when creating new item 
+ *	20090324 - franciscom - added logic to avoid losing user work if title already exists.
  *                            - fixed minor errors due to missing variables
  */
 
@@ -114,9 +116,20 @@ class reqSpecCommands
 		$guiObj->total_req_counter=null;
 
 		$guiObj->cfields = $this->reqSpecMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+		
+		// manage new order
+		$order = 0;
+    	$nt2exclude = array('testplan' => 'exclude_me','testsuite'=> 'exclude_me',
+    	                    'testcase'=> 'exclude_me');
+    	$siblings = $this->reqSpecMgr->tree_mgr->get_children($argsObj->reqParentID,$nt2exclude);
+    	if( !is_null($siblings) )
+    	{
+    		$dummy = end($siblings);
+    		$order = $dummy['node_order']+1;
+    	}
 		$ret = $this->reqSpecMgr->create($argsObj->tproject_id,$argsObj->reqParentID,
 		                                 $argsObj->doc_id,$argsObj->title,$argsObj->scope,
-		                                 $argsObj->countReq,$argsObj->user_id);
+		                                 $argsObj->countReq,$argsObj->user_id,'n',$order);
 
 		$guiObj->user_feedback = $ret['msg'];
 		if($ret['status_ok'])

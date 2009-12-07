@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/11/25 22:33:28 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/12/07 18:14:39 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -102,10 +102,20 @@ class reqCommands
  		$obj->req_spec_id = $argsObj->req_spec_id;
 	    $obj->expected_coverage = $argsObj->expected_coverage;
 	
+			// manage new order
+		$order = 0;
+    	$nt2exclude = array('testplan' => 'exclude_me','testsuite'=> 'exclude_me',
+    	                    'testcase'=> 'exclude_me');
+    	$siblings = $this->reqMgr->tree_mgr->get_children($argsObj->req_spec_id,$nt2exclude);
+    	if( !is_null($siblings) )
+    	{
+    		$dummy = end($siblings);
+    		$order = $dummy['node_order']+1;
+    	}
 	    // 20090719 - franciscom - seems that TYPE has been removed from user interface
 		$ret = $this->reqMgr->create($argsObj->req_spec_id,$argsObj->reqDocId,$argsObj->title,
 		                             $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
-		                             $argsObj->reqType,$argsObj->expected_coverage);
+		                             $argsObj->reqType,$argsObj->expected_coverage,$order);
 
 		$obj->user_feedback = $ret['msg'];
 		if($ret['status_ok'])

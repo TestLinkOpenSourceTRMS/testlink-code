@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/12/02 22:18:22 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/12/07 18:16:12 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:  
+ *  20091207 - franciscom - create() added node_order
  *	20091202 - franciscom - create(), update() 
  *                          added contribution by asimon83/mx-julian that creates
  *                          links inside scope field.
@@ -153,7 +154,7 @@ function get_by_id($id)
   */
 function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
                 $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE,
-                $expected_coverage=1)
+                $expected_coverage=1,$node_order=0)
 {
     $result['id'] = 0;
 	$result['status_ok'] = 0;
@@ -177,7 +178,7 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
     
         $parent_id=$srs_id;
 		$name=$title;
-		$req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name);
+		$req_id = $this->tree_mgr->new_node($parent_id,$this->my_node_type,$name,$node_order);
 		$db_now = $this->db->db_now();
 		$sql = " INSERT INTO {$this->object_table} " .
 		       " (id, srs_id, req_doc_id, scope, status, type, author_id, creation_ts,expected_coverage)" .

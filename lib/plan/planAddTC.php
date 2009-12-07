@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.82 2009/11/17 18:11:15 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.83 2009/12/07 18:15:46 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -21,6 +21,9 @@ require_once('email_api.php');
 require_once("specview.php");
 
 testlinkInitPage($db);
+
+// $startTime = microtime_float();
+
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 $tplan_mgr = new testplan($db);
@@ -204,6 +207,10 @@ if($do_display)
     //new dBug($gui);
     
 	$smarty->assign('gui', $gui);
+	// $endTime = microtime_float();
+    // echo 'start:' . $startTime . '<br>';
+    // echo 'end:' . $endTime . '<br>';
+    // echo sprintf("Elapsed: %f", $endTime-$startTime);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
 

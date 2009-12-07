@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.47 2009/09/28 08:41:52 franciscom Exp $
+$Id: execSetResults.tpl,v 1.48 2009/12/07 18:17:12 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090901 - franciscom - preconditions
@@ -42,7 +42,8 @@ Rev:
 	           no_data_available,import_xml_results,btn_save_all_tests_results,execution_type,
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
-             deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution,
+             deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
+             btn_save_exec_and_movetonext,
              preconditions,platform,platform_description,exec_not_run_result_note'}
 
 

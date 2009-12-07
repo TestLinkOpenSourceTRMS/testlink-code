@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.29 2009/12/06 17:19:02 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.30 2009/12/07 20:12:18 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -89,29 +89,6 @@ Ext.onReady(function(){
 //-->
 </script>
 {/literal}
-
-{*
-{foreach from=$gui->items key=idx item=info}
-  {assign var=tcases value=$info.testcases}
-  {foreach from=$info.testcases key=tcidx item=tcversionInfo}
-   {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
-    tcidx: {$tcidx}<br>
-    tcversionLinked: {$tcversionLinked}<br>
-  {/foreach}  
-{/foreach}
-
-
-{/literal}
-{foreach from=$gui->items key=idx item=info}
-  {foreach from=$info.testcases key=tcidx item=tcversionInfo}
-   {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
-   {literal}
-   alert('tooltip-{/literal}{$tableID}{literal}');
-  {/foreach}  
-{/foreach}
-
-*}
-
 
 </head>
 <body>

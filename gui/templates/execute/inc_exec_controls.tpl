@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.9 2009/11/17 18:11:15 franciscom Exp $
+$Id: inc_exec_controls.tpl,v 1.10 2009/12/07 20:12:18 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -47,7 +47,7 @@ Rev: 20080503 - franciscom - use of tlCfg
     		 			      <input type="submit" name="save_and_next[{$args_tcversion_id}]" 
     		 			            {$args_input_enable_mgmt}
                           onclick="document.getElementById('save_button_clicked').value={$args_tcversion_id};return checkSubmitForStatus('{$ResultsStatusCode.not_run}')"
-    		 			            value="{$args_labels.btn_save_exec_and_movetonext}Save and Go to next" />
+    		 			            value="{$args_labels.btn_save_exec_and_movetonext}" />
 
     		 			  {else}
      	    	        <input type="submit" id="do_bulk_save" name="do_bulk_save"

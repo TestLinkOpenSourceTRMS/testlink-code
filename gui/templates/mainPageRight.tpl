@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.19 2009/09/04 12:18:16 havlat Exp $
+ $Id: mainPageRight.tpl,v 1.20 2009/12/07 20:12:18 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -50,7 +50,7 @@
 
 {/if}
 
-{if $gui->countPlans > 0 }
+{if $gui->countPlans > 0}
    {assign var="display_right_block_2" value=true}
 
     <script  type="text/javascript">
@@ -143,7 +143,7 @@
   <div id="menu_right_block_3"></div><br />
   
   {* ----------------------------------------------------------------------------------- *}
-	{if $display_right_block_1 }
+	{if $display_right_block_1}
     <div id='test_plan_mgmt_topics'>
     
       {if $gui->grants.mgt_testplan_create == "yes"}
@@ -163,7 +163,7 @@
        	    <a href="lib/usermanagement/usersAssign.php?featureType=testplan&amp;featureID={$gui->testplanID}">{$labels.href_assign_user_roles}</a>
 	    {/if}
       
-	    {if $gui->grants.testplan_planning == "yes" and $gui->countPlans > 0 }
+	    {if $gui->grants.testplan_planning == "yes" and $gui->countPlans > 0}
             <br />
         	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
            	<a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
@@ -174,10 +174,10 @@
   {* ----------------------------------------------------------------------------------- *}
 
 	{* ------------------------------------------------------------------------------------------ *}
-	{if $display_right_block_2 }
+	{if $display_right_block_2}
     <div id='test_execution_topics'>
 		  <p>
-		  {if $gui->grants.testplan_execute == "yes" }
+		  {if $gui->grants.testplan_execute == "yes"}
 		  	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	          <a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
 		  {/if} 
@@ -199,7 +199,7 @@
   {* ------------------------------------------------------------------------------------------ *}
 
   {* ------------------------------------------------------------------------------------------ *}
-	{if $display_right_block_3 }
+	{if $display_right_block_3}
     <div id='testplan_contents_topics'>
 		<p>
 		

@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_help.tpl,v 1.14 2009/09/16 19:53:00 schlundus Exp $ *}
+{* $Id: inc_help.tpl,v 1.15 2009/12/07 20:12:18 franciscom Exp $ *}
 {* 
 
 Purpose: smarty template - help link/icon component
@@ -16,7 +16,7 @@ Revisions:
 {* get localized text and remove harm characters *}
 {lang_get var="help_text_raw" s=$helptopic}
 {assign var="help_text" 
-        value=$help_text_raw|regex_replace:"/[\r\t\n]/":" "|replace:"'":"&#39;"|replace:"\"":"&quot;"|default:"Help: Localization/Text is missing." }
+        value=$help_text_raw|regex_replace:"/[\r\t\n]/":" "|replace:"'":"&#39;"|replace:"\"":"&quot;"|default:"Help: Localization/Text is missing."}
 
 <script type="text/javascript">
 <!--

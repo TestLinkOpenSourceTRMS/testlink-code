@@ -1,11 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.7 2009/07/16 21:30:52 havlat Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.8 2009/12/07 20:12:18 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20081109 - franciscom - refactoring 
         20070113 - franciscom - use of smarty config file
 *}
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes"}
 

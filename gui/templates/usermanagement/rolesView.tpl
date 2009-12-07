@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesView.tpl,v 1.14 2009/06/03 19:51:45 schlundus Exp $
+$Id: rolesView.tpl,v 1.15 2009/12/07 20:12:19 franciscom Exp $
 Purpose: smarty template - View defined roles
 
 rev:
@@ -19,11 +19,11 @@ rev:
              warning_users_will_be_reset,btn_confirm_delete,btn_cancel,no_roles,
              th_roles,th_role_description,th_delete,alt_edit_role,alt_delete_role,N_A"}
 
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{lang_get s='warning_delete_role' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_delete_role' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}

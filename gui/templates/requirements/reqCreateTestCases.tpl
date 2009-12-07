@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.11 2009/06/08 17:40:21 schlundus Exp $
+$Id: reqCreateTestCases.tpl,v 1.12 2009/12/07 20:12:18 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -59,7 +59,7 @@ function check_action_precondition(form_id,action,msg)
 <body>
 
 
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">

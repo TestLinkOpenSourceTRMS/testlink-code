@@ -1,6 +1,6 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.49 2009/11/19 12:00:16 franciscom Exp $
+	$Id: navBar.tpl,v 1.50 2009/12/07 20:12:18 franciscom Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
@@ -13,7 +13,7 @@
           s="title_events,event_viewer,home,testproject,title_specification,title_execute,
              title_edit_personal_data,th_tcid,link_logout,title_admin,
              search_testcase,title_results,title_user_mgmt, warn_session_timeout"}
-{assign var="cfg_section" value=$smarty.template|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.202 2009/11/28 15:46:35 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.203 2009/12/07 16:08:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091207 - franciscom - get_last_execution() - internal bug bad management of set_group_by
  * 20091127 - franciscom - getByPathName() new method
  * 20091118 - franciscom - get_last_execution() - still working ond fixing bug when using self::ALL_VERSIONS
  * 20091113 - franciscom - get_last_execution() - fixed bug when using self::ALL_VERSIONS
@@ -2363,8 +2364,7 @@ class testcase extends tlObjectWithAttachments
 	  function: get_last_execution
 	
 	  args :
-	
-	  
+  
 	
 	  returns: map:
 	           key: tcversion_id
@@ -2429,11 +2429,10 @@ class testcase extends tlObjectWithAttachments
 	    $add_groupby='';
         $cumulativeMode=0;
        	$group_by = '';
-	    $set_group_by = false;
-
+	    $set_group_by = false;  
         
 		// getNoExecutions: 1 -> if testcase/version_id has not been executed return anyway
-		//                       standard return stricture.
+		//                       standard return structure.
 		//                  0 -> default
 		//
 		// groupByBuild: 0 -> default, get last execution on ANY BUILD, then for a testcase/version_id
@@ -2451,6 +2450,9 @@ class testcase extends tlObjectWithAttachments
         	$add_columns=', e.build_id';
 	        $add_groupby=$add_columns;
             $cumulativeMode=1;
+            
+            // seems I've forgot this
+            $set_group_by = true;
         }
 	
 		if( is_array($id) )
@@ -2482,19 +2484,21 @@ class testcase extends tlObjectWithAttachments
 		$group_by = $set_group_by ? ' GROUP BY tcversion_id ' : '';
 		$group_by = ($group_by == '' && $add_groupby != '') ? ' GROUP BY ' : $group_by;  
 		$add_field = $set_group_by ? ', e.tcversion_id AS tcversion_id' : '';
-	    $where_clause_1 = $set_group_by ? $where_clause_1 : $where_clause;
-	    $where_clause_2 = $set_group_by ? $where_clause_2 : $where_clause;
+		
+		// we may be need to remove tcversion filter ($set_group_by==false)
+	    $where_clause_1 = $set_group_by ? $where_clause :  $where_clause_1;
+	    $where_clause_2 = $set_group_by ? $where_clause : $where_clause_2;
 
 	    
       	// get list of max exec id, to be used filter in next query
 	  	$sql="/* $debugMsg */ " . 
-	  	     " SELECT MAX(e.id) AS execution_id {$add_field} {$add_columns}" .
+	  	     " SELECT COALESCE(MAX(e.id),0) AS execution_id {$add_field} {$add_columns}" .
 	  		 " FROM {$this->tables['nodes_hierarchy']} NHA " .
 	  	     " JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id AND e.testplan_id = {$tplan_id} " .
 	  	     " {$filterBy['build_id']} {$filterBy['platform_id']}" .
 	  	     " AND e.status IS NOT NULL " .
 	  	     " $where_clause_1 {$group_by} {$add_groupby}";
-	  	     
+	     
       	// 20090716 - order of columns changed
 	  	$recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
 	  
@@ -2567,7 +2571,6 @@ class testcase extends tlObjectWithAttachments
 	        " $where_clause_2" .
 	        " ORDER BY NHB.parent_id ASC, NHA.node_order ASC, NHA.parent_id ASC, execution_id DESC";
       
-  
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
 	  
 	  	return($recordset ? $recordset : null);
@@ -3625,25 +3628,6 @@ class testcase extends tlObjectWithAttachments
 					}	
 				}
 			}
-			
-    		// if( !isset($xtree[$testcase['parent_id']]) )
-    		// {
-    		// 	// $xtree[$testcase['parent_id']]['level']=0;
-			//     new dBug($xtree);
-			// 	foreach($path_info as $elem)
-			// 	{
-			// 	    new dBug($xtree);
-			// 		$prefix = isset($xtree[$elem['parent_id']]) ? ($xtree[$elem['parent_id']] . '/') : '';
-			// 		if( $elem['node_table'] == 'testsuites' )
-			// 		{
-			// 			$xtree[$elem['id']] = $prefix . $elem['name'];
-			// 			// $xtree[$testcase['parent_id']]['level']++;
-			// 		}	
-			// 	}
-			// 	
-			// }
-			
-			
 		}	
 		return $xtree;
 	} // getPathLayered($tcaseSet)

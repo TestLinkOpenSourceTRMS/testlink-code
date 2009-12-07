@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.274 2009/12/06 08:26:23 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.275 2009/12/07 15:18:44 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -98,6 +98,7 @@ $tlCfg->api = new stdClass();
 $tlCfg->document_generator = new stdClass();
 $tlCfg->exec_cfg = new stdClass();
 $tlCfg->gui = new stdClass();
+$tlCfg->gui->custom_fields = new stdClass();
 $tlCfg->testcase_cfg = new stdClass();
 $tlCfg->req_cfg = new stdClass();
 $tlCfg->validation_cfg = new stdClass();
@@ -459,6 +460,10 @@ $tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration
 
 $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 ,
                                           'testPlanContents' => 3);
+
+/** Enable warning on a changed content before an user leave a page */
+$tlCfg->gui->checkNotSaved = FALSE;
+
 
 // ----------------------------------------------------------------------------
 /* [GUI: TREE] */

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.133 2009/12/06 18:17:31 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.134 2009/12/07 08:50:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -512,8 +512,6 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
   	{
   	  $my['filters']['exclude_node_types']['testcase']='exclude me';
   	}
-  	
-  	new dBug($my['filters']);
   	
 	$subtree = $this->tree_manager->get_subtree($id,$my['filters'],$my['options']);
 	return $subtree;

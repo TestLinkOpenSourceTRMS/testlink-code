@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.9 2009/07/30 17:20:04 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.10 2009/12/08 14:06:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -37,23 +37,25 @@ class TLSmarty extends Smarty
     function TLSmarty()
     {
         global $tlCfg;
-        global $g_attachments;
-        global $g_spec_cfg;
+        // global $g_attachments;
+        // global $g_spec_cfg;
         global $g_bugInterfaceOn;
         global $g_interface_bugs;
-        global $g_locales;
+        // global $g_locales;
         global $g_locales_html_select_date_field_order;
         global $g_locales_date_format;
         global $g_locales_timestamp_format;
         
         
-        $this->Smarty();
+        // $this->Smarty();
+        parent::__construct();
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
         $this->compile_dir = TL_TEMP_PATH;
         $this->config_dir = TL_ABS_PATH . 'gui/templates/';
         
-        $testproject_coloring=$tlCfg->gui->testproject_coloring;
+        $testproject_coloring = $tlCfg->gui->testproject_coloring;
         $testprojectColor = $tlCfg->gui->background_color ; //TL_BACKGROUND_DEFAULT;
+        
         if (isset($_SESSION['testprojectColor']))
         {
             $testprojectColor =  $_SESSION['testprojectColor'];
@@ -119,16 +121,11 @@ class TLSmarty extends Smarty
         // load configuration
         $this->assign('tlCfg',$tlCfg);
         $this->assign('gsmarty_gui',$tlCfg->gui);
-        $this->assign('gsmarty_spec_cfg',$g_spec_cfg);
-        $this->assign('gsmarty_attachments',$g_attachments);
+        $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
+        $this->assign('gsmarty_attachments',config_get('attachments'));
         
         $this->assign('pageCharset',$tlCfg->charset);
         $this->assign('tlVersion',TL_VERSION);
-        
-        // $this->assign('gsmarty_tc_status',$tlCfg->results['status_code']);
-        // $this->assign('gsmarty_tc_status_css',$tlCfg->results['code_status']);
-        // $this->assign('gsmarty_tc_status_for_ui',$tlCfg->results['status_label_for_exec_ui']);
-        // $this->assign('gsmarty_tc_status_verbose_labels',$tlCfg->results['status_label']);
         
         $this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
         $this->assign('gsmarty_interface_bugs',$g_interface_bugs);
@@ -166,7 +163,7 @@ class TLSmarty extends Smarty
         $this->assign('refresh', 'no');
         $this->assign('result', null);
         
-        $this->assign('optLocale',$g_locales);
+        $this->assign('optLocale',config_get('locales'));
         
         $this->assign('gsmarty_href_keywordsView',
         ' "lib/keywords/keywordsView.php" ' .

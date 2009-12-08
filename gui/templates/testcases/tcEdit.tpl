@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.20 2009/09/15 18:50:12 schlundus Exp $ 
+$Id: tcEdit.tpl,v 1.21 2009/12/08 10:50:37 havlat Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -31,7 +31,11 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 var alert_box_title = "{$labels.warning}";
 var UNLOAD_MSG = "{$labels.warning_unsaved}";
+var UNLOAD_CHECK_ENABLED = {$tlCfg->gui->checkNotSaved};
 var TC_EDITOR = "{$tlCfg->gui->text_editor.all.type}";
+var IGNORE_UNLOAD = true;
+var UNLOAD_ASKED = false;
+
 {literal}
 function validateForm(f)
 {
@@ -65,40 +69,37 @@ function validateForm(f)
 	      	return false;
 		}
 	}
-	if(window.body)
-		window.body.onbeforeunload = null; // IE
-	else
-		window.onbeforeunload = null; // FX
-		
+	
 	return true;
 }
-</script>
 
-<script type="text/javascript">
-// @TODO - Always ADD on internal revisions NEW FEATURES, thing that has not been do
-// 
 // Notify on exit with unsaved data 
 // @TODO use EXTJS dialog
-
-var IGNORE_UNLOAD = true;
-
 function doBeforeUnload() 
 {
+	if(UNLOAD_ASKED) return; 
+
 	checkFCKEditorChanged(); //check FCKeditors 
-	if(IGNORE_UNLOAD) 
-		return ; // Let the page unload
+	if(IGNORE_UNLOAD) return; // Let the page unload
+
 	if(window.event)
 		window.event.returnValue = UNLOAD_MSG; // IE
 	else
    		return UNLOAD_MSG; // FX
 }
 
-if(window.body)
-	window.body.onbeforeunload = doBeforeUnload; // IE
-else
-	window.onbeforeunload = doBeforeUnload; // FX
+// set unload checking if configured to use 
+if (UNLOAD_CHECK_ENABLED)
+{
+	if(window.body)
+		window.body.onbeforeunload = doBeforeUnload; // IE
+	else
+		window.onbeforeunload = doBeforeUnload; // FX
+}
 
 // verify if content of any editor changed
+// TODO havlatm: something changed - and IsDirty() doesn't work correctly
+// need to investigate the problem
 function checkFCKEditorChanged()
 {
 	if (TC_EDITOR == "fckeditor")
@@ -114,9 +115,23 @@ function checkFCKEditorChanged()
 		}	
 	}
 }
+
+// not used yet
+function resetFCKEditorStatus()
+{
+	if (TC_EDITOR == "fckeditor")
+	{
+		var edSummary = FCKeditorAPI.GetInstance('summary') ;
+		var edSteps = FCKeditorAPI.GetInstance('steps') ;
+		var edExpResults = FCKeditorAPI.GetInstance('expected_results') ;
+
+		edSummary.ResetIsDirty();
+		edSteps.ResetIsDirty(); 
+		edExpResults.ResetIsDirty(); 
+	}
+}
 {/literal}
 </script>
-
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">

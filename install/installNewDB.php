@@ -6,28 +6,27 @@
  * create or update TestLink database 
  * 
  * @package 	TestLink
- * @author 		Martin Havlat
+ * @author 		Francisco Mancardi
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.51 2009/11/10 16:10:20 havlat Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.52 2009/12/08 18:08:27 franciscom Exp $
  *
  * @internal Revisions:
  * 	20091109 - havlatm - general layout, header, logic update
  * 	20091003 - franciscom - migration from 1.8.x (DB 1.2) to 1.9 Beta 1 (DB 1.3)
- *  20090715 - franciscom - changed way to manage replace of table prefix on
-                        SQL statements to run.
-                        Improvements on Drop of table if Datat Base Exists
-20090603 - franciscom - write on config file table prefix
-20080102 - franciscom - added DB 1.2
-20071018 - franciscom - added DB 1.1 
-20070725 - franciscom - added 1.7.0 RC 3
-20070414 - franciscom - added 1.7.0 RC 2
-20070216 - franciscom - added dropping of all tables if DB exists
-20070204 - franciscom - added 1.7.0 Beta 5
-20070131 - franciscom - added 1.7.0 Beta 4
-20070121 - franciscom - upgrade code for 1.7 Beta
-20060523 - franciscom - adding postgres support
+ *  20090715 - franciscom - changed way to manage replace of table prefix on SQL statements to run.
+ *                          Improvements on Drop of table if Datat Base Exists
+ *	20090603 - franciscom - write on config file table prefix
+ *  20080102 - franciscom - added DB 1.2
+ *  20071018 - franciscom - added DB 1.1 
+ *  20070725 - franciscom - added 1.7.0 RC 3
+ *  20070414 - franciscom - added 1.7.0 RC 2
+ *  20070216 - franciscom - added dropping of all tables if DB exists
+ *  20070204 - franciscom - added 1.7.0 Beta 5
+ *  20070131 - franciscom - added 1.7.0 Beta 4
+ *  20070121 - franciscom - upgrade code for 1.7 Beta
+ *  20060523 - franciscom - adding postgres support
  * 
  **/
 

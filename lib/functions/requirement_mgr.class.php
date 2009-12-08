@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/12/07 18:16:12 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2009/12/08 14:27:52 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:  
+ *  20091208 - franciscom - contrib by julian - BUGID 2995
  *  20091207 - franciscom - create() added node_order
  *	20091202 - franciscom - create(), update() 
  *                          added contribution by asimon83/mx-julian that creates
@@ -525,10 +526,12 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
     $tcase_mgr = new testcase($this->db);
   	$req_cfg = config_get('req_cfg');
   	$field_size = config_get('field_size');
+ 	
   	$auto_testsuite_name = $req_cfg->default_testsuite_name;
     $node_descr_type=$this->tree_mgr->get_available_node_types();
     $empty_steps='';
     $empty_results='';
+    $empty_preconditions=''; // fix for BUGID 2995
 
 
   	$output = null;
@@ -574,16 +577,30 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
       $output[]=sprintf(lang_get('testsuite_name_created'), $auto_testsuite_name);
    	}
 
-  	//create TC
+  	// create TC
+    $cfg['check_names_for_duplicates'] = config_get('check_names_for_duplicates');
+    $cfg['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
+
+  	// compute test case order
+  	$testcase_order = config_get('treemenu_default_testcase_order');
+   	$nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
+    $siblings = $this->tree_mgr->get_children($tsuite_id,$nt2exclude);
+    if( !is_null($siblings) )
+    {
+    	$dummy = end($siblings);
+    	$testcase_order = $dummy['node_order'];
+    }
   	foreach ($arrIdReq as $execIdReq)
   	{
+  		$testcase_order++;
         $reqData = $this->get_by_id($execIdReq);
+
+        // Julian - BUGID 2995
   	    $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
   	                              $req_cfg->testcase_summary_prefix . $reqData['scope'] ,
-  	                              $empty_steps,$empty_results,$user_id,null,
-  	                              DEFAULT_TC_ORDER,AUTOMATIC_ID,
-  		                          config_get('check_names_for_duplicates'),
-  		                          config_get('action_on_duplicate_name'));
+					              $empty_preconditions, $empty_steps,$empty_results,$user_id,
+					              null,$testcase_order,testcase::AUTOMATIC_ID,
+  		                          $cfg['check_names_for_duplicates'],$cfg['action_on_duplicate_name']);
 
         $tcase_name=$tcase['new_name'];
         if( $tcase_name == '' )

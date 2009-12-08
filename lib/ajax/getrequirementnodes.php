@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.9 2009/11/22 18:19:09 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.10 2009/12/08 18:08:30 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -19,6 +19,8 @@
 *   - Assign requirements to test cases
 *
 *	@internal revision
+*	20091208 - franciscom - added management of new attribute 'forbbiden_parent'
+*                           to manage req spec movement when child req spec management is ENABLED.  
 *	20091122 - franciscom - manage rep spec doc id
 *	20090502 - franciscom - BUGID 2309 - display requirement doc id
 *        
@@ -45,6 +47,14 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                           $show_children=ON,$operation='manage') 
 {             
     $tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy','node_types','req_specs'));
+	$cfg = config_get('req_cfg');
+	$forbbiden_parent['testproject'] = 'none';
+	$forbbiden_parent['requirement'] = 'testproject';
+	$forbbiden_parent['requirement_spec'] = 'requirement_spec';
+	if($cfg->child_requirements_mgmt)
+	{
+		$forbbiden_parent['requirement_spec'] = 'none';
+	} 
     
     switch($operation)
     {
@@ -114,21 +124,25 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
  	        // public property 'attributes' of object of Class Ext.tree.TreeNode 
  	        // 
  	        $path['testlink_node_type']	= $row['node_type'];		                                 
+            $path['forbbiden_parent'] = 'none';
             switch($row['node_type'])
             {
                 case 'testproject':
 	                $path['href'] = "javascript:EP({$path['id']})";
+                    $path['forbbiden_parent'] = $forbbiden_parent[$row['node_type']];
 	                break;
 
                 case 'requirement_spec':
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
 	                $path['text'] = htmlspecialchars($row['doc_id'] . "::") . $path['text'];
+                    $path['forbbiden_parent'] = $forbbiden_parent[$row['node_type']];
 	                break;
 
                 case 'requirement':
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
 	                $path['text'] = htmlspecialchars($requirements[$row['id']]['doc_id'] . ":") . $path['text'];
 	                $path['leaf']	= true;
+                    $path['forbbiden_parent'] = $forbbiden_parent[$row['node_type']];
 	                break;
             }
             $nodes[] = $path;                                                                        

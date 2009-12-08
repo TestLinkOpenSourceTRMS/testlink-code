@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.3 2009/07/30 17:21:37 franciscom Exp $
+$Id: treebyloader.js,v 1.4 2009/12/08 18:07:47 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -33,38 +33,24 @@ rev:
   
   returns: true -> movement can be made.
 
+  rev: 20091208 - franciscom - using new node attribute forbbiden_parent in logic
 */
 function checkMovement(newparent,node,oldparentid,newparentid,nodeorder)
 {
     var status=true;
     var newparent_node_type =newparent.attributes.testlink_node_type;
     var node_type = node.attributes.testlink_node_type;
-    
     switch(node_type)
     {
         case 'requirement':
-            switch(newparent_node_type)
-            {
-                case 'testproject':
-                    status=false;
-                break;
-            }   
-        break;
-
-        // While we do not manage unlimited tree depth, need
-        // to use this control
         case 'requirement_spec':
-            switch(newparent_node_type)
-            {
-                case 'requirement_spec':
-                    status=false;
-                break;
-            }   
+            if( node.attributes.forbbiden_parent == newparent_node_type )
+            {                                                            
+              status=false;                                              
+            }                                                            
         break;
-               
     }
     return status;
-    
 }
 
 

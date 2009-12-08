@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.15 2009/08/28 20:37:03 schlundus Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.16 2009/12/08 14:43:37 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -156,3 +156,4 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     }
 	return $nodes;                                                                             
 }                                                                                               
+?>

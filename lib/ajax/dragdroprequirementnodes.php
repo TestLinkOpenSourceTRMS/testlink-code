@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: dragdroprequirementnodes.php,v 1.2 2009/06/07 12:55:58 franciscom Exp $
+* 	@version 	$Id: dragdroprequirementnodes.php,v 1.3 2009/12/08 14:41:57 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   manage drag and drop on test project tree
@@ -57,6 +57,4 @@ function init_args()
     }
     return $args;
 }
-?>
-
-                                                                                              
+?>                                                                                              

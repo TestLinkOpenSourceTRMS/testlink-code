@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: charts.inc.php,v 1.2 2009/06/04 03:08:36 tosikawa Exp $ 
+ * $Id: charts.inc.php,v 1.3 2009/12/08 16:11:05 havlat Exp $ 
  *
  * @author	Francisco Mancardi - francisco.mancardi@gmail.com
  *
@@ -24,13 +24,13 @@ include_once(PCHART_PATH . "/pChart/pChart.class");
 */
 function createChart(&$info,&$cfg)
 {
-    $backgndColor=array('R' => 255, 'G' => 255, 'B' => 255);
+    $backgndColor=array('R' => 255, 'G' => 255, 'B' => 254);
     $chartCfg=new stdClass();
     $chartCfg->XSize=$info->canDraw ? $cfg->XSize : 600;
     $chartCfg->YSize=$info->canDraw ? $cfg->YSize : 50;                    
     
     $chartCfg->border = new stdClass();
-    $chartCfg->border->width = 2;
+    $chartCfg->border->width = 1;
     $chartCfg->border->color = array('R' => 0, 'G' => 0, 'B' => 0);
 
     $chartCfg->graphArea = new stdClass();

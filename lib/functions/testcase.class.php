@@ -6,12 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.203 2009/12/07 16:08:20 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.204 2009/12/08 14:06:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
- * 20091207 - franciscom - get_last_execution() - internal bug bad management of set_group_by
+ * 20091207 - franciscom - get_last_execution() - internal bug 
  * 20091127 - franciscom - getByPathName() new method
  * 20091118 - franciscom - get_last_execution() - still working ond fixing bug when using self::ALL_VERSIONS
  * 20091113 - franciscom - get_last_execution() - fixed bug when using self::ALL_VERSIONS
@@ -2367,7 +2367,7 @@ class testcase extends tlObjectWithAttachments
   
 	
 	  returns: map:
-	           key: tcversion_id
+	           key: tcversions.id
 	           value: map with following keys:
 	            			execution_id
 	            			status: execution status
@@ -2409,7 +2409,6 @@ class testcase extends tlObjectWithAttachments
 	function get_last_execution($id,$version_id,$tplan_id,$build_id,$platform_id,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
 		$resultsCfg = config_get('results');
 		$status_not_run=$resultsCfg['status_code']['not_run'];
 
@@ -2429,7 +2428,6 @@ class testcase extends tlObjectWithAttachments
 	    $add_groupby='';
         $cumulativeMode=0;
        	$group_by = '';
-	    $set_group_by = false;  
         
 		// getNoExecutions: 1 -> if testcase/version_id has not been executed return anyway
 		//                       standard return structure.
@@ -2437,24 +2435,16 @@ class testcase extends tlObjectWithAttachments
 		//
 		// groupByBuild: 0 -> default, get last execution on ANY BUILD, then for a testcase/version_id
 		//                    only a record will be present on return struture.
-		//
+		//                    GROUP BY must be done ONLY BY tcversion_id
+		//                  
 		//               1 -> get last execution on EACH BUILD.
+		//                    GROUP BY must be done BY tcversion_id,build_id
 		//   
 		$localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0);
         if(!is_null($options) && is_array($options))
         {
         	$localOptions=array_merge($localOptions,$options);		
         }
-        if( $localOptions['groupByBuild'] )
-        {
-        	$add_columns=', e.build_id';
-	        $add_groupby=$add_columns;
-            $cumulativeMode=1;
-            
-            // seems I've forgot this
-            $set_group_by = true;
-        }
-	
 		if( is_array($id) )
 		{
 			$tcid_list = implode(",",$id);
@@ -2481,48 +2471,65 @@ class testcase extends tlObjectWithAttachments
 			}
 		}
 		
-		$group_by = $set_group_by ? ' GROUP BY tcversion_id ' : '';
-		$group_by = ($group_by == '' && $add_groupby != '') ? ' GROUP BY ' : $group_by;  
-		$add_field = $set_group_by ? ', e.tcversion_id AS tcversion_id' : '';
+		// This logic (is mine - franciscom) must be detailed better!!!!!
+		$group_by = ' GROUP BY tcversion_id ';
+        $add_fields = ', e.tcversion_id AS tcversion_id';
+        if( $localOptions['groupByBuild'] )
+        {
+        	$add_fields .= ', e.build_id';
+	        $group_by .= ', e.build_id';
+            $cumulativeMode = 1;
+	    	
+	    	// Hummm!!! I do not understand why this can be needed
+	    	$where_clause_1 = $where_clause;
+	    	$where_clause_2 = $where_clause;
+        }
+
+		// $group_by .= $localOptions['groupByBuild'] ? $add_groupby : ''; 
+		// $group_by = $set_group_by ? ' GROUP BY tcversion_id ' : '';
+		// $group_by = ($group_by == '' && $add_groupby != '') ? ' GROUP BY ' : $group_by;  
 		
 		// we may be need to remove tcversion filter ($set_group_by==false)
-	    $where_clause_1 = $set_group_by ? $where_clause :  $where_clause_1;
-	    $where_clause_2 = $set_group_by ? $where_clause : $where_clause_2;
-
+		// $add_field = $set_group_by ? ', e.tcversion_id AS tcversion_id' : '';
+        // $add_field = $localOptions['groupByBuild'] ? '' : ', e.tcversion_id AS tcversion_id';
+	    // $where_clause_1 = $localOptions['groupByBuild'] ? $where_clause :  $where_clause_1;
+	    // $where_clause_2 = $localOptions['groupByBuild'] ? $where_clause : $where_clause_2;
 	    
       	// get list of max exec id, to be used filter in next query
+      	// Here we can get:
+      	// a) one record for each tcversion_id (ignoring build)
+      	// b) one record for each tcversion_id,build
+      	//
 	  	$sql="/* $debugMsg */ " . 
-	  	     " SELECT COALESCE(MAX(e.id),0) AS execution_id {$add_field} {$add_columns}" .
+	  	     " SELECT COALESCE(MAX(e.id),0) AS execution_id {$add_fields}" .
 	  		 " FROM {$this->tables['nodes_hierarchy']} NHA " .
 	  	     " JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id AND e.testplan_id = {$tplan_id} " .
 	  	     " {$filterBy['build_id']} {$filterBy['platform_id']}" .
 	  	     " AND e.status IS NOT NULL " .
-	  	     " $where_clause_1 {$group_by} {$add_groupby}";
+	  	     " $where_clause_1 {$group_by}";
 	     
       	// 20090716 - order of columns changed
 	  	$recordset = $this->db->fetchColumnsIntoMap($sql,'execution_id','tcversion_id');
-	  
-	  $rs = $this->db->fetchRowsIntoMap($sql,'execution_id');
-	  $and_exec_id='';
-	  if( !is_null($recordset) && count($recordset) > 0)
-	  {
-	  	  $the_list = implode(",", array_keys($recordset));
-	  	  if($the_list != '')
-	  	  {
-	  	  	if( count($recordset) > 1 )
-	  	  	{
+	  	$and_exec_id='';
+	  	if( !is_null($recordset) && count($recordset) > 0)
+	  	{
+	  		$the_list = implode(",", array_keys($recordset));
+	  		if($the_list != '')
+	  		{
+	  			if( count($recordset) > 1 )
+	  			{
 	  				$and_exec_id = " AND e.id IN ($the_list) ";
-	  	  	}
-	  	  	else
-	  	  	{
-	  			  $and_exec_id = " AND e.id = $the_list ";
-	  	  	}
-	  	  }
-	  }
-	
-	  $executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id " .
-	                   " AND e.testplan_id = {$tplan_id} {$and_exec_id} {$filterBy['build_id']} " .
-	                   " {$filterBy['platform_id']} ";
+	  			}
+	  			else
+	  			{
+	  				$and_exec_id = " AND e.id = $the_list ";
+	  			}
+	  		}
+	  	}
+	  	
+	  	$executions_join=" JOIN {$this->tables['executions']} e ON NHA.id = e.tcversion_id " .
+	  	                 " AND e.testplan_id = {$tplan_id} {$and_exec_id} {$filterBy['build_id']} " .
+	  	                 " {$filterBy['platform_id']} ";
 	                   
 	  if( $localOptions['getNoExecutions'] )
 	  {

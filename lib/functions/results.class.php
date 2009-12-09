@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.152 2009/11/04 08:09:34 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.153 2009/12/09 11:54:58 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -817,7 +817,6 @@ class results extends tlObjectWithDB
 		$total['not_run'] = abs($totalCases - $dummy);
 		$percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);
 		
-		new dBug($results);
 		$keySet = array_keys($results);
 		foreach($keySet as $keyID)
 		{
@@ -1235,8 +1234,6 @@ class results extends tlObjectWithDB
 		// map for adding SuiteName directly to every TC
 		$allSuites = $this->getAllSuites();
 		
-		// new dBug($allSuites);
-		
 		// for execution link
 		$canExecute = has_rights($this->db,"tp_execute");
 		
@@ -1399,7 +1396,7 @@ class results extends tlObjectWithDB
 	} // end function
 
 	/**
-	 * TO-DO - figure out what file to include so i don't have
+	 * @TODO - figure out what file to include so i don't have
 	 * to redefine this
 	 * builds bug information for execution id
 	 * written by Andreas, being implemented again by KL

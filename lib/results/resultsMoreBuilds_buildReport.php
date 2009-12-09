@@ -1,22 +1,25 @@
 <?php
-/** 
-* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsMoreBuilds_buildReport.php,v 1.70 2009/10/27 15:41:23 franciscom Exp $ 
-*
-* @author	Kevin Levy <kevinlevy@users.sourceforge.net>
-* 
-* This page will forward the user to a form where they can select
-* the builds they would like to query results against.
-*
-* rev :
-*	20091027 - franciscom - BUGID 2500
-*	20090409 - amitkhullar- code refactor for results object
-*	20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
-*	20090122 - franciscom - BUGID 2012 
-*	20080524 - franciscom - BUGID 1430
-*	20070901 - franciscom - refactoring
-* 
-**/
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * This page will forward the user to a form where they can select
+ * the builds they would like to query results against.
+ * 
+ * @package 	TestLink
+ * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
+ * @copyright 	2009, TestLink community 
+ * @version    	CVS: $Id: resultsMoreBuilds_buildReport.php,v 1.71 2009/12/09 11:55:25 havlat Exp $
+ *
+ * @internal Revisions:
+ *	20091027 - franciscom - BUGID 2500
+ *	20090409 - amitkhullar- code refactor for results object
+ *	20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
+ *	20090122 - franciscom - BUGID 2012 
+ *	20080524 - franciscom - BUGID 1430
+ *	20070901 - franciscom - refactoring
+ * 
+ **/
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('results.class.php');
@@ -35,14 +38,10 @@ $smarty->assign('report_type', $args->report_type);
 
 displayReport($templateCfg->template_dir . 'resultsMoreBuilds_report.tpl', $smarty, $args->report_type);
 
-/*
-  function: get_date_range()
 
-  args:
-  
-  returns: 
-
-*/
+/**
+ * @TODO describe get_date_range()
+ */
 function get_date_range($hash)
 {
     $date_range = new stdClass();
@@ -73,14 +72,9 @@ function get_date_range($hash)
 }
 
 
-/*
-  function: initializeGui
-
-  args :
-
-  returns: 
-
-*/
+/**
+ * initialize Gui
+ */
 function initializeGui(&$dbHandler,&$argsObj)
 {
     $reports_cfg = config_get('reportsCfg');
@@ -97,7 +91,6 @@ function initializeGui(&$dbHandler,&$argsObj)
 		$gui->showPlatforms=false;
 	}
 
-   
    
     $gui->resultsCfg = config_get('results');
 
@@ -213,14 +206,9 @@ function initializeGui(&$dbHandler,&$argsObj)
     return $gui;
 }
 
-/*
-  function: init_args
-
-  args:
-  
-  returns: 
-
-*/
+/**
+ * Initialize input data
+ */
 function init_args()
 {
 	$iParams = array(
@@ -241,6 +229,8 @@ function init_args()
 		"search_notes_string" => array(tlInputParameter::STRING_N),
 	);
 	$args = new stdClass();
+
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 	$pParams = R_PARAMS($iParams);
 	
 	$args->format = $pParams["format"];

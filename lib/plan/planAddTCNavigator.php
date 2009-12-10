@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.47 2009/07/27 07:26:14 franciscom Exp $
+ * @version $Id: planAddTCNavigator.php,v 1.48 2009/12/10 21:04:37 franciscom Exp $
  * @author Martin Havlat
  * 
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -214,17 +214,28 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
  			 // -------------------------------------------------------------------------------
     }
   
-    $keywordsFilter = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
+    $filters = array();
+    $filters['keywords'] = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
     $applyFilter = !is_null($keywordsFilter);
 
     $treeMenu = null;
     if($applyFilter)
     {
-        $treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
-                                         $guiObj->menuUrl,NOT_FOR_PRINTING,
-                                         HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
-                                         $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
-        
+        // $treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
+        //                                  $guiObj->menuUrl,NOT_FOR_PRINTING,
+        //                                  HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
+        //                                  $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
+           
+		$options = array('getArguments' => $guiObj->args,
+		                 'forPrinting' => NOT_FOR_PRINTING, 'hideTestCases' => HIDE_TESTCASES,
+		                 'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
+		                 'ignore_inactive_testcases' => IGNORE_INACTIVE_TESTCASES);
+    	
+    	$treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,
+    	                                 $guiObj->menuUrl,$filters,$options);
+           
+           
+           
         // When using filters I need to switch to static generated tree, that's reason why
         // I'm creating from scratch ajaxTree.
 		$guiObj->ajaxTree = new stdClass();

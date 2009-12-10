@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.112 2009/09/28 08:45:46 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.113 2009/12/10 21:04:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -71,10 +71,25 @@ function filterString($str)
  * 20070217 - franciscom - added $exclude_branches
  * 20061105 - franciscom - added $ignore_inactive_testcases
  */
-function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$bForPrinting=0,
-				$bHideTCs = 0,$tc_action_enabled = 1,$getArguments = '',$keywordsFilter=null,
-				$ignore_inactive_testcases=0,$exclude_branches=null)
+ 
+ 
+// function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$bForPrinting=0,
+// 				$bHideTCs = 0,$tc_action_enabled = 1,$getArguments = '',$keywordsFilter=null,
+// 				$ignore_inactive_testcases=0,$exclude_branches=null)
+
+function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
+	$my = array();
+	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0,'getArguments' => '', 
+	                       'tc_action_enabled' => 1,'ignore_inactive_testcases' => 0, 
+	                       'exclude_branches' => null);
+
+	$my['filters'] = array('keywords' => null, 'executionType' => null);
+
+	$my['options'] = array_merge($my['options'], (array)$options);
+	$my['filters'] = array_merge($my['filters'], (array)$filters);
+
+	
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
 	$treeMenu->menustring = '';
@@ -95,12 +110,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$bForPri
 	$status_code_descr=$resultsCfg['code_status'];
 	
 	$decoding_hash=array('node_id_descr' => $hash_id_descr,
-		'status_descr_code' =>  $status_descr_code,
-		'status_code_descr' =>  $status_code_descr);
+		                 'status_descr_code' =>  $status_descr_code,
+		                 'status_code_descr' =>  $status_code_descr);
 	
 	$tcase_prefix=$tproject_mgr->getTestCasePrefix($tproject_id) . $glueChar;
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,testproject::RECURSIVE_MODE,
-		                                    testproject::INCLUDE_TESTCASES,$exclude_branches);
+		                                    testproject::INCLUDE_TESTCASES,$my['options']['exclude_branches']);
 	
 	// Added root node for test specification -> testproject
 	$test_spec['name'] = $tproject_name;
@@ -116,9 +131,10 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$bForPri
 	if($test_spec)
 	{
 		$tck_map = null;  // means no filter
-		if(!is_null($keywordsFilter))
+		if(!is_null($my['filters']['keywords']))
 		{
-			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keywordsFilter->items,$keywordsFilter->type);
+			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$my['filters']['keywords']->items,
+			                                              $my['filters']['keywords']->type);
 			if( is_null($tck_map) )
 			{
 				$tck_map=array();  // means filter everything
@@ -128,16 +144,17 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$bForPri
 		// Important: prepareNode() will make changes to $test_spec like filtering by test case 
 		// keywords using $tck_map;
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
-			$tplan_tcs,$bHideTCs,DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
-			$ignore_inactive_testcases);
+			                             $tplan_tcs,$my['options']['hideTestCases'],
+			                             DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
+			                             $my['options']['ignore_inactive_testcases']);
 		
 		foreach($testcase_counters as $key => $value)
 		{
 			$test_spec[$key]=$testcase_counters[$key];
 		}
-		$menustring = renderTreeNode(1,$test_spec,$getArguments,$hash_id_descr,
-			$tc_action_enabled,$linkto,$tcase_prefix,
-			$bForPrinting,$showTestCaseID);
+		$menustring = renderTreeNode(1,$test_spec,$my['options']['getArguments'],$hash_id_descr,
+			                         $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
+			                         $my['options']['forPrinting'],$showTestCaseID);
 	}
 	
 	$menustring ='';
@@ -1266,6 +1283,29 @@ function buildKeywordsFilter($keywordsId,&$guiObj)
     }
     
     return $keywordsFilter;
+}
+
+
+/**
+ * generate array with test case execution type for a filter
+ *
+ */
+function buildExecTypeFilter($execTypeSet,&$guiObj)
+{
+    $itemsFilter = null;
+    
+    if(!is_null($execTypeSet))
+    {
+        $items = array_flip((array)$execTypeSet);
+        if(!isset($items[0]))
+        {
+            $itemsFilter = new stdClass();
+            $itemsFilter->items = $execTypeSet;
+            //$itemsFilter->type = isset($guiObj->keywordsFilterType) ? $guiObj->keywordsFilterType->selected: 'OR';
+        }
+    }
+    
+    return $itemsFilter;
 }
 
 

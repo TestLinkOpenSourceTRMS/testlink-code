@@ -2,15 +2,16 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.45 2009/09/15 18:48:53 schlundus Exp $
+* 	@version 	$Id: listTestCases.php,v 1.46 2009/12/10 21:05:15 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
-*   rev: 
-*        20090308 - franciscom - added option Any in keywords filter
-*        20090210 - BUGID 2062 - franciscom -
+*	@internal revision
+*	20091210 - franciscom - test case execution type filter
+*   20090308 - franciscom - added option Any in keywords filter
+*   20090210 - BUGID 2062 - franciscom -
 */
 require_once('../../config.inc.php');
 require_once("common.php");
@@ -19,6 +20,8 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
+
+
 $spec_cfg = config_get('spec_cfg');
 
 $feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
@@ -31,15 +34,17 @@ $treeDragDropEnabled =  array('edit_tc' => (has_rights($db,"mgt_modify_tc") == '
 
 $args = init_args($spec_cfg);
 if(isset($feature_action[$args->feature]))
+{
 	$workPath = $feature_action[$args->feature];
+}
 else
 {
 	tLog("Wrong get argument 'feature'.", 'ERROR');
 	exit();
 }
 
-
-$gui = initializeGui($args,$tproject_mgr,$treeDragDropEnabled[$args->feature]);
+// Here lazy loading tree configuration is done
+$gui = initializeGui($db,$args,$tproject_mgr,$treeDragDropEnabled[$args->feature]);
 
 $draw_filter = $spec_cfg->show_tsuite_filter;
 $exclude_branches = null;
@@ -52,24 +57,43 @@ if($spec_cfg->show_tsuite_filter)
 	$draw_filter = $mappy['draw_filter'];
 }
 
-$keywordsFilter = buildKeywordsFilter($args->keyword_id,$gui);
-$applyFilter = !is_null($keywordsFilter);
+$filters = array();
+$filters['keywords'] = buildKeywordsFilter($args->keyword_id,$gui);
+$filters['executionType'] = buildExecTypeFilter($args->exec_type,$gui);
+
+$applyFilter = !is_null($filters['keywords']);
 
 if($applyFilter)
 {
+	// Bye, Bye Lazy tree:
+	// we need to use statically generated because user have choosen to apply a filter
+	//
+	
+	
+    // $treeMenu = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
+    //                                  $workPath,NOT_FOR_PRINTING,
+    //                                  SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
+    //                                  NO_ADDITIONAL_ARGS, $keywordsFilter,
+    //                                  DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
+
+	$options = array('forPrinting' => NOT_FOR_PRINTING, 'hideTestCases' => SHOW_TESTCASES,
+	                 'getArguments' => NO_ADDITIONAL_ARGS, 
+	                 'tc_action_enabled' => DO_ON_TESTCASE_CLICK,
+	                 'ignore_inactive_testcases' => DO_NOT_FILTER_INACTIVE_TESTCASES, 
+	                 'exclude_branches' => $exclude_branches);
+
     $treeMenu = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
-                                     $workPath,NOT_FOR_PRINTING,
-                                     SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
-                                     NO_ADDITIONAL_ARGS, $keywordsFilter,
-                                     DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
+                                     $workPath,$filters,$options);
+
 	$gui->ajaxTree->loader = '';
 	$gui->ajaxTree->root_node = $treeMenu->rootnode;
 	$gui->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "''";
 	$gui->ajaxTree->cookiePrefix = $args->feature;
 	
 	if($applyFilter)
+	{
 		$gui->ajaxTree->loader = '';  
-		
+	}	
 }
 
 $gui->treeHeader = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
@@ -93,9 +117,8 @@ $smarty->display($templateCfg->template_dir . 'tcTree.tpl');
 */
 function tsuite_filter_mgmt(&$db,&$tprojectMgr,$tproject_id,$tsuites_to_show)
 {
-	$ret = array('draw_filter' => 0,
-              'html_options' => array(0 =>''),
-              'exclude_branches' => null);
+	$ret = array('draw_filter' => 0,'html_options' => array(0 =>''),
+                 'exclude_branches' => null);
              
 	$fl_tsuites = $tprojectMgr->get_first_level_test_suites($tproject_id,'smarty_html_options');
 	if($tsuites_to_show > 0)
@@ -117,7 +140,10 @@ function tsuite_filter_mgmt(&$db,&$tprojectMgr,$tproject_id,$tsuites_to_show)
   	return $ret;
 }
 
-
+/**
+ * 
+ *
+ */
 function init_args($spec_cfg)
 {
 	$iParams = array("feature" => array(tlInputParameter::STRING_N,0,50),
@@ -126,13 +152,15 @@ function init_args($spec_cfg)
 			         "tsuites_to_show" => array(tlInputParameter::INT_N),
 					 "tcspec_refresh_on_action" => array(tlInputParameter::INT_N),
 					 "hidden_tcspec_refresh_on_action" => array(tlInputParameter::INT_N),
-	);
+					 "exec_type" => array(tlInputParameter::INT_N));
+					 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
     
     if (!$args->keywordsFilterType)
+    {
     	$args->keywordsFilterType = "OR";
-    
+    }
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     $args->basehref = $_SESSION['basehref'];
@@ -141,13 +169,18 @@ function init_args($spec_cfg)
     if (!is_null($args->hidden_tcspec_refresh_on_action))
     {
     	if (!is_null($args->tcspec_refresh_on_action))
+    	{
     		$args->do_refresh = $args->tcspec_refresh_on_action ? "yes" : "no";
+        }
     }
     else if (isset($_SESSION["tcspec_refresh_on_action"]))
+    {
     	$args->do_refresh = ($_SESSION["tcspec_refresh_on_action"] == "yes") ? "yes" : "no";
-    else	
+    }
+    else
+    {	
     	$args->do_refresh = ($spec_cfg->automatic_tree_refresh > 0) ? "yes": "no";
-  
+    }
 	$_SESSION['tcspec_refresh_on_action'] = $args->do_refresh;
     	
 	return $args;  
@@ -172,7 +205,7 @@ function init_args($spec_cfg)
        it on root tree node.
 
 */
-function initializeGui($args,&$tprojectMgr,$treeDragDropEnabled)
+function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled)
 {
     $tcaseCfg = config_get('testcase_cfg');
     $gui_open = config_get('gui_separator_open');
@@ -186,9 +219,9 @@ function initializeGui($args,&$tprojectMgr,$treeDragDropEnabled)
     
     $gui->ajaxTree = new stdClass();
     $gui->ajaxTree->loader = $args->basehref . 'lib/ajax/gettprojectnodes.php?' .
-                           "root_node={$args->tproject_id}&" .
-                           "tcprefix=" . urlencode($tcasePrefix. $tcaseCfg->glue_character) . "&" .
-                           "filter_node={$args->tsuites_to_show}";
+                             "root_node={$args->tproject_id}&" .
+                             "tcprefix=" . urlencode($tcasePrefix. $tcaseCfg->glue_character) . "&" .
+                             "filter_node={$args->tsuites_to_show}";
 
     $gui->ajaxTree->root_node = new stdClass();
     $gui->ajaxTree->root_node->href = "javascript:EP({$args->tproject_id})";
@@ -239,6 +272,13 @@ function initializeGui($args,&$tprojectMgr,$treeDragDropEnabled)
         $gui->keywords_map = array(0 => $gui->str_option_any) + $gui->keywords_map;
     }
 
+
+    // 20091210 - franciscom    
+    $tcaseMgr = new testcase($dbHandler);
+    $gui->exec_type = $args->exec_type; 
+    $gui->exec_type_map = $tcaseMgr->get_execution_types(); 
+    $gui->exec_type_map = array(0 => $gui->str_option_any) + $gui->exec_type_map;
+     
     return $gui;  
 }
 ?>

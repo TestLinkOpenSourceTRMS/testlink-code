@@ -1,9 +1,10 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.17 2009/08/14 20:58:03 schlundus Exp $ 
+   $Id: tcTree.tpl,v 1.18 2009/12/10 21:06:35 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
+     20091210 - franciscom -  exec type filter 
      20080831 - franciscom - treeCfg
                              manage testlink_node_type, useBeforeMoveNode
      20080805 - franciscom - BUGID 1656
@@ -15,13 +16,13 @@ rev:
 *}
 {lang_get var="labels"
           s="caption_nav_filter_settings,testsuite,do_auto_update,keywords_filter_help,
-             button_update_tree,no_tc_spec_av,keyword"}
+             button_update_tree,no_tc_spec_av,keyword,execution_type"}
 
 
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
-    {if $gui->ajaxTree->loader == '' }
+    {if $gui->ajaxTree->loader == ''}
         {literal}
         <script type="text/javascript">
         treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
@@ -103,6 +104,17 @@ rev:
                          	selected=$gui->keywordsFilterType->selected }
 				</td>	
 			</tr>
+		  {if $session['testprojectOptAutomation']}
+			<tr>
+				<td>{$labels.execution_type}</td>
+	  			<td>
+			    <select name="exec_type">
+    	  	  {html_options options=$gui->exec_type_map selected=$gui->exec_type}
+	    	  </select>
+				</td>	
+			</tr>
+			{/if}
+			
 			<tr>
 	   			<td>{$labels.do_auto_update}</td>
 	  			<td>

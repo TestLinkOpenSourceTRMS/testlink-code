@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.113 2009/12/10 21:04:57 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.114 2009/12/10 22:17:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -143,10 +143,16 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		
 		// Important: prepareNode() will make changes to $test_spec like filtering by test case 
 		// keywords using $tck_map;
+		$pnFilters = null;
+	    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 
+		                   'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases']);
+		
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
-			                             $tplan_tcs,$my['options']['hideTestCases'],
-			                             DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
-			                             $my['options']['ignore_inactive_testcases']);
+			                             $tplan_tcs,$pnFilters,$pnOptions);
+			                             
+		// 	                             $my['options']['hideTestCases'],
+		// 	                             DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
+		// 	                             $my['options']['ignore_inactive_testcases']);
 		
 		foreach($testcase_counters as $key => $value)
 		{
@@ -273,15 +279,19 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 //
 // 
  */
+// function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
+//                      $tplan_tcases = null,$bHideTCs = 0,$assignedTo = null,$status = null, 
+//                      $ignore_inactive_testcases=0,$show_tc_id=1,$bGetExternalTcID = 1)
+                     
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
-                     $tplan_tcases = null,$bHideTCs = 0,$assignedTo = null,$status = null, 
-                     $ignore_inactive_testcases=0,$show_tc_id=1,$bGetExternalTcID = 1)
+                     $tplan_tcases = null,$filters=null, $options=null)
 {
 	static $hash_id_descr;
 	static $status_descr_code;
 	static $status_code_descr;
 	static $debugMsg;
     static $tables;
+    static $my;
     
 	if (!$tables)
 	{
@@ -300,6 +310,19 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	{
 		$status_code_descr = $decoding_info['status_code_descr'];
 	}
+	
+	if (!$my)
+	{
+		$my = array();
+		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1,
+		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0);
+		
+		$my['filters'] = array('status' => null, 'assignedTo' => null);
+		
+		$my['options'] = array_merge($my['options'], (array)$options);
+		$my['filters'] = array_merge($my['filters'], (array)$filters);
+	}
+	
 	
 	$tcase_counters = array('testcase_count' => 0);
 	foreach($status_descr_code as $status_descr => $status_code)
@@ -323,10 +346,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		if ($node && $viewType == 'executionTree')
 		{
 			$tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
-			if (!$tpNode || (!is_null($assignedTo)) && 
-					((isset($assignedTo[TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
-							(!isset($assignedTo[TL_USER_NOBODY]) && !isset($assignedTo[$tpNode['user_id']]))) || 
-							(!is_null($status) && !isset($status[$tpNode['exec_status']]))
+			if (!$tpNode || (!is_null($my['filters']['assignedTo'])) && 
+					((isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
+							(!isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && 
+							 !isset($my['filters']['assignedTo'][$tpNode['user_id']]))) || 
+							(!is_null($my['filters']['status']) && !isset($my['filters']['status'][$tpNode['exec_status']]))
 			)
 			{
 				$node = null;
@@ -336,7 +360,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 				$externalID='';
 				$node['tcversion_id'] = $tpNode['tcversion_id'];		
 				$node['version'] = $tpNode['version'];		
-				if ($bGetExternalTcID)
+				if ($my['options']['getExternalTestCaseID'])
 				{
 					if (!isset($tpNode['external_id']))
 					{
@@ -359,7 +383,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			}
 		}
 		
-		if ($node && $ignore_inactive_testcases)
+		if ($node && $my['options']['ignoreInactiveTestCases'])
 		{
 			// there are active tcversions for this node ???
 			// I'm doing this instead of creating a test case manager object, because
@@ -436,7 +460,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		$init_value = $node ? 1 : 0;
 		$tcase_counters[$tc_status_descr]=$init_value;
 		$tcase_counters['testcase_count']=$init_value;
-		if ($bHideTCs)
+		// if ($bHideTCs)
+		if ( $my['options']['hideTestCases'] )
 		{
 			$node = null;
 		} 
@@ -454,10 +479,9 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			{
 				continue;
 			}
+			
 			$counters_map = prepareNode($db,$current,$decoding_info,$map_node_tccount,
-				$tck_map,$tplan_tcases,$bHideTCs,
-				$assignedTo,$status,
-				$ignore_inactive_testcases,$show_tc_id,$bGetExternalTcID);
+				                        $tck_map,$tplan_tcases,$my['filters'],$my['options']);
 			foreach($counters_map as $key => $value)
 			{
 				$tcase_counters[$key] += $counters_map[$key];   
@@ -756,16 +780,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// $assignedTo = $include_unassigned ? 0 : $assignedTo;
 		$assignedTo = $filters->include_unassigned ? null : $assignedTo;		                                                       
 		
-		$bForPrinting = $bHideTCs;
-		/**
-		 * @TODO: schlundus, can we speed up with NO_EXTERNAL?
-		 * franciscom -  but we need EXTERNAL ID!!!!
-		 */
+		// $bForPrinting = $bHideTCs;
+		 
+		$pnFilters = array('assignedTo' => $assignedTo, 'status' => $status);
+		$pnOptions = array('hideTestCases' => $bHideTCs); 
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-		                                 $tck_map,$tplan_tcases,$bHideTCs,$assignedTo,$status);
+		                                 $tck_map,$tplan_tcases,$pnFilters,$pnOptions);
 
-        // echo "DEBUG - AFTER prepareNode()<br>";
-        // new dBug($tplan_tcases); 
 		foreach($testcase_counters as $key => $value)
 		{
 			$test_spec[$key] = $testcase_counters[$key];
@@ -774,10 +795,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$getArguments,
 			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
 			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-		
-		// echo "DEBUG - AFTER renderExecTreeNode()<br>";
-        // new dBug($tplan_tcases); 
-        // new dBug($menustring);
         
 	}  // if($test_spec)
 	
@@ -907,10 +924,12 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 			$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,
 			                                              $keywordsFilter->items,$keywordsFilter->type);
 		}	
+		
 		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
+		$filters = null;
+ 	    $options = array('hideTestCases' => 0);
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-		                                 $tck_map,$tplan_tcases,SHOW_TESTCASES);
-	
+		                                 $tck_map,$tplan_tcases,$filters,$options);
 		$test_spec['testcase_count'] = $testcase_counters['testcase_count'];
 	}
 
@@ -966,8 +985,10 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 				$keywordsFilter->items,$keywordsFilter->type);
 		}	
 		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
+		$filters = null;
+		$options = array('hideTestCases' => 0);
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
-			$tck_map,$tplan_tcases,SHOW_TESTCASES);
+			                             $tck_map,$tplan_tcases,$filters,$options);
 		
 		$test_spec['testcase_count'] = $testcase_counters['testcase_count'];
 	}

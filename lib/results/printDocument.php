@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/11/19 20:05:39 $ by $Author: schlundus $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/12/10 22:18:03 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -40,7 +40,7 @@ $doc_info->type = $args->doc_type;
 $doc_info->content_range = $args->level;
 
 // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
-$printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0,'header' => 0, 
+$printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
 		                   'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0, 
 		                   'cfields' => 0, 'testplan' => 0, 'metrics' => 0  );
 foreach($printingOptions as $opt => $val)
@@ -89,13 +89,7 @@ $my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me',
                        'exclude_children_of' => array('testcase'=>'exclude my children',
                                                       'requirement_spec'=> 'exclude my children'));      
 
-// $test_spec = $tree_manager->get_subtree($args->itemID,
-// 				array('testplan'=>'exclude me', 'requirement_spec'=>'exclude me', 
-// 					'requirement'=>'exclude me'),
-// 				array('testcase'=>'exclude my children','requirement_spec'=> 'exclude my children'),
-// 				null, null, RECURSIVE_MODE, $order_cfg);
 $test_spec = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
-
 
 $tproject_info = $tproject->get_by_id($args->tproject_id);
 $doc_info->tproject_name = htmlspecialchars($tproject_info['name']);
@@ -166,10 +160,17 @@ switch ($doc_info->type)
     	   	    	  {
     	   	    		   $tree['childNodes'] = null;
     	   	    	  }
+
     	   	    	  //@TODO:REFACTOR	
+    	   	    	  // prepareNode($db,$tree,$decoding_hash,$dummy,$dummy,$tp_tcs,
+    	   	    	  //              SHOW_TESTCASES,null,null,0,1,0);
+
     	   	    	  $dummy = null;
-    	   	    	  prepareNode($db,$tree,$decoding_hash,$dummy,
-    	   	    	              $dummy,$tp_tcs,SHOW_TESTCASES,null,null,0,1,0);
+                      $pnFilters = null;
+                      $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
+		                                  'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
+    	   	    	  prepareNode($db,$tree,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
+    	   	    	 
     	   	    	  $treeForPlatform[$platform_id] = $tree;            
     	   	    	  
     	   	    	  
@@ -199,7 +200,12 @@ switch ($doc_info->type)
     	   	        	
 						//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 						$dummy = null;
-						prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
+						$pnFilters = null;
+                        $pnOptions =  array('hideTestCases' => 0);
+						
+						// prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
+						prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
+						
 						$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $tInfo['name'] : $doc_info->testplan_name);
 						$tree['childNodes'] = array($tInfo);
     	   	    	    $treeForPlatform[$platform_id] = $tree;            

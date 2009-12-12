@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.46 2009/12/10 21:05:15 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.47 2009/12/12 10:12:14 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -60,8 +60,7 @@ if($spec_cfg->show_tsuite_filter)
 $filters = array();
 $filters['keywords'] = buildKeywordsFilter($args->keyword_id,$gui);
 $filters['executionType'] = buildExecTypeFilter($args->exec_type,$gui);
-
-$applyFilter = !is_null($filters['keywords']);
+$applyFilter = !is_null($filters['keywords']) || !is_null($filters['executionType']);
 
 if($applyFilter)
 {

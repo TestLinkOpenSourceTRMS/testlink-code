@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.495 2009/12/12 11:56:44 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.496 2009/12/12 14:36:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1119,7 +1119,9 @@ $TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
 $TLS_update_testcase_versions = "Update Linked Test Case Versions";
 $TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
 $TLS_tplan_updated = "Test Plan was updated";
-$TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
+// $TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
+$TLS_update2latest = "<p>This set shows linked Test Cases for which a newer active version is available. " . 
+                     "Select those you want to update to the newest available active version.</p>";
 
 
 

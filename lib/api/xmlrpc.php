@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2009/11/29 09:05:51 $ by $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2009/12/12 15:09:11 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20091212 - franciscom - BUGID 2998 - contribution - getTestSuiteByID()
  *  20091128 - franciscom - getTestCaseIDBy() - added testcasepathname
  *  20091113 - franciscom - work for adding overwrite argument to reportTCResult() started.
  *  20090917 - franciscom - reportTCResult() manages platform info
@@ -278,6 +279,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 'tl.getTestCaseAttachments' => 'this:getTestCaseAttachments',
 	                            'tl.getTestCase' => 'this:getTestCase',
                                 'tl.getFullPath' => 'this:getFullPath',
+                                'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
                                 'tl.deleteExecution' => 'this:deleteExecution',
 			                    'tl.about' => 'this:about',
 			                    'tl.setTestMode' => 'this:setTestMode',
@@ -3623,6 +3625,45 @@ public function getTestCase($args)
     	}
 		return $exec_id;
 	}	
+
+   /**
+     * Return a TestSuite by ID
+     *
+     * @param
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param int $args["testsuiteid"]
+     * @return mixed $resultInfo
+     * 
+     * @access public
+     */
+    public function getTestSuiteByID($args)
+    { 
+        $operation=__FUNCTION__;
+        $msg_prefix="({$operation}) - ";
+
+        $this->_setArgs($args);
+        $status_ok=$this->_runChecks(array('authenticate','checkTestSuiteID'),$msg_prefix);
+
+        $details='simple';
+        $key2search=self::$detailsParamName;
+        if( $this->_isParamPresent($key2search) )
+        { 
+            $details=$this->args[$key2search];
+        }
+
+        if($status_ok && $this->userHasRight("mgt_view_tc"))
+        { 
+            $testSuiteID = $this->args[self::$testSuiteIDParamName];
+            $tsuiteMgr = new testsuite($this->dbObj);
+            return $tsuiteMgr->get_by_id($testSuiteID);
+
+        }
+        else
+        { 
+            return $this->errors;
+        }
+    }
 
 } // class end
 

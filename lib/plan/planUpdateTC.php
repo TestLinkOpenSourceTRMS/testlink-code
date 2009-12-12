@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.37 2009/08/17 08:00:33 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.38 2009/12/12 15:01:13 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -9,13 +9,11 @@
  * following user choices.
  * Test Case Execution assignments will be auto(magically) updated.
  *
- * rev:
- *     20080602 - franciscom - fixed internal bug
- *                             testplan was always value on session, and not what user
- *                             have choosen on left framework
- *                             
- *     20080528 - franciscom - fixed internal bug that shows wrong version is user works
- *                             only with one test case
+ * 	@internal revisions:
+ *	
+ *	20091212 - franciscom - added contribution by asimon83 (refactored) - BUGID 2652
+ *                          show newest testcase versions when updating all linked testcase versions
+ *	
  */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -42,36 +40,24 @@ if(is_array($args->keyword_id))
 switch ($args->doAction)
 {
     case "doUpdate":
+    case "doBulkUpdateToLatest":
 	    $gui->user_feedback = doUpdate($db,$args);
 	    break;
-
-    case "doUpdateAllToLatest":
-	    $gui->user_feedback = doUpdateAllToLatest($db,$args,$tplan_mgr);
 
     default:
     	break;
 }
 
 $out = null;
-
+$gui->show_details = 0;
+$gui->operationType = 'standard';
+$gui->hasItems = 0;        	
+        	
 switch($args->level)
 {
 	case 'testcase':
-		$my_path = $tree_mgr->get_path($args->id);
-		$idx_ts = count($my_path)-1;
-		$tsuite_data = $my_path[$idx_ts-1];
-		$filters = array('tcase_id' => $args->id);
-		// $linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->id);
-        $linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters);		
-		
-		// $out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-		//                      $linked_items,null,$args->keyword_id,
-		//                      FILTER_BY_TC_OFF,WRITE_BUTTON_ONLY_IF_LINKED,1,0);
-		
-		$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
-        $filters = array('keywords' => $args->keyword_id);
-		$out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
-		                     $linked_items,null,$filters,$opt);
+	    $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr,$tree_mgr);
+	
 
 		break;
 
@@ -81,7 +67,18 @@ switch($args->level)
 
 	case 'testplan':
 		$gui->instructions = lang_get('update2latest');
-		$gui->buttonAction = "doUpdateAllToLatest";
+		$gui->buttonAction = "doBulkUpdateToLatest";
+        $gui->testcases = processTestPlan($db,$args,$keywordsFilter,$tplan_mgr);
+        $gui->operationType = 'bulk';
+        if( !is_null($gui->testcases) )
+        {
+	        $gui->hasItems = 1;
+			$gui->show_details = 1;
+        }
+        else
+        {
+			$gui->user_feedback = lang_get('no_newest_version_of_linked_tcversions');
+        }
   		break;
   
 	default:
@@ -92,7 +89,7 @@ switch($args->level)
 
 if(!is_null($out))
 {
-	$gui->has_tc = $out['num_tc'] > 0 ? 1:0;
+	$gui->hasItems = $out['num_tc'] > 0 ? 1 : 0;
 	$gui->items = $out['spec_view'];
 }
 
@@ -233,7 +230,7 @@ function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tca
 
 
 /*
-  function: doUpdate
+  function: doUpdateAllToLatest
 
   args:
 
@@ -295,6 +292,56 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
 
   return $msg;
 }
+
+
+/**
+ * 
+ *
+ */
+function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$treeMgr)
+{
+	$my_path = $treeMgr->get_path($args->id);
+	$idx_ts = count($my_path)-1;
+	$tsuite_data = $my_path[$idx_ts-1];
+	$filters = array('tcase_id' => $args->id);
+	$linked_items = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);		
+	$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
+	$filters = array('keywords' => $argsObj->keyword_id);
+	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
+	                     $linked_items,null,$filters,$opt);
+	return $out;
+}
+
+/**
+ * 
+ *
+ */
+function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
+{
+	$set2update = null;
+    $filters = array('keywords' => $argsObj->keyword_id);
+	$linked_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);
+    if( count($linked_tcases) > 0 )
+    {
+        $testCaseSet = array_keys($linked_tcases);
+    	$set2update = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id,$testCaseSet);
+		
+		if( !is_null($set2update) && count($set2update) > 0 )
+		{
+			$itemSet=array_keys($set2update);
+			$path_info=$tplanMgr->tree_manager->get_full_path_verbose($itemSet);
+			foreach($set2update as $tcase_id => $value)
+			{
+				$path=$path_info[$tcase_id];
+				unset($path[0]);
+				$path[]='';
+				$set2update[$tcase_id]['path']=implode(' / ',$path);
+			}
+		}
+    }
+    return $set2update;
+}
+
 
 function checkRights(&$db,&$user)
 {

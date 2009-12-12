@@ -8,25 +8,28 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.114 2009/12/10 22:17:50 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.115 2009/12/12 10:11:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *		
- *		20090815 - franciscom - get_last_execution() call changes
- *      20090801 - franciscom - table prefix missed
- *		20090716 - franciscom - BUGID 2692
- * 		20090328 - franciscom - BUGID 2299 - introduced on 20090308.
- *                              Added logic to remove Empty Top level test suites 
- *                              (have neither test cases nor test suites inside) when applying 
- *                              test case keyword filtering.
- *                              BUGID 2296
- *      20090308 - franciscom - generateTestSpecTree() - changes for EXTJS tree
- *      20090211 - franciscom - BUGID 2094 
- *      20090202 - franciscom - minor changes to avoid BUGID 2009
- *      20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
- *                              added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
+ *	20091212 - franciscom - prepareNode(), generateTestSpecTree() interface changes
+ *                          added logic to do filtering on test spec for execution type
+ *
+ *	20090815 - franciscom - get_last_execution() call changes
+ *  20090801 - franciscom - table prefix missed
+ *	20090716 - franciscom - BUGID 2692
+ * 	20090328 - franciscom - BUGID 2299 - introduced on 20090308.
+ *                          Added logic to remove Empty Top level test suites 
+ *                          (have neither test cases nor test suites inside) when applying 
+ *                          test case keyword filtering.
+ *                          BUGID 2296
+ *  20090308 - franciscom - generateTestSpecTree() - changes for EXTJS tree
+ *  20090211 - franciscom - BUGID 2094 
+ *  20090202 - franciscom - minor changes to avoid BUGID 2009
+ *  20090118 - franciscom - replaced multiple calls config_get('testcase_cfg')
+ *                          added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
  *
  */
 
@@ -79,16 +82,17 @@ function filterString($str)
 
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
+    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
+
 	$my = array();
 	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0,'getArguments' => '', 
-	                       'tc_action_enabled' => 1,'ignore_inactive_testcases' => 0, 
+	                       'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
 	                       'exclude_branches' => null);
 
 	$my['filters'] = array('keywords' => null, 'executionType' => null);
 
 	$my['options'] = array_merge($my['options'], (array)$options);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
-
 	
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -140,10 +144,50 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 				$tck_map=array();  // means filter everything
 			}
 		}
+        // echo 'tck_map'; 
+		// new dBug($tck_map);
+		
+		// 20091211 - franciscom
+		// if( !is_null($tck_map) && count($tck_map) > 0)
+		// {
+		// 	$testCaseSet = array_keys($tck_map);
+		// 	if( $my['options']['ignore_inactive_testcases'] )
+		// 	{
+		// 		$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
+		// 		       " SELECT count(TCV.id) AS num_active_versions, parent_id, tc_external_id " .
+		// 			   " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+		// 			   " WHERE NH.parent_id IN  (" . implode(',',$testCaseSet) . ") " .
+		// 			   " AND NH.id = TCV.id AND TCV.active=1 "  .
+		// 			   " GROUP BY parent_id,tc_external_id " .
+		// 			   " HAVING count(TCV.id) > 0 ";
+		// 		$dataSet = $db->fetchRowsIntoMap($sql,'parent_id');
+		// 		new dBug($dataSet);
+		// 		
+		//     	$testCaseSet = count($dataSet) > 0 ? array_keys($dataSet) : array();
+		// 	}	 
+		// 	
+	    //     if( count($testCaseSet) > 0 )
+	    //     {
+	    //     	
+	    //     }
+		// 	
+		// 	// $sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
+		// 	//        " SELECT COALESCE(MAX(TCV.id),0) AS maxid, TCV.tc_external_id AS external_id" .
+		// 	// 	   " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+		// 	// 	   " WHERE  NH.id = TCV.id AND TCV.active=1 AND NH.parent_id={$node['id']} " .
+		// 	// 	   " GROUP BY TCV.tc_external_id ";
+        // 
+		// }
+		
 		
 		// Important: prepareNode() will make changes to $test_spec like filtering by test case 
 		// keywords using $tck_map;
 		$pnFilters = null;
+	    if(!is_null($my['filters']['executionType']))
+		{
+			$pnFilters['executionType'] = $my['filters']['executionType']->items;
+		}
+	    
 	    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 
 		                   'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases']);
 		
@@ -228,56 +272,58 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *  - Test project specification -> we want ALL test cases defined in test project.
  *  - Test execution             -> we only want the test cases linked to a test plan.
  * 
-//
-//
-// status: one of the possible execution status of a test case.
-//
-//
-// tp_tcs: map with testcase versions linked to test plan. (TestPlan TestCaseS -> tp_tcs)
-//         due to the multiples uses of this function, null has to meanings
-//
-//         When we want to build a Test Project specification tree,
-//         WE SET tp_tcs to NULL, because we are not interested in a test plan.
-// 
-//         When we want to build a Test execution tree, we dont set tp_tcs deliverately
-//         to null, but null can be the result of no tcversion linked.
-//
-//
-// 20081220 - franciscom - status can be an array with multple values, to do OR search.
-//
-// 20071014 - franciscom - added version info fro test cases in return data structure.
-//
-// 20061105 - franciscom
-// ignore_inactive_testcases: useful when building a Test Project Specification tree 
-//                            to be used in the add/link test case to Test Plan.
-//
-//
-// 20061030 - franciscom
-// tck_map: Test Case Keyword map:
-//          null        => no filter
-//          empty map   => filter out test case ALWAYS
-//          initialized map => filter out test case ONLY if present in map.
-//
-//
-// 20060924 - franciscom
-// added argument:
-//                $map_node_tccount
-//                key => node_id
-//                values => node test case count
-//                          node name (useful only for debug purpouses
-//
-//                IMPORTANT: this new argument is not useful for tree rendering
-//                           but to avoid duplicating logic to get test case count
-//
-//
-// return: map with keys:
-//         'total_count'
-//         'passed'  
-//         'failed'
-//         'blocked'
-//         'not run'
-//
-// 
+ * IMPORTANT:
+ * when analising a container node (Test Suite) if it is empty and we have requested
+ * some sort of filtering NODE WILL BE PRUNED.
+ *
+ *
+ * status: one of the possible execution status of a test case.
+ *
+ *
+ * tplan_tcases: map with testcase versions linked to test plan. 
+ *               due to the multiples uses of this function, null has to meanings
+ *
+ *         		 When we want to build a Test Project specification tree,
+ *         		 WE SET it to NULL, because we are not interested in a test plan.
+ *         		 
+ *         		 When we want to build a Test execution tree, we dont set it deliverately
+ *         		 to null, but null can be the result of NO tcversion linked.
+ *
+ *
+ * 20081220 - franciscom - status can be an array with multple values, to do OR search.
+ *
+ * 20071014 - franciscom - added version info fro test cases in return data structure.
+ *
+ * 20061105 - franciscom
+ * ignore_inactive_testcases: useful when building a Test Project Specification tree 
+ *                            to be used in the add/link test case to Test Plan.
+ *
+ *
+ * 20061030 - franciscom
+ * tck_map: Test Case Keyword map:
+ *          null            => no filter
+ *          empty map       => filter out ALL test case ALWAYS
+ *          initialized map => filter out test case ONLY if NOT present in map.
+ *
+ *
+ * added argument:
+ *                $map_node_tccount
+ *                key => node_id
+ *                values => node test case count
+ *                          node name (useful only for debug purpouses
+ *
+ *                IMPORTANT: this new argument is not useful for tree rendering
+ *                           but to avoid duplicating logic to get test case count
+ *
+ *
+ * return: map with keys:
+ *         'total_count'
+ *         'passed'  
+ *         'failed'
+ *         'blocked'
+ *         'not run'
+ *
+ * 
  */
 // function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
 //                      $tplan_tcases = null,$bHideTCs = 0,$assignedTo = null,$status = null, 
@@ -292,6 +338,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	static $debugMsg;
     static $tables;
     static $my;
+    static $enabledFilters;
+    static $activeVersionClause;
     
 	if (!$tables)
 	{
@@ -317,10 +365,17 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1,
 		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0);
 		
-		$my['filters'] = array('status' => null, 'assignedTo' => null);
+		$my['filters'] = array('status' => null, 'assignedTo' => null, 'executionType' => null);
 		
 		$my['options'] = array_merge($my['options'], (array)$options);
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
+	}
+	
+	if(!$enabledFilters)
+	{
+	  $enabledFilters['keywords'] = !is_null($tck_map);
+	  $enabledFilters['executionType'] = !is_null($my['filters']['executionType']);
+	  $activeVersionClause = $enabledFilters['executionType'] ? " AND TCV.active=1 " : '';
 	}
 	
 	
@@ -336,7 +391,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	if($node_type == 'testcase')
 	{
 		$viewType = is_null($tplan_tcases) ? 'testSpecTree' : 'executionTree';
-		if (!is_null($tck_map))
+		if ($enabledFilters['keywords'])
 		{
 			if (!isset($tck_map[$node['id']]))
 			{
@@ -393,7 +448,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			// 20070106 - franciscom
 			// Postgres Problems
 			// =======================================================================================
-			// Problem 1 - SQL Sintax
+			// Problem 1 - SQL Syntax
 			//   While testing with postgres
 			//   SELECT count(TCV.id) NUM_ACTIVE_VERSIONS   -> Error
 			//
@@ -401,7 +456,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			//   while AS is NOT REQUIRED (and with some DBMS causes errors) when you want to give a 
 			//   TABLE ALIAS
 			//
-			// Problem 2 - alias cas
+			// Problem 2 - alias case
 			//   At least in my installation the aliases column name is returned lower case, then
 			//   PHP fails when:
 			//                  if($myrow['NUM_ACTIVE_VERSIONS'] == 0)
@@ -424,19 +479,41 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		// -------------------------------------------------------------------
 		if ($node && $viewType=='testSpecTree')
 		{
-			$sql= " /* $debugMsg - line:" . __LINE__ . " */ " . 
-			      " SELECT DISTINCT(TCV.tc_external_id) AS external_id " .
-				  " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
-				  " WHERE  NH.id = TCV.id " .
-				  " AND NH.parent_id=" . $node['id'];
-			
-			$result = $db->exec_query($sql);
-			$myrow = $db->fetch_array($result);
-			$node['external_id'] = $myrow['external_id'];		
-			
-			// needed to avoid problems when using json_encode with EXTJS
-			unset($node['childNodes']);
-			$node['leaf']=true;;
+			$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
+			       " SELECT COALESCE(MAX(TCV.id),0) AS maxid, TCV.tc_external_id AS external_id" .
+				   " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
+				   " WHERE  NH.id = TCV.id {$activeVersionClause} AND NH.parent_id={$node['id']} " .
+				   " GROUP BY TCV.tc_external_id ";
+			   
+			$rs = $db->get_recordset($sql);
+			if( is_null($rs) )
+			{
+				$node = null;
+			}
+			else
+			{	
+			    $node['external_id'] = $rs[0]['external_id'];
+				if( $enabledFilters['executionType'] )
+				{
+					$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
+					       " SELECT TCV.execution_type " .
+						   " FROM {$tables['tcversions']} TCV " .
+						   " WHERE TCV.id = {$rs[0]['maxid']} " .
+						   " AND TCV.execution_type = {$my['filters']['executionType']} ";
+						   
+			    	$rs = $db->fetchRowsIntoMap($sql,'execution_type');
+			    	if(is_null($rs))
+			    	{
+			    		$node = null;
+			    	}
+			    }
+			} 
+            if( !is_null($node) )
+            {
+				// needed to avoid problems when using json_encode with EXTJS
+				unset($node['childNodes']);
+				$node['leaf']=true;
+			}
 		}
 		// -------------------------------------------------------------------
 		
@@ -469,6 +546,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
+		// node has to be a Test Suite ?
 		$childNodes = &$node['childNodes'];
 		$childNodesQty = sizeof($childNodes);
 		for($idx = 0;$idx < $childNodesQty ;$idx++)
@@ -495,10 +573,12 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		if (isset($node['id']))
 		{
 			$map_node_tccount[$node['id']] = array(	'testcount' => $node['testcase_count'],
-				'name'      => $node['name']);
+				                                    'name' => $node['name']);
 		}
-		if ((!is_null($tck_map) || !is_null($tplan_tcases)) && 
-				!$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
+
+        // node must be dstroyed if empty had we have using filtering conditions
+		if (($enabledFilters['keywords'] || $enabledFilters['executionType'] || !is_null($tplan_tcases)) && 
+			 !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
 		{
 			$node = null;
 		}
@@ -508,8 +588,9 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		// does this means is an empty test suite ??? - franciscom 20080328
 		$map_node_tccount[$node['id']] = array(	'testcount' => 0,'name' => $node['name']);
 		
-		// 20090328 - franciscom added tck_map
-		if (!is_null($tplan_tcases) || !is_null($tck_map))
+        // If is an EMPTY Test suite and we have added filtering conditions,
+        // We will destroy it.
+		if ($enabledFilters['executionType'] || $enabledFilters['keywords'] || !is_null($tplan_tcases) )
 		{
 			$node = null;
 		}	

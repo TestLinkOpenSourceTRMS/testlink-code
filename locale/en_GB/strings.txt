@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.494 2009/12/11 08:35:45 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.495 2009/12/12 11:56:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1102,6 +1102,7 @@ $TLS_keywords_filter_help = "You can use OR/AND filtering";
 
 // ----- gui/templates/planTCNavigator.tpl -----
 $TLS_btn_update_all_testcases_to_latest_version = "Update all Test Cases to latest version";
+$TLS_btn_bulk_update_to_latest_version = "Bulk Update to latest version";
 
 
 // ----- gui/templates/planPriority.tpl -----

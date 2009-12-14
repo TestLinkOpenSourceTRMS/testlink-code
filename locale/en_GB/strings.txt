@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.496 2009/12/12 14:36:30 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.497 2009/12/14 20:38:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2584,6 +2584,14 @@ $TLS_link_time_charts		= "Time Charts";
 $TLS_time_charts_metrics 	= "Time Charts Metrics";
 $TLS_time_charts_title 		= "Time Charts";
 
+// ----- linkto.php -----
+$TLS_testproject_not_found = "Testproject with prefix (%s) does not exist";
+$TLS_testproject_not_set = "Testproject key (tprojectPrefix) not found on _GET.";
+$TLS_item_not_set = "Item not set - what do we want to see? [item=tc|req|reqspec]";
+$TLS_id_not_set = "ID not set.";
+$TLS_testcase_not_found = "Testcase %s not found in test project (prefix:%s).";
+$TLS_req_spec_not_found = "Requirement specification %s not found in test project (prefix:%s).";
+$TLS_req_not_found = "Requirement %s not found in test project (prefix:%s).";
 
 // ----- END ------------------------------------------------------------------
 ?>

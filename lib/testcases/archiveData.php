@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.54 2009/11/30 22:19:37 havlat Exp $
+ * @version $Id: archiveData.php,v 1.55 2009/12/15 20:56:32 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -65,12 +65,24 @@ switch($args->feature)
 		}
 		
 		if($get_path_info || $args->show_path)
+		{
 		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
+		}
 			
 		$attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
 	
 		$smarty->assign('id',$args->id);
 		$smarty->assign('attachments',$attachments);
+		
+		/* contribution BUGID 2999, show permanent link */
+	    list($prefix,$tprojectID) = $item_mgr->getPrefix($args->id);
+		$tc = $item_mgr->get_by_id($args->id);
+		
+		$dl = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
+		      urlencode($prefix) . '&item=testcase&id=' . 
+		      urlencode($prefix . "-" . $tc[0]['tc_external_id']);
+
+		$smarty->assign('direct_link', $dl);
 		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,$args->tcversion_id,
 		                $viewerArgs,$path_info,$args->show_mode);
 		break;
@@ -80,6 +92,10 @@ switch($args->feature)
 		trigger_error($_SESSION['currentUser']->login.'> Argument "edit" has invalid value.', E_USER_ERROR);
 }
 
+/**
+ * 
+ *
+ */
 function init_args(&$viewerCfg)
 {
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),

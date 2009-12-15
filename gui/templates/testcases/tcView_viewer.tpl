@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.31 2009/09/01 07:31:29 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.32 2009/12/15 20:51:37 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -18,7 +18,7 @@ rev:
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
-             execution_type,test_importance,none,preconditions"}
+             execution_type,test_importance,none,preconditions,btn_show_direct_link"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -109,7 +109,6 @@ rev:
   		<input type="submit" name="do_create_new_version"   value="{$labels.btn_new_version}" />
 	  {/if}
 
-
 	
 		{* --------------------------------------------------------------------------------------- *}
 		{if $active_status_op_enabled eq 1 && $args_can_do->deactivate=='yes'}
@@ -146,9 +145,13 @@ rev:
 		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
 		*}
 	
+	{* contribution BUGID 2999, show direct link *}
+	<input type="button" name="direct_link" value="{$labels.btn_show_direct_link}" 
+		       onclick="javascript:alert('{$direct_link}')"/>
+	
 	</form>
 	</span>
-
+	
   </div> {* class="groupBtn" *}
 
 {/if} {* user can edit *}

@@ -13,11 +13,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.178 2009/11/22 11:04:40 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.179 2009/12/15 13:46:34 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *
+ * 20091215 - eloff      - save active testplan_id to cookie
  * 20091121 - franciscom - getItemTemplateContents() - contribution refactored
  * 20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
  * 20090409 - amitkhullar- BUGID 2354
@@ -149,6 +151,7 @@ function doDBConnect(&$db)
 
 /**
  * Set session data related to the current test plan
+ * and saves a cookie with current testplan id
  * 
  * @param array $tplan_info result of DB query
  */
@@ -158,6 +161,8 @@ function setSessionTestPlan($tplan_info)
 	{
 		$_SESSION['testplanID'] = $tplan_info['id'];
 		$_SESSION['testplanName'] = $tplan_info['name'];
+		// Save testplan id for next session
+		setcookie('TL_lastTestPlanForUserID_' . 1, $tplan_info['id'], TL_COOKIE_KEEPTIME, '/');
 
 		tLog("Test Plan was adjusted to '" . $tplan_info['name'] . "' ID(" . $tplan_info['id'] . ')', 'INFO');
 	}

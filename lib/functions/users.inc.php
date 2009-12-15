@@ -8,13 +8,14 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.104 2009/11/19 20:05:39 schlundus Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.105 2009/12/15 13:46:34 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
  * 
- *  	20090817 - franciscom - getUsersForHtmlOptions() - implementation changes
- *  	20090517 - franciscom - getTestersForHtmlOptions() interface changes
+ *      20091215 - eloff      - read active testplan from cookie into session
+ *      20090817 - franciscom - getUsersForHtmlOptions() - implementation changes
+ *      20090517 - franciscom - getTestersForHtmlOptions() interface changes
  *                              buildUserMap() added prefix to tag inactive users
  *      20081221 - franciscom - buildUserMap() interface changes
  *      20081213 - franciscom - refactoring removing old config options 
@@ -89,6 +90,13 @@ function setUserSession(&$db,$user, $id, $roleID, $email, $locale = null, $activ
     		$tpID = key($arrProducts);
     	}	
    		$_SESSION['testprojectID'] = $tpID;
+	}
+	// Validation is done in navBar.php
+	$tplan_cookie = 'TL_lastTestPlanForUserID_' . $id;
+	if (isset($_COOKIE[$tplan_cookie]))
+	{
+		$_SESSION['testplanID'] = $_COOKIE[$tplan_cookie];
+		tLog("Cookie: {$tplan_cookie}=".$_SESSION['testplanID']);
 	}
 
 	return 1;

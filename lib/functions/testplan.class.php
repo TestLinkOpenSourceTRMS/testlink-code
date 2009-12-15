@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.151 2009/11/26 21:50:49 havlat Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.152 2009/12/15 20:41:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -408,7 +408,9 @@ class testplan extends tlObjectWithAttachments
 		$ret=array();
 		$tcase_cfg = config_get('testcase_cfg');
 		$dummy=reset($items);
-		$ret['tcasePrefix']=$this->tcase_mgr->getPrefix($dummy) . $tcase_cfg->glue_character;
+		
+		list($ret['tcasePrefix'],$tproject_id) = $this->tcase_mgr->getPrefix($dummy);
+		$ret['tcasePrefix'] .= $tcase_cfg->glue_character;
 		
 		$sql=" SELECT TCV.id, tc_external_id, version, NHB.name " .
 			" FROM {$this->tables['tcversions']} TCV,{$this->tables['nodes_hierarchy']} NHA, " .
@@ -937,9 +939,9 @@ class testplan extends tlObjectWithAttachments
 		// Missing column in GROUP BY Clause
 		
 		$sql = " SELECT MAX(NHB.id) AS newest_tcversion_id, " .
-			" NHA.parent_id AS tc_id, NHC.name, T.tcversion_id AS tcversion_id," .
-			" TCVA.tc_external_id AS tc_external_id, TCVA.version AS version " .
-			" FROM {$this->tables['nodes_hierarchy']} NHA " .
+			   " NHA.parent_id AS tc_id, NHC.name, T.tcversion_id AS tcversion_id," .
+			   " TCVA.tc_external_id AS tc_external_id, TCVA.version AS version " .
+			   " FROM {$this->tables['nodes_hierarchy']} NHA " .
 			
 			// NHA - will contain ONLY nodes of type testcase_version that are LINKED to test plan
 			" JOIN {$this->tables['testplan_tcversions']} T ON NHA.id = T.tcversion_id " . 

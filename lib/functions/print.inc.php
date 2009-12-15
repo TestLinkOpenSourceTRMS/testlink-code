@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.90 2009/11/25 14:08:18 havlat Exp $
+ * @version $Id: print.inc.php,v 1.91 2009/12/15 20:38:39 franciscom Exp $
  * @uses printDocument.php
  *
  *
@@ -336,7 +336,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     static $tables = null;
     
     if (!$tables)
+    {
     	$tables = tlDBObject::getDBTables(array('executions','builds'));
+    }
     
 	$code = null;
 	$tcInfo = null;
@@ -351,16 +353,21 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
  	    $tc_mgr = new testcase($db);
  	    list($cfg,$labels) = initRenderTestCaseCfg($tc_mgr);
 	    if(!is_null($prefix))
+	    {
 	        $tcase_prefix = $prefix;
+	    }
 	    else
-	    	$tcase_prefix = $tc_mgr->getPrefix($id);
+	    {
+	    	list($tcase_prefix,$dummy) = $tc_mgr->getPrefix($id);
+	    }
 	    $tcase_prefix .= $cfg['testcase']->glue_character;
 	}
 	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
     $tcInfo = $tc_mgr->get_by_id($id,$versionID);
     if ($tcInfo)
+    {
     	$tcInfo = $tcInfo[0];  
-
+    }
     $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
 	$name = htmlspecialchars($node['name']);
 

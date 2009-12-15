@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.204 2009/12/08 14:06:38 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.205 2009/12/15 20:42:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091215 - franciscom - getPrefix() - changed in return type, to avoid in some situations
+ *                                       a double call.
  * 20091207 - franciscom - get_last_execution() - internal bug 
  * 20091127 - franciscom - getByPathName() new method
  * 20091118 - franciscom - get_last_execution() - still working ond fixing bug when using self::ALL_VERSIONS
@@ -1148,7 +1150,7 @@ class testcase extends tlObjectWithAttachments
 	
 	  args: id: testcase id
 	
-	  returns: prefix
+	  returns: array(prefix,testproject id)
 	
 	*/
 	function getPrefix($id)
@@ -1156,7 +1158,7 @@ class testcase extends tlObjectWithAttachments
 	    $path2root=$this->tree_manager->get_path($id);
 	    $tproject_id=$path2root[0]['parent_id'];
 	    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
-	    return $tcasePrefix;
+	    return array($tcasePrefix,$tproject_id);
 	}
 	
 	

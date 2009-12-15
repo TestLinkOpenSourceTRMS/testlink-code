@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.499 2009/12/14 21:10:40 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.500 2009/12/15 20:52:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2593,5 +2593,7 @@ $TLS_testcase_not_found = "Testcase %s not found in test project (prefix:%s).";
 $TLS_req_spec_not_found = "Requirement specification %s not found in test project (prefix:%s).";
 $TLS_req_not_found = "Requirement %s not found in test project (prefix:%s).";
 $TLS_invalid_item = 'Invalid item (%s)';
+$TLS_btn_show_direct_link = "Show permanent link";
+
 // ----- END ------------------------------------------------------------------
 ?>

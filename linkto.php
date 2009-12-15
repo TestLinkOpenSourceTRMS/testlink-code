@@ -35,12 +35,13 @@
  * @package 	TestLink
  * @author 		asimon
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: linkto.php,v 1.2 2009/12/15 10:14:38 franciscom Exp $
+ * @version    	CVS: $Id: linkto.php,v 1.3 2009/12/15 19:25:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20091215 - asimon     - refactored process_req() with new method in requirement_mgr class
  *	20091215 - franciscom - refactored
- *	20091214 - asimon83 - refactoring like requested in issue comments
+ *	20091214 - asimon83   - refactoring like requested in issue comments
  */
 
 // use output buffer to prevent headers/data from being sent before 
@@ -89,6 +90,9 @@ else
     $mustKeys = array('tprojectPrefix' => 'testproject_not_set', 
                       'item' => 'item_not_set', 'id' => 'id_not_set');
                       
+    
+    $tprojectPrefix = isset($_GET['tprojectPrefix']) ? $_GET['tprojectPrefix'] : '';
+    
 	foreach($mustKeys as $key => $labelID)
 	{
 		$op['status_ok'] = isset($_GET[$key]);
@@ -102,7 +106,7 @@ else
 	if($op['status_ok'])
 	{
 		$tproject = new testproject($db);
-		$tproject_data = $tproject->get_by_prefix($_GET['tprojectPrefix']);
+		$tproject_data = $tproject->get_by_prefix($tprojectPrefix);
 		if(($op['status_ok'] = !is_null($tproject_data))) 
 		{
 			$tproject->setSessionProject($tproject_data['id']);
@@ -120,7 +124,7 @@ else
 	{
 		// Build  name of function to call for doing the job.
 		$pfn = 'process_' . $_GET['item'];
-		$jump_to = $pfn($db,$_GET['id'],$tproject_data['id']);
+		$jump_to = $pfn($db,$_GET['id'],$tproject_data['id'], $tprojectPrefix);
 		
 		$op['status_ok'] = !is_null($jump_to['url']);
 		$op['msg'] = $jump_to['msg'];
@@ -147,12 +151,12 @@ ob_end_flush();
  * process_testcase
  *
  */
-function process_testcase(&$dbHandler,$externalID,$tprojectID)
+function process_testcase(&$dbHandler,$externalID,$tprojectID, $tprojectPrefix)
 {
 	$ret = array();
 	$ret['url'] = null;
-    $ret['msg'] = sprintf(lang_get('testcase_not_found'), $externalID);
-
+	$ret['msg'] = sprintf(lang_get('testcase_not_found'), $externalID, $tprojectPrefix);
+    
 	$tcase_mgr = new testcase($dbHandler);
 	$tcaseID = $tcase_mgr->getInternalID($externalID);
 	if($tcaseID > 0)
@@ -161,7 +165,7 @@ function process_testcase(&$dbHandler,$externalID,$tprojectID)
         $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,'ys-tproject_');
 		setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
 	}
-    return $ret;	
+    return $ret;
 }
 
 
@@ -169,24 +173,20 @@ function process_testcase(&$dbHandler,$externalID,$tprojectID)
  * process_req
  *
  */
-function process_req(&$dbHandler,$docID,$tprojectID)
+function process_req(&$dbHandler,$docID,$tprojectID,$tprojectPrefix)
 {
 	$tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy', 
 	                                            'req_specs', 'tcversions'));
 
 	$ret = array();
 	$ret['url'] = null;
-    $ret['msg'] = sprintf(lang_get('req_not_found'), $docID,$tprojectID);
+    $ret['msg'] = sprintf(lang_get('req_not_found'), $docID,$tprojectPrefix);
 
-	// get internal id from external id
-	$sql = " SELECT R.id, R.req_doc_id, NH.parent_id, RS.id as req_spec_id " .
-	       " FROM {$tables['requirements']} R, {$tables['nodes_hierarchy']} NH, {$tables['req_specs']} RS " .
-	       " WHERE R.id=NH.id and NH.parent_id=RS.id " .
-	       " AND RS.testproject_id={$tprojectID} AND R.req_doc_id='{$docID}' ";
-	
-	$req = $dbHandler->fetchRowsIntoMap($sql, 'id');
-	if( count($req) > 0) 
-	{
+    $req_mgr = new requirement_mgr($dbHandler);
+    $req = $req_mgr->getByDocID($docID,$tprojectID);
+
+    if( !is_null($req) )
+    {    
 		// link to open in requirement frame
 		$req = current($req);
 		$ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id={$req['id']}&";
@@ -203,12 +203,12 @@ function process_req(&$dbHandler,$docID,$tprojectID)
  * process_reqspec
  *
  */
-function process_reqspec(&$dbHandler,$docID,$tprojectID)
+function process_reqspec(&$dbHandler,$docID,$tprojectID,$tprojectPrefix)
 {
 	$ret = array();
 	$ret['url'] = null;
-    $ret['msg'] = sprintf(lang_get('req_spec_not_found'), $docID,$tprojectID);
-    
+    $ret['msg'] = sprintf(lang_get('req_spec_not_found'), $docID,$tprojectPrefix);
+
     $reqspec_mgr = new requirement_spec_mgr($dbHandler);
     $reqSpec = $reqspec_mgr->getByDocID($docID,$tprojectID);
     
@@ -216,7 +216,7 @@ function process_reqspec(&$dbHandler,$docID,$tprojectID)
     {
     	$reqSpec = current($reqSpec);
     	$id = $reqSpec['id'];
-		$ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}&";;
+		$ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}&";
 
         $cookie = buildCookie($dbHandler,$id,$tprojectID,'ys-requirement_spec');
 		setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');

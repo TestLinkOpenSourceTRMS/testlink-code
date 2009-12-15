@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/11/19 17:52:13 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/12/15 21:06:15 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -25,6 +25,7 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $req_spec_mgr = new requirement_spec_mgr($db);
 $req_mgr = new requirement_mgr($db);
+$tproject_mgr = new testproject($db);
 
 $templateCfg = templateConfiguration();
 
@@ -39,7 +40,6 @@ $gui->req_spec_id = $args->req_spec_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->name = $gui->req_spec['title'];
 
-// 20091119 - francisco.mancardi@gruppotesi.com
 $gui->main_descr = lang_get('req_spec_short') . config_get('gui_title_separator_1') . 
                    "[{$gui->req_spec['doc_id']}] :: " .$gui->req_spec['title'];
 $gui->refresh_tree = 'no';
@@ -47,20 +47,26 @@ $gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec
 $gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);
 $gui->requirements_count = $req_spec_mgr->get_requirements_count($args->req_spec_id);
 
+
+/* contribution BUGID 2999, show direct link */
+$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id]);
+$gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
+                    '&item=reqspec&id=' . urlencode($gui->req_spec['doc_id']);
+
+
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
+/**
+ *
+ */
 function init_args()
 {
-	$iParams = array(
-			"req_spec_id" => array(tlInputParameter::INT_N),
-	);
+	$iParams = array("req_spec_id" => array(tlInputParameter::INT_N));
     $args = new stdClass();
     R_PARAMS($iParams,$args);
-
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
     

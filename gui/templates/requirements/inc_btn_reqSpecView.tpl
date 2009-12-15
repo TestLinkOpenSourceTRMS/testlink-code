@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.13 2009/11/22 18:54:50 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.14 2009/12/15 21:09:10 franciscom Exp $
 
 rev: 20090321 - franciscom 
      20080925 - franciscom - child requirements/folder management 
@@ -8,7 +8,8 @@ rev: 20090321 - franciscom
 *}
 {lang_get var='labels'
           s='btn_req_create,btn_generate_doc,btn_new_req_spec,btn_analyse,btn_export,
-             req_select_create_tc,btn_import,btn_export_reqs,btn_edit_spec,btn_delete_spec'}
+             req_select_create_tc,btn_import,btn_export_reqs,btn_edit_spec,btn_delete_spec,
+             btn_show_direct_link'}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -53,6 +54,11 @@ rev: 20090321 - franciscom
  		      <input type="button" name="exportReq" value="{$labels.btn_export}"
 		             onclick="location='{$req_export_url}'" />
 	  	{/if}
+	  	
+	  	{* contribution BUGID 2999, show direct link *}
+	<input type="button" name="direct_link" value="{$labels.btn_show_direct_link}" 
+	       onclick="javascript:alert('{$gui->direct_link}')"/>
+	
 	</div>
   </form>
 </div>

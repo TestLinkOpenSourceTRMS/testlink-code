@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/12/02 22:18:26 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/12/15 19:30:46 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
  *	20091202 - franciscom - create(), update() 
  *                          added contribution by asimon83/mx-julian that creates
  *                          links inside scope field.
@@ -547,8 +548,11 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
                           $order_by=" ORDER BY NH.node_order,title,req_doc_id")
 {
 	$sql = '';
+	
+	// contribution, BUGID 2996
     $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,type," .
-                "NH.node_order,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
+    			"REQ.expected_coverage," . 
+    			"NH.node_order,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
                 "REQ.modification_ts,NH.name AS title";
 
 	switch($range)
@@ -1314,7 +1318,6 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
         $elem = $items[$idx]['req_spec'];
         $depth = $elem['level'];
         
-        //echo "Going to create reqspec:" . $copy_reqspec[$idx] . ":" . $elem['title'] . "<br>";
         $result = $this->create($tproject_id,$container_id[$depth], 
                                 $elem['doc_id'],$elem['title'],$elem['scope'],0,$author_id);
         if($result['status_ok'])
@@ -1365,7 +1368,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
   */
 function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=self::CASE_SENSITIVE)
 {
-    $fields2get="RSPEC.id,testproject_id,RSPEC,doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+    $fields2get="RSPEC.id,testproject_id,RSPEC.doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
                 "RSPEC.modification_ts,NH.name AS title";
     
@@ -1383,8 +1386,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=sel
             $sql .= " WHERE UPPER(RSPEC.doc_id)='" . strtoupper($the_doc_id) . "'";    
         break;
     }
-  	$sql .= " AND RSPEC.id=NH.id ";
-
 
   	if( !is_null($tproject_id) )
   	{
@@ -1398,7 +1399,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=sel
 
     $sql .= " AND RSPEC.id=NH.id ";
     $output = $this->db->fetchRowsIntoMap($sql,'id');
-
   	return $output;
   }
 

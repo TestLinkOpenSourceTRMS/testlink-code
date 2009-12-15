@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2009/12/08 14:27:52 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2009/12/15 19:26:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
- * rev:  
+ * rev:
+ *  20091215 - asimon     - added new method getByDocID()  
+ *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
  *  20091208 - franciscom - contrib by julian - BUGID 2995
  *  20091207 - franciscom - create() added node_order
  *	20091202 - franciscom - create(), update() 
@@ -516,12 +518,12 @@ function get_by_title($title,$ignore_case=0)
     returns:
 
   */
-function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
+function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tc_count=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title";
+                "RSPEC.modification_ts, NH.parent_id, NH.name AS title";
     
     $tcase_mgr = new testcase($this->db);
   	$req_cfg = config_get('req_cfg');
@@ -533,49 +535,69 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
     $empty_results='';
     $empty_preconditions=''; // fix for BUGID 2995
 
-
   	$output = null;
   	if (is_array($mixIdReq)) {
   		$arrIdReq = $mixIdReq;
   	} else {
   		$arrIdReq = array($mixIdReq);
   	}
-  	if ( $req_cfg->use_req_spec_as_testsuite_name )
-  	{
-  	    // SRS Title
-        $sql = " /* $debugMsg */ SELECT {$fields2get} FROM {$this->tables['req_specs']} RSPEC," .
-  	           " {$this->tables['nodes_hierarchy']} NH " .
-               " WHERE RSPEC.id = {$srs_id} AND RSPEC.id=NH.id ";
-    	$arrSpec = $this->db->get_recordset($sql);
-  	    $testproject_id=$arrSpec[0]['testproject_id'];
-  	    $auto_testsuite_name = substr($arrSpec[0]['title'],0,$field_size->testsuite_name);
+  	
+  	/* contribution BUGID 2996, testcase creation */
+	$tsuite_mgr=New testsuite($this->db);
+	$parent_id = $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+  	if ( $req_cfg->use_req_spec_as_testsuite_name ) {
+  		$parents = $this->tree_mgr->get_path($srs_id);
+  		
+  		foreach($parents as $key => $node) {
+  			//follow hierarchy of parents to create
+  			$addition = " (" . lang_get("testsuite_title_addition") . ")";
+  			$testsuite_name = substr($node['name'],0,$field_size->testsuite_name - strlen($addition));
+  			$testsuite_name .= $addition;
+  			//does parent already exist?
+  			$sql=" SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
+  	     		" WHERE name='" . $testsuite_name . "' " .
+  	     		" AND node_type_id=" . $node_descr_type['testsuite'];
+  			$res = $this->db->exec_query($sql);
+  			$parentfound = false;
+  			if ($this->db->num_rows($res) >= 1) {
+  				while($row = $this->db->fetch_array($res)) {
+  					if($testproject_id == $this->tree_mgr->getTreeRoot($row['id'])) {
+  						$parentfound = true;
+  						$parent_id = $row['id'];
+  					}
+ 	 			}
+  			}
+  			if($parentfound) {
+  				//parent exists
+  				$tsuite_id = $parent_id;
+  			} else {
+  				//parent doesn't exist yet, so create
+  				$new_tsuite = $tsuite_mgr->create($parent_id,$testsuite_name,$req_cfg->testsuite_details);
+  				$parent_id = $tsuite_id = $new_tsuite['id'];
+  				$output[] = sprintf(lang_get('testsuite_name_created'), $testsuite_name);
+  			}
+  		}
+  		$output[]=sprintf(lang_get('created_on_testsuite'), $testsuite_name);
+  	} else {
+  		//don't use req_spec as testsuite name
+  		$sql=" SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
+  		     " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " .
+  		     " AND parent_id=" . $testproject_id . " " .
+  	    	 " AND node_type_id=" . $node_descr_type['testsuite'];
+  		$result = $this->db->exec_query($sql);
+    	if ($this->db->num_rows($result) == 1) {
+    		$row = $this->db->fetch_array($result);
+    		$tsuite_id = $row['id'];
+    		$output[]=sprintf(lang_get('created_on_testsuite'), $auto_testsuite_name);
+    	} else {
+    		// not found -> create
+	    	tLog('test suite:' . $auto_testsuite_name . ' was not found.');
+	    	$new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$req_cfg->testsuite_details);
+	    	$tsuite_id=$new_tsuite['id'];
+	    	$output[]=sprintf(lang_get('testsuite_name_created'), $auto_testsuite_name);
+	   	}
   	}
-
-  	// find container with the following characteristics:
-  	// 1. testproject_id is its father
-  	// 2. has the searched name
-  	$sql=" /* $debugMsg */ SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
-  	     " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " .
-  	     " AND parent_id=" . $testproject_id . " " .
-  	     " AND node_type_id=" . $node_descr_type['testsuite'];
-
-
-  	$result = $this->db->exec_query($sql);
-    if ($this->db->num_rows($result) == 1) 
-    {
-  		$row = $this->db->fetch_array($result);
-  		$tsuite_id = $row['id'];
-        $output[]=sprintf(lang_get('created_on_testsuite'), $auto_testsuite_name);
-  	}
-  	else 
-  	{
-  		// not found -> create
-  		tLog('test suite:' . $auto_testsuite_name . ' was not found.');
-      $tsuite_mgr=New testsuite($this->db);
-      $new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$req_cfg->testsuite_details);
-      $tsuite_id=$new_tsuite['id'];
-      $output[]=sprintf(lang_get('testsuite_name_created'), $auto_testsuite_name);
-   	}
+  	/* end contribution */
 
   	// create TC
     $cfg['check_names_for_duplicates'] = config_get('check_names_for_duplicates');
@@ -592,28 +614,34 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id)
     }
   	foreach ($arrIdReq as $execIdReq)
   	{
-  		$testcase_order++;
+  		
         $reqData = $this->get_by_id($execIdReq);
 
-        // Julian - BUGID 2995
-  	    $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
-  	                              $req_cfg->testcase_summary_prefix . $reqData['scope'] ,
-					              $empty_preconditions, $empty_steps,$empty_results,$user_id,
-					              null,$testcase_order,testcase::AUTOMATIC_ID,
-  		                          $cfg['check_names_for_duplicates'],$cfg['action_on_duplicate_name']);
-
-        $tcase_name=$tcase['new_name'];
-        if( $tcase_name == '' )
-        {
-            $tcase_name=$reqData['title'];
+        /* contribution, BUGID 2996 */
+        $count = (!is_null($tc_count)) ? $tc_count[$execIdReq] : 1;
+        for ($i = 0; $i<$count; $i++) {
+        	
+	        $testcase_order++;
+	        // Julian - BUGID 2995
+	  	    $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
+	  	                              $req_cfg->testcase_summary_prefix . $reqData['scope'] ,
+						              $empty_preconditions, $empty_steps,$empty_results,$user_id,
+						              null,$testcase_order,testcase::AUTOMATIC_ID,
+	  		                          $cfg['check_names_for_duplicates'],$cfg['action_on_duplicate_name']);
+	
+	        $tcase_name=$tcase['new_name'];
+	        if( $tcase_name == '' )
+	        {
+	            $tcase_name=$reqData['title'];
+	        }
+	        $output[]=sprintf(lang_get('tc_created'), $tcase_name);
+	
+	  		// create coverage dependency
+	  		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) 
+	  		{
+	  			$output[] = 'Test case: ' . $reqData['title'] . "was not created";
+	  		}
         }
-        $output[]=sprintf(lang_get('tc_created'), $tcase_name);
-
-  		// create coverage dependency
-  		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) 
-  		{
-  			$output[] = 'Test case: ' . $reqData['title'] . "was not created";
-  		}
   	}
 
   	return $output;
@@ -1140,6 +1168,58 @@ function html_table_of_custom_field_values($id)
     $this->cfield_mgr->design_values_to_db($hash,$node_id,$cf_map,$hash_type);
   }
 
+  /*
+   function: getByDocID
+   get req information using document ID as access key.
+
+   args : doc_id:
+   [tproject_id]
+   [parent_id]
+   [case_analysis]: control case sensitive search.
+   default 0 -> case sensivite search
+
+   returns: map.
+   key: req spec id
+   value: req info, map with following keys:
+   id
+   doc_id
+   testproject_id
+   title
+   scope
+   total_req
+   type
+   status
+   expected_coverage
+   author_id
+   creation_ts
+   modifier_id
+   modification_ts
+   */
+  function getByDocID($doc_id,$tproject_id=null,$parent_id=null)
+  {
+  	$fields2get="R.id,R.req_doc_id,RSPEC.testproject_id,R.scope,R.type,R.status,R.expected_coverage," .
+                "R.author_id,R.creation_ts,R.modifier_id," .
+                "R.modification_ts,NH.name AS title";
+
+  	$output=null;
+  	$the_doc_id=$this->db->prepare_string(trim($doc_id));
+  	$sql = "SELECT {$fields2get} FROM {$this->object_table} R, {$this->tables['nodes_hierarchy']} NH, " .
+  			"{$this->tables['req_specs']} RSPEC  WHERE R.req_doc_id='{$the_doc_id}'";
+  	
+  	if( !is_null($tproject_id) )
+  	{
+  		$sql .= " AND NH.parent_id=RSPEC.id AND RSPEC.testproject_ID={$tproject_id}";
+  	}
+
+  	if( !is_null($parent_id) )
+  	{
+  		$sql .= " AND NH.parent_id={$parent_id}";
+  	}
+
+  	$sql .= " AND R.id=NH.id ";
+  	$output = $this->db->fetchRowsIntoMap($sql,'id');
+  	return $output;
+  }
 
 } // class end
 ?>

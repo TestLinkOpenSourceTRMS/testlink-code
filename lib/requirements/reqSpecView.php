@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/12/15 21:06:15 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/12/15 21:20:37 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -49,7 +49,7 @@ $gui->requirements_count = $req_spec_mgr->get_requirements_count($args->req_spec
 
 
 /* contribution BUGID 2999, show direct link */
-$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id]);
+$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
                     '&item=reqspec&id=' . urlencode($gui->req_spec['doc_id']);
 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/11/25 22:47:18 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/12/15 21:19:37 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -23,9 +23,20 @@ $args = init_args();
 $gui = initialize_gui($db,$args);
 
 $smarty = new TLSmarty();
+
+/* contribution BUGID 2999, show permanent link */
+$tproject_mgr = new testproject($db);
+$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id]);
+
+$gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
+                    urlencode($prefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
+		
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+/**
+ *
+ */
 function init_args()
 {
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),

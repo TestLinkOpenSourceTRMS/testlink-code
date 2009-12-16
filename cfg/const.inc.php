@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.121 2009/12/06 08:26:06 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.122 2009/12/16 21:04:56 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -578,8 +578,7 @@ define('TL_REQ_STATUS_NOT_TESTABLE','N');
 
 // key: status; value: text label
 $g_req_status = array(TL_REQ_STATUS_VALID => 'review_status_valid', 
-					TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable'
-					);
+					  TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable');
 
 /** 
  * Types of requirements (with respect to standards)

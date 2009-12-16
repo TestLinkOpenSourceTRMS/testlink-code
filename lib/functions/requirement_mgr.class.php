@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2009/12/15 19:26:28 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/12/16 19:04:37 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20091216 - franciscom - create_tc_from_requirement() interface changes
  *  20091215 - asimon     - added new method getByDocID()  
  *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
  *  20091208 - franciscom - contrib by julian - BUGID 2995
@@ -518,7 +519,7 @@ function get_by_title($title,$ignore_case=0)
     returns:
 
   */
-function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tc_count=null)
+function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = null, $tc_count=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
@@ -526,6 +527,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tc_count=null)
                 "RSPEC.modification_ts, NH.parent_id, NH.name AS title";
     
     $tcase_mgr = new testcase($this->db);
+   	$tsuite_mgr = new testsuite($this->db);
+
   	$req_cfg = config_get('req_cfg');
   	$field_size = config_get('field_size');
  	
@@ -543,59 +546,75 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tc_count=null)
   	}
   	
   	/* contribution BUGID 2996, testcase creation */
-	$tsuite_mgr=New testsuite($this->db);
-	$parent_id = $testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-  	if ( $req_cfg->use_req_spec_as_testsuite_name ) {
+    if( is_null($tproject_id) || $tproject_id == 0 )
+    {
+  		$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
+  	}
+  	
+  	if ( $req_cfg->use_req_spec_as_testsuite_name ) 
+  	{
+  	    $parent_id = $testproject_id;
   		$parents = $this->tree_mgr->get_path($srs_id);
+  		$addition = " (" . lang_get("testsuite_title_addition") . ")";
+  		$truncate_limit = $field_size->testsuite_name - strlen($addition);
   		
-  		foreach($parents as $key => $node) {
-  			//follow hierarchy of parents to create
-  			$addition = " (" . lang_get("testsuite_title_addition") . ")";
-  			$testsuite_name = substr($node['name'],0,$field_size->testsuite_name - strlen($addition));
-  			$testsuite_name .= $addition;
-  			//does parent already exist?
+  		foreach($parents as $key => $node) 
+  		{
+  			// follow hierarchy of parents to create
+  			$testsuite_name = substr($node['name'],0,$truncate_limit). $addition;
+  			
+  			// does parent already exist?
   			$sql=" SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
-  	     		" WHERE name='" . $testsuite_name . "' " .
-  	     		" AND node_type_id=" . $node_descr_type['testsuite'];
+  	     		 " WHERE name='" . $this->db->prepare_string($testsuite_name) . "' " .
+  	     		 " AND node_type_id=" . $node_descr_type['testsuite'];
+  	     		
   			$res = $this->db->exec_query($sql);
   			$parentfound = false;
   			if ($this->db->num_rows($res) >= 1) {
   				while($row = $this->db->fetch_array($res)) {
-  					if($testproject_id == $this->tree_mgr->getTreeRoot($row['id'])) {
+  					if($testproject_id == $this->tree_mgr->getTreeRoot($row['id'])) 
+  					{
   						$parentfound = true;
   						$parent_id = $row['id'];
   					}
  	 			}
   			}
-  			if($parentfound) {
-  				//parent exists
+  			if($parentfound) 
+  			{
   				$tsuite_id = $parent_id;
-  			} else {
-  				//parent doesn't exist yet, so create
+  			} 
+  			else 
+  			{
+  				// parent doesn't exist yet, so create
   				$new_tsuite = $tsuite_mgr->create($parent_id,$testsuite_name,$req_cfg->testsuite_details);
   				$parent_id = $tsuite_id = $new_tsuite['id'];
   				$output[] = sprintf(lang_get('testsuite_name_created'), $testsuite_name);
   			}
   		}
   		$output[]=sprintf(lang_get('created_on_testsuite'), $testsuite_name);
-  	} else {
-  		//don't use req_spec as testsuite name
+  	} 
+  	else 
+  	{
+  		// don't use req_spec as testsuite name
   		$sql=" SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
   		     " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " .
   		     " AND parent_id=" . $testproject_id . " " .
   	    	 " AND node_type_id=" . $node_descr_type['testsuite'];
+  
   		$result = $this->db->exec_query($sql);
     	if ($this->db->num_rows($result) == 1) {
     		$row = $this->db->fetch_array($result);
     		$tsuite_id = $row['id'];
-    		$output[]=sprintf(lang_get('created_on_testsuite'), $auto_testsuite_name);
+    		$label = lang_get('created_on_testsuite');
     	} else {
     		// not found -> create
 	    	tLog('test suite:' . $auto_testsuite_name . ' was not found.');
 	    	$new_tsuite=$tsuite_mgr->create($testproject_id,$auto_testsuite_name,$req_cfg->testsuite_details);
 	    	$tsuite_id=$new_tsuite['id'];
-	    	$output[]=sprintf(lang_get('testsuite_name_created'), $auto_testsuite_name);
+	    	$label = lang_get('testsuite_name_created');
 	   	}
+    	$output[]=sprintf($label, $auto_testsuite_name);
+	   	
   	}
   	/* end contribution */
 

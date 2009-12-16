@@ -4,12 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/12/07 18:14:39 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/12/16 19:04:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
- * rev: 20081213 - franciscom - fixed minor bug on doCreate()
+ * @internal revision
+ *	20091216 - franciscom - create_tc_from_requirement() interface changes 
+ *	20081213 - franciscom - fixed minor bug on doCreate()
  */
 
 class reqCommands
@@ -237,13 +239,18 @@ class reqCommands
 		$guiObj->array_of_msg = '';
 		  
 	    return $guiObj;
-  }
-  
- 	function doCreateTestCases(&$argsObj)
+  	}
+                                                  
+    /**
+     * 
+     *
+     */
+	function doCreateTestCases(&$argsObj)
 	{
 		$guiObj = $this->createTestCases($argsObj);
 	    $guiObj->array_of_msg = $this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
-	                                                                    $argsObj->user_id);
+	                                                                      $argsObj->user_id,$argsObj->tproject_id,
+	                                                                      $argsObj->testcase_count);
 	    return $guiObj;
 	}
 }

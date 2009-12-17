@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.275 2009/12/07 15:18:44 havlat Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.276 2009/12/17 21:05:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *	20091217 - franciscom - $tlCfg->testcase_cfg->duplicated_name_algorithm
  *  20091205 - franciscom - BUGID 0002469: $tlCfg->exec_cfg->expand_collapse
  *  20091129 - franciscom - BUGID 2554 - gui->usersAssignGlobalRoleColoring
  *  20091126 - franciscom - added contribution req internal links
@@ -670,6 +671,19 @@ $tlCfg->testcase_cfg->can_remove_executed = ENABLED;
 // due to too many results.
 $tlCfg->testcase_cfg->search=new stdClass();
 $tlCfg->testcase_cfg->search->max_qty_for_display=200;
+
+
+$tlCfg->testcase_cfg->duplicated_name_algorithm = new stdClass();
+// 'stringPrefix' => use duplicated_name_algorithm->text
+// 'counterSuffix' => creare name as :
+//                    test case title  + (number of existent test cases +1)
+//                    example: My Test Title 2
+//                    duplicated_name_algorithm->text is used as sprintf format mask   
+$tlCfg->testcase_cfg->duplicated_name_algorithm->type = 'stringPrefix';
+$tlCfg->testcase_cfg->duplicated_name_algorithm->text = strftime("%Y%m%d-%H:%M:%S", time());
+// $tlCfg->testcase_cfg->duplicated_name_algorithm->type = 'counterSuffix';
+// $tlCfg->testcase_cfg->duplicated_name_algorithm->text = " (%s)";
+
         
 /** text template for a new items:
     Test Case: summary, steps, expected_results, preconditions 
@@ -1050,6 +1064,7 @@ define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 $tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
 
 
+// var_dump($tlCfg->testcase_cfg->duplicated_name_algorithm);
 
 // --------------------------------------------------------------------------------------
 /** Converted and derived variables (Users should not modify this section) */
@@ -1091,6 +1106,9 @@ $g_ereg_forbidden = "/[|]/i";
    if the name exist.
  */
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
+
+
+
 
 /** 
  * martin: @TODO remove - $g_action_on_duplicate_name is enough to define behaviour

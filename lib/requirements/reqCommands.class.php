@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/12/16 19:04:45 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/12/17 08:45:27 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
+ *	20091217 - franciscom - added reqTypeDomain
  *	20091216 - franciscom - create_tc_from_requirement() interface changes 
  *	20081213 - franciscom - fixed minor bug on doCreate()
  */
@@ -20,6 +21,7 @@ class reqCommands
   private $reqSpecMgr;
   private $reqMgr;
   private $reqStatusDomain;
+  private $reqTypeDomain;
 
 	function __construct(&$db)
 	{
@@ -27,6 +29,7 @@ class reqCommands
 	    $this->reqSpecMgr = new requirement_spec_mgr($db);
 	    $this->reqMgr = new requirement_mgr($db);
 	    $this->reqStatusDomain=init_labels(config_get('req_status'));
+	    $this->reqTypeDomain=init_labels(config_get('req_cfg')->type_labels);
 	}
 
   /*
@@ -48,6 +51,7 @@ class reqCommands
       	$obj->template = 'reqEdit.tpl';
 		$obj->submit_button_label = lang_get('btn_save');
 		$obj->reqStatusDomain = $this->reqStatusDomain;
+		$obj->reqTypeDomain = $this->reqTypeDomain;
 		$obj->req_spec_id = $argsObj->req_spec_id;
 		$obj->req_id = null;
 		$obj->req = null;
@@ -75,6 +79,7 @@ class reqCommands
 		$obj->template = 'reqEdit.tpl';
 		$obj->submit_button_label = lang_get('btn_save');
 	  	$obj->reqStatusDomain = $this->reqStatusDomain;
+		$obj->reqTypeDomain = $this->reqTypeDomain;
 		$obj->req_spec_id = $argsObj->req_spec_id;
 		$obj->req_id = $argsObj->req_id;
 		$obj->expected_coverage = $argsObj->expected_coverage;
@@ -101,6 +106,7 @@ class reqCommands
 		$obj->submit_button_label=lang_get('btn_save');
 		$obj->template = null;
       	$obj->reqStatusDomain=$this->reqStatusDomain;
+		$obj->reqTypeDomain = $this->reqTypeDomain;
  		$obj->req_spec_id = $argsObj->req_spec_id;
 	    $obj->expected_coverage = $argsObj->expected_coverage;
 	

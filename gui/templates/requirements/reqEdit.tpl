@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.18 2009/11/25 21:19:44 franciscom Exp $
+$Id: reqEdit.tpl,v 1.19 2009/12/17 08:44:34 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20091125 - franciscom - 
@@ -9,7 +9,7 @@ internal revision
 
 {lang_get var='labels' 
           s='show_event_history,btn_save,cancel,status,scope,warning,req_doc_id,
-             title,warning_expected_coverage,
+             title,warning_expected_coverage,type,
              warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -105,6 +105,14 @@ internal revision
   	<div class="labelHolder"> <label for="reqStatus">{$labels.status}</label>
      	<select name="reqStatus">
   			{html_options options=$gui->reqStatusDomain selected=$gui->req.status}
+  		</select>
+  	</div>
+  	<br />
+ 	<br />
+
+  	<div class="labelHolder"> <label for="reqType">{$labels.type}</label>
+     	<select name="reqType">
+  			{html_options options=$gui->reqTypeDomain selected=$gui->req.type}
   		</select>
   	</div>
   	<br />

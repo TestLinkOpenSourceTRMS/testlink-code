@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.120 $
- * @modified $Date: 2009/12/07 08:49:53 $  by $Author: franciscom $
+ * @version $Revision: 1.121 $
+ * @modified $Date: 2009/12/17 21:06:18 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -189,12 +189,14 @@ else if($args->do_create)
     		$dummy = end($siblings);
     		$new_order = $dummy['node_order']+1;
     	}
-       	$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,
-		                            $args->preconditions,$args->steps,
-		                            $args->expected_results,$args->user_id,$args->assigned_keywords_list,
-		                            $new_order,testcase::AUTOMATIC_ID,
-		                            config_get('check_names_for_duplicates'),'block',$args->exec_type,
-		                            $args->importance);
+    	// 20091217 - francisco.mancardi@gruppotesi.com
+    	//
+    	$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
+    	                 'action_on_duplicate_name' => 'block');
+       	$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,$args->preconditions,
+       	                            $args->steps,$args->expected_results,$args->user_id,
+       	                            $args->assigned_keywords_list,$new_order,testcase::AUTOMATIC_ID,
+       	                            $args->exec_type,$args->importance,$options);
 
 		if($tcase['status_ok'])
 		{
@@ -371,14 +373,22 @@ else if($args->do_move)
 }
 else if($args->do_copy)
 {
-	  $user_feedback='';
-	  $msg = '';
-	  $action_result = 'copied';
-	  $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$args->copy,
-	                                config_get('check_names_for_duplicates'),
-	                                config_get('action_on_duplicate_name'));
+	$user_feedback='';
+	$msg = '';
+	$action_result = 'copied';
+	$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
+                     'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
+                     'copy_also' => $args->copy);
+
 	  
-	  $msg = $result['msg'];
+	  // $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$args->copy,
+	  //                               config_get('check_names_for_duplicates'),
+	  //                               config_get('action_on_duplicate_name'));
+	  // 
+	new dBug($options);  
+	$result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$options);
+	$msg = $result['msg'];
+
     if($msg == "ok")
     {
 		    $tree_mgr->change_child_order($args->new_container_id,$result['id'],

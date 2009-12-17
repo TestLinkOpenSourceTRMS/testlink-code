@@ -4,11 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/12/15 21:20:37 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/12/17 09:00:19 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
+ *	@internal revision
+ *	20091217 - franciscom - display type and expected coverage
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -52,6 +54,10 @@ function init_args()
     return $args;
 }
 
+/**
+ * 
+ *
+ */
 function initialize_gui(&$dbHandler,$argsObj)
 {
     $tproject_mgr = new testproject($dbHandler);
@@ -80,6 +86,7 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->cfields = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);
     $gui->attachments = getAttachmentInfosFrom($req_mgr,$gui->req_id);
     $gui->reqStatus = init_labels(config_get('req_status'));
+    $gui->reqType = init_labels($gui->req_cfg->type_labels);
 
     return $gui;
 }

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2009/12/17 08:45:27 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2009/12/17 09:00:19 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -120,7 +120,6 @@ class reqCommands
     		$dummy = end($siblings);
     		$order = $dummy['node_order']+1;
     	}
-	    // 20090719 - franciscom - seems that TYPE has been removed from user interface
 		$ret = $this->reqMgr->create($argsObj->req_spec_id,$argsObj->reqDocId,$argsObj->title,
 		                             $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
 		                             $argsObj->reqType,$argsObj->expected_coverage,$order);

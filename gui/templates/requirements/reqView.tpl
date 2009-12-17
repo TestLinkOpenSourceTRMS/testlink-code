@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.21 2009/12/15 21:10:24 franciscom Exp $
+$Id: reqView.tpl,v 1.22 2009/12/17 08:59:35 franciscom Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -9,7 +9,7 @@ rev: 20080512 - franciscom - added paremt_descr
 {* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
-          s="req,scope,status,coverage,req_msg_notestcase,
+          s="req,scope,status,coverage,req_msg_notestcase,type,expected_coverage,
              title_created,by,title_last_mod,btn_edit,btn_delete,no_records_found,
              btn_show_direct_link"}
              
@@ -40,7 +40,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 
 {* contribution by asimon83/mx-julian *}
 {if $gui->req.id}
-{* enc contribution by asimon83/mx-julian *}
+{* end contribution by asimon83/mx-julian *}
 	
 	{if $gui->grants->req_mgmt == "yes"}
 	<div class="groupBtn">
@@ -74,21 +74,13 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 	  <tr>
 	  <td>{$labels.status}{$smarty.const.TITLE_SEP}{$gui->reqStatus[$gui->req.status]}</td>
 	  </tr>
-	
-	  <tr class="time_stamp_creation">
-	  <td colspan="2">
-	      {$labels.title_created}&nbsp;{localize_timestamp ts=$gui->req.creation_ts }&nbsp;
-	      		{$labels.by}&nbsp;{$gui->req.author|escape}
-	  </td>
+
+	  <tr>
+	  <td>{$labels.type}{$smarty.const.TITLE_SEP}{$gui->reqType[$gui->req.type]}</td>
 	  </tr>
-	  {if $gui->req.modifier != ""}
-	    <tr class="time_stamp_creation">
-	    <td colspan="2">
-	    {$labels.title_last_mod}&nbsp;{localize_timestamp ts=$gui->req.modification_ts}
-			  &nbsp;{$labels.by}&nbsp;{$gui->req.modifier|escape}
-	    </td>
-	    </tr>
-	  {/if}
+	  <tr>
+	  <td>{$labels.expected_coverage}{$smarty.const.TITLE_SEP}{$gui->req.expected_coverage}</td>
+	  </tr>
 	
 	  <tr>
 			<td>
@@ -121,6 +113,21 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 	  	{$gui->cfields}
 	  	</td>
 		</tr>
+
+	  <tr class="time_stamp_creation">
+	  <td colspan="2">
+	      {$labels.title_created}&nbsp;{localize_timestamp ts=$gui->req.creation_ts }&nbsp;
+	      		{$labels.by}&nbsp;{$gui->req.author|escape}
+	  </td>
+	  </tr>
+	  {if $gui->req.modifier != ""}
+	    <tr class="time_stamp_creation">
+	    <td colspan="2">
+	    {$labels.title_last_mod}&nbsp;{localize_timestamp ts=$gui->req.modification_ts}
+			  &nbsp;{$labels.by}&nbsp;{$gui->req.modifier|escape}
+	    </td>
+	    </tr>
+	  {/if}
 	
 	</table>
 	

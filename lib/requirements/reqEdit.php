@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/12/03 07:07:32 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2009/12/17 09:00:19 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *	20091217 - franciscom - added type management 
  *	20091202 - franciscom - fixed bug on webeditor value init.
  *	20080827 - franciscom - BUGID 1692
  *	20080411 - franciscom - BUGID 1476

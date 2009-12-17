@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.205 2009/12/15 20:42:29 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.206 2009/12/17 21:05:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091217 - franciscom - getDuplicatesByName() - new argument added
  * 20091215 - franciscom - getPrefix() - changed in return type, to avoid in some situations
  *                                       a double call.
  * 20091207 - franciscom - get_last_execution() - internal bug 
@@ -227,17 +228,16 @@ class testcase extends tlObjectWithAttachments
 	function create($parent_id,$name,$summary,$preconditions,$steps,
                     $expected_results,$author_id,$keywords_id='',
                     $tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-                    $check_duplicate_name=self::DONT_CHECK_DUPLICATE_NAME,
-                    $action_on_duplicate_name='generate_new',
-                    $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
+                    $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
+                    $importance=2,$options=null)
 	{
 		$status_ok = 1;
+
+	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
+	                            'action_on_duplicate_name' => 'generate_new');
+	    $my['options'] = array_merge($my['options'], (array)$options);
 		
-		
-		$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,
-			                            $check_duplicate_name,
-			                            $action_on_duplicate_name);
-		// if($ret['msg'] == 'ok')
+		$ret = $this->create_tcase_only($parent_id,$name,$tc_order,$id,$my['options']);
 		if($ret["status_ok"])
 		{
 			if(trim($keywords_id) != "")
@@ -291,50 +291,73 @@ class testcase extends tlObjectWithAttachments
 		     
 	rev: 20090120 - franciscom - added new action_on_duplicate_name	     
 	*/
+	// function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
+	//                            $check_duplicate_name=0,
+	//                            $action_on_duplicate_name='generate_new')
+	//                            
 	function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-	                           $check_duplicate_name=0,
-	                           $action_on_duplicate_name='generate_new')
+	                           $options=null)
 	{
-	    $ret['id'] = -1;
-	    $ret['external_id']=0;
-	    $ret['status_ok'] = 1;
-	    $ret['msg'] = 'ok';
-		$ret['new_name'] = '';
-		$ret['version_number'] = 1;
-		$ret['has_duplicate'] = false;
-		
-	
+        $getOptions = array();
+		$ret = array('id' => -1,'external_id' => 0, 'status_ok' => 1,'msg' => 'ok', 
+		             'new_name' => '', 'version_number' => 1, 'has_duplicate' => false);
+
+	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
+	                            'action_on_duplicate_name' => 'generate_new'); 
+	                            
+	    $my['options'] = array_merge($my['options'], (array)$options);
+       
 	    $doCreate=true;
-	 	if ($check_duplicate_name)
+	 	if ($my['options']['check_duplicate_name'])
 		{
-	        $myrow = $this->getDuplicatesByName($name,$parent_id);		
-			if( !is_null($myrow) && count($myrow) > 0 )
+			$algo_cfg = config_get('testcase_cfg')->duplicated_name_algorithm;
+			$getOptions['check_criteria'] = ($algo_cfg->type == 'counterSuffix') ? 'like' : '='; 
+	        $myrow = $this->getDuplicatesByName($name,$parent_id,$getOptions);	
+	        
+			if( !is_null($myrow) && ($siblingQty=count($myrow)) > 0 )
 			{
-		    $ret['has_duplicate'] = true;
-			  switch($action_on_duplicate_name)
+		      $ret['has_duplicate'] = true;
+			  switch($my['options']['action_on_duplicate_name'])
 			  {
 				    case 'block':
-		            $doCreate=true;
-				    	  $ret['status_ok'] = 0;
-				    	  $ret['msg'] = sprintf(lang_get('testcase_name_already_exists'),$name);
+		            	$doCreate=false;
+				   		$ret['status_ok'] = 0;
+				    	$ret['msg'] = sprintf(lang_get('testcase_name_already_exists'),$name);
 				    break;
 				    
 				    case 'generate_new':
 				        $doCreate=true;
+				        
+			            switch($algo_cfg->type)
+			            {
+			            	case 'stringPrefix':
+			            		$name = $algo_cfg->text . " " . $name ;
+			            	break;
+			            	
+			            	case 'counterSuffix':
+			            	    $add_string = $siblingQty+1;
+			            	    if( !is_null($algo_cfg->text) )
+			            	    {
+			            	    	$add_string = sprintf($algo_cfg->text,$add_string);
+			            	    }
+                                // Need to recheck
+			            		$name .= $add_string;
+			            	break;
+			            } 
+
 				        $ret['status_ok'] = 1;
-						    $ret['new_name'] = $name;
-						    $name = config_get('prefix_name_for_copy') . " " . $name ;
-						    $ret['msg'] = sprintf(lang_get('created_with_title'),$name);
+						$ret['new_name'] = $name;
+						$ret['msg'] = sprintf(lang_get('created_with_title'),$name);
 						break;
 				        
 				    case 'create_new_version':
 				        $doCreate=false;
-	              $ret['id'] = key($myrow);            
-		            $ret['external_id']=$myrow[$ret['id']]['tc_external_id'];
+	                    $ret['id'] = key($myrow);            
+		                $ret['external_id']=$myrow[$ret['id']]['tc_external_id'];
 				        $ret['status_ok'] = 1;
-						    $ret['new_name'] = $name;
-		            $ret['version_number'] = -1;
-						    $ret['msg'] = lang_get('create_new_version');
+						$ret['new_name'] = $name;
+		            	$ret['version_number'] = -1;
+						$ret['msg'] = lang_get('create_new_version');
 				    break;
 				    
 				    default:
@@ -371,17 +394,19 @@ class testcase extends tlObjectWithAttachments
 	                          $expected_results,$author_id,
 	                          $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
 		// get a new id
 		$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
-		$sql = "INSERT INTO {$this->tables['tcversions']} " .
-		     " (id,tc_external_id,version,summary,steps,expected_results,preconditions," . 
-		     "author_id,creation_ts,execution_type,importance) " . 
-	  	     " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
-	  	     $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
-		  	 "'" . $this->db->prepare_string($expected_results) .  "','" . 
-		  	 $this->db->prepare_string($preconditions) . "'," . $author_id . "," .
-	         $this->db->db_now() . ", {$execution_type},{$importance} )";
+		$sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
+		       " (id,tc_external_id,version,summary,steps,expected_results,preconditions," . 
+		       "author_id,creation_ts,execution_type,importance) " . 
+	  	       " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
+	  	       $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
+		  	   "'" . $this->db->prepare_string($expected_results) .  "','" . 
+		  	   $this->db->prepare_string($preconditions) . "'," . $author_id . "," .
+	           $this->db->db_now() . ", {$execution_type},{$importance} )";
 		$result = $this->db->exec_query($sql);
 		$ret['msg']='ok';
 		$ret['id']=$tcase_version_id;
@@ -406,19 +431,37 @@ class testcase extends tlObjectWithAttachments
 	
 	  returns: hash
 	*/
-	function getDuplicatesByName($name, $parent_id)
+	function getDuplicatesByName($name, $parent_id, $options=null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	    $my['options'] = array( 'check_criteria' => '=');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
+	    $target = $this->db->prepare_string($name);
+	    switch($my['options']['check_criteria'])
+	    {
+	    	case '=':
+	    	default:
+	    		$check_criteria = " AND NHA.name = '{$target}' ";
+	    	break;
+	    	
+	    	case 'like':
+	    		$check_criteria = " AND NHA.name LIKE '{$target}%' ";
+	    	break;
+	    	
+	    }
+			
 	    $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
 			       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
 			       " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['tcversions']} TCV  " .
 			       " WHERE NHA.node_type_id = {$this->my_node_type} " .
-			       " AND NHA.name = '{$this->db->prepare_string($name)}' " .
 			       " AND NHB.parent_id=NHA.id " .
 			       " AND TCV.id=NHB.id " .
 			       " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
-			       " AND NHA.parent_id={$parent_id} ";
+			       " AND NHA.parent_id={$parent_id} {$check_criteria}";
 	
-			$rs = $this->db->fetchRowsIntoMap($sql,'id');
+		$rs = $this->db->fetchRowsIntoMap($sql,'id');
 	    if( is_null($rs) || count($rs) == 0 )
 	    {
 	        $rs=null;   
@@ -1186,17 +1229,21 @@ class testcase extends tlObjectWithAttachments
 	                        changed return type
 	
 	*/
-	function copy_to($id,$parent_id,$user_id,$copy_also=null,
-	                 $check_duplicate_name=0,
-	                 $action_on_duplicate_name='generate_new')
+	// function copy_to($id,$parent_id,$user_id,$copy_also=null,
+	//                  $check_duplicate_name=0,
+	//                  $action_on_duplicate_name='generate_new')
+    // 
+	function copy_to($id,$parent_id,$user_id,$options=null)
 	{
-	    $new_tc['id']=-1;
-	    $new_tc['status_ok']=0;
-	    $new_tc['msg']='ok';
+	    $new_tc = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok');
+	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
+	                            'action_on_duplicate_name' => 'generate_new', 'copy_also' => null);
+	    $my['options'] = array_merge($my['options'], (array)$options);
 	
-	    if( is_null($copy_also) )
+	
+	    if( is_null($my['options']['copy_also']) )
 	    {
-	        $copy_also=array('keyword_assignments' => true,'requirement_assignments' => true);   
+	        $my['options']['copy_also'] = array('keyword_assignments' => true,'requirement_assignments' => true);   
 	    }
 	    
 		$tcase_info = $this->get_by_id($id);
@@ -1204,7 +1251,7 @@ class testcase extends tlObjectWithAttachments
 		{
 			$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
 			                                   $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
-	                                           $check_duplicate_name,$action_on_duplicate_name);
+	                                           $my['options']);
 			if ($new_tc['status_ok'])
 			{
 		        $ret['status_ok']=1;
@@ -1216,12 +1263,14 @@ class testcase extends tlObjectWithAttachments
 				}
 				
 				// Conditional copies
-				if (isset($copy_also['keyword_assignments']) && $copy_also['keyword_assignments'])
+				if( isset($my['options']['copy_also']['keyword_assignments']) && 
+				    $my['options']['copy_also']['keyword_assignments'])
 				{
 					$this->copyKeywordsTo($id,$new_tc['id']);
 				}
 				
-				if (isset($copy_also['requirement_assignments']) && $copy_also['requirement_assignments'])
+				if (isset($my['options']['copy_also']['requirement_assignments']) && 
+				    $my['options']['copy_also']['requirement_assignments'])
 				{
 					$this->copyReqAssignmentTo($id,$new_tc['id']);
 				}

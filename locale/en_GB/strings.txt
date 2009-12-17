@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.500 2009/12/15 20:52:46 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.501 2009/12/17 08:44:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -93,6 +93,7 @@ $TLS_testproject = "Test Project";
 $TLS_test_report = "Test Report";
 $TLS_test_suite = "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
+$TLS_type = "Type";
 $TLS_title = "Title";
 $TLS_title_admin = "Administration";
 
@@ -146,27 +147,27 @@ $TLS_btn_simple_filters = "Simple Filters";
 
 
 // Status (used wide)
-$TLS_test_status_all 		= "All";
-$TLS_test_status_any 		= "Any";
-$TLS_test_status_not_run 	= "Not Run";
-$TLS_test_status_blocked 	= "Blocked";
-$TLS_test_status_failed 	= "Failed";
-$TLS_test_status_passed 	= "Passed";
+$TLS_test_status_all = "All";
+$TLS_test_status_any = "Any";
+$TLS_test_status_not_run = "Not Run";
+$TLS_test_status_blocked = "Blocked";
+$TLS_test_status_failed = "Failed";
+$TLS_test_status_passed = "Passed";
 $TLS_test_status_not_available = "Not Available";
-$TLS_test_status_unknown 	= "Unknown";
+$TLS_test_status_unknown = "Unknown";
 
-$TLS_review_status_valid 	= "Valid";
-$TLS_review_status_draft 	= 'Draft';
+$TLS_review_status_valid = "Valid";
+$TLS_review_status_draft = 'Draft';
 $TLS_review_status_future	= 'Future';
 $TLS_review_status_obsolete = 'Obsolete';
-$TLS_review_status_todo 	= 'To do';
+$TLS_review_status_todo = 'To do';
 
-$TLS_req_type_info 			= "Informational";
-$TLS_req_type_feature 		= 'Feature';
-$TLS_req_type_use_case	 	= 'Use Case';
-$TLS_req_type_interface 	= 'Interface';
+$TLS_req_type_info = "Informational";
+$TLS_req_type_feature = 'Feature';
+$TLS_req_type_use_case = 'Use Case';
+$TLS_req_type_interface = 'Interface';
 $TLS_req_type_non_functional = 'Non functional';
-$TLS_req_type_constrain 	= 'Constrain';
+$TLS_req_type_constrain = 'Constrain';
 
 $TLS_exec_not_run_result_note = "Important Notice: Once a Result is updated from 'Not Run' to another value, " .
                                 "you cannot set it back to 'Not Run'. <br />You can still set the Result to any other value.";

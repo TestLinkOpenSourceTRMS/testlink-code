@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/12/19 10:56:53 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2009/12/19 13:09:26 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -633,9 +633,6 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 	   	
   	}
   	/* end contribution */
-    new dBug($output);
-    new dBug($tsuite_id);
-    
 
   	// create TC
     $createOptions = array();

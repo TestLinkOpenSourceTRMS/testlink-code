@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2009/12/17 09:00:19 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2009/12/19 08:46:34 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -62,7 +62,8 @@ function init_args()
 					 "countReq" => array(tlInputParameter::INT_N),
 					 "expected_coverage" => array(tlInputParameter::INT_N),
 					 "doAction" => array(tlInputParameter::STRING_N,0,100),
-					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT));	
+					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
+					 "testcase_count" => array(tlInputParameter::ARRAY_INT));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);

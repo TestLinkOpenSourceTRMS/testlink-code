@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.47 $
- * @modified $Date: 2009/12/19 13:09:26 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2009/12/19 16:23:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -658,16 +658,46 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
         $count = (!is_null($tc_count)) ? $tc_count[$execIdReq] : 1;
         
         // Generate name with progessive
-     	$getOptions['check_criteria'] = 'like';
-        $myrow = $tcase_mgr->getDuplicatesByName($reqData['title'],$tsuite_id,$getOptions);	
-        $siblingQty = count($myrow);
-        
+        $instance=1;
+     	$getOptions = array('check_criteria' => 'like','access_key' => 'name');
+        $itemSet = $tcase_mgr->getDuplicatesByName($reqData['title'],$tsuite_id,$getOptions);	
+        $nameSet = null;
+        if( !is_null($itemSet) )
+        {
+        	$nameSet = array_flip(array_keys($itemSet));
+        	// $siblingQty = count($nameSet);
+        }
         for ($idx = 0; $idx < $count; $idx++) 
         {
 	        $testcase_order++;
-	        $siblingQty++;
-            $tcase_name = $reqData['title'] . " [{$siblingQty}] "; 
-            	        
+	        // $siblingQty++;
+            	
+            // We have a little problem to work on:
+            // suppose you have created:
+            // TC [1]
+            // TC [2]
+            // TC [3]
+            // If we delete TC [2]
+            // When I got siblings  il will got 2, if I create new progressive using next,
+            // it will be 3 => I will get duplicated name.
+            //
+            // Seems better option can be:
+            // Get all siblings names, put on array, create name an check if exists, if true 
+            // generate a new name.
+            // This may be at performance level is better than create name then check on db,
+            // because this approach will need more queries to DB     	
+            //
+            $tcase_name = $reqData['title'] . " [{$instance}] "; 
+            if( !is_null($nameSet) )
+            {
+            	while( isset($nameSet[$tcase_name]) )
+            	{
+            		$instance++;
+            		$tcase_name = $reqData['title'] . " [{$instance}] "; 
+            	}
+            }        
+            $nameSet[$tcase_name]=$tcase_name;
+            
 	        // Julian - BUGID 2995
 	  	    $tcase = $tcase_mgr->create($tsuite_id,$tcase_name,$req_cfg->testcase_summary_prefix . $reqData['scope'] ,
 						                $empty_preconditions, $empty_steps,$empty_results,$user_id,null,

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.207 2009/12/19 10:56:53 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.208 2009/12/19 16:27:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -436,7 +436,7 @@ class testcase extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-	    $my['options'] = array( 'check_criteria' => '=');
+	    $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id');
 	    $my['options'] = array_merge($my['options'], (array)$options);
 	    
 	    $target = $this->db->prepare_string($name);
@@ -462,7 +462,7 @@ class testcase extends tlObjectWithAttachments
 			       " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
 			       " AND NHA.parent_id={$parent_id} {$check_criteria}";
 	
-		$rs = $this->db->fetchRowsIntoMap($sql,'id');
+		$rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
 	    if( is_null($rs) || count($rs) == 0 )
 	    {
 	        $rs=null;   

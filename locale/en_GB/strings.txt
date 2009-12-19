@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.501 2009/12/17 08:44:00 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.502 2009/12/19 08:39:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -636,6 +636,11 @@ $TLS_title_created = "Created on";
 $TLS_title_last_mod = "Last modified on ";
 $TLS_expected_coverage = "Number of test cases needed";
 $TLS_warning_expected_coverage = $TLS_expected_coverage . " must be a number ";
+$TLS_expected_coverage = "Needed";
+$TLS_current_coverage = "Connected";
+$TLS_coverage_number = "Create";
+$TLS_testsuite_title_addition = "automatically generated from requirement specification";
+$TLS_testcase_title_addition = "automatically generated from requirement";
 
 
 

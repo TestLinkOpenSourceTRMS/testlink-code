@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/12/19 10:56:54 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2009/12/19 13:31:10 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -110,7 +110,7 @@ class reqCommands
  		$obj->req_spec_id = $argsObj->req_spec_id;
 	    $obj->expected_coverage = $argsObj->expected_coverage;
 	
-			// manage new order
+		// manage new order
 		$order = 0;
     	$nt2exclude = array('testplan' => 'exclude_me','testsuite'=> 'exclude_me',
     	                    'testcase'=> 'exclude_me');
@@ -231,7 +231,7 @@ class reqCommands
   	}
   
 	/**
-	 * DocBlock with nested lists
+	 * 
 	 *
 	 */
 	function createTestCases(&$argsObj)
@@ -254,8 +254,6 @@ class reqCommands
 				round(100 / $guiObj->all_reqs[$key]['expected_coverage'] * $count, 2);
 			$guiObj->all_reqs[$key]['coverage'] = $count;
 		}
-     
-		  
 	    return $guiObj;
   	}
                                                   
@@ -265,11 +263,12 @@ class reqCommands
      */
 	function doCreateTestCases(&$argsObj)
 	{
-        new dBug($argsObj);
 		$guiObj = $this->createTestCases($argsObj);
 	    $guiObj->array_of_msg = $this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
 	                                                                      $argsObj->user_id,$argsObj->tproject_id,
 	                                                                      $argsObj->testcase_count);
+        // need to update results
+		$guiObj = $this->createTestCases($argsObj);
 	    return $guiObj;
 	}
 }

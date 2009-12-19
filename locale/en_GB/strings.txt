@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.503 2009/12/19 13:08:16 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.504 2009/12/19 17:48:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1967,6 +1967,7 @@ $TLS_no_testplans_available = "I'm sorry there are no Test Plans available";
 
 // ----- lib/general/tlsmarty.inc.php -----
 $TLS_show_hide_api_info = "Show / Hide API Info";
+$TLS_show_hide_direct_link = "Show / Hide direct link";
 
 
 // ----- lib/keywords/keywords.inc.php -----

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.73 2009/10/12 07:04:30 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.74 2009/12/19 10:56:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1212,7 +1212,8 @@ class tree extends tlObject
 		}
 	}
  
-}// end class
 
+ 
+}// end class
 
 ?>

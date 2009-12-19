@@ -1,17 +1,22 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.12 2009/12/07 20:12:18 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.13 2009/12/19 10:57:04 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
    rev: 
+  20091209 - asimon     - contrib for testcase creation, BUGID 2996
 *}
 {assign var="req_module" value='lib/requirements/'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get s='select_at_least_one_req' var="check_msg"}
+{lang_get var='labels' 
+          s="req_doc_id,title,scope,coverage_number,expected_coverage,
+             current_coverage,coverage,req_msg_norequirement,req_select_create_tc"} 
+
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -99,23 +104,41 @@ function check_action_precondition(form_id,action,msg)
                          title="{lang_get s='check_uncheck_all_checkboxes'}" class="clickable"/></th>
         {/if}
     		
-    		<th>{lang_get s="req_doc_id"}</th>
-    		<th>{lang_get s="title"}</th>
-    		<th>{lang_get s="scope"}</th>
+    		<th>{$labels.req_doc_id}</th>
+    		<th>{$labels.title}</th>
+    		<th>{$labels.scope}</th>
+    		
+    		{* contribution for testcase creation, BUGID 2996 *}
+    		<th>{$labels.coverage_number}</th>
+    		{if $gui->req_cfg->expected_coverage_management}
+  				<th>{$labels.expected_coverage}</th>
+  			{/if}
+  			<th>{$labels.current_coverage}</th>
+  			<th>{$labels.coverage}</th>
+    		
     	 </tr>
     	{section name=row loop=$gui->all_reqs}
     	<tr>
     	  {* 20060110 - fm - managing checkboxes as array and added value *}
     		{if $gui->grants->req_mgmt == "yes"}
-    		<td><input type="checkbox" id="req_id_cbox{$gui->all_reqs[row].id}"
+    		<td style="padding:2px;"><input type="checkbox" id="req_id_cbox{$gui->all_reqs[row].id}"
     		           name="req_id_cbox[{$gui->all_reqs[row].id}]" 
     		                                           value="{$gui->all_reqs[row].id}"/></td>{/if}
-    		<td><span class="bold">{$gui->all_reqs[row].req_doc_id|escape}</span></td>
-    		<td><span class="bold">{$gui->all_reqs[row].title|escape}</a></span></td>
-    		<td>{$gui->all_reqs[row].scope|strip_tags|strip|truncate:100}</td>
+    		<td style="padding:2px;"><span class="bold">{$gui->all_reqs[row].req_doc_id|escape}</span></td>
+    		<td style="padding:2px;"><span class="bold">{$gui->all_reqs[row].title|escape}</a></span></td>
+    		<td style="padding:2px;">{$gui->all_reqs[row].scope|strip_tags|strip|truncate:100}</td>
+    		
+    		{* contribution for testcase creation, BUGID 2996 *}
+    		<td style="padding:2px;"><input name="testcase_count[{$gui->all_reqs[row].id}]" type="text" size="3" maxlength="3" value="1"></td>
+    		{if $gui->req_cfg->expected_coverage_management}
+  				<td align="center" style="padding:2px;"><span class="bold">{$gui->all_reqs[row].expected_coverage}</span></td>
+    		{/if}  	
+    		<td align="center" style="padding:2px;"><span class="bold">{$gui->all_reqs[row].coverage}</span></td>
+    		<td align="center" style="padding:2px;"><span class="bold">{$gui->all_reqs[row].coverage_percent}%</span></td>
+    		
     	</tr>
     	{sectionelse}
-    	<tr><td></td><td><span class="bold">{lang_get s='req_msg_norequirement'}</span></td></tr>
+    	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
     	{/section}
      </table>
      </div>
@@ -124,7 +147,7 @@ function check_action_precondition(form_id,action,msg)
      {* ------------------------------------------------------------------------------------------ *}
      {if $gui->grants->req_mgmt == "yes"}
       <div class="groupBtn">
-       <input type="submit" name="create_tc_from_req" value="{lang_get s='req_select_create_tc'}" 
+       <input type="submit" name="create_tc_from_req" value="{$labels.req_select_create_tc}" 
               onclick="return check_action_precondition('frmReqList','create','{$check_msg}');"/>
       </div>
      {/if}

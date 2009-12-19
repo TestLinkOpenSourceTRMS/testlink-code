@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/12/17 09:00:19 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2009/12/19 10:56:54 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -230,6 +230,10 @@ class reqCommands
       	return $obj;
   	}
   
+	/**
+	 * DocBlock with nested lists
+	 *
+	 */
 	function createTestCases(&$argsObj)
 	{
 		$guiObj = new stdClass();
@@ -237,11 +241,20 @@ class reqCommands
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 		$guiObj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
 		$guiObj->action_descr = lang_get('create_testcase_from_req');
-      
-		$guiObj->all_reqs = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id);
+
 		$guiObj->req_spec_id = $argsObj->req_spec_id;
 		$guiObj->req_spec_name = $req_spec['title'];
 		$guiObj->array_of_msg = '';
+
+		$guiObj->all_reqs = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id);
+		foreach($guiObj->all_reqs as $key => $req) 
+		{
+			$count = count($this->reqMgr->get_coverage($req['id']));
+			$guiObj->all_reqs[$key]['coverage_percent'] =
+				round(100 / $guiObj->all_reqs[$key]['expected_coverage'] * $count, 2);
+			$guiObj->all_reqs[$key]['coverage'] = $count;
+		}
+     
 		  
 	    return $guiObj;
   	}
@@ -252,6 +265,7 @@ class reqCommands
      */
 	function doCreateTestCases(&$argsObj)
 	{
+        new dBug($argsObj);
 		$guiObj = $this->createTestCases($argsObj);
 	    $guiObj->array_of_msg = $this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
 	                                                                      $argsObj->user_id,$argsObj->tproject_id,

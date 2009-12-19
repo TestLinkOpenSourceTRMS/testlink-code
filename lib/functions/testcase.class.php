@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.206 2009/12/17 21:05:52 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.207 2009/12/19 10:56:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -368,6 +368,7 @@ class testcase extends tlObjectWithAttachments
 	
 	  if( $ret['status_ok'] && $doCreate)
 	  {
+	  	
 	    // Get tproject id
 	    $path2root=$this->tree_manager->get_path($parent_id);
 	    $tproject_id=$path2root[0]['parent_id'];

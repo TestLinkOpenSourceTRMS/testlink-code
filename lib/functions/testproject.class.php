@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.134 2009/12/07 08:50:08 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.135 2009/12/19 10:56:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -782,10 +782,12 @@ function count_testcases($id)
              a new test case number
 
   */
-  function generateTestCaseNumber($id)
-  {
+function generateTestCaseNumber($id)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
   	$ret=null;
-    $sql = " UPDATE {$this->object_table} " .
+    $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
            " SET tc_counter=tc_counter+1 WHERE id = {$id}";
   	$recordset = $this->db->exec_query($sql);
 
@@ -793,7 +795,7 @@ function count_testcases($id)
   	$recordset = $this->db->get_recordset($sql);
     $ret=$recordset[0]['tc_counter'];
   	return ($ret);
-  }
+}
 
 /** 
  * @param integer $id test project ID

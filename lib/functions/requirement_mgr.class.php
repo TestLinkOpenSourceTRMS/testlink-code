@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/12/16 19:04:37 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/12/19 10:56:53 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -537,6 +537,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     $empty_steps='';
     $empty_results='';
     $empty_preconditions=''; // fix for BUGID 2995
+    
+    $labels['tc_created'] = lang_get('tc_created');
 
   	$output = null;
   	if (is_array($mixIdReq)) {
@@ -553,49 +555,63 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
   	
   	if ( $req_cfg->use_req_spec_as_testsuite_name ) 
   	{
-  	    $parent_id = $testproject_id;
-  		$parents = $this->tree_mgr->get_path($srs_id);
+ 		$full_path = $this->tree_mgr->get_path($srs_id);
   		$addition = " (" . lang_get("testsuite_title_addition") . ")";
   		$truncate_limit = $field_size->testsuite_name - strlen($addition);
-  		
-  		foreach($parents as $key => $node) 
+
+  		// REQ_SPEC_A
+  		//           |-- REQ_SPEC_A1 
+  		//                          |-- REQ_SPEC_A2
+  		//                                         |- REQ100
+  		//                                         |- REQ101
+  		//
+  		// We will try to check if a test suite has already been created for
+  		// top REQ_SPEC_A  (we do search using automatic generated name as search criteria).
+  		// If not => we need to create all path till leaves (REQ100 and REQ200)
+  		//
+  		//
+  		// First search: we use test project
+  		$parent_id = $tproject_id;
+  		$deep_create = false;
+  		foreach($full_path as $key => $node) 
   		{
-  			// follow hierarchy of parents to create
+  			// follow hierarchy of test suites to create
+  			$tsuiteInfo = null;
   			$testsuite_name = substr($node['name'],0,$truncate_limit). $addition;
-  			
-  			// does parent already exist?
-  			$sql=" SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
-  	     		 " WHERE name='" . $this->db->prepare_string($testsuite_name) . "' " .
-  	     		 " AND node_type_id=" . $node_descr_type['testsuite'];
-  	     		
-  			$res = $this->db->exec_query($sql);
-  			$parentfound = false;
-  			if ($this->db->num_rows($res) >= 1) {
-  				while($row = $this->db->fetch_array($res)) {
-  					if($testproject_id == $this->tree_mgr->getTreeRoot($row['id'])) 
-  					{
-  						$parentfound = true;
-  						$parent_id = $row['id'];
-  					}
- 	 			}
-  			}
-  			if($parentfound) 
+  			if( !$deep_create )
   			{
-  				$tsuite_id = $parent_id;
-  			} 
-  			else 
-  			{
-  				// parent doesn't exist yet, so create
-  				$new_tsuite = $tsuite_mgr->create($parent_id,$testsuite_name,$req_cfg->testsuite_details);
-  				$parent_id = $tsuite_id = $new_tsuite['id'];
+  				// child test suite with this name, already exists on current parent ?
+  				// At first a failure we will not check anymore an proceed with deep create
+  				$sql="/* $debugMsg */ SELECT id,name FROM {$this->tables['nodes_hierarchy']} NH " .
+  	     			 " WHERE name='" . $this->db->prepare_string($testsuite_name) . "' " .
+  	     			 " AND node_type_id=" . $node_descr_type['testsuite'] . 
+  	     			 " AND parent_id = {$parent_id} ";
+            	
+            	// If returns more that one record use ALWAYS first
+  				$tsuiteInfo = $this->db->fetchRowsIntoMap($sql,'id');
+ 			}
+ 			
+ 			if( is_null($tsuiteInfo) )
+ 			{
+  				$tsuiteInfo = $tsuite_mgr->create($parent_id,$testsuite_name,$req_cfg->testsuite_details);
   				$output[] = sprintf(lang_get('testsuite_name_created'), $testsuite_name);
-  			}
+  				$deep_create = true;
+ 			}
+ 			else
+ 			{
+ 				$tsuiteInfo = current($tsuiteInfo);
+ 				$tsuite_id = $tsuiteInfo['id'];
+ 			}
+			$tsuite_id = $tsuiteInfo['id'];  // last value here will be used as parent for test cases
+ 			$parent_id = $tsuite_id;
   		}
   		$output[]=sprintf(lang_get('created_on_testsuite'), $testsuite_name);
   	} 
   	else 
   	{
   		// don't use req_spec as testsuite name
+  		// Warning:
+  		// We are not maintaining hierarchy !!!
   		$sql=" SELECT id FROM {$this->tables['nodes_hierarchy']} NH " .
   		     " WHERE name='" . $this->db->prepare_string($auto_testsuite_name) . "' " .
   		     " AND parent_id=" . $testproject_id . " " .
@@ -617,10 +633,16 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 	   	
   	}
   	/* end contribution */
+    new dBug($output);
+    new dBug($tsuite_id);
+    
 
   	// create TC
-    $cfg['check_names_for_duplicates'] = config_get('check_names_for_duplicates');
-    $cfg['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
+    $createOptions = array();
+    $createOptions['check_names_for_duplicates'] = config_get('check_names_for_duplicates');
+    $createOptions['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
+
+    $testcase_importance_default = config_get('testcase_importance_default');
 
   	// compute test case order
   	$testcase_order = config_get('treemenu_default_testcase_order');
@@ -631,38 +653,40 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     	$dummy = end($siblings);
     	$testcase_order = $dummy['node_order'];
     }
+    
   	foreach ($arrIdReq as $execIdReq)
   	{
   		
         $reqData = $this->get_by_id($execIdReq);
-
-        /* contribution, BUGID 2996 */
         $count = (!is_null($tc_count)) ? $tc_count[$execIdReq] : 1;
-        for ($i = 0; $i<$count; $i++) {
-        	
+        
+        // Generate name with progessive
+     	$getOptions['check_criteria'] = 'like';
+        $myrow = $tcase_mgr->getDuplicatesByName($reqData['title'],$tsuite_id,$getOptions);	
+        $siblingQty = count($myrow);
+        
+        for ($idx = 0; $idx < $count; $idx++) 
+        {
 	        $testcase_order++;
+	        $siblingQty++;
+            $tcase_name = $reqData['title'] . " [{$siblingQty}] "; 
+            	        
 	        // Julian - BUGID 2995
-	  	    $tcase=$tcase_mgr->create($tsuite_id,$reqData['title'],
-	  	                              $req_cfg->testcase_summary_prefix . $reqData['scope'] ,
-						              $empty_preconditions, $empty_steps,$empty_results,$user_id,
-						              null,$testcase_order,testcase::AUTOMATIC_ID,
-	  		                          $cfg['check_names_for_duplicates'],$cfg['action_on_duplicate_name']);
-	
-	        $tcase_name=$tcase['new_name'];
-	        if( $tcase_name == '' )
-	        {
-	            $tcase_name=$reqData['title'];
-	        }
-	        $output[]=sprintf(lang_get('tc_created'), $tcase_name);
-	
+	  	    $tcase = $tcase_mgr->create($tsuite_id,$tcase_name,$req_cfg->testcase_summary_prefix . $reqData['scope'] ,
+						                $empty_preconditions, $empty_steps,$empty_results,$user_id,null,
+						                $testcase_order,testcase::AUTOMATIC_ID,TESTCASE_EXECUTION_TYPE_MANUAL,
+						                $testcase_importance_default,$createOptions);
+	        
+	        $tcase_name = $tcase['new_name'] == '' ? $tcase_name : $tcase['new_name'];
+	        $output[]=sprintf($labels['tc_created'], $tcase_name);
+
 	  		// create coverage dependency
 	  		if (!$this->assign_to_tcase($reqData['id'],$tcase['id']) ) 
 	  		{
-	  			$output[] = 'Test case: ' . $reqData['title'] . "was not created";
+	  			$output[] = 'Test case: ' . $tcase_name . " was not created";
 	  		}
         }
   	}
-
   	return $output;
   }
 

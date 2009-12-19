@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.208 2009/12/19 16:27:02 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.209 2009/12/19 17:58:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -312,9 +312,10 @@ class testcase extends tlObjectWithAttachments
 		{
 			$algo_cfg = config_get('testcase_cfg')->duplicated_name_algorithm;
 			$getOptions['check_criteria'] = ($algo_cfg->type == 'counterSuffix') ? 'like' : '='; 
-	        $myrow = $this->getDuplicatesByName($name,$parent_id,$getOptions);	
+			$getOptions['access_key'] = ($algo_cfg->type == 'counterSuffix') ? 'name' : 'id'; 
+	        $itemSet = $this->getDuplicatesByName($name,$parent_id,$getOptions);	
 	        
-			if( !is_null($myrow) && ($siblingQty=count($myrow)) > 0 )
+			if( !is_null($itemSet) && ($siblingQty=count($itemSet)) > 0 )
 			{
 		      $ret['has_duplicate'] = true;
 			  switch($my['options']['action_on_duplicate_name'])
@@ -335,13 +336,23 @@ class testcase extends tlObjectWithAttachments
 			            	break;
 			            	
 			            	case 'counterSuffix':
-			            	    $add_string = $siblingQty+1;
-			            	    if( !is_null($algo_cfg->text) )
-			            	    {
-			            	    	$add_string = sprintf($algo_cfg->text,$add_string);
-			            	    }
-                                // Need to recheck
-			            		$name .= $add_string;
+			            	    $mask =  !is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
+            	            	$nameSet = array_flip(array_keys($itemSet));
+			            		$target = $name . sprintf($mask,++$siblingQty);
+                                
+                                // Need to recheck if new generated name does not crash with existent name
+                                // why? Suppose you have created:
+            					// TC [1]
+            					// TC [2]
+            					// TC [3]
+            					// Then you delete TC [2].
+            					// When I got siblings  il will got 2 siblings, if I create new progressive using next,
+            					// it will be 3 => I will get duplicated name.
+            					while( isset($nameSet[$target]) )
+            					{
+			            			$target = $name . sprintf($mask,++$siblingQty);
+            					}
+                                $name = $target;
 			            	break;
 			            } 
 

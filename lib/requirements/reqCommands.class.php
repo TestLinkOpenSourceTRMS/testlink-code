@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2009/12/19 13:31:10 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2009/12/19 17:58:25 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -264,11 +264,12 @@ class reqCommands
 	function doCreateTestCases(&$argsObj)
 	{
 		$guiObj = $this->createTestCases($argsObj);
-	    $guiObj->array_of_msg = $this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
-	                                                                      $argsObj->user_id,$argsObj->tproject_id,
-	                                                                      $argsObj->testcase_count);
+	    $msg = $this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
+	                                                     $argsObj->user_id,$argsObj->tproject_id,
+	                                                     $argsObj->testcase_count);
         // need to update results
 		$guiObj = $this->createTestCases($argsObj);
+		$guiObj->array_of_msg = $msg;
 	    return $guiObj;
 	}
 }

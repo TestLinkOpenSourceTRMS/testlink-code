@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.29 2009/11/29 18:44:04 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.30 2009/12/19 17:56:17 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -52,11 +52,13 @@
 
 <body {$body_onload}>
 <h1 class="title">
+  {$toggle_direct_link_img} &nbsp;
 	{$gui->main_descr|escape}
 	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
 </h1>
 
 <div class="workBack">
+   <div class="direct_link" style='display:none'>{$gui->direct_link}</div>
 
 {include file="$buttons_template"}
 

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.10 2009/12/08 14:06:24 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.11 2009/12/19 17:58:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -179,6 +179,7 @@ class TLSmarty extends Smarty
         // Images
         $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
         $api_info_img = TL_THEME_IMG_DIR . "/brick.png";
+        $direct_link_img = TL_THEME_IMG_DIR . "/world_link.png";
         
         $this->assign("sort_img",$sort_img);
         $this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
@@ -189,6 +190,12 @@ class TLSmarty extends Smarty
         " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
         " src=\"{$api_info_img}\" align=\"left\" />";
         $this->assign("toggle_api_info_img",$toggle_api_info_img);
+
+        $msg = lang_get('show_hide_direct_link');
+        $toggle_direct_link_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
+        " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
+        " src=\"{$direct_link_img}\" align=\"left\" />";
+        $this->assign("toggle_direct_link_img",$toggle_direct_link_img);
         
         // Some useful values for Sort Table Engine
         switch (TL_SORT_TABLE_ENGINE)

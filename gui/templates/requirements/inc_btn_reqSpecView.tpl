@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.14 2009/12/15 21:09:10 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.15 2009/12/19 17:56:17 franciscom Exp $
 
 rev: 20090321 - franciscom 
      20080925 - franciscom - child requirements/folder management 
@@ -54,11 +54,7 @@ rev: 20090321 - franciscom
  		      <input type="button" name="exportReq" value="{$labels.btn_export}"
 		             onclick="location='{$req_export_url}'" />
 	  	{/if}
-	  	
-	  	{* contribution BUGID 2999, show direct link *}
-	<input type="button" name="direct_link" value="{$labels.btn_show_direct_link}" 
-	       onclick="javascript:alert('{$gui->direct_link}')"/>
-	
+
 	</div>
   </form>
 </div>

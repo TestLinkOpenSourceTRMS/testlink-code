@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.22 2009/12/17 08:59:35 franciscom Exp $
+$Id: reqView.tpl,v 1.23 2009/12/19 17:56:17 franciscom Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -10,8 +10,7 @@ rev: 20080512 - franciscom - added paremt_descr
 
 {lang_get var="labels"
           s="req,scope,status,coverage,req_msg_notestcase,type,expected_coverage,
-             title_created,by,title_last_mod,btn_edit,btn_delete,no_records_found,
-             btn_show_direct_link"}
+             title_created,by,title_last_mod,btn_edit,btn_delete,no_records_found"}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -32,11 +31,14 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 <body {$body_onload}>
 
 <h1 class="title">
+  {$toggle_direct_link_img} &nbsp;
 	{if $gui->showReqSpecTitle}{$gui->parent_descr|escape}{$tlCfg->gui_title_separator_2}{/if}
 	{$gui->main_descr|escape}
 </h1>
 
 <div class="workBack">
+   <div class="direct_link" style='display:none'>{$gui->direct_link}</div>
+
 
 {* contribution by asimon83/mx-julian *}
 {if $gui->req.id}
@@ -56,11 +58,6 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 		<input type="button" name="delete_req" value="{$labels.btn_delete}"
 		       onclick="delete_confirmation({$gui->req.id},'{$gui->req.title|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title}', '{$warning_msg}');"	/>
-					                                
-	{* contribution BUGID 2999, show direct link *}
-	<input type="button" name="direct_link" value="{$labels.btn_show_direct_link}" 
-	       onclick="javascript:alert('{$gui->direct_link}')"/>
-	
 	</form>
 	</div>
 	{/if}

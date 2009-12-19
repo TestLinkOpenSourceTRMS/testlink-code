@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.32 2009/12/15 20:51:37 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.33 2009/12/19 17:57:08 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -11,14 +11,13 @@ rev:
                             to test plans. 
     20090215 - franciscom - BUGID - show info about links to test plans
 *}
-
 {lang_get var="labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
              btn_edit,btn_del,btn_mv_cp,btn_del_this_version,btn_new_version,
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
-             execution_type,test_importance,none,preconditions,btn_show_direct_link"}
+             execution_type,test_importance,none,preconditions"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -67,7 +66,6 @@ rev:
       {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     {/if} 
   {/if}
-
 
   <div class="groupBtn">
 
@@ -144,11 +142,6 @@ rev:
 		<input type="button" name="tstButton" value="{$labels.btn_execute_automatic_testcase}"
 		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
 		*}
-	
-	{* contribution BUGID 2999, show direct link *}
-	<input type="button" name="direct_link" value="{$labels.btn_show_direct_link}" 
-		       onclick="javascript:alert('{$direct_link}')"/>
-	
 	</form>
 	</span>
 	
@@ -166,12 +159,12 @@ rev:
  	{/if}
  
 <table class="simple">
-    {if $args_show_title == "yes"}
+  {if $args_show_title == "yes"}
 	<tr>
 		<th colspan="2">
 		{$args_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$args_testcase.name|escape}</th>
 	</tr>
-    {/if}
+  {/if}
 
   {if $args_show_version == "yes"}
 	  <tr>

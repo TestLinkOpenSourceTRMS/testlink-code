@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.19 2009/12/17 08:44:34 franciscom Exp $
+$Id: reqEdit.tpl,v 1.20 2009/12/19 13:08:39 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20091125 - franciscom - 
@@ -9,7 +9,7 @@ internal revision
 
 {lang_get var='labels' 
           s='show_event_history,btn_save,cancel,status,scope,warning,req_doc_id,
-             title,warning_expected_coverage,type,
+             title,warning_expected_coverage,type,warning_expected_coverage_range,
              warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -22,6 +22,7 @@ internal revision
 	var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id}";
 	var warning_empty_req_title = "{$labels.warning_empty_req_title}";
 	var warning_expected_coverage = "{$labels.warning_expected_coverage}";
+	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range}";
 	{literal}
 	function validateForm(f)
 	{
@@ -42,9 +43,16 @@ internal revision
 		
     {if $gui->req_cfg->expected_coverage_management  }
 		  {literal}
-		  if (isNaN(parseInt(f.expected_coverage.value)))
+		  value = parseInt(f.expected_coverage.value);
+		  if (isNaN(value))
 		  {
 		  	alert_message(alert_box_title,warning_expected_coverage);
+		  	selectField(f,'expected_coverage');
+		  	return false;
+		  }
+		  else if( value <= 0)
+		  {
+		  	alert_message(alert_box_title,warning_expected_coverage_range);
 		  	selectField(f,'expected_coverage');
 		  	return false;
 		  }

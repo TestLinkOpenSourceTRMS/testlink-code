@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2009/12/19 08:46:34 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2009/12/20 18:47:48 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -54,6 +54,7 @@ function init_args()
 {
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 					 "req_spec_id" => array(tlInputParameter::INT_N),
+					 "containerID" => array(tlInputParameter::INT_N),
 					 "reqDocId" => array(tlInputParameter::STRING_N,0,32),
 					 "req_title" => array(tlInputParameter::STRING_N,0,100),
 					 "scope" => array(tlInputParameter::STRING_N),
@@ -61,8 +62,9 @@ function init_args()
 					 "reqType" => array(tlInputParameter::STRING_N,0,1),
 					 "countReq" => array(tlInputParameter::INT_N),
 					 "expected_coverage" => array(tlInputParameter::INT_N),
-					 "doAction" => array(tlInputParameter::STRING_N,0,100),
+					 "doAction" => array(tlInputParameter::STRING_N,0,20),
 					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
+			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
 					 "testcase_count" => array(tlInputParameter::ARRAY_INT));	
 		
 	$args = new stdClass();
@@ -89,11 +91,13 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
     $renderType = 'none';
+    // @TODO document
     $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                              'doDelete' => '', 'doReorder' => '', 'reorder' => '',
                              'createTestCases' => 'doCreateTestCases',
                              'doCreateTestCases' => 'doCreateTestCases',
-                             'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate');
+                             'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
+                             'copy' => 'doCopy');
 
 
 
@@ -105,7 +109,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "create":
         $owebEditor->Value = $argsObj->scope;
         break;
-        
+
         default:
     	$owebEditor->Value = getItemTemplateContents('requirement_template',$owebEditor->InstanceName, 
     	                                             $argsObj->scope);
@@ -127,6 +131,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "doCreateTestCases":
 		case "doCreate":
       	case "doUpdate":
+        case "copy":
+        case "doCopy":
             $renderType = 'template';
             $key2loop = get_object_vars($opObj);
             foreach($key2loop as $key => $value)
@@ -147,7 +153,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
             {
                 $renderType = 'redirect';  
             } 
-            break;
+        break;
     }
 
     switch($renderType)
@@ -163,11 +169,15 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         break;
 
         default:
-        	break;
+       	break;
     }
 
 }
 
+/**
+ * 
+ *
+ */
 function initialize_gui(&$dbHandler,&$argsObj)
 {
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);

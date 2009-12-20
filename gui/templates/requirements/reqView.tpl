@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.23 2009/12/19 17:56:17 franciscom Exp $
+$Id: reqView.tpl,v 1.24 2009/12/20 18:49:26 franciscom Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -10,7 +10,8 @@ rev: 20080512 - franciscom - added paremt_descr
 
 {lang_get var="labels"
           s="req,scope,status,coverage,req_msg_notestcase,type,expected_coverage,
-             title_created,by,title_last_mod,btn_edit,btn_delete,no_records_found"}
+             title_created,by,title_last_mod,btn_edit,btn_delete,btn_cp,
+             no_records_found"}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -50,14 +51,15 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 		<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 		<input type="hidden" name="doAction" value="" />
 		
-		<input type="submit" name="edit_req" 
-		       value="{$labels.btn_edit}" 
-		       onclick="doAction.value='edit'"/>
+		<input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
 		
 		
 		<input type="button" name="delete_req" value="{$labels.btn_delete}"
 		       onclick="delete_confirmation({$gui->req.id},'{$gui->req.title|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title}', '{$warning_msg}');"	/>
+					                                
+					                                
+		<input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>
 	</form>
 	</div>
 	{/if}

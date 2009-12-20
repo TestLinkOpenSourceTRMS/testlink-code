@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2009/12/19 17:58:25 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2009/12/20 18:47:47 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -20,6 +20,7 @@ class reqCommands
   private $db;
   private $reqSpecMgr;
   private $reqMgr;
+  
   private $reqStatusDomain;
   private $reqTypeDomain;
 
@@ -28,6 +29,7 @@ class reqCommands
 	    $this->db=$db;
 	    $this->reqSpecMgr = new requirement_spec_mgr($db);
 	    $this->reqMgr = new requirement_mgr($db);
+	    
 	    $this->reqStatusDomain=init_labels(config_get('req_status'));
 	    $this->reqTypeDomain=init_labels(config_get('req_cfg')->type_labels);
 	}
@@ -272,5 +274,65 @@ class reqCommands
 		$guiObj->array_of_msg = $msg;
 	    return $guiObj;
 	}
+
+
+    /**
+     * 
+     *
+     */
+	function copy(&$argsObj)
+	{
+		$obj = new stdClass();
+		$obj->items = array($this->reqMgr->get_by_id($argsObj->req_id));
+		$obj->main_descr = lang_get('req') . TITLE_SEP . $obj->req['title'];
+		$obj->action_descr = lang_get('copy_one_req');
+        $obj->template = 'reqCopy.tpl';
+		$obj->containers = null;
+		$obj->page2call = 'lib/requirements/reqEdit.php';
+  
+  	    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
+	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+        
+ 		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
+	  	$subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']);
+ 		if(count($subtree))
+		{
+		  $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
+        }
+		return $obj;
+	}
+
+    /**
+     * 
+     *
+     */
+	function doCopy(&$argsObj)
+	{
+		echo __FUNCTION__;
+		$target_req_spec = $this->reqSpecMgr->get_by_id($argsObj->containerID);
+		$itemID = current($argsObj->itemSet);
+		$argsObj->req_id = $itemID;
+		$obj = $this->copy($argsObj);
+      	$obj->req = null;
+      	
+		$ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,$argsObj->user_id);
+		$obj->user_feedback = $ret['msg'];
+	    $obj->array_of_msg = '';
+		if($ret['status_ok'])
+		{
+			$new_req = $this->reqMgr->get_by_id($ret['id']);
+		    $source_req = $this->reqMgr->get_by_id($itemID);
+		    $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
+			logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
+			$obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id']);
+  			$obj->template = 'reqCopy.tpl';
+  			$obj->req_id = $ret['id'];
+  		    $obj->array_of_msg = array($logMsg);	
+  			
+		}
+		return $obj;	
+	}
+
+
 }
 ?>

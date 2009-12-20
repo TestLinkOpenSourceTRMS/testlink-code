@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.209 2009/12/19 17:58:25 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.210 2009/12/20 15:54:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091220 - franciscom - copy_attachments() refactoring
  * 20091217 - franciscom - getDuplicatesByName() - new argument added
  * 20091215 - franciscom - getPrefix() - changed in return type, to avoid in some situations
  *                                       a double call.
@@ -148,10 +149,10 @@ class testcase extends tlObjectWithAttachments
 	 * 
 	 * @param resource &$db reference to database handler
 	 */
-	function testcase(&$db)
+	function __construct(&$db)
 	{
 		$this->db = &$db;
-		$this->tproject_mgr = New testproject($this->db);
+		$this->tproject_mgr = new testproject($this->db);
 		$this->tree_manager = &$this->tproject_mgr->tree_manager;
 
 		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
@@ -2987,43 +2988,44 @@ class testcase extends tlObjectWithAttachments
 	 **/
 	function copy_attachments($source_id,$target_id)
 	{
-		$table_name = $this->attachmentTableName;
-		$f_parts = null;
-		$destFPath = null;
-		$mangled_fname = '';
-		$status_ok = false;
-		$repo_type = config_get('repositoryType');
-		$repo_path = config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
+		$this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
 		
-		$attachments = $this->getAttachmentInfos($source_id);
-		if(count($attachments) > 0)
-		{
-			foreach($attachments as $key => $value)
-			{
-				$file_contents = null;
-				$f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
-				$mangled_fname = $f_parts[count($f_parts)-1];
-				
-				if ($repo_type == TL_REPOSITORY_TYPE_FS)
-				{
-					$destFPath = $this->attachmentRepository->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
-					$status_ok = copy($repo_path . $value['file_path'],$destFPath);
-				}
-				else
-				{
-					$file_contents = $this->attachmentRepository->getAttachmentContentFromDB($value['id']);
-					$status_ok = sizeof($file_contents);
-				}
-				if($status_ok)
-				{
-					$attachment = new tlAttachment();
-					$attachment->create($target_id,$table_name,$value['file_name'],
-						                $destFPath,$file_contents,$value['file_type'],
-						                $value['file_size'],$value['title']);
-					$attachment->writeToDb($this->db);
-				}
-			}
-		}
+		// $f_parts = null;
+		// $destFPath = null;
+		// $mangled_fname = '';
+		// $status_ok = false;
+		// $repo_type = config_get('repositoryType');
+		// $repo_path = config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
+		// 
+		// $attachments = $this->getAttachmentInfos($source_id);
+		// if(count($attachments) > 0)
+		// {
+		// 	foreach($attachments as $key => $value)
+		// 	{
+		// 		$file_contents = null;
+		// 		$f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
+		// 		$mangled_fname = $f_parts[count($f_parts)-1];
+		// 		
+		// 		if ($repo_type == TL_REPOSITORY_TYPE_FS)
+		// 		{
+		// 			$destFPath = $this->attachmentRepository->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
+		// 			$status_ok = copy($repo_path . $value['file_path'],$destFPath);
+		// 		}
+		// 		else
+		// 		{
+		// 			$file_contents = $this->attachmentRepository->getAttachmentContentFromDB($value['id']);
+		// 			$status_ok = sizeof($file_contents);
+		// 		}
+		// 		if($status_ok)
+		// 		{
+		// 			$attachment = new tlAttachment();
+		// 			$attachment->create($target_id,$table_name,$value['file_name'],
+		// 				                $destFPath,$file_contents,$value['file_type'],
+		// 				                $value['file_size'],$value['title']);
+		// 			$attachment->writeToDB($this->db);
+		// 		}
+		// 	}
+		// }
 	}
 
 	

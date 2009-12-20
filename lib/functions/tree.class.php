@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.75 2009/12/20 10:55:11 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.76 2009/12/20 11:02:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1255,7 +1255,7 @@ class tree extends tlObject
                                10   array(name =>	'TS2', level 	=> 2)
 
   */
-  protected function createHierarchyMap($array2map,$mode='dotted')
+  function createHierarchyMap($array2map,$mode='dotted')
   {
 		$hmap=array();
 		$the_level = 1;

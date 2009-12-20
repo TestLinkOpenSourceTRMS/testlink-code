@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/12/20 18:54:28 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/12/20 19:01:47 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -283,12 +283,14 @@ class reqCommands
 	function copy(&$argsObj)
 	{
 		$obj = new stdClass();
-		$obj->items = array($this->reqMgr->get_by_id($argsObj->req_id));
-		$obj->main_descr = lang_get('req') . TITLE_SEP . $obj->req['title'];
+		$req = $this->reqMgr->get_by_id($argsObj->req_id);
+		$obj->items = array($req);
+		$obj->main_descr = lang_get('req') . TITLE_SEP . $req['title'];
 		$obj->action_descr = lang_get('copy_one_req');
         $obj->template = 'reqCopy.tpl';
 		$obj->containers = null;
 		$obj->page2call = 'lib/requirements/reqEdit.php';
+		$obj->array_of_msg = '';
   
   	    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');

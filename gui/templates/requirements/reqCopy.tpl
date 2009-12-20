@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCopy.tpl,v 1.2 2009/12/20 18:49:26 franciscom Exp $
+$Id: reqCopy.tpl,v 1.3 2009/12/20 18:52:06 franciscom Exp $
 Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
@@ -52,6 +52,12 @@ function check_action_precondition(container_id,action,msg)
 <h1 class="title"> </h1>
 <div class="workBack">
 <h1 class="title">{$gui->action_descr}</h1>
+{if $gui->array_of_msg != ''}
+  <br />
+  {include file="inc_msg_from_array.tpl" array_of_msg=$gui->array_of_msg arg_css_class="messages"}
+  <br />
+{/if}
+
 	<form id="copy_req" name="copy_req" method="post" action="{$gui->page2call}">
 		<p>{$labels.choose_target}:
 			<select name="containerID" id="containerID">

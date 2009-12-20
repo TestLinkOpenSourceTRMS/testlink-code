@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.74 2009/12/19 10:56:53 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.75 2009/12/20 10:55:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091220 - franciscom - new method createHierarchyMap()
  * 20090926 - franciscom - get_subtree() - interface changes
  * 20090923 - franciscom - get_full_path_verbose() - fixed bug
  * 20090905 - franciscom - get_full_path_verbose() new options
@@ -1212,6 +1213,88 @@ class tree extends tlObject
 		}
 	}
  
+
+  /*
+  
+              [$mode]: dotted -> $level number of dot characters are appended to
+                               the left of item name to create an indent effect.
+                               Level indicates on what tree layer item is positioned.
+                               Example:
+
+                                null
+                                \
+                               id=1   <--- Tree Root = Level 0
+                                 |
+                                 + ------+
+                               /   \      \
+                            id=9   id=2   id=8  <----- Level 1
+                                    \
+                                     id=3       <----- Level 2
+                                      \
+                                       id=4     <----- Level 3
+
+
+                               key: item id (= node id on tree).
+                               value: every array element is an string, containing item name.
+
+                               Result example:
+
+                                2  .TS1
+                                3 	..TS2
+                                9 	.20071014-16:22:07 TS1
+                               10 	..TS2
+
+
+                     array  -> key: item id (= node id on tree).
+                               value: every array element is a map with the following keys
+                               'name', 'level'
+
+                                2  	array(name => 'TS1',level =>	1)
+                                3   array(name => 'TS2',level =>	2)
+                                9	  array(name => '20071014-16:22:07 TS1',level =>1)
+                               10   array(name =>	'TS2', level 	=> 2)
+
+  */
+  protected function createHierarchyMap($array2map,$mode='dotted')
+  {
+		$hmap=array();
+		$the_level = 1;
+		$level = array();
+  		$pivot = $array2map[0];
+
+		foreach($array2map as $elem)
+		{
+			$current = $elem;
+
+			if ($pivot['id'] == $current['parent_id'])
+			{
+				$the_level++;
+				$level[$current['parent_id']]=$the_level;
+			}
+			else if ($pivot['parent_id'] != $current['parent_id'])
+			{
+				$the_level = $level[$current['parent_id']];
+			}
+
+			switch($mode)
+			{
+  				case 'dotted':
+					$hmap[$current['id']] = str_repeat('.',$the_level) . $current['name'];
+					break;
+
+  				case 'array':
+					$hmap[$current['id']] = array('name' => $current['name'], 'level' =>$the_level);
+					break;
+			}
+
+			// update pivot
+			$level[$current['parent_id']]= $the_level;
+			$pivot=$elem;
+		}
+		
+	    return $hmap;
+  }
+
 
  
 }// end class

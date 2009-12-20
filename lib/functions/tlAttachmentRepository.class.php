@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.1 2009/09/05 18:19:07 schlundus Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.2 2009/12/20 15:55:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
+ * 20091220 - franciscom - new method copyAttachments()
  *
  */
 
@@ -35,6 +36,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 * @var string the path to the repository if filesystem 
 	 */
 	protected $repositoryPath;
+	
 	/**
 	 * @var array additional attachment configuration
 	 */
@@ -80,9 +82,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     public static function getType()
     {
     	//@TODO schlundus, type should came from configuration class
-    	global $g_repositoryType;
-    	
-    	return $g_repositoryType;
+    	return config_get('repositoryType');
     }
 	/**
 	 * returns the compression type of the repository
@@ -92,9 +92,7 @@ class tlAttachmentRepository extends tlObjectWithDB
 	public static function getCompression()
     {
     	//@TODO schlundus, type should came from configuration class
-    	global $g_repositoryCompressionType;
-    	
-    	return $g_repositoryCompressionType;
+    	return config_get('repositoryCompressionType');
     }
     /**
      * returns the path to the repository
@@ -104,9 +102,7 @@ class tlAttachmentRepository extends tlObjectWithDB
     public static function getPathToRepository()
     {
     	//@TODO schlundus, path should came from configuration class
-    	global $g_repositoryPath;
-    	
-    	return $g_repositoryPath;
+    	return config_get('repositoryPath');
     }
     
     
@@ -321,14 +317,16 @@ class tlAttachmentRepository extends tlObjectWithDB
 	{
 		$content = null;
 		if (!$attachmentInfo)
+		{
 			$attachmentInfo = $this->getAttachmentInfo($id);
+		}
+		
 		if ($attachmentInfo)
 		{
 			//for DB-repository the filename is null
-			if (($attachmentInfo['file_path']) == "")
-				$content = $this->getAttachmentContentFromDB($id);
-			else
-				$content = $this->getAttachmentContentFromFS($id);
+			$fname = 'getAttachmentContentFrom';
+			$fname .= ($attachmentInfo['file_path'] == "") ? 'DB' : 'FS';
+			$content = $this->$fname($id);
 		}
 		return $content;
 	}
@@ -484,5 +482,50 @@ class tlAttachmentRepository extends tlObjectWithDB
 
 		return $attachmentIDs;
 	}
+
+    /*
+  	 * @param $fkTableName the "type" of the object, or the table the object is stored in 
+     */
+	function copyAttachments($source_id,$target_id,$fkTableName)
+	{
+		$f_parts = null;
+		$destFPath = null;
+		$mangled_fname = '';
+		$status_ok = false;
+		$repo_type = config_get('repositoryType');
+		$repo_path = config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
+		
+		$attachments = $this->getAttachmentInfosFor($source_id,$fkTableName);
+		if(count($attachments) > 0)
+		{
+			foreach($attachments as $key => $value)
+			{
+				$file_contents = null;
+				$f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
+				$mangled_fname = $f_parts[count($f_parts)-1];
+				
+				if ($repo_type == TL_REPOSITORY_TYPE_FS)
+				{
+					$destFPath = $this->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
+					$status_ok = copy($repo_path . $value['file_path'],$destFPath);
+				}
+				else
+				{
+					$file_contents = $this->getAttachmentContentFromDB($value['id']);
+					$status_ok = sizeof($file_contents);
+				}
+				if($status_ok)
+				{
+		            $attachmentMgr = new tlAttachment();
+					$attachmentMgr->create($target_id,$fkTableName,$value['file_name'],
+						                   $destFPath,$file_contents,$value['file_type'],
+						                   $value['file_size'],$value['title']);
+					$attachmentMgr->writeToDB($this->db);
+				}
+			}
+		}
+	}
+
+
 }
 ?>

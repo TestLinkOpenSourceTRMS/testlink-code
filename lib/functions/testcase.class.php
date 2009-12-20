@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.210 2009/12/20 15:54:52 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.211 2009/12/20 18:48:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2984,7 +2984,6 @@ class testcase extends tlObjectWithAttachments
 	/** 
 	 * Copy attachments from source testcase to target testcase
 	 * 
-	 * @ TODO schlundus, copy attachments should be a repository functionality 
 	 **/
 	function copy_attachments($source_id,$target_id)
 	{
@@ -3558,8 +3557,7 @@ class testcase extends tlObjectWithAttachments
 	  {
 	    foreach($cfmap_from as $key => $value)
 	    {
-	      $cfield[$key]=array("type_id"  => $value['type'],
-	                          "cf_value" => $value['value']);
+	      $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
 	    }
 	  }
 	  $this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');

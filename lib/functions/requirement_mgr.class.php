@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.48 $
- * @modified $Date: 2009/12/19 16:23:59 $ by $Author: franciscom $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2009/12/20 18:48:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -44,6 +44,9 @@ class requirement_mgr extends tlObjectWithAttachments
 	var $cfield_mgr;
 	var $my_node_type;
 	var $tree_mgr;
+
+    const AUTOMATIC_ID=0;
+
 
   /*
     function: requirement_mgr
@@ -146,6 +149,8 @@ function get_by_id($id)
           user_id: author
           [status]
           [type]
+          [expected_coverage]
+          [node_order]
 
     returns: map with following keys:
              status_ok -> 1/0
@@ -157,18 +162,16 @@ function get_by_id($id)
 
   */
 function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
-                $status = TL_REQ_STATUS_VALID, $type = TL_REQ_STATUS_NOT_TESTABLE,
+                $status = TL_REQ_STATUS_VALID, $type = TL_REQ_TYPE_INFO,
                 $expected_coverage=1,$node_order=0)
 {
     $result['id'] = 0;
 	$result['status_ok'] = 0;
 	$result['msg'] = 'ko';
-
 	$field_size = config_get('field_size');
 
 	$reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title = trim_and_limit($title,$field_size->req_title);
-
 	$result = $this->check_basic_data($srs_id,$title,$reqdoc_id);
 	if($result['status_ok'])
 	{
@@ -687,13 +690,13 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
             // This may be at performance level is better than create name then check on db,
             // because this approach will need more queries to DB     	
             //
-            $tcase_name = $reqData['title'] . " [{$instance}] "; 
+            $tcase_name = $reqData['title'] . " [{$instance}]"; 
             if( !is_null($nameSet) )
             {
             	while( isset($nameSet[$tcase_name]) )
             	{
             		$instance++;
-            		$tcase_name = $reqData['title'] . " [{$instance}] "; 
+            		$tcase_name = $reqData['title'] . " [{$instance}]"; 
             	}
             }        
             $nameSet[$tcase_name]=$tcase_name;
@@ -1096,15 +1099,14 @@ function xmlToMapRequirement($xml_item)
 function get_linked_cfields($id,$parent_id=null)
 {
 	$enabled = 1;
-
 	if (!is_null($id) && $id > 0)
 	{
-    $req_info = $this->get_by_id($id);
-	  $tproject_id = $req_info['testproject_id'];
+    	$req_info = $this->get_by_id($id);
+	  	$tproject_id = $req_info['testproject_id'];
 	}
 	else
 	{
-	  $tproject_id = $parent_id;
+	  	$tproject_id = $parent_id;
 	}
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,null,
 	                                                          'requirement',$id);
@@ -1265,31 +1267,185 @@ function html_table_of_custom_field_values($id)
    modifier_id
    modification_ts
    */
-  function getByDocID($doc_id,$tproject_id=null,$parent_id=null)
-  {
-  	$fields2get="R.id,R.req_doc_id,RSPEC.testproject_id,R.scope,R.type,R.status,R.expected_coverage," .
-                "R.author_id,R.creation_ts,R.modifier_id," .
-                "R.modification_ts,NH.name AS title";
+	function getByDocID($doc_id,$tproject_id=null,$parent_id=null, $options = null)
+  	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-  	$output=null;
-  	$the_doc_id=$this->db->prepare_string(trim($doc_id));
-  	$sql = "SELECT {$fields2get} FROM {$this->object_table} R, {$this->tables['nodes_hierarchy']} NH, " .
-  			"{$this->tables['req_specs']} RSPEC  WHERE R.req_doc_id='{$the_doc_id}'";
+	    $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 
+	                            'case' => 'sensitive');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+
   	
-  	if( !is_null($tproject_id) )
-  	{
-  		$sql .= " AND NH.parent_id=RSPEC.id AND RSPEC.testproject_ID={$tproject_id}";
+  		$fields2get="R.id,R.req_doc_id,RSPEC.testproject_id,R.scope,R.type,R.status,R.expected_coverage," .
+    	            "R.author_id,R.creation_ts,R.modifier_id," .
+    	            "R.modification_ts,NH.name AS title";
+    	
+  		$output=null;
+  		$the_doc_id = $this->db->prepare_string(trim($doc_id));
+	    switch($my['options']['check_criteria'])
+	    {
+	    	case '=':
+	    	default:
+	    		$check_criteria = " = '{$the_doc_id}' ";
+	    	break;
+	    	
+	    	case 'like':
+	    		$check_criteria = " LIKE '{$the_doc_id}%' ";
+	    	break;
+	    }
+  		
+  		$sql = " /* $debugMsg */ SELECT {$fields2get} " .
+  		       " FROM {$this->object_table} R, {$this->tables['nodes_hierarchy']} NH, " .
+  			   " {$this->tables['req_specs']} RSPEC  " .
+  			   " WHERE R.req_doc_id {$check_criteria} ";
+  		
+  		if( !is_null($tproject_id) )
+  		{
+  			$sql .= " AND NH.parent_id=RSPEC.id AND RSPEC.testproject_ID={$tproject_id}";
+  		}
+    	
+  		if( !is_null($parent_id) )
+  		{
+  			$sql .= " AND NH.parent_id={$parent_id}";
+  		}
+    	
+  		$sql .= " AND R.id=NH.id ";
+  		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+  		return $output;
   	}
 
-  	if( !is_null($parent_id) )
-  	{
-  		$sql .= " AND NH.parent_id={$parent_id}";
-  	}
+	/**
+	 * 
+	 *
+	 */
+	function copy_to($id,$parent_id,$user_id,$options=null)
+	{
+	    $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok');
+	    $my['options'] = array();
+	    $my['options'] = array_merge($my['options'], (array)$options);
+		$item_info = $this->get_by_id($id);
+		
+		if ($item_info)
+		{
+			$field_size = config_get('field_size');
+			
+			// Check if another req with same DOC ID exists on target container,
+			// If yes generate a new DOC ID
+			$getOptions = array('check_criteria' => 'like', 'access_key' => 'req_doc_id');
+		    $itemSet = $this->getByDocID($item_info['req_doc_id'],null,$parent_id,$getOptions);
+		    $target_doc = $item_info['req_doc_id'];
+		    $instance = 1;
+		    if( !is_null($itemSet) )
+		    {
+		    	// $siblingsQty = count($itemSet);
+		    	// req_doc_id has limited size then we need to be sure that generated id will
+		    	// not exceed DB size
+                $nameSet = array_flip(array_keys($itemSet));
+	            // 6 magic from " [xxx]"
+	            $prefix = trim_and_limit($item_info['req_doc_id'],$field_size->req_docid-6);
+                $target_doc = $prefix . " [{$instance}]"; 
+            	while( isset($nameSet[$target_doc]) )
+            	{
+            		$instance++;
+                	$target_doc = $prefix . " [{$instance}]"; 
+            	}
+		    }
+			
+			$new_item = $this->create($parent_id,$target_doc,$item_info['title'],
+			                          $item_info['scope'],$item_info['author_id'],$item_info['status'],
+			                          $item_info['type'],$item_info['expected_coverage'],
+			                          $item_info['node_order']);
+	
+	        new dBug($new_item);
+	        		
+			$this->copy_cfields($id,$new_item['id']);
+	        $this->copy_attachments($id,$new_item['id']);
+		}
+		return($new_item);
+	}
 
-  	$sql .= " AND R.id=NH.id ";
-  	$output = $this->db->fetchRowsIntoMap($sql,'id');
-  	return $output;
-  }
+
+	function copy_attachments($source_id,$target_id)
+	{
+		$this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
+	}
+
+
+	/*
+	  function: copy_cfields
+	            Get all cfields linked to any testcase of this testproject
+	            with the values presents for $from_id, testcase we are using as
+	            source for our copy.
+	
+	  args: from_id: source item id
+	        to_id: target item id
+	
+	  returns: -
+	
+	*/
+	function copy_cfields($from_id,$to_id)
+	{
+	  $cfmap_from=$this->get_linked_cfields($from_id);
+	  $cfield=null;
+	  if( !is_null($cfmap_from) )
+	  {
+	    foreach($cfmap_from as $key => $value)
+	    {
+	      $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
+	    }
+	  }
+	  $this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');
+	}
+
+
+	// /*
+	//   function: getDuplicatesByname
+	// 
+	//   args: $name
+	//         $parent_id
+	// 
+	//   returns: hash
+	// */
+	// function getDuplicatesByName($name, $parent_id, $options=null)
+	// {
+	// 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    // 
+	//     $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id');
+	//     $my['options'] = array_merge($my['options'], (array)$options);
+	//     
+	//     $target = $this->db->prepare_string($name);
+	//     switch($my['options']['check_criteria'])
+	//     {
+	//     	case '=':
+	//     	default:
+	//     		$check_criteria = " AND NHA.name = '{$target}' ";
+	//     	break;
+	//     	
+	//     	case 'like':
+	//     		$check_criteria = " AND NHA.name LIKE '{$target}%' ";
+	//     	break;
+	//     	
+	//     }
+	// 		
+	//     $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
+	// 		       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
+	// 		       " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['tcversions']} TCV  " .
+	// 		       " WHERE NHA.node_type_id = {$this->my_node_type} " .
+	// 		       " AND NHB.parent_id=NHA.id " .
+	// 		       " AND TCV.id=NHB.id " .
+	// 		       " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
+	// 		       " AND NHA.parent_id={$parent_id} {$check_criteria}";
+	// 
+	// 	$rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+	//     if( is_null($rs) || count($rs) == 0 )
+	//     {
+	//         $rs=null;   
+	//     }
+	//     return $rs;
+	// }
+
+
+
 
 } // class end
 ?>

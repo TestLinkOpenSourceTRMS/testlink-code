@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.44 2009/11/24 19:55:31 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.45 2009/12/20 10:16:56 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -14,6 +14,10 @@
 -- 
 --  Rev :
 -- 
+--  20091220 - franciscom - fields removed form req_spec and requirements 
+--                          "title" VARCHAR(100) NOT NULL DEFAULT ''
+--                          "node_order" BIGINT NOT NULL DEFAULT 0,
+--
 --  20091124 - franciscom - requirements table - new field expected_coverage
 --  20091119 - franciscom - req_specs added doc_id field
 --  20091010 - franciscom - added testplan_platforms,platforms
@@ -467,7 +471,6 @@ CREATE TABLE /*prefix*/req_specs(
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),  
   "doc_id" VARCHAR(32) NULL DEFAULT NULL,
-  "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
   "total_req" INTEGER NOT NULL DEFAULT '0',
   "type" CHAR(1) NULL DEFAULT 'N',
@@ -489,21 +492,41 @@ CREATE TABLE /*prefix*/req_suites(
   PRIMARY KEY ("id")
 ); 
 
-
-
 --
 -- Table structure for table "requirements"
 --
+-- CREATE TABLE /*prefix*/req(  
+--   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+--   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
+--   "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
+--   PRIMARY KEY ("id")
+-- ); 
+-- CREATE INDEX /*prefix*/requirements_req_doc_id ON /*prefix*/requirements ("srs_id","req_doc_id");
+
+-- CREATE TABLE /*prefix*/req_version(  
+--   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+--   "version" INTEGER NOT NULL DEFAULT '1',
+--   "scope" TEXT NULL DEFAULT NULL,
+--   "status" CHAR(1) NOT NULL DEFAULT 'V',
+--   "type" CHAR(1) NULL DEFAULT NULL,
+--   "expected_coverage" INTEGER NOT NULL DEFAULT 1,
+--   "author_id" BIGINT NULL DEFAULT NULL,
+--   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+--   "modifier_id" BIGINT NULL DEFAULT NULL,
+--   "modification_ts" TIMESTAMP NULL,
+--   PRIMARY KEY ("id","version")
+-- ); 
+
+
+
 CREATE TABLE /*prefix*/requirements(  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
   "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
-  "title" VARCHAR(100) NOT NULL DEFAULT '',
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
   "expected_coverage" INTEGER NOT NULL DEFAULT 1,
-  "node_order" BIGINT NOT NULL DEFAULT 0,
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "modifier_id" BIGINT NULL DEFAULT NULL,
@@ -512,6 +535,7 @@ CREATE TABLE /*prefix*/requirements(
 ); 
 CREATE INDEX /*prefix*/requirements_srs_id ON /*prefix*/requirements("srs_id","status");
 CREATE INDEX /*prefix*/requirements_req_doc_id ON /*prefix*/requirements ("srs_id","req_doc_id");
+--- CREATE INDEX /*prefix*/requirements_version ON /*prefix*/requirements ("id","version");
 
 
 --

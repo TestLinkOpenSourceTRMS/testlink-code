@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.36 2009/07/17 17:08:35 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.37 2009/12/20 10:20:09 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -11,43 +11,45 @@
 -- 
 -- Rev :
 --
---      20090717 - franciscom - added cfield_testprojects.location field
---      20090411 - franciscom - BUGID 2369 - testplan_tcversions
---      20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
---      20090103 - franciscom - milestones table - added new unique index
---      20081018 - franciscom - new indexes (suggested by schlundus) on events table 
---                              refactored index names
+--  20091220 - franciscom - fields removed form req_spec and requirements 
+--                          "title", "node_order" 
 --
---      20080831 - franciscom - BUGID 1650 (REQ)
---                 custom_fields.show_on_testplan_design
---                 custom_fields.enable_on_testplan_design
---                 new table cfield_testplan_design_values 
+--  20090717 - franciscom - added cfield_testprojects.location field
+--  20090411 - franciscom - BUGID 2369 - testplan_tcversions
+--  20090103 - franciscom - changed case of unique fields in UPPER CASE (milestones table A,B,C)
+--  20090103 - franciscom - milestones table - added new unique index
+--  20081018 - franciscom - new indexes (suggested by schlundus) on events table 
+--                          refactored index names
 --
---      20080722 - franciscom - added missing tc_external_id
---      20080720 - franciscom - added missing option_automation field
---      20080719 - franciscom - schema upgrade - added transactions and event tables
+--  20080831 - franciscom - BUGID 1650 (REQ)
+--             custom_fields.show_on_testplan_design
+--             custom_fields.enable_on_testplan_design
+--             new table cfield_testplan_design_values 
 --
---      20080713 - franciscom - schema upgrade
+--  20080722 - franciscom - added missing tc_external_id
+--  20080720 - franciscom - added missing option_automation field
+--  20080719 - franciscom - schema upgrade - added transactions and event tables
 --
---      20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
---      20080331 - franciscom - testplan_tcversions added node_order
---      20071202 - franciscom - added tcversions.execution_type
---      20071010 - franciscom - ntext,nvarchar,nchar -> text,varchar,char
---                              open -> is_open
---      20070519 - franciscom - milestones table date -> target_date, because
---                              date is reserved word for Oracle
+--  20080713 - franciscom - schema upgrade
 --
---      20070414 - franciscom - table requirements: added field node_order 
+--  20080528 - franciscom - BUGID 1504 - added executions.tcversion_number
+--  20080331 - franciscom - testplan_tcversions added node_order
+--  20071202 - franciscom - added tcversions.execution_type
+--  20071010 - franciscom - ntext,nvarchar,nchar -> text,varchar,char
+--                          open -> is_open
+--  20070519 - franciscom - milestones table date -> target_date, because
+--                          date is reserved word for Oracle
 --
---      20070228 - franciscom -  BUGID 697 - priority table
---      20070228 - franciscom -  BUGID 697 - builds table
---      20070131 - franciscom - requirements -> req_doc_id(32), 
+--  20070414 - franciscom - table requirements: added field node_order 
 --
---      20070120 - franciscom - following BUGID 458 ( really a new feature request)
---                              two new fields on builds table
---                              active, open
---                              
---                              
+--  20070228 - franciscom -  BUGID 697 - priority table
+--  20070228 - franciscom -  BUGID 697 - builds table
+--  20070131 - franciscom - requirements -> req_doc_id(32), 
+--
+--  20070120 - franciscom - following BUGID 458 ( really a new feature request)
+--                          two new fields on builds table  active, open
+--                          
+--                          
 --  -----------------------------------------------------------------------------------
 --
 --
@@ -431,7 +433,6 @@ CREATE NONCLUSTERED INDEX [/*prefix*/IX_req_testcase] ON [/*prefix*/req_coverage
 CREATE TABLE /*prefix*/req_specs (
 	[id] [int] NOT NULL,
 	[testproject_id] [int] NOT NULL,
-	[title] [varchar](100)  NOT NULL,
 	[scope] [text]  NULL,
 	[total_req] [int] NOT NULL CONSTRAINT [/*prefix*/DF_req_specs_total_req]  DEFAULT ((0)),
 	[type] [char](1)  NOT NULL CONSTRAINT [/*prefix*/DF_req_specs_type]  DEFAULT (N'n'),
@@ -454,11 +455,9 @@ CREATE TABLE /*prefix*/requirements (
 	[id] [int] NOT NULL,
 	[srs_id] [int] NOT NULL,
 	[req_doc_id] [varchar](32)  NULL,
-	[title] [varchar](100)  NOT NULL,
 	[scope] [text]  NULL,
 	[status] [char](1)  NOT NULL CONSTRAINT [/*prefix*/DF_requirements_status]  DEFAULT (N'n'),
 	[type] [char](1)  NULL,
-	[node_order] [int] NOT NULL DEFAULT ((1)),
 	[author_id] [int] NULL,
 	[creation_ts] [datetime] NULL CONSTRAINT [/*prefix*/DF_requirements_creation_ts]  DEFAULT (getdate()),
 	[modifier_id] [int] NULL,

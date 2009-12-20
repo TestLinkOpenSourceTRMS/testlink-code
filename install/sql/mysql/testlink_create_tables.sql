@@ -1,12 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
-# $Id: testlink_create_tables.sql,v 1.62 2009/11/24 19:52:31 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.63 2009/12/20 10:18:31 franciscom Exp $
 #
 # SQL script - create db tables for TL - MySQL  
 #
 # ATTENTION: do not use a different naming convention, that one already in use.
 #
 # Rev :
+#
+# 20091220 - franciscom - fields removed form req_spec and requirements 
+#                         "title"
 #
 # 20091119 - franciscom - requirements table - new field expected_coverage
 # 20091119 - franciscom - req_specs added doc_id field
@@ -221,7 +224,6 @@ CREATE TABLE /*prefix*/req_specs (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
   `doc_id` varchar(32) default NULL,
-  `title` varchar(100) NOT NULL,
   `scope` text,
   `total_req` int(10) NOT NULL default '0',
   `type` char(1) default 'n',
@@ -238,7 +240,6 @@ CREATE TABLE /*prefix*/requirements (
   `id` int(10) unsigned NOT NULL,
   `srs_id` int(10) unsigned NOT NULL,
   `req_doc_id` varchar(32) default NULL,
-  `title` varchar(100) NOT NULL,
   `scope` text,
   `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,

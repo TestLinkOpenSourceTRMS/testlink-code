@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCopy.tpl,v 1.3 2009/12/20 18:52:06 franciscom Exp $
+$Id: reqCopy.tpl,v 1.4 2009/12/20 18:57:56 franciscom Exp $
 Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
@@ -12,7 +12,7 @@ rev :
              check_uncheck_all_checkboxes,title,
              choose_target,copy_keywords,btn_move,btn_cp'}
 
-{lang_get s='select_at_least_one_testcase' var="check_msg"}
+{lang_get s='select_at_least_one_req' var="check_msg"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}

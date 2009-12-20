@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.49 $
- * @modified $Date: 2009/12/20 18:48:18 $ by $Author: franciscom $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2009/12/20 18:53:14 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1356,8 +1356,6 @@ function html_table_of_custom_field_values($id)
 			                          $item_info['type'],$item_info['expected_coverage'],
 			                          $item_info['node_order']);
 	
-	        new dBug($new_item);
-	        		
 			$this->copy_cfields($id,$new_item['id']);
 	        $this->copy_attachments($id,$new_item['id']);
 		}

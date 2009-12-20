@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/12/20 18:47:47 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/12/20 18:54:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -308,7 +308,6 @@ class reqCommands
      */
 	function doCopy(&$argsObj)
 	{
-		echo __FUNCTION__;
 		$target_req_spec = $this->reqSpecMgr->get_by_id($argsObj->containerID);
 		$itemID = current($argsObj->itemSet);
 		$argsObj->req_id = $itemID;

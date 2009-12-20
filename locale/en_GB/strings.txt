@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.506 2009/12/20 18:48:47 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.507 2009/12/20 18:57:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -185,6 +185,8 @@ $TLS_exec_assign_no_testcase = "Please select at least one Test Case.";
 $TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
 $TLS_no_testcases_available = "No Test Cases or no destination Test Suites available!";
 $TLS_warning_must_be_number = "Value must be a number";
+$TLS_select_at_least_one_req = "Please select at least one Requirement";
+
 
 $TLS_estimated_time_hours = "Estimated time for executing %s test cases (hours):";
 $TLS_estimated_time_min = "Estimated time for executing %s test cases (min):";

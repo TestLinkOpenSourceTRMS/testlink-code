@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.8 2009/10/05 08:47:11 franciscom Exp $
+ * $Id: db_schema_update.sql,v 1.9 2009/12/21 10:58:29 havlat Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -83,17 +83,29 @@ ALTER TABLE /*prefix*/executions  ADD COLUMN platform_id int(10) unsigned NOT NU
 
 /* tcversions */
 ALTER TABLE /*prefix*/tcversions ADD COLUMN preconditions text;
+ALTER TABLE /*prefix*/tcversions ADD COLUMN `type` smallint(5) unsigned NOT NULL default '1',
+ALTER TABLE /*prefix*/tcversions ADD COLUMN `status` smallint(5) unsigned NOT NULL default '1',
 
 /* milestones */
 ALTER TABLE /*prefix*/milestones ADD COLUMN start_date date NOT NULL default '0000-00-00';
+
+ALTER TABLE /*prefix*/testprojects ADD COLUMN `options` text,
 
 
 /* system data update */
 INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (25 ,'platform_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (26 ,'project_infrastructure_edit');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (27 ,'project_infrastructure_view');
 
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,26);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,26);
 
 /* database version update */
 INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.3', 'TestLink 1.9',CURRENT_TIMESTAMP());

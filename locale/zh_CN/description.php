@@ -3,8 +3,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/02 22:30:53 $ $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2009/12/21 12:38:56 $ $Author: havlat $
+ * @modified $Date: 2009/12/21 12:38:56 $ $Author: havlat $
+ * @modified $Date: 2009/12/21 12:38:56 $ $Author: havlat $
  * @author Martin Havlat
  *
  * LOCALIZATION:
@@ -25,226 +27,193 @@
  *
  * ----------------------------------------------------------------------------------- */
 
-// printFilter.html
-$TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
+// printFilter.html //已校对
+$TLS_hlp_generateDocOptions = "<h2>根据选项生成的文档</h2>
 
-<p>This table allows the user to filter test cases before they are viewed. If
-selected (checked) the data will be shown. In order to change the data
-presented, check or uncheck, click on Filter, and select the desired data
-level from the tree.</p>
+<p>该列表允许用户在浏览测试用例之前对其进行过滤。
+通过筛选可以显示你所需要的数据。为了改变显示的数据，
+你可以选择或者取消选择条件，点击过滤器，并在树上选择希望的数据等级。</p>
 
-<p><b>Document Header:</b> Users can filter out Document Header information. 
-Document Header information includes: Introduction, Scope, References, 
-Test Methodology, and Test Limitations.</p>
+<p><b>文档头部：</b>用户可以过滤文档的头部信息。
+文档的头部信息包括：介绍，范围，参考，测试方法和测试规范。</p>
 
-<p><b>Test Case Body:</b> Users can filter out Test Case Body information. Test Case Body information
-includes: Summary, Steps, Expected Results, and Keywords.</p>
+<p><b>测试用例的内容：</b>用户可以过滤测试用例的内容。测试用例的内容包括：
+摘要，步骤，预期结果和关键字。</p>
 
-<p><b>Test Case Summary:</b> Users can filter out Test Case Summary information from the Test Case Title,
-however, they cannot filter out Test Case Summary information from the Test
-Case Body. Test Case Summary has only been partially separated from Test Case
-Body in order to support viewing Titles with a brief Summary and the absence of
-Steps, Expected Results, and Keywords. If a user decides to view Test Case
-Body, Test Case Summary will always be included.</p>
+<p><b>测试用例摘要：</b>通过测试用例的标题，用户可以过滤测试用例摘要的信息。
+但是，用户不能通过测试用例的内容过滤测试用例摘要信息。
+为了在浏览标题时显示摘要信息和遗漏的步骤，预期结果和关键字，我们把测试摘要从测试用例内容中单独分离出来。
+当用户浏览测试用例的时候，测试用例摘要会被自动包含进来供浏览。</p>
 
-<p><b>Table of Content:</b> TestLink inserts list of all titles with internal hypertext links if checked.</p>
+<p><b>表中的内容：</b>TestLink通过内部超连接插入所有标题</p>
 
-<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MS word component 
-in second case.</p>";
+<p><b>导出格式：</b>共有两种格式：HTML和MS word。在第二种情况下，浏览器会自动调用MS word组件。</p>";
 
-// testPlan.html
-$TLS_hlp_testPlan = "<h2>Test Plan</h2>
+// testPlan.html //已校对
+$TLS_hlp_testPlan = "<h2>测试计划</h2>
 
-<h3>General</h3>
-<p>A test plan is a systematic approach to testing a system such as software. You can organize testing activity with 
-particular builds of product in time and trace results.</p>
+<h3>一般定义</h3>
+<p>测试计划是测试软件系统的一个系统性的方法。你可以根据特定的产品周期和问题跟踪结果组织你的测试活动。</p>
 
-<h3>Test Execution</h3>
-<p>This section is where users can execute test cases (write test results) and 
-print Test case suite of the Test Plan. This section is where users can track 
-the results of their test case execution.</p> 
+<h3>测试执行</h3>
+<p>在该部分用户可以执行测试用例（记录测试结果），并输出测试计划所包含的测试套件。
+同时用户也可以跟踪测试用例执行的结果。</p>
 
-<h2>Test Plan Management</h2>
-<p>This section, which is only lead accessible, allows users to administrate test plans. 
-Administering test plans involves creating/editing/deleting plans, 
-adding/editing/deleting/updating test cases in plans, creating builds as well as defining who can 
-see which plan.<br />
-Users with lead permissions may also set the priority/risk and ownership of 
-Test case suites (categories) and create testing milestones.</p> 
+<h2>测试计划的管理</h2>
+<p>这部分，仅管理人员可以访问，管理测试计划。
+管理测试计划涉及到创建、编辑和删除测试计划，添加、编辑、删除和更新测试计划所包含的测试用例，创建构建以及指派用户在项目中的权限。<br/>
+权限高的用户可以设置测试套件（类别）的优先级／风险和所有关系(测试套件由谁负责)，以及创建测试里程碑。</p>
 
-<p>Note: It is possible that users may not see a dropdown containing any Test plans. 
-In this situation all links (except lead enabled ones) will be unlinked. If you 
-are in this situation you must contact a lead or admin to grant you the proper 
-project rights or create a Test Plan for you.</p>"; 
+<p>注意：用户有可能看不到一个包含任何测试计划的下拉菜单。
+在这种情况下，所有的链接（除了管理人员开启的）都不能使用。如果出现这种情况，你一定要跟领导或管理员联系，给你在项目中授予适当的权限或者为你创建一个测试计划。</p>"; 
 
-// custom_fields.html
-$TLS_hlp_customFields = "<h2>Custom Fields</h2>
-<p>Following are some facts about the implementation of custom fields:</p>
+// custom_fields.html //已校对
+$TLS_hlp_customFields = "<h2>自定义字段</h2>
+<p>下面是关于自定义字段应用的一些实例：</p>
 <ul>
-<li>Custom fields are defined system wide.</li>
-<li>Custom fields are linked to a type of element (Test Suite, Test Case)</li>
-<li>Custom fields can be linked to multiple Test Projects.</li>
-<li>The sequence of displaying custom fields can be different per Test Project.</li>
-<li>Custom fields can be turned inactive for an specific Test Project.</li>
-<li>Number of custom fields is not restricted.</li>
+<li>自定义字段定义系统范围。</li>
+<li>自定义字段关联到一种元素类型（测试套件，测试用例）。</li>
+<li>自定义字段可以关联到多个测试项目。</li>
+<li>每个测试项目中自定义字段的显示顺序不同。</li>
+<li>可以在特定的测试项目中锁定自定义字段。</li>
+<li>自定义字段的数量不受限制。</li>
 </ul>
 
-<p>The definition of a custom field includes the following logical
-attributes:</p>
+<p>自定义字段的定义中包括一下属性：</p>
 <ul>
-<li>Custom field name</li>
-<li>Caption variable name (eg: This is the value that is
-supplied to lang_get() API , or displayed as-is if not found in language file).</li>
-<li>Custom field type (string, numeric, float, enum, email)</li>
-<li>Enumeration possible values (eg: RED|YELLOW|BLUE), applicable to list, multiselection list 
-and combo types.<br />
-<i>Use the pipe ('|') character to
-separate possible values for an enumeration. One of the possible values
-can be an empty string.</i>
+<li>自定义字段名称</li>
+<li>变量名称的描述（例如：该值用于提供lang_get() API，或者当语言文件里不存在时显示原样）。</li>
+<li>自定义字段类型 (string, numeric, float, enum, email)</li>
+<li>列举可能的取值 (例如: RED|YELLOW|BLUE), 适用于清单，多选列表和组合类型。<br />
+<i>用管道符 ('|') 将可能的枚举值分离开。空字符串可能也是可选的值。</i>
 </li>
-<li>Default value: NOT IMPLEMENTED YET</li>
-<li>Minimum/maximum length for the custom field value (use 0 to disable). (NOT IMPLEMENTED YET)</li>
-<li>Regular expression to use for validating user input
-(use <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
-syntax). <b>(NOT IMPLEMENTED YET)</b></li>
-<li>All custom fields are currently saved to a field of type VARCHAR(255) in the database.</li>
-<li>Display on test specification.</li>
-<li>Enable on test specification. User can change the value during Test Case Specification Design</li>
-<li>Display on test execution.</li>
-<li>Enable on test execution. User can change the value during Test Case execution</li>
-<li>Display on test plan design.</li>
-<li>Enable on test plan design. User can change the value during Test Plan design (add test cases to test plan)</li>
-<li>Available for. User choose to what kind of item the field belows.</li>
+<li>默认值: 尚未实现</li>
+<li>自定义字段的最大／最小长度 (用0代表禁用). (尚未实现)</li>
+<li>用正则表达式验证用户的输入
+(用 <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
+语法). <b>(尚未实现)</b></li>
+<li>所有的自定义字段目前以VARCHAE(255)的字段类型被保存在数据库中。</li>
+<li>显示在所有的测试规格说明中。</li>
+<li>启用测试规格。当设计测试用例规格时，用户可以对其进行修改。</li>
+<li>显示在测试执行中。</li>
+<li>启用测试执行。当测试用例执行时用户可以对其进行修改</li>
+<li>显示在测试计划设计中</li>
+<li>启用测试计划设计。当设计测试计划(向测试计划中添加测试用例时),用户可以对其进行修改</li>
+<li>可用于。用户选择什么类型的字段选项。</li>
 </ul>
 ";
 
-// execMain.html
-$TLS_hlp_executeMain = "<h2>Executing Test Cases</h2>
-<p>Allows users to 'execute' test cases. Execution itself is merely
-assigning a test case a result (pass,fail,blocked) against a selected build.</p>
-<p>Access to a bug tracking system could be configured. User can directly add a new bugs
-and browse exesting ones then.</p>";
+// execMain.html  //已校对
+$TLS_hlp_executeMain = "<h2>执行测试用例</h2>
+<p>允许用户执行测试用例。执行本身只是一个对选择的构建的测试用例分配结果（通过，失败，锁定）的过程</p>
+<p>通过配置可以关联到缺陷跟踪系统。用户可以直接新建问题和浏览已经存在的问题。更多信息请查看安装手册。</p>";
 
-//bug_add.html
-$TLS_hlp_btsIntegration = "<h2>Add Bugs to Test Case</h2>
-<p><i>(only if it is configured)</i>
-TestLink has a very simple integration with Bug Tracking Systems (BTS),
-not being able either send a bug creationg request to BTS, neither get back the bug id.
-The integration is done using links to pages on BTS, that calls the following features:
+//bug_add.html //已校对
+$TLS_hlp_btsIntegration = "<h2>给测试用例添加问题</h2>
+<p><i>(仅在已经配置好的情况下)</i>
+TestLink 仅仅简单地跟缺陷跟踪系统（BTS）进行了集成，即不能向BTS发送创建bug的请求，也不能取回bug id号。
+该集成仅仅与BTS建立了一个页面连接，调用以下功能：
 <ul>
-	<li>Insert new bug.</li>
-	<li>Display existent bug info. </li>
+	<li>添加新问题</li>
+	<li>显示已存在问题的信息 </li>
 </ul>
 </p>  
 
-<h3>Process to add a bug</h3>
+<h3>添加问题的过程</h3>
 <p>
    <ul>
-   <li>Step 1: use the link to open BTS to insert a new bug. </li>
-   <li>Step 2: write down the BUGID assigned by BTS.</li>
-   <li>Step 3: write BUGID on the input field.</li>
-   <li>Step 4: use add bug button.</li>
+   <li>第一步: 点击连接打开BTS，添加一个新的问题</li>
+   <li>第二步: 记下BTS指定的BUGID</li>
+   <li>第三步: 将BUGID写入输入框中</li>
+   <li>第四步: 点击添加问题按钮</li>
    </ul>  
 
-After closing the add bug page, you will see relevant bug data on the execute page.
+关闭添加问题页面后，你将在执行页面上看见一个问题数据的关联信息。
 </p>";
 
-// execFilter.html
-$TLS_hlp_executeFilter = "<h2>Setup Filter and Build for test execution</h2>
+// execFilter.html  //已校对
+$TLS_hlp_executeFilter = "<h2>设置过滤器并构建测试的实施</h2>
 
-<p>The left pane consists from navigator through test cases assigned to the current " .
-"Test plan and table with settings and filter. These filters allows the user " .
-"to refine offered set of test cases before they are executed." .
-"Setup your filter, press the \"Apply\" button and select appropriate Test Case " .
-"from tree menu.</p>
+<p>左方框中包含指派给当前项目测试计划的测试用例的导航,左方框的列表包含了测试用例筛选的过滤器。" .
+"这些过滤器允许用户提炼出的一组测试用例，然后去执行。" .
+"设置好过滤器，然后点击 \"应用\" 按钮并从树形菜单中选择适当的测试用例 " .
+"</p>
 
-<h3>Build</h3>
-<p>Users must choose a build that will be connected with a test result. " .
-"Builds are the basic component for the current Test Plan. Each test case " .
-"may be run more times per build. However the last results is count only. 
-<br />Builds can be created by leads using the Create New Build page.</p>
+<h3>构建</h3>
+<p>用户必须选择一个用来和测试结果建立连接的构建。" .
+"构建是当前测试计划的基本组件。在每个构建中每一个测试用例都可能被执行多次。" .
+"然而统计时只计入最终的执行结果。 
+<br />项目负责人可以在新建构建页面创建构建。</p>
 
-<h3>Test Case ID filter</h3>
-<p>Users can filter test cases by unique identifier. This ID is created automatically 
-during create time. Empty box means that the filter doesn't apply.</p> 
+<h3>测试用例ID过滤器</h3>
+<p>用户可以过滤测试用例通过唯一的标识符。该ID在创建测试用例的时候自动生成。 
+空列表意味着还没有应用过滤器。</p> 
 
-<h3>Priority filter</h3>
-<p>Users can filter test cases by test priority. Each test case importance is combined" .
-"with test urgency within the current Test plan. For example 'HIGH' priority test case " .
-"is shown if importance or urgency is HIGH and second attribute is at least MEDIUM level.</p> 
+<h3>优先级过滤器</h3>
+<p>用户可以通过优先级来过滤测试用例。每个测试用例的重要性还与该测试用例在当前测试计划里的紧急程度有关。" .
+"例如'HIGH'优先级的测试用例会显示那些如果重要程度是HIGH，在测试计划中的紧急程度至少是MEDIUM级别的测试用例。</p> 
 
-<h2>Result filter</h2>
-<p>Users can filter test cases by results. Results are what happened to that test 
-case during a particular build. Test cases can pass, fail, be blocked, or not be run." .
-"This filter is disabled by default.</p>
+<h2>结果过滤器</h2>
+<p>用户可以通过测试结果过滤测试用例。测试结果是测试用例基于某一构建的产物。测试用例的状态包括通过，失败，锁定或者尚未运行。" .
+"该过滤器默认情况下是禁用的。</p>
 
-<h3>User filter</h3>
-<p>Users can filter test cases by their assignee. The check-box allows to include also " .
-"\"unassigned\" tests into the resulted set in addtion.</p>";
+<h3>用户过滤器</h3>
+<p>用户可以根据测试用例的指派者来过滤测试用例。复选框允许包含\"未指派\"的选项。</p>";
 /*
-<h2>Most Current Result</h2>
-<p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted 
-by the build that is chosen from the dropdown box. In this state the tree will display 
-the test cases status. 
-<br />Example: User selects build 2 from the dropdown box and doesn't check the 'most 
-current' checkbox. All test cases will be shown with their status from build 2. 
-So, if test case 1 passed in build 2 it will be colored green.
-<br />If the user decideds to check the 'most current' checkbox the tree will be 
-colored by the test cases most recent result.
-<br />Ex: User selects build 2 from the dropdown box and this time checks 
-the 'most current' checkbox. All test cases will be shown with most current 
-status. So, if test case 1 passed in build 3, even though the user has also selected 
-build 2, it will be colored green.</p>
+<h2>当前结果</h2>
+<p>默认情况下或者没有选择复选框里的"most  current"选项时，树形目录将按照下拉选择框里选择的构建排序。
+这时树形目录将显示测试用例的状态。<br />
+例如：用户从下来选择框里选择构建2而且没有选择复选框里的"most current"。
+所有测试用例会显示它们在构建2里的执行状态。 
+因此，如果测试用例1在构建2里执行通过的情况下，它会显示为绿色。
+<br />如果用户选择了复选框里的"most current"，那么树形目录里的测试用例将根据他们最新的执行结果显示相应的颜色。
+<br />例如：如果用户选择了构建2而且选择了复选框里的"most current"，那么所有的测试用例将根据他们最近的状态显示。
+因此，如果测试用例1在构建3里通过，即使用户选择了构建2，它也会显示为绿色。</p>
  */
 
 
-// newest_tcversions.html
-$TLS_hlp_planTcModified = "<h2>Newest versions of linked Test Cases</h2>
-<p>The whole set of Test Cases linked to Test Plan is analyzed, and a list of Test Cases
-which have a newest version is displayed (against the current set of the Test Plan).
+// newest_tcversions.html //已校对
+$TLS_hlp_planTcModified = "<h2>被关联测试用例的最新版本</h2>
+<p>通过分析与测试计划关联的所有测试用例，那些有最新版本的测试用例将被罗列出来（相对应于当前测试计划的测试用例）
 </p>";
 
 
-// requirementsCoverage.html
-$TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
+// requirementsCoverage.html //已校对
+$TLS_hlp_requirementsCoverage = "<h3>需求覆盖</h3>
 <br />
-<p>This feature allows to map a coverage of user or system requirements by
-test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
+<p>这个功能允许通过测试用例来映射对用户或系统需求的覆盖度。
+通过主页的\"需求规格\" 可以进行导航。</p>
 
-<h3>Requirements Specification</h3>
-<p>Requirements are grouped by 'Requirements Specification' document which is related to 
-Test Project.<br /> TestLink doesn't support versions for both Requirements Specification  
-and Requirements itself. So, version of document should be added after 
-a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p> 
+<h3>需求规格</h3>
+<p>需求是根据测试项目中相关联的'需求规约'文档来组织的。<br />
+TestLink 不支持即包含需求规约又包含需求的版本。
+因此，只有创建好规约之后才能往里添加需求文档版本。 
+<b>标题</b>.
+用户于可以向<b>范围</b>中添加简单的描述或注释。</p> 
 
-<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
-evaluation Req. coverage in case that not all requirements are added (imported) in. 
-The value <b>0</b> means that current count of requirements is used for metrics.</p> 
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
-coverage is 25% (if all these added requirements will be tested).</i></p>
+<p><b><a name='total_count'>需求覆盖数目</a></b>用来评估需求覆盖度如果并没有把所有的需求添加(导入)到TestLink的情况下。 
+需求覆盖数目的值<b>0</b> 指的是当前被用来做结果分析的需求数量。</p> 
+<p><i>例如 SRS 包含200个需求，但是仅有50个被添加到TestLink。测试覆盖度为25%（如果这些被添加的需求都将被测试）。 
+</i></p>
 
-<h3><a name=\"req\">Requirements</a></h3>
-<p>Click on title of a created Requirements Specification. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be \"Normal\" or \"Not testable\". Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and 
-wrong designed requirements.</p> 
+<h3><a name=\"req\">需求</a></h3>
+<p>点击需求规约的标题，你就可以创建，编辑，删除和导入需求文档。每个需求都有标题，范围和状态。
+状态包括 \"有效的\" 和 \"不可测试的\". 不可测试的需求不会被统计度量。
+该参数用于没有实现的功能和错误的设计需求。</p> 
 
-<p>You can create new test cases for requirements by using multi action with checked 
-requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
-\"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
+<p>你可以在需求规约页面通过多种查看需求的途径为需求创建新的测试用例。
+这些测试用例被包含在通过配置命名的测试套件里。<i>(默认是: &#36;tlCfg->req_cfg->default_testsuite_name = 
+\"通过需求创建测试套件 - 自动\";)</i>. 标题和范围被复制到这些测试用例。</p>
 ";
 
 
-// planAddTC_m1.tpl
-$TLS_hlp_planAddTC = "<h2>Regarding 'Save Custom Fields'</h2>
-If you have defined and assigned to Test Project,<br /> 
-Custom Fields with:<br />
- 'Display on test plan design=true' and <br />
- 'Enable on test plan design=true'<br />
-you will see these in this page ONLY for Test Cases linked to Test Plan.
+// planAddTC_m1.tpl //已校对
+$TLS_hlp_planAddTC = "<h2>关于'保存自定义字段'</h2>
+如果你已经定义而且指派了关键字到测试项目中，<br /> 
+自定义字段具有：<br />
+ '在测试计划设计里显示=true' 和 <br />
+ '启用测试计划设计=true'<br />
+你将只能在已经与测试计划建立关联的测试用例页面看到这些关键字。
 ";
 
 // xxx.html

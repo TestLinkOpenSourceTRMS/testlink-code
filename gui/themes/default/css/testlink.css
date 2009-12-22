@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.22 2009/09/04 12:18:16 havlat Exp $
+$Id: testlink.css,v 1.23 2009/12/22 14:06:06 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -156,9 +156,14 @@ div.workBack {
 }
 
 .onright {
-	float: 	right;
+	float: 			right;
 }
 
+span.form_label {
+	font-weight:    bold;
+	width:			200px; 
+	float:			left;
+}
 
 /* **** Navigation, menu and buttons ************************************* */
 

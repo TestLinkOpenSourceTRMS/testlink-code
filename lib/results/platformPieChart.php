@@ -7,10 +7,11 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	
- * @version    	CVS: $Id: platformPieChart.php,v 1.1 2009/10/25 19:24:08 franciscom Exp $
+ * @version    	CVS: $Id: platformPieChart.php,v 1.2 2009/12/22 16:20:08 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20091222 - eloff - fixed extraction of data to current data structures
  *
  *
 **/
@@ -27,7 +28,7 @@ $tplan_mgr = new testplan($db);
 $totalsByPlatform = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
 // new dBug($totalsByPlatform);
 
-$totals=$totalsByPlatform[$args->platform_id];
+$totals=$totalsByPlatform[$args->platform_id]['details'];
 unset($totals['total']);
 
 $values = array();
@@ -35,6 +36,7 @@ $labels = array();
 $series_color = array();
 foreach($totals as $key => $value)
 {
+    $value = $value['qty'];
     $values[] = $value;
     $labels[] = lang_get($resultsCfg['status_label'][$key]) . " ($value)";
     if( isset($resultsCfg['charts']['status_colour'][$key]) )

@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.20 2009/12/04 10:47:26 havlat Exp $
+ * @version    	CVS: $Id: texts.php,v 1.21 2009/12/22 14:03:44 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -65,7 +65,7 @@ $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to vi
 <h2>Getting Started:</h2>
 <ol>
 	<li>Select your <i>Test Project</i> in the navigation tree (the root node). <i>Please note: " .
-	"You can always change the activate Test Project by selecting a different one from the " .
+	"You can always change the active Test Project by selecting a different one from the " .
 	"drop-down list in the top-right corner.</i></li>
 	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b>. Test Suites can " .
 	"bring structure to your test documents according to your conventions (functional/non-functional " .
@@ -75,21 +75,21 @@ $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to vi
 	"all annotations that are common to the Child Test Cases. Test Suites follow " .
 	"the &quot;folder&quot; metaphor, thus users can move and copy Test Suites within " .
 	"the Test project. Also, they can be imported or exported (including the contained Test cases).</li>
-	<li>Test suites are scalable folders. User can move or copy Test Suites within " .
-	"the Test project. Test suites could be imported or exported (include Test cases).
+	<li>Test Suites are scalable folders. Users can move or copy Test Suites within " .
+	"the Test project. Test Suites can be imported or exported (include Test Cases).
 	<li>Select your newly created Test Suite in the navigation tree and create " .
 	"a new Test Case by clicking on <b>Create Test Case</b>. A Test Case specifies " .
 	"a particular testing scenario, expected results and custom fields defined " .
 	"in the Test Project (refer to the user manual for more information). It is also possible " .
 	"to assign <b>keywords</b> for improved traceability.</li>
-	<li>Navigate via the tree view on the left side and edit data. Test cases stores own history.</li>
-	<li>Assign your created Test Specification to <span class=\"help\" onclick=
+	<li>Navigate via the tree view on the left side and edit data. Each Test case stores own history.</li>
+	<li>Assign your created Test Specification to a 	<span class=\"help\" onclick=
 	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test cases are ready.</li>
 </ol>
 
-<p>With TestLink you can organize test cases into test suites." .
-"Test suites can be nested within other test suites, enabling you to create hierarchies of test suites.
- You can then print this information together with the test cases.</p>";
+<p>With TestLink you can organize Test Cases into Test Suites." .
+"Test Suites can be nested within other test suites, enabling you to create hierarchies of Test Suites.
+ You can then print this information together with the Test Cases.</p>";
 
 
 // ------------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ case sensitive. Result include just test cases from actual Test Project.</p>
 	<li>Write searched string to an appropriate box. Left blank unused fields in form.</li>
 	<li>Choose required keyword or left value 'Not applied'.</li>
 	<li>Click the Search button.</li>
-	<li>All fulfilled test cases are shown. You can modify test cases via 'Title' link.</li>
+	<li>All fulfilled test cases are shown. You can modify Test Cases via 'Title' link.</li>
 </ol>";
 
 
@@ -121,7 +121,7 @@ or all the test cases in a test project or plan.</p>
 test suite, or the test project. A printable page will be displayed.</p>
 </li>
 <li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
-the information displayed as HTML, OpenOffice Writer or in a Microsoft Word document. 
+the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document. 
 See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 '{$locale}');\">help</span> for more information.</p>
 </li>

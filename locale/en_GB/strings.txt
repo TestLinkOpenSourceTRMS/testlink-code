@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.507 2009/12/20 18:57:13 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.508 2009/12/22 15:14:56 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -286,6 +286,16 @@ $TLS_main_page_title = "TestLink ::: Main Page";
 $TLS_config_check_warnings = "There are security warnings for your consideration. " .
                              "See details on file: %s. " .
                              "To disable any reference to these checkings, set \$tlCfg->config_check_warning_mode = 'SILENT';";
+
+// ----- infrastructureView.php -----
+$TLS_infrastructure_title = "Project infrastructure list";
+$TLS_infrastructure_create_title = "Define a new machine and press 'Add' button";
+$TLS_infrastructure_empty = "No item. Use 'Create' button to define.";
+$TLS_infrastructure_name = "Machine name";
+$TLS_infrastructure_ipaddress = "IP Address";
+$TLS_infrastructure_notes = "Notes";
+$TLS_infrastructure_delete = "Delete";
+//$TLS_ = "";
 
 
 // ----- keywordsimport.php -----
@@ -1713,6 +1723,7 @@ $TLS_href_browse_tc = "Browse Test Cases";
 $TLS_href_cfields_management = "Define custom fields";
 $TLS_href_cfields_tproject_assign = "Assign custom fields";
 $TLS_href_edit_tc = "Edit Test Cases";
+$TLS_href_infrastructure = "Infrastructure";
 $TLS_href_keywords_assign = "Assign Keywords";
 $TLS_href_keywords_manage = "Keyword Management";
 $TLS_href_keywords_view = "View Keywords";

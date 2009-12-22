@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.47 2009/10/18 16:27:39 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.48 2009/12/22 15:14:15 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -10,6 +10,8 @@
 *
 * @author 
 * 
+* 20091221 - eloff      - fixed bug when iterating over results
+*                         changed link to executed testcase to be an absolute url
 * 20091016 - franciscom - fix bug on URL to test case execution
 * 20090909 - franciscom - refactored to manage multiple tables when more that one
 *                         platform exists.
@@ -112,11 +114,13 @@ if ($lastResultMap != null)
 				$testCaseVersion = $tcase['version'];
 				$external_id = $testCasePrefix . $tcase['external_id'];
 
-                // URL must be absolute or relative to this page, in this case
-                // we are on <TL_ROOT>/lib/results/, then we go back two levels 
-				$link = '<a href="../../lib/execute/execSetResults.php?level=testcase&build_id=' .
-				        $tcase['buildIdLastExecuted'] . '&id=' . $testCaseId . '&version_id=' .
-				        $tcase['tcversion_id'] . '&tplan_id=' . $args->tplan_id . '">' .
+				$link = '<a href="' . $_SESSION['basehref'] . 'lib/execute/execSetResults.php?' .
+				        'level=testcase' .
+				        '&build_id=' . $tcase['buildIdLastExecuted'] .
+				        '&id=' . $testCaseId .
+				        '&version_id=' . $tcase['tcversion_id'] .
+				        '&tplan_id=' . $args->tplan_id .
+				        '&platform_id=' . $platformId .'">' .
 				        htmlspecialchars("{$external_id}:{$name}",ENT_QUOTES) . '</a>';
 
 				$rowArray = array($suiteName, $link, $testCaseVersion);
@@ -155,7 +159,8 @@ if ($lastResultMap != null)
 					{
 						$execution_array = $suiteExecutions[$jdx];
 						if (($execution_array['testcaseID'] == $testCaseId) && 
-						    ($execution_array['build_id'] == $buildId)) 
+						    ($execution_array['build_id'] == $buildId) &&
+						    ($execution_array['platform_id'] == $platformId))
 						{
 							$resultsForBuild = $map_tc_status_code_langet[$execution_array['status']];	
 							$lastStatus = $execution_array['status'];

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.9 2009/09/10 09:14:22 franciscom Exp $ *}
+{* $Id: resultsTC.tpl,v 1.10 2009/12/22 15:14:15 erikeloff Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070919 - franciscom - BUGID
@@ -42,7 +42,7 @@
 {foreach from=$gui->tableSet key=idx item=matrix}
   {assign var=tableID value=table_$idx}
   {if $idx != 0}
-  <br />{$labels.platform}:{$gui->platforms[$idx]|escape}
+  <h2>{$labels.platform}: {$gui->platforms[$idx]|escape}</h2>
   {/if}
   {$matrix->renderBodySection($tableID)}
 {/foreach}

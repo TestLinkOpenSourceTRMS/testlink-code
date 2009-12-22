@@ -1,6 +1,6 @@
--- $Revision: 1.5 $
--- $Date: 2009/11/24 20:03:36 $
--- $Author: franciscom $
+-- $Revision: 1.6 $
+-- $Date: 2009/12/22 15:55:11 $
+-- $Author: erikeloff $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -33,10 +33,10 @@
 -- Step 3 - table changes
 
 -- testprojects
-ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public INT2 NOT NULL DEFAULT '1',
+ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public INT2 NOT NULL DEFAULT '1';
 
 -- testplans
-ALTER TABLE /*prefix*/testplans ADD COLUMN is_public INT2 NOT NULL DEFAULT '1',
+ALTER TABLE /*prefix*/testplans ADD COLUMN is_public INT2 NOT NULL DEFAULT '1';
 
 
 -- testplan_tcversions

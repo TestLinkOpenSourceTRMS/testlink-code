@@ -1,6 +1,6 @@
--- $Revision: 1.2 $
--- $Date: 2009/07/17 17:08:35 $
--- $Author: franciscom $
+-- $Revision: 1.3 $
+-- $Date: 2009/12/22 15:55:11 $
+-- $Author: erikeloff $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
 --
@@ -20,10 +20,10 @@
 -- Step 3 - table changes
 
 -- testprojects
-ALTER TABLE /*prefix*/testprojects ADD is_public tinyint NOT NULL DEFAULT '1',
+ALTER TABLE /*prefix*/testprojects ADD is_public tinyint NOT NULL DEFAULT '1';
 
 -- testplans
-ALTER TABLE /*prefix*/testplans ADD is_public tinyint NOT NULL DEFAULT '1',
+ALTER TABLE /*prefix*/testplans ADD is_public tinyint NOT NULL DEFAULT '1';
 
 -- builds
 ALTER TABLE /*prefix*/builds ADD author_id INT NULL DEFAULT NULL;

@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.10 2009/12/22 15:14:15 erikeloff Exp $ *}
+{* $Id: resultsTC.tpl,v 1.11 2009/12/23 13:42:40 erikeloff Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
-   20070919 - franciscom - BUGID
-   20051204 - mht - removed obsolete print button
+    20091223 - eloff      - readded support for HTML tables
+    20070919 - franciscom - BUGID
+    20051204 - mht - removed obsolete print button
 *}
 
 {lang_get var="labels"
@@ -11,12 +12,14 @@
              title_test_case_title,version,generated_by_TestLink_on, priority"}
 
 {include file="inc_head.tpl" openHead="yes"}
-{include file="inc_ext_js.tpl" bResetEXTCss=1}
-{include file="inc_ext_table.tpl"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
   {assign var=tableID value=table_$idx}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
+    {if $matrix instanceof tlExtTable}
+        {include file="inc_ext_js.tpl" bResetEXTCss=1}
+        {include file="inc_ext_table.tpl"}
+    {/if}
   {/if}
   {$matrix->renderHeadSection($tableID)}
 {/foreach}

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.48 2009/12/22 15:14:15 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.49 2009/12/23 13:42:41 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -10,6 +10,7 @@
 *
 * @author 
 * 
+* 20091223 - eloff      - added HTML tables for reports where JS is unavailable
 * 20091221 - eloff      - fixed bug when iterating over results
 *                         changed link to executed testcase to be an absolute url
 * 20091016 - franciscom - fix bug on URL to test case execution
@@ -61,11 +62,9 @@ if ($gui->buildInfoSet)
 
 // Get Results on map with access key = test case's parent test suite id
 $executionsMap = $re->getSuiteList();
-new dBug($executionsMap);
 
 // lastResultMap provides list of all test cases in plan - data set includes title and suite names
 $lastResultMap = $re->getMapOfLastResult();
-new dBug($lastResultMap);
 
 
 
@@ -192,7 +191,7 @@ if ($lastResultMap != null)
 
 foreach($gui->matrixSet as $platformID => $matrixData)
 {
-	$gui->tableSet[$platformID] =  buildMatrix($gui->buildInfoSet, $matrixData);
+	$gui->tableSet[$platformID] =  buildMatrix($gui->buildInfoSet, $matrixData, $args->format);
 }
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);
@@ -232,7 +231,7 @@ function checkRights(&$db,&$user)
  * return tlExtTable
  *
  */
-function buildMatrix($buildSet, $dataSet)
+function buildMatrix($buildSet, $dataSet, $format)
 {
 	$columns = array(array('title' => lang_get('title_test_suite_name'), 'width' => 100),
 		             array('title' => lang_get('title_test_case_title'), 'width' => 350),
@@ -243,7 +242,11 @@ function buildMatrix($buildSet, $dataSet)
 	{
 		$columns[] = array('title' => $build['name'], 'type' => 'status', 'width' => 100);
 	}
-	$matrix = new tlExtTable($columns, $dataSet);
+	if ($format == FORMAT_HTML) {
+		$matrix = new tlExtTable($columns, $dataSet);
+	} else {
+		$matrix = new tlHTMLTable($columns, $dataSet);
+	}
 	return $matrix;
 }
 

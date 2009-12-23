@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.153 2009/12/09 11:54:58 havlat Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.154 2009/12/23 13:42:41 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -754,7 +754,7 @@ class results extends tlObjectWithDB
 		$dummy=0;
 		foreach($results as $tc_id => $tc_info)
 		{
-			foreach($tc_info as $platform_id => $result_code) {
+			foreach((array)$tc_info as $platform_id => $result_code) {
 			$status_verbose=$code_verbose[$result_code];
 			
 			// Check if user has configured and add not_run.

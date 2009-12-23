@@ -58,6 +58,11 @@ abstract class tlTable
 	}
 
 	/**
+	 * Outputs the code that all tables shares
+	 */
+	public abstract function renderCommonGlobals();
+
+	/**
 	 * Outputs the code that should be in <head>
 	 */
 	public abstract function renderHeadSection($tableID);

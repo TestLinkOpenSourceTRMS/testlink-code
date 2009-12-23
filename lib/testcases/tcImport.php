@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2009/09/01 07:31:29 $ by $Author: franciscom $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2009/12/23 14:11:07 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -371,7 +371,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
 		$externalid = $tc['externalid'];
 		$preconditions = $tc['preconditions'];
-				
+		$exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
+		$importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;		
     
 		$name_len = tlStringLen($name);  
 		if( $name_len > $fieldSizeCfg->testcase_name)
@@ -426,13 +427,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		
 		if( $doCreate )
 		{
+		    $createOoptions = array( 'check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
+	                                   'action_on_duplicate_name' => $actionOnDuplicatedName);
+
 		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
-		                                  $expected_results,$userID,$kwIDs,
-		                                  $node_order,testcase::AUTOMATIC_ID,
-                                          testcase::CHECK_DUPLICATE_NAME,$actionOnDuplicatedName))
-        {
-            $resultMap[] = array($name,$ret['msg']);
-        }                              
+		                                  $expected_results,$userID,$kwIDs,$node_order,
+		                                  testcase::AUTOMATIC_ID,$exec_type,$importance,
+		                                  $createOptions))
+        	{
+        	    $resultMap[] = array($name,$ret['msg']);
+        	}                              
 		}
 			
 		// 20090106 - franciscom

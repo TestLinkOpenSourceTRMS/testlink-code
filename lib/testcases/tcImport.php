@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/12/23 14:11:07 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/12/23 14:13:39 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -396,32 +396,32 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		if( $actionOnDuplicatedName == 'update_last_version' )
 		{
 			$info=$tcase_mgr->getDuplicatesByName($name,$container_id);
-   		 if( !is_null($info) )
-   		 {
-   		     $tcase_qty = count($info);
-		       switch($tcase_qty)
-		       {
-		           case 1:
-		           		$doCreate=false;
-		           		$tcase_id = key($info); 
-                   		$last_version=$tcase_mgr->get_last_version_info($tcase_id);
-                   		$tcversion_id=$last_version['id'];
-                   		$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
-                   		                          $preconditions,$steps,
-                   		                          $expected_results,$userID,$kwIDs,$node_order);
-                   		                          
-                   		$resultMap[] = array($name,lang_get('already_exists_updated'));
-	               break;
-		           
-		           case 0:
-		               $doCreate=true; 
-		           break;
-		           
-		           default:
-		               $doCreate=false; 
-		           break;
-		       }
-		   }
+   		 	if( !is_null($info) )
+   		 	{
+   		 		$tcase_qty = count($info);
+		 	    switch($tcase_qty)
+		 	    {
+		 	        case 1:
+		 	        	$doCreate=false;
+		 	        	$tcase_id = key($info); 
+         	        	$last_version=$tcase_mgr->get_last_version_info($tcase_id);
+         	        	$tcversion_id=$last_version['id'];
+         	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
+         	        	                          $preconditions,$steps,$expected_results,
+         	        	                          $userID,$kwIDs,$node_order,$exec_type,$importance);
+         	        	                          
+         	        	$resultMap[] = array($name,lang_get('already_exists_updated'));
+	     	        break;
+		 	        
+		 	        case 0:
+		 	        	$doCreate=true; 
+		 	        break;
+		 	        
+		 	        default:
+		 	            $doCreate=false; 
+		 	        break;
+		 	    }
+		 	}
 
 		}
 		

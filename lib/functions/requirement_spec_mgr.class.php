@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/12/20 18:48:37 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/12/24 08:39:35 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ * 	20091223 - franciscom - new method - copy_to() + changes to check_main_data()
  *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
  *	20091202 - franciscom - create(), update() 
  *                          added contribution by asimon83/mx-julian that creates
@@ -71,9 +72,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 		$this->cfield_mgr = new cfield_mgr($this->db);
 		$this->tree_mgr =  new tree($this->db);
 
-		$node_types_descr_id=$this->tree_mgr->get_available_node_types();
-		$node_types_id_descr=array_flip($node_types_descr_id);
-		$this->my_node_type=$node_types_descr_id['requirement_spec'];
+		$this->node_types_descr_id=$this->tree_mgr->get_available_node_types();
+		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
+		$this->my_node_type=$this->node_types_descr_id['requirement_spec'];
 
 		tlObjectWithAttachments::__construct($this->db,'req_specs');
 	    $this->object_table=$this->tables['req_specs'];
@@ -137,12 +138,14 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
   */
 function create($tproject_id,$parent_id,$doc_id,$title, $scope, 
-                $countReq,$user_id,$type = 'n',$node_order=null)
+                $countReq,$user_id,$type = 'n',$node_order=null, $options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $result=array('status_ok' => 0, 'msg' => 'ko', 'id' => 0);
     $title=trim($title);
     $chk=$this->check_main_data($title,$doc_id,$tproject_id,$parent_id);
+    $result['msg']=$chk['msg'];
+
     if ($chk['status_ok'])
     {
     	/* contribution by asimon83/mx-julian */
@@ -172,10 +175,6 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,
             $result['status_ok'] = 1;
 		    $result['msg'] = 'ok';
 		}
-	}
-    else
-    {
-        $result['msg']=$chk['msg'];
 	}
     return $result;
 }
@@ -584,6 +583,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 	{
 		$sql .= $order_by;
   	}
+  	
   	return $this->db->get_recordset($sql);
 }
 
@@ -673,7 +673,8 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
     returns:
 
   */
-  function check_title($title,$tproject_id=null,$parent_id=null,$id=null,$case_analysis=self::CASE_SENSITIVE)
+  function check_title($title,$tproject_id=null,$parent_id=null,$id=null,
+                       $case_analysis=self::CASE_SENSITIVE)
   {
     $ret['status_ok'] = 1;
     $ret['msg'] = '';
@@ -715,9 +716,11 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   	          existent title or doc id.
   	          
               $tlCfg->req_cfg->child_requirements_mgmt == ENABLED  => N level tree
-                 title and doc id can not repited on ANY level of tree
+                             title and doc id can not repited on ANY level of tree
                  
               This is important due to unique index present on Database
+              ATTENTION:
+              Must be rethinked!!!!
               
 
     args : title: req spec title
@@ -736,7 +739,10 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
                            $case_analysis=self::CASE_SENSITIVE)
   {
   	$cfg = config_get('req_cfg');
-  	$my_parent_id = $cfg->child_requirements_mgmt == ENABLED ? null : $parent_id;
+  	
+  	// 20091223 - this has to be removed if we remove unique index
+  	// $my_parent_id = $cfg->child_requirements_mgmt == ENABLED ? null : $parent_id;
+    $my_parent_id = $parent_id;
 
     $ret['status_ok'] = 1;
     $ret['msg'] = '';
@@ -756,22 +762,30 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   		$ret['msg'] = lang_get("warning_empty_doc_id");
   	}
   	
-  	if($ret['status_ok'])
-  	{
-		$ret['msg']='ok';
-      	$rs = $this->get_by_title($title,$tproject_id,$my_parent_id,$case_analysis);
-  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
-      	{
-      		$info = current($rs);
-  			$ret['msg'] = sprintf(lang_get("warning_duplicated_req_spec_title"),$info['doc_id'],$title);
-        	$ret['status_ok'] = 0;
-  		}
-	}
+  	// 20091223 - franciscom -
+  	// Now that req spec has doc id, IMHO this check has not to be done
+  	// or must be improved
+  	//
+  	// if($ret['status_ok'])
+  	// {
+	// 	$ret['msg']='ok';
+    //   	$rs = $this->get_by_title($title,$tproject_id,$my_parent_id,$case_analysis);
+  	// 	if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
+    //   	{
+    //   		$info = current($rs);
+  	// 		$ret['msg'] = sprintf(lang_get("warning_duplicated_req_spec_title"),$info['doc_id'],$title);
+    //     	$ret['status_ok'] = 0;
+  	// 	}
+	// }
 
   	if($ret['status_ok'])
   	{
 		$ret['msg']='ok';
-      	$rs = $this->getByDocID($doc_id,$tproject_id,$my_parent_id,$case_analysis);
+      	// $rs = $this->getByDocID($doc_id,$tproject_id,$my_parent_id,$case_analysis);
+      	echo 'parent id' . $my_parent_id;
+      	$rs = $this->getByDocID($doc_id,$tproject_id,$my_parent_id);
+      	new dBug($rs);
+      	
   		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
       	{
       		$info = current($rs);
@@ -1368,26 +1382,45 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
                     modifier_id
                     modification_ts
   */
-function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=self::CASE_SENSITIVE)
+// function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=self::CASE_SENSITIVE)
+function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 'case' => 'sensitive');
+	$my['options'] = array_merge($my['options'], (array)$options);
+
     $fields2get="RSPEC.id,testproject_id,RSPEC.doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
                 "RSPEC.modification_ts,NH.name AS title";
     
   	$output=null;
     $the_doc_id=$this->db->prepare_string(trim($doc_id));
-  	$sql = "SELECT {$fields2get} FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH";
 
-    switch ($case_analysis)
-    {
-        case self::CASE_SENSITIVE:
-            $sql .= " WHERE RSPEC.doc_id='{$the_doc_id}'";
-        break;
+	switch($my['options']['check_criteria'])
+	{
+		case '=':
+		default:
+			$check_criteria = " = '{$the_doc_id}' ";
+		break;
+		
+		case 'like':
+			$check_criteria = " LIKE '{$the_doc_id}%' ";
+		break;
+	}
+  	$sql = " /* $debugMsg */ SELECT {$fields2get} " .
+  	       " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH " .
+ 		   " WHERE RSPEC.doc_id {$check_criteria} ";
 
-        case self::CASE_INSENSITIVE:
-            $sql .= " WHERE UPPER(RSPEC.doc_id)='" . strtoupper($the_doc_id) . "'";    
-        break;
-    }
+    // switch ($case_analysis)
+    // {
+    //     case self::CASE_SENSITIVE:
+    //         $sql .= " WHERE RSPEC.doc_id='{$the_doc_id}'";
+    //     break;
+    // 
+    //     case self::CASE_INSENSITIVE:
+    //         $sql .= " WHERE UPPER(RSPEC.doc_id)='" . strtoupper($the_doc_id) . "'";    
+    //     break;
+    // }
 
   	if( !is_null($tproject_id) )
   	{
@@ -1400,9 +1433,124 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=sel
     }
 
     $sql .= " AND RSPEC.id=NH.id ";
-    $output = $this->db->fetchRowsIntoMap($sql,'id');
+	$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
   	return $output;
   }
+
+
+	/*
+	  function: copy_to
+	            deep copy one req spec to another parent (req spec or testproject).
+	            
+	
+	  args : id: testsuite id (source or copy)
+	         parent_id:
+	         user_id: who is requesting copy operation
+	         [options]
+	         [check_duplicate_name]: default: 0 -> do not check
+	                                          1 -> check for duplicate when doing copy
+	                                               What to do if duplicate exists, is controlled
+	                                               by action_on_duplicate_name argument.
+	                                               
+	         [action_on_duplicate_name argument]: default: 'allow_repeat'.
+	                                              Used when check_duplicate_name=1.
+	                                              Specifies how to react if duplicate name exists.
+	                                              
+	  returns: map with foloowing keys:
+	           status_ok: 0 / 1
+	           msg: 'ok' if status_ok == 1
+	           id: new created if everything OK, -1 if problems.
+	
+	  rev :
+	*/
+	function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
+	{
+		$field_size = config_get('field_size');
+		$item_info = $this->get_by_id($id);
+
+		// Check if another req with same DOC ID exists on target container,
+		// If yes generate a new DOC ID
+		$getOptions = array('check_criteria' => 'like', 'access_key' => 'doc_id');
+		$itemSet = $this->getByDocID($item_info['req_doc_id'],null,$parent_id,$getOptions);
+		$target_doc = $item_info['doc_id'];
+		$instance = 1;
+		if( !is_null($itemSet) )
+		{
+			// doc_id has limited size => we need to be sure that generated id will not exceed DB size
+            $nameSet = array_flip(array_keys($itemSet));
+	        // 6 magic from " [xxx]"
+	        $prefix = trim_and_limit($item_info['doc_id'],$field_size->docid-6);
+            $target_doc = $prefix . " [{$instance}]"; 
+        	while( isset($nameSet[$target_doc]) )
+        	{
+        		$instance++;
+            	$target_doc = $prefix . " [{$instance}]"; 
+        	}
+		}
+		$new_item = $this->create($tproject_id,$parent_id,$target_doc,$item_info['title'],
+		                          $item_info['scope'],$item_info['total_req'],
+		                          $item_info['author_id'],$item_info['type'],$item_info['node_order']);
+	
+		$this->copy_cfields($id,$new_item['id']);
+    
+        // Now loop to copy all items inside it    	
+ 		$my['filters'] = null;
+		$subtree = $this->tree_mgr->get_subtree($id,$my['filters']);
+		if (!is_null($subtree))
+		{
+			$this->reqMgr =  new requirement_mgr($this->db);
+			$parent_decode=array();
+		  	$parent_decode[$id]=$new_item['id'];
+			foreach($subtree as $the_key => $elem)
+			{
+			  	$the_parent_id=$parent_decode[$elem['parent_id']];
+				switch ($elem['node_type_id'])
+				{
+					case $this->node_types_descr_id['requirement']:
+						$this->reqMgr->copy_to($elem['id'],$the_parent_id,$user_id);
+						break;
+						
+					case $this->node_types_descr_id['requirement_spec']:
+						$item_info = $this->get_by_id($elem['id']);
+						$ret = $this->create($tproject_id,$the_parent_id,$item_info['doc_id'],$item_info['title'],
+		                                     $item_info['scope'],$item_info['total_req'],
+		                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
+				    	$parent_decode[$elem['id']]=$ret['id'];
+			      		$this->copy_cfields($elem['id'],$ret['id']);
+						break;
+				}
+			}
+		}
+		return $op;
+	}
+
+
+	/*
+	  function: copy_cfields
+	            Get all cfields linked to any testcase of this testproject
+	            with the values presents for $from_id, testcase we are using as
+	            source for our copy.
+	
+	  args: from_id: source item id
+	        to_id: target item id
+	
+	  returns: -
+	
+	*/
+	function copy_cfields($from_id,$to_id)
+	{
+	  $cfmap_from=$this->get_linked_cfields($from_id);
+	  $cfield=null;
+	  if( !is_null($cfmap_from) )
+	  {
+	    foreach($cfmap_from as $key => $value)
+	    {
+	      $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
+	    }
+	  }
+	  $this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');
+	}
+
 
 } // class end
 ?>

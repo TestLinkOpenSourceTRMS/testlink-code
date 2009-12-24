@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.50 $
- * @modified $Date: 2009/12/20 18:53:14 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2009/12/24 08:39:35 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1323,6 +1323,12 @@ function html_table_of_custom_field_values($id)
 	    $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok');
 	    $my['options'] = array();
 	    $my['options'] = array_merge($my['options'], (array)$options);
+    
+   	    if( is_null($my['options']['copy_also']) )
+	    {
+	        $my['options']['copy_also'] = array('testcase_assignment' => true);   
+	    }
+
 		$item_info = $this->get_by_id($id);
 		
 		if ($item_info)
@@ -1358,11 +1364,30 @@ function html_table_of_custom_field_values($id)
 	
 			$this->copy_cfields($id,$new_item['id']);
 	        $this->copy_attachments($id,$new_item['id']);
+		    if( isset($my['options']['copy_also']['testcase_assignment']) &&
+		        $my['options']['copy_also']['testcase_assignment'] )
+			{
+	         $linked_items = $this->get_coverage($id);
+             if( !is_null($linked_items) )
+             {
+             	foreach($linked_items as $value)
+             	{
+                    new dBug($value);
+             		$this->assign_to_tcase($new_item['id'],$value['id']);
+             	}
+             }	            
+	
+			}
+
 		}
 		return($new_item);
 	}
 
 
+    /**
+     * 
+     *
+     */
 	function copy_attachments($source_id,$target_id)
 	{
 		$this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);

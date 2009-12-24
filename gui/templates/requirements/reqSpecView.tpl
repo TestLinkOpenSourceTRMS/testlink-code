@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.30 2009/12/19 17:56:17 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.31 2009/12/24 08:37:33 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -36,6 +36,13 @@
 
 {assign var="url_args" value="reqSpecEdit.php?doAction=createChild&amp;reqParentID="}
 {assign var="req_spec_new_url" value="$basehref$req_module$url_args$reqSpecID"}
+
+{assign var="url_args" value="reqSpecEdit.php?doAction=copyRequirements&amp;req_spec_id="}
+{assign var="req_spec_copy_req_url" value="$basehref$req_module$url_args$reqSpecID"}
+
+{assign var="url_args" value="reqSpecEdit.php?doAction=copy&amp;req_spec_id="}
+{assign var="req_spec_copy_url" value="$basehref$req_module$url_args$reqSpecID"}
+
 
 {* used on inc_btn_reqSpecView.tpl *}
 {lang_get s='warning_delete_req_spec' var="warning_msg" }

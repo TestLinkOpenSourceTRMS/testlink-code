@@ -1,16 +1,17 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCopy.tpl,v 1.5 2009/12/20 19:01:31 franciscom Exp $
+$Id: reqCopy.tpl,v 1.6 2009/12/24 08:37:33 franciscom Exp $
 Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
 
 rev :
+     20091223 - franciscom - added checkbox for test case assignment copy
 *}
 {lang_get var='labels'
           s='title_move_cp,title_move_cp_testcases,sorry_further,req_doc_id,
-             check_uncheck_all_checkboxes,title,
-             choose_target,copy_keywords,btn_move,btn_cp'}
+             check_uncheck_all_checkboxes,title,copy_testcase_assignments,
+             choose_target,btn_cp'}
 
 {lang_get s='select_at_least_one_req' var="check_msg"}
 
@@ -59,11 +60,19 @@ function check_action_precondition(container_id,action,msg)
 {/if}
 
 	<form id="copy_req" name="copy_req" method="post" action="{$gui->page2call}">
+    <input type="hidden" name="req_spec_id"  id="req_spec_id"  value="{$gui->req_spec_id}" />
+	  
 		<p>{$labels.choose_target}:
 			<select name="containerID" id="containerID">
 				  {html_options options=$gui->containers}
 			</select>
 		</p>
+		<br />
+		<p>
+    <input type="checkbox" name="copy_testcase_assignment" id='copy_testcase_assignment' checked="checked">
+     {$labels.copy_testcase_assignments}
+    </p>
+		<br />
 
 		{* need to do JS checks*}
     {* used as memory for the check/uncheck all checkbox javascript logic *}
@@ -97,7 +106,7 @@ function check_action_precondition(container_id,action,msg)
         <br />
     </div>
 		<div>
-      <input type="hidden" name="doAction" id="doAction"  value="doCopy" />
+      <input type="hidden" name="doAction" id="doAction"  value="{$gui->doActionButton}" />
 			<input type="submit" name="copy" value="{$labels.btn_cp}"
 			       onclick="return check_action_precondition('move_copy_checkboxes','copy','{$check_msg}');"  />
 		</div>

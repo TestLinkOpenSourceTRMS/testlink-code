@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.508 2009/12/22 15:14:56 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.509 2009/12/24 08:37:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -52,6 +52,9 @@ $TLS_desc = "Descending";
 $TLS_description = "Description";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
 $TLS_doc_id = "Document ID";
+$TLS_destination_top = "Destination position top";
+$TLS_destination_bottom = "Destination position bottom";
+
 $TLS_export = "Export";
 $TLS_file_type = 'File type';
 $TLS_help = "Help";
@@ -443,6 +446,7 @@ $TLS_create_testcase_from_req = "Create Test Cases from Requirements";
 // ----- gui/templates/reqCopy.tpl -----
 $TLS_copy_one_req = "Copy requirement";
 $TLS_copy_several_reqs = "Copy requirements";
+$TLS_copy_testcase_assignments = "Copy Test Case Assignments";
 
 
 // gui/templates/containerOrder.tpl
@@ -702,6 +706,8 @@ $TLS_comp_scope = "Scope";
 // gui/templates/reqSpecView.tpl
 $TLS_btn_analyse = "Analyse";
 $TLS_btn_check_all = "Check All";
+$TLS_btn_copy_requirements = "Copy Requirements";
+$TLS_btn_copy_req_spec = "Copy";
 $TLS_btn_delete_spec = "Delete document";
 $TLS_btn_edit_spec = "Edit document";
 $TLS_btn_export_reqs = "Export requirements";
@@ -800,7 +806,8 @@ $TLS_trep_ts = $TLS_test_suite;
 
 // gui/templates/reqSpecEdit.tpl
 $TLS_req_total_description = "Use this parameter to overwrite real count " .
-		"of requirements within the document. '0' means unused.";
+		                         "of requirements within the document. '0' means unused.";
+$TLS_copy_req_spec = "Copy Req. Spec.";
 
 
 

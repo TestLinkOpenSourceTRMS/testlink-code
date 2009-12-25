@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecCopy.tpl,v 1.2 2009/12/25 10:54:47 franciscom Exp $
+$Id: reqSpecCopy.tpl,v 1.3 2009/12/25 11:37:17 franciscom Exp $
 @author: francisco mancardi
 Purpose: copy req specification
 
@@ -22,6 +22,13 @@ rev :
 {if $gui->containers eq ''}
 	{$labels.sorry_further} {$parent} {$labels.defined_exclam}
 {else}
+
+{if $gui->array_of_msg != ''}
+  <br />
+  {include file="inc_msg_from_array.tpl" array_of_msg=$gui->array_of_msg arg_css_class="messages"}
+  <br />
+{/if}
+
 	<form method="post" action="lib/requirements/reqSpecEdit.php?req_spec_id={$gui->req_spec_id}">
 		<p>{$labels.choose_target} {$parent|escape}:
 			<select name="containerID">

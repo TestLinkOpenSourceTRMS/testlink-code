@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.24 2009/10/12 07:04:00 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.25 2009/12/25 19:25:20 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
@@ -32,7 +32,7 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (4, 'testcase_version')
 INSERT INTO /*prefix*/node_types (id,description) VALUES (5, 'testplan');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (6, 'requirement_spec');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (7, 'requirement');
-
+INSERT INTO /*prefix*/node_types (id,description) VALUES (8, 'requirement_version');
 
 --  Roles -
 INSERT INTO /*prefix*/roles (id,description) VALUES (3, '<no rights>');

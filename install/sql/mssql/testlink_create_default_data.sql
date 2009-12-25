@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.19 2009/07/15 17:25:58 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.20 2009/12/25 19:26:45 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
@@ -27,6 +27,7 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (4, 'testcase_version')
 INSERT INTO /*prefix*/node_types (id,description) VALUES (5, 'testplan');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (6, 'requirement_spec');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (7, 'requirement');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (8, 'requirement_version');
 SET IDENTITY_INSERT /*prefix*/node_types OFF
 
 --  Roles -

@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.55 $
- * @modified $Date: 2009/12/25 10:53:52 $ by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2009/12/25 11:38:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ * 	20091225 - franciscom - new method - generateDocID()
  * 	20091223 - franciscom - new method - copy_to() + changes to check_main_data()
  *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
  *	20091202 - franciscom - create(), update() 
@@ -1454,7 +1455,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	                                              Used when check_duplicate_name=1.
 	                                              Specifies how to react if duplicate name exists.
 	                                              
-	  returns: map with foloowing keys:
+	  returns: map with following keys:
 	           status_ok: 0 / 1
 	           msg: 'ok' if status_ok == 1
 	           id: new created if everything OK, -1 if problems.
@@ -1463,66 +1464,58 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	*/
 	function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 	{
-		$op = null;
+		$op = array('status_ok' => 1, 'msg' => 'ok', 'id' => -1 );
 		$field_size = config_get('field_size');
 		$item_info = $this->get_by_id($id);
-
-		// // Check if another req with same DOC ID exists on target container,
-		// // If yes generate a new DOC ID
-		// $getOptions = array('check_criteria' => 'like', 'access_key' => 'doc_id');
-		// // $itemSet = $this->getByDocID($item_info['req_doc_id'],null,$parent_id,$getOptions);
-		// $itemSet = $this->getByDocID($item_info['req_doc_id'],$tproject_id,null,$getOptions);
-		// $target_doc = $item_info['doc_id'];
-		// $instance = 1;
-		// if( !is_null($itemSet) )
-		// {
-		// 	// doc_id has limited size => we need to be sure that generated id will not exceed DB size
-        //     $nameSet = array_flip(array_keys($itemSet));
-	    //     // 6 magic from " [xxx]"
-	    //     $prefix = trim_and_limit($item_info['doc_id'],$field_size->docid-6);
-        //     $target_doc = $prefix . " [{$instance}]"; 
-        // 	while( isset($nameSet[$target_doc]) )
-        // 	{
-        // 		$instance++;
-        //     	$target_doc = $prefix . " [{$instance}]"; 
-        // 	}
-		// }
         $target_doc = $this->generateDocID($id,$tproject_id);		
 		$new_item = $this->create($tproject_id,$parent_id,$target_doc,$item_info['title'],
 		                          $item_info['scope'],$item_info['total_req'],
 		                          $item_info['author_id'],$item_info['type'],$item_info['node_order']);
 	
-		$this->copy_cfields($id,$new_item['id']);
-    
-        // Now loop to copy all items inside it    	
- 		$my['filters'] = null;
-		$subtree = $this->tree_mgr->get_subtree($id,$my['filters']);
-		if (!is_null($subtree))
-		{
-			$this->reqMgr =  new requirement_mgr($this->db);
-			$parent_decode=array();
-		  	$parent_decode[$id]=$new_item['id'];
-			foreach($subtree as $the_key => $elem)
+	    $op = $new_item;
+	    if( $new_item['status_ok'] )
+	    {
+			$this->copy_cfields($id,$new_item['id']);
+        	
+        	// Now loop to copy all items inside it    	
+ 			$my['filters'] = null;
+			$subtree = $this->tree_mgr->get_subtree($id,$my['filters']);
+			if (!is_null($subtree))
 			{
-			  	$the_parent_id=$parent_decode[$elem['parent_id']];
-				switch ($elem['node_type_id'])
+				$this->reqMgr =  new requirement_mgr($this->db);
+				$parent_decode=array();
+			  	$parent_decode[$id]=$new_item['id'];
+				foreach($subtree as $the_key => $elem)
 				{
-					case $this->node_types_descr_id['requirement']:
-						$this->reqMgr->copy_to($elem['id'],$the_parent_id,$user_id);
+				  	$the_parent_id=$parent_decode[$elem['parent_id']];
+					switch ($elem['node_type_id'])
+					{
+						case $this->node_types_descr_id['requirement']:
+							$ret = $this->reqMgr->copy_to($elem['id'],$the_parent_id,$user_id);
+							$op['status_ok'] = $ret['status_ok'];
+							break;
+							
+						case $this->node_types_descr_id['requirement_spec']:
+							$item_info = $this->get_by_id($elem['id']);
+        	                $target_doc = $this->generateDocID($elem['id'],$tproject_id);		
+							$ret = $this->create($tproject_id,$the_parent_id,$target_doc,$item_info['title'],
+			                                     $item_info['scope'],$item_info['total_req'],
+			                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
+					    	$parent_decode[$elem['id']]=$ret['id'];
+				      		
+				      		if( ($op['status_ok'] = $ret['status_ok']) )
+				      		{
+				      			$this->copy_cfields($elem['id'],$ret['id']);
+							}
+							break;
+					}
+					if( $op['status_ok'] == 0 )
+					{
 						break;
-						
-					case $this->node_types_descr_id['requirement_spec']:
-						$item_info = $this->get_by_id($elem['id']);
-                        $target_doc = $this->generateDocID($elem['id'],$tproject_id);		
-						$ret = $this->create($tproject_id,$the_parent_id,$target_doc,$item_info['title'],
-		                                     $item_info['scope'],$item_info['total_req'],
-		                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
-				    	$parent_decode[$elem['id']]=$ret['id'];
-			      		$this->copy_cfields($elem['id'],$ret['id']);
-						break;
+					}
 				}
 			}
-		}
+		}	
 		return $op;
 	}
 

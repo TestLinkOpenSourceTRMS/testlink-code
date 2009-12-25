@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/08/18 19:58:14 $ $Author: schlundus $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/12/25 18:44:49 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -339,9 +339,10 @@ class bugtrackingInterface
 $g_bugInterfaceOn = false;
 $g_bugInterface = null;
 
-global $g_interface_bugs;
+// global $g_interface_bugs;
 
-if (isset($bts[$g_interface_bugs]))
+$bts_type = config_get('interface_bugs');
+if (isset($bts[$bts_type]))
 {
 	$btsname = strtolower($g_interface_bugs);
 	$configPHP = $btsname . '.cfg.php';
@@ -353,7 +354,9 @@ if (isset($bts[$g_interface_bugs]))
 	$g_bugInterfaceName = BUG_INTERFACE_CLASSNAME;
 	$g_bugInterface = new $g_bugInterfaceName();
 	if ($g_bugInterface)
+	{
 		$g_bugInterface->connect();
+	}
 	$g_bugInterfaceOn = ($g_bugInterface && $g_bugInterface->isConnected());
 }
 ?>

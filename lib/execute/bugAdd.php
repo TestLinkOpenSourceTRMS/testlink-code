@@ -5,19 +5,17 @@
  *
  * Filename $RCSfile: bugAdd.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/12/25 18:29:54 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2009/12/25 18:53:04 $ by $Author: franciscom $
  */
 require_once('../../config.inc.php');
 require_once('common.php');
-require_once('exec.inc.php');
-require_once('exec.inc.php');
-
 if (config_get('interface_bugs') != 'NO')
 {
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
 }
+require_once('exec.inc.php');
 
 testlinkInitPage($db,false,false,"checkRights");
 

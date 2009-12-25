@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.179 2009/12/15 13:46:34 erikeloff Exp $
+ * @version    	CVS: $Id: common.php,v 1.180 2009/12/25 18:33:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -62,11 +62,11 @@ require_once('pagestatistics.class.php');
 
 /** BTS interface */
 /** @TODO martin: remove from global loading - limited using */ 
-if ($g_interface_bugs != 'NO')
-{
-  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
-               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-}
+// if ($g_interface_bugs != 'NO')
+// {
+//   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
+//                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+// }
 require_once("testproject.class.php"); 
 
 /** @TODO use the next include only if it is used -> must be removed */

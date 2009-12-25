@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.144 $
- * @modified $Date: 2009/12/07 16:08:33 $ $Author: franciscom $
+ * @version $Revision: 1.145 $
+ * @modified $Date: 2009/12/25 18:29:54 $ $Author: franciscom $
  *
  * rev:
  *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
@@ -41,6 +41,13 @@ require_once("attachments.inc.php");
 require_once("specview.php");
 require_once("web_editor.php");
 $cfg=getCfg();
+
+if($cfg->bts_type != 'NO')
+{
+  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
+               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+}
+
 require_once(require_web_editor($cfg->editorCfg['type']));
 
 testlinkInitPage($db);
@@ -917,6 +924,7 @@ function getCfg()
     $cfg = new stdClass();
     $cfg->exec_cfg = config_get('exec_cfg');
     $cfg->gui_cfg = config_get('gui');
+    $cfg->bts_type = config_get('interface_bugs');
     
     $results = config_get('results');
     $cfg->tc_status = $results['status_code'];

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/12/07 18:14:47 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2009/12/25 10:54:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
  * 
  *	@internal revisions
+ *	20091223 - franciscom - new feature copy requirements
  *	20091207 - franciscom - logic to get order when creating new item 
  *	20090324 - franciscom - added logic to avoid losing user work if title already exists.
  *                            - fixed minor errors due to missing variables
@@ -316,6 +317,187 @@ class reqSpecCommands
 
 		return $guiObj;	
 	}
+
+
+  /*
+    function: copyRequirements
+
+    args:
+    
+    returns: 
+
+  */
+	function copyRequirements(&$argsObj,$options=null)
+	{
+   		$obj = new stdClass();
+		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		
+	    $my['options'] = array( 'get_items' => true);
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    if( $my['options']['get_items'] )
+	    {
+	    	$obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,
+	    	                                                  'all',null," ORDER BY NH.node_order");
+		}
+
+		$obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$obj->action_descr = lang_get('copy_several_reqs');
+        $obj->template = 'reqCopy.tpl';
+		$obj->containers = null;
+		$obj->page2call = 'lib/requirements/reqSpecEdit.php';
+		$obj->array_of_msg = '';
+  		$obj->doActionButton = 'doCopyRequirements';
+  		$obj->req_spec_id = $argsObj->req_spec_id;
+  
+  	    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
+	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+        
+ 		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
+	  	$subtree = $this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']);
+ 		if(count($subtree))
+		{
+		  $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
+        }
+		return $obj;
+	}
+
+    /**
+     * 
+     *
+     */
+	function doCopyRequirements(&$argsObj)
+	{
+		// $target_req_spec = $this->reqSpecMgr->get_by_id($argsObj->containerID);
+		$obj = new stdClass();
+ 		$obj = $this->copyRequirements($argsObj, array( 'get_items' => false));
+      	$obj->req = null;
+   		$obj->req_spec_id = $argsObj->req_spec_id;
+     	
+      	$copyOptions = array('copy_also' => 
+      	                     array('testcase_assignment' => $argsObj->copy_testcase_assignment));
+      	
+    	$obj->array_of_msg = '';
+      	foreach($argsObj->itemSet as $itemID)
+      	{
+			$ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,$argsObj->user_id,$copyOptions);
+			$obj->user_feedback = $ret['msg'];
+			if($ret['status_ok'])
+			{
+				$new_req = $this->reqMgr->get_by_id($ret['id']);
+			    $source_req = $this->reqMgr->get_by_id($itemID);
+			    $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
+				logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
+				$obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id']);
+  				$obj->template = 'reqCopy.tpl';
+  				$obj->req_id = $ret['id'];
+  			    $obj->array_of_msg[] = $logMsg;	
+			}
+		}
+		
+		$obj->items = $this->reqSpecMgr->get_requirements($obj->req_spec_id,
+     	                                                  'all',null," ORDER BY NH.node_order");
+		
+		return $obj;	
+	}
+
+
+  /*
+    function: copy
+              copy req. spec
+
+    args:
+    
+    returns: 
+
+  */
+	function copy(&$argsObj,$options=null)
+	{
+   		$obj = new stdClass();
+		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		
+	    $my['options'] = array( 'get_items' => true);
+	    $my['options'] = array_merge($my['options'], (array)$options);
+
+		$obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$obj->action_descr = lang_get('copy_req_spec');
+        $obj->template = 'reqSpecCopy.tpl';
+		$obj->containers = null;
+		$obj->page2call = 'lib/requirements/reqSpecEdit.php';
+		$obj->array_of_msg = '';
+  		$obj->doActionButton = 'doCopy';
+  		$obj->req_spec_id = $argsObj->req_spec_id;
+  		$obj->top_checked = ' checked = "checked" ';
+  		$obj->bottom_checked = ' ';
+  
+  
+  	    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
+	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+        
+ 		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
+	  	$root = $this->reqMgr->tree_mgr->get_node_hierachy_info($argsObj->tproject_id);
+	  	$subtree = array_merge(array($root),$this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']));
+
+ 		if(count($subtree))
+		{
+		  $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
+        }
+		return $obj;
+	}
+
+
+
+  /*
+    function: copy
+              copy req. spec
+
+    args:
+    
+    returns: 
+
+  */
+	function doCopy(&$argsObj)
+	{
+		$obj = new stdClass();
+ 		$obj = $this->copy($argsObj);
+      	$obj->req = null;
+   		$obj->req_spec_id = $argsObj->req_spec_id;
+  	    $req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		
+		
+	    // $my['options'] = array( 'get_items' => true);
+	    // $my['options'] = array_merge($my['options'], (array)$options);
+
+		$obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
+		$obj->action_descr = lang_get('copy_req_spec');
+        $obj->template = 'reqSpecCopy.tpl';
+		$obj->containers = null;
+		$obj->page2call = 'lib/requirements/reqSpecEdit.php';
+		$obj->array_of_msg = '';
+  		$obj->doActionButton = 'doCopy';
+  		$obj->req_spec_id = $argsObj->req_spec_id;
+  		$obj->top_checked = ' checked = "checked" ';
+  		$obj->bottom_checked = ' ';
+  
+  	    $res = $this->reqSpecMgr->copy_to($argsObj->req_spec_id,$argsObj->containerID, 
+  	                                      $argsObj->tproject_id, $argsObj->user_id);
+
+  
+  	    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
+	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
+        
+ 		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
+	  	$root = $this->reqSpecMgr->tree_mgr->get_node_hierachy_info($argsObj->tproject_id);
+	  	$subtree = array_merge(array($root),$this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']));
+
+ 		if(count($subtree))
+		{
+		  $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
+        }
+		return $obj;
+	}
+
+
+
 
 }
 ?>

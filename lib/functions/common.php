@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.180 2009/12/25 18:33:23 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.181 2009/12/25 19:02:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -265,7 +265,7 @@ function initTopMenu(&$db)
 	$guiTopMenu = config_get('guiTopMenu');
     
 	// check if Project is available
-	if ($_SESSION['testprojectID'] > 0)
+	if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
 	{
 		$idx = 1;	
     	foreach ($guiTopMenu as $element)

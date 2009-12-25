@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.12 2009/12/25 18:56:23 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.13 2009/12/25 18:58:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -126,7 +126,7 @@ class TLSmarty extends Smarty
         
         // $this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
         // $this->assign('gsmarty_interface_bugs',$g_interface_bugs);
-        $this->assign('g_bugInterfaceOn',config_get('bugInterfaceOn'));
+        $this->assign('gsmarty_bugInterfaceOn',config_get('bugInterfaceOn'));
         $this->assign('gsmarty_interface_bugs',config_get('interface_bugs'));
         $this->assign('testproject_coloring',null);
         

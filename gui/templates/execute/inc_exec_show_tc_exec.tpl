@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.13 2009/09/10 09:13:00 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.14 2009/12/25 18:57:37 franciscom Exp $
 Purpose: 
 Author: franciscom
 
@@ -171,7 +171,7 @@ Rev:
             {assign var="my_colspan" value=$my_colspan-1}
         {/if}
 
-				{if $g_bugInterfaceOn}
+				{if $gsmarty_bugInterfaceOn}
           <th style="text-align:left">{$labels.bug_mgmt}</th>
           {assign var="my_colspan" value=$my_colspan+1}
         {/if}
@@ -240,7 +240,7 @@ Rev:
               </td>
   	      {/if}
 
-    			{if $g_bugInterfaceOn}
+    			{if $gsmarty_bugInterfaceOn}
        		  	<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{$labels.img_title_bug_mgmt}"
       			         style="border:none" /></a>

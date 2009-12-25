@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.51 $
- * @modified $Date: 2009/12/24 08:39:35 $ by $Author: franciscom $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2009/12/25 12:04:41 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ * 	20091225 - franciscom - new method - generateDocID()
  *  20091216 - franciscom - create_tc_from_requirement() interface changes
  *  20091215 - asimon     - added new method getByDocID()  
  *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
@@ -1315,10 +1316,18 @@ function html_table_of_custom_field_values($id)
   	}
 
 	/**
+	 * Copy a requirement to a new requirement specification
+	 * requirement DOC ID will be changed because must be unique inside
+	 * MASTER CONATAINER (test project)
 	 * 
+	 * @param integer $id: requirement ID
+	 * @param integer $parent_id: target req spec id (where we want to copy)
+	 * @param integer $user_id: who is requesting copy
+	 * @param integer $tproject_id: optional, is null will be computed here
+	 * @param array $options: map
 	 *
 	 */
-	function copy_to($id,$parent_id,$user_id,$options=null)
+	function copy_to($id,$parent_id,$user_id,$tproject_id=null,$options=null)
 	{
 	    $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok');
 	    $my['options'] = array();
@@ -1330,32 +1339,17 @@ function html_table_of_custom_field_values($id)
 	    }
 
 		$item_info = $this->get_by_id($id);
-		
+		$root = $tproject_id;
+		if( !is_null($root) )
+		{
+			$reqSpecMgr = new requirement_spec_mgr($this->db);
+			$target = $reqSpecMgr->get_by_id($parent_id);
+			$root = $target['testproject_id'];
+		}
+        $target_doc = $this->generateDocID($id,$tproject_id);		
+
 		if ($item_info)
 		{
-			$field_size = config_get('field_size');
-			
-			// Check if another req with same DOC ID exists on target container,
-			// If yes generate a new DOC ID
-			$getOptions = array('check_criteria' => 'like', 'access_key' => 'req_doc_id');
-		    $itemSet = $this->getByDocID($item_info['req_doc_id'],null,$parent_id,$getOptions);
-		    $target_doc = $item_info['req_doc_id'];
-		    $instance = 1;
-		    if( !is_null($itemSet) )
-		    {
-		    	// $siblingsQty = count($itemSet);
-		    	// req_doc_id has limited size then we need to be sure that generated id will
-		    	// not exceed DB size
-                $nameSet = array_flip(array_keys($itemSet));
-	            // 6 magic from " [xxx]"
-	            $prefix = trim_and_limit($item_info['req_doc_id'],$field_size->req_docid-6);
-                $target_doc = $prefix . " [{$instance}]"; 
-            	while( isset($nameSet[$target_doc]) )
-            	{
-            		$instance++;
-                	$target_doc = $prefix . " [{$instance}]"; 
-            	}
-		    }
 			
 			$new_item = $this->create($parent_id,$target_doc,$item_info['title'],
 			                          $item_info['scope'],$item_info['author_id'],$item_info['status'],
@@ -1421,53 +1415,38 @@ function html_table_of_custom_field_values($id)
 	}
 
 
-	// /*
-	//   function: getDuplicatesByname
-	// 
-	//   args: $name
-	//         $parent_id
-	// 
-	//   returns: hash
-	// */
-	// function getDuplicatesByName($name, $parent_id, $options=null)
-	// {
-	// 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    // 
-	//     $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id');
-	//     $my['options'] = array_merge($my['options'], (array)$options);
-	//     
-	//     $target = $this->db->prepare_string($name);
-	//     switch($my['options']['check_criteria'])
-	//     {
-	//     	case '=':
-	//     	default:
-	//     		$check_criteria = " AND NHA.name = '{$target}' ";
-	//     	break;
-	//     	
-	//     	case 'like':
-	//     		$check_criteria = " AND NHA.name LIKE '{$target}%' ";
-	//     	break;
-	//     	
-	//     }
-	// 		
-	//     $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
-	// 		       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
-	// 		       " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['tcversions']} TCV  " .
-	// 		       " WHERE NHA.node_type_id = {$this->my_node_type} " .
-	// 		       " AND NHB.parent_id=NHA.id " .
-	// 		       " AND TCV.id=NHB.id " .
-	// 		       " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
-	// 		       " AND NHA.parent_id={$parent_id} {$check_criteria}";
-	// 
-	// 	$rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-	//     if( is_null($rs) || count($rs) == 0 )
-	//     {
-	//         $rs=null;   
-	//     }
-	//     return $rs;
-	// }
 
+    /**
+	 * 
+ 	 *
+ 	 */
+	function generateDocID($id, $tproject_id)
+	{
+		$field_size = config_get('field_size');
+		$item_info = $this->get_by_id($id);
 
+		// Check if another req with same DOC ID exists on test project (MASTER CONTAINER),
+		// If yes generate a new DOC ID
+		$getOptions = array('check_criteria' => 'like', 'access_key' => 'req_doc_id');
+		$itemSet = $this->getByDocID($item_info['req_doc_id'],$tproject_id,null,$getOptions);
+		$target_doc = $item_info['req_doc_id'];
+		$instance = 1;
+		if( !is_null($itemSet) )
+		{
+			// req_doc_id has limited size then we need to be sure that generated id will
+			// not exceed DB size
+    	    $nameSet = array_flip(array_keys($itemSet));
+		    // 6 magic from " [xxx]"
+		    $prefix = trim_and_limit($item_info['req_doc_id'],$field_size->req_docid-6);
+    	    $target_doc = $prefix . " [{$instance}]"; 
+    		while( isset($nameSet[$target_doc]) )
+    		{
+    			$instance++;
+    	    	$target_doc = $prefix . " [{$instance}]"; 
+    		}
+		}
+     	return $target_doc;
+	}
 
 
 } // class end

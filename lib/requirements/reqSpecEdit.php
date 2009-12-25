@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/12/03 07:07:32 $ $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2009/12/25 12:04:42 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -61,7 +61,10 @@ function init_args()
 					 "title" => array(tlInputParameter::STRING_N,0,100),
 					 "scope" => array(tlInputParameter::STRING_N),
 					 "doc_id" => array(tlInputParameter::STRING_N,1,32),
-					 "nodes_order" => array(tlInputParameter::ARRAY_INT));	
+					 "nodes_order" => array(tlInputParameter::ARRAY_INT),
+					 "containerID" => array(tlInputParameter::INT_N),
+ 			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
+					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -89,7 +92,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     $actionOperation = array('create' => 'doCreate', 'edit' => 'doUpdate',
                              'doDelete' => '', 'doReorder' => '', 'reorder' => '',
                              'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                             'createChild' => 'doCreate');
+                             'createChild' => 'doCreate', 'copy' => 'doCopy',
+                             'doCopy' => 'doCopy',
+                             'copyRequirements' => 'doCopyRequirements',
+                             'doCopyRequirements' => 'doCopyRequirements');
 
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
 	switch($argsObj->doAction)
@@ -118,6 +124,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "doReorder":
 	    case "doCreate":
 	    case "doUpdate":
+        case "copyRequirements":
+        case "doCopyRequirements":
+        case "copy":
+        case "doCopy":
         	$renderType = 'template';
             $key2loop = get_object_vars($opObj);
             foreach($key2loop as $key => $value)
@@ -127,7 +137,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
             $guiObj->operation = $actionOperation[$argsObj->doAction];
             $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
             $tpd = isset($key2loop['template_dir']) ? $opObj->template_dir : $templateCfg->template_dir;
-    		break;
+    	break;
     }
     
 	switch($argsObj->doAction)
@@ -138,11 +148,15 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "reorder":
         case "doDelete":
         case "doReorder":
+        case "copyRequirements":
+        case "copy":
         	$tpl = $tpd . $tpl;
             break;
     
         case "doCreate":
 	    case "doUpdate": 
+        case "doCopyRequirements":
+        case "doCopy":
 	    	$pos = strpos($tpl, '.php');
             if($pos === false)
             {

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/12/20 19:01:47 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/12/25 12:04:42 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -291,6 +291,8 @@ class reqCommands
 		$obj->containers = null;
 		$obj->page2call = 'lib/requirements/reqEdit.php';
 		$obj->array_of_msg = '';
+		$obj->doActionButton = 'doCopy';
+  		$obj->req_spec_id = $argsObj->req_spec_id;
   
   	    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
@@ -315,8 +317,13 @@ class reqCommands
 		$argsObj->req_id = $itemID;
 		$obj = $this->copy($argsObj);
       	$obj->req = null;
+  		$obj->req_spec_id = $argsObj->req_spec_id;
+    	
+      	$copyOptions = array('copy_also' => 
+      	                     array('testcase_assignment' => $argsObj->copy_testcase_assignment));
       	
-		$ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,$argsObj->user_id);
+		$ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,$argsObj->user_id,$argsObj->tproject_id,
+		                              $copyOptions);
 		$obj->user_feedback = $ret['msg'];
 	    $obj->array_of_msg = '';
 		if($ret['status_ok'])

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/12/25 10:54:28 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2009/12/25 12:04:42 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
@@ -447,7 +447,7 @@ class reqSpecCommands
 
 
   /*
-    function: copy
+    function: doCopy
               copy req. spec
 
     args:
@@ -478,10 +478,16 @@ class reqSpecCommands
   		$obj->top_checked = ' checked = "checked" ';
   		$obj->bottom_checked = ' ';
   
-  	    $res = $this->reqSpecMgr->copy_to($argsObj->req_spec_id,$argsObj->containerID, 
-  	                                      $argsObj->tproject_id, $argsObj->user_id);
+  	    $op = $this->reqSpecMgr->copy_to($argsObj->req_spec_id,$argsObj->containerID, 
+  	                                     $argsObj->tproject_id, $argsObj->user_id);
 
-  
+        if( $op['status_ok'] )
+        {
+        	$new_req_spec = $this->reqSpecMgr->get_by_id($op['id']);
+			$obj->array_of_msg[] = sprintf(lang_get('req_spec_copy_done'),$req_spec['doc_id'],
+			                               $req_spec['title'],$new_req_spec['doc_id']);
+        }
+        
   	    $exclude_node_types=array('testplan' => 'exclude_me','testsuite' => 'exclude_me',
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
         

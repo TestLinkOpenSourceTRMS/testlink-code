@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2009/12/20 18:47:48 $ by $Author: franciscom $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2009/12/25 12:04:42 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -65,7 +65,8 @@ function init_args()
 					 "doAction" => array(tlInputParameter::STRING_N,0,20),
 					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
 			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
-					 "testcase_count" => array(tlInputParameter::ARRAY_INT));	
+					 "testcase_count" => array(tlInputParameter::ARRAY_INT),
+					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -97,7 +98,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                              'createTestCases' => 'doCreateTestCases',
                              'doCreateTestCases' => 'doCreateTestCases',
                              'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                             'copy' => 'doCopy');
+                             'copy' => 'doCopy', 'doCopy' => 'doCopy');
 
 
 

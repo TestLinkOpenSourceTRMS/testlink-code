@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2009/12/23 14:13:39 $ by $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2009/12/25 12:05:15 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -375,14 +375,14 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;		
     
 		$name_len = tlStringLen($name);  
-		if( $name_len > $fieldSizeCfg->testcase_name)
+		if($name_len > $fieldSizeCfg->testcase_name)
 		{
 		    // Will put original name inside summary
 		    $xx=lang_get('start_warning'). "\n" . lang_get('testlink_warning') . "\n";
 		    $xx .=sprintf(lang_get('testcase_name_too_long'),$name_len, $fieldSizeCfg->testcase_name) . "\n";
 		    $xx .= lang_get('original_name'). "\n" . $name. "\n" . lang_get('end_warning'). "\n";
 		    $summary = nl2br($xx) . $summary;
-		    $name= tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
+		    $name = tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
 		}
     		
 		

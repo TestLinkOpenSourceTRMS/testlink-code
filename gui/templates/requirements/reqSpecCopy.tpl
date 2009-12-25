@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecCopy.tpl,v 1.1 2009/12/24 08:37:33 franciscom Exp $
+$Id: reqSpecCopy.tpl,v 1.2 2009/12/25 10:54:47 franciscom Exp $
 @author: francisco mancardi
 Purpose: copy req specification
 
@@ -37,7 +37,6 @@ rev :
 		<div>
 			<input type="submit" name="doActionButton" value="{$labels.btn_cp}" />
 			<input type="hidden" name="doAction" value="doCopy" />
-			<input type="hidden" name="old_containerID" value="{$old_containerID}" />
 		</div>
 
 	</form>

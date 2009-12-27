@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.3 2009/12/27 14:40:46 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.4 2009/12/27 14:45:29 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -104,6 +104,7 @@ var pF_delete_req_version = delete_req_version;
 		         args_grants=$gui->grants 
 		         args_can_do=$gui->can_do
 		         args_can_copy=true
+		         args_can_delete_req=true
 		         args_can_delete_version=$my_delete_version
 		         args_show_version=true
 		         args_show_title=$gui->show_title

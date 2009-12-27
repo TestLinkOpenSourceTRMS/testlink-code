@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.3 2009/12/27 14:40:46 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.4 2009/12/27 14:45:29 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -41,16 +41,23 @@ rev:
 	  	<input type="hidden" name="doAction" value="" />
 	  	
 	  	<input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
+	  	
+	  	{if $args_can_delete_req}
 	  	<input type="button" name="delete_req" value="{$labels.btn_delete}"
 	  	       onclick="delete_confirmation({$args_req.id},
 	  	                                    '{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"	/>
 
+	  	{/if}
+	  	
+	  	{if $args_can_delete_version}
 	  	<input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
 	  	       onclick="delete_confirmation({$args_req.version_id},
 	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req_version);"	/>
 	  				                                
+	  	{/if}
+
 	    {if $args_can_copy}  				                                
 	  	<input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>
 	  	{/if}

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/12/25 12:04:42 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2009/12/27 15:26:11 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -101,7 +101,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 	switch($argsObj->doAction)
     {
         case "edit":
-        case "create":
+        case "doCreate":
         $owebEditor->Value = $argsObj->scope;
         break;
         
@@ -109,7 +109,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         $owebEditor->Value = getItemTemplateContents('req_spec_template',$owebEditor->InstanceName, $argsObj->scope);
         break;
     }
-
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];  
 

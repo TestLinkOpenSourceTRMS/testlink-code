@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/12/25 19:32:06 $ by $Author: franciscom $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2009/12/27 14:15:35 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -262,7 +262,8 @@ function update($id,$reqdoc_id,$title, $scope, $user_id, $status, $type,
 
     if($chk['status_ok'] || $skip_controls)
 	{
-	  	$sql = "UPDATE requirements SET scope='" . $this->db->prepare_string($scope) . "', " .
+	  	$sql = " UPDATE {$this->tables['requirements']} " .
+	  	       " SET scope='" . $this->db->prepare_string($scope) . "', " .
 	  	       " status='" . $this->db->prepare_string($status) . "', " .
 	  	       " type='" . $this->db->prepare_string($type) . "', " .
 	  	       " modifier_id={$user_id}, req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "', " .

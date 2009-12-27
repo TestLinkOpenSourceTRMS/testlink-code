@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.72 2009/12/06 08:26:43 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.73 2009/12/27 15:45:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -803,6 +803,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
   function design_values_to_db($hash,$node_id,$cf_map=null,$hash_type=null)
   {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     if( is_null($hash) && is_null($cf_map) )
     {
        return;
@@ -822,7 +823,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         $value = $type_and_value['cf_value'];
 
         // do I need to update or insert this value?
-        $sql = "SELECT value FROM {$this->tables['cfield_design_values']} " .
+        $sql = "/* $debugMsg */ SELECT value FROM {$this->tables['cfield_design_values']} " .
     		   " WHERE field_id={$field_id} AND	node_id={$node_id}";
 
         $result = $this->db->exec_query($sql);
@@ -837,7 +838,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         if($this->db->num_rows( $result ) > 0 )
         {
 
-          $sql = "UPDATE {$this->tables['cfield_design_values']} " .
+          $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_design_values']} " .
                  " SET value='{$safe_value}' " .
     	         " WHERE field_id={$field_id} AND	node_id={$node_id}";
         }
@@ -847,7 +848,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		    # Always store the value, even if it's the dafault value
   		    # This is important, as the definitions might change but the
   		    #  values stored with a bug must not change
-  		    $sql = "INSERT INTO {$this->tables['cfield_design_values']} " .
+  		    $sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_design_values']} " .
   				   " ( field_id, node_id, value ) " .
   				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
   		  }
@@ -971,14 +972,17 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function link_to_testproject($tproject_id,$cfield_ids)
 	{
 		if(is_null($cfield_ids))
+		{
 			return;
+        }
 
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
-			$sql = "INSERT INTO {$this->tables['cfield_testprojects']} " .
-			   	" (testproject_id,field_id) " .
-			   	" VALUES({$tproject_id},{$field_id})";
+			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_testprojects']} " .
+			   	   " (testproject_id,field_id) " .
+			   	   " VALUES({$tproject_id},{$field_id})";
 
 			if ($this->db->exec_query($sql))
 			{

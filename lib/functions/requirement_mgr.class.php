@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.54 $
- * @modified $Date: 2009/12/27 14:15:35 $ by $Author: franciscom $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2009/12/27 17:19:02 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -432,11 +432,13 @@ function get_coverage($id)
   	{
   		$ret['msg'] = 'ok';
 
-  		if($req_cfg->reqdoc_id->is_system_wide)
-  		{
-  			// req doc id MUST BE unique inside the whole DB
-        	$my_srs_id = null;
-  		}
+        // 20091227 - franciscom - must be refactored
+  		// if($req_cfg->reqdoc_id->is_system_wide)
+  		// {
+  		// 	// req doc id MUST BE unique inside the whole DB
+        // 	$my_srs_id = null;
+  		// }                     
+  		$my_srs_id = null;
   		$rs = $this->get_by_docid($reqdoc_id,$my_srs_id);
 
 

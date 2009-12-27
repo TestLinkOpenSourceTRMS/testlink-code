@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.276 2009/12/17 21:05:11 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.277 2009/12/27 17:16:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ * 	20091227 - franciscom - REMOVED - $tlCfg->req_cfg->reqdoc_id->is_system_wide
  *	20091217 - franciscom - $tlCfg->testcase_cfg->duplicated_name_algorithm
  *  20091205 - franciscom - BUGID 0002469: $tlCfg->exec_cfg->expand_collapse
  *  20091129 - franciscom - BUGID 2554 - gui->usersAssignGlobalRoleColoring
@@ -831,9 +832,10 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 // ----------------------------------------------------------------------------
 /* [Requirements] */
 
+// HAS TO BE REMOVED - > req_doc_id UNIQUE INSIDE test project
 // true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
 // false: you want req_doc_id UNIQUE INSIDE a SRS
-$tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
+// $tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
 
 /** 
  * Test Case generation from Requirements - use_req_spec_as_testsuite_name

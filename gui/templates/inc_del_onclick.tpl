@@ -1,12 +1,12 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_del_onclick.tpl,v 1.9 2009/11/30 21:52:19 erikeloff Exp $
+$Id: inc_del_onclick.tpl,v 1.10 2009/12/27 10:01:06 franciscom Exp $
 Purpose: include files for:
 
 
 rev :
+     20091227 - franciscom - documentation improvements
      20071202 - franciscom - changes on delete_confirmation.
-     
      20071008 - franciscom - added prototype.js method escapeHTML()
 *}
 {if $smarty.const.USE_EXT_JS_LIBRARY}
@@ -21,9 +21,10 @@ rev :
   /*
     function: delete_confirmation
 
-    args: o_id: object id, id of object on with do_action will be done.
+    args: o_id: object id, id of object on with do_action() will be done.
                 is not a DOM id, but an specific application id.
-          
+                IMPORTANT: do_action() is a function defined in this file
+
           o_name: name of object, used to to give user feedback.
 
           title: pop up title
@@ -40,8 +41,9 @@ rev :
     var safe_title = title;
     var my_msg = msg.replace('%s',safe_name);
     if (!pFunction)
+    {
   		pFunction = do_action;
-    
+    }
     Ext.Msg.confirm(safe_title, my_msg,
   			            function(btn, text)
   			            { 
@@ -72,6 +74,9 @@ rev :
   */
   function do_action(btn, text, o_id)
   { 
+    // IMPORTANT:
+    // del_action is defined in SMARTY TEMPLATE that is using this logic.
+    //
   	var my_action='';
     
     if( btn == 'yes' )
@@ -92,6 +97,7 @@ rev :
   {
     Ext.MessageBox.alert(title.escapeHTML(), msg.escapeHTML());
   }
+
   /**
    * Displays an alert message. title and message must be escaped.
    */
@@ -115,6 +121,9 @@ rev :
   */
   function delete_confirmation(o_id,o_name,msg) 
   {
+    // IMPORTANT:
+    // del_action is defined in SMARTY TEMPLATE that is using this logic.
+    //
   	if (confirm(msg + o_name))
   	{
   		window.location = del_action+o_id;

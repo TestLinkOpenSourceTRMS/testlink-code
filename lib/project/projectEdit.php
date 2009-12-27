@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/11/21 19:16:27 $ $Author: uid189872 $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2009/12/27 11:29:27 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -15,6 +15,7 @@
  * @todo Verify dependency before delete testplan
  *
  * @internal revision
+ * 20091227 - franciscom - BUGID 3020
  * 20091121 - franciscom - BUGID - Julian Contribution
  * 20080827 - franciscom - BUGID 1692
 **/
@@ -45,7 +46,6 @@ $reloadType = 'none';
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
-// $of->Value = getItemTemplateContents('project_template', $of->name, $args->notes);
 
 $found = 'yes';
 $status_ok = 1;
@@ -81,7 +81,7 @@ switch($args->doAction)
       break;
 
     case 'doDelete':
-      $op = doDelete($args,$tproject_mgr,$session_tproject_id);
+        $op = doDelete($args,$tproject_mgr,$session_tproject_id);
     	$status_ok = $op->status_ok;
     	$user_feedback = $op->msg;
     	$reloadType = $op->reloadType;
@@ -114,10 +114,17 @@ switch($args->doAction)
         $smarty->display($templateCfg->template_dir . $template);
     break;
 
+
     case "ErrorOnAction":
     default:
-    	$of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
-
+        if( $args->doAction != "edit")
+        {
+    		$of->Value = getItemTemplateContents('project_template', $of->InstanceName, $args->notes);
+        }
+        else
+        {
+        	$of->Value = $args->notes;
+        }
         foreach($ui as $prop => $value)
         {
             $smarty->assign($prop,$value);
@@ -187,7 +194,9 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 			$the_data = $tprojectMgr->get_by_id($args->tprojectID);
 			$args->notes = $the_data['notes'];
 			if ($args->doAction == 'doDelete')
+			{
 				$args->tprojectName = $the_data['name'];
+			}	
 		}
 		else
 		{
@@ -272,6 +281,7 @@ function doCreate($argsObj,&$tprojectMgr)
 */
 function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 {
+	
     $key2get = array('status_ok','msg');
 
     $op = new stdClass();
@@ -336,7 +346,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 function edit(&$argsObj,&$tprojectMgr)
 {
 	$tprojectInfo = $tprojectMgr->get_by_id($argsObj->tprojectID);
-
+   
 	$argsObj->tprojectName = $tprojectInfo['name'];
 	$argsObj->color = $tprojectInfo['color'];
 	$argsObj->notes = $tprojectInfo['notes'];

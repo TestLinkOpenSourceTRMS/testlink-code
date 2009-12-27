@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.2 2009/12/27 14:32:18 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.3 2009/12/27 14:40:46 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -130,22 +130,14 @@ rev:
     	</td>
   </tr>
 	{/if}
-  
-	{if $args_cf.before_steps_results neq ''}
-	<tr>
-	  <td>
-    {$args_cf.before_steps_results}
-    </td>
-	</tr>
-	{/if}
 	<tr>
 	</tr>
 	<tr>
 	</tr>
 </table>
 
-	{if $args_cf.standard_location neq ''}
+	{if $args_cf neq ''}
 	<div>
-        <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
+        <div id="cfields_design_time" class="custom_field_container">{$args_cf}</div>
 	</div>
 	{/if}

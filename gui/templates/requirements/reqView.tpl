@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.24 2009/12/20 18:49:26 franciscom Exp $
+$Id: reqView.tpl,v 1.25 2009/12/27 14:32:18 franciscom Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -10,7 +10,7 @@ rev: 20080512 - franciscom - added paremt_descr
 
 {lang_get var="labels"
           s="req,scope,status,coverage,req_msg_notestcase,type,expected_coverage,
-             title_created,by,title_last_mod,btn_edit,btn_delete,btn_cp,
+             title_created,by,title_last_mod,btn_edit,btn_delete,btn_cp,btn_new_version,
              no_records_found"}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -60,6 +60,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 					                                
 					                                
 		<input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>
+		<input type="submit" name="new_version" value="{$labels.btn_new_version}" onclick="doAction.value='doCreateVersion'"/>
 	</form>
 	</div>
 	{/if}

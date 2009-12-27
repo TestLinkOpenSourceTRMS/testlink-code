@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.1 2009/12/26 17:22:00 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.2 2009/12/27 14:32:18 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -13,9 +13,36 @@ rev:
 {include file="inc_head.tpl" openHead='yes'}
 {include file="inc_del_onclick.tpl"}
 
+
 <script type="text/javascript">
+{literal}
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
-var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement_id=';
+function delete_req(btn, text, o_id)
+{ 
+	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement_id=';
+  if( btn == 'yes' )
+  {
+    my_action = my_action+o_id;
+	  window.location=my_action;
+	}
+}					
+
+function delete_req_version(btn, text, o_id)
+{ 
+	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDeleteVersion&req_version_id=';
+  if( btn == 'yes' )
+  {
+    my_action = my_action+o_id;
+	  window.location=my_action;
+	}
+}					
+
+// VERY IMPORTANT:
+// needed to make delete_confirmation() understand we are using a function.
+// if I pass delete_req as argument javascript complains.
+var pF_delete_req = delete_req;
+var pF_delete_req_version = delete_req_version; 
+{/literal}
 </script>
 
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.20 2009/12/19 13:08:39 franciscom Exp $
+$Id: reqEdit.tpl,v 1.21 2009/12/27 14:32:18 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20091125 - franciscom - 
@@ -86,6 +86,7 @@ internal revision
 
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
+	<input type="hidden" name="req_version_id" value="{$gui->req_version_id}" />
 
   	<div class="labelHolder"><label for="reqDocId">{$labels.req_doc_id}</label>
   	   		{if $gui->grants->mgt_view_events eq "yes" and $gui->req_id}

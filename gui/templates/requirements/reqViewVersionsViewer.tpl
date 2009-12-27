@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.1 2009/12/26 17:22:00 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.2 2009/12/27 14:32:18 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -8,6 +8,7 @@ rev:
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
+             btn_del_this_version,
              version,testproject,title_last_mod,title_created,by"}
 
              
@@ -35,13 +36,20 @@ rev:
 {if $args_grants->req_mgmt == "yes"}
   <div class="groupBtn">
 	  <form id="req" name="req" action="lib/requirements/reqEdit.php" method="post">
-	  	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
+	  	<input type="hidden" name="requirement_id" value="{$args_req.id}" />
+	  	<input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
 	  	<input type="hidden" name="doAction" value="" />
 	  	
 	  	<input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
 	  	<input type="button" name="delete_req" value="{$labels.btn_delete}"
-	  	       onclick="delete_confirmation({$args_req.id},'{$args_req.title|escape:'javascript'|escape}',
-	  				                              '{$del_msgbox_title}', '{$warning_msg}');"	/>
+	  	       onclick="delete_confirmation({$args_req.id},
+	  	                                    '{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
+	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req);"	/>
+
+	  	<input type="button" name="delete_req_version" value="{$labels.btn_del_this_version}"
+	  	       onclick="delete_confirmation({$args_req.version_id},
+	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
+	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req_version);"	/>
 	  				                                
 	    {if $args_can_copy}  				                                
 	  	<input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>
@@ -109,18 +117,20 @@ rev:
 	</tr>
 
 	<tr class="time_stamp_creation">
-  		<td width="50%">
+  		<td >
       		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_req.creation_ts }&nbsp;
       		{$labels.by}&nbsp;{$args_req.author|escape}
   		</td>
-  		{if $args_req.modifier != ""}
-    	<td width="50%">
+  </tr>
+	{if $args_req.modifier != ""}
+  <tr class="time_stamp_creation">
+  		<td >
     		{$labels.title_last_mod}&nbsp;{localize_timestamp ts=$args_req.modification_ts}
 		  	&nbsp;{$labels.by}&nbsp;{$args_req.modifier|escape}
     	</td>
-  		{/if}
-    </tr>
-
+  </tr>
+	{/if}
+  
 	{if $args_cf.before_steps_results neq ''}
 	<tr>
 	  <td>

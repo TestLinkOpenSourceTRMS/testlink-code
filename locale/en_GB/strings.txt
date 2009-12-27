@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.511 2009/12/27 14:07:18 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.512 2009/12/27 15:27:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2359,9 +2359,9 @@ $TLS_edit_req_spec = "Edit Requirements Specification";
 $TLS_create_req = "Create Requirement";
 $TLS_delete_req = "Delete Requirement";
 $TLS_edit_req = "Edit Requirement";
-$TLS_req_created = "Requirement: %s was successfully created";
-$TLS_req_deleted = "Requirement: %s was successfully deleted";
-
+$TLS_req_created = "Req: %s-%s was successfully created";
+$TLS_req_deleted = "Req: %s-%s was successfully deleted";
+$TLS_req_version_deleted = "Req: %s-%s Version %s was successfully deleted";
 
 
 // ----- reqSpecReorder.tpl -----
@@ -2534,6 +2534,7 @@ $TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
 $TLS_audit_req_assigned_tc = "Requirement with title '{%1}' was assigned to the Test Case '{%2}'";
 $TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassigned from the Test Case '{%2}'";
 $TLS_audit_requirement_copy = "Req 'DOCID:{%1}' was created as a copy of Req 'DOCID:{%2}'";
+$TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%2} was deleted."; 
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";

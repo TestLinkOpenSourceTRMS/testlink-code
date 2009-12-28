@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.22 2009/04/04 18:05:16 schlundus Exp $
+$Id: inc_attachments.tpl,v 1.23 2009/12/28 10:12:25 franciscom Exp $
 Generic attachment management
 
 Input:
@@ -44,9 +44,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
     </div>
 {/if}
 {include file="inc_del_onclick.tpl"}
-
-
-{if $gsmarty_attachments->enabled && ($attach_attachmentInfos neq "" || $attach_show_upload_btn) }
+{if $gsmarty_attachments->enabled && ($attach_attachmentInfos != "" || $attach_show_upload_btn) }
 
 <table class="{$attach_tableClassName}" {if $attach_inheritStyle == 0} style="{$attach_tableStyles}" {/if}>
 

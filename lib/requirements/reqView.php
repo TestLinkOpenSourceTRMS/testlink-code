@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/12/28 08:49:30 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2009/12/28 10:11:59 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -34,7 +34,7 @@ $gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' .
                     urlencode($prefix) . '&item=req&id=' . urlencode($gui->req['req_doc_id']);
 		
 $smarty->assign('gui',$gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 
 /**
  *
@@ -93,8 +93,8 @@ function initialize_gui(&$dbHandler,$argsObj)
         $gui->parent_descr = lang_get('req_spec_short') . $gui->pieceSep . $gui->req['req_spec_title'];
     }
     $gui->cfields[] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);
+   	$gui->attachments[$gui->req_id] = getAttachmentInfosFrom($req_mgr,$gui->req_id);
     
-    $gui->attachments[$gui->req_id] = getAttachmentInfosFrom($req_mgr,$gui->req_id);
     $gui->attachmentTableName = $req_mgr->getAttachmentTableName();
     $gui->reqStatus = init_labels(config_get('req_status'));
     $gui->reqType = init_labels($gui->req_cfg->type_labels);

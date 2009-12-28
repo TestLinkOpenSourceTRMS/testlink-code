@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2009/12/28 17:12:43 $ by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2009/12/28 17:27:21 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1017,7 +1017,8 @@ function exportReqToXML($id,$tproject_id=null)
 							    "||NODE_ORDER||" => "node_order",
 							    );
 	
-	$reqData[] = $this->get_by_id($id);
+	$req = $this->get_by_id($id,requirement_mgr::LATEST_VERSION);
+	$reqData[] = $req[0]; 
 	$xmlStr=exportDataToXML($reqData,$rootElem,$elemTpl,$info,true);						    
 	return $xmlStr;
 }

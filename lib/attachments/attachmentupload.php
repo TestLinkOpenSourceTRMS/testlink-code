@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2009/12/28 08:52:06 $ by $Author: franciscom $
  *
  * Upload dialog for attachments
  *
@@ -17,27 +17,36 @@ require_once('../functions/attachments.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 	
 $args = init_args();
-$bUploaded = false;
-$msg = null;
+$gui = new stdClass();
+$gui->uploaded = false;
+$gui->msg = null;
+$gui->tableName = $args->tableName;
+$gui->import_limit = TL_REPOSITORY_MAXFILESIZE;
+$gui->id = $args->id;
 
 if ($args->bPostBack)
 {
 	$fInfo  = isset($_FILES['uploadedFile']) ? $_FILES['uploadedFile'] : null;
 	$id = $_SESSION['s_upload_id'];
-	$tableName = $_SESSION['s_upload_tableName'];
-	if ($fInfo && $id && $tableName != "")
+	$gui->tableName = $_SESSION['s_upload_tableName'];
+	
+	if ($fInfo && $id && $gui->tableName != "")
 	{
 		$fSize = isset($fInfo['size']) ? $fInfo['size'] : 0;
 		$fTmpName = isset($fInfo['tmp_name']) ? $fInfo['tmp_name'] : '';
 		if ($fSize && $fTmpName != "")
 		{
 			$attachmentRepository = tlAttachmentRepository::create($db);
-			$bUploaded = $attachmentRepository->insertAttachment($id,$tableName,$args->title,$fInfo);
-			if ($bUploaded)
+			$gui->uploaded = $attachmentRepository->insertAttachment($id,$gui->tableName,$args->title,$fInfo);
+			if ($gui->uploaded)
+			{
 				logAuditEvent(TLS("audit_attachment_created",$args->title,$fInfo['name']),"CREATE",$id,"attachments");
+			}	
 		}
 		else
-			$msg  = getFileUploadErrorMessage($fInfo);
+		{
+			$gui->msg  = getFileUploadErrorMessage($fInfo);
+		}	
 	}
 }
 else
@@ -47,11 +56,7 @@ else
 }
 
 $smarty = new TLSmarty();
-$smarty->assign('import_limit',TL_REPOSITORY_MAXFILESIZE);
-$smarty->assign('id',$args->id);
-$smarty->assign('tableName',$args->tableName);
-$smarty->assign('bUploaded',$bUploaded);
-$smarty->assign('msg',$msg);
+$smarty->assign('gui',$gui);
 $smarty->display('attachmentupload.tpl');
 
 /**
@@ -68,7 +73,7 @@ function init_args()
 		"title" => array("POST",tlInputParameter::STRING_N,0,250),
 	);
 	$args = new stdClass();
-	$pParams = I_PARAMS($iParams,$args);
+	I_PARAMS($iParams,$args);
 	
 	$args->bPostBack = sizeof($_POST);
 	

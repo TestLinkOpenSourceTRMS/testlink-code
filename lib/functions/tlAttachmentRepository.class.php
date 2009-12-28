@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.2 2009/12/20 15:55:14 franciscom Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.3 2009/12/28 08:53:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
@@ -453,9 +453,10 @@ class tlAttachmentRepository extends tlObjectWithDB
 	{
 		$attachmentInfos = null;
 		$attachmentIDs = $this->getAttachmentIDsFor($fkid,$fkTableName);
-		for($i = 0;$i < sizeof($attachmentIDs);$i++)
+		$loop2do = sizeof($attachmentIDs);
+		for($idx = 0;$idx < $loop2do; $idx++)
 		{
-			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$i]);
+			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$idx]);
 			if ($attachmentInfo)
 			{
 				$attachmentInfos[] = $attachmentInfo;

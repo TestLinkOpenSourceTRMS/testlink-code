@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachment.class.php,v 1.1 2009/09/05 18:19:07 schlundus Exp $
+ * @version    	CVS: $Id: tlAttachment.class.php,v 1.2 2009/12/28 08:53:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  */
@@ -30,34 +30,42 @@ class tlAttachment extends tlDBObject
 	 * @var int $fkid the foreign key id (attachments.fk_id)
 	 */
 	protected $fkID;
+
 	/**
 	 * @var string $fktableName the tablename to which the $id refers to (attachments.fk_table)
 	 */
 	protected $fkTableName;
+
 	/**
 	 * @var string the filename the attachment is stored to
 	 */
 	protected $fName;
+
 	/**
 	 * @var string the title used for the attachment
 	 */
 	protected $title;
+
 	/**
 	 * @var string $fType the mime-type of the file
 	 */
 	protected $fType;
+
 	/**
 	 * @var int $fSize the filesize (uncompressed)
 	 */
 	protected $fSize;
+
 	/**
 	 * @var string $destFPath the path to file within the repository
 	 */
 	protected $destFPath; 
+
 	/**
 	 * @var string $fContents the contents of the file
 	 */
 	protected $fContents;
+
 	/**
 	 * 
 	 * @var int the compression type used for the attachment
@@ -65,18 +73,22 @@ class tlAttachment extends tlDBObject
 	 * @see TL_REPOSITORY_COMPRESSIONTYPE_GZIP
 	 * */
 	protected $compressionType;
+
 	/**
 	 * @var string a description for the attachment
 	 */
 	protected $description;
+
 	/**
 	 * @var timestamp the timestampe when the attachment was added
 	 */
 	protected $dateAdded;
+
 	/**
 	 * @var string the path to the repository
 	 */
 	protected $repositoryPath;
+
 	/**
 	 * @var unknown_type
 	 */
@@ -99,7 +111,9 @@ class tlAttachment extends tlDBObject
 		$this->dateAdded = NULL;
 		
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
 			$this->dbID = null;
+		}	
 	} 
 
 	/**
@@ -118,6 +132,7 @@ class tlAttachment extends tlDBObject
 		$this->_clean();
 		$this->dbID = $dbID;
 	}
+	
 	/* 
 	 * Class destructor, cleans the object 
 	 */
@@ -126,6 +141,7 @@ class tlAttachment extends tlDBObject
 		parent::__destruct();
 		$this->_clean();
 	}
+	
 	/*
 	 * Initializes the attachment object 
 	 * 
@@ -154,13 +170,16 @@ class tlAttachment extends tlDBObject
 				case 'use_filename':
 					$title = $fName;
 					break;
+	
 				default:
 					break;  
 			}
 
 		}
 		if(!$config->allow_empty_title && $title == "")
+		{
 			return self::E_TITLELENGTH; 
+		}
 		
 		$this->fkID = $fkid;
 		$this->fkTableName = trim($fkTableName);
@@ -224,18 +243,14 @@ class tlAttachment extends tlDBObject
 	 */
 	public function getInfo()
 	{
-		return array(
-			"id" => $this->dbID,
-			"title" => $this->title,
-			"description" => $this->description,
-			"file_name" => $this->fName,
-			"file_type" => $this->fType,
-			"file_size" => $this->fSize,
-			"date_added" => $this->dateAdded,
-			"compression_type" => $this->compressionType,
-			"file_path" => $this->destFPath,
-			"fk_id" => $this->fkID,
-			"fk_table" => $this->fkTableName,
+		return array("id" => $this->dbID,"title" => $this->title,
+			         "description" => $this->description,
+			         "file_name" => $this->fName, "file_type" => $this->fType,
+			         "file_size" => $this->fSize,
+			         "date_added" => $this->dateAdded,
+			         "compression_type" => $this->compressionType,
+			         "file_path" => $this->destFPath,
+			         "fk_id" => $this->fkID,"fk_table" => $this->fkTableName,
 		);
 	}
 	
@@ -263,7 +278,9 @@ class tlAttachment extends tlDBObject
 	  
 		$result = $db->exec_query($query);
 		if ($result)
+		{
 			$this->dbID = $db->insert_id();
+		}
 		
 		return $result ? tl::OK : tl::ERROR;
 	}

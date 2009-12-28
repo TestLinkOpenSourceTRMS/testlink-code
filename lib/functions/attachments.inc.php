@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: attachments.inc.php,v 1.19 2009/09/05 18:19:07 schlundus Exp $
+ * @version    	CVS: $Id: attachments.inc.php,v 1.20 2009/12/28 08:52:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -31,8 +31,9 @@ function getAttachmentInfos(&$attachmentRepository,$fkid,$fkTableName,$storeList
 {
 	$attachmentInfos = $attachmentRepository->getAttachmentInfosFor($fkid,$fkTableName);
 	if ($storeListInSession)
+	{
 		storeAttachmentsInSession($attachmentInfos,$counter);
-	
+	}
 	return $attachmentInfos;
 }
 
@@ -50,8 +51,9 @@ function getAttachmentInfosFrom(&$object,$fkid,$storeListInSession = true,$count
 {
 	$attachmentInfos = $object->getAttachmentInfos($fkid);
 	if ($storeListInSession)
+	{
 		storeAttachmentsInSession($attachmentInfos,$counter);
-	
+	}
 	return $attachmentInfos;
 }
 

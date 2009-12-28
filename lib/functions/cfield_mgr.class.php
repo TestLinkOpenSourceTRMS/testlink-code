@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.73 2009/12/27 15:45:33 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.74 2009/12/28 08:53:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -560,7 +560,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          $additional_filter .
          " ORDER BY display_order,CF.id ";
 
-    // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
     $map = $this->db->fetchRowsIntoMap($sql,$access_key);
     return($map);

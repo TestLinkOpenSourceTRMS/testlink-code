@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2009/12/28 08:55:58 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2009/12/28 13:44:40 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -86,15 +86,22 @@ class requirement_mgr extends tlObjectWithAttachments
   function: get_by_id
 
 
-  args: id: requirement id
+  args: id: requirement id (can be an array)
+	    [version_id]: requirement version id (can be an array)
+	    [version_number]: 
+	    [options]
+	    
 
   returns: null if query fails
            map with requirement info
 
 */
-function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1)
+function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$my['options'] = array('order_by' => " ORDER BY REQV.version DESC ");
+    $my['options'] = array_merge($my['options'], (array)$options);
+	
     $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQV.scope,REQV.status,REQV.type,REQV.author_id," .
                 "REQV.version,REQV.id AS version_id,REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
                 "REQV.modification_ts,NH_REQ.name AS title";
@@ -115,17 +122,25 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1)
 	}
 	else
 	{
-		if( is_null($version_id) )
+		if(is_array($version_id))
 		{
-		    $where_clause .= " AND REQV.version = {$version_number} ";
+		    $versionid_list = implode(",",$version_id);
+		    $where_clause .= " AND REQV.version IN ({$versionid_list}) ";
 		}
-		else 
-		{
-		    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
-		    {
-		    	$where_clause .= " AND REQV.id = {$version_id} ";
-		    }
-	    }
+        else
+        {
+			if( is_null($version_id) )
+			{
+			    $where_clause .= " AND REQV.version = {$version_number} ";
+			}
+			else 
+			{
+			    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
+			    {
+			    	$where_clause .= " AND REQV.id = {$version_id} ";
+			    }
+	    	}
+        }
     }
   
 	$sql = " /* $debugMsg */ SELECT {$fields2get}, REQ_SPEC.testproject_id, " .
@@ -136,7 +151,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1)
 	       " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
 	       " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
 	       " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-           $where_clause . " ORDER BY REQV.version DESC ";
+           $where_clause . $my['options']['order_by'];
 
 	$recordset = $this->db->get_recordset($sql);
   	$rs = null;
@@ -1324,10 +1339,6 @@ function html_table_of_custom_field_values($id)
 	                            'case' => 'sensitive');
 	    $my['options'] = array_merge($my['options'], (array)$options);
     	
-    	// $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQV.scope,REQV.status,REQV.type,REQV.author_id," .
-    	//             "REQV.version,REQV.id AS version_id,REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
-    	//             "REQV.modification_ts,NH_REQ.name AS title";
-    	   
     	$fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title";
     	   
   		$output=null;
@@ -1344,18 +1355,6 @@ function html_table_of_custom_field_values($id)
 	    	break;
 	    }
   		
-        // Will return all versions ???
-		// $sql = " /* $debugMsg */ SELECT {$fields2get}, REQ_SPEC.testproject_id, " .
-		//        " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
-		//        " FROM {$this->object_table} REQ " .
-		//        " /* Get Req info from NH */ " .
-		//        " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
-		//        " /* Get Req Version info from NH */ " .
-		//        " JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id ".
-		//        " JOIN {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
-		//        " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
-		//        " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-		//        " WHERE REQ.req_doc_id {$check_criteria} ";
 		$sql = " /* $debugMsg */ SELECT {$fields2get}, REQ_SPEC.testproject_id, " .
 		       " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
 		       " FROM {$this->object_table} REQ " .
@@ -1375,6 +1374,7 @@ function html_table_of_custom_field_values($id)
   		{
   			$sql .= " AND REQ.srs_id={$parent_id}";
   		}
+
   		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
   		
   		return $output;
@@ -1410,7 +1410,7 @@ function html_table_of_custom_field_values($id)
 			$target = $reqSpecMgr->get_by_id($parent_id);
 			$root = $target['testproject_id'];
 		}
-        $target_doc = $this->generateDocID($id,$tproject_id);		
+        $target_doc = $this->generateDocID($id,$root);		
 
 		$item_versions = $this->get_by_id($id);
 		if($item_versions)
@@ -1518,6 +1518,7 @@ function html_table_of_custom_field_values($id)
     	    	$target_doc = $prefix . " [{$instance}]"; 
     		}
 		}
+		// die();
      	return $target_doc;
 	}
 

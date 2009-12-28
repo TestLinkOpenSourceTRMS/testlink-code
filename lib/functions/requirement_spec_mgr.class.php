@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.56 $
- * @modified $Date: 2009/12/25 11:38:22 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2009/12/28 13:44:40 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ * 	20091228 - franciscom - get_requirements() - refactored to manage req versions
  * 	20091225 - franciscom - new method - generateDocID()
  * 	20091223 - franciscom - new method - copy_to() + changes to check_main_data()
  *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
@@ -58,6 +59,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
   var $export_file_types = array("XML" => "XML");
   var $my_node_type;
+  var $node_types_descr_id;
+  var $node_types_id_descr;
+  var $attachmentTableName;
 
   /*
     contructor
@@ -73,11 +77,12 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 		$this->cfield_mgr = new cfield_mgr($this->db);
 		$this->tree_mgr =  new tree($this->db);
 
-		$this->node_types_descr_id=$this->tree_mgr->get_available_node_types();
-		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
-		$this->my_node_type=$this->node_types_descr_id['requirement_spec'];
+		$this->node_types_descr_id = $this->tree_mgr->get_available_node_types();
+		$this->node_types_id_descr = array_flip($this->node_types_descr_id);
+		$this->my_node_type = $this->node_types_descr_id['requirement_spec'];
 
-		tlObjectWithAttachments::__construct($this->db,'req_specs');
+        $this->attachmentTableName = 'req_specs';
+		tlObjectWithAttachments::__construct($this->db,$this->attachmentTableName);
 	    $this->object_table=$this->tables['req_specs'];
 	}
 
@@ -481,22 +486,22 @@ function delete($id)
 {
     $req_mgr = new requirement_mgr($this->db);
 	
-	    // Delete Custom fields
-	    $this->cfield_mgr->remove_all_design_values_from_node($id);
-		  $result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
+	// Delete Custom fields
+	$this->cfield_mgr->remove_all_design_values_from_node($id);
+	$result = $this->attachmentRepository->deleteAttachmentsFor($id,"req_specs");
 
-		  // delete requirements (one type req spec children) with all related data
-		  // coverage, attachments, custom fields, etc
-		  $requirements_info = $this->get_requirements($id);
-		  if(!is_null($requirements_info))
-	    {
-		    $items = null;
-		    foreach($requirements_info as $req)
-		    {
-	    		$items[] = $req["id"];
-		    }
-		    $req_mgr->delete($items);
-	    }
+	// delete requirements (one type req spec children) with all related data
+	// coverage, attachments, custom fields, etc
+	$requirements_info = $this->get_requirements($id);
+	if(!is_null($requirements_info))
+	{
+		$items = null;
+		foreach($requirements_info as $req)
+		{
+			$items[] = $req["id"];
+		}
+		$req_mgr->delete($items);
+	}
 		  
 		  // delete specification itself
 		  $sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
@@ -533,7 +538,7 @@ function delete_deep($id)
 
   /*
     function: get_requirements
-              get requirements contained in a requirement spec
+              get LATEST VERSION OF requirements contained in a req spec
 
 
     args: id: req spec id
@@ -547,45 +552,61 @@ function delete_deep($id)
     rev: 20080830 - franciscom - changed to get node_order from nodes hierarchy table
   */
 function get_requirements($id, $range = 'all', $testcase_id = null,
-                          $order_by=" ORDER BY NH.node_order,title,req_doc_id")
+                          $order_by=" ORDER BY NH_REQ.node_order,NH_REQ.title,REQ.req_doc_id")
 {
-	$sql = '';
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    $req_mgr = new requirement_mgr($this->db);
+	$rs = null;
 	
+	$sql = '';
+	$tcase_filter = '';
 	// contribution, BUGID 2996
-    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,type," .
-    			"REQ.expected_coverage," . 
-    			"NH.node_order,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
-                "REQ.modification_ts,NH.name AS title";
+    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title,NH_REQ.node_order," .
+                "REQV.version,REQV.scope,REQV.expected_coverage,REQV.author_id," .
+                "REQV.creation_ts,REQV.modifier_id,REQV.modifier_ts";
+
+    // First Step - get only req info
+	$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
 
 	switch($range)
 	{
 		case 'all';
-			$sql = " SELECT {$fields2get}" .
-			       " FROM {$this->tables['requirements']} REQ, {$this->tables['nodes_hierarchy']} NH" .
-			       " WHERE REQ.id=NH.id " .
-			       " AND REQ.srs_id={$id}";
 			break;
 
 		case 'assigned':
-			$sql = " SELECT {$fields2get}" . 
-			       " FROM {$this->tables['requirements']} REQ, {$this->tables['nodes_hierarchy']} NH, " .
-			       " {$this->tables['req_coverage']} req_coverage " .
-		           " WHERE REQ.id=NH.id " .
-			       " AND req_coverage.req_id=REQ.id " .
-			       " AND REQ.srs_id={$id} ";
-		       
+			$sql .= " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ_COV.req_id=NH_REQ.id ";
 			if(!is_null($testcase_id))
 			{       
-		    	$sql .= " AND req_coverage.testcase_id={$testcase_id}";
+		    	$tcase_filter = " AND REQ_COV.testcase_id={$testcase_id}";
 	  		}
 	  		break;
 	}
-	if(!is_null($order_by))
+	$sql .= " WHERE NH_REQ.parent_id={$id} " .
+	        " AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
+	$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
+
+	if( !is_null($itemSet) )
 	{
-		$sql .= $order_by;
-  	}
-  	
-  	return $this->db->get_recordset($sql);
+		$reqSet = array_keys($itemSet);
+		
+		$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
+		       " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
+		       " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
+		       " GROUP BY NH_REQV.parent_id ";
+
+		$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
+	    $reqVersionSet = array_keys($latestVersionSet);
+	    
+	    $getOptions = null;
+	    if( !is_null($order_by) )
+	    {
+			$getOptions = array('order_by' => $order_by);
+		}
+		$rs = $req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions);	    	
+		
+	}
+	return $rs;
+	
 }
 
 
@@ -1464,6 +1485,8 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	*/
 	function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
 		$op = array('status_ok' => 1, 'msg' => 'ok', 'id' => -1 );
 		$field_size = config_get('field_size');
 		$item_info = $this->get_by_id($id);
@@ -1491,7 +1514,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 					switch ($elem['node_type_id'])
 					{
 						case $this->node_types_descr_id['requirement']:
-							$ret = $this->reqMgr->copy_to($elem['id'],$the_parent_id,$user_id);
+							$ret = $this->reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,$tproject_id);
 							$op['status_ok'] = $ret['status_ok'];
 							break;
 							
@@ -1534,16 +1557,17 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	*/
 	function copy_cfields($from_id,$to_id)
 	{
-	  $cfmap_from=$this->get_linked_cfields($from_id);
-	  $cfield=null;
-	  if( !is_null($cfmap_from) )
-	  {
-	    foreach($cfmap_from as $key => $value)
-	    {
-	      $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
-	    }
-	  }
-	  $this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');
+  		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  	$cfmap_from=$this->get_linked_cfields($from_id);
+	  	$cfield=null;
+	  	if( !is_null($cfmap_from) )
+	  	{
+	  	  foreach($cfmap_from as $key => $value)
+	  	  {
+	  	    $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
+	  	  }
+	  	}
+	  	$this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');
 	}
 
 

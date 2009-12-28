@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/12/28 08:49:30 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/12/28 14:25:32 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -263,6 +263,7 @@ class reqCommands
 		$guiObj->array_of_msg = '';
 
 		$guiObj->all_reqs = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id);
+		
 		foreach($guiObj->all_reqs as $key => $req) 
 		{
 			$count = count($this->reqMgr->get_coverage($req['id']));

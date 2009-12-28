@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2009/12/28 13:59:36 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2009/12/28 14:23:38 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -555,7 +555,7 @@ function delete_deep($id)
     rev: 20080830 - franciscom - changed to get node_order from nodes hierarchy table
   */
 function get_requirements($id, $range = 'all', $testcase_id = null,
-                          $order_by=" ORDER BY NH_REQ.node_order,NH_REQ.title,REQ.req_doc_id")
+                          $order_by=" ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id")
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $req_mgr = new requirement_mgr($this->db);
@@ -599,7 +599,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 
 		$latestVersionSet = $this->db->fetchRowsIntoMap($sql,'version_id');
 	    $reqVersionSet = array_keys($latestVersionSet);
-	    
+
 	    $getOptions = null;
 	    if( !is_null($order_by) )
 	    {

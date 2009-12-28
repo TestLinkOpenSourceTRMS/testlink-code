@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.13 2009/12/19 10:57:04 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.14 2009/12/28 14:23:44 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -14,7 +14,7 @@ $Id: reqCreateTestCases.tpl,v 1.13 2009/12/19 10:57:04 franciscom Exp $
 
 {lang_get s='select_at_least_one_req' var="check_msg"}
 {lang_get var='labels' 
-          s="req_doc_id,title,scope,coverage_number,expected_coverage,
+          s="req_doc_id,title,scope,coverage_number,expected_coverage,needed,
              current_coverage,coverage,req_msg_norequirement,req_select_create_tc"} 
 
 
@@ -111,7 +111,7 @@ function check_action_precondition(form_id,action,msg)
     		{* contribution for testcase creation, BUGID 2996 *}
     		<th>{$labels.coverage_number}</th>
     		{if $gui->req_cfg->expected_coverage_management}
-  				<th>{$labels.expected_coverage}</th>
+  				<th>{$labels.needed}</th>
   			{/if}
   			<th>{$labels.current_coverage}</th>
   			<th>{$labels.coverage}</th>

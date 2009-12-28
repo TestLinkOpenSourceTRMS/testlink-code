@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2009/12/25 12:04:42 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2009/12/28 13:45:37 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
@@ -337,9 +337,8 @@ class reqSpecCommands
 	    if( $my['options']['get_items'] )
 	    {
 	    	$obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,
-	    	                                                  'all',null," ORDER BY NH.node_order");
+	    	                                                  'all',null," ORDER BY NH_REQ.node_order");
 		}
-
 		$obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
 		$obj->action_descr = lang_get('copy_several_reqs');
         $obj->template = 'reqCopy.tpl';
@@ -379,7 +378,8 @@ class reqSpecCommands
     	$obj->array_of_msg = '';
       	foreach($argsObj->itemSet as $itemID)
       	{
-			$ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,$argsObj->user_id,$copyOptions);
+			$ret = $this->reqMgr->copy_to($itemID,$argsObj->containerID,$argsObj->user_id,
+			                              $argsObj->tproject_id,$copyOptions);
 			$obj->user_feedback = $ret['msg'];
 			if($ret['status_ok'])
 			{
@@ -395,7 +395,7 @@ class reqSpecCommands
 		}
 		
 		$obj->items = $this->reqSpecMgr->get_requirements($obj->req_spec_id,
-     	                                                  'all',null," ORDER BY NH.node_order");
+     	                                                  'all',null," ORDER BY NH_REQ.node_order");
 		
 		return $obj;	
 	}

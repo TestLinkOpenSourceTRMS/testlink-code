@@ -5,11 +5,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.45 2009/12/25 19:57:38 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.46 2009/12/28 09:36:58 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20091227 - franciscom - new method getAttachmentTableName()
  * 20090806 - franciscom - platforms feature
  * 20090615 - franciscom - fixed bug on getDBTables()
  * 20090609 - franciscom - added method getDBTables()
@@ -124,6 +125,7 @@ abstract class tlObject implements iSerialization
 	{
 		$this->_clean();
 	}
+
 	
 	/** 
 	 * magic method for usage with print() or echo() , dumps out the object
@@ -324,6 +326,12 @@ abstract class tlObjectWithAttachments extends tlObjectWithDB
 		$this->attachmentRepository = null;
 		$this->attachmentTableName = null;
 	}
+	
+	function getAttachmentTableName()
+	{
+		return $this->attachmentTableName;	
+	}
+	
 }
 
 

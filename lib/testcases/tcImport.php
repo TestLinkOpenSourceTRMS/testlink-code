@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2009/12/25 12:05:15 $ by $Author: franciscom $
+ * @version $Revision: 1.56 $
+ * @modified $Date: 2009/12/28 16:23:18 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -427,8 +427,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		
 		if( $doCreate )
 		{
-		    $createOoptions = array( 'check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
-	                                   'action_on_duplicate_name' => $actionOnDuplicatedName);
+		    $createOptions = array( 'check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
+	                                'action_on_duplicate_name' => $actionOnDuplicatedName);
 
 		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
 		                                  $expected_results,$userID,$kwIDs,$node_order,

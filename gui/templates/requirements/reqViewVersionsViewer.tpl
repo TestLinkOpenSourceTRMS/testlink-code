@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.5 2009/12/28 13:25:01 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.6 2009/12/28 17:23:50 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -109,7 +109,7 @@ rev:
 	  {section name=row loop=$args_req_coverage}
 	    <span> {* BUGID 2521 *}
 	    <a href="javascript:openTCaseWindow({$args_req_coverage[row].id})">
-	    {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req.coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}</a>
+	    {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}</a>
 	    </span><br />
 	   {sectionelse}
 	  <span>{$labels.req_msg_notestcase}</span>

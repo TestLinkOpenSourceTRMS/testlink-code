@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.60 $
- * @modified $Date: 2009/12/28 16:13:45 $ by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2009/12/28 17:12:43 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -261,34 +261,24 @@ function get_coverage($id)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $req_mgr = new requirement_mgr($this->db);
-    $statusFilter = " AND status IN('" . strtoupper(VALID_REQ)."','".VALID_REQ."') ";
-    $order_by = " ORDER BY req_doc_id,title";
+    // $statusFilter = " AND status IN('" . strtoupper(VALID_REQ)."','".VALID_REQ."') ";
+    // $order_by = " ORDER BY req_doc_id,title";
 	$output = array( 'covered' => array(), 'uncovered' => array(),'nottestable' => array());
 
-	// get requirements
-	// amitkhullar- BUGID : 2439
-	// $sql_common = "/* $debugMsg */ SELECT REQ.id,REQ.req_doc_id,NH.name AS title " .
-	//               " FROM {$this->tables['requirements']} REQ " .
-	//               " JOIN {$this->tables['nodes_hierarchy']} NH ON REQ.id=NH.id " .
-	//               " WHERE REQ.srs_id={$id} ";
-	// $sql = $sql_common . $statusFilter . " {$order_by}";
-	// $arrReq = $this->db->get_recordset($sql);
-	
     // function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null)
     $getOptions = array('order_by' => " ORDER BY req_doc_id,title");
-	$allReq = $this->get_requirements($id,'all',null,$getOptions);
+	$getFilters = array('status' => VALID_REQ);
+	$validReq = $this->get_requirements($id,'all',null,$getOptions,$getFilters);
 	
 	// get not-testable requirements
-	// $sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' {$order_by}";
-	// $output['nottestable'] = $this->db->get_recordset($sql);
 	$getFilters = array('status' => NON_TESTABLE_REQ);
     $output['nottestable'] = $this->get_requirements($id,'all',null,$getOptions,$getFilters);   
-       
+      
        
 	// get coverage
-	if (sizeof($allReq))
+	if (sizeof($validReq))
 	{
-		foreach ($allReq as $req)
+		foreach ($validReq as $req)
 		{
 			// collect TC for REQ
 			$arrCoverage = $req_mgr->get_coverage($req['id']);
@@ -318,38 +308,37 @@ function get_coverage($id)
  */
 function get_metrics($id)
 {
-	$output = array();
+	$output = array('notTestable' => 0, 'total' => 0, 'covered' => 0, 'uncovered' => 0);
 
-	// get nottestable REQs
-	$sql = "SELECT count(0) AS cnt " .
-	       " FROM {$this->tables['requirements']} WHERE srs_id={$id} " .
-		   " AND status='" . TL_REQ_STATUS_NOT_TESTABLE . "'";
+	// $output['notTestable'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
+	$getFilters = array('status' => NON_TESTABLE_REQ);
+    $output['notTestable'] = $this->get_requirements_count($id,'all',null,$getFilters);
 
-	$output['notTestable'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
-
-	$sql = "SELECT count(0) AS cnt FROM {$this->tables['requirements']} WHERE srs_id={$id}";
+	$sql = "/* $debugMsg */ SELECT count(0) AS cnt FROM {$this->tables['requirements']} WHERE srs_id={$id}";
 	$output['total'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
 
-	$sql = "SELECT total_req FROM {$this->object_table} WHERE id={$id}";
+    //
+	$sql = "/* $debugMsg */ SELECT total_req FROM {$this->object_table} WHERE id={$id}";
 	$output['expectedTotal'] = $this->db->fetchFirstRowSingleColumn($sql,'total_req');
-
 	if ($output['expectedTotal'] == 0)
-		$output['expectedTotal'] = $output['total'];
-	
-	$sql = " SELECT DISTINCT requirements.id " .
-	       " FROM {$this->tables['requirements']} requirements, {$this->tables['req_coverage']} req_coverage " .
-	       " WHERE requirements.srs_id={$id}" .
-		   " AND requirements.id=req_coverage.req_id";
-	$result = $this->db->exec_query($sql);
-	if (!empty($result))
 	{
-		$output['covered'] = $this->db->num_rows($result);
+		$output['expectedTotal'] = $output['total'];
+	}
+	
+	$sql = "/* $debugMsg */ SELECT DISTINCT REQ.id " .
+	       " FROM {$this->tables['requirements']} REQ " .
+	       " JOIN {$this->tables['req_coverage']} REQ_COV ON REQ.id=REQ_COV.req_id" .
+	       " WHERE REQ.srs_id={$id} " ;
+		   
+	$rs = $this->db->get_recordset($sql);
+	if (!is_null($rs))
+	{
+		$output['covered'] = $count($rs);
 	}
 	$output['uncovered'] = $output['expectedTotal'] - $output['total'];
 
 	return $output;
 }
-
 
   /*
     function: get_all_in_testproject
@@ -838,9 +827,8 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
 		$ret['msg']='ok';
       	// $rs = $this->getByDocID($doc_id,$tproject_id,$my_parent_id,$case_analysis);
       	$rs = $this->getByDocID($doc_id,$tproject_id);
-     	
   		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
-      	{
+      	{                                  
       		$info = current($rs);
   			$ret['msg'] = sprintf(lang_get("warning_duplicated_req_spec_doc_id"),$info['title'],$doc_id);
         	$ret['status_ok'] = 0;
@@ -878,10 +866,11 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
     returns: 
 
   */
-  function get_requirements_count($id, $range = 'all', $testcase_id = null)
+  function get_requirements_count($id, $range = 'all', $testcase_id = null,$filters=null)
   {
+  	// filters => array('status' => NON_TESTABLE_REQ, 'type' => 'X');
   	$options = array('output' => 'count');
-	$count = $this->get_requirements($id,$range, $testcase_id,$options);
+	$count = $this->get_requirements($id,$range,$testcase_id,$options,$filters);
   }
 
 

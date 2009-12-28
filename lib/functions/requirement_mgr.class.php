@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2009/12/28 16:13:45 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2009/12/28 17:12:43 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -236,8 +236,10 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 
 	$reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title = trim_and_limit($title,$field_size->req_title);
-	$op = $this->check_basic_data($srs_id,$title,$reqdoc_id);
-	
+	$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
+
+	$op = $this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id);
+	$result['msg'] = $op['status_ok'] ? $result['msg'] : $op['msg'];
 	if( $op['status_ok'] )
 	{
 		$result = $this->create_req_only($srs_id,$reqdoc_id,$title,$user_id,$node_order);
@@ -246,7 +248,6 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 
 			if (config_get('req_cfg')->internal_links) 
 			{
-				$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
 				$scope = req_link_replace($this->db, $scope, $tproject_id);
 			}
 
@@ -299,18 +300,18 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     $rs=$this->get_by_id($id,$version_id);
     $req = $rs[0];
     $srs_id=$req['srs_id'];
+	$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
 
     /* contribution by asimon83/mx-julian */
 	if (config_get('req_cfg')->internal_links) 
 	{
-		$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
 		$scope = req_link_replace($this->db, $scope, $tproject_id);
 	}
 	/* end contribution by asimon83/mx-julian */
     
 	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
 	$title=trim_and_limit($title,$field_size->req_title);
-    $chk=$this->check_basic_data($srs_id,$title,$reqdoc_id,$id);
+    $chk=$this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id);
 
     if($chk['status_ok'] || $skip_controls)
 	{
@@ -489,7 +490,7 @@ function get_coverage($id)
                    msg
 
   */
-  function check_basic_data($srs_id,$title,$reqdoc_id,$id = null)
+  function check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id = null)
   {
   	$req_cfg = config_get('req_cfg');
 
@@ -514,92 +515,21 @@ function get_coverage($id)
   	{
   		$ret['msg'] = 'ok';
 
-  		if($req_cfg->reqdoc_id->is_system_wide)
+  		// if($req_cfg->reqdoc_id->is_system_wide)
+  		// {
+  		// 	// req doc id MUST BE unique inside the whole DB
+        // 	$my_srs_id = null;
+  		// }
+  		$rs = $this->getByDocID($reqdoc_id,$tproject_id);
+ 		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
   		{
-  			// req doc id MUST BE unique inside the whole DB
-        	$my_srs_id = null;
-  		}
-  		$rs = $this->get_by_docid($reqdoc_id,$my_srs_id);
-
-
-  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
-  		{
-  			$ret['msg'] = lang_get("warning_duplicate_reqdoc_id");
+  			$ret['msg'] = sprintf(lang_get("warning_duplicate_reqdoc_id"),$reqdoc_id);
   			$ret['status_ok'] = 0;
   		}
   	}
 
   	return $ret;
   }
-
-
-
-/**
- * get_by_docid
- *
- */
-function get_by_docid($reqdoc_id,$srs_id=null)
-{
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    // $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQV.scope,REQV.status,REQV.type,REQV.author_id," .
-    //             "REQV.version,REQV.id AS version_id,REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
-    //             "REQV.modification_ts,NH_REQ.name AS title";
-    
-    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,type,REQ.expected_coverage," .
-                "NH.node_order,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
-                "REQ.modification_ts,NH.name AS title";
-
-	$sql = "SELECT {$fields2get} FROM {$this->object_table} REQ, {$this->tables['nodes_hierarchy']} NH " .
-	       " WHERE req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'"  .
-	       " AND REQ.id = NH.id ";
-
-    if( !is_null($srs_id) )
-    {
-        $sql .=	 " AND srs_id={$srs_id}";
-    }
-	return($this->db->fetchRowsIntoMap($sql,'id'));
-}
-
-  /*
-    function: get_by_title
-
-    args:
-
-    returns:
-
-  */
-function get_by_title($title,$ignore_case=0)
-{
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQ.scope,REQ.status,REQ.type,NH.node_order,"  .
-                "REQ.expected_coverage,REQ.author_id,REQ.creation_ts,REQ.modifier_id," .
-                "REQ.modification_ts,NH.name AS title";
-
-  	$output = array();
-    $sql = " /* $debugMsg */ SELECT {$fields2get} FROM {$this->object_table} REQ, " .
-  	       "{$this->tables['nodes_hierarchy']} NH ";
-
-    $the_title=$this->db->prepare_string($title);
-  	if($ignore_case)
-  	{
-  	  $sql .= " WHERE UPPER(title)='" . strupper($the_title) . "'";
-  	}
-  	else
-  	{
-  	   $sql .= " WHERE title='{$the_title}'";
-  	}
-  	$sql .= " AND REQ.id = NH.id";
-
-
-  	$result = $this->db->exec_query($sql);
-  	if (!empty($result)) 
-  	{
-  		$output = $this->db->fetch_array($result);
-  	}
-
-  	return $output;
-} // function end
-
 
 
   /*

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.514 2009/12/28 14:24:15 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.515 2009/12/28 17:12:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1897,7 +1897,7 @@ $TLS_req_import_format_description2 = " - CSV exported from DOORS requires heade
 $TLS_req_import_format_docbook = " - DocBook XML format";
 $TLS_req_import_result_overwritten = "overwritten!";
 $TLS_req_import_result_skipped = "skipped";
-$TLS_warning_duplicate_reqdoc_id = "Duplicated document id";
+$TLS_warning_duplicate_reqdoc_id = "Duplicated document id %s";
 
 
 //  ----- lib/functions/requirement_spec_mgr.class.php -----

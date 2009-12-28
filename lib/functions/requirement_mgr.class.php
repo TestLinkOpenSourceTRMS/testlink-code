@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2009/12/28 13:44:40 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2009/12/28 14:33:25 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -616,11 +616,7 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     $labels['tc_created'] = lang_get('tc_created');
 
   	$output = null;
-  	if (is_array($mixIdReq)) {
-  		$arrIdReq = $mixIdReq;
-  	} else {
-  		$arrIdReq = array($mixIdReq);
-  	}
+  	$reqSet = is_array($mixIdReq) ? $mixIdReq : array($mixIdReq);
   	
   	/* contribution BUGID 2996, testcase creation */
     if( is_null($tproject_id) || $tproject_id == 0 )
@@ -726,11 +722,11 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
     	$testcase_order = $dummy['node_order'];
     }
     
-  	foreach ($arrIdReq as $execIdReq)
+  	foreach ($reqSet as $reqID)
   	{
-  		
-        $reqData = $this->get_by_id($execIdReq);
-        $count = (!is_null($tc_count)) ? $tc_count[$execIdReq] : 1;
+        $reqData = $this->get_by_id($reqID,requirement_mgr::LATEST_VERSION);
+        $count = (!is_null($tc_count)) ? $tc_count[$reqID] : 1;
+        $reqData = $reqData[0];
         
         // Generate name with progessive
         $instance=1;
@@ -740,12 +736,10 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
         if( !is_null($itemSet) )
         {
         	$nameSet = array_flip(array_keys($itemSet));
-        	// $siblingQty = count($nameSet);
         }
         for ($idx = 0; $idx < $count; $idx++) 
         {
 	        $testcase_order++;
-	        // $siblingQty++;
             	
             // We have a little problem to work on:
             // suppose you have created:

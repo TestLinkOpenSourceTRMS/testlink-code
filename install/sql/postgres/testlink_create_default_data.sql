@@ -1,9 +1,10 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.25 2009/12/25 19:25:20 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.26 2009/12/28 16:13:45 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
 --
+--  20091228 - franciscom - added new rights for project infrastructure
 --  20091010 - franciscom - platform feature
 --  20090126 - havlatm - role definition update
 --  20090101 - franciscom - found some problem with serial column fo role table.
@@ -71,6 +72,8 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (22,'events_mgt');
 INSERT INTO /*prefix*/rights (id,description) VALUES (23 ,'testproject_user_role_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (24 ,'platform_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (25 ,'platform_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (26 ,'project_infrastructure_edit');
+INSERT INTO /*prefix*/rights (id,description) VALUES (27 ,'project_infrastructure_view');
 
 
 
@@ -100,6 +103,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,22);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,23);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
 
 
 --  Rights for guest role
@@ -132,6 +137,7 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,7 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,8 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,9 );
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,11);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,26);
 
 --  Rights for leader role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,1 );
@@ -147,6 +153,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,10);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,11);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,15);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,16);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 
 
 --  admin account 

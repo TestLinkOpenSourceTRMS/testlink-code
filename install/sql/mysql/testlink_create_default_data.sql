@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.32 2009/12/25 19:26:09 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.33 2009/12/28 16:13:45 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
@@ -155,7 +155,6 @@ INSERT INTO /*prefix*/users (login,password,role_id,email,first,last,locale,acti
 # Assignment types
 INSERT INTO /*prefix*/assignment_types (id,fk_table,description) VALUES(1,'testplan_tcversions','testcase_execution');
 INSERT INTO /*prefix*/assignment_types (id,fk_table,description) VALUES(2,'tcversions','testcase_review');
-
 
 # Assignment status
 INSERT INTO /*prefix*/assignment_status (id,description) VALUES(1,'open');

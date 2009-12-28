@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.59 $
- * @modified $Date: 2009/12/28 14:23:38 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2009/12/28 16:13:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
  * 	20091228 - franciscom - get_requirements() - refactored to manage req versions
+ *                          get_coverage() - refactored to manage req versions
  * 	20091225 - franciscom - new method - generateDocID()
  * 	20091223 - franciscom - new method - copy_to() + changes to check_main_data()
  *  20091209 - asimon     - contrib for testcase creation, BUGID 2996
@@ -258,30 +259,36 @@ function get_by_id($id)
  */
 function get_coverage($id)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $req_mgr = new requirement_mgr($this->db);
     $statusFilter = " AND status IN('" . strtoupper(VALID_REQ)."','".VALID_REQ."') ";
     $order_by = " ORDER BY req_doc_id,title";
-	$output = array( 'covered' => array(), 
-					 'uncovered' => array(),
-					 'nottestable' => array()
-	);
+	$output = array( 'covered' => array(), 'uncovered' => array(),'nottestable' => array());
 
 	// get requirements
 	// amitkhullar- BUGID : 2439
-	$sql_common = " SELECT REQ.id,REQ.req_doc_id,NH.name AS title " .
-	              " FROM {$this->tables['requirements']} REQ, {$this->tables['nodes_hierarchy']} NH" .
-	              " WHERE REQ.srs_id={$id} AND REQ.id=NH.id";
-	$sql = $sql_common . $statusFilter . " {$order_by}";
-	$arrReq = $this->db->get_recordset($sql);
+	// $sql_common = "/* $debugMsg */ SELECT REQ.id,REQ.req_doc_id,NH.name AS title " .
+	//               " FROM {$this->tables['requirements']} REQ " .
+	//               " JOIN {$this->tables['nodes_hierarchy']} NH ON REQ.id=NH.id " .
+	//               " WHERE REQ.srs_id={$id} ";
+	// $sql = $sql_common . $statusFilter . " {$order_by}";
+	// $arrReq = $this->db->get_recordset($sql);
+	
+    // function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null)
+    $getOptions = array('order_by' => " ORDER BY req_doc_id,title");
+	$allReq = $this->get_requirements($id,'all',null,$getOptions);
 	
 	// get not-testable requirements
-	$sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' {$order_by}";
-	$output['nottestable'] = $this->db->get_recordset($sql);
-
+	// $sql = $sql_common . " AND status='" . NON_TESTABLE_REQ . "' {$order_by}";
+	// $output['nottestable'] = $this->db->get_recordset($sql);
+	$getFilters = array('status' => NON_TESTABLE_REQ);
+    $output['nottestable'] = $this->get_requirements($id,'all',null,$getOptions,$getFilters);   
+       
+       
 	// get coverage
-	if (sizeof($arrReq))
+	if (sizeof($allReq))
 	{
-		foreach ($arrReq as $req)
+		foreach ($allReq as $req)
 		{
 			// collect TC for REQ
 			$arrCoverage = $req_mgr->get_coverage($req['id']);
@@ -554,23 +561,38 @@ function delete_deep($id)
 
     rev: 20080830 - franciscom - changed to get node_order from nodes hierarchy table
   */
-function get_requirements($id, $range = 'all', $testcase_id = null,
-                          $order_by=" ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id")
+// function get_requirements($id, $range = 'all', $testcase_id = null,
+//                           $order_by=" ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id")
+// 
+function get_requirements($id, $range = 'all', $testcase_id = null, $options=null, $filters = null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $req_mgr = new requirement_mgr($this->db);
-	$rs = null;
+	$my['options'] = array( 'order_by' => " ORDER BY NH_REQ.node_order,NH_REQ.name,REQ.req_doc_id", 
+	                        'output' => 'standard');
+	$my['options'] = array_merge($my['options'], (array)$options);
+
+    // null => do not filter
+	$my['filters'] = array('status' => null, 'type' => null);
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+    switch($my['options']['output'])
+    {
+	    case 'count':
+	       	$rs = 0;	   
+	    break;
+
+    	case 'standard':
+    	default;
+			$rs = null;
+	    break;
+    }
+
 	
 	$sql = '';
 	$tcase_filter = '';
-	// contribution, BUGID 2996
-    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title,NH_REQ.node_order," .
-                "REQV.version,REQV.scope,REQV.expected_coverage,REQV.author_id," .
-                "REQV.creation_ts,REQV.modifier_id,REQV.modifier_ts";
-
     // First Step - get only req info
 	$sql = "/* $debugMsg */ SELECT NH_REQ.id FROM {$this->tables['nodes_hierarchy']} NH_REQ ";
-
 	switch($range)
 	{
 		case 'all';
@@ -591,7 +613,6 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 	if( !is_null($itemSet) )
 	{
 		$reqSet = array_keys($itemSet);
-		
 		$sql = "/* $debugMsg */ SELECT MAX(NH_REQV.id) AS version_id" . 
 		       " FROM {$this->tables['nodes_hierarchy']} NH_REQV " .
 		       " WHERE NH_REQV.parent_id IN (" . implode(",",$reqSet) . ") " .
@@ -601,12 +622,21 @@ function get_requirements($id, $range = 'all', $testcase_id = null,
 	    $reqVersionSet = array_keys($latestVersionSet);
 
 	    $getOptions = null;
-	    if( !is_null($order_by) )
+	    if( !is_null($my['options']['order_by']) )
 	    {
-			$getOptions = array('order_by' => $order_by);
+			$getOptions = array('order_by' => $my['options']['order_by']);
 		}
-		$rs = $req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions);	    	
-		
+		$rs = $req_mgr->get_by_id($reqSet,$reqVersionSet,null,$getOptions,$my['filters']);	    	
+        
+        switch($my['options']['output'])
+        {
+        	case 'standard':
+		    break;
+		    
+		    case 'count':
+		       	$rs = !is_null($rs) ? count($rs) : 0;	   
+		    break;
+		}
 	}
 	return $rs;
 	
@@ -850,30 +880,8 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   */
   function get_requirements_count($id, $range = 'all', $testcase_id = null)
   {
-      $sql='';
-	    switch($range)
-	    {
-	      case 'all';
-	      $sql = " SELECT count(id) AS requirements_qty" .
-	             " FROM {$this->tables['requirements']}" .
-	             " WHERE srs_id={$id}";
-	      break;
-      
-      
-	      case 'assigned':
-	    	$sql = " SELECT count(requirements.id) AS requirements_qty" .
-	    	       " FROM {$this->tables['requirements']} requirements, " .
-	    	       " {$this->tables['req_coverage']} req_coverage " .
-	             " WHERE req_coverage.req_id=requirements.id " .
-	    	       " AND srs_id={$id} ";
-	    	       
-	    	if( !is_null($testcase_id) )
-		    {       
-		        $sql .= " AND req_coverage.testcase_id={$testcase_id}";
-	      }
-	      break;
-	    }
-	    return $this->db->fetchOneValue($sql);
+  	$options = array('output' => 'count');
+	$count = $this->get_requirements($id,$range, $testcase_id,$options);
   }
 
 

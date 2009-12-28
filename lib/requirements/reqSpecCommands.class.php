@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/12/28 14:07:08 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2009/12/28 16:13:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
@@ -26,6 +26,7 @@ class reqSpecCommands
 	private $defaultTemplate='reqSpecEdit.tpl';
 	private $submit_button_label;
 	private $auditContext;
+    private $getRequirementsOptions
 
 	function __construct(&$db)
 	{
@@ -34,6 +35,8 @@ class reqSpecCommands
 	    $this->reqMgr = new requirement_mgr($db);
 	    $this->reqStatus=init_labels(config_get('req_status'));
 		$this->submit_button_label=lang_get('btn_save');
+		$this->getRequirementsOptions = array('order_by' => " ORDER BY NH_REQ.node_order ");
+		
 	}
 
 	function setAuditContext($auditContext)
@@ -336,8 +339,8 @@ class reqSpecCommands
 	    $my['options'] = array_merge($my['options'], (array)$options);
 	    if( $my['options']['get_items'] )
 	    {
-	    	$obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,
-	    	                                                  'all',null," ORDER BY NH_REQ.node_order");
+	    	$obj->items = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id,'all',null,
+	    	                                                  $this->getRequirementsOptions);
 		}
 		$obj->main_descr = lang_get('req_spec') . TITLE_SEP . $req_spec['title'];
 		$obj->action_descr = lang_get('copy_several_reqs');
@@ -396,9 +399,8 @@ class reqSpecCommands
   			    $obj->array_of_msg[] = $logMsg;	
 			}
 		}
-		
 		$obj->items = $this->reqSpecMgr->get_requirements($obj->req_spec_id,
-     	                                                  'all',null," ORDER BY NH_REQ.node_order");
+     	                                                  'all',null,$this->getRequirementsOptions);
 		
 		return $obj;	
 	}

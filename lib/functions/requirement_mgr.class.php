@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.58 $
- * @modified $Date: 2009/12/28 14:33:25 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2009/12/28 16:13:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -96,16 +96,33 @@ class requirement_mgr extends tlObjectWithAttachments
            map with requirement info
 
 */
-function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options=null)
+function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options=null,$filters=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	$my['options'] = array('order_by' => " ORDER BY REQV.version DESC ");
     $my['options'] = array_merge($my['options'], (array)$options);
-	
+
+    // null => do not filter
+	$my['filters'] = array('status' => null, 'type' => null);
+    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+	$filter_clause = '';
+    $dummy[]='';  // trick to make implode() work
+    foreach( $my['filters'] as $field2filter => $value)
+    {
+    	if( !is_null($value) )
+    	{
+    		$dummy[] = " {$field2filter} = '{$value}' ";
+    	}
+    }
+    if( count($dummy) > 1)
+    {
+    	$filter_clause = implode(" AND ",$dummy);
+    }
+
     $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQV.scope,REQV.status,REQV.type,REQV.author_id," .
                 "REQV.version,REQV.id AS version_id,REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
                 "REQV.modification_ts,NH_REQ.name AS title";
-
 	$where_clause = " WHERE NH_REQV.parent_id ";
 	if(is_array($id))
 	{
@@ -115,6 +132,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 	{
 		$where_clause .= " = {$id} ";
 	}
+	
 	if(is_array($version_id))
 	{
 	    $versionid_list = implode(",",$version_id);
@@ -151,7 +169,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 	       " JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
 	       " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
 	       " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-           $where_clause . $my['options']['order_by'];
+           $where_clause . $filter_clause . $my['options']['order_by'];
 
 	$recordset = $this->db->get_recordset($sql);
   	$rs = null;
@@ -1512,7 +1530,6 @@ function html_table_of_custom_field_values($id)
     	    	$target_doc = $prefix . " [{$instance}]"; 
     		}
 		}
-		// die();
      	return $target_doc;
 	}
 

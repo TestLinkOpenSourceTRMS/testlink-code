@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2009/12/12 15:09:11 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2009/12/28 17:49:50 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20091228 - franciscom - checkReqSpecQuality() - refactoring due to req versioning feature
  *	20091212 - franciscom - BUGID 2998 - contribution - getTestSuiteByID()
  *  20091128 - franciscom - getTestCaseIDBy() - added testcasepathname
  *  20091113 - franciscom - work for adding overwrite argument to reportTCResult() started.
@@ -2828,7 +2829,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                   if( !isset($dummy[$req_id]) )
                   {
                       $status_ok=false;
-                      $req_info = $this->reqMgr->get_by_id($req_id);
+                      $req_info = $this->reqMgr->get_by_id($req_id,requirement_mgr::LATEST_VERSION);
                       
                       if( is_null($req_info) )
                       {
@@ -2837,6 +2838,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                       }
                       else 
                       {  
+                      	  $req_info = $req_inf[0];
                           $msg = sprintf(REQ_REQSPEC_KO_STR,$req_info['req_doc_id'],$req_info['title'],$req_id,
                                          $reqspec_info['title'],$req_spec_id);
                           $error_code=REQ_REQSPEC_KO;

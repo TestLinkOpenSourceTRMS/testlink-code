@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2009/12/28 17:27:21 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2009/12/28 17:32:00 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20091228 - franciscom - exportReqToXML() - added expected_coverage
+ *                          refactoring for feature req versioning
  *  20091227 - franciscom - delete() now manage version_id 
  * 	20091225 - franciscom - new method - generateDocID()
  *  20091216 - franciscom - create_tc_from_requirement() interface changes
@@ -1004,10 +1006,11 @@ function exportReqToXML($id,$tproject_id=null)
 	           "\n\t\t" . "<docid><![CDATA[||DOCID||]]></docid>" .
 	           "\n\t\t" . "<title><![CDATA[||TITLE||]]></title>" .
 	           "\n\t\t" . "<node_order><![CDATA[||NODE_ORDER||]]></node_order>".
-					   "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
-					   "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
-					   "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
-					   "\n\t" . "</requirement>" . "\n";
+			   "\n\t\t" . "<description><![CDATA[\n||DESCRIPTION||\n]]></description>".
+			   "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
+			   "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
+			   "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .			   
+			   "\n\t" . "</requirement>" . "\n";
 					   
 	$info = array (	"||DOCID||" => "req_doc_id",
 							    "||TITLE||" => "title",
@@ -1015,6 +1018,7 @@ function exportReqToXML($id,$tproject_id=null)
 							    "||STATUS||" => "status",
 							    "||TYPE||" => "type",
 							    "||NODE_ORDER||" => "node_order",
+							    "||EXPECTED_COVERAGE||" => "expected_coverage",
 							    );
 	
 	$req = $this->get_by_id($id,requirement_mgr::LATEST_VERSION);

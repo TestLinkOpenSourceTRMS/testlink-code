@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.64 2009/12/21 10:58:29 havlat Exp $
+# $Id: testlink_create_tables.sql,v 1.65 2009/12/28 08:45:26 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
 # 			tables are in alphabetic order  
@@ -9,7 +9,13 @@
 #
 # Revisions:
 #
-# 20091221 - havlatm - infrastructure table added, tcversion and testproject updated
+# 20091228 - franciscom - changes to requirements table and new table req_versions
+#                         to implement requirement versioning
+#                         req_doc_id and doc_id => changed to NOT NULL
+#                         
+# 20091221 - havlatm - infrastructure table added.
+#                      tcversion.type added 
+#                      testproject.options added
 # 20091220 - franciscom - fields removed form req_spec and requirements "title"
 # 20091119 - franciscom - requirements table - new field expected_coverage
 # 20091119 - franciscom - req_specs added doc_id field
@@ -329,7 +335,7 @@ CREATE TABLE /*prefix*/req_coverage (
 CREATE TABLE /*prefix*/req_specs (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
-  `doc_id` varchar(32) default NULL,
+  `doc_id` varchar(32) NOT NULL,
   `scope` text,
   `total_req` int(10) NOT NULL default '0',
   `type` char(1) default 'n',
@@ -343,10 +349,36 @@ CREATE TABLE /*prefix*/req_specs (
 ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
 
 
+# Old version
+#CREATE TABLE /*prefix*/requirements (
+#  `id` int(10) unsigned NOT NULL,
+#  `srs_id` int(10) unsigned NOT NULL,
+#  `req_doc_id` varchar(32) default NULL,
+#  `scope` text,
+#  `status` char(1) NOT NULL default 'V',
+#  `type` char(1) default NULL,
+#  `expected_coverage` int(10) NOT NULL default '1',
+#  `author_id` int(10) unsigned default NULL,
+#  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+#  `modifier_id` int(10) unsigned default NULL,
+#  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+#  PRIMARY KEY  (`id`),
+#  KEY /*prefix*/requirements_srs_id (`srs_id`,`status`),
+#  UNIQUE KEY /*prefix*/requirements_req_doc_id (`srs_id`,`req_doc_id`)
+#) DEFAULT CHARSET=utf8;
+#
+
 CREATE TABLE /*prefix*/requirements (
   `id` int(10) unsigned NOT NULL,
   `srs_id` int(10) unsigned NOT NULL,
-  `req_doc_id` varchar(32) default NULL,
+  `req_doc_id` varchar(32) NOT NULL,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/requirements_req_doc_id (`srs_id`,`req_doc_id`)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/req_versions (
+  `id` int(10) unsigned NOT NULL,
+  `version` smallint(5) unsigned NOT NULL default '1',
   `scope` text,
   `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,
@@ -355,10 +387,10 @@ CREATE TABLE /*prefix*/requirements (
   `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `modifier_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`),
-  KEY /*prefix*/requirements_srs_id (`srs_id`,`status`),
-  UNIQUE KEY /*prefix*/requirements_req_doc_id (`srs_id`,`req_doc_id`)
+  PRIMARY KEY  (`id,version`),
 ) DEFAULT CHARSET=utf8;
+
+
 
 
 CREATE TABLE /*prefix*/rights (

@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.46 2009/12/28 08:29:56 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.47 2009/12/28 08:45:26 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -13,6 +13,9 @@
 --
 -- 
 --  Rev :
+-- 
+--  20091228 - franciscom - requirements table changes and new table req_versions
+--                          to implement requirements versioning.
 -- 
 --  20091124 - franciscom - requirements table - new field expected_coverage
 --  20091119 - franciscom - req_specs added doc_id field

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/12/28 16:13:45 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2009/12/28 17:35:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
@@ -26,7 +26,7 @@ class reqSpecCommands
 	private $defaultTemplate='reqSpecEdit.tpl';
 	private $submit_button_label;
 	private $auditContext;
-    private $getRequirementsOptions
+    private $getRequirementsOptions;
 
 	function __construct(&$db)
 	{

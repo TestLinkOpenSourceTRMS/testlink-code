@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.6 2009/12/28 08:47:35 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.7 2009/12/28 13:25:01 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -144,7 +144,6 @@ var pF_delete_req_version = delete_req_version;
         <div id="vers_{$vid}" class="workBack">
         
   	    {foreach from=$gui->other_versions[idx] item=my_req }
-
             {assign var="version_num" value=$my_req.version}
             {assign var="title" value="$labels.version}
             {assign var="title" value="$title $version_num"}
@@ -165,6 +164,7 @@ var pF_delete_req_version = delete_req_version;
 		          {include file="$this_template_dir/reqViewVersionsViewer.tpl" 
 		                   args_req_coverage=$gui->req_coverage
 		                   args_req=$my_req 
+           		         args_gui=$gui
 		                   args_grants=$gui->grants 
 		                   args_can_do=$gui->can_do
 		                   args_can_copy=false

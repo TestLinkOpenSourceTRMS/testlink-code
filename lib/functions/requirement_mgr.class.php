@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2009/12/28 17:32:00 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2009/12/28 17:34:27 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1053,6 +1053,7 @@ function xmlToMapRequirement($xml_item)
     $dummy['description'] = (string)$xml_item->description;
     $dummy['status'] = (string)$xml_item->status;
     $dummy['type'] = (string)$xml_item->type;
+    $dummy['expected_coverage'] = (int)$xml_item->expected_coverage;
 
     if( property_exists($xml_item,'custom_fields') )	              
     {

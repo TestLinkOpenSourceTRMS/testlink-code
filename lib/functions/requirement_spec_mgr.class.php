@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.61 $
- * @modified $Date: 2009/12/28 17:12:43 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2009/12/28 17:59:15 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1354,8 +1354,9 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
         $elem = $items[$idx]['req_spec'];
         $depth = $elem['level'];
         
-        $result = $this->create($tproject_id,$container_id[$depth], 
-                                $elem['doc_id'],$elem['title'],$elem['scope'],0,$author_id);
+        $req_spec_order = isset($elem['node_order']) ? $elem['node_order'] : 0;
+        $result = $this->create($tproject_id,$container_id[$depth],$elem['doc_id'],$elem['title'],
+                                $elem['scope'],$req_spec_order,$author_id);
         if($result['status_ok'])
         {
             $container_id[$depth+1] = $result['id']; 
@@ -1368,8 +1369,9 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
                 for($jdx = 0;$jdx < $items_qty; $jdx++)
                 {
                      $req = $requirementSet[$keys2insert[$jdx]];
-                     $req_mgr->create($result['id'],$req['docid'],$req['title'],
-                                      $req['description'],$author_id,$req['status'],$req['type']);
+                     $req_mgr->create($result['id'],$req['docid'],$req['title'],$req['description'],
+                                      $author_id,$req['status'],$req['type'],
+                                      $req['expected_coverage'],$req['node_order']);
                 } 
             }  // if($create_requirements)   
         } // if($result['status_ok'])

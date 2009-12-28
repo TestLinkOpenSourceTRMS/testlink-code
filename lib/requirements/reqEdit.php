@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2009/12/25 12:04:42 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2009/12/28 08:49:30 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -37,12 +37,16 @@ $args = init_args();
 $gui = initialize_gui($db,$args);
 $commandMgr = new reqCommands($db);
 
+
 $pFn = $args->doAction;
+
 $op = null;
 if(method_exists($commandMgr,$pFn))
 {
 	$op = $commandMgr->$pFn($args,$_REQUEST);
 }
+
+// new dBug($op);
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 
@@ -66,6 +70,7 @@ function init_args()
 					 "req_id_cbox" => array(tlInputParameter::ARRAY_INT),
 			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
 					 "testcase_count" => array(tlInputParameter::ARRAY_INT),
+					 "req_version_id" => array(tlInputParameter::INT_N),
 					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL));	
 		
 	$args = new stdClass();
@@ -98,7 +103,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                              'createTestCases' => 'doCreateTestCases',
                              'doCreateTestCases' => 'doCreateTestCases',
                              'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
-                             'copy' => 'doCopy', 'doCopy' => 'doCopy');
+                             'copy' => 'doCopy', 'doCopy' => 'doCopy',
+                             'doCreateVersion' => 'doCreateVersion',
+                             'doDeleteVersion' => '');
 
 
 
@@ -134,6 +141,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
       	case "doUpdate":
         case "copy":
         case "doCopy":
+        case "doCreateVersion":
+        case "doDeleteVersion":
             $renderType = 'template';
             $key2loop = get_object_vars($opObj);
             foreach($key2loop as $key => $value)

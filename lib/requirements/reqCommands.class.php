@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/12/25 12:04:42 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/12/28 08:49:30 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -72,10 +72,16 @@ class reqCommands
 	function edit(&$argsObj)
 	{
 		$obj = new stdClass();
-		$obj->req = $this->reqMgr->get_by_id($argsObj->req_id);
+
+		// ATENCION!!!!
+		$obj->req = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
+		$obj->req = $obj->req[0];
 		$argsObj->scope = $obj->req['scope'];
-	
-		$obj->main_descr = lang_get('req') . TITLE_SEP . $obj->req['title'];
+		    
+		$obj->main_descr = lang_get('req_short') . TITLE_SEP . $obj->req['req_doc_id'] . 
+		                   " (" . lang_get('version') . ' ' . $obj->req['version'] . ")" . TITLE_SEP . 
+		                   TITLE_SEP .  $obj->req['title'];
+		                   
 		$obj->action_descr = lang_get('edit_req');
 		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->tproject_id);
 		$obj->template = 'reqEdit.tpl';
@@ -84,6 +90,7 @@ class reqCommands
 		$obj->reqTypeDomain = $this->reqTypeDomain;
 		$obj->req_spec_id = $argsObj->req_spec_id;
 		$obj->req_id = $argsObj->req_id;
+		$obj->req_version_id = $argsObj->req_version_id;
 		$obj->expected_coverage = $argsObj->expected_coverage;
 		
 		return $obj;	
@@ -105,6 +112,7 @@ class reqCommands
 		$obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
 		$obj->action_descr = lang_get('create_req');
 		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+	
 		$obj->submit_button_label=lang_get('btn_save');
 		$obj->template = null;
       	$obj->reqStatusDomain=$this->reqStatusDomain;
@@ -130,7 +138,7 @@ class reqCommands
 		if($ret['status_ok'])
 		{
 			logAuditEvent(TLS("audit_requirement_created",$argsObj->reqDocId),"CREATE",$ret['id'],"requirements");
-			$obj->user_feedback = sprintf(lang_get('req_created'), $argsObj->reqDocId);
+			$obj->user_feedback = sprintf(lang_get('req_created'),$argsObj->reqDocId,$argsObj->title);
 			$cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
 			$this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
   			$obj->template = 'reqEdit.tpl';
@@ -153,7 +161,8 @@ class reqCommands
 	{
 		$obj = new stdClass();
 	    $descr_prefix = lang_get('req') . TITLE_SEP;
-		$ret = $this->reqMgr->update($argsObj->req_id,trim($argsObj->reqDocId),$argsObj->title,
+		$ret = $this->reqMgr->update($argsObj->req_id,$argsObj->req_version_id,
+		                             trim($argsObj->reqDocId),$argsObj->title,
 	  				                 $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
 	  				                 $argsObj->reqType,$argsObj->expected_coverage);
 
@@ -166,7 +175,6 @@ class reqCommands
         	$obj->main_descr = '';
 		    $obj->action_descr = '';
           	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
-          	// $obj->template = "reqView.php";
 		  	$cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id);
 		  	$this->reqMgr->values_to_db($request,$argsObj->req_id,$cf_map);
 
@@ -175,29 +183,35 @@ class reqCommands
 		else
 		{
 			// Action has failed => no change done on DB.
-	        $old = $this->reqMgr->get_by_id($argsObj->req_id);
+	        $old = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
 	        $obj->main_descr = $descr_prefix . $old['title'];
           	$obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->tproject_id);
 		}
 		return $obj;	
 	}
 
+    /**
+	 * 
+ 	 * 
+     */
 	function doDelete(&$argsObj)
 	{
 		$obj = new stdClass();
-		$req = $this->reqMgr->get_by_id($argsObj->req_id);
+		$reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
+		$req = current($reqVersionSet);
+		
 		$this->reqMgr->delete($argsObj->req_id);
 		logAuditEvent(TLS("audit_requirement_deleted",$req['req_doc_id']),"DELETE",$argsObj->req_id,"requirements");
   
 		$obj->template = 'show_message.tpl';
 		$obj->template_dir = '';
-		$obj->user_feedback = sprintf(lang_get('req_deleted'),$req['title']);
+		$obj->user_feedback = sprintf(lang_get('req_deleted'),$req['req_doc_id'],$req['title']);
 		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req['title'];
 		$obj->title=lang_get('delete_req');
 		$obj->refresh_tree = 'yes';
 		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
-  }
+  	}
   
 
 	function reorder(&$argsObj)
@@ -283,7 +297,9 @@ class reqCommands
 	function copy(&$argsObj)
 	{
 		$obj = new stdClass();
-		$req = $this->reqMgr->get_by_id($argsObj->req_id);
+		$reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
+		$req = current($reqVersionSet);
+		
 		$obj->items = array($req);
 		$obj->main_descr = lang_get('req') . TITLE_SEP . $req['title'];
 		$obj->action_descr = lang_get('copy_one_req');
@@ -326,10 +342,15 @@ class reqCommands
 		                              $copyOptions);
 		$obj->user_feedback = $ret['msg'];
 	    $obj->array_of_msg = '';
+		
 		if($ret['status_ok'])
 		{
-			$new_req = $this->reqMgr->get_by_id($ret['id']);
-		    $source_req = $this->reqMgr->get_by_id($itemID);
+			$new_req_version_set = $this->reqMgr->get_by_id($ret['id']);
+			$new_req = current($new_req_version_set);
+			
+		    $source_req_version_set = $this->reqMgr->get_by_id($itemID);
+            $source_req = current($source_req_version_set);
+
 		    $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
 			logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
 			$obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id']);
@@ -342,5 +363,57 @@ class reqCommands
 	}
 
 
+  /*
+    function: doCreateVersion
+
+    args:
+    
+    returns: 
+
+  */
+	function doCreateVersion(&$argsObj,$request)
+	{
+		$ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id);
+		$obj=new stdClass();
+		$obj->user_feedback = $ret['msg'];
+       	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
+      	$obj->req = null;
+  		$obj->spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+		$obj->req_id = $argsObj->req_id;
+		return $obj;	
+  }
+  
+  
+   /**
+	 * 
+ 	 * 
+     */
+	function doDeleteVersion(&$argsObj)
+	{
+		$obj = new stdClass();
+		$node = $this->reqMgr->tree_mgr->get_node_hierachy_info($argsObj->req_version_id);
+		$req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
+        $req_version = $req_version[0];
+
+		$this->reqMgr->delete($node['parent_id'],$argsObj->req_version_id);
+		logAuditEvent(TLS("audit_req_version_deleted",$req_version['version'],
+		                  $req_version['req_doc_id'],$req_version['title']),
+		              "DELETE",$argsObj->req_version_id,"req_version");
+  
+		$obj->template = 'show_message.tpl';
+		$obj->template_dir = '';
+		
+		$obj->user_feedback = sprintf(lang_get('req_version_deleted'),$req_version['req_doc_id'],
+		                              $req_version['title'],$req_version['version']);
+		
+		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req_version['title'];
+		$obj->title=lang_get('delete_req');
+		$obj->refresh_tree = 'no';
+		$obj->result = 'ok';  // needed to enable refresh_tree logic
+		return $obj;
+  	}
+
+  
+  
 }
 ?>

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.73 2009/11/22 15:47:45 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.74 2009/12/28 13:59:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -284,29 +284,29 @@ class testsuite extends tlObjectWithAttachments
 	 */
 	function delete($id)
 	{
-	  $tcase_mgr = New testcase($this->db);
+	  	$tcase_mgr = New testcase($this->db);
 		$tsuite_info = $this->get_by_id($id);
 	
-	  $testcases=$this->get_children_testcases($id);
-	  if (!is_null($testcases))
+	  	$testcases=$this->get_children_testcases($id);
+	  	if (!is_null($testcases))
 		{
-		  foreach($testcases as $the_key => $elem)
-		  {
-	      $tcase_mgr->delete($elem['id']);
-		  }
+			foreach($testcases as $the_key => $elem)
+			{
+	  		$tcase_mgr->delete($elem['id']);
+			}
 		}  
-	  
-	  // What about keywords ???
-	  $this->cfield_mgr->remove_all_design_values_from_node($id);
-	  $this->deleteAttachments($id);  //inherited
-	  $this->deleteKeywords($id);
-	
-	  
-	  $sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
-	  $result = $this->db->exec_query($sql);
-	  
-	  $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
-	  $result = $this->db->exec_query($sql);
+	  	
+	  	// What about keywords ???
+	  	$this->cfield_mgr->remove_all_design_values_from_node($id);
+	  	$this->deleteAttachments($id);  //inherited
+	  	$this->deleteKeywords($id);
+	  	
+	  	
+	  	$sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
+	  	$result = $this->db->exec_query($sql);
+	  	
+	  	$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id={$id}";
+	  	$result = $this->db->exec_query($sql);
 	
 	}
 	

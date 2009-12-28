@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.57 $
- * @modified $Date: 2009/12/28 13:44:40 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2009/12/28 13:59:36 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -503,23 +503,23 @@ function delete($id)
 		$req_mgr->delete($items);
 	}
 		  
-		  // delete specification itself
-		  $sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
-		  $result = $this->db->exec_query($sql);
+	// delete specification itself
+	$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
+	$result = $this->db->exec_query($sql);
+	
+	$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id}";
+	$result = $this->db->exec_query($sql);
 
-		  $sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id}";
-		  $result = $this->db->exec_query($sql);
+	if($result)
+	{
+		$result = 'ok';
+	}
+	else
+	{
+		$result = 'The DELETE SRS request fails.';
+	}
 
-		  if($result)
-	  	{
-	  		$result = 'ok';
-	  	}
-	  	else
-	  	{
-	  		$result = 'The DELETE SRS request fails.';
-	  	}
-
-		  return $result;
+	return $result;
 } // function end
 
 
@@ -530,7 +530,10 @@ function delete($id)
  */
 function delete_deep($id)
 {
-    $this->tree_mgr->delete_subtree_objects($id);
+	// 	function delete_subtree_objects($node_id,$and_not_in_clause = '',$exclude_children_of = null,
+	//                                 $exclude_branches = null)
+    // 
+    $this->tree_mgr->delete_subtree_objects($id,'',array('requirement' => 'exclude_my_children'));
     $this->delete($id);
 }
 

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.76 2009/12/20 11:02:21 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.77 2009/12/28 13:59:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -824,10 +824,7 @@ class tree extends tlObject
 	             "                AND NHA.parent_id = {$node_id}" .
 	             "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
 	             "                ORDER BY node_order,spec_order,id";
-                echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 			    break;
-			    
-    
 	    }
 	    $result = $this->db->exec_query($sql);
 	  
@@ -915,7 +912,6 @@ class tree extends tlObject
 			     "                AND NHA.parent_id = {$node_id}" .
 			     "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
 			     "                ORDER BY node_order,spec_order,id";
-            //    echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 			break;
 			    
 	    }
@@ -1149,10 +1145,13 @@ class tree extends tlObject
 	                                $exclude_branches = null)
 	{
 		static $root_id;
+		static $my;
 		if( is_null($root_id) )
 		{
 			$root_id=$node_id;  
 		}
+		
+		
 		
 		$sql = " SELECT NH.* FROM {$this->object_table} NH " .
 			   " WHERE NH.parent_id = {$node_id} {$and_not_in_clause} ";
@@ -1174,6 +1173,7 @@ class tree extends tlObject
 					//    due to the version management
 					//
 					// 2. Sometime we want to exclude all descendants (branch) of a node.
+					//
 					if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
 					{
 						$this->delete_subtree_objects($rowID,$and_not_in_clause,

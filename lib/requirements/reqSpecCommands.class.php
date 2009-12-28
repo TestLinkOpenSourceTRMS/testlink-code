@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/12/28 13:45:37 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2009/12/28 14:07:08 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
@@ -383,11 +383,14 @@ class reqSpecCommands
 			$obj->user_feedback = $ret['msg'];
 			if($ret['status_ok'])
 			{
-				$new_req = $this->reqMgr->get_by_id($ret['id']);
-			    $source_req = $this->reqMgr->get_by_id($itemID);
+				$new_req = $this->reqMgr->get_by_id($ret['id'],requirement_mgr::LATEST_VERSION);
+			    $source_req = $this->reqMgr->get_by_id($itemID,requirement_mgr::LATEST_VERSION);
+				$new_req = $new_req[0];
+				$source_req = $source_req[0];
+
 			    $logMsg = TLS("audit_requirement_copy",$new_req['req_doc_id'],$source_req['req_doc_id']);
 				logAuditEvent($logMsg,"COPY",$ret['id'],"requirements");
-				$obj->user_feedback = sprintf(lang_get('req_created'), $new_req['req_doc_id']);
+				$obj->user_feedback = $logMsg; // sprintf(lang_get('req_created'), $new_req['req_doc_id']);
   				$obj->template = 'reqCopy.tpl';
   				$obj->req_id = $ret['id'];
   			    $obj->array_of_msg[] = $logMsg;	

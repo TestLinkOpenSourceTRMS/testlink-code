@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.211 2009/12/20 18:48:32 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.212 2009/12/29 18:02:06 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20091229 - eloff      - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
  * 20091220 - franciscom - copy_attachments() refactoring
  * 20091217 - franciscom - getDuplicatesByName() - new argument added
  * 20091215 - franciscom - getPrefix() - changed in return type, to avoid in some situations
@@ -1940,32 +1941,28 @@ class testcase extends tlObjectWithAttachments
 	// -------------------------------------------------------------------------------
 	
 	
-	/*
-	  function: getInternalID
-	
-	  args: stringID: external test case ID, an string with this components
-	                  XXXXXGNN
-	
-	                  XXXXX: test case prefix, exists one for each test project
-	                  G: glue character
-	                  NN: test case number (generated using testprojects.tc_counter field)
-	
-	  returns: internal id (node id in nodes_hierarchy)
-	
-	
-	  20080818 - franciscom - Dev Note
-	  I'm a feeling regarding performance of this function.
-	  Surelly adding a new column to tcversions (prefix) will simplify a lot this function.
-	  Other choice (that I refuse to implement time ago) is to add prefix field
-	  as a new nodes_hierarchy column.
-	  This must be discussed with dev team if we got performance bottleneck trying
-	  to get internal id from external one.
-	 
-	  
-	  rev:
-	      20090608 - franciscom - fixed error on management of numeric part (externalID)
-	      20080126 - franciscom - BUGID 1313
-	*/
+	/**
+	 * @param string stringID external test case ID
+	 *      a string on the form XXXXXGNN where:
+	 *          XXXXX: test case prefix, exists one for each test project
+	 *          G: glue character
+	 *          NN: test case number (generated using testprojects.tc_counter field)
+	 *
+	 * @return internal id (node id in nodes_hierarchy)
+	 *
+	 * 20080818 - franciscom - Dev Note
+	 * I'm a feeling regarding performance of this function.
+	 * Surelly adding a new column to tcversions (prefix) will simplify a lot this function.
+	 * Other choice (that I refuse to implement time ago) is to add prefix field
+	 * as a new nodes_hierarchy column.
+	 * This must be discussed with dev team if we got performance bottleneck trying
+	 * to get internal id from external one.
+	 *
+	 * @internal Revisions:
+	 * 20091229 - eloff      - BUGID 3021 fixed error when tc prefix contains glue character
+	 * 20090608 - franciscom - fixed error on management of numeric part (externalID)
+	 * 20080126 - franciscom - BUGID 1313
+	 */
 	function getInternalID($stringID,$glueCharacter = null)
 	{
 		if (is_null($glueCharacter))
@@ -1974,11 +1971,15 @@ class testcase extends tlObjectWithAttachments
 			$glueCharacter = $cfg->glue_character;
 		}
 		$internalID = 0;
-		$pieces = explode($glueCharacter,$stringID);
-		if(count($pieces) == 2)
+		// Find the last glue char
+		$gluePos = strrpos($stringID, $glueCharacter);
+		if ($gluePos !== false)
 		{
-	    	$testCasePrefix = $this->db->prepare_string($pieces[0]);
-	        $externalID = is_numeric($pieces[1]) ?  intval($pieces[1]) : 0;
+			$rawTestCasePrefix = substr($stringID, 0, $gluePos);
+			$rawExternalID = substr($stringID, $gluePos+1);
+
+			$testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
+			$externalID = is_numeric($rawExternalID) ?  intval($rawExternalID) : 0;
 	
 			$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
 	               " FROM {$this->tables['tcversions']} TCV, {$this->tables['nodes_hierarchy']} NH" .

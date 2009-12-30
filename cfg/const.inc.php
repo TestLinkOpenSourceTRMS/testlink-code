@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.123 2009/12/24 08:40:13 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.124 2009/12/30 18:13:59 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -601,6 +601,7 @@ define('TL_REQ_TYPE_INTERFACE',4);
 define('TL_REQ_TYPE_NON_FUNCTIONAL',5);
 define('TL_REQ_TYPE_CONSTRAIN',6);
 
+
 /** 
  * @var array localization identifiers for requirements types 
  * @since 2.0 (?) - not used yet
@@ -612,6 +613,24 @@ $tlCfg->req_cfg->type_labels = array(
 		TL_REQ_TYPE_INTERFACE => 'req_type_interface', 
 		TL_REQ_TYPE_NON_FUNCTIONAL => 'req_type_non_functional', 
 		TL_REQ_TYPE_CONSTRAIN => 'req_type_constrain');
+
+
+// Need to be defined better
+define('TL_REQ_SPEC_TYPE_INFO', 1);
+define('TL_REQ_SPEC_TYPE_FEATURE',2);
+define('TL_REQ_SPEC_TYPE_USE_CASE',3); 
+define('TL_REQ_SPEC_TYPE_INTERFACE',4);
+define('TL_REQ_SPEC_TYPE_NON_FUNCTIONAL',5);
+define('TL_REQ_SPEC_TYPE_CONSTRAIN',6);
+
+$tlCfg->req_spec_cfg->type_labels = array(
+		TL_REQ_SPEC_TYPE_INFO => 'req_type_info', 
+		TL_REQ_SPEC_TYPE_FEATURE => 'req_type_feature',
+		TL_REQ_SPEC_TYPE_USE_CASE => 'req_type_use_case', 
+		TL_REQ_SPEC_TYPE_INTERFACE => 'req_type_interface', 
+		TL_REQ_SPEC_TYPE_NON_FUNCTIONAL => 'req_type_non_functional', 
+		TL_REQ_SPEC_TYPE_CONSTRAIN => 'req_type_constrain');
+
 
 
 /**

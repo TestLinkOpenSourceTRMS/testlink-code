@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/12/15 21:20:37 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/12/30 18:35:33 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -32,10 +32,13 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 
 $gui = new stdClass();
+$gui->req_spec_cfg = config_get('req_spec_cfg');
+
 $gui->grants = new stdClass();
 $gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
 
 $gui->req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
+
 $gui->req_spec_id = $args->req_spec_id;
 $gui->tproject_name = $args->tproject_name;
 $gui->name = $gui->req_spec['title'];
@@ -46,6 +49,9 @@ $gui->refresh_tree = 'no';
 $gui->cfields = $req_spec_mgr->html_table_of_custom_field_values($args->req_spec_id,$args->tproject_id);
 $gui->attachments = getAttachmentInfosFrom($req_spec_mgr,$args->req_spec_id);
 $gui->requirements_count = $req_spec_mgr->get_requirements_count($args->req_spec_id);
+
+$gui->reqSpecType = init_labels($gui->req_spec_cfg->type_labels);
+
 
 
 /* contribution BUGID 2999, show direct link */

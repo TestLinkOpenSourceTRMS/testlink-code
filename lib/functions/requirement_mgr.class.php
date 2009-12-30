@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2009/12/28 17:34:27 $ by $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2009/12/30 17:29:52 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -324,7 +324,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
   		  	     " WHERE id={$id}";
  	  	
 	  	$sql[] = "/* $debugMsg */ UPDATE {$this->tables['requirements']} " .
-	  	         " SET req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'";
+	  	         " SET req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'" .
 	  	         " WHERE id={$id}";
 	  	
 	  	$sql[] = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " .
@@ -342,6 +342,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 		    {
 		  	  	$result['status_ok'] = 0;
 		  	  	$result['msg'] = $this->db->error_msg;
+		  	  	$result['sql'] = $stm;
 		      	break;
 		    }
 		}
@@ -494,6 +495,7 @@ function get_coverage($id)
   */
   function check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id = null)
   {
+
   	$req_cfg = config_get('req_cfg');
 
   	$my_srs_id=$srs_id;
@@ -523,6 +525,15 @@ function get_coverage($id)
         // 	$my_srs_id = null;
   		// }
   		$rs = $this->getByDocID($reqdoc_id,$tproject_id);
+        // new dBug($rs);
+        // $checks = array();
+        // $checks['!is_null(rs)'] = !is_null($rs);
+        // $checks['is_null(id)'] = is_null($id);
+        // $checks['!isset(rs[$id]'] = !isset($rs[$id]);
+        // 
+        // new dBug($checks);
+        
+        
  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
   		{
   			$ret['msg'] = sprintf(lang_get("warning_duplicate_reqdoc_id"),$reqdoc_id);

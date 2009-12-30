@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/12/28 14:25:32 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2009/12/30 08:53:16 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -379,7 +379,7 @@ class reqCommands
 		$obj->user_feedback = $ret['msg'];
        	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
       	$obj->req = null;
-  		$obj->spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
+  		// $obj->spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 		$obj->req_id = $argsObj->req_id;
 		return $obj;	
   }

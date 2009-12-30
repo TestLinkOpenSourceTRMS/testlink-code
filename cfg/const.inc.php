@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.124 2009/12/30 18:13:59 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.125 2009/12/30 18:14:34 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -624,12 +624,12 @@ define('TL_REQ_SPEC_TYPE_NON_FUNCTIONAL',5);
 define('TL_REQ_SPEC_TYPE_CONSTRAIN',6);
 
 $tlCfg->req_spec_cfg->type_labels = array(
-		TL_REQ_SPEC_TYPE_INFO => 'req_type_info', 
-		TL_REQ_SPEC_TYPE_FEATURE => 'req_type_feature',
-		TL_REQ_SPEC_TYPE_USE_CASE => 'req_type_use_case', 
-		TL_REQ_SPEC_TYPE_INTERFACE => 'req_type_interface', 
-		TL_REQ_SPEC_TYPE_NON_FUNCTIONAL => 'req_type_non_functional', 
-		TL_REQ_SPEC_TYPE_CONSTRAIN => 'req_type_constrain');
+		TL_REQ_SPEC_TYPE_INFO => 'req_spec_type_info', 
+		TL_REQ_SPEC_TYPE_FEATURE => 'req_spec_type_feature',
+		TL_REQ_SPEC_TYPE_USE_CASE => 'req_spec_type_use_case', 
+		TL_REQ_SPEC_TYPE_INTERFACE => 'req_spec_type_interface', 
+		TL_REQ_SPEC_TYPE_NON_FUNCTIONAL => 'req_spec_type_non_functional', 
+		TL_REQ_SPEC_TYPE_CONSTRAIN => 'req_spec_type_constrain');
 
 
 

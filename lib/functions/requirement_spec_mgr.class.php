@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.62 $
- * @modified $Date: 2009/12/28 17:59:15 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2009/12/30 17:14:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -200,7 +200,6 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,
 function get_by_id($id)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	
     $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
                 "RSPEC.modification_ts,NH.name AS title,RSPEC.doc_id";
@@ -598,7 +597,7 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
 	$sql .= " WHERE NH_REQ.parent_id={$id} " .
 	        " AND NH_REQ.node_type_id = {$this->node_types_descr_id['requirement']} {$tcase_filter}";
 	$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
-
+   
 	if( !is_null($itemSet) )
 	{
 		$reqSet = array_keys($itemSet);
@@ -871,6 +870,7 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   	// filters => array('status' => NON_TESTABLE_REQ, 'type' => 'X');
   	$options = array('output' => 'count');
 	$count = $this->get_requirements($id,$range,$testcase_id,$options,$filters);
+	return $count;
   }
 
 

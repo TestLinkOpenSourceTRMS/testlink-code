@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.277 2009/12/27 17:16:46 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.278 2009/12/30 18:16:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -105,7 +105,7 @@ $tlCfg->testcase_cfg = new stdClass();
 $tlCfg->req_cfg = new stdClass();
 $tlCfg->validation_cfg = new stdClass();
 $tlCfg->custom_fields = new stdClass();
-
+$tlCfg->req_spec_cfg = new stdClass();
 
 
 /** @uses database access definition (generated automatically by TL installer) */ 

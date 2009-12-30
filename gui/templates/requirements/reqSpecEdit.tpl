@@ -1,13 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.18 2009/11/22 18:46:43 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.19 2009/12/30 20:47:03 franciscom Exp $
 Purpose: smarty template - create a new req document
 
+rev: 20091230 - franciscom - req spec type
 *}
 {* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
-          s='warning,warning_empty_req_spec_title,title,scope,req_total,
+          s='warning,warning_empty_req_spec_title,title,scope,req_total,type,
              doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -95,6 +96,15 @@ Purpose: smarty template - create a new req document
 			<input type="text" id="countReq" name="countReq" size="{#REQ_COUNTER_SIZE#}" 
 			      maxlength="{#REQ_COUNTER_MAXLEN#}" value="{$gui->total_req_counter}" />
 		</div>
+	  <br />
+		
+  	<div class="labelHolder"> <label for="reqSpecType">{$labels.type}</label>
+     	<select name="reqSpecType">
+  			{html_options options=$gui->reqSpecTypeDomain selected=$gui->req_spec.type}
+  		</select>
+  	</div>
+
+		
 	    <br />
 		{if $gui->cfields neq ""}
 			<div class="custom_field_container">

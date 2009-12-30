@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2009/12/30 17:53:26 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2009/12/30 20:47:04 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -99,7 +99,7 @@ function initialize_gui(&$dbHandler,$argsObj)
     
     $gui->attachmentTableName = $req_mgr->getAttachmentTableName();
     $gui->reqStatus = init_labels(config_get('req_status'));
-    $gui->reqType = init_labels($gui->req_cfg->type_labels);
+    $gui->reqTypeDomain = init_labels($gui->req_cfg->type_labels);
     return $gui;
 }
 

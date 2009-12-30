@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.25 2009/12/27 14:32:18 franciscom Exp $
+$Id: reqView.tpl,v 1.26 2009/12/30 20:47:04 franciscom Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -76,7 +76,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 	  </tr>
 
 	  <tr>
-	  <td>{$labels.type}{$smarty.const.TITLE_SEP}{$gui->reqType[$gui->req.type]}</td>
+	  <td>{$labels.type}{$smarty.const.TITLE_SEP}{$gui->reqTypeDomain[$gui->req.type]}</td>
 	  </tr>
 	  <tr>
 	  <td>{$labels.expected_coverage}{$smarty.const.TITLE_SEP}{$gui->req.expected_coverage}</td>

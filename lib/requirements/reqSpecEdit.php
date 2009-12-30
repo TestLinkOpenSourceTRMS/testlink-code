@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2009/12/27 15:26:11 $ $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2009/12/30 20:47:04 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -30,9 +30,9 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-
-$gui = initialize_gui($db);
 $commandMgr = new reqSpecCommands($db);
+
+$gui = initialize_gui($db,$commandMgr);
 
 $auditContext = new stdClass();
 $auditContext->tproject = $args->tproject_name;
@@ -64,6 +64,7 @@ function init_args()
 					 "nodes_order" => array(tlInputParameter::ARRAY_INT),
 					 "containerID" => array(tlInputParameter::INT_N),
  			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
+					 "reqSpecType" => array(tlInputParameter::STRING_N,0,1),
 					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL));	
 		
 	$args = new stdClass();
@@ -190,9 +191,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
  * 
  *
  */
-function initialize_gui(&$dbHandler)
+function initialize_gui(&$dbHandler,&$commandMgr)
 {
-    $gui = new stdClass();
+    $gui = $commandMgr->initGuiBean();
     $gui->user_feedback = null;
     $gui->main_descr = null;
     $gui->action_descr = null;

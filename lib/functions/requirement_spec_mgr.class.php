@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.63 $
- * @modified $Date: 2009/12/30 17:14:22 $ by $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2009/12/30 20:47:04 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -145,7 +145,8 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 
   */
 function create($tproject_id,$parent_id,$doc_id,$title, $scope, 
-                $countReq,$user_id,$type = 'n',$node_order=null, $options=null)
+                $countReq,$user_id, $type = TL_REQ_SPEC_TYPE_FEATURE,
+                $node_order=null, $options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $result=array('status_ok' => 0, 'msg' => 'ko', 'id' => 0);
@@ -183,6 +184,8 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,
 		    $result['msg'] = 'ok';
 		}
 	}
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
     return $result;
 }
 
@@ -243,7 +246,6 @@ function get_by_id($id)
             }    
         }
     }  	
-
     return $rs;
 }
 
@@ -397,7 +399,7 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
              msg -> some simple message, useful when status_ok ==0
 
   */
-  function update($id,$doc_id,$title, $scope, $countReq,$user_id,$type = TL_REQ_STATUS_NOT_TESTABLE)
+  function update($id,$doc_id,$title, $scope, $countReq,$user_id,$type = TL_REQ_SPEC_TYPE_FEATURE)
   {
 		$result['status_ok'] = 1;
 	  	$result['msg'] = 'ok';

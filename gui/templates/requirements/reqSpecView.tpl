@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.31 2009/12/24 08:37:33 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.32 2009/12/30 20:47:04 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -9,7 +9,7 @@
         20070102 - franciscom - added javascript validation of checked requirements
 *}
 
-{lang_get var="labels" s="scope,req_total,by,title,title_last_mod,title_created"}
+{lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,title_created"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -68,10 +68,19 @@
    <div class="direct_link" style='display:none'>{$gui->direct_link}</div>
 
 {include file="$buttons_template"}
-
 <table class="simple" style="width: 90%">
 	<tr>
 		<th>{$gui->main_descr|escape}</th>
+	</tr>
+	<tr>
+	  <td>{$labels.type}{$smarty.const.TITLE_SEP}
+	  {assign var="req_spec_type" value=$gui->req_spec.type}
+	  {if isset($gui->reqSpecTypeDomain.$req_spec_type)}
+	    {$gui->reqSpecTypeDomain.$req_spec_type}
+	  {else}
+	    {$labels.type_not_configured}  
+	  {/if}
+	  </td>
 	</tr>
 	<tr>
 		<td>

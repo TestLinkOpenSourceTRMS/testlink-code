@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/12/30 08:53:16 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2009/12/30 17:53:26 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -34,6 +34,33 @@ class reqCommands
 	    $this->reqTypeDomain=init_labels(config_get('req_cfg')->type_labels);
 	}
 
+	/**
+	 * common properties needed on gui
+	 *
+	 */
+	function initGuiBean()
+	{
+		$obj = new stdClass();
+		$obj->pageTitle = '';
+		$obj->bodyOnLoad = '';
+		$obj->bodyOnUnload = '';
+		$obj->hilite_item_name = false;
+		$obj->display_path = false;
+		$obj->show_match_count = false;
+		$obj->main_descr = '';
+		$obj->action_descr = '';
+		$obj->cfields = null;
+      	$obj->template = '';
+		$obj->submit_button_label = '';
+		$obj->reqStatusDomain = $this->reqStatusDomain;
+		$obj->reqTypeDomain = $this->reqTypeDomain;
+		$obj->req_spec_id = null;
+		$obj->req_id = null;
+		$obj->req = null;
+		$obj->expected_coverage = null;
+        return $obj;
+    }
+
   /*
     function: create
 
@@ -44,7 +71,7 @@ class reqCommands
   */
 	function create(&$argsObj)
 	{
-		$obj = new stdClass();
+		$obj = $this->initGuiBean();
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
         
 		$obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
@@ -58,6 +85,7 @@ class reqCommands
 		$obj->req_id = null;
 		$obj->req = null;
 		$obj->expected_coverage = null;
+		$obj->display_path = false;
  		return $obj;	
 	}
 
@@ -71,7 +99,8 @@ class reqCommands
   */
 	function edit(&$argsObj)
 	{
-		$obj = new stdClass();
+		$obj = $this->initGuiBean();
+		$obj->display_path = false;
 
 		// ATENCION!!!!
 		$obj->req = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
@@ -107,7 +136,8 @@ class reqCommands
 	function doCreate(&$argsObj,$request)
 	{
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
-		$obj=new stdClass();
+		$obj = $this->initGuiBean();
+		$obj->display_path = false;
       	$obj->req = null;
 		$obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
 		$obj->action_descr = lang_get('create_req');
@@ -159,7 +189,7 @@ class reqCommands
   */
 	function doUpdate(&$argsObj,$request)
 	{
-		$obj = new stdClass();
+		$obj = $this->initGuiBean();
 	    $descr_prefix = lang_get('req') . TITLE_SEP;
 		$ret = $this->reqMgr->update($argsObj->req_id,$argsObj->req_version_id,
 		                             trim($argsObj->reqDocId),$argsObj->title,
@@ -196,7 +226,8 @@ class reqCommands
      */
 	function doDelete(&$argsObj)
 	{
-		$obj = new stdClass();
+		$obj = $this->initGuiBean();
+		$obj->display_path = false;
 		$reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
 		$req = current($reqVersionSet);
 		
@@ -216,7 +247,7 @@ class reqCommands
 
 	function reorder(&$argsObj)
 	{
-		$obj = new stdClass();
+		$obj = $this->initGuiBean();
 		  
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 		$all_reqs = $this->reqSpecMgr->get_requirements($argsObj->req_spec_id);
@@ -232,7 +263,7 @@ class reqCommands
 
 	function doReorder(&$argsObj)
 	{
-      	$obj = new stdClass();
+		$obj = $this->initGuiBean();
   		$obj->template = 'reqSpecView.tpl';
 		$nodes_in_order = transform_nodes_order($argsObj->nodes_order);
 
@@ -252,7 +283,7 @@ class reqCommands
 	 */
 	function createTestCases(&$argsObj)
 	{
-		$guiObj = new stdClass();
+		$guiObj = $this->initGuiBean();
 		$guiObj->template = 'reqCreateTestCases.tpl';
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 		$guiObj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
@@ -280,6 +311,7 @@ class reqCommands
      */
 	function doCreateTestCases(&$argsObj)
 	{
+		$guiObj = $this->initGuiBean();
 		$guiObj = $this->createTestCases($argsObj);
 	    $msg = $this->reqMgr->create_tc_from_requirement($argsObj->arrReqIds,$argsObj->req_spec_id,
 	                                                     $argsObj->user_id,$argsObj->tproject_id,
@@ -297,7 +329,7 @@ class reqCommands
      */
 	function copy(&$argsObj)
 	{
-		$obj = new stdClass();
+		$obj = $this->initGuiBean();
 		$reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
 		$req = current($reqVersionSet);
 		
@@ -329,6 +361,8 @@ class reqCommands
      */
 	function doCopy(&$argsObj)
 	{
+		$obj = $this->initGuiBean();
+
 		$target_req_spec = $this->reqSpecMgr->get_by_id($argsObj->containerID);
 		$itemID = current($argsObj->itemSet);
 		$argsObj->req_id = $itemID;
@@ -375,11 +409,10 @@ class reqCommands
 	function doCreateVersion(&$argsObj,$request)
 	{
 		$ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id);
-		$obj=new stdClass();
+		$obj = $this->initGuiBean();
 		$obj->user_feedback = $ret['msg'];
        	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
       	$obj->req = null;
-  		// $obj->spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
 		$obj->req_id = $argsObj->req_id;
 		return $obj;	
   }
@@ -391,7 +424,7 @@ class reqCommands
      */
 	function doDeleteVersion(&$argsObj)
 	{
-		$obj = new stdClass();
+		$obj = $this->initGuiBean();
 		$node = $this->reqMgr->tree_mgr->get_node_hierachy_info($argsObj->req_version_id);
 		$req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
         $req_version = $req_version[0];
@@ -413,8 +446,5 @@ class reqCommands
 		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
   	}
-
-  
-  
 }
 ?>

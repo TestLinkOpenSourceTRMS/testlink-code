@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2009/12/28 10:11:59 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2009/12/30 17:53:26 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -62,8 +62,9 @@ function initialize_gui(&$dbHandler,$argsObj)
 {
     $tproject_mgr = new testproject($dbHandler);
     $req_mgr = new requirement_mgr($dbHandler);
-   
-    $gui = new stdClass();
+    $commandMgr = new reqCommands($db);
+
+    $gui = $commandMgr->initGuiBean();
     $gui->req_cfg = config_get('req_cfg');
     $gui->tproject_name = $argsObj->tproject_name;
 
@@ -92,6 +93,7 @@ function initialize_gui(&$dbHandler,$argsObj)
     {
         $gui->parent_descr = lang_get('req_spec_short') . $gui->pieceSep . $gui->req['req_spec_title'];
     }
+    $gui->cfields = array();
     $gui->cfields[] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);
    	$gui->attachments[$gui->req_id] = getAttachmentInfosFrom($req_mgr,$gui->req_id);
     

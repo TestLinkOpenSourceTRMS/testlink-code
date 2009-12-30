@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2009/12/28 08:49:30 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2009/12/30 17:53:26 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -33,9 +33,10 @@ require_once(require_web_editor($editorCfg['type']));
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$args = init_args();
-$gui = initialize_gui($db,$args);
 $commandMgr = new reqCommands($db);
+
+$args = init_args();
+$gui = initialize_gui($db,$args,$commandMgr);
 
 
 $pFn = $args->doAction;
@@ -45,8 +46,6 @@ if(method_exists($commandMgr,$pFn))
 {
 	$op = $commandMgr->$pFn($args,$_REQUEST);
 }
-
-// new dBug($op);
 renderGui($args,$gui,$op,$templateCfg,$editorCfg);
 
 
@@ -188,10 +187,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
  * 
  *
  */
-function initialize_gui(&$dbHandler,&$argsObj)
+function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 {
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
-    $gui = new stdClass();
+
+    $gui = $commandMgr->initGuiBean();
     $gui->req_cfg = config_get('req_cfg');
     
   	$gui->req_spec_id = $argsObj->req_spec_id;

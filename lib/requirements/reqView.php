@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2009/12/30 20:47:04 $ by $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2009/12/31 10:53:13 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -23,7 +23,6 @@ $templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = initialize_gui($db,$args);
-
 $smarty = new TLSmarty();
 
 /* contribution BUGID 2999, show permanent link */

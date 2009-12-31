@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.7 2009/12/31 09:56:22 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.8 2009/12/31 10:53:13 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -92,9 +92,11 @@ rev:
 	<tr>
 	  <td>{$labels.type}{$smarty.const.TITLE_SEP}{$args_gui->reqTypeDomain[$args_req.type]}</td>
 	</tr>
+	{if $args_gui->req_cfg->expected_coverage_management && $args_gui->attrCfg.expected_coverage[$args_req.type]} 
 	<tr>
 	  <td>{$labels.expected_coverage}{$smarty.const.TITLE_SEP}{$args_req.expected_coverage}</td>
 	</tr>
+	{/if}
 
 	<tr>
 		<td>

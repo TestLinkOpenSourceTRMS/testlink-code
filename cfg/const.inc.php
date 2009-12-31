@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.125 2009/12/30 18:14:34 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.126 2009/12/31 09:55:17 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -592,7 +592,7 @@ $g_req_status = array(TL_REQ_STATUS_VALID => 'review_status_valid',
  * <li><b>Non-functional</b> - performance, infrastructure, robustness, security, safety, etc.</li>
  * <li><b>Constrain</b> - Constraints and Limitations</li>
  * </ul>
- * @since 2.0 (?) - not used yet
+ * @since TestLink 1.9
  **/
 define('TL_REQ_TYPE_INFO', 1);
 define('TL_REQ_TYPE_FEATURE',2);
@@ -604,7 +604,7 @@ define('TL_REQ_TYPE_CONSTRAIN',6);
 
 /** 
  * @var array localization identifiers for requirements types 
- * @since 2.0 (?) - not used yet
+ * @since TestLink 1.9
  **/
 $tlCfg->req_cfg->type_labels = array(
 		TL_REQ_TYPE_INFO => 'req_type_info', 
@@ -613,6 +613,20 @@ $tlCfg->req_cfg->type_labels = array(
 		TL_REQ_TYPE_INTERFACE => 'req_type_interface', 
 		TL_REQ_TYPE_NON_FUNCTIONAL => 'req_type_non_functional', 
 		TL_REQ_TYPE_CONSTRAIN => 'req_type_constrain');
+
+/** 
+ * @var array controls is expected_coverage must be requested at user interface.
+ * following conditions (OR LOGIC) must be verified to request value:
+ *
+ * a. key is NOT PRESENT (!isset())
+ * b. key is present with value TRUE
+ *
+ * Working in this way configuration is simplified.
+ *
+ * @since TestLink 1.9
+ **/
+$tlCfg->req_cfg->type_expected_coverage = array(TL_REQ_TYPE_INFO => false);
+
 
 
 // Need to be defined better

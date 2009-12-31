@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/12/30 17:53:26 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2009/12/31 09:55:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -17,12 +17,13 @@
 
 class reqCommands
 {
-  private $db;
-  private $reqSpecMgr;
-  private $reqMgr;
+	private $db;
+	private $reqSpecMgr;
+	private $reqMgr;
   
-  private $reqStatusDomain;
-  private $reqTypeDomain;
+	private $reqStatusDomain;
+	private $reqTypeDomain;
+	private $attrCfg;
 
 	function __construct(&$db)
 	{
@@ -30,8 +31,19 @@ class reqCommands
 	    $this->reqSpecMgr = new requirement_spec_mgr($db);
 	    $this->reqMgr = new requirement_mgr($db);
 	    
-	    $this->reqStatusDomain=init_labels(config_get('req_status'));
-	    $this->reqTypeDomain=init_labels(config_get('req_cfg')->type_labels);
+	    $this->reqStatusDomain = init_labels(config_get('req_status'));
+	    $this->reqTypeDomain = init_labels(config_get('req_cfg')->type_labels);
+	    
+	    $type_ec = config_get('req_cfg')->type_expected_coverage;
+	    $this->attrCfg = array();
+	    $this->attrCfg['expected_coverage'] = array();
+	    foreach($this->reqTypeDomain as $type_code => $dummy)
+	    {
+	    	// Because it has to be used on Smarty Template, I choose to transform
+	    	// TRUE -> 1, FALSE -> 0, because I've had problems using true/false
+	    	$value = isset($type_ec[$type_code]) ? ($type_ec[$type_code] ? 1 : 0) : 1;
+	    	$this->attrCfg['expected_coverage'][$type_code] = $value; 	
+	    } 
 	}
 
 	/**
@@ -54,10 +66,13 @@ class reqCommands
 		$obj->submit_button_label = '';
 		$obj->reqStatusDomain = $this->reqStatusDomain;
 		$obj->reqTypeDomain = $this->reqTypeDomain;
+		$obj->attrCfg = $this->attrCfg;
+ 
 		$obj->req_spec_id = null;
 		$obj->req_id = null;
 		$obj->req = null;
 		$obj->expected_coverage = null;
+ 
         return $obj;
     }
 

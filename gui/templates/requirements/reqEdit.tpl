@@ -1,9 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.21 2009/12/27 14:32:18 franciscom Exp $
+$Id: reqEdit.tpl,v 1.22 2009/12/31 09:55:18 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
-20091125 - franciscom - 
+20091231 - franciscom - added logic to display and check expected coverage
+                        attribute based on req type, with configuration
+                        managed using $tlCfg->req_cfg->type_expected_coverage
+
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -23,8 +26,27 @@ internal revision
 	var warning_empty_req_title = "{$labels.warning_empty_req_title}";
 	var warning_expected_coverage = "{$labels.warning_expected_coverage}";
 	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range}";
+
+  // To manage hide/show expected coverage logic, depending of req type
+  var js_expected_coverage_cfg = new Array();
+  
+  // DOM Object ID (oid)
+  // associative array with attributes
+  js_attr_cfg = new Array();
+  
+  // Configuration for expected coverage attribute
+  js_attr_cfg['expected_coverage'] = new Array();
+  js_attr_cfg['expected_coverage']['oid'] = new Array();
+  js_attr_cfg['expected_coverage']['oid']['input'] = 'expected_coverage';
+  js_attr_cfg['expected_coverage']['oid']['container'] = 'expected_coverage_container';
+
+  {foreach from=$gui->attrCfg.expected_coverage key=req_type item=cfg_def}
+    js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
+  {/foreach}
+
+
 	{literal}
-	function validateForm(f)
+	function validateForm(f,cfg)
 	{
 		if (isWhitespace(f.reqDocId.value)) 
 	  {
@@ -41,20 +63,27 @@ internal revision
 	  }
     {/literal}
 		
-    {if $gui->req_cfg->expected_coverage_management  }
+    {if $gui->req_cfg->expected_coverage_management}
 		  {literal}
-		  value = parseInt(f.expected_coverage.value);
-		  if (isNaN(value))
+		  if( cfg['expected_coverage'][f.reqType.value] == 1 )
 		  {
-		  	alert_message(alert_box_title,warning_expected_coverage);
-		  	selectField(f,'expected_coverage');
-		  	return false;
+		    value = parseInt(f.expected_coverage.value);
+		    if (isNaN(value))
+		    {
+		    	alert_message(alert_box_title,warning_expected_coverage);
+		    	selectField(f,'expected_coverage');
+		    	return false;
+		    }
+		    else if( value <= 0)
+		    {
+		    	alert_message(alert_box_title,warning_expected_coverage_range);
+		    	selectField(f,'expected_coverage');
+		    	return false;
+		    }
 		  }
-		  else if( value <= 0)
+		  else
 		  {
-		  	alert_message(alert_box_title,warning_expected_coverage_range);
-		  	selectField(f,'expected_coverage');
-		  	return false;
+		    f.expected_coverage.value = 0;
 		  }
 		  {/literal}
 		{/if}
@@ -64,10 +93,57 @@ internal revision
 	}
 	
 	
+	/**
+   * 
+   *
+   */
 	window.onload = function()
   {
 			focusInputField('reqDocId');
+      configure_attr('reqType',js_attr_cfg);
   }
+ 
+  
+  /*
+  function: configure_attr
+            depending of req type, attributes will be set to disable, 
+            if its value is nonsense for req type choosen by user.
+
+  args :
+         oid_type: id of html input used to choose req type
+         cfg: see js_attr_cfg
+         
+
+  returns: -
+
+*/
+function configure_attr(oid_type,cfg)
+{
+  var o_reqtype=document.getElementById(oid_type);
+  var oid;
+  var keys2loop=new Array();
+  var idx;
+  var key;
+  var attr_container;
+  var attr2loop=new Array();
+  attr2loop[0] = 'expected_coverage';
+  
+  for(idx=0;idx < attr2loop.length; idx++)
+  {
+    key=attr2loop[idx];
+    oid=cfg[key]['oid']['container'];
+    attr_container=document.getElementById(oid);
+    if( cfg[key][o_reqtype.value] == 0 )
+    {
+      attr_container.style.display='none';
+    }
+    else
+    {
+      attr_container.style.display='';
+    }
+  }
+} // configure_attr
+
 	{/literal}
 </script>
 </head>
@@ -82,7 +158,7 @@ internal revision
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
 <div class="workBack">
-<form name="reqEdit" id="reqEdit" method="post" onSubmit="javascript:return validateForm(this);">
+<form name="reqEdit" id="reqEdit" method="post" onSubmit="javascript:return validateForm(this,js_attr_cfg);">
 
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
@@ -119,16 +195,17 @@ internal revision
   	<br />
  	<br />
 
-  	<div class="labelHolder"> <label for="reqType">{$labels.type}</label>
-     	<select name="reqType">
+  	<div class="labelHolder" id="reqType_container"> <label for="reqType">{$labels.type}</label>
+     	<select name="reqType" id="reqType"
+     	     	  onchange="configure_attr('reqType',js_attr_cfg);" >
   			{html_options options=$gui->reqTypeDomain selected=$gui->req.type}
   		</select>
   	</div>
   	<br />
  	<br />
  	
-    {if $gui->req_cfg->expected_coverage_management  }
-  	<div class="labelHolder"> <label for="expected_coverage">{$labels.expected_coverage}</label>
+    {if $gui->req_cfg->expected_coverage_management}
+  	<div class="labelHolder" id="expected_coverage_container"> <label for="expected_coverage">{$labels.expected_coverage}</label>
   	<input type="text" name="expected_coverage" id="expected_coverage"
   		        size="{#REQ_EXPECTED_COVERAGE_SIZE#}" maxlength="{#REQ_EXPECTED_COVERAGE_MAXLEN#}"
   		        value="{$gui->req.expected_coverage}" />
@@ -136,6 +213,7 @@ internal revision
  	  </div>
   	<br />
     {/if}  	
+    
    	{* Custom fields *}
    	{if $gui->cfields != ""}
     	<div class="custom_field_container">

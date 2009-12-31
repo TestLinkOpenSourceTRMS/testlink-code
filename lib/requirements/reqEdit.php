@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2009/12/30 17:53:26 $ by $Author: franciscom $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2009/12/31 09:55:18 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -113,7 +113,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 	switch($argsObj->doAction)
     {
         case "edit":
-        case "create":
+        case "doCreate":
         $owebEditor->Value = $argsObj->scope;
         break;
 

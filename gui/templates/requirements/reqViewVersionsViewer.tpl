@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.6 2009/12/28 17:23:50 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.7 2009/12/31 09:56:22 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -87,10 +87,10 @@ rev:
 	{/if}
 
   <tr>
-	  <td>{$labels.status}{$smarty.const.TITLE_SEP}{$args_gui->reqStatus[$args_req.status]}</td>
+	  <td>{$labels.status}{$smarty.const.TITLE_SEP}{$args_gui->reqStatusDomain[$args_req.status]}</td>
 	</tr>
 	<tr>
-	  <td>{$labels.type}{$smarty.const.TITLE_SEP}{$args_gui->reqType[$args_req.type]}</td>
+	  <td>{$labels.type}{$smarty.const.TITLE_SEP}{$args_gui->reqTypeDomain[$args_req.type]}</td>
 	</tr>
 	<tr>
 	  <td>{$labels.expected_coverage}{$smarty.const.TITLE_SEP}{$args_req.expected_coverage}</td>

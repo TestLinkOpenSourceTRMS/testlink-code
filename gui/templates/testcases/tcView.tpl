@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.24 2009/12/19 17:57:34 franciscom Exp $
+$Id: tcView.tpl,v 1.25 2009/12/31 10:20:49 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -68,7 +68,7 @@ rev:
     {if $gui->show_title == 'no' }
 	    {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
     {/if}
-    <div class="direct_link" style='display:none'>{$direct_link}</div>
+    <div class="direct_link" style='display:none'><a href="{$direct_link}">{$direct_link}</a></div>
 		{include file="$this_template_dir/tcView_viewer.tpl" 
 		         args_testcase=$gui->tc_current_version[idx][0]
 		         args_keywords_map=$keywords_map[idx] 

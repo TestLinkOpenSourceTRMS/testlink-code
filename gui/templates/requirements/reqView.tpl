@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqView.tpl,v 1.26 2009/12/30 20:47:04 franciscom Exp $
+$Id: reqView.tpl,v 1.27 2009/12/31 10:18:54 franciscom Exp $
 
 rev: 20080512 - franciscom - added paremt_descr 
      20071226 - franciscom - fieldset class added (thanks ext js team)
@@ -38,7 +38,7 @@ var del_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDelete&requirement
 </h1>
 
 <div class="workBack">
-   <div class="direct_link" style='display:none'>{$gui->direct_link}</div>
+   <div class="direct_link" style='display:none'><a href"{$gui->direct_link}">{$gui->direct_link}</a></div>
 
 
 {* contribution by asimon83/mx-julian *}

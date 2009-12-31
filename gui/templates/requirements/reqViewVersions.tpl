@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.9 2009/12/31 10:21:25 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.10 2009/12/31 10:24:38 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -95,7 +95,7 @@ var pF_delete_req_version = delete_req_version;
     {if !$gui->show_title }
 	    {$gui->current_version[idx][0].req_doc_id|escape}:{$gui->current_version[idx][0].title|escape}</h2>
     {/if}
-    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}">{$gui->direct_link}</a></div>
+    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
     
 		{include file="$this_template_dir/reqViewVersionsViewer.tpl" 
 		         args_req_coverage=$gui->req_coverage

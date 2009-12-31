@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.33 2009/12/31 10:15:38 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.34 2009/12/31 10:24:38 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -65,7 +65,7 @@
 </h1>
 
 <div class="workBack">
-   <div class="direct_link" style='display:none'><a href="{$gui->direct_link}">{$gui->direct_link}</a></div>
+   <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 
 {include file="$buttons_template"}
 <table class="simple" style="width: 90%">

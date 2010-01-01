@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.34 2010/01/01 16:54:16 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.35 2010/01/01 18:35:41 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -19,7 +19,8 @@ rev:
              title_last_mod,title_created,by,expected_results,keywords,
              execution_type,test_importance,none,preconditions"}
 
-
+{* will be useful in future to semplify changes *}
+{assign var="tableColspan" value="2"} 
 {assign var="addInfoDivStyle" value='style="padding: 5px 3px 4px 10px;"'}
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -163,44 +164,49 @@ rev:
 <table class="simple">
   {if $args_show_title == "yes"}
 	<tr>
-		<th colspan="2">
+		<th colspan="{$tableColspan}">
 		{$args_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$args_testcase.name|escape}</th>
 	</tr>
   {/if}
 
   {if $args_show_version == "yes"}
 	  <tr>
-	  	<td class="bold" colspan="2">{$labels.version}
+	  	<td class="bold" colspan="{$tableColspan}">{$labels.version}
 	  	{$args_testcase.version|escape}
 	  	</td>
 	  </tr>
 	{/if}
 
 	<tr class="time_stamp_creation">
-  		<td width="50%">
+  		<td colspan="{$tableColspan}">
       		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
       		{$labels.by}&nbsp;{$author_userinfo->getDisplayName()|escape}
   		</td>
-  		{if $args_testcase.updater_last_name != "" || $args_testcase.updater_first_name != ""}
-    	<td width="50%">
+  </tr>
+
+ {if $args_testcase.updater_last_name != "" || $args_testcase.updater_first_name != ""}
+	<tr class="time_stamp_creation">
+  		<td colspan="{$tableColspan}">
     		{$labels.title_last_mod}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
 		  	&nbsp;{$labels.by}&nbsp;{$updater_userinfo->getDisplayName()|escape}
     	</td>
-  		{/if}
-    </tr>
+  </tr>
+ {/if}
+ 
+
 
 	<tr>
-		<td class="bold" colspan="2">{$labels.summary}</td>
+		<td class="bold" colspan="{$tableColspan}">{$labels.summary}</td>
 	</tr>
 	<tr>
-		<td colspan="2">{$args_testcase.summary}</td>
+		<td colspan="{$tableColspan}">{$args_testcase.summary}</td>
 	</tr>
 
 	<tr>
-		<td class="bold" colspan="2">{$labels.preconditions}</td>
+		<td class="bold" colspan="{$tableColspan}">{$labels.preconditions}</td>
 	</tr>
 	<tr>
-		<td colspan="2">{$args_testcase.preconditions}</td>
+		<td colspan="{$tableColspan}">{$args_testcase.preconditions}</td>
 	</tr>
 
 	{* 20090718 - franciscom *}
@@ -264,7 +270,7 @@ rev:
 	<div {$addInfoDivStyle}>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
      			  <tr>
-       			  <td colspan="2" style="vertical-align:text-top;"><span><a title="{$labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
+       			  <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
       				target="mainframe" class="bold">{$labels.Requirements}</a>
       				: &nbsp;</span>
       			  </td>

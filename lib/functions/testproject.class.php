@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.136 2009/12/23 14:03:42 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.137 2010/01/01 17:30:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1539,7 +1539,7 @@ function setPublicStatus($id,$status)
 				$tproject_id_on_session = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : $id;
 				if ($id == $tproject_id_on_session)
 				{
-					setSessionProject(null);
+					$this->setSessionProject(null);
 				}	
 			}
 			else

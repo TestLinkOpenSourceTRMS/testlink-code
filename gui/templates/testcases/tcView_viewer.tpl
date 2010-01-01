@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.33 2009/12/19 17:57:08 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.34 2010/01/01 16:54:16 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -19,6 +19,8 @@ rev:
              title_last_mod,title_created,by,expected_results,keywords,
              execution_type,test_importance,none,preconditions"}
 
+
+{assign var="addInfoDivStyle" value='style="padding: 5px 3px 4px 10px;"'}
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
@@ -157,7 +159,7 @@ rev:
  	{if $warning_edit_msg neq ""}
  	    <br /><div class="messages" align="center">{$warning_edit_msg}</div>
  	{/if}
- 
+
 <table class="simple">
   {if $args_show_title == "yes"}
 	<tr>
@@ -209,6 +211,7 @@ rev:
     </td>
 	</tr>
 	{/if}
+
 	<tr>
 		<th width="50%">{$labels.steps}</th>
 		<th width="50%">{$labels.expected_results}</th>
@@ -218,28 +221,29 @@ rev:
 		<td>{$args_testcase.expected_results}</td>
 	</tr>
 </table>
-    {if $session['testprojectOptAutomation']}
-    <div>
+
+{if $session['testprojectOptAutomation']}
+  <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$labels.execution_type} {$smarty.const.TITLE_SEP}</span>
 		{$execution_types[$args_testcase.execution_type]}
 	</div>
-	{/if}
+{/if}
 
-    {if $session['testprojectOptPriority']}
-    <div>
+{if $session['testprojectOptPriority']}
+   <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$labels.test_importance} {$smarty.const.TITLE_SEP}</span>
 		{$gsmarty_option_importance[$args_testcase.importance]}
 	</div>
-	{/if}
+{/if}
 
   {* 20090718 - franciscom *}
 	{if $args_cf.standard_location neq ''}
-	<div>
+	<div {$addInfoDivStyle}>
         <div id="cfields_design_time" class="custom_field_container">{$args_cf.standard_location}</div>
 	</div>
 	{/if}
 
-	<div>
+	<div {$addInfoDivStyle}>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
 			    <tr>
 			     	<td width="35%" style="vertical-align:top;"><a href={$gsmarty_href_keywordsView}>{$labels.keywords}</a>: &nbsp;
@@ -257,7 +261,7 @@ rev:
 	</div>
 
 	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
-	<div>
+	<div {$addInfoDivStyle}>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
      			  <tr>
        			  <td colspan="2" style="vertical-align:text-top;"><span><a title="{$labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
@@ -280,7 +284,7 @@ rev:
 	
 	{if $args_linked_versions != null }
   <br />
-	<div>
+	<div {$addInfoDivStyle}>
 	  {$labels.testplan_usage}
 		<table class="simple">
     <tr><th>Version </th> <th> Test Plan</th> </tr>

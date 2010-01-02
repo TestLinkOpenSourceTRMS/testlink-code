@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.22 2009/04/22 08:46:50 amkhullar Exp $ *}
+{* $Id: containerView.tpl,v 1.23 2010/01/02 17:59:47 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
+    20100102 - franciscom - refactoring to use $gui
     20080805 - franciscom - fixed undefined variable log warning.
                             BUGID 1661 - removed reorder button if tree component support drag & drop
                             
@@ -24,7 +25,7 @@ rev :
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc'}
 
-{assign var="container_id" value=$container_data.id}
+{assign var="container_id" value=$gui->container_data.id}
 {assign var="tcImportAction"
         value="lib/testcases/tcImport.php?containerID=$container_id"}
 {assign var="importToTProjectAction"  value="$basehref$tcImportAction&amp;bIntoProject=1&amp;bRecursive=1&amp;"}
@@ -41,25 +42,25 @@ rev :
 </head>
 
 <body>
-<h1 class="title">{$page_title}{$tlCfg->gui_title_separator_1}{$container_data.name|escape}</h1>
+<h1 class="title">{$gui->page_title}{$tlCfg->gui_title_separator_1}{$gui->container_data.name|escape}</h1>
 
 <div class="workBack">
 
-{include file="inc_update.tpl" result=$sqlResult item=$level
-         name=$moddedItem.name refresh=$smarty.session.tcspec_refresh_on_action }
+{include file="inc_update.tpl" result=$gui->sqlResult item=$gui->level
+         name=$gui->moddedItem.name refresh=$smarty.session.tcspec_refresh_on_action}
 
 {assign var="bDownloadOnly" value=true}
 {assign var="drawReorderButton" value=true}
 {assign var="drawReorderButton" value=false}
 
-{if $level == 'testproject'}
+{if $gui->level == 'testproject'}
 
-	{if $modify_tc_rights == 'yes'}
+	{if $gui->modify_tc_rights == 'yes'}
 		{assign var="bDownloadOnly" value=false}
 
 	<div>
 	<form method="post" action="lib/testcases/containerEdit.php">
-		<input type="hidden" name="containerID" value="{$container_data.id}" />
+		<input type="hidden" name="containerID" value="{$gui->container_data.id}" />
 		<input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
 
     {if $drawReorderButton}
@@ -84,11 +85,11 @@ rev :
 		</tr>
 		<tr>
 			<td>
-	    {if $mgt_modify_product eq 'yes'}
+	    {if $gui->mgt_modify_product == 'yes'}
 			  <a href="lib/project/projectView.php"  target="mainframe"
-			          title="{$labels.edit_testproject_basic_data}">{$container_data.name|escape}</a>
+			          title="{$labels.edit_testproject_basic_data}">{$gui->container_data.name|escape}</a>
 			{else}
-			   {$container_data.name|escape}
+			   {$gui->container_data.name|escape}
 			{/if}
 			</td>
 		</tr>
@@ -96,7 +97,7 @@ rev :
 			<th>{$labels.th_notes}</th>
 		</tr>
 		<tr>
-			<td>{$container_data.notes}</td>
+			<td>{$gui->container_data.notes}</td>
 		</tr>
 
 	</table>
@@ -107,14 +108,14 @@ rev :
 
   {* internal bug - 20080706 - franciscom*}
 	{include file="inc_attachments.tpl" 
-	         attach_id=$id attach_tableName="nodes_hierarchy"
-	         attach_attachmentInfos=$attachmentInfos
+	         attach_id=$gui->id attach_tableName="nodes_hierarchy"
+	         attach_attachmentInfos=$gui->attachmentInfos
 	         attach_downloadOnly=$bDownloadOnly}
 
 {* ----- TEST SUITE ----------------------------------------------------- *}
 {elseif $level == 'testsuite'}
 
-	{if $modify_tc_rights == 'yes' || $sqlResult neq ''}
+	{if $gui->modify_tc_rights == 'yes' || $gui->sqlResult neq ''}
 		<div class="groupBtn">
 
 		{* Add a new testsuite children for this parent *}
@@ -181,14 +182,14 @@ rev :
 		{assign var="bDownloadOnly" value=false}
 	{/if}
 	{include file="inc_attachments.tpl" 
-	         attach_attachmentInfos=$attachmentInfos
+	         attach_attachmentInfos=$gui->attachmentInfos
 	         attach_id=$id attach_tableName="nodes_hierarchy" 
 	         attach_downloadOnly=$bDownloadOnly}
 
 {/if} {* test suite *}
 
 </div>
-{if $refreshTree}
+{if $gui->refreshTree}
    {include file="inc_refreshTree.tpl"}
 {/if}
 </body>

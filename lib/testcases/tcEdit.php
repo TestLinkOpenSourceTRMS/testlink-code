@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.121 $
- * @modified $Date: 2009/12/17 21:06:18 $  by $Author: franciscom $
+ * @version $Revision: 1.122 $
+ * @modified $Date: 2010/01/02 11:23:11 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -546,6 +546,7 @@ function init_args($spec_cfg,$otName)
     $rightlist_html_name = $otName . "_newRight";
     $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";
 
+	// $args->step_number = isset($_REQUEST['step_number']) ? intval($_REQUEST['step_number']) : 0;
 
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
     $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;

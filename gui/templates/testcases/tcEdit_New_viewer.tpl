@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.14 2009/09/01 07:31:28 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.15 2010/01/02 18:58:10 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -35,8 +35,8 @@ Rev:
 			maxlength="{#TESTCASE_NAME_MAXLEN#}"
 			onchange="IGNORE_UNLOAD = false"
 			onkeypress="IGNORE_UNLOAD = false"
-			{if isset($tc.name)}
-		       value="{$tc.name|escape}"
+			{if isset($gui->tc.name)}
+		       value="{$gui->tc.name|escape}"
 			{else}
 		   		value=""
 		   	{/if}
@@ -53,10 +53,10 @@ Rev:
     
 	  {* Custom fields - with before steps & results location - 20090718 - franciscom *}
     <br />
-	  {if $cf.before_steps_results neq ""}
+	  {if $gui->cf.before_steps_results neq ""}
 	       <br/>
 	       <div id="cfields_design_time_before" class="custom_field_container">
-	       {$cf.before_steps_results}
+	       {$gui->cf.before_steps_results}
 	       </div>
 	       
 	  {/if}
@@ -72,7 +72,7 @@ Rev:
 		{if $session['testprojectOptAutomation']}
 			<div class="labelHolder">{$labels.execution_type}
 			<select name="exec_type" onchange="IGNORE_UNLOAD = false">
-    	  	{html_options options=$execution_types selected=$tc.execution_type}
+    	  	{html_options options=$gui->execution_types selected=$tc.execution_type}
 	    	</select>
 			</div>
     	{/if}
@@ -81,7 +81,7 @@ Rev:
 		   	<div>
 			<span class="labelHolder">{$labels.test_importance}</span>
 			<select name="importance" onchange="IGNORE_UNLOAD = false">
-    	  	{html_options options=$gsmarty_option_importance selected=$tc.importance}
+    	  	{html_options options=$gsmarty_option_importance selected=$gui->tc.importance}
 	    	</select>
 			</div>
 		{/if}
@@ -89,20 +89,20 @@ Rev:
     </div>
 
 	{* Custom fields - with standard location - 20090718 - franciscom *}
-	{if $cf.standard_location neq ""}
+	{if $gui->cf.standard_location neq ""}
 	     <br/>
 	     <div id="cfields_design_time" class="custom_field_container">
-	     {$cf.standard_location}
+	     {$gui->cf.standard_location}
 	     </div>
 	{/if}
 
 	<div>
 	<a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
-	{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
+	{include file="opt_transfer.inc.tpl" option_transfer=$gui->opt_cfg}
 	</div>
 	
-	{if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes' && isset($tc.testcase_id)}
+	{if $gui->opt_requirements==TRUE && $gui->grants->requirement_mgmt=='yes' && isset($gui->tc.testcase_id)}
 		<div>
-		<a href="javascript:openReqWindow({$tc.testcase_id})">{$labels.assign_requirements}</a>    
+		<a href="javascript:openReqWindow({$gui->tc.testcase_id})">{$labels.assign_requirements}</a>    
 		</div>
 	{/if}

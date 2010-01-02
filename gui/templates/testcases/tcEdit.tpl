@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.21 2009/12/08 10:50:37 havlat Exp $ 
+$Id: tcEdit.tpl,v 1.22 2010/01/02 18:58:10 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -141,7 +141,7 @@ function resetFCKEditorStatus()
 
 <div class="workBack" style="width:97%;">
 
-{if $has_been_executed}
+{if $gui->has_been_executed}
     {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
     <div class="messages" align="center">{$warning_edit_msg}</div>
 {/if}
@@ -149,9 +149,9 @@ function resetFCKEditorStatus()
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
       onSubmit="return validateForm(this);">
 
-	<input type="hidden" name="testcase_id" value="{$tc.testcase_id}" />
-	<input type="hidden" name="tcversion_id" value="{$tc.id}" />
-	<input type="hidden" name="version" value="{$tc.version}" />
+	<input type="hidden" name="testcase_id" value="{$gui->tc.testcase_id}" />
+	<input type="hidden" name="tcversion_id" value="{$gui->tc.id}" />
+	<input type="hidden" name="version" value="{$gui->tc.version}" />
 	<input type="hidden" name="doAction" value="" />
   	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 

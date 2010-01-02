@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.127 $
- * @modified $Date: 2010/01/02 18:53:52 $  by $Author: franciscom $
+ * @version $Revision: 1.128 $
+ * @modified $Date: 2010/01/02 19:02:12 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -706,6 +706,10 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$treeMgr)
     $guiObj->attachments = null;
 	$guiObj->parent_info = null;
 	$guiObj->user_feedback = '';
+	
+	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
+	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $argsObj->tcase_id;
+
 	
 	if($argsObj->container_id > 0)
 	{

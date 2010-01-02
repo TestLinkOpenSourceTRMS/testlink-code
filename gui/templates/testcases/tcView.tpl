@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.29 2010/01/02 18:50:24 franciscom Exp $
+$Id: tcView.tpl,v 1.30 2010/01/02 19:02:23 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -104,7 +104,7 @@ rev:
 		{include file="inc_attachments.tpl" 
 		         attach_id=$tcID  
 		         attach_tableName="nodes_hierarchy"
-		         attach_attachmentInfos=$attachments[$tcID]  
+		         attach_attachmentInfos=$gui->attachments[$tcID]  
 		         attach_downloadOnly=$bDownloadOnly
 		         attach_loadOnCancelURL=$gui->loadOnCancelURL
 		         }

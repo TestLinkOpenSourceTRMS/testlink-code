@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.520 2010/01/02 10:36:28 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.521 2010/01/02 11:30:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -89,6 +89,7 @@ $TLS_srs = "SRS";
 $TLS_step_details="Step details";
 $TLS_step_number="#";
 $TLS_step_number_verbose = "Step number";
+$TLS_step_number_x_created = "Step number: %s created";
 $TLS_Role = "Role";
 $TLS_sort_table_by_column = "Click to change sort order";
 $TLS_scope = "Scope";

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.12 2009/12/28 08:46:59 franciscom Exp $ *}
+{* $Id: attachmentupload.tpl,v 1.13 2010/01/02 18:03:41 franciscom Exp $ *}
 {* Purpose: smarty template - template for attachment upload dialog 
 
    rev :
@@ -45,9 +45,9 @@ var warning_empty_title = "{lang_get s='enter_attachment_title'}";
 		</div>
 	</form>
 	<p>
-		{$labels.max_size_file_upload'}: {$gui->import_limit} Bytes
+		{$labels.max_size_file_upload}: {$gui->import_limit} Bytes
 	</p>
-	{if $gui->msg neq ''}
+	{if $gui->msg != ''}
 		<p class="bold" style="color:red">{$gui->msg}</p>
 	{/if}
 </div>

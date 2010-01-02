@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.124 $
- * @modified $Date: 2010/01/02 18:19:34 $  by $Author: franciscom $
+ * @version $Revision: 1.125 $
+ * @modified $Date: 2010/01/02 18:47:55 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -391,8 +391,7 @@ else if($args->do_move)
                                   $args->target_position,$cfg->exclude_node_types);
 
     $gui->refreshTree = $args->do_refresh;
-	$smarty->assign('gui',$gui);
-	$tsuite_mgr->show($smarty,$templateCfg->template_dir,$args->old_container_id);
+	$tsuite_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->old_container_id);
 }
 else if($args->do_copy)
 {
@@ -403,12 +402,6 @@ else if($args->do_copy)
                      'action_on_duplicate_name' => config_get('action_on_duplicate_name'),
                      'copy_also' => $args->copy);
 
-	  
-	  // $result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$args->copy,
-	  //                               config_get('check_names_for_duplicates'),
-	  //                               config_get('action_on_duplicate_name'));
-	  // 
-	// new dBug($options);  
 	$result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$options);
 	$msg = $result['msg'];
 
@@ -429,14 +422,14 @@ else if($args->do_copy)
 		    $path = trim($path,$ts_sep);
 		    $user_feedback = sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
     }
-	  $smarty->assign('refreshTree',$args->do_refresh);
 
-	  $viewer_args['action'] = $action_result;
-	  $viewer_args['refresh_tree']=$args->do_refresh?"yes":"no";
-	  $viewer_args['msg_result'] = $msg;
-	  $viewer_args['user_feedback'] = $user_feedback;
-	  $tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,
-	                   $args->tcversion_id,$viewer_args,null, $args->show_mode);
+	$gui->refreshTree = $args->do_refresh;
+	$viewer_args['action'] = $action_result;
+	$viewer_args['refresh_tree']=$args->do_refresh?"yes":"no";
+	$viewer_args['msg_result'] = $msg;
+	$viewer_args['user_feedback'] = $user_feedback;
+	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,
+	                 $args->tcversion_id,$viewer_args,null, $args->show_mode);
 
 }
 else if($args->do_create_new_version)
@@ -458,22 +451,27 @@ else if($args->do_create_new_version)
 	$viewer_args['user_feedback'] = $user_feedback;
 	
 	// used to implement go back ??
-	$smarty->assign('loadOnCancelURL',
-	                $_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
+	// $smarty->assign('loadOnCancelURL',
+	//                 $_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
 	
 	// 20090419 - BUGID - 
+	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
+	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id);
+	
 	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
-	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,$testcase_version, 
+	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,$testcase_version, 
 	                 $viewer_args,null, $args->show_mode);
 }
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
+	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
+	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id);
+
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
 	$viewer_args['action'] = $action_result;
 	$viewer_args['refresh_tree']=DONT_REFRESH;
-	$smarty->assign('loadOnCancelURL',$_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
-	
-	$tcase_mgr->show($smarty,$templateCfg->template_dir,$args->tcase_id,
+
+	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,
 	                 testcase::ALL_VERSIONS,$viewer_args,null, $args->show_mode);
 }
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.28 2010/01/02 18:47:29 franciscom Exp $
+$Id: tcView.tpl,v 1.29 2010/01/02 18:50:24 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -51,7 +51,7 @@ rev:
 		{assign var="tcID" value=$gui->tc_current_version[idx][0].testcase_id}
 
     {* Current active version *}
-    {if $testcase_other_versions[idx] neq null}
+    {if $gui->testcase_other_versions[idx] neq null}
         {assign var="my_delete_version" value="yes"}
     {else}
         {assign var="my_delete_version" value="no"}
@@ -68,12 +68,12 @@ rev:
     {if $gui->show_title == 'no' }
 	    {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
     {/if}
-    <div class="direct_link" style='display:none'><a href="{$direct_link}" target="_blank">{$direct_link}</a></div>
+    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 		{include file="$this_template_dir/tcView_viewer.tpl" 
 		         args_testcase=$gui->tc_current_version[idx][0]
-		         args_keywords_map=$keywords_map[idx] 
-		         args_reqs=$arrReqs[idx] 
-		         args_status_quo=$status_quo[idx]
+		         args_keywords_map=$gui->keywords_map[idx] 
+		         args_reqs=$gui->arrReqs[idx] 
+		         args_status_quo=$gui->status_quo[idx]
 		         args_can_do=$gui->can_do
 		         args_can_move_copy="yes"
 		         args_can_delete_testcase="yes" 
@@ -83,9 +83,9 @@ rev:
 		         args_show_title=$gui->show_title
 		         args_activate_deactivate_name='activate'
 		         args_activate_deactivate='bnt_activate'
-		         args_cf=$cf[idx] 
-		         args_tcase_cfg=$tcase_cfg
-		         args_users=$users
+		         args_cf=$gui->cf[idx] 
+		         args_tcase_cfg=$gui->tcase_cfg
+		         args_users=$gui->users
 		         args_tproject_name=$gui->tprojectName
 		         args_tsuite_name=$gui->parentTestSuiteName
 		         args_linked_versions=$gui->linked_versions[idx]
@@ -110,7 +110,7 @@ rev:
 		         }
 		         
 	{* Other Versions *}
-    {if $testcase_other_versions[idx] neq null}
+    {if $gui->testcase_other_versions[idx] neq null}
         {assign var="vid" value=$gui->tc_current_version[idx][0].id}
         {assign var="div_id" value=vers_$vid}
         {assign var="memstatus_id" value=mem_$div_id}
@@ -124,7 +124,7 @@ rev:
                
         <div id="vers_{$vid}" class="workBack">
         
-  	    {foreach item=my_testcase from=$testcase_other_versions[idx]}
+  	    {foreach item=my_testcase from=$gui->testcase_other_versions[idx]}
 
             {assign var="version_num" value=$my_testcase.version}
             {assign var="title" value="$labels.version}
@@ -153,9 +153,9 @@ rev:
            		
 				      {include file="$this_template_dir/tcView_viewer.tpl" 
                        args_testcase=$my_testcase 
-                       args_keywords_map=$keywords_map[idx] 
-                       args_reqs=$arrReqs[idx]
-                       args_status_quo=$status_quo[idx]
+                       args_keywords_map=$gui->keywords_map[idx] 
+                       args_reqs=$gui->arrReqs[idx]
+                       args_status_quo=$gui->status_quo[idx]
                        args_can_do=$gui->can_do
          		           args_can_move_copy="no" 
                        args_can_delete_testcase='no'
@@ -163,8 +163,8 @@ rev:
                        
                        args_show_version="no" 
                        args_show_title="no"
-                       args_users=$users
-                       args_cf=$cf[idx]
+                       args_users=$gui->users
+                       args_cf=$gui->cf[idx]
            		         args_linked_versions=null
 	         		         args_has_testplans=$gui->has_testplans
                        }
@@ -180,7 +180,7 @@ rev:
       	<script type="text/javascript">
       	{/literal}
  	  	      viewElement(document.getElementById('vers_{$vid}'),false);
-    	  		{foreach item=my_testcase from=$testcase_other_versions[idx]}
+    	  		{foreach item=my_testcase from=$gui->testcase_other_versions[idx]}
   	  	      viewElement(document.getElementById('v_{$vid}_{$my_testcase.version}'),false);
 			      {/foreach}
       	{literal}

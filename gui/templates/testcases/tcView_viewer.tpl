@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.36 2010/01/02 18:19:34 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.37 2010/01/02 19:02:23 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -232,7 +232,7 @@ rev:
 {if $session['testprojectOptAutomation']}
   <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$labels.execution_type} {$smarty.const.TITLE_SEP}</span>
-		{$execution_types[$args_testcase.execution_type]}
+		{$gui->execution_types[$args_testcase.execution_type]}
 	</div>
 {/if}
 
@@ -267,7 +267,7 @@ rev:
 				</table>
 	</div>
 
-	{if $opt_requirements == TRUE && $view_req_rights == "yes"}
+	{if $gui->opt_requirements == TRUE && $gui->view_req_rights == "yes"}
 	<div {$addInfoDivStyle}>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
      			  <tr>

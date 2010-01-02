@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.75 2010/01/02 16:54:34 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.76 2010/01/02 18:19:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -397,47 +397,45 @@ class testsuite extends tlObjectWithAttachments
 	 * returns: -
 	 *
 	 **/
-	function show(&$smarty,$template_dir, $id, $options=null,
+	function show(&$smarty,$guiObj,$template_dir, $id, $options=null,
 	              $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	{
-		$cf_smarty = '';
+		$gui = $guiObj;
+		$gui->cf = '';
+	    $gui->sqlResult = '';
+		$gui->sqlAction = '';
+
   	    $my['options'] = array('show_mode' => 'readonly'); 	
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
-        $smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
+        $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
         if($my['options']['show_mode'] == 'readonly')
         {  	    
-			$smarty->assign('modify_tc_rights', 'no');
+			$gui->modify_tc_rights = 'no';
 	    }
 	    
 		if($sqlResult)
 		{ 
-			$smarty->assign('sqlResult', $sqlResult);
-			$smarty->assign('sqlAction', $action);
+			$gui->sqlResult = $sqlResult;
+			$gui->sqlAction = $sqlAction;
 		}
 		
-		$item = $this->get_by_id($id);
-		$modded_item = $item;
+		$gui->container_data = $this->get_by_id($id);
+		$gui->moddedItem = $gui->container_data;
 		if ($modded_item_id)
 		{
-			$modded_item = $this->get_by_id($modded_item_id);
+			$gui->moddedItem = $this->get_by_id($modded_item_id);
 		}
-	  
-		$cf_smarty = $this->html_table_of_custom_field_values($id);
-	  
-		$keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
-		$attachmentInfos = getAttachmentInfosFrom($this,$id);
+
+		$gui->cf = $this->html_table_of_custom_field_values($id);
+		$gui->keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
+		$gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
+		$gui->refreshTree = false;
+		$gui->id = $id;
+	 	$gui->idpage_title = lang_get('testsuite');
+		$gui->level = 'testsuite';
 		
-		$smarty->assign('refreshTree',false);
-		$smarty->assign('attachmentInfos',$attachmentInfos);
-		$smarty->assign('id',$id);
-	 	$smarty->assign('page_title',lang_get('testsuite'));
-		$smarty->assign('cf',$cf_smarty);
-		$smarty->assign('keywords_map',$keywords_map);
-		$smarty->assign('moddedItem',$modded_item);
-		$smarty->assign('level', 'testsuite');
-		$smarty->assign('container_data', $item);
-		$smarty->assign('sqlResult',$sqlResult);
+		$smarty->assign('gui',$gui);
 		$smarty->display($template_dir . 'containerView.tpl');
 	}
 	

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.23 2010/01/02 17:59:47 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.24 2010/01/02 18:19:34 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -18,8 +18,8 @@ rev :
     20070216 - franciscom  moved parameters from GET to hidden
 *}
 {lang_get var='labels' 
-          s='th_product_name,edit_testproject_basic_data,th_notes,
-	           alt_del_testsuite, alt_edit_testsuite, alt_move_cp_testcases, alt_move_cp_testsuite, 
+          s='th_product_name,edit_testproject_basic_data,th_notes,test_suite,details,none,
+             keywords,alt_del_testsuite, alt_edit_testsuite, alt_move_cp_testcases, alt_move_cp_testsuite, 
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
 	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,	
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
@@ -113,7 +113,7 @@ rev :
 	         attach_downloadOnly=$bDownloadOnly}
 
 {* ----- TEST SUITE ----------------------------------------------------- *}
-{elseif $level == 'testsuite'}
+{elseif $gui->level == 'testsuite'}
 
 	{if $gui->modify_tc_rights == 'yes' || $gui->sqlResult neq ''}
 		<div class="groupBtn">
@@ -121,20 +121,20 @@ rev :
 		{* Add a new testsuite children for this parent *}
 		<span style="float: left; margin-right: 5px;">
 		<form method="post" action="lib/testcases/containerEdit.php">
-			<input type="hidden" name="containerID" value="{$container_data.id}" />
+			<input type="hidden" name="containerID" value="{$gui->container_data.id}" />
 			<input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
 		</form>
 		</span>
 
 		<form method="post" action="lib/testcases/containerEdit.php">
-			<input type="hidden" name="testsuiteID" value="{$container_data.id}" />
-			<input type="hidden" name="testsuiteName" value="{$container_data.name|escape}" />
+			<input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
+			<input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
 			<input type="submit" name="edit_testsuite" value="{$labels.btn_edit_testsuite}"
-				    title="{$labels.alt_edit_testsuite}" />
+				     title="{$labels.alt_edit_testsuite}" />
 			<input type="submit" name="delete_testsuite" value="{$labels.btn_del_testsuite}"
-				    title="{$labels.alt_del_testsuite}" />
+				     title="{$labels.alt_del_testsuite}" />
 			<input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"
-				    title="{$labels.alt_move_cp_testsuite}" />
+				     title="{$labels.alt_move_cp_testsuite}" />
 
       {if $drawReorderButton}
 			    <input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder}" />
@@ -149,7 +149,7 @@ rev :
 		<div class="groupBtn">
 		<span style="float: left; margin-right: 5px;">
 		<form method="post" action="lib/testcases/tcEdit.php">
-		  <input type="hidden" name="containerID" value="{$container_data.id}" />
+		  <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
 			<input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
 			<input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />
 			<input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />
@@ -161,10 +161,10 @@ rev :
 		</form>
 		</span>
 		<form method="post" action="lib/testcases/containerEdit.php">
-			<input type="hidden" name="testsuiteID" value="{$container_data.id}" />
-			<input type="hidden" name="testsuiteName" value="{$container_data.name|escape}" />
-	    	<input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"
-             		title="{$labels.alt_move_cp_testcases}" />
+			<input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
+			<input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
+	    <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"
+         		 title="{$labels.alt_move_cp_testcases}" />
 		</form>
 
 		</div>
@@ -175,15 +175,15 @@ rev :
 	{/if}
 	
 	{* ----- show Test Suite data --------------------------------------------- *}
-  	{assign var=this_template_dir value=$smarty.template|dirname}
+  {assign var=this_template_dir value=$smarty.template|dirname}
 	{include file="$this_template_dir/inc_testsuite_viewer_ro.tpl"}
 
-	{if $modify_tc_rights eq 'yes'}
+	{if $gui->modify_tc_rights eq 'yes'}
 		{assign var="bDownloadOnly" value=false}
 	{/if}
 	{include file="inc_attachments.tpl" 
 	         attach_attachmentInfos=$gui->attachmentInfos
-	         attach_id=$id attach_tableName="nodes_hierarchy" 
+	         attach_id=$gui->id attach_tableName="nodes_hierarchy" 
 	         attach_downloadOnly=$bDownloadOnly}
 
 {/if} {* test suite *}

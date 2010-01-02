@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.35 2010/01/01 18:35:41 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.36 2010/01/02 18:19:34 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -17,6 +17,7 @@ rev:
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
+             btn_create_step,
              execution_type,test_importance,none,preconditions"}
 
 {* will be useful in future to semplify changes *}

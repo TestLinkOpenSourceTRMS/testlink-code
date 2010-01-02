@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.123 $
- * @modified $Date: 2010/01/02 16:54:34 $  by $Author: franciscom $
+ * @version $Revision: 1.124 $
+ * @modified $Date: 2010/01/02 18:19:34 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -64,19 +64,9 @@ $show_newTC_form = 0;
 
 
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
-$gui = new stdClass();
-$gui->editorType = $cfg->webEditorCfg['type'];
-$gui->grants = getGrants($db);
-$gui->opt_requirements = $args->opt_requirements; 
-$gui->action_on_duplicated_name = 'generate_new';
-$gui->show_mode = $args->show_mode;
-
+$gui = initializeGui($db,$args,$cfg,$tree_mgr);
 
 $smarty = new TLSmarty();
-$smarty->assign('gui',$gui);
-$smarty->assign('has_been_executed',$args->has_been_executed);
-$smarty->assign('execution_types',$tcase_mgr->get_execution_types());
-$smarty->assign('attachments',null);
 
 $active_status = 0;
 $action_result = "deactivate_this_version";
@@ -88,16 +78,7 @@ if($args->do_activate_this)
 
 $login_name = $_SESSION['currentUser']->login;
 $version = isset($_REQUEST['version']) ? intval($_REQUEST['version']) : 0;
-$user_feedback = '';
 
-if($args->container_id > 0)
-{
-	$pnode_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
-	$node_descr = array_flip($tree_mgr->get_available_node_types());
-	$parent_info['name'] = $pnode_info['name'];
-	$parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
-	$smarty->assign('parent_info',$parent_info);
-}
 
 $name_ok = 1;
 
@@ -108,13 +89,13 @@ if($args->do_create)
 	if($name_ok && !check_string($args->name,$g_ereg_forbidden))
 	{
 		$msg = lang_get('string_contains_bad_chars');
-		$user_feedback = $msg;
+		$gui->user_feedback = $msg;
 		$name_ok = 0;
 	}
 	if($name_ok && $args->name == "")
 	{
 		$msg = lang_get('warning_empty_tc_title');
-		$user_feedback = $msg;
+		$gui->user_feedback = $msg;
 		$name_ok = 0;
 	}
 }
@@ -158,10 +139,16 @@ if($args->edit_tc)
 			                                              null,null,null,$locationFilter);
 	}	
 	// -----------------------------------------------------------------------------
-    $smarty->assign('cf',$cf_smarty);
-   	$smarty->assign('tc', $tc_data[0]);
-  	$smarty->assign('opt_cfg', $opt_cfg);
+    // $smarty->assign('cf',$cf_smarty);
+   	// $smarty->assign('tc', $tc_data[0]);
+  	// $smarty->assign('opt_cfg', $opt_cfg);
     $templateCfg = templateConfiguration('tcEdit');
+    
+    
+    $gui->cf = $cf_smarty;
+    $gui->tc = $tc_data[0];
+    $gui->opt_cfg = $opt_cfg;
+    $smarty->assign('gui',$gui);
   	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
 else if($args->create_tc)
@@ -169,15 +156,19 @@ else if($args->create_tc)
 	$show_newTC_form = 1;
 	$opt_cfg->to->map = array();
 	keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
-	$smarty->assign('opt_cfg', $opt_cfg);
+
+	// $smarty->assign('opt_cfg', $opt_cfg);
+    $gui->opt_cfg = $opt_cfg;
+    $smarty->assign('gui',$gui);
+
 }
 else if($args->do_create)
 {
 	$show_newTC_form = 1;
 	if ($name_ok)
 	{
-		$user_feedback = lang_get('error_tc_add');
-        $sqlResult = 'ko';
+		$gui->user_feedback = lang_get('error_tc_add');
+        $gui->sqlResult = 'ko';
         
         $new_order = $cfg->treemenu_default_testcase_order;
 
@@ -203,8 +194,8 @@ else if($args->do_create)
 			$cf_map = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($args->testproject_id,ENABLED,
 			                                                             NO_FILTER_SHOW_ON_EXEC,'testcase') ;
 	    	$tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['id']);
-        	$user_feedback = sprintf(lang_get('tc_created'),$args->name);
-        	$sqlResult = 'ok';
+        	$gui->user_feedback = sprintf(lang_get('tc_created'),$args->name);
+        	$gui->sqlResult = 'ok';
 		}
 		elseif(isset($tcase['msg']))
 		{
@@ -215,11 +206,15 @@ else if($args->do_create)
 	}
 
 	keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
- 	$smarty->assign('opt_cfg', $opt_cfg);
- 	$smarty->assign('sqlResult', $sqlResult);
-	$smarty->assign('user_feedback', $user_feedback);
-	$smarty->assign('testcase_name', $args->name);
-	$smarty->assign('item', 'testcase');
+ 	// $smarty->assign('opt_cfg', $opt_cfg);
+ 	// $smarty->assign('sqlResult', $sqlResult);
+	// $smarty->assign('user_feedback', $user_feedback);
+	// $smarty->assign('testcase_name', $args->name);
+	// $smarty->assign('item', 'testcase');
+	$gui->opt_cfg = $opt_cfg;
+	$gui->testcase_name = $args->name;
+	$gui->item = 'testcase';
+    $smarty->assign('gui',$gui);
 }
 else if($args->delete_tc)
 {
@@ -239,13 +234,22 @@ else if($args->delete_tc)
 	}
 	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id);
 
-	$smarty->assign('exec_status_quo',$exec_status_quo);
-	$smarty->assign('title', lang_get('title_del_tc'));
-	$smarty->assign('testcase_name', $tcinfo[0]['name']);
-	$smarty->assign('testcase_id', $args->tcase_id);
-	$smarty->assign('tcversion_id', testcase::ALL_VERSIONS);
-	$smarty->assign('delete_message', $msg);
+	// $smarty->assign('exec_status_quo',$exec_status_quo);
+	// $smarty->assign('title', lang_get('title_del_tc'));
+	// $smarty->assign('testcase_name', $tcinfo[0]['name']);
+	// $smarty->assign('testcase_id', $args->tcase_id);
+	// $smarty->assign('tcversion_id', testcase::ALL_VERSIONS);
+	// $smarty->assign('delete_message', $msg);
+       
+	$gui->exec_status_quo = $exec_status_quo;
+	$gui->title = lang_get('title_del_tc');
+	$gui->testcase_name =  $tcinfo[0]['name'];
+	$gui->testcase_id = $args->tcase_id;
+	$gui->tcversion_id = testcase::ALL_VERSIONS;
+	$gui->delete_message = $msg;
 	$gui->refresh_tree = "yes";
+    $smarty->assign('gui',$gui);
+
     $templateCfg = templateConfiguration('tcDelete');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
@@ -275,60 +279,78 @@ else if($args->delete_tc_version)
 	}
 
 	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
-	$smarty->assign('title', lang_get('title_del_tc') . TITLE_SEP_TYPE3 .
-	                         lang_get('version') . " " . $tcinfo[0]['version']);
 
-	$smarty->assign('testcase_name', $tcinfo[0]['name']);
-	$smarty->assign('testcase_id', $args->tcase_id);
-	$smarty->assign('tcversion_id', $args->tcversion_id);
-	$smarty->assign('delete_message', $msg);
-	$smarty->assign('exec_status_quo',$sq);
+	// $smarty->assign('title', lang_get('title_del_tc') . TITLE_SEP_TYPE3 .
+	//                          lang_get('version') . " " . $tcinfo[0]['version']);
+    // 
+	// $smarty->assign('testcase_name', $tcinfo[0]['name']);
+	// $smarty->assign('testcase_id', $args->tcase_id);
+	// $smarty->assign('tcversion_id', $args->tcversion_id);
+	// $smarty->assign('delete_message', $msg);
+	// $smarty->assign('exec_status_quo',$sq);
+
+	$gui->title = lang_get('title_del_tc') . 
+	              TITLE_SEP_TYPE3 . lang_get('version') . " " . $tcinfo[0]['version'];
+	$gui->testcase_name = $tcinfo[0]['name'];
+	$gui->testcase_id = $args->tcase_id;
+	$gui->tcversion_id = $args->tcversion_id;
+	$gui->delete_message = $msg;
+	$gui->exec_status_quo = $sq;
 	$gui->refresh_tree = "no";
+
+    $smarty->assign('gui',$gui);
     $templateCfg = templateConfiguration('tcDelete');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
 else if($args->do_delete)
 {
 	
- 	$user_feedback = '';
-	$msg = '';
-	$action_result = 'deleted';
-	$verbose_result = 'ok';
+ 	$gui->user_feedback = '';
+	$gui->delete_message = '';
+	$gui->action = 'deleted';
+	$gui->sqlResult = 'ok';
 	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
+	
 	if (!$tcase_mgr->delete($args->tcase_id,$args->tcversion_id))
 	{
-		$action_result = '';
-		$verbose_result = $db->error_msg();
+		$gui->action = '';
+		$gui->sqlResult = $db->error_msg();
 	}
 	else
 	{
-		$user_feedback = sprintf(lang_get('tc_deleted'),$tcinfo[0]['name']);
+		$gui->user_feedback = sprintf(lang_get('tc_deleted'),$tcinfo[0]['name']);
 	}
 
-	$the_title = lang_get('title_del_tc') . htmlspecialchars($tcinfo[0]['name']);
+	$gui->title = lang_get('title_del_tc') . htmlspecialchars($tcinfo[0]['name']);
   
-  // 20080706 - refresh must be forced to avoid a wrong tree situation.
-  // if tree is not refreshed and user click on deleted test case he/she
-  // will get a SQL error
-  // $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
-  $gui->refresh_tree = "yes";
+  	// 20080706 - refresh must be forced to avoid a wrong tree situation.
+  	// if tree is not refreshed and user click on deleted test case he/she
+  	// will get a SQL error
+  	// $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
+  	$gui->refresh_tree = "yes";
  
-  // When deleting JUST one version, there is no need to refresh tree
+  	// When deleting JUST one version, there is no need to refresh tree
 	if($args->tcversion_id != testcase::ALL_VERSIONS)
 	{
-		  $the_title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
+		  $gui->title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
 		  $gui->refresh_tree = "no";
-	  	$user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
+	  	  $gui->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
 	}
 
+	// $smarty->assign('title', $the_title);
+	// $smarty->assign('testcase_name', $tcinfo[0]['name']);
+	// $smarty->assign('user_feedback', $user_feedback);
+	// $smarty->assign('sqlResult', $verbose_result);
+	// $smarty->assign('testcase_id', $args->tcase_id);
+	// $smarty->assign('delete_message', $msg);
+	// $smarty->assign('action',$action_result);
+
+	//$gui->title = $the_title;
+	$gui->testcase_name = $tcinfo[0]['name'];
+	$gui->sqlResult = $verbose_result;
+	$gui->testcase_id = $args->tcase_id;
     $smarty->assign('gui',$gui); 
-	$smarty->assign('title', $the_title);
-	$smarty->assign('testcase_name', $tcinfo[0]['name']);
-	$smarty->assign('user_feedback', $user_feedback);
-	$smarty->assign('sqlResult', $verbose_result);
-	$smarty->assign('testcase_id', $args->tcase_id);
-	$smarty->assign('delete_message', $msg);
-	$smarty->assign('action',$action_result);
+
     $templateCfg = templateConfiguration('tcDelete');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
@@ -368,7 +390,8 @@ else if($args->do_move)
   	$tree_mgr->change_child_order($args->new_container_id,$args->tcase_id,
                                   $args->target_position,$cfg->exclude_node_types);
 
-	$smarty->assign('refreshTree',$args->do_refresh);
+    $gui->refreshTree = $args->do_refresh;
+	$smarty->assign('gui',$gui);
 	$tsuite_mgr->show($smarty,$templateCfg->template_dir,$args->old_container_id);
 }
 else if($args->do_copy)
@@ -385,7 +408,7 @@ else if($args->do_copy)
 	  //                               config_get('check_names_for_duplicates'),
 	  //                               config_get('action_on_duplicate_name'));
 	  // 
-	new dBug($options);  
+	// new dBug($options);  
 	$result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$options);
 	$msg = $result['msg'];
 
@@ -457,40 +480,8 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 // --------------------------------------------------------------------------
 if ($show_newTC_form)
 {
-	$smarty->assign('containerID', $args->container_id);
 	
 	// BUGID 2163 - Create test case with same title, after submit, all data lost 
-	// if( $init_inputs)
-	// {
-	//     foreach ($oWebEditor->cfg as $key => $value)
-	//     {
-	//         $of = &$oWebEditor->editor[$key];
-	//         $rows = $oWebEditor->cfg[$key]['rows'];
-	//         $cols = $oWebEditor->cfg[$key]['cols'];
-	//        	$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');
-	//     
-	//         $smarty->assign($key, $of->CreateHTML($rows,$cols));
-	//   	} // foreach ($a_oWebEditor_cfg as $key)
-    // 
-    //   	$tc_default=array('id' => 0, 'name' => '', 
-    //                       'importance' => $tlCfg->testcase_importance_default,
-    //                       'execution_type' => TESTCASE_EXECUTION_TYPE_MANUAL);
-  	// }
-  	// else
-  	// {
-    //   	// Preserve values edited by user
-    //   	foreach ($oWebEditor->cfg as $key => $value)
-	//   	{
-	//   	    $of = &$oWebEditor->editor[$key];
-	//   	    $rows = $oWebEditor->cfg[$key]['rows'];
-	//   	    $cols = $oWebEditor->cfg[$key]['cols'];
-    //   	
-	//   		$of->Value = $args->$key;
-	//   	    $smarty->assign($key, $of->CreateHTML($rows,$cols));
-	//   	}
-    //   	$tc_default=array('id' => 0, 'name' => '', 'importance' => $args->importance, 
-    //   	                  'execution_type' => $args->exec_type);
-  	// }
   	$tc_default=array('id' => 0, 'name' => '');
   	$tc_default['importance'] = $init_inputs ? $tlCfg->testcase_importance_default : $args->importance;
   	$tc_default['execution_type'] = $init_inputs ? TESTCASE_EXECUTION_TYPE_MANUAL : $args->exec_type;
@@ -511,8 +502,6 @@ if ($show_newTC_form)
   	} // foreach ($a_oWebEditor_cfg as $key)
 
 
-
-
 	$filters=$tcase_mgr->buildCFLocationMap();
 	foreach($filters as $locationKey => $locationFilter)
 	{ 
@@ -522,11 +511,17 @@ if ($show_newTC_form)
 
     }
 
-	$smarty->assign('cf',$cf_smarty);
-	$smarty->assign('tc',$tc_default);
+
+	$gui->cf = $cf_smarty;
+	$gui->tc = $tc_default;
+	$gui->containerID = $args->container_id;
+	$smarty->assign('gui',$gui);
+
     $templateCfg = templateConfiguration('tcNew');
   	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
+
+
 
 /*
   function:
@@ -696,4 +691,32 @@ function getGrants(&$dbHandler)
     return $grants;
 }
 
+
+/**
+ * 
+ *
+ */
+funtion initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$treeMgr)
+{
+	$guiObj = new stdClass();
+	$guiObj->editorType = $cfgObj->webEditorCfg['type'];
+	$guiObj->grants = getGrants($dbHandler);
+	$guiObj->opt_requirements = $argsObj->opt_requirements; 
+	$guiObj->action_on_duplicated_name = 'generate_new';
+	$guiObj->show_mode = $argsObj->show_mode;
+    $guiObj->has_been_executed = $argsObj->has_been_executed;
+    $guiObj->attachments = null;
+	$guiObj->parent_info = null;
+	$guiObj->user_feedback = '';
+	
+	if($argsObj->container_id > 0)
+	{
+		$pnode_info = $treeMgr->get_node_hierarchy_info($argsObj->container_id);
+		$node_descr = array_flip($treeMgr->get_available_node_types());
+		$gui->parent_info['name'] = $pnode_info['name'];
+		$gui->parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
+	}
+	
+	return $guiObj;
+}
 ?>

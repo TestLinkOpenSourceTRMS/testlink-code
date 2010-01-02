@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.55 2009/12/15 20:56:32 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.56 2010/01/02 18:19:34 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -25,21 +25,30 @@ $viewerArgs = null;
 $args = init_args($viewerArgs);
 
 $smarty = new TLSmarty();
-$smarty->assign('page_title',lang_get('container_title_' . $args->feature));
+$gui = new stdClass();
+$gui->page_title = lang_get('container_title_' . $args->feature);
+
+// $smarty->assign('page_title',lang_get('container_title_' . $args->feature));
 
 switch($args->feature)
 {
 	case 'testproject':
 	case 'testsuite':
 		$item_mgr = new $args->feature($db);
-		$attachments = getAttachmentInfosFrom($item_mgr,$args->id);
-		$smarty->assign('id',$args->id);
-		$smarty->assign('attachmentInfos',$attachments);
+		$gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
+		$gui->id = $args->id;
+		// $smarty->assign('id',$args->id);
+		// $smarty->assign('attachmentInfos',$attachments);
+		
 		if($args->feature == 'testproject')
-			$item_mgr->show($smarty,$templateCfg->template_dir,$args->id);
+		{
+			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id);
+		}
 		else
-			$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,array('show_mode' => $args->show_mode));
-
+		{
+			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,array('show_mode' => $args->show_mode));
+        }
+        
 		break;
 
 	case 'testcase':
@@ -71,20 +80,23 @@ switch($args->feature)
 			
 		$attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
 	
-		$smarty->assign('id',$args->id);
-		$smarty->assign('attachments',$attachments);
+	     
+		// $smarty->assign('id',$args->id);
+		// $smarty->assign('attachments',$attachments);
 		
 		/* contribution BUGID 2999, show permanent link */
 	    list($prefix,$tprojectID) = $item_mgr->getPrefix($args->id);
 		$tc = $item_mgr->get_by_id($args->id);
 		
-		$dl = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
-		      urlencode($prefix) . '&item=testcase&id=' . 
-		      urlencode($prefix . "-" . $tc[0]['tc_external_id']);
+		$gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
+		                    urlencode($prefix) . '&item=testcase&id=' . 
+		                    urlencode($prefix . "-" . $tc[0]['tc_external_id']);
 
-		$smarty->assign('direct_link', $dl);
+		// $smarty->assign('direct_link', $dl);
+	    $gui->id = $args->id;
+	    $gui->attachments = $attachments; 
 		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,$args->tcversion_id,
-		                $viewerArgs,$path_info,$args->show_mode);
+		                $viewerArgs,$path_info,$args->show_mode,$gui);
 		break;
 
 	default:

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.137 2010/01/01 17:30:11 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.138 2010/01/02 18:04:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100102 - franciscom - show() - interface changes
  * 20091206 - franciscom - fixed bug on get_subtree() created furing refactoring
  * 20090606 - franciscom - get_by_prefix() interface changes
  * 20090512 - franciscom - added setPublicStatus()
@@ -527,29 +528,38 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
  * @param type $action [default = 'update']
  * @param type $modded_item_id [default = 0]
  **/
-function show(&$smarty,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
+function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
-	$smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
-	$smarty->assign('mgt_modify_product', has_rights($this->db,"mgt_modify_product"));
+	$gui = $guiObj;
+	$gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
+	$gui->mgt_modify_product = has_rights($this->db,"mgt_modify_product");
 
+	
+	// $smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
+	// $smarty->assign('mgt_modify_product', has_rights($this->db,"mgt_modify_product"));
+
+	$gui->sqlResult = '';
+	$gui->sqlAction = '';
 	if($sqlResult)
 	{
-		$smarty->assign('sqlResult', $sqlResult);
-		$smarty->assign('sqlAction', $action);
+		$gui->sqlResult = $sqlResult;
+		$gui->sqlAction = $sqlAction;
+		// $smarty->assign('sqlResult', $sqlResult);
+		// $smarty->assign('sqlAction', $action);
 	}
 
-	$item = $this->get_by_id($id);
- 	$modded_item = $item;
+	$gui->container_data = $this->get_by_id($id);
+ 	$gui->moddedItem = $gui->container_data;
+ 	$gui->level = 'testproject';
+ 	$gui->page_title = lang_get('testproject');
+ 	$gui->refreshTree = false;
+    $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
+ 	
 	if ($modded_item_id)
 	{
-		$modded_item = $this->get_by_id($modded_item_id);
+		$gui->moddedItem = $this->get_by_id($modded_item_id);
 	}
-
-  $smarty->assign('refreshTree',false);
-	$smarty->assign('moddedItem',$modded_item);
-	$smarty->assign('level', 'testproject');
-	$smarty->assign('page_title', lang_get('testproject'));
-	$smarty->assign('container_data', $item);
+    $smarty->assign('gui', $gui);	
 	$smarty->display($template_dir . 'containerView.tpl');
 }
 

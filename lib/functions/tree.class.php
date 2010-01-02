@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.77 2009/12/28 13:59:36 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.78 2010/01/02 16:54:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -151,7 +151,7 @@ class tree extends tlObject
 	
 	*/
 	/*
-    function: get_node_hierachy_info
+    function: get_node_hierarchy_info
               returns the row from nodes_hierarchy table that has
               node_id as id.
               
@@ -163,7 +163,7 @@ class tree extends tlObject
     returns: 
 
   */
-	function get_node_hierachy_info($node_id) 
+	function get_node_hierarchy_info($node_id) 
 	{
 	  $sql = "SELECT * FROM {$this->object_table} WHERE id";
 	  $getidx=-1;

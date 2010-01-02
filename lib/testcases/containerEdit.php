@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2009/12/07 08:49:53 $ by $Author: franciscom $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  *	@internal revisions
@@ -484,7 +484,7 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
 	$oid = is_null($argsObj->testsuiteID) ? $argsObj->containerID : $argsObj->testsuiteID;
 	$children = $treeMgr->get_children($oid, array("testplan" => "exclude_me",
                                                  "requirement_spec"  => "exclude_me"));
-  	$object_info = $treeMgr->get_node_hierachy_info($oid);
+  	$object_info = $treeMgr->get_node_hierarchy_info($oid);
   	$object_name = $object_info['name'];
 
 

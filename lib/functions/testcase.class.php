@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.212 2009/12/29 18:02:06 erikeloff Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.213 2010/01/02 16:54:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2165,7 +2165,7 @@ class testcase extends tlObjectWithAttachments
 		$result = ($this->db->exec_query($sql) ? 1 : 0);
 		if ($result)
 		{
-			$tcInfo = $this->tree_manager->get_node_hierachy_info($id);
+			$tcInfo = $this->tree_manager->get_node_hierarchy_info($id);
 			$keyword = tlKeyword::getByID($this->db,$kw_id);
 			if ($keyword && $tcInfo && $audit == self::AUDIT_ON)
 			{
@@ -2258,7 +2258,7 @@ class testcase extends tlObjectWithAttachments
 		$result = $this->db->exec_query($sql);
 		if ($result)
 		{
-			$tcInfo = $this->tree_manager->get_node_hierachy_info($tcID);
+			$tcInfo = $this->tree_manager->get_node_hierarchy_info($tcID);
 			if ($tcInfo && $key4log)
 			{
 				foreach($key4log as $key2get)

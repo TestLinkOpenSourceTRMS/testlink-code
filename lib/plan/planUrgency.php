@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planUrgency.php,v 1.15 2009/10/18 16:27:23 franciscom Exp $
+ * @version    	CVS: $Id: planUrgency.php,v 1.16 2010/01/02 16:54:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -42,7 +42,7 @@ $gui = new stdClass();
 // $xx=$tplan_mgr->getPriority($args->tplan_id,$filters,$options);
 // new dBug($xx);
 
-$node_info = $tplan_mgr->tree_manager->get_node_hierachy_info($args->node_id);
+$node_info = $tplan_mgr->tree_manager->get_node_hierarchy_info($args->node_id);
 $gui->urgencyCfg = config_get('urgency');
 $gui->node_name = $node_info['name'];
 $gui->user_feedback = null;

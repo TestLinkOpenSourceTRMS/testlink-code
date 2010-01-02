@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.122 $
- * @modified $Date: 2010/01/02 11:23:11 $  by $Author: franciscom $
+ * @version $Revision: 1.123 $
+ * @modified $Date: 2010/01/02 16:54:34 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -92,7 +92,7 @@ $user_feedback = '';
 
 if($args->container_id > 0)
 {
-	$pnode_info = $tree_mgr->get_node_hierachy_info($args->container_id);
+	$pnode_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
 	$node_descr = array_flip($tree_mgr->get_available_node_types());
 	$parent_info['name'] = $pnode_info['name'];
 	$parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
@@ -336,7 +336,7 @@ else if($args->move_copy_tc)
 {
 	// need to get the testproject for the test case
 	$tproject_id = $tcase_mgr->get_testproject($args->tcase_id);
-	$the_tc_node = $tree_mgr->get_node_hierachy_info($args->tcase_id);
+	$the_tc_node = $tree_mgr->get_node_hierarchy_info($args->tcase_id);
 	$tc_parent_id = $the_tc_node['parent_id'];
 	$the_xx = $tproject_mgr->gen_combo_test_suites($tproject_id);
 
@@ -396,7 +396,7 @@ else if($args->do_copy)
         
 		    $ts_sep = config_get('testsuite_sep');
 		    $tc_info = $tcase_mgr->get_by_id($args->tcase_id);
-		    $container_info = $tree_mgr->get_node_hierachy_info($args->new_container_id);
+		    $container_info = $tree_mgr->get_node_hierarchy_info($args->new_container_id);
 		    $container_path = $tree_mgr->get_path($args->new_container_id);
 		    $path = '';
 		    foreach($container_path as $key => $value)

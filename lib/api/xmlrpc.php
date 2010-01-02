@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2009/12/28 17:49:50 $ by $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -2090,7 +2090,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		}
 		
 		$tplanid=$this->args[self::$testPlanIDParamName];
-		$tplanInfo=$this->tplanMgr->tree_manager->get_node_hierachy_info($tplanid);
+		$tplanInfo=$this->tplanMgr->tree_manager->get_node_hierarchy_info($tplanid);
 		
 		foreach($opt as $key => $value)
 		{

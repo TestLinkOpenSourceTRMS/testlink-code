@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.test.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/12/02 22:20:10 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
@@ -29,10 +29,10 @@ echo "<pre> tree - get_available_node_types()";echo "</pre>";
 $available_node_types = $tree_mgr->get_available_node_types();
 new dBug($available_node_types);
 
-echo "<pre> tree - get_node_hierachy_info(\$node_id)";echo "</pre>";
+echo "<pre> tree - get_node_hierarchy_info(\$node_id)";echo "</pre>";
 $node_id=1;
-echo "<pre> get_node_hierachy_info($node_id)";echo "</pre>";
-$node_hierachy_info = $tree_mgr->get_node_hierachy_info($node_id);
+echo "<pre> get_node_hierarchy_info($node_id)";echo "</pre>";
+$node_hierachy_info = $tree_mgr->get_node_hierarchy_info($node_id);
 new dBug($node_hierachy_info);
 
 echo "<pre> tree - get_subtree(\$node_id)";echo "</pre>";
@@ -93,9 +93,9 @@ $children = $tree_mgr->get_children($node_id);
 new dBug($children);
 
 
-echo "<pre> tree - get_node_hierachy_info(\$node_id) ";echo "</pre>";
-echo "<pre> get_node_hierachy_info($node_id) ";echo "</pre>";
-$node_hierachy_info=$tree_mgr->get_node_hierachy_info($node_id) ;
+echo "<pre> tree - get_node_hierarchy_info(\$node_id) ";echo "</pre>";
+echo "<pre> get_node_hierarchy_info($node_id) ";echo "</pre>";
+$node_hierachy_info=$tree_mgr->get_node_hierarchy_info($node_id) ;
 new dBug($node_hierachy_info);
 
 
@@ -104,7 +104,7 @@ function tree(&$db)
 function get_available_node_types() 
 function new_root_node($name = '') 
 function new_node($parent_id,$node_type_id,$name='',$node_order=0,$node_id=0) 
-function get_node_hierachy_info($node_id) 
+function get_node_hierarchy_info($node_id) 
 function get_subtree_list($node_id)
 function _get_subtree_list($node_id,&$node_list)
 function delete_subtree($node_id)

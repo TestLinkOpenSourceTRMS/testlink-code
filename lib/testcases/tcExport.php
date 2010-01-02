@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/09/01 07:31:29 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
  *
  * Scope: test case and test suites export
  * 
@@ -91,7 +91,7 @@ if( $check_children )
 	else
 		$gui->nothing_todo_msg='';
 }
-$node = $tree_mgr->get_node_hierachy_info($node_id);
+$node = $tree_mgr->get_node_hierarchy_info($node_id);
 
 
 if ($args->bExport)

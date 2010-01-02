@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.56 $
- * @modified $Date: 2009/12/28 16:23:18 $ by $Author: franciscom $
+ * @version $Revision: 1.57 $
+ * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -65,7 +65,7 @@ $container_name = '';
 if($args->container_id)
 {
 	$tree_mgr = new tree($db);
-	$node_info = $tree_mgr->get_node_hierachy_info($args->container_id);    
+	$node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);    
 	$container_name = $node_info['name'];
 	if($args->container_id == $args->tproject_id)
 	{

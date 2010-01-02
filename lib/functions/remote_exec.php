@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: remote_exec.php,v $
- * @version $Revision: 1.2 $ $Author: franciscom $
- * @modified $Date: 2008/11/25 18:18:14 $
+ * @version $Revision: 1.3 $ $Author: franciscom $
+ * @modified $Date: 2010/01/02 16:54:34 $
  * @author 	Martin Havlat, Chad Rosen
  *
  * ----------------------------------------------------------------------------------- */
@@ -68,7 +68,7 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager)
   	// (-1 for executions results, and fault code and error message for message.
   	$xmlrpc_client = new xmlrpc_client($server_path,$server_host,$server_port);
 
-  	$tc_info = $tree_manager->get_node_hierachy_info($testcase_id);
+  	$tc_info = $tree_manager->get_node_hierarchy_info($testcase_id);
   	$testcase_name = $tc_info['name'];
 
   	//Create XML-RPC Objects to pass on to the the servers

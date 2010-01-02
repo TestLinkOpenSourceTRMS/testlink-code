@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/12/30 20:47:04 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * web command experiment
  *
@@ -469,7 +469,7 @@ class reqSpecCommands
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
         
  		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
-	  	$root = $this->reqMgr->tree_mgr->get_node_hierachy_info($argsObj->tproject_id);
+	  	$root = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->tproject_id);
 	  	$subtree = array_merge(array($root),$this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']));
 
  		if(count($subtree))
@@ -528,7 +528,7 @@ class reqSpecCommands
 	                              'testcase'=> 'exclude_me','requirement' => 'exclude_me');
         
  		$my['filters'] = array('exclude_node_types' => $exclude_node_types);
-	  	$root = $this->reqSpecMgr->tree_mgr->get_node_hierachy_info($argsObj->tproject_id);
+	  	$root = $this->reqSpecMgr->tree_mgr->get_node_hierarchy_info($argsObj->tproject_id);
 	  	$subtree = array_merge(array($root),$this->reqMgr->tree_mgr->get_subtree($argsObj->tproject_id,$my['filters']));
 
  		if(count($subtree))

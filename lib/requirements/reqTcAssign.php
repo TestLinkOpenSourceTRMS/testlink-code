@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2009/09/28 08:43:22 $  $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/01/02 16:54:34 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
@@ -144,7 +144,7 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
     $guiObj->bulkassign_warning_msg = '';
     $guiObj->tsuite_id = $argsObj->id;
     
-    $tsuite_info = $tproject_mgr->tree_manager->get_node_hierachy_info($guiObj->tsuite_id);
+    $tsuite_info = $tproject_mgr->tree_manager->get_node_hierarchy_info($guiObj->tsuite_id);
     $guiObj->pageTitle = lang_get('test_suite') . config_get('gui_title_separator_1') . $tsuite_info['name'];
      
 	$guiObj->req_specs = $tproject_mgr->getOptionReqSpec($argsObj->tproject_id,testproject::GET_NOT_EMPTY_REQSPEC);

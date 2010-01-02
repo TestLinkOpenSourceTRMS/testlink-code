@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2009/12/30 17:29:52 $ by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -784,8 +784,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
          	    if ($this->db->affected_rows() == 1)
          	    {
         	        $output = 1;
-         	        $tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
-        	        $reqInfo = $this->tree_mgr->get_node_hierachy_info($items[$idx]);
+         	        $tcInfo = $this->tree_mgr->get_node_hierarchy_info($testcase_id);
+        	        $reqInfo = $this->tree_mgr->get_node_hierarchy_info($items[$idx]);
         	        if($tcInfo && $reqInfo)
         	        {
         	    	    logAuditEvent(TLS("audit_req_assigned_tc",$reqInfo['name'],$tcInfo['name']),
@@ -825,8 +825,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 	
 		if ($result && $this->db->affected_rows() == 1)
 		{
-			$tcInfo = $this->tree_mgr->get_node_hierachy_info($testcase_id);
-			$reqInfo = $this->tree_mgr->get_node_hierachy_info($req_id);
+			$tcInfo = $this->tree_mgr->get_node_hierarchy_info($testcase_id);
+			$reqInfo = $this->tree_mgr->get_node_hierarchy_info($req_id);
 			if($tcInfo && $reqInfo)
 			{
 				logAuditEvent(TLS("audit_req_assignment_removed_tc",$reqInfo['name'],

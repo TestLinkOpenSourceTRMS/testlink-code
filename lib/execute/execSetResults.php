@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.145 $
- * @modified $Date: 2009/12/25 18:29:54 $ $Author: franciscom $
+ * @version $Revision: 1.146 $
+ * @modified $Date: 2010/01/02 16:54:34 $ $Author: franciscom $
  *
  * rev:
  *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
@@ -1140,7 +1140,7 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   	                                                         null,$argsObj->tproject_id);
   	}
   	// 20070405 - BUGID 766
-    $tc_info=$treeMgr->get_node_hierachy_info($tcase_id);
+    $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
 	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
 		                                                                   'nodes_hierarchy',true,1);
 		                                                                      

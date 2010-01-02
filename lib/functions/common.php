@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.181 2009/12/25 19:02:39 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.182 2010/01/02 16:54:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -798,7 +798,7 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
   	// (-1 for executions results, and fault code and error message for message.
   	$xmlrpc_client = new xmlrpc_client($server_path,$server_host,$server_port);
 
-  	$tc_info = $tree_manager->get_node_hierachy_info($testcase_id);
+  	$tc_info = $tree_manager->get_node_hierarchy_info($testcase_id);
   	$testcase_name = $tc_info['name'];
 
   	//Create XML-RPC Objects to pass on to the the servers

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.74 2009/12/28 13:59:36 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.75 2010/01/02 16:54:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -486,7 +486,7 @@ class testsuite extends tlObjectWithAttachments
 		
 	    $cf_smarty=-2; // MAGIC must be explained
 	    
-	    $pnode_info=$this->tree_manager->get_node_hierachy_info($parent_id);
+	    $pnode_info=$this->tree_manager->get_node_hierarchy_info($parent_id);
 	    $parent_info['description']=lang_get($this->node_types_id_descr[$pnode_info['node_type_id']]);
 	    $parent_info['name']=$pnode_info['name'];
 	  
@@ -713,7 +713,7 @@ class testsuite extends tlObjectWithAttachments
 	  
 	  if($doit && $details=='full')
 	  {
-	      $parentNodes=$this->tree_manager->get_node_hierachy_info($parentSet);
+	      $parentNodes=$this->tree_manager->get_node_hierarchy_info($parentSet);
 	
 	      $rs=array();
 	      $tcase_mgr = new testcase($this->db);

@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.74 2009/12/28 08:53:37 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.75 2010/01/02 16:54:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -976,7 +976,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         }
 
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
+    	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
 			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_testprojects']} " .
@@ -1012,7 +1012,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		if(is_null($cfield_ids))
 			return;
 
-    	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
+    	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		$auditMsg = $active_val ? "audit_cfield_activated" : "audit_cfield_deactivated";
 		foreach($cfield_ids as $field_id)
 		{
@@ -1052,7 +1052,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         // $cfield_ids=(array)$cfield_ids;
         
         // just for audit porpouses
-		$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
+		$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
 			// BUGID 0000677
@@ -1865,7 +1865,7 @@ function name_is_unique($id,$name)
  */
  function set_display_order($tproject_id, $map_field_id_display_order)
  {
- 	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
+ 	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
     foreach($map_field_id_display_order as $field_id => $display_order)
     {
 		$sql = "UPDATE {$this->tables['cfield_testprojects']}  " .
@@ -1888,7 +1888,7 @@ function name_is_unique($id,$name)
  */
  function setDisplayLocation($tproject_id, $field_id_location)
  {
- 	$tproject_info = $this->tree_manager->get_node_hierachy_info($tproject_id);
+ 	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
     foreach($field_id_location as $field_id => $location)
     {
 		$sql = "UPDATE {$this->tables['cfield_testprojects']}  " .
@@ -1937,7 +1937,7 @@ function getXMLServerParams($node_id)
 	$srv_cfg = new stdClass();
 	
 	$node_type=$this->tree_manager->get_available_node_types();
-	$node_info=$this->tree_manager->get_node_hierachy_info($node_id);
+	$node_info=$this->tree_manager->get_node_hierarchy_info($node_id);
 	$ret=null;
 	
 	if( !is_null($node_info) )
@@ -1947,7 +1947,7 @@ function getXMLServerParams($node_id)
 			'xml_server_port' => null,
 			'xml_server_path' => null);
 		
-		$node_info=$this->tree_manager->get_node_hierachy_info($node_id);
+		$node_info=$this->tree_manager->get_node_hierarchy_info($node_id);
 		
 		
 		if( $node_info['node_type_id'] == $node_type['testcase'])

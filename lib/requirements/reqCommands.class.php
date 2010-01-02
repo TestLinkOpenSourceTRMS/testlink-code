@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/12/31 09:55:18 $ by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -440,7 +440,7 @@ class reqCommands
 	function doDeleteVersion(&$argsObj)
 	{
 		$obj = $this->initGuiBean();
-		$node = $this->reqMgr->tree_mgr->get_node_hierachy_info($argsObj->req_version_id);
+		$node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
 		$req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
         $req_version = $req_version[0];
 

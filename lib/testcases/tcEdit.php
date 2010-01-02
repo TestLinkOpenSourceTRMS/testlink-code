@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.125 $
- * @modified $Date: 2010/01/02 18:47:55 $  by $Author: franciscom $
+ * @version $Revision: 1.126 $
+ * @modified $Date: 2010/01/02 18:53:23 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -456,7 +456,7 @@ else if($args->do_create_new_version)
 	
 	// 20090419 - BUGID - 
 	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
-	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id);
+	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id;
 	
 	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
 	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,$testcase_version, 
@@ -465,7 +465,7 @@ else if($args->do_create_new_version)
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
 	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
-	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id);
+	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id;
 
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
 	$viewer_args['action'] = $action_result;

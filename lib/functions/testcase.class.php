@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.215 2010/01/02 18:47:54 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.216 2010/01/02 18:52:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -812,8 +812,8 @@ class testcase extends tlObjectWithAttachments
 		$gui->arrReqs = $arrReqs;
 		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
 		$gui->opt_requirements = $requirements_feature;
-		$gui->keywords_map = $keywords_map);
-		
+		$gui->keywords_map = $keywords_map;
+		$smarty->assign('gui',$gui);
 		$smarty->display($template_dir . $my_template);
 	}
 	

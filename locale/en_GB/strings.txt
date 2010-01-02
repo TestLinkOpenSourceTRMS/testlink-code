@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.523 2010/01/02 15:57:25 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.524 2010/01/02 16:00:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -90,6 +90,7 @@ $TLS_step_number="#";
 $TLS_step_number_verbose = "Step number";
 $TLS_step_number_x_created = "Step number: %s created";
 $TLS_delete_step = "Delete step";
+$TLS_warning_delete_step = "<p>You are going to delete step number: %s </p><p>Are you sure?</p>";
 $TLS_Role = "Role";
 $TLS_sort_table_by_column = "Click to change sort order";
 $TLS_scope = "Scope";

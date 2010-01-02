@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.64 $
- * @modified $Date: 2009/12/30 20:47:04 $ by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2010/01/02 16:33:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -184,8 +184,6 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,
 		    $result['msg'] = 'ok';
 		}
 	}
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
     return $result;
 }
 

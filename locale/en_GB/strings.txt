@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.521 2010/01/02 11:30:19 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.522 2010/01/02 15:46:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1323,6 +1323,7 @@ $TLS_btn_new_version = "Create a new version";
 $TLS_can_not_edit_tc = "You can not edit this version because it has been executed";
 $TLS_deactivate_this_tcversion = "Deactivate this version";
 $TLS_execution_type = 'Execution type';
+$TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "This version is INACTIVE => will be not available to be included in a test plan";
 
 

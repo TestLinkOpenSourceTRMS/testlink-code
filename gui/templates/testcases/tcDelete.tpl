@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.7 2009/03/10 09:12:04 havlat Exp $
+$Id: tcDelete.tpl,v 1.8 2010/01/02 18:58:10 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev :
@@ -33,7 +33,7 @@ rev :
          refresh=$gui->refresh_tree}
 
 {if $sqlResult == ''}
-	{if $exec_status_quo neq ''}
+	{if $exec_status_quo != ''}
 	    <table class="link_and_exec" >
 			<tr>
 				<th>{$labels.th_version}</th>

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.126 $
- * @modified $Date: 2010/01/02 18:53:23 $  by $Author: franciscom $
+ * @version $Revision: 1.127 $
+ * @modified $Date: 2010/01/02 18:53:52 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -694,7 +694,7 @@ function getGrants(&$dbHandler)
  * 
  *
  */
-funtion initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$treeMgr)
+function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$treeMgr)
 {
 	$guiObj = new stdClass();
 	$guiObj->editorType = $cfgObj->webEditorCfg['type'];

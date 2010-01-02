@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.56 2010/01/02 18:19:34 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.57 2010/01/02 18:38:58 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -95,8 +95,8 @@ switch($args->feature)
 		// $smarty->assign('direct_link', $dl);
 	    $gui->id = $args->id;
 	    $gui->attachments = $attachments; 
-		$item_mgr->show($smarty,$templateCfg->template_dir,$args->id,$args->tcversion_id,
-		                $viewerArgs,$path_info,$args->show_mode,$gui);
+		$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,$args->tcversion_id,
+		                $viewerArgs,$path_info,$args->show_mode);
 		break;
 
 	default:

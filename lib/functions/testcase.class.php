@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.214 2010/01/02 18:19:34 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.215 2010/01/02 18:47:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -591,8 +591,8 @@ class testcase extends tlObjectWithAttachments
 	       added disable_edit argument
 	
 	*/
-	function show(&$smarty,$template_dir,$id,$version_id = self::ALL_VERSIONS,
-	              $viewer_args = null,$path_info=null,$mode=null,$guiObj=nul)
+	function show(&$smarty,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
+	              $viewer_args = null,$path_info=null,$mode=null)
 	{
 	    $status_ok = 1;
 	
@@ -782,8 +782,6 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
 
-        new dBug($smarty);
-        die(); 
 		// $smarty->assign('cf',$cf_smarty);
 		// $smarty->assign('gui',$gui);
 		// $smarty->assign('refresh_tree',$viewer_defaults['refresh_tree']);
@@ -800,8 +798,21 @@ class testcase extends tlObjectWithAttachments
 		// $smarty->assign('opt_requirements',$requirements_feature);
 		// $smarty->assign('keywords_map',$keywords_map);
 		
-		
-		
+		// $smarty->assign('gui',$gui);
+		$gui->cf = $cf_smarty;
+		$gui->refresh_tree = $viewer_defaults['refresh_tree'];
+		$gui->sqlResult = $viewer_defaults['msg_result'];
+		$gui->action = $viewer_defaults['action'];
+		$gui->user_feedback = $viewer_defaults['user_feedback'];
+		$gui->execution_types = $this->execution_types;
+		$gui->tcase_cfg = $tcase_cfg;
+		$gui->users = tlUser::getByIDs($this->db,$passeduserarray,'id');
+		$gui->status_quo = $status_quo_map;
+		$gui->testcase_other_versions = $tc_other_versions;
+		$gui->arrReqs = $arrReqs;
+		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
+		$gui->opt_requirements = $requirements_feature;
+		$gui->keywords_map = $keywords_map);
 		
 		$smarty->display($template_dir . $my_template);
 	}

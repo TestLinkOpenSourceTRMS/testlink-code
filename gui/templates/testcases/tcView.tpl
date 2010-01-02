@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.27 2010/01/02 18:19:34 franciscom Exp $
+$Id: tcView.tpl,v 1.28 2010/01/02 18:47:29 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -98,7 +98,7 @@ rev:
 			{assign var="bDownloadOnly" value=true}
 		{/if}
 		
-		{if !isset($loadOnCancelURL)}
+		{if !isset($gui->loadOnCancelURL)}
  	      {assign var="loadOnCancelURL" value=""}
     {/if} 
 		{include file="inc_attachments.tpl" 
@@ -106,7 +106,7 @@ rev:
 		         attach_tableName="nodes_hierarchy"
 		         attach_attachmentInfos=$attachments[$tcID]  
 		         attach_downloadOnly=$bDownloadOnly
-		         attach_loadOnCancelURL=$loadOnCancelURL
+		         attach_loadOnCancelURL=$gui->loadOnCancelURL
 		         }
 		         
 	{* Other Versions *}

@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.57 2010/01/02 18:38:58 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.58 2010/01/03 09:43:03 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
  *
  * rev :
+ *      20100103 - franciscom - changes on calls to show()
  *      20090329 - franciscom - added management of new call parameter tcversion_id
  *      20090326 - franciscom - solved bug related to forced READ ONLY when called as 
  *                 result of search on Navigator bar.
@@ -23,7 +24,6 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $viewerArgs = null;
 $args = init_args($viewerArgs);
-
 $smarty = new TLSmarty();
 $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
@@ -78,12 +78,9 @@ switch($args->feature)
 		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
 		}
 			
-		$attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
+		$gui->loadOnCancelURL = '';
+		$gui->attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
 	
-	     
-		// $smarty->assign('id',$args->id);
-		// $smarty->assign('attachments',$attachments);
-		
 		/* contribution BUGID 2999, show permanent link */
 	    list($prefix,$tprojectID) = $item_mgr->getPrefix($args->id);
 		$tc = $item_mgr->get_by_id($args->id);
@@ -91,10 +88,7 @@ switch($args->feature)
 		$gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
 		                    urlencode($prefix) . '&item=testcase&id=' . 
 		                    urlencode($prefix . "-" . $tc[0]['tc_external_id']);
-
-		// $smarty->assign('direct_link', $dl);
 	    $gui->id = $args->id;
-	    $gui->attachments = $attachments; 
 		$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,$args->tcversion_id,
 		                $viewerArgs,$path_info,$args->show_mode);
 		break;

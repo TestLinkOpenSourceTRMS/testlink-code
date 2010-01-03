@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.58 2010/01/03 09:43:03 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.59 2010/01/03 11:07:21 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -27,8 +27,6 @@ $args = init_args($viewerArgs);
 $smarty = new TLSmarty();
 $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
-
-// $smarty->assign('page_title',lang_get('container_title_' . $args->feature));
 
 switch($args->feature)
 {

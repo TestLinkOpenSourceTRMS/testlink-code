@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.22 2010/01/02 18:58:10 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.23 2010/01/03 11:07:21 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 rev: 20090422 - franciscom - BUGID 2414
@@ -8,7 +8,8 @@ rev: 20090422 - franciscom - BUGID 2414
 *}
 
 {lang_get var="labels"
-          s="warning,warning_empty_tc_title,btn_save,cancel,warning_unsaved"}
+          s="warning,warning_empty_tc_title,btn_save,
+             version,title_edit_tc,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 
@@ -16,7 +17,7 @@ rev: 20090422 - franciscom - BUGID 2414
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-
+{assign var="opt_cfg" value=$gui->opt_cfg}
 <script type="text/javascript" language="JavaScript">
 var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_cfg->to->name}");
 {$opt_cfg->js_ot_name}.saveRemovedLeftOptions("{$opt_cfg->js_ot_name}_removedLeft");
@@ -136,8 +137,8 @@ function resetFCKEditorStatus()
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 {config_load file="input_dimensions.conf" section="tcNew"}
-<h1 class="title">{lang_get s='title_edit_tc'}{$smarty.const.TITLE_SEP}{$tc.name|escape}
-	{$smarty.const.TITLE_SEP_TYPE3}{lang_get s='version'} {$tc.version}</h1> 
+<h1 class="title">{$labels.title_edit_tc}{$smarty.const.TITLE_SEP}{$gui->tc.name|escape}
+	{$smarty.const.TITLE_SEP_TYPE3}{$labels.version} {$gui->tc.version}</h1> 
 
 <div class="workBack" style="width:97%;">
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/10/05 08:47:11 $  by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/01/03 11:07:21 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -16,14 +16,16 @@
 **/
 class testcaseCommands
 {
-  private $db;
-  private $tcaseMgr;
-  private $templateCfg;
+	private $db;
+	private $tcaseMgr;
+	private $templateCfg;
+	private $execution_types;
 
 	function __construct(&$db)
 	{
 	    $this->db=$db;
 	    $this->tcaseMgr = new testcase($db);
+        $this->execution_types = $this->tcaseMgr->get_execution_types();
 	}
 
 	function setTemplateCfg($cfg)
@@ -31,36 +33,58 @@ class testcaseCommands
 	    $this->templateCfg=$cfg;
 	}
 
+	/**
+	 * 
+	 *
+	 */
+	function initGuiBean()
+	{
+	    $obj = new stdClass();
+	    $obj->loadOnCancelURL = '';
+		$obj->attachments = null;
+		$obj->direct_link = null;
+	    $obj->execution_types = $this->execution_types;
+	    return $obj;
+	}
+	 
 
-  /*
-    function: edit
 
-    args:
-    
-    returns: 
 
-  */
+	/*
+	  function: edit (Test Case)
+	
+	  args:
+	  
+	  returns: 
+	
+	*/
 	function edit(&$argsObj,&$otCfg,$oWebEditorKeys)
 	{
-    	$guiObj = new stdClass();
+    	$guiObj = $this->initGuiBean();
     	$otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
-    	
     	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
-    	
   		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
-    	
-    	
-  		foreach ($oWebEditorKeys as $key => $value)
+
+  		foreach($oWebEditorKeys as $key)
    		{
   		  	$guiObj->$key = $tc_data[0][$key];
+  		  	$argsObj->$key = $tc_data[0][$key];
   		}
-    	
-		$guiObj->cfields = $this->tcaseMgr->html_table_of_custom_field_inputs($argsObj->tcase_id);
+  		
+  		$cf_smarty = null;
+		$cfPlaces = $this->tcaseMgr->buildCFLocationMap();
+		foreach($cfPlaces as $locationKey => $locationFilter)
+		{ 
+			$cf_smarty[$locationKey] = 
+				$this->tcaseMgr->html_table_of_custom_field_inputs($argsObj->tcase_id,null,'design','',
+				                                                   null,null,null,$locationFilter);
+		}	
+   		$templateCfg = templateConfiguration('tcEdit');
+		$guiObj->cf = $cf_smarty;
     	$guiObj->tc=$tc_data[0];
     	$guiObj->opt_cfg=$otCfg;
-    	//$guiObj->template=$tpl_cfg['tcEdit'];
 		$tpl_cfg=config_get('tpl');
-		$guiObj->template=isset($tpl_cfg['tcEdit']) ? $tpl_cfg['tcEdit'] : 'tcEdit.tpl'; 
+		$guiObj->template=$templateCfg->default_template;
     	return $guiObj;
   }
 
@@ -76,10 +100,11 @@ class testcaseCommands
     function doUpdate(&$argsObj,$request)
 	{
         $smartyObj = new TLSmarty();
-        $guiObj=new stdClass();
         $viewer_args=array();
-      
+
+    	$guiObj = $this->initGuiBean();
    	    $guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
+        $guiObj->has_been_executed = $argsObj->has_been_executed;
 
 		  // to get the name before the user operation
         $tc_old = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
@@ -90,7 +115,6 @@ class testcaseCommands
 		                             $argsObj->assigned_keywords_list,
 		                             TC_DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
-        $smartyObj->assign('attachments',null);
         if($ret['status_ok'])
 		{
 		    $refresh_tree='yes';
@@ -101,8 +125,7 @@ class testcaseCommands
 		                                                                      $ENABLED,$NO_FILTERS,'testcase') ;
 			$this->tcaseMgr->cfield_mgr->design_values_to_db($request,$argsObj->tcase_id);
          
-            $attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
-            $smartyObj->assign('attachments',$attachments);
+            $guiObj->attachments[$argsObj->tcase_id] = getAttachmentInfosFrom($this->tcaseMgr,$argsObj->tcase_id);
 		}
 		else
 		{
@@ -112,11 +135,8 @@ class testcaseCommands
 	
 	    $viewer_args['refresh_tree'] = $refresh_tree;
  	    $viewer_args['user_feedback'] = $msg;
-
-        $smartyObj->assign('has_been_executed',$argsObj->has_been_executed);
-        $smartyObj->assign('execution_types',$this->tcaseMgr->get_execution_types());
       
-	    $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
+	    $this->tcaseMgr->show($smartyObj,$guiObj, $this->templateCfg->template_dir,
 	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args,null,$argsObj->show_mode);
  
         return $guiObj;
@@ -129,27 +149,26 @@ class testcaseCommands
    */
 	function doAdd2testplan(&$argsObj,$request)
 	{
-      $smartyObj = new TLSmarty();
-      $smartyObj->assign('attachments',null);
-      $guiObj=new stdClass();
-      $viewer_args=array();
-      $tplan_mgr = new testplan($this->db);
-      
-   	  $guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
-      $item2link[$argsObj->tcase_id]=$argsObj->tcversion_id;
-      
-      if( isset($request['add2tplanid']) )
-      {
-          foreach($request['add2tplanid'] as $tplan_id => $value)
-          {
-              // 20090411 - franciscom
-              $tplan_mgr->link_tcversions($tplan_id,$item2link,$argsObj->user_id);  
-          }
-          $this->tcaseMgr->show($smartyObj,$this->templateCfg->template_dir,
-	                            $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
-          
-      }
-      return $guiObj;
+      	$smartyObj = new TLSmarty();
+      	$smartyObj->assign('attachments',null);
+    	$guiObj = $this->initGuiBean();
+
+      	$viewer_args=array();
+      	$tplan_mgr = new testplan($this->db);
+      	
+   	  	$guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
+      	$item2link[$argsObj->tcase_id]=$argsObj->tcversion_id;
+      	
+      	if( isset($request['add2tplanid']) )
+      	{
+      	    foreach($request['add2tplanid'] as $tplan_id => $value)
+      	    {
+      	        $tplan_mgr->link_tcversions($tplan_id,$item2link,$argsObj->user_id);  
+      	    }
+      	    $this->tcaseMgr->show($smartyObj,$guiObj,$this->templateCfg->template_dir,
+	  	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
+      	}
+      	return $guiObj;
   }
 
   /**
@@ -175,8 +194,6 @@ class testcaseCommands
       // 
       // return $guiObj;
   }
-
-
 
 } // end class  
 ?>

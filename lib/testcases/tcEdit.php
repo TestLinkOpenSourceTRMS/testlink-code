@@ -4,33 +4,21 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.129 $
- * @modified $Date: 2010/01/02 19:03:35 $  by $Author: franciscom $
+ * @version $Revision: 1.130 $
+ * @modified $Date: 2010/01/03 11:07:21 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
+ *	20100103 - franciscom - refactoring to use command class
  *	20090831 - franciscom - preconditions
  *	20090401 - franciscom - BUGID 2364 - edit while executing
  *  20090401 - franciscom - BUGID 2316
  *  20090325 - franciscom - BUGID - problems with add to testplan
  *  20090302 - franciscom - BUGID 2163 - Create test case with same title, after submit, all data lost 
  *  20080827 - franciscom - BUGID 1692 
- *  20080706 - franciscom - force refresh tree when operation can put tree on
- *                          situation that lead to errors if user click on deleted element.
- *  20080203 - franciscom - changes on $tcase_mgr->show() interface
  *  20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
- *  
- *  20071201 - franciscom - new web editor code
  *  20071106 - BUGID 1165
- *  20070826 - franciscom - is automatic tree refresh is disable,
- *                          do not refresh if test case changes during update
  *  
- *  20070701 - franciscom - feedback improvement on new version operation
- *  20070302 - franciscom - BUGID
- *  20070220 - franciscom - automatic tree refresh management
- *  20070218 - franciscom - added $g_spec_cfg->automatic_tree_refresh to the refresh tree logic
- *
- *
  * -------------------------------------------------------------------------------- */
 
 require_once("../../config.inc.php");
@@ -54,7 +42,6 @@ $templateCfg = templateConfiguration('tcEdit');
 
 $commandMgr = new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
-
 $oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg);
 
 $sqlResult = "";
@@ -100,58 +87,29 @@ if($args->do_create)
 	}
 }
 
-
+$doRender = false;
+$pfn = $args->doAction;
 switch($args->doAction)
 {
     case "doUpdate":
-        $op=$commandMgr->doUpdate($args,$_REQUEST);
-    break;
-	  
     case "doAdd2testplan":
-        $op=$commandMgr->doAdd2testplan($args,$_REQUEST);
+        $op=$commandMgr->$pfn($args,$_REQUEST);
+    break;
+	
+	case "edit":  
+        $oWebEditorKeys = array_keys($oWebEditor->cfg);
+        $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys);
+        $doRender = true;
     break;
 }
 
-//If the user has chosen to edit a testcase then show this code
-if($args->edit_tc)
+if( $doRender )
 {
-    $opt_cfg->to->map = $tcase_mgr->get_keywords_map($args->tcase_id," ORDER BY keyword ASC ");
-    keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
-
-  	$tc_data = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
-  	foreach ($oWebEditor->cfg as $key => $value)
-   	{
-  	  	// Warning:
-  	  	// the data assignment will work while the keys in $the_data are identical
-  	  	// to the keys used on $oWebEditor.
-  	  	$of = &$oWebEditor->editor[$key];
-  	  	$of->Value = $tc_data[0][$key];
-  	  	$rows = $oWebEditor->cfg[$key]['rows'];
-        $cols = $oWebEditor->cfg[$key]['cols'];
-  	  	$smarty->assign($key, $of->CreateHTML($rows,$cols));
-  	}
-
-    $filters=$tcase_mgr->buildCFLocationMap();
-	foreach($filters as $locationKey => $locationFilter)
-	{ 
-		$cf_smarty[$locationKey] = 
-			$tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,null,'design','',
-			                                              null,null,null,$locationFilter);
-	}	
-	// -----------------------------------------------------------------------------
-    // $smarty->assign('cf',$cf_smarty);
-   	// $smarty->assign('tc', $tc_data[0]);
-  	// $smarty->assign('opt_cfg', $opt_cfg);
-    $templateCfg = templateConfiguration('tcEdit');
-    
-    
-    $gui->cf = $cf_smarty;
-    $gui->tc = $tc_data[0];
-    $gui->opt_cfg = $opt_cfg;
-    $smarty->assign('gui',$gui);
-  	$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+	renderGui($args,$gui,$op,$templateCfg,$cfg->webEditorCfg);
+	exit();
 }
-else if($args->create_tc)
+
+if($args->create_tc)
 {
 	$show_newTC_form = 1;
 	$opt_cfg->to->map = array();
@@ -559,7 +517,12 @@ function init_args($spec_cfg,$otName)
     
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
     
-    $args->edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
+    $edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
+    if( $edit_tc )
+    {
+    	$args->doAction = 'edit';
+    }
+    
     $args->delete_tc = isset($_REQUEST['delete_tc']) ? 1 : 0;
     $args->create_tc = isset($_REQUEST['create_tc']) ? 1 : 0;
     $args->move_copy_tc = isset($_REQUEST['move_copy_tc']) ? 1 : 0;
@@ -608,7 +571,7 @@ function init_args($spec_cfg,$otName)
 function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
 {
     $otCfg = new stdClass();
-    if($argsObj->create_tc || $argsObj->edit_tc || $argsObj->do_create)
+    if($argsObj->create_tc || $argsObj->doAction == 'edit' || $argsObj->do_create)
     {
         $otCfg = opt_transf_empty_cfg();
         $otCfg->global_lbl = '';
@@ -634,7 +597,7 @@ function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
   
   rev: 20080902 - franciscom - manage column number as function of layout for tinymce
 */
-function createWebEditors($basehref,$editorCfg)
+function createWebEditors($basehref,$editorCfg,$editorSet=null)
 {
     $specGUICfg=config_get('spec_cfg');
     $layout=$specGUICfg->steps_results_layout;
@@ -651,9 +614,17 @@ function createWebEditors($basehref,$editorCfg)
                       'expected_results' => array('rows'=> null, 'cols' => $cols['expected_results'][$layout]));
     
     $owe->editor = array();
+    $force_create = is_null($editorSet);
     foreach ($owe->cfg as $key => $value)
     {
-    	$owe->editor[$key] = web_editor($key,$basehref,$editorCfg);
+    	if( $force_create || isset($editorSet[$key]) )
+    	{
+    		$owe->editor[$key] = web_editor($key,$basehref,$editorCfg);
+    	}
+    	else
+    	{
+    		unset($owe->cfg[$key]);
+    	}
     }
     
     return $owe;
@@ -721,4 +692,86 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$treeMgr)
 	
 	return $guiObj;
 }
+
+/**
+ * manage GUI rendering
+ *
+ */
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
+{
+    $smartyObj = new TLSmarty();
+    $renderType = 'none';
+    // key Operation - value next Operation
+    $actionOperation = array('createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
+                             'doDeleteStep' => '', 'edit' => 'doUpdate');
+                             
+    $oWebEditor = createWebEditors($argsObj->basehref,$editorCfg); 
+	foreach ($oWebEditor->cfg as $key => $value)
+  	{
+  		$of = &$oWebEditor->editor[$key];
+  		$rows = $oWebEditor->cfg[$key]['rows'];
+  		$cols = $oWebEditor->cfg[$key]['cols'];
+		switch($argsObj->doAction)
+    	{
+    	    case "edit":
+    	    case "editStep":
+    	    case "doCreateStep":
+  				$of->Value = $argsObj->$key;
+  			break;
+  			
+  			default:	
+  				$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');	
+  			break;
+  		}
+		$smartyObj->assign($key, $of->CreateHTML($rows,$cols));
+
+	}
+      
+    switch($argsObj->doAction)
+    {
+        case "edit":
+        case "createStep":
+        case "doCreateStep":
+        case "doDeleteStep":
+            $renderType = 'template';
+            $key2loop = get_object_vars($opObj);
+            foreach($key2loop as $key => $value)
+            {
+                $guiObj->$key = $value;
+            }
+            $guiObj->operation = $actionOperation[$argsObj->doAction];
+            
+            $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;
+            $tpl = is_null($opObj->template) ? $templateCfg->default_template : $opObj->template;
+            
+            $pos = strpos($tpl, '.php');
+           	if($pos === false)
+           	{
+                $tpl = $tplDir . $tpl;      
+            }
+            else
+            {
+                $renderType = 'redirect';  
+            } 
+        break;
+    }
+
+    switch($renderType)
+    {
+        case 'template':
+        	$smartyObj->assign('gui',$guiObj);
+		    $smartyObj->display($tpl);
+        	break;  
+ 
+        case 'redirect':
+		      header("Location: {$tpl}");
+	  		  exit();
+        break;
+
+        default:
+       	break;
+    }
+
+}
+
 ?>

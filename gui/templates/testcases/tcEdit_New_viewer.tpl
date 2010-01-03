@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.15 2010/01/02 18:58:10 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.16 2010/01/03 11:07:21 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -26,7 +26,6 @@ Rev:
 	{assign var="layout3" value="</td></tr></table><br />"}
 {/if}
 {* ---------------------------------------------------------------- *}
-
 	<p />
 	<div class="labelHolder"><label for="testcase_name">{$labels.tc_title}</label></div>
 	<div>	
@@ -72,7 +71,7 @@ Rev:
 		{if $session['testprojectOptAutomation']}
 			<div class="labelHolder">{$labels.execution_type}
 			<select name="exec_type" onchange="IGNORE_UNLOAD = false">
-    	  	{html_options options=$gui->execution_types selected=$tc.execution_type}
+    	  	{html_options options=$gui->execution_types selected=$gui->tc.execution_type}
 	    	</select>
 			</div>
     	{/if}

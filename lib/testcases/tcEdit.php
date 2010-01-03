@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.132 $
- * @modified $Date: 2010/01/03 16:48:46 $  by $Author: franciscom $
+ * @version $Revision: 1.133 $
+ * @modified $Date: 2010/01/03 17:31:49 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -51,7 +51,7 @@ $show_newTC_form = 0;
 
 
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
-$gui = initializeGui($db,$args,$cfg,$tree_mgr);
+$gui = initializeGui($db,$args,$cfg,$tcase_mgr);
 
 $smarty = new TLSmarty();
 
@@ -167,21 +167,20 @@ else if($args->move_copy_tc)
 	$tc_info = $tcase_mgr->get_by_id($args->tcase_id);
 
 	$container_qty = count($the_xx);
-	$move_enabled = 1;
+	$gui->move_enabled = 1;
 	if($container_qty == 1)
 	{
 		// move operation is nonsense
-		$move_enabled = 0;
+		$gui->move_enabled = 0;
 	}
+    $gui->top_checked = 'checked=checked';
+	$gui->bottom_checked = '';
+	$gui->old_container = $the_tc_node['parent_id']; // original container
+	$gui->array_container = $the_xx;
+	$gui->testcase_id = $args->tcase_id;
+	$gui->name = $tc_info[0]['name'];
 
-	$smarty->assign('top_checked','checked=checked');
-	$smarty->assign('bottom_checked','');
-	$smarty->assign('old_container', $the_tc_node['parent_id']); // original container
-	$smarty->assign('array_container', $the_xx);
-	$smarty->assign('testcase_id', $args->tcase_id);
-	$smarty->assign('move_enabled',$move_enabled);
-	$smarty->assign('name', $tc_info[0]['name']);
-
+	$smarty->assign('gui', $gui);
     $templateCfg = templateConfiguration('tcMove');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
@@ -532,7 +531,7 @@ function getGrants(&$dbHandler)
  * 
  *
  */
-function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$treeMgr)
+function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 {
 	$guiObj = new stdClass();
 	$guiObj->editorType = $cfgObj->webEditorCfg['type'];
@@ -551,11 +550,14 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$treeMgr)
 	
 	if($argsObj->container_id > 0)
 	{
-		$pnode_info = $treeMgr->get_node_hierarchy_info($argsObj->container_id);
-		$node_descr = array_flip($treeMgr->get_available_node_types());
+		$pnode_info = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->container_id);
+		$node_descr = array_flip($tcaseMgr->tree_manager->get_available_node_types());
 		$guiObj->parent_info['name'] = $pnode_info['name'];
 		$guiObj->parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
 	}
+	
+	$guiObj->direct_link = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$argsObj->tcase_id,$argsObj->testproject_id);
+
 	
 	return $guiObj;
 }

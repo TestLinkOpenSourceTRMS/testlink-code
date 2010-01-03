@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/01/03 16:48:46 $  by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/01/03 17:31:49 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -175,6 +175,7 @@ class testcaseCommands
     	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
     	// new dBug($otCfg);
     	
+    	new dBug($this->tcaseMgr->get_last_version_info($argsObj->tcase_id));
     	
   		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 

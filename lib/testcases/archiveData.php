@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.59 2010/01/03 11:07:21 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.60 2010/01/03 17:31:49 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -78,14 +78,7 @@ switch($args->feature)
 			
 		$gui->loadOnCancelURL = '';
 		$gui->attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
-	
-		/* contribution BUGID 2999, show permanent link */
-	    list($prefix,$tprojectID) = $item_mgr->getPrefix($args->id);
-		$tc = $item_mgr->get_by_id($args->id);
-		
-		$gui->direct_link = $_SESSION['basehref'] . 'linkto.php?tprojectPrefix=' . 
-		                    urlencode($prefix) . '&item=testcase&id=' . 
-		                    urlencode($prefix . "-" . $tc[0]['tc_external_id']);
+		$gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
 	    $gui->id = $args->id;
 		$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,$args->tcversion_id,
 		                $viewerArgs,$path_info,$args->show_mode);
@@ -119,8 +112,10 @@ function init_args(&$viewerCfg)
     $args->feature = $args->edit;
 
    	if (!$args->tcversion_id)
+   	{
    		 $args->tcversion_id = testcase::ALL_VERSIONS;
-
+    }
+    
    	switch($args->feature)
     {
 		case 'testsuite':
@@ -135,14 +130,16 @@ function init_args(&$viewerCfg)
 			$viewerCfg['disable_edit'] = 0;
 
 			if(isset($_SESSION['tcspec_refresh_on_action']))
+			{
 				$viewerCfg['refresh_tree'] = $_SESSION['tcspec_refresh_on_action'];
-
+            }
 			break;
     }
     $cfg = config_get('testcase_cfg');
     if (strpos($args->targetTestCase,$cfg->glue_character) === false)
+    {
     	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
- 	
+ 	}
     return $args;
 }
 ?>

@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.216 2010/01/02 18:52:10 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.217 2010/01/03 14:09:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
- * 20091229 - eloff      - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
+ * 20091220 - franciscom - getPrefix() - interface changes & refactoring
+ * 20091229 - eloff - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
  * 20091220 - franciscom - copy_attachments() refactoring
  * 20091217 - franciscom - getDuplicatesByName() - new argument added
  * 20091215 - franciscom - getPrefix() - changed in return type, to avoid in some situations
@@ -35,37 +36,19 @@
  *                         when calling cfield_mgr class method
  *
  * 20090718 - franciscom - new method buildCFLocationMap();
- * 20090716 - franciscom - get_last_execution() - BUGID 2692
- *                         interface changes.
- *
+ * 20090716 - franciscom - get_last_execution() - BUGID 2692 - interface changes.
  * 20090713 - franciscom - solved bug on get_executions() (bad SQL statement).
  * 20090530 - franciscom - html_table_of_custom_field_inputs() changes in interface
  * 20090526 - franciscom - html_table_of_custom_field_values() - added scope 'testplan_design'
  * 20090521 - franciscom - get_by_id() added version_number argument
- * 20090517 - franciscom - changes to manage deleted users on:
- *                         get_executions(),get_last_execution()
- * 20090514 - franciscom - added locatization of custom fields label without audit warning 
  * 20090419 - franciscom - BUGID 2364 - show() changes on edit enabled logic
  * 20090414 - franciscom - BUGID 2378
  * 20090401 - franciscom - BUGID 2316 - changes to copy_to()
- * 20090329 - franciscom - html_table_of_custom_field_values() new option useful when
- *                         used on printing docs.
- *
  * 20090308 - franciscom - BUGID 2204 - create() fixed return of new version number
  * 20090220 - franciscom - BUGID 2129
- * 20090214 - franciscom - when getting execution info, executions.execution_type will be returned
- *                         with alias execution_run_type
- * 
- * 20090201 - franciscom - get_by_id_bulk() - added version_id filter
- * 20090131 - franciscom - new method get_assigned_to_user()
- * 20090120 - franciscom - create_tcase_only() - added new action_on_duplicate_name	     
- * 20090116 - franciscom - get_by_name() refactoring
- *                         get_linked_versions() - added tplan_id argument
  * 20090106 - franciscom - BUGID - exportTestCaseDataToXML() - added export of custom fields values
  * 20081103 - franciscom - new method setKeywords() - added by schlundus
  *                         removed useless code from getTestProjectFromTestCase()
- *
- * 20081103 - franciscom - change to show() to improve display when used in search test cases.
  * 20081015 - franciscom - delete() - improve controls to avoid bug if no children
  * 20080812 - franciscom - BUGID 1650 (REQ)
  *                         html_table_of_custom_field_inputs() interface changes
@@ -74,18 +57,7 @@
  * 20080602 - franciscom - get_linked_versions() - internal changes due to BUG1504
  *                         get_exec_status() - interface and internal changes due to BUG1504
  *
- * 20080425 - franciscom - replacing DEFINE with const
- *                         new internat method updateKeywordAssignment()
- *
- * 20080420 - franciscom - update() added controls to avoid duplicate name,
- *                                  changed return type
- *
- * 20080409 - azl - added optional testSuite param to get_by_name function
- * 20080206 - franciscom - exportTestCaseDataToXML() - added externalid
  * 20080126 - franciscom - BUGID 1313
- * 20080120 - franciscom - show() interface changes
- * 20080119 - franciscom - copy_tcversion() added missed logic to manage tc_external_id
- * 20080114 - franciscom - new method getPrefix()
  */
 
 /** related functionality */
@@ -994,37 +966,37 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function delete($id,$version_id = self::ALL_VERSIONS)
 	{
-	  $children=null;
-	  $doit=true;
-	  if($version_id == self::ALL_VERSIONS)
-	  {
-	    // I'm trying to speedup the next deletes
-	    $sql="SELECT nodes_hierarchy.id FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy";
-	    if( is_array($id) )
-	    {
-	      $sql .= " WHERE nodes_hierarchy.parent_id IN (" .implode(',',$id) . ") ";
-	    }
-	    else
-	    {
-	      $sql .= " WHERE nodes_hierarchy.parent_id={$id} ";
-	    }
-	
-	    $children_rs=$this->db->get_recordset($sql);
-	    $doit=!is_null($children_rs); 
-	    if( $doit )
-	    {
-	    foreach($children_rs as $value)
-	    {
-	      $children[]=$value['id'];
-	    }
-	  }
-	  }                       
-	
-	  if( $doit )
-	  {   
-		$this->_execution_delete($id,$version_id,$children);
-		$this->_blind_delete($id,$version_id,$children);
-	  }   
+	  	$children=null;
+	  	$doit=true;
+	  	if($version_id == self::ALL_VERSIONS)
+	  	{
+	  	  // I'm trying to speedup the next deletes
+	  	  $sql="SELECT nodes_hierarchy.id FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy";
+	  	  if( is_array($id) )
+	  	  {
+	  	    $sql .= " WHERE nodes_hierarchy.parent_id IN (" .implode(',',$id) . ") ";
+	  	  }
+	  	  else
+	  	  {
+	  	    $sql .= " WHERE nodes_hierarchy.parent_id={$id} ";
+	  	  }
+	  	
+	  	  $children_rs=$this->db->get_recordset($sql);
+	  	  $doit=!is_null($children_rs); 
+	  	  if( $doit )
+	  	  {
+	  	  foreach($children_rs as $value)
+	  	  {
+	  	    $children[]=$value['id'];
+	  	  }
+	  	}
+	  	}                       
+	  	
+	  	if( $doit )
+	  	{   
+			$this->_execution_delete($id,$version_id,$children);
+			$this->_blind_delete($id,$version_id,$children);
+	  	}   
 	
 		return 1;
 	}
@@ -1223,16 +1195,21 @@ class testcase extends tlObjectWithAttachments
 	  function: getPrefix
 	
 	  args: id: testcase id
+	        [$tproject_id]
 	
 	  returns: array(prefix,testproject id)
 	
 	*/
-	function getPrefix($id)
+	function getPrefix($id, $tproject_id=null)
 	{
-	    $path2root=$this->tree_manager->get_path($id);
-	    $tproject_id=$path2root[0]['parent_id'];
-	    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($tproject_id);
-	    return array($tcasePrefix,$tproject_id);
+		$root = $tproject_id;
+		if( is_null($root) )
+		{
+	    	$path2root=$this->tree_manager->get_path($id);
+	    	$root=$path2root[0]['parent_id'];
+	    }
+	    $tcasePrefix=$this->tproject_mgr->getTestCasePrefix($root);
+	    return array($tcasePrefix,$root);
 	}
 	
 	

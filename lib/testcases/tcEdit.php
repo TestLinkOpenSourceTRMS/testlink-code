@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.130 $
- * @modified $Date: 2010/01/03 11:07:21 $  by $Author: franciscom $
+ * @version $Revision: 1.131 $
+ * @modified $Date: 2010/01/03 14:10:20 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -101,6 +101,13 @@ switch($args->doAction)
         $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys);
         $doRender = true;
     break;
+    
+	case "delete":  
+	case "doDelete":  
+        $op=$commandMgr->$pfn($args,$_REQUEST);
+        $doRender = true;
+    break;
+    
 }
 
 if( $doRender )
@@ -174,43 +181,43 @@ else if($args->do_create)
 	$gui->item = 'testcase';
     $smarty->assign('gui',$gui);
 }
-else if($args->delete_tc)
-{
- 	$msg = '';
- 	$my_ret = $tcase_mgr->check_link_and_exec_status($args->tcase_id);
- 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
-	
-  	switch($my_ret)
-	{
-		case "linked_and_executed":
-			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
-			break;
-
-		case "linked_but_not_executed":
-			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
-			break;
-	}
-	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id);
-
-	// $smarty->assign('exec_status_quo',$exec_status_quo);
-	// $smarty->assign('title', lang_get('title_del_tc'));
-	// $smarty->assign('testcase_name', $tcinfo[0]['name']);
-	// $smarty->assign('testcase_id', $args->tcase_id);
-	// $smarty->assign('tcversion_id', testcase::ALL_VERSIONS);
-	// $smarty->assign('delete_message', $msg);
-       
-	$gui->exec_status_quo = $exec_status_quo;
-	$gui->title = lang_get('title_del_tc');
-	$gui->testcase_name =  $tcinfo[0]['name'];
-	$gui->testcase_id = $args->tcase_id;
-	$gui->tcversion_id = testcase::ALL_VERSIONS;
-	$gui->delete_message = $msg;
-	$gui->refresh_tree = "yes";
-    $smarty->assign('gui',$gui);
-
-    $templateCfg = templateConfiguration('tcDelete');
-    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-}
+// else if($args->delete_tc)
+// {
+//  	$msg = '';
+//  	$my_ret = $tcase_mgr->check_link_and_exec_status($args->tcase_id);
+//  	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
+// 	
+//   	switch($my_ret)
+// 	{
+// 		case "linked_and_executed":
+// 			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
+// 			break;
+// 
+// 		case "linked_but_not_executed":
+// 			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
+// 			break;
+// 	}
+// 	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id);
+// 
+// 	// $smarty->assign('exec_status_quo',$exec_status_quo);
+// 	// $smarty->assign('title', lang_get('title_del_tc'));
+// 	// $smarty->assign('testcase_name', $tcinfo[0]['name']);
+// 	// $smarty->assign('testcase_id', $args->tcase_id);
+// 	// $smarty->assign('tcversion_id', testcase::ALL_VERSIONS);
+// 	// $smarty->assign('delete_message', $msg);
+//        
+// 	$gui->exec_status_quo = $exec_status_quo;
+// 	$gui->title = lang_get('title_del_tc');
+// 	$gui->testcase_name =  $tcinfo[0]['name'];
+// 	$gui->testcase_id = $args->tcase_id;
+// 	$gui->tcversion_id = testcase::ALL_VERSIONS;
+// 	$gui->delete_message = $msg;
+// 	$gui->refresh_tree = "yes";
+//     $smarty->assign('gui',$gui);
+// 
+//     $templateCfg = templateConfiguration('tcDelete');
+//     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+// }
 else if($args->delete_tc_version)
 {
 	$status_quo_map = $tcase_mgr->get_versions_status_quo($args->tcase_id);
@@ -257,58 +264,6 @@ else if($args->delete_tc_version)
 	$gui->refresh_tree = "no";
 
     $smarty->assign('gui',$gui);
-    $templateCfg = templateConfiguration('tcDelete');
-    $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-}
-else if($args->do_delete)
-{
-	
- 	$gui->user_feedback = '';
-	$gui->delete_message = '';
-	$gui->action = 'deleted';
-	$gui->sqlResult = 'ok';
-	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
-	
-	if (!$tcase_mgr->delete($args->tcase_id,$args->tcversion_id))
-	{
-		$gui->action = '';
-		$gui->sqlResult = $db->error_msg();
-	}
-	else
-	{
-		$gui->user_feedback = sprintf(lang_get('tc_deleted'),$tcinfo[0]['name']);
-	}
-
-	$gui->title = lang_get('title_del_tc') . htmlspecialchars($tcinfo[0]['name']);
-  
-  	// 20080706 - refresh must be forced to avoid a wrong tree situation.
-  	// if tree is not refreshed and user click on deleted test case he/she
-  	// will get a SQL error
-  	// $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
-  	$gui->refresh_tree = "yes";
- 
-  	// When deleting JUST one version, there is no need to refresh tree
-	if($args->tcversion_id != testcase::ALL_VERSIONS)
-	{
-		  $gui->title .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
-		  $gui->refresh_tree = "no";
-	  	  $gui->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
-	}
-
-	// $smarty->assign('title', $the_title);
-	// $smarty->assign('testcase_name', $tcinfo[0]['name']);
-	// $smarty->assign('user_feedback', $user_feedback);
-	// $smarty->assign('sqlResult', $verbose_result);
-	// $smarty->assign('testcase_id', $args->tcase_id);
-	// $smarty->assign('delete_message', $msg);
-	// $smarty->assign('action',$action_result);
-
-	//$gui->title = $the_title;
-	$gui->testcase_name = $tcinfo[0]['name'];
-	$gui->sqlResult = $verbose_result;
-	$gui->testcase_id = $args->tcase_id;
-    $smarty->assign('gui',$gui); 
-
     $templateCfg = templateConfiguration('tcDelete');
     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 }
@@ -517,21 +472,31 @@ function init_args($spec_cfg,$otName)
     
     $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : '';
     
-    $edit_tc   = isset($_REQUEST['edit_tc']) ? 1 : 0;
+    $edit_tc = isset($_REQUEST['edit_tc']) ? 1 : 0;
+    $delete_tc = isset($_REQUEST['delete_tc']) ? 1 : 0;
+    $do_delete = isset($_REQUEST['do_delete']) ? 1 : 0;
+
     if( $edit_tc )
     {
     	$args->doAction = 'edit';
     }
+    if( $delete_tc )
+    {
+    	$args->doAction = 'delete';
+    }
+    if( $do_delete )
+    {
+    	$args->doAction = 'doDelete';
+    }
+
     
-    $args->delete_tc = isset($_REQUEST['delete_tc']) ? 1 : 0;
+    
     $args->create_tc = isset($_REQUEST['create_tc']) ? 1 : 0;
     $args->move_copy_tc = isset($_REQUEST['move_copy_tc']) ? 1 : 0;
     $args->delete_tc_version = isset($_REQUEST['delete_tc_version']) ? 1 : 0;
     $args->do_create = isset($_REQUEST['do_create']) ? 1 : 0;
-    // $args->do_update = isset($_REQUEST['do_update']) ? 1 : 0;
     $args->do_move   = isset($_REQUEST['do_move']) ? 1 : 0;
     $args->do_copy   = isset($_REQUEST['do_copy']) ? 1 : 0;
-    $args->do_delete = isset($_REQUEST['do_delete']) ? 1 : 0;
     $args->do_create_new_version = isset($_REQUEST['do_create_new_version']) ? 1 : 0;
     $args->do_delete_tc_version = isset($_REQUEST['do_delete_tc_version']) ? 1 : 0;
     $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
@@ -703,7 +668,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     $renderType = 'none';
     // key Operation - value next Operation
     $actionOperation = array('createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
-                             'doDeleteStep' => '', 'edit' => 'doUpdate');
+                             'doDeleteStep' => '', 'edit' => 'doUpdate', 'delete' => 'doDelete', 
+                             'doDelete' => '');
                              
     $oWebEditor = createWebEditors($argsObj->basehref,$editorCfg); 
 	foreach ($oWebEditor->cfg as $key => $value)
@@ -714,6 +680,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 		switch($argsObj->doAction)
     	{
     	    case "edit":
+    	    case "delete":
+    	    case "doDelete":
     	    case "editStep":
     	    case "doCreateStep":
   				$of->Value = $argsObj->$key;
@@ -730,6 +698,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     switch($argsObj->doAction)
     {
         case "edit":
+        case "delete":
+        case "doDelete":
         case "createStep":
         case "doCreateStep":
         case "doDeleteStep":

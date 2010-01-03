@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/01/03 11:07:21 $  by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/01/03 14:10:20 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -40,10 +40,13 @@ class testcaseCommands
 	function initGuiBean()
 	{
 	    $obj = new stdClass();
+	    $obj->sqlResult = '';
+	    $obj->action = '';
 	    $obj->loadOnCancelURL = '';
 		$obj->attachments = null;
 		$obj->direct_link = null;
 	    $obj->execution_types = $this->execution_types;
+		$obj->main_descr = '';
 	    return $obj;
 	}
 	 
@@ -194,6 +197,101 @@ class testcaseCommands
       // 
       // return $guiObj;
   }
+
+
+  /**
+   * 
+   *
+   */
+	function delete(&$argsObj,$request)
+	{
+    	$guiObj = $this->initGuiBean();
+ 		$guiObj->delete_message = '';
+		$cfg = config_get('testcase_cfg');
+
+ 		$my_ret = $this->tcaseMgr->check_link_and_exec_status($argsObj->tcase_id);
+ 		$guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id);
+		
+  		switch($my_ret)
+		{
+			case "linked_and_executed":
+				$guiObj->exec_status_quo = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
+				break;
+    	
+			case "linked_but_not_executed":
+				$guiObj->exec_status_quo = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
+				break;
+		}
+		$tcinfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id);
+		list($prefix,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->testproject_id);
+        $prefix .= $cfg->glue_character;
+        $external_id = $prefix . $tcinfo[0]['tc_external_id'];
+        
+		$guiObj->title = lang_get('title_del_tc');
+		$guiObj->testcase_name =  $tcinfo[0]['name'];
+		$guiObj->testcase_id = $argsObj->tcase_id;
+		$guiObj->tcversion_id = testcase::ALL_VERSIONS;
+		$guiObj->refresh_tree = "yes";
+ 		$guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
+    
+    	$templateCfg = templateConfiguration('tcDelete');
+  		$guiObj->template=$templateCfg->default_template;
+		return $guiObj;
+	}
+
+  /**
+   * 
+   *
+   */
+	function doDelete(&$argsObj,$request)
+	{
+		$cfg = config_get('testcase_cfg');
+
+    	$guiObj = $this->initGuiBean();
+ 		$guiObj->user_feedback = '';
+		$guiObj->delete_message = '';
+		$guiObj->action = 'deleted';
+		$guiObj->sqlResult = 'ok';
+		$tcinfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
+		list($prefix,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->testproject_id);
+        $prefix .= $cfg->glue_character;
+        $external_id = $prefix . $tcinfo[0]['tc_external_id'];
+		
+		if (!$this->tcaseMgr->delete($argsObj->tcase_id,$argsObj->tcversion_id))
+		{
+			$guiObj->action = '';
+			$guiObj->sqlResult = $this->tcaseMgr->db->error_msg();
+		}
+		else
+		{
+			$guiObj->user_feedback = sprintf(lang_get('tc_deleted'), ":" . $external_id . TITLE_SEP . $tcinfo[0]['name']);
+		}
+    	
+		$guiObj->main_descr = lang_get('title_del_tc') . ":" . $external_id . TITLE_SEP . htmlspecialchars($tcinfo[0]['name']);
+  
+  		// 20080706 - refresh must be forced to avoid a wrong tree situation.
+  		// if tree is not refreshed and user click on deleted test case he/she
+  		// will get a SQL error
+  		// $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
+  		$guiObj->refresh_tree = "yes";
+ 
+  		// When deleting JUST one version, there is no need to refresh tree
+		if($argsObj->tcversion_id != testcase::ALL_VERSIONS)
+		{
+			  $guiObj->main_descr .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
+			  $guiObj->refresh_tree = "no";
+		  	  $guiObj->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
+		}
+
+		$guiObj->testcase_name = $tcinfo[0]['name'];
+		$guiObj->testcase_id = $argsObj->tcase_id;
+    
+    	$templateCfg = templateConfiguration('tcDelete');
+  		$guiObj->template=$templateCfg->default_template;
+		return $guiObj;
+	}
+
+
 
 } // end class  
 ?>

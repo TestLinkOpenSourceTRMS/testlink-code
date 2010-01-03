@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.8 2010/01/02 18:58:10 franciscom Exp $
+$Id: tcDelete.tpl,v 1.9 2010/01/03 14:10:20 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev :
@@ -19,28 +19,26 @@ rev :
 
 *}
 {lang_get var="labels"
-          s='btn_yes_iw2del,btn_no,th_version,th_linked_to_tplan,th_executed'}
-
-
-
+          s='btn_yes_iw2del,btn_no,th_version,th_linked_to_tplan,th_executed,question_del_tc'}
 {include file="inc_head.tpl"}
 
 <body>
-<h1 class="title">{$title}{$smarty.const.TITLE_SEP}{$testcase_name|escape}</h1>
-<div class="workBack">
+<h1 class="title">{$gui->main_descr|escape}</h1>
 
-{include file="inc_update.tpl" result=$sqlResult action=$action item="test case"
+<div class="workBack">
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback 
+         result=$gui->sqlResult action=$gui->action item="test case"
          refresh=$gui->refresh_tree}
 
-{if $sqlResult == ''}
-	{if $exec_status_quo != ''}
+{if $gui->sqlResult == ''}
+	{if $gui->exec_status_quo != ''}
 	    <table class="link_and_exec" >
 			<tr>
 				<th>{$labels.th_version}</th>
 				<th>{$labels.th_linked_to_tplan}</th>
 				<th>{$labels.th_executed}</th>
 				</tr>
-			{foreach key=testcase_version_id item=on_tplan_status from=$exec_status_quo}
+			{foreach key=testcase_version_id item=on_tplan_status from=$gui->exec_status_quo}
 				{foreach key=tplan_id item=status from=$on_tplan_status}
 				<tr>
 					<td align="right">{$status.version}</td>
@@ -51,20 +49,18 @@ rev :
 			{/foreach}
 	    </table>
 
-    	{$delete_message}
+    	{$gui->delete_message}
   	{/if}
 
-	<p>{lang_get s='question_del_tc'}</p>
+	<p>{$labels.question_del_tc}</p>
 	<form method="post" 
-	      action="lib/testcases/tcEdit.php?testcase_id={$testcase_id}&tcversion_id={$tcversion_id}">
+	      action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}&tcversion_id={$gui->tcversion_id}">
 		<input type="submit" id="do_delete" name="do_delete" value="{$labels.btn_yes_iw2del}" />
-
 		<input type="button" name="cancel_delete"
-		                     onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?version_id=undefined&edit=testcase&id={$testcase_id}";'
+		                     onclick='javascript: location.href=fRoot+"lib/testcases/archiveData.php?version_id=undefined&edit=testcase&id={$gui->testcase_id}";'
 		                     value="{$labels.btn_no}" />
 	</form>
 {/if}
-
 </div>
 </body>
 </html>

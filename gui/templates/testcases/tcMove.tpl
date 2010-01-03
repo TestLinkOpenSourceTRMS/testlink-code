@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcMove.tpl,v 1.7 2009/04/02 06:42:06 franciscom Exp $
+$Id: tcMove.tpl,v 1.8 2010/01/03 16:59:31 franciscom Exp $
 Purpose: smarty template - move/copy test case
 
 rev: 20090401 - franciscom - BUGID 2316 - copy options
@@ -14,14 +14,14 @@ rev: 20090401 - franciscom - BUGID 2316 - copy options
              copy_requirement_assignments,copy_keyword_assignments,
              choose_container,as_first_testcase,as_last_testcase,btn_mv,btn_cp"}
 <body>
-<h1 class="title">{$labels.test_case}{$smarty.const.TITLE_SEP}{$name|escape}</h1>
+<h1 class="title">{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->name|escape}</h1>
 
 <div class="workBack">
 <h1 class="title">{$labels.title_mv_cp_tc}</h1>
 
-<form method="post" action="lib/testcases/tcEdit.php?testcase_id={$testcase_id}">
+<form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}">
   <p>
-  {if $move_enabled }
+  {if $gui->move_enabled }
 	  {$labels.inst_move}<br />
   {/if}
   {$labels.inst_copy}<br />
@@ -30,7 +30,7 @@ rev: 20090401 - franciscom - BUGID 2316 - copy options
 
 	<p>{$labels.choose_container}
 		<select name="new_container">
-			{html_options options=$array_container selected=$old_container}
+			{html_options options=$gui->array_container selected=$gui->old_container}
 		</select>
   </p>
   
@@ -44,16 +44,16 @@ rev: 20090401 - franciscom - BUGID 2316 - copy options
 
 	 
 	<p><input type="radio" name="target_position"
-	          value="top" {$top_checked} />{$labels.as_first_testcase}
+	          value="top" {$gui->top_checked} />{$labels.as_first_testcase}
 	<br /><input type="radio" name="target_position"
-	          value="bottom" {$bottom_checked} />{$labels.as_last_testcase}
+	          value="bottom" {$gui->bottom_checked} />{$labels.as_last_testcase}
 
 		<div class="groupBtn">
-		  {if $move_enabled }
+		  {if $gui->move_enabled }
 			  <input id="do_move" type="submit" name="do_move" value="{$labels.btn_mv}" />
 			{/if}
 			<input id="do_copy" type="submit" name="do_copy" value="{$labels.btn_cp}" />
-			<input type="hidden" name="old_container" value="{$old_container}" />
+			<input type="hidden" name="old_container" value="{$gui->old_container}" />
 	</div>
 
 </form>

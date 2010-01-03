@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.131 $
- * @modified $Date: 2010/01/03 14:10:20 $  by $Author: franciscom $
+ * @version $Revision: 1.132 $
+ * @modified $Date: 2010/01/03 16:48:46 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -63,29 +63,26 @@ if($args->do_activate_this)
 	$action_result = "activate_this_version";
 }
 
-$login_name = $_SESSION['currentUser']->login;
-$version = isset($_REQUEST['version']) ? intval($_REQUEST['version']) : 0;
-
-
 $name_ok = 1;
 
-if($args->do_create)
-{
-	// BUGID 0000086
-	$result = lang_get('warning_empty_tc_title');
-	if($name_ok && !check_string($args->name,$g_ereg_forbidden))
-	{
-		$msg = lang_get('string_contains_bad_chars');
-		$gui->user_feedback = $msg;
-		$name_ok = 0;
-	}
-	if($name_ok && $args->name == "")
-	{
-		$msg = lang_get('warning_empty_tc_title');
-		$gui->user_feedback = $msg;
-		$name_ok = 0;
-	}
-}
+// 20100103 - franciscom - can be removed ???
+// if($args->do_create)
+// {
+// 	// BUGID 0000086
+// 	$result = lang_get('warning_empty_tc_title');
+// 	if($name_ok && !check_string($args->name,$g_ereg_forbidden))
+// 	{
+// 		$msg = lang_get('string_contains_bad_chars');
+// 		$gui->user_feedback = $msg;
+// 		$name_ok = 0;
+// 	}
+// 	if($name_ok && $args->name == "")
+// 	{
+// 		$msg = lang_get('warning_empty_tc_title');
+// 		$gui->user_feedback = $msg;
+// 		$name_ok = 0;
+// 	}
+// }
 
 $doRender = false;
 $pfn = $args->doAction;
@@ -97,6 +94,8 @@ switch($args->doAction)
     break;
 	
 	case "edit":  
+	case "create":  
+	case "doCreate":  
         $oWebEditorKeys = array_keys($oWebEditor->cfg);
         $op = $commandMgr->$pfn($args,$opt_cfg,$oWebEditorKeys);
         $doRender = true;
@@ -116,109 +115,7 @@ if( $doRender )
 	exit();
 }
 
-if($args->create_tc)
-{
-	$show_newTC_form = 1;
-	$opt_cfg->to->map = array();
-	keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
-
-	// $smarty->assign('opt_cfg', $opt_cfg);
-    $gui->opt_cfg = $opt_cfg;
-    $smarty->assign('gui',$gui);
-
-}
-else if($args->do_create)
-{
-	$show_newTC_form = 1;
-	if ($name_ok)
-	{
-		$gui->user_feedback = lang_get('error_tc_add');
-        $gui->sqlResult = 'ko';
-        
-        $new_order = $cfg->treemenu_default_testcase_order;
-
-    	// compute order
-    	$nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
-    	$siblings = $tcase_mgr->tree_manager->get_children($args->container_id,$nt2exclude);
-    	if( !is_null($siblings) )
-    	{
-    		$dummy = end($siblings);
-    		$new_order = $dummy['node_order']+1;
-    	}
-    	// 20091217 - francisco.mancardi@gruppotesi.com
-    	//
-    	$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
-    	                 'action_on_duplicate_name' => 'block');
-       	$tcase = $tcase_mgr->create($args->container_id,$args->name,$args->summary,$args->preconditions,
-       	                            $args->steps,$args->expected_results,$args->user_id,
-       	                            $args->assigned_keywords_list,$new_order,testcase::AUTOMATIC_ID,
-       	                            $args->exec_type,$args->importance,$options);
-
-		if($tcase['status_ok'])
-		{
-			$cf_map = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($args->testproject_id,ENABLED,
-			                                                             NO_FILTER_SHOW_ON_EXEC,'testcase') ;
-	    	$tcase_mgr->cfield_mgr->design_values_to_db($_REQUEST,$tcase['id']);
-        	$gui->user_feedback = sprintf(lang_get('tc_created'),$args->name);
-        	$gui->sqlResult = 'ok';
-		}
-		elseif(isset($tcase['msg']))
-		{
-    	  // BUGID 0001267 by cmurray
-     		$user_feedback .= '' . $tcase['msg'];
-     		$init_inputs=false;
-		}
-	}
-
-	keywords_opt_transf_cfg($opt_cfg, $args->assigned_keywords_list);
- 	// $smarty->assign('opt_cfg', $opt_cfg);
- 	// $smarty->assign('sqlResult', $sqlResult);
-	// $smarty->assign('user_feedback', $user_feedback);
-	// $smarty->assign('testcase_name', $args->name);
-	// $smarty->assign('item', 'testcase');
-	$gui->opt_cfg = $opt_cfg;
-	$gui->testcase_name = $args->name;
-	$gui->item = 'testcase';
-    $smarty->assign('gui',$gui);
-}
-// else if($args->delete_tc)
-// {
-//  	$msg = '';
-//  	$my_ret = $tcase_mgr->check_link_and_exec_status($args->tcase_id);
-//  	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
-// 	
-//   	switch($my_ret)
-// 	{
-// 		case "linked_and_executed":
-// 			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked_and_exec');
-// 			break;
-// 
-// 		case "linked_but_not_executed":
-// 			$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
-// 			break;
-// 	}
-// 	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id);
-// 
-// 	// $smarty->assign('exec_status_quo',$exec_status_quo);
-// 	// $smarty->assign('title', lang_get('title_del_tc'));
-// 	// $smarty->assign('testcase_name', $tcinfo[0]['name']);
-// 	// $smarty->assign('testcase_id', $args->tcase_id);
-// 	// $smarty->assign('tcversion_id', testcase::ALL_VERSIONS);
-// 	// $smarty->assign('delete_message', $msg);
-//        
-// 	$gui->exec_status_quo = $exec_status_quo;
-// 	$gui->title = lang_get('title_del_tc');
-// 	$gui->testcase_name =  $tcinfo[0]['name'];
-// 	$gui->testcase_id = $args->tcase_id;
-// 	$gui->tcversion_id = testcase::ALL_VERSIONS;
-// 	$gui->delete_message = $msg;
-// 	$gui->refresh_tree = "yes";
-//     $smarty->assign('gui',$gui);
-// 
-//     $templateCfg = templateConfiguration('tcDelete');
-//     $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-// }
-else if($args->delete_tc_version)
+if($args->delete_tc_version)
 {
 	$status_quo_map = $tcase_mgr->get_versions_status_quo($args->tcase_id);
 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
@@ -244,15 +141,6 @@ else if($args->delete_tc_version)
 	}
 
 	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
-
-	// $smarty->assign('title', lang_get('title_del_tc') . TITLE_SEP_TYPE3 .
-	//                          lang_get('version') . " " . $tcinfo[0]['version']);
-    // 
-	// $smarty->assign('testcase_name', $tcinfo[0]['name']);
-	// $smarty->assign('testcase_id', $args->tcase_id);
-	// $smarty->assign('tcversion_id', $args->tcversion_id);
-	// $smarty->assign('delete_message', $msg);
-	// $smarty->assign('exec_status_quo',$sq);
 
 	$gui->title = lang_get('title_del_tc') . 
 	              TITLE_SEP_TYPE3 . lang_get('version') . " " . $tcinfo[0]['version'];
@@ -475,6 +363,8 @@ function init_args($spec_cfg,$otName)
     $edit_tc = isset($_REQUEST['edit_tc']) ? 1 : 0;
     $delete_tc = isset($_REQUEST['delete_tc']) ? 1 : 0;
     $do_delete = isset($_REQUEST['do_delete']) ? 1 : 0;
+    $create_tc = isset($_REQUEST['create_tc']) ? 1 : 0;
+    $do_create = isset($_REQUEST['do_create']) ? 1 : 0;
 
     if( $edit_tc )
     {
@@ -488,19 +378,27 @@ function init_args($spec_cfg,$otName)
     {
     	$args->doAction = 'doDelete';
     }
+    if( $create_tc )
+    {
+    	$args->doAction = 'create';
+    }
+
+    if( $do_create )
+    {
+    	$args->doAction = 'doCreate';
+    }
 
     
     
-    $args->create_tc = isset($_REQUEST['create_tc']) ? 1 : 0;
     $args->move_copy_tc = isset($_REQUEST['move_copy_tc']) ? 1 : 0;
     $args->delete_tc_version = isset($_REQUEST['delete_tc_version']) ? 1 : 0;
-    $args->do_create = isset($_REQUEST['do_create']) ? 1 : 0;
     $args->do_move   = isset($_REQUEST['do_move']) ? 1 : 0;
     $args->do_copy   = isset($_REQUEST['do_copy']) ? 1 : 0;
     $args->do_create_new_version = isset($_REQUEST['do_create_new_version']) ? 1 : 0;
     $args->do_delete_tc_version = isset($_REQUEST['do_delete_tc_version']) ? 1 : 0;
     $args->do_activate_this = isset($_REQUEST['activate_this_tcversion']) ? 1 : 0;
     $args->do_deactivate_this = isset($_REQUEST['deactivate_this_tcversion']) ? 1 : 0;
+
     $args->target_position = isset($_REQUEST['target_position']) ? $_REQUEST['target_position'] : 'bottom';
     
     // BUGID 2316
@@ -536,14 +434,19 @@ function init_args($spec_cfg,$otName)
 function initializeOptionTransferCfg($otName,&$argsObj,&$tprojectMgr)
 {
     $otCfg = new stdClass();
-    if($argsObj->create_tc || $argsObj->doAction == 'edit' || $argsObj->do_create)
+    switch($argsObj->doAction)
     {
-        $otCfg = opt_transf_empty_cfg();
-        $otCfg->global_lbl = '';
-        $otCfg->from->lbl = lang_get('available_kword');
-        $otCfg->from->map = $tprojectMgr->get_keywords_map($argsObj->testproject_id);
-        $otCfg->to->lbl = lang_get('assigned_kword');
+    	case 'create':
+    	case 'edit':
+    	case 'doCreate':
+        	$otCfg = opt_transf_empty_cfg();
+        	$otCfg->global_lbl = '';
+        	$otCfg->from->lbl = lang_get('available_kword');
+        	$otCfg->from->map = $tprojectMgr->get_keywords_map($argsObj->testproject_id);
+        	$otCfg->to->lbl = lang_get('assigned_kword');
+    	break;
     }
+    
     $otCfg->js_ot_name = $otName;
     return $otCfg;
 }
@@ -621,7 +524,6 @@ function getGrants(&$dbHandler)
 {
     $grants=new stdClass();
     $grants->requirement_mgmt=has_rights($dbHandler,"mgt_modify_req"); 
-
     return $grants;
 }
 
@@ -651,8 +553,8 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$treeMgr)
 	{
 		$pnode_info = $treeMgr->get_node_hierarchy_info($argsObj->container_id);
 		$node_descr = array_flip($treeMgr->get_available_node_types());
-		$gui->parent_info['name'] = $pnode_info['name'];
-		$gui->parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
+		$guiObj->parent_info['name'] = $pnode_info['name'];
+		$guiObj->parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
 	}
 	
 	return $guiObj;
@@ -668,9 +570,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     $renderType = 'none';
     // key Operation - value next Operation
     $actionOperation = array('createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
+                             'create' => 'doCreate', 'doCreate' => 'doCreate',
                              'doDeleteStep' => '', 'edit' => 'doUpdate', 'delete' => 'doDelete', 
                              'doDelete' => '');
-                             
+
+	$initWebEditorFromTemplate = $opObj->initWebEditorFromTemplate;                             
     $oWebEditor = createWebEditors($argsObj->basehref,$editorCfg); 
 	foreach ($oWebEditor->cfg as $key => $value)
   	{
@@ -681,16 +585,24 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     	{
     	    case "edit":
     	    case "delete":
-    	    case "doDelete":
     	    case "editStep":
+    	    case "doCreate":
+    	    case "doDelete":
     	    case "doCreateStep":
+  				$initWebEditorFromTemplate = false;
   				$of->Value = $argsObj->$key;
   			break;
   			
+    	    case "create":
   			default:	
-  				$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');	
+  				$initWebEditorFromTemplate = true;
   			break;
   		}
+  		
+  		if(	$initWebEditorFromTemplate)
+  		{
+			$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');	
+		}	
 		$smartyObj->assign($key, $of->CreateHTML($rows,$cols));
 
 	}
@@ -698,12 +610,16 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     switch($argsObj->doAction)
     {
         case "edit":
+   	    case "create":
         case "delete":
-        case "doDelete":
         case "createStep":
+   	    case "doCreate":
+        case "doDelete":
         case "doCreateStep":
         case "doDeleteStep":
             $renderType = 'template';
+            
+            // Document !!!!
             $key2loop = get_object_vars($opObj);
             foreach($key2loop as $key => $value)
             {

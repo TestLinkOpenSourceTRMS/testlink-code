@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/10/05 08:47:11 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/01/03 15:03:05 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * @internal revisions
@@ -14,12 +14,12 @@
 require_once("testplan.class.php");  // needed because milestone_mgr is inside
 class planMilestonesCommands
 {
-  private $db;
-  private $milestone_mgr;
-  private $defaultTemplate='planMilestonesEdit.tpl';
-  private $submit_button_label;
-  private $auditContext;
-  private $viewAction = 'lib/plan/planMilestonesView.php';
+  	private $db;
+  	private $milestone_mgr;
+  	private $defaultTemplate='planMilestonesEdit.tpl';
+  	private $submit_button_label;
+  	private $auditContext;
+  	private $viewAction = 'lib/plan/planMilestonesView.php';
   
 	function __construct(&$db)
 	{
@@ -134,8 +134,8 @@ class planMilestonesCommands
 		      	$guiObj->user_feedback = sprintf(lang_get('milestone_created'), $argsObj->name);
   		      	$guiObj->template = $basehref . $this->viewAction;
 		      }
-		  }    
-      return $guiObj;	
+		}    
+		return $guiObj;	
   }
 
 

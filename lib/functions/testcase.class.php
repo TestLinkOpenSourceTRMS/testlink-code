@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.217 2010/01/03 14:09:41 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.218 2010/01/03 17:32:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
- * 20091220 - franciscom - getPrefix() - interface changes & refactoring
+ * 20100103 - franciscom - getPrefix() - interface changes & refactoring
+ *                         new methods - buildDirectWebLink(), getExternalID()
  * 20091229 - eloff - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
  * 20091220 - franciscom - copy_attachments() refactoring
  * 20091217 - franciscom - getDuplicatesByName() - new argument added
@@ -1953,7 +1954,7 @@ class testcase extends tlObjectWithAttachments
 	 * to get internal id from external one.
 	 *
 	 * @internal Revisions:
-	 * 20091229 - eloff      - BUGID 3021 fixed error when tc prefix contains glue character
+	 * 20091229 - eloff - BUGID 3021 fixed error when tc prefix contains glue character
 	 * 20090608 - franciscom - fixed error on management of numeric part (externalID)
 	 * 20080126 - franciscom - BUGID 1313
 	 */
@@ -3756,6 +3757,32 @@ class testcase extends tlObjectWithAttachments
 	    return $retval;
 	}
 	
-	
+	/**
+	 * 
+ 	 *
+     */
+	function buildDirectWebLink($base_href,$id,$tproject_id=null)
+	{
+	    list($external_id,$prefix,$glue,$tc_number) = $this->getExternalID($id,$tproject_id);
+
+		$dl = $base_href . 'linkto.php?tprojectPrefix=' . urlencode($prefix) . 
+		      '&item=testcase&id=' . urlencode($external_id);
+        return $dl;
+    }
+
+    /**
+	 * 
+ 	 *
+     */
+	function getExternalID($id,$tproject_id=null)
+	{
+		$info = $this->get_last_version_info($id);
+        $external = $info['tc_external_id'];
+       	$cfg = config_get('testcase_cfg');
+       	list($prefix,$root) = $this->getPrefix($id,$tproject_id);
+       	$identity = $prefix . $cfg->glue_character . $external;
+		return array($identity,$prefix,$cfg->glue_character,$external);
+	}
+
 } // end class
 ?>

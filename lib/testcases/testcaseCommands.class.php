@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/01/03 17:31:49 $  by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/01/03 18:50:34 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -168,15 +168,7 @@ class testcaseCommands
 	{
     	$guiObj = $this->initGuiBean();
     	$otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
-    	
-    	// new dBug($otCfg);
-    	// new dBug($otCfg->to->map);
-    	// new dBug($argsObj->assigned_keywords_list);
     	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
-    	// new dBug($otCfg);
-    	
-    	new dBug($this->tcaseMgr->get_last_version_info($argsObj->tcase_id));
-    	
   		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 
   		foreach($oWebEditorKeys as $key)

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.530 2010/01/04 14:24:55 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.531 2010/01/04 14:27:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -86,6 +86,7 @@ $TLS_req_spec_short = "Req. Spec.";
 $TLS_requirements_spec = "Requirements Spec.";
 $TLS_req_specification = "Req. Specification";
 $TLS_srs = "SRS";
+$TLS_step_actions = "Step actions";
 $TLS_step_details="Step details";
 $TLS_step_number="#";
 $TLS_step_number_verbose = "Step number";

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.529 2010/01/04 14:22:03 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.530 2010/01/04 14:24:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -42,6 +42,7 @@ $TLS_STRINGFILE_CHARSET = "UTF-8";
 $TLS_type_not_configured = "system message: type not configured";
 $TLS_undefined = "undefined";
 $TLS_active = "Active";
+$TLS_actions = "Actions";
 $TLS_asc = "Ascending";
 $TLS_any = "Any";
 $TLS_author	= "Author";

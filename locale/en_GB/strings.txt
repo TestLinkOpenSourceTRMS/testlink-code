@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.527 2010/01/04 09:24:02 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.528 2010/01/04 12:37:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1064,6 +1064,7 @@ $TLS_or_unassigned_test_cases = " Or without tester assignment";
 $TLS_run_mode = "Run mode";
 $TLS_set_all_tc_to = "Set all to status ";
 $TLS_show_hide = "Show / hide";
+$TLS_show_hide_reorder = "Show / Hide reorder ";
 $TLS_tc_not_tested_yet = "Not Tested Yet";
 $TLS_test_cases_cannot_be_executed = "Test cases can not be executed";
 $TLS_testcase_version_is_inactive_on_exec = "This version is inactive => Can not be executed";

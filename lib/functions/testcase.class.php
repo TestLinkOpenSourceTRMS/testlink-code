@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.218 2010/01/03 17:32:20 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.219 2010/01/04 07:29:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100104 - franciscom - create_new_version() - interface changes
  * 20100103 - franciscom - getPrefix() - interface changes & refactoring
  *                         new methods - buildDirectWebLink(), getExternalID()
  * 20091229 - eloff - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
@@ -1295,10 +1296,13 @@ class testcase extends tlObjectWithAttachments
 	
 	/*
 	  function: create_new_version()
-	            create a new test case version, doing a copy of last test case version.
+	            create a new test case version, 
+	            doing a copy of source test case version
+	            
 	
 	  args : $id: testcase id
 	         $user_id: who is doing this operation.
+	         [$source_version_id]: default null -> source is LATEST TCVERSION 
 	
 	  returns:
 	          map:  id: node id of created tcversion
@@ -1307,14 +1311,18 @@ class testcase extends tlObjectWithAttachments
 	
 	  rev : 20070701 - franciscom - added version key on return map.
 	*/
-	function create_new_version($id,$user_id)
+	function create_new_version($id,$user_id,$source_version_id=null)
 	{
-	  // get a new id
 	  $tcversion_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
-	  // get last version for this test case
+	  // get last version for this test case (need to get new version number)
 	  $last_version_info =  $this->get_last_version_info($id);
-	  $this->copy_tcversion($last_version_info['id'],$tcversion_id,$last_version_info['version']+1,$user_id);
+	  $from = $source_version_id;
+	  if( is_null($source_version_id) || $source_version_id <= 0)
+	  {
+	  	$from = $last_version_info['id'];
+	  }
+	  $this->copy_tcversion($from,$tcversion_id,$last_version_info['version']+1,$user_id);
 	
 	  $ret['id'] = $tcversion_id;
 	  $ret['version'] = $last_version_info['version']+1;
@@ -3783,6 +3791,7 @@ class testcase extends tlObjectWithAttachments
        	$identity = $prefix . $cfg->glue_character . $external;
 		return array($identity,$prefix,$cfg->glue_character,$external);
 	}
+
 
 } // end class
 ?>

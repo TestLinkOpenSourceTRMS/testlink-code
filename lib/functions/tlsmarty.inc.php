@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.14 2010/01/04 12:51:57 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.15 2010/01/04 12:59:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -176,7 +176,15 @@ class TLSmarty extends Smarty
         
         // -----------------------------------------------------------------------------
         // Images
-        $reorder_img = TL_THEME_IMG_DIR . "/arrow_switch.png";
+        $tlImages = array('reorder' => TL_THEME_IMG_DIR . "/arrow_switch.png",
+                          'sort' => TL_THEME_IMG_DIR . "/sort_hint.png",
+                          'api_info' => TL_THEME_IMG_DIR . "/brick.png",
+        	              'direct_link' => TL_THEME_IMG_DIR . "/world_link.png",
+                          'checked' => TL_THEME_IMG_DIR . "/apply_f2_16.png",
+                          'delete' =>TL_THEME_IMG_DIR . "/trash.png");
+
+        $this->assign("tlImages",$tlImages);
+        
         $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
         $api_info_img = TL_THEME_IMG_DIR . "/brick.png";
         $direct_link_img = TL_THEME_IMG_DIR . "/world_link.png";

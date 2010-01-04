@@ -6,13 +6,15 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.220 2010/01/04 08:58:06 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.221 2010/01/04 16:53:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100104 - franciscom - create_new_version() - interface changes
  *                         new method get_basic_info()
+ *                         fixed bug in show()  regarding $gui->can_do->add2tplan
+ *
  * 20100103 - franciscom - getPrefix() - interface changes & refactoring
  *                         new methods - buildDirectWebLink(), getExternalID()
  * 20091229 - eloff - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
@@ -683,11 +685,16 @@ class testcase extends tlObjectWithAttachments
 	        if(trim($tcasePrefix) != "")
 	        {
 	        	// Add To Testplan button will be disabled if the testcase doesn't belong to the current selected testproject
-	        	$gui->can_do->add2tplan = 'no';
+	        	// $gui->can_do->add2tplan = 'no';
 	        	if ($_SESSION['testprojectPrefix'] == $tcasePrefix)
 	        	{
 		    		$gui->can_do->add2tplan = $gui->can_do->add2tplan == 'yes' ? has_rights($this->db,"testplan_planning") : 'no';
 				}
+				else
+				{
+					$gui->can_do->add2tplan = 'no';
+				}
+
 				$tcasePrefix .= $tcase_cfg->glue_character;
 		   	}
 	    }

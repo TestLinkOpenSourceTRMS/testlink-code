@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.528 2010/01/04 12:37:59 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.529 2010/01/04 14:22:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -159,7 +159,7 @@ $TLS_btn_upd = $TLS_btn_update; //obsolete
 $TLS_btn_upload = "Upload";
 $TLS_btn_advanced_filters = "Advanced Filters";
 $TLS_btn_simple_filters = "Simple Filters"; 
-
+$TLS_btn_reorder_steps = "Reorder Steps";
 
 // Status (used wide)
 $TLS_test_status_all = "All";

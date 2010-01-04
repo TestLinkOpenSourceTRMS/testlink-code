@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.221 2010/01/04 16:53:14 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.222 2010/01/04 17:37:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -14,7 +14,7 @@
  * 20100104 - franciscom - create_new_version() - interface changes
  *                         new method get_basic_info()
  *                         fixed bug in show()  regarding $gui->can_do->add2tplan
- *
+ *                         get_last_version_info() - interface changes
  * 20100103 - franciscom - getPrefix() - interface changes & refactoring
  *                         new methods - buildDirectWebLink(), getExternalID()
  * 20091229 - eloff - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
@@ -232,7 +232,7 @@ class testcase extends tlObjectWithAttachments
 				// useful when importing test cases. Need to get last version number.
 				// I do not use create_new_version() because it does a copy ot last version
 				// and do not allow to set new values in different fields while doing this operation.
-				$last_version_info = $this->get_last_version_info($ret['id']);
+				$last_version_info = $this->get_last_version_info($ret['id'],array('output' => 'minimun'));
 				$version_number = $last_version_info['version']+1;
 				$ret['msg'] = sprintf($ret['msg'],$version_number);       
 				
@@ -1324,7 +1324,7 @@ class testcase extends tlObjectWithAttachments
 	  $tcversion_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
 	  // get last version for this test case (need to get new version number)
-	  $last_version_info =  $this->get_last_version_info($id);
+	  $last_version_info =  $this->get_last_version_info($id, array('output' => 'minimun'));
 	  $from = $source_version_id;
 	  if( is_null($source_version_id) || $source_version_id <= 0)
 	  {
@@ -1345,14 +1345,13 @@ class testcase extends tlObjectWithAttachments
 	            Get information about last version (greater number) of a testcase.
 	
 	  args : id: testcase id
+	         [options]
 	
-	  returns: map with following keys:
+	  returns: map with keys  that depends of options['output']:
 	
 		  			 id -> tcversion_id
 					   version
 					   summary
-					   steps
-					   expected_results
 					   importance
 					   author_id
 					   creation_ts
@@ -1362,26 +1361,49 @@ class testcase extends tlObjectWithAttachments
 					   is_open
 	
 	*/
-	function get_last_version_info($id)
+	function get_last_version_info($id,$options=null)
 	{
-		$sql = "SELECT MAX(version) AS version " .
-		       " FROM {$this->tables['tcversions']} tcversions," .
-		       " {$this->tables['nodes_hierarchy']} nodes_hierarchy WHERE ".
-		       " nodes_hierarchy.id = tcversions.id ".
-		       " AND nodes_hierarchy.parent_id = {$id} ";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $my['options'] = array( 'get_steps' => false, 'output' => 'full');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+		$tcInfo = null;
+		switch($my['options']['output'])
+		{
+			case 'minimun':
+			default:
+				$fields2get = " TCV.id, TCV.version, TCV.tc_external_id ";
+			break;		
+
+			case 'full':
+			default:
+				$fields2get = " TCV.* ";
+			break;		
+		}
+		
+		
+		$sql = "/* $debugMsg */ SELECT MAX(version) AS version " .
+		       " FROM {$this->tables['tcversions']} TCV," .
+		       " {$this->tables['nodes_hierarchy']} NH WHERE ".
+		       " NH.id = TCV.id ".
+		       " AND NH.parent_id = {$id} ";
 	
 		$max_version = $this->db->fetchFirstRowSingleColumn($sql,'version');
 	
 		$tcInfo = null;
 		if ($max_version)
 		{
-			$sql = "SELECT tcversions.* FROM {$this->tables['tcversions']} tcversions," .
-			       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
-			       "WHERE version = {$max_version} AND nodes_hierarchy.id = tcversions.id".
-				   " AND nodes_hierarchy.parent_id = {$id}";
+			$sql = "SELECT {$fields2get}  FROM {$this->tables['tcversions']} TCV," .
+			       " {$this->tables['nodes_hierarchy']} NH ".
+			       " WHERE TCV.version = {$max_version} AND NH.id = TCV.id".
+				   " AND NH.parent_id = {$id}";
 	
 			$tcInfo = $this->db->fetchFirstRow($sql);
 		}
+		
+		// if(!is_null($tcInfo) && $my['option']['get_steps'])
+		// {
+		// 	
+		// }
 		return $tcInfo;
 	}
 	
@@ -3792,7 +3814,7 @@ class testcase extends tlObjectWithAttachments
      */
 	function getExternalID($id,$tproject_id=null)
 	{
-		$info = $this->get_last_version_info($id);
+		$info = $this->get_last_version_info($id, array('output' => 'minimun'));
         $external = $info['tc_external_id'];
        	$cfg = config_get('testcase_cfg');
        	list($prefix,$root) = $this->getPrefix($id,$tproject_id);

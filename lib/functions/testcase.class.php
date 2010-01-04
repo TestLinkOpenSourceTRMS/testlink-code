@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.219 2010/01/04 07:29:28 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.220 2010/01/04 08:58:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100104 - franciscom - create_new_version() - interface changes
+ *                         new method get_basic_info()
  * 20100103 - franciscom - getPrefix() - interface changes & refactoring
  *                         new methods - buildDirectWebLink(), getExternalID()
  * 20091229 - eloff - BUGID 3021  - getInternalID() - fixed error when tc prefix contains glue character
@@ -3791,6 +3792,30 @@ class testcase extends tlObjectWithAttachments
        	$identity = $prefix . $cfg->glue_character . $external;
 		return array($identity,$prefix,$cfg->glue_character,$external);
 	}
+
+
+    /**
+	 * returns just name, tc_external_id, version.
+	 * this info is normally enough for user feednack.
+ 	 *
+ 	 * @param int $id test case id
+ 	 * @param int $version_id test case version id
+ 	 * 
+ 	 * @return array with one element with keys: name,version,tc_external_id
+     */
+	function get_basic_info($id,$version_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ " .
+		  	   " SELECT NH_TCASE.name, TCV.version, TCV.tc_external_id " .
+		       " FROM {$this->tables['nodes_hierarchy']} NH_TCASE " .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TCASE.id" .
+		       " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id " .
+		       " WHERE NH_TCASE.id = {$id} AND TCV.id = {$version_id} ";
+      
+        $result = $this->db->get_recordset($sql);
+        return $result;
+    }
 
 
 } // end class

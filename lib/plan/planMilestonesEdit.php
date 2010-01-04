@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesEdit.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2009/09/10 17:17:16 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/01/04 09:34:52 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * rev: 
@@ -115,6 +115,15 @@ function init_args(&$dbHandler)
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg)
 {
     $smartyObj = new TLSmarty();
+    //
+    // key: operation requested (normally received from GUI on doAction)
+    // value: operation value to set on doAction HTML INPUT
+    // This is useful when you use same template (example xxEdit.tpl), for create and edit.
+    // When template is used for create -> operation: doCreate.
+    // When template is used for edit -> operation: doUpdate.
+    //              
+    // used to set value of: $guiObj->operation
+    //
     $actionOperation=array('create' => 'doCreate', 'edit' => 'doUpdate',
                            'doDelete' => '', 'doCreate' => 'doCreate', 
                            'doUpdate' => 'doUpdate');

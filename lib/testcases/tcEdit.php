@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.134 $
- * @modified $Date: 2010/01/04 07:29:53 $  by $Author: franciscom $
+ * @version $Revision: 1.135 $
+ * @modified $Date: 2010/01/04 09:35:57 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -573,7 +573,15 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 {
     $smartyObj = new TLSmarty();
     $renderType = 'none';
-    // key Operation - value next Operation
+    //
+    // key: operation requested (normally received from GUI on doAction)
+    // value: operation value to set on doAction HTML INPUT
+    // This is useful when you use same template (example xxEdit.tpl), for create and edit.
+    // When template is used for create -> operation: doCreate.
+    // When template is used for edit -> operation: doUpdate.
+    //              
+    // used to set value of: $guiObj->operation
+    //
     $actionOperation = array('createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
                              'create' => 'doCreate', 'doCreate' => 'doCreate',
                              'doDeleteStep' => '', 'edit' => 'doUpdate', 'delete' => 'doDelete', 
@@ -603,7 +611,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
   				$initWebEditorFromTemplate = true;
   			break;
   		}
-  		
+        $guiObj->operation = $actionOperation[$argsObj->doAction];
+	
   		if(	$initWebEditorFromTemplate)
   		{
 			$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');	

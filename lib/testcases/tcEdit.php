@@ -4,11 +4,13 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.133 $
- * @modified $Date: 2010/01/03 17:31:49 $  by $Author: franciscom $
+ * @version $Revision: 1.134 $
+ * @modified $Date: 2010/01/04 07:29:53 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
+ *  20100104 - franciscom - fixed bug on create new version, now is created
+ *                          from selected version and NOT FROM LATEST
  *	20100103 - franciscom - refactoring to use command class
  *	20090831 - franciscom - preconditions
  *	20090401 - franciscom - BUGID 2364 - edit while executing
@@ -32,6 +34,8 @@ require_once(require_web_editor($cfg->webEditorCfg['type']));
 testlinkInitPage($db);
 $optionTransferName = 'ot';
 $args = init_args($cfg->spec,$optionTransferName);
+
+new dBug($args);
 
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
@@ -119,12 +123,15 @@ if($args->delete_tc_version)
 {
 	$status_quo_map = $tcase_mgr->get_versions_status_quo($args->tcase_id);
 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
-
+    
+    $msg = '';
 	$sq = null;
 	if(!is_null($exec_status_quo))
 	{
 		if(isset($exec_status_quo[$args->tcversion_id]))
+		{
 			$sq = array($args->tcversion_id => $exec_status_quo[$args->tcversion_id]);
+		}	
 	}
 
 	if(intval($status_quo_map[$args->tcversion_id]['executed']))
@@ -134,10 +141,6 @@ if($args->delete_tc_version)
 	else if(intval($status_quo_map[$args->tcversion_id]['linked']))
 	{
       	$msg = lang_get('warning') . TITLE_SEP . lang_get('delete_linked');
-	}
-	else
-	{
-		$msg = '';
 	}
 
 	$tcinfo = $tcase_mgr->get_by_id($args->tcase_id,$args->tcversion_id);
@@ -238,7 +241,7 @@ else if($args->do_create_new_version)
 	$show_newTC_form = 0;
 	$action_result = "do_update";
 	$msg = lang_get('error_tc_add');
-	$op = $tcase_mgr->create_new_version($args->tcase_id,$args->user_id);
+	$op = $tcase_mgr->create_new_version($args->tcase_id,$args->user_id,$args->tcversion_id);
 	if ($op['msg'] == "ok")
 	{
 		$user_feedback = sprintf(lang_get('tc_new_version'),$op['version']);

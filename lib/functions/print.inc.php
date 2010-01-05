@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.91 2009/12/15 20:38:39 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.92 2010/01/05 09:04:04 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20100105 - franciscom - added tableColspan config 
  *  20090906 - franciscom - added contribution by Eloff:
  *                          - regarding platforms feature
  *                          - Moved toc to be outside of report content
@@ -426,8 +427,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	}
       
  	$code .= '<p>&nbsp;</p><div> <table class="tc" width="90%">';
- 	$code .= '<tr><th colspan="2">' . $labels['test_case'] . " " . 
+ 	$code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . 
  			htmlspecialchars($external_id) . ": " . $name;
+
     
 	// add test case version
 	if($cfg['doc']->tc_version_enabled && isset($node['version'])) 
@@ -442,7 +444,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
   	{
 		$authorName = gendocGetUserName($db, $tcInfo['author_id']);
 		$code .= '<tr><td width="20%" valign="top"><span class="label">'.$labels['author'].':</span></td>';
-        $code .= '<td>' . $authorName;
+        $code .= '<td colspan="' .  ($cfg['tableColspan']-1) . '">' . $authorName;
+
+
 		if (($tcInfo['updater_id'] > 0) && $tcInfo['updater_id'] != $tcInfo['author_id']) 
 		{
 		    // add updater if available and differs from author
@@ -477,8 +481,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
         	// disable the field if it's empty
         	if ($tcInfo[$key] != '')
         	{
-            	$code .= '<tr><td colspan="2"><span class="label">' . $labels[$key] .
-                     ':</span><br />' .  $tcInfo[$key] . "</td></tr>";
+           		$code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '"><span class="label">' . $labels[$key] .
+            	         ':</span><br />' .  $tcInfo[$key] . "</td></tr>";
+                     
             }         
         }
     }
@@ -497,7 +502,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 		{
 		  	$code .= '<tr><td width="20%" valign="top">' . 
 		  			'<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
-		  			'<td><b>' . $labels["test_status_not_run"] . "</b></td></tr>\n";
+		  			'<td colspan="' . ($cfg['tableColspan']-1) . '"><b>' . $labels["test_status_not_run"] . 
+		  			"</b></td></tr>\n";
+
 		}
 	}
 
@@ -506,10 +513,13 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	if ($printingOptions['requirement'])
 	{
 	    if(!$req_mgr)
+	    {
 	        $req_mgr = new requirement_mgr($db);
-	  	
+	  	}
 	  	$requirements = $req_mgr->get_all_for_tcase($id);
-	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['reqs'].'</span><td>';
+	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['reqs'].'</span>'; 
+	  	$code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
+
 	  	if (sizeof($requirements))
 	  	{
 	  		foreach ($requirements as $req)
@@ -518,8 +528,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  		}
 	  	}
 	  	else
+	  	{
 	  		$code .= '&nbsp;' . $labels['none'] . '<br />';
-	  	
+	  	}
 	  	$code .= "</td></tr>\n";
 	}
 	  
@@ -527,8 +538,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	// based on contribution by JMU (#1045)
 	if ($printingOptions['keyword'])
 	{
-	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['keywords'].':</span><td>';
-    
+	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['keywords'].':</span>';
+      	$code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 	  	$arrKeywords = $tc_mgr->getKeywords($id);
 	  	if (sizeof($arrKeywords))
 	  	{
@@ -538,7 +549,9 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	  		}
 	  	}
 	  	else
+	  	{
 	  		$code .= '&nbsp;' . $labels['none'] . '<br>';
+	  	}
 	  	$code .= "</td></tr>\n";
 	  }
 
@@ -745,6 +758,7 @@ function buildTestPlanMetrics($statistics)
 function initRenderTestCaseCfg(&$tcaseMgr)
 {
 	$config = null;
+	$config['tableColspan'] = 3;
 	$config['doc'] = config_get('document_generator');
 	$config['gui'] = config_get('gui');
 	$config['testcase'] = config_get('testcase_cfg');
@@ -810,8 +824,9 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
 			{
 				$bugString .= $bugInfo['link_to_bts']."<br />";
 			}
-			$out .= '<tr><td colspan=2 width="20%" valign="top">' . $labels['bugs'] . '</td>' . 
-					'<td>' . $bugString ."</td></tr>\n"; 
+			$out .= '<tr><td colspan="' .  $cfg['tableColspan'] . '" width="20%" valign="top">' . 
+			        $labels['bugs'] . '</td><td>' . $bugString ."</td></tr>\n"; 
+					
 		}
 	}
 	

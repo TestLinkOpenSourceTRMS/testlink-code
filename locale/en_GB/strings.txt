@@ -16,13 +16,14 @@
  * and text at the end.
  *
  * Warning: be careful about format - the file is parsed by script
+ * 		comment only with "//" except header
  * Warning: if JS string you must use \\n to get \n for end of line
  * Note: API interface is not localized (except error messages)
  * 
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.531 2010/01/04 14:27:03 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.532 2010/01/05 13:15:31 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -34,7 +35,7 @@
  * 20070206 - franciscom - BUGID 618 - \n on JS messages
  **/
 
-/** Define character set of this file (UTF-8 is common value) */
+// Define character set of this file (UTF-8 is common value) 
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 
@@ -320,6 +321,7 @@ $TLS_infrastructure_name = "Machine name";
 $TLS_infrastructure_ipaddress = "IP Address";
 $TLS_infrastructure_notes = "Notes";
 $TLS_infrastructure_delete = "Delete";
+$TLS_infrastructure_edit = "Edit";
 //$TLS_ = "";
 
 

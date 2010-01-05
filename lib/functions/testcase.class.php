@@ -6,12 +6,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.223 2010/01/05 14:48:35 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.224 2010/01/05 15:36:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100105 - franciscom - fixed missing copy of preconditions on copy_tcversion()
+ *                         exportTestCaseDataToXML() - added execution_type, importance
+ *
  * 20100104 - franciscom - create_new_version() - interface changes
  *                         new method get_basic_info()
  *                         fixed bug in show()  regarding $gui->can_do->add2tplan
@@ -2690,18 +2692,19 @@ class testcase extends tlObjectWithAttachments
 	
 	  returns:
 	
-	  rev: 20090204 - franciscom - added export of node_order
+	  rev: 20100105 - franciscom - added execution_type, importance
+	  	   20090204 - franciscom - added export of node_order
 	       20080206 - franciscom - added externalid
 	
 	*/
 	function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
 	                                 $bNoXMLHeader = false,$optExport = array())
 	{
-	  static $reqMgr=null; 
-	  if( is_null($reqMgr) )
-	  {
-	      $reqMgr = new requirement_mgr($this->db);      
-	  }
+	  	static $reqMgr=null; 
+	  	if( is_null($reqMgr) )
+	  	{
+	  	    $reqMgr = new requirement_mgr($this->db);      
+	  	}
 	
 		$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
 		if (!$tproject_id)
@@ -2733,20 +2736,20 @@ class testcase extends tlObjectWithAttachments
 		}
 		
 		// BUGID - requirements
-	  $requirements = $reqMgr->get_all_for_tcase($tcase_id);
-	  if( !is_null($requirements) && count($requirements) > 0 )
-	  {
-	  	$reqRootElem = "\t<requirements>\n{{XMLCODE}}\t</requirements>\n";
-		$reqElemTemplate = "\t\t<requirement>\n" .
-		                       "\t\t\t<req_spec_title><![CDATA[||REQ_SPEC_TITLE||]]></req_spec_title>\n" .
-		                       "\t\t\t<doc_id><![CDATA[||REQ_DOC_ID||]]></doc_id>\n" .
-		    	                 "\t\t\t<title><![CDATA[||REQ_TITLE||]]></title>\n" .
-		    	                 "\t\t</requirement>\n";
-		    	                 
-		    $reqDecode = array ("||REQ_SPEC_TITLE||" => "req_spec_title",
-		                        "||REQ_DOC_ID||" => "req_doc_id","||REQ_TITLE||" => "title");
-		    $tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
-	  }
+	  	$requirements = $reqMgr->get_all_for_tcase($tcase_id);
+	  	if( !is_null($requirements) && count($requirements) > 0 )
+	  	{
+	  		$reqRootElem = "\t<requirements>\n{{XMLCODE}}\t</requirements>\n";
+			$reqElemTemplate = "\t\t<requirement>\n" .
+			                       "\t\t\t<req_spec_title><![CDATA[||REQ_SPEC_TITLE||]]></req_spec_title>\n" .
+			                       "\t\t\t<doc_id><![CDATA[||REQ_DOC_ID||]]></doc_id>\n" .
+			    	                 "\t\t\t<title><![CDATA[||REQ_TITLE||]]></title>\n" .
+			    	                 "\t\t</requirement>\n";
+			    	                 
+			$reqDecode = array ("||REQ_SPEC_TITLE||" => "req_spec_title",
+			                        "||REQ_DOC_ID||" => "req_doc_id","||REQ_TITLE||" => "title");
+			$tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
+	  	}
 		
 		$rootElem = "{{XMLCODE}}";
 		if (isset($optExport['ROOTELEM']))
@@ -2758,23 +2761,32 @@ class testcase extends tlObjectWithAttachments
 				   "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
 		           "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
 		           "\t<preconditions><![CDATA[||PRECONDITIONS||]]></preconditions>\n" .
+		           "\t<executiontype><![CDATA[||EXECUTIONTYPE||]]></executiontype>\n" .
+		           "\t<importance><![CDATA[||IMPORTANCE||]]></importance>\n" .
 		           "\t<steps><![CDATA[||STEPS||]]></steps>\n" .
 		           "\t<expectedresults><![CDATA[||RESULTS||]]></expectedresults>\n" .
 		           "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
 	
 	    // ||yyy||-> tags,  {{xxx}} -> attribute 
+	    // tags and attributes receive different treatment on exportDataToXML()
+	    //
+	    // each UPPER CASE word in this map KEY, MUST HAVE AN OCCURENCE on $elemTpl
+	    // value is a key inside $tc_data[0]
+	    //
 		$info = array("{{TESTCASE_ID}}" => "testcase_id",
 					  "{{NAME}}" => "name",
 					  "||NODE_ORDER||" => "node_order",
 					  "||EXTERNALID||" => "tc_external_id",
 					  "||SUMMARY||" => "summary",
 					  "||PRECONDITIONS||" => "preconditions",
+					  "||EXECUTIONTYPE||" => "execution_type",
+					  "||IMPORTANCE||" => "importance",
 					  "||STEPS||" => "steps",
 					  "||RESULTS||" => "expected_results",
 				      "||KEYWORDS||" => "xmlkeywords",
 					  "||CUSTOMFIELDS||" => "xmlcustomfields",
-					  "||REQUIREMENTS||" => "xmlrequirements"
-							);
+					  "||REQUIREMENTS||" => "xmlrequirements");
+					  
 		$xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info,$bNoXMLHeader);
 		return $xmlTC;
 	}

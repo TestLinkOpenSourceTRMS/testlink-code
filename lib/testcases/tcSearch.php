@@ -1,7 +1,7 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: tcSearch.php,v 1.2 2009/10/05 08:47:11 franciscom Exp $
- * Purpose:  This page presents the search results. 
+ * $Id: tcSearch.php,v 1.3 2010/01/05 16:37:06 franciscom Exp $
+ * Purpose:  Presents the search results. 
  *
  * rev:
  *     20090228 - franciscom - if targetTestCase == test case prefix => 
@@ -20,27 +20,13 @@ $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
-$gui = new stdClass();
-$gui->pageTitle = lang_get('caption_search_form');
-$gui->warning_msg = '';
-$gui->tcasePrefix = '';
-$gui->path_info = null;
-$gui->resultSet = null;
-$gui->bodyOnLoad = null;
-$gui->bodyOnUnload = null;
-$gui->refresh_tree = false;
-$gui->hilite_testcase_name = false;
-$gui->show_match_count = false;
-$gui->tc_current_version = null;
-$gui->row_qty = 0;
+$gui = initializeGui();
 $map = null;
 $args = init_args();
 if ($args->tprojectID)
 {
-	$tables = tlObjectWithDB::getDBTables(
-							array("cfield_design_values",'nodes_hierarchy',
-								'requirements','req_coverage','testcase_keywords','tcversions'
-							));
+	$tables = tlObjectWithDB::getDBTables(array("cfield_design_values",'nodes_hierarchy',
+								          'requirements','req_coverage','testcase_keywords','tcversions'));
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
     $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
@@ -50,8 +36,10 @@ if ($args->tprojectID)
     if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
     {
      	if (strpos($args->targetTestCase,$tcase_cfg->glue_character) === false)
+     	{
     		$args->targetTestCase = $gui->tcasePrefix . $args->targetTestCase;
-   	 
+   	    }
+   	    
         $tcase_mgr = new testcase ($db);
         $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$tcase_cfg->glue_character); 
         $filter['by_tc_id'] = " AND NHB.parent_id = {$tcaseID} ";
@@ -116,26 +104,35 @@ if ($args->tprojectID)
                                         " AND REQ.id=RC.req_id "; 
     }   
     
-    $sql = " SELECT NHA.id AS testcase_id,NHA.name,TCV.id AS tcversion_id," .
-           " summary,steps,expected_results,version,tc_external_id";
+    $sqlFields = " SELECT NHA.id AS testcase_id,NHA.name,TCV.id AS tcversion_id," .
+                 " summary,steps,expected_results,version,tc_external_id";
     
     $sqlCount  = "SELECT COUNT(NHA.id) ";
     
     $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NHA, " .
-           " {$tables['nodes_hierarchy']} NHB, {$tables['tcversions']} TCV " .
-           " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']}".
-           " WHERE NHA.id = NHB.parent_id AND NHB.id = TCV.id ";
+                " {$tables['nodes_hierarchy']} NHB, {$tables['tcversions']} TCV " .
+                " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']}".
+                " WHERE NHA.id = NHB.parent_id AND NHB.id = TCV.id ";
            
     if ($filter)
+    {
         $sqlPart2 .= implode("",$filter);
+    }
     
-    $gui->row_qty = $db->fetchOneValue($sqlCount.$sqlPart2); 
+    // Count results
+    $sql = $sqlCount . $sqlPart2;
+    $gui->row_qty = $db->fetchOneValue($sql); 
     if ($gui->row_qty)
     {
     	if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
-    		$map = $db->fetchRowsIntoMap($sql.$sqlPart2,'testcase_id');	
+    	{
+            $sql = $sqlFields . $sqlPart2;
+    		$map = $db->fetchRowsIntoMap($sql,'testcase_id');	
+		}
 		else
+		{
 			$gui->warning_msg = lang_get('too_wide_search_criteria');
+		}	
 	}
 }
 
@@ -155,9 +152,7 @@ if($gui->row_qty)
 else
 {
 	$the_tpl = config_get('tpl');
-	// $tpl = $the_tpl['tcView'];
     $tpl = isset($the_tpl['tcSearchView']) ? $the_tpl['tcSearchView'] : 'tcView.tpl'; 
-
 }
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
@@ -186,4 +181,29 @@ function init_args()
 
     return $args;
 }
+
+
+/**
+ * 
+ *
+ */
+function initializeGui()
+{
+	$gui = new stdClass();
+
+	$gui->pageTitle = lang_get('caption_search_form');
+	$gui->warning_msg = '';
+	$gui->tcasePrefix = '';
+	$gui->path_info = null;
+	$gui->resultSet = null;
+	$gui->bodyOnLoad = null;
+	$gui->bodyOnUnload = null;
+	$gui->refresh_tree = false;
+	$gui->hilite_testcase_name = false;
+	$gui->show_match_count = false;
+	$gui->tc_current_version = null;
+	$gui->row_qty = 0;
+    return $gui;
+}
+
 ?>

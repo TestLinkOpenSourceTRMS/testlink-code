@@ -8,14 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.92 2010/01/05 09:04:04 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.93 2010/01/05 09:56:42 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
- *  20100105 - franciscom - added tableColspan config 
+ *  20100105 - franciscom - added tableColspan,firstColWidth config 
  *  20090906 - franciscom - added contribution by Eloff:
  *                          - regarding platforms feature
  *                          - Moved toc to be outside of report content
@@ -443,7 +443,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
   	if ($printingOptions['author'])
   	{
 		$authorName = gendocGetUserName($db, $tcInfo['author_id']);
-		$code .= '<tr><td width="20%" valign="top"><span class="label">'.$labels['author'].':</span></td>';
+		$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+		         '<span class="label">'.$labels['author'].':</span></td>';
         $code .= '<td colspan="' .  ($cfg['tableColspan']-1) . '">' . $authorName;
 
 
@@ -500,7 +501,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 		}
 		else
 		{
-		  	$code .= '<tr><td width="20%" valign="top">' . 
+		  	$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
 		  			'<span class="label">' . $labels['last_exec_result'] . '</span></td>' . 
 		  			'<td colspan="' . ($cfg['tableColspan']-1) . '"><b>' . $labels["test_status_not_run"] . 
 		  			"</b></td></tr>\n";
@@ -517,7 +518,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	        $req_mgr = new requirement_mgr($db);
 	  	}
 	  	$requirements = $req_mgr->get_all_for_tcase($id);
-	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['reqs'].'</span>'; 
+	  	$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
+	  	         $labels['reqs'].'</span>'; 
 	  	$code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 
 	  	if (sizeof($requirements))
@@ -538,7 +540,8 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	// based on contribution by JMU (#1045)
 	if ($printingOptions['keyword'])
 	{
-	  	$code .= '<tr><td width="20%" valign="top"><span class="label">'. $labels['keywords'].':</span>';
+	  	$code .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top"><span class="label">'. 
+	  	         $labels['keywords'].':</span>';
       	$code .= '<td colspan="' . ($cfg['tableColspan']-1) . '">';
 	  	$arrKeywords = $tc_mgr->getKeywords($id);
 	  	if (sizeof($arrKeywords))
@@ -758,6 +761,7 @@ function buildTestPlanMetrics($statistics)
 function initRenderTestCaseCfg(&$tcaseMgr)
 {
 	$config = null;
+	$config['firstColWidth'] = '20%';
 	$config['tableColspan'] = 3;
 	$config['doc'] = config_get('document_generator');
 	$config['gui'] = config_get('gui');
@@ -801,14 +805,14 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
 	$out .= '<tr><td width="20%" valign="top">' .
 			'<span class="label">' . $labels['last_exec_result'] . ':</span></td>' .
 			'<td><b>' . $testStatus . "</b></td></tr>\n" .
-    		'<tr><td width="20%" valign="top">' . $labels['build'] .'</td>' . 
+    		'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
     		'<td>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n" .
-    		'<tr><td width="20%" valign="top">' . $labels['tester'] .'</td>' . 
+    		'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
     		'<td>' . $testerName . "</b></td></tr>\n";
 
     if ($executionNotes != '') // show exection notes is not empty
     {
-		$out .= '<tr><td width="20%" valign="top">'.$labels['testnotes'] . '</td>' .
+		$out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">'.$labels['testnotes'] . '</td>' .
 			    '<td>' . $executionNotes  . "</td></tr>\n"; 
     }
 
@@ -824,7 +828,8 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
 			{
 				$bugString .= $bugInfo['link_to_bts']."<br />";
 			}
-			$out .= '<tr><td colspan="' .  $cfg['tableColspan'] . '" width="20%" valign="top">' . 
+			$out .= '<tr><td colspan="' .  $cfg['tableColspan'] . 
+			        '" width="' . $cfg['firstColWidth'] . '" valign="top">' . 
 			        $labels['bugs'] . '</td><td>' . $bugString ."</td></tr>\n"; 
 					
 		}

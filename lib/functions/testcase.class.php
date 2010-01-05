@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.222 2010/01/04 17:37:14 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.223 2010/01/05 14:48:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100105 - franciscom - fixed missing copy of preconditions on copy_tcversion()
  * 20100104 - franciscom - create_new_version() - interface changes
  *                         new method get_basic_info()
  *                         fixed bug in show()  regarding $gui->can_do->add2tplan
@@ -1422,11 +1423,11 @@ class testcase extends tlObjectWithAttachments
 	{
 	    $now = $this->db->db_now();
 	    $sql="INSERT INTO {$this->tables['tcversions']} (id,version,tc_external_id,author_id,creation_ts," .
-	         "                        summary,steps,expected_results,importance,execution_type) " .
+	         "                        summary,preconditions,steps,expected_results,importance,execution_type) " .
 	         " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
 	         "        tc_external_id, " .
 	         "        {$user_id} AS author_id, {$now} AS creation_ts," .
-	         "        summary,steps,expected_results,importance,execution_type " .
+	         "        summary,preconditions,steps,expected_results,importance,execution_type " .
 	         " FROM {$this->tables['tcversions']} " .
 	         " WHERE id={$from_tcversion_id} ";
 	

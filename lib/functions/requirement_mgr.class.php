@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2010/01/06 18:28:13 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -570,9 +570,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
  	
   	$auto_testsuite_name = $req_cfg->default_testsuite_name;
     $node_descr_type=$this->tree_mgr->get_available_node_types();
-    $empty_steps='';
-    $empty_results='';
-    $empty_preconditions=''; // fix for BUGID 2995
+    $empty_steps = null;
+    $empty_preconditions = ''; // fix for BUGID 2995
     
     $labels['tc_created'] = lang_get('tc_created');
 
@@ -728,9 +727,10 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
             }        
             $nameSet[$tcase_name]=$tcase_name;
             
+            // 20100106 - franciscom - multiple test case steps feature - removed expected_results
 	        // Julian - BUGID 2995
 	  	    $tcase = $tcase_mgr->create($tsuite_id,$tcase_name,$req_cfg->testcase_summary_prefix . $reqData['scope'] ,
-						                $empty_preconditions, $empty_steps,$empty_results,$user_id,null,
+						                $empty_preconditions, $empty_steps,$user_id,null,
 						                $testcase_order,testcase::AUTOMATIC_ID,TESTCASE_EXECUTION_TYPE_MANUAL,
 						                $testcase_importance_default,$createOptions);
 	        

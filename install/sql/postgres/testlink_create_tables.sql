@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.47 2009/12/28 08:45:26 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.48 2010/01/06 15:47:07 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -14,6 +14,8 @@
 -- 
 --  Rev :
 -- 
+--  20100106 - franciscom - Test Case Step feature
+--
 --  20091228 - franciscom - requirements table changes and new table req_versions
 --                          to implement requirements versioning.
 -- 
@@ -154,6 +156,28 @@ CREATE TABLE /*prefix*/users(
 );
 
 
+-- --
+-- -- Table structure for table "tcversions"
+-- --
+-- CREATE TABLE /*prefix*/tcversions(  
+--   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+--   "tc_external_id" INT NULL,
+--   "version" INTEGER NOT NULL DEFAULT '1',
+--   "summary" TEXT NULL DEFAULT NULL,
+--   "preconditions" TEXT NULL DEFAULT NULL,
+--   "steps" TEXT NULL DEFAULT NULL,
+--   "expected_results" TEXT NULL DEFAULT NULL,
+--   "importance" INT2 NOT NULL DEFAULT '2',
+--   "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+--   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+--   "updater_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+--   "modification_ts" TIMESTAMP NULL,
+--   "active" INT2 NOT NULL DEFAULT '1',
+--   "is_open" INT2 NOT NULL DEFAULT '1',
+--   "execution_type" INT2 NOT NULL DEFAULT '1',
+--   PRIMARY KEY ("id")
+-- ); 
+
 --
 -- Table structure for table "tcversions"
 --
@@ -163,8 +187,8 @@ CREATE TABLE /*prefix*/tcversions(
   "version" INTEGER NOT NULL DEFAULT '1',
   "summary" TEXT NULL DEFAULT NULL,
   "preconditions" TEXT NULL DEFAULT NULL,
-  "steps" TEXT NULL DEFAULT NULL,
-  "expected_results" TEXT NULL DEFAULT NULL,
+--  "steps" TEXT NULL DEFAULT NULL,
+--  "expected_results" TEXT NULL DEFAULT NULL,
   "importance" INT2 NOT NULL DEFAULT '2',
   "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
@@ -175,6 +199,23 @@ CREATE TABLE /*prefix*/tcversions(
   "execution_type" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
+
+
+--
+-- Table structure for table "tcsteps"
+--
+CREATE TABLE /*prefix*/"tcsteps" (  
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
+  "step_number" INT NOT NULL DEFAULT '1',
+  "actions" TEXT NULL DEFAULT NULL,
+  "expected_results" TEXT NULL DEFAULT NULL,
+  "active" INT2 NOT NULL DEFAULT '1',
+  "execution_type" INT2 NOT NULL DEFAULT '1',
+  PRIMARY KEY ("id")
+); 
+
+
+
 
 
 --

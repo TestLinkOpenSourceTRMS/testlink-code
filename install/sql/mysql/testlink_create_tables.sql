@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.67 2009/12/28 09:28:08 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.68 2010/01/06 15:49:35 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
 # 			tables are in alphabetic order  
@@ -9,6 +9,8 @@
 #
 # Revisions:
 #
+# 20100106 - franciscom - Test Case Step feature
+# 
 # 20091228 - franciscom - changes to requirements table and new table req_versions
 #                         to implement requirement versioning
 #                         req_doc_id and doc_id => changed to NOT NULL
@@ -443,8 +445,8 @@ CREATE TABLE /*prefix*/tcversions (
   `status` smallint(5) unsigned NOT NULL default '1',
   `summary` text,
   `preconditions` text,
-  `steps` text,
-  `expected_results` text,
+/*  `steps` text, */
+/*  `expected_results` text, */
   `importance` smallint(5) unsigned NOT NULL default '2',
   `author_id` int(10) unsigned default NULL,
   `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -454,6 +456,17 @@ CREATE TABLE /*prefix*/tcversions (
   `is_open` tinyint(1) NOT NULL default '1',
   `execution_type` tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
   PRIMARY KEY  (`id`)
+) DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE /*prefix*/tcsteps (  
+  id int(10) unsigned NOT NULL,
+  step_number INT NOT NULL DEFAULT '1',
+  actions TEXT,
+  expected_results TEXT,
+  active tinyint(1) NOT NULL default '1',
+  execution_type tinyint(1) NOT NULL default '1' COMMENT '1 -> manual, 2 -> automated',
+  PRIMARY KEY (id)
 ) DEFAULT CHARSET=utf8;
 
 

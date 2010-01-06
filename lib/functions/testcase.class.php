@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.231 2010/01/06 18:04:06 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.232 2010/01/06 18:16:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -14,7 +14,7 @@
  * 20100106 - franciscom - Multiple Test Case Steps Feature
  *                         Affected methods: get_by_id(), create(), update()
  *                         get_last_version_info(), get_linked_versions(), copy_to()
- *                         copy_tcversion()
+ *                         copy_tcversion(),exportTestCaseDataToXML()
  *
  * 20100105 - franciscom - fixed missing copy of preconditions on copy_tcversion()
  *                         exportTestCaseDataToXML() - added execution_type, importance
@@ -1506,8 +1506,6 @@ class testcase extends tlObjectWithAttachments
         	$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
         	                         $step['expected_results'],$step['execution_type']);			
 	    }
-
-	    $result = $this->db->exec_query($sql);
 	}
 	
 	
@@ -2744,7 +2742,8 @@ class testcase extends tlObjectWithAttachments
 	        " NHB.name,NHA.parent_id AS testcase_id, NHB.parent_id AS tsuite_id," .
 	        " tcversions.id,tcversions.tc_external_id,tcversions.version,tcversions.summary," .
 	        " tcversions.preconditions," .
-	        " tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id," .
+	        // " tcversions.steps,tcversions.expected_results,tcversions.importance,tcversions.author_id," .
+	        " tcversions.importance,tcversions.author_id," .
 	        " tcversions.creation_ts,tcversions.updater_id,tcversions.modification_ts,tcversions.active," .
 	        " tcversions.is_open,tcversions.execution_type," .
 	        " users.login AS tester_login,users.first AS tester_first_name," .
@@ -2765,6 +2764,17 @@ class testcase extends tlObjectWithAttachments
       
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
 	  
+	  	// Multiple Test Case Steps Feature
+	  	if( !is_null($recordset) )
+	  	{
+	  	   	$itemSet = array_keys($recordset);
+	  		foreach( $itemSet as $sdx)
+	  		{
+	  			$step_set = $this->get_steps($recordset[$sdx]['id']);
+	  			$recordset[$sdx]['steps'] = $step_set;
+	  		} 
+
+	  	}
 	  	return($recordset ? $recordset : null);
 	}
 	
@@ -2784,7 +2794,7 @@ class testcase extends tlObjectWithAttachments
 	function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
 	                                 $bNoXMLHeader = false,$optExport = array())
 	{
-	  	static $reqMgr=null; 
+		static $reqMgr=null; 
 	  	if( is_null($reqMgr) )
 	  	{
 	  	    $reqMgr = new requirement_mgr($this->db);      
@@ -2795,15 +2805,22 @@ class testcase extends tlObjectWithAttachments
 		{
 			$tproject_id = $this->getTestProjectFromTestCase($tcase_id);
 		}
-	
+	    
 		$cfMap = $this->get_linked_cfields_at_design($tcase_id,null,null,$tproject_id);
+
+	    // ||yyy||-> tags,  {{xxx}} -> attribute 
+	    // tags and attributes receive different treatment on exportDataToXML()
+	    //
+	    // each UPPER CASE word in this map KEY, MUST HAVE AN OCCURENCE on $elemTpl
+	    // value is a key inside $tc_data[0]
+	    //
 		
 		if( !is_null($cfMap) && count($cfMap) > 0 )
 		{
-	      	$cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+			$cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
 		    $cfElemTemplate = "\t" . "<custom_field>\n" .
 		                             "\t<name><![CDATA[||NAME||]]></name>\n" .
-		    	                       "\t<value><![CDATA[||VALUE||\n]]></value>\n</custom_field>\n";
+		                             "\t<value><![CDATA[||VALUE||\n]]></value>\n</custom_field>\n";
 		    $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
 		    $tc_data[0]['xmlcustomfields'] = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
 		} 
@@ -2818,22 +2835,40 @@ class testcase extends tlObjectWithAttachments
 				$tc_data[0]['xmlkeywords'] = $xmlKW;
 			}
 		}
-		
-		// BUGID - requirements
+		  
+		// Requirements
 	  	$requirements = $reqMgr->get_all_for_tcase($tcase_id);
 	  	if( !is_null($requirements) && count($requirements) > 0 )
 	  	{
-	  		$reqRootElem = "\t<requirements>\n{{XMLCODE}}\t</requirements>\n";
+			$reqRootElem = "\t<requirements>\n{{XMLCODE}}\t</requirements>\n";
 			$reqElemTemplate = "\t\t<requirement>\n" .
-			                       "\t\t\t<req_spec_title><![CDATA[||REQ_SPEC_TITLE||]]></req_spec_title>\n" .
-			                       "\t\t\t<doc_id><![CDATA[||REQ_DOC_ID||]]></doc_id>\n" .
-			    	                 "\t\t\t<title><![CDATA[||REQ_TITLE||]]></title>\n" .
-			    	                 "\t\t</requirement>\n";
-			    	                 
+			                   "\t\t\t<req_spec_title><![CDATA[||REQ_SPEC_TITLE||]]></req_spec_title>\n" .
+			                   "\t\t\t<doc_id><![CDATA[||REQ_DOC_ID||]]></doc_id>\n" .
+			                   "\t\t\t<title><![CDATA[||REQ_TITLE||]]></title>\n" .
+			                   "\t\t</requirement>\n";
+			      	                 
 			$reqDecode = array ("||REQ_SPEC_TITLE||" => "req_spec_title",
-			                        "||REQ_DOC_ID||" => "req_doc_id","||REQ_TITLE||" => "title");
+			                    "||REQ_DOC_ID||" => "req_doc_id","||REQ_TITLE||" => "title");
 			$tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
 	  	}
+		
+		// ------------------------------------------------------------------------------------
+        // Multiple Test Case Steps Feature
+       	$stepRootElem = "<steps>{{XMLCODE}}</steps>";
+        $stepTemplate = "\n" . '<step>' . "\n" .
+				   		"\t<step_number><![CDATA[||STEP_NUMBER||]]></step_number>\n" .
+				   		"\t<actions><![CDATA[||ACTIONS||]]></actions>\n" .
+		           		"\t<expectedresults><![CDATA[||EXPECTEDRESULTS||]]></expectedresults>\n" .
+		           		"</step>\n";
+        $stepInfo = array("||STEP_NUMBER||" => "step_number",
+						  "||ACTIONS||" => "actions",
+						  "||EXPECTEDRESULTS||" => "expected_results" );
+
+        $stepSet = $tc_data[0]['steps'];
+		$xmlsteps = exportDataToXML($stepSet,$stepRootElem,$stepTemplate,$stepInfo,true);
+        $tc_data[0]['xmlsteps'] = $xmlsteps;
+        // ------------------------------------------------------------------------------------
+		
 		
 		$rootElem = "{{XMLCODE}}";
 		if (isset($optExport['ROOTELEM']))
@@ -2841,15 +2876,15 @@ class testcase extends tlObjectWithAttachments
 			$rootElem = $optExport['ROOTELEM'];
 		}
 		$elemTpl = "\n".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">' . "\n" .
-				   "\t<node_order><![CDATA[||NODE_ORDER||]]></node_order>\n" .
-				   "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
-		           "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
-		           "\t<preconditions><![CDATA[||PRECONDITIONS||]]></preconditions>\n" .
-		           "\t<executiontype><![CDATA[||EXECUTIONTYPE||]]></executiontype>\n" .
-		           "\t<importance><![CDATA[||IMPORTANCE||]]></importance>\n" .
-		           "\t<steps><![CDATA[||STEPS||]]></steps>\n" .
-		           "\t<expectedresults><![CDATA[||RESULTS||]]></expectedresults>\n" .
-		           "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
+				       "\t<node_order><![CDATA[||NODE_ORDER||]]></node_order>\n" .
+				       "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
+		               "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
+		               "\t<preconditions><![CDATA[||PRECONDITIONS||]]></preconditions>\n" .
+		               "\t<executiontype><![CDATA[||EXECUTIONTYPE||]]></executiontype>\n" .
+		               "\t<importance><![CDATA[||IMPORTANCE||]]></importance>\n" .
+		               "||STEPS||\n" .
+		               "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";
+	
 	
 	    // ||yyy||-> tags,  {{xxx}} -> attribute 
 	    // tags and attributes receive different treatment on exportDataToXML()
@@ -2857,22 +2892,21 @@ class testcase extends tlObjectWithAttachments
 	    // each UPPER CASE word in this map KEY, MUST HAVE AN OCCURENCE on $elemTpl
 	    // value is a key inside $tc_data[0]
 	    //
-		$info = array("{{TESTCASE_ID}}" => "testcase_id",
-					  "{{NAME}}" => "name",
-					  "||NODE_ORDER||" => "node_order",
-					  "||EXTERNALID||" => "tc_external_id",
-					  "||SUMMARY||" => "summary",
-					  "||PRECONDITIONS||" => "preconditions",
-					  "||EXECUTIONTYPE||" => "execution_type",
-					  "||IMPORTANCE||" => "importance",
-					  "||STEPS||" => "steps",
-					  "||RESULTS||" => "expected_results",
-				      "||KEYWORDS||" => "xmlkeywords",
-					  "||CUSTOMFIELDS||" => "xmlcustomfields",
-					  "||REQUIREMENTS||" => "xmlrequirements");
-					  
-		$xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info,$bNoXMLHeader);
-		return $xmlTC;
+		  $info = array("{{TESTCASE_ID}}" => "testcase_id",
+		  			  "{{NAME}}" => "name",
+		  			  "||NODE_ORDER||" => "node_order",
+		  			  "||EXTERNALID||" => "tc_external_id",
+		  			  "||SUMMARY||" => "summary",
+		  			  "||PRECONDITIONS||" => "preconditions",
+		  			  "||EXECUTIONTYPE||" => "execution_type",
+		  			  "||IMPORTANCE||" => "importance",
+		  			  "||STEPS||" => "xmlsteps",
+		  	          "||KEYWORDS||" => "xmlkeywords",
+		  			  "||CUSTOMFIELDS||" => "xmlcustomfields",
+		  			  "||REQUIREMENTS||" => "xmlrequirements");
+			
+		  $xmlTC = exportDataToXML($tc_data,$rootElem,$elemTpl,$info,$bNoXMLHeader);
+		  return $xmlTC;
 	}
 	
 	

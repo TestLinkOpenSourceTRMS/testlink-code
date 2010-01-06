@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.225 2010/01/06 17:04:16 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.226 2010/01/06 17:18:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -832,8 +832,7 @@ class testcase extends tlObjectWithAttachments
 	//
 	// 20060424 - franciscom - interface changes added $keywords_id
 	function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
-	                $expected_results,$user_id,$keywords_id='',
-	                $tc_order=self::DEFAULT_ORDER,
+	                $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
 	                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 	{
 		$ret['status_ok'] = 1;
@@ -843,13 +842,13 @@ class testcase extends tlObjectWithAttachments
 		tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
 	
 		// Check if new name will be create a duplicate testcase under same parent
-	  $checkDuplicates = config_get('check_names_for_duplicates');
-	  if ($checkDuplicates)
-	  {  	
-		    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
-            $ret['status_ok'] = !$check['status']; 
-            $ret['msg'] = $check['msg']; 
-      }    
+	  	$checkDuplicates = config_get('check_names_for_duplicates');
+	  	if ($checkDuplicates)
+	  	{  	
+			    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
+      	      $ret['status_ok'] = !$check['status']; 
+      	      $ret['msg'] = $check['msg']; 
+      	}    
 	
 	  if($ret['status_ok'])
 	  {    
@@ -860,8 +859,6 @@ class testcase extends tlObjectWithAttachments
 		    // test case version
 		    $sql[] = " UPDATE {$this->tables['tcversions']} tcversions " .
 		             " SET summary='" . $this->db->prepare_string($summary) . "'," .
-		    		 " steps='" . $this->db->prepare_string($steps) . "'," .
-		    		 " expected_results='" . $this->db->prepare_string($expected_results) . "'," .
 		    		 " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
 		    		 " execution_type={$execution_type}, importance={$importance} " . "," .
 		    		 " preconditions='" . $this->db->prepare_string($preconditions) . "' " .

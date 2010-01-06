@@ -1,9 +1,10 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.33 2009/12/28 16:13:45 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.34 2010/01/06 15:13:39 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
 #
+# 20100106 - franciscom - added testcase_step node type
 # 20090426 - franciscom - new right testproject_user_role_assignment
 # 20090126 - havlatm - role definition update
 # 20081029 - franciscom - add events_mgt right
@@ -18,14 +19,15 @@
 INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.3', 'TestLink 1.9',CURRENT_TIMESTAMP());
 
 # Node types -
-INSERT INTO /*prefix*/node_types  (id,description) VALUES (1, 'testproject');
-INSERT INTO /*prefix*/node_types  (id,description) VALUES (2, 'testsuite');
-INSERT INTO /*prefix*/node_types  (id,description) VALUES (3, 'testcase');
-INSERT INTO /*prefix*/node_types  (id,description) VALUES (4, 'testcase_version');
-INSERT INTO /*prefix*/node_types  (id,description) VALUES (5, 'testplan');
-INSERT INTO /*prefix*/node_types  (id,description) VALUES (6, 'requirement_spec');
-INSERT INTO /*prefix*/node_types  (id,description) VALUES (7, 'requirement');
-INSERT INTO /*prefix*/node_types  (id,description) VALUES (8, 'requirement_version');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (2,'testsuite');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (3,'testcase');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (4,'testcase_version');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (5,'testplan');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (6,'requirement_spec');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (7,'requirement');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (8,'requirement_version');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (9,'testcase_step');
 
 
 # Roles -

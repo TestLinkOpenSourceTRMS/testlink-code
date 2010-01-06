@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.20 2009/12/25 19:26:45 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.21 2010/01/06 15:13:38 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
@@ -20,14 +20,15 @@ INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.2','fi
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON
-INSERT INTO /*prefix*/node_types (id,description) VALUES (1, 'testproject');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (2, 'testsuite');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (3, 'testcase');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (4, 'testcase_version');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (5, 'testplan');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (6, 'requirement_spec');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (7, 'requirement');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (8, 'requirement_version');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (1,'testproject');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (2,'testsuite');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (3,'testcase');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (4,'testcase_version');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (5,'testplan');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (6,'requirement_spec');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (7,'requirement');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
 SET IDENTITY_INSERT /*prefix*/node_types OFF
 
 --  Roles -

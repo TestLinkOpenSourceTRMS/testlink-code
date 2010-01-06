@@ -1,9 +1,10 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.26 2009/12/28 16:13:45 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.27 2010/01/06 15:13:39 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
 --
+--  20100106 - franciscom - added testcase_step node type
 --  20091228 - franciscom - added new rights for project infrastructure
 --  20091010 - franciscom - platform feature
 --  20090126 - havlatm - role definition update
@@ -26,14 +27,15 @@ INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.
 
 
 --  Node types -
-INSERT INTO /*prefix*/node_types (id,description) VALUES (1, 'testproject');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (2, 'testsuite');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (3, 'testcase');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (4, 'testcase_version');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (5, 'testplan');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (6, 'requirement_spec');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (7, 'requirement');
-INSERT INTO /*prefix*/node_types (id,description) VALUES (8, 'requirement_version');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (1,'testproject');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (2,'testsuite');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (3,'testcase');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (4,'testcase_version');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (5,'testplan');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (6,'requirement_spec');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (7,'requirement');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
 
 --  Roles -
 INSERT INTO /*prefix*/roles (id,description) VALUES (3, '<no rights>');

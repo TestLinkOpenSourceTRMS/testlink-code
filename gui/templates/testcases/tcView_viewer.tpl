@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.39 2010/01/06 16:37:11 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.40 2010/01/06 16:37:55 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -23,7 +23,7 @@ rev:
 
 
 {* will be useful in future to semplify changes *}
-{assign var="tableColspan" value="{$gui->tableColspan}"} 
+{assign var="tableColspan" value=$gui->tableColspan} 
 {assign var="addInfoDivStyle" value='style="padding: 5px 3px 4px 10px;"'}
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}

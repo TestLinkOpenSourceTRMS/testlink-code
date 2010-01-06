@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.135 $
- * @modified $Date: 2010/01/04 09:35:57 $  by $Author: franciscom $
+ * @version $Revision: 1.136 $
+ * @modified $Date: 2010/01/06 17:05:11 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
+ *  20100106 - franciscom - Multiple Test Case Steps Feature
  *  20100104 - franciscom - fixed bug on create new version, now is created
  *                          from selected version and NOT FROM LATEST
  *	20100103 - franciscom - refactoring to use command class
@@ -107,10 +108,16 @@ switch($args->doAction)
     
 	case "delete":  
 	case "doDelete":  
+    case "createStep":
+    case "editStep":
+    case "doCreateStep":
+    case "doUpdateStep":
+    case "doDeleteStep":
+    case "doReorderSteps":
         $op=$commandMgr->$pfn($args,$_REQUEST);
         $doRender = true;
     break;
-    
+
 }
 
 if( $doRender )
@@ -341,9 +348,6 @@ function init_args($spec_cfg,$otName)
 
     $rightlist_html_name = $otName . "_newRight";
     $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";
-
-	// $args->step_number = isset($_REQUEST['step_number']) ? intval($_REQUEST['step_number']) : 0;
-
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
     $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
     $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
@@ -413,6 +417,12 @@ function init_args($spec_cfg,$otName)
     
     // 20090419 - franciscom - BUGID - edit while executing
     $args->show_mode = (isset($_REQUEST['show_mode']) && $_REQUEST['show_mode'] != '') ? $_REQUEST['show_mode'] : null;
+
+    // Multiple Test Case Steps Feature
+	$args->step_number = isset($_REQUEST['step_number']) ? intval($_REQUEST['step_number']) : 0;
+	$args->step_id = isset($_REQUEST['step_id']) ? intval($_REQUEST['step_id']) : 0;
+	$args->step_set = isset($_REQUEST['step_set']) ? $_REQUEST['step_set'] : null;
+
         
     // from session
     $args->testproject_id = $_SESSION['testprojectID'];

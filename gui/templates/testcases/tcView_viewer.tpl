@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.42 2010/01/06 16:45:16 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.43 2010/01/06 17:05:27 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -252,10 +252,46 @@ rev:
 		<th width="25">{$labels.execution_type_short_descr}</th>
 		<th>&nbsp;</th>
 	</tr>
-	
-	
-	
+
+<form method="post" action="lib/testcases/tcEdit.php">
+	{if $args_testcase.steps != ''}
+ 	{foreach from=$args_testcase.steps item=step_info }
+	<tr>
+		<td style="text-align:righ;"><span class="order_info" style='display:none'>
+		<input type="text" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
+		       value="{$step_info.step_number}" 
+			     size="{#STEP_NUMBER_SIZE#}" 	maxlength="{#STEP_NUMBER_MAXLEN#}"
+  	{include file="error_icon.tpl" field="step_number"}
+		</span><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
+		<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+		<td >{$step_info.expected_results}</td>
+		<td>{$execution_types[$step_info.execution_type]}</td>
+		<td class="clickable_icon">
+       <img style="border:none;cursor: pointer;" 
+            title="{$labels.delete_step}"  alt="{$labels.delete_step}" 
+ 					  onclick="delete_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
+ 					                               '{$del_msgbox_title}','{$warning_msg}');"
+  				  src="{$delete_img}"/>
+  	</td>
+	</tr>
+  {/foreach}	
+	{/if}
 </table>
+
+<div {$addInfoDivStyle}>
+  <input type="hidden" name="doAction" value="" />
+  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+  <input type="submit" name="create_step" 
+  	 	   onclick="doAction.value='createStep';{$gui->submitCode}" value="{$labels.btn_create_step}" />
+
+  <span class="order_info" style='display:none'>
+  <input type="submit" name="renumber_step" 
+  	 	   onclick="doAction.value='doReorderSteps';{$gui->submitCode}" value="{$labels.btn_reorder_steps}" />
+  </span>
+</div>
+</form>
 
 {if $session['testprojectOptAutomation']}
   <div {$addInfoDivStyle}>

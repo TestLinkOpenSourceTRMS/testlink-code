@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.224 2010/01/05 15:36:49 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.225 2010/01/06 17:04:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100106 - franciscom - Multiple Test Case Steps Feature
  * 20100105 - franciscom - fixed missing copy of preconditions on copy_tcversion()
  *                         exportTestCaseDataToXML() - added execution_type, importance
  *
@@ -242,9 +243,13 @@ class testcase extends tlObjectWithAttachments
 				// BUGID 2204
 				$ret['version_number']=$version_number;
 			}
+			// Multiple Test Case Steps Feature
+			// $op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
+			//                               $preconditions,$steps,$expected_results,$author_id,
+			//                               $execution_type,$importance);
 			$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
-			                              $preconditions,$steps,$expected_results,$author_id,
-			                              $execution_type,$importance);
+			                              $preconditions,$steps,$author_id,$execution_type,$importance);
+			
 			
 			$ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
 		}
@@ -381,30 +386,47 @@ class testcase extends tlObjectWithAttachments
 	
 	  returns:
 	
-	  rev: 20080113 - franciscom - interface changes added tc_ext_id
+	  rev: 20100106 - franciscom - Multiple Test Case Steps Feature
+	  	   20080113 - franciscom - interface changes added tc_ext_id
 	
 	*/
 	function create_tcversion($id,$tc_ext_id,$version,$summary,$preconditions,$steps,
-	                          $expected_results,$author_id,
-	                          $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
+	                          $author_id,$execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-		// get a new id
 		$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
-	
+	     
+		// $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
+		//        " (id,tc_external_id,version,summary,steps,expected_results,preconditions," . 
+		//        "author_id,creation_ts,execution_type,importance) " . 
+	  	//        " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
+	  	//        $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
+		//   	   "'" . $this->db->prepare_string($expected_results) .  "','" . 
+		//   	   $this->db->prepare_string($preconditions) . "'," . $author_id . "," .
+	    //        $this->db->db_now() . ", {$execution_type},{$importance} )";
+        //
 		$sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
-		       " (id,tc_external_id,version,summary,steps,expected_results,preconditions," . 
+		       " (id,tc_external_id,version,summary,preconditions," . 
 		       "author_id,creation_ts,execution_type,importance) " . 
 	  	       " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
-	  	       $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
-		  	   "'" . $this->db->prepare_string($expected_results) .  "','" . 
-		  	   $this->db->prepare_string($preconditions) . "'," . $author_id . "," .
-	           $this->db->db_now() . ", {$execution_type},{$importance} )";
+	  	       $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($preconditions) . "'," . 
+	  	       $author_id . "," . $this->db->db_now() . ", {$execution_type},{$importance} )";
+		
 		$result = $this->db->exec_query($sql);
 		$ret['msg']='ok';
 		$ret['id']=$tcase_version_id;
 		$ret['status_ok']=1;
+
+		if ($result && ( !is_null($steps) && is_array($steps) ) )
+		{
+			$steps2create = count($steps);
+			$op['status_ok'] = 1;
+			for($jdx=0 ; ($jdx < $steps2create && $op['status_ok']); $jdx++)
+			{
+				$op = $this->create_step($tcase_version_id,$steps[$jdx]['step_number'],
+				                         $steps[$jdx]['actions'],$steps[$jdx]['expected_results']);
+			}	 
+		}
 	
 		if (!$result)
 		{
@@ -1278,9 +1300,15 @@ class testcase extends tlObjectWithAttachments
 		        $ret['status_ok']=1;
 	 			foreach($tcase_info as $tcversion)
 				{
+					// $this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
+					//                         $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
+					//                         $tcversion['expected_results'],$tcversion['author_id']);
+					//
 					$this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
 					                        $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
-					                        $tcversion['expected_results'],$tcversion['author_id']);
+					                        $tcversion['author_id'],$tcversion['execution_type'],$tcversion['importance']);
+					
+					
 				}
 				
 				// Conditional copies
@@ -3859,6 +3887,168 @@ class testcase extends tlObjectWithAttachments
         return $result;
     }
 
+
+
+	/**
+     * 
+     *
+     */
+	function create_step($tcversion_id,$step_number,$actions,$expected_results,
+                         $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $ret = array();
+		$item_id = $this->tree_manager->new_node($tcversion_id,$this->node_types_descr_id['testcase_step']);
+		$sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcsteps']} " .
+		       " (id,step_number,actions,expected_results,execution_type) " .
+		       " VALUES({$item_id},{$step_number},'" . $this->db->prepare_string($actions) . "','" .
+		  	   $this->db->prepare_string($expected_results) . "', {$execution_type})";
+      
+		$result = $this->db->exec_query($sql);
+		$ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 'sql' => $sql);
+		if (!$result)
+		{
+	        $ret['msg'] = $this->db->error_msg();
+		    $ret['status_ok']=0;
+		    $ret['id']=-1;
+		}
+		return $ret;
+	}
+
+	/**
+     * 
+     *
+     */
+	function get_steps($tcversion_id,$step_number=0)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
+		
+		$sql = "/* $debugMsg */ " . 
+		       " SELECT TCSTEPS.* FROM {$this->tables['tcsteps']} TCSTEPS " .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .
+		       " ON NH_STEPS.id = TCSTEPS.id " . 
+		       " WHERE NH_STEPS.parent_id = {$tcversion_id} {$step_filter} ORDER BY step_number";
+
+		$result = $this->db->get_recordset($sql);
+		return $result;
+	}
+
+	/**
+     * 
+     *
+     */
+	function get_step_by_id($step_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ " . 
+		       " SELECT TCSTEPS.* FROM {$this->tables['tcsteps']} TCSTEPS " .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .
+		       " ON NH_STEPS.id = TCSTEPS.id " . 
+		       " WHERE TCSTEPS.id = {$step_id} ";
+		$result = $this->db->get_recordset($sql);
+		
+		return is_null($result) ? $result : $result[0];
+	}
+
+
+	function get_step_numbers($tcversion_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
+		
+		$sql = "/* $debugMsg */ " . 
+		       " SELECT TCSTEPS.id, TCSTEPS.step_number FROM {$this->tables['tcsteps']} TCSTEPS " .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .
+		       " ON NH_STEPS.id = TCSTEPS.id " . 
+		       " WHERE NH_STEPS.parent_id = {$tcversion_id} ORDER BY step_number";
+
+		$result = $this->db->fetchRowsIntoMap($sql,'step_number');
+		return $result;
+	}
+
+
+
+	/**
+     * 
+     *
+     */
+	function get_latest_step_number($tcversion_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ " . 
+		       " SELECT MAX(TCSTEPS.step_number) AS max_step FROM {$this->tables['tcsteps']} TCSTEPS " .
+		       " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .
+		       " ON NH_STEPS.id = TCSTEPS.id " . 
+		       " WHERE NH_STEPS.parent_id = {$tcversion_id} ";
+
+		$result = $this->db->get_recordset($sql);
+		$max_step = (!is_null($result) && isset($result[0]['max_step']) )? $result[0]['max_step'] : 0;
+		return $max_step;
+	}
+
+
+	/**
+     * 
+     *
+     */
+	function delete_step_by_id($step_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = array();
+		
+		$sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']} WHERE id = {$step_id} ";
+		$sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$step_id} ";
+		foreach($sqlSet as $sql)
+		{
+			$this->db->exec_query($sql);
+		} 
+	}
+
+
+	/**
+     * 
+     *
+     */
+	function set_step_number($step_number)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+        
+        foreach($step_number as $step_id => $value)
+        {
+        	$sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} TC_STEP " . 
+        	 	   " SET step_number = {$value} WHERE TC_STEP.id = {$step_id} ";
+        	$this->db->exec_query($sql); 	    
+        }
+
+	}
+
+	/**
+     * 
+     *
+     */
+	function update_step($step_id,$step_number,$actions,$expected_results,$execution_type)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $ret = array();
+		$sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} " .
+		       " SET step_number={$step_number}," .
+		       " actions='" . $this->db->prepare_string($actions) . "', " .
+		       " expected_results='" . $this->db->prepare_string($expected_results) . "', " .
+		       " execution_type = {$execution_type} " .
+		       " WHERE id = {$step_id} ";
+       
+		$result = $this->db->exec_query($sql);
+		$ret = array('msg' => 'ok', 'status_ok' => 1, 'sql' => $sql);
+		if (!$result)
+		{
+	        $ret['msg'] = $this->db->error_msg();
+		    $ret['status_ok']=0;
+		}
+		return $ret;
+	}
 
 } // end class
 ?>

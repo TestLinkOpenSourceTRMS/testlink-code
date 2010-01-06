@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.46 2009/12/28 09:36:58 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.47 2010/01/06 17:04:16 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -214,6 +214,7 @@ abstract class tlObject implements iSerialization
                         'role_rights' => DB_TABLE_PREFIX . 'role_rights',
                         'roles' => DB_TABLE_PREFIX . 'roles',
                         'tcversions' => DB_TABLE_PREFIX . 'tcversions',
+                        'tcsteps' => DB_TABLE_PREFIX . 'tcsteps',
                         'testcase_keywords' => DB_TABLE_PREFIX . 'testcase_keywords',
                         'testplan_platforms' => DB_TABLE_PREFIX . 'testplan_platforms',
                         'testplan_tcversions' => DB_TABLE_PREFIX . 'testplan_tcversions',

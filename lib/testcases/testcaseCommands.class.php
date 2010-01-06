@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/01/03 18:50:34 $  by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/01/06 17:05:11 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -44,18 +44,20 @@ class testcaseCommands
 	function initGuiBean()
 	{
 	    $obj = new stdClass();
-	    $obj->sqlResult = '';
 	    $obj->action = '';
-	    $obj->loadOnCancelURL = '';
 		$obj->attachments = null;
+		$obj->containerID = '';
 		$obj->direct_link = null;
 	    $obj->execution_types = $this->execution_types;
-		$obj->main_descr = '';
-		$obj->name = '';
-		$obj->containerID = '';
 		$obj->grants = $this->grants;
     	$obj->initWebEditorFromTemplate = false;
-	    return $obj;
+	    $obj->loadOnCancelURL = '';
+		$obj->main_descr = '';
+		$obj->name = '';
+	    $obj->sqlResult = '';
+    	$obj->refresh_tree="no";
+    	$obj->tableColSpan = 5;
+		return $obj;
 	}
 	 
 	/**
@@ -390,6 +392,66 @@ class testcaseCommands
     
     	$templateCfg = templateConfiguration('tcDelete');
   		$guiObj->template=$templateCfg->default_template;
+		return $guiObj;
+	}
+
+
+	/**
+   	 * createStep
+     *
+     */
+	function createStep(&$argsObj,$request)
+	{
+	    $guiObj = $this->initGuiBean();
+		$max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
+		$max_step++;;
+
+		$guiObj->step_number = $max_step;
+		$guiObj->tcversion_id = $argsObj->tcversion_id;
+    	$templateCfg = templateConfiguration('tcStepEdit');
+  		$guiObj->template=$templateCfg->default_template;
+		return $guiObj;
+	}
+
+	/**
+   	 * doCreateStep
+     *
+     */
+	function doCreateStep(&$argsObj,$request)
+	{
+	    $guiObj = $this->initGuiBean();
+		$guiObj->user_feedback = '';
+        $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$argsObj->step_number,
+                                           $argsObj->steps,$argsObj->expected_results,
+                                           $argsObj->exec_type);		
+		
+		if( $op['status_ok'] )
+		{
+			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
+		}	
+		$max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
+		$max_step++;;
+		$guiObj->step_number = $max_step;
+
+    	$templateCfg = templateConfiguration('tcStepEdit');
+  		$guiObj->template=$templateCfg->default_template;
+
+		return $guiObj;
+	}
+
+
+	/**
+   	 * doReorderSteps
+     *
+     */
+	function doReorderSteps(&$argsObj,$request)
+	{
+	    $guiObj = $this->initGuiBean();
+		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$guiObj->main_descr = lang_get('test_case');
+		$this->tcaseMgr->set_step_number($argsObj->step_set);
+		$guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&edit=testcase&id={$argsObj->tcase_id}";
 		return $guiObj;
 	}
 

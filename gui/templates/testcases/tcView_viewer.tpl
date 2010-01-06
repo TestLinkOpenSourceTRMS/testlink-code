@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.41 2010/01/06 16:38:58 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.42 2010/01/06 16:45:16 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -17,7 +17,7 @@ rev:
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
-             btn_create_step,step_number,btn_reorder_steps,
+             btn_create_step,step_number,btn_reorder_steps,step_actions,
              execution_type_short_descr,delete_step,show_hide_reorder,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
@@ -232,14 +232,29 @@ rev:
 	</tr>
 	{/if}
 
+{* OLD STYLE *}
+{*	<tr>                                               *}
+{*		<th width="50%">{$labels.steps}</th>             *}
+{*		<th width="50%">{$labels.expected_results}</th>  *}
+{*	</tr>                                              *}
+{*	<tr>                                               *}
+{*		<td>{$args_testcase.steps}</td>                  *}
+{*		<td>{$args_testcase.expected_results}</td>       *}
+{*	</tr>                                              *}
+	
 	<tr>
-		<th width="50%">{$labels.steps}</th>
-		<th width="50%">{$labels.expected_results}</th>
+		<th width="{$tableColspan}">
+		<img src="{$tlImages.reorder}" align="left" title="{$labels.show_hide_reorder}" 
+		    onclick="showHideByClass('span','order_info');event.stopPropagation();">
+		{$labels.step_number}</th>
+		<th>{$labels.step_actions}</th>
+		<th>{$labels.expected_results}</th>
+		<th width="25">{$labels.execution_type_short_descr}</th>
+		<th>&nbsp;</th>
 	</tr>
-	<tr>
-		<td>{$args_testcase.steps}</td>
-		<td>{$args_testcase.expected_results}</td>
-	</tr>
+	
+	
+	
 </table>
 
 {if $session['testprojectOptAutomation']}

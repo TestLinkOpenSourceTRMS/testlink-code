@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.60 2010/01/03 17:31:49 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.61 2010/01/06 16:45:06 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -76,6 +76,7 @@ switch($args->feature)
 		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
 		}
 			
+        $gui->tableColspan = 5;
 		$gui->loadOnCancelURL = '';
 		$gui->attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
 		$gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);

@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: xml.inc.php,v 1.11 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: xml.inc.php,v 1.12 2010/01/06 17:27:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -19,6 +19,8 @@
 
 function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
+
+    // echo __FUNCTION__; echo 'items <br>'; new dBug($items);
 	if (!$items)
 	{
 		return;
@@ -30,6 +32,11 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 	{
 		$item = $item[1];
 		$xmlElemCode = $elemTpl;
+		
+		// REMEMBER YOU NEED TO USE XMP TO DEBUG
+		// echo '$xmlElemCode'; echo "<xmp>$xmlElemCode)</xmp>";
+		// echo '$elemInfo'; new dBug($elemInfo);
+		
 		foreach($elemInfo as $subject => $replacement)
 		{
 			$fm = substr($subject,0,2);
@@ -46,6 +53,9 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 			}
 			
 			$xmlElemCode = str_replace($subject,$content,$xmlElemCode);
+			// echo '$subject:' . $subject . '<br>';
+			// echo '$replacement key:' . $replacement . '<br>';
+            // echo "<xmp>$xmlElemCode)</xmp>";
 		}
 		$xmlCode .= $xmlElemCode;
 	}

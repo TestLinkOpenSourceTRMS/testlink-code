@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.226 2010/01/06 17:18:34 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.227 2010/01/06 17:21:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100106 - franciscom - Multiple Test Case Steps Feature
+ *                         Affected methods: get_by_id(), create(), update()
  * 20100105 - franciscom - fixed missing copy of preconditions on copy_tcversion()
  *                         exportTestCaseDataToXML() - added execution_type, importance
  *
@@ -1666,6 +1667,19 @@ class testcase extends tlObjectWithAttachments
 		    //                              
 			$recordset = array($this->db->fetchFirstRow($sql));
 	    }
+	
+	    // Multiple Test Case Steps
+	    if( !is_null($recordset) )
+	    {
+	    	$loop2do = count($recordset);
+	    	for( $sdx = 0; $sdx < $loop2do; $sdx++)
+	    	{
+	    		$step_set = $this->get_steps($recordset[$sdx]['id']);
+	    		$recordset[$sdx]['steps'] = $step_set;
+	    	} 
+	    }
+
+	
 	    
 		return ($recordset ? $recordset : null);
 	}

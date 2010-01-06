@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.43 2010/01/06 17:05:27 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.44 2010/01/06 17:25:38 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -21,6 +21,8 @@ rev:
              execution_type_short_descr,delete_step,show_hide_reorder,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
+{lang_get s='warning_delete_step' var="warning_msg" }
+{lang_get s='delete' var="del_msgbox_title" }
 
 {* will be useful in future to semplify changes *}
 {assign var="tableColspan" value=$gui->tableColspan} 
@@ -265,7 +267,7 @@ rev:
 		</span><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
 		<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
 		<td >{$step_info.expected_results}</td>
-		<td>{$execution_types[$step_info.execution_type]}</td>
+		<td>{$gui->execution_types[$step_info.execution_type]}</td>
 		<td class="clickable_icon">
        <img style="border:none;cursor: pointer;" 
             title="{$labels.delete_step}"  alt="{$labels.delete_step}" 

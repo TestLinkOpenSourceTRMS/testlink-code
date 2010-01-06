@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.136 $
- * @modified $Date: 2010/01/06 17:05:11 $  by $Author: franciscom $
+ * @version $Revision: 1.137 $
+ * @modified $Date: 2010/01/06 17:43:58 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -35,8 +35,6 @@ require_once(require_web_editor($cfg->webEditorCfg['type']));
 testlinkInitPage($db);
 $optionTransferName = 'ot';
 $args = init_args($cfg->spec,$optionTransferName);
-
-new dBug($args);
 
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
@@ -592,10 +590,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
     //              
     // used to set value of: $guiObj->operation
     //
-    $actionOperation = array('createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
-                             'create' => 'doCreate', 'doCreate' => 'doCreate',
-                             'doDeleteStep' => '', 'edit' => 'doUpdate', 'delete' => 'doDelete', 
-                             'doDelete' => '');
+    $actionOperation = array('create' => 'doCreate', 'doCreate' => 'doCreate',
+                             'edit' => 'doUpdate','delete' => 'doDelete', 'doDelete' => '',
+                             'createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
+                             'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
+                             'doDeleteStep' => '', 'doReorderSteps' => '');
 
 	$initWebEditorFromTemplate = $opObj->initWebEditorFromTemplate;                             
     $oWebEditor = createWebEditors($argsObj->basehref,$editorCfg); 
@@ -637,9 +636,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
    	    case "create":
         case "delete":
         case "createStep":
+        case "editStep":
    	    case "doCreate":
         case "doDelete":
         case "doCreateStep":
+        case "doUpdateStep":
         case "doDeleteStep":
             $renderType = 'template';
             

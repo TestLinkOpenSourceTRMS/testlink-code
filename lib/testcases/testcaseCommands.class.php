@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/01/06 17:11:16 $  by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/01/06 17:43:58 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
+ *	20100106 - franciscom - Multiple Test Case Steps Feature
  *	20090831 - franciscom - preconditions 
  *	BUGID 2364 - changes in show() calls
  *  BUGID - doAdd2testplan() - added user id, con call to link_tcversions()
@@ -440,6 +441,67 @@ class testcaseCommands
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 
+		return $guiObj;
+	}
+
+	/**
+   	 * editStep
+     *
+     */
+	function editStep(&$argsObj,$request)
+	{
+	    $guiObj = $this->initGuiBean();
+		$guiObj->user_feedback = '';
+		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
+
+        $oWebEditorKeys = array('steps' => 'actions', 'expected_results' => 'expected_results');
+  		foreach($oWebEditorKeys as $key => $field)
+   		{
+  		  	$argsObj->$key = $stepInfo[$field];
+  		  	$guiObj->$key = $stepInfo[$field];
+  		}
+
+		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
+		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 
+
+		$guiObj->tcase_id = $argsObj->tcase_id;
+		$guiObj->tcversion_id = $argsObj->tcversion_id;
+		$guiObj->step_id = $argsObj->step_id;
+		$guiObj->step_exec_type = $argsObj->exec_type;
+		$guiObj->step_number = $stepInfo['step_number'];
+
+		$templateCfg = templateConfiguration('tcStepEdit');
+		$guiObj->template=$templateCfg->default_template;
+		
+		return $guiObj;
+	}
+
+	/**
+   	 * doUpdateStep
+     *
+     */
+	function doUpdateStep(&$argsObj,$request)
+	{
+	    $guiObj = $this->initGuiBean();
+		$guiObj->user_feedback = '';
+		
+		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
+		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
+		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 
+
+        $op = $this->tcaseMgr->update_step($argsObj->step_id,$argsObj->step_number,$argsObj->steps,
+                                           $argsObj->expected_results,$argsObj->exec_type);		
+
+		$guiObj->tcversion_id = $argsObj->tcversion_id;
+		$guiObj->step_id = $argsObj->step_id;
+		$guiObj->step_number = $stepInfo['step_number'];
+		$guiObj->step_exec_type = $argsObj->exec_type;
+		$guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&edit=testcase&id={$argsObj->tcase_id}";
+		
 		return $guiObj;
 	}
 

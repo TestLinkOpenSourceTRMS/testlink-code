@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/01/06 17:43:58 $  by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2010/01/06 18:42:30 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -125,8 +125,8 @@ class testcaseCommands
 		$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
 		                 'action_on_duplicate_name' => 'block');
 		$tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,$argsObj->preconditions,
-		                            	 $argsObj->steps,$argsObj->expected_results,$argsObj->user_id,
-		                            	 $argsObj->assigned_keywords_list,$new_order,testcase::AUTOMATIC_ID,
+		                            	 $argsObj->steps,$argsObj->user_id,$argsObj->assigned_keywords_list,
+		                            	 $new_order,testcase::AUTOMATIC_ID,
 		                            	 $argsObj->exec_type,$argsObj->importance,$options);
        
 		if($tcase['status_ok'])

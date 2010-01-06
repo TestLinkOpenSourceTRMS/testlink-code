@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/01/06 18:42:30 $  by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/01/06 19:16:27 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -57,7 +57,7 @@ class testcaseCommands
 		$obj->name = '';
 	    $obj->sqlResult = '';
     	$obj->refresh_tree="no";
-    	$obj->tableColSpan = 5;
+    	$obj->tableColspan = 5;
 		return $obj;
 	}
 	 
@@ -176,8 +176,8 @@ class testcaseCommands
 
   		foreach($oWebEditorKeys as $key)
    		{
-  		  	$guiObj->$key = $tc_data[0][$key];
-  		  	$argsObj->$key = $tc_data[0][$key];
+   			$guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
+   			$argsObj->$key = $guiObj->$key;
   		}
   		
   		$cf_smarty = null;
@@ -219,8 +219,7 @@ class testcaseCommands
 
         $ret=$this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
 		                             $argsObj->summary, $argsObj->preconditions, $argsObj->steps, 
-		                             $argsObj->expected_results, $argsObj->user_id, 
-		                             $argsObj->assigned_keywords_list,
+		                             $argsObj->user_id,$argsObj->assigned_keywords_list,
 		                             TC_DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
         if($ret['status_ok'])

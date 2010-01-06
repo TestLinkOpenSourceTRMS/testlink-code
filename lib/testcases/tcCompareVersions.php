@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tcCompareVersions.php,v 1.1 2010/01/06 08:36:41 franciscom Exp $
+ * @version    	CVS: $Id: tcCompareVersions.php,v 1.2 2010/01/06 15:29:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected testcase versions with each other.
@@ -97,11 +97,11 @@ function init_args()
 	$args->version_left = $_REQUEST['version_left'];
 	$args->version_right = $_REQUEST['version_right'];
 	
-	$diff_cfg = config_get("diff_cfg");
+	$diffEngineCfg = config_get("diffEngine");
 	if (isset($_REQUEST['context_show_all'])) {
 		$args->context = null;
 	} else {
-		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diff_cfg->context;	
+		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diffEngineCfg->context;	
 	}
 	
 	return $args;

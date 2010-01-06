@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcStepEditViewer.tpl,v 1.2 2010/01/06 17:07:20 franciscom Exp $
+$Id: tcStepEditViewer.tpl,v 1.3 2010/01/06 17:11:16 franciscom Exp $
 Purpose: test case step edit/create viewer
 
 Rev:
@@ -43,7 +43,7 @@ Rev:
 		{if $session['testprojectOptAutomation']}
 			<div class="labelHolder">{$labels.execution_type}
 			<select name="exec_type" onchange="IGNORE_UNLOAD = false">
-    	  	{html_options options=$gui->execution_types selected=$gui->execution_type}
+    	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
 	    	</select>
 			</div>
     	{/if}

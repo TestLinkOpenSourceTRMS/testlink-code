@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/01/06 17:05:11 $  by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2010/01/06 17:11:16 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -407,6 +407,7 @@ class testcaseCommands
 		$max_step++;;
 
 		$guiObj->step_number = $max_step;
+		$guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
 		$guiObj->tcversion_id = $argsObj->tcversion_id;
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
@@ -421,6 +422,7 @@ class testcaseCommands
 	{
 	    $guiObj = $this->initGuiBean();
 		$guiObj->user_feedback = '';
+		$guiObj->step_exec_type = $argsObj->exec_type;
         $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$argsObj->step_number,
                                            $argsObj->steps,$argsObj->expected_results,
                                            $argsObj->exec_type);		
@@ -428,7 +430,9 @@ class testcaseCommands
 		if( $op['status_ok'] )
 		{
 			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
+		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
 		}	
+
 		$max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
 		$max_step++;;
 		$guiObj->step_number = $max_step;

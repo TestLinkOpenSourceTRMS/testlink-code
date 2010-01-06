@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.93 2010/01/05 09:56:42 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.94 2010/01/06 17:33:15 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20100106 - franciscom - Multiple Test Case Steps Feature
  *  20100105 - franciscom - added tableColspan,firstColWidth config 
  *  20090906 - franciscom - added contribution by Eloff:
  *                          - regarding platforms feature
@@ -466,28 +467,54 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     {
         $tcase_pieces[] = 'preconditions';
         $tcase_pieces[] = 'steps';
-        $tcase_pieces[] = 'expected_results';        
+        // $tcase_pieces[] = 'expected_results';        
     }
     
     if(!is_null($tcase_pieces))
     {
+    	// Multiple Test Case Steps Feature
         foreach($tcase_pieces as $key)
         {
             // 20090719 - franciscom - cf location
-            if( $key == 'steps' && isset($cfields['specScope']['before_steps_results']))
+            if( $key == 'steps' )
             {
+            	if( isset($cfields['specScope']['before_steps_results']) )
+            	{
         		 	$code .= $cfields['specScope']['before_steps_results'];    
+                }
+                if ($tcInfo[$key] != '')
+                {
+            		$code .= '<tr>' .
+            		         '<td><span class="label">' . $labels['step_number'] .':</span></td>' .
+            		         '<td><span class="label">' . $labels['step_actions'] .':</span></td>' .
+            		         '<td><span class="label">' . $labels['expected_results'] .':</span></td></tr>';
+                	
+                	$loop2do = count($tcInfo[$key]);
+                	for($ydx=0 ; $ydx < $loop2do; $ydx++)
+                	{
+            			$code .= '<tr>' .
+            			         '<td width="5">' .  $tcInfo[$key][$ydx]['step_number'] . '</td>' .
+            			         '<td>' .  $tcInfo[$key][$ydx]['actions'] . '</td>' .
+            			         '<td>' .  $tcInfo[$key][$ydx]['expected_results'] . '</td>' .
+            				     '</tr>';
+                	}
+
+                }
+                
             }
-        	
-        	// disable the field if it's empty
-        	if ($tcInfo[$key] != '')
+        	else
         	{
-           		$code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '"><span class="label">' . $labels[$key] .
+        		// disable the field if it's empty
+        		if ($tcInfo[$key] != '')
+        		{
+            		$code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '"><span class="label">' . $labels[$key] .
             	         ':</span><br />' .  $tcInfo[$key] . "</td></tr>";
-                     
+            	}
             }         
         }
     }
+    // Spacer
+    $code .= '<tr><td colspan="' .  $cfg['tableColspan'] . '">' . "</td></tr>";
     
     // 20090719 - franciscom - cf location
     $code .= $cfields['specScope']['standard_location'] . $cfields['execScope'];

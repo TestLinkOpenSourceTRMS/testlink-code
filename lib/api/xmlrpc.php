@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2010/01/06 18:44:24 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1782,12 +1782,26 @@ class TestlinkXMLRPCServer extends IXR_Server
              
         if( $status_ok )
         {
+        	// Multiple Test Case Steps Feature - Need WORK
+            // $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
+            //                                    $this->args[self::$testCaseNameParamName],
+            //                                    $this->args[self::$summaryParamName],
+            //                                    $opt[self::$preconditionsParamName],
+            //                                    $this->args[self::$stepsParamName],
+            //                                    $this->args[self::$expectedResultsParamName],
+            //                                    $author_id,$keywordSet,
+            //                                    $opt[self::$orderParamName],
+            //                                    $opt[self::$internalIDParamName],
+            //                                    $opt[self::$checkDuplicatedNameParamName],                        
+            //                                    $opt[self::$actionOnDuplicatedNameParamName],
+            //                                    $opt[self::$executionTypeParamName],
+            //                                    $opt[self::$importanceParamName]);
+               
             $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
                                                $this->args[self::$testCaseNameParamName],
                                                $this->args[self::$summaryParamName],
                                                $opt[self::$preconditionsParamName],
                                                $this->args[self::$stepsParamName],
-                                               $this->args[self::$expectedResultsParamName],
                                                $author_id,$keywordSet,
                                                $opt[self::$orderParamName],
                                                $opt[self::$internalIDParamName],
@@ -1795,7 +1809,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                                                $opt[self::$actionOnDuplicatedNameParamName],
                                                $opt[self::$executionTypeParamName],
                                                $opt[self::$importanceParamName]);
-            
+               
             
             $resultInfo=array();
    		    $resultInfo[] = array("operation" => $operation, "status" => true, 

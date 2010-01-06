@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.232 2010/01/06 18:16:40 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.233 2010/01/06 18:50:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1060,8 +1060,6 @@ class testcase extends tlObjectWithAttachments
 	                  id -> tcversion_id (node id)
 	                  version
 	                  summary
-	                  steps
-	                  expected_results
 	                  importance
 	                  author_id
 	                  creation_ts
@@ -1457,7 +1455,7 @@ class testcase extends tlObjectWithAttachments
 		}
 
 		// Multiple Test Case Steps Feature
-	    if( !is_null($tcInfo) && $my['option']['get_steps'] )
+	    if( !is_null($tcInfo) && $my['options']['get_steps'] )
 	    {
     		$step_set = $this->get_steps($tcInfo['id']);
     		$tcInfo['steps'] = $step_set;

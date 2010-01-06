@@ -6,14 +6,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.229 2010/01/06 17:56:41 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.230 2010/01/06 18:00:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100106 - franciscom - Multiple Test Case Steps Feature
  *                         Affected methods: get_by_id(), create(), update()
- *                         get_last_version_info(), get_linked_versions()
+ *                         get_last_version_info(), get_linked_versions(), copy_to()
  * 20100105 - franciscom - fixed missing copy of preconditions on copy_tcversion()
  *                         exportTestCaseDataToXML() - added execution_type, importance
  *
@@ -1314,11 +1314,24 @@ class testcase extends tlObjectWithAttachments
 					//                         $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
 					//                         $tcversion['expected_results'],$tcversion['author_id']);
 					//
-					$this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
-					                        $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
-					                        $tcversion['author_id'],$tcversion['execution_type'],$tcversion['importance']);
+					$op = $this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
+					                              $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
+					                              $tcversion['author_id'],$tcversion['execution_type'],$tcversion['importance']);
 					
-					
+	    			if( $op['status_ok'] )
+	    			{
+	    				// Need to get all steps
+	    				$stepsSet = $this->get_steps($tcversion['id']);
+	    				$to_tcversion_id = $op['id'];
+	    				if( !is_null($stepsSet) )
+	    				{
+	    					foreach($stepsSet as $key => $step)
+	    					{
+        						$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
+        						                         $step['expected_results'],$step['execution_type']);			
+	    					}
+	    				}
+					}                       
 				}
 				
 				// Conditional copies

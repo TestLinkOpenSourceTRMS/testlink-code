@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.57 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @version $Revision: 1.58 $
+ * @modified $Date: 2010/01/06 18:25:38 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *	20100106 - franciscom - Multiple Test Case Steps Feature
  *	20090831 - franciscom - preconditions
  *  20090506 - Requirements refactoring
  *  20090221 - BUGID - Improvement on messages to user when XML file contains
@@ -431,9 +432,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	                                'action_on_duplicate_name' => $actionOnDuplicatedName);
 
 		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
-		                                  $expected_results,$userID,$kwIDs,$node_order,
-		                                  testcase::AUTOMATIC_ID,$exec_type,$importance,
-		                                  $createOptions))
+		                                  $userID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
+		                                  $exec_type,$importance,$createOptions))
         	{
         	    $resultMap[] = array($name,$ret['msg']);
         	}                              
@@ -540,6 +540,10 @@ function importTCsFromXML($xmlTCs)
 		$tc = importTCFromXML($xmlTC);
 		if ($tc)
 		{
+			// Test Case Steps
+			$steps = importStepsFromXML($xmlTC->get_elements_by_tagname("step"));
+			$tc['steps'] = $steps;
+			
 			$keywords = importKeywordsFromXML($xmlTC->get_elements_by_tagname("keyword"));
 			if ($keywords)
 			{
@@ -581,7 +585,10 @@ function importTCFromXML(&$xmlTC)
 		return null;
 	}
 	
-	$keyContent=array("summary","steps","expectedresults","preconditions");
+	// Test Case Steps
+	// $keyContent=array("summary","steps","expectedresults","preconditions");
+	$keyContent=array("summary","preconditions");
+
 	$tc = null;
 	$tc['name'] = $xmlTC->get_attribute("name");
   	foreach($keyContent as $key)
@@ -1027,5 +1034,31 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
     } //foreach
      
     return $resultMsg;
+}
+
+/**
+ * 
+ *
+ */
+function importStepsFromXML($xmlItems)
+{
+	if (!$xmlItems)
+	{
+		return null;
+	}
+
+  	$items = null;
+  	$items_counter=0;
+  	$loop_qty = count($xmlItems);
+  	$keys2extract = array('step_number','actions','expected_results'); 
+  	for($idx=0; $idx < $loop_qty; $idx++)
+  	{
+		foreach($keys2extract  as $key)
+		{
+		    $dummy[$key] = trim(getNodeContent($xmlItems[$idx],$key));
+		}
+		$items[$items_counter++] = $dummy;
+  	}
+	return $items;
 }
 ?>

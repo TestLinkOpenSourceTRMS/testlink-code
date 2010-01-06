@@ -9,12 +9,14 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.152 2009/12/15 20:41:02 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.153 2010/01/06 18:22:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100106 - franciscom - Multiple Test Case Steps Feature
+ *                          Affected Methods: get_linked_tcversions()
  *	20091111 - franciscom - BUGID 2938 - getTestCaseSiblings(), getTestCaseNextSibling()
  *  20091031 - franciscom - tallyResultsForReport()
  *  20091027 - franciscom - BUGID 2500 - get_linked_tcversions()
@@ -753,7 +755,9 @@ class testplan extends tlObjectWithAttachments
 		switch($my['options']['details'])
 		{
 			case 'full':
-			$more_tcase_fields .= 'TCV.summary,TCV.steps,TCV.expected_results,';
+			// Multiple Test Case Steps Feature
+			// $more_tcase_fields .= 'TCV.summary,TCV.steps,TCV.expected_results,';
+			$more_tcase_fields .= 'TCV.summary,';
 			$join_for_parent .= " JOIN {$this->tables['nodes_hierarchy']} NHC ON NHB.parent_id = NHC.id ";
 			$more_parent_fields .= 'NHC.name as tsuite_name,';
 			break;
@@ -890,6 +894,39 @@ class testplan extends tlObjectWithAttachments
 			break;
 		}
 
+        // Multiple Test Case Steps Feature
+        if( !is_null($recordset) )
+        {
+			switch($my['options']['output'])
+			{ 
+        	
+				case 'mapOfArray':
+				case 'mapOfMap':
+				    $itemSet = array_keys($recordset);
+	  				foreach($itemSet as $itemKey)
+	  				{
+	  					$keySet = array_keys($recordset[$itemKey]);
+	  					$target = &$recordset[$itemKey];
+	  					foreach($keySet as $accessKey)
+	  					{
+	  						$step_set = $this->tcase_mgr->get_steps($target[$accessKey]['tcversion_id']);
+	  						$target[$accessKey]['steps'] = $step_set;
+	  					}
+	  				}
+				break;
+				
+				case 'array':
+				case 'map':
+				default:
+  					foreach($keySet as $accessKey)
+  					{
+	  					$step_set = $this->tcase_mgr->get_steps($recordset[$accessKey]['tcversion_id']);
+	  					$recordset[$accessKey]['steps'] = $step_set;
+	  				} 
+				break;
+			}
+        }
+
 		
 		return $recordset;
 	}
@@ -966,11 +1003,11 @@ class testplan extends tlObjectWithAttachments
 			" GROUP BY NHA.parent_id, NHC.name, T.tcversion_id, TCVA.tc_external_id, TCVA.version  ";
 		
 		$sql2 = " SELECT SUBQ.name, SUBQ.newest_tcversion_id, SUBQ.tc_id, " .
-			" SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .
-			" TCV.version AS newest_version " .
-			" FROM {$this->tables['tcversions']} TCV, ( $sql ) AS SUBQ " .
-			" WHERE SUBQ.newest_tcversion_id = TCV.id " .
-			" ORDER BY SUBQ.tc_id ";
+			    " SUBQ.tcversion_id, SUBQ.version, SUBQ.tc_external_id, " .
+			    " TCV.version AS newest_version " .
+			    " FROM {$this->tables['tcversions']} TCV, ( $sql ) AS SUBQ " .
+			    " WHERE SUBQ.newest_tcversion_id = TCV.id " .
+			    " ORDER BY SUBQ.tc_id ";
 		
 		return $this->db->fetchRowsIntoMap($sql2,'tc_id');
 	}

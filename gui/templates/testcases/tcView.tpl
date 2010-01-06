@@ -1,17 +1,33 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.30 2010/01/02 19:02:23 franciscom Exp $
+$Id: tcView.tpl,v 1.31 2010/01/06 16:33:20 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
+    20100106 - franciscom - Multiple Test Case Steps Feature
     20090418 - franciscom - BUGID 2364 
     20090414 - franciscom - BUGID 2378
     20090308 - franciscom - added args_can_do
     20090215 - franciscom - BUGID - show info about links to test plans
 *}
 
+{config_load file="input_dimensions.conf"}
+{lang_get var='labels' 
+          s='no_records_found,other_versions,show_hide_reorder,
+             version,title_test_case,match_count'}
+
+{* Configure Actions *}
+{assign var="deleteStepAction" value="lib/testcases/tcEdit.php?doAction=doDeleteStep&step_id="}
+
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+{include file="inc_del_onclick.tpl"}
+
+<script type="text/javascript">
+/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
+var del_action=fRoot+'{$deleteStepAction}';
+</script>
+
 
 {if $smarty.const.USE_EXT_JS_LIBRARY}
   {include file="inc_ext_js.tpl" css_only=1}

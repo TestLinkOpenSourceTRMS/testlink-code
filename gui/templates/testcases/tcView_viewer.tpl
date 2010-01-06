@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.38 2010/01/06 08:39:28 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.39 2010/01/06 16:37:11 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -17,11 +17,13 @@ rev:
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
-             btn_create_step,
+             btn_create_step,step_number,btn_reorder_steps,
+             execution_type_short_descr,delete_step,show_hide_reorder,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
+
 {* will be useful in future to semplify changes *}
-{assign var="tableColspan" value="2"} 
+{assign var="tableColspan" value="{$gui->tableColspan}"} 
 {assign var="addInfoDivStyle" value='style="padding: 5px 3px 4px 10px;"'}
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}

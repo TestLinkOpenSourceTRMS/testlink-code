@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.48 2009/12/07 18:17:12 franciscom Exp $
+$Id: execSetResults.tpl,v 1.49 2010/01/06 18:34:10 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090901 - franciscom - preconditions
@@ -33,7 +33,8 @@ Rev:
 {lang_get var='labels'
           s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
              th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
-             version,has_no_assignment,assigned_to,execution_history,exec_notes,
+             version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
+             execution_type_short_descr,expected_results,
              last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
              test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
 	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,

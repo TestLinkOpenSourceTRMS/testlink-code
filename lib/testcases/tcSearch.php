@@ -1,9 +1,10 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: tcSearch.php,v 1.3 2010/01/05 16:37:06 franciscom Exp $
+ * $Id: tcSearch.php,v 1.4 2010/01/06 18:32:06 franciscom Exp $
  * Purpose:  Presents the search results. 
  *
  * rev:
+ *	   20100106	 - franciscom - Multiple Test Case Steps Feature
  *     20090228 - franciscom - if targetTestCase == test case prefix => 
  *                             consider as empty => means search all.
  *
@@ -25,8 +26,10 @@ $map = null;
 $args = init_args();
 if ($args->tprojectID)
 {
-	$tables = tlObjectWithDB::getDBTables(array("cfield_design_values",'nodes_hierarchy',
-								          'requirements','req_coverage','testcase_keywords','tcversions'));
+	$tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
+								                'requirements','req_coverage','tcsteps',
+								                'testcase_keywords','tcversions'));
+								                
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
     $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
@@ -42,77 +45,85 @@ if ($args->tprojectID)
    	    
         $tcase_mgr = new testcase ($db);
         $tcaseID = $tcase_mgr->getInternalID($args->targetTestCase,$tcase_cfg->glue_character); 
-        $filter['by_tc_id'] = " AND NHB.parent_id = {$tcaseID} ";
+        $filter['by_tc_id'] = " AND NH_TCV.parent_id = {$tcaseID} ";
     }
     else
     {
         $tproject_mgr->get_all_testcases_id($args->tprojectID,$a_tcid);
-        $filter['by_tc_id'] = " AND NHB.parent_id IN (" . implode(",",$a_tcid) . ") ";
+        $filter['by_tc_id'] = " AND NH_TCV.parent_id IN (" . implode(",",$a_tcid) . ") ";
     }
     if($args->version)
     {
-        $filter['by_version'] = " AND version = {$args->version} ";
+        $filter['by_version'] = " AND TCV.version = {$args->version} ";
     }
     
     if($args->keyword_id)				
     {
-        $from['by_keyword_id'] = " ,{$tables['testcase_keywords']} KW ";
-        $filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$args->keyword_id} ";	
+        // $from['by_keyword_id'] = " ,{$tables['testcase_keywords']} KW ";
+        // $filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$args->keyword_id} ";	
+        
+        $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
+        $filter['by_keyword_id'] = " AND KW.keyword_id = {$args->keyword_id} ";	
+        
     }
     
     if($args->name != "")
     {
         $args->name =  $db->prepare_string($args->name);
-        $filter['by_name'] = " AND NHA.name like '%{$args->name}%' ";
+        $filter['by_name'] = " AND NH_TC.name like '%{$args->name}%' ";
     }
     
     if($args->summary != "")
     {
         $args->summary = $db->prepare_string($args->summary);
-        $filter['by_summary'] = " AND summary like '%{$args->summary}%' ";
+        $filter['by_summary'] = " AND TCV.summary like '%{$args->summary}%' ";
     }    
     
     if($args->steps != "")
     {
         $args->steps = $db->prepare_string($args->steps);
-        $filter['by_steps'] = " AND steps like '%{$args->steps}%' ";	
+        $filter['by_steps'] = " AND TCSTEPS.actions like '%{$args->steps}%' ";	
     }    
     
     if($args->expected_results != "")
     {
 		$args->expected_results = $db->prepare_string($args->expected_results);
-        $filter['by_expected_results'] = " AND expected_results like '%{$args->expected_results}%' ";	
+        $filter['by_expected_results'] = " AND TCSTEPS.expected_results like '%{$args->expected_results}%' ";	
     }    
     
     if($args->custom_field_id > 0)
     {
         $args->custom_field_id = $db->prepare_string($args->custom_field_id);
         $args->custom_field_value = $db->prepare_string($args->custom_field_value);
-        $from['by_custom_field']= " ,{$tables['cfield_design_values']} CFD "; 
+        $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
+                                  " ON CFD.node_id=NH_TC.id ";
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-                                     " AND CFD.node_id=NHA.id " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
     }
    
    	if($args->requirement_doc_id != "")
     {
     	$args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
-     	$from['by_requirement_doc_id'] = " , {$tables['requirements']} REQ, " .
-                                       " {$tables['req_coverage']}  RC";  
-    	$filter['by_requirement_doc_id'] = " AND RC.testcase_id = NHA.id " .
-                                        " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' " .
-                                        " AND REQ.id=RC.req_id "; 
+     	$from['by_requirement_doc_id'] = " JOIN {$tables['requirements']} REQ " .
+     	                                 " ON AND REQ.id=RC.req_id " .
+                                         " JOIN {$tables['req_coverage']} RC" .  
+                                         " ON RC.testcase_id = NH_TC.id ";
+    	$filter['by_requirement_doc_id'] = " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' ";
     }   
     
-    $sqlFields = " SELECT NHA.id AS testcase_id,NHA.name,TCV.id AS tcversion_id," .
-                 " summary,steps,expected_results,version,tc_external_id";
+    $sqlFields = " SELECT NH_TC.id AS testcase_id,NH_TC.name,TCV.id AS tcversion_id," .
+                 " TCV.summary, TCV.version, TCV.tc_external_id "; 
+                 // " TCSTEPS.actions, TCSTEPS.expected_results";
     
-    $sqlCount  = "SELECT COUNT(NHA.id) ";
+    $sqlCount  = "SELECT COUNT(NH_TC.id) ";
     
-    $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NHA, " .
-                " {$tables['nodes_hierarchy']} NHB, {$tables['tcversions']} TCV " .
-                " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']}".
-                " WHERE NHA.id = NHB.parent_id AND NHB.id = TCV.id ";
+    $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NH_TC " .
+                " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
+                " JOIN {$tables['nodes_hierarchy']} NH_TCSTEPS ON NH_TCSTEPS.parent_id = NH_TCV.id " .
+                " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
+                " JOIN {$tables['tcsteps']} TCSTEPS ON NH_TCSTEPS.id = TCSTEPS.id  " .
+                " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']} " .
+                " WHERE 1=1 ";
            
     if ($filter)
     {

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.37 2010/01/02 19:02:23 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.38 2010/01/06 08:39:28 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -18,7 +18,7 @@ rev:
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
              btn_create_step,
-             execution_type,test_importance,none,preconditions"}
+             execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
 {* will be useful in future to semplify changes *}
 {assign var="tableColspan" value="2"} 
@@ -147,6 +147,13 @@ rev:
 		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
 		*}
 	</form>
+	
+	{* compare versions *}
+	<form method="post" action="lib/testcases/tcCompareVersions.php" name="version_compare">
+			<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+			<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
+	</form>
+	
 	</span>
 	
   </div> {* class="groupBtn" *}

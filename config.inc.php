@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.278 2009/12/30 18:16:57 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.279 2010/01/06 08:52:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20100106 - franciscom - added $tlCfg->diff_cfg - diff for test case and req (Contribution)
  * 	20091227 - franciscom - REMOVED - $tlCfg->req_cfg->reqdoc_id->is_system_wide
  *	20091217 - franciscom - $tlCfg->testcase_cfg->duplicated_name_algorithm
  *  20091205 - franciscom - BUGID 0002469: $tlCfg->exec_cfg->expand_collapse
@@ -106,7 +107,7 @@ $tlCfg->req_cfg = new stdClass();
 $tlCfg->validation_cfg = new stdClass();
 $tlCfg->custom_fields = new stdClass();
 $tlCfg->req_spec_cfg = new stdClass();
-
+$tlCfg->diff_cfg = new stdClass();
 
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -903,6 +904,10 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed'
 // 
 // DISABLED: no links are automatically created.
 $tlCfg->req_cfg->internal_links = ENABLED; 
+
+// Requirement/testcase diff
+// default value of lines to show before and after each difference
+$tlCfg->diff_cfg->context = 5;
 
 
 // ----------------------------------------------------------------------------

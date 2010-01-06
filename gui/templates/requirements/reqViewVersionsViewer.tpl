@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.8 2009/12/31 10:53:13 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.9 2010/01/06 08:42:15 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -9,7 +9,8 @@ rev:
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version,
-             version,testproject,title_last_mod,title_created,by"}
+             version,testproject,title_last_mod,title_created,by,
+             btn_compare_versions"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -63,6 +64,13 @@ rev:
 	  	{/if}
 	  	<input type="submit" name="new_version" value="{$labels.btn_new_version}" onclick="doAction.value='doCreateVersion'"/>
 	  </form>
+	  
+	{* compare versions *}
+	<form method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
+		<input type="hidden" name="requirement_id" value="{$args_req.id}" />
+		<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
+	</form>
+	  	
   </div> {* class="groupBtn" *}
 {/if}
 

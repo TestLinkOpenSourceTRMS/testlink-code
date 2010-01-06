@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.532 2010/01/05 13:15:31 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.533 2010/01/06 08:49:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2655,6 +2655,24 @@ $TLS_req_spec_not_found = "Requirement specification %s not found in test projec
 $TLS_req_not_found = "Requirement %s not found in test project (prefix:%s).";
 $TLS_invalid_item = 'Invalid item (%s)';
 $TLS_btn_show_direct_link = "Show permanent link";
+
+// ----- testcase/req comparison -----
+$TLS_title_compare_versions_tc = "Testcase versions compare page";
+$TLS_title_compare_versions_req = "Requirement versions compare page";
+$TLS_btn_compare_versions = "Compare versions";
+$TLS_btn_compare_selected_versions = "Compare selected versions";
+$TLS_select_versions = "Select Versions to compare:";
+$TLS_version = "Version ";
+$TLS_compare = "Compare ";
+$TLS_modified = "Last modified ";
+$TLS_modified_by = "Last modified by ";
+$TLS_num_changes = "Number of changes in %s: %s.";
+$TLS_no_changes = "No changes in %s.";
+$TLS_context = "Context (number of lines):";
+$TLS_show_all = "show all";
+$TLS_version_short = "v";
+$TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%s) of testcase %s"; 
+$TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";
 
 // ----- END ------------------------------------------------------------------
 ?>

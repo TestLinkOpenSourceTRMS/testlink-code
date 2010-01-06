@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.230 2010/01/06 18:00:23 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.231 2010/01/06 18:04:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -14,6 +14,8 @@
  * 20100106 - franciscom - Multiple Test Case Steps Feature
  *                         Affected methods: get_by_id(), create(), update()
  *                         get_last_version_info(), get_linked_versions(), copy_to()
+ *                         copy_tcversion()
+ *
  * 20100105 - franciscom - fixed missing copy of preconditions on copy_tcversion()
  *                         exportTestCaseDataToXML() - added execution_type, importance
  *
@@ -1477,15 +1479,34 @@ class testcase extends tlObjectWithAttachments
 	function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 	{
 	    $now = $this->db->db_now();
-	    $sql="INSERT INTO {$this->tables['tcversions']} (id,version,tc_external_id,author_id,creation_ts," .
-	         "                        summary,preconditions,steps,expected_results,importance,execution_type) " .
+	    // $sql="INSERT INTO {$this->tables['tcversions']} (id,version,tc_external_id,author_id,creation_ts," .
+	    //      "                        summary,preconditions,steps,expected_results,importance,execution_type) " .
+	    //      " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
+	    //      "        tc_external_id, " .
+	    //      "        {$user_id} AS author_id, {$now} AS creation_ts," .
+	    //      "        summary,preconditions,steps,expected_results,importance,execution_type " .
+	    //      " FROM {$this->tables['tcversions']} " .
+	    //      " WHERE id={$from_tcversion_id} ";
+
+	    $sql="/* $debugMsg */ " . 
+	         " INSERT INTO {$this->tables['tcversions']} " . 
+	         " (id,version,tc_external_id,author_id,creation_ts,summary,importance,execution_type) " .
 	         " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
 	         "        tc_external_id, " .
 	         "        {$user_id} AS author_id, {$now} AS creation_ts," .
-	         "        summary,preconditions,steps,expected_results,importance,execution_type " .
+	         "        summary,importance,execution_type " .
 	         " FROM {$this->tables['tcversions']} " .
 	         " WHERE id={$from_tcversion_id} ";
-	
+		$result = $this->db->exec_query($sql);	
+	    
+	    // Need to get all steps
+	    $stepsSet = $this->get_steps($from_tcversion_id);
+	    foreach($stepsSet as $key => $step)
+	    {
+        	$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
+        	                         $step['expected_results'],$step['execution_type']);			
+	    }
+
 	    $result = $this->db->exec_query($sql);
 	}
 	

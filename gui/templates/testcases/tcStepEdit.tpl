@@ -1,13 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.1 2010/01/06 16:29:29 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.2 2010/01/06 17:44:43 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev: 
      
 *}
 
-DDDD {$gui->operation}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 

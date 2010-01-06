@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.40 2010/01/06 16:37:55 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.41 2010/01/06 16:38:58 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -37,6 +37,10 @@ rev:
 {assign var="tcversion_id" value=$args_testcase.id}
 {assign var="url_args" value="tcAssign2Tplan.php?tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {assign var="hrefAddTc2Tplan"  value="$basehref$module$url_args"}
+
+{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id&step_id="}
+{assign var="hrefEditStep"  value="$basehref$module$url_args"}
+
 
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
 {assign var="updater_userinfo" value=""}

@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.533 2010/01/06 08:49:00 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.534 2010/01/07 20:47:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -93,6 +93,7 @@ $TLS_step_number="#";
 $TLS_step_number_verbose = "Step number";
 $TLS_step_number_x_created = "Step number: %s created";
 $TLS_edit_step_number_x = "Edit Step number: %s - Test Case: %s - Version: %s";
+$TLS_create_step = "Create Step - Test Case: %s - Version: %s";
 $TLS_delete_step = "Delete step";
 $TLS_warning_delete_step = "<p>You are going to delete step number: %s </p><p>Are you sure?</p>";
 $TLS_warning_step_number = " Step number must be a number and > 0";
@@ -1304,6 +1305,7 @@ $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment 
 
 // ----- gui/templates/tcEdit.tpl -----
 $TLS_title_edit_tc = "Edit Test Case";
+$TLS_warning_editing_executed_step = "Warning! This Test Case Step has been executed.";
 $TLS_warning_editing_executed_tc = "Warning! This Test Case version has been executed.";
 $TLS_warning_unsaved = "You will lose any unsaved changes!";
 

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.76 2010/01/02 18:19:34 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.77 2010/01/07 20:44:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -292,7 +292,7 @@ class testsuite extends tlObjectWithAttachments
 		{
 			foreach($testcases as $the_key => $elem)
 			{
-	  		$tcase_mgr->delete($elem['id']);
+	  			$tcase_mgr->delete($elem['id']);
 			}
 		}  
 	  	

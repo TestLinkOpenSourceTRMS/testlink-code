@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.2 2010/01/06 17:44:43 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.3 2010/01/07 20:44:15 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev: 
@@ -49,8 +49,8 @@ function validateForm(f)
 	</div>
 {/if}
 
-{if $has_been_executed}
-    {lang_get s='warning_editing_executed_tc' var="warning_edit_msg"}
+{if $gui->has_been_executed}
+    {lang_get s='warning_editing_executed_step' var="warning_edit_msg"}
     <div class="messages" align="center">{$warning_edit_msg}</div>
 {/if}
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.137 $
- * @modified $Date: 2010/01/06 17:43:58 $  by $Author: franciscom $
+ * @version $Revision: 1.138 $
+ * @modified $Date: 2010/01/07 20:44:16 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -45,7 +45,8 @@ $templateCfg = templateConfiguration('tcEdit');
 
 $commandMgr = new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
-$oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg);
+
+$oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg, array());
 
 $sqlResult = "";
 $init_inputs=true; // BUGID 2163 - Create test case with same title, after submit, all data lost 
@@ -120,7 +121,8 @@ switch($args->doAction)
 
 if( $doRender )
 {
-	renderGui($args,$gui,$op,$templateCfg,$cfg->webEditorCfg);
+	// renderGui($args,$gui,$op,$templateCfg,$cfg->webEditorCfg);
+	renderGui($args,$gui,$op,$templateCfg,$cfg);
 	exit();
 }
 
@@ -522,6 +524,11 @@ function getCfg()
     $cfg->tcase_template = config_get('testcase_template');
     $cfg->webEditorCfg=getWebEditorCfg('design');
     
+    $cfg->editorKeys = new stdClass();
+    $cfg->editorKeys->testcase = array('summary' => true, 'preconditions' => true);    
+    $cfg->editorKeys->step = array('steps' => true, 'expected_results' => true);    
+    
+    
     return $cfg;
 }
 
@@ -577,7 +584,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
  * manage GUI rendering
  *
  */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 {
     $smartyObj = new TLSmarty();
     $renderType = 'none';
@@ -597,7 +604,11 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                              'doDeleteStep' => '', 'doReorderSteps' => '');
 
 	$initWebEditorFromTemplate = $opObj->initWebEditorFromTemplate;                             
-    $oWebEditor = createWebEditors($argsObj->basehref,$editorCfg); 
+    $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg); 
+    // $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg,$cfgObj->editorKeys->step);
+
+
+
 	foreach ($oWebEditor->cfg as $key => $value)
   	{
   		$of = &$oWebEditor->editor[$key];

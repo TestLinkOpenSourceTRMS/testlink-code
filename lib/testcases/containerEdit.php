@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.102 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2010/01/07 20:44:16 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  *	@internal revisions
@@ -579,9 +579,14 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
 	  if( $op['status_ok'] )
 	  {
 	      $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
-                                                     $argsObj->target_position,$exclude_node_types);
+                                                       $argsObj->target_position,$exclude_node_types);
 	  }
-	  $tsuiteMgr->show($smartyObj,$template_dir,$argsObj->objectID,'ok');
+
+      $guiObj = new stdClass();
+  	  $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+	  $guiObj->id = $argsObj->objectID;
+
+	  $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,'ok');
 }
 
 /*
@@ -716,10 +721,15 @@ function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj
         foreach($argsObj->tcaseSet as $key => $tcaseid)
         {
             $op=$tcaseMgr->copy_to($tcaseid, $argsObj->containerID, $argsObj->userID,
-	                                 $argsObj->copyKeywords,$check_names_for_duplicates_cfg,
-	                                 $action_on_duplicate_name_cfg);
+	                               $argsObj->copyKeywords,$check_names_for_duplicates_cfg,
+	                               $action_on_duplicate_name_cfg);
         }
-        $tsuiteMgr->show($smartyObj,$template_dir,$argsObj->objectID);
+        
+        $guiObj = new stdClass();
+   		$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+		$guiObj->id = $argsObj->objectID;
+
+        $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID);
     }
 
 }
@@ -742,7 +752,11 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
         $user_feedback= $status_ok ? '' : lang_get('move_testcases_failed');
 
         // objectID - original container
-        $tsuiteMgr->show($smartyObj,$template_dir,$argsObj->objectID,$user_feedback);
+        $guiObj = new stdClass();
+   		$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+		$guiObj->id = $argsObj->objectID;
+
+        $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,$user_feedback);
     }
 }
 

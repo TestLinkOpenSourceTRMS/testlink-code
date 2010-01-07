@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.16 2010/01/03 11:07:21 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.17 2010/01/07 20:44:15 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -61,12 +61,13 @@ Rev:
 	  {/if}
 		{$layout1}
 
-		<div class="labelHolder">{$labels.steps}</div>
-		<div>{$steps}</div>
-		{$layout2}
-		<div class="labelHolder">{$labels.expected_results}</div>
-		<div>{$expected_results}</div>
-		{$layout3}
+{* Multiple Test Case Steps Feature                              *}   
+{* <div class="labelHolder">{$labels.steps}</div>                *}
+{* <div>{$steps}</div>                                           *}
+{* {$layout2}                                                    *} 
+{* <div class="labelHolder">{$labels.expected_results}</div>     *}
+{* <div>{$expected_results}</div>                                *} 
+{* {$layout3}                                                    *}
 
 		{if $session['testprojectOptAutomation']}
 			<div class="labelHolder">{$labels.execution_type}

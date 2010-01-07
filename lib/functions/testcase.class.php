@@ -6,10 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.233 2010/01/06 18:50:34 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.234 2010/01/07 20:44:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20100107 - franciscom - Multiple Test Case Steps Feature
+ *                         Affected methods: delete(), _blind_delete()
  *
  * 20100106 - franciscom - Multiple Test Case Steps Feature
  *                         Affected methods: get_by_id(), create(), update()
@@ -212,9 +215,8 @@ class testcase extends tlObjectWithAttachments
 	/**
 	 * create a test case
 	 */
-	function create($parent_id,$name,$summary,$preconditions,$steps,
-                    $expected_results,$author_id,$keywords_id='',
-                    $tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
+	function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
+	                $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
                     $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
                     $importance=2,$options=null)
 	{
@@ -997,36 +999,52 @@ class testcase extends tlObjectWithAttachments
 	
 	/* 
 	 
-	rev: 20081015 - franciscom - added check to avoid bug due to no children
+	rev:
+		20100107 - franciscom - Multiple Test Case Step Feature 
+		20081015 - franciscom - added check to avoid bug due to no children
 	
 	*/
 	function delete($id,$version_id = self::ALL_VERSIONS)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  	$children=null;
 	  	$doit=true;
+	  	
+	  	// I'm trying to speedup the next deletes
+	  	$sql="/* $debugMsg */ " . 
+	  	     " SELECT NH_TCV.id AS tcversion_id, NH_TCSTEPS.id AS step_id " .
+	  	     " FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
+	  	     " JOIN {$this->tables['nodes_hierarchy']} NH_TCSTEPS " . 
+	  	     " ON NH_TCSTEPS.parent_id = NH_TCV.id ";
+
 	  	if($version_id == self::ALL_VERSIONS)
 	  	{
-	  	  // I'm trying to speedup the next deletes
-	  	  $sql="SELECT nodes_hierarchy.id FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy";
-	  	  if( is_array($id) )
-	  	  {
-	  	    $sql .= " WHERE nodes_hierarchy.parent_id IN (" .implode(',',$id) . ") ";
-	  	  }
-	  	  else
-	  	  {
-	  	    $sql .= " WHERE nodes_hierarchy.parent_id={$id} ";
-	  	  }
-	  	
-	  	  $children_rs=$this->db->get_recordset($sql);
-	  	  $doit=!is_null($children_rs); 
-	  	  if( $doit )
-	  	  {
-	  	  foreach($children_rs as $value)
-	  	  {
-	  	    $children[]=$value['id'];
-	  	  }
-	  	}
+	  		if( is_array($id) )
+	  		{
+	  		  $sql .= " WHERE NH_TCV.parent_id IN (" .implode(',',$id) . ") ";
+	  		}
+	  		else
+	  		{
+	  		  $sql .= " WHERE NH_TCV.parent_id={$id} ";
+	  		}
 	  	}                       
+	  	else
+	  	{
+	  		  $sql .= " WHERE NH_TCV.parent_id={$id} AND NH_TCV.id = {$version_id}";
+	  	}
+
+	  	$children_rs=$this->db->get_recordset($sql);
+	  	$doit=!is_null($children_rs); 
+	  	if( $doit )
+	  	{
+	  		foreach($children_rs as $value)
+	  		{
+	  		  $children['tcversion'][]=$value['tcversion_id'];
+	  		  $children['step'][]=$value['step_id'];
+	  		}
+	  	}
+
+	  	
 	  	
 	  	if( $doit )
 	  	{   
@@ -1138,29 +1156,42 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $sql = array();
-	
+
 	    if( $version_id == self::ALL_VERSIONS)
 	    {
-		    $sql[]="DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
-		    $sql[]="DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
+		    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
+		    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
 	
-		    $children_list=implode(',',$children);
-		    $sql[]="DELETE FROM {$this->tables['testplan_tcversions']}  " .
-		           " WHERE tcversion_id IN ({$children_list})";
+		    $tcversion_list=implode(',',$children['tcversion']);
+		    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testplan_tcversions']}  " .
+		           " WHERE tcversion_id IN ({$tcversion_list})";
 	
-	      $sql[]="DELETE FROM {$this->tables['tcversions']}  " .
-		         " WHERE id IN ({$children_list})";
+		    // Multiple Test Case Steps Feature
+		    $step_list=implode(',',$children['step']);
+	        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
+		           " WHERE id IN ({$step_list})";
 	
-	      $this->deleteAttachments($id);
-	      $this->cfield_mgr->remove_all_design_values_from_node($id);
+	        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
+		           " WHERE id IN ({$tcversion_list})";
 	
-	      $item_id = $id;
+	        $this->deleteAttachments($id);
+	        $this->cfield_mgr->remove_all_design_values_from_node($id);
+	
+	        $item_id = $id;
 	    }
 	    else
 	    {
-			  $sql[] = " DELETE FROM {$this->tables['testplan_tcversions']}  WHERE tcversion_id = {$version_id}";
-	          $sql[] = "DELETE FROM {$this->tables['tcversions']} WHERE id = {$version_id}";
+			$sql[] = "/* $debugMsg */ DELETE FROM {$this->tables['testplan_tcversions']} " .
+			         " WHERE tcversion_id = {$version_id}";
+			         
+			// Multiple Test Case Steps Feature
+			$step_list=implode(',',$children['step']);
+			$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
+			       " WHERE id IN ({$step_list})";
+			           
+	        $sql[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcversions']} WHERE id = {$version_id}";
 	
 	    	$item_id = $version_id;
 	    }
@@ -1181,35 +1212,40 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function _execution_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
 	{
-		  $sql = array();
-			if( $version_id	== self::ALL_VERSIONS )
-			{
-		    $children_list=implode(',',$children);
-	    	$sql[]="DELETE FROM {$this->tables['execution_bugs']}
-	        		  WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} 
-	            		                     WHERE tcversion_id IN ({$children_list}))";
-	
-	      // 20070603 - franciscom
-	      $sql[]="DELETE FROM {$this->tables['cfield_execution_values']}  " .
-	      		   " WHERE tcversion_id IN ({$children_list})";
-	
-	      $sql[]="DELETE FROM {$this->tables['executions']}  " .
-	      		   " WHERE tcversion_id IN ({$children_list})";
-	
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = array();
+
+		if( $version_id	== self::ALL_VERSIONS )
+		{
+			
+			$tcversion_list=implode(',',$children['tcversion']);
+			// $step_list=implode(',',$children['step']);
+			
+			$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_bugs']} " .
+		  		   " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
+    		       " WHERE tcversion_id IN ({$tcversion_list}))";
+
+	      	$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']}  " .
+	      		   " WHERE tcversion_id IN ({$tcversion_list})";
+
+	      	$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']}  " .
+	      		   " WHERE tcversion_id IN ({$tcversion_list})";
+	      	
+	      	// $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['steps']}  " .
+	      	// 	   " WHERE tcversion_id IN ({$step_list})";
 	
 	    }
 	    else
 	    {
-	    		$sql[]="DELETE FROM {$this->tables['execution_bugs']}
-	        	  	  WHERE execution_id IN (SELECT id FROM {$this->tables['executions']}
-	              		                     WHERE tcversion_id = {$version_id})";
+			$sql[]="/* $debugMsg */  DELETE FROM {$this->tables['execution_bugs']} " .
+	        	   " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
+	               " WHERE tcversion_id = {$version_id})";
 	
-	        // 20070603 - franciscom
-	        $sql[]="DELETE FROM {$this->tables['cfield_execution_values']} " .
-	        		   " WHERE tcversion_id = {$version_id}";
+	        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
+	        	   " WHERE tcversion_id = {$version_id}";
 	
-	    		$sql[]="DELETE FROM {$this->tables['executions']} " .
-	        		   " WHERE tcversion_id = {$version_id}";
+	        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']} " .
+	        	   " WHERE tcversion_id = {$version_id}";
 	    }
 	
 	    foreach ($sql as $the_stm)
@@ -3965,12 +4001,15 @@ class testcase extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$sql = "/* $debugMsg */ " .
-		  	   " SELECT NH_TCASE.name, TCV.version, TCV.tc_external_id " .
+		  	   " SELECT NH_TCASE.id, NH_TCASE.name, TCV.version, TCV.tc_external_id " .
 		       " FROM {$this->tables['nodes_hierarchy']} NH_TCASE " .
 		       " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TCASE.id" .
-		       " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id " .
-		       " WHERE NH_TCASE.id = {$id} AND TCV.id = {$version_id} ";
-      
+		       " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id ";
+		       
+	    $where_clause = " WHERE TCV.id = {$version_id} ";
+	    $where_clause .= (!is_null($id) && $id > 0) ? " AND NH_TCASE .id = {$id} " :  "";
+        $sql .= $where_clause;
+       
         $result = $this->db->get_recordset($sql);
         return $result;
     }

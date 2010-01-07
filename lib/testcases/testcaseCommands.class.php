@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2010/01/06 19:16:27 $  by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2010/01/07 20:44:16 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -53,11 +53,15 @@ class testcaseCommands
 		$obj->grants = $this->grants;
     	$obj->initWebEditorFromTemplate = false;
 	    $obj->loadOnCancelURL = '';
+        $obj->loadOnCancelURL = "archiveData.php?edit=testcase&id=%s&version_id=%s";
 		$obj->main_descr = '';
 		$obj->name = '';
-	    $obj->sqlResult = '';
     	$obj->refresh_tree="no";
+	    $obj->sqlResult = '';
+   		$obj->step_id = -1;
     	$obj->tableColspan = 5;
+   		$obj->tcase_id = -1;
+   		$obj->has_been_executed = false;
 		return $obj;
 	}
 	 
@@ -117,6 +121,9 @@ class testcaseCommands
 		$new_order = config_get('treemenu_default_testcase_order');
 		$nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
 		$siblings = $this->tcaseMgr->tree_manager->get_children($argsObj->container_id,$nt2exclude);
+		
+		// new dBug($siblings);
+		
 		if( !is_null($siblings) )
 		{
 			$dummy = end($siblings);
@@ -403,12 +410,20 @@ class testcaseCommands
 	function createStep(&$argsObj,$request)
 	{
 	    $guiObj = $this->initGuiBean();
+		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
+
+		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
+		                              $tcaseInfo[0]['version']); 
+        
 		$max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
 		$max_step++;;
 
 		$guiObj->step_number = $max_step;
 		$guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
 		$guiObj->tcversion_id = $argsObj->tcversion_id;
+
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;
@@ -423,9 +438,18 @@ class testcaseCommands
 	    $guiObj = $this->initGuiBean();
 		$guiObj->user_feedback = '';
 		$guiObj->step_exec_type = $argsObj->exec_type;
+        $guiObj->tcversion_id = $argsObj->tcversion_id;
+
+		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
+		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
+		                              $tcaseInfo[0]['version']); 
+
         $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$argsObj->step_number,
                                            $argsObj->steps,$argsObj->expected_results,
-                                           $argsObj->exec_type);		
+                                           $argsObj->exec_type);	
+                                           	
+		// new dBug($op); // CBC
 		
 		if( $op['status_ok'] )
 		{
@@ -437,6 +461,8 @@ class testcaseCommands
 		$max_step++;;
 		$guiObj->step_number = $max_step;
 
+
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 
@@ -473,6 +499,7 @@ class testcaseCommands
 
 		$templateCfg = templateConfiguration('tcStepEdit');
 		$guiObj->template=$templateCfg->default_template;
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
 		
 		return $guiObj;
 	}

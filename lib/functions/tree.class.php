@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.78 2010/01/02 16:54:34 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.79 2010/01/07 20:44:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -249,13 +249,15 @@ class tree extends tlObject
   */
 	function delete_subtree($node_id)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
 		$children = $this->get_subtree_list($node_id);
 		$id2del = $node_id;
 		if($children != "")
 		{
 			$id2del .= ",{$children}";	
 		}
-		$sql = "DELETE FROM {$this->object_table} WHERE id IN ({$id2del})";
+		$sql = "/* $debugMsg */ DELETE FROM {$this->object_table} WHERE id IN ({$id2del})";
 	
 		$result = $this->db->exec_query($sql);
 	}

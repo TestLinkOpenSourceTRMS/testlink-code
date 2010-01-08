@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.44 2010/01/06 17:25:38 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.45 2010/01/08 10:25:50 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -157,10 +157,12 @@ rev:
 	</form>
 	
 	{* compare versions *}
+	{if $args_testcase.version > 1}
 	<form method="post" action="lib/testcases/tcCompareVersions.php" name="version_compare">
 			<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 			<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
 	</form>
+	{/if}
 	
 	</span>
 	

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.9 2010/01/06 08:42:15 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.10 2010/01/08 10:26:21 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -66,11 +66,13 @@ rev:
 	  </form>
 	  
 	{* compare versions *}
-	<form method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
-		<input type="hidden" name="requirement_id" value="{$args_req.id}" />
-		<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
-	</form>
-	  	
+	{if $gui->req_versions|@count > 1}
+		<form method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
+			<input type="hidden" name="requirement_id" value="{$args_req.id}" />
+			<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
+		</form>
+	{/if}
+
   </div> {* class="groupBtn" *}
 {/if}
 

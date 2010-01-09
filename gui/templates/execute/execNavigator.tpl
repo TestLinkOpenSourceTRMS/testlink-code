@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.29 2009/09/10 09:53:27 havlat Exp $ *}
+{* $Id: execNavigator.tpl,v 1.30 2010/01/09 13:41:32 erikeloff Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+     20100109 - eloff      - BUGID 2800 - filter panel is now ext CollapsiblePanel
      20090808 - franciscom - added contribution platform
      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
      20081220 - franciscom - advanced/simple filters
@@ -32,10 +33,28 @@ rev :
 {/if}
           
 
+{* includes Ext.ux.CollapsiblePanel *}
+<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 {literal}
 <script type="text/javascript">
 	treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
 	           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+	Ext.onReady(function() {
+		Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+
+		// Use a collapsible panel for filter settings
+		// and place a help icon in ther header
+		var panel = new Ext.ux.CollapsiblePanel({
+			id: 'tl_exec_filter_settings',
+			applyTo: 'filter_panel',
+			tools: [{
+				id: 'help',
+				handler: function(event, toolEl, panel) {
+					show_help(help_localized_text);
+				}
+			}]
+		});
+	});
 </script>
 {/literal}
 
@@ -53,7 +72,7 @@ rev :
 </head>
 
 {* ===================================================================== *}
-<body onLoad="show_hide('tplan_settings','tpn_view_settings',0);">
+<body>
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {assign var="build_number" value=$gui->optBuild.selected }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -62,19 +81,14 @@ rev :
 {$tlCfg->gui_separator_open}{$labels.build}{$tlCfg->gui_title_separator_1}
 {$gui->optBuild.items.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
 
-<div class="x-panel-header x-unselectable">
-	<div class="x-tool x-tool-toggle" style="background-position:0 -75px; float:left;"
-		onclick="show_hide('tplan_settings', 'tpn_view_settings',
-	              document.getElementById('tplan_settings').style.display=='none')">
+{* include localized help message as a js-variable without icon *}
+{include file="inc_help.tpl" helptopic="hlp_executeFilter" icon=false}
+<div id="filter_panel">
+	<div class="x-panel-header x-unselectable">
+		{$labels.caption_nav_filter_settings}
 	</div>
-	<span style="padding:2px;"
-			onclick="show_hide('tplan_settings', 'tpn_view_settings',
-	              document.getElementById('tplan_settings').style.display=='none')">
-	{$labels.caption_nav_filter_settings}</span>
-	<span>{include file="inc_help.tpl" helptopic="hlp_executeFilter"}</span>
-</div>
 
-<div id="tplan_settings" class="exec_additional_info" style="margin: 3px;">
+<div id="tplan_settings" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
 <form method="post" id="filters">
   <input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
 	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
@@ -191,6 +205,7 @@ rev :
 		</div>
 </form>
 </div>
+</div> {* end filter panel *}
 
 
 {* ===================================================================== *}

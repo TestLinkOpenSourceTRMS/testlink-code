@@ -2,7 +2,8 @@
 /*********************************************************************************************************************\
  * LAST UPDATE
  * ============
- * March 22, 2007
+ * 20100109 - franciscom
+ * Adapted for Test Link
  *
  *
  * AUTHOR
@@ -45,7 +46,6 @@
  * new dBug ( $strXml, "xml" );
  * 
 \*********************************************************************************************************************/
-
 class dBug {
 	
 	var $xmlDepth=array();
@@ -55,18 +55,34 @@ class dBug {
 	var $xmlCount=0;
 	var $xmlAttrib;
 	var $xmlName;
-	var $arrType=array("array","object","resource","boolean");
+	var $arrType=array("array","object","resource","boolean","NULL");
 	var $bInitialized = false;
+	var $bCollapsed = false;
 	var $arrHistory = array();
 	
-	//constructor
-	function dBug($var,$forceType="") {
+	// constructor
+    // function dBug($var,$forceType="",$bCollapsed=false) {
+	function dBug($var,$options) {
+		
+		if( !defined('DBUG_ON') ) return; // >>----> Bye!
+
+        $my['options'] = array('forceType' => '', 'collapsed' => true, 'label'=> '');
+   	    $my['options'] = array_merge($my['options'], (array)$options);
+        $forceType =  $my['options']['forceType'];
+        
+    
 		//include js and css scripts
 		if(!defined('BDBUGINIT')) {
 			define("BDBUGINIT", TRUE);
 			$this->initJSandCSS();
 		}
 		$arrAccept=array("array","object","xml"); //array of variable types that can be "forced"
+		$this->bCollapsed = $my['options']['collapsed'];
+
+        if( $my['options']['label'] != '')
+        {
+        	echo $my['options']['label'] . '<br>';
+        } 
 		if(in_array($forceType,$arrAccept))
 			$this->{"varIs".ucfirst($forceType)}($var);
 		else
@@ -99,7 +115,8 @@ class dBug {
 			//find call to dBug class
 			preg_match('/\bnew dBug\s*\(\s*(.+)\s*\);/i', $code, $arrMatches);
 			
-			return $arrMatches[1];
+			$varName = explode(',',$arrMatches[1]);
+			return $varName[0];
 		}
 		return "";
 	}
@@ -110,15 +127,18 @@ class dBug {
 			$header = $this->getVariableName() . " (" . $header . ")";
 			$this->bInitialized = true;
 		}
+		$str_i = ($this->bCollapsed) ? "style=\"font-style:italic\" " : ""; 
+		
 		echo "<table cellspacing=2 cellpadding=3 class=\"dBug_".$type."\">
 				<tr>
-					<td class=\"dBug_".$type."Header\" colspan=".$colspan." onClick='dBug_toggleTable(this)'>".$header."</td>
+					<td ".$str_i."class=\"dBug_".$type."Header\" colspan=".$colspan." onClick='dBug_toggleTable(this)'>".$header."</td>
 				</tr>";
 	}
 	
 	//create the table row header
 	function makeTDHeader($type,$header) {
-		echo "<tr>
+		$str_d = ($this->bCollapsed) ? " style=\"display:none\"" : "";
+		echo "<tr".$str_d.">
 				<td valign=\"top\" onClick='dBug_toggleRow(this)' class=\"dBug_".$type."Key\">".$header."</td>
 				<td>";
 	}

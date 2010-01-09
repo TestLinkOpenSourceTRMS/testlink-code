@@ -1,17 +1,22 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later.
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: usersView.php,v $
+ * Shows all users
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/10/05 08:47:11 $ -  $Author: franciscom $
+ * @package 	TestLink
+ * @author 		-
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: usersView.php,v 1.31 2010/01/09 10:59:19 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * shows all users
  *
- * rev: 20080416 - franciscom - getRoleColourCfg()
+ * @internal Revisions:
  *
+ *	20100106 - franciscom - security improvement - checkUserOrderBy()
+ *                         (after scanning with Acunetix Web Security Scanner)
+ *                          
  */
 require_once("../../config.inc.php");
 require_once("users.inc.php");
@@ -137,13 +142,18 @@ function get_order_by_clause($order)
 */
 function init_args()
 {
-	$iParams = array(
-			"operation" => array(tlInputParameter::STRING_N,0,50),
-			"user_order_by" => array(tlInputParameter::STRING_N,0,50),
-			"order_by_role_dir" => array(tlInputParameter::STRING_N,0,4),
-			"order_by_login_dir" => array(tlInputParameter::STRING_N,0,4),
-			"user" => array(tlInputParameter::INT_N),
-		);
+	
+	// input from GET['HelloString3'], 
+	// type: string,  minLen: 1, maxLen: 15,
+	// checkFunction: applys checks via checkFooOrBar() to ensure its either 'foo' or 'bar' 
+	// normalization: done via  normFunction() which replaces ',' with '.' 
+	// "HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,null,'checkFooOrBar','normFunction'),
+	
+	$iParams = array("operation" => array(tlInputParameter::STRING_N,0,50),
+			         "user_order_by" => array(tlInputParameter::STRING_N,0,50),			
+			         "order_by_role_dir" => array(tlInputParameter::STRING_N,0,4),
+			         "order_by_login_dir" => array(tlInputParameter::STRING_N,0,4),
+			         "user" => array(tlInputParameter::INT_N));
 
 	$pParams = R_PARAMS($iParams);
 
@@ -190,6 +200,20 @@ function getRoleColourCfg(&$db)
     }
     return $role_colour;
 }
+
+
+/**
+ * check function for tlInputParameter user_order_by
+ *
+ */
+function checkUserOrderBy($input)
+{
+	$domain = array('order_by_role','order_by_login');
+	
+	$status_ok = isset($domain[$input]) ? true : false;
+	return $status_ok;
+}
+
 
 function checkRights(&$db,&$user)
 {

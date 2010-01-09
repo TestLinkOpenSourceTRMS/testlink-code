@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.19 2009/06/16 22:21:09 havlat Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.20 2010/01/09 09:11:48 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -391,6 +391,7 @@ class tlIntegerValidationInfo
 	 * @var integer the minimum value of the parameter
 	 */
 	public $minVal = -2147483648;
+	
 	/**
 	 * @var function callback function which can be used for validation
 	 */

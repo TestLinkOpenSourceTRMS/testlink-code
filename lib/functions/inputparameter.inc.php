@@ -7,19 +7,31 @@
  * 
  * Examples of using tlInputParameter related functions
  *
+ *	@interal revisions:
+ *  20100109 - franciscom - fixed errors on documentation          
+ *
  * <code>
+ *  
+ * 
  * 	$params = array( 
- *		//string, from POST['HelloString'], minLen 1, maxLen 15
+ *
+ *		// input from GET['HelloString3'], 
+ *      // type: string,  minLen: 1, maxLen: 15,
+ *      // checkFunction: applys checks via checkFooOrBar() to ensure its either 'foo' or 'bar' 
+ *      // normalization: done via  normFunction() which replaces ',' with '.' 
+ *		"HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,null,'checkFooOrBar','normFunction'),
+ *
+ *		// string, from POST['HelloString'], minLen 1, maxLen 15
  *		"HelloString1" => array("POST",tlInputParameter::STRING_N,1,15),
+ *
  *		//non negative integer, from POST['HelloInt1']
  *		"HelloInt1" =>  array("POST",tlInputParameter::INT_N),
+ *
  *		//string, from POST['HelloString2'], minLen 1, maxLen 15, checked with a regExp 
  *		"HelloString2" => array("POST",tlInputParameter::STRING_N,1,15,'/^aaaa$/'),
- *		//string, from POST['HelloString3'], minLen 1, maxLen 15, checked with a check function to 	
- *		//ensure its either 'foo' or 'bar' and normalization function which replaces ',' with '.' 
- *		"HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,null,'checkFunction','normFunction'),
- *		//non negativ integer, from GET['HelloInt2'], minValue = 20, maxValue = 40. checked to 	
- *		//ensure it's odd by using a chechkFunction
+ *
+ *		// non negativ integer, from POST['HelloInt2'], minValue = 20, maxValue = 40. checked to 	
+ *		// ensure it's odd by using a chechkFunction
  *		"HelloInt2" =>  array("POST",tlInputParameter::INT,20,40,'checkOdd'),
  * 	);
  * 
@@ -30,7 +42,7 @@
  * 		"HelloString1" => array(tlInputParameter::STRING_N,1,15),
  * 		"HelloInt1" =>  array(tlInputParameter::INT_N),
  * 		"HelloString2" => array(tlInputParameter::STRING_N,1,15,'/^aaaa$/'),
- * 		"HelloString3" => 			array(,tlInputParameter::STRING_N,1,15,null,'checkFunction','normFunction'),
+ * 		"HelloString3" => array(,tlInputParameter::STRING_N,1,15,null,'checkFunction','normFunction'),
  * 		"HelloInt2" =>  array(tlInputParameter::INT,20,40,'checkOdd'),
  * 	);
  * 
@@ -39,7 +51,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: inputparameter.inc.php,v 1.25 2009/09/11 20:35:09 schlundus Exp $
+ * @version    	CVS: $Id: inputparameter.inc.php,v 1.26 2010/01/09 09:11:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * 
@@ -236,7 +248,9 @@ function GPR_PARAM_INT($inputSource,$name,$minVal = null,$maxVal = null,$pfnVali
 	foreach($parameters as $parameter)
     {
         if (!is_null($$parameter))
+        {
             $vInfo->$parameter = $$parameter;
+        }    
     }
 	$pInfo = new tlParameterInfo($inputSource,$name);
 	$iParam = new tlInputParameter($pInfo,$vInfo);

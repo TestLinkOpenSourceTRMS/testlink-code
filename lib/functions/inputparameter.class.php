@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.20 2010/01/09 09:11:48 franciscom Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.21 2010/01/11 19:16:30 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -367,7 +367,7 @@ class tlStringValidationInfo
 		{
 			if (!$pfnValidation($value))
 			{
-				throw new Exception("Input parameter validation failed [external function]");
+				throw new Exception("Input parameter validation failed [external function - $pfnValidation]");
 			}	
 		}	
 			

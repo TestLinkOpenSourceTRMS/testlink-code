@@ -17,6 +17,7 @@
  *
  *		// input from GET['HelloString3'], 
  *      // type: string,  minLen: 1, maxLen: 15,
+ *      // regexp: null 
  *      // checkFunction: applys checks via checkFooOrBar() to ensure its either 'foo' or 'bar' 
  *      // normalization: done via  normFunction() which replaces ',' with '.' 
  *		"HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,null,'checkFooOrBar','normFunction'),
@@ -51,7 +52,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: inputparameter.inc.php,v 1.26 2010/01/09 09:11:48 franciscom Exp $
+ * @version    	CVS: $Id: inputparameter.inc.php,v 1.27 2010/01/11 19:16:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * 

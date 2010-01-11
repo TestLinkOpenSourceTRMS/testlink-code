@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.17 2009/08/29 23:18:02 havlat Exp $
+$Id: userInfo.tpl,v 1.18 2010/01/11 19:16:30 franciscom Exp $
 
 rev: 20080908 - franciscom - email validity check
 *}
@@ -166,6 +166,7 @@ function checkPasswords(oldp,newp,newp_check)
 	</div>
 </form>
 
+FAFAFAF
 <hr />
 <h2>{lang_get s="title_personal_passwd"}</h2>
 {if $external_password_mgmt eq 0 }
@@ -195,7 +196,9 @@ function checkPasswords(oldp,newp,newp_check)
    <p>{$labels.your_password_is_external}<p>
 {/if}
 
-{if $tlCfg->api->enabled eq TRUE}
+API{$tlCfg->api}
+
+{if $tlCfg->api->enabled}
 <hr />
 <h2>{lang_get s="title_api_interface"}</h2>
 <div>

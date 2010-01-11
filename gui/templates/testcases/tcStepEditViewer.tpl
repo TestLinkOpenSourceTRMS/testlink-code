@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcStepEditViewer.tpl,v 1.3 2010/01/06 17:11:16 franciscom Exp $
+$Id: tcStepEditViewer.tpl,v 1.4 2010/01/11 15:59:03 erikeloff Exp $
 Purpose: test case step edit/create viewer
 
 Rev:
+ 20100111 - eloff - BUGID 2036 - Check modified content before exit
 *}
 
 {* ---------------------------------------------------------------- *}
@@ -27,8 +28,11 @@ Rev:
 	<div class="labelHolder"><label for="step_number">{$labels.step_number_verbose}</label></div>
 	<div>	
 		<input type="text" name="step_number" id="step_number"
-		       value="{$gui->step_number}" 
-			     size="{#STEP_NUMBER_SIZE#}" 	maxlength="{#STEP_NUMBER_MAXLEN#}"
+			value="{$gui->step_number}"
+			size="{#STEP_NUMBER_SIZE#}"
+			maxlength="{#STEP_NUMBER_MAXLEN#}"
+			onchange="content_modified = true"
+			onkeypress="content_modified = true"/>
   	{include file="error_icon.tpl" field="step_number"}
 		<p />
 		{$layout1}
@@ -42,7 +46,7 @@ Rev:
 
 		{if $session['testprojectOptAutomation']}
 			<div class="labelHolder">{$labels.execution_type}
-			<select name="exec_type" onchange="IGNORE_UNLOAD = false">
+			<select name="exec_type" onchange="content_modified = true">
     	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
 	    	</select>
 			</div>

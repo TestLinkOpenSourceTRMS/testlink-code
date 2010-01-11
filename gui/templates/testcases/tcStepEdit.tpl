@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.3 2010/01/07 20:44:15 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.4 2010/01/11 15:59:03 erikeloff Exp $ 
 Purpose: create/edit test case step
 
 rev: 
+ 20100111 - eloff - BUGID 2036 - Check modified content before exit
      
 *}
 
@@ -36,6 +37,13 @@ function validateForm(f)
 }
 {/literal}
 </script>
+{if $tlCfg->gui->checkNotSaved}
+<script type="text/javascript">
+var UNLOAD_MSG = "{$labels.warning_unsaved}";
+var TC_EDITOR = "{$tlCfg->gui->text_editor.all.type}";
+</script>
+<script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+{/if}
 </head>
 
 <body onLoad="focusInputField('step')">

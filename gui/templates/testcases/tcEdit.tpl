@@ -1,10 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.23 2010/01/03 11:07:21 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.24 2010/01/11 15:59:03 erikeloff Exp $ 
 Purpose: smarty template - edit test specification: test case
 
-rev: 20090422 - franciscom - BUGID 2414
-     20090419 - franciscom - BUGID  - edit while executing
+@internal Revisions:
+	20100110 - eloff      - BUGID 2036 - Check modified content before exit
+	20090422 - franciscom - BUGID 2414
+	20090419 - franciscom - BUGID  - edit while executing
 *}
 
 {lang_get var="labels"
@@ -31,11 +33,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 <script type="text/javascript">
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 var alert_box_title = "{$labels.warning}";
-var UNLOAD_MSG = "{$labels.warning_unsaved}";
-var UNLOAD_CHECK_ENABLED = {$tlCfg->gui->checkNotSaved};
-var TC_EDITOR = "{$tlCfg->gui->text_editor.all.type}";
-var IGNORE_UNLOAD = true;
-var UNLOAD_ASKED = false;
 
 {literal}
 function validateForm(f)
@@ -74,65 +71,16 @@ function validateForm(f)
 	return true;
 }
 
-// Notify on exit with unsaved data 
-// @TODO use EXTJS dialog
-function doBeforeUnload() 
-{
-	if(UNLOAD_ASKED) return; 
 
-	checkFCKEditorChanged(); //check FCKeditors 
-	if(IGNORE_UNLOAD) return; // Let the page unload
-
-	if(window.event)
-		window.event.returnValue = UNLOAD_MSG; // IE
-	else
-   		return UNLOAD_MSG; // FX
-}
-
-// set unload checking if configured to use 
-if (UNLOAD_CHECK_ENABLED)
-{
-	if(window.body)
-		window.body.onbeforeunload = doBeforeUnload; // IE
-	else
-		window.onbeforeunload = doBeforeUnload; // FX
-}
-
-// verify if content of any editor changed
-// TODO havlatm: something changed - and IsDirty() doesn't work correctly
-// need to investigate the problem
-function checkFCKEditorChanged()
-{
-	if (TC_EDITOR == "fckeditor")
-	{
-		var edSummary = FCKeditorAPI.GetInstance('summary') ;
-		var edSteps = FCKeditorAPI.GetInstance('steps') ;
-		var edExpResults = FCKeditorAPI.GetInstance('expected_results') ;
-
-		if(edSummary.IsDirty() || edSteps.IsDirty() || edExpResults.IsDirty()) 
-		{
-			// ABSOLUTELY BAD naming convention, why has to be UPPER CASE ????
-			IGNORE_UNLOAD = false;
-		}	
-	}
-}
-
-// not used yet
-function resetFCKEditorStatus()
-{
-	if (TC_EDITOR == "fckeditor")
-	{
-		var edSummary = FCKeditorAPI.GetInstance('summary') ;
-		var edSteps = FCKeditorAPI.GetInstance('steps') ;
-		var edExpResults = FCKeditorAPI.GetInstance('expected_results') ;
-
-		edSummary.ResetIsDirty();
-		edSteps.ResetIsDirty(); 
-		edExpResults.ResetIsDirty(); 
-	}
-}
 {/literal}
 </script>
+{if $tlCfg->gui->checkNotSaved}
+<script type="text/javascript">
+var UNLOAD_MSG = "{$labels.warning_unsaved}";
+var TC_EDITOR = "{$tlCfg->gui->text_editor.all.type}";
+</script>
+<script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+{/if}
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">

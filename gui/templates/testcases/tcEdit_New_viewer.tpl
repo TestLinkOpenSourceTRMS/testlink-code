@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.17 2010/01/07 20:44:15 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.18 2010/01/11 15:59:03 erikeloff Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -32,8 +32,8 @@ Rev:
 		<input type="text" name="testcase_name" id="testcase_name"
 			size="{#TESTCASE_NAME_SIZE#}" 
 			maxlength="{#TESTCASE_NAME_MAXLEN#}"
-			onchange="IGNORE_UNLOAD = false"
-			onkeypress="IGNORE_UNLOAD = false"
+			onchange="content_modified = true"
+			onkeypress="content_modified = true"
 			{if isset($gui->tc.name)}
 		       value="{$gui->tc.name|escape}"
 			{else}
@@ -71,7 +71,7 @@ Rev:
 
 		{if $session['testprojectOptAutomation']}
 			<div class="labelHolder">{$labels.execution_type}
-			<select name="exec_type" onchange="IGNORE_UNLOAD = false">
+			<select name="exec_type" onchange="content_modified = true">
     	  	{html_options options=$gui->execution_types selected=$gui->tc.execution_type}
 	    	</select>
 			</div>
@@ -80,7 +80,7 @@ Rev:
 	    {if $session['testprojectOptPriority']}
 		   	<div>
 			<span class="labelHolder">{$labels.test_importance}</span>
-			<select name="importance" onchange="IGNORE_UNLOAD = false">
+			<select name="importance" onchange="content_modified = true">
     	  	{html_options options=$gsmarty_option_importance selected=$gui->tc.importance}
 	    	</select>
 			</div>

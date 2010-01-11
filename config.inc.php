@@ -18,14 +18,14 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.280 2010/01/06 15:24:59 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.281 2010/01/11 15:59:03 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 
+ *  20100110 - eloff      - BUGID 2036 - changed $tlCfg->gui->checkNotSaved to true
  *  20100106 - franciscom - added $tlCfg->diffEngine - diff for test case and req (Contribution)
- * 	20091227 - franciscom - REMOVED - $tlCfg->req_cfg->reqdoc_id->is_system_wide
- *	20091217 - franciscom - $tlCfg->testcase_cfg->duplicated_name_algorithm
+ *  20091227 - franciscom - REMOVED - $tlCfg->req_cfg->reqdoc_id->is_system_wide
+ *  20091217 - franciscom - $tlCfg->testcase_cfg->duplicated_name_algorithm
  *  20091205 - franciscom - BUGID 0002469: $tlCfg->exec_cfg->expand_collapse
  *  20091129 - franciscom - BUGID 2554 - gui->usersAssignGlobalRoleColoring
  *  20091126 - franciscom - added contribution req internal links
@@ -464,8 +464,17 @@ $tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration
 $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 ,
                                           'testPlanContents' => 3);
 
-/** Enable warning on a changed content before an user leave a page */
-$tlCfg->gui->checkNotSaved = FALSE;
+/** Enable warning on a changed content before an user leave a page.
+ *
+ * Tested in:
+ * - IE8        OK
+ * - Firefox 3  OK
+ * - Chrome     FAIL
+ *
+ * Does not work in Webkit browsers (Chrome, Safari) when using frames.
+ * Bug in webkit: https://bugs.webkit.org/show_bug.cgi?id=19418
+ */
+$tlCfg->gui->checkNotSaved = true;
 
 
 // ----------------------------------------------------------------------------

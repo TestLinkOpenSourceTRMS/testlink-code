@@ -62,7 +62,7 @@ class dBug {
 	
 	// constructor
     // function dBug($var,$forceType="",$bCollapsed=false) {
-	function dBug($var,$options) {
+	function dBug($var,$options=null) {
 		
 		if( !defined('DBUG_ON') ) return; // >>----> Bye!
 

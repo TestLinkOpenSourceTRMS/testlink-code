@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.18 2010/01/11 19:16:30 franciscom Exp $
+$Id: userInfo.tpl,v 1.19 2010/01/11 20:27:52 franciscom Exp $
 
 rev: 20080908 - franciscom - email validity check
 *}
@@ -166,7 +166,6 @@ function checkPasswords(oldp,newp,newp_check)
 	</div>
 </form>
 
-FAFAFAF
 <hr />
 <h2>{lang_get s="title_personal_passwd"}</h2>
 {if $external_password_mgmt eq 0 }
@@ -196,8 +195,6 @@ FAFAFAF
    <p>{$labels.your_password_is_external}<p>
 {/if}
 
-API{$tlCfg->api}
-
 {if $tlCfg->api->enabled}
 <hr />
 <h2>{lang_get s="title_api_interface"}</h2>
@@ -215,7 +212,7 @@ API{$tlCfg->api}
 
 <hr />
 <h2>{$labels.audit_login_history}
-	{if $mgt_view_events eq "yes"}
+	{if $mgt_view_events == "yes"}
 	<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" onclick="showEventHistoryFor('{$user->dbID}','users')" alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 </h2>
 {/if}

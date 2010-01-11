@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		-
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: usersView.php,v 1.31 2010/01/09 10:59:19 franciscom Exp $
+ * @version    	CVS: $Id: usersView.php,v 1.32 2010/01/11 19:17:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -144,13 +144,15 @@ function init_args()
 {
 	
 	// input from GET['HelloString3'], 
-	// type: string,  minLen: 1, maxLen: 15,
+	// type: string,  
+	// minLen: 1, 
+	// maxLen: 15,
+	// regular expression: null
 	// checkFunction: applys checks via checkFooOrBar() to ensure its either 'foo' or 'bar' 
 	// normalization: done via  normFunction() which replaces ',' with '.' 
-	// "HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,null,'checkFooOrBar','normFunction'),
-	
+	// "HelloString3" => array("GET",tlInputParameter::STRING_N,1,15,'checkFooOrBar','normFunction'),
 	$iParams = array("operation" => array(tlInputParameter::STRING_N,0,50),
-			         "user_order_by" => array(tlInputParameter::STRING_N,0,50),			
+			         "user_order_by" => array(tlInputParameter::STRING_N,0,50,null,'checkUserOrderBy'),			
 			         "order_by_role_dir" => array(tlInputParameter::STRING_N,0,4),
 			         "order_by_login_dir" => array(tlInputParameter::STRING_N,0,4),
 			         "user" => array(tlInputParameter::INT_N));
@@ -208,7 +210,7 @@ function getRoleColourCfg(&$db)
  */
 function checkUserOrderBy($input)
 {
-	$domain = array('order_by_role','order_by_login');
+	$domain = array_flip(array('order_by_role','order_by_login'));
 	
 	$status_ok = isset($domain[$input]) ? true : false;
 	return $status_ok;

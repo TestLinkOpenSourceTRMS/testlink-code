@@ -9,11 +9,12 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.50 2009/12/04 10:49:00 havlat Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.51 2010/01/11 22:10:31 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100111 - franciscon - BUGID - display debug_print_backtrace() when query fails
  * 20090720 - franciscom - fetchRowsIntoMap() - added some error management code 
  * 20090202 - franciscom - BUGID 1318 - fetchFirstRowSingleColumn() added new control
  * 20081129 - franciscom - Added CUMULATIVE constant
@@ -188,6 +189,7 @@ class database
 		if ( !$t_result ) {
 			tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) . 
 					"<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");			
+			echo "<pre>"; debug_print_backtrace(); echo "</pre>";
 			return false;
 		} else {
 			return $t_result;
@@ -220,15 +222,15 @@ class database
 
     // 20080315 - franciscom - Got new code from Mantis, that manages FETCH_MODE_ASSOC
 	function db_result( $p_result, $p_index1=0, $p_index2=0 ) {
-
-		if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) ) {
+		if ( $p_result && ( $this->num_rows( $p_result ) > 0 ) ) 
+		{
 			$p_result->Move( $p_index1 );
 			$t_result = $p_result->GetArray();
-
+        
 			if ( isset( $t_result[0][$p_index2] ) ) {
 				return $t_result[0][$p_index2];
 			}
-
+        
 			// The numeric index doesn't exist. FETCH_MODE_ASSOC may have been used.
 			// Get 2nd dimension and make it numerically indexed
 			$t_result = array_values( $t_result[0] );
@@ -611,8 +613,6 @@ class database
                 }
                 if($shoot)
                 {
-                	// new dBug(debug_backtrace());
-                	// die();
     			    $errorMsg .= ' - SQL:' . $sql;
     				trigger_error($errorMsg,E_USER_NOTICE);
     				return null;
@@ -751,7 +751,7 @@ class database
 	 * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]
 	 * 
 	 **/
-	function fetchMapRowsIntoMap($sql,$column_main_key,$column_sec_key,$limit = -1)
+	function fetchMapRowsIntoMap($sql,$column_main_key,$column_sec_key,$cumulative = 0,$limit = -1)
 	{
 		$items = null;
 		$result = $this->exec_query($sql,$limit);
@@ -759,7 +759,14 @@ class database
 		{
 			while($row = $this->fetch_array($result))
 			{
-				$items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
+				if($cumulative)
+				{
+					$items[$row[$column_main_key]][$row[$column_sec_key]][] = $row;
+				}
+				else
+				{
+					$items[$row[$column_main_key]][$row[$column_sec_key]] = $row;
+				}	
 			}
 		}
 		return $items;

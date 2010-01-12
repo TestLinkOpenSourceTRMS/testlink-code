@@ -1,9 +1,10 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.18 2009/11/11 14:07:17 havlat Exp $     
+ $Id: mainPageLeft.tpl,v 1.19 2010/01/12 20:14:06 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
+ 	  20100106 - asimon     - contribution for 2976 req/reqspec search                                    
       20090808 - franciscom - grouping rights on gui->grants
       20081228 - franciscom - new feature user can choose vertical order of link groups
       20070523 - franciscom - test case search link enabled only if session testproject
@@ -18,6 +19,7 @@
                           href_roles_management,title_requirements,
                           href_req_spec,href_req_assign,
                           title_test_spec,href_edit_tc,href_browse_tc,href_search_tc,
+                          href_search_req, href_search_req_spec,
                           href_platform_management,
                           href_print_tc,href_keywords_assign'}
 
@@ -220,7 +222,14 @@
     <div id="requirements_topics" >
       {if $gui->grants.reqs_view == "yes"}
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-        <a href="{$gui->launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a>
+        <a href="{$gui->launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a><br/>
+        
+        {* contribution for 2976 req/reqspec search *}
+        <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+        <a href="{$gui->launcher}?feature=searchReq">{$labels.href_search_req}</a><br/>
+        <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+        <a href="{$gui->launcher}?feature=searchReqSpec">{$labels.href_search_req_spec}</a>
+        
 	   	{/if}
 		{if $gui->grants.reqs_edit == "yes"}
 			<br />

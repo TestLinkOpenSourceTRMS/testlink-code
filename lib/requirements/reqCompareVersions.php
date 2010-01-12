@@ -1,5 +1,4 @@
 <?php
-<?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later. 
@@ -7,7 +6,7 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.3 2010/01/08 10:29:30 franciscom Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.4 2010/01/12 10:38:51 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.

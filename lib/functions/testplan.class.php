@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.155 2010/01/12 18:27:07 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.156 2010/01/12 18:53:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -462,6 +462,9 @@ class testplan extends tlObjectWithAttachments
 	function link_tcversions($id,&$items_to_link,$userId)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		new dBug($items_to_link);
+		
 		
 		// Get human readeable info for audit
 		$title_separator = config_get('gui_title_separator_1');

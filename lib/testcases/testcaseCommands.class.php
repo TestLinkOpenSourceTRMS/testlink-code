@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/01/07 20:44:16 $  by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2010/01/12 18:53:38 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -121,9 +121,7 @@ class testcaseCommands
 		$new_order = config_get('treemenu_default_testcase_order');
 		$nt2exclude=array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me','requirement'=> 'exclude_me');
 		$siblings = $this->tcaseMgr->tree_manager->get_children($argsObj->container_id,$nt2exclude);
-		
-		// new dBug($siblings);
-		
+	
 		if( !is_null($siblings) )
 		{
 			$dummy = end($siblings);
@@ -271,13 +269,22 @@ class testcaseCommands
       	$tplan_mgr = new testplan($this->db);
       	
    	  	$guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
-      	$item2link[$argsObj->tcase_id]=$argsObj->tcversion_id;
-      	
+      	$item2link = null;
+      	// $request['add2tplanid']
+      	// main key: testplan id
+      	// sec key : platform_id
       	if( isset($request['add2tplanid']) )
       	{
-      	    foreach($request['add2tplanid'] as $tplan_id => $value)
+      	    foreach($request['add2tplanid'] as $tplan_id => $platformSet)
       	    {
-      	        $tplan_mgr->link_tcversions($tplan_id,$item2link,$argsObj->user_id);  
+      	    	foreach($platformSet as $platform_id => $dummy)
+      	    	{
+      	    		$item2link = null;
+                    $item2link['tcversion'][$argsObj->tcase_id] = $argsObj->tcversion_id;
+                    $item2link['platform'][$platform_id] = $platform_id;
+                    $item2link['items'][$argsObj->tcase_id][$platform_id] = $argsObj->tcversion_id;
+      	        	$tplan_mgr->link_tcversions($tplan_id,$item2link,$argsObj->user_id);  
+      	        }
       	    }
       	    $this->tcaseMgr->show($smartyObj,$guiObj,$this->templateCfg->template_dir,
 	  	                          $argsObj->tcase_id,$argsObj->tcversion_id,$viewer_args);
@@ -449,8 +456,6 @@ class testcaseCommands
                                            $argsObj->steps,$argsObj->expected_results,
                                            $argsObj->exec_type);	
                                            	
-		// new dBug($op); // CBC
-		
 		if( $op['status_ok'] )
 		{
 			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);

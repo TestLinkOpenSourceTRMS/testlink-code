@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: tcAssign2Tplan.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2010/01/12 18:53:38 $ by $Author: franciscom $
  * @author Amit Khullar - amkhullar@gmail.com
  * 
  * For a (test case, test case version), 
@@ -17,20 +17,16 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tcase_mgr=new testcase($db);
+$tplan_mgr=new testplan($db);
 $tproject_mgr=new testproject($db);
 
+$glue = config_get('testcase_cfg')->glue_character;
 $args = init_args();
-$gui = new stdClass();
-// $gui->goback_url=$args->goback_url;
-$gui->pageTitle='';
-$gui->tcaseIdentity='';
-$gui->mainDescription=lang_get('add_tcversion_to_plans');;
-$gui->tcase_id=$args->tcase_id;
-$gui->tcversion_id=$args->tcversion_id;
-$gui->can_do=false;
-$gui->item_sep=config_get('gui')->title_separator_2;
-
+$gui = initializeGui($args);
+$getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
+$gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);  
 $tcase_all_info = $tcase_mgr->get_by_id($args->tcase_id);
+
 if( !is_null($tcase_all_info) )
 {
     foreach($tcase_all_info as $tcversion_info)
@@ -39,36 +35,46 @@ if( !is_null($tcase_all_info) )
         {
             $version = $tcversion_info['version'];
             $gui->pageTitle=lang_get('test_case') . ':' . $tcversion_info['name'];
-            $gui->tcaseIdentity = $tproject_mgr->getTestCasePrefix($args->tproject_id) .
-                                  config_get('testcase_cfg')->glue_character . $tcversion_info['tc_external_id'] . 
-                                  ':' . $tcversion_info['name'];
+            $gui->tcaseIdentity = $tproject_mgr->getTestCasePrefix($args->tproject_id);
+            $gui->tcaseIdentity .= $glue . $tcversion_info['tc_external_id'] . ':' . $tcversion_info['name'];
             break;      
         }   
     } 
 }
 
-$link_info = $tcase_mgr->get_linked_versions($args->tcase_id);
-if( !is_null($gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id)) )
+$link_info = $tcase_mgr->get_linked_versions($args->tcase_id,'NOT_EXECUTED');
+if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id)) )
 {
     // Initial situation, enable link of target test case version to all test plans
-    foreach($gui->tplans as $tplan_id => $value)  
+    $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
+    foreach($tplanSet as $tplan_id => $value)  
     {
-        $gui->tplans[$tplan_id]['tcversion_id'] = $args->tcversion_id;
-        $gui->tplans[$tplan_id]['version'] = $version;
-        $gui->tplans[$tplan_id]['draw_checkbox'] = true;
+    	$gui->tplans[$tplan_id] = array();
+		$platformSet = $tplan_mgr->getPlatforms($tplan_id,$getOpt);
+        foreach($platformSet as $platform_id => $platform_info)
+        {
+        	$gui->tplans[$tplan_id][$platform_id] = $value;
+        	$gui->tplans[$tplan_id][$platform_id]['tcversion_id'] = $args->tcversion_id;
+        	$gui->tplans[$tplan_id][$platform_id]['version'] = $version;
+        	$gui->tplans[$tplan_id][$platform_id]['draw_checkbox'] = true;
+            $gui->tplans[$tplan_id][$platform_id]['platform'] = $platform_info;                            
+        }
     }
-
+   
     // If target test case has been linked to any test plan, analise to 
     // disable operation on used test plans.
     if( !is_null($link_info) )
     {
         foreach($link_info as $tcversion_id => $info)
         {
-           foreach($info as $tplan_id => $value)
+           foreach($info as $tplan_id => $platform_info)
            {
-               $gui->tplans[$tplan_id]['tcversion_id']=$value['id'];                            
-               $gui->tplans[$tplan_id]['version']=$value['version'];
-               $gui->tplans[$tplan_id]['draw_checkbox'] = false;
+           		foreach($platform_info as $platform_id => $value)
+           		{
+               		$gui->tplans[$tplan_id][$platform_id]['tcversion_id']=$value['id'];                            
+               		$gui->tplans[$tplan_id][$platform_id]['version']=$value['version'];
+               		$gui->tplans[$tplan_id][$platform_id]['draw_checkbox'] = false;
+           		}
            }
         }  
     }
@@ -77,14 +83,15 @@ if( !is_null($gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id)
     // Condition there is at least one test plan where no version of
     // target test cases has been linked.
     $gui->can_do=false;  // because an OR logic will be used
-    foreach($gui->tplans as $tplan_id => $value)  
+    foreach($gui->tplans as $tplan_id => $platform_info)  
     {
-        $gui->can_do = $gui->can_do || $gui->tplans[$tplan_id]['draw_checkbox'];
+		foreach($platform_info as $platform_id => $value)
+        {
+    		$gui->can_do = $gui->can_do || $gui->tplans[$tplan_id][$platform_id]['draw_checkbox'];
+    	}
+        
     }    
-
 }
-
-
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -109,7 +116,24 @@ function init_args()
 	// $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
   return $args;	
-}	
+}
+
+
+/**
+ * 
+ *
+ */
+function initializeGui($argsObj)
+{
+	$guiObj = new stdClass();
+	$guiObj->pageTitle='';
+	$guiObj->tcaseIdentity='';
+	$guiObj->mainDescription=lang_get('add_tcversion_to_plans');;
+	$guiObj->tcase_id=$argsObj->tcase_id;
+	$guiObj->tcversion_id=$argsObj->tcversion_id;
+	$guiObj->can_do=false;
+	$guiObj->item_sep=config_get('gui')->title_separator_2;
+    return $guiObj;
+}
+
 ?>
-
-

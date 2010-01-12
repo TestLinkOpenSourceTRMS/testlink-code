@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.234 2010/01/07 20:44:16 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.235 2010/01/12 18:53:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100111 - franciscom - get_version_exec_assignment() - refactoring due to platforms feature.
+ *                         get_linked_versions() - refactoring due to platforms feature.
  * 20100107 - franciscom - Multiple Test Case Steps Feature
  *                         Affected methods: delete(), _blind_delete()
  *
@@ -505,23 +507,26 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function get_by_name($name, $tsuite_name = '', $tproject_name = '')
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
 	    $recordset = null;
 	    $filters_on = array('tsuite_name' => false, 'tproject_name' => false);
 	
 	    $tsuite_name = trim($tsuite_name);
 	    $tproject_name = trim($tproject_name);
 	    
-	    $sql = " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .
+		$sql = "/* $debugMsg */ " . 	    
+	           " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .
 	           " NH_TCASE_PARENT.name AS tsuite_name, TCV.tc_external_id " .
-			       " FROM {$this->tables['nodes_hierarchy']} NH_TCASE, " .
-			       " {$this->tables['nodes_hierarchy']} NH_TCASE_PARENT, " .
-			       " {$this->tables['nodes_hierarchy']} NH_TCVERSIONS," .
-			       " {$this->tables['tcversions']}  TCV  " .
-			       " WHERE NH_TCASE.node_type_id = {$this->my_node_type} " .
-			       " AND NH_TCASE.name = '{$this->db->prepare_string($name)}' " .
-				   " AND TCV.id=NH_TCVERSIONS.id " .
-			       " AND NH_TCVERSIONS.parent_id=NH_TCASE.id " .
-			       " AND NH_TCASE_PARENT.id=NH_TCASE.parent_id ";
+			   " FROM {$this->tables['nodes_hierarchy']} NH_TCASE, " .
+			   " {$this->tables['nodes_hierarchy']} NH_TCASE_PARENT, " .
+			   " {$this->tables['nodes_hierarchy']} NH_TCVERSIONS," .
+			   " {$this->tables['tcversions']}  TCV  " .
+			   " WHERE NH_TCASE.node_type_id = {$this->my_node_type} " .
+			   " AND NH_TCASE.name = '{$this->db->prepare_string($name)}' " .
+			   " AND TCV.id=NH_TCVERSIONS.id " .
+			   " AND NH_TCVERSIONS.parent_id=NH_TCASE.id " .
+			   " AND NH_TCASE_PARENT.id=NH_TCASE.parent_id ";
 	   
 		if($tsuite_name != "")
 		{
@@ -745,7 +750,11 @@ class testcase extends tlObjectWithAttachments
 		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
 		  		// get the status quo of execution and links of tc versions
 		  		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
+
+                // ATTENTION TO PLATFORMS
 		  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
+
+
 		  		$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 		  		$tc_current = $tc_array[0];
 		  		$gui->tc_current_version[] = array($tc_current);
@@ -979,6 +988,7 @@ class testcase extends tlObjectWithAttachments
 		$status = 'no_links';
 	
 		// get linked versions
+		// ATTENTION TO PLATFORMS
 		$linked_tcversions = $this->get_linked_versions($id);
 		$has_links_to_testplans = is_null($linked_tcversions) ? 0 : 1;
 	
@@ -1090,18 +1100,21 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function get_linked_versions($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null)
 	{
-	  $active_filter='';
-	  $active_status=strtoupper($active_status);
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  	$active_filter='';
+	  	$active_status=strtoupper($active_status);
 		if($active_status !='ALL')
 		{
 		  $active_filter=' AND tcversions.active=' . $active_status=='ACTIVE' ? 1 : 0;
-	  }
+	  	}
 	
 		switch ($exec_status)
 		{
 			case "ALL":
-				$sql = "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id, " .
-					   "tcversions.*, TTC.testplan_id, TTC.tcversion_id,NHB.name AS tplan_name " .
+		        $sql = "/* $debugMsg */ " . 	    
+				       "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id, " .
+					   "tcversions.*, TTC.testplan_id, TTC.tcversion_id, TTC.platform_id," . 
+					   " NHB.name AS tplan_name " .
 					   "FROM   {$this->tables['nodes_hierarchy']} NH," .
 					   " {$this->tables['tcversions']} tcversions," .
 					   " {$this->tables['testplan_tcversions']} TTC, " .
@@ -1115,28 +1128,37 @@ class testcase extends tlObjectWithAttachments
 	      {
 	          $sql .= " AND TTC.testplan_id={$tplan_id} ";  
 	      }  					    
-	      $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id');
+	        $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
 		  break;
 	
-	    case "EXECUTED":
+	     case "EXECUTED":
 		      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id);
 		  break;
 	
 		  case "NOT_EXECUTED":
 		      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id);
-	    break;
+	      break;
 	  }
-	    
+
 	  // Multiple Test Case Steps
-	  if( !is_null($recordset) )
-	  {
-	  	$key2loop = array_keys($recordset);
-	  	foreach( $key2loop as $accessKey)
-	  	{	
-	  		$step_set = $this->get_steps($recordset[$accessKey]['id']);
-	  		$recordset[$accessKey]['steps'] = $step_set;
-	  	} 
-	  }
+		if( !is_null($recordset) )
+		{
+			$version2loop = array_keys($recordset);
+			foreach( $version2loop as $accessKey)
+			{	
+				$step_set = $this->get_steps($accessKey);
+				$tplan2loop = array_keys($recordset[$accessKey]);
+				foreach( $tplan2loop as $tplanKey)
+				{	
+					$elem2loop = array_keys($recordset[$accessKey][$tplanKey]);
+					foreach( $elem2loop as $elemKey)
+					{	
+						$recordset[$accessKey][$tplanKey][$elemKey]['steps'] = $step_set;
+					}
+				}
+				
+			} 
+		}
 	    
 	  return $recordset;
 	}
@@ -1923,13 +1945,15 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $active_status = strtoupper($active_status);
 	  
 	    // Get info about tcversions of this test case
-	    $sqlx = " SELECT TCV.id,TCV.version,TCV.active" .
-	          " FROM {$this->tables['nodes_hierarchy']} NHA " .
-	          " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
-	          " JOIN {$this->tables['tcversions']}  TCV ON NHA.id = TCV.id ";
+	    $sqlx = "/* $debugMsg */ " .
+	            " SELECT TCV.id,TCV.version,TCV.active" .
+	            " FROM {$this->tables['nodes_hierarchy']} NHA " .
+	            " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id " .
+	            " JOIN {$this->tables['tcversions']}  TCV ON NHA.id = TCV.id ";
 	          
 	    $where_clause = " WHERE  NHA.parent_id = {$id}";
 	          
@@ -1940,28 +1964,30 @@ class testcase extends tlObjectWithAttachments
 	    }    
 	    $sqlx .= $where_clause; 
 		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
+	    new dBug($version_id,array('label' => 'version set'));
 	
-	  
-		$sql = "SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id,
-			             T.tcversion_id AS linked,TCV.active,
-			             E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan,
-			             E.tcversion_number,
-			             T.testplan_id, NHB.name AS tplan_name, TCV.version
-			      FROM   {$this->tables['nodes_hierarchy']} NH
-			      JOIN {$this->tables['testplan_tcversions']}  T ON T.tcversion_id = NH.id
-			      JOIN {$this->tables['tcversions']}  TCV ON T.tcversion_id = TCV.id
-			      JOIN {$this->tables['nodes_hierarchy']} NHB ON T.testplan_id = NHB.id
-			      LEFT OUTER JOIN {$this->tables['executions']}  E ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id)
-			      WHERE  NH.parent_id = {$id} ";
+	    $sql = "/* $debugMsg */ " .
+			   " SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id, " .
+			   " T.tcversion_id AS linked, T.platform_id, TCV.active, E.tcversion_id AS executed, " . 
+			   " E.testplan_id AS exec_on_tplan, E.tcversion_number, " .
+			   " T.testplan_id, NHB.name AS tplan_name, TCV.version " .
+			   " FROM   {$this->tables['nodes_hierarchy']} NH " .
+			   " JOIN {$this->tables['testplan_tcversions']}  T ON T.tcversion_id = NH.id " .
+			   " JOIN {$this->tables['tcversions']}  TCV ON T.tcversion_id = TCV.id " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NHB ON T.testplan_id = NHB.id " .
+			   " LEFT OUTER JOIN {$this->tables['executions']} E " .
+			   " ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id AND E.platform_id=T.platform_id ) " .
+			   " WHERE  NH.parent_id = {$id} ";
 			
 		if(!is_null($tplan_id))
 	    {
 	        $sql .= " AND T.tplan_id = {$tplan_id} "; 
 	    }    
 	    $sql .= " ORDER BY version,tplan_name";
-	
 		$rs = $this->db->get_recordset($sql);
-	
+
+        new dBug($rs);
+        	
 	    // set right tcversion_id, based on tcversion_number,version comparison
 	    $item_not_executed = null;
 	    $item_executed = null;
@@ -1970,13 +1996,16 @@ class testcase extends tlObjectWithAttachments
 	    
 	    if (sizeof($rs))
 	    {
-			foreach($rs as $idx => $elem)
+	    	foreach($rs as $idx => $elem)
 			{
 		    	if( $elem['tcversion_number'] != $elem['version'])
 			    {
+			    	
 			        // Save to generate record for linked but not executed if needed
 			        // (see below fix not executed section)
-			        $link_info[$elem['tcversion_id']][]=$elem;    
+			        // 20100111 - franciscom - PLATFORM REFACTORING
+			        // access key => (version,test plan, platform)
+			        $link_info[$elem['tcversion_id']][$elem['testplan_id']][$elem['platform_id']]=$elem;    
 		
 			      // We are working with a test case version, that was used in a previous life of this test plan
 			      // information about his tcversion_id is not anymore present in tables:
@@ -1992,30 +2021,30 @@ class testcase extends tlObjectWithAttachments
 			      // (value displayed at User Interface) as search key.
 			      //
 			      // Important:
-			      // executions.tcversion_number:  maintain info about right test case version executed
+			      // executions.tcversion_number:  maintain info about RIGHT TEST case version executed
 			      // executions.tcversion_id    :  test case version linked to test plan. 
 			      //
 			      //
 			      if( is_null($elem['tcversion_number']) )
 			      {
-			          // Not Executed
-			          $rs[$idx]['executed']=null;
-		            $rs[$idx]['tcversion_id']=$elem['tcversion_id'];
-		            $rs[$idx]['version']=$elem['version'];
-		            $rs[$idx]['linked']=$elem['tcversion_id'];
-		            $item_not_executed[]=$idx;  
+			      		// Not Executed
+			      		$rs[$idx]['executed']=null;
+		          		$rs[$idx]['tcversion_id']=$elem['tcversion_id'];
+		          		$rs[$idx]['version']=$elem['version'];
+		          		$rs[$idx]['linked']=$elem['tcversion_id'];
+		          		$item_not_executed[]=$idx;  
 			      }
 			      else
 			      {
-		            // Get right tcversion_id
-		            $rs[$idx]['executed']=$version_id[$elem['tcversion_number']]['id'];
-		            $rs[$idx]['tcversion_id']=$rs[$idx]['executed'];
-		            $rs[$idx]['version']=$elem['tcversion_number'];
-		            $rs[$idx]['linked']=$rs[$idx]['executed'];
-		            $item_executed[]=$idx;
+		        		// Get right tcversion_id
+		        		$rs[$idx]['executed']=$version_id[$elem['tcversion_number']]['id'];
+		        		$rs[$idx]['tcversion_id']=$rs[$idx]['executed'];
+		        		$rs[$idx]['version']=$elem['tcversion_number'];
+		        		$rs[$idx]['linked']=$rs[$idx]['executed'];
+		        		$item_executed[]=$idx;
 			      }
 			      $version=$rs[$idx]['version'];
-		        $rs[$idx]['active']=$version_id[$version]['active'];	      
+		          $rs[$idx]['active']=$version_id[$version]['active'];	      
 		      }
 		      else
 		      {
@@ -2023,33 +2052,43 @@ class testcase extends tlObjectWithAttachments
 		      }
 		
 			 	// needed for logic to avoid miss not executed (see below fix not executed)
-			    $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']]=$rs[$idx]['tcversion_id'];
+			    // $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']]=$rs[$idx]['tcversion_id'];
+			    $in_set[$rs[$idx]['tcversion_id']][$rs[$idx]['testplan_id']][$rs[$idx]['platform_id']]=$rs[$idx]['tcversion_id'];
 			}
 	    }
 	    else
+	    {
 	    	$rs = array();
+	    }
+        new dBug($in_set);
+	    new dBug($link_info);
+	    
 	    // fix not executed
 	    //
 	    // need to add record for linked but not executed, that due to new
 	    // logic to upate testplan-tcversions link can be absent
 	    if(!is_null($link_info))
 	    {
-	        foreach($link_info as $idx => $elem)
-		      {
-	            foreach($elem as $value)
+	    	foreach($link_info as $tcversion_id => $elem)
+	    	{
+	            foreach($elem as $testplan_id => $platform_link)
 	            {
-	              if( !isset($in_set[$idx][$value['testplan_id']]) ) 
-	              {
-	                  // missing record
-	                  $value['executed']=null;
-	                  $value['exec_on_tplan']=null;
-	                  $value['tcversion_number']=null;
-	                  $rs[]=$value;
-	                  
-	                  // Must Update list of not executed
-	                  $kix=count($rs);
-	                  $item_not_executed[]=$kix > 0 ? $kix-1 : $kix;
-	              }  
+	            	foreach($platform_link as $platform_id => $value)
+	            	{
+	            		if( !isset($in_set[$tcversion_id][$testplan_id][$platform_id]) ) 
+	            		{
+	            		    // missing record
+	            		    $value['executed']=null;
+	            		    $value['exec_on_tplan']=null;
+	            		    $value['tcversion_number']=null;
+	            		    $rs[]=$value;
+	            		    
+	            		    // Must Update list of not executed
+	            		    $kix=count($rs);
+	            		    $item_not_executed[]=$kix > 0 ? $kix-1 : $kix;
+	            		}  
+	            	
+	            	}	
 	            }   
 	        }
 	    }
@@ -2075,13 +2114,13 @@ class testcase extends tlObjectWithAttachments
 	    {
 	    	foreach($target as $idx)
 			{
-			     $elem=$rs[$idx];
-	    	   if( $active_status=='ALL' ||
-	    	       $active_status='ACTIVE' && $elem['active'] ||
-	    	       $active_status='INACTIVE' && $elem['active']==0 )
-	    	   {    
-	    	       $recordset[$elem['tcversion_id']][$elem['testplan_id']]=$elem;
-	    	   }    
+				$elem=$rs[$idx];
+	    	   	if( $active_status=='ALL' ||
+	    	   	    $active_status='ACTIVE' && $elem['active'] ||
+	    	   	    $active_status='INACTIVE' && $elem['active']==0 )
+	    	   	{    
+	    	   	    $recordset[$elem['tcversion_id']][$elem['testplan_id']][$elem['platform_id']]=$elem;
+	    	   	}    
 	    	}
 	    }		  
 	    if( !is_null($recordset) )
@@ -2982,10 +3021,9 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	*/
-	// @TODO must be refactored due to platform feature
 	function get_version_exec_assignment($tcversion_id,$tplan_id)
 	{
-		$sql =  "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id," .
+		$sql =  "SELECT T.tcversion_id AS tcversion_id,T.id AS feature_id,T.platform_id, " .
 				"       UA.user_id,UA.type,UA.status,UA.assigner_id ".
 				" FROM {$this->tables['testplan_tcversions']}  T " .
 				" LEFT OUTER JOIN {$this->tables['user_assignments']}  UA ON UA.feature_id = T.id " .
@@ -2995,7 +3033,9 @@ class testcase extends tlObjectWithAttachments
 				"        OR UA.type IS NULL) ";
 	
 	
-		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+		// $recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+        $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','platform_id');
+		
 		return $recordset;
 	}
 	

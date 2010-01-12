@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.72 2009/10/16 16:52:14 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.73 2010/01/12 18:27:49 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -37,7 +37,10 @@ $tcase_mgr = new testcase($db);
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
-$gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+// 20100112 - franciscom
+$getOpt = array('outputFormat' => 'map');
+// $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+$gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 if( is_null($gui->platformSet) )
 {
 	$gui->platformSet = array('');

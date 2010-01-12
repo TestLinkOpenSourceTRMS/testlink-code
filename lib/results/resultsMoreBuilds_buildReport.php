@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds_buildReport.php,v 1.71 2009/12/09 11:55:25 havlat Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds_buildReport.php,v 1.72 2010/01/12 18:27:49 franciscom Exp $
  *
  * @internal Revisions:
  *	20091027 - franciscom - BUGID 2500
@@ -83,7 +83,10 @@ function initializeGui(&$dbHandler,&$argsObj)
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
  
-    $gui->platformSet = $tplan_mgr->getPlatforms($argsObj->tplan_id,'map');
+    // 20100112 - franciscom
+    $getOpt = array('outputFormat' => 'map');
+    $gui->platformSet = $tplan_mgr->getPlatforms($argsObj->tplan_id,$getOpt);
+
     $gui->showPlatforms=true;
 	if( is_null($gui->platformSet) )
 	{

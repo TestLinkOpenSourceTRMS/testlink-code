@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.49 2009/12/23 13:42:41 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.50 2010/01/12 18:27:49 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -50,7 +50,11 @@ $gui->tproject_name = $tproject_info['name'];
 $testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 
-$gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+// 20100112 - franciscom
+$getOpt = array('outputFormat' => 'map');
+// $gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+$gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
+
 $show_platforms = isset($gui->platforms[0]) ? false : true;
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
 

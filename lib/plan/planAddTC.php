@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.83 2009/12/07 18:15:46 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.84 2010/01/12 18:27:49 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -92,11 +92,15 @@ switch($args->doAction)
 		        $types_map = $tplan_mgr->assignment_mgr->get_available_types();
 		        $db_now = $db->db_now();
                 $tcversion_tcase = array_flip($items_to_link['tcversion']);
-                $platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
-                if( is_null($platformSet) )
-                {
-                	$platformSet = array( 0 => '');
-                }
+                
+                // 20100112 - franciscom
+                $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
+                // $platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+                $platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
+                // if( is_null($platformSet) )
+                // {
+                // 	$platformSet = array( 0 => '');
+                // }
                 
 		    	foreach($linked_features as $platform_id => $tcversion_info)
 		    	{

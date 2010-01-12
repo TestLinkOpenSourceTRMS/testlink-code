@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/12/10 22:18:03 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/01/12 18:27:49 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -131,12 +131,16 @@ switch ($doc_info->type)
 		    $doc_info->testplan_scope = $tplan_info['notes'];
 		    $doc_info->title = $doc_info->testplan_name;
 
-            $platforms = $tplan_mgr->getPlatforms($args->tplan_id,'map');
-            if( is_null($platforms))
-            {
-            	// needed for algorithm
-            	$platforms[0]='';
-            }		
+            // 20100112 - franciscom
+            $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
+            $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
+            
+            // $platforms = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+            // if( is_null($platforms))
+            // {
+            // 	// needed for algorithm
+            // 	$platforms[0]='';
+            // }		
 			
 			$tcase_filter = null;
 			$execid_filter = null;

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.59 $
- * @modified $Date: 2009/11/05 16:46:14 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2010/01/12 18:27:49 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -52,8 +52,11 @@ $tproject_mgr = new testproject($db);
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
-$gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
 
+
+$getOpt = array('outputFormat' => 'map');
+// $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
+$gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 if( is_null($gui->platformSet) )
 {
 	$gui->platformSet = array('');

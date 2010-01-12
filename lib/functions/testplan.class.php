@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.154 2010/01/11 20:28:47 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.155 2010/01/12 18:27:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20100112 - franciscom - getPlatforms() - interface changes
  *	20100106 - franciscom - Multiple Test Case Steps Feature
  *                          Affected Methods: get_linked_tcversions()
  *	20091111 - franciscom - BUGID 2938 - getTestCaseSiblings(), getTestCaseNextSibling()
@@ -2572,10 +2573,19 @@ class testplan extends tlObjectWithAttachments
  	 *
  	 * outputFormat: possible . 'array','map'
  	 */
-    function getPlatforms($id,$outputFormat='array')
+    // function getPlatforms($id,$outputFormat='array')
+    function getPlatforms($id,$options=null)
     {
-    	$method2call = $outputFormat='map' ? 'getLinkedToTestplanAsMap' : 'getLinkedToTestplan';
-    	return  $this->platform_mgr->$method2call($id);
+        $my['options'] = array ('outputFormat' => 'array', 'addIfNull' => false);
+	    $my['options'] = array_merge($my['options'], (array)$options);
+
+    	$method2call = ($my['options']['outputFormat']=='map') ? 'getLinkedToTestplanAsMap' : 'getLinkedToTestplan';
+    	$platforms = $this->platform_mgr->$method2call($id);
+    	if( $my['options']['addIfNull'] && is_null($platforms) )
+		{
+			$platforms = array( 0 => '');
+		}
+    	return $platforms; 
     }
 
     /**

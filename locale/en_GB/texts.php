@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.21 2009/12/22 14:03:44 havlat Exp $
+ * @version    	CVS: $Id: texts.php,v 1.22 2010/01/12 19:59:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -107,6 +107,42 @@ case sensitive. Result include just test cases from actual Test Project.</p>
 	<li>Click the Search button.</li>
 	<li>All fulfilled test cases are shown. You can modify Test Cases via 'Title' link.</li>
 </ol>";
+
+/* contribution by asimon for 2976 */
+// requirements search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReq']	= "Requirement Search Page";
+$TLS_htmltext['searchReq'] 		= "<h2>Purpose:</h2>
+
+<p>Navigation according to keywords and/or searched strings. The search is not
+case sensitive. Result includes just requirements from actual Test Project.</p>
+
+<h2>To search:</h2>
+
+<ol>
+	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
+	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>Click the 'Find' button.</li>
+	<li>All fulfilling requirements are shown. You can modify requirements via 'Title' link.</li>
+</ol>";
+
+// requirement specification search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReqSpec']	= "Requirement Specification Search Page";
+$TLS_htmltext['searchReqSpec'] 		= "<h2>Purpose:</h2>
+
+<p>Navigation according to keywords and/or searched strings. The search is not
+case sensitive. Result includes just requirement specifications from actual Test Project.</p>
+
+<h2>To search:</h2>
+
+<ol>
+	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
+	<li>Choose required keyword or leave value 'Not applied'.</li>
+	<li>Click the 'Find' button.</li>
+	<li>All fulfilling requirements are shown. You can modify requirement specifications via 'Title' link.</li>
+</ol>";
+/* end contribution */
 
 
 // ------------------------------------------------------------------------------------------

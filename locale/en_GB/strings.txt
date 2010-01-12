@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.534 2010/01/07 20:47:19 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.535 2010/01/12 19:59:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1777,6 +1777,23 @@ $TLS_href_plan_define_priority = "Test Plan priority";
 $TLS_href_my_testcase_assignments="Test Cases assigned to me";
 $TLS_href_platform_management = "Platform Management";
 
+
+// ----- contribution by asimon for req/reqspec search BUGID 2976 -----
+$TLS_href_search_req = "Search Requirements";
+$TLS_href_search_req_spec = "Search Requirement Specifiations";
+$TLS_caption_search_form_req = "Search Requirements";
+$TLS_caption_search_form_req_spec = "Search Requirement Specifications";
+$TLS_title_search_req = "Search";
+$TLS_requirement_document_id = "Req. Doc. ID";
+$TLS_req_spec_document_id = "Req. Spec. Doc. ID";
+$TLS_reqversion = "Version";
+$TLS_title_search_req_spec = "Search";
+$TLS_requirements = "Requirements";
+$TLS_req_specs = "Req. Specs";
+$TLS_req_expected_coverage = "Expected no. of testcases";
+$TLS_reqid = "Requirement ID";
+
+
 // ----- gui/templates/mainPage_right.tpl -----
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
 $TLS_href_build_new = "Builds / Releases";
@@ -2675,6 +2692,11 @@ $TLS_show_all = "show all";
 $TLS_version_short = "v";
 $TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%s) of testcase %s"; 
 $TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";
+$TLS_warning_context = "Context (lines) must be a number.";
+$TLS_warning_context_range = "Context is out of range (must be a positive number).";
+$TLS_warning_empty_context = "Context (lines) must not be empty.";
+$TLS_warning_selected_versions = "You have to select two versions from the list.";
+$TLS_warning_same_selected_versions = "You have to select two different versions from the list.";
 
 // ----- END ------------------------------------------------------------------
 ?>

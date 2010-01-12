@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.281 2010/01/11 15:59:03 erikeloff Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.282 2010/01/12 20:20:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *  20100110 - eloff      - BUGID 2036 - changed $tlCfg->gui->checkNotSaved to true
+ *  20100112 - asimon - BUGID 2976 - $tlCfg->req_cfg->search 
+ *  20100110 - eloff - BUGID 2036 - changed $tlCfg->gui->checkNotSaved to true
  *  20100106 - franciscom - added $tlCfg->diffEngine - diff for test case and req (Contribution)
  *  20091227 - franciscom - REMOVED - $tlCfg->req_cfg->reqdoc_id->is_system_wide
  *  20091217 - franciscom - $tlCfg->testcase_cfg->duplicated_name_algorithm
@@ -858,6 +859,13 @@ $tlCfg->req_cfg->default_testsuite_name = "Auto-created Test cases";
 $tlCfg->req_cfg->testsuite_details = "Test Cases in the Test Suite are generated from Requirements. " .
 		                            "A refinement of test scenario is highly recommended.";
 $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from the assigned requirement.</b><br />";
+
+
+// To avoid perfomance problems on search Requirements feature,
+// we can decide when to inform user that results can not be displayed
+// due to too many results.
+$tlCfg->req_cfg->search=new stdClass();
+$tlCfg->req_cfg->search->max_qty_for_display=200;
 
 
 // ENABLED: allow N level depth tree 

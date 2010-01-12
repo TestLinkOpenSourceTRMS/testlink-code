@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.34 2009/12/31 10:24:38 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.35 2010/01/12 20:08:06 franciscom Exp $ *}
 {*
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat
@@ -9,7 +9,8 @@
         20070102 - franciscom - added javascript validation of checked requirements
 *}
 
-{lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,title_last_mod,title_created"}
+{lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,
+							            title_last_mod,title_created,no_records_found"}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -67,6 +68,10 @@
 <div class="workBack">
    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
 
+{* contribution by asimon *}
+{if $gui->req_spec.id}
+{* end contribution by asimon *}
+	
 {include file="$buttons_template"}
 <table class="simple" style="width: 90%">
 	<tr>
@@ -127,6 +132,10 @@
          attach_tableName="req_specs"
          attach_attachmentInfos=$gui->attachments  
          attach_downloadOnly=$bDownloadOnly}
+
+{else}
+	{$labels.no_records_found}
+{/if}
 
 </div>
 {if $gui->refresh_tree == 'yes'}

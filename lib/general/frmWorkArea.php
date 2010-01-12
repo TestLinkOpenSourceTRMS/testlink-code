@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/09/11 20:35:09 $ by $Author: schlundus $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/01/12 20:04:41 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
  *
  * rev: 
+ *  20100106 - asimon - contribution for 2976 req/reqspec search
  * 	20080620 - havlatm - urgency support
  * 	20080501 - franciscom -
  *  20060809 - franciscom - changes in validateBuildAvailability()
@@ -42,6 +43,11 @@ $aa_tfp = array(
      'editTc' => 'lib/testcases/listTestCases.php?feature=edit_tc',
      'assignReqs' => 'lib/testcases/listTestCases.php?feature=assignReqs',
      'searchTc' => 'lib/testcases/tcSearchForm.php',
+	 
+	 /* contribution for 2976 req/reqspec search */
+     'searchReq' => 'lib/requirements/reqSearchForm.php',
+     'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
+	 
      'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
      'planAddTC'    => 'lib/plan/planAddTCNavigator.php',

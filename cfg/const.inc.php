@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.127 2010/01/06 11:32:29 havlat Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.128 2010/01/13 18:48:24 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -223,10 +223,10 @@ $g_field_size->testsuite_name = 100;
 $g_field_size->testcase_name = 100;
 
 // requirements and req_spec tables field sizes
-$g_field_size->req_docid = 32;
+$g_field_size->req_docid = 64;
 $g_field_size->req_title = 100;
 $g_field_size->requirement_title = 100;
-$g_field_size->docid = 32;
+$g_field_size->docid = 64;
 
 
 // --------------------------------------------------------------------------------------

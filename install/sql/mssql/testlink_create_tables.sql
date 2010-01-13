@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.37 2009/12/20 10:20:09 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.38 2010/01/13 18:48:42 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -11,6 +11,7 @@
 -- 
 -- Rev :
 --
+--  20091220 - franciscom - doc_id increased to 64 and setted NOT NULL
 --  20091220 - franciscom - fields removed form req_spec and requirements 
 --                          "title", "node_order" 
 --
@@ -454,7 +455,7 @@ CREATE NONCLUSTERED INDEX [/*prefix*/IX_testproject_id] ON [/*prefix*/req_specs]
 CREATE TABLE /*prefix*/requirements (
 	[id] [int] NOT NULL,
 	[srs_id] [int] NOT NULL,
-	[req_doc_id] [varchar](32)  NULL,
+	[req_doc_id] [varchar](64)  NOT NULL,
 	[scope] [text]  NULL,
 	[status] [char](1)  NOT NULL CONSTRAINT [/*prefix*/DF_requirements_status]  DEFAULT (N'n'),
 	[type] [char](1)  NULL,

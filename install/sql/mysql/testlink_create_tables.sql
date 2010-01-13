@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.69 2010/01/13 18:41:34 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.70 2010/01/13 20:03:13 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
 # 			tables are in alphabetic order  
@@ -17,7 +17,7 @@
 #                         req_doc_id and doc_id => changed to NOT NULL
 #                         
 # 20091221 - havlatm - infrastructure table added.
-#                      tcversion.type added 
+#                      tcversions.layout added 
 #                      testproject.options added
 # 20091220 - franciscom - fields removed form req_spec and requirements "title"
 # 20091119 - franciscom - requirements table - new field expected_coverage
@@ -128,6 +128,7 @@ CREATE TABLE /*prefix*/builds (
   `notes` text,
   `active` tinyint(1) NOT NULL default '1',
   `is_open` tinyint(1) NOT NULL default '1',
+  `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `release_date` date NULL,
   `closed_on_date` date NULL,
@@ -442,7 +443,7 @@ CREATE TABLE /*prefix*/tcversions (
   `id` int(10) unsigned NOT NULL,
   `tc_external_id` int(10) unsigned NULL,
   `version` smallint(5) unsigned NOT NULL default '1',
-  `type` smallint(5) unsigned NOT NULL default '1',
+  `layout` smallint(5) unsigned NOT NULL default '1',
   `status` smallint(5) unsigned NOT NULL default '1',
   `summary` text,
   `preconditions` text,

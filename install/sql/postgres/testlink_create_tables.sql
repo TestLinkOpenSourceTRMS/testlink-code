@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.48 2010/01/06 15:47:07 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.49 2010/01/13 18:42:07 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -14,6 +14,7 @@
 -- 
 --  Rev :
 -- 
+--  20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
 --  20100106 - franciscom - Test Case Step feature
 --
 --  20091228 - franciscom - requirements table changes and new table req_versions
@@ -510,7 +511,7 @@ CREATE TABLE /*prefix*/object_keywords(
 CREATE TABLE /*prefix*/req_specs(  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),  
-  "doc_id" VARCHAR(32) NULL DEFAULT NULL,
+  "doc_id" VARCHAR(64) NOT NULL,
 ---  "title" VARCHAR(100) NOT NULL DEFAULT '',   --- TO BE REMOVED
   "scope" TEXT NULL DEFAULT NULL,
   "total_req" INTEGER NOT NULL DEFAULT '0',
@@ -541,7 +542,7 @@ CREATE TABLE /*prefix*/req_suites(
 CREATE TABLE /*prefix*/requirements (  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
-  "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
+  "req_doc_id" VARCHAR(64) NOT NULL,
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX /*prefix*/requirements_idx1 ON /*prefix*/requirements ("srs_id","req_doc_id");

@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.68 2010/01/06 15:49:35 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.69 2010/01/13 18:41:34 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
 # 			tables are in alphabetic order  
@@ -9,6 +9,7 @@
 #
 # Revisions:
 #
+# 20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
 # 20100106 - franciscom - Test Case Step feature
 # 
 # 20091228 - franciscom - changes to requirements table and new table req_versions
@@ -337,7 +338,7 @@ CREATE TABLE /*prefix*/req_coverage (
 CREATE TABLE /*prefix*/req_specs (
   `id` int(10) unsigned NOT NULL,
   `testproject_id` int(10) unsigned NOT NULL,
-  `doc_id` varchar(32) NOT NULL,
+  `doc_id` varchar(64) NOT NULL,
   `scope` text,
   `total_req` int(10) NOT NULL default '0',
   `type` char(1) default 'n',
@@ -373,7 +374,7 @@ CREATE TABLE /*prefix*/req_specs (
 CREATE TABLE /*prefix*/requirements (
   `id` int(10) unsigned NOT NULL,
   `srs_id` int(10) unsigned NOT NULL,
-  `req_doc_id` varchar(32) NOT NULL,
+  `req_doc_id` varchar(64) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/requirements_req_doc_id (`srs_id`,`req_doc_id`)
 ) DEFAULT CHARSET=utf8;

@@ -1,11 +1,18 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.50 2010/01/13 20:03:08 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.51 2010/01/15 19:40:49 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
 -- ATTENTION: do not use a different naming convention, that one already in use.
 -- 
+-- Naming convention for column regarding date/time of creation or change
+-- Right or wrong from TL 1.7 we have used
+-- creation_ts, modification_ts
+--
+-- Then no other naming convention has to be used as: create_ts, modified_ts
+--
+--
 -- CRITIC:
 --        Because this file will be processed during installation doing text replaces
 --        to add TABLE PREFIX NAME, any NEW DDL CODE added must be respect present
@@ -132,9 +139,9 @@ CREATE TABLE /*prefix*/roles(
   "id" BIGSERIAL NOT NULL ,
   "description" VARCHAR(100) NOT NULL DEFAULT '',
   "notes" TEXT NULL DEFAULT NULL,
-  PRIMARY KEY ("id"),
-  UNIQUE ("description")
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/roles_uidx1 ON /*prefix*/roles ("description");
 
 
 --
@@ -152,32 +159,9 @@ CREATE TABLE /*prefix*/users(
   "default_testproject_id" INTEGER NULL DEFAULT NULL,
   "active" INT2 NOT NULL DEFAULT '1',
   "script_key" VARCHAR(32) NULL,
-  PRIMARY KEY ("id"),
-  UNIQUE ("login")
+  PRIMARY KEY ("id")
 );
-
-
--- --
--- -- Table structure for table "tcversions"
--- --
--- CREATE TABLE /*prefix*/tcversions(  
---   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
---   "tc_external_id" INT NULL,
---   "version" INTEGER NOT NULL DEFAULT '1',
---   "summary" TEXT NULL DEFAULT NULL,
---   "preconditions" TEXT NULL DEFAULT NULL,
---   "steps" TEXT NULL DEFAULT NULL,
---   "expected_results" TEXT NULL DEFAULT NULL,
---   "importance" INT2 NOT NULL DEFAULT '2',
---   "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
---   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
---   "updater_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
---   "modification_ts" TIMESTAMP NULL,
---   "active" INT2 NOT NULL DEFAULT '1',
---   "is_open" INT2 NOT NULL DEFAULT '1',
---   "execution_type" INT2 NOT NULL DEFAULT '1',
---   PRIMARY KEY ("id")
--- ); 
+CREATE UNIQUE INDEX /*prefix*/users_uidx1 ON /*prefix*/users ("login");
 
 --
 -- Table structure for table "tcversions"
@@ -189,8 +173,6 @@ CREATE TABLE /*prefix*/tcversions(
   "layout" INTEGER NOT NULL DEFAULT '1',
   "summary" TEXT NULL DEFAULT NULL,
   "preconditions" TEXT NULL DEFAULT NULL,
---  "steps" TEXT NULL DEFAULT NULL,
---  "expected_results" TEXT NULL DEFAULT NULL,
   "importance" INT2 NOT NULL DEFAULT '2',
   "author_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
@@ -206,8 +188,8 @@ CREATE TABLE /*prefix*/tcversions(
 --
 -- Table structure for table "tcsteps"
 --
-CREATE TABLE /*prefix*/"tcsteps" (  
-  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES nodes_hierarchy (id),
+CREATE TABLE /*prefix*/tcsteps (  
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES /*prefix*/nodes_hierarchy (id),
   "step_number" INT NOT NULL DEFAULT '1',
   "actions" TEXT NULL DEFAULT NULL,
   "expected_results" TEXT NULL DEFAULT NULL,
@@ -236,7 +218,7 @@ CREATE INDEX /*prefix*/testplans_testproject_id_active ON /*prefix*/testplans ("
 
 
 --
--- Table structure for table `builds`
+-- Table structure for table builds
 --
 CREATE TABLE /*prefix*/builds(  
   "id" BIGSERIAL NOT NULL ,
@@ -249,9 +231,9 @@ CREATE TABLE /*prefix*/builds(
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "release_date" DATE NULL,
   "closed_on_date" DATE NULL,
-  PRIMARY KEY ("id"),
-  UNIQUE ("testplan_id","name")
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/builds_uidx1 ON /*prefix*/builds  ("testplan_id","name");
 CREATE INDEX /*prefix*/builds_testplan_id ON /*prefix*/builds ("testplan_id");
 
 --
@@ -286,9 +268,9 @@ CREATE TABLE /*prefix*/testplan_tcversions(
   "urgency" INT2 NOT NULL DEFAULT '2',
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
-  PRIMARY KEY ("id"),
-  UNIQUE ("testplan_id","tcversion_id","platform_id")
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/testplan_tcversions_uidx1 ON  /*prefix*/testplan_tcversions ("testplan_id","tcversion_id","platform_id");
 
 
 --
@@ -310,10 +292,9 @@ CREATE TABLE /*prefix*/custom_fields(
   "enable_on_execution" SMALLINT NOT NULL DEFAULT '0',
   "show_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
   "enable_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
-  PRIMARY KEY ("id"),
-  UNIQUE ("name")
+  PRIMARY KEY ("id")
 ); 
-CREATE INDEX /*prefix*/custom_fields_idx_custom_fields_name ON /*prefix*/custom_fields ("name");
+CREATE UNIQUE INDEX /*prefix*/custom_fields_uidx1 ON /*prefix*/custom_fields ("name");
 
 --
 -- Table structure for table "testprojects"
@@ -326,16 +307,17 @@ CREATE TABLE /*prefix*/testprojects(
   "option_reqs" INT2 NOT NULL DEFAULT '0',
   "option_priority" INT2 NOT NULL DEFAULT '0',
   "option_automation" INT2 NOT NULL DEFAULT '0',
+  "options" TEXT,
   "prefix" varchar(16) NOT NULL,
   "tc_counter" int NOT NULL default '0',
   "is_public" INT2 NOT NULL DEFAULT '1',
-  PRIMARY KEY ("id"),
-  UNIQUE ("prefix")
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/testprojects_uidx1 ON /*prefix*/testprojects ("prefix");
 CREATE INDEX /*prefix*/testprojects_id_active ON /*prefix*/testprojects ("id","active");
 
 --
--- Table structure for table `cfield_testprojects`
+-- Table structure for table cfield_testprojects
 --
 
 CREATE TABLE /*prefix*/cfield_testprojects(  
@@ -352,7 +334,7 @@ CREATE TABLE /*prefix*/cfield_testprojects(
 
 
 --
--- Table structure for table `cfield_design_values`
+-- Table structure for table cfield_design_values
 --
 CREATE TABLE /*prefix*/cfield_design_values(  
   "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
@@ -364,7 +346,7 @@ CREATE INDEX /*prefix*/IX_cfield_design_values ON /*prefix*/cfield_design_values
 
 
 --
--- Table structure for table `cfield_execution_values`
+-- Table structure for table cfield_execution_values
 --
 CREATE TABLE /*prefix*/cfield_execution_values(  
   "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
@@ -387,7 +369,7 @@ CREATE TABLE /*prefix*/cfield_testplan_design_values(
 CREATE INDEX /*prefix*/IX_cfield_tplan_design_val ON /*prefix*/cfield_testplan_design_values ("link_id");
 
 --
--- Table structure for table `cfield_node_types`
+-- Table structure for table cfield_node_types
 --
 CREATE TABLE /*prefix*/cfield_node_types(  
   "field_id" INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/custom_fields (id),
@@ -400,7 +382,7 @@ CREATE INDEX /*prefix*/cfield_node_types_idx_custom_fields_assign ON /*prefix*/c
 
 -- ################################################################################ --
 --
--- Table structure for table `assignment_status`
+-- Table structure for table assignment_status
 --
 CREATE TABLE /*prefix*/assignment_status(  
   "id" BIGSERIAL NOT NULL ,
@@ -410,7 +392,7 @@ CREATE TABLE /*prefix*/assignment_status(
 
 
 --
--- Table structure for table `assignment_types`
+-- Table structure for table assignment_types
 --
 CREATE TABLE /*prefix*/assignment_types(  
   "id" BIGSERIAL NOT NULL ,
@@ -421,7 +403,7 @@ CREATE TABLE /*prefix*/assignment_types(
 
 
 --
--- Table structure for table `attachments`
+-- Table structure for table attachments
 --
 CREATE TABLE /*prefix*/attachments(  "id" BIGSERIAL NOT NULL ,
   "fk_id" BIGINT NOT NULL DEFAULT '0',
@@ -486,16 +468,14 @@ CREATE TABLE /*prefix*/milestones(
   "b" SMALLINT NOT NULL DEFAULT '0',
   "c" SMALLINT NOT NULL DEFAULT '0',
   "name" VARCHAR(100) NOT NULL DEFAULT 'undefined',
-  PRIMARY KEY ("id"),
-  UNIQUE ("name","testplan_id")
-
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/milestones_uidx1 ON /*prefix*/milestones ("name","testplan_id");
 CREATE INDEX /*prefix*/milestones_testplan_id ON /*prefix*/milestones ("testplan_id");
 
 
-
 --
--- Table structure for table `object_keywords`
+-- Table structure for table object_keywords
 --
 CREATE TABLE /*prefix*/object_keywords(  
   "id" BIGSERIAL NOT NULL ,
@@ -521,9 +501,9 @@ CREATE TABLE /*prefix*/req_specs(
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "modifier_id" BIGINT NULL DEFAULT NULL,
   "modification_ts" TIMESTAMP NULL,
-  PRIMARY KEY ("id"),
-  UNIQUE ("doc_id","testproject_id")
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/req_specs_uidx1 ON /*prefix*/req_specs ("doc_id","testproject_id");
 CREATE INDEX /*prefix*/req_specs_testproject_id ON /*prefix*/req_specs ("testproject_id");
 
 --
@@ -561,10 +541,6 @@ CREATE TABLE /*prefix*/req_versions(
   "modification_ts" TIMESTAMP NULL,
   PRIMARY KEY ("id","version")
 ); 
-
-
-
-
 
 
 -- CREATE TABLE /*prefix*/requirements(  
@@ -605,9 +581,9 @@ CREATE INDEX /*prefix*/req_coverage_req_testcase ON /*prefix*/req_coverage ("req
 CREATE TABLE /*prefix*/rights(  
   "id" BIGSERIAL NOT NULL ,
   "description" VARCHAR(100) NOT NULL DEFAULT '',
-  PRIMARY KEY ("id"),
-  UNIQUE ("description")
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/rights_uidx1 ON /*prefix*/rights ("description");
 
 
 --
@@ -619,9 +595,9 @@ CREATE TABLE /*prefix*/risk_assignments(
   "node_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "risk" CHAR(1) NOT NULL DEFAULT '2',
   "importance" CHAR(1) NOT NULL DEFAULT 'M',
-  PRIMARY KEY ("id"),
-  UNIQUE ("testplan_id","node_id")
+  PRIMARY KEY ("id")
 ); 
+CREATE UNIQUE INDEX /*prefix*/risk_assignments_uidx1 ON /*prefix*/risk_assignments ("testplan_id","node_id");
 
 
 --
@@ -701,9 +677,9 @@ CREATE TABLE /*prefix*/text_templates(
   author_id BIGINT default NULL REFERENCES  /*prefix*/users (id),
   creation_ts TIMESTAMP NOT NULL default now(),
   is_public INT2 NOT NULL default '0',
-  PRIMARY KEY ("id"),
-  UNIQUE (type,title)
+  PRIMARY KEY ("id")
 );
+CREATE UNIQUE INDEX /*prefix*/text_templates_uidx1 ON /*prefix*/text_templates (type,title);
 COMMENT ON TABLE /*prefix*/text_templates IS 'Global Project Templates';
 
 
@@ -714,9 +690,9 @@ CREATE TABLE /*prefix*/user_group(
   description text,
   owner_id BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
   testproject_id BIGINT NOT NULL REFERENCES  /*prefix*/testprojects (id),
-  PRIMARY KEY ("id"),
-  UNIQUE (title)
+  PRIMARY KEY ("id")
 );
+CREATE UNIQUE INDEX /*prefix*/user_group_uidx1 ON /*prefix*/user_group (title);
 
 --
 CREATE TABLE /*prefix*/user_group_assign(
@@ -730,14 +706,33 @@ CREATE TABLE /*prefix*/platforms (
   name VARCHAR(100) NOT NULL,
   testproject_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
   notes text NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE (testproject_id,name)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testproject_id,name);
 
 CREATE TABLE /*prefix*/testplan_platforms (
   id BIGSERIAL NOT NULL,
   testplan_id BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   platform_id BIGINT NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
-  UNIQUE (testplan_id,platform_id)
+  PRIMARY KEY (id)
 );
+CREATE UNIQUE INDEX /*prefix*/testplan_platforms_uidx1 ON /*prefix*/testplan_platforms (testplan_id,platform_id);
+
+CREATE TABLE /*prefix*/infrastructure (
+  id BIGSERIAL NOT NULL,
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  "owner_id" BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
+  "name" VARCHAR(255) NOT NULL,
+	ipaddress VARCHAR(255) NOT NULL,
+	data TEXT NULL ,
+	reserved_id BIGINT NULL,
+	reserved_start_ts TIMESTAMP NULL ,
+	reserved_end_ts TIMESTAMP NULL ,
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "modification_ts" TIMESTAMP NULL,
+	PRIMARY KEY (id)
+);
+CREATE INDEX /*prefix*/infrastructure_idx1 ON /*prefix*/infrastructure (testproject_id);
+CREATE UNIQUE INDEX /*prefix*/infrastructure_uidx1 ON /*prefix*/infrastructure (name,testproject_id);
+
+

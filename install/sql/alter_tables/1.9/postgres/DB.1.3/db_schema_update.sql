@@ -1,5 +1,5 @@
--- $Revision: 1.7 $
--- $Date: 2010/01/13 20:18:15 $
+-- $Revision: 1.8 $
+-- $Date: 2010/01/15 20:00:59 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -20,6 +20,7 @@
 -- It is not intelligent enough to ignore  SEMICOLONS inside comments, then PLEASE
 -- USE SEMICOLONS ONLY to signal END of SQL Statements.
 --
+-- ALTER TABLE table  RENAME TO newtable
 --
 -- internal revision:
 --  20100113 - franciscom
@@ -70,6 +71,23 @@ CREATE TABLE /*prefix*/testplan_platforms (
 );
 
 
+CREATE TABLE /*prefix*/infrastructure (
+  id BIGSERIAL NOT NULL,
+  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+  "owner_id" BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
+  "name" VARCHAR(255) NOT NULL,
+	ipaddress VARCHAR(255) NOT NULL,
+	data TEXT NULL ,
+	reserved_id BIGINT NULL,
+	reserved_start_ts TIMESTAMP NULL ,
+	reserved_end_ts TIMESTAMP NULL ,
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "modification_ts" TIMESTAMP NULL,
+	PRIMARY KEY (id)
+);
+CREATE INDEX /*prefix*/infrastructure_idx1 ON /*prefix*/infrastructure (testproject_id);
+CREATE UNIQUE INDEX /*prefix*/infrastructure_uidx1 ON /*prefix*/infrastructure (name,testproject_id);
+
 
 -- Step 3 - simple structure updates
 -- builds
@@ -84,9 +102,12 @@ COMMENT ON TABLE /*prefix*/builds IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
 -- testprojects
 ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public INT2 NOT NULL DEFAULT '1';
+ALTER TABLE /*prefix*/testprojects ADD COLUMN options TEXT;
+COMMENT ON TABLE /*prefix*/testprojects IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
 -- testplans
 ALTER TABLE /*prefix*/testplans ADD COLUMN is_public INT2 NOT NULL DEFAULT '1';
+COMMENT ON TABLE /*prefix*/testplans IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
 -- testplan_tcversions
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
@@ -94,13 +115,26 @@ ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN creation_ts TIMESTAMP NOT N
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN platform_id BIGINT NOT NULL DEFAULT '0';
 COMMENT ON TABLE /*prefix*/testplan_tcversions IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
+-- SELECT * FROM /*prefix*/testplan_tcversions INTO TABLE /*prefix*/mig_testplan_tcversions;
+-- DROP TABLE /*prefix*/testplan_tcversions;
+-- ALTER TABLE /*prefix*/mig_testplan_tcversions RENAME /*prefix*/testplan_tcversions
+-- ALTER TABLE tableName ADD PRIMARY KEY (id);
+
 -- cfield_testprojects
 ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location INT2 NOT NULL DEFAULT '1';
+COMMENT ON TABLE /*prefix*/cfield_testprojects IS 'Updated to TL 1.9.0 Development - DB 1.3';
+
+-- executions
+ALTER TABLE /*prefix*/executions ADD COLUMN platform_id BIGINT NOT NULL DEFAULT '0';
+COMMENT ON TABLE /*prefix*/executions IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
 -- req_spec
 ALTER TABLE /*prefix*/req_specs ADD COLUMN doc_id VARCHAR(64) NOT NULL;
+COMMENT ON TABLE /*prefix*/req_specs IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
 -- requirements
 ALTER TABLE /*prefix*/requirements ADD COLUMN expected_coverage INTEGER NOT NULL DEFAULT 1;
+COMMENT ON TABLE /*prefix*/requirements IS 'Updated to TL 1.9.0 Development - DB 1.3';
 
+-- UNIQUE ("testplan_id","tcversion_id","platform_id")
 

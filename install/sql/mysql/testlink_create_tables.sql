@@ -1,12 +1,38 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.70 2010/01/13 20:03:13 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.71 2010/01/15 19:56:21 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
-# 			tables are in alphabetic order  
-# 			ATTENTION: do not use a different naming convention, that one already in use.
+# tables are in alphabetic order  
 #
+# ATTENTION: do not use a different naming convention, that one already in use.
+#
+# IMPORTANT NOTE - DATETIME or TIMESTAMP
+# Extracted from MySQL Manual
+#
+# The TIMESTAMP column type provides a type that you can use to automatically 
+# mark INSERT or UPDATE operations with the current date and time. 
+# If you have multiple TIMESTAMP columns in a table, only the first one is updated automatically.
+#
+# Knowing this is clear that we can use in interchangable way DATETIME or TIMESTAMP
+#
+# Naming convention for column regarding date/time of creation or change
+#
+# Right or wrong from TL 1.7 we have used
+#
+# creation_ts
+# modification_ts
+#
+# Then no other naming convention has to be used as:
+# create_ts, modified_ts
+#
+# CRITIC:
+# Because this file will be processed during installation doing text replaces
+# to add TABLE PREFIX NAME, any NEW DDL CODE added must be respect present
+# convention regarding case and spaces between DDL keywords.
+# 
+# ---------------------------------------------------------------------------------------
 # Revisions:
 #
 # 20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
@@ -259,19 +285,19 @@ CREATE TABLE /*prefix*/executions (
 
 
 CREATE TABLE /*prefix*/infrastructure (
-	`id` INT( 10 ) UNSIGNED NOT NULL ,
+  id int(10) unsigned NOT NULL auto_increment,
 	`testproject_id` INT( 10 ) UNSIGNED NOT NULL ,
-	`owner_id` INT( 10 ) UNSIGNED NOT NULL ,
-	`name` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
-	`ipaddress` VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+	`owner_id` INT(10) UNSIGNED NOT NULL ,
+	`name` VARCHAR(255) NOT NULL ,
+	`ipaddress` VARCHAR(255)  NOT NULL ,
 	`data` TEXT NULL ,
-	`reserved_id` INT( 10 ) UNSIGNED NULL ,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modification_ts` TIMESTAMP NOT NULL,
+	`reserved_id` INT(10) UNSIGNED NULL ,
 	`reserved_start_ts` TIMESTAMP NULL ,
 	`reserved_end_ts` TIMESTAMP NULL ,
-	`modified_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
-	`created_ts` TIMESTAMP NOT NULL ,
-	PRIMARY KEY ( `id` ),
-	KEY /*prefix*/infrastructure_idx (`testproject_id`)
+	PRIMARY KEY (`id`),
+	KEY /*prefix*/infrastructure_idx1 (`testproject_id`)
 ) DEFAULT CHARSET=utf8; 
 
 
@@ -344,33 +370,13 @@ CREATE TABLE /*prefix*/req_specs (
   `total_req` int(10) NOT NULL default '0',
   `type` char(1) default 'n',
   `author_id` int(10) unsigned default NULL,
-  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+   creation_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`),
   KEY /*prefix*/testproject_id (`testproject_id`),
   UNIQUE KEY /*prefix*/req_spec_uk1(`doc_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='Dev. Documents (e.g. System Requirements Specification)';
-
-
-# Old version
-#CREATE TABLE /*prefix*/requirements (
-#  `id` int(10) unsigned NOT NULL,
-#  `srs_id` int(10) unsigned NOT NULL,
-#  `req_doc_id` varchar(32) default NULL,
-#  `scope` text,
-#  `status` char(1) NOT NULL default 'V',
-#  `type` char(1) default NULL,
-#  `expected_coverage` int(10) NOT NULL default '1',
-#  `author_id` int(10) unsigned default NULL,
-#  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-#  `modifier_id` int(10) unsigned default NULL,
-#  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-#  PRIMARY KEY  (`id`),
-#  KEY /*prefix*/requirements_srs_id (`srs_id`,`status`),
-#  UNIQUE KEY /*prefix*/requirements_req_doc_id (`srs_id`,`req_doc_id`)
-#) DEFAULT CHARSET=utf8;
-#
 
 CREATE TABLE /*prefix*/requirements (
   `id` int(10) unsigned NOT NULL,
@@ -388,7 +394,7 @@ CREATE TABLE /*prefix*/req_versions (
   `type` char(1) default NULL,
   `expected_coverage` int(10) NOT NULL default '1',
   `author_id` int(10) unsigned default NULL,
-  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`,`version`)
@@ -447,11 +453,9 @@ CREATE TABLE /*prefix*/tcversions (
   `status` smallint(5) unsigned NOT NULL default '1',
   `summary` text,
   `preconditions` text,
-/*  `steps` text, */
-/*  `expected_results` text, */
   `importance` smallint(5) unsigned NOT NULL default '2',
   `author_id` int(10) unsigned default NULL,
-  `creation_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updater_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   `active` tinyint(1) NOT NULL default '1',
@@ -551,7 +555,7 @@ CREATE TABLE /*prefix*/user_assignments (
   `user_id` int(10) unsigned default '0',
   `deadline_ts` datetime NULL,
   `assigner_id`  int(10) unsigned default '0',
-  `creation_ts`  datetime NOT NULL default '0000-00-00 00:00:00',
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `status` int(10) unsigned default '1',
   PRIMARY KEY  (`id`),
   KEY /*prefix*/user_assignments_feature_id (`feature_id`)

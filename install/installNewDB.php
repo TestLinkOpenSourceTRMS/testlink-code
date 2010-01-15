@@ -10,9 +10,10 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.52 2009/12/08 18:08:27 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.53 2010/01/15 20:01:56 franciscom Exp $
  *
  * @internal Revisions:
+ *	20100110 - franciscom - added drop_tables();
  * 	20091109 - havlatm - general layout, header, logic update
  * 	20091003 - franciscom - migration from 1.8.x (DB 1.2) to 1.9 Beta 1 (DB 1.3)
  *  20090715 - franciscom - changed way to manage replace of table prefix on SQL statements to run.
@@ -89,11 +90,14 @@ $g_tlLogger->disableLogging('db');
 
 $msg_process_data = "</b><br />Importing StartUp data<b> ";
 $inst_type_verbose=" Installation ";
-if (!$_SESSION['isNew'])
+
+$install = $_SESSION['isNew'];
+$upgrade = !$install;
+if ($upgrade)
 {
-  $inst_type_verbose=" Upgrade ";
+	$inst_type_verbose=" Upgrade ";
 	$msg_process_data = "</b><br />Updating Database Contents<b> ";
-  $a_sql_data   = array();
+  	$a_sql_data   = array();
 }
 $the_title = $_SESSION['title'];
 ?>
@@ -116,7 +120,7 @@ $the_title = $_SESSION['title'];
 <table border="0" cellpadding="0" cellspacing="0" class="mainTable">
   <tr class="fancyRow">
     <td><span class="headers">&nbsp;<img src="./img/dot.gif" alt="" style="margin-top: 1px;" />&nbsp;<?php echo $tl_and_version?></span></td>
-    <td align="right"><span class="headers"><?php echo $_SESSION['title']; ?> </span></td>
+    <td align="right"><span class="headers"><?php echo $the_title ?> </span></td>
   </tr>
   <tr class="fancyRow2">
     <td colspan="2" class="border-top-bottom smallText" align="right">&nbsp;</td>
@@ -180,7 +184,7 @@ if( $conn_result['status'] == 0 )
 	$db->close();
 	echo "</b><br>Database $db_name does not exist. <br>";
 	
-	if( !$_SESSION['isNew'] )
+	if( $upgrade )
 	{
 		echo "Can't Upgrade";
 		close_html_and_exit();     
@@ -250,7 +254,7 @@ if($create)
 
 // in upgrade mode we detect the lenght of user password field
 // to identify a version with uncrypted passwords
-if (!$_SESSION['isNew'])
+if ($upgrade)
 {
 	$my_ado=$db->get_dbmgr_object();
 	$user_table=$my_ado->MetaTables('TABLES',false,'user');
@@ -388,40 +392,9 @@ switch($db_type)
     break;
 }
 // --------------------------------------------------------------------------------------------
-if( $_SESSION['isNew'] && $conn_result['status'] != 0 )
+if( $install && $conn_result['status'] != 0 )
 {
-	// Drop tables to allow re-run Installation
-	// From 1.9 and up we have detail of tables.
-	$schema = tlObjectWithDB::getDBTables();
-	
-	// tables present on target db
-	$my_ado=$db->get_dbmgr_object();
-	$the_tables =$my_ado->MetaTables('TABLES');  
-	if( count($the_tables) > 0 && isset($the_tables[0]))
-	{
-		echo "<br />Dropping all TL existent tables:<br />";
-		foreach($schema as $tablePlainName => $tableFullName)
-		{
-			$targetTable=$db_table_prefix . $tablePlainName;	
-			if( in_array($targetTable,$the_tables) )
-			{
-				// Need to add option (CASCADE ?) to delete dependent object
-				echo "Droping $targetTable" . "<br />";
-				$sql="DROP TABLE $targetTable CASCADE";
-				$db->exec_query($sql);
-			}  	
-		}
-		
-		
-		// foreach($the_tables as $table2drop )
-		// {
-		//   	// Need to add option (CASCADE ?) to delete dependent object
-		//   	// echo $table2drop . "<br>";
-		//   	$sql="DROP TABLE {$table2drop} CASCADE";
-		//   	$db->exec_query($sql);
-		// }
-		echo "<span class='ok'>Done!</span>";
-	}
+	drop_tables($db);
 }  
 
 
@@ -574,6 +547,35 @@ function write_config_db($filename, $data)
 	$ret['cfg_string'] = $configString;
 	
 	return($ret);
+}
+
+
+
+// Drop tables to allow re-run Installation
+function drop_tables(&$dbHandler)
+{
+	// From 1.9 and up we have detail of tables.
+	$schema = tlObjectWithDB::getDBTables();
+	
+	// tables present on target db
+	$my_ado=$dbHandler->get_dbmgr_object();
+	$the_tables =$my_ado->MetaTables('TABLES');  
+	if( count($the_tables) > 0 && isset($the_tables[0]))
+	{
+		echo "<br />Dropping all TL existent tables:<br />";
+		foreach($schema as $tablePlainName => $tableFullName)
+		{
+			$targetTable=$db_table_prefix . $tablePlainName;	
+			if( in_array($targetTable,$the_tables) )
+			{
+				// Need to add option (CASCADE ?) to delete dependent object
+				echo "Droping $targetTable" . "<br />";
+				$sql="DROP TABLE $targetTable CASCADE";
+				$dbHandler->exec_query($sql);
+			}  	
+		}
+		echo "<span class='ok'>Done!</span>";
+	}
 }
 
 ?>

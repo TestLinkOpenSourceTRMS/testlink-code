@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.10 2009/12/22 15:55:11 erikeloff Exp $
+ * $Id: db_schema_update.sql,v 1.1 2010/01/17 17:24:56 franciscom Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.

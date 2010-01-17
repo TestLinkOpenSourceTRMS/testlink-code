@@ -1,6 +1,6 @@
--- $Revision: 1.3 $
--- $Date: 2009/12/22 15:55:11 $
--- $Author: erikeloff $
+-- $Revision: 1.1 $
+-- $Date: 2010/01/17 17:21:26 $
+-- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
 --

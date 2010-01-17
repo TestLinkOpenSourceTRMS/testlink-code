@@ -10,7 +10,7 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.53 2010/01/15 20:01:56 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.54 2010/01/17 17:15:16 franciscom Exp $
  *
  * @internal Revisions:
  *	20100110 - franciscom - added drop_tables();
@@ -35,8 +35,10 @@ require_once("../config.inc.php");
 require_once( dirname(__FILE__). '/../lib/functions/database.class.php' );
 require_once("installUtils.php");
 require_once("sqlParser.class.php");
+require_once("../lib/functions/common.php");
 require_once("../lib/functions/object.class.php");
 require_once("../lib/functions/metastring.class.php");
+
 require_once("../third_party/dBug/dBug.php");
 
 // 20080315 - franciscom
@@ -254,6 +256,7 @@ if($create)
 
 // in upgrade mode we detect the lenght of user password field
 // to identify a version with uncrypted passwords
+$tables = tlObject::getDBTables();
 if ($upgrade)
 {
 	$my_ado=$db->get_dbmgr_object();
@@ -275,6 +278,7 @@ if ($upgrade)
 	// ------------------------------------------------------------------------------------------------
 	
 	$a_sql_upd_dir=array();
+	$a_sql_data_dir=array();
 	
 	$the_version_table=$my_ado->MetaTables('TABLES',false,'db_version');
 	if( count($the_version_table) == 0 )
@@ -286,10 +290,11 @@ if ($upgrade)
 	}
 	else
 	{
+		$migration_functions_file = '';
+        $migration_process = ''; 
+
 		// try to know what db version is installed
-		// 20071019 - franciscom - LIMIT does not work on MSSQL
-		// $sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC LIMIT 1";
-		$sql = "SELECT * FROM db_version ORDER BY upgrade_ts DESC";
+		$sql = "SELECT * FROM {$tables['db_version']} ORDER BY upgrade_ts DESC";
 		$res = $db->exec_query($sql);  
 		if (!$res)
 		{
@@ -302,13 +307,19 @@ if ($upgrade)
 		
 		switch ($schema_version)
 		{
-			case 'DB 1.1':
-				$a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
-				$a_sql_upd_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/";      	
-				break;
+			// case 'DB 1.1':
+			// 	$a_sql_upd_dir[] = "sql/alter_tables/1.8/{$db_type}/DB.1.2/";      	
+			// 	$a_sql_upd_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/";      	
+            //     $migration_process = 'migrate_18_to_19'; 
+            //     $migration_functions_file = '.\migration\migrate_18\migrate_18_to_19.php';
+			// 	break;
 				
 			case 'DB 1.2':
-				$a_sql_upd_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/";      	
+				$a_sql_upd_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/step1/";      	
+				$a_sql_data_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/stepZ/";
+				      	
+                $migration_process = 'migrate_18_to_19'; 
+                $migration_functions_file = '.\migration\migrate_18\migrate_18_to_19.php';
 				break;
 				
 			case 'DB 1.3':
@@ -333,6 +344,7 @@ if ($upgrade)
 	}
 	
 	$a_sql_schema = getDirSqlFiles($a_sql_upd_dir,ADD_DIR);
+	$a_sql_data = getDirSqlFiles($a_sql_data_dir,ADD_DIR);
 }
 
 
@@ -410,6 +422,12 @@ foreach($a_sql_schema as $sql_schema)
 	echo "<br />";
 }
 
+// Now data migration must be done if needed
+if( $migration_process != '' )
+{
+	require_once($migration_functions_file);
+	$migration_process($db,$tables);
+}
 
 // -------------------------------------------------
 // Data Operations

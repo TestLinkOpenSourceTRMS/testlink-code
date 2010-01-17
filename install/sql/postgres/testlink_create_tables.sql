@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.51 2010/01/15 19:40:49 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.52 2010/01/17 17:16:32 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -593,8 +593,8 @@ CREATE TABLE /*prefix*/risk_assignments(
   "id" BIGSERIAL NOT NULL ,
   "testplan_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testplans (id),
   "node_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-  "risk" CHAR(1) NOT NULL DEFAULT '2',
-  "importance" CHAR(1) NOT NULL DEFAULT 'M',
+  "risk" INT2 NOT NULL DEFAULT '2',
+  "importance" INT2 NOT NULL DEFAULT '2',
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/risk_assignments_uidx1 ON /*prefix*/risk_assignments ("testplan_id","node_id");

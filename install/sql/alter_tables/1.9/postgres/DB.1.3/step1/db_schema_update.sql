@@ -1,5 +1,5 @@
--- $Revision: 1.1 $
--- $Date: 2010/01/17 17:18:03 $
+-- $Revision: 1.2 $
+-- $Date: 2010/01/18 20:09:25 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -127,10 +127,27 @@ ALTER TABLE /*prefix*/builds ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
 ALTER TABLE /*prefix*/builds ADD COLUMN release_date DATE NOT NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN closed_on_date DATE NULL;
-
 --- TO BE CHECKED
 --- CREATE INDEX /*prefix*/builds_testplan_id ON /*prefix*/builds ("testplan_id");
 COMMENT ON TABLE /*prefix*/builds IS 'Updated to TL 1.9.0 - DB 1.3';
+
+-- cfield_testprojects
+ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location INT2 NOT NULL DEFAULT '1';
+COMMENT ON TABLE /*prefix*/cfield_testprojects IS 'Updated to TL 1.9.0 - DB 1.3';
+
+ALTER TABLE /*prefix*/cfield_design_values ALTER COLUMN value TYPE varchar(4000) NOT NULL default '';
+COMMENT ON TABLE /*prefix*/cfield_design_values IS 'Updated to TL 1.9.0 - DB 1.3';
+
+ALTER TABLE /*prefix*/cfield_execution_values ALTER COLUMN value varchar(4000) NOT NULL default '';
+COMMENT ON TABLE /*prefix*/cfield_execution_values IS 'Updated to TL 1.9.0 - DB 1.3';
+
+ALTER TABLE /*prefix*/cfield_testplan_design_values ALTER COLUMN value varchar(4000) NOT NULL default '';
+COMMENT ON TABLE /*prefix*/cfield_testplan_design_values IS 'Updated to TL 1.9.0 - DB 1.3';
+  
+ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values varchar(4000) NOT NULL default '';
+ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value varchar(4000) NOT NULL default '';
+COMMENT ON TABLE /*prefix*/custom_fields IS 'Updated to TL 1.9.0 - DB 1.3';
+
 
 -- testprojects
 ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public INT2 NOT NULL DEFAULT '1';
@@ -143,6 +160,7 @@ COMMENT ON TABLE /*prefix*/testplans IS 'Updated to TL 1.9.0 - DB 1.3';
 
 -- tcversions
 ALTER TABLE /*prefix*/tcversions ADD COLUMN layout INTEGER NOT NULL DEFAULT '1';
+ALTER TABLE /*prefix*/tcversions ADD COLUMN status INTEGER NOT NULL DEFAULT '1';
 ALTER TABLE /*prefix*/tcversions ADD COLUMN preconditions TEXT NULL DEFAULT NULL;
 COMMENT ON TABLE /*prefix*/tcversions IS 'Updated to TL 1.9.0 - DB 1.3';
 
@@ -154,9 +172,6 @@ ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN platform_id BIGINT NOT NULL
 COMMENT ON TABLE /*prefix*/testplan_tcversions IS 'Updated to TL 1.9.0 - DB 1.3';
 
 
--- cfield_testprojects
-ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location INT2 NOT NULL DEFAULT '1';
-COMMENT ON TABLE /*prefix*/cfield_testprojects IS 'Updated to TL 1.9.0 - DB 1.3';
 
 -- executions
 ALTER TABLE /*prefix*/executions ADD COLUMN platform_id BIGINT NOT NULL DEFAULT '0';

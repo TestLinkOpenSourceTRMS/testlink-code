@@ -1,9 +1,9 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_18_to_19.php,v 1.1 2010/01/17 17:16:22 franciscom Exp $ 
+$Id: migrate_18_to_19.php,v 1.2 2010/01/18 21:14:55 franciscom Exp $ 
 
-Migrate from 1.7.2 to 1.8.0
+Migrate from 1.8.x tp 1.9.0
 
 Author: franciscom
 
@@ -18,6 +18,7 @@ tasks:
 - Update IDs on ....
 
 rev: 
+	20100118 - franciscom - fixed bug on migrate_req_specs()
       
 */
 
@@ -41,47 +42,7 @@ function migrate_18_to_19(&$dbHandler,$tableSet)
  */
 function migrate_requirements(&$dbHandler,$tableSet)
 {
-	
-// CREATE TABLE "requirements_TL18" (  
-//   "id" BIGSERIAL NOT NULL ,
-//   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES req_specs (id),
-//   "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
-//   "title" VARCHAR(100) NOT NULL DEFAULT '',
-//   "scope" TEXT NULL DEFAULT NULL,
-//   "status" CHAR(1) NOT NULL DEFAULT 'V',
-//   "type" CHAR(1) NULL DEFAULT NULL,
-//   "node_order" BIGINT NOT NULL DEFAULT 0,
-//   "author_id" BIGINT NULL DEFAULT NULL,
-//   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
-//   "modifier_id" BIGINT NULL DEFAULT NULL,
-//   "modification_ts" TIMESTAMP NULL,
-//   PRIMARY KEY ("id")
-// ); 
-	
-	
-	
-// 	CREATE TABLE /*prefix*/requirements (  
-//   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-//   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
-//   "req_doc_id" VARCHAR(64) NOT NULL,
-//   PRIMARY KEY ("id")
-// ); 
-
-// CREATE TABLE /*prefix*/req_versions(  
-//   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
-//   "version" INTEGER NOT NULL DEFAULT '1',
-//   "scope" TEXT NULL DEFAULT NULL,
-//   "status" CHAR(1) NOT NULL DEFAULT 'V',
-//   "type" CHAR(1) NULL DEFAULT NULL,
-//   "expected_coverage" INTEGER NOT NULL DEFAULT 1,
-//   "author_id" BIGINT NULL DEFAULT NULL,
-//   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
-//   "modifier_id" BIGINT NULL DEFAULT NULL,
-//   "modification_ts" TIMESTAMP NULL,
-//   PRIMARY KEY ("id","version")
-// ); 
-
-	echo __FUNCTION__;
+	echo __FUNCTION__ . '<br>';
 	
 	// do requirements exist?
 	$sql = "SELECT id FROM {$tableSet['requirements']}";
@@ -120,9 +81,24 @@ function migrate_requirements(&$dbHandler,$tableSet)
 	    }
 
         // STEP 3 - Remove fields from requirements
-        $sql = "ALTER TABLE {$tableSet['requirements']} " .
-               "DROP scope, DROP status, DROP type, DROP author_id,DROP creation_ts, " .
-               "DROP modifier_id,DROP modification_ts, DROP node_order,DROP title";
+        $adodbObj = $dbHandler->get_dbmgr_object();
+        $colNames = $adodbObj->MetaColumnNames($tableSet['requirements']);
+        $cols2drop = array("scope", "status", "type", "author_id","creation_ts",
+                           "modifier_id","modification_ts","node_order","title");
+        $cols2drop = array_flip($cols2drop);
+        foreach($cols2drop as $colname => $dummy)
+        {
+        	if( !isset($colNames[strtoupper($colname)]) )
+        	{
+        		unset($cols2drop[$colname]);
+        	}
+        	else
+        	{
+        		$cols2drop[$colname] = " DROP $colname ";
+        	}
+        }
+        $drop_clause = implode(",", $cols2drop);
+        $sql = "ALTER TABLE {$tableSet['requirements']} {$drop_clause} ";
         $dbHandler->exec_query($sql);
 	} 
 }
@@ -132,7 +108,7 @@ function migrate_requirements(&$dbHandler,$tableSet)
  * migrate_requirements_1
  *
  */
-function migrate_requirements_1(&$dbHandler,$tableSet)
+function migrate_requirements_1(&$dbHandler,$adodbObj,$tableSet)
 {
 	echo __FUNCTION__;
 	
@@ -196,7 +172,8 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 	    foreach($keyset as $id)
 	    {
 			$sql = " UPDATE {$tableSet['req_specs']} " .
-			       " SET doc_id = '" . "RSPEC-DOCID-" . $rs[$id]['id'] . "'";
+			       " SET doc_id = '" . "RSPEC-DOCID-" . $rs[$id]['id'] . "'" .
+			       " WHERE id={$rs[$id]['id']} ";
 	        $dbHandler->exec_query($sql);
 	    }
 	} 

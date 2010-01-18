@@ -10,7 +10,7 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.54 2010/01/17 17:15:16 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.55 2010/01/18 21:14:35 franciscom Exp $
  *
  * @internal Revisions:
  *	20100110 - franciscom - added drop_tables();
@@ -257,11 +257,10 @@ if($create)
 // in upgrade mode we detect the lenght of user password field
 // to identify a version with uncrypted passwords
 $tables = tlObject::getDBTables();
+$my_ado=$db->get_dbmgr_object();
 if ($upgrade)
 {
-	$my_ado=$db->get_dbmgr_object();
 	$user_table=$my_ado->MetaTables('TABLES',false,'user');
-	
 	if( count($user_table) == 1 )
 	{
 		$the_cols=$my_ado->MetaColumns('user');

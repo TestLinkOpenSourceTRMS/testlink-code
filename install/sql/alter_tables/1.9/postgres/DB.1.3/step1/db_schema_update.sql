@@ -1,5 +1,5 @@
--- $Revision: 1.2 $
--- $Date: 2010/01/18 20:09:25 $
+-- $Revision: 1.3 $
+-- $Date: 2010/01/18 21:13:25 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -170,8 +170,6 @@ ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN author_id BIGINT NULL DEFAU
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN platform_id BIGINT NOT NULL DEFAULT '0';
 COMMENT ON TABLE /*prefix*/testplan_tcversions IS 'Updated to TL 1.9.0 - DB 1.3';
-
-
 
 -- executions
 ALTER TABLE /*prefix*/executions ADD COLUMN platform_id BIGINT NOT NULL DEFAULT '0';

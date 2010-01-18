@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.2 2010/01/18 20:08:20 franciscom Exp $
+ * $Id: db_schema_update.sql,v 1.3 2010/01/18 21:13:09 franciscom Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -138,8 +138,6 @@ DROP INDEX /*prefix*/tp_tcversion ON /*prefix*/testplan_tcversions;
 CREATE UNIQUE INDEX /*prefix*/testplan_tcversions_tplan_tcversion ON /*prefix*/testplan_tcversions (testplan_id,tcversion_id,platform_id);
 
 
-
-
 /* executions */
 ALTER TABLE /*prefix*/executions  ADD COLUMN platform_id int(10) unsigned NOT NULL default '0';
 ALTER TABLE /*prefix*/executions COMMENT = 'Updated to TL 1.9.0 - DB 1.3';
@@ -149,5 +147,12 @@ ALTER TABLE /*prefix*/executions COMMENT = 'Updated to TL 1.9.0 - DB 1.3';
 ALTER TABLE /*prefix*/milestones ADD COLUMN start_date date NOT NULL default '0000-00-00';
 ALTER TABLE /*prefix*/milestones COMMENT = 'Updated to TL 1.9.0 - DB 1.3';
 
+/* req_spec */
+ALTER TABLE /*prefix*/req_specs ADD COLUMN doc_id VARCHAR(64) NOT NULL DEFAULT 'RS_DOC_ID';
+ALTER TABLE /*prefix*/req_specs COMMENT = 'Updated to TL 1.9.0 - DB 1.3';
+
+/* requirements */
+ALTER TABLE /*prefix*/requirements MODIFY COLUMN req_doc_id VARCHAR(64);
+ALTER TABLE /*prefix*/requirements COMMENT = 'Updated to TL 1.9.0 - DB 1.3';
 
 /* ----- END ----- */

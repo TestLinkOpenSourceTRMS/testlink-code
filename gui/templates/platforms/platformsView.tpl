@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.7 2009/12/01 18:56:14 erikeloff Exp $
+$Id: platformsView.tpl,v 1.8 2010/01/19 21:32:35 erikeloff Exp $
 Purpose: smarty template - View all platforms
 
+20100119 - Eloff      - added ability to show/hide platform id for API
 20091201 - Eloff      - show grey trash icon on platforms that use used
                         and show warning when deleting platforms
 20091010 - franciscom - export XML feature
@@ -42,7 +43,7 @@ Purpose: smarty template - View all platforms
 {if $gui->platforms neq ''}
 	<table class="simple sortable" style="width:95%">
 		<tr>
-			<th width="30%">{$sortHintIcon}{$labels.th_platform}</th>
+			<th width="30%">{$toggle_api_info_img}{$sortHintIcon}{$labels.th_platform}</th>
 			<th>{$sortHintIcon}{$labels.th_notes}</th>
 			{if $gui->canManage != ""}
 				<th>{$labels.th_delete}</th>
@@ -51,6 +52,7 @@ Purpose: smarty template - View all platforms
 		{section name=platform loop=$gui->platforms}
 		<tr>
 			<td>
+				<span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$gui->platforms[platform].id}</span>
 				{if $gui->canManage != ""}
 					<a href="lib/platforms/platformsEdit.php?doAction=edit&amp;id={$gui->platforms[platform].id}">
 				{/if}

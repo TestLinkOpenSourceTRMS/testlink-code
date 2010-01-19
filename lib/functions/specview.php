@@ -6,41 +6,34 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.43 2009/12/06 10:29:27 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.44 2010/01/19 06:05:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
- *     20090808 - franciscom - gen_spec_view() interface changes + refactoring
- *     20090325 - franciscom - added new info about when and who has linked a tcversion
- *     20090325 - franciscom - BUGID - better implementation of BUGID 1497
- *     20081116 - franciscom - BUGID
- *     20081109 - franciscom - fixed filter on getTestSpecFromNode()
- *                             fixed minor bug on $tsuite_tcqty processing
- *                             added new value for spec_view_type='uncoveredtestcases'.
+ *	20100119 - franciscom - addCustomFieldsToView() - missing wokr on platforms
+ *	20090808 - franciscom - gen_spec_view() interface changes + refactoring
+ *	20090325 - franciscom - added new info about when and who has linked a tcversion
+ *	20090325 - franciscom - BUGID - better implementation of BUGID 1497
+ *	20081109 - franciscom - fixed filter on getTestSpecFromNode()
+ *	                        fixed minor bug on $tsuite_tcqty processing
+ *	                        added new value for spec_view_type='uncoveredtestcases'.
+ *	
+ *	20081030 - franciscom - created removeEmptyTestSuites(), removeEmptyBranches() to refactor.
+ *	                        refactored use of tproject_id on gen_spec_view()
+ *	
+ *	20081019 - franciscom - removed new option to prune empty test suites
+ *	                        till we understand were this will be used.
+ *	                        In today implementation causes problems
+ *	                        Added logic to compute total count of test cases
+ *	                        for every test suite in a branch, to avoid use
+ *	                        of map_node_tccount argument
  *
- *     20081030 - franciscom - created removeEmptyTestSuites(), removeEmptyBranches() to refactor.
- *                             refactored use of tproject_id on gen_spec_view()
- *
- *     20081019 - franciscom - removed new option to prune empty test suites
- *                             till we understand were this will be used.
- *                             In today implementation causes problems
- *                             Added logic to compute total count of test cases
- *                             for every test suite in a branch, to avoid use
- *                             of map_node_tccount argument
- *
- *     20081004 - franciscom - minor code clean up
- *     20080919 - franciscom - BUGID 1716
- *     20080811 - franciscom - BUGID 1650 (REQ)
- *                             documentation improvements
- *
- *     20080528 - franciscom - internal bug - only one version was retrieved
- *     20080510 - franciscom - added getFilteredLinkedVersions()
- *                                   keywordFilteredSpecView()
- *
- *     20080422 - franciscom - BUGID 1497
- *     Suggested by Martin Havlat execution order will be set to external_id * 10
- *     for test cases not linked yet
+ *	20080919 - franciscom - BUGID 1716
+ *	20080811 - franciscom - BUGID 1650 (REQ)
+ *	20080422 - franciscom - BUGID 1497
+ *	Suggested by Martin Havlat execution order will be set to external_id * 10
+ *	for test cases not linked yet
  *           
  **/ 
 
@@ -557,9 +550,13 @@ function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
 
 
 /**
- * @param array &$testSuiteSet
- * @param integer $tprojectId
- * @param object &$tcaseMgr reference to testCase class instance
+ *	@param array &$testSuiteSet
+ *	@param integer $tprojectId
+ *	@param object &$tcaseMgr reference to testCase class instance
+ *
+ *	@internal revisions
+ *	20100119 - franciscom - start fixing missing platform refactoring
+ *
  */
 function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
 {
@@ -574,18 +571,25 @@ function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
 			{
 				foreach($value['testcases'] as $skey => $svalue)
 				{
-					
 					$linked_version_id=$svalue['linked_version_id'];
 					$testSuiteSet[$key]['testcases'][$skey]['custom_fields']='';
 					if( $linked_version_id != 0  )
 					{
-						$cf_name_suffix = "_" . $svalue['feature_id'];
+						// 20100119 - franciscom
+						// Here we need loop over platforms ?
+						$platformSet = array_keys($svalue['feature_id']);
+						foreach($platformSet as $platform_id)
+						{
+							// change in suffix format
+							$cf_name_suffix = $platform_id . "_" . $svalue['feature_id'][$platform_id];
+							
+							// 20090530 - franciscom - interface change
+							$cf_map = $tcaseMgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
+								                                                   $cf_name_suffix,$svalue['feature_id'][$platform_id],
+								                                                   null,$tprojectId);
+							$testSuiteSet[$key]['testcases'][$skey][$platform_id]['custom_fields'] = $cf_map;
+						}
 						
-						// 20090530 - franciscom - interface change
-						$cf_map = $tcaseMgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
-							$cf_name_suffix,$svalue['feature_id'],
-							null,$tprojectId);
-						$testSuiteSet[$key]['testcases'][$skey]['custom_fields'] = $cf_map;
 					}
 				}
 			} 

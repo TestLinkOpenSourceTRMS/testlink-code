@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_18_to_19.php,v 1.2 2010/01/18 21:14:55 franciscom Exp $ 
+$Id: migrate_18_to_19.php,v 1.3 2010/01/19 06:22:08 franciscom Exp $ 
 
 Migrate from 1.8.x tp 1.9.0
 
@@ -17,7 +17,8 @@ tasks:
   
 - Update IDs on ....
 
-rev: 
+rev:
+    20100119 - franciscom - migrate_req_specs() - drop title 
 	20100118 - franciscom - fixed bug on migrate_req_specs()
       
 */
@@ -177,6 +178,27 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 	        $dbHandler->exec_query($sql);
 	    }
 	} 
+    // STEP 3 - Remove fields from requirements
+    $adodbObj = $dbHandler->get_dbmgr_object();
+    $colNames = $adodbObj->MetaColumnNames($tableSet['req_specs']);
+    $cols2drop = array("title");
+    $cols2drop = array_flip($cols2drop);
+    foreach($cols2drop as $colname => $dummy)
+    {
+    	if( !isset($colNames[strtoupper($colname)]) )
+    	{
+    		unset($cols2drop[$colname]);
+    	}
+    	else
+    	{
+    		$cols2drop[$colname] = " DROP $colname ";
+    	}
+    }
+    $drop_clause = implode(",", $cols2drop);
+    $sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
+    $dbHandler->exec_query($sql);
+
+
 }
 
 /**

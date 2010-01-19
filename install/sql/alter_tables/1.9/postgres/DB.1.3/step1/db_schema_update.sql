@@ -1,5 +1,5 @@
--- $Revision: 1.3 $
--- $Date: 2010/01/18 21:13:25 $
+-- $Revision: 1.4 $
+-- $Date: 2010/01/19 20:28:40 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -135,17 +135,17 @@ COMMENT ON TABLE /*prefix*/builds IS 'Updated to TL 1.9.0 - DB 1.3';
 ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location INT2 NOT NULL DEFAULT '1';
 COMMENT ON TABLE /*prefix*/cfield_testprojects IS 'Updated to TL 1.9.0 - DB 1.3';
 
-ALTER TABLE /*prefix*/cfield_design_values ALTER COLUMN value TYPE varchar(4000) NOT NULL default '';
+ALTER TABLE /*prefix*/cfield_design_values ALTER COLUMN value TYPE varchar(4000);
 COMMENT ON TABLE /*prefix*/cfield_design_values IS 'Updated to TL 1.9.0 - DB 1.3';
 
-ALTER TABLE /*prefix*/cfield_execution_values ALTER COLUMN value varchar(4000) NOT NULL default '';
+ALTER TABLE /*prefix*/cfield_execution_values ALTER COLUMN value TYPE varchar(4000);
 COMMENT ON TABLE /*prefix*/cfield_execution_values IS 'Updated to TL 1.9.0 - DB 1.3';
 
-ALTER TABLE /*prefix*/cfield_testplan_design_values ALTER COLUMN value varchar(4000) NOT NULL default '';
+ALTER TABLE /*prefix*/cfield_testplan_design_values ALTER COLUMN value TYPE varchar(4000);
 COMMENT ON TABLE /*prefix*/cfield_testplan_design_values IS 'Updated to TL 1.9.0 - DB 1.3';
   
-ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values varchar(4000) NOT NULL default '';
-ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value varchar(4000) NOT NULL default '';
+ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values TYPE varchar(4000);
+ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value TYPE varchar(4000);
 COMMENT ON TABLE /*prefix*/custom_fields IS 'Updated to TL 1.9.0 - DB 1.3';
 
 

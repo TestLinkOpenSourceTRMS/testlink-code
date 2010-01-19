@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: projectEdit.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2009/12/27 11:29:27 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/01/19 20:19:12 $ $Author: franciscom $
  *
  * @author Martin Havlat
  *
@@ -15,6 +15,7 @@
  * @todo Verify dependency before delete testplan
  *
  * @internal revision
+ * 20100119 - franciscom - BUGID 3048
  * 20091227 - franciscom - BUGID 3020
  * 20091121 - franciscom - BUGID - Julian Contribution
  * 20080827 - franciscom - BUGID 1692
@@ -68,6 +69,7 @@ switch($args->doAction)
     	$ui = $op->ui;
     	$status_ok = $op->status_ok;
     	$user_feedback = $op->msg;
+    	$reloadType = $op->reloadType;
     	break;
 
     case 'doUpdate':
@@ -219,54 +221,56 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 */
 function doCreate($argsObj,&$tprojectMgr)
 {
-    $key2get=array('status_ok','msg');
-
-    $op = new stdClass();
+	$key2get=array('status_ok','msg');
+	
+	$op = new stdClass();
 	$op->ui = new stdClass();
-
-    $op->status_ok = 0;
-    $op->template = null;
-    $op->msg = '';
+	
+	$op->status_ok = 0;
+	$op->template = null;
+	$op->msg = '';
 	$op->id = 0;
+    $op->reloadType = 'none';
+	
+	$check_op = crossChecks($argsObj,$tprojectMgr);
+	foreach($key2get as $key)
+	{
+	    $op->$key=$check_op[$key];
+	}
 
-    $check_op = crossChecks($argsObj,$tprojectMgr);
-    foreach($key2get as $key)
-    {
-        $op->$key=$check_op[$key];
-    }
-
-	  if($op->status_ok)
-	  {
-	    $options = new stdClass();
-	    
-	    $options->requirement_mgmt = $argsObj->optReq;
-	    $options->priority_mgmt = $argsObj->optPriority;
-	    $options->automated_execution = $argsObj->optAutomation;
-	    	    
-	  	$new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$options,
-	  	                               $argsObj->notes,$argsObj->active,$argsObj->tcasePrefix,$argsObj->is_public);
-	  								                 
-	  	if (!$new_id)
-	  	{
-	  		$op->msg = lang_get('refer_to_log');
-	  	}
-	  	else
-	  	{
-	  		$op->template = 'projectView.tpl';
-	  		$op->id = $new_id;
-	  	}
-	  }
-
-	  if( $op->status_ok )
-	  {
-	      logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");
-	  }
+	if($op->status_ok)
+	{
+	  $options = new stdClass();
+	  
+	  $options->requirement_mgmt = $argsObj->optReq;
+	  $options->priority_mgmt = $argsObj->optPriority;
+	  $options->automated_execution = $argsObj->optAutomation;
+	  	    
+		$new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$options,
+		                               $argsObj->notes,$argsObj->active,$argsObj->tcasePrefix,$argsObj->is_public);
+									                 
+		if (!$new_id)
+		{
+			$op->msg = lang_get('refer_to_log');
+		}
 		else
 		{
-			$op->ui->doActionValue = 'doCreate';
-			$op->ui->buttonValue = lang_get('btn_create');
-			$op->ui->caption = lang_get('caption_new_tproject');
+			$op->template = 'projectView.tpl';
+			$op->id = $new_id;
 		}
+	}
+
+	if( $op->status_ok )
+	{
+	    logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");
+    	$op->reloadType = 'reloadNavBar'; // BUGID 3048
+	}
+	else
+	{
+		$op->ui->doActionValue = 'doCreate';
+		$op->ui->buttonValue = lang_get('btn_create');
+		$op->ui->caption = lang_get('caption_new_tproject');
+	}
 
     return $op;
 }
@@ -320,7 +324,9 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
     if($op->status_ok)
 	{
 		if($sessionTprojectID == $argsObj->tprojectID)
+		{
 			$op->reloadType = 'reloadNavBar';
+		}	
 	}
 	else
 	{
@@ -457,8 +463,9 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 	if ($ope_status['status_ok'])
 	{
 		if($sessionTprojectID == $argsObj->tprojectID)
+		{
 			$op->reloadType = 'reloadNavBar';
-
+        }
 		$op->msg = sprintf(lang_get('test_project_deleted'),$argsObj->tprojectName);
 		logAuditEvent(TLS("audit_testproject_deleted",$argsObj->tprojectName),"DELETE",$argsObj->tprojectID,"testprojects");
 	}

@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_18_to_19.php,v 1.3 2010/01/19 06:22:08 franciscom Exp $ 
+$Id: migrate_18_to_19.php,v 1.4 2010/01/19 20:38:18 franciscom Exp $ 
 
 Migrate from 1.8.x tp 1.9.0
 
@@ -31,7 +31,6 @@ define('DBVERSION4MIG', 'DB 1.2');
 
 function migrate_18_to_19(&$dbHandler,$tableSet)
 {
-	echo __FUNCTION__;
     migrate_requirements($dbHandler,$tableSet);
     migrate_req_specs($dbHandler,$tableSet);
     migrate_testcases($dbHandler,$tableSet);
@@ -43,12 +42,10 @@ function migrate_18_to_19(&$dbHandler,$tableSet)
  */
 function migrate_requirements(&$dbHandler,$tableSet)
 {
-	echo __FUNCTION__ . '<br>';
-	
 	// do requirements exist?
 	$sql = "SELECT id FROM {$tableSet['requirements']}";
  	$reqSet = $dbHandler->get_recordset($sql);
-
+    
 	if( !is_null($reqSet) && count($reqSet) > 0)
 	{
 		$tree_mgr = new tree($dbHandler);
@@ -106,62 +103,11 @@ function migrate_requirements(&$dbHandler,$tableSet)
 
 
 /**
- * migrate_requirements_1
- *
- */
-function migrate_requirements_1(&$dbHandler,$adodbObj,$tableSet)
-{
-	echo __FUNCTION__;
-	
-	// get all requirements in system
-	$sql = "SELECT * FROM {$tableSet['requirements']}";
-	
-	$rs = $dbHandler->get_recordset($sql);
-	
-	//
-	if( !is_null($rs) && count($rs) > 0)
-	{
-		$req_mgr = new requirement_mgr($dbHandler);
-	
-	    $keyset = array_keys($rs);
-	    foreach($keyset as $req_id)
-	    {
-			// function create_version($id,$version,$scope, $user_id, $status = TL_REQ_STATUS_VALID, 
-	        //             $type = TL_REQ_TYPE_INFO, $expected_coverage=1)
-            // 
-            $req = $rs[$req_id];
-			$op = $req_mgr->create_version($req['id'],1,$req['scope'], $req['author_id'],
-			                               $req['status'],$req['type'],1);	    
-			                         
-			if( $op['status_ok'] )
-			{
-				$set = array();
-			    $set[] = " creation_ts = '" . $req['creation_ts'] . "' ";                         
-
-				if( is_int($req['modifier_id']) )
-				{
-					$set[] = " modifier_id = {$req['modifier_id']} ";
-					$set[] = " modification_ts = '" . $req['modification_ts'] ."' ";
-				}
-			}                         
-			$sql = " UPDATE {$tableSet['req_versions']} " .
-			       " SET " . implode (",",$set);                         
-	        $dbHandler->exec_query($sql);
-	    }
-	} 
-	
-	// remove fields
-	
-}
-
-/**
  * migrate_req_specs
  *
  */
 function migrate_req_specs(&$dbHandler,$tableSet)
 {
-	echo __FUNCTION__;
-	
 	// get all requirements in system
 	$sql = "SELECT * FROM {$tableSet['req_specs']}";
 	$rs = $dbHandler->get_recordset($sql);

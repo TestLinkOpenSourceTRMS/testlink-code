@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.47 2010/01/06 17:04:16 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.48 2010/01/20 11:14:40 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -61,6 +61,11 @@ abstract class tlObject implements iSerialization
 {	
 	/** @var string the unique object id */
 	protected $objectID;
+
+	/** 
+	 * @var string a message for user feedback 
+	 */
+	protected $userFeedback;
 		
 	/**
 	 * @var array supported serialization interfaces
@@ -110,6 +115,23 @@ abstract class tlObject implements iSerialization
 		}
 		$this->getSupportedSerializationFormatDescriptions();
 	}
+
+	/**
+	 * get a message for user
+	 */
+	 public function getUserFeedback()
+	 {
+	 	return $this->userFeedback;
+	 }
+	
+	/**
+	 * Set a message for user
+	 * @param string $message a localized message as user feedback
+	 */
+	 public function setUserFeedback($message)
+	 {
+	 	$this->userFeedback = $message;
+	 }
 	
 	/**
 	 * Getter for the unique objectID

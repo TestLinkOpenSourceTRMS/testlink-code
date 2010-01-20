@@ -1,6 +1,6 @@
--- $Revision: 1.4 $
--- $Date: 2010/01/19 20:28:40 $
--- $Author: franciscom $
+-- $Revision: 1.5 $
+-- $Date: 2010/01/20 11:23:35 $
+-- $Author: havlat $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -104,17 +104,14 @@ CREATE TABLE /*prefix*/testplan_platforms (
 
 
 CREATE TABLE /*prefix*/infrastructure (
-  id BIGSERIAL NOT NULL,
-  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
-  "owner_id" BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
-  "name" VARCHAR(255) NOT NULL,
+	id BIGSERIAL NOT NULL,
+	"testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+	"owner_id" BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
+	"name" VARCHAR(255) NOT NULL,
 	ipaddress VARCHAR(255) NOT NULL,
-	data TEXT NULL ,
-	reserved_id BIGINT NULL,
-	reserved_start_ts TIMESTAMP NULL ,
-	reserved_end_ts TIMESTAMP NULL ,
-  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
-  "modification_ts" TIMESTAMP NULL,
+	content TEXT NULL ,
+	"creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+	"modification_ts" TIMESTAMP NULL,
 	PRIMARY KEY (id)
 );
 CREATE INDEX /*prefix*/infrastructure_idx1 ON /*prefix*/infrastructure (testproject_id);

@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.53 2010/01/18 20:10:27 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.54 2010/01/20 11:23:35 havlat Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -720,17 +720,14 @@ CREATE TABLE /*prefix*/testplan_platforms (
 CREATE UNIQUE INDEX /*prefix*/testplan_platforms_uidx1 ON /*prefix*/testplan_platforms (testplan_id,platform_id);
 
 CREATE TABLE /*prefix*/infrastructure (
-  id BIGSERIAL NOT NULL,
-  "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
-  "owner_id" BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
-  "name" VARCHAR(255) NOT NULL,
+	id BIGSERIAL NOT NULL,
+	"testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
+	"owner_id" BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
+	"name" VARCHAR(255) NOT NULL,
 	ipaddress VARCHAR(255) NOT NULL,
-	data TEXT NULL ,
-	reserved_id BIGINT NULL,
-	reserved_start_ts TIMESTAMP NULL ,
-	reserved_end_ts TIMESTAMP NULL ,
-  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
-  "modification_ts" TIMESTAMP NULL,
+	"content" TEXT NULL ,
+	"creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+	"modification_ts" TIMESTAMP NULL,
 	PRIMARY KEY (id)
 );
 CREATE INDEX /*prefix*/infrastructure_idx1 ON /*prefix*/infrastructure (testproject_id);

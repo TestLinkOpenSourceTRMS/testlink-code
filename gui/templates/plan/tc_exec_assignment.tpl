@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.19 2009/08/21 07:07:13 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.20 2010/01/21 17:28:55 erikeloff Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20100121 - eloff      - BUGID 3078 - buttons always visible on top
      20090215 - franciscom - BUGID 2114
      20070930 - franciscom - BUGID 
      tcase name href to open window with test case spec.
@@ -38,9 +39,10 @@ function check_action_precondition(container_id,action)
 {/literal}
 
 </head>
-<body>
-
-<h1 class="title">{$gui->main_descr|escape}</h1>
+<body class="fixedheader">
+<form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
+	<div id="header-wrap">
+	<h1 class="title">{$gui->main_descr|escape}</h1>
 
 {if $gui->has_tc }
 
@@ -54,17 +56,14 @@ function check_action_precondition(container_id,action)
 {* prefix for checkbox name ADD*}   
 {assign var="add_cb" value="achecked_tc"}
   
-<form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
-<div class="workBack">
-
 	<div class="groupBtn">    
 		<input type='submit' name='doAction' value='{$labels.btn_update_selected_tc}' />
 		<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
 		{$labels.send_mail_to_tester}
 		</span>
 	</div>
-
-	<div style="height: 650px; overflow-y: auto;">	
+	</div> <!-- header-wrap -->
+<div class="workBack">
 	{assign var=top_level value=$gui->items[0].level}
 	
 	{foreach from=$gui->items item=ts key=idx name="div_drawing"}
@@ -204,12 +203,12 @@ function check_action_precondition(container_id,action)
     {/if} {* $ts_id != '' *}
 	{/foreach}
 	</div>
-</div>
-</form>
 
 {else}
+	</div> <!-- header-wrap -->
 	<div class="workBack">{lang_get s='no_testcase_available'}</div>
 {/if}
 
+</form>
 </body>
 </html>

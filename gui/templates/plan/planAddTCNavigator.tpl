@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.17 2009/04/20 19:39:33 schlundus Exp $
+$Id: planAddTCNavigator.tpl,v 1.18 2010/01/21 22:06:18 franciscom Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
@@ -80,7 +80,7 @@ function pre_submit()
 	<table class="smallGrey" width="100%">
 		<caption>
 			{$labels.caption_nav_filter_settings}
-			{* include file="inc_help.tpl" helptopic="hlp_executeFilter" *}
+			{* include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=true *}
 		</caption>
 		<tr>
 			<td>{$labels.test_plan}</td>

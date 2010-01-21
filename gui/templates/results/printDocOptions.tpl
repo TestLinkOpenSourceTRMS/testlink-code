@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.16 2009/09/16 19:53:00 schlundus Exp $ 
+$Id: printDocOptions.tpl,v 1.17 2010/01/21 22:06:18 franciscom Exp $ 
 Purpose: show tree on print feature
 
 rev: 20080820 - franciscom - added code to manage EXTJS tree component
@@ -57,7 +57,7 @@ rev: 20080820 - franciscom - added code to manage EXTJS tree component
 </head>
 
 <body>
-<h1 class="title">{$gui->mainTitle}{include file="inc_help.tpl" helptopic="hlp_generateDocOptions"}</h1>
+<h1 class="title">{$gui->mainTitle}{include file="inc_help.tpl" helptopic="hlp_generateDocOptions" show_help_icon=true}</h1>
 
 <div style="margin: 10px;">
 <p>{$labels.doc_opt_guide}<br /></p>

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.49 2010/01/06 18:34:10 franciscom Exp $
+$Id: execSetResults.tpl,v 1.50 2010/01/21 22:06:18 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090901 - franciscom - preconditions
@@ -204,7 +204,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 	{if $gui->platform_info.name != ""}
 	  {$title_sep_type3}{$labels.platform}{$title_sep}{$gui->platform_info.name|escape}
 	{/if}
-	{include file="inc_help.tpl" helptopic="hlp_executeMain"}
+	{include file="inc_help.tpl" helptopic="hlp_executeMain" show_help_icon=true}
 </h1>
 <h1 class="title">
 	{if $gui->ownerDisplayName != ""}

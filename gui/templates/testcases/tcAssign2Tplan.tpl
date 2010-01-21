@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcAssign2Tplan.tpl,v 1.3 2010/01/12 18:53:38 franciscom Exp $
+$Id: tcAssign2Tplan.tpl,v 1.4 2010/01/21 22:06:18 franciscom Exp $
 Purpose: manage assignment of test case version to N test plans.
  
 rev: BUGID 2378
@@ -36,7 +36,7 @@ function check_action_precondition(container_id,action)
 <body>
 
 <h1 class="title"> {$gui->pageTitle|escape} 
-	{*  {include file="inc_help.tpl" helptopic="hlp_planTcModified"} *}
+	{*  {include file="inc_help.tpl" helptopic="hlp_planTcModified" show_help_icon=true} *}
 </h1>
 
 <div class="workBack">

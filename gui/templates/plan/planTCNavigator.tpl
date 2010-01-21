@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.17 2009/03/25 20:53:12 schlundus Exp $
+$Id: planTCNavigator.tpl,v 1.18 2010/01/21 22:06:18 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -71,7 +71,7 @@ function update2latest(id)
 	<table class="smallGrey" style="width:100%;">
 		<caption>
 			{$labels.caption_nav_filter_settings}
-			{include file="inc_help.tpl" helptopic="hlp_executeFilter"}
+			{include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=true}
 		</caption>
     {if $gui->map_tplans != '' }
 		<tr>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.14 2009/12/28 14:23:44 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.15 2010/01/21 22:06:18 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -69,7 +69,7 @@ function check_action_precondition(form_id,action,msg)
 
 <h1 class="title">
  	{$gui->main_descr|escape}   
-	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
 </h1>
 
 

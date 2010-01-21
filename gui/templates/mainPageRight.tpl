@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.20 2009/12/07 20:12:18 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.21 2010/01/21 22:06:18 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -105,7 +105,7 @@
      {lang_get s='help' var='common_prefix'}
      {lang_get s='test_plan' var="xx_alt"}
      {assign var="text_hint" value="$common_prefix: $xx_alt"}
-     {include file="inc_help.tpl" helptopic="hlp_testPlan" 
+     {include file="inc_help.tpl" helptopic="hlp_testPlan" show_help_icon=true 
               inc_help_alt="$text_hint" inc_help_title="$text_hint"  
               inc_help_style="float: right;vertical-align: top;"}
 

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.30 2010/01/09 13:41:32 erikeloff Exp $ *}
+{* $Id: execNavigator.tpl,v 1.31 2010/01/21 22:06:18 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -82,7 +82,7 @@ rev :
 {$gui->optBuild.items.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
 
 {* include localized help message as a js-variable without icon *}
-{include file="inc_help.tpl" helptopic="hlp_executeFilter" icon=false}
+{include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}
 <div id="filter_panel">
 	<div class="x-panel-header x-unselectable">
 		{$labels.caption_nav_filter_settings}

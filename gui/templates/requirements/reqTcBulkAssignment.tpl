@@ -40,7 +40,7 @@ function check_action_precondition(form_id,action)
 <body>
 <h1 class="title">
 	{$gui->pageTitle|escape}
-	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
 </h1>
 
 {if $gui->has_req_spec}

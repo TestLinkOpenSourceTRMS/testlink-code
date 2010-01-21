@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecAnalyse.tpl,v 1.10 2009/08/29 19:21:42 schlundus Exp $ *}
+{* $Id: reqSpecAnalyse.tpl,v 1.11 2010/01/21 22:06:18 franciscom Exp $ *}
 {* Purpose: smarty template - Analyse REQ coverage *}
 
 {lang_get var="labels"
@@ -17,7 +17,7 @@
 
 <h1 class="title">
 	{$labels.req_title_analyse}{$smarty.const.TITLE_SEP}{$reqSpec[$selectedReqSpec]|escape}
-	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
 </h1>
 
 

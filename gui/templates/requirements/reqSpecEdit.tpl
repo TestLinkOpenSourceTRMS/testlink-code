@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.19 2009/12/30 20:47:03 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.20 2010/01/21 22:06:18 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev: 20091230 - franciscom - req spec type
@@ -53,7 +53,7 @@ rev: 20091230 - franciscom - req spec type
 <body>
 <h1 class="title">
 	{if $gui->action_descr != ''}{$gui->action_descr|escape}{/if} {$gui->main_descr|escape}
-	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
 </h1>
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}

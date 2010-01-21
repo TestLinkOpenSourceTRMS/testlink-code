@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.15 2009/05/13 05:55:49 franciscom Exp $
+$Id: projectView.tpl,v 1.16 2010/01/21 22:06:18 franciscom Exp $
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
@@ -146,6 +146,7 @@ var del_action=fRoot+'{$deleteAction}';
   // remove query string to avoid reload of home page,
   // instead of reload only navbar
   var href_pieces=parent.titlebar.location.href.split('?');
+	alert(href_pieces[0]);
 	parent.titlebar.location=href_pieces[0];
 	</script>
   {/if}

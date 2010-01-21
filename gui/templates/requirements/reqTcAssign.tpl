@@ -47,7 +47,7 @@ function check_action_precondition(form_id,action)
 
 <h1 class="title">
 	{$labels.test_case}{$smarty.const.TITLE_SEP}{$gui->tcTitle|escape}
-	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage"}
+	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
 </h1>
 
 <div class="workBack">

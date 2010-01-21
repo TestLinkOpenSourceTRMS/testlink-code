@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.15 2010/01/04 12:59:25 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.16 2010/01/21 22:04:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100121 - franciscom - added show_help_icon to remove error on event viewer
  * 20090304 - franciscom - removed some MAGIC NUMBERS 
  * 20081027 - havlatm - moved to include Smarty library
  * 20080424 - havlatm - added $tlCfg
@@ -101,7 +102,8 @@ class TLSmarty extends Smarty
         $this->assign('inc_help_alt',null);
         $this->assign('inc_help_title',null);
         $this->assign('inc_help_style',null);
-        
+        $this->assign('show_help_icon',true);
+                
         $this->assign('tplan_name',null);
         $this->assign('name',null);
         // -----------------------------------------------------------------------------

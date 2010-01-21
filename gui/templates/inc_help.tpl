@@ -1,5 +1,5 @@
 {* Testlink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: inc_help.tpl,v 1.16 2010/01/09 13:41:32 erikeloff Exp $ *}
+{* $Id: inc_help.tpl,v 1.17 2010/01/21 22:07:08 franciscom Exp $ *}
 {* 
 
 Purpose: smarty template - help link/icon component
@@ -16,7 +16,7 @@ Revisions:
 {*
 template arguments:
     @param string $helptopic The topic to get help on.
-    @param boolean $icon    if true (default) include a small help icon that
+    @param boolean $show_help_icon    if true (default) include a small help icon that
                             activates help text when clicked.  If false you must
                             by other means call show_help(help_localized_text)
     @param string $inc_help_style
@@ -36,7 +36,7 @@ template arguments:
 		"onclick='javascript: close_help();' /> {$help_text|escape:'javascript'}";
 //-->
 </script>  
-{if $icon !== false}
+{if $show_help_icon !== false}
 <img alt="{$img_alt}" style="{$img_style}" 
 	src="{$smarty.const.TL_THEME_IMG_DIR}/sym_question.gif" 
 	onclick='javascript: show_help(help_localized_text);'

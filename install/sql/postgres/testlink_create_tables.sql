@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.54 2010/01/20 11:23:35 havlat Exp $
+-- $Id: testlink_create_tables.sql,v 1.55 2010/01/21 20:17:59 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -494,7 +494,6 @@ CREATE TABLE /*prefix*/req_specs(
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),  
   "doc_id" VARCHAR(64) NOT NULL,
----  "title" VARCHAR(100) NOT NULL DEFAULT '',   --- TO BE REMOVED
   "scope" TEXT NULL DEFAULT NULL,
   "total_req" INTEGER NOT NULL DEFAULT '0',
   "type" CHAR(1) NULL DEFAULT 'N',

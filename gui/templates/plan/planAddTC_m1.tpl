@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.30 2009/12/07 20:12:18 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.31 2010/01/21 17:26:01 erikeloff Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20100121 - eloff      - BUGID 3078 - moved buttons to top
     20091109 - franciscom - BUGID 0002937 - add/remove test case hover over test case 
                                             tooltip replacement with summary     
     20090610 - franciscom - display date when test case version was linked to test plan
@@ -91,20 +92,48 @@ Ext.onReady(function(){
 {/literal}
 
 </head>
-<body>
-<h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$actionTitle}
-	{include file="inc_help.tpl" helptopic="hlp_planAddTC"}
-</h1>
-{include file="inc_update.tpl" result=$sqlResult}
+<body class="fixedheader">
+<form name="addTcForm" id="addTcForm" method="post">
+	<div id="header-wrap">
+		<h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$actionTitle}
+		{include file="inc_help.tpl" helptopic="hlp_planAddTC"}
+		</h1>
+		{include file="inc_update.tpl" result=$sqlResult}
 
+		<div class="groupBtn">
+			{$labels.tester_assignment_on_add}
+			<select name="testerID"  id="testerID">
+				{html_options options=$gui->testers selected=$gui->testerID}
+			</select>
+			<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
+			{$labels.send_mail_to_tester}
+			</span>
+		</div>
+		<div class="groupBtn">
+			<input type="hidden" name="doAction" id="doAction" value="default" />
+			<input type="submit" name="doAddRemove" value="{$buttonValue}"
+				onclick="doAction.value=this.name" />
+			{if $gui->full_control eq 1}
+			<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}"
+				onclick="doAction.value=this.name" />
+				{if $show_write_custom_fields eq 1}
+				<input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}"
+					onclick="doAction.value=this.name" />
+				{/if}
+				{if $drawSavePlatformsButton}
+				<input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}"
+					onclick="doAction.value=this.name" />
+				{/if}
+			{/if}
+			</div>
+		</div>
+	</div> <!-- header-wrap -->
 {if $gui->has_tc }
 
 
 
-<form name="addTcForm" id="addTcForm" method="post">
 
 <div class="workBack">
-  <div id="scroller" style="height: 550px; overflow-y: auto;">
 	{if $gui->keywords_filter != ''}
 		<div style="margin-left: 20px; font-size: smaller;">
 			<br />{$labels.note_keyword_filter}{$gui->keywords_filter|escape}</p>
@@ -318,37 +347,7 @@ Ext.onReady(function(){
     </div>
 
 	{/foreach}
-  </div>
-  <hr />
 
-	<div class="groupBtn">   
-  	{$labels.tester_assignment_on_add}  	
-  	<select name="testerID"  id="testerID">
-      		{html_options options=$gui->testers selected=$gui->testerID}
-   	</select>
-    {*  to be done *}
-		<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
-		{$labels.send_mail_to_tester}
-		</span>
-    
-    <br />
-    <input type="hidden" name="doAction" id="doAction" value="default" />
-		<input type="submit" name="doAddRemove" style="padding-right: 20px;"
-                   onclick="doAction.value=this.name" value="{$buttonValue}" />
-		{if $gui->full_control eq 1}
-			<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}" 
-                   onclick="doAction.value=this.name" />
-			{if $show_write_custom_fields eq 1}
-             	<input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}" 
-                     onclick="doAction.value=this.name" />
-      {/if}
-			{if $drawSavePlatformsButton}
-             	<input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}" 
-                     onclick="doAction.value=this.name" />
-      {/if}
-
-		{/if}
-	</div>
 
 </div>
 

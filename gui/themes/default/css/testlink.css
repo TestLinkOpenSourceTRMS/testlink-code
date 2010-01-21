@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.23 2009/12/22 14:06:06 havlat Exp $
+$Id: testlink.css,v 1.24 2010/01/21 17:26:01 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
@@ -38,6 +38,12 @@ body, body.testlink {
 	font-size: 		small;
 	margin:			0px;
 	padding:		0px;
+}
+
+/** use together with #header-wrap */
+body.fixedheader {
+	padding-top:	97px !important;
+	padding-top:	0; /* IE 6 does not understand fixed */
 }
 
 img {
@@ -135,6 +141,15 @@ div.testproject_title{
 
 
 /* **** general classes ************************************* */
+
+#header-wrap {
+	background:		#eee;
+	border-bottom:	1px solid #000;
+	height:			100px;
+	position:		fixed;
+	top:			0;
+	width:			100%;
+}
 
 /* background for working area (tables and forms) */
 div.workBack {

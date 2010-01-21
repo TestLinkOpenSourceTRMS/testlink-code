@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.146 $
- * @modified $Date: 2010/01/02 16:54:34 $ $Author: franciscom $
+ * @version $Revision: 1.147 $
+ * @modified $Date: 2010/01/21 22:08:00 $ $Author: franciscom $
  *
  * rev:
+ *  20100121 - franciscom - missing platform feature refactoring
  *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
  *  20091111 - franciscom - BUGID 2938 - Feature: Save and Go to next test case in test suite.
  *  20090922 - franciscom - added contribution idea, when using bulk operation
@@ -773,17 +774,22 @@ function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
   args:
   
   returns: 
+  
+  rev: 20100121 - franciscom - platform refactoring
 
 */
-function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id)
+function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id)
 {     
+	new dBug($exec_info);
+	
 	foreach($exec_info as $version_id => $value)
 	{
 		$exec_info[$version_id]['assigned_user'] = '';
 		$exec_info[$version_id]['assigned_user_id'] = 0;
-		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
 		
-		$assignedTesterId = intval($p3[$version_id]['user_id']);
+		// map of map: main key version_id, secondary key: platform_id
+		$p3 = $tcase_mgr->get_version_exec_assignment($version_id,$tplan_id);
+		$assignedTesterId = intval($p3[$version_id][$platform_id]['user_id']);
 		
 		if($assignedTesterId)
 		{
@@ -1169,7 +1175,8 @@ function getLastExecution(&$dbHandler,$tcase_id,$tcversion_id,$guiObj,$argsObj,&
     
     if( !is_null($last_exec) )
     {
-        $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,$argsObj->tplan_id);
+        $last_exec=setTesterAssignment($dbHandler,$last_exec,$tcaseMgr,
+                                       $argsObj->tplan_id,$argsObj->platform_id);
         
         // Warning: setCanExecute() must be called AFTER setTesterAssignment()  
         $can_execute=$guiObj->grants->execute && ($guiObj->build_is_open);

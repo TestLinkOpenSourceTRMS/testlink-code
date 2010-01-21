@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: cfieldsTprojectAssign.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/07/18 14:43:05 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/01/21 22:04:18 $ by $Author: franciscom $
  *
 **/
 require_once(dirname(__FILE__) . "/../../config.inc.php");
@@ -76,12 +76,22 @@ switch($args->doAction)
 // Get all available custom fields
 $cfield_map = $cfield_mgr->get_all();
 
+
+
+
 $gui = new stdClass();
 $gui->locations=createLocationsMenu($cfield_mgr->getLocations());
 $gui->tproject_name = $args->testproject_name;
 $gui->my_cf = $cfield_mgr->get_linked_to_testproject($args->testproject_id);
 $cf2exclude = is_null($gui->my_cf) ? null :array_keys($gui->my_cf);
 $gui->other_cf = $cfield_mgr->get_all($cf2exclude);
+$gui->cf_available_types = $cfield_mgr->get_available_types();
+$gui->cf_allowed_nodes = array();
+$allowed_nodes = $cfield_mgr->get_allowed_nodes();
+foreach($allowed_nodes as $verbose_type => $type_id)
+{
+	$gui->cf_allowed_nodes[$type_id] = lang_get($verbose_type);
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

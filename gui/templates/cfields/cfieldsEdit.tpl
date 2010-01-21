@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.21 2010/01/21 21:34:23 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.22 2010/01/21 22:05:10 franciscom Exp $
 
 
 Important Development note:
@@ -310,7 +310,7 @@ function initShowOnExec(id_master,show_on_cfg)
 
 <h1 class="title">
   	{$labels.title_cfields_mgmt} 
-	{include file="inc_help.tpl" helptopic="hlp_customFields"}
+	{include file="inc_help.tpl" helptopic="hlp_customFields" show_help_icon=true}
 </h1>
 
 <h2>{$operation_descr|escape}</h2>

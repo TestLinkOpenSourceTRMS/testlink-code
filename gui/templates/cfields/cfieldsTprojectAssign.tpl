@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsTprojectAssign.tpl,v 1.7 2009/09/21 09:27:53 franciscom Exp $
+$Id: cfieldsTprojectAssign.tpl,v 1.8 2010/01/21 22:05:10 franciscom Exp $
 Purpose: management Custom fields assignment to a test project
 
 rev :
+     20100121 - franciscom - added more information for users
      20090717 - franciscom - location management
      20070527 - franciscom - added check/uncheck all logic
      20070515 - franciscom - BUGID 0000852 
@@ -16,6 +17,7 @@ rev :
 {lang_get var="labels" 
           s='name,label,display_order,location,cfields_active,testproject,btn_assign,
              cfields_tproject_assign,title_assigned_cfields,check_uncheck_all_checkboxes,
+             available_on,type,
              manage_cfield,btn_unassign,btn_cfields_active_mgmt,btn_cfields_display_order,
              btn_cfields_display_attr,title_available_cfields'}
 
@@ -47,6 +49,8 @@ rev :
       		</th>
       		<th width="40%">{$labels.name}</th>
       		<th width="40%">{$labels.label}</th>
+      		<th>{$labels.type}</th>
+      		<th>{$labels.available_on}</th>
       		<th width="15%">{$labels.display_order}</th>
       		<th width="15%">{$labels.location}</th>
       		<th width="5%">{$labels.cfields_active}</th>
@@ -57,6 +61,10 @@ rev :
    		   	<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&amp;cfield_id={$cf.id}"
    		   	                    title="{$labels.manage_cfield}">{$cf.name|escape}</a></td>
       		<td class="bold">{$cf.label|escape}</td>
+      		<td class="bold">{$gui->cf_available_types[$cf.type]|escape}</td>
+      		<td class="bold">{$gui->cf_allowed_nodes[$cf.node_type_id]|escape}</td>
+
+
       		<td><input type="text" name="display_order[{$cf.id}]" 
       		           value="{$cf.display_order}" 
       		           size="{#DISPLAY_ORDER_SIZE#}" maxlength="{#DISPLAY_ORDER_MAXLEN#}" /></td>
@@ -117,12 +125,16 @@ rev :
       		</th>
       		<th>{$labels.name}</th>
       		<th>{$labels.label}</th>
+      		<th>{$labels.type}</th>
+      		<th>{$labels.available_on}</th>
       	</tr>
       	{foreach key=cf_id item=cf from=$gui->other_cf}
       	<tr>
       		<td class="clickable_icon"> <input type="checkbox" id="free_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
       		<td class="bold">{$cf.name|escape}</td>
       		<td class="bold">{$cf.label|escape}</td>
+      		<td class="bold">{$gui->cf_available_types[$cf.type]|escape}</td>
+      		<td class="bold">{$gui->cf_allowed_nodes[$cf.node_type_id]|escape}</td>
       	</tr>
       	{/foreach}
       </table>

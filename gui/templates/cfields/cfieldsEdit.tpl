@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.20 2009/05/25 20:40:18 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.21 2010/01/21 21:34:23 franciscom Exp $
 
 
 Important Development note:
@@ -23,6 +23,7 @@ This is done to simplify logic.
 
 
 rev :
+     20100121 - franciscom - BUGID - layout change
      20090524 - franciscom - Refactoring to have a better picture on User Interface of
                              Custom Field application area usage
      20090503 - franciscom - BUGID 2425
@@ -352,6 +353,26 @@ function initShowOnExec(id_master,show_on_cfg)
 		           {include file="error_icon.tpl" field="cf_label"}
     	</td>
 	  </tr>
+		<tr>
+			<th style="background:none;">{$labels.available_on}</th>
+			<td>
+			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
+			    {assign var="idx" value=$gui->cfield.node_type_id}
+			    {$gui->cfieldCfg->cf_allowed_nodes.$idx}
+			    {hidden_cf_node_type_id}
+			    <input type="hidden" id="combo_cf_node_type_id"
+			           value={$gui->cfield.node_type_id} name="cf_node_type_id" />
+			  {else}
+  				<select onchange="configure_cf_attr('combo_cf_node_type_id',
+  				                                    js_enable_on_cfg,
+  				                                    js_show_on_cfg);"
+  				        id="combo_cf_node_type_id"
+  				        name="cf_node_type_id">
+  				{html_options options=$gui->cfieldCfg->cf_allowed_nodes selected=$gui->cfield.node_type_id}
+  				</select>
+				{/if}
+			</td>
+		</tr>
 
 		<tr>
 			<th style="background:none;">{$labels.type}</th>
@@ -425,31 +446,6 @@ function initShowOnExec(id_master,show_on_cfg)
 			</td>
 		</tr>
 
- 
- 
-
-
-
-		<tr>
-			<th style="background:none;">{$labels.available_on}</th>
-			<td>
-			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
-			    {assign var="idx" value=$gui->cfield.node_type_id}
-			    {$gui->cfieldCfg->cf_allowed_nodes.$idx}
-			    {hidden_cf_node_type_id}
-			    <input type="hidden" id="combo_cf_node_type_id"
-			           value={$gui->cfield.node_type_id} name="cf_node_type_id" />
-			  {else}
-  				<select onchange="configure_cf_attr('combo_cf_node_type_id',
-  				                                    js_enable_on_cfg,
-  				                                    js_show_on_cfg);"
-  				        id="combo_cf_node_type_id"
-  				        name="cf_node_type_id">
-  				{html_options options=$gui->cfieldCfg->cf_allowed_nodes selected=$gui->cfield.node_type_id}
-  				</select>
-				{/if}
-			</td>
-		</tr>
 	</table>
 
   {* BUGID *}

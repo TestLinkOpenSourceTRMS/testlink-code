@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.535 2010/01/12 19:59:50 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.536 2010/01/21 22:08:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2124,7 +2124,7 @@ $TLS_platform_default_notes = "Automatically created platform for Test Plan %s";
 
 // ----- lib/platforms/platformsAssign.php -----
 $TLS_unknown_platform="Warning/Critic<br>" .
-		                  " In this test plan exist test case versions with platform_id=0 <br>" .
+		                  " In this test plan exist test case versions without platform assignment. <br>" .
 						          " This means that probably you have worked on this test plan before " .
 						          " assigning platforms.<br>" .
 						          " After you have assigned platforms to this test plan you MUST NEED " .

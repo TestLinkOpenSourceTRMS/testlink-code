@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.32 2010/01/21 22:06:18 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.33 2010/01/22 07:50:34 erikeloff Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20100122 - eloff      - BUGID 3084 - fixes alignment of columns
     20100121 - eloff      - BUGID 3078 - moved buttons to top
     20091109 - franciscom - BUGID 0002937 - add/remove test case hover over test case 
                                             tooltip replacement with summary     
@@ -326,7 +327,7 @@ Ext.onReady(function(){
     				{/if}
     			</td>
     			<td>{$platform.name|escape}</td>
-				<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
+				<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>
 				{if $is_active == 1 && isset($tcase.feature_id[$platform.id])}
 	      			<td>&nbsp;</td>
 	   				<td><input type='checkbox' name='{$rm_cb}[{$tcID}][{$platform.id}]' id='{$rm_cb}{$tcID}[{$platform.id}]' 

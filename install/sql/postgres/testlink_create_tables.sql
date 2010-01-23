@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.55 2010/01/21 20:17:59 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.56 2010/01/23 18:53:10 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -21,6 +21,7 @@
 -- 
 --  Rev :
 -- 
+--  20100123 - franciscom - is_open added to requirements table
 --  20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
 --  20100106 - franciscom - Test Case Step feature
 --
@@ -524,6 +525,7 @@ CREATE TABLE /*prefix*/requirements (
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
   "req_doc_id" VARCHAR(64) NOT NULL,
+  "is_open" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX /*prefix*/requirements_idx1 ON /*prefix*/requirements ("srs_id","req_doc_id");

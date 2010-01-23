@@ -1,6 +1,6 @@
--- $Revision: 1.5 $
--- $Date: 2010/01/20 11:23:35 $
--- $Author: havlat $
+-- $Revision: 1.6 $
+-- $Date: 2010/01/23 18:57:18 $
+-- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -178,6 +178,7 @@ COMMENT ON TABLE /*prefix*/req_specs IS 'Updated to TL 1.9.0 - DB 1.3';
 
 -- requirements
 ALTER TABLE /*prefix*/requirements ALTER COLUMN req_doc_id TYPE VARCHAR(64);
+ALTER TABLE /*prefix*/requirements ADD COLUMN is_open INT2 NOT NULL DEFAULT '1',
 COMMENT ON TABLE /*prefix*/requirements IS 'Updated to TL 1.9.0 - DB 1.3';
 
 -- milestones

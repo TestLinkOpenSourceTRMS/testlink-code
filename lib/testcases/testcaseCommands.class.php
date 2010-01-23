@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2010/01/23 11:35:18 $  by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2010/01/23 11:37:42 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
  *	20100123 - franciscom - added logic to check for step number existence
+ *                          added missing method doDeleteStep()
  *	20100106 - franciscom - Multiple Test Case Steps Feature
  *	20090831 - franciscom - preconditions 
  *	BUGID 2364 - changes in show() calls
@@ -562,6 +563,26 @@ class testcaseCommands
 		return $guiObj;
 	}
 
+
+	/**
+   	 * doDeleteStep
+     *
+     */
+	function doDeleteStep(&$argsObj,$request)
+	{
+		$guiObj=new stdClass();
+		$viewer_args=array();
+		$guiObj->refresh_tree="no";
+		$step_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->step_id);
+		$tcversion_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($step_node['parent_id']);
+		$tcversion_id = $step_node['parent_id'];
+		$tcase_id = $tcversion_node['parent_id'];
+		
+		$guiObj->template="archiveData.php?version_id={$tcversion_id}&edit=testcase&id={$tcase_id}";
+		$guiObj->user_feedback = '';
+        $op = $this->tcaseMgr->delete_step_by_id($argsObj->step_id);
+		return $guiObj;
+	}
 
 
 } // end class  

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: tcEdit.php,v $
  *
- * @version $Revision: 1.138 $
- * @modified $Date: 2010/01/07 20:44:16 $  by $Author: franciscom $
+ * @version $Revision: 1.139 $
+ * @modified $Date: 2010/01/23 10:00:08 $  by $Author: franciscom $
  * This page manages all the editing of test cases.
  *
  * rev: 
@@ -35,7 +35,6 @@ require_once(require_web_editor($cfg->webEditorCfg['type']));
 testlinkInitPage($db);
 $optionTransferName = 'ot';
 $args = init_args($cfg->spec,$optionTransferName);
-
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
@@ -50,9 +49,7 @@ $oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg, array());
 
 $sqlResult = "";
 $init_inputs=true; // BUGID 2163 - Create test case with same title, after submit, all data lost 
-
 $show_newTC_form = 0;
-
 
 $opt_cfg = initializeOptionTransferCfg($optionTransferName,$args,$tproject_mgr);
 $gui = initializeGui($db,$args,$cfg,$tcase_mgr);
@@ -60,33 +57,13 @@ $gui = initializeGui($db,$args,$cfg,$tcase_mgr);
 $smarty = new TLSmarty();
 
 $active_status = 0;
+$name_ok = 1;
 $action_result = "deactivate_this_version";
 if($args->do_activate_this)
 {
 	$active_status = 1;
 	$action_result = "activate_this_version";
 }
-
-$name_ok = 1;
-
-// 20100103 - franciscom - can be removed ???
-// if($args->do_create)
-// {
-// 	// BUGID 0000086
-// 	$result = lang_get('warning_empty_tc_title');
-// 	if($name_ok && !check_string($args->name,$g_ereg_forbidden))
-// 	{
-// 		$msg = lang_get('string_contains_bad_chars');
-// 		$gui->user_feedback = $msg;
-// 		$name_ok = 0;
-// 	}
-// 	if($name_ok && $args->name == "")
-// 	{
-// 		$msg = lang_get('warning_empty_tc_title');
-// 		$gui->user_feedback = $msg;
-// 		$name_ok = 0;
-// 	}
-// }
 
 $doRender = false;
 $pfn = $args->doAction;
@@ -605,9 +582,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 
 	$initWebEditorFromTemplate = $opObj->initWebEditorFromTemplate;                             
     $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg); 
-    // $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg,$cfgObj->editorKeys->step);
-
-
 
 	foreach ($oWebEditor->cfg as $key => $value)
   	{
@@ -653,6 +627,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
         case "doCreateStep":
         case "doUpdateStep":
         case "doDeleteStep":
+        case "doReorderSteps":
             $renderType = 'template';
             
             // Document !!!!

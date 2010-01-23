@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.536 2010/01/21 22:08:12 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.537 2010/01/23 09:30:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -361,6 +361,7 @@ $TLS_your_first_login = "Welcome to TestLink! You have guest access now. Please 
 
 // ----- newest_tcversions.php -----
 $TLS_no_linked_tcversions = "no linked Test Case versions";
+$TLS_testplan_seems_empty = "Test plan seems to be empty - Nothing to do";
 
 // resultsGeneral.php
 $TLS_report_tspec_has_no_tsuites = "There are no Test Suites defined for Test Project, <br />".
@@ -1175,11 +1176,9 @@ $TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
 $TLS_update_testcase_versions = "Update Linked Test Case Versions";
 $TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
 $TLS_tplan_updated = "Test Plan was updated";
-// $TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
-$TLS_update2latest = "<p>This set shows linked Test Cases for which a newer active version is available. " . 
+$TLS_update2latest = "<p>This set show linked Test Cases for which a newer active version is available. " . 
                      "Select those you want to update to the newest available active version.</p>";
-
-
+$TLS_noupdateneeded="All Test Cases are already updated to latest version";
 
 // ----- gui/templates/planEdit.tpl -----
 $TLS_btn_testplan_create = "Create";

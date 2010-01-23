@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.38 2009/12/12 15:01:13 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.39 2010/01/23 09:48:28 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -11,6 +11,7 @@
  *
  * 	@internal revisions:
  *	
+ *	20100123 - franciscom - BUGID 2652 + missing refactoring for table prefix doUpdate()
  *	20091212 - franciscom - added contribution by asimon83 (refactored) - BUGID 2652
  *                          show newest testcase versions when updating all linked testcase versions
  *	
@@ -37,6 +38,8 @@ if(is_array($args->keyword_id))
     $keywordsFilter->type = $gui->keywordsFilterType->selected;
 }
 
+new dBug($args);
+
 switch ($args->doAction)
 {
     case "doUpdate":
@@ -57,8 +60,6 @@ switch($args->level)
 {
 	case 'testcase':
 	    $out = processTestCase($db,$args,$keywordsFilter,$tplan_mgr,$tree_mgr);
-	
-
 		break;
 
 	case 'testsuite':
@@ -66,18 +67,16 @@ switch($args->level)
 		break;
 
 	case 'testplan':
+        $itemSet = processTestPlan($db,$args,$keywordsFilter,$tplan_mgr);
+        $gui->testcases = $itemSet['items'];
+        $gui->user_feedback = $itemSet['msg'];
 		$gui->instructions = lang_get('update2latest');
 		$gui->buttonAction = "doBulkUpdateToLatest";
-        $gui->testcases = processTestPlan($db,$args,$keywordsFilter,$tplan_mgr);
         $gui->operationType = 'bulk';
         if( !is_null($gui->testcases) )
         {
 	        $gui->hasItems = 1;
 			$gui->show_details = 1;
-        }
-        else
-        {
-			$gui->user_feedback = lang_get('no_newest_version_of_linked_tcversions');
         }
   		break;
   
@@ -152,39 +151,27 @@ function init_args(&$tplanMgr)
 */
 function doUpdate(&$dbObj,&$argsObj)
 {
-  $msg = "";
-  if(!is_null($argsObj->checkedTestCaseSet))
-  {
-      foreach($argsObj->checkedTestCaseSet as $tcaseID => $tcversionID)
-      {
-         $newtcversion=$argsObj->newVersionSet[$tcaseID];
-
-         // Update link to testplan
-         $sql = "UPDATE testplan_tcversions " .
-               " SET tcversion_id={$newtcversion} " .
-               " WHERE tcversion_id={$tcversionID} " .
-               " AND testplan_id={$argsObj->tplan_id}";
-         $dbObj->exec_query($sql);
-
-
-         // BUGID 1504
-         // Update link in executions
-         $sql = "UPDATE executions " .
-               " SET tcversion_id={$newtcversion} " .
-               " WHERE tcversion_id={$tcversionID}" .
-               " AND testplan_id={$argsObj->tplan_id}";
-         $dbObj->exec_query($sql);
-         
-         // Update link in cfields values
-         $sql = "UPDATE cfield_execution_values " .
-               " SET tcversion_id={$newtcversion} " .
-               " WHERE tcversion_id={$tcversionID}" .
-               " AND testplan_id={$argsObj->tplan_id}";
-         $dbObj->exec_query($sql);
-      }
-      $msg = lang_get("tplan_updated");
-  }
-  return $msg;
+	$debugMsg = 'File:' . __FILE__ . ' - Function: ' . __FUNCTION__;
+	$tables = tlObject::getDBTables(array('testplan_tcversions','executions',
+	                                      'cfield_execution_values'));
+	$msg = "";
+	if(!is_null($argsObj->checkedTestCaseSet))
+	{
+		foreach($argsObj->checkedTestCaseSet as $tcaseID => $tcversionID)
+		{
+			$newtcversion=$argsObj->newVersionSet[$tcaseID];
+			foreach($tables as $table2update)
+			{
+				$sql = "/* $debugMsg */ UPDATE $table2update " .
+				       " SET tcversion_id={$newtcversion} " . 
+				       " WHERE tcversion_id={$tcversionID} " .
+				       " AND testplan_id={$argsObj->tplan_id}";
+				$dbObj->exec_query($sql);
+			}
+		}
+		$msg = lang_get("tplan_updated");
+	}
+	return $msg;
 }
 
 
@@ -318,24 +305,26 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
  */
 function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
 {
-	$set2update = null;
+	$set2update = array('items' => null, 'msg' => '');
     $filters = array('keywords' => $argsObj->keyword_id);
 	$linked_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);
+	$set2update['msg'] = lang_get('testplan_seems_empty');
     if( count($linked_tcases) > 0 )
     {
         $testCaseSet = array_keys($linked_tcases);
-    	$set2update = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id,$testCaseSet);
+    	$set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id,$testCaseSet);
 		
-		if( !is_null($set2update) && count($set2update) > 0 )
+		$set2update['msg'] = lang_get('no_newest_version_of_linked_tcversions');
+		if( !is_null($set2update['items']) && count($set2update['items']) > 0 )
 		{
-			$itemSet=array_keys($set2update);
+			$itemSet=array_keys($set2update['items']);
 			$path_info=$tplanMgr->tree_manager->get_full_path_verbose($itemSet);
-			foreach($set2update as $tcase_id => $value)
+			foreach($set2update['items'] as $tcase_id => $value)
 			{
 				$path=$path_info[$tcase_id];
 				unset($path[0]);
 				$path[]='';
-				$set2update[$tcase_id]['path']=implode(' / ',$path);
+				$set2update['items'][$tcase_id]['path']=implode(' / ',$path);
 			}
 		}
     }

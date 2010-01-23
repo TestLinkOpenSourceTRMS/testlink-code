@@ -10,7 +10,7 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.55 2010/01/18 21:14:35 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.56 2010/01/23 18:09:39 franciscom Exp $
  *
  * @internal Revisions:
  *	20100110 - franciscom - added drop_tables();
@@ -582,12 +582,13 @@ function drop_tables(&$dbHandler)
 		echo "<br />Dropping all TL existent tables:<br />";
 		foreach($schema as $tablePlainName => $tableFullName)
 		{
-			$targetTable=$db_table_prefix . $tablePlainName;	
-			if( in_array($targetTable,$the_tables) )
+			$targetTable = $db_table_prefix . $tablePlainName;
+			// if( isset(in_array($targetTable,$the_tables) )
+			if( in_array($tableFullName,$the_tables) )
 			{
 				// Need to add option (CASCADE ?) to delete dependent object
-				echo "Droping $targetTable" . "<br />";
-				$sql="DROP TABLE $targetTable CASCADE";
+				echo "Droping $tableFullName" . "<br />";
+				$sql="DROP TABLE $tableFullName CASCADE";
 				$dbHandler->exec_query($sql);
 			}  	
 		}

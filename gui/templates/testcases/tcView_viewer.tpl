@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.45 2010/01/08 10:25:50 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.46 2010/01/23 18:23:53 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100123 - franciscom - BUGID 0003086: After execution of testcase, 
+                                           a new version should be created before editing test steps 
     20090831 - franciscom - preconditions
     20090418 - franciscom - BUGID 2364 - added fine grain control of button enable/disable
     20090414 - franciscom - BUGID 2378 - check for active test plan existence to display btn_add_to_testplan
@@ -248,13 +250,17 @@ rev:
 	
 	<tr>
 		<th width="{$tableColspan}">
+    {if $edit_enabled}
 		<img src="{$tlImages.reorder}" align="left" title="{$labels.show_hide_reorder}" 
 		    onclick="showHideByClass('span','order_info');event.stopPropagation();">
+    {/if}
 		{$labels.step_number}</th>
 		<th>{$labels.step_actions}</th>
 		<th>{$labels.expected_results}</th>
 		<th width="25">{$labels.execution_type_short_descr}</th>
-		<th>&nbsp;</th>
+    {if $edit_enabled}
+		  <th>&nbsp;</th>
+    {/if}
 	</tr>
 
 <form method="post" action="lib/testcases/tcEdit.php">
@@ -270,6 +276,8 @@ rev:
 		<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
 		<td >{$step_info.expected_results}</td>
 		<td>{$gui->execution_types[$step_info.execution_type]}</td>
+
+    {if $edit_enabled}
 		<td class="clickable_icon">
        <img style="border:none;cursor: pointer;" 
             title="{$labels.delete_step}"  alt="{$labels.delete_step}" 
@@ -277,6 +285,7 @@ rev:
  					                               '{$del_msgbox_title}','{$warning_msg}');"
   				  src="{$delete_img}"/>
   	</td>
+  	{/if}
 	</tr>
   {/foreach}	
 	{/if}
@@ -287,6 +296,7 @@ rev:
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
   <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+  {if $edit_enabled}
   <input type="submit" name="create_step" 
   	 	   onclick="doAction.value='createStep';{$gui->submitCode}" value="{$labels.btn_create_step}" />
 
@@ -294,6 +304,7 @@ rev:
   <input type="submit" name="renumber_step" 
   	 	   onclick="doAction.value='doReorderSteps';{$gui->submitCode}" value="{$labels.btn_reorder_steps}" />
   </span>
+  {/if}
 </div>
 </form>
 

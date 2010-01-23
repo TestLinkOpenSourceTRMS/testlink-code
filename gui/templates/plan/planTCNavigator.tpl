@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.18 2010/01/21 22:06:18 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.19 2010/01/23 09:31:05 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -10,7 +10,7 @@ Revisions :
 
 {lang_get var="labels" 
           s='btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,title_navigator,
-             btn_update_all_testcases_to_latest_version,
+             btn_bulk_update_to_latest_version,
              filter_owner,TestPlan,test_plan,caption_nav_filter_settings'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -53,7 +53,7 @@ function pre_submit()
 */
 function update2latest(id)
 {
-	var action_url = fRoot+'/'+menuUrl+"?level=testplan&id="+id+args;
+	var action_url = fRoot+'/'+menuUrl+"?doAction=doBulkUpdateToLatest&level=testplan&id="+id+args;
 	parent.workframe.location = action_url;
 }
 </script>
@@ -128,14 +128,11 @@ function update2latest(id)
 </form>
 </div>
 
-
-{* 20080621 - franciscom *}
 {if $gui->draw_bulk_update_button }
-    	<input type="button" value="{$labels.btn_update_all_testcases_to_latest_version}" 
-    	       name="doUpdateToLatest" 
+    	<input type="button" value="{$labels.btn_bulk_update_to_latest_version}" 
+    	       name="doBulkUpdateToLatest" 
     	       onclick="update2latest({$gui->tplan_id})" />
 {/if}
-
 <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 
 <script type="text/javascript">

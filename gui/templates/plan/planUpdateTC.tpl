@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.11 2009/12/12 14:59:32 franciscom Exp $
+$Id: planUpdateTC.tpl,v 1.12 2010/01/23 09:31:05 franciscom Exp $
 
 Author: franciscom
 
@@ -250,7 +250,7 @@ function validateForm(f)
 
   </form>
 {else}
-  	<h2>{$labels.no_testcase_available}</h2>
+  	<h2>{$gui->user_feedback}</h2>
 {/if}
 
 

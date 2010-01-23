@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.537 2010/01/23 09:30:34 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.538 2010/01/23 11:33:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -97,6 +97,7 @@ $TLS_create_step = "Create Step - Test Case: %s - Version: %s";
 $TLS_delete_step = "Delete step";
 $TLS_warning_delete_step = "<p>You are going to delete step number: %s </p><p>Are you sure?</p>";
 $TLS_warning_step_number = " Step number must be a number and > 0";
+$TLS_warning_step_number_already_exists = " Step number %s already exists";
 $TLS_Role = "Role";
 $TLS_sort_table_by_column = "Click to change sort order";
 $TLS_scope = "Scope";

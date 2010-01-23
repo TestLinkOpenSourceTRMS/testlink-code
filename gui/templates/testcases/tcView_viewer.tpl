@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.46 2010/01/23 18:23:53 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.47 2010/01/23 18:47:17 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -21,6 +21,7 @@ rev:
              title_last_mod,title_created,by,expected_results,keywords,
              btn_create_step,step_number,btn_reorder_steps,step_actions,
              execution_type_short_descr,delete_step,show_hide_reorder,
+             test_plan,platform,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
 {lang_get s='warning_delete_step' var="warning_msg" }
@@ -368,20 +369,24 @@ rev:
 	</div>
 	{/if}
 	
-	{if $args_linked_versions != null }
+	
+{if $args_linked_versions != null }
   <br />
 	<div {$addInfoDivStyle}>
 	  {$labels.testplan_usage}
 		<table class="simple">
-    <tr><th>Version </th> <th> Test Plan</th> </tr>
-  	{foreach item=linked_item from=$args_linked_versions}
-  	    {foreach item=tplan_item from=$linked_item}
-        <tr>
-            <td style="text-align:center;width:15%;">{$tplan_item.version|escape}</td>
-            <td>{$tplan_item.tplan_name|escape}</td>
-        </tr>
-		    {/foreach}
-		{/foreach}
+    <th>{$labels.version}</th><th>{$labels.test_plan}</th><th>{$labels.platform}</th>
+    {foreach from=$args_linked_versions item=link2tplan_platform}
+      {foreach from=$link2tplan_platform item=link2platform key=tplan_id}
+        {foreach from=$link2platform item=version_info}
+          <tr>
+          <td style="width:10%;text-align:center;">{$version_info.version}</td>
+          <td>{$version_info.tplan_name|escape}</td>
+          <td>{$version_info.platform|escape}</td>
+          </tr>
+        {/foreach}
+      {/foreach}
+    {/foreach}
 	  </table>
 	</div>
-  {/if}	
+{/if}	

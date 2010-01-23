@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.4 2010/01/11 15:59:03 erikeloff Exp $ 
+$Id: tcStepEdit.tpl,v 1.5 2010/01/23 18:15:53 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev: 
- 20100111 - eloff - BUGID 2036 - Check modified content before exit
+  20100123 - franciscom - checks on existence of step number
+  20100111 - eloff - BUGID 2036 - Check modified content before exit
      
 *}
 
@@ -12,27 +13,41 @@ rev:
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
-          s="warning,warning_step_number,btn_save,cancel,warning_unsaved"}
+          s="warning_step_number_already_exists,warning,warning_step_number,
+             btn_save,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
-
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
 var warning_step_number = "{$labels.warning_step_number}";
 var alert_box_title = "{$labels.warning}";
+var warning_step_number_already_exists = "{$labels.warning_step_number_already_exists}";
 
 {literal}
-function validateForm(f)
+function validateForm(f,step_set,step_number_on_edit)
 {
   var status_ok = true;
+  var feedback = '';
 	value = parseInt(f.step_number.value);
+
 	if( isNaN(value) || value <= 0)
 	{
 		alert_message(alert_box_title,warning_step_number);
 		selectField(f,'step_number');
 		return false;
 	}
+  // check is step number is free/available
+  if( step_set.length > 0 )
+  {
+    if( step_set.indexOf(value) > 0 && value != step_number_on_edit)
+    {
+      feedback = warning_step_number_already_exists.replace('%s',value);
+ 	    alert_message(alert_box_title,feedback);
+		  selectField(f,'step_number');
+		  return false;
+		}
+  }
 	return true;
 }
 {/literal}
@@ -63,7 +78,7 @@ var TC_EDITOR = "{$tlCfg->gui->text_editor.all.type}";
 {/if}
 
 <form method="post" action="lib/testcases/tcEdit.php" name="tcStepEdit"
-      onSubmit="return validateForm(this);">
+      onSubmit="return validateForm(this,'{$gui->step_set}',{$gui->step_number});">
 	<input type="hidden" name="testcase_id" value="{$gui->tcase_id}" />
 	<input type="hidden" name="tcversion_id" value="{$gui->tcversion_id}" />
 	<input type="hidden" name="doAction" value="" />

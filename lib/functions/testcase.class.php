@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.235 2010/01/12 18:53:38 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.236 2010/01/24 17:06:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100124 - franciscom - BUGID 3090 - problems when trying to delete a test case that has 0 steps.
  * 20100111 - franciscom - get_version_exec_assignment() - refactoring due to platforms feature.
  *                         get_linked_versions() - refactoring due to platforms feature.
  * 20100107 - franciscom - Multiple Test Case Steps Feature
@@ -88,7 +89,6 @@ require_once( dirname(__FILE__) . '/users.inc.php' );
 $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
 
 /** @TODO havlatm: move consts to class? */
-define("TC_ALL_VERSIONS",0);
 define("TC_LATEST_VERSION",-1);
 define("TC_DEFAULT_ORDER",0);
 define("TC_AUTOMATIC_ID",0);
@@ -1018,13 +1018,13 @@ class testcase extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  	$children=null;
-	  	$doit=true;
+	  	$do_it=true;
 	  	
 	  	// I'm trying to speedup the next deletes
 	  	$sql="/* $debugMsg */ " . 
 	  	     " SELECT NH_TCV.id AS tcversion_id, NH_TCSTEPS.id AS step_id " .
 	  	     " FROM {$this->tables['nodes_hierarchy']} NH_TCV " .
-	  	     " JOIN {$this->tables['nodes_hierarchy']} NH_TCSTEPS " . 
+	  	     " LEFT OUTER JOIN {$this->tables['nodes_hierarchy']} NH_TCSTEPS " . 
 	  	     " ON NH_TCSTEPS.parent_id = NH_TCV.id ";
 
 	  	if($version_id == self::ALL_VERSIONS)
@@ -1044,23 +1044,19 @@ class testcase extends tlObjectWithAttachments
 	  	}
 
 	  	$children_rs=$this->db->get_recordset($sql);
-	  	$doit=!is_null($children_rs); 
-	  	if( $doit )
+	  	$do_it = !is_null($children_rs);
+	  	if($do_it)
 	  	{
 	  		foreach($children_rs as $value)
 	  		{
 	  		  $children['tcversion'][]=$value['tcversion_id'];
 	  		  $children['step'][]=$value['step_id'];
 	  		}
-	  	}
-
-	  	
-	  	
-	  	if( $doit )
-	  	{   
 			$this->_execution_delete($id,$version_id,$children);
 			$this->_blind_delete($id,$version_id,$children);
-	  	}   
+
+	  	}
+
 	
 		return 1;
 	}
@@ -1191,10 +1187,12 @@ class testcase extends tlObjectWithAttachments
 		           " WHERE tcversion_id IN ({$tcversion_list})";
 	
 		    // Multiple Test Case Steps Feature
-		    $step_list=implode(',',$children['step']);
-	        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
-		           " WHERE id IN ({$step_list})";
-	
+		    $step_list=trim(implode(',',$children['step']));
+	        if( strlen($step_list) > 0 )
+	        { 
+	        	$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
+		    	       " WHERE id IN ({$step_list})";
+	        }
 	        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
 		           " WHERE id IN ({$tcversion_list})";
 	
@@ -1964,8 +1962,6 @@ class testcase extends tlObjectWithAttachments
 	    }    
 	    $sqlx .= $where_clause; 
 		$version_id = $this->db->fetchRowsIntoMap($sqlx,'version');
-	    new dBug($version_id,array('label' => 'version set'));
-	
 	    $sql = "/* $debugMsg */ " .
 			   " SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id, " .
 			   " T.tcversion_id AS linked, T.platform_id, TCV.active, E.tcversion_id AS executed, " . 
@@ -1986,8 +1982,6 @@ class testcase extends tlObjectWithAttachments
 	    $sql .= " ORDER BY version,tplan_name";
 		$rs = $this->db->get_recordset($sql);
 
-        new dBug($rs);
-        	
 	    // set right tcversion_id, based on tcversion_number,version comparison
 	    $item_not_executed = null;
 	    $item_executed = null;
@@ -2060,8 +2054,6 @@ class testcase extends tlObjectWithAttachments
 	    {
 	    	$rs = array();
 	    }
-        new dBug($in_set);
-	    new dBug($link_info);
 	    
 	    // fix not executed
 	    //

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.156 2010/01/12 18:53:38 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.157 2010/01/24 10:18:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -478,9 +478,6 @@ class testplan extends tlObjectWithAttachments
 		       "INSERT INTO {$this->tables['testplan_tcversions']} " .
 			   "(testplan_id,author_id,creation_ts,tcversion_id,platform_id) " . 
 			   " VALUES ({$id},{$userId},{$this->db->db_now()},";
-
-        echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
         $features=null;
 		foreach($items_to_link['items'] as $tcase_id => $items)
 		{
@@ -2900,7 +2897,6 @@ class testplan extends tlObjectWithAttachments
  	 */
 	public function getStatusTotalsByAssignedTesterPlatform($id)
 	{
-        // echo __FUNCTION__ . '<br>';
 		$code_verbose = $this->getStatusForReports();
 		$filters = null;
 		$user_platform = null;

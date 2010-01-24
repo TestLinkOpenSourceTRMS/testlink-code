@@ -13,12 +13,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.182 2010/01/02 16:54:34 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.183 2010/01/24 13:09:48 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
  *
+ * 20100124 - eloff      - BUGID 3012 - added buildExternalIdString()
  * 20091215 - eloff      - save active testplan_id to cookie
  * 20091121 - franciscom - getItemTemplateContents() - contribution refactored
  * 20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
@@ -1106,5 +1107,21 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
       }
     }
     return $value; 
+}
+
+/**
+ * Builds a string $testCasePrefix . $glueChar . $external_id
+ *
+ * @param string $testCasePrefix prefix for the project without glue character
+ * @param mixed $external_id
+ */
+function buildExternalIdString($testCasePrefix, $external_id)
+{
+	static $gluechar;
+	if (!$glueChar) {
+		$glueChar = config_get('testcase_cfg')->glue_character;
+	}
+	return $testCasePrefix . $glueChar . $external_id;
+
 }
 ?>

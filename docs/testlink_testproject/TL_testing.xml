@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="API" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[Testing of TL feature via API]]> 
+</details></testsuite><testsuite name="Test Project Management" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[<p>All test project management feature.</p><p>Remember to test with and without platforms&nbsp;</p>]]> 
+</details>
+<testcase internalid="255" name="Create FIRST Test Project">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<summary><![CDATA[After a FRESH Install, create the first test project]]></summary>
+	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="257" name="Create Test Project - No conflict">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<summary><![CDATA[Create a Test project with all required information, without creating any conflict (use a test project name not present on system, use a PREFIX not present on system)]]></summary>
+	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite></testsuite>

@@ -3,18 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.61 2010/01/06 16:45:06 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.62 2010/01/24 10:00:37 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
  *
  * rev :
- *      20100103 - franciscom - changes on calls to show()
- *      20090329 - franciscom - added management of new call parameter tcversion_id
- *      20090326 - franciscom - solved bug related to forced READ ONLY when called as 
- *                 result of search on Navigator bar.
- *      20090228 - franciscom - this page is called when search option on Navigation Bar is used.
+ *  20100124 - franciscom - pass platform info to testcase.show()
+ *	20100103 - franciscom - changes on calls to show()
+ *	20090329 - franciscom - added management of new call parameter tcversion_id
+ *	20090326 - franciscom - solved bug related to forced READ ONLY when called as 
+ *	           result of search on Navigator bar.
+ *	20090228 - franciscom - this page is called when search option on Navigation Bar is used.
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -76,6 +77,8 @@ switch($args->feature)
 		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
 		}
 			
+	    $platform_mgr = new tlPlatform($db,$args->tproject_id);
+	    $gui->platforms = $platform_mgr->getAllAsMap();
         $gui->tableColspan = 5;
 		$gui->loadOnCancelURL = '';
 		$gui->attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
@@ -112,6 +115,7 @@ function init_args(&$viewerCfg)
     //@TODO schlundus, rename Parameter from edit to feature
     $args->feature = $args->edit;
 
+    
    	if (!$args->tcversion_id)
    	{
    		 $args->tcversion_id = testcase::ALL_VERSIONS;
@@ -141,6 +145,7 @@ function init_args(&$viewerCfg)
     {
     	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
  	}
+   	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     return $args;
 }
 ?>

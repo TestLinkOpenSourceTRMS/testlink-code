@@ -3,16 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/01/24 10:35:50 $ by $Author: franciscom $
- * @author Amit Khullar - amkhullar@gmail.com
+ * While in test specification feature, assign TEST CASE version to multiple
+ * ACTIVE test plans
  *
- *  While in test specification feature, assign TEST CASE version to multiple
- *  ACTIVE test plans
+ * @package 	TestLink
+ * @author 		Amit Khullar - amkhullar@gmail.com
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: tcAssign2Tplan.php,v 1.5 2010/01/24 10:50:44 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
  *
  *	@internal revisions
  *	20100124 - franciscom - BUGID 3064 - add logic to manage ONLY ACTIVE test plans
-*/
+ **/
 
 require_once("../../config.inc.php");
 require_once("common.php");

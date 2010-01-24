@@ -1,5 +1,5 @@
--- $Revision: 1.6 $
--- $Date: 2010/01/23 18:57:18 $
+-- $Revision: 1.7 $
+-- $Date: 2010/01/24 15:18:25 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -67,6 +67,8 @@ CREATE TABLE /*prefix*/req_versions(
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
+  "active" INT2 NOT NULL DEFAULT '1',
+  "is_open" INT2 NOT NULL DEFAULT '1',
   "expected_coverage" INTEGER NOT NULL DEFAULT 1,
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
@@ -178,7 +180,6 @@ COMMENT ON TABLE /*prefix*/req_specs IS 'Updated to TL 1.9.0 - DB 1.3';
 
 -- requirements
 ALTER TABLE /*prefix*/requirements ALTER COLUMN req_doc_id TYPE VARCHAR(64);
-ALTER TABLE /*prefix*/requirements ADD COLUMN is_open INT2 NOT NULL DEFAULT '1',
 COMMENT ON TABLE /*prefix*/requirements IS 'Updated to TL 1.9.0 - DB 1.3';
 
 -- milestones

@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.5 2010/01/23 18:58:59 franciscom Exp $
+ * $Id: db_schema_update.sql,v 1.6 2010/01/24 15:19:27 franciscom Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -34,6 +34,8 @@ CREATE TABLE /*prefix*/req_versions (
   `scope` text,
   `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,
+  `active` tinyint(1) NOT NULL default '1',
+  `is_open` tinyint(1) NOT NULL default '1',
   `expected_coverage` int(10) NOT NULL default '1',
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -150,6 +152,5 @@ ALTER TABLE /*prefix*/req_specs COMMENT = 'Updated to TL 1.9.0 - DB 1.3';
 
 /* requirements */
 ALTER TABLE /*prefix*/requirements MODIFY COLUMN req_doc_id VARCHAR(64);
-ALTER TABLE /*prefix*/requirements ADD COLUMN is_open tinyint(1) NOT NULL default '1';
 ALTER TABLE /*prefix*/requirements COMMENT = 'Updated to TL 1.9.0 - DB 1.3';
 /* ----- END ----- */

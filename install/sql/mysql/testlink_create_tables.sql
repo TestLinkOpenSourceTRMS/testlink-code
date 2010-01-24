@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.73 2010/01/23 18:53:59 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.74 2010/01/24 15:15:48 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
 # tables are in alphabetic order  
@@ -35,7 +35,7 @@
 # ---------------------------------------------------------------------------------------
 # Revisions:
 #
-# 20100123 - franciscom - is_open added to requirements table
+# 20100124 - franciscom - is_open,active added to req_versions table
 # 20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
 # 20100106 - franciscom - Test Case Step feature
 # 
@@ -380,7 +380,6 @@ CREATE TABLE /*prefix*/requirements (
   `id` int(10) unsigned NOT NULL,
   `srs_id` int(10) unsigned NOT NULL,
   `req_doc_id` varchar(64) NOT NULL,
-  `is_open` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/requirements_req_doc_id (`srs_id`,`req_doc_id`)
 ) DEFAULT CHARSET=utf8;
@@ -391,6 +390,8 @@ CREATE TABLE /*prefix*/req_versions (
   `scope` text,
   `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,
+  `active` tinyint(1) NOT NULL default '1',
+  `is_open` tinyint(1) NOT NULL default '1',
   `expected_coverage` int(10) NOT NULL default '1',
   `author_id` int(10) unsigned default NULL,
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

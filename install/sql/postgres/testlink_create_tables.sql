@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.56 2010/01/23 18:53:10 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.57 2010/01/24 15:14:51 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -21,7 +21,7 @@
 -- 
 --  Rev :
 -- 
---  20100123 - franciscom - is_open added to requirements table
+--  20100124 - franciscom - is_open,active added to req_versions table
 --  20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
 --  20100106 - franciscom - Test Case Step feature
 --
@@ -525,7 +525,6 @@ CREATE TABLE /*prefix*/requirements (
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
   "req_doc_id" VARCHAR(64) NOT NULL,
-  "is_open" INT2 NOT NULL DEFAULT '1',
   PRIMARY KEY ("id")
 ); 
 CREATE INDEX /*prefix*/requirements_idx1 ON /*prefix*/requirements ("srs_id","req_doc_id");
@@ -536,6 +535,8 @@ CREATE TABLE /*prefix*/req_versions(
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
+  "active" INT2 NOT NULL DEFAULT '1',
+  "is_open" INT2 NOT NULL DEFAULT '1',
   "expected_coverage" INTEGER NOT NULL DEFAULT 1,
   "author_id" BIGINT NULL DEFAULT NULL,
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
@@ -543,29 +544,6 @@ CREATE TABLE /*prefix*/req_versions(
   "modification_ts" TIMESTAMP NULL,
   PRIMARY KEY ("id","version")
 ); 
-
-
--- CREATE TABLE /*prefix*/requirements(  
---   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
--- ---  "version" INTEGER NOT NULL DEFAULT '1',
---   "srs_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_specs (id),
---   "req_doc_id" VARCHAR(32) NULL DEFAULT NULL,
--- ---  "title" VARCHAR(100) NOT NULL DEFAULT '', --- TO BE REMOVED
---   "scope" TEXT NULL DEFAULT NULL,
---   "status" CHAR(1) NOT NULL DEFAULT 'V',
---   "type" CHAR(1) NULL DEFAULT NULL,
---   "expected_coverage" INTEGER NOT NULL DEFAULT 1,
--- ---  "node_order" BIGINT NOT NULL DEFAULT 0,  --- TO BE REMOVED
---   "author_id" BIGINT NULL DEFAULT NULL,
---   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
---   "modifier_id" BIGINT NULL DEFAULT NULL,
---   "modification_ts" TIMESTAMP NULL,
---   PRIMARY KEY ("id")
--- ); 
--- CREATE INDEX /*prefix*/requirements_srs_id ON /*prefix*/requirements("srs_id","status");
--- CREATE INDEX /*prefix*/requirements_req_doc_id ON /*prefix*/requirements ("srs_id","req_doc_id");
--- --- CREATE INDEX /*prefix*/requirements_version ON /*prefix*/requirements ("id","version");
--- 
 
 --
 -- Table structure for table "req_coverage"

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2010/01/24 17:24:13 $  by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2010/01/24 17:25:42 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -183,7 +183,6 @@ class testcaseCommands
   		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
   		foreach($oWebEditorKeys as $key)
    		{
-   			new dBug($key);
    			$guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
    			$argsObj->$key = $guiObj->$key;
   		}

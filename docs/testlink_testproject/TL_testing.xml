@@ -84,13 +84,36 @@ Choose version 1 and create new version]]></summary>
 	<importance><![CDATA[2]]></importance>
 
 </testcase>
-
+</testsuite><testsuite name="Test Case Management" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details>
 <testcase internalid="30" name="Delete Test Case that has NO STEPS">
-	<node_order><![CDATA[101]]></node_order>
+	<node_order><![CDATA[0]]></node_order>
 	<externalid><![CDATA[10]]></externalid>
 	<summary><![CDATA[Create a test case
 DO NOT ADD STEPS
 Delete]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="35" name="Edit Test Case - Template DISABLED">
+	<node_order><![CDATA[1]]></node_order>
+	<externalid><![CDATA[12]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="37" name="Edit Test Case - Template ENABLED">
+	<node_order><![CDATA[2]]></node_order>
+	<externalid><![CDATA[13]]></externalid>
+	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>

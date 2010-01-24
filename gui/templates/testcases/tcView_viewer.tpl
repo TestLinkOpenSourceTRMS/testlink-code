@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.48 2010/01/24 09:26:42 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.49 2010/01/24 10:16:32 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100124 - franciscom - fixed problem on display of test case version assignemt 
+                            to different test plans + add table sorting
     20100123 - franciscom - BUGID 0003086: After execution of testcase, 
                                            a new version should be created before editing test steps 
     20090831 - franciscom - preconditions
@@ -369,20 +371,26 @@ rev:
 	</div>
 	{/if}
 	
-	
 {if $args_linked_versions != null }
+  {* Test Case version Test Plan Assignment *}
   <br />
 	<div {$addInfoDivStyle}>
 	  {$labels.testplan_usage}
-		<table class="simple">
-    <th>{$labels.version}</th><th>{$labels.test_plan}</th><th>{$labels.platform}</th>
+		<table class="simple sortable">
+    <th>{$labels.version}</th>
+    <th>{$sortHintIcon}{$labels.test_plan}</th>
+    <th>{$sortHintIcon}{$labels.platform}</th>
     {foreach from=$args_linked_versions item=link2tplan_platform}
       {foreach from=$link2tplan_platform item=link2platform key=tplan_id}
         {foreach from=$link2platform item=version_info}
           <tr>
           <td style="width:10%;text-align:center;">{$version_info.version}</td>
           <td>{$version_info.tplan_name|escape}</td>
-          <td>{$version_info.platform|escape}</td>
+          <td>
+          {if $version_info.platform_id > 0}
+            {$gui->platforms[$version_info.platform_id]|escape}
+          {/if}          
+          </td>
           </tr>
         {/foreach}
       {/foreach}

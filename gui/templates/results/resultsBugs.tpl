@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBugs.tpl,v 1.3 2008/05/30 09:31:06 franciscom Exp $ *}
+{* $Id: resultsBugs.tpl,v 1.4 2010/01/24 13:10:57 erikeloff Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20070826 - franciscom - localization
@@ -45,7 +45,7 @@
      </tr>
 </table>
 
-<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
+<table class="simple" style="width: 100%; margin-left: 0px;">
 	<tr>
 		<th>{$labels.title_test_suite_name}</th>
 		<th>{$labels.title_test_case_title}</th>

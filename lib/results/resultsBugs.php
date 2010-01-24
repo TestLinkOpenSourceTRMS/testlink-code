@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2009/06/04 19:22:01 $ by $Author: schlundus $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2010/01/24 13:10:57 $ by $Author: erikeloff $
  * @author kevinlevy
  * 
  * rev :
- *      20080413 - franciscom - refactoring + BUGID 1477 
- *      20070827 - franciscom - BUGID 994
+ *	20100124 - eloff      - BUGID 3012 - don't show internal id in report
+ *	20080413 - franciscom - refactoring + BUGID 1477 
+ *	20070827 - franciscom - BUGID 994
  */
 
 
@@ -55,7 +56,8 @@ if ($lastResultMap) {
 			$suiteName = $currentTestCaseInfo['suiteName'];
 			$name = $currentTestCaseInfo['name'];		
 			$suiteExecutions = $executionsMap[$suiteId];
-			$rowArray = array($suiteName, $testCaseId . ":" . $name);
+			$tcaseName = buildExternalIdString($tproject_info['prefix'], $currentTestCaseInfo['external_id']) . ":" . $name;
+			$rowArray = array($suiteName, $tcaseName);
 			for ($i = 0; $i < sizeOf($suiteExecutions); $i++) {
 				$currentExecution = $suiteExecutions[$i];
 				if ($currentExecution['testcaseID'] == $testCaseId) {

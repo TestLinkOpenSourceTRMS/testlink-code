@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.73 2010/01/12 18:27:49 franciscom Exp $
+* $Id: resultsByStatus.php,v 1.74 2010/01/24 13:10:57 erikeloff Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -9,14 +9,15 @@
 *
 *
 * rev : 
-*   20091016 - franciscom - work still is needed to display LINK to BUG
-*   20091011 - franciscom - refactoring to do not use result.class
-*   20090517 - franciscom - fixed management of deleted testers
-* 	20090414 - amikhullar - BUGID: 2374 - Show Assigned User in the Not Run Test Cases Report 
-* 	20090325 - amkhullar  - BUGID 2249
-* 	20090325 - amkhullar  - BUGID 2267
-*   20080602 - franciscom - changes due to BUGID 1504
-*   20070623 - franciscom - BUGID 911
+*	20100124 - eloff      - use buildExternalIdString()
+*	20091016 - franciscom - work still is needed to display LINK to BUG
+*	20091011 - franciscom - refactoring to do not use result.class
+*	20090517 - franciscom - fixed management of deleted testers
+*	20090414 - amikhullar - BUGID: 2374 - Show Assigned User in the Not Run Test Cases Report 
+*	20090325 - amkhullar  - BUGID 2249
+*	20090325 - amkhullar  - BUGID 2267
+*	20080602 - franciscom - changes due to BUGID 1504
+*	20070623 - franciscom - BUGID 911
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -52,7 +53,6 @@ $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
 
 $testCaseCfg = config_get('testcase_cfg');
-$testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 $arrOwners = getUsersForHtmlOptions($db);
 
 $fl=$tproject_mgr->tree_manager->get_children($args->tproject_id,
@@ -109,7 +109,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			    $testerName = sprintf($deleted_user_label,$item[$user_key]);
 			}
 		}
-		$tcaseName = $testCasePrefix . $item['external_id'] . ':' . $item['name'];
+		$tcaseName = buildExternalIdString($tproject_info['prefix'], $item['external_id']). ':' . $item['name'];
 		if( !isset($pathCache[$item['tc_id']]) )
 		{
 			$dummy=$tcase_mgr->getPathLayered(array($item['tc_id']));	

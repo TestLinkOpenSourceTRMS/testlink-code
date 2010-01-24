@@ -119,4 +119,24 @@ Delete]]></summary>
 	<importance><![CDATA[2]]></importance>
 
 </testcase>
+
+<testcase internalid="39" name="Copy Test Case - Dest: Same Test Suite TOP">
+	<node_order><![CDATA[3]]></node_order>
+	<externalid><![CDATA[14]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="41" name="Copy Test Case - Dest: Same Test Suite BOTTOM ">
+	<node_order><![CDATA[3]]></node_order>
+	<externalid><![CDATA[15]]></externalid>
+	<summary><![CDATA[<p>Copy Keywords: NO</p><p>Copy Requirements: NO&nbsp;</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
 </testsuite></testsuite></testsuite>

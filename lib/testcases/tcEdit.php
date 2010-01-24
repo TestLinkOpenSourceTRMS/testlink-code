@@ -1,14 +1,18 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: tcEdit.php,v $
+ * Test Case and Test Steps operations
  *
- * @version $Revision: 1.139 $
- * @modified $Date: 2010/01/23 10:00:08 $  by $Author: franciscom $
- * This page manages all the editing of test cases.
+ * @package 	TestLink
+ * @author 		TestLink community
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: tcEdit.php,v 1.140 2010/01/24 17:25:39 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * rev: 
+ *
+ *	@internal revisions
  *  20100106 - franciscom - Multiple Test Case Steps Feature
  *  20100104 - franciscom - fixed bug on create new version, now is created
  *                          from selected version and NOT FROM LATEST
@@ -21,8 +25,10 @@
  *  20080827 - franciscom - BUGID 1692 
  *  20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
  *  20071106 - BUGID 1165
- *  
- * -------------------------------------------------------------------------------- */
+ **/
+
+
+
 
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -45,7 +51,8 @@ $templateCfg = templateConfiguration('tcEdit');
 $commandMgr = new testcaseCommands($db);
 $commandMgr->setTemplateCfg(templateConfiguration());
 
-$oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg, array());
+$testCaseEditorKeys = array('summary' => 'summary','preconditions' => 'preconditions');
+$oWebEditor = createWebEditors($args->basehref,$cfg->webEditorCfg,$testCaseEditorKeys);
 
 $sqlResult = "";
 $init_inputs=true; // BUGID 2163 - Create test case with same title, after submit, all data lost 

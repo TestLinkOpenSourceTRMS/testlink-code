@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2010/01/23 11:37:42 $  by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/01/24 17:24:13 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -181,13 +181,13 @@ class testcaseCommands
     	$otCfg->to->map = $this->tcaseMgr->get_keywords_map($argsObj->tcase_id," ORDER BY keyword ASC ");
     	keywords_opt_transf_cfg($otCfg, $argsObj->assigned_keywords_list);
   		$tc_data = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
-
   		foreach($oWebEditorKeys as $key)
    		{
+   			new dBug($key);
    			$guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
    			$argsObj->$key = $guiObj->$key;
   		}
-  		
+ 		
   		$cf_smarty = null;
 		$cfPlaces = $this->tcaseMgr->buildCFLocationMap();
 		foreach($cfPlaces as $locationKey => $locationFilter)
@@ -377,7 +377,6 @@ class testcaseCommands
 		list($prefix,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->testproject_id);
         $prefix .= $cfg->glue_character;
         $external_id = $prefix . $tcinfo[0]['tc_external_id'];
-		
 		if (!$this->tcaseMgr->delete($argsObj->tcase_id,$argsObj->tcversion_id))
 		{
 			$guiObj->action = '';

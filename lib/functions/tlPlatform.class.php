@@ -6,19 +6,20 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.12 2009/12/01 21:06:58 erikeloff Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.13 2010/01/24 09:57:55 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *
- *  20091201 - Eloff      - added options to getAll() to include linked_count
- *                          Use positive logic in getAll()
- *                          Rewrite SQL queries to coding conventions (no newline in string)
+ *  20100124 - franciscom - fixed bug on getAll() - filter by active test project is not more there.
+ *  20091201 - Eloff - added options to getAll() to include linked_count
+ *                     Use positive logic in getAll()
+ *                     Rewrite SQL queries to coding conventions (no newline in string)
  *  20091118 - franciscom - getID() - fixed added testproject id in where clause
  *	20091031 - franciscom - getAll(),getAllAsMap(),getLinkedToTestplanAsMap() - added orderBy
  *	20090807 - franciscom - added check on empty name with exception (throwIfEmptyName())
  *                          linkToTestplan(),unlinkFromTestplan() interface changes
- *	20090805 - Eloff    Updated code according to guidelines
+ *	20090805 - Eloff - Updated code according to guidelines
  */
 
 /**
@@ -193,39 +194,42 @@ class tlPlatform extends tlObjectWithDB
 	}
 
 	/**
+	 * get all available platforms on active test project
+	 *
 	 * @options array $options Optional params
 	 *                         ['include_linked_count'] => adds the number of
 	 *                         testplans this platform is used in
-	 *
-	 * @return array of all available platforms
+	 *                         
+	 * @return array 
 	 */
 	public function getAll($options = null)
 	{
-		$default = array(
-			'include_linked_count' => false
-		);
+		$default = array('include_linked_count' => false);
 		$options = array_merge($default, (array)$options);
+		
+		$tproject_filter = " WHERE PLAT.testproject_id = {$this->tproject_id} ";
 		if ($options['include_linked_count'])
 		{
-			$sql =  " SELECT p.id,p.name,p.notes, " .
-					" COUNT(tp.testplan_id) AS linked_count " .
-					" FROM {$this->tables['platforms']} p " .
-					" LEFT JOIN {$this->tables['testplan_platforms']} tp " .
-					" ON tp.platform_id = p.id" .
-					" GROUP BY p.id, p.name, p.notes";
+			$sql =  " SELECT PLAT.id,PLAT.name,PLAT.notes, " .
+					" COUNT(TPLAT.testplan_id) AS linked_count " .
+					" FROM {$this->tables['platforms']} PLAT " .
+					" LEFT JOIN {$this->tables['testplan_platforms']} TPLAT " .
+					" ON TPLAT.platform_id = PLAT.id " . $tproject_filter .
+					" GROUP BY PLAT.id, PLAT.name, PLAT.notes";
 		}
 		else
 		{
 			$sql =  " SELECT id, name, notes " .
-					" FROM {$this->tables['platforms']}";
+					" FROM {$this->tables['platforms']} PLAT {$tproject_filter} ";
 		}
 		$sql .= " ORDER BY name";
 		return $this->db->get_recordset($sql);
 	}
 
 	/**
+	 * get all available platforms in the active testproject ($this->tproject_id)
 	 * @param string $orderBy
-	 * @return array Returns all available platforms in the active testproject
+	 * @return array Returns 
 	 *               as array($platform_id => $platform_name)
 	 */
 	public function getAllAsMap($accessKey='id',$output='columns',$orderBy=' ORDER BY name ')
@@ -280,7 +284,8 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function getLinkedToTestplanAsMap($testplanID,$orderBy=' ORDER BY name ')
 	{
-		$sql =  " SELECT P.id, P.name " .
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql =  "/* $debugMsg */ SELECT P.id, P.name " .
 				" FROM {$this->tables['platforms']} P " .
 				" JOIN {$this->tables['testplan_platforms']} TP " .
 				" ON P.id = TP.platform_id " .

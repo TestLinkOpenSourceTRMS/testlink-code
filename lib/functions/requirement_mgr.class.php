@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2010/01/06 18:28:13 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2010/01/24 15:56:35 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20100124 - franciscom - BUGID 0003089: Req versions new attributes - active and open 
+ *							new methods updateActive(),updateOpen()
  *  20091228 - franciscom - exportReqToXML() - added expected_coverage
  *                          refactoring for feature req versioning
  *  20091227 - franciscom - delete() now manage version_id 
@@ -122,8 +124,9 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     	$filter_clause = implode(" AND ",$dummy);
     }
 
-    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQV.scope,REQV.status,REQV.type,REQV.author_id," .
-                "REQV.version,REQV.id AS version_id,REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQV.scope,REQV.status,REQV.type,REQV.active," . 
+                "REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+                "REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
                 "REQV.modification_ts,NH_REQ.name AS title";
 	$where_clause = " WHERE NH_REQV.parent_id ";
 	if(is_array($id))
@@ -1613,6 +1616,47 @@ function html_table_of_custom_field_values($id)
 	    $result = $this->db->exec_query($sql);
 	}
 
+    /**
+	 * 
+ 	 *
+     */
+	function updateOpen($reqVersionID,$value)
+	{
+		$this->updateBoolean($reqVersionID,'is_open',$value);
+	}	
+
+    /**
+	 * 
+ 	 *
+     */
+	function updateActive($reqVersionID,$value)
+	{
+		$this->updateBoolean($reqVersionID,'active',$value);
+	}	
+
+    /**
+	 * 
+ 	 *
+     */
+	private function updateBoolean($reqVersionID,$field,$value)
+	{
+		$booleanValue = $value;
+	    if( is_bool($booleanValue) )
+	    {
+	    	$booleanValue = $booleanValue ? 1 : 0;
+	    }
+		else if( !is_numeric($booleanValue) || is_null($booleanValue))
+		{
+			$booleanValue = 1;
+		}
+		$booleanValue = $booleanValue > 0 ? 1 : 0;
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " .
+  		       " SET {$field}={$booleanValue} WHERE id={$reqVersionID}";
+	
+	    $result = $this->db->exec_query($sql);
+	   
+	}	
 
 
 } // class end

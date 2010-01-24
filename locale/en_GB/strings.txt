@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.538 2010/01/23 11:33:24 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.539 2010/01/24 10:56:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -60,6 +60,7 @@ $TLS_destination_top = "Destination position top";
 $TLS_destination_bottom = "Destination position bottom";
 $TLS_export = "Export";
 $TLS_file_type = 'File type';
+$TLS_filter_mode_and = 'Attenttion: Filter fields works in AND mode';
 $TLS_help = "Help";
 $TLS_hour = "Hour";
 $TLS_importance	= "Importance";

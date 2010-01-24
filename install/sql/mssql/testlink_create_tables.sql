@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.39 2010/01/23 18:55:50 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.40 2010/01/24 15:17:15 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -11,7 +11,7 @@
 -- 
 -- Rev :
 --
---  20100123 - franciscom - is_open added to requirements table
+--  20100123 - franciscom - is_open,active added to req_versions table
 --  20091220 - franciscom - doc_id increased to 64 and setted NOT NULL
 --  20091220 - franciscom - fields removed form req_spec and requirements 
 --                          "title", "node_order" 
@@ -457,7 +457,6 @@ CREATE TABLE /*prefix*/requirements (
 	[id] [int] NOT NULL,
 	[srs_id] [int] NOT NULL,
 	[req_doc_id] [varchar](64)  NOT NULL,
-	[is_open] [tinyint] NOT NULL CONSTRAINT [/*prefix*/DF_requirements_is_open]  DEFAULT ((1)),
  CONSTRAINT [/*prefix*/PK_requirements] PRIMARY KEY CLUSTERED 
 (
 	[id] ASC
@@ -467,7 +466,6 @@ CREATE TABLE /*prefix*/requirements (
 CREATE NONCLUSTERED INDEX [/*prefix*/IX_requirements] ON [/*prefix*/requirements] 
 (
 	[srs_id] ASC,
-	[status] ASC
 ) ON [PRIMARY]
 
 CREATE TABLE /*prefix*/role_rights (

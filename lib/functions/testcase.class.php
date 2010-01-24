@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.236 2010/01/24 17:06:28 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.237 2010/01/24 18:17:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -804,23 +804,6 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
 
-		// $smarty->assign('cf',$cf_smarty);
-		// $smarty->assign('gui',$gui);
-		// $smarty->assign('refresh_tree',$viewer_defaults['refresh_tree']);
-		// $smarty->assign('sqlResult',$viewer_defaults['msg_result']);
-		// $smarty->assign('action',$viewer_defaults['action']);
-		// $smarty->assign('user_feedback',$viewer_defaults['user_feedback']);
-		// $smarty->assign('execution_types',$this->execution_types);
-		// $smarty->assign('tcase_cfg',$tcase_cfg);
-		// $smarty->assign('users',tlUser::getByIDs($this->db,$passeduserarray,'id'));
-		// $smarty->assign('status_quo',$status_quo_map);
-		// $smarty->assign('testcase_other_versions',$tc_other_versions);
-		// $smarty->assign('arrReqs',$arrReqs);
-		// $smarty->assign('view_req_rights', has_rights($this->db,"mgt_view_req"));
-		// $smarty->assign('opt_requirements',$requirements_feature);
-		// $smarty->assign('keywords_map',$keywords_map);
-		
-		// $smarty->assign('gui',$gui);
 		$gui->cf = $cf_smarty;
 		$gui->refresh_tree = $viewer_defaults['refresh_tree'];
 		$gui->sqlResult = $viewer_defaults['msg_result'];

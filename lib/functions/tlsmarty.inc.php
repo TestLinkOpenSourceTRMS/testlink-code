@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.16 2010/01/21 22:04:49 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.17 2010/01/24 11:04:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -178,7 +178,8 @@ class TLSmarty extends Smarty
         
         // -----------------------------------------------------------------------------
         // Images
-        $tlImages = array('reorder' => TL_THEME_IMG_DIR . "/arrow_switch.png",
+        $tlImages = array('info' => TL_THEME_IMG_DIR . "/question.gif",
+                          'reorder' => TL_THEME_IMG_DIR . "/arrow_switch.png",
                           'sort' => TL_THEME_IMG_DIR . "/sort_hint.png",
                           'api_info' => TL_THEME_IMG_DIR . "/brick.png",
         	              'direct_link' => TL_THEME_IMG_DIR . "/world_link.png",

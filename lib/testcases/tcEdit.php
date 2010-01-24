@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.140 2010/01/24 17:25:39 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.141 2010/01/24 18:27:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100124 - franciscom - fixed bug on copy test cases - do not obey to top or bottom user choice
  *  20100106 - franciscom - Multiple Test Case Steps Feature
  *  20100104 - franciscom - fixed bug on create new version, now is created
  *                          from selected version and NOT FROM LATEST
@@ -198,11 +199,10 @@ else if($args->do_copy)
 
 	$result = $tcase_mgr->copy_to($args->tcase_id,$args->new_container_id,$args->user_id,$options);
 	$msg = $result['msg'];
-
-    if($msg == "ok")
+    if($result['status_ok'])
     {
 		    $tree_mgr->change_child_order($args->new_container_id,$result['id'],
-		                                $args->target_position,$cfg->exclude_node_types);
+		                                  $args->target_position,$cfg->exclude_node_types);
         
 		    $ts_sep = config_get('testsuite_sep');
 		    $tc_info = $tcase_mgr->get_by_id($args->tcase_id);

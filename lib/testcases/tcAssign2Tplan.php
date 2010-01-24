@@ -1,16 +1,19 @@
 <?php
-/** 
+/**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later. 
- *  
- * @filesource $RCSfile: tcAssign2Tplan.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2010/01/12 18:53:38 $ by $Author: franciscom $
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/01/24 10:35:50 $ by $Author: franciscom $
  * @author Amit Khullar - amkhullar@gmail.com
- * 
- * For a (test case, test case version), 
- * 
- */
+ *
+ *  While in test specification feature, assign TEST CASE version to multiple
+ *  ACTIVE test plans
+ *
+ *	@internal revisions
+ *	20100124 - franciscom - BUGID 3064 - add logic to manage ONLY ACTIVE test plans
+*/
+
 require_once("../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db);
@@ -43,7 +46,9 @@ if( !is_null($tcase_all_info) )
 }
 
 $link_info = $tcase_mgr->get_linked_versions($args->tcase_id,'NOT_EXECUTED');
-if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id)) )
+
+// 20100124 - work only on ACTIVE TEST PLANS => array('plan_status' => 1)
+if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id,array('plan_status' => 1))) )
 {
     // Initial situation, enable link of target test case version to all test plans
     $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);

@@ -9,7 +9,7 @@
 <node_order><![CDATA[2]]></node_order>
 <details><![CDATA[<p>All test project management feature.</p><p>Remember to test with and without platforms&nbsp;</p>]]> 
 </details>
-<testcase internalid="4" name="Create FIRST Test Project">
+<testcase internalid="47" name="Create FIRST Test Project - TEMPLATE OFF">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[1]]></externalid>
 	<summary><![CDATA[After a FRESH Install, create the first test project]]></summary>
@@ -19,11 +19,71 @@
 
 </testcase>
 
-<testcase internalid="6" name="Create Test Project - No conflict">
+<testcase internalid="81" name="Create FIRST Test Project - TEMPLATE ON">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[15]]></externalid>
+	<summary><![CDATA[After a FRESH Install, create the first test project]]></summary>
+	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="49" name="Create Test Project - No conflict">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[2]]></externalid>
 	<summary><![CDATA[Create a Test project with all required information, without creating any conflict (use a test project name not present on system, use a PREFIX not present on system)]]></summary>
 	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="75" name="Rename Test Project - NO NAME CONFLICT">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[12]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="77" name="Rename Test Project - NO NAME CONFLICT [2] ">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[13]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="79" name="Delete Test Project">
+	<node_order><![CDATA[103]]></node_order>
+	<externalid><![CDATA[14]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="83" name="Set Test Project INACTIVE">
+	<node_order><![CDATA[104]]></node_order>
+	<externalid><![CDATA[16]]></externalid>
+	<summary><![CDATA[<p>Choose an ACTIVE test project</p><p>Set INACTIVE</p><p>Choose again same test project</p><p>Set ACTIVE&nbsp;</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="85" name="Set Test Project INACTIVE [2] ">
+	<node_order><![CDATA[104]]></node_order>
+	<externalid><![CDATA[17]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
@@ -38,7 +98,7 @@
 <node_order><![CDATA[2]]></node_order>
 <details><![CDATA[]]> 
 </details>
-<testcase internalid="11" name="Create Req - &quot;easy&quot;">
+<testcase internalid="54" name="Create Req - &quot;easy&quot;">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[3]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -48,7 +108,7 @@
 
 </testcase>
 
-<testcase internalid="13" name="Create NEW VERSION - Source Version 1">
+<testcase internalid="56" name="Create NEW VERSION - Source Version 1">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[4]]></externalid>
 	<summary><![CDATA[Create Req
@@ -59,7 +119,7 @@ Choose version 1 and create new version]]></summary>
 
 </testcase>
 
-<testcase internalid="15" name="Create NEW VERSION - Source Version &lt;&gt; 1">
+<testcase internalid="58" name="Create NEW VERSION - Source Version &lt;&gt; 1">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[5]]></externalid>
 	<summary><![CDATA[<p>Create a Req.</p><p>Create several versions 1,2,3, making content of every version different</p><p>Choose version 2 =&gt; create a new version&nbsp;</p><p>&nbsp;</p>]]></summary>
@@ -75,7 +135,7 @@ Choose version 1 and create new version]]></summary>
 <node_order><![CDATA[1]]></node_order>
 <details><![CDATA[Create, Edit, Delete, Copy, Move, Import, Export operations]]> 
 </details>
-<testcase internalid="22" name="Create Test Suite 'Easy'">
+<testcase internalid="62" name="Create Test Suite 'Easy'">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[6]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -88,9 +148,9 @@ Choose version 1 and create new version]]></summary>
 <node_order><![CDATA[2]]></node_order>
 <details><![CDATA[]]> 
 </details>
-<testcase internalid="30" name="Delete Test Case that has NO STEPS">
+<testcase internalid="65" name="Delete Test Case that has NO STEPS">
 	<node_order><![CDATA[0]]></node_order>
-	<externalid><![CDATA[10]]></externalid>
+	<externalid><![CDATA[7]]></externalid>
 	<summary><![CDATA[Create a test case
 DO NOT ADD STEPS
 Delete]]></summary>
@@ -100,9 +160,9 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="35" name="Edit Test Case - Template DISABLED">
+<testcase internalid="67" name="Edit Test Case - Template DISABLED">
 	<node_order><![CDATA[1]]></node_order>
-	<externalid><![CDATA[12]]></externalid>
+	<externalid><![CDATA[8]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
@@ -110,9 +170,9 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="37" name="Edit Test Case - Template ENABLED">
+<testcase internalid="69" name="Edit Test Case - Template ENABLED">
 	<node_order><![CDATA[2]]></node_order>
-	<externalid><![CDATA[13]]></externalid>
+	<externalid><![CDATA[9]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
@@ -120,9 +180,9 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="39" name="Copy Test Case - Dest: Same Test Suite TOP">
+<testcase internalid="71" name="Copy Test Case - Dest: Same Test Suite TOP">
 	<node_order><![CDATA[3]]></node_order>
-	<externalid><![CDATA[14]]></externalid>
+	<externalid><![CDATA[10]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
@@ -130,13 +190,37 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="41" name="Copy Test Case - Dest: Same Test Suite BOTTOM ">
+<testcase internalid="73" name="Copy Test Case - Dest: Same Test Suite BOTTOM ">
 	<node_order><![CDATA[3]]></node_order>
-	<externalid><![CDATA[15]]></externalid>
+	<externalid><![CDATA[11]]></externalid>
 	<summary><![CDATA[<p>Copy Keywords: NO</p><p>Copy Requirements: NO&nbsp;</p>]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
 </testcase>
-</testsuite></testsuite></testsuite>
+</testsuite></testsuite><testsuite name="Platforms Management" >
+<node_order><![CDATA[5]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Custom Fields Management" >
+<node_order><![CDATA[6]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Test Plan Management" >
+<node_order><![CDATA[7]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Build Management" >
+<node_order><![CDATA[8]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Milestones Management" >
+<node_order><![CDATA[9]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="User Management" >
+<node_order><![CDATA[10]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Role Management" >
+<node_order><![CDATA[11]]></node_order>
+<details><![CDATA[/** Testauite:<br /> Fill in:<br />  <table border="0"> <tbody><tr><td>Title</td><td>Scope</td></tr> <tr><td>Author name</td></tr> </tbody></table> <br />   **/ ]]> 
+</details></testsuite><testsuite name="Keyword Management" >
+<node_order><![CDATA[12]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite>

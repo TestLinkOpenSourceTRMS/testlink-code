@@ -1,18 +1,25 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: tcSearch.php,v 1.4 2010/01/06 18:32:06 franciscom Exp $
- * Purpose:  Presents the search results. 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * rev:
- *	   20100106	 - franciscom - Multiple Test Case Steps Feature
- *     20090228 - franciscom - if targetTestCase == test case prefix => 
+ * Display test cases search results. 
+ *
+ * @package 	TestLink
+ * @author 		TestLink community
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: tcSearch.php,v 1.5 2010/01/24 11:07:09 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ *
+ *	@internal revisions
+ *  20100124 - franciscom - BUGID 3077 - search on preconditions
+ *	20100106	 - franciscom - Multiple Test Case Steps Feature
+ *	20090228 - franciscom - if targetTestCase == test case prefix => 
  *                             consider as empty => means search all.
  *
- *     20090125 - franciscom - BUGID - search by requirement doc id
- *     20081115 - franciscom - refactored to improve:
- *     performance and information displayed.
- *              
-**/
+ *	20090125 - franciscom - BUGID - search by requirement doc id
+ **/
 require_once("../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db);
@@ -59,9 +66,6 @@ if ($args->tprojectID)
     
     if($args->keyword_id)				
     {
-        // $from['by_keyword_id'] = " ,{$tables['testcase_keywords']} KW ";
-        // $filter['by_keyword_id'] = " AND NHA.id = KW.testcase_id AND KW.keyword_id = {$args->keyword_id} ";	
-        
         $from['by_keyword_id'] = " JOIN {$tables['testcase_keywords']} KW ON KW.testcase_id = NH_TC.id ";
         $filter['by_keyword_id'] = " AND KW.keyword_id = {$args->keyword_id} ";	
         
@@ -77,6 +81,12 @@ if ($args->tprojectID)
     {
         $args->summary = $db->prepare_string($args->summary);
         $filter['by_summary'] = " AND TCV.summary like '%{$args->summary}%' ";
+    }    
+
+    if($args->preconditions != "")
+    {
+        $args->preconditions = $db->prepare_string($args->preconditions);
+        $filter['by_preconditions'] = " AND TCV.preconditions like '%{$args->preconditions}%' ";
     }    
     
     if($args->steps != "")
@@ -181,6 +191,7 @@ function init_args()
 					 "expected_results" => array(tlInputParameter::STRING_N,0,50),
 					 "custom_field_value" => array(tlInputParameter::STRING_N,0,20),
 					 "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
+					 "preconditions" => array(tlInputParameter::STRING_N,0,50),
 					 "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
 	);	
 		

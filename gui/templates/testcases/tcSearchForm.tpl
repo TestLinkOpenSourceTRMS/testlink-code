@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.10 2009/09/16 19:53:01 schlundus Exp $
+$Id: tcSearchForm.tpl,v 1.11 2010/01/24 11:07:09 franciscom Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
-     20090228 - franciscom - pre-fill test case id with testcase prefix
-     20090125 - franciscom - BUGID - search by requirement doc id
+  20100124 - franciscom - BUGID 3077 - search on preconditions
+  20090228 - franciscom - pre-fill test case id with testcase prefix
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -13,7 +13,7 @@ rev :
 {lang_get var="labels" 
           s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,
              th_title,summary,steps,expected_results,keyword,custom_field,
-             search_type_like,
+             search_type_like,preconditions,filter_mode_and,
              custom_field_value,btn_find,requirement_document_id'}
 
 
@@ -21,11 +21,13 @@ rev :
 <body>
 
 <h1 class="title">{$gui->mainCaption|escape}</h1>
-
 <div style="margin: 1px;">
 <form method="post" action="lib/testcases/tcSearch.php" target="workframe">
 	<table class="smallGrey" style="width:100%">
 		<caption>{$labels.caption_search_form}</caption>
+		<tr>
+		 <td colspan="2"><img src="{$tlImages.info}"> {$labels.filter_mode_and} </td>
+		</tr>
 		<tr>
 			<td>{$labels.th_tcid}</td>
 			<td><input type="text" name="targetTestCase" id="TCID"  
@@ -44,6 +46,11 @@ rev :
 			<td>{$labels.summary}</td>
 			<td><input type="text" name="summary" 
 			           size="{#SUMMARY_SIZE#}" maxlength="{#SUMMARY_MAXLEN#}" /></td>
+		</tr>
+		<tr>
+			<td>{$labels.preconditions}</td>
+			<td><input type="text" name="preconditions" 
+			           size="{#PRECONDITIONS_SIZE#}" maxlength="{#PRECONDITIONS_MAXLEN#}" /></td>
 		</tr>
 		<tr>
 			<td>{$labels.steps}</td>

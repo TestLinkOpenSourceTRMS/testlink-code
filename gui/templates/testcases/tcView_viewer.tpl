@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.47 2010/01/23 18:47:17 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.48 2010/01/24 09:26:42 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -273,8 +273,8 @@ rev:
 		       value="{$step_info.step_number}" 
 			     size="{#STEP_NUMBER_SIZE#}" 	maxlength="{#STEP_NUMBER_MAXLEN#}"
   	{include file="error_icon.tpl" field="step_number"}
-		</span><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
-		<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+		</span>{if $edit_enabled}<a href="{$hrefEditStep}{$step_info.id}">{/if}{$step_info.step_number}</a></td>
+		<td >{if $edit_enabled}<a href="{$hrefEditStep}{$step_info.id}">{/if}{$step_info.actions}</a></td>
 		<td >{$step_info.expected_results}</td>
 		<td>{$gui->execution_types[$step_info.execution_type]}</td>
 

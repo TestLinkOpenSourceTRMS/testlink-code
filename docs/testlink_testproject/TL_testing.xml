@@ -68,4 +68,32 @@ Choose version 1 and create new version]]></summary>
 	<importance><![CDATA[2]]></importance>
 
 </testcase>
+</testsuite></testsuite><testsuite name="Test Specification" >
+<node_order><![CDATA[4]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Test Suite Management" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[Create, Edit, Delete, Copy, Move, Import, Export operations]]> 
+</details>
+<testcase internalid="22" name="Create Test Suite 'Easy'">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[6]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="30" name="Delete Test Case that has NO STEPS">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[10]]></externalid>
+	<summary><![CDATA[Create a test case
+DO NOT ADD STEPS
+Delete]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
 </testsuite></testsuite></testsuite>

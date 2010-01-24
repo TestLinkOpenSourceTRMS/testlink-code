@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.1 2009/11/10 16:10:20 havlat Exp $
+ * @version    	CVS: $Id: installDbInput.php,v 1.2 2010/01/24 15:22:07 franciscom Exp $
  *
  * @internal Revisions:
  * 20090603 - franciscom - added table prefix management
@@ -115,7 +115,9 @@ include 'installHead.inc';
 		<select id="databasetype" name="databasetype">
 			<option value="mysql" selected>MySQL (5.0 and later)</option>
 			<option value="postgres" >Postgres (8.0 and later)</option>
-			<option value="mssql" >Microsoft SQL Server 2000</option>
+			<!--- 
+			20100124 - franciscom - Not ready => disabled
+			<option value="mssql" >Microsoft SQL Server 2000</option> --->
 		</select>	
 		</p>
 		<p>

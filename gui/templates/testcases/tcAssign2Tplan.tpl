@@ -1,7 +1,8 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcAssign2Tplan.tpl,v 1.4 2010/01/21 22:06:18 franciscom Exp $
-Purpose: manage assignment of test case version to N test plans.
+$Id: tcAssign2Tplan.tpl,v 1.5 2010/01/24 10:51:04 franciscom Exp $
+Purpose: manage assignment of A test case version to N test plans 
+         while working on test specification 
  
 rev: BUGID 2378
     

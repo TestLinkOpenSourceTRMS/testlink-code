@@ -144,6 +144,66 @@ Choose version 1 and create new version]]></summary>
 	<importance><![CDATA[2]]></importance>
 
 </testcase>
+
+<testcase internalid="102" name="Delete EMPTY Test Suite">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[20]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="104" name="Delete NOT EMPTY Test Suite ">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[21]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="106" name="Copy EMPTY Test Suite">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[22]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="108" name="Copy NOT EMPTY Test Suite ">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[23]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="110" name="Move EMPTY Test Suite via DRAG &amp; DROP">
+	<node_order><![CDATA[103]]></node_order>
+	<externalid><![CDATA[24]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="112" name="Move NOT EMPTY Test Suite via DRAG &amp; DROP">
+	<node_order><![CDATA[103]]></node_order>
+	<externalid><![CDATA[25]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
 </testsuite><testsuite name="Test Case Management" >
 <node_order><![CDATA[2]]></node_order>
 <details><![CDATA[]]> 
@@ -223,4 +283,33 @@ Delete]]></summary>
 </details></testsuite><testsuite name="Keyword Management" >
 <node_order><![CDATA[12]]></node_order>
 <details><![CDATA[]]> 
-</details></testsuite></testsuite>
+</details></testsuite><testsuite name="Installation" >
+<node_order><![CDATA[13]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Upgrade/MIgration" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Fresh Install" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="98" name="DBMS - MySQL">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[18]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="100" name="DBMS - Postgres">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[19]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite></testsuite></testsuite>

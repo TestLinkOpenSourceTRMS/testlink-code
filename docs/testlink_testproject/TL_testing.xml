@@ -9,7 +9,7 @@
 <node_order><![CDATA[2]]></node_order>
 <details><![CDATA[<p>All test project management feature.</p><p>Remember to test with and without platforms&nbsp;</p>]]> 
 </details>
-<testcase internalid="255" name="Create FIRST Test Project">
+<testcase internalid="4" name="Create FIRST Test Project">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[1]]></externalid>
 	<summary><![CDATA[After a FRESH Install, create the first test project]]></summary>
@@ -19,7 +19,7 @@
 
 </testcase>
 
-<testcase internalid="257" name="Create Test Project - No conflict">
+<testcase internalid="6" name="Create Test Project - No conflict">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[2]]></externalid>
 	<summary><![CDATA[Create a Test project with all required information, without creating any conflict (use a test project name not present on system, use a PREFIX not present on system)]]></summary>
@@ -28,4 +28,44 @@
 	<importance><![CDATA[2]]></importance>
 
 </testcase>
-</testsuite></testsuite>
+</testsuite><testsuite name="Requirements Feature" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Requirement Spec (Folders)" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Requirements (Leaves)" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="11" name="Create Req - &quot;easy&quot;">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="13" name="Create NEW VERSION - Source Version 1">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[4]]></externalid>
+	<summary><![CDATA[Create Req
+Choose version 1 and create new version]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="15" name="Create NEW VERSION - Source Version &lt;&gt; 1">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[5]]></externalid>
+	<summary><![CDATA[<p>Create a Req.</p><p>Create several versions 1,2,3, making content of every version different</p><p>Choose version 2 =&gt; create a new version&nbsp;</p><p>&nbsp;</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite></testsuite></testsuite>

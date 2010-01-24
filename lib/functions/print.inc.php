@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.94 2010/01/06 17:33:15 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.95 2010/01/24 17:34:45 havlat Exp $
  * @uses printDocument.php
  *
  *
@@ -840,7 +840,7 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
     if ($executionNotes != '') // show exection notes is not empty
     {
 		$out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">'.$labels['testnotes'] . '</td>' .
-			    '<td>' . $executionNotes  . "</td></tr>\n"; 
+			    '<td>' . nl2br($executionNotes)  . "</td></tr>\n"; 
     }
 
 	$bug_interface = config_get('bugInterface');

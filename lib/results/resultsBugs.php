@@ -4,12 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2010/01/24 13:10:57 $ by $Author: erikeloff $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2010/01/25 17:35:25 $ by $Author: franciscom $
  * @author kevinlevy
  * 
  * rev :
- *	20100124 - eloff      - BUGID 3012 - don't show internal id in report
+ *	20100124 - eloff - BUGID 3012 - don't show internal id in report
  *	20080413 - franciscom - refactoring + BUGID 1477 
  *	20070827 - franciscom - BUGID 994
  */

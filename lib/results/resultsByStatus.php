@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.74 2010/01/24 13:10:57 erikeloff Exp $
+* $Id: resultsByStatus.php,v 1.75 2010/01/25 17:35:25 franciscom Exp $
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author Chad Rosen
@@ -9,7 +9,7 @@
 *
 *
 * rev : 
-*	20100124 - eloff      - use buildExternalIdString()
+*	20100124 - eloff - use buildExternalIdString()
 *	20091016 - franciscom - work still is needed to display LINK to BUG
 *	20091011 - franciscom - refactoring to do not use result.class
 *	20090517 - franciscom - fixed management of deleted testers

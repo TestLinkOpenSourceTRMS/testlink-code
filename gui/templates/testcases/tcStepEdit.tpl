@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.5 2010/01/23 18:15:53 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.6 2010/01/25 20:37:17 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev: 
+  20100125 - franciscom - fixed bug on checks on existence of step number
   20100123 - franciscom - checks on existence of step number
   20100111 - eloff - BUGID 2036 - Check modified content before exit
      
@@ -27,8 +28,11 @@ var warning_step_number_already_exists = "{$labels.warning_step_number_already_e
 {literal}
 function validateForm(f,step_set,step_number_on_edit)
 {
+  var value = '';
   var status_ok = true;
   var feedback = '';
+  var value_found_on_set=false;
+  var value_step_mistmatch=false;
 	value = parseInt(f.step_number.value);
 
 	if( isNaN(value) || value <= 0)
@@ -37,10 +41,17 @@ function validateForm(f,step_set,step_number_on_edit)
 		selectField(f,'step_number');
 		return false;
 	}
+
   // check is step number is free/available
+  // alert('#1# - step_set:' + step_set + ' - step_set.length:' + step_set.length);
+  // alert('#2# - step_numver.value:' + value + ' - step_number_on_edit:' + step_number_on_edit);
   if( step_set.length > 0 )
   {
-    if( step_set.indexOf(value) > 0 && value != step_number_on_edit)
+    value_found_on_set = (step_set.indexOf(value) >= 0);
+    value_step_mistmatch = (value != step_number_on_edit);
+    // alert('#3# - value_found_on_set:' + value_found_on_set + ' - value_step_mistmatch:' + value_step_mistmatch);
+
+    if(value_found_on_set && value_step_mistmatch)
     {
       feedback = warning_step_number_already_exists.replace('%s',value);
  	    alert_message(alert_box_title,feedback);

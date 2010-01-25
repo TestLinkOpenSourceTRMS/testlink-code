@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.49 2010/01/24 10:16:32 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.50 2010/01/25 19:23:33 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100125 - franciscom - added check to display info about steps only if test case has steps
     20100124 - franciscom - fixed problem on display of test case version assignemt 
                             to different test plans + add table sorting
     20100123 - franciscom - BUGID 0003086: After execution of testcase, 
@@ -251,9 +252,10 @@ rev:
 {*		<td>{$args_testcase.expected_results}</td>       *}
 {*	</tr>                                              *}
 	
+	{if $args_testcase.steps != ''}
 	<tr>
 		<th width="{$tableColspan}">
-    {if $edit_enabled}
+    {if $edit_enabled && $args_testcase.steps != ''}
 		<img src="{$tlImages.reorder}" align="left" title="{$labels.show_hide_reorder}" 
 		    onclick="showHideByClass('span','order_info');event.stopPropagation();">
     {/if}
@@ -265,7 +267,7 @@ rev:
 		  <th>&nbsp;</th>
     {/if}
 	</tr>
-
+  {/if}
 <form method="post" action="lib/testcases/tcEdit.php">
 	{if $args_testcase.steps != ''}
  	{foreach from=$args_testcase.steps item=step_info }

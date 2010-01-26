@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.50 2010/01/25 19:23:33 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.51 2010/01/26 22:47:52 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -88,7 +88,7 @@ rev:
   <div class="groupBtn">
 
 	<span style="float: left">
-	  <form method="post" action="lib/testcases/tcEdit.php">
+	  <form id="topControlsForm" name="topControlsForm" method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />

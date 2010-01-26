@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: inputparameter.class.php,v 1.21 2010/01/11 19:16:30 franciscom Exp $
+ * @version CVS: $Id: inputparameter.class.php,v 1.22 2010/01/26 22:09:50 havlat Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/inputparameter.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -347,8 +347,10 @@ class tlStringValidationInfo
 		$minLen = $this->minLen;
 		if ($minLen && tlStringLen($value) < $minLen)
 		{
-			throw new Exception("Input parameter validation failed [minLen: " . 
-			                    tlStringLen($value)." {$minLen}]");
+			$msg = "Input parameter validation failed [minLen: " . 
+			                    tlStringLen($value)." {$minLen}]";
+			tLog($msg,'ERROR');
+			throw new Exception($msg);
 		}
 		
 		$regExp = $this->regExp; 
@@ -357,8 +359,10 @@ class tlStringValidationInfo
 			$dummy = null;
 			if (!preg_match($regExp,$value,$dummy))
 			{
-				throw new Exception("Input parameter validation failed [regExp: " . 
-				                    htmlspecialchars($value)." ".htmlspecialchars($regExp)."]");
+				$msg = "Input parameter validation failed [regExp: " . 
+				                    htmlspecialchars($value)." ".htmlspecialchars($regExp)."]";
+				tLog($msg,'ERROR');
+				throw new Exception($msg);
 			}	                    
 		}	
 		
@@ -367,7 +371,10 @@ class tlStringValidationInfo
 		{
 			if (!$pfnValidation($value))
 			{
-				throw new Exception("Input parameter validation failed [external function - $pfnValidation]");
+				$msg = "Input parameter validation failed [external function" .
+						" - $pfnValidation]";
+				tLog($msg,'ERROR');
+				throw new Exception($msg);
 			}	
 		}	
 			
@@ -415,23 +422,31 @@ class tlIntegerValidationInfo
 	    $msg = 'Input parameter validation failed';
 		if (!is_numeric($value))
 		{
-			throw new Exception("{$msg} [numeric: " . htmlspecialchars($value)."]");
+			$msg = "{$msg} [numeric: " . htmlspecialchars($value)."]";
+			tLog($msg,'ERROR');
+			throw new Exception($msg);
 		}
 		$value = intval($value);
 		$minVal = $this->minVal;
 		if ($value < $minVal)
 		{
-			throw new Exception("{$msg} [minVal: " . htmlspecialchars($value) . " = {$minVal}]");
+			$msg = "{$msg} [minVal: " . htmlspecialchars($value) . " = {$minVal}]";
+			tLog($msg,'ERROR');
+			throw new Exception($msg);
 		}
 		$maxVal = $this->maxVal;
 		if ($value > $maxVal)
 		{
-			throw new Exception("{$msg} [maxVal: " . htmlspecialchars($value) . " = {$maxVal}]");
+			$msg = "{$msg} [maxVal: " . htmlspecialchars($value) . " = {$maxVal}]";
+			tLog($msg,'ERROR');
+			throw new Exception($msg);
 		}
 		$pfnValidation = $this->pfnValidation;
 		if ($pfnValidation && !$pfnValidation($value))
 		{
-			throw new Exception("{$msg} [external function]");
+			$msg = "{$msg} [external function]";
+			tLog($msg,'ERROR');
+			throw new Exception($msg);
 		}
 		return true;
 	}

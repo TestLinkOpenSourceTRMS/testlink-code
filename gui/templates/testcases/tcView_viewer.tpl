@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.51 2010/01/26 22:47:52 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.52 2010/01/26 23:00:16 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -88,7 +88,7 @@ rev:
   <div class="groupBtn">
 
 	<span style="float: left">
-	  <form id="topControlsForm" name="topControlsForm" method="post" action="lib/testcases/tcEdit.php">
+	  <form id="topControls" name="topControls" method="post" action="lib/testcases/tcEdit.php">
 	  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 	  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 	  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
@@ -151,7 +151,7 @@ rev:
 	</span>
 
 	<span>
-	<form method="post" action="lib/testcases/tcExport.php" name="tcexport">
+	<form id="tcexport" name="tcexport" method="post" action="lib/testcases/tcExport.php" >
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$labels.btn_export}" />
@@ -164,7 +164,7 @@ rev:
 	
 	{* compare versions *}
 	{if $args_testcase.version > 1}
-	<form method="post" action="lib/testcases/tcCompareVersions.php" name="version_compare">
+	<form id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
 			<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 			<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
 	</form>
@@ -185,6 +185,7 @@ rev:
  	    <br /><div class="messages" align="center">{$warning_edit_msg}</div>
  	{/if}
 
+<form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
 <table class="simple">
   {if $args_show_title == "yes"}
 	<tr>
@@ -268,7 +269,6 @@ rev:
     {/if}
 	</tr>
   {/if}
-<form method="post" action="lib/testcases/tcEdit.php">
 	{if $args_testcase.steps != ''}
  	{foreach from=$args_testcase.steps item=step_info }
 	<tr>
@@ -307,7 +307,8 @@ rev:
 
   <span class="order_info" style='display:none'>
   <input type="submit" name="renumber_step" 
-  	 	   onclick="doAction.value='doReorderSteps';{$gui->submitCode}" value="{$labels.btn_reorder_steps}" />
+  	 	   onclick="doAction.value='doReorderSteps';{$gui->submitCode}validateStepsReorder('stepsControls');" 
+  	 	   value="{$labels.btn_reorder_steps}" />
   </span>
   {/if}
 </div>

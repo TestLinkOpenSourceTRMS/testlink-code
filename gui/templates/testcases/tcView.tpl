@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.31 2010/01/06 16:33:20 franciscom Exp $
+$Id: tcView.tpl,v 1.32 2010/01/26 23:00:16 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -39,6 +39,65 @@ var del_action=fRoot+'{$deleteStepAction}';
   var {$gui->dialogName} = new std_dialog('&refreshTree');
 </script>  
 {/if}
+
+
+{literal}
+<script language="JavaScript">
+function validateStepsReorder(formOID)
+{
+  // var formObj=document.getElementById(formOID);
+	// var all_inputs = formObj.getElementsByTagName('input');
+	// var input_element;
+	// var check_id='';
+	// var apieces='';
+	// var combo_id_suffix='';
+	// var cb_id= new Array();
+	// var jdx=0;
+	// var idx=0;
+	// var step_set = new Array();	
+  // 
+	// // Build an array with the html select ids
+	// alert('formsQty:' + document.forms.length);
+  // 
+  // alert(document.forms[0].name);
+  // alert(document.forms[1].name);
+  // alert(document.forms[2].name);
+  // alert(document.forms[2].id);
+  // f=document.getElementById(document.forms[1].id);
+	// all_inputs = formObj.getElementsByTagName('input');
+  // 
+	// alert('validateStepsReorder');
+	// alert(formOID);
+	// alert(formObj);
+	// alert(all_inputs);
+	// alert(all_inputs.length);
+	// alert(formOID + '::' + formObj.getElementsByTagName('input').length);
+	// 
+	// for(idx = 0; idx < all_inputs.length; idx++)
+	// {
+	//   input_element=all_inputs[idx];		
+	//   alert(input_element.type + ':' + input_element.name);
+	// 	if(input_element.type == "text")
+	// 	{
+  //     step_set[jdx]=input_element.value;
+  //     jdx++;
+	// 	}	
+	// }
+	// alert(step_set);
+  return true;
+}	
+
+
+// var sorted_arr = arr.sort(); // You can define the comparing function here. JS default uses a crappy string compare.
+// var results = [];
+// for (var i = 0; i < arr.length - 1; i += 1) {
+//         if (sorted_arr[i + 1] == sorted_arr[i]) {
+//                 results.push(sorted_arr[i]);
+//         }
+// }
+</script>  
+{/literal}
+
 </head>
 
 {assign var="my_style" value=""}

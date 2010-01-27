@@ -13,14 +13,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.183 2010/01/24 13:09:48 erikeloff Exp $
+ * @version    	CVS: $Id: common.php,v 1.184 2010/01/27 08:13:20 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 
- *
- * 20100124 - eloff      - BUGID 3012 - added buildExternalIdString()
- * 20091215 - eloff      - save active testplan_id to cookie
+ * 20100124 - eloff - added $redirect parameter to checkSessionValid()
+ * 20100124 - eloff - BUGID 3012 - added buildExternalIdString()
+ * 20091215 - eloff - save active testplan_id to cookie
  * 20091121 - franciscom - getItemTemplateContents() - contribution refactored
  * 20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
  * 20090409 - amitkhullar- BUGID 2354
@@ -192,8 +191,9 @@ function setPaths()
 /** 
  * Verify if user is log in. Redirect to login page if not.
  * @param integer $db DB identifier 
+ * @param boolean $redirect if true (default) redirects user to login page, otherwise returns true/false as login status
  **/
-function checkSessionValid(&$db)
+function checkSessionValid(&$db, $redirect=true)
 {
 	$isValidSession = false;
 	if (isset($_SESSION['userID']) && $_SESSION['userID'] > 0)
@@ -218,7 +218,7 @@ function checkSessionValid(&$db)
 			$isValidSession = true;
 		}
 	}
-	if (!$isValidSession)
+	if (!$isValidSession && $redirect)
 	{
         $ip = $_SERVER["REMOTE_ADDR"];
 	    tLog('Invalid session from ' . $ip . '. Redirected to login page.', 'INFO');
@@ -233,6 +233,7 @@ function checkSessionValid(&$db)
         redirect($fName . "?note=expired","top.location");
         exit();
 	}
+	return $isValidSession;
 }
 
 

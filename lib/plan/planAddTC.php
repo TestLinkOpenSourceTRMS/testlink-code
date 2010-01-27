@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.84 2010/01/12 18:27:49 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.85 2010/01/27 20:51:04 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -21,8 +21,6 @@ require_once('email_api.php');
 require_once("specview.php");
 
 testlinkInitPage($db);
-
-// $startTime = microtime_float();
 
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
@@ -93,14 +91,8 @@ switch($args->doAction)
 		        $db_now = $db->db_now();
                 $tcversion_tcase = array_flip($items_to_link['tcversion']);
                 
-                // 20100112 - franciscom
                 $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
-                // $platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
                 $platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
-                // if( is_null($platformSet) )
-                // {
-                // 	$platformSet = array( 0 => '');
-                // }
                 
 		    	foreach($linked_features as $platform_id => $tcversion_info)
 		    	{
@@ -207,14 +199,7 @@ if($do_display)
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];
 	$gui->add_custom_fields = $opt['add_custom_fields'];
-
-    //new dBug($gui);
-    
 	$smarty->assign('gui', $gui);
-	// $endTime = microtime_float();
-    // echo 'start:' . $startTime . '<br>';
-    // echo 'end:' . $endTime . '<br>';
-    // echo sprintf("Elapsed: %f", $endTime-$startTime);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
 

@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: login.php,v 1.54 2010/01/27 08:15:32 erikeloff Exp $
+ * @version    	CVS: $Id: login.php,v 1.55 2010/01/27 08:19:42 erikeloff Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/login.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions
+ * 20100127 - eloff - Send localized login form strings with response to ajaxcheck
  * 20100124 - eloff - Added login functionality via ajax
  **/
 
@@ -77,6 +78,8 @@ case 'ajaxcheck':
 	setPaths();
 	$validSession = checkSessionValid($db, false);
 
+	// Send a json reply. Also include localized strings for use in js to
+	// display a login form
 	echo json_encode(array(
 		'validSession' => $validSession,
 		'username_label' => lang_get('login_name'),

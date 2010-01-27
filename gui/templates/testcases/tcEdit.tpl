@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.24 2010/01/11 15:59:03 erikeloff Exp $ 
+$Id: tcEdit.tpl,v 1.25 2010/01/27 08:16:23 erikeloff Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
-	20100110 - eloff      - BUGID 2036 - Check modified content before exit
+	20100124 - eloff - BUGID 3088 - Check valid session before submit
+	20100110 - eloff - BUGID 2036 - Check modified content before exit
 	20090422 - franciscom - BUGID 2414
 	20090419 - franciscom - BUGID  - edit while executing
 *}
@@ -18,6 +19,7 @@ Purpose: smarty template - edit test specification: test case
 {include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+<script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 {assign var="opt_cfg" value=$gui->opt_cfg}
 <script type="text/javascript" language="JavaScript">
@@ -35,14 +37,14 @@ var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 var alert_box_title = "{$labels.warning}";
 
 {literal}
-function validateForm(f)
+function validateForm(the_form)
 {
     var status_ok = true;
 	
-  	if (isWhitespace(f.testcase_name.value)) 
-  	{
-    	alert_message(alert_box_title,warning_empty_testcase_name);
-		selectField(f,'testcase_name');
+	if (isWhitespace(the_form.testcase_name.value))
+	{
+		alert_message(alert_box_title,warning_empty_testcase_name);
+		selectField(the_form,'testcase_name');
 		return false;
 	}
 	var cf_designTime = document.getElementById('cfields_design_time');
@@ -67,8 +69,8 @@ function validateForm(f)
 	      	return false;
 		}
 	}
-	
-	return true;
+	show_modified_warning=false;
+	return Ext.ux.requireSessionAndSubmit(the_form);
 }
 
 
@@ -76,8 +78,8 @@ function validateForm(f)
 </script>
 {if $tlCfg->gui->checkNotSaved}
 <script type="text/javascript">
-var UNLOAD_MSG = "{$labels.warning_unsaved}";
-var TC_EDITOR = "{$tlCfg->gui->text_editor.all.type}";
+var unload_msg = "{$labels.warning_unsaved}";
+var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 </script>
 <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

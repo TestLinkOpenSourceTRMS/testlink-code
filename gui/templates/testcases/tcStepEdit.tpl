@@ -1,13 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.6 2010/01/25 20:37:17 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.7 2010/01/27 08:16:23 erikeloff Exp $ 
 Purpose: create/edit test case step
 
-rev: 
-  20100125 - franciscom - fixed bug on checks on existence of step number
-  20100123 - franciscom - checks on existence of step number
-  20100111 - eloff - BUGID 2036 - Check modified content before exit
-     
+rev:
+	20100125 - franciscom - fixed bug on checks on existence of step number
+	20100124 - eloff - BUGID 3088 - Check valid session before submit
+	20100123 - franciscom - checks on existence of step number
+	20100111 - eloff - BUGID 2036 - Check modified content before exit
+
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -20,25 +21,26 @@ rev:
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
 
+<script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
 var warning_step_number = "{$labels.warning_step_number}";
 var alert_box_title = "{$labels.warning}";
 var warning_step_number_already_exists = "{$labels.warning_step_number_already_exists}";
 
 {literal}
-function validateForm(f,step_set,step_number_on_edit)
+function validateForm(the_form,step_set,step_number_on_edit)
 {
-  var value = '';
-  var status_ok = true;
-  var feedback = '';
-  var value_found_on_set=false;
-  var value_step_mistmatch=false;
-	value = parseInt(f.step_number.value);
+	var value = '';
+	var status_ok = true;
+	var feedback = '';
+	var value_found_on_set=false;
+	var value_step_mistmatch=false;
+	value = parseInt(the_form.step_number.value);
 
 	if( isNaN(value) || value <= 0)
 	{
 		alert_message(alert_box_title,warning_step_number);
-		selectField(f,'step_number');
+		selectField(the_form,'step_number');
 		return false;
 	}
 
@@ -55,18 +57,19 @@ function validateForm(f,step_set,step_number_on_edit)
     {
       feedback = warning_step_number_already_exists.replace('%s',value);
  	    alert_message(alert_box_title,feedback);
-		  selectField(f,'step_number');
+		  selectField(the_form,'step_number');
 		  return false;
 		}
   }
-	return true;
+	show_modified_warning=false;
+	return Ext.ux.requireSessionAndSubmit(the_form);
 }
 {/literal}
 </script>
 {if $tlCfg->gui->checkNotSaved}
 <script type="text/javascript">
-var UNLOAD_MSG = "{$labels.warning_unsaved}";
-var TC_EDITOR = "{$tlCfg->gui->text_editor.all.type}";
+var unload_msg = "{$labels.warning_unsaved}";
+var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 </script>
 <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}

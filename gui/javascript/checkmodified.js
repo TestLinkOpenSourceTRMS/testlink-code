@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2010, TestLink community
- * @version CVS: $Id: checkmodified.js,v 1.1 2010/01/11 15:59:02 erikeloff Exp $
+ * @version CVS: $Id: checkmodified.js,v 1.2 2010/01/27 08:16:23 erikeloff Exp $
  * @filesource
 http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/checkmodified.js
  * @link http://www.teamst.org
@@ -14,32 +14,41 @@ http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/chec
  * This file contains functions for warning the user of unsaved content
  * in an editor.
  *
- * Usage: Import this javascript and make sure the variables UNLOAD_MSG and
- * TC_EDITOR are defined.
+ * Usage: Import this javascript and make sure the variables unload_msg and
+ * tc_editor are defined.
  */
 
 /** Any input can change content_modified to true if it is modified */
 var content_modified = false;
+/** Set show_modified_warning to false when clear to submit */
+var show_modified_warning = true;
 
 // Notify on exit with unsaved data
 function doBeforeUnload()
 {
-	if (FCKEditorChanged())
+	if (!show_modified_warning) {
+		return;
+	}
+
+	if (FCKEditorChanged()) {
 		content_modified = true;
+	}
 
-	if (!content_modified) return; // Let the page unload
+	if (!content_modified) {
+		return; // Let the page unload
+	}
 
-	if(window.event)
-		window.event.returnValue = UNLOAD_MSG; // IE
-	else
-		return UNLOAD_MSG; // FX
+	if(window.event) {
+		window.event.returnValue = unload_msg; // IE
+	} else {
+		return unload_msg; // FX
+	}
 }
 
 // verify if content of any editor changed
 function FCKEditorChanged()
 {
-	if (TC_EDITOR == "fckeditor")
-	{
+	if (tc_editor == "fckeditor") {
 		for (var editorname in FCKeditorAPI.Instances) {
 			if (FCKeditorAPI.GetInstance(editorname).IsDirty()) {
 				return true;
@@ -56,7 +65,8 @@ function FCKeditor_OnComplete(editorInstance)
 }
 
 // set unload checking if configured to use
-if(window.body)
+if(window.body) {
 	window.body.onbeforeunload = doBeforeUnload; // IE
-else
+} else {
 	window.onbeforeunload = doBeforeUnload; // FX
+}

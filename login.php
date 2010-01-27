@@ -8,10 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: login.php,v 1.53 2009/11/28 23:16:14 havlat Exp $
+ * @version    	CVS: $Id: login.php,v 1.54 2010/01/27 08:15:32 erikeloff Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/login.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
+ * @internal Revisions
+ * 20100124 - eloff - Added login functionality via ajax
  **/
 
 require_once('lib/functions/configCheck.php');
@@ -35,36 +37,62 @@ if (!$op['status'])
 
 $args = init_args();
 $gui = init_gui($db,$args);
-
-if(!is_null($args->login))
-{
+switch($args->action) {
+case 'doLogin':
+case 'ajaxlogin':
 	doSessionStart();
 	unset($_SESSION['basehref']);
 	setPaths();
 	
 	if(doAuthorize($db,$args->login,$args->pwd,$msg) < tl::OK)
 	{
-		if (!$msg)
+		if (!$msg) {
 			$gui->note = lang_get('bad_user_passwd');
-		else
+		} else {
 			$gui->note = $msg;
+		}
+
+		if ($args->action == 'ajaxlogin') {
+			echo json_encode(array(
+				'success' => false,
+				'reason' => $gui->note));
+		}
 	}
 	else
 	{
 		$args->currentUser = $_SESSION['currentUser'];
 		logAuditEvent(TLS("audit_login_succeeded",$args->login,
 		                  $_SERVER['REMOTE_ADDR']),"LOGIN",$args->currentUser->dbID,"users");
-		redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
-		exit();
+		if ($args->action == 'ajaxlogin') {
+			echo json_encode(array('success' => true));
+		} else {
+			redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
+		}
 	}
+	break;
+
+case 'ajaxcheck':
+	doSessionStart();
+	unset($_SESSION['basehref']);
+	setPaths();
+	$validSession = checkSessionValid($db, false);
+
+	echo json_encode(array(
+		'validSession' => $validSession,
+		'username_label' => lang_get('login_name'),
+		'password_label' => lang_get('password'),
+		'login_label' => lang_get('btn_login')));
+	break;
+
+case 'loginform':
+	$logPeriodToDelete = config_get('removeEventsOlderThan');
+	$g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
+
+	$smarty = new TLSmarty();
+	$smarty->assign('gui', $gui);
+	$smarty->display($templateCfg->default_template);
+	break;
 }
-
-$logPeriodToDelete = config_get('removeEventsOlderThan');
-$g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
-
-$smarty = new TLSmarty();
-$smarty->assign('gui', $gui);
-$smarty->display($templateCfg->default_template);
 
 function init_args()
 {
@@ -73,16 +101,25 @@ function init_args()
 		"tl_password" => array(tlInputParameter::STRING_N,0,32),
 		"req" => array(tlInputParameter::STRING_N,0,4000),
 		"reqURI" => array(tlInputParameter::STRING_N,0,4000),
+		"action" => array(tlInputParameter::STRING_N,0, 10),
 	);
 	$pParams = R_PARAMS($iParams);
-	
+
     $args = new stdClass();
     $args->note = $pParams['note'];
     $args->login = $pParams['tl_login'];
     $args->pwd = $pParams['tl_password'];
     $args->reqURI = urlencode($pParams['req']);
     $args->preqURI = urlencode($pParams['reqURI']);
-	
+
+	if ($pParams['action'] == 'ajaxcheck' || $pParams['action'] == 'ajaxlogin') {
+		$args->action = $pParams['action'];
+	} else if (!is_null($args->login)) {
+		$args->action = 'doLogin';
+	} else {
+		$args->action = 'loginform';
+	}
+
     return $args;
 }
 

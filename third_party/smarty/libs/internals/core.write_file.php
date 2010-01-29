@@ -41,11 +41,11 @@ function smarty_core_write_file($params, &$smarty)
         // On platforms and filesystems that cannot overwrite with rename() 
         // delete the file before renaming it -- because windows always suffers
         // this, it is short-circuited to avoid the initial rename() attempt
-        if( $file_exists($params['filename']) )
+        if( file_exists($params['filename']) )
         {
         	@unlink($params['filename']);
-        	@rename($_tmp_file, $params['filename']);
         }
+       	@rename($_tmp_file, $params['filename']);
     }
     @chmod($params['filename'], $smarty->_file_perms);
 

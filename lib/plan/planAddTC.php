@@ -7,12 +7,14 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.86 2010/01/29 22:08:20 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.87 2010/01/29 22:29:33 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * 20100129 - franciscom - moved here from template, logic to initialize drawSavePlatformsButton        
+ * 20100129 - franciscom - moved here from template, logic to initialize:
+ *                         drawSavePlatformsButton,drawSaveCFieldsButton        
+ *                         
  * 20090922 - franciscom - add contribution - bulk tester assignment while adding test cases
  *
  **/
@@ -202,32 +204,13 @@ if($do_display)
 	$gui->has_linked_items = $out['has_linked_items'];
 	$gui->add_custom_fields = $opt['add_custom_fields'];
     $gui->drawSavePlatformsButton = false;
+    $gui->drawSaveCFieldsButton = false;
     if( !is_null($gui->items) )
     {
-    	$keySet = array_keys($gui->items);
-    	foreach($keySet as $key)
-    	{
-    		$breakLoop = false;
-    		$elem = &$gui->items[$key];
-    		if($elem['linked_testcase_qty'] > 0)
-    		{
-    			$tcaseSet = array_keys($elem['testcases']);
-    			foreach($tcaseSet as $tcaseKey)
-    			{
-					if( isset($elem['testcases'][$tcaseKey]['feature_id'][0]) )
-					{
-						$breakLoop = true;
-						$gui->drawSavePlatformsButton = true;
-						break;
-					}
-    			}
-    		} 
-    		if( $breakLoop )
-    		{
-    			break;
-    		}
-    	}
+		initDrawSaveButtons($gui);
     }
+    new dBug($gui);
+    die();
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
@@ -577,5 +560,48 @@ function send_mail_to_testers(&$dbHandler,&$tcaseMgr,&$guiObj,&$argsObj,$feature
             } // foreach($tester_set as $user_id => $value)
   	    }                       
     }
+}
+
+
+/**
+ * initDrawSaveButtons
+ *
+ */
+function initDrawSaveButtons(&$guiObj)
+{
+	$keySet = array_keys($guiObj->items);
+	foreach($keySet as $key)
+	{
+		$breakLoop = false;
+		$elem = &$guiObj->items[$key];
+		if($elem['linked_testcase_qty'] > 0)
+		{
+			$tcaseSet = array_keys($elem['testcases']);
+			foreach($tcaseSet as $tcaseKey)
+			{
+				if( isset($elem['testcases'][$tcaseKey]['feature_id'][0]) )
+				{
+					$breakLoop = true;
+					$guiObj->drawSavePlatformsButton = true;
+					break;
+				}
+			}
+		} 
+		if( $breakLoop )
+		{
+			break;
+		}
+	}
+    
+	reset($keySet);
+	foreach($keySet as $key)
+	{
+		$elem = &$guiObj->items[$key];
+		if(!is_null($elem['custom_fields']))
+		{
+			$guiObj->drawSaveCFieldsButton = true;
+			break;
+		}
+	}
 }
 ?>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.36 2010/01/29 22:13:47 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.37 2010/01/29 22:29:12 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -106,34 +106,36 @@ Ext.onReady(function(){
 			<select name="testerID"  id="testerID">
 				{html_options options=$gui->testers selected=$gui->testerID}
 			</select>
-			<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
-			{$labels.send_mail_to_tester}
+			<span style="margin-left:20px;">
+			  <input type="checkbox" name="send_mail" 
+			         id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
+			  {$labels.send_mail_to_tester}
 			</span>
 		</div>
+		
 		<div class="groupBtn">
 			<input type="hidden" name="doAction" id="doAction" value="default" />
 			<input type="submit" name="doAddRemove" value="{$buttonValue}"
-				onclick="doAction.value=this.name" />
+				     onclick="doAction.value=this.name" />
 			{if $gui->full_control eq 1}
-			<input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}"
-				onclick="doAction.value=this.name" />
-				{if $show_write_custom_fields eq 1}
-				<input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}"
-					onclick="doAction.value=this.name" />
+			  <input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}"
+				       onclick="doAction.value=this.name" />
+
+				{if $gui->drawSaveCFieldsButton}
+				  <input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}"
+					       onclick="doAction.value=this.name" />
 				{/if}
 				{if $gui->drawSavePlatformsButton}
-				<input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}"
-					onclick="doAction.value=this.name" />
+				  <input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}"
+					       onclick="doAction.value=this.name" />
 				{/if}
 			{/if}
 			</div>
 		</div>
-	</div> <!-- header-wrap -->
+  </div> <!-- header-wrap -->
+
+
 {if $gui->has_tc }
-
-
-
-
 <div class="workBack">
 	{if $gui->keywords_filter != ''}
 		<div style="margin-left: 20px; font-size: smaller;">
@@ -300,9 +302,8 @@ Ext.onReady(function(){
           			</td>
                 {/if}
               </tr>
-			 {if isset($tcase.custom_fields)}
+			      {if isset($tcase.custom_fields)}
       			<input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
-                {assign var="show_write_custom_fields" value=1}
               <tr><td colspan="7">{$tcase.custom_fields}</td></tr>
               {/if}
             {/if} 

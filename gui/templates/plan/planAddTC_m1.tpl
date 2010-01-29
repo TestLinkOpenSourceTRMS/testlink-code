@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.35 2010/01/29 22:08:31 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.36 2010/01/29 22:13:47 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -50,21 +50,6 @@ rev:
 {* prefix for checkbox named , ADD and ReMove *}   
 {assign var="add_cb" value="achecked_tc"} 
 {assign var="rm_cb" value="remove_checked_tc"}
-
-{* Check if there is any platform_id = 0. If yes then add a "Save platform"
-   button on top of page. This must be done before printing out the table*}
-{*
-{assign var="drawSavePlatformsButton" value=false}
-{foreach from=$gui->items item=ts}
-    {if $ts.linked_testcase_qty > 0}
-        {foreach from=$ts.testcases item=tcase}
-            {if isset($tcase.feature_id[0])}
-                {assign var="drawSavePlatformsButton" value=true}
-            {/if}
-        {/foreach}
-    {/if}
-{/foreach}
-*}
 
 {config_load file="input_dimensions.conf" section="planAddTC"}
 

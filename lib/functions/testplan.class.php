@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.158 2010/01/29 19:47:44 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.159 2010/01/29 20:54:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -919,12 +919,13 @@ class testplan extends tlObjectWithAttachments
         // Multiple Test Case Steps Feature
         if( !is_null($recordset) )
         {
+		    $itemSet = array_keys($recordset);
 			switch($my['options']['output'])
 			{ 
         	
 				case 'mapOfArray':
 				case 'mapOfMap':
-				    $itemSet = array_keys($recordset);
+				    // $itemSet = array_keys($recordset);
 	  				foreach($itemSet as $itemKey)
 	  				{
 	  					$keySet = array_keys($recordset[$itemKey]);

@@ -5,11 +5,14 @@
  *
  * Filename $RCSfile: getExecNotes.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/07/15 17:28:04 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/01/29 20:49:29 $ by $Author: franciscom $
  *
  *
- * 20090530: franciscom - try to improve usability in order to allow edit online
+ * rev:	20100129 - BUGID 3113 - franciscom
+ *		solved ONLY for  $webeditorType == 'none'
+ *
+ * 		20090530: franciscom - try to improve usability in order to allow edit online
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -38,9 +41,12 @@ else
     $notesContent=$map[0]['notes'];
 }
 
+$readonly = $args->readonly > 0 ? 'readonly="readonly"' : ''; 
 $smarty = new TLSmarty();
 $smarty->assign('notes',$notesContent);
 $smarty->assign('webeditorType',$webeditorCfg['type']);
+$smarty->assign('readonly',$readonly);
+$smarty->assign('editor_instance','exec_notes_' . $args->exec_id);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -66,7 +72,8 @@ function createExecNotesWebEditor($id,$basehref,$editorCfg,$content=null)
 
 function init_args()
 {
-    $iParams = array("exec_id" => array(tlInputParameter::INT_N));
+    $iParams = array("exec_id" => array(tlInputParameter::INT_N),
+                     "readonly" => array(tlInputParameter::INT_N));
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
     return $args; 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.50 2010/01/21 22:06:18 franciscom Exp $
+$Id: execSetResults.tpl,v 1.51 2010/01/29 20:50:01 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090901 - franciscom - preconditions
@@ -72,7 +72,8 @@ var import_xml_results="{$labels.import_xml_results}";
 {literal}
 function load_notes(panel,exec_id)
 {
-  var url2load=fRoot+'lib/execute/getExecNotes.php?exec_id=' + exec_id;
+  // 20100129 - BUGID 3113 - franciscom   -  solved ONLY for  $webeditorType == 'none'
+  var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
   panel.load({url:url2load});
 }
 {/literal}

@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.34 2010/01/22 08:38:13 erikeloff Exp $
+$Id: planAddTC_m1.tpl,v 1.35 2010/01/29 22:08:31 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
-    20100122 - eloff      - BUGID 3078 - check drawSavePlatformsButton first
-    20100122 - eloff      - BUGID 3084 - fixes alignment of columns
-    20100121 - eloff      - BUGID 3078 - moved buttons to top
+    20100129 - franciscom - drawSavePlatformsButton logic moved to planAddTC.php
+    20100122 - eloff - BUGID 3078 - check drawSavePlatformsButton first
+    20100122 - eloff - BUGID 3084 - fixes alignment of columns
+    20100121 - eloff - BUGID 3078 - moved buttons to top
     20091109 - franciscom - BUGID 0002937 - add/remove test case hover over test case 
                                             tooltip replacement with summary     
     20090610 - franciscom - display date when test case version was linked to test plan
@@ -52,6 +53,7 @@ rev:
 
 {* Check if there is any platform_id = 0. If yes then add a "Save platform"
    button on top of page. This must be done before printing out the table*}
+{*
 {assign var="drawSavePlatformsButton" value=false}
 {foreach from=$gui->items item=ts}
     {if $ts.linked_testcase_qty > 0}
@@ -62,7 +64,7 @@ rev:
         {/foreach}
     {/if}
 {/foreach}
-
+*}
 
 {config_load file="input_dimensions.conf" section="planAddTC"}
 
@@ -134,7 +136,7 @@ Ext.onReady(function(){
 				<input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}"
 					onclick="doAction.value=this.name" />
 				{/if}
-				{if $drawSavePlatformsButton}
+				{if $gui->drawSavePlatformsButton}
 				<input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}"
 					onclick="doAction.value=this.name" />
 				{/if}

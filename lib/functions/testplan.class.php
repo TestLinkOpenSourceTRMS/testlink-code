@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.157 2010/01/24 10:18:44 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.158 2010/01/29 19:47:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -940,7 +940,7 @@ class testplan extends tlObjectWithAttachments
 				case 'array':
 				case 'map':
 				default:
-  					foreach($keySet as $accessKey)
+  					foreach($itemSet as $accessKey)
   					{
 	  					$step_set = $this->tcase_mgr->get_steps($recordset[$accessKey]['tcversion_id']);
 	  					$recordset[$accessKey]['steps'] = $step_set;

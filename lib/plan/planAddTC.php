@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.87 2010/01/29 22:29:33 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.88 2010/01/30 14:52:33 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -210,7 +210,7 @@ if($do_display)
 		initDrawSaveButtons($gui);
     }
     new dBug($gui);
-    die();
+    //die();
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }

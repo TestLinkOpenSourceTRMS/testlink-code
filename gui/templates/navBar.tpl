@@ -1,9 +1,10 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.50 2009/12/07 20:12:18 franciscom Exp $
+	$Id: navBar.tpl,v 1.51 2010/01/31 09:50:44 franciscom Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
+	  20100131 - franciscom - moved get_docs() to javascript library
 		20090902 - timeout warning 
 		20080504 - access to local documentation
 		20080211 - changes action for user management
@@ -19,13 +20,6 @@
 {include file="inc_head.tpl" openHead="yes"}
 {literal}
 <script type="text/javascript">
-    function get_docs(name, server_name){
-        if (name != 'leer') {
-            var w = window.open();
-            w.location = server_name + '/docs/' + name;
-        }
-    }
-
 // -------- Session Timeout Warning functions -------
 /** 
  * Session Timeout Warning functions: timeoutDisplay()

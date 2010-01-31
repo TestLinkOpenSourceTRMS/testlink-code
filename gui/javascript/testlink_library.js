@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.89 2009/09/07 17:52:37 schlundus Exp $
+// $Id: testlink_library.js,v 1.90 2010/01/31 09:50:31 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100131 - franciscom - BUGID 3118: Help files are not getting opened when selected in the dropdown 
 // 20090906 - franciscom - added openTestSuiteWindow()
 // 20090821 - havlatm - added support for session timeout
 // 20090530 - franciscom - openExecEditWindow()
@@ -961,4 +962,17 @@ function openTestSuiteWindow(tsuite_id)
 	// second parameter(window name) with spaces generate bug on IE
 	windowCfg = "width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+feature_url,"TestSuite",windowCfg);
+}
+
+/* 
+ * use to display documentation included on test link distribution
+ * 20100131 - franciscom - moved here to solve BUGID 3118: Help files are not getting 
+ *                         opened when selected in the dropdown
+ */
+function get_docs(name, server_name)
+{
+  if (name != 'leer') {
+      var w = window.open();
+      w.location = server_name + '/docs/' + name;
+  }
 }

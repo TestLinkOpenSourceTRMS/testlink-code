@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.147 $
- * @modified $Date: 2010/01/21 22:08:00 $ $Author: franciscom $
+ * @version $Revision: 1.148 $
+ * @modified $Date: 2010/01/31 18:01:00 $ $Author: franciscom $
  *
  * rev:
  *  20100121 - franciscom - missing platform feature refactoring
@@ -780,8 +780,6 @@ function initializeExecMode(&$db,$exec_cfg,$userObj,$tproject_id,$tplan_id)
 */
 function setTesterAssignment(&$db,$exec_info,&$tcase_mgr,$tplan_id,$platform_id)
 {     
-	new dBug($exec_info);
-	
 	foreach($exec_info as $version_id => $value)
 	{
 		$exec_info[$version_id]['assigned_user'] = '';
@@ -1132,12 +1130,13 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   		                                                      null,null,$argsObj->tproject_id);
     	
     	// 20090718 - franciscom - TO BE refactored
-    	// 20090526 - franciscom
     	$guiObj->testplan_design_time_cfields[$argsObj->id] = 
   		         $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
   		                                                      null,null,$argsObj->tproject_id,null,$link_id);
     	
+
     }
+
     // BUGID 856: Guest user can execute test case
   	if($guiObj->grants->execute)
   	{

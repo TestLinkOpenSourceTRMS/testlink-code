@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.48 2010/01/31 16:57:51 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.49 2010/01/31 18:32:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -216,6 +216,12 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
       	list($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out) = buildSkeleton($id,$name,$cfg,
       	                                                               $test_spec,$platforms);
 	} 
+
+    // new dBug($a_tcid);
+    // new dBug($a_tsuite_idx);
+    // new dBug($tsuite_tcqty);
+    // new dBug($out);
+	// new dBug($linked_items);
 	
 	// This code has been replace (see below on Remove empty branches)
 	// Once we have created array with testsuite and children testsuites
@@ -245,7 +251,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 		$tcaseSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS);
 		$result = addLinkedVersionsInfo($tcaseSet,$a_tsuite_idx,$out,$linked_items);
 	}
-
+	
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
 	// that do not need to be displayed on user interface.
 	if( count($result['spec_view']) > 0)
@@ -260,6 +266,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	{
 		removeEmptyBranches($result['spec_view'],$tsuite_tcqty);
 	}   
+	
+	
 	
 	/** @TODO: maybe we can integrate this into already present loops above? */
 	// This is not right condition for identifing an empty test suite for the porpouse
@@ -295,7 +303,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	// --------------------------------------------------------------------------------------------
 	unset($tcase_mgr);
 	
-	// 20081004 - franciscom - with array_values() we reindex array to avoid "holes"
+	// with array_values() we reindex array to avoid "holes"
 	$result['spec_view']= array_values($result['spec_view']);
  	return $result;
 }
@@ -518,6 +526,10 @@ function removeEmptyTestSuites(&$testSuiteSet,&$treeMgr,$pruneUnlinkedTcversions
 }
 	  
 
+/**
+ * 
+ *
+ */
 function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
 {
 	foreach($testSuiteSet as $key => $elem)
@@ -628,7 +640,6 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 	$out[$idx]['linked_ts'] = null;                                          
 	$out[$idx]['linked_by'] = 0;                                          
     $out[$idx]['priority'] = 0;
-    // $out[$idx]['importance'] = 0;
 
 	$the_level = $out[0]['level']+1;
 	$idx++;
@@ -768,6 +779,7 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
     $optionalIntegerFields = array('user_id', 'feature_id','linked_by');
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 	$pivot_id=-1;
+	
 	foreach($testCaseSet as $the_k => $testCase)
 	{
 		$tc_id = $testCase['testcase_id'];

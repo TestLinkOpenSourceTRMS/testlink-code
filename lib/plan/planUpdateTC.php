@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.39 2010/01/23 09:48:28 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.40 2010/01/31 17:55:54 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -287,13 +287,16 @@ function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
  */
 function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$treeMgr)
 {
-	$my_path = $treeMgr->get_path($args->id);
+	$my_path = $treeMgr->get_path($argsObj->id);
 	$idx_ts = count($my_path)-1;
 	$tsuite_data = $my_path[$idx_ts-1];
 	$filters = array('tcase_id' => $args->id);
 	$linked_items = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);		
 	$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
 	$filters = array('keywords' => $argsObj->keyword_id);
+
+    new dBug();
+    
 	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 	                     $linked_items,null,$filters,$opt);
 	return $out;

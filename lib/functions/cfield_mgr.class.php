@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.75 2010/01/02 16:54:34 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.76 2010/01/31 16:51:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2034,57 +2034,52 @@ function getXMLServerParams($node_id)
   */
   function testplan_design_values_to_db($hash,$node_id,$link_id,$cf_map=null,$hash_type=null)
   {
-    if( is_null($hash) && is_null($cf_map) )
-    {
-       return;
-    }
-    if( is_null($hash_type) )
-    {
-      $cfield=$this->_build_cfield($hash,$cf_map);
-    }
-    else
-    {
-      $cfield=$hash;
-    }
+	if( is_null($hash) && is_null($cf_map) )
+	{
+	   return;
+	}
 
-    if( !is_null($cfield) )
-    {
-      foreach($cfield as $field_id => $type_and_value)
-      {
-        $value = $type_and_value['cf_value'];
-        // do I need to update or insert this value?
-        $sql = "SELECT value FROM {$this->tables['cfield_testplan_design_values']} " .
-    		 			 " WHERE field_id={$field_id} AND	link_id={$link_id}";
+	$cfield = is_null($hash_type) ? $this->_build_cfield($hash,$cf_map) : $hash;
+	if( !is_null($cfield) )
+	{
+	  foreach($cfield as $field_id => $type_and_value)
+	  {
+	  	// echo "DEBUG: \$field_id:$field_id - \$link_id:$link_id<br>";
+	    $value = $type_and_value['cf_value'];
 
-        $result = $this->db->exec_query($sql);
-
-        // max_length_value = 0 => no limit
-        if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
-        {
-           $value = substr($value,0,$this->max_length_value);
-        }
-
-        $safe_value=$this->db->prepare_string($value);
-        if($this->db->num_rows( $result ) > 0 )
-        {
-
-          $sql = "UPDATE {$this->tables['cfield_testplan_design_values']} " .
-                 " SET value='{$safe_value}' " .
-    		     " WHERE field_id={$field_id} AND	link_id={$link_id}";
-        }
-        else
-        {
-          # Remark got from Mantis code:
-  		    # Always store the value, even if it's the dafault value
-  		    # This is important, as the definitions might change but the
-  		    #  values stored with a bug must not change
-  		    $sql = "INSERT INTO {$this->tables['cfield_testplan_design_values']} " .
-  				   " ( field_id, link_id, value ) " .
-  				   " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
-  		  }
-        $this->db->exec_query($sql);
-      } //foreach($cfield
-    } //if( !is_null($cfield) )
+	    // do I need to update or insert this value?
+	    $sql = "SELECT value FROM {$this->tables['cfield_testplan_design_values']} " .
+			   " WHERE field_id={$field_id} AND	link_id={$link_id}";
+	
+	    $result = $this->db->exec_query($sql);
+	
+	    // max_length_value = 0 => no limit
+	    if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
+	    {
+	       $value = substr($value,0,$this->max_length_value);
+	    }
+	
+	    $safe_value=$this->db->prepare_string($value);
+	    if($this->db->num_rows( $result ) > 0 )
+	    {
+	
+	      $sql = "UPDATE {$this->tables['cfield_testplan_design_values']} " .
+	             " SET value='{$safe_value}' " .
+			     " WHERE field_id={$field_id} AND	link_id={$link_id}";
+	    }
+	    else
+	    {
+	      # Remark got from Mantis code:
+		    # Always store the value, even if it's the dafault value
+		    # This is important, as the definitions might change but the
+		    #  values stored with a bug must not change
+		    $sql = "INSERT INTO {$this->tables['cfield_testplan_design_values']} " .
+				   " ( field_id, link_id, value ) " .
+				   " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
+		  }
+	    $this->db->exec_query($sql);
+	  } //foreach($cfield
+	} //if( !is_null($cfield) )
 
   } //function end
 

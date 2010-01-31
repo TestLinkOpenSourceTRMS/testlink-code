@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.38 2010/01/31 15:47:32 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.39 2010/01/31 16:52:03 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -326,6 +326,15 @@ Ext.onReady(function(){
   	                  <td>{localize_date d=$tcase.linked_ts[$platform.id]}</td>
                     {/if}
                   </tr>
+  			          {if isset($tcase.custom_fields[$platform.id])}
+                    <tr>
+                      <td colspan="7">
+                        <input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
+                        {$tcase.custom_fields[$platform.id]}
+                      </td>
+                    </tr>
+                  {/if}
+                  
                 {/foreach}
                	<tr><td colspan="9"><hr/></td></tr>
               {/if}             

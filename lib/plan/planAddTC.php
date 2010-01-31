@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.89 2010/01/31 15:47:52 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.90 2010/01/31 16:52:03 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -209,8 +209,6 @@ if($do_display)
     {
 		initDrawSaveButtons($gui);
     }
-    new dBug($gui);
-    // die();
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
@@ -434,7 +432,6 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 */
 function doSaveCustomFields(&$argsObj,&$userInput,&$tplanMgr,&$tcaseMgr)
 {
-    // function testplan_design_values_to_db($hash,$node_id,$link_id,$cf_map=null,$hash_type=null)
     // N.B.: I've use this piece of code also on write_execution(), think is time to create
     //       a method on cfield_mgr class.
     //       One issue: find a good method name
@@ -443,21 +440,25 @@ function doSaveCustomFields(&$argsObj,&$userInput,&$tplanMgr,&$tcaseMgr)
     $cf_nodeid_pos=4;
     
   	$nodeid_array_cfnames=null;
-  	// Example: two test cases (21 adn 19 are testplan_tcversions.id)
+
+  	// Example: two test cases (21 and 19 are testplan_tcversions.id => FEATURE_ID)
   	//          with 3 custom fields
+  	//
+  	// custom_field_[TYPE]_[CFIELD_ID]_[FEATURE_ID]
+  	//
   	// (
     // [21] => Array
     //     (
     //         [0] => custom_field_0_3_21
     //         [1] => custom_field_0_7_21
-    //         [5] => custom_field_6_9_21_
+    //         [5] => custom_field_6_9_21
     //     )
     // 
     // [19] => Array
     //     (
     //         [0] => custom_field_0_3_19
     //         [1] => custom_field_0_7_19
-    //         [5] => custom_field_6_9_19_
+    //         [5] => custom_field_6_9_19
     //     )
     // )
     //  	
@@ -469,10 +470,12 @@ function doSaveCustomFields(&$argsObj,&$userInput,&$tplanMgr,&$tcaseMgr)
           $nodeid_array_cfnames[$dummy[$cf_nodeid_pos]][]=$input_name;
         } 
     }
-   
+     
     // foreach($argsObj->linkedWithCF as $key => $link_id)
     foreach( $nodeid_array_cfnames as $link_id => $customFieldsNames)
     {   
+    	
+    	
         // Create a SubSet of userInput just with inputs regarding CF for a link_id
         // Example for link_id=21:
         //
@@ -632,8 +635,6 @@ function initDrawSaveButtons(&$guiObj)
 	{
 		$breakLoop = false;
 		$tcaseSet = &$guiObj->items[$key]['testcases'];
-		
-		new dBug($tcaseSet);
 		if( !is_null($tcaseSet) )
 		{
 			$tcversionSet = array_keys($tcaseSet);
@@ -653,8 +654,5 @@ function initDrawSaveButtons(&$guiObj)
 			break;
 		}
 	}
-	//new dBug($guiObj->items);
-	
-	//die();
 }
 ?>

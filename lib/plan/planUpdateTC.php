@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.40 2010/01/31 17:55:54 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.41 2010/01/31 18:32:00 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -10,7 +10,7 @@
  * Test Case Execution assignments will be auto(magically) updated.
  *
  * 	@internal revisions:
- *	
+ *	20100131 - franciscom - BUGID 3008/3109	
  *	20100123 - franciscom - BUGID 2652 + missing refactoring for table prefix doUpdate()
  *	20091212 - franciscom - added contribution by asimon83 (refactored) - BUGID 2652
  *                          show newest testcase versions when updating all linked testcase versions
@@ -37,8 +37,6 @@ if(is_array($args->keyword_id))
     $keywordsFilter->items = $args->keyword_id;
     $keywordsFilter->type = $gui->keywordsFilterType->selected;
 }
-
-new dBug($args);
 
 switch ($args->doAction)
 {
@@ -290,13 +288,16 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
 	$my_path = $treeMgr->get_path($argsObj->id);
 	$idx_ts = count($my_path)-1;
 	$tsuite_data = $my_path[$idx_ts-1];
-	$filters = array('tcase_id' => $args->id);
-	$linked_items = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);		
+	$filters = array('tcase_id' => $argsObj->id);
 	$opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
-	$filters = array('keywords' => $argsObj->keyword_id);
 
-    new dBug();
-    
+	$dummy_items = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);		
+
+    // 20100131 - franciscom
+	// adapt data structure to gen_spec_view() desires
+	$linked_items[key($dummy_items)][0] = current($dummy_items);
+	$filters = array('keywords' => $argsObj->keyword_id, 'testcases' => $argsObj->id);
+   
 	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 	                     $linked_items,null,$filters,$opt);
 	return $out;

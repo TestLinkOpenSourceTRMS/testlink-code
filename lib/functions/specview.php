@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.47 2010/01/31 16:52:03 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.48 2010/01/31 16:57:51 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -575,18 +575,20 @@ function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
 			{
 				foreach($value['testcases'] as $skey => $svalue)
 				{
-					$linked_version_id=$svalue['linked_version_id'];
-					$platformSet = array_keys($svalue['feature_id']);
-					foreach($platformSet as $platform_id)
+					if( ($linked_version_id=$svalue['linked_version_id']) > 0 )
 					{
-						$testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id]='';
-						if( $linked_version_id != 0  )
+						$platformSet = array_keys($svalue['feature_id']);
+						foreach($platformSet as $platform_id)
 						{
-                            $cf_name_suffix = "_" . $svalue['feature_id'][$platform_id];
-							$cf_map = $tcaseMgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
-								                                                   $cf_name_suffix,$svalue['feature_id'][$platform_id],
-								                                                   null,$tprojectId);
-							$testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id] = $cf_map;
+							$testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id]='';
+							if( $linked_version_id != 0  )
+							{
+                    	        $cf_name_suffix = "_" . $svalue['feature_id'][$platform_id];
+								$cf_map = $tcaseMgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
+									                                                   $cf_name_suffix,$svalue['feature_id'][$platform_id],
+									                                                   null,$tprojectId);
+								$testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id] = $cf_map;
+							}
 						}
 					}
 				}

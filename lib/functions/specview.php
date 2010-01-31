@@ -6,12 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.45 2010/01/24 16:55:20 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.46 2010/01/31 09:35:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
- *	20100119 - franciscom - addCustomFieldsToView() - missing wokr on platforms
+ *	20100119 - franciscom - addCustomFieldsToView() - missing work on platforms
  *	20090808 - franciscom - gen_spec_view() interface changes + refactoring
  *	20090325 - franciscom - added new info about when and who has linked a tcversion
  *	20090325 - franciscom - BUGID - better implementation of BUGID 1497
@@ -550,10 +550,14 @@ function  removeEmptyBranches(&$testSuiteSet,&$tsuiteTestCaseQty)
 
 
 /**
- *	@param array &$testSuiteSet
+ *	@param array &$testSuiteSet: changes will be done to this array
+ *                               to add custom fields info.
+ *                               Custom field info will be indexed by platform id
+ * 
  *	@param integer $tprojectId
  *	@param object &$tcaseMgr reference to testCase class instance
  *
+ *  
  *	@internal revisions
  *	20100119 - franciscom - start fixing missing platform refactoring
  *
@@ -563,34 +567,56 @@ function addCustomFieldsToView(&$testSuiteSet,$tprojectId,&$tcaseMgr)
 	// Important:
 	// testplan_tcversions.id value, that is used to link to manage custom fields that are used
 	// during testplan_design is present on key 'feature_id' (only is linked_version_id != 0)
+	
+	new dBug($testSuiteSet,array('lable' => "IN " .__FUNCTION__));
 	foreach($testSuiteSet as $key => $value) 
 	{
+		echo '$key:' . $key . '<br>';
+		new dBug($value);
 		if( !is_null($value) )
 		{
 			if( isset($value['testcases']) && count($value['testcases']) > 0 )
 			{
+                new dBug($value['testcases']); 
 				foreach($value['testcases'] as $skey => $svalue)
 				{
 					$linked_version_id=$svalue['linked_version_id'];
-					$testSuiteSet[$key]['testcases'][$skey]['custom_fields']='';
-					if( $linked_version_id != 0  )
+					$platformSet = array_keys($svalue['feature_id']);
+					foreach($platformSet as $platform_id)
 					{
-						// 20100119 - franciscom
-						// Here we need loop over platforms ?
-						$platformSet = array_keys($svalue['feature_id']);
-						foreach($platformSet as $platform_id)
+						$testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id]='';
+						if( $linked_version_id != 0  )
 						{
 							// change in suffix format
 							$cf_name_suffix = $platform_id . "_" . $svalue['feature_id'][$platform_id];
-							
-							// 20090530 - franciscom - interface change
+
 							$cf_map = $tcaseMgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
 								                                                   $cf_name_suffix,$svalue['feature_id'][$platform_id],
 								                                                   null,$tprojectId);
-							$testSuiteSet[$key]['testcases'][$skey][$platform_id]['custom_fields'] = $cf_map;
+							$testSuiteSet[$key]['testcases'][$skey]['custom_fields'][$platform_id] = $cf_map;
 						}
 						
 					}
+					// new dBug($testSuiteSet[$key]['testcases'][$skey]);
+					// 
+					// if( $linked_version_id != 0  )
+					// {
+					// 	// 20100119 - franciscom
+					// 	// Here we need loop over platforms ?
+					// 	$platformSet = array_keys($svalue['feature_id']);
+					// 	foreach($platformSet as $platform_id)
+					// 	{
+					// 		// change in suffix format
+					// 		$cf_name_suffix = $platform_id . "_" . $svalue['feature_id'][$platform_id];
+					// 		
+					// 		// 20090530 - franciscom - interface change
+					// 		$cf_map = $tcaseMgr->html_table_of_custom_field_inputs($linked_version_id,null,'testplan_design',
+					// 			                                                   $cf_name_suffix,$svalue['feature_id'][$platform_id],
+					// 			                                                   null,$tprojectId);
+					// 		$testSuiteSet[$key]['testcases'][$skey][$platform_id]['custom_fields'] = $cf_map;
+					// 	}
+					// 	
+					// }
 				}
 			} 
 			

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		eloff
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.8 2009/12/01 18:56:14 erikeloff Exp $
+ * @version    	CVS: $Id: platformsAssign.php,v 1.9 2010/02/01 14:24:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -100,26 +100,30 @@ $smarty->assign('opt_cfg', $opt_cfg);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
- * This function initializes the option transfer items, by appending a text
- * with number linked TC:s for every assigned platform.
- * It also builds a js map platform_name => linked_count. This map is used
- * to show warning dialog only when trying to unlink platforms with assigned TCs
+ * Initializes option transfer items, by appending a text with number linked TC:s 
+ * for every assigned platform.
+ * It also builds a js map platform_name => linked_count. 
+ * This map is used to show warning dialog only when trying to unlink 
+ * platforms with assigned TCs
  */
 function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
 {
     $opt_cfg->from->map = $platform_mgr->getAllAsMap();
-
     $map = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
-    $platform_count_js = "platform_count_map = new Array();\n";
-    foreach ($map as $platform_id => &$platform_name) {
-        $count = $tplan_mgr->count_testcases($args->tplan_id,$platform_id);
-        $platform_name .= sprintf(lang_get('platform_linked_count'), $count);
-        $platform_count_js .= "platform_count_map['$platform_name'] = $count;\n";
-
-        // Removal of duplicates is NOT handles automatically since we just
-        // modified their names.
-        unset($opt_cfg->from->map[$platform_id]);
-    }
+   	$platform_count_js = "platform_count_map = new Array();\n";
+    if(!is_null($map))
+    {     
+    	foreach ($map as $platform_id => &$platform_name) 
+    	{
+    	    $count = $tplan_mgr->count_testcases($args->tplan_id,$platform_id);
+    	    $platform_name .= sprintf(lang_get('platform_linked_count'), $count);
+    	    $platform_count_js .= "platform_count_map['$platform_name'] = $count;\n";
+    	
+    	    // Removal of duplicates is NOT handles automatically since we just
+    	    // modified their names.
+    	    unset($opt_cfg->from->map[$platform_id]);
+    	}
+	}
     $opt_cfg->to->map = $map;
     return $platform_count_js;
 }

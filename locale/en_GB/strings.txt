@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.541 2010/02/01 09:14:56 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.542 2010/02/01 11:02:51 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -110,6 +110,7 @@ $TLS_tester = "Tester";
 $TLS_test_plan = "Test Plan";
 $TLS_testplan = $TLS_test_plan; // obsolete
 $TLS_testproject = "Test Project";
+$TLS_testplan_report = "Test Plan Report";
 $TLS_test_report = "Test Report";
 $TLS_test_suite = "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
@@ -1424,7 +1425,7 @@ $TLS_title_req_export = "Export requirements";
 
 // ----- gui/templates/resultsAllBuilds.tpl -----
 $TLS_th_build = "Build";
-$TLS_th_tc_total = "TC Total";
+$TLS_th_tc_total = "Total";
 $TLS_title_met_of_build = "Metrics of build";
 
 
@@ -1455,7 +1456,7 @@ $TLS_th_assigned_to = "Assigned To";
 
 
 // ----- gui/templates/resultsGeneral.tpl -----
-$TLS_title_gen_test_rep = "Test Plan Metrics";
+$TLS_title_gen_test_rep = "General Test Plan Metrics";
 $TLS_title_report_tc_priorities = "Test results according to test priorities";
 $TLS_title_report_milestones = "Status of Milestones";
 $TLS_th_completed = "Completed";

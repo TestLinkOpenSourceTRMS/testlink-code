@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.540 2010/01/24 10:58:34 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.541 2010/02/01 09:14:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1901,7 +1901,7 @@ $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
 $TLS_desc_mgt_view_events = "Event viewer (read only access)";
 $TLS_desc_events_mgt = "Event management";
 $TLS_desc_platforms_view="Platform view (read only access)";
-$TLS_desc_platforms_management="Platform management";
+$TLS_desc_platforms_management="Platform Management";
 
 
 $TLS_desc_role_management = "Role management";
@@ -2425,7 +2425,7 @@ $TLS_edit_keyword = "Edit keyword";
 $TLS_warning_empty_keyword = "Keyword must not be empty!";
 
 // ----- platformsEdit.php -----
-$TLS_platform_management = "Platform management";
+$TLS_platform_management = "Platform Management";
 $TLS_create_platform = "Create platform";
 $TLS_edit_platform = "Edit platform";
 $TLS_platform_name_already_exists = "Platform Name %s already Exists";

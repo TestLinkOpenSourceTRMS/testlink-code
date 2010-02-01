@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.162 2010/02/01 11:35:05 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.163 2010/02/01 16:06:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1545,7 +1545,10 @@ class testplan extends tlObjectWithAttachments
 	}
 
 
-	// 20070129 - franciscom - added custom field management
+	/**
+	 * Delete test plan and all related link to other items
+	 *
+ 	 */
 	function delete($id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1560,8 +1563,10 @@ class testplan extends tlObjectWithAttachments
 		$the_sql[]="DELETE FROM {$this->tables['cfield_testplan_design_values']} WHERE link_id ".
 			       "IN (SELECT id FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id})";
 		
+		// missing delete - 20100201
+		$the_sql[]="DELETE FROM {$this->tables['testplan_platforms']} WHERE testplan_id={$id}";
+
 		$the_sql[]="DELETE FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id}";
-		
 		$the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}";
 		$the_sql[]="DELETE FROM {$this->tables['cfield_execution_values']} WHERE testplan_id={$id}";
 		

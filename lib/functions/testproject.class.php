@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.138 2010/01/02 18:04:33 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.139 2010/02/01 16:06:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100201 - franciscom - delete() - missing delete of platforms
  * 20100102 - franciscom - show() - interface changes
  * 20091206 - franciscom - fixed bug on get_subtree() created furing refactoring
  * 20090606 - franciscom - get_by_prefix() interface changes
@@ -1480,8 +1481,6 @@ function setPublicStatus($id,$status)
 		$error = '';
 		$reqspec_mgr = new requirement_spec_mgr($this->db);
 		
-		$a_sql = array();
-		
 		$this->deleteKeywords($id);
 		$this->deleteAttachments($id);
 		
@@ -1504,6 +1503,10 @@ function setPublicStatus($id,$status)
 				$tplan_mgr->delete($key);
 			}
 		}
+
+		// 20100201 - 
+		$platform_mgr = new tlPlatform($this->db,$id);
+		$platform_mgr->deleteByTestProject($id);
 		
 		$a_sql[] = array(
 			"UPDATE {$this->tables['users']}  SET default_testproject_id = NULL " .

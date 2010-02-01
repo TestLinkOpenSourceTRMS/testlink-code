@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.15 2009/11/04 08:09:34 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.16 2010/02/01 10:24:23 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -24,9 +24,9 @@ Revisions:
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 
-         arg_tproject_name=$session.testprojectName arg_tplan_name=$tplan_name}	
+         arg_tproject_name=$session.testprojectName arg_tplan_name=$gui->tplan_name}	
 
-{if $do_report.status_ok}
+{if $gui->do_report.status_ok}
 
   {if $gui->showPlatforms}
    <hr>
@@ -204,7 +204,7 @@ Revisions:
 	{/if}
 
 {else}
-  	{$do_report.msg}
+  	{$gui->do_report.msg}
 {/if}  
 </div>
 

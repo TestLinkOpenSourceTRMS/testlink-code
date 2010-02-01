@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.60 $
- * @modified $Date: 2010/01/12 18:27:49 $ by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2010/02/01 10:25:06 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * This page show Test Results over all Builds.
@@ -28,34 +28,33 @@ require_once('results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db,true,false,"checkRights");
 
-$args = init_args();
+
+$tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
 $templateCfg = templateConfiguration();
 
-$gui = new stdClass();
-$gui->showPlatforms=true;
+$args = init_args();
+$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
+$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
 $arrDataSuite = array();
-$do_report = array();
+
+$gui = new stdClass();
+$gui->do_report = array();
+$gui->showPlatforms=true;
 $gui->colDefinition = array();
 $gui->columnsDefinition = new stdClass();
 $gui->columnsDefinition->keywords = null;
 $gui->columnsDefinition->testers = null;
 $gui->columnsDefinition->platform = null;
-
 $gui->statistics = new stdClass();
 $gui->statistics->keywords = null;
 $gui->statistics->testers = null;
 $gui->statistics->milestones = null;
-
-$tplan_mgr = new testplan($db);
-$tproject_mgr = new testproject($db);
-
-$tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
-$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
+$gui->tplan_name = $tplan_info['name'];
 
 
 $getOpt = array('outputFormat' => 'map');
-// $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 if( is_null($gui->platformSet) )
 {
@@ -73,14 +72,14 @@ $topLevelSuites = $re->getTopLevelSuites();
 if(is_null($topLevelSuites))
 {
 	// no test cases -> no report
-	$do_report['status_ok'] = 0;
-	$do_report['msg'] = lang_get('report_tspec_has_no_tsuites');
+	$gui->do_report['status_ok'] = 0;
+	$gui->do_report['msg'] = lang_get('report_tspec_has_no_tsuites');
 	tLog('Overall Metrics page: no test cases defined');
 }
 else // do report
 {
-	$do_report['status_ok'] = 1;
-	$do_report['msg'] = '';
+	$gui->do_report['status_ok'] = 1;
+	$gui->do_report['msg'] = '';
 
 	$items2loop = array('keywords','assigned_testers');
 
@@ -97,7 +96,6 @@ else // do report
         $gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
 	}
 
-    // new dBug($gui->statistics);	
 	foreach($items2loop as $item)
 	{
       	if( !is_null($gui->statistics->$item) )
@@ -113,10 +111,6 @@ else // do report
           	$gui->columnsDefinition->$item = $dummy['details'];
          } 
   	} 
-
-
-
-
 
   	$mapOfAggregate = $re->getAggregateMap();
   	$arrDataSuite = null;
@@ -199,11 +193,9 @@ else // do report
 
 	$colDefiniton = null;
 	$results = null;
-	if($do_report['status_ok'])
+	if($gui->do_report['status_ok'])
 	{
   		$results = $re->getAggregateBuildResults();
-
-
   		if ($results != null) 
   		{
       		// Get labels
@@ -239,25 +231,16 @@ else // do report
 	$filters=null;
 	$options=array('output' => 'map', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    // new dBug($options);
-    // new dBug($execResults);
-    
+
     $options=array('output' => 'mapOfArray', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    // new dBug($options);
-    // new dBug($execResults);
     
     $options=array('output' => 'mapOfMap', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    // new dBug($options);
-    // new dBug($execResults);
     
     $options=array('output' => 'array', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
-    // new dBug($options);
-    // new dBug($execResults);
-    
-    
+   
 
 	// collect prioritized results for whole Test Plan
 	if ($_SESSION['testprojectOptPriority'])
@@ -282,8 +265,6 @@ else // do report
 // ----------------------------------------------------------------------------
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
-$smarty->assign('do_report', $do_report);
-$smarty->assign('tplan_name', $tplan_info['name']);
 $smarty->assign('buildColDefinition', $colDefinition);
 $smarty->assign('buildResults',$results);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);

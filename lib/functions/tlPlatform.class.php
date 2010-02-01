@@ -6,12 +6,13 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.14 2010/02/01 15:06:23 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.15 2010/02/01 15:50:10 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *
  *	20100201 - franciscom - linkToTestplan(), unlinkFromTestplan() - refactoring to manage null	as $id
+ *		                    deleteByTestProject() - new method.
  *  20100124 - franciscom - fixed bug on getAll() - filter by active test project is not more there.
  *  20091201 - Eloff - added options to getAll() to include linked_count
  *                     Use positive logic in getAll()
@@ -317,6 +318,19 @@ class tlPlatform extends tlObjectWithDB
 	    }
         return $safeName;
     }
+
+
+	/**
+	 * 
+ 	 *
+ 	 */
+	public function deleteByTestProject($tproject_id)
+	{
+		$sql = "DELETE FROM {$this->tables['platforms']} WHERE testproject_id = {$tproject_id}";
+		$result = $this->db->exec_query($sql);
+		
+		return $result ? tl::OK : self::E_DBERROR;
+	}
 
 
 }

@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.184 2010/01/27 08:13:20 erikeloff Exp $
+ * @version    	CVS: $Id: common.php,v 1.185 2010/02/01 11:54:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1118,7 +1118,7 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
  */
 function buildExternalIdString($testCasePrefix, $external_id)
 {
-	static $gluechar;
+	static $glueChar;
 	if (!$glueChar) {
 		$glueChar = config_get('testcase_cfg')->glue_character;
 	}

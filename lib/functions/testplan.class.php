@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.159 2010/01/29 20:54:19 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.160 2010/02/01 10:20:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -462,9 +462,6 @@ class testplan extends tlObjectWithAttachments
 	function link_tcversions($id,&$items_to_link,$userId)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		
-		new dBug($items_to_link);
-		
 		
 		// Get human readeable info for audit
 		$title_separator = config_get('gui_title_separator_1');
@@ -2574,10 +2571,9 @@ class testplan extends tlObjectWithAttachments
  	 *
  	 * outputFormat: possible . 'array','map'
  	 */
-    // function getPlatforms($id,$outputFormat='array')
     function getPlatforms($id,$options=null)
     {
-        $my['options'] = array ('outputFormat' => 'array', 'addIfNull' => false);
+        $my['options'] = array('outputFormat' => 'array', 'addIfNull' => false);
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
     	$method2call = ($my['options']['outputFormat']=='map') ? 'getLinkedToTestplanAsMap' : 'getLinkedToTestplan';
@@ -2795,25 +2791,27 @@ class testplan extends tlObjectWithAttachments
 	public function getStatusTotalsByPlatform($id)
 	{
 		$code_verbose = $this->getStatusForReports();
-        $platformSet = $this->getPlatforms($id);
+        $platformSet = $this->getPlatforms($id,array('outputFormat' => 'map'));
         $totals = null;
         $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
+        
         foreach($platformIDSet as $platformID)
         {
         	$totals[$platformID]=array('type' => 'platform', 
         	                           'name' => $platformSet[$platformID],
-        	                           'total_tc' => 0);
+        	                           'total_tc' => 0, 
+        	                           'details' => array('not_run' => array('qty' => 0)));
 			foreach($code_verbose as $status_code => $status_verbose)
 			{
 				$totals[$platformID]['details'][$status_verbose]['qty']=0;
 			}
         }
-       
+        
 		// First step - get not run
 		$filters=null;
         $options=array('group_by_platform_tcversion' => true);
         $notRunResults = $this->getNotExecutedLinkedTCVersionsDetailed($id,$filters,$options);
-
+        
         $loop2do = count($notRunResults);
         for($idx=0; $idx < $loop2do ; $idx++)
         {
@@ -2830,6 +2828,11 @@ class testplan extends tlObjectWithAttachments
         {
         	$key=$code_verbose[$execResults[$idx]['exec_status']];
         	$totals[$execResults[$idx]['platform_id']]['total_tc']++;
+        	
+        	if( !isset($totals[$execResults[$idx]['platform_id']]['details'][$key]['qty']) )
+        	{
+        		$totals[$execResults[$idx]['platform_id']]['details'][$key]['qty']=0;
+        	}
         	$totals[$execResults[$idx]['platform_id']]['details'][$key]['qty']++;
         }
         return $totals;
@@ -3027,6 +3030,10 @@ class testplan extends tlObjectWithAttachments
         return $info;
     }
 
+	/**
+	 * 
+ 	 *
+     */
 	function tallyResultsForReport($results)
 	{
 		if ($results == null)
@@ -3044,11 +3051,11 @@ class testplan extends tlObjectWithAttachments
 				$results[$keyID]['percentage_completed'] = 
 						number_format((($totalCases - $target['not_run']['qty']) / $totalCases) * 100,2);
 						
-			}
-			foreach($target as $status_verbose => $qty)
-			{
-				$target[$status_verbose]['percentage']=(($target[$status_verbose]['qty']) / $totalCases) * 100;
-				$target[$status_verbose]['percentage']=number_format($target[$status_verbose]['percentage'],2);
+				foreach($target as $status_verbose => $qty)
+				{
+					$target[$status_verbose]['percentage']=(($target[$status_verbose]['qty']) / $totalCases) * 100;
+					$target[$status_verbose]['percentage']=number_format($target[$status_verbose]['percentage'],2);
+				}
 			}
 		}
 		return $results;

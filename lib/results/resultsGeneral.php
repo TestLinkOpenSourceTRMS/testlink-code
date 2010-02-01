@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.61 $
- * @modified $Date: 2010/02/01 10:25:06 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2010/02/01 11:51:07 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
- * This page show Test Results over all Builds.
+ * Show Test Results over all Builds.
  *
  * Revisions:
+ *	20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns 
+ *                                         with test case exec results
  *  20091103 - franciscom - keywords, assigned testers, platform results refactored,
  *                          noew use method from test plan class.
  *
@@ -198,21 +200,11 @@ else // do report
   		$results = $re->getAggregateBuildResults();
   		if ($results != null) 
   		{
-      		// Get labels
+			// BUGID 0003123: General Test Plan Metrics - order of columns with test case exec results
+			$code_verbose = $tplan_mgr->getStatusForReports();
       		$resultsCfg = config_get('results');
       		$labels = $resultsCfg['status_label'];
-      
-      		// I will add not_run if not exists
-		  	$keys2display = array('not_run' => 'not_run');
-		  	foreach($resultsCfg['status_label_for_exec_ui'] as $key => $value)
-		  	{
-		      	if($key != 'not_run')
-		      	{
-		        	$keys2display[$key] = $key;  
-		      	}  
-		  	}
-      
-      		foreach($keys2display as $status_verbose => $value)
+      		foreach($code_verbose as $status_verbose)
       		{
             	$l18n_label = isset($labels[$status_verbose]) ? lang_get($labels[$status_verbose]) : 
                               lang_get($status_verbose); 

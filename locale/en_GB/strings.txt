@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.542 2010/02/01 11:02:51 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.543 2010/02/01 11:08:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2233,7 +2233,7 @@ $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 $TLS_result_on_last_build = '[Last Build]';
 
 
-// ----- lib/results/resultsNavigator.php -----
+// ----- cfg/reports.cfg.php -----
 $TLS_link_charts = "Charts";
 $TLS_link_report_blocked_tcs = "Blocked Test Cases";
 $TLS_link_report_failed = "Failed Test Cases";
@@ -2245,6 +2245,8 @@ $TLS_link_report_overall_build = "Overall Build Status";
 $TLS_link_report_reqs_coverage = "Requirements based Report";
 $TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
 $TLS_link_report_test = "Test result matrix";
+$TLS_link_report_test_plan = "Test Plan Report";
+$TLS_link_report_test_report = "Test Report";
 $TLS_link_report_total_bugs = "Bugs per Test Case";
 $TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
 $TLS_link_report_tcases_with_cf = "Test Cases with Custom Fields info";

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.238 2010/02/01 16:07:29 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.239 2010/02/01 18:00:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100201 - franciscom - getExternalID(), refactored to improve performance when used on loops
  * 20100124 - franciscom - BUGID 3090 - problems when trying to delete a test case that has 0 steps.
  * 20100111 - franciscom - get_version_exec_assignment() - refactoring due to platforms feature.
  *                         get_linked_versions() - refactoring due to platforms feature.
@@ -3995,12 +3996,20 @@ class testcase extends tlObjectWithAttachments
 	 * 
  	 *
      */
-	function getExternalID($id,$tproject_id=null)
+	function getExternalID($id,$tproject_id=null,$prefix=null)
 	{
+		static $cfg;
+		if( is_null($cfg) )
+		{
+			$cfg = config_get('testcase_cfg');
+		}
+       	
+		if( is_null($prefix) )
+		{
+       		list($prefix,$root) = $this->getPrefix($id,$tproject_id);
+		}
 		$info = $this->get_last_version_info($id, array('output' => 'minimun'));
         $external = $info['tc_external_id'];
-       	$cfg = config_get('testcase_cfg');
-       	list($prefix,$root) = $this->getPrefix($id,$tproject_id);
        	$identity = $prefix . $cfg->glue_character . $external;
 		return array($identity,$prefix,$cfg->glue_character,$external);
 	}

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.77 2010/01/07 20:44:16 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.78 2010/02/01 18:00:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100201 - franciscom - get_testcases_deep() - added external_id in output
  * 20091122 - franciscom - item template logic refactored - read_file() removed
  * 20090821 - franciscom - BUGID 0002781
  * 20090801 - franciscom - BUGID 2767 Duplicate testsuite name error message issue 
@@ -671,6 +672,7 @@ class testsuite extends tlObjectWithAttachments
 	                    node_order
 	                    node_table: node table, for a testcase.
 	                    name: testcase name
+	                    external_id: 
 	                    
 	                    'full'
 	                    Complete info about testcase for LAST TCVERSION 
@@ -681,16 +683,18 @@ class testsuite extends tlObjectWithAttachments
 	*/
 	function get_testcases_deep($id, $details = 'simple')
 	{
+		$tcase_mgr = new testcase($this->db);
 		$testcases = null;
 		$subtree = $this->get_subtree($id);
 		$only_id=($details=='only_id') ? true : false;             				
 		$doit=!is_null($subtree);
-	  $parentSet=null;
+		$parentSet=null;
 	  
 		if($doit)
 		{
 			$testcases = array();
 			$tcNodeType = $this->node_types_descr_id['testcase'];
+			$prefix = null;
 			foreach ($subtree as $the_key => $elem)
 			{
 				if($elem['node_type_id'] == $tcNodeType)
@@ -701,6 +705,10 @@ class testsuite extends tlObjectWithAttachments
 					}
 					else
 					{
+						// After first call passing $prefix with right value, avoids a function call
+						// inside of getExternalID();
+						list($identity,$prefix,$glueChar,$external) = $tcase_mgr->getExternalID($elem['id'],null,$prefix);
+						$elem['external_id'] = $identity; 
 						$testcases[]= $elem;
 						$parentSet[$elem['parent_id']]=$elem['parent_id'];
 					}	
@@ -709,22 +717,21 @@ class testsuite extends tlObjectWithAttachments
 			$doit = count($testcases) > 0;
 		}
 	  
-	  if($doit && $details=='full')
-	  {
-	      $parentNodes=$this->tree_manager->get_node_hierarchy_info($parentSet);
-	
-	      $rs=array();
-	      $tcase_mgr = new testcase($this->db);
-	      foreach($testcases as $idx => $value)
-	      {
-	         $item=$tcase_mgr->get_last_version_info($value['id']);
-	         $item['tcversion_id']=$item['id'];
-	         $tsuite['tsuite_name']=$parentNodes[$value['parent_id']]['name'];
-	         unset($item['id']);
-	         $rs[]=$value+$item+$tsuite;   
-	      }
-	      $testcases=$rs;
-	  }
+	  	if($doit && $details=='full')
+	  	{
+	  	    $parentNodes=$this->tree_manager->get_node_hierarchy_info($parentSet);
+	  	
+	  	    $rs=array();
+	  	    foreach($testcases as $idx => $value)
+	  	    {
+	  	       $item=$tcase_mgr->get_last_version_info($value['id']);
+	  	       $item['tcversion_id']=$item['id'];
+	  	       $tsuite['tsuite_name']=$parentNodes[$value['parent_id']]['name'];
+	  	       unset($item['id']);
+	  	       $rs[]=$value+$item+$tsuite;   
+	  	    }
+	  	    $testcases=$rs;
+	  	}
 		return $testcases; 
 	}
 	

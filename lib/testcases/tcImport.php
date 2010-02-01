@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.58 $
- * @modified $Date: 2010/01/06 18:25:38 $ by $Author: franciscom $
+ * @version $Revision: 1.59 $
+ * @modified $Date: 2010/02/01 16:07:29 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -364,10 +364,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	for($idx = 0; $idx <$tc_qty ; $idx++)
 	{
 		$tc = $tcData[$idx];
-
 		$name = $tc['name'];
 		$summary = $tc['summary'];
-		$expected_results = $tc['expectedresults'];
 		$steps = $tc['steps'];
 		$node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
 		$externalid = $tc['externalid'];
@@ -408,8 +406,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
          	        	$last_version=$tcase_mgr->get_last_version_info($tcase_id);
          	        	$tcversion_id=$last_version['id'];
          	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
-         	        	                          $preconditions,$steps,$expected_results,
-         	        	                          $userID,$kwIDs,$node_order,$exec_type,$importance);
+         	        	                          $preconditions,$steps,$userID,$kwIDs,
+         	        	                          $node_order,$exec_type,$importance);
          	        	                          
          	        	$resultMap[] = array($name,lang_get('already_exists_updated'));
 	     	        break;

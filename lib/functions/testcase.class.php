@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.237 2010/01/24 18:17:11 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.238 2010/02/01 16:07:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1170,11 +1170,14 @@ class testcase extends tlObjectWithAttachments
 		           " WHERE tcversion_id IN ({$tcversion_list})";
 	
 		    // Multiple Test Case Steps Feature
-		    $step_list=trim(implode(',',$children['step']));
-	        if( strlen($step_list) > 0 )
-	        { 
-	        	$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
-		    	       " WHERE id IN ({$step_list})";
+		    if( !is_null($children['step']) )
+		    {
+		    	$step_list=trim(implode(',',$children['step']));
+	        	if( strlen($step_list) > 0 )
+	        	{ 
+	        		$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
+		    		       " WHERE id IN ({$step_list})";
+	        	}
 	        }
 	        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
 		           " WHERE id IN ({$tcversion_list})";

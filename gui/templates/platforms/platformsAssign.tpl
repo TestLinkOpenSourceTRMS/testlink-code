@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsAssign.tpl,v 1.5 2009/12/01 18:56:14 erikeloff Exp $
+$Id: platformsAssign.tpl,v 1.6 2010/02/01 15:06:36 franciscom Exp $
 Purpose: smarty template - assign platforms to testplans
 *}
 {lang_get var="labels"
@@ -27,20 +27,20 @@ Purpose: smarty template - assign platforms to testplans
   {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 
 
-/* This function checks if any of the removed platforms has linked testcases.
+/* Checks if any of the removed platforms has linked testcases.
  * If that is the case, a warning dialog is displayed
  *
- * 20091201 - Eloff - Added transferleft function
+ * 20091201 - Eloff - Added transferLeft function
  */
 {$opt_cfg->js_ot_name}.transferLeft={literal}function(){
 	options = this.right.options;
 	num_with_linked_to_move = 0;
-	for(i=0;i<options.length;i++) {
-		if(options[i].selected && platform_count_map[options[i].text] > 0) {
+	for(idx=0; idx<options.length; idx++) {
+		if(options[idx].selected && platform_count_map[options[idx].text] > 0) {
 			num_with_linked_to_move++;
 		}
 	}
-    // Trying to remove platforms with linked TCs. Show warning/confirm dialog
+  // Trying to remove platforms with linked TCs. Show warning/confirm dialog
 	if (num_with_linked_to_move > 0) {
 		function callback(btn,text)
 		{
@@ -48,7 +48,8 @@ Purpose: smarty template - assign platforms to testplans
 				moveSelectedOptions(this.right,this.left,this.autoSort,this.staticOptionRegex); this.update();
 			}
 		}
-		Ext.Msg.confirm("{/literal}{$labels.platform_unlink_warning_title}{literal}","{/literal}{$labels.platform_unlink_warning_message}{literal}", callback, this);
+		Ext.Msg.confirm("{/literal}{$labels.platform_unlink_warning_title}{literal}",
+		                "{/literal}{$labels.platform_unlink_warning_message}{literal}", callback, this);
 	}
 	else {
 		// this is the default call from option transfer
@@ -73,9 +74,11 @@ Purpose: smarty template - assign platforms to testplans
 {if $gui->can_do}
 		<div style="margin-top: 25px;">
 			<form method="post" action="lib/platforms/platformsAssign.php?tplan_id={$gui->tplan_id}">
+			  <input type="hidden" name="doAction" value="">
 				{include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 				<br />
-				<input type="submit" name="assignPlatforms" value="{$labels.btn_save}" />
+				<input type="submit" name="doAssignPlatforms" value="{$labels.btn_save}" 
+				       onclick="doAction.value='doAssignPlatforms'"	/>
 			</form>
 		</div>
 	{else}

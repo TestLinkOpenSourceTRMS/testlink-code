@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		eloff
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.9 2010/02/01 14:24:03 franciscom Exp $
+ * @version    	CVS: $Id: platformsAssign.php,v 1.10 2010/02/01 15:07:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -48,7 +48,7 @@ $gui->warning = '';
 
 if (isset($args->tplan_id))
 {
-	// do follwing check to give warning to user
+	// do following check to give warning to user
 	// if test plan has test case versions with platform_id=0
 	// this means that right now there are not platforms linked to test plan.
 	// Give message to user with following info:
@@ -74,11 +74,11 @@ if (isset($args->tplan_id))
         $gui->mainTitle = sprintf($gui->mainTitle,$tplanData['name']);
     }
 
-    if($args->doAssignPlatforms)
+    
+    if($args->doAction == 'doAssignPlatforms')
     {
     	$platform_mgr->linkToTestplan($args->platformsToAdd,$args->tplan_id);
     	$platform_mgr->unlinkFromTestplan($args->platformsToRemove,$args->tplan_id);
-       
         if( $fix_needed && count($args->platformsToAdd) == 1)
         {
     	    reset($args->platformsToAdd);
@@ -135,7 +135,7 @@ function init_args(&$opt_cfg)
 
 	$iParams = array( "tplan_id" => array(tlInputParameter::INT_N),
 		              "edit" => array(tlInputParameter::STRING_N,0,100),
-		              "assignPlatforms" => array(tlInputParameter::STRING_N,0,1),
+		              "doAction" => array(tlInputParameter::STRING_N,0,20),
 		              $added => array(tlInputParameter::STRING_N),
 		              $removed => array(tlInputParameter::STRING_N));
 
@@ -151,9 +151,8 @@ function init_args(&$opt_cfg)
     if ($pParams[$removed] != "") {
         $args->platformsToRemove = explode(",", $pParams[$removed]);
     }
-
 	$args->edit = $pParams["edit"];
-	$args->doAssignPlatforms = ($pParams["assignPlatforms"] != "") ? 1 : 0;
+	$args->doAction = $pParams["doAction"];
 	$args->testproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 	return $args;

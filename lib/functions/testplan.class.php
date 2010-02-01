@@ -9,12 +9,14 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.160 2010/02/01 10:20:35 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.161 2010/02/01 10:24:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100201 - franciscom - BUGID 3121 - Adding Platform to test plan after the execution completed, 
+ *                                       reports are not shown appropriate 	
  *  20100112 - franciscom - getPlatforms() - interface changes
  *	20100106 - franciscom - Multiple Test Case Steps Feature
  *                          Affected Methods: get_linked_tcversions()
@@ -2787,6 +2789,9 @@ class testplan extends tlObjectWithAttachments
 	 *	                     'failed' => array( 'qty' => Y) 	
 	 *	                     'blocked' => array( 'qty' => U) 	 	
 	 *                       ....)
+	 *
+	 * @internal revision
+	 * 20100201 - franciscom - BUGID 3121
 	 */
 	public function getStatusTotalsByPlatform($id)
 	{

@@ -6,11 +6,12 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.13 2010/01/24 09:57:55 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.14 2010/02/01 15:06:23 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *
+ *	20100201 - franciscom - linkToTestplan(), unlinkFromTestplan() - refactoring to manage null	as $id
  *  20100124 - franciscom - fixed bug on getAll() - filter by active test project is not more there.
  *  20091201 - Eloff - added options to getAll() to include linked_count
  *                     Use positive logic in getAll()
@@ -139,18 +140,21 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function linkToTestplan($id, $testplan_id)
 	{
-		$idSet = (array)$id;
 		$result = true;
-		foreach ($idSet as $platform_id)
+		if( !is_null($id) )
 		{
-			$sql = " INSERT INTO {$this->tables['testplan_platforms']} " .
-					" (testplan_id, platform_id) " .
-					" VALUES ($testplan_id, $platform_id)";
-			$result = $this->db->exec_query($sql);
-			if(!$result)
+			$idSet = (array)$id;
+			foreach ($idSet as $platform_id)
 			{
-				break;
-			}	
+				$sql = " INSERT INTO {$this->tables['testplan_platforms']} " .
+						" (testplan_id, platform_id) " .
+						" VALUES ($testplan_id, $platform_id)";
+				$result = $this->db->exec_query($sql);
+				if(!$result)
+				{
+					break;
+				}	
+			}
 		}
 		return $result ? tl::OK : self::E_DBERROR;
 	}
@@ -163,20 +167,23 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function unlinkFromTestplan($id,$testplan_id)
 	{
-		$idSet = (array)$id;
-	    $result = true;
-		foreach ($idSet as $platform_id)
+		$result = true;
+		if( !is_null($id) )
 		{
-			$sql = " DELETE FROM {$this->tables['testplan_platforms']} " .
-				   " WHERE testplan_id = {$testplan_id} " .
-				   " AND platform_id = {$platform_id} ";
-		    
-		    $result = $this->db->exec_query($sql);
-			if(!$result)
+			$idSet = (array)$id;
+			foreach ($idSet as $platform_id)
 			{
-				break;
-			}	
-		}	   
+				$sql = " DELETE FROM {$this->tables['testplan_platforms']} " .
+					   " WHERE testplan_id = {$testplan_id} " .
+					   " AND platform_id = {$platform_id} ";
+			    
+			    $result = $this->db->exec_query($sql);
+				if(!$result)
+				{
+					break;
+				}	
+			}	   
+		}
 		return $result ? tl::OK : self::E_DBERROR;
 	}
 

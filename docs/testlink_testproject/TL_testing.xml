@@ -312,9 +312,12 @@ Delete]]></summary>
 </testsuite></testsuite><testsuite name="Platforms Management" >
 <node_order><![CDATA[5]]></node_order>
 <details><![CDATA[]]> 
+</details><testsuite name="Create / Update / Delete Platforms" >
+<node_order><![CDATA[0]]></node_order>
+<details><![CDATA[]]> 
 </details>
 <testcase internalid="853" name="Create Platform with Existent NAME">
-	<node_order><![CDATA[0]]></node_order>
+	<node_order><![CDATA[1]]></node_order>
 	<externalid><![CDATA[38]]></externalid>
 	<summary><![CDATA[Create Platform that have same NAME that existent ONE on this test project =&gt; Conflict]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
@@ -324,7 +327,7 @@ Delete]]></summary>
 </testcase>
 
 <testcase internalid="851" name="Create Platform without Conflicts">
-	<node_order><![CDATA[1]]></node_order>
+	<node_order><![CDATA[2]]></node_order>
 	<externalid><![CDATA[37]]></externalid>
 	<summary><![CDATA[Create Platform without Conflicts]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
@@ -332,7 +335,20 @@ Delete]]></summary>
 	<importance><![CDATA[2]]></importance>
 
 </testcase>
-</testsuite><testsuite name="Custom Fields Management" >
+</testsuite><testsuite name="Add / Remove Platforms" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="858" name="Add ONE platform to ZERO Platform Test plan">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[39]]></externalid>
+	<summary><![CDATA[Check effects of adding ONE platform to a test plan that HAS NO Platforms, after test plan has been populated with test cases, and some test cases has been executed.]]></summary>
+	<preconditions><![CDATA[Have a test plan with test cases and some test cases executed]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite></testsuite><testsuite name="Custom Fields Management" >
 <node_order><![CDATA[6]]></node_order>
 <details><![CDATA[]]> 
 </details></testsuite><testsuite name="Test Plan Management" >

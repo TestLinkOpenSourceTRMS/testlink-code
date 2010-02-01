@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.17 2010/01/23 10:40:30 franciscom Exp $
+$Id: projectView.tpl,v 1.18 2010/02/01 16:06:15 franciscom Exp $
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
@@ -43,9 +43,8 @@ var del_action=fRoot+'{$deleteAction}';
 <h1 class="title">{$labels.title_testproject_management}</h1>
 <div class="workBack">
 <div id="testproject_management_list">
-{if $tprojects eq ''}
+{if $gui->tprojects == ''}
 	{$labels.testproject_txt_empty_list}
-
 {else}
 	<table id="item_view" class="simple sortable" width="95%">
 		<tr>
@@ -55,11 +54,11 @@ var del_action=fRoot+'{$deleteAction}';
 			<th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
 			<th class="icon_cell">{$labels.th_active}</th>
 			<th class="icon_cell">{$labels.public}</th>
-			{if $canManage == "yes"}
+			{if $gui->canManage == "yes"}
 			<th class="icon_cell">{$labels.th_delete}</th>
 			{/if}
 		</tr>
-		{foreach item=testproject from=$tprojects}
+		{foreach item=testproject from=$gui->tprojects}
 		<tr>
 			<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testproject.id}</span>
 			    <a href="{$editAction}{$testproject.id}">
@@ -108,14 +107,13 @@ var del_action=fRoot+'{$deleteAction}';
   				{/if}
 			</td>
 
-			{if $canManage == "yes"}
+			{if $gui->canManage == "yes"}
 			<td class="clickable_icon">
-				  <img style="border:none;cursor: pointer;"
-				       alt="{$labels.testproject_alt_delete}"
-					   title="{$labels.testproject_alt_delete}"
-					   onclick="delete_confirmation({$testproject.id},'{$testproject.name|escape:'javascript'|escape}',
+				  <img style="border:none;cursor: pointer;"  alt="{$labels.testproject_alt_delete}"
+					     title="{$labels.testproject_alt_delete}"
+					     onclick="delete_confirmation({$testproject.id},'{$testproject.name|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title}','{$warning_msg}');"
-				     src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
+				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 			</td>
 			{/if}
 		</tr>
@@ -126,7 +124,7 @@ var del_action=fRoot+'{$deleteAction}';
 {/if}
 </div>
 
- {if $canManage}
+ {if $gui->canManage}
  <div class="groupBtn">
     <form method="post" action="{$createAction}">
       <input type="submit" name="create" value="{$labels.btn_create}" />
@@ -135,13 +133,12 @@ var del_action=fRoot+'{$deleteAction}';
  {/if}
 </div>
 
-{* *}
-{if $doAction == "reloadAll"}
+{if $gui->doAction == "reloadAll"}
 	<script type="text/javascript">
 	top.location = top.location;
 	</script>
 {else}
-  {if $doAction == "reloadNavBar"}
+  {if $gui->doAction == "reloadNavBar"}
 	<script type="text/javascript">
   // remove query string to avoid reload of home page,
   // instead of reload only navbar

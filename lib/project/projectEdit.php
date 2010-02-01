@@ -1,16 +1,15 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later.
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: projectEdit.php,v $
+ * edit/delete test projetcs.
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/01/19 20:19:12 $ $Author: franciscom $
- *
- * @author Martin Havlat
- *
- * Allows users to edit/delete test projetcs.
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: projectEdit.php,v 1.40 2010/02/01 16:06:15 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
  *
@@ -19,7 +18,9 @@
  * 20091227 - franciscom - BUGID 3020
  * 20091121 - franciscom - BUGID - Julian Contribution
  * 20080827 - franciscom - BUGID 1692
-**/
+ *
+ */
+
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once("web_editor.php");
@@ -34,8 +35,9 @@ $templateCfg = templateConfiguration();
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
 $template = null;
-$ui = new stdClass();
 
+
+$ui = new stdClass();
 $ui->doActionValue = '';
 $ui->buttonValue = '';
 $ui->caption = '';
@@ -46,6 +48,10 @@ $reloadType = 'none';
 
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
+$gui = $args;
+$gui->canManage = has_rights($db,"mgt_modify_product");
+
+
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
 
 $found = 'yes';
@@ -94,8 +100,8 @@ $ui->main_descr = lang_get('title_testproject_management');
 $smarty = new TLSmarty();
 $smarty->assign('gui_cfg',$gui_cfg);
 $smarty->assign('editorType',$editorCfg['type']);
-$smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
 $smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
+
 
 if(!$status_ok)
 {
@@ -107,12 +113,12 @@ switch($args->doAction)
     case "doCreate":
     case "doDelete":
     case "doUpdate":
-        $tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map',
-                                                            " ORDER BY nodes_hierarchy.name ");
+        $gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map',
+                                                                 " ORDER BY nodes_hierarchy.name ");
 
+		$gui->doAction = $reloadType;
         $template= is_null($template) ? 'projectView.tpl' : $template;
-        $smarty->assign('tprojects',$tprojects);
-        $smarty->assign('doAction',$reloadType);
+        $smarty->assign('gui',$gui);
         $smarty->display($templateCfg->template_dir . $template);
     break;
 

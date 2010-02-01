@@ -3,14 +3,17 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: projectView.php,v $
- *
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/01/05 21:38:57 $ $Author: schlundus $
- *
  * Display list of test projects
  *
-*/
+ * @package 	TestLink
+ * @author 		TestLink community
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: projectView.php,v 1.12 2010/02/01 16:06:15 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ */
+
+
 require_once('../../config.inc.php');
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
@@ -18,24 +21,31 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args();
 
-$smarty = new TLSmarty();
-$smarty->assign('canManage', has_rights($db,"mgt_modify_product"));
+new dBug($args);
+
+$gui = new stdClass();
+$gui->doAction = $args->doAction;
+$gui->canManage = has_rights($db,"mgt_modify_product");
 
 $tproject_mgr = new testproject($db);
-$tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', 
-                                                    " ORDER BY nodes_hierarchy.name ");
-if(count($tprojects) == 0)
+$gui->tprojects = $tproject_mgr->get_accessible_for_user($args->userID,'array_of_map', 
+                                                         " ORDER BY nodes_hierarchy.name ");
+
+$template2launch = $templateCfg->default_template;
+if(count($gui->tprojects) == 0)
 {
-    $default_template = "projectEdit.tpl"; 
-    $smarty->assign('doAction',"create");
+    $template2launch = "projectEdit.tpl"; 
+    $gui->doAction = "create";
 }
-else
-    $smarty->assign('tprojects',$tprojects);
-
-$smarty->assign('doAction', $args->doAction);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+$smarty = new TLSmarty();
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->template_dir . $template2launch);
 
 
+/**
+ * 
+ *
+ */
 function init_args()
 {
    $_REQUEST = strings_stripSlashes($_REQUEST);

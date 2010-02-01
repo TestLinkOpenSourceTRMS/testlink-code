@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.19 2009/05/13 05:55:49 franciscom Exp $
+$Id: projectEdit.tpl,v 1.20 2010/02/01 16:06:14 franciscom Exp $
 Purpose: smarty template - Edit existing product
 
 rev:
@@ -162,7 +162,7 @@ function validateForm(f)
 
 
 		</table>
-    {if $canManage == "yes"}
+    {if $gui->canManage == "yes"}
 		<div class="groupBtn">
     {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed.
                   added hidden   *}

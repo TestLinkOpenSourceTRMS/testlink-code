@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.543 2010/02/01 11:08:26 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.544 2010/02/01 16:43:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -495,6 +495,7 @@ $TLS_alt_edit_testsuite = "Modify this Test Suite data and title";
 $TLS_alt_move_cp_testsuite = "Move or copy this Test Suite to another Test Project";
 $TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
 $TLS_btn_del_testsuite = "Delete Test Suite";
+$TLS_btn_del_testsuites_bulk = "Delete Test Suites Bulk";
 $TLS_btn_edit_testsuite = $TLS_btn_edit;
 $TLS_btn_execute_automatic_testcases = "Execute All Automatic Test Cases";
 $TLS_btn_export_all_testsuites = "Export All Test Suites";

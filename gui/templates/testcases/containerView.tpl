@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.24 2010/01/02 18:19:34 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.25 2010/02/01 16:44:09 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -21,7 +21,8 @@ rev :
           s='th_product_name,edit_testproject_basic_data,th_notes,test_suite,details,none,
              keywords,alt_del_testsuite, alt_edit_testsuite, alt_move_cp_testcases, alt_move_cp_testsuite, 
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
-	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,	
+	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
+	           btn_del_testsuites_bulk,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc'}
 
@@ -60,16 +61,19 @@ rev :
 
 	<div>
 	<form method="post" action="lib/testcases/containerEdit.php">
+		<input type="hidden" name="doAction" id="doAction" value="" />
 		<input type="hidden" name="containerID" value="{$gui->container_data.id}" />
+		
 		<input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
-
-    {if $drawReorderButton}
-		    <input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder}" />
-		{/if}    
 
 		<input type="button" onclick="location='{$importToTProjectAction}'"
 			                       value="{$labels.btn_import_testsuite}" />
 		<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
+
+    {* TO BE DEVELOPED  
+		<input type="submit" name="del_testsuites_bulk" id="del_testsuites_bulk"
+		       onclick="doAction.value='deleteBulk'" value="{$labels.btn_del_testsuites_bulk}" />
+    *}
 
 			{*
 			 <input type="button" name="execButton" value="{$labels.btn_execute_automatic_testcases}"
@@ -136,10 +140,6 @@ rev :
 			<input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"
 				     title="{$labels.alt_move_cp_testsuite}" />
 
-      {if $drawReorderButton}
-			    <input type="submit" name="reorder_testsuites" value="{$labels.btn_reorder}" />
-			{/if}    
-			
 			<input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
 			<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />
 		</form>

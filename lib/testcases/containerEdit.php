@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.103 $
- * @modified $Date: 2010/01/07 20:44:16 $ by $Author: franciscom $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2010/02/01 16:43:36 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  *	@internal revisions
@@ -44,18 +44,23 @@ $spec_cfg = config_get('spec_cfg');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
 
-$a_keys['testsuite'] = array('details');
 
+new dBug($args);
+
+
+$a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
-                'reorder_testsuites' => 'containerOrderDnD.tpl',  /* DnD -> Drag and Drop */
+                'del_testsuites_bulk' => 'containerDeleteBulk.tpl',
                 'updateTCorder' => 'containerView.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl');
-
+   
+   
 $a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
 					'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
                     'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
-                    'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,'do_copy_tcase_set' => 0 );
+                    'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
+                    'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
@@ -118,6 +123,11 @@ switch($action)
     case 'delete_testsuite':
    		$refreshTree = deleteTestSuite($smarty,$args,$tsuite_mgr,$tree_mgr,$tcase_mgr,$level);
     break;
+
+    case 'del_testsuites_bulk':
+   		$refreshTree = deleteTestSuitesBulk($smarty,$args,$tsuite_mgr,$tree_mgr,$tcase_mgr,$level);
+    break;
+
 
     case 'move_testsuite_viewer':
 		moveTestSuiteViewer($smarty,$tproject_mgr,$args);
@@ -296,8 +306,8 @@ function init_args($optionTransferCfg)
     $args->tprojectName = $_SESSION['testprojectName'];
     $args->userID = $_SESSION['userID'];
 
-
-    $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,'target_position' => 'bottom');
+    $keys2loop=array('nodes_order' => null, 'tcaseSet' => null,
+                     'target_position' => 'bottom', 'doAction' => '');
     foreach($keys2loop as $key => $value)
     {
        $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
@@ -789,4 +799,20 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
     }
     return array($oWebEditor,$htmlNames,$itemTemplateKey);
  }
+ 
+ 
+ 
+ 
+ /*
+  function: deleteTestSuitesBulk
+
+  args:
+
+  returns: true -> refresh tree
+           false -> do not refresh
+
+*/
+function deleteTestSuitesBulk(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,$level)
+{
+}
 ?>

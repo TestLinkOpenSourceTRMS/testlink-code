@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.19 2010/01/12 20:14:06 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.20 2010/02/01 18:16:52 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -192,7 +192,7 @@
 	  {/if} {* view_keys_rights *}
 	  
  		{* --- platforms management ---  *}
-		{if $gui->grants.platform_management == "yes" || 1}
+		{if $gui->grants.platform_management == "yes"}
 			<br />
 	  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 				<a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>

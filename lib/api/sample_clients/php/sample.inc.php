@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: sample.inc.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/05/01 20:36:56 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/02/01 17:59:07 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -73,7 +73,7 @@ echo '<h1>Test Link XML-RPC API - PHP Samples </h1><br />';
 define("DEV_KEY", "CLIENTSAMPLEDEVKEY");
 if( DEV_KEY == "CLIENTSAMPLEDEVKEY" )
 {
-    echo '<h1>Attention: DEVKEY is still setted to demo value</h1>';
+    echo '<h1>Attention: DEVKEY is still setted to demo value (' . DEV_KEY . ')</h1>';
     echo 'Please check if this VALUE is defined for a user on yout DB Installation<b>';
     echo '<hr>';
 }

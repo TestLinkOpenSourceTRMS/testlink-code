@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.161 2010/02/01 10:24:48 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.162 2010/02/01 11:35:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2763,6 +2763,10 @@ class testplan extends tlObjectWithAttachments
     }
 
 
+    /**
+	 * DocBlock with nested lists
+ 	 *
+ 	 */
 	public function getStatusForReports()
 	{
     	// This will be used to create dynamically counters if user add new status
@@ -2805,7 +2809,7 @@ class testplan extends tlObjectWithAttachments
         	$totals[$platformID]=array('type' => 'platform', 
         	                           'name' => $platformSet[$platformID],
         	                           'total_tc' => 0, 
-        	                           'details' => array('not_run' => array('qty' => 0)));
+        	                           'details' => null);
 			foreach($code_verbose as $status_code => $status_verbose)
 			{
 				$totals[$platformID]['details'][$status_verbose]['qty']=0;
@@ -2907,11 +2911,16 @@ class testplan extends tlObjectWithAttachments
 	public function getStatusTotalsByAssignedTesterPlatform($id)
 	{
 		$code_verbose = $this->getStatusForReports();
+		
+		new dBug($code_verbose);
+		
 		$filters = null;
 		$user_platform = null;
 		$options = array('output' => 'mapOfMap');
     	$execResults = $this->get_linked_tcversions($id,$filters,$options);
  
+        new dBug($execResults);
+        
 	    if( !is_null($execResults) )
 	    {
 	    	$tcaseSet = array_keys($execResults);

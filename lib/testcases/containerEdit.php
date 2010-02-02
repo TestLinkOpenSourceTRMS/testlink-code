@@ -3,11 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2010/02/01 16:43:36 $ by $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2010/02/02 16:25:36 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  *	@internal revisions
+ *	20100202 - franciscom - BUGID 3130: TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error
+ *                          (bug created due change in show() interface
  *	20091206 - franciscom - addTestSuite() - new test suites are order set to last on tree branch
  *	20081225 - franciscom - Postgres SQL Error
  *	20080827 - franciscom - BUGID 1692
@@ -142,9 +144,9 @@ switch($action)
     	$level = is_null($ret) ? $level : $ret;
     	break;
 
-    case 'do_testsuite_reorder':
-    	doTestSuiteReorder($smarty,$template_dir,$tproject_mgr,$tsuite_mgr,$args);
-    	break;
+    // case 'do_testsuite_reorder':
+    // 	doTestSuiteReorder($smarty,$template_dir,$tproject_mgr,$tsuite_mgr,$args);
+    // 	break;
 
     case 'do_move':
     	moveTestSuite($smarty,$template_dir,$tproject_mgr,$args);
@@ -159,7 +161,13 @@ switch($action)
 	  	{
         	$msg = updateTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
     	}
-    	$tsuite_mgr->show($smarty,$template_dir,$args->testsuiteID,$msg);
+    	// 20100202 - franciscom -
+		$guiObj = new stdClass();
+  	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
+	  	$guiObj->id = $args->testsuiteID;
+		$guiObj->page_title = lang_get('container_title_testsuite');
+
+     	$tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,$msg);
     	break;
 
     case 'add_testsuite':
@@ -529,20 +537,20 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
       20080223 - franciscom - fixed typo error - BUGID 1408
       removed wrong global coupling
 */
-function doTestSuiteReorder(&$smartyObj,$template_dir,&$tprojectMgr,&$tsuiteMgr,$argsObj)
-{
-	$nodes_in_order = transform_nodes_order($argsObj->nodes_order,$argsObj->containerID);
-	$tprojectMgr->tree_manager->change_order_bulk($nodes_in_order);
-	if($argsObj->containerID == $argsObj->tprojectID)
-	{
-		$objMgr = $tprojectMgr;
-	}
-	else
-	{
-		$objMgr = $tsuiteMgr;
-	}
-	$objMgr->show($smartyObj,$template_dir,$argsObj->containerID,'ok');
-}
+// function doTestSuiteReorder(&$smartyObj,$template_dir,&$tprojectMgr,&$tsuiteMgr,$argsObj)
+// {
+// 	$nodes_in_order = transform_nodes_order($argsObj->nodes_order,$argsObj->containerID);
+// 	$tprojectMgr->tree_manager->change_order_bulk($nodes_in_order);
+// 	if($argsObj->containerID == $argsObj->tprojectID)
+// 	{
+// 		$objMgr = $tprojectMgr;
+// 	}
+// 	else
+// 	{
+// 		$objMgr = $tsuiteMgr;
+// 	}
+// 	$objMgr->show($smartyObj,$template_dir,$argsObj->containerID,,null,'ok');
+// }
 
 /*
   function: updateTestSuite
@@ -596,7 +604,7 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
   	  $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
 	  $guiObj->id = $argsObj->objectID;
 
-	  $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,'ok');
+	  $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
 }
 
 /*
@@ -609,12 +617,16 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
 */
 function moveTestSuite(&$smartyObj,$template_dir,&$tprojectMgr,$argsObj)
 {
-  $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
+	$exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
 
 	$tprojectMgr->tree_manager->change_parent($argsObj->objectID,$argsObj->containerID);
-  $tprojectMgr->tree_manager->change_child_order($argsObj->containerID,$argsObj->objectID,
-                                                 $argsObj->target_position,$exclude_node_types);
-  $tprojectMgr->show($smartyObj,$template_dir,$argsObj->tprojectID,'ok');
+  	$tprojectMgr->tree_manager->change_child_order($argsObj->containerID,$argsObj->objectID,
+                                                   $argsObj->target_position,$exclude_node_types);
+
+	$guiObj = new stdClass();
+	$guiObj->id = $argsObj->tprojectID;
+
+  	$tprojectMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->tprojectID,null,'ok');
 }
 
 
@@ -766,7 +778,7 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
    		$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
 		$guiObj->id = $argsObj->objectID;
 
-        $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,$user_feedback);
+        $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,$user_feedback);
     }
 }
 

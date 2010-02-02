@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.78 2010/02/01 18:00:06 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.79 2010/02/02 16:25:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -233,20 +233,21 @@ class testsuite extends tlObjectWithAttachments
 	 */
 	function update($id, $name, $details, $parent_id=null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  	$ret['status_ok']=0;
 	  	$ret['msg']='';
 	  	$check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id,$parent_id);
 	  	if($check['status']==0)
 	  	{
-			$sql = " UPDATE {$this->tables['testsuites']} " .
+			$sql = "/* $debugMsg */ UPDATE {$this->tables['testsuites']} " .
 			       " SET details = '" . $this->db->prepare_string($details) . "'" .
 			       " WHERE id = {$id}";
 			$result = $this->db->exec_query($sql);
 	  		
 			if ($result)
 			{
-				$sql = " UPDATE {$this->tables['nodes_hierarchy']}  SET name='" . 
-						$this->db->prepare_string($name) . "' WHERE id= {$id}";
+				$sql = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']}  SET name='" . 
+					   $this->db->prepare_string($name) . "' WHERE id= {$id}";
 				$result = $this->db->exec_query($sql);
 			}
 			
@@ -401,7 +402,7 @@ class testsuite extends tlObjectWithAttachments
 	function show(&$smarty,$guiObj,$template_dir, $id, $options=null,
 	              $sqlResult = '', $action = 'update',$modded_item_id = 0)
 	{
-		$gui = $guiObj;
+		$gui = is_null($guiObj) ? new stdClass() : $guiObj;
 		$gui->cf = '';
 	    $gui->sqlResult = '';
 		$gui->sqlAction = '';
@@ -418,7 +419,7 @@ class testsuite extends tlObjectWithAttachments
 		if($sqlResult)
 		{ 
 			$gui->sqlResult = $sqlResult;
-			$gui->sqlAction = $sqlAction;
+			$gui->sqlAction = $action;
 		}
 		
 		$gui->container_data = $this->get_by_id($id);

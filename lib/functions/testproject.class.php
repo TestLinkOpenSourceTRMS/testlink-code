@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.139 2010/02/01 16:06:59 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.140 2010/02/02 20:27:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1977,6 +1977,193 @@ function get_linked_custom_fields($id,$node_type=null,$access_key='id')
   $map = $this->db->fetchRowsIntoMap($sql,$access_key);
   return($map);
 }
+
+
+
+/*
+function: copy_as
+          creates a new test project using an existent one as source.
+
+
+args: id: source testproject id
+      new_id: destination
+      [new_name]: default null.
+                  != null => set this as the new name
+
+      [copy_options]: default null
+                      null: do a deep copy => copy following child elements:
+                      test plans
+                      builds
+                      linked tcversions
+                      milestones
+                      user_roles
+                      priorities,
+                      platforms
+                      execution assignment.
+                          
+                    != null, a map with keys that controls what child elements to copy
+
+
+returns: N/A
+*/
+function copy_as($id,$new_id,$new_name=null,$copy_options=null)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	// CoPy configuration
+	// Configure here only elements that has his own table.
+	$cp_options = array('copy_tcases' => 1,'copy_user_roles' => 1,'copy_platforms' => 1);
+
+	$cp_methods = array('copy_tcases' => 'copy_testcases',
+		                'copy_user_roles' => 'copy_user_roles',
+		                'copy_platforms' => 'copy_platforms');
+	
+	if( !is_null($copy_options) )
+	{
+		$cp_options=$copy_options;
+	}
+	
+	// get source test project general info
+	$rs_source=$this->get_by_id($id);
+	
+	if(!is_null($new_name))
+	{
+		$sql="/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+			 "SET name='" . $this->db->prepare_string(trim($new_name)) . "' " .
+			 "WHERE id={$new_id}";
+		$this->db->exec_query($sql);
+	}
+
+
+
+	// Copy elements that can be used by other elements
+	// Keywords
+
+	// Platforms
+	$oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
+	
+	// Custom Field assignments
+	
+
+	
+	// need to get subtree and create a new one
+	$filters = array();
+	$filters['exclude_node_types'] = array('testplan' => 'exclude_me','requirement_spec' => 'exclude_me');
+	$filters['exclude_children_of'] = array('testcase' => 'exclude_me', 'requirement' => 'exclude_me',
+	                                        'testcase_step' => 'exclude_me');
+	                 
+	$elements = $this->tree_manager->get_subtree($id,$filters);
+	new dBug($elements);
+	echo count($elements);
+	
+	$parent_id = $new_id;
+
+    $PID['pivot'] = $elements[0]['parent_id'];
+    $oldPID_newPID = array();
+	$oldPID_newPID[$elements[0]['parent_id']] = $new_id; 
+
+	foreach($elements as $piece)
+	{
+		switch( $piece['node_table'] )
+		{
+			case 'testsuites':
+			if( $PID['pivot'] != $piece['parent_id'] )
+			{
+        	    $parent_id = $oldPID_newPID[$piece['parent_id']];
+        	    $PID['pivot'] = $piece['parent_id'];
+			}
+
+			if( !isset($item_mgr['testsuites']) )
+			{
+				$item_mgr['testsuites'] = new testsuite($this->db);
+			}
+			$op = $item_mgr['testsuites']->create($parent_id,$piece['name'],
+			                                      $piece['details'],$piece['order']);
+
+			if( !isset($oldPID_newPID[$piece['id']]) )
+			{
+				$oldPID_newPID[$piece['id']] = $op['id']; 
+			}
+			break;
+			
+			case 'testcases':
+			
+			
+			break;
+		}
+
+	}
+    die();	
+	
+	
+	foreach( $cp_options as $key => $do_copy )
+	{
+		if( $do_copy )
+		{
+			if( isset($cp_methods[$key]) )
+			{
+				$copy_method=$cp_methods[$key];
+				$this->$copy_method($id,$new_tplan_id,$tcversion_type,$copy_assigned_to,$user_id);
+			}
+		}
+	}
+} // end function copy_as
+
+
+/**
+ * Copy user roles to a new Test Project
+ * 
+ * @param int $source_id original Test Project identificator
+ * @param int $target_id new Test Project identificator
+ */
+private function copy_user_roles($source_id, $target_id)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	
+	$sql = "/* $debugMsg */ SELECT user_id FROM {$this->tables['user_testproject_roles']} " .
+	       "WHERE testplan_id={$source_id} ";
+	$rs=$this->db->get_recordset($sql);
+
+	if(!is_null($rs))
+	{
+    	foreach($rs as $elem)
+    	{
+      		$sql="/* $debugMsg */ INSERT INTO {$this->tables['user_testproject_roles']}  " .
+           		"(testproject_id,user_id,role_id) " .
+           		"VALUES({$target_id}," . $elem['user_id'] ."," . $elem['role_id'] . ")";
+      		$this->db->exec_query($sql);
+		}
+	}
+}
+
+
+/**
+ * Copy platforms
+ * 
+ * @param int $source_id original Test Project identificator
+ * @param int $target_id new Test Project identificator
+ */
+private function copy_platforms($source_id, $target_id)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$platform_mgr = new tlPlatform($this->db,$source_id);
+	$old_new = null;
+	
+	$platformSet = $platform_mgr->getAll();
+
+	if( !is_null($platformSet) )
+	{
+		$platform_mgr->setTestProjectID($target_id);
+		foreach($platformSet as $platform)
+		{
+			$op = $platform_mgr->create($platform['name'],$platform['notes']);
+			$old_new[$platform['id']] = $op['id'];
+		}
+	}
+	return $old_new;
+}
+
+
 
 } // end class
 ?>

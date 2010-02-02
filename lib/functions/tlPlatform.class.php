@@ -6,11 +6,12 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.15 2010/02/01 15:50:10 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.16 2010/02/02 20:23:31 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *
+ *	20100202 - franciscom - create() - changed return type
  *	20100201 - franciscom - linkToTestplan(), unlinkFromTestplan() - refactoring to manage null	as $id
  *		                    deleteByTestProject() - new method.
  *  20100124 - franciscom - fixed bug on getAll() - filter by active test project is not more there.
@@ -53,16 +54,27 @@ class tlPlatform extends tlObjectWithDB
 	}
 
 	/**
+	 * 
+	 * 
+	 */
+	public function setTestProjectID($tproject_id)
+	{
+		$this->tproject_id = $tproject_id;	
+	}
+
+
+	/**
 	 * Creates a new platform.
 	 * @return tl::OK on success otherwise E_DBERROR;
 	 */
 	public function create($name, $notes=null)
 	{
+		$op = array('status' => self::E_DBERROR, 'id' => -1);
 		$safeName = $this->throwIfEmptyName($name);
 		$alreadyExists = $this->getID($name);
 		if ($alreadyExists)
 		{
-			$status = self::E_NAMEALREADYEXISTS;
+			$op = array('status' => self::E_NAMEALREADYEXISTS, 'id' => -1);
 		}
 		else
 		{
@@ -71,9 +83,14 @@ class tlPlatform extends tlObjectWithDB
 				   " VALUES ('" . $this->db->prepare_string($safeName) . 
 				   "', $this->tproject_id, '".$this->db->prepare_string($notes)."')";
 			$result = $this->db->exec_query($sql);
-			$status = $result ? tl::OK : self::E_DBERROR;
+
+            if( $result )
+            {
+				$op['status'] = tl::OK;
+				$op['id'] = $this->db->insert_id($this->tables['platforms']);
+            } 
 		}
-		return $status;
+		return $op;
 	}
 
 	/**

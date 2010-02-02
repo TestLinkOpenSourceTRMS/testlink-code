@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: login.php,v 1.55 2010/01/27 08:19:42 erikeloff Exp $
+ * @version    	CVS: $Id: login.php,v 1.56 2010/02/02 12:52:36 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/login.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions
+ * 20100202 - franciscom - BUGID 0003129: After login failure blank page is displayed
  * 20100127 - eloff - Send localized login form strings with response to ajaxcheck
  * 20100124 - eloff - Added login functionality via ajax
  **/
@@ -24,6 +25,7 @@ require_once('common.php');
 require_once('doAuthorize.php');
 
 $templateCfg = templateConfiguration();
+$doRender = false; // BUGID 0003129
 
 $op = doDBConnect($db);
 if (!$op['status'])
@@ -38,73 +40,84 @@ if (!$op['status'])
 
 $args = init_args();
 $gui = init_gui($db,$args);
-switch($args->action) {
-case 'doLogin':
-case 'ajaxlogin':
-	doSessionStart();
-	unset($_SESSION['basehref']);
-	setPaths();
+
+switch($args->action) 
+{
+	case 'doLogin':
+	case 'ajaxlogin':
+		 doSessionStart();
+		 unset($_SESSION['basehref']);
+		 setPaths();
+		 $op = doAuthorize($db,$args->login,$args->pwd);
+		 
+		 if( $op['status'] < tl::OK)
+		 {
+		 	$gui->note = is_null($op['msg']) ? lang_get('bad_user_passwd') : $op['msg'];
+		 	if ($args->action == 'ajaxlogin') 
+		 	{
+		 		echo json_encode(array('success' => false,'reason' => $gui->note));
+		 	}
+		 	else
+		 	{
+		 		$doRender = true;
+		 	}
+		 }
+		 else
+		 {
+		 	$args->currentUser = $_SESSION['currentUser'];
+		 	logAuditEvent(TLS("audit_login_succeeded",$args->login,
+		 	                  $_SERVER['REMOTE_ADDR']),"LOGIN",$args->currentUser->dbID,"users");
+		 	if ($args->action == 'ajaxlogin') {
+		 		echo json_encode(array('success' => true));
+		 	} else {
+		 		redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
+		 	}
+		 }
+		 break;
 	
-	if(doAuthorize($db,$args->login,$args->pwd,$msg) < tl::OK)
-	{
-		if (!$msg) {
-			$gui->note = lang_get('bad_user_passwd');
-		} else {
-			$gui->note = $msg;
-		}
+	case 'ajaxcheck':
+		 doSessionStart();
+		 unset($_SESSION['basehref']);
+		 setPaths();
+		 $validSession = checkSessionValid($db, false);
+	     
+		 // Send a json reply, include localized strings for use in js to display a login form.
+		 echo json_encode(array('validSession' => $validSession,
+		 	                    'username_label' => lang_get('login_name'),
+		 	                    'password_label' => lang_get('password'),
+		 	                    'login_label' => lang_get('btn_login')));
+		 break;
+	
+	case 'loginform':
+		 $doRender = true;
+		 break;
+}
 
-		if ($args->action == 'ajaxlogin') {
-			echo json_encode(array(
-				'success' => false,
-				'reason' => $gui->note));
-		}
-	}
-	else
-	{
-		$args->currentUser = $_SESSION['currentUser'];
-		logAuditEvent(TLS("audit_login_succeeded",$args->login,
-		                  $_SERVER['REMOTE_ADDR']),"LOGIN",$args->currentUser->dbID,"users");
-		if ($args->action == 'ajaxlogin') {
-			echo json_encode(array('success' => true));
-		} else {
-			redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
-		}
-	}
-	break;
-
-case 'ajaxcheck':
-	doSessionStart();
-	unset($_SESSION['basehref']);
-	setPaths();
-	$validSession = checkSessionValid($db, false);
-
-	// Send a json reply. Also include localized strings for use in js to
-	// display a login form
-	echo json_encode(array(
-		'validSession' => $validSession,
-		'username_label' => lang_get('login_name'),
-		'password_label' => lang_get('password'),
-		'login_label' => lang_get('btn_login')));
-	break;
-
-case 'loginform':
+// BUGID 0003129
+if( $doRender )
+{
 	$logPeriodToDelete = config_get('removeEventsOlderThan');
 	$g_tlLogger->deleteEventsFor(null, strtotime("-{$logPeriodToDelete} days UTC"));
-
+	
 	$smarty = new TLSmarty();
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->default_template);
-	break;
 }
 
+
+
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$iParams = array("note" => array(tlInputParameter::STRING_N,0,255),
-		"tl_login" => array(tlInputParameter::STRING_N,0,30),
-		"tl_password" => array(tlInputParameter::STRING_N,0,32),
-		"req" => array(tlInputParameter::STRING_N,0,4000),
-		"reqURI" => array(tlInputParameter::STRING_N,0,4000),
-		"action" => array(tlInputParameter::STRING_N,0, 10),
+		             "tl_login" => array(tlInputParameter::STRING_N,0,30),
+		             "tl_password" => array(tlInputParameter::STRING_N,0,32),
+		             "req" => array(tlInputParameter::STRING_N,0,4000),
+		             "reqURI" => array(tlInputParameter::STRING_N,0,4000),
+		             "action" => array(tlInputParameter::STRING_N,0, 10),
 	);
 	$pParams = R_PARAMS($iParams);
 
@@ -126,6 +139,10 @@ function init_args()
     return $args;
 }
 
+/**
+ * 
+ *
+ */
 function init_gui(&$db,$args)
 {
 	$gui = new stdClass();

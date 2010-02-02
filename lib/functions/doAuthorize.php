@@ -8,11 +8,14 @@
  * @package 	TestLink
  * @author 		Chad Rosen, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: doAuthorize.php,v 1.32 2009/09/07 12:08:46 havlat Exp $
+ * @version    	CVS: $Id: doAuthorize.php,v 1.33 2010/02/02 12:52:35 franciscom Exp $
  * @link 		http://www.teamst.org/
  *
  * @todo Setting up cookies so that the user can automatically login next time
- * 
+ *
+ * @internal revisions:
+ * 20100202 - franciscom - refactoring of doAuthorize (BUGID 0003129: After login failure blank page is displayed)
+ *
  */
 
 /** TBD */ 
@@ -21,10 +24,12 @@ require_once("roles.inc.php");
 
 /** 
  * authorization function verifies login & password and set user session data 
+ * return map
+ *
  */
-function doAuthorize(&$db,$login,$pwd,&$msg)
+function doAuthorize(&$db,$login,$pwd)
 {
-	$result = tl::ERROR;
+	$result = array('status' => tl::ERROR, 'msg' => null);
 	$_SESSION['locale'] = TL_DEFAULT_LOCALE; 
 	if (!is_null($pwd) && !is_null($login))
 	{
@@ -40,27 +45,32 @@ function doAuthorize(&$db,$login,$pwd,&$msg)
 				// Disallow two sessions within one browser
 				if (isset($_SESSION['currentUser']) && !is_null($_SESSION['currentUser']))
 				{
-					$msg = lang_get('login_msg_session_exists1') . ' <a style="color:white;" href="logout.php">' . 
-						lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
+					$result['msg'] = lang_get('login_msg_session_exists1') . 
+					                 ' <a style="color:white;" href="logout.php">' . 
+						             lang_get('logout_link') . '</a>' . lang_get('login_msg_session_exists2');
 				}
 				else
 				{ 
 					//Setting user's session information
 					$_SESSION['currentUser'] = $user;
 					$_SESSION['lastActivity'] = time();
+					
 					// get session duration to indicate session end
 					$timeout = ini_get("session.gc_maxlifetime");
 					$_SESSION['maxlifetime_min'] = floor($timeout/60);
 					$_SESSION['maxlifetime_sec'] = $timeout % 60;
+					
 					global $g_tlLogger;
 					$g_tlLogger->endTransaction();
 					$g_tlLogger->startTransaction();
 					setUserSession($db,$user->login, $user->dbID,$user->globalRoleID,$user->emailAddress, $user->locale,null);
-					$result = tl::OK;
+					$result['status'] = tl::OK;
 				}
 			}
 			else
+			{
 				logAuditEvent(TLS("audit_login_failed",$login,$_SERVER['REMOTE_ADDR']),"LOGIN_FAILED",$user->dbID,"users");
+			}	
 		}
 	}
 	return $result;

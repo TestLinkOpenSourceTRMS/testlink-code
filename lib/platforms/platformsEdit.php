@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/12/01 17:31:25 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/02/02 20:23:04 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  *
@@ -176,7 +176,8 @@ function do_create(&$args,&$gui,&$platform_mgr)
 
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
-	$ret->status = $platform_mgr->create($args->name,$args->notes);
+	$op = $platform_mgr->create($args->name,$args->notes);
+	$ret->status = $op['status']; 
 	
 	return $ret;
 }

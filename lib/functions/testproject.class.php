@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.140 2010/02/02 20:27:08 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.141 2010/02/02 20:40:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2043,7 +2043,7 @@ function copy_as($id,$new_id,$new_name=null,$copy_options=null)
 	$oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
 	
 	// Custom Field assignments
-	
+	$this->copy_cfields_assignments($id,$new_id);	
 
 	
 	// need to get subtree and create a new one
@@ -2077,8 +2077,11 @@ function copy_as($id,$new_id,$new_name=null,$copy_options=null)
 			{
 				$item_mgr['testsuites'] = new testsuite($this->db);
 			}
+			$source_obj = $item_mgr['testsuites']->get_by_id($piece['id']);
+			new dBug($source_obj);
+			
 			$op = $item_mgr['testsuites']->create($parent_id,$piece['name'],
-			                                      $piece['details'],$piece['order']);
+			                                      $source_obj['details'],$source_obj['node_order']);
 
 			if( !isset($oldPID_newPID[$piece['id']]) )
 			{
@@ -2163,6 +2166,25 @@ private function copy_platforms($source_id, $target_id)
 	return $old_new;
 }
 
+
+/**
+ * 
+ *
+ */
+private function copy_cfields_assignments($source_id, $target_id)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  	$ret=null;
+    $sql = "/* $debugMsg */ " . 
+           " SELECT field_id FROM {$this->tables['cfield_testprojects']} " .
+           " WHERE testproject_id = {$source_id}";
+  	$cfield_set = $this->db->exec_query($sql);
+
+	if( !is_null($cfield_set) )
+	{
+		$this->cfield_mgr->link_to_testproject($target_id,$cfield_set);
+	}
+}
 
 
 } // end class

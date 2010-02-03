@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.141 2010/02/02 20:40:37 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.142 2010/02/03 20:44:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100203 - franciscom - addKeyword() return type changed
  * 20100201 - franciscom - delete() - missing delete of platforms
  * 20100102 - franciscom - show() - interface changes
  * 20091206 - franciscom - fixed bug on get_subtree() created furing refactoring
@@ -834,10 +835,14 @@ function setPublicStatus($id,$status)
 	{
 		$kw = new tlKeyword();
 		$kw->initialize(null,$testprojectID,$keyword,$notes);
-		$result = $kw->writeToDB($this->db);
-		if ($result >= tl::OK)
-			logAuditEvent(TLS("audit_keyword_created",$keyword),"CREATE",$kw->dbID,"keywords");
-		return $result;
+		$op = array('status' => tlKeyword::E_DBERROR, 'id' => -1);
+		$op['status'] = $kw->writeToDB($this->db);
+		if ($op['status'] >= tl::OK)
+		{
+			$op['id'] = $kw->dbID;
+			logAuditEvent(TLS("audit_keyword_created",$keyword),"CREATE",$op['id'],"keywords");
+		}
+		return $op;
 	}
 
 	/**
@@ -1020,26 +1025,35 @@ function setPublicStatus($id,$status)
 		return $this->importKeywordsFromSimpleXML($testproject_id,$xml);
 	}
 
+	/**
+	 * 
+	 *
+ 	 */
 	function importKeywordsFromSimpleXML($testproject_id,$xml)
 	{
 		if (!$xml || $xml->getName() != 'keywords')
+		{
 			return tlKeyword::E_WRONGFORMAT;
+		}
+		
 		if ($xml->keyword)
 		{
 			foreach($xml->keyword as $keyword)
 			{
 				$kw = new tlKeyword();
 				$kw->initialize(null,$testproject_id,NULL,NULL);
+				$status = tlKeyword::E_WRONGFORMAT;
 				if ($kw->readFromSimpleXML($keyword) >= tl::OK)
 				{
+					$status = tl::OK;
 					if ($kw->writeToDB($this->db) >= tl::OK)
+					{
 						logAuditEvent(TLS("audit_keyword_created",$kw->name),"CREATE",$kw->dbID,"keywords");
+					}	
 				}
-				else
-					return tlKeyword::E_WRONGFORMAT;
 			}
 		}
-		return tl::OK;
+		return $status;
 	}
 
 	/**
@@ -2038,6 +2052,7 @@ function copy_as($id,$new_id,$new_name=null,$copy_options=null)
 
 	// Copy elements that can be used by other elements
 	// Keywords
+	$oldNewMappings['keywords'] = $this->copy_keywords($id,$new_id);
 
 	// Platforms
 	$oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
@@ -2078,11 +2093,16 @@ function copy_as($id,$new_id,$new_name=null,$copy_options=null)
 				$item_mgr['testsuites'] = new testsuite($this->db);
 			}
 			$source_obj = $item_mgr['testsuites']->get_by_id($piece['id']);
-			new dBug($source_obj);
-			
 			$op = $item_mgr['testsuites']->create($parent_id,$piece['name'],
 			                                      $source_obj['details'],$source_obj['node_order']);
 
+
+			// Need to copy related items links :
+			// Custom fields
+			// Keywords
+			// 
+			
+			
 			if( !isset($oldPID_newPID[$piece['id']]) )
 			{
 				$oldPID_newPID[$piece['id']] = $op['id']; 
@@ -2148,6 +2168,7 @@ private function copy_user_roles($source_id, $target_id)
  */
 private function copy_platforms($source_id, $target_id)
 {
+	echo __FUNCTION__;
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	$platform_mgr = new tlPlatform($this->db,$source_id);
 	$old_new = null;
@@ -2168,20 +2189,48 @@ private function copy_platforms($source_id, $target_id)
 
 
 /**
+ * Copy platforms
+ * 
+ * @param int $source_id original Test Project identificator
+ * @param int $target_id new Test Project identificator
+ */
+private function copy_keywords($source_id, $target_id)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$old_new = null;
+	$sql = "/* $debugMsg */ SELECT * FROM {$this->tables['keywords']} " .
+		   " WHERE testproject_id = {$source_id}";
+		   
+	$itemSet = $this->db->fetchRowsIntoMap($sql,'id');
+	if( !is_null($itemSet) )
+	{
+		foreach($itemSet as $item)
+		{
+			$op = $this->addKeyword($target_id,$item['keyword'],$item['notes']);
+			$old_new[$item['id']] = $op['id'];
+		}
+	}
+	return $old_new;
+}
+
+
+
+
+
+/**
  * 
  *
  */
 private function copy_cfields_assignments($source_id, $target_id)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-  	$ret=null;
     $sql = "/* $debugMsg */ " . 
            " SELECT field_id FROM {$this->tables['cfield_testprojects']} " .
            " WHERE testproject_id = {$source_id}";
-  	$cfield_set = $this->db->exec_query($sql);
-
-	if( !is_null($cfield_set) )
+  	$row_set = $this->db->fetchRowsIntoMap($sql,'field_id');   
+	if( !is_null($row_set) )
 	{
+		$cfield_set = array_keys($row_set);
 		$this->cfield_mgr->link_to_testproject($target_id,$cfield_set);
 	}
 }

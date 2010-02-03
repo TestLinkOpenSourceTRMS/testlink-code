@@ -10,7 +10,7 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.56 2010/01/23 18:09:39 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.57 2010/02/03 17:52:02 franciscom Exp $
  *
  * @internal Revisions:
  *	20100110 - franciscom - added drop_tables();
@@ -318,7 +318,7 @@ if ($upgrade)
 				$a_sql_data_dir[] = "sql/alter_tables/1.9/{$db_type}/DB.1.3/stepZ/";
 				      	
                 $migration_process = 'migrate_18_to_19'; 
-                $migration_functions_file = '.\migration\migrate_18\migrate_18_to_19.php';
+                $migration_functions_file = './migration/migrate_18/migrate_18_to_19.php';
 				break;
 				
 			case 'DB 1.3':

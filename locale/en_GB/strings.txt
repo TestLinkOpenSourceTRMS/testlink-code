@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.544 2010/02/01 16:43:47 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.545 2010/02/03 21:19:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1266,6 +1266,7 @@ $TLS_btn_inactivate = "Inactivate";
 $TLS_caption_edit_tproject = "Edit %s";
 $TLS_caption_new_tproject = "Create new Test Project";
 $TLS_color = "Color";
+$TLS_create_from_existent_tproject = "Create from existing Test Project?";
 $TLS_enable_requirements = "Requirements Management";
 $TLS_enable_priority = "Priority Management";
 $TLS_enable_automation = "Test Automation";

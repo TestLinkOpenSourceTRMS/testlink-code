@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.129 2010/01/29 19:14:08 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.130 2010/02/03 18:06:50 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -630,12 +630,25 @@ $tlCfg->req_cfg->type_expected_coverage = array(TL_REQ_TYPE_INFO => false);
 
 
 // Need to be defined better
-define('TL_REQ_SPEC_TYPE_INFO', 1);
-define('TL_REQ_SPEC_TYPE_FEATURE',2);
-define('TL_REQ_SPEC_TYPE_USE_CASE',3); 
-define('TL_REQ_SPEC_TYPE_INTERFACE',4);
-define('TL_REQ_SPEC_TYPE_NON_FUNCTIONAL',5);
-define('TL_REQ_SPEC_TYPE_CONSTRAIN',6);
+define('TL_REQ_SPEC_TYPE_INFO', 1); 
+define('TL_REQ_SPEC_TYPE_FEATURE', 2);
+define('TL_REQ_SPEC_TYPE_USE_CASE', 3);
+define('TL_REQ_SPEC_TYPE_INTERFACE', 4);
+define('TL_REQ_SPEC_TYPE_NON_FUNCTIONAL', 5);
+define('TL_REQ_SPEC_TYPE_CONSTRAIN', 6);
+
+
+// define('TL_REQ_SPEC_TYPE_FUNCTIONAL_AND_DATA', 1);
+// define('TL_REQ_SPEC_TYPE_LOOK_AND_FEEL',2);
+// define('TL_REQ_SPEC_TYPE_USABILITY_AND_HUMANITY',3); 
+// define('TL_REQ_SPEC_TYPE_PERFORMANCE',4);
+// define('TL_REQ_SPEC_TYPE_OPERATIONAL_AND_ENVIRONMENTAL',5);
+// define('TL_REQ_SPEC_TYPE_MAINTAINABILITY_AND_SUPPORT',6);
+// define('TL_REQ_SPEC_TYPE_SECURITY',7);
+// define('TL_REQ_SPEC_TYPE_CULTURAL_AND_POLITICAL',8);
+// define('TL_REQ_SPEC_TYPE_LEGAL',9);
+
+
 
 $tlCfg->req_spec_cfg->type_labels = array(
 		TL_REQ_SPEC_TYPE_INFO => 'req_spec_type_info', 

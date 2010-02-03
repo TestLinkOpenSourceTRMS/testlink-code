@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.20 2010/02/01 16:06:14 franciscom Exp $
+$Id: projectEdit.tpl,v 1.21 2010/02/03 21:32:39 franciscom Exp $
 Purpose: smarty template - Edit existing product
 
 rev:
@@ -27,7 +27,7 @@ rev:
 {assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
 
 {lang_get var="labels" s='show_event_history,th_active,cancel,info_failed_loc_prod,
-                          invalid_query,
+                          invalid_query,create_from_existent_tproject,
                           caption_edit_tproject,caption_new_tproject,name,tcase_id_prefix,
                           title_testproject_management,notes,color,enable_priority, enable_automation,
                           public,enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del,th_id'}
@@ -105,6 +105,16 @@ function validateForm(f)
 		  <th style="background:none;">{$labels.notes}</th>
 		  <td width="80%">{$notes}</td>
 	   </tr>
+
+	   {if $gui->testprojects != ''}
+	   <tr>
+		  <th style="background:none;">{$labels.create_from_existent_tproject}</th>
+		  <td width="80%">{$notes}</td>
+	   </tr>
+	   {/if}
+
+
+
 
 	   {if $gui_cfg->testproject_coloring neq 'none'}
 			<tr>

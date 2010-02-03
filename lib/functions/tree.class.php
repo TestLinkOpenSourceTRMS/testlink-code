@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.79 2010/01/07 20:44:16 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.80 2010/02/03 21:32:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -504,35 +504,33 @@ class tree extends tlObject
 	          
 	           
 	*/
-	
 	function get_children($id,$exclude_node_types=null) 
 	{
-	  $sql = " SELECT * from {$this->object_table}
-	          WHERE parent_id = {$id} ORDER BY node_order,id";
-	
-	  $node_list=array();  
-	  $result = $this->db->exec_query($sql);
-	 
-	  if( $this->db->num_rows($result) == 0 )
-	  {
-	    return(null); 	
-	  }
-	
-	  while ( $row = $this->db->fetch_array($result) )
-	  {
-	    // ----------------------------------------------------------------------------
-	    $node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-	    if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
-	    {
-	      $node_list[] = array('id'        => $row['id'],
-	                           'parent_id' => $row['parent_id'],
-	                           'node_type_id' => $row['node_type_id'],
-	                           'node_order' => $row['node_order'],
-	                           'node_table' => $node_table,
-	                           'name' => $row['name']);
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+	  	$sql = "/* $debugMsg */ SELECT * from {$this->object_table} " .
+	  	       " WHERE parent_id = {$id} ORDER BY node_order,id";
+	  	
+	  	$node_list=array();  
+	  	$result = $this->db->exec_query($sql);
+	  	
+	  	if( $this->db->num_rows($result) == 0 )
+	  	{
+	  	  return(null); 	
 	  	}
-	  }
-	  return ($node_list);
+	  	
+	  	while ( $row = $this->db->fetch_array($result) )
+	  	{
+	  	  	$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+	  	  	if( !isset($exclude_node_types[$this->node_types[$row['node_type_id']]]))
+	  	  	{
+	  	    	$node_list[] = array('id' => $row['id'], 'parent_id' => $row['parent_id'],
+	  	        	                 'node_type_id' => $row['node_type_id'],
+	  	            	             'node_order' => $row['node_order'],
+	  	                	         'node_table' => $node_table,'name' => $row['name']);
+	  		}
+	  	}
+	  	return ($node_list);
 	}
 	
 	 

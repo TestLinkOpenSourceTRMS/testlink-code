@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.142 2010/02/03 20:44:27 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.143 2010/02/03 21:32:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -356,22 +356,43 @@ rev:
     20071104 - franciscom - added order_by
 
 */
-function get_all($order_by=" ORDER BY nodes_hierarchy.name ",$active=null )
+// function get_all($order_by=" ORDER BY nodes_hierarchy.name ",$active=null )
+function get_all($filters=null,$options=null)
 {
-	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	$my = array ('filters' => '', 'options' => '');
+	
+	
+	$my['filters'] = array('active' => null);
+	$my['options'] = array('order_by' => " ORDER BY nodes_hierarchy.name ", 'access_key' => null);
+	
+	$my['filters'] = array_merge($my['filters'], (array)$filters);
+	$my['options'] = array_merge($my['options'], (array)$options);
+    
+	
+	
+	$sql = "/* $debugMsg */ SELECT testprojects.*, nodes_hierarchy.name ".
 	       " FROM {$this->object_table} testprojects, " .
 	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
 	       " WHERE testprojects.id = nodes_hierarchy.id ";
 	
-	if (!is_null($active) )
+	if (!is_null($my['filters']['active']) )
 	{
-		$sql .= " AND active=" . intval($active) . " ";
+		$sql .= " AND active=" . intval($my['filters']['active']) . " ";
 	}
-	if( !is_null($order_by) )
+	if( !is_null($my['options']['order_by']) )
 	{
-	  $sql .= $order_by;
+	  $sql .= $my['options']['order_by'];
 	}
-	$recordset = $this->db->get_recordset($sql);
+	
+	if( is_null($my['options']['access_key']))
+	{
+		$recordset = $this->db->get_recordset($sql);
+	}
+	else
+	{
+		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+	}	
 	return $recordset;
 }
 
@@ -2020,7 +2041,7 @@ args: id: source testproject id
 
 returns: N/A
 */
-function copy_as($id,$new_id,$new_name=null,$copy_options=null)
+function copy_as_1($id,$new_id,$new_name=null,$copy_options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -2130,6 +2151,80 @@ function copy_as($id,$new_id,$new_name=null,$copy_options=null)
 			}
 		}
 	}
+} // end function copy_as
+
+
+
+function copy_as($id,$new_id,$user_id,$new_name=null,$copy_options=null)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	// CoPy configuration
+	// Configure here only elements that has his own table.
+	$cp_options = array('copy_tcases' => 1,'copy_user_roles' => 1,'copy_platforms' => 1);
+
+	$cp_methods = array('copy_tcases' => 'copy_testcases',
+		                'copy_user_roles' => 'copy_user_roles',
+		                'copy_platforms' => 'copy_platforms');
+	
+	if( !is_null($copy_options) )
+	{
+		$cp_options=$copy_options;
+	}
+	
+	// get source test project general info
+	$rs_source=$this->get_by_id($id);
+	
+	if(!is_null($new_name))
+	{
+		$sql="/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+			 "SET name='" . $this->db->prepare_string(trim($new_name)) . "' " .
+			 "WHERE id={$new_id}";
+		$this->db->exec_query($sql);
+	}
+
+
+
+	// Copy elements that can be used by other elements
+	// Keywords
+	$oldNewMappings['keywords'] = $this->copy_keywords($id,$new_id);
+
+	// Platforms
+	$oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
+	
+	// Custom Field assignments
+	$this->copy_cfields_assignments($id,$new_id);	
+
+	
+	// need to get subtree and create a new one
+	$filters = array();
+	$filters['exclude_node_types'] = array('testplan' => 'exclude_me','requirement_spec' => 'exclude_me');
+	$filters['exclude_children_of'] = array('testcase' => 'exclude_me', 'requirement' => 'exclude_me',
+	                                        'testcase_step' => 'exclude_me');
+	                 
+	$elements = $this->tree_manager->get_children($id,$filters['exclude_node_types']);
+	new dBug($elements);
+	echo count($elements);
+	$parent_id = $new_id;
+    $PID['pivot'] = $elements[0]['parent_id'];
+    $oldPID_newPID = array();
+	$oldPID_newPID[$elements[0]['parent_id']] = $new_id; 
+
+	// Copy Test Specification
+    $item_mgr['testsuites'] = new testsuite($this->db);
+	foreach($elements as $piece)
+	{
+		$item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id);				
+	}
+	
+	// Copy Test Plans
+	
+	// Copy builds
+	
+	
+	
+	
+	
 } // end function copy_as
 
 

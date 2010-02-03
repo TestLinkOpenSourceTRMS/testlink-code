@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.79 2010/02/02 16:25:36 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.80 2010/02/03 21:32:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -615,8 +615,8 @@ class testsuite extends tlObjectWithAttachments
 						$ret = $this->create($the_parent_id,$tsuite_info['name'],
 						                     $tsuite_info['details'],$tsuite_info['node_order']);      
 					  
-				    $parent_decode[$elem['id']]=$ret['id'];
-			      $tcase_mgr->copy_attachments($elem['id'],$ret['id']);
+				    	$parent_decode[$elem['id']]=$ret['id'];
+			      		$tcase_mgr->copy_attachments($elem['id'],$ret['id']);
 						break;
 				}
 			}

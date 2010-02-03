@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.40 2010/02/01 16:06:15 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.41 2010/02/03 21:32:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -61,7 +61,8 @@ switch($args->doAction)
 {
     case 'create':
     	$template = $templateCfg->default_template;
-      	$ui = create($args);
+      	$ui = create($args,$tproject_mgr);
+      	$gui->testprojects = $ui->testprojects;
     	break;
 
     case 'edit':
@@ -213,6 +214,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 	}
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+	$args->testprojects = null;
 
 	return $args;
 }
@@ -436,7 +438,7 @@ function crossChecks($argsObj,&$tprojectMgr)
   returns:
 
 */
-function create(&$argsObj)
+function create(&$argsObj,&$tprojectMgr)
 {
     $argsObj->active = 1;
     $argsObj->is_public = 1;
@@ -445,6 +447,14 @@ function create(&$argsObj)
 	$gui->doActionValue = 'doCreate';
 	$gui->buttonValue = lang_get('btn_create');
 	$gui->caption = lang_get('caption_new_tproject');
+
+	// $gui->testprojects = $tprojectMgr->get_all(null,array('access_key' => 'id'));
+	// new dBug($gui->testprojects);
+	// 
+	// if( !is_null($gui->testprojects) )
+	// {
+	// 
+	// }
 
     return $gui;
 }

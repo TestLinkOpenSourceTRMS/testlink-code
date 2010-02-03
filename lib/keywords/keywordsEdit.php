@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2010/02/03 20:22:13 $ by $Author: franciscom $
  *
  * allows users to manage keywords. 
  *
@@ -158,9 +158,10 @@ function do_create(&$smarty,&$args,&$tproject_mgr)
 	$smarty->assign('submit_button_label',lang_get('btn_save'));
 	$smarty->assign('submit_button_action','do_create');
 
+	$op = $tproject_mgr->addKeyword($args->testproject_id,$args->keyword,$args->notes);
 	$ret = new stdClass();
 	$ret->template = 'keywordsView.tpl';
-	$ret->status = $tproject_mgr->addKeyword($args->testproject_id,$args->keyword,$args->notes);
+	$ret->status = $op['status'];
 	return $ret;
 }
 

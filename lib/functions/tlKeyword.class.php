@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlKeyword.class.php,v 1.2 2009/08/26 19:10:28 schlundus Exp $
+ * @version    	CVS: $Id: tlKeyword.class.php,v 1.3 2010/02/03 20:44:01 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -26,13 +26,13 @@ require_once('xml.inc.php');
  */ 
 class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML,iSerializationToCSV,iDBBulkReadSerialization
 {
-	/** @var string the name of the keyword */
+	/** @var string name of the keyword */
 	public $name;
 
-	/** @var string the notes for the keyword */
+	/** @var string notes for the keyword */
 	public $notes;
 
-	/** @var string the testprojectID the keyword belongs to */
+	/** @var string testprojectID the keyword belongs to */
 	public $testprojectID;
 
 	/** error codes */
@@ -52,7 +52,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = null;
 		$this->testprojectID = null;
 		if (!($options & self::TLOBJ_O_SEARCH_BY_ID))
+		{
 			$this->dbID = null;
+		}	
 	}
 	
 	/**
@@ -105,7 +107,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$query = $this->getReadFromDBQuery($this->dbID,$options);
 		$info = $db->fetchFirstRow($query);
 		if ($info)
+		{
 			$this->readFromDBRow($info);
+		}
 		
 		return $info ? tl::OK : tl::ERROR;
 	}
@@ -137,8 +141,9 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 				$clauses[] = "id IN (".implode(",",$ids).")";
 		}
 		if ($clauses)
+		{
 			$query .= " WHERE " . implode(" AND ",$clauses);
-		
+		}
 		return $query;
 	}
 	

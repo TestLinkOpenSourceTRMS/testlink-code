@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.106 $
- * @modified $Date: 2010/02/04 08:30:57 $ by $Author: franciscom $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2010/02/04 09:23:09 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  *	@internal revisions
@@ -594,14 +594,10 @@ function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
     $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
   	
   	$options = array();
-	$options['check_names_for_duplicates'] = config_get('check_names_for_duplicates');
+	$options['check_duplicate_name'] = config_get('check_names_for_duplicates');
   	$options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
   	$options['copyKeywords'] = $argsObj->copyKeywords;
-  	
-  	
-  	// $op=$tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,
-	//                           config_get('check_names_for_duplicates'),
-	//                           config_get('action_on_duplicate_name'),$argsObj->copyKeywords);
+
   	$op=$tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
 	if( $op['status_ok'] )
 	{

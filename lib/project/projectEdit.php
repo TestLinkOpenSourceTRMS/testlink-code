@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.41 2010/02/03 21:32:41 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.42 2010/02/04 15:12:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -48,6 +48,8 @@ $reloadType = 'none';
 
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
+new dBug($args);
+
 $gui = $args;
 $gui->canManage = has_rights($db,"mgt_modify_product");
 
@@ -182,7 +184,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 	}
 
 	// $intval_keys = array('optReq' => 0, 'tprojectID' => 0);
-	$intval_keys = array('tprojectID' => 0);
+	$intval_keys = array('tprojectID' => 0, 'copy_from_tproject_id' => 0);
 	foreach ($intval_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
@@ -248,11 +250,11 @@ function doCreate($argsObj,&$tprojectMgr)
 
 	if($op->status_ok)
 	{
-	  $options = new stdClass();
-	  
-	  $options->requirement_mgmt = $argsObj->optReq;
-	  $options->priority_mgmt = $argsObj->optPriority;
-	  $options->automated_execution = $argsObj->optAutomation;
+	  	$options = new stdClass();
+	  	
+	  	$options->requirement_mgmt = $argsObj->optReq;
+	  	$options->priority_mgmt = $argsObj->optPriority;
+	  	$options->automated_execution = $argsObj->optAutomation;
 	  	    
 		$new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$options,
 		                               $argsObj->notes,$argsObj->active,$argsObj->tcasePrefix,$argsObj->is_public);
@@ -272,6 +274,13 @@ function doCreate($argsObj,&$tprojectMgr)
 	{
 	    logAuditEvent(TLS("audit_testproject_created",$argsObj->tprojectName),"CREATE",$op->id,"testprojects");
     	$op->reloadType = 'reloadNavBar'; // BUGID 3048
+    	
+		if($argsObj->copy_from_tproject_id > 0)
+		{
+			$options = array('copy_requirements' => $argsObj->optReq);
+			$tprojectMgr->copy_as($argsObj->copy_from_tproject_id,$new_id,
+			                      $argsObj->user_id,$argsObj->testplan_name,$options);
+		}
 	}
 	else
 	{
@@ -448,14 +457,7 @@ function create(&$argsObj,&$tprojectMgr)
 	$gui->buttonValue = lang_get('btn_create');
 	$gui->caption = lang_get('caption_new_tproject');
 
-	// $gui->testprojects = $tprojectMgr->get_all(null,array('access_key' => 'id'));
-	// new dBug($gui->testprojects);
-	// 
-	// if( !is_null($gui->testprojects) )
-	// {
-	// 
-	// }
-
+	$gui->testprojects = $tprojectMgr->get_all(null,array('access_key' => 'id'));
     return $gui;
 }
 

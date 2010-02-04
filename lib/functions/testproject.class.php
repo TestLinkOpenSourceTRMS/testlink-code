@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.143 2010/02/03 21:32:40 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.144 2010/02/04 15:12:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2041,22 +2041,13 @@ args: id: source testproject id
 
 returns: N/A
 */
-function copy_as_1($id,$new_id,$new_name=null,$copy_options=null)
+function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-	// CoPy configuration
-	// Configure here only elements that has his own table.
-	$cp_options = array('copy_tcases' => 1,'copy_user_roles' => 1,'copy_platforms' => 1);
+	$my['options'] = array('copy_requirements' => 1,'copy_user_roles' => 1,'copy_platforms' => 1);
+	$my['options'] = array_merge($my['options'], (array)$options);
 
-	$cp_methods = array('copy_tcases' => 'copy_testcases',
-		                'copy_user_roles' => 'copy_user_roles',
-		                'copy_platforms' => 'copy_platforms');
-	
-	if( !is_null($copy_options) )
-	{
-		$cp_options=$copy_options;
-	}
 	
 	// get source test project general info
 	$rs_source=$this->get_by_id($id);
@@ -2072,128 +2063,22 @@ function copy_as_1($id,$new_id,$new_name=null,$copy_options=null)
 
 
 	// Copy elements that can be used by other elements
+	// Custom Field assignments
+	$this->copy_cfields_assignments($id,$new_id);	
+
 	// Keywords
 	$oldNewMappings['keywords'] = $this->copy_keywords($id,$new_id);
 
 	// Platforms
 	$oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
 	
-	// Custom Field assignments
-	$this->copy_cfields_assignments($id,$new_id);	
-
-	
-	// need to get subtree and create a new one
-	$filters = array();
-	$filters['exclude_node_types'] = array('testplan' => 'exclude_me','requirement_spec' => 'exclude_me');
-	$filters['exclude_children_of'] = array('testcase' => 'exclude_me', 'requirement' => 'exclude_me',
-	                                        'testcase_step' => 'exclude_me');
-	                 
-	$elements = $this->tree_manager->get_subtree($id,$filters);
-	new dBug($elements);
-	echo count($elements);
-	
-	$parent_id = $new_id;
-
-    $PID['pivot'] = $elements[0]['parent_id'];
-    $oldPID_newPID = array();
-	$oldPID_newPID[$elements[0]['parent_id']] = $new_id; 
-
-	foreach($elements as $piece)
+	// Requirements
+	if( $my['options']['copy_requirements'] )
 	{
-		switch( $piece['node_table'] )
-		{
-			case 'testsuites':
-			if( $PID['pivot'] != $piece['parent_id'] )
-			{
-        	    $parent_id = $oldPID_newPID[$piece['parent_id']];
-        	    $PID['pivot'] = $piece['parent_id'];
-			}
-
-			if( !isset($item_mgr['testsuites']) )
-			{
-				$item_mgr['testsuites'] = new testsuite($this->db);
-			}
-			$source_obj = $item_mgr['testsuites']->get_by_id($piece['id']);
-			$op = $item_mgr['testsuites']->create($parent_id,$piece['name'],
-			                                      $source_obj['details'],$source_obj['node_order']);
-
-
-			// Need to copy related items links :
-			// Custom fields
-			// Keywords
-			// 
-			
-			
-			if( !isset($oldPID_newPID[$piece['id']]) )
-			{
-				$oldPID_newPID[$piece['id']] = $op['id']; 
-			}
-			break;
-			
-			case 'testcases':
-			
-			
-			break;
-		}
-
+		$oldNewMappings['requirements'] = $this->copy_requirements($id,$new_id);
+    	new dBug($oldNewMappings['requirements']);
+    	die();	
 	}
-    die();	
-	
-	
-	foreach( $cp_options as $key => $do_copy )
-	{
-		if( $do_copy )
-		{
-			if( isset($cp_methods[$key]) )
-			{
-				$copy_method=$cp_methods[$key];
-				$this->$copy_method($id,$new_tplan_id,$tcversion_type,$copy_assigned_to,$user_id);
-			}
-		}
-	}
-} // end function copy_as
-
-
-
-function copy_as($id,$new_id,$user_id,$new_name=null,$copy_options=null)
-{
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-	// CoPy configuration
-	// Configure here only elements that has his own table.
-	$cp_options = array('copy_tcases' => 1,'copy_user_roles' => 1,'copy_platforms' => 1);
-
-	$cp_methods = array('copy_tcases' => 'copy_testcases',
-		                'copy_user_roles' => 'copy_user_roles',
-		                'copy_platforms' => 'copy_platforms');
-	
-	if( !is_null($copy_options) )
-	{
-		$cp_options=$copy_options;
-	}
-	
-	// get source test project general info
-	$rs_source=$this->get_by_id($id);
-	
-	if(!is_null($new_name))
-	{
-		$sql="/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-			 "SET name='" . $this->db->prepare_string(trim($new_name)) . "' " .
-			 "WHERE id={$new_id}";
-		$this->db->exec_query($sql);
-	}
-
-
-
-	// Copy elements that can be used by other elements
-	// Keywords
-	$oldNewMappings['keywords'] = $this->copy_keywords($id,$new_id);
-
-	// Platforms
-	$oldNewMappings['platforms'] = $this->copy_platforms($id,$new_id);
-	
-	// Custom Field assignments
-	$this->copy_cfields_assignments($id,$new_id);	
 
 	
 	// need to get subtree and create a new one
@@ -2203,18 +2088,22 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$copy_options=null)
 	                                        'testcase_step' => 'exclude_me');
 	                 
 	$elements = $this->tree_manager->get_children($id,$filters['exclude_node_types']);
-	new dBug($elements);
-	echo count($elements);
-	$parent_id = $new_id;
-    $PID['pivot'] = $elements[0]['parent_id'];
-    $oldPID_newPID = array();
-	$oldPID_newPID[$elements[0]['parent_id']] = $new_id; 
+	// new dBug($elements);
+	// echo count($elements);
+	// $parent_id = $new_id;
+    // $PID['pivot'] = $elements[0]['parent_id'];
+    // $oldPID_newPID = array();
+	// $oldPID_newPID[$elements[0]['parent_id']] = $new_id; 
 
 	// Copy Test Specification
     $item_mgr['testsuites'] = new testsuite($this->db);
+	$copyTSuiteOpt = array();
+	$copyTSuiteOpt['copyKeywords'] = 1;
+	$copyTSuiteOpt['copyRequirements'] = $my['options']['copy_requirements'];		
+	
 	foreach($elements as $piece)
 	{
-		$item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id);				
+		$item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt);				
 	}
 	
 	// Copy Test Plans

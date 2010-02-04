@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.84 2010/02/04 11:42:59 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.85 2010/02/04 15:12:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -585,7 +585,7 @@ class testsuite extends tlObjectWithAttachments
 
   	    $my['options'] = array('check_duplicate_name' => 0,
   	    					   'action_on_duplicate_name' => 'allow_repeat',
-  	    					   'copyKeywords' => 0); 	
+  	    					   'copyKeywords' => 0, 'copyRequirements' => 0); 	
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
 	    $my['mappings'] = array();
@@ -594,7 +594,7 @@ class testsuite extends tlObjectWithAttachments
 
 		$copyTCaseOpt = array('copy_also' => 
 		                      array('keyword_assignments' => $my['options']['copyKeywords'],
-		                            'requirement_assignments' => true) ); 
+		                            'requirement_assignments' => $my['options']['copyRequirements']) ); 
 		                            
     	$copyOptions = array('keyword_assignments' => $my['options']['copyKeywords']);
     	

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.65 $
- * @modified $Date: 2010/01/02 16:33:22 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2010/02/04 15:12:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1465,7 +1465,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	            deep copy one req spec to another parent (req spec or testproject).
 	            
 	
-	  args : id: testsuite id (source or copy)
+	  args : id: req spec id (source or copy)
 	         parent_id:
 	         user_id: who is requesting copy operation
 	         [options]
@@ -1489,7 +1489,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		$op = array('status_ok' => 1, 'msg' => 'ok', 'id' => -1 );
+		$op = array('status_ok' => 1, 'msg' => 'ok', 'id' => -1 , 'mappings' => null);
 		$field_size = config_get('field_size');
 		$item_info = $this->get_by_id($id);
         $target_doc = $this->generateDocID($id,$tproject_id);		
@@ -1500,6 +1500,8 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	    $op = $new_item;
 	    if( $new_item['status_ok'] )
 	    {
+	    	$op['mappings'][$id] = $new_item['id'];
+	    		
 			$this->copy_cfields($id,$new_item['id']);
         	
         	// Now loop to copy all items inside it    	
@@ -1527,7 +1529,8 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			                                     $item_info['scope'],$item_info['total_req'],
 			                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
 					    	$parent_decode[$elem['id']]=$ret['id'];
-				      		
+				      		$op['mappings'][$elem['id']] = $ret['id'];
+
 				      		if( ($op['status_ok'] = $ret['status_ok']) )
 				      		{
 				      			$this->copy_cfields($elem['id'],$ret['id']);

@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectEdit.tpl,v 1.21 2010/02/03 21:32:39 franciscom Exp $
+$Id: projectEdit.tpl,v 1.22 2010/02/04 15:12:34 franciscom Exp $
 Purpose: smarty template - Edit existing product
 
 rev:
+    20100204 - franciscom - test project copy
     20090512 - franciscom - is_public attribute
     20080117 - franciscom - removed displayy of ID -> use projectview feature
     20080112 - franciscom - added test case prefix management
@@ -27,7 +28,7 @@ rev:
 {assign var="editAction" value="$managerURL?doAction=edit&tprojectID="}
 
 {lang_get var="labels" s='show_event_history,th_active,cancel,info_failed_loc_prod,
-                          invalid_query,create_from_existent_tproject,
+                          invalid_query,create_from_existent_tproject,opt_no,
                           caption_edit_tproject,caption_new_tproject,name,tcase_id_prefix,
                           title_testproject_management,notes,color,enable_priority, enable_automation,
                           public,enable_requirements,btn_upd,btn_inactivate,btn_activate,btn_del,th_id'}
@@ -76,7 +77,6 @@ function validateForm(f)
   {include file="inc_update.tpl" user_feedback=$user_feedback feedback_type=$feedback_type}
 {/if}
 
-	{* edit product form *}
 	{if $found == "yes"}
 		<h2>{$caption|escape}
 		{if $mgt_view_events eq "yes" and $id}
@@ -106,14 +106,24 @@ function validateForm(f)
 		  <td width="80%">{$notes}</td>
 	   </tr>
 
-	   {if $gui->testprojects != ''}
-	   <tr>
-		  <th style="background:none;">{$labels.create_from_existent_tproject}</th>
-		  <td width="80%">{$notes}</td>
-	   </tr>
-	   {/if}
-
-
+		 {if $id eq 0}
+	     {if $gui->testprojects != ''}
+		 		<tr><th style="background:none;">{$labels.create_from_existent_tproject}</th>
+		 		<td>
+		 		{* 
+		 		<select name="copy_from_tproject_id"
+		 		        onchange="manage_copy_ctrls('copy_controls',this.value,'0')">
+		 		*}
+		 		<select name="copy_from_tproject_id">
+		 		<option value="0">{$labels.opt_no}</option>
+		 		{foreach item=testproject from=$gui->testprojects}
+		 			<option value="{$testproject.id}">{$testproject.name|escape}</option>
+		 		{/foreach}
+		 		</select>
+		 		</td>
+		 		</tr>
+		 	{/if}
+		 {/if}
 
 
 	   {if $gui_cfg->testproject_coloring neq 'none'}

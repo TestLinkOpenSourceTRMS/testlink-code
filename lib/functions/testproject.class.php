@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.144 2010/02/04 15:12:35 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.145 2010/02/04 15:56:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2101,11 +2101,13 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	$copyTSuiteOpt['copyKeywords'] = 1;
 	$copyTSuiteOpt['copyRequirements'] = $my['options']['copy_requirements'];		
 	
+	$oldNewMappings['test_spec'] = array();
 	foreach($elements as $piece)
 	{
-		$item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt);				
+		$op = $item_mgr['testsuites']->copy_to($piece['id'],$new_id,$user_id,$copyTSuiteOpt);				
+		$oldNewMappings['test_spec'] += $op['mappings'];
 	}
-	
+
 	// Copy Test Plans
 	
 	// Copy builds

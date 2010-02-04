@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.241 2010/02/04 11:42:49 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.242 2010/02/04 15:56:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1323,7 +1323,7 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
 	{
-	    $new_tc = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok');
+	    $newTCObj = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
 	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
 	                            'action_on_duplicate_name' => 'generate_new', 'copy_also' => null);
 
@@ -1344,20 +1344,25 @@ class testcase extends tlObjectWithAttachments
 		$tcase_info = $this->get_by_id($id);
 		if ($tcase_info)
 		{
-			$new_tc = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
-			                                   $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
-	                                           $my['options']);
-			if ($new_tc['status_ok'])
+			$newTCObj = $this->create_tcase_only($parent_id,$tcase_info[0]['name'],
+			                                     $tcase_info[0]['node_order'],self::AUTOMATIC_ID,
+	                                             $my['options']);
+			if($newTCObj['status_ok'])
 			{
 		        $ret['status_ok']=1;
+		        $newTCObj['mappings'][$id] = $newTCObj['id'];
+		        
 	 			foreach($tcase_info as $tcversion)
 				{
-					$op = $this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
+					$op = $this->create_tcversion($newTCObj['id'],$newTCObj['external_id'],$tcversion['version'],
 					                              $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
 					                              $tcversion['author_id'],$tcversion['execution_type'],$tcversion['importance']);
 					
 	    			if( $op['status_ok'] )
 	    			{
+	    				// 20100204 - franciscom
+	    				$newTCObj['mappings'][$tcversion['id']] = $op['id'];
+	    				
 	    				// Need to get all steps
 	    				$stepsSet = $this->get_steps($tcversion['id']);
 	    				$to_tcversion_id = $op['id'];
@@ -1376,21 +1381,21 @@ class testcase extends tlObjectWithAttachments
 				if( isset($my['options']['copy_also']['keyword_assignments']) && 
 				    $my['options']['copy_also']['keyword_assignments'])
 				{
-					$this->copyKeywordsTo($id,$new_tc['id'],$my['mappings']['keywords']);
+					$this->copyKeywordsTo($id,$newTCObj['id'],$my['mappings']['keywords']);
 				}
 				
 				if (isset($my['options']['copy_also']['requirement_assignments']) && 
 				    $my['options']['copy_also']['requirement_assignments'])
 				{
-					$this->copyReqAssignmentTo($id,$new_tc['id'],$my['mappings']['requirements']);
+					$this->copyReqAssignmentTo($id,$newTCObj['id'],$my['mappings']['requirements']);
 				}
 				
 				
-				$this->copy_cfields_design_values($id,$new_tc['id']);
-	            $this->copy_attachments($id,$new_tc['id']);
+				$this->copy_cfields_design_values($id,$newTCObj['id']);
+	            $this->copy_attachments($id,$newTCObj['id']);
 			}
 		}
-		return($new_tc);
+		return($newTCObj);
 	}
 	
 	

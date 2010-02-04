@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.85 2010/02/04 15:12:35 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.86 2010/02/04 15:56:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -605,6 +605,7 @@ class testsuite extends tlObjectWithAttachments
 		                    $tsuite_info['node_order'],$my['options']['check_duplicate_name'],
 		                    $my['options']['action_on_duplicate_name']);
 		
+		$op['mappings'][$id] = $op['id']; 
 		$new_tsuite_id = $op['id'];
 		
 		// Work on root of these subtree
@@ -633,7 +634,9 @@ class testsuite extends tlObjectWithAttachments
 				switch ($elem['node_type_id'])
 				{
 					case $this->node_types_descr_id['testcase']:
-						$tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt);
+						
+						$tcOp = $tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt);
+						$op['mappings'] += $tcOp['mappings'];
 						break;
 						
 					case $this->node_types_descr_id['testsuite']:
@@ -641,7 +644,8 @@ class testsuite extends tlObjectWithAttachments
 						$ret = $this->create($the_parent_id,$tsuite_info['name'],
 						                     $tsuite_info['details'],$tsuite_info['node_order']);      
 					  
-				    	$parent_decode[$elem['id']]=$ret['id'];
+				    	$parent_decode[$elem['id']] = $ret['id'];
+				    	$op['mappings'][$elem['id']] = $ret['id']; 
 				    	
 			      		$tcase_mgr->copy_attachments($elem['id'],$ret['id']);
 						if( $my['options']['copyKeywords'] )
@@ -649,6 +653,7 @@ class testsuite extends tlObjectWithAttachments
   							$this->copy_keyword_assignment($elem['id'],$ret['id'],$kmap);
 						}
   	    				$this->copy_cfields_values($elem['id'],$ret['id']);
+  	    				
 						break;
 				}
 			}

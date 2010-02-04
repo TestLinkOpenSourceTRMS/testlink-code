@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testPlanUrgency.class.php,v 1.1 2009/10/18 15:20:10 franciscom Exp $
+ * @version    	CVS: $Id: testPlanUrgency.class.php,v 1.2 2010/02/04 21:38:52 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -202,7 +202,7 @@ class testPlanUrgency extends testPlan
 		                	if($rs[$key]['priority'] >= $priorityLevelsCfg[$level])
 		                	{
 		                		$rs[$key]['priority_level']=$level;
-		                		$break;
+		                		break;
 		                	}
 		                }
 					}

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.240 2010/02/04 08:30:56 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.241 2010/02/04 11:42:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100204 - franciscom - copyKeywordsTo(),copyReqAssignmentTo() - interface changes
  * 20100201 - franciscom - getExternalID(), refactored to improve performance when used on loops
  * 20100124 - franciscom - BUGID 3090 - problems when trying to delete a test case that has 0 steps.
  * 20100111 - franciscom - get_version_exec_assignment() - refactoring due to platforms feature.
@@ -1320,15 +1321,18 @@ class testcase extends tlObjectWithAttachments
 	                        changed return type
 	
 	*/
-	// function copy_to($id,$parent_id,$user_id,$copy_also=null,
-	//                  $check_duplicate_name=0,
-	//                  $action_on_duplicate_name='generate_new')
-    // 
-	function copy_to($id,$parent_id,$user_id,$options=null)
+	function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
 	{
 	    $new_tc = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok');
 	    $my['options'] = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME,
 	                            'action_on_duplicate_name' => 'generate_new', 'copy_also' => null);
+
+        // needed when Test Case is copied to a DIFFERENT Test Project,
+        // added during Test Project COPY Feature implementation
+        $my['mappings']['keywords'] = null;
+        $my['mappings']['requirements'] = null;
+
+	    $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
 	    $my['options'] = array_merge($my['options'], (array)$options);
 	
 	
@@ -1348,10 +1352,6 @@ class testcase extends tlObjectWithAttachments
 		        $ret['status_ok']=1;
 	 			foreach($tcase_info as $tcversion)
 				{
-					// $this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
-					//                         $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
-					//                         $tcversion['expected_results'],$tcversion['author_id']);
-					//
 					$op = $this->create_tcversion($new_tc['id'],$new_tc['external_id'],$tcversion['version'],
 					                              $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
 					                              $tcversion['author_id'],$tcversion['execution_type'],$tcversion['importance']);
@@ -1376,13 +1376,13 @@ class testcase extends tlObjectWithAttachments
 				if( isset($my['options']['copy_also']['keyword_assignments']) && 
 				    $my['options']['copy_also']['keyword_assignments'])
 				{
-					$this->copyKeywordsTo($id,$new_tc['id']);
+					$this->copyKeywordsTo($id,$new_tc['id'],$my['mappings']['keywords']);
 				}
 				
 				if (isset($my['options']['copy_also']['requirement_assignments']) && 
 				    $my['options']['copy_also']['requirement_assignments'])
 				{
-					$this->copyReqAssignmentTo($id,$new_tc['id']);
+					$this->copyReqAssignmentTo($id,$new_tc['id'],$my['mappings']['requirements']);
 				}
 				
 				
@@ -2323,7 +2323,10 @@ class testcase extends tlObjectWithAttachments
 	{
 		$kw = $this->getKeywords($id,$kw_id);
 		if (sizeof($kw))
+		{
 			return 1;
+		}
+		
 		$sql = " INSERT INTO {$this->tables['testcase_keywords']} (testcase_id,keyword_id) " .
 			     " VALUES ($id,$kw_id)";
 	
@@ -2351,14 +2354,14 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function addKeywords($id,$kw_ids,$audit = self::AUDIT_ON)
 	{
-		$bSuccess = 1;
+		$status_ok = 1;
 		$num_kws = sizeof($kw_ids);
 		for($idx = 0; $idx < $num_kws; $idx++)
 		{
-			$bSuccess = $bSuccess && $this->addKeyword($id,$kw_ids[$idx],$audit);
+			$status_ok = $status_ok && $this->addKeyword($id,$kw_ids[$idx],$audit);
 		}
 	
-		return $bSuccess;
+		return $status_ok;
 	}
 	/*
 	  function: set's the keywords of the given testcase to the passed keywords
@@ -2378,19 +2381,35 @@ class testcase extends tlObjectWithAttachments
 		return $result;
 	}
 	
-	function copyKeywordsTo($id,$destID)
+	/**
+	 * 
+	 *
+ 	 * mappings is only useful when source_id and target_id do not belong to same Test Project.
+	 * Because keywords are defined INSIDE a Test Project, ID will be different for same keyword
+	 * in a different Test Project.
+     *
+ 	 */
+	function copyKeywordsTo($id,$destID,$mappings)
 	{
-		$bSuccess = true;
+		$status_ok = true;
 		$this->deleteKeywords($destID);
-		$kws = $this->getKeywords($id);
-		if ($kws)
+		$sourceItems = $this->getKeywords($id);
+        
+		if( !is_null($sourceItems) )
 		{
-			foreach($kws as $k => $kwID)
+			// build item id list
+			$keySet = array_keys($sourceItems);
+			foreach($keySet as $itemPos => $itemID)
 			{
-				$bSuccess = $bSuccess && $this->addKeyword($destID,$kwID['keyword_id']);
-			}
-		}
-		return $bSuccess;
+		 		if( isset($mappings[$itemID]) )
+		 		{
+		 			$keySet[$itemPos] = $mappings[$itemID];
+		 		}
+				$status_ok = $status_ok && $this->addKeyword($destID,$keySet[$itemPos]);
+			}	
+		
+		}	
+		return $status_ok;
 	}
 	
 	/*
@@ -2418,7 +2437,9 @@ class testcase extends tlObjectWithAttachments
 			}    
 		}	
 		else
+		{
 			$key4log = array_keys((array)$this->get_keywords_map($tcID));
+		}
 			
 		$result = $this->db->exec_query($sql);
 		if ($result)
@@ -3208,9 +3229,12 @@ class testcase extends tlObjectWithAttachments
 	 * copyReqAssignmentTo
 	 * copy requirement assignments for $from test case id to $to test case id 
 	 *
+  	 * mappings is only useful when source_id and target_id do not belong to same Test Project.
+	 * Because keywords are defined INSIDE a Test Project, ID will be different for same keyword
+	 * in a different Test Project.
 	 *
 	 */
-	function copyReqAssignmentTo($from,$to)
+	function copyReqAssignmentTo($from,$to,$mappings)
 	{
 		static $req_mgr;
 		if( is_null($req_mgr) )
@@ -3218,13 +3242,20 @@ class testcase extends tlObjectWithAttachments
 			$req_mgr=new requirement_mgr($this->db);
 		}
 		
-		$requirements=$req_mgr->get_all_for_tcase($from);
-		if( !is_null($requirements) )
+		$itemSet=$req_mgr->get_all_for_tcase($from);
+		if( !is_null($itemSet) )
 		{
-			$loop2do=count($requirements);
+			$loop2do=count($itemSet);
 			for($idx=0; $idx < $loop2do; $idx++)
 			{
-				$items[$idx]=$requirements[$idx]['id'];
+		 		if( isset($mappings[$itemSet[$idx]['id']]) )
+		 		{
+                	$items[$idx]=$mappings[$itemSet[$idx]['id']];
+                }				
+                else
+                {
+					$items[$idx]=$itemSet[$idx]['id'];
+				}
 			}
 			$req_mgr->assign_to_tcase($items,$to); 
 		} 

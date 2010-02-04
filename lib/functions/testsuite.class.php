@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.81 2010/02/04 08:30:56 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.82 2010/02/04 09:23:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -109,13 +109,15 @@ class testsuite extends tlObjectWithAttachments
 		$this->my_node_type=$this->node_types_descr_id['testsuite'];
 		
 		$this->cfield_mgr=new cfield_mgr($this->db);
-		$this->object_table = $this->tables['testsuites'];
 		
 		// ATTENTION:
 		// second argument is used to set $this->attachmentTableName,property that this calls
 		// get from his parent
 		// tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
 		parent::__construct($this->db,"nodes_hierarchy");
+
+		// Must be setted AFTER call to parent constructor
+		$this->object_table = $this->tables['testsuites'];
 
 	}
 
@@ -167,7 +169,6 @@ class testsuite extends tlObjectWithAttachments
 	                $check_duplicate_name=0,
 	                $action_on_duplicate_name='allow_repeat')
 	{
-	
 		$prefix_name_for_copy = config_get('prefix_name_for_copy');
 		if( is_null($order) )
 		{
@@ -300,7 +301,6 @@ class testsuite extends tlObjectWithAttachments
 	  	$this->cfield_mgr->remove_all_design_values_from_node($id);
 	  	$this->deleteAttachments($id);  //inherited
 	  	$this->deleteKeywords($id);
-	  	
 	  	
 	  	$sql = "DELETE FROM {$this->object_table} WHERE id={$id}";
 	  	$result = $this->db->exec_query($sql);
@@ -584,18 +584,24 @@ class testsuite extends tlObjectWithAttachments
 
 	function copy_to($id, $parent_id, $user_id,$options=null,$mapping=null)
 	{
+
   	    $my['options'] = array('check_duplicate_name' => 0,
   	    					   'action_on_duplicate_name' => 'allow_repeat',
   	    					   'copyKeywords' => 0); 	
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
+	    $my['mappings'] = array();
+	    $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
+
+
     	$copyOptions = array('keyword_assignments' => $my['options']['copyKeywords']);
     	
 		$tcase_mgr = new testcase($this->db);
 		$tsuite_info = $this->get_by_id($id);
+		
 		$op = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
-		                    $tsuite_info['node_order'],
-		                    $my['options']['check_duplicate_name'],$my['options']['action_on_duplicate_name']);
+		                    $tsuite_info['node_order'],$my['options']['check_duplicate_name'],
+		                    $my['options']['action_on_duplicate_name']);
 		
 		$new_tsuite_id = $op['id'];
 		
@@ -603,10 +609,11 @@ class testsuite extends tlObjectWithAttachments
 	  	// Attachments
 	  	// Keyword assignment
 	  	// Custom Field values
-	  	$tcase_mgr->copy_attachments($id,$new_tsuite_id);
-		
-		
-		
+	  	$this->copy_attachments($id,$new_tsuite_id);
+		if( $my['options']['copyKeywords'] )
+		{
+  			$this->copy_keyword_assignment($id,$new_tsuite_id,$my['mappings']['keywords']);
+		}
 		
  		$my['filters'] = array('exclude_children_of' => array('testcase' => 'exclude my children'));
 		$subtree = $this->tree_manager->get_subtree($id,$my['filters']);
@@ -866,7 +873,9 @@ class testsuite extends tlObjectWithAttachments
 	*/
 	function getKeywords($id,$kw_id = null)
 	{
-		$sql = "SELECT keyword_id,keywords.keyword, notes " .
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword, notes " .
 		       " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
 		       " WHERE keyword_id = keywords.id AND fk_id = {$id}";
 		if (!is_null($kw_id))
@@ -902,13 +911,19 @@ class testsuite extends tlObjectWithAttachments
 	*/
 	function get_keywords_map($id,$order_by_clause='')
 	{
-		$sql = "SELECT keyword_id,keywords.keyword " .
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ SELECT keyword_id,keywords.keyword " .
 		       " FROM {$this->tables['object_keywords']}, {$this->tables['keywords']} keywords " .
 		       " WHERE keyword_id = keywords.id ";
+
 		if (is_array($id))
+		{
 			$sql .= " AND fk_id IN (".implode(",",$id).") ";
+		}
 		else
+		{
 			$sql .= " AND fk_id = {$id} ";
+		}
 			
 		$sql .= $order_by_clause;
 	
@@ -917,18 +932,22 @@ class testsuite extends tlObjectWithAttachments
 	} 
 	
 	
-	
+	/**
+	 * 
+ 	 *
+	 */
 	function addKeyword($id,$kw_id)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$status = 1;
 		$kw = $this->getKeywords($id,$kw_id);
-		if (sizeof($kw))
+		if( ($doLink = !sizeof($kw)) )
 		{
-			return 1;
+			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['object_keywords']} " .
+			       " (fk_id,fk_table,keyword_id) VALUES ($id,'nodes_hierarchy',$kw_id)";
+        	$status = $this->db->exec_query($sql) ? 1 : 0;
 		}	
-		$sql = " INSERT INTO {$this->tables['object_keywords']} (fk_id,fk_table,keyword_id) " .
-			     " VALUES ($id,'nodes_hierarchy',$kw_id)";
-	
-		return ($this->db->exec_query($sql) ? 1 : 0);
+		return $status;
 	}
 	
 	
@@ -1248,6 +1267,32 @@ class testsuite extends tlObjectWithAttachments
 	{
 		$this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
 	}
+
+	/** 
+	 * Copy keyword assignment
+	 * mappings is only useful when source_id and target_id do not belong to same Test Project.
+	 * Because keywords are defined INSIDE a Test Project, ID will be different for same keyword
+	 * in a different Test Project
+	 *
+	 **/
+	function copy_keyword_assignment($source_id,$target_id,$mappings)
+	{
+		// Get source_id keyword assignment
+		$sourceItems = $this->getKeywords($source_id);
+		if( !is_null($sourceItems) )
+		{
+			// build item id list
+			$keySet = array_keys($sourceItems);
+			foreach($keySet as $itemPos => $itemID)
+			{
+				if( isset($mappings[$itemID]) )
+				{
+					$keySet[$itemPos] = $mappings[$itemID];
+				}
+			}
+			$this->addKeywords($target_id,$keySet);		
+		}
+    }
 
 
 } // end class

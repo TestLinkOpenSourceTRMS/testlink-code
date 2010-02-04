@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.105 $
- * @modified $Date: 2010/02/02 16:25:36 $ by $Author: franciscom $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2010/02/04 08:30:57 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  *	@internal revisions
+ *	20100204 - franciscom - changes in $tsuiteMgr->copy_to() call	
  *	20100202 - franciscom - BUGID 3130: TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error
  *                          (bug created due change in show() interface
  *	20091206 - franciscom - addTestSuite() - new test suites are order set to last on tree branch
@@ -591,20 +592,28 @@ function updateTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
 function copyTestSuite(&$smartyObj,$template_dir,&$tsuiteMgr,$argsObj)
 {
     $exclude_node_types=array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
-  	$op=$tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,
-	                          config_get('check_names_for_duplicates'),
-	                          config_get('action_on_duplicate_name'),$argsObj->copyKeywords);
-	  if( $op['status_ok'] )
-	  {
-	      $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
-                                                       $argsObj->target_position,$exclude_node_types);
-	  }
-
-      $guiObj = new stdClass();
-  	  $guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
-	  $guiObj->id = $argsObj->objectID;
-
-	  $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
+  	
+  	$options = array();
+	$options['check_names_for_duplicates'] = config_get('check_names_for_duplicates');
+  	$options['action_on_duplicate_name'] = config_get('action_on_duplicate_name');
+  	$options['copyKeywords'] = $argsObj->copyKeywords;
+  	
+  	
+  	// $op=$tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,
+	//                           config_get('check_names_for_duplicates'),
+	//                           config_get('action_on_duplicate_name'),$argsObj->copyKeywords);
+  	$op=$tsuiteMgr->copy_to($argsObj->objectID, $argsObj->containerID, $argsObj->userID,$options);
+	if( $op['status_ok'] )
+	{
+	    $tsuiteMgr->tree_manager->change_child_order($argsObj->containerID,$op['id'],
+	                                                 $argsObj->target_position,$exclude_node_types);
+	}
+	
+	$guiObj = new stdClass();
+	$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
+	$guiObj->id = $argsObj->objectID;
+	
+	$tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,'ok');
 }
 
 /*

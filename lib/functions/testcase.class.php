@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.239 2010/02/01 18:00:06 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.240 2010/02/04 08:30:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -89,12 +89,6 @@ require_once( dirname(__FILE__) . '/users.inc.php' );
 /** list of supported format for Test case import/export */
 $g_tcFormatStrings = array ("XML" => lang_get('the_format_tc_xml_import'));
 
-/** @TODO havlatm: move consts to class? */
-define("TC_LATEST_VERSION",-1);
-define("TC_DEFAULT_ORDER",0);
-define("TC_AUTOMATIC_ID",0);
-define("TC_COPY_KEYWORDS",0);
-
 /**
  * class for Test case CRUD
  * @package 	TestLink
@@ -160,8 +154,9 @@ class testcase extends tlObjectWithAttachments
 		$this->execution_types = array(TESTCASE_EXECUTION_TYPE_MANUAL => lang_get('manual'),
                                        TESTCASE_EXECUTION_TYPE_AUTO => lang_get('automated'));
 
-
-		// tlObjectWithAttachments::__construct($this->db,"nodes_hierarchy");
+		// ATTENTION:
+		// second argument is used to set $this->attachmentTableName,property that this calls
+		// get from his parent
 		parent::__construct($this->db,"nodes_hierarchy");
 	}
 
@@ -3206,43 +3201,6 @@ class testcase extends tlObjectWithAttachments
 	function copy_attachments($source_id,$target_id)
 	{
 		$this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
-		
-		// $f_parts = null;
-		// $destFPath = null;
-		// $mangled_fname = '';
-		// $status_ok = false;
-		// $repo_type = config_get('repositoryType');
-		// $repo_path = config_get('repositoryPath') .  DIRECTORY_SEPARATOR;
-		// 
-		// $attachments = $this->getAttachmentInfos($source_id);
-		// if(count($attachments) > 0)
-		// {
-		// 	foreach($attachments as $key => $value)
-		// 	{
-		// 		$file_contents = null;
-		// 		$f_parts = explode(DIRECTORY_SEPARATOR,$value['file_path']);
-		// 		$mangled_fname = $f_parts[count($f_parts)-1];
-		// 		
-		// 		if ($repo_type == TL_REPOSITORY_TYPE_FS)
-		// 		{
-		// 			$destFPath = $this->attachmentRepository->buildRepositoryFilePath($mangled_fname,$table_name,$target_id);
-		// 			$status_ok = copy($repo_path . $value['file_path'],$destFPath);
-		// 		}
-		// 		else
-		// 		{
-		// 			$file_contents = $this->attachmentRepository->getAttachmentContentFromDB($value['id']);
-		// 			$status_ok = sizeof($file_contents);
-		// 		}
-		// 		if($status_ok)
-		// 		{
-		// 			$attachment = new tlAttachment();
-		// 			$attachment->create($target_id,$table_name,$value['file_name'],
-		// 				                $destFPath,$file_contents,$value['file_type'],
-		// 				                $value['file_size'],$value['title']);
-		// 			$attachment->writeToDB($this->db);
-		// 		}
-		// 	}
-		// }
 	}
 
 	

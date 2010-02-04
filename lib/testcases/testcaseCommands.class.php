@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/01/24 17:25:42 $  by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/02/04 08:30:57 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -227,7 +227,7 @@ class testcaseCommands
         $ret=$this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
 		                             $argsObj->summary, $argsObj->preconditions, $argsObj->steps, 
 		                             $argsObj->user_id,$argsObj->assigned_keywords_list,
-		                             TC_DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
+		                             testcase::DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
         if($ret['status_ok'])
 		{

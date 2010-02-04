@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.95 2010/01/24 17:34:45 havlat Exp $
+ * @version $Id: print.inc.php,v 1.96 2010/02/04 08:30:55 franciscom Exp $
  * @uses printDocument.php
  *
  *
@@ -364,7 +364,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 	    }
 	    $tcase_prefix .= $cfg['testcase']->glue_character;
 	}
-	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : TC_LATEST_VERSION;
+	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : testcase::LATEST_VERSION;
     $tcInfo = $tc_mgr->get_by_id($id,$versionID);
     if ($tcInfo)
     {

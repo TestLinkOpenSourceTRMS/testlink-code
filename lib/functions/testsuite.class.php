@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.80 2010/02/03 21:32:40 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.81 2010/02/04 08:30:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -55,13 +55,6 @@
  * 20070116 - franciscom - BUGID 543
  * 20070102 - franciscom - changes to delete_deep() to support custom fields
  * 20061230 - franciscom - custom field management
- * 20061119 - franciscom - changes in create()
- *
- * 20060805 - franciscom - changes in viewer_edit_new()
- *                         keywords related functions
- * 
- * 20060425 - franciscom - changes in show() following Andreas Morsing advice (schlundus)
- *
  */
 
 /** include support for attachments */
@@ -116,9 +109,14 @@ class testsuite extends tlObjectWithAttachments
 		$this->my_node_type=$this->node_types_descr_id['testsuite'];
 		
 		$this->cfield_mgr=new cfield_mgr($this->db);
-		
-		tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
 		$this->object_table = $this->tables['testsuites'];
+		
+		// ATTENTION:
+		// second argument is used to set $this->attachmentTableName,property that this calls
+		// get from his parent
+		// tlObjectWithAttachments::__construct($this->db,'nodes_hierarchy');
+		parent::__construct($this->db,"nodes_hierarchy");
+
 	}
 
 
@@ -581,17 +579,33 @@ class testsuite extends tlObjectWithAttachments
            20090821 - franciscom - BUGID 0002781
 	       20070324 - BUGID 710
 	*/
-	function copy_to($id, $parent_id, $user_id,$check_duplicate_name = 0,
-			         $action_on_duplicate_name = 'allow_repeat',$copyKeywords = 0 )
+//	function copy_to($id, $parent_id, $user_id,$check_duplicate_name = 0,
+//			         $action_on_duplicate_name = 'allow_repeat',$copyKeywords = 0 )
+
+	function copy_to($id, $parent_id, $user_id,$options=null,$mapping=null)
 	{
-    	$copyOptions = array('keyword_assignments' => $copyKeywords);
+  	    $my['options'] = array('check_duplicate_name' => 0,
+  	    					   'action_on_duplicate_name' => 'allow_repeat',
+  	    					   'copyKeywords' => 0); 	
+	    $my['options'] = array_merge($my['options'], (array)$options);
+
+    	$copyOptions = array('keyword_assignments' => $my['options']['copyKeywords']);
+    	
 		$tcase_mgr = new testcase($this->db);
 		$tsuite_info = $this->get_by_id($id);
 		$op = $this->create($parent_id,$tsuite_info['name'],$tsuite_info['details'],
-		                    $tsuite_info['node_order'],$check_duplicate_name,$action_on_duplicate_name);
+		                    $tsuite_info['node_order'],
+		                    $my['options']['check_duplicate_name'],$my['options']['action_on_duplicate_name']);
 		
 		$new_tsuite_id = $op['id'];
+		
+		// Work on root of these subtree
+	  	// Attachments
+	  	// Keyword assignment
+	  	// Custom Field values
 	  	$tcase_mgr->copy_attachments($id,$new_tsuite_id);
+		
+		
 		
 		
  		$my['filters'] = array('exclude_children_of' => array('testcase' => 'exclude my children'));
@@ -1027,7 +1041,8 @@ class testsuite extends tlObjectWithAttachments
 		    	    {
 		    		    $tcase_mgr = new testcase($this->db);
 		    		}
-		    		$xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],TC_LATEST_VERSION,$tproject_id,true,$optExport);
+		    		$xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
+		    		                                              $tproject_id,true,$optExport);
 		    	}
 		    }
 		}   
@@ -1224,6 +1239,15 @@ class testsuite extends tlObjectWithAttachments
 	    return($cf_smarty);
 	} // function end
 
+
+	/** 
+	 * Copy attachments from source test suite to target test suite
+	 * 
+	 **/
+	function copy_attachments($source_id,$target_id)
+	{
+		$this->attachmentRepository->copyAttachments($source_id,$target_id,$this->attachmentTableName);
+	}
 
 
 } // end class

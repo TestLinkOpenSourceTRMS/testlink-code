@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.83 2010/02/04 10:51:35 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.84 2010/02/04 11:42:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -592,6 +592,10 @@ class testsuite extends tlObjectWithAttachments
 	    $my['mappings'] = array_merge($my['mappings'], (array)$mappings);
 
 
+		$copyTCaseOpt = array('copy_also' => 
+		                      array('keyword_assignments' => $my['options']['copyKeywords'],
+		                            'requirement_assignments' => true) ); 
+		                            
     	$copyOptions = array('keyword_assignments' => $my['options']['copyKeywords']);
     	
 		$tcase_mgr = new testcase($this->db);
@@ -629,7 +633,7 @@ class testsuite extends tlObjectWithAttachments
 				switch ($elem['node_type_id'])
 				{
 					case $this->node_types_descr_id['testcase']:
-						$tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyOptions);
+						$tcase_mgr->copy_to($elem['id'],$the_parent_id,$user_id,$copyTCaseOpt);
 						break;
 						
 					case $this->node_types_descr_id['testsuite']:

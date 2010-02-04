@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.82 2010/02/04 09:23:23 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.83 2010/02/04 10:51:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100204 - franciscom - copy_to() refactoring	
  * 20100201 - franciscom - get_testcases_deep() - added external_id in output
  * 20091122 - franciscom - item template logic refactored - read_file() removed
  * 20090821 - franciscom - BUGID 0002781
@@ -579,10 +580,7 @@ class testsuite extends tlObjectWithAttachments
            20090821 - franciscom - BUGID 0002781
 	       20070324 - BUGID 710
 	*/
-//	function copy_to($id, $parent_id, $user_id,$check_duplicate_name = 0,
-//			         $action_on_duplicate_name = 'allow_repeat',$copyKeywords = 0 )
-
-	function copy_to($id, $parent_id, $user_id,$options=null,$mapping=null)
+	function copy_to($id, $parent_id, $user_id,$options=null,$mappings=null)
 	{
 
   	    $my['options'] = array('check_duplicate_name' => 0,
@@ -612,8 +610,11 @@ class testsuite extends tlObjectWithAttachments
 	  	$this->copy_attachments($id,$new_tsuite_id);
 		if( $my['options']['copyKeywords'] )
 		{
-  			$this->copy_keyword_assignment($id,$new_tsuite_id,$my['mappings']['keywords']);
+			$kmap = isset($my['mappings']['keywords']) ? $my['mappings']['keywords'] : null;
+  			$this->copy_keyword_assignment($id,$new_tsuite_id,$kmap);
 		}
+  	    $this->copy_cfields_values($id,$new_tsuite_id);
+		
 		
  		$my['filters'] = array('exclude_children_of' => array('testcase' => 'exclude my children'));
 		$subtree = $this->tree_manager->get_subtree($id,$my['filters']);
@@ -637,7 +638,13 @@ class testsuite extends tlObjectWithAttachments
 						                     $tsuite_info['details'],$tsuite_info['node_order']);      
 					  
 				    	$parent_decode[$elem['id']]=$ret['id'];
+				    	
 			      		$tcase_mgr->copy_attachments($elem['id'],$ret['id']);
+						if( $my['options']['copyKeywords'] )
+						{
+  							$this->copy_keyword_assignment($elem['id'],$ret['id'],$kmap);
+						}
+  	    				$this->copy_cfields_values($elem['id'],$ret['id']);
 						break;
 				}
 			}
@@ -1291,6 +1298,29 @@ class testsuite extends tlObjectWithAttachments
 				}
 			}
 			$this->addKeywords($target_id,$keySet);		
+		}
+    }
+
+	/** 
+	 * Copy Custom Fields values
+	 *
+	 **/
+	function copy_cfields_values($source_id,$target_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		// Get source_id cfields assignment
+		$sourceItems = $this->cfield_mgr->getByLinkID($source_id,array('scope' => 'design'));
+        new dBug($sourceItems);
+        
+		if( !is_null($sourceItems) )
+		{
+		    $sql = "/* $debugMsg */ " . 
+	               " INSERT INTO {$this->tables['cfield_design_values']} " . 
+	               " (field_id,value,node_id) " .
+	         	   " SELECT field_id,value,{$target_id} AS target_id" .
+	               " FROM {$this->tables['cfield_design_values']} " .
+	         	   " WHERE node_id = {$source_id} ";
+			$this->db->exec_query($sql);
 		}
     }
 

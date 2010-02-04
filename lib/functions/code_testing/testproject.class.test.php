@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testproject.class.test.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/02/02 20:40:37 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/02/04 10:51:36 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
@@ -37,20 +37,20 @@ $is_public=1;
 $namePrefix = 'TPX :: ';
 $name = uniqid($namePrefix,true);
 $tcasePrefix = uniqid('',false);
-// $new_id = $tproject_mgr->create($name,$color,$options,$notes,$active,$tcasePrefix,$is_public);
-// 
-// $name = $namePrefix . $new_id;
-// $tcasePrefix = $namePrefix . $new_id;
-// 
-// $tproject_mgr->update($new_id, $name, $color, $options->requirement_mgmt, 
-//                       $options->priority_mgmt, $options->automated_execution, 
-//                       $notes,$active,$tcasePrefix,$is_public);
-// 
-// new dBug($tproject_mgr->get_by_id($new_id));
-// die();
+//$new_id = $tproject_mgr->create($name,$color,$options,$notes,$active,$tcasePrefix,$is_public);
+//
+//$name = $namePrefix . $new_id;
+//$tcasePrefix = $namePrefix . $new_id;
+//
+//$tproject_mgr->update($new_id, $name, $color, $options->requirement_mgmt, 
+//                      $options->priority_mgmt, $options->automated_execution, 
+//                      $notes,$active,$tcasePrefix,$is_public);
+//
+//new dBug($tproject_mgr->get_by_id($new_id));
+//die();
 
-$new_id = 180;
-$tproject_mgr->copy_as(9,$new_id);
+$new_id = 1157;
+$tproject_mgr->copy_as(9,$new_id,1);
 die();
 
 

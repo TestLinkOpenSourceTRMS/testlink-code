@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.76 2010/01/31 16:51:33 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.77 2010/02/04 10:51:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *
+ *                   
+ * 20100204 - franciscom - getByLinkID() - new method
  * 20090823 - franciscom - added logic to remove 255 size limit
  * 20090718 - franciscom - buildLocationMap()
  * 20090717 - franciscom - get_linked_cfields_at_design() - added filter by location
@@ -1010,23 +1011,28 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	function set_active_for_testproject($tproject_id,$cfield_ids,$active_val)
 	{
   		if(is_null($cfield_ids))
+  		{
 			return;
-
+		}
+		
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     	$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		$auditMsg = $active_val ? "audit_cfield_activated" : "audit_cfield_deactivated";
 		foreach($cfield_ids as $field_id)
 		{
-			$sql = "UPDATE cfield_testprojects " .
-				     " SET active={$active_val} " .
-				     " WHERE testproject_id={$tproject_id} " .
-				     " AND field_id={$field_id}";
+			$sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_testprojects']} " .
+				   " SET active={$active_val} " .
+				   " WHERE testproject_id={$tproject_id} " .
+				   " AND field_id={$field_id}";
 
 			if ($this->db->exec_query($sql))
 			{
 				$cf = $this->get_by_id($field_id);
 				if ($cf)
+				{
 					logAuditEvent(TLS($auditMsg,$cf[$field_id]['name'],$tproject_info['name']),
 								        "SAVE",$tproject_id,"testprojects");
+				}								        
 			}
 		}
 	} //function end
@@ -1049,14 +1055,14 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	  	{
 			return;
         }
-        // $cfield_ids=(array)$cfield_ids;
         
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
         // just for audit porpouses
 		$tproject_info = $this->tree_manager->get_node_hierarchy_info($tproject_id);
 		foreach($cfield_ids as $field_id)
 		{
 			// BUGID 0000677
-			$sql = "DELETE FROM {$this->tables['cfield_testprojects']} " .
+			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testprojects']} " .
 			       " WHERE field_id = {$field_id} AND testproject_id = {$tproject_id} ";
 			if ($this->db->exec_query($sql))
 			{
@@ -1082,15 +1088,16 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 	function get_by_name($name)
 	{
-	  $my_name=$this->db->prepare_string(trim($name));
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  	$my_name=$this->db->prepare_string(trim($name));
 
-	  $sql="SELECT CF.*, CFNT.node_type_id,NT.description AS node_type" .
-	       " FROM {$this->tables['custom_fields']} CF, {$this->tables['cfield_node_types']} CFNT," .
-	       " {$this->tables['node_types']} NT" .
-	       " WHERE CF.id=CFNT.field_id " .
-	       " AND CFNT.node_type_id=NT.id " .
-	       " AND name='{$my_name}' ";
-    return($this->db->fetchRowsIntoMap($sql,'id'));
+	  	$sql="/* $debugMsg */  SELECT CF.*, CFNT.node_type_id,NT.description AS node_type" .
+	  	     " FROM {$this->tables['custom_fields']} CF, {$this->tables['cfield_node_types']} CFNT," .
+	  	     " {$this->tables['node_types']} NT" .
+	  	     " WHERE CF.id=CFNT.field_id " .
+	  	     " AND CFNT.node_type_id=NT.id " .
+	  	     " AND name='{$my_name}' ";
+    	return($this->db->fetchRowsIntoMap($sql,'id'));
   }
 
   /*
@@ -1104,12 +1111,13 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 	function get_by_id($id)
 	{
-	  $sql="SELECT CF.*, CFNT.node_type_id" .
-	       " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
-	       " WHERE CF.id=CFNT.field_id " .
-	       " AND   CF.id={$id} ";
-    return($this->db->fetchRowsIntoMap($sql,'id'));
-  }
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  	$sql="/* $debugMsg */ SELECT CF.*, CFNT.node_type_id" .
+	  	     " FROM {$this->tables['custom_fields']}  CF, {$this->tables['cfield_node_types']} CFNT" .
+	  	     " WHERE CF.id=CFNT.field_id " .
+	  	     " AND   CF.id={$id} ";
+    	return($this->db->fetchRowsIntoMap($sql,'id'));
+	}
 
   /*
     function: get_available_item_type
@@ -1123,15 +1131,15 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
 	function get_available_item_type($id)
 	{
-	  $sql=" SELECT CFNT.field_id,CFNT.node_type_id ".
-	       " FROM {$this->tables['cfield_node_types']} CFNT, " .
-	       "      {$this->tables['nodes_types']} NT " .
-	       " WHERE NT.id=CFNT.node_type_id " .
-	       " CFNt.field_id={$id} ";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  	$sql="/* $debugMsg */ SELECT CFNT.field_id,CFNT.node_type_id ".
+	  	     " FROM {$this->tables['cfield_node_types']} CFNT, " .
+	  	     "      {$this->tables['nodes_types']} NT " .
+	  	     " WHERE NT.id=CFNT.node_type_id " .
+	  	     " CFNt.field_id={$id} ";
 
-    return($this->db->fetchRowsIntoMap($sql,'field_id'));
-  }
-
+    	return($this->db->fetchRowsIntoMap($sql,'field_id'));
+	}
 
 
   /*
@@ -2398,6 +2406,58 @@ function buildLocationMap($nodeType)
 	}	     
     return $locationMap; 
 }
+
+
+/**
+ * @param int linkID: how is used depends on $options['scope']
+ *                    $options['scope']=design => node_id
+ *                    $options['scope']=testplan_design => feature_id (see testplan_tcversions table)
+ *                    $options['scope']=execution => execution_id
+ *
+ */
+function getByLinkID($linkID, $options=null)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	$my['options'] = array('scope' => 'design', 'output' => 'field_id'); 	
+	$my['options'] = array_merge($my['options'], (array)$options);
+
+ 	switch($my['options']['output'])
+ 	{
+ 		case 'field_id':
+			 $sql = "/* debugMsg */ SELECT field_id FROM ";
+ 		break;
+
+ 		case 'full':
+			 $sql = "/* debugMsg */ SELECT * FROM ";
+ 		break;
+ 		
+ 	}
+ 	 
+	switch($my['options']['scope'])
+	{
+		case 'design':
+			 $sql .= " {$this->tables['cfield_design_values']} " .
+			         " WHERE node_id = {$linkID} ";
+		break;
+		
+		case 'testplan_design':
+			 $sql .= " {$this->tables['cfield_testplan_design_values']} " .
+			         " WHERE feature_id = {$linkID} ";
+		break;
+		
+		case 'execution':
+			 $sql .= " {$this->tables['cfield_execution_values']} " .
+			         " WHERE execution_id = {$linkID} ";
+		break;
+	
+	}
+	$rs = $this->db->get_recordset($sql);
+	
+	
+    return $rs; 
+}
+
 
 
 } // end class

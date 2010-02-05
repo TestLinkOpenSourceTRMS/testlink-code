@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2010/01/06 18:44:24 $ by $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2010/02/05 13:18:59 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20100205 - franciscom - BUGID 3140 - _checkTCIDAndTPIDValid()	
  *	20091228 - franciscom - checkReqSpecQuality() - refactoring due to req versioning feature
  *	20091212 - franciscom - BUGID 2998 - contribution - getTestSuiteByID()
  *  20091128 - franciscom - getTestCaseIDBy() - added testcasepathname
@@ -1020,7 +1021,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         else
         {
             $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
-            $tcase_info = $testCaseMgr->get_by_id($tcase_id);
+            $tcase_info = $this->tcaseMgr->->get_by_id($tcase_id);
             $msg = sprintf(TCASEID_NOT_IN_TPLANID_STR,$tcase_info[0]['name'],
                            $this->args[self::$testCaseExternalIDParamName],$tplan_info['name'],$tplan_id);          
             $this->errors[] = new IXR_Error(TCASEID_NOT_IN_TPLANID, $msg);

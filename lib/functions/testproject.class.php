@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.146 2010/02/05 10:14:04 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.147 2010/02/05 13:58:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2103,7 +2103,7 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	}
 
 	// Copy Test Plans and all related information
-	$this->copy_testplans($id,$new_id,$user_id,$oldNewMappings['test_spec']);
+	$this->copy_testplans($id,$new_id,$user_id,$oldNewMappings);
 		
 	
 	
@@ -2218,7 +2218,7 @@ private function copy_cfields_assignments($source_id, $target_id)
  * 
  *
  */
-private function copy_testplans($source_id,$target_id,$user_id,$test_spec_mappings)
+private function copy_testplans($source_id,$target_id,$user_id,$mappings)
 {
 	static $tplanMgr;
 	
@@ -2239,7 +2239,7 @@ private function copy_testplans($source_id,$target_id,$user_id,$test_spec_mappin
 			if( $new_id > 0 )
 			{
 				$tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,
-			                       null,$test_spec_mappings);
+			                       null,$mappings);
 			}                       
 		}
 		

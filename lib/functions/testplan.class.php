@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.164 2010/02/05 10:14:04 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.165 2010/02/05 13:58:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1251,6 +1251,8 @@ class testplan extends tlObjectWithAttachments
 			                'copy_platforms_links' => 'copy_platforms_links',
 			                'copy_builds' => 'copy_builds');
 
+		$mapping_methods = array('copy_platforms_links' => 'platforms');
+
 		$my['options'] = array();
 
 		// Configure here only elements that has his own table.
@@ -1284,6 +1286,7 @@ class testplan extends tlObjectWithAttachments
 		// copy test cases is an special copy
 		if( $my['options']['items2copy']['copy_tcases'] )
 		{
+			echo 'before copy_linked_tcversions<br>';
 			$this->copy_linked_tcversions($id,$new_tplan_id,$user_id,$my['options'],$mappings);
 		}
 		
@@ -1294,7 +1297,14 @@ class testplan extends tlObjectWithAttachments
 				if( isset($cp_methods[$key]) )
 				{
 					$copy_method=$cp_methods[$key];
-					$this->$copy_method($id,$new_tplan_id);
+					if( isset($mapping_methods[$key]) && isset($mappings[$mapping_methods[$key]]))
+					{
+						$this->$copy_method($id,$new_tplan_id,$mappings[$mapping_methods[$key]]);
+					}
+					else
+					{
+						$this->$copy_method($id,$new_tplan_id);
+					}	
 				}
 			}
 		}
@@ -1302,9 +1312,10 @@ class testplan extends tlObjectWithAttachments
 
 
 
-
-	// $id: source testplan id
-	// $new_tplan_id: destination
+	/**
+	 * $id: source testplan id
+	 * $new_tplan_id: destination
+	 */
 	private function copy_builds($id,$new_tplan_id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1351,6 +1362,11 @@ class testplan extends tlObjectWithAttachments
 	    $my['options']['copy_assigned_to'] = 0;
 		$my['options'] = array_merge($my['options'], (array)$options);
 	    
+	    
+	    new dBug($my['options']);
+	    new dBug($mappings);
+
+	    
         $now_ts = $this->db->db_now();
 
 		$sql="/* $debugMsg */ "; 
@@ -1369,11 +1385,17 @@ class testplan extends tlObjectWithAttachments
 	    }
 
 		$rs=$this->db->get_recordset($sql);
+		 echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+		new dBug($rs);
 		
 		if(!is_null($rs))
 		{
 			$tcase_mgr = new testcase($this->db);
+			$doMappings = !is_null($mappings);
 			
+			
+			new dBug($rs);
 			foreach($rs as $elem)
 			{
 				$tcversion_id = $elem['tcversion_id'];
@@ -1388,19 +1410,32 @@ class testplan extends tlObjectWithAttachments
 					$tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
 				}
 				
-				// do mapping
-				
+				// mapping need to be done with:
+				// platforms
+				// test case versions
+				$platform_id = $elem['platform_id'];
+				if( $doMappings )
+				{
+					if( isset($mappings['platforms'][$platform_id]) )
+					{
+						$platform_id = $mappings['platforms'][$platform_id]; 
+					}
+					if( isset($mappings['test_spec'][$tcversion_id]) )
+					{
+						$tcversion_id = $mappings['test_spec'][$tcversion_id]; 
+					}
+				}
 				
 				
 				$sql = "/* $debugMsg */ " . 
 				       " INSERT INTO {$this->tables['testplan_tcversions']} " .
 					   " (testplan_id,tcversion_id,platform_id,node_order,urgency) " .
-					   " VALUES({$new_tplan_id},{$tcversion_id},{$elem['platform_id']}," .
+					   " VALUES({$new_tplan_id},{$tcversion_id},{$platform_id}," .
 					   " {$elem['node_order']},{$elem['urgency']})";
 				$this->db->exec_query($sql);
 				$new_feature_id = $this->db->insert_id($this->tables['testplan_tcversions']);
 				
-				if($copy_assigned_to && $elem['tester'] > 0)
+				if($my['options']['copy_assigned_to'] && $elem['tester'] > 0)
 				{
 					$features_map = array();
 					$feature_id=$new_feature_id;
@@ -2586,16 +2621,26 @@ class testplan extends tlObjectWithAttachments
 	/**
 	 * link platforms to a new Test Plan
 	 * 
-	 * @param int $original_tplan_id original Test Plan identificator
-	 * @param int $new_tplan_id new Test Plan identificator
+	 * @param int $source_id original Test Plan id
+	 * @param int $target_id new Test Plan id
+	 * @param array $mappings: key source platform id, target platform id
+	 *                         USED when copy is done to a test plan that BELONGS to
+	 *                         another Test Project.
 	 */
-	private function copy_platforms_links($original_tplan_id, $new_tplan_id)
+	private function copy_platforms_links($source_id, $target_id, $mappings = null)
 	{
-    	$sourceLinks = $this->platform_mgr->getLinkedToTestplanAsMap($original_tplan_id);
+    	$sourceLinks = $this->platform_mgr->getLinkedToTestplanAsMap($source_id);
     	if( !is_null($sourceLinks) )
     	{
     		$sourceLinks = array_keys($sourceLinks);
-    		$this->platform_mgr->linkToTestplan($sourceLinks,$new_tplan_id);
+    		if( !is_null($mappings) )
+    		{
+    			foreach($sourceLinks as $key => $value)
+    			{
+    				$sourceLinks[$key] = $mappings[$value];
+    			}
+    		}
+    		$this->platform_mgr->linkToTestplan($sourceLinks,$target_id);
     	}
 	}
 

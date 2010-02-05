@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.147 2010/02/05 13:58:38 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.148 2010/02/05 14:06:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2105,6 +2105,7 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	// Copy Test Plans and all related information
 	$this->copy_testplans($id,$new_id,$user_id,$oldNewMappings);
 		
+	$this->copy_user_roles($id,$new_id);
 	
 	
 	
@@ -2121,12 +2122,14 @@ private function copy_user_roles($source_id, $target_id)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	
-	$sql = "/* $debugMsg */ SELECT user_id FROM {$this->tables['user_testproject_roles']} " .
-	       "WHERE testplan_id={$source_id} ";
+	$sql = "/* $debugMsg */ SELECT * FROM {$this->tables['user_testproject_roles']} " .
+	       "WHERE testproject_id={$source_id} ";
 	$rs=$this->db->get_recordset($sql);
 
 	if(!is_null($rs))
 	{
+		new dBug($rs);
+		
     	foreach($rs as $elem)
     	{
       		$sql="/* $debugMsg */ INSERT INTO {$this->tables['user_testproject_roles']}  " .
@@ -2245,9 +2248,5 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
 		
 	}
 }
-
-
-
-
 } // end class
 ?>

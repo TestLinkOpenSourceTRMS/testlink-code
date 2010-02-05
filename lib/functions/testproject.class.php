@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.145 2010/02/04 15:56:34 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.146 2010/02/05 10:14:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2088,12 +2088,6 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	                                        'testcase_step' => 'exclude_me');
 	                 
 	$elements = $this->tree_manager->get_children($id,$filters['exclude_node_types']);
-	// new dBug($elements);
-	// echo count($elements);
-	// $parent_id = $new_id;
-    // $PID['pivot'] = $elements[0]['parent_id'];
-    // $oldPID_newPID = array();
-	// $oldPID_newPID[$elements[0]['parent_id']] = $new_id; 
 
 	// Copy Test Specification
     $item_mgr['testsuites'] = new testsuite($this->db);
@@ -2108,11 +2102,9 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 		$oldNewMappings['test_spec'] += $op['mappings'];
 	}
 
-	// Copy Test Plans
-	
-	// Copy builds
-	
-	
+	// Copy Test Plans and all related information
+	$this->copy_testplans($id,$new_id,$user_id,$oldNewMappings['test_spec']);
+		
 	
 	
 	
@@ -2220,6 +2212,41 @@ private function copy_cfields_assignments($source_id, $target_id)
 		$this->cfield_mgr->link_to_testproject($target_id,$cfield_set);
 	}
 }
+
+
+/**
+ * 
+ *
+ */
+private function copy_testplans($source_id,$target_id,$user_id,$test_spec_mappings)
+{
+	static $tplanMgr;
+	
+	$tplanSet = $this->get_all_testplans($source_id);
+	if( !is_null($tplanSet) )
+	{
+		$keySet = array_keys($tplanSet);
+		if( is_null($tplanMgr) )
+		{
+			$tplanMgr = new testplan($this->db);
+		}
+		
+		foreach($keySet as $itemID)
+		{
+			$new_id = $tplanMgr->create($tplanSet[$itemID]['name'],$tplanSet[$itemID]['notes'],
+			                            $target_id,$tplanSet[$itemID]['active'],$tplanSet[$itemID]['is_public']);
+
+			if( $new_id > 0 )
+			{
+				$tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,
+			                       null,$test_spec_mappings);
+			}                       
+		}
+		
+	}
+}
+
+
 
 
 } // end class

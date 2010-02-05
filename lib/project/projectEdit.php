@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.42 2010/02/04 15:12:35 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.43 2010/02/05 10:14:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -279,7 +279,7 @@ function doCreate($argsObj,&$tprojectMgr)
 		{
 			$options = array('copy_requirements' => $argsObj->optReq);
 			$tprojectMgr->copy_as($argsObj->copy_from_tproject_id,$new_id,
-			                      $argsObj->user_id,$argsObj->testplan_name,$options);
+			                      $argsObj->userID,trim($argsObj->tprojectName),$options);
 		}
 	}
 	else

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.163 2010/02/01 16:06:59 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.164 2010/02/05 10:14:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1223,73 +1223,84 @@ class testplan extends tlObjectWithAttachments
         [tproject_id]: default null.
                        != null => set this as the new testproject for the testplan
                               this allow us to copy testplans to differents test projects.
-        [copy_options]: default null
-                        null: do a deep copy => copy following test plan child elements:
+
+        [user_id]
+        [options]: default null
+                   allowed keys:
+                   items2copy: 
+                   	          null: do a deep copy => copy following test plan child elements:
                               builds,linked tcversions,milestones,user_roles,priorities,
                               platforms,execution assignment.
                               
-                        != null, a map with keys that controls what child elements to copy
+                              != null, a map with keys that controls what child elements to copy
 
-        [tcversion_type]:  default null -> use same version present on source testplan
-                          'lastest' -> for every testcase linked to source testplan
-                                      use lastest available version
-
+				   copy_assigned_to:
+				   tcversion_type: 
+				                  null -> use same version present on source testplan
+                                  'lastest' -> for every testcase linked to source testplan
+                                               use lastest available version
   	returns: N/A
 	*/
-	function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null,
-                     $copy_options=null,$tcversion_type=null,$copy_assigned_to=0,$user_id=null)
+	function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null,$user_id=null,
+                     $options=null,$mappings=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		// CoPy configuration
-		// Configure here only elements that has his own table.
-		// Exception example:
-		//                   test urgency information is not stored in a special table
-		//                   then key can set to 0, or better REMOVED.
-		$cp_options = array('copy_tcases' => 1,'copy_milestones' => 1, 'copy_user_roles' => 1, 
-		                    'copy_builds' => 1, 'copy_platforms_links' => 1);
-		$cp_methods = array('copy_tcases' => 'copy_linked_tcversions',
-		                    'copy_milestones' => 'copy_milestones',
+		$cp_methods = array('copy_milestones' => 'copy_milestones',
 			                'copy_user_roles' => 'copy_user_roles',
 			                'copy_platforms_links' => 'copy_platforms_links',
 			                'copy_builds' => 'copy_builds');
-		
-		
-		if( !is_null($copy_options) )
-		{
-			$cp_options=$copy_options;
-		}
+
+		$my['options'] = array();
+
+		// Configure here only elements that has his own table.
+		$my['options']['items2copy']= array('copy_tcases' => 1,'copy_milestones' => 1, 'copy_user_roles' => 1, 
+		                                    'copy_builds' => 1, 'copy_platforms_links' => 1);
+
+		$my['options']['copy_assigned_to'] = 0;
+		$my['options']['tcversion_type'] = null;
+
+		$my['options'] = array_merge($my['options'], (array)$options);
 		
 		// get source testplan general info
 		$rs_source=$this->get_by_id($id);
 		
 		if(!is_null($tplan_name))
 		{
-			$sql="UPDATE {$this->tables['nodes_hierarchy']} " .
-				"SET name='" . $this->db->prepare_string(trim($tplan_name)) . "' " .
-				"WHERE id={$new_tplan_id}";
+			$sql="/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+				 "SET name='" . $this->db->prepare_string(trim($tplan_name)) . "' " .
+				 "WHERE id={$new_tplan_id}";
 			$this->db->exec_query($sql);
 		}
 		
 		if(!is_null($tproject_id))
 		{
-			$sql="UPDATE {$this->tables['testplans']} SET testproject_id={$tproject_id} " .
-				"WHERE id={$new_tplan_id}";
+			$sql="/* $debugMsg */ UPDATE {$this->tables['testplans']} SET testproject_id={$tproject_id} " .
+				 "WHERE id={$new_tplan_id}";
 			$this->db->exec_query($sql);
 		}
 		
-		foreach( $cp_options as $key => $do_copy )
+		
+		// copy test cases is an special copy
+		if( $my['options']['items2copy']['copy_tcases'] )
+		{
+			$this->copy_linked_tcversions($id,$new_tplan_id,$user_id,$my['options'],$mappings);
+		}
+		
+		foreach( $my['options']['items2copy'] as $key => $do_copy )
 		{
 			if( $do_copy )
 			{
 				if( isset($cp_methods[$key]) )
 				{
 					$copy_method=$cp_methods[$key];
-					$this->$copy_method($id,$new_tplan_id,$tcversion_type,$copy_assigned_to,$user_id);
+					$this->$copy_method($id,$new_tplan_id);
 				}
 			}
 		}
 	} // end function copy_as
+
+
 
 
 	// $id: source testplan id
@@ -1318,23 +1329,32 @@ class testplan extends tlObjectWithAttachments
 
   	args: id: source testplan id
         new_tplan_id: destination
-        [tcversion_type]: default null -> use same version present on source testplan
-                          'lastest' -> for every testcase linked to source testplan
+        [options]
+        	[tcversion_type]: default null -> use same version present on source testplan
+                              'lastest' -> for every testcase linked to source testplan
                                       use lastest available version
-        [copy_assigned_to]: 1 -> copy execution assignments without role control                              
+        	[copy_assigned_to]: 1 -> copy execution assignments without role control                              
 
   	returns:
   
  	 Note: test urgency is set to default in the new Test plan (not copied)
 	*/
-	private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null,
-	                                        $copy_assigned_to=0,$user_id=-1)
+	// private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null,
+	//                                         $copy_assigned_to=0,$user_id=-1)
+	private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1,
+	                                        $options=null,$mappings=null)
+	
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+    
+		$my['options']['tcversion_type'] = null;
+	    $my['options']['copy_assigned_to'] = 0;
+		$my['options'] = array_merge($my['options'], (array)$options);
+	    
         $now_ts = $this->db->db_now();
 
 		$sql="/* $debugMsg */ "; 
-		if($copy_assigned_to)
+		if($my['options']['copy_assigned_to'])
 		{
 			$sql .= " SELECT TPTCV.*, COALESCE(UA.user_id,-1) AS tester " .
 			        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
@@ -1357,14 +1377,20 @@ class testplan extends tlObjectWithAttachments
 			foreach($rs as $elem)
 			{
 				$tcversion_id = $elem['tcversion_id'];
+				
+				// Seems useless - 20100204
 				$feature_id = $elem['id'];
-				if( !is_null($tcversion_type) )
+				if( !is_null($my['options']['tcversion_type']) )
 				{
 					$sql="/* $debugMsg */ SELECT * FROM {$this->tables['nodes_hierarchy']} WHERE id={$tcversion_id} ";
 					$rs2=$this->db->get_recordset($sql);
 					$last_version_info = $tcase_mgr->get_last_version_info($rs2[0]['parent_id']);
 					$tcversion_id = $last_version_info ? $last_version_info['id'] : $tcversion_id ;
 				}
+				
+				// do mapping
+				
+				
 				
 				$sql = "/* $debugMsg */ " . 
 				       " INSERT INTO {$this->tables['testplan_tcversions']} " .

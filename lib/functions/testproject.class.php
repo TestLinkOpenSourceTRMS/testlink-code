@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.148 2010/02/05 14:06:02 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.149 2010/02/05 19:12:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2076,8 +2076,6 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	if( $my['options']['copy_requirements'] )
 	{
 		$oldNewMappings['requirements'] = $this->copy_requirements($id,$new_id);
-    	new dBug($oldNewMappings['requirements']);
-    	die();	
 	}
 
 	
@@ -2248,5 +2246,35 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
 		
 	}
 }
+
+
+/**
+ * 
+ *
+ */
+private function copy_requirements($source_id,$target_id,$user_id)
+{
+	$mappings = null;
+	// need to get subtree and create a new one
+	$filters = array();
+	$filters['exclude_node_types'] = array('testplan' => 'exclude','testcase' => 'exclude',
+	                                       'testsuite' => 'exclude','requirement' => 'exclude');
+	                 
+	$elements = $this->tree_manager->get_children($source_id,$filters['exclude_node_types']);
+	if( !is_null($elements) )
+	{
+		$mappings = array();
+		$reqSpecMgr = new requirement_spec_mgr($this->db);
+		$options = array('copy_also' => array('testcase_assignments' => false) );
+		foreach($elements as $piece)
+		{
+			// function copy_to($id, $parent_id, $tproject_id, $user_id,$options = null)
+			$op = $reqSpecMgr->copy_to($piece['id'],$target_id,$target_id,$user_id,$options);
+			$mappings += $op['mappings'];
+		}
+	}
+	return $mappings;
+}
+
 } // end class
 ?>

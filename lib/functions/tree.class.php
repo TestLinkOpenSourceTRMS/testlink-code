@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.80 2010/02/03 21:32:40 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.81 2010/02/05 19:12:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -32,25 +32,23 @@ class tree extends tlObject
 	// configurable values - pseudoconstants
 	var $node_types = array( 1 => 'testproject','testsuite',
 	                              'testcase','tcversion','testplan',
-	                              'requirement_spec','requirement');
+	                              'requirement_spec','requirement','req_version');
 
   // key: node type id, value: class name
 	var $class_name = array( 1 => 'testproject','testsuite',
 	                              'testcase',null,'testplan',
-	                              'requirement_spec_mgr','requirement_mgr');
+	                              'requirement_spec_mgr','requirement_mgr',null);
 	                              
 	var $node_descr_id = array();
 	
 	var $node_tables = array('testproject' => 'testprojects',
-                           'testsuite'   => 'testsuites',
-                           'testplan'    => 'testplans',
-                           'testcase'    => 'testcases',
-                           'tcversion'   => 'tcversions',
-                           'requirement_spec' =>'req_specs',
-                           'requirement' =>'requirements'  );
- 
-
-  
+                             'testsuite' => 'testsuites',
+                             'testplan' => 'testplans',
+                             'testcase' => 'testcases',
+                             'tcversion' => 'tcversions',
+                             'requirement_spec' =>'req_specs',
+                             'requirement' => 'requirements',  
+                             'req_version' => 'req_versions');
   
 	var $ROOT_NODE_TYPE_ID = 1;
 	var $ROOT_NODE_PARENT_ID = NULL;
@@ -838,34 +836,33 @@ class tree extends tlObject
 	      if( !isset($exclude_branches[$row['id']]) )
 	      {  
 	          
-	        	$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
-	            $node_list[] = array('id'        => $row['id'],
-	                                 'parent_id' => $row['parent_id'],
-	                                 'node_type_id' => $row['node_type_id'],
-	                                 'node_order' => $row['node_order'],
-	                                 'node_table' => $node_table,
-	                                 'name' => $row['name']);
+				$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
+				$node_list[] = array('id' => $row['id'],
+				                     'parent_id' => $row['parent_id'],
+				                     'node_type_id' => $row['node_type_id'],
+				                     'node_order' => $row['node_order'],
+				                     'node_table' => $node_table,
+				                     'name' => $row['name']);
 	          
-	          // Basically we use this because:
-	          // 1. Sometimes we don't want the children if the parent is a testcase,
-	          //    due to the version management
-	          //
-	          // 2. Sometime we want to exclude all descendants (branch) of a node.
-	          //
-	          // [franciscom]: 
-	          // I think ( but I have no figures to backup my thoughts) doing this check and 
-	          // avoiding the function call is better that passing a condition that will result
-	          // in a null result set.
-	          //
-	          //
-	          if( !isset($exclude_children_of[$this->node_types[$row['node_type_id']]]) && 
-	              !isset($exclude_branches[$row['id']])
-	            )
-	          {
-	        	  $this->_get_subtree($row['id'],$node_list,$and_not_in_clause,
-	        	                      $exclude_children_of,$exclude_branches,$order_cfg);	
-	         	  
-	        	}
+				// Basically we use this because:
+				// 1. Sometimes we don't want the children if the parent is a testcase,
+				//    due to the version management
+				//
+				// 2. Sometime we want to exclude all descendants (branch) of a node.
+				//
+				// [franciscom]: 
+				// I think ( but I have no figures to backup my thoughts) doing this check and 
+				// avoiding the function call is better that passing a condition that will result
+				// in a null result set.
+				//
+				//
+				if( !isset($exclude_children_of[$this->node_types[$row['node_type_id']]]) && 
+				    !isset($exclude_branches[$row['id']]) )
+				{
+				  $this->_get_subtree($row['id'],$node_list,$and_not_in_clause,
+				                      $exclude_children_of,$exclude_branches,$order_cfg);	
+				  
+				}
 	    	}
 	  	}
 	} // function end
@@ -1146,14 +1143,14 @@ class tree extends tlObject
 	{
 		static $root_id;
 		static $my;
+		static $debugMsg;
 		if( is_null($root_id) )
 		{
+			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 			$root_id=$node_id;  
 		}
 		
-		
-		
-		$sql = " SELECT NH.* FROM {$this->object_table} NH " .
+		$sql = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
 			   " WHERE NH.parent_id = {$node_id} {$and_not_in_clause} ";
 		
 		$rs = $this->db->get_recordset($sql);
@@ -1200,14 +1197,22 @@ class tree extends tlObject
 			$children = $this->db->get_recordset($sql);
 			if( is_null($children) || count($children) == 0 )
 			{
-				$sql2 = " SELECT NH.* FROM {$this->object_table} NH " .
-					" WHERE NH.id = {$node_id}";
+				$sql2 = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
+					    " WHERE NH.id = {$node_id}";
 				$node_info = $this->db->get_recordset($sql2);
-				$className = $this->class_name[$node_info[0]['node_type_id']];
-				if( !is_null($className) )
-				{ 
-					$item_mgr = new $className($this->db);
-					$item_mgr->delete($node_id);        
+				
+				if( isset($this->class_name[$node_info[0]['node_type_id']]) )
+				{
+					$className = $this->class_name[$node_info[0]['node_type_id']];
+					if( !is_null($className) )
+					{ 
+						$item_mgr = new $className($this->db);
+						$item_mgr->delete($node_id);        
+					}
+				}   
+				else
+				{
+					// need to signal error - TO BE DONE
 				}
 			}   	   
 		}

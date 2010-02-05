@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.66 $
- * @modified $Date: 2010/02/04 15:12:34 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2010/02/05 19:12:12 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -44,6 +44,7 @@
  *
 */
 require_once( dirname(__FILE__) . '/attachments.inc.php' );
+require_once( dirname(__FILE__) . '/requirements.inc.php' );
 
 class requirement_spec_mgr extends tlObjectWithAttachments
 {
@@ -1469,14 +1470,6 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 	         parent_id:
 	         user_id: who is requesting copy operation
 	         [options]
-	         [check_duplicate_name]: default: 0 -> do not check
-	                                          1 -> check for duplicate when doing copy
-	                                               What to do if duplicate exists, is controlled
-	                                               by action_on_duplicate_name argument.
-	                                               
-	         [action_on_duplicate_name argument]: default: 'allow_repeat'.
-	                                              Used when check_duplicate_name=1.
-	                                              Specifies how to react if duplicate name exists.
 	                                              
 	  returns: map with following keys:
 	           status_ok: 0 / 1
@@ -1490,6 +1483,10 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 		$op = array('status_ok' => 1, 'msg' => 'ok', 'id' => -1 , 'mappings' => null);
+		$my['options'] = array('copy_also' => null);
+		$my['options'] = array_merge($my['options'], (array)$options);
+
+
 		$field_size = config_get('field_size');
 		$item_info = $this->get_by_id($id);
         $target_doc = $this->generateDocID($id,$tproject_id);		
@@ -1518,8 +1515,10 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 					switch ($elem['node_type_id'])
 					{
 						case $this->node_types_descr_id['requirement']:
-							$ret = $this->reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,$tproject_id);
-							$op['status_ok'] = $ret['status_ok'];
+							$ret = $this->reqMgr->copy_to($elem['id'],$the_parent_id,$user_id,
+							                              $tproject_id,$my['options']['copy_also']);
+							$op['status_ok'] = $ret['status_ok'];    
+							$op['mappings'] += $ret['mappings'];
 							break;
 							
 						case $this->node_types_descr_id['requirement_spec']:
@@ -1528,6 +1527,7 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 							$ret = $this->create($tproject_id,$the_parent_id,$target_doc,$item_info['title'],
 			                                     $item_info['scope'],$item_info['total_req'],
 			                                     $item_info['author_id'],$item_info['type'],$item_info['node_order']);
+
 					    	$parent_decode[$elem['id']]=$ret['id'];
 				      		$op['mappings'][$elem['id']] = $ret['id'];
 

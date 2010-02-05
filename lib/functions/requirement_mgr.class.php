@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2010/01/24 15:56:35 $ by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2010/02/05 19:12:10 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1356,7 +1356,7 @@ function html_table_of_custom_field_values($id)
 	 */
 	function copy_to($id,$parent_id,$user_id,$tproject_id=null,$options=null)
 	{
-	    $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok');
+	    $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
 	    $my['options'] = array();
 	    $my['options'] = array_merge($my['options'], (array)$options);
     
@@ -1382,12 +1382,16 @@ function html_table_of_custom_field_values($id)
 			if ($new_item['status_ok'])
 			{
 		        $ret['status_ok']=1;
+   		        $new_item['mappings'][$id] = $new_item['id'];
+		        
 	 			foreach($item_versions as $req_version)
 				{
 					$op = $this->create_version($new_item['id'],$req_version['version'],
 					                            $req_version['scope'],$req_version['author_id'],
 					                            $req_version['status'],$req_version['type'],
 					                            $req_version['expected_coverage']);
+
+	    			$new_item['mappings'][$req_version['id']] = $op['id'];
 				}
 				
 				$this->copy_cfields($id,$new_item['id']);
@@ -1395,14 +1399,14 @@ function html_table_of_custom_field_values($id)
 		    	if( isset($my['options']['copy_also']['testcase_assignment']) &&
 		    	    $my['options']['copy_also']['testcase_assignment'] )
 				{
-	        	 $linked_items = $this->get_coverage($id);
-            	 if( !is_null($linked_items) )
-            	 {
-            	 	foreach($linked_items as $value)
-            	 	{
-            	 		$this->assign_to_tcase($new_item['id'],$value['id']);
-            	 	}
-            	 }	            
+	        		$linked_items = $this->get_coverage($id);
+            		if( !is_null($linked_items) )
+            		{
+            			foreach($linked_items as $value)
+            			{
+            				$this->assign_to_tcase($new_item['id'],$value['id']);
+            			}
+            		}	            
 				}
 			}
 		}

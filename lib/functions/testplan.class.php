@@ -9,13 +9,15 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.165 2010/02/05 13:58:38 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.166 2010/02/06 10:06:05 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
- *	20100201 - franciscom - BUGID 3121 - Adding Platform to test plan after the execution completed, 
+ *  20100206 - eloff - BUGID 3060 - Adding getStatusTotalsByPriority()
+ *  20100206 - eloff - BUGID 3060 - Adding urgencyImportanceToPriorityLevel() method
+ *  20100201 - franciscom - BUGID 3121 - Adding Platform to test plan after the execution completed,
  *                                       reports are not shown appropriate 	
  *  20100112 - franciscom - getPlatforms() - interface changes
  *	20100106 - franciscom - Multiple Test Case Steps Feature
@@ -2776,7 +2778,8 @@ class testplan extends tlObjectWithAttachments
 			                " B.closed_on_date AS build_closed_on_date,";
             $build_join = " JOIN {$this->tables['builds']} B ON  B.testplan_id=TPTCV.testplan_id " ;
 			$executions_join = " E.build_id=B.id AND E.tcversion_id=TPTCV.tcversion_id " .
-			                   " AND E.testplan_id = TPTCV.testplan_id ";
+			                   " AND E.testplan_id = TPTCV.testplan_id " .
+			                   " AND E.platform_id = TPTCV.platform_id ";
         }
 
 		$sql = "/* {$debugMsg} */ ";
@@ -2790,7 +2793,8 @@ class testplan extends tlObjectWithAttachments
 		        " TPTCV.creation_ts AS link_creation_ts, TPTCV.platform_id, " . 
 			    " TCV.version AS version, TCV.active, TCV.summary, " .
 			    " TCV.tc_external_id AS external_id, TCV.execution_type," .
-		        " COALESCE(UA.user_id,0) AS assigned_to " .
+				" COALESCE(UA.user_id,0) AS assigned_to, " .
+				" (urgency * importance) AS priority " .
 				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
 				$build_join .
 				" /* get test case version info */ " .
@@ -2921,6 +2925,72 @@ class testplan extends tlObjectWithAttachments
         	$totals[$execResults[$idx]['platform_id']]['details'][$key]['qty']++;
         }
         return $totals;
+    }
+
+	/**
+	 * @param int $tplan_id test plan id
+	 * @return map:
+	 *	'type' => 'priority'
+	 *	'total_tc => ZZ
+	 *	'details' => array ( 'passed' => array( 'qty' => X)
+	 *	                     'failed' => array( 'qty' => Y)
+	 *	                     'blocked' => array( 'qty' => U)
+	 *	                      ....)
+	 *
+	 * @internal revision
+	 * 20100206 - eloff - BUGID 3060
+	 */
+	public function getStatusTotalsByPriority($tplan_id)
+	{
+		$code_verbose = $this->getStatusForReports();
+		$urgencyCfg = config_get('urgency');
+		$prioSet = array(
+			HIGH => lang_get($urgencyCfg['code_label'][HIGH]),
+			MEDIUM => lang_get($urgencyCfg['code_label'][MEDIUM]),
+			LOW => lang_get($urgencyCfg['code_label'][LOW]));
+		$totals = array();
+
+		foreach($prioSet as $prioCode => $prioLabel)
+		{
+			$totals[$prioCode]=array('type' => 'priority',
+				'name' => $prioLabel,
+				'total_tc' => 0,
+				'details' => null);
+			foreach($code_verbose as $status_code => $status_verbose)
+			{
+				$totals[$prioCode]['details'][$status_verbose]['qty']=0;
+			}
+		}
+
+		// First step - get not run
+		$filters=null;
+		$options=array();
+		$notRunResults = $this->getNotExecutedLinkedTCVersionsDetailed($tplan_id,$filters,$options);
+
+		foreach ($notRunResults as $result)
+		{
+			$prio_level = $this->urgencyImportanceToPriorityLevel($result['priority']);
+			$totals[$prio_level]['total_tc']++;
+			$totals[$prio_level]['details']['not_run']['qty']++;
+		}
+
+		// Second step - get other results
+		$filters = null;
+		$options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true);
+		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
+		foreach ($execResults as $result)
+		{
+			$prio_level = $this->urgencyImportanceToPriorityLevel($result['priority']);
+			$key=$code_verbose[$result['exec_status']];
+			$totals[$prio_level]['total_tc']++;
+
+			if (!isset($totals[$prio_level]['details'][$key]['qty']))
+			{
+				$totals[$prio_level]['details'][$key]['qty']=0;
+			}
+			$totals[$prio_level]['details'][$key]['qty']++;
+		}
+		return $totals;
     }
 
     /**
@@ -3197,6 +3267,40 @@ class testplan extends tlObjectWithAttachments
         	                 'tcversion_id' => $sibling_tcversion);
         }
         return $sibling;
+    }
+
+    /**
+     * Convert a given urgency and importance to a priority level using
+     * threshold values in $tlCfg->priority_levels.
+     *
+     * @param mixed $urgency Urgency of the testcase.
+     *      If this is the only parameter given then interpret it as
+     *      $urgency*$importance.
+     * @param mixed $importance Importance of the testcase. (Optional)
+     *
+     * @return int HIGH, MEDIUM or LOW
+     */
+    public function urgencyImportanceToPriorityLevel($urgency, $importance=null)
+    {
+        static $priorityLevelsCfg;
+        if ($priorityLevelsCfg == null) {
+            $priorityLevelsCfg = config_get('priority_levels');
+        }
+
+        if (is_null($importance)) {
+            // No importance given, interpret $urgency as urgency * importance
+            $urgencyImportance = intval($urgency);
+        } else {
+            $urgencyImportance = intval($urgency) * intval($importance);
+        }
+
+        if ($urgencyImportance >= $priorityLevelsCfg[HIGH]) {
+            return HIGH;
+        } else if ($urgencyImportance >= $priorityLevelsCfg[MEDIUM]) {
+            return MEDIUM;
+        } else {
+            return LOW;
+        }
     }
 
 

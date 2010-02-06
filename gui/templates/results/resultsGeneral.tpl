@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.16 2010/02/01 10:24:23 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.17 2010/02/06 10:06:37 erikeloff Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
 {lang_get var="labels"
-     s='trep_kw,trep_owner,trep_comp,generated_by_TestLink_on, 
+     s='trep_kw,trep_owner,trep_comp,generated_by_TestLink_on, priority,
        	 th_overall_priority, th_progress, th_expected, th_overall, th_milestone,
        	 th_tc_priority_high, th_tc_priority_medium, th_tc_priority_low,
          title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites,
@@ -98,6 +98,15 @@ Revisions:
              args_column_definition=$gui->columnsDefinition->platform
              args_column_data=$gui->statistics->platform}
     {/if}
+    {if $session['testprojectOptPriority']}
+      {include file="$this_template_dir/inc_results_show_table.tpl"
+             args_title=$labels.title_report_tc_priorities
+             args_first_column_header=$labels.priority
+             args_first_column_key='name'
+             args_show_percentage=true
+             args_column_definition=$gui->columnsDefinition->platform
+             args_column_data=$gui->statistics->priorities}
+    {/if}
   
   	{* Keywords 
      Warning: args_first_column_key='keyword_name' is related to name used 
@@ -115,30 +124,6 @@ Revisions:
   	{* ----- results by milestones / priorities -------------------------------------- *}
 
 	{if $session['testprojectOptPriority']}
-		<h2>{$labels.title_report_tc_priorities}</h2>
-		
-		<table class="simple" style="width: 50%; text-align: center; margin-left: 0px;">
-		<tr>
-			<th>{$labels.th_overall_priority}</th>
-			<th>{$labels.th_progress}</th>
-		</tr>
-  		<tr>
-			<td>{$labels.th_tc_priority_high}</td>
- 			<td>{$gui->statistics->priority_overall.3} {$tlCfg->gui_separator_open}
-  					{$gui->statistics->priority_overall.high_percentage} %{$tlCfg->gui_separator_close}</td>
-  		</tr>
-  		<tr>
-			<td>{$labels.th_tc_priority_medium}</td>
-  			<td>{$gui->statistics->priority_overall.2} {$tlCfg->gui_separator_open}
-  					{$gui->statistics->priority_overall.medium_percentage} %{$tlCfg->gui_separator_close}</td>
-  		</tr>
-  		<tr>
-			<td>{$labels.th_tc_priority_low}</td>
-  			<td>{$gui->statistics->priority_overall.1} {$tlCfg->gui_separator_open}
-  					{$gui->statistics->priority_overall.low_percentage} %{$tlCfg->gui_separator_close}</td>
-  		</tr>
-		</table>
-
 		{if $gui->statistics->milestones != ""}
 
 			<h2>{$labels.title_report_milestones}</h2>

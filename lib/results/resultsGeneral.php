@@ -4,14 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2010/02/01 11:51:07 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2010/02/06 10:06:37 $ by $Author: erikeloff $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
  *
  * Revisions:
- *	20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns 
+ *  20100206 - eloff - BUGID 3060 - Show verbose priority statistics like other tables.
+ *  20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns
  *                                         with test case exec results
  *  20091103 - franciscom - keywords, assigned testers, platform results refactored,
  *                          noew use method from test plan class.
@@ -94,8 +95,14 @@ else // do report
 	if( $gui->showPlatforms )
 	{
 		$items2loop[] = 'platform';
-	    $platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
-        $gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
+		$platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
+		$gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
+	}
+	if ($_SESSION['testprojectOptPriority'])
+	{
+		$items2loop[] = 'priorities';
+		$prios = $tplan_mgr->getStatusTotalsByPriority($args->tplan_id);
+		$gui->statistics->priorities = $tplan_mgr->tallyResultsForReport($prios);
 	}
 
 	foreach($items2loop as $item)
@@ -233,19 +240,6 @@ else // do report
     $options=array('output' => 'array', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
    
-
-	// collect prioritized results for whole Test Plan
-	if ($_SESSION['testprojectOptPriority'])
-	{
-		$set2loop = array('high_percentage' => HIGH,'medium_percentage' => MEDIUM,
-		                  'low_percentage' => LOW);
-		$gui->statistics->priority_overall = $metricsMgr->getPrioritizedResults($args->tplan_id);
-		foreach( $set2loop as $key => $value )
-		{
-			$gui->statistics->priority_overall[$key] = get_percentage($planMetrics['total'],
-				                                                      $gui->statistics->priority_overall[$value]); 
-		}
-	}
 
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);
 	if (!empty($milestonesList))

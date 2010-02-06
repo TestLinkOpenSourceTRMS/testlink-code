@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.166 2010/02/06 10:06:05 erikeloff Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.167 2010/02/06 10:11:43 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2768,7 +2768,8 @@ class testplan extends tlObjectWithAttachments
 			$build_fields = " ";
             $build_join = " ";
 			$executions_join = " E.tcversion_id=TPTCV.tcversion_id " .
-			                   " AND E.testplan_id = TPTCV.testplan_id ";
+			                   " AND E.testplan_id = TPTCV.testplan_id " .
+			                   " AND E.platform_id = TPTCV.platform_id ";
 		    $sqlFilter = "";
         }
         else

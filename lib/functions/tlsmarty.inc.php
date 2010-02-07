@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.17 2010/01/24 11:04:26 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.18 2010/02/07 20:48:06 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -19,15 +19,52 @@
  * 20080424 - havlatm - added $tlCfg
  */
 
+define('SMARTY_DIR', TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
+	            DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR);
+define('SMARTY_CORE_DIR', SMARTY_DIR . 'internals' . DIRECTORY_SEPARATOR);
+tLog(SMARTY_CORE_DIR, 'ERROR');
+
 /** include parent extrenal component */
-require_once( TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 'smarty'.  
-	            DIRECTORY_SEPARATOR . 'libs' . DIRECTORY_SEPARATOR . 'Smarty.class.php');
+require_once( SMARTY_DIR . 'Smarty.class.php');
 
 /** in this way you can switch ext js version in easy way */
 if( !defined('TL_EXTJS_RELATIVE_PATH') )
 {
     define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );
 }
+
+
+/** @TODO martin: refactore + describe */
+function translate_tc_status($status_code)
+{
+	$resultsCfg = config_get('results'); 
+	$verbose = lang_get('test_status_not_run');
+	if( $status_code != '')
+	{
+		$suffix = $resultsCfg['code_status'][$status_code];
+		$verbose = lang_get('test_status_' . $suffix);
+	}
+	return $verbose;
+}
+
+/** 
+ * function is registered in tlSmarty class
+ * @uses function translate_tc_status
+ * @todo should be moved to tlSmarty class
+ */
+function translate_tc_status_smarty($params, &$smarty)
+{
+	$the_ret = translate_tc_status($params['s']);
+	if(	isset($params['var']) )
+	{
+		$smarty->assign($params['var'], $the_ret);
+	}
+	else
+	{
+		return $the_ret;
+	}
+}
+
 
 /**
  * TestLink wrapper for external Smarty class

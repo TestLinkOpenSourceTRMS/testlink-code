@@ -7,37 +7,37 @@
  * Common functions: database connection, session and data initialization,
  * maintain $_SESSION data, redirect page, log, etc.
  * 
- * Note: this file cannot include a feature specific code for performance and 
- * readability reason
+ * Note: this file must uses only globally used functionality and cannot include 
+ * a feature specific code because of performance and readability reasons
  *
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.185 2010/02/01 11:54:48 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.186 2010/02/07 20:48:06 havlat Exp $
  * @link 		http://www.teamst.org/index.php
+ * @since 		TestLink 1.5
  *
  * @internal Revisions:
- * 20100124 - eloff - added $redirect parameter to checkSessionValid()
- * 20100124 - eloff - BUGID 3012 - added buildExternalIdString()
- * 20091215 - eloff - save active testplan_id to cookie
- * 20091121 - franciscom - getItemTemplateContents() - contribution refactored
- * 20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
- * 20090409 - amitkhullar- BUGID 2354
- * 20090111 - franciscom - commented some required_once and some global coupling
- * 20081027 - havlatm - refactorization, description
+ * 	20100207 - havlatm - cleanup
+ * 	20100124 - eloff - added $redirect parameter to checkSessionValid()
+ * 	20100124 - eloff - BUGID 3012 - added buildExternalIdString()
+ * 	20091215 - eloff - save active testplan_id to cookie
+ * 	20091121 - franciscom - getItemTemplateContents() - contribution refactored
+ * 	20090425 - amitkhullar - BUGID 2431 - Improper Session Handler	
+ * 	20090409 - amitkhullar- BUGID 2354
+ * 	20090111 - franciscom - commented some required_once and some global coupling
+ * 	20081027 - havlatm - refactorization, description
  * 						removed unused $g_cache_config and some functions 
- * 20080907 - franciscom - isValidISODateTime()
- * 20080518 - franciscom - translate_tc_status()
- * 20080412 - franciscom - templateConfiguration()
- * 20080326 - franciscom - config_get() - refactored removed eval()
- * 20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
+ * 	20080907 - franciscom - isValidISODateTime()
+ * 	20080518 - franciscom - translate_tc_status()
+ * 	20080412 - franciscom - templateConfiguration()
+ * 	20080326 - franciscom - config_get() - refactored removed eval()
+ * 	20071027 - franciscom - added ini_get_bool() from mantis code, needed to user
  *                         string_api.php, also from Mantis.
- *
- * 20071002 - jbarchibald - BUGID 1051
- * 20070705 - franciscom - init_labels()
- * 20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
- *
- * ----------------------------------------------------------------------------------- */
+ * 	20071002 - jbarchibald - BUGID 1051
+ * 	20070705 - franciscom - init_labels()
+ * 	20070623 - franciscom - improved info in header of localize_dateOrTimeStamp()
+ */
 
 /** core and parenthal classes */
 require_once('object.class.php');
@@ -45,6 +45,11 @@ require_once('metastring.class.php');
 
 /** library for localization */
 require_once('lang_api.php');
+
+/** logging functions */
+require_once('logging.inc.php');
+require_once('logger.class.php');
+require_once('pagestatistics.class.php');
 
 /** library of database wrapper */
 require_once('database.class.php');
@@ -55,43 +60,18 @@ require_once('roles.inc.php');
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
 require_once('tlsmarty.inc.php');
 
-/** logging functions */
-require_once('logging.inc.php');
-require_once('logger.class.php');
-require_once('pagestatistics.class.php');
-
-/** BTS interface */
-/** @TODO martin: remove from global loading - limited using */ 
-// if ($g_interface_bugs != 'NO')
-// {
-//   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
-//                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
-// }
-require_once("testproject.class.php"); 
-
-/** @TODO use the next include only if it is used -> must be removed */
-require_once("treeMenu.inc.php");
-require_once("exec_cfield_mgr.class.php");
+/** Input data validation */
 require_once("inputparameter.inc.php");
 
-//@TODO schlundus, i think we can remove php4 legacy stuff?
-/** 
- * load the php4 to php5 domxml wrapper if the php5 is used and 
- * the domxml extension is not loaded 
- **/
-if (version_compare(PHP_VERSION,'5','>=') && !extension_loaded("domxml"))
-{
-	require_once(TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 
-		'domxml-php4-to-php5.php');
-}
+/** @TODO use the next include only if it is used -> must be removed */
+require_once("testproject.class.php"); 
+require_once("treeMenu.inc.php");
+require_once("exec_cfield_mgr.class.php");
 
-// -------------------------------------------------------------------------------------
-/** @var integer global main DB connection identifier */
-$db = 0;
-
-
-// --------------------------------------------------------------------------------------
-/* See PHP Manual for details */
+/**
+ * Automatic loader for PHP classes
+ * See PHP Manual for details 
+ */
 function __autoload($class_name) 
 {
 	// exceptions
@@ -106,6 +86,12 @@ function __autoload($class_name)
 	} 
     require_once $classFileName . '.class.php';
 }
+
+
+// ----- End of loading and begin functions ---------------------------------------------
+
+/** @var integer global main DB connection identifier */
+$db = 0;
 
 
 /**
@@ -190,6 +176,7 @@ function setPaths()
 
 /** 
  * Verify if user is log in. Redirect to login page if not.
+ * 
  * @param integer $db DB identifier 
  * @param boolean $redirect if true (default) redirects user to login page, otherwise returns true/false as login status
  **/
@@ -361,19 +348,19 @@ function initProject(&$db,$hash_user_sel)
 }
 
 
- /**
-  * General page initialization procedure
-  * - init session
-  * - init database
-  * - check rights
-  * - initialize project data (if requested)
-  * 
-  * @param integer $db DB connection identifier
-  * @param boolean $initProject (optional) Set true if adjustment of Product or
-  * 		Test Plan is required; default is FALSE
-  * @param boolean $bDontCheckSession (optional) Set to true if no session should be
-  * 		 started
-  */
+/**
+ * General GUI page initialization procedure
+ * - init session
+ * - init database
+ * - check rights
+ * - initialize project data (if requested)
+ * 
+ * @param integer $db DB connection identifier
+ * @param boolean $initProject (optional) Set true if adjustment of Product or
+ * 		Test Plan is required; default is FALSE
+ * @param boolean $bDontCheckSession (optional) Set to true if no session should be
+ * 		 started
+ */
 function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false,$userRightsCheckFunction = null)
 {
 	doSessionStart();
@@ -464,7 +451,6 @@ function strings_stripSlashes($parameter,$bGPC = true)
 }
 
 
-// --------------------------------------------------------------------------------------
 function to_boolean($alt_boolean)
 {
 	$the_val = 1;
@@ -487,13 +473,15 @@ function to_boolean($alt_boolean)
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
+ * Validate string by relular expression
  *
  * @param string $str2check
- * @param string  $regexp_forbidden_chars: regular expression (perl format)
+ * @param string $regexp_forbidden_chars Regular expression (perl format)
  *
- * @return  1: check ok, 0:check KO
+ * @return boolean 1: check ok, 0:check KO
+ * 
+ * @todo havlatm: remove as obsolete or move to inputparam.inc.php
  */
 function check_string($str2check, $regexp_forbidden_chars)
 {
@@ -510,12 +498,6 @@ function check_string($str2check, $regexp_forbidden_chars)
 }
 
 
-// --------------------------------------------------------------------------------------
-/*
-  function:
-  args :
-  returns:
-*/
 function set_dt_formats()
 {
 	global $g_date_format;
@@ -537,15 +519,15 @@ function set_dt_formats()
 }
 
 
-// --------------------------------------------------------------------------------------
-/*
-  function: config_get
-  args :
-  returns:
-  
-  rev:
-      20080326 - franciscom - removed eval
-*/
+/**
+ * Load global configuration to function
+ * 
+ * @param string $config_id key for identification of configuration parameter
+ * @return mixed the configuration parameter(s)
+ * 
+ * @internal Revisions
+ *	20080326 - franciscom - removed eval
+ */
 function config_get($config_id)
 {
 	$t_value = '';  
@@ -568,13 +550,13 @@ function config_get($config_id)
 }
 
 
-// --------------------------------------------------------------------------------------
 /**  
- * Return true if the parameter is an empty string or a string
+ * @return boolean Return true if the parameter is an empty string or a string
  * containing only whitespace, false otherwise
  * @author Copyright (C) 2000 - 2004  Mantis Team, Kenzaburo Ito
  */ 
-function is_blank( $p_var ) {
+function is_blank( $p_var ) 
+{
 	$p_var = trim( $p_var );
 	$str_len = strlen( $p_var );
 	if ( 0 == $str_len ) {
@@ -584,15 +566,12 @@ function is_blank( $p_var ) {
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
  * Builds the header needed to make the content available for downloading
  *
  * @param string $content the content which should be downloaded
  * @param string $fileName the filename
- *
- *
-**/
+ **/
 function downloadContentsToFile($content,$fileName)
 {
 	$charSet = config_get('charset');
@@ -606,71 +585,12 @@ function downloadContentsToFile($content,$fileName)
 }
 
 
-// --------------------------------------------------------------------------------------
-/** @TODO martin: move the next two functions to appropriate class + describe */
-/*
-  function: translate_tc_status
-  args :
-  returns:
-*/
-function translate_tc_status($status_code)
-{
-	$resultsCfg = config_get('results'); 
-	$verbose = lang_get('test_status_not_run');
-	if( $status_code != '')
-	{
-		$suffix = $resultsCfg['code_status'][$status_code];
-		$verbose = lang_get('test_status_' . $suffix);
-	}
-	return $verbose;
-}
-
-/*
-  function: translate_tc_status_smarty
-  args :
-  returns:
-*/
-function translate_tc_status_smarty($params, &$smarty)
-{
-	$the_ret = translate_tc_status($params['s']);
-	if(	isset($params['var']) )
-	{
-		$smarty->assign($params['var'], $the_ret);
-	}
-	else
-	{
-		return $the_ret;
-	}
-}
-
-
-// --------------------------------------------------------------------------------------
-/** @TODO describe */
-/*
-  function:
-  args :
-  returns:
-*/
-function my_array_intersect_keys($array1,$array2)
-{
-	$aresult = array();
-	foreach($array1 as $key => $val)
-	{
-		if(isset($array2[$key]))
-		{
-			$aresult[$key] = $array2[$key];
-		}
-	}
-	return($aresult);
-}
-
-
-// --------------------------------------------------------------------------------------
-/*
-  function for performance timing
-  @TODO martin: move to logger?
-  returns:
-*/
+/**
+ * helper function for performance timing
+ * 
+ * @TODO havlatm: Andreas, move to logger?
+ * returns: ?
+ */
 function microtime_float()
 {
    list($usec, $sec) = explode(" ", microtime());
@@ -678,29 +598,10 @@ function microtime_float()
 }
 
 
-// --------------------------------------------------------------------------------------
-/*
-  function: init_labels
-
-  args : map key=a code
-             value: string_to_translate, that can be found in strings.txt
-
-  returns: map key=a code
-               value: lang_get(string_to_translate)
-*/
-function init_labels($map_code_label)
-{
-	foreach($map_code_label as $key => $label)
-	{
-		$map_code_label[$key] = lang_get($label);
-	}
-	return $map_code_label;
-}
-
-/*
+/**
  * Converts a priority weight (urgency * importance) to HIGH, MEDUIM or LOW
  *
- * @return HIGH, MEDUIM or LOW
+ * @return integer HIGH, MEDUIM or LOW
  */
 function priority_to_level($priority) {
 	$levels = config_get('priority_levels');
@@ -713,10 +614,9 @@ function priority_to_level($priority) {
 }
 
 
-
-// --------------------------------------------------------------------------------------
 /**
  * Get the named php ini variable but return it as a bool
+ * 
  * @author Copyright (C) 2000 - 2004  Mantis Team, Kenzaburo Ito
  */
 function ini_get_bool( $p_name ) {
@@ -832,53 +732,16 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
 */
 
 
-// --------------------------------------------------------------------------------------
-// MHT: I'm not able find a simple SQL (subquery is not supported
-// in MySQL 4.0.x); probably temporary table should be used instead of the next
-function array_diff_byId ($arrAll, $arrPart)
-{
-	// solve empty arrays
-	if (!count($arrAll) || is_null($arrAll))
-	{
-		return(null);
-	}
-	if (!count($arrPart) || is_null($arrPart))
-	{
-		return $arrAll;
-	}
-
-	$arrTemp = array();
-	$arrTemp2 = array();
-
-	// converts to associated arrays
-	foreach ($arrAll as $penny) {
-		$arrTemp[$penny['id']] = $penny;
-	}
-	foreach ($arrPart as $penny) {
-		$arrTemp2[$penny['id']] = $penny;
-	}
-
-	// exec diff
-	$arrTemp3 = array_diff_assoc($arrTemp, $arrTemp2);
-
-	$arrTemp4 = null;
-	// convert to numbered array
-	foreach ($arrTemp3 as $penny) {
-		$arrTemp4[] = $penny;
-	}
-	return $arrTemp4;
-}
-
-
-// --------------------------------------------------------------------------------------
 /**
- * trim string and limit to N chars
+ * Trim string and limit to N chars
+ * 
  * @param string
  * @param int [len]: how many chars return
  *
  * @return string trimmed string
  *
  * @author Francisco Mancardi - 20050905 - refactoring
+ * @todo havlatm - 20100207 - using should be refactored for inputparameter.inc.php
  */
 function trim_and_limit($s, $len = 100)
 {
@@ -890,11 +753,10 @@ function trim_and_limit($s, $len = 100)
 	return $s;
 }
 
-// --------------------------------------------------------------------------------------
-//
+
+/** @todo havlatm - 20100207 - what's that? and why here. Remove' */
 // nodes_order format:  NODE_ID-?,NODE_ID-?
 // 2-0,10-0,3-0
-//
 function transform_nodes_order($nodes_order,$node_to_exclude=null)
 {
   $fa = explode(',',$nodes_order);
@@ -914,9 +776,9 @@ function transform_nodes_order($nodes_order,$node_to_exclude=null)
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
  * Checks $_FILES for errors while uploading
+ * 
  * @param array $fInfo an array used by uploading files ($_FILES)
  * @return string containing an error message (if any)
  */
@@ -943,11 +805,10 @@ function getFileUploadErrorMessage($fInfo)
 }
 
 
-// --------------------------------------------------------------------------------------
 /**
- * @abstract redirect to a page with static html defined in locale/en_GB/texts.php
+ * Redirect to a page with static html defined in locale/en_GB/texts.php
+ * 
  * @param string $key keyword for finding exact html text in definition array
- * @return N/A 
  */
 function show_instructions($key, $refreshTree=0)
 {
@@ -961,14 +822,9 @@ function show_instructions($key, $refreshTree=0)
 }
 
 
-// --------------------------------------------------------------------------------------
-/*
-  function: templateConfiguration
-  args :
-  returns:
-
-  @TODO: franciscom - 20091003 - document return value
-*/
+/**
+ * @TODO: franciscom - 20091003 - document return value
+ */
 function templateConfiguration($template2get=null)
 {
 	$custom_templates = config_get('tpl');
@@ -988,18 +844,16 @@ function templateConfiguration($template2get=null)
 }
 
 
-// --------------------------------------------------------------------------------------
-/*
-  function: isValidISODateTime
-            check if an string is a valid ISO date/time
-            accepted format: YYYY-MM-DD HH:MM:SS
-
-  args: datetime to check
-
-  returns: true / false
-  
-  rev: 20080907 - franciscom - Code taked form PHP manual
-*/
+/**
+ * Check if an string is a valid ISO date/time
+ *          accepted format: YYYY-MM-DD HH:MM:SS
+ * 
+ * @param string $ISODateTime datetime to check
+ * @return boolean True if string has correct format
+ * 
+ * @internal   
+ * rev: 20080907 - franciscom - Code taked form PHP manual
+ */
 function isValidISODateTime($ISODateTime)
 {
    $dateParts=array('YEAR' => 1, 'MONTH' => 2 , 'DAY' => 3);
@@ -1012,6 +866,7 @@ function isValidISODateTime($ISODateTime)
    }
    return $status_ok;
 }
+
 
 function checkUserRightsFor(&$db,$pfn)
 {
@@ -1034,6 +889,7 @@ function checkUserRightsFor(&$db,$pfn)
 	}
 }
 
+
 function tlStringLen($str)
 {
 	$charset = config_get('charset');	
@@ -1044,6 +900,7 @@ function tlStringLen($str)
 	}
 	return $nLen; 
 }
+
 
 function tlSubStr($str,$start,$length = null)
 {
@@ -1056,7 +913,7 @@ function tlSubStr($str,$start,$length = null)
 }
 
 /**
- * get text from a configured item template for editor objects
+ * Get text from a configured item template for editor objects
  * 
  * @param $itemTemplate identifies a TestLink item that can have
  *        templates that can be loaded when creating an item to semplify
@@ -1109,6 +966,7 @@ function getItemTemplateContents($itemTemplate, $webEditorName, $defaultText='')
     }
     return $value; 
 }
+
 
 /**
  * Builds a string $testCasePrefix . $glueChar . $external_id

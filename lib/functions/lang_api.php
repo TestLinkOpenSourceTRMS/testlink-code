@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: lang_api.php,v 1.25 2009/11/19 09:40:38 havlat Exp $
+ * @version    	CVS: $Id: lang_api.php,v 1.26 2010/02/07 20:48:06 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -210,6 +210,26 @@ function localize_array( $input_array ) {
 	}
 
 	return $input_array;
+}
+
+
+/**
+ * Translate array of TLS keys to array of localized labels
+ * 
+ * @param array $map_code_label map key=a code
+ *           value: string_to_translate, that can be found in strings.txt
+ * 
+ * @return array  map key=a code
+ *             value: lang_get(string_to_translate)
+ * 
+ */
+function init_labels($map_code_label)
+{
+	foreach($map_code_label as $key => $label)
+	{
+		$map_code_label[$key] = lang_get($label);
+	}
+	return $map_code_label;
 }
 
 

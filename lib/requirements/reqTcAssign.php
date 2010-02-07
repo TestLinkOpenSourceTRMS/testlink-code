@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/01/02 16:54:34 $  $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2010/02/07 21:46:40 $  $Author: havlat $
  * 
  * @author Martin Havlat
  *
@@ -214,6 +214,45 @@ function doSingleTestCaseOperation(&$dbHandler,&$argsObj,&$guiObj,$pfn)
   	}
 	return $guiObj;
 } 
+
+
+/** @todo should be refactored; used by function processTestCase only */
+// Old comment: MHT: I'm not able find a simple SQL (subquery is not supported
+// in MySQL 4.0.x); probably temporary table should be used instead of the next
+function array_diff_byId ($arrAll, $arrPart)
+{
+	// solve empty arrays
+	if (!count($arrAll) || is_null($arrAll))
+	{
+		return(null);
+	}
+	if (!count($arrPart) || is_null($arrPart))
+	{
+		return $arrAll;
+	}
+
+	$arrTemp = array();
+	$arrTemp2 = array();
+
+	// converts to associated arrays
+	foreach ($arrAll as $penny) {
+		$arrTemp[$penny['id']] = $penny;
+	}
+	foreach ($arrPart as $penny) {
+		$arrTemp2[$penny['id']] = $penny;
+	}
+
+	// exec diff
+	$arrTemp3 = array_diff_assoc($arrTemp, $arrTemp2);
+
+	$arrTemp4 = null;
+	// convert to numbered array
+	foreach ($arrTemp3 as $penny) {
+		$arrTemp4[] = $penny;
+	}
+	return $arrTemp4;
+}
+
 
 /**
  * processTestCase

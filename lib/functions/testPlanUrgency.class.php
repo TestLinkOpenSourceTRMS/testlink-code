@@ -6,13 +6,14 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testPlanUrgency.class.php,v 1.2 2010/02/04 21:38:52 erikeloff Exp $
+ * @version    	CVS: $Id: testPlanUrgency.class.php,v 1.3 2010/02/09 15:39:49 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *  20091017 - franciscom - moved method getPriority() from result.class.php
- * 	20081212 - BUGID 1922 - franciscom 
- * 	20080901 - franciscom - getSuiteUrgency() - changes in return data 
+ *	20100204 - eloff - fixed "spelling" of break to break instead of $break
+ *	20091017 - franciscom - moved method getPriority() from result.class.php
+ *	20081212 - BUGID 1922 - franciscom 
+ *	20080901 - franciscom - getSuiteUrgency() - changes in return data 
  *
  */ 
 

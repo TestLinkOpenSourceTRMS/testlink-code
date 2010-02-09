@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.150 2010/02/09 19:24:35 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.151 2010/02/09 19:34:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1631,6 +1631,7 @@ function setPublicStatus($id,$status)
 	{
 		static $tcNodeTypeID;
 		static $tsuiteNodeTypeID;
+		static $debugMsg;
 		if (!$tcNodeTypeID)
 		{
 			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;

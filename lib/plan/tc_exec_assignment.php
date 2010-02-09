@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.43 2009/10/19 09:47:45 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.44 2010/02/09 21:11:15 franciscom Exp $ 
  * 
  * rev :
  *       20090807 - franciscom - new feature platforms
@@ -245,7 +245,13 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->show_platforms=$platform_mgr->platformVisibleForTestplan($argsObj->tplan_id);
     $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
     
-    $gui->send_mail=$argsObj->send_mail;
+    $gui->send_mail = $argsObj->send_mail;
+    $gui->send_mail_checked = "";
+    if($gui->send_mail)
+    {
+    	$gui->send_mail_checked = ' checked="checked" ';
+    }
+    
     $gui->glueChar=$tcase_cfg->glue_character;
     
     if ($argsObj->level != 'testproject')

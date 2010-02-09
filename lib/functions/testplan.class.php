@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.167 2010/02/06 10:11:43 erikeloff Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.168 2010/02/09 19:48:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1288,7 +1288,6 @@ class testplan extends tlObjectWithAttachments
 		// copy test cases is an special copy
 		if( $my['options']['items2copy']['copy_tcases'] )
 		{
-			echo 'before copy_linked_tcversions<br>';
 			$this->copy_linked_tcversions($id,$new_tplan_id,$user_id,$my['options'],$mappings);
 		}
 		
@@ -1363,12 +1362,6 @@ class testplan extends tlObjectWithAttachments
 		$my['options']['tcversion_type'] = null;
 	    $my['options']['copy_assigned_to'] = 0;
 		$my['options'] = array_merge($my['options'], (array)$options);
-	    
-	    
-	    new dBug($my['options']);
-	    new dBug($mappings);
-
-	    
         $now_ts = $this->db->db_now();
 
 		$sql="/* $debugMsg */ "; 
@@ -1387,17 +1380,10 @@ class testplan extends tlObjectWithAttachments
 	    }
 
 		$rs=$this->db->get_recordset($sql);
-		 echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
-		new dBug($rs);
-		
 		if(!is_null($rs))
 		{
 			$tcase_mgr = new testcase($this->db);
 			$doMappings = !is_null($mappings);
-			
-			
-			new dBug($rs);
 			foreach($rs as $elem)
 			{
 				$tcversion_id = $elem['tcversion_id'];
@@ -1507,24 +1493,22 @@ class testplan extends tlObjectWithAttachments
 	/**
 	 * Copy user roles to a new Test Plan
 	 * 
-	 * @param int $original_tplan_id original Test Plan identificator
-	 * @param int $new_tplan_id new Test Plan identificator
+	 * @param int $source_id original Test Plan id
+	 * @param int $target_id new Test Plan id
 	 */
-	private function copy_user_roles($original_tplan_id, $new_tplan_id)
+	private function copy_user_roles($source_id, $target_id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		
-		$sql = "SELECT user_id FROM {$this->tables['user_testplan_roles']} " .
-		       "WHERE testplan_id={$original_tplan_id} ";
-		$rs=$this->db->get_recordset($sql);
-	
+		$sql = "/* $debugMsg */ SELECT user_id,role_id FROM {$this->tables['user_testplan_roles']} " .
+		       " WHERE testplan_id={$source_id} ";
+		$rs = $this->db->get_recordset($sql);
 		if(!is_null($rs))
 		{
 	    	foreach($rs as $elem)
 	    	{
 	      		$sql="INSERT INTO {$this->tables['user_testplan_roles']}  " .
 	           		"(testplan_id,user_id,role_id) " .
-	           		"VALUES({$new_tplan_id}," . $elem['user_id'] ."," . $elem['role_id'] . ")";
+	           		"VALUES({$target_id}," . $elem['user_id'] ."," . $elem['role_id'] . ")";
 	      		$this->db->exec_query($sql);
 			}
 		}
@@ -3058,16 +3042,10 @@ class testplan extends tlObjectWithAttachments
 	public function getStatusTotalsByAssignedTesterPlatform($id)
 	{
 		$code_verbose = $this->getStatusForReports();
-		
-		new dBug($code_verbose);
-		
 		$filters = null;
 		$user_platform = null;
 		$options = array('output' => 'mapOfMap');
     	$execResults = $this->get_linked_tcversions($id,$filters,$options);
- 
-        new dBug($execResults);
-        
 	    if( !is_null($execResults) )
 	    {
 	    	$tcaseSet = array_keys($execResults);

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.151 2010/02/09 19:34:47 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.152 2010/02/09 19:48:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2241,8 +2241,7 @@ private function copy_testplans($source_id,$target_id,$user_id,$mappings)
 
 			if( $new_id > 0 )
 			{
-				$tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,
-			                       null,$mappings);
+				$tplanMgr->copy_as($itemID,$new_id,null,$target_id,$user_id,null,$mappings);
 			}                       
 		}
 		

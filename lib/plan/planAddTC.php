@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.90 2010/01/31 16:52:03 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.91 2010/02/09 21:14:47 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -375,7 +375,11 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
     $gui->testerID = $argsObj->testerID;
     $gui->send_mail = $argsObj->send_mail;
- 
+    if($gui->send_mail)
+    {
+    	$gui->send_mail_checked = ' checked="checked" ';
+    }
+
 	$platform_mgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
 	$gui->platforms = $platform_mgr->getLinkedToTestplan($argsObj->tplan_id);
 	$gui->platformsForHtmlOptions = null;

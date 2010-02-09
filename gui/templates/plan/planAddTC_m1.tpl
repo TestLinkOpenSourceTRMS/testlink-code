@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.39 2010/01/31 16:52:03 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.40 2010/02/09 21:14:27 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -83,8 +83,7 @@ Ext.onReady(function(){
 				{html_options options=$gui->testers selected=$gui->testerID}
 			</select>
 			<span style="margin-left:20px;">
-			  <input type="checkbox" name="send_mail" 
-			         id="send_mail" {if $gui->send_mail eq 1} checked="checked" {/if}/>
+			  <input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked}/>
 			  {$labels.send_mail_to_tester}
 			</span>
 		</div>

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.87 2009/12/02 22:18:26 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.88 2010/02/09 19:46:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -27,15 +27,6 @@
 
 /** inlude basic functions for printing Test Specification document */
 require_once("print.inc.php");
-
-/** @var array formats for import */
-$g_reqFormatStrings = array (
-	"csv" => lang_get('req_import_format_description1'),
-	"csv_doors" => lang_get('req_import_format_description2'),
-	"XML" => lang_get('the_format_req_xml_import'),
-	"DocBook" => lang_get('req_import_format_docbook')
-);
-
 
 /**
  * render Requirement Specification

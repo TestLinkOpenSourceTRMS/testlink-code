@@ -1,11 +1,9 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.10 2009/07/19 19:22:29 franciscom Exp $ 
+// $Id: checkboxes.js,v 1.11 2010/02/09 21:05:09 franciscom Exp $ 
 //
 //
 // rev :
-//      20070125 - francisco- - new function set_checkbox()
-//      20070120 - franciscom - new function set_combo_if_checkbox()
-//      20070102 - franciscom - new function checkbox_count_checked()
+//      20100209 - francisco- BUGID 0003150: "Bulk user assignment" on "Assign testcase execution" doesn't work anymore
 //
 
 /*
@@ -75,8 +73,8 @@ function checkOrUncheckAll(ml,bCheck)
 	// var ml = document.myform;
 	var my_form=document.getElementById(ml);
 	
-	alert(ml);
-	alert(my_form);
+	// alert(ml);
+	// alert(my_form);
 	
 	var len = my_form.elements.length;
 	
@@ -157,9 +155,14 @@ function set_combo_if_checkbox(oid,combo_id_prefix,value_to_assign)
       check_id=input_element.id;
       
       // Consider the id a list with '_' as element separator
-      //    
       apieces=check_id.split("_");
-      combo_id_suffix=apieces[apieces.length-1];
+      
+      // BUGID 0003150: "Bulk user assignment" on "Assign testcase execution" doesn't work anymore
+      // 20100209 - needed due to platform features
+      // apieces.length-2 => test case id
+      // apieces.length-1 => platform id
+      //
+      combo_id_suffix=apieces[apieces.length-2] + '_' + apieces[apieces.length-1];
       cb_id[jdx]=combo_id_prefix + combo_id_suffix;
       jdx++;
 		}	
@@ -168,7 +171,7 @@ function set_combo_if_checkbox(oid,combo_id_prefix,value_to_assign)
 	// now set the combos
 	for(idx = 0; idx < cb_id.length; idx++)
 	{
-	   // debug - alert(cb_id[idx] + " will be" + value_to_assign);
+	   //debug - alert(cb_id[idx] + " will be" + value_to_assign);
 	   input_element=document.getElementById(cb_id[idx]);
 	   input_element.value=value_to_assign;
 	}

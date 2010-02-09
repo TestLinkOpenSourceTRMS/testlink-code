@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.545 2010/02/03 21:19:05 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.546 2010/02/09 21:48:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -557,6 +557,7 @@ $TLS_caption_nav_filter_settings = "Filter & Settings ...";
 $TLS_current_build = "Current build";
 $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
+$TLS_filter_on = "on";
 $TLS_filter_tcID = "Test Case ID";
 $TLS_include_unassigned_testcases = " - include unassigned Test Cases";
 $TLS_test_status_all_status = $TLS_test_status_all;

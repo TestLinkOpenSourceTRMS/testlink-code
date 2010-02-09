@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2010/02/09 22:19:24 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
+ *  20100205 - asimon - added doFreezeVersion()
  *	20091217 - franciscom - added reqTypeDomain
  *	20091216 - franciscom - create_tc_from_requirement() interface changes 
  *	20081213 - franciscom - fixed minor bug on doCreate()
@@ -260,6 +261,36 @@ class reqCommands
   	}
   
 
+	/**
+	 * 
+ 	 * 
+     */
+	function doFreezeVersion(&$argsObj)
+	{
+		$obj = $this->initGuiBean();
+		$node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
+		$req_version = $this->reqMgr->get_by_id($node['parent_id'],$argsObj->req_version_id);
+        $req_version = $req_version[0];
+
+		$this->reqMgr->updateOpen($req_version['version_id'], false);
+		logAuditEvent(TLS("audit_req_version_frozen",$req_version['version_id'],
+		                  $req_version['req_doc_id'],$req_version['title']),
+		              "FREEZE",$argsObj->req_version_id,"req_version");
+  
+		$obj->template = 'show_message.tpl';
+		$obj->template_dir = '';
+		
+		$obj->user_feedback = sprintf(lang_get('req_version_frozen'),$req_version['req_doc_id'],
+		                              $req_version['title'],$req_version['version']);
+		
+		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req_version['title'];
+		$obj->title=lang_get('freeze_req');
+		$obj->refresh_tree = 'no';
+		$obj->result = 'ok';  // needed to enable refresh_tree logic
+		return $obj;
+  	}
+
+  	
 	function reorder(&$argsObj)
 	{
 		$obj = $this->initGuiBean();

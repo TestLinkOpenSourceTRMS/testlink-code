@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.10 2009/12/31 10:24:38 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.11 2010/02/09 22:16:49 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -8,7 +8,9 @@ rev:
 *}
 
 {lang_get s='warning_delete_requirement' var="warning_msg" }
+{lang_get s='warning_freeze_requirement' var="freeze_warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='freeze' var="freeze_msgbox_title" }
 
 {include file="inc_head.tpl" openHead='yes'}
 {include file="inc_del_onclick.tpl"}
@@ -37,11 +39,22 @@ function delete_req_version(btn, text, o_id)
 	}
 }					
 
+function freeze_req_version(btn, text, o_id)
+{
+	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doFreezeVersion&req_version_id=';
+	if( btn == 'yes' )
+	{
+		my_action = my_action+o_id;
+		window.location=my_action;
+	}
+}
+
 // VERY IMPORTANT:
 // needed to make delete_confirmation() understand we are using a function.
 // if I pass delete_req as argument javascript complains.
 var pF_delete_req = delete_req;
 var pF_delete_req_version = delete_req_version; 
+var pF_freeze_req_version = freeze_req_version;
 {/literal}
 </script>
 
@@ -85,6 +98,13 @@ var pF_delete_req_version = delete_req_version;
         {assign var="my_delete_version" value=false}
     {/if}
   
+  	{* is it frozen? *}
+    {if $gui->current_version[idx][0].is_open}
+        {assign var="frozen_version" value=false}
+    {else}
+        {assign var="frozen_version" value=true}
+    {/if}
+  
     <h2 style="{$my_style}">
 	  {$toggle_direct_link_img} &nbsp;
 	  {if $gui->display_path}
@@ -105,6 +125,7 @@ var pF_delete_req_version = delete_req_version;
 		         args_can_copy=true
 		         args_can_delete_req=true
 		         args_can_delete_version=$my_delete_version
+		         args_frozen_version=$frozen_version
 		         args_show_version=true
 		         args_show_title=$gui->show_title
 		         args_cf=$gui->cfields[idx] 
@@ -152,6 +173,13 @@ var pF_delete_req_version = delete_req_version;
             {assign var="div_id" value=$div_id$sep$version_num}
             {assign var="memstatus_id" value=mem_$div_id}
            
+           	{* is this version frozen? *}
+    		{if $my_req.is_open}
+        		{assign var="frozen_version" value=false}
+    		{else}
+        		{assign var="frozen_version" value=true}
+    		{/if}
+           
             {include file="inc_show_hide_mgmt.tpl" 
                      show_hide_container_title=$title
                      show_hide_container_id=$div_id
@@ -168,6 +196,7 @@ var pF_delete_req_version = delete_req_version;
 		                   args_can_copy=false
                        args_can_delete_req=false
                        args_can_delete_version=true
+                       args_frozen_version=$frozen_version
                        args_show_version=false 
                        args_show_title=false
                        args_cf=$gui->cfields[idx]}

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.10 2010/01/08 10:26:21 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.11 2010/02/09 22:16:49 franciscom Exp $
 viewer for requirement
 
 rev:
@@ -8,9 +8,8 @@ rev:
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
-             btn_del_this_version,
-             version,testproject,title_last_mod,title_created,by,
-             btn_compare_versions"}
+             btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
+             testproject,title_last_mod,title_created,by,btn_compare_versions"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -41,7 +40,9 @@ rev:
 	  	<input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
 	  	<input type="hidden" name="doAction" value="" />
 	  	
+	  	{if $args_frozen_version eq null}
 	  	<input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
+	  	{/if}
 	  	
 	  	{if $args_can_delete_req}
 	  	<input type="button" name="delete_req" value="{$labels.btn_delete}"
@@ -57,6 +58,14 @@ rev:
 	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
 	  				                              '{$del_msgbox_title}', '{$warning_msg}',pF_delete_req_version);"	/>
 	  				                                
+	  	{/if}
+
+		{* freeze, BUGID 3089 *}
+		{if $args_frozen_version eq null}
+	  	<input type="button" name="freeze_req_version" value="{$labels.btn_freeze_this_version}"
+	  	       onclick="delete_confirmation({$args_req.version_id},
+	  	                '{$labels.version}:{$args_req.version}-{$args_req.req_doc_id|escape:'javascript'|escape}:{$args_req.title|escape:'javascript'|escape}',
+	  				                              '{$freeze_msgbox_title}', '{$freeze_warning_msg}',pF_freeze_req_version);"	/>
 	  	{/if}
 
 	    {if $args_can_copy}  				                                
@@ -76,6 +85,10 @@ rev:
   </div> {* class="groupBtn" *}
 {/if}
 
+{* warning message when req is frozen *}
+{if $args_frozen_version neq null}
+<div class="messages" align="center">{$labels.can_not_edit_req}</div>
+{/if}
 
 <table class="simple">
   {if $args_show_title}

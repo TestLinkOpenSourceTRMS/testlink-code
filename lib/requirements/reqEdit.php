@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2009/12/31 09:55:18 $ by $Author: franciscom $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2010/02/09 22:18:12 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *  20100205 - asimon - added requirement freezing
  *	20091217 - franciscom - added type management 
  *	20091202 - franciscom - fixed bug on webeditor value init.
  *	20080827 - franciscom - BUGID 1692
@@ -104,7 +105,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                              'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
                              'copy' => 'doCopy', 'doCopy' => 'doCopy',
                              'doCreateVersion' => 'doCreateVersion',
-                             'doDeleteVersion' => '');
+                             'doDeleteVersion' => '', 'doFreezeVersion' => 'doFreezeVersion',);
 
 
 
@@ -137,6 +138,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "createTestCases":
         case "doCreateTestCases":
 		case "doCreate":
+		case "doFreezeVersion":
       	case "doUpdate":
         case "copy":
         case "doCopy":

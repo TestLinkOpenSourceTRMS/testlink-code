@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2010/02/05 13:18:59 $ by $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2010/02/09 19:44:37 $ by $Author: havlat $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1021,7 +1021,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         else
         {
             $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
-            $tcase_info = $this->tcaseMgr->->get_by_id($tcase_id);
+            $tcase_info = $this->tcaseMgr->get_by_id($tcase_id);
             $msg = sprintf(TCASEID_NOT_IN_TPLANID_STR,$tcase_info[0]['name'],
                            $this->args[self::$testCaseExternalIDParamName],$tplan_info['name'],$tplan_id);          
             $this->errors[] = new IXR_Error(TCASEID_NOT_IN_TPLANID, $msg);

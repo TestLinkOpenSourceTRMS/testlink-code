@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.67 $
- * @modified $Date: 2010/02/05 19:12:12 $ by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2010/02/09 19:24:35 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ *  20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
  * 	20091228 - franciscom - get_requirements() - refactored to manage req versions
  *                          get_coverage() - refactored to manage req versions
  * 	20091225 - franciscom - new method - generateDocID()
@@ -526,10 +527,8 @@ function delete($id)
  */
 function delete_deep($id)
 {
-	// 	function delete_subtree_objects($node_id,$and_not_in_clause = '',$exclude_children_of = null,
-	//                                 $exclude_branches = null)
-    // 
-    $this->tree_mgr->delete_subtree_objects($id,'',array('requirement' => 'exclude_my_children'));
+	// BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
+    $this->tree_mgr->delete_subtree_objects($id,$id,'',array('requirement' => 'exclude_my_children'));
     $this->delete($id);
 }
 

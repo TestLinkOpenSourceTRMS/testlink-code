@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.86 2010/02/04 15:56:34 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.87 2010/02/09 19:24:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
  * 20100204 - franciscom - copy_to() refactoring	
  * 20100201 - franciscom - get_testcases_deep() - added external_id in output
  * 20091122 - franciscom - item template logic refactored - read_file() removed
@@ -837,8 +838,9 @@ class testsuite extends tlObjectWithAttachments
 	*/
 	function delete_deep($id)
 	{
-	  $this->tree_manager->delete_subtree_objects($id,'',array('testcase' => 'exclude_tcversion_nodes'));
-	  $this->delete($id);
+		// BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
+	  	$this->tree_manager->delete_subtree_objects($id,$id,'',array('testcase' => 'exclude_tcversion_nodes'));
+	  	$this->delete($id);
 	} // end function
 	
 	

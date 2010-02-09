@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.149 2010/02/05 19:12:12 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.150 2010/02/09 19:24:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
  * 20100203 - franciscom - addKeyword() return type changed
  * 20100201 - franciscom - delete() - missing delete of platforms
  * 20100102 - franciscom - show() - interface changes
@@ -1510,6 +1511,8 @@ function setPublicStatus($id,$status)
 	 */
 	function delete($id)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
 		$ret['msg']='ok';
 		$ret['status_ok']=1;
 		
@@ -1543,11 +1546,10 @@ function setPublicStatus($id,$status)
 		$platform_mgr = new tlPlatform($this->db,$id);
 		$platform_mgr->deleteByTestProject($id);
 		
-		$a_sql[] = array(
-			"UPDATE {$this->tables['users']}  SET default_testproject_id = NULL " .
-			" WHERE default_testproject_id = {$id}",
-			'info_resetting_default_project_fails',
-		);
+		$a_sql[] = array("/* $debugMsg */ UPDATE {$this->tables['users']}  " . 
+		                 " SET default_testproject_id = NULL " .
+			             " WHERE default_testproject_id = {$id}",
+			             'info_resetting_default_project_fails');
 		
 		foreach ($a_sql as $oneSQL)
 		{
@@ -1576,10 +1578,10 @@ function setPublicStatus($id,$status)
 		// attachments
 		if (empty($error))
 		{
-			$sql="DELETE FROM {$this->tables['cfield_testprojects']} WHERE testproject_id = {$id} ";
+			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testprojects']} WHERE testproject_id = {$id} ";
 			$this->db->exec_query($sql);
 			
-			$sql = "DELETE FROM {$this->object_table} WHERE id = {$id}";
+			$sql = "/* $debugMsg */ DELETE FROM {$this->object_table} WHERE id = {$id}";
 			
 			$result = $this->db->exec_query($sql);
 			if ($result)
@@ -1598,8 +1600,9 @@ function setPublicStatus($id,$status)
 		
 		if (empty($error))
 		{
-			$this->tree_manager->delete_subtree_objects($id,'',array('testcase' => 'exclude_tcversion_nodes'));
-			$sql="DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
+			// BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
+			$this->tree_manager->delete_subtree_objects($id,$id,'',array('testcase' => 'exclude_tcversion_nodes'));
+			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$id} ";
 			$this->db->exec_query($sql);
 		}
 		
@@ -1630,10 +1633,11 @@ function setPublicStatus($id,$status)
 		static $tsuiteNodeTypeID;
 		if (!$tcNodeTypeID)
 		{
+			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 			$tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
 			$tsuiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
 		}
-		$sql = " SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} " .
+		$sql = "/* $debugMsg */  SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} " .
 		       " WHERE parent_id IN ({$idList})";
 		$sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) "; 
 		
@@ -2126,8 +2130,6 @@ private function copy_user_roles($source_id, $target_id)
 
 	if(!is_null($rs))
 	{
-		new dBug($rs);
-		
     	foreach($rs as $elem)
     	{
       		$sql="/* $debugMsg */ INSERT INTO {$this->tables['user_testproject_roles']}  " .
@@ -2147,7 +2149,6 @@ private function copy_user_roles($source_id, $target_id)
  */
 private function copy_platforms($source_id, $target_id)
 {
-	echo __FUNCTION__;
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	$platform_mgr = new tlPlatform($this->db,$source_id);
 	$old_new = null;

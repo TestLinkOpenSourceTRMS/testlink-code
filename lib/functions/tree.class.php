@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.81 2010/02/05 19:12:13 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.82 2010/02/09 19:24:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
  * 20091220 - franciscom - new method createHierarchyMap()
  * 20090926 - franciscom - get_subtree() - interface changes
  * 20090923 - franciscom - get_full_path_verbose() - fixed bug
@@ -914,8 +915,6 @@ class tree extends tlObject
 	    }
 	  	$children_key = 'childNodes';
 	  	$result = $this->db->exec_query($sql);
-        // echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 	    while($row = $this->db->fetch_array($result))
 	    {
 	  		$rowID = $row['id'];
@@ -1137,17 +1136,15 @@ class tree extends tlObject
 	 * 
 	 * ATTENTION: subtree root node ($node_id) IS NOT DELETED.
 	 *
+	 * BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
 	 */
-	function delete_subtree_objects($node_id,$and_not_in_clause = '',$exclude_children_of = null,
+	function delete_subtree_objects($root_id,$node_id,$and_not_in_clause = '',$exclude_children_of = null,
 	                                $exclude_branches = null)
 	{
-		static $root_id;
-		static $my;
 		static $debugMsg;
-		if( is_null($root_id) )
+		if( is_null($debugMsg) )
 		{
 			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-			$root_id=$node_id;  
 		}
 		
 		$sql = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
@@ -1173,7 +1170,7 @@ class tree extends tlObject
 					//
 					if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
 					{
-						$this->delete_subtree_objects($rowID,$and_not_in_clause,
+						$this->delete_subtree_objects(null,$rowID,$and_not_in_clause,
 							                          $exclude_children_of,$exclude_branches);
 					}
 					else
@@ -1189,10 +1186,10 @@ class tree extends tlObject
 			} //while
 		}
 		
-		// Must delete myself if I'm empty, only is I'm not subtree root.
+		// Must delete myself if I'm empty, only if I'm not subtree root.
 		// Done this way to avoid infinte recursion for some type of nodes
 		// that use this method as it's delete method. (example testproject).
-		if( $node_id != $root_id )
+		if( !is_null($root_id) && ($node_id != $root_id) )
 		{
 			$children = $this->db->get_recordset($sql);
 			if( is_null($children) || count($children) == 0 )
@@ -1200,7 +1197,7 @@ class tree extends tlObject
 				$sql2 = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
 					    " WHERE NH.id = {$node_id}";
 				$node_info = $this->db->get_recordset($sql2);
-				
+			
 				if( isset($this->class_name[$node_info[0]['node_type_id']]) )
 				{
 					$className = $this->class_name[$node_info[0]['node_type_id']];
@@ -1215,7 +1212,7 @@ class tree extends tlObject
 					// need to signal error - TO BE DONE
 				}
 			}   	   
-		}
+		}  // if( $node_id != $root_id )
 	}
  
 

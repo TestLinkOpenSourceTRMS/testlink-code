@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: xml.inc.php,v 1.12 2010/01/06 17:27:24 franciscom Exp $
+ * @version    	CVS: $Id: xml.inc.php,v 1.13 2010/02/10 19:21:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -96,15 +96,11 @@ function getNodeContent(&$node,$tag)
  * @todo SCHLUNDUS: will soon be removed
  * 		martin: moved from deleted keywords.inc.php; not used anywhere; I guess it could be removed
  */
-function exportKeywordDataToXML($keywords,$bNoHeader = false)
-{
-	$keywordRootElem = "<keywords>{{XMLCODE}}</keywords>";
-	$keywordElemTpl = "\t".'<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>".'</notes></keyword>'."\n";
-	$keywordInfo = array (
-							"{{NAME}}" => "keyword",
-							"||NOTES||" => "notes",
-						);
-	return exportDataToXML($keywords,$keywordRootElem,$keywordElemTpl,$keywordInfo,$bNoHeader);
-}
-
+// function exportKeywordDataToXML($keywords,$bNoHeader = false)
+// {
+// 	$keywordRootElem = "<keywords>{{XMLCODE}}</keywords>";
+// 	$keywordElemTpl = "\t".'<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>".'</notes></keyword>'."\n";
+// 	$keywordInfo = array("{{NAME}}" => "keyword","||NOTES||" => "notes");
+// 	return exportDataToXML($keywords,$keywordRootElem,$keywordElemTpl,$keywordInfo,$bNoHeader);
+// }
 ?>

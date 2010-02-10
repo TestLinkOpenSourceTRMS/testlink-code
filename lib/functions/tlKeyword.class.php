@@ -7,9 +7,13 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlKeyword.class.php,v 1.3 2010/02/03 20:44:01 franciscom Exp $
+ * @version    	CVS: $Id: tlKeyword.class.php,v 1.4 2010/02/10 19:21:00 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/keyword.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
+ *
+ * @internal revisions
+ *
+ * 20100210 - franciscom - toXMLString() new method
  *
  **/
 
@@ -368,7 +372,23 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$keywordInfo = array ("{{NAME}}" => "keyword","||NOTES||" => "notes");
 		$xml .= exportDataToXML($keywords,"{{XMLCODE}}",$keywordElemTpl,$keywordInfo,$noHeader);
 	}
-
+ 	
+ 	
+	/* 
+	 */
+ 	public function toXMLString($keywordSet=null,$noHeader = false)
+	{
+		$keywords = is_null($keywordSet) ? array($this->getInfo()) : $keywordSet;
+        $rootElem = "{{XMLCODE}}";
+		$elemXMLTemplate = '<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>" . 
+		                   '</notes></keyword>'."\n";
+		$keywordInfo = array ("{{NAME}}" => "keyword","||NOTES||" => "notes");
+		$xml = exportDataToXML($keywords,$rootElem,$elemXMLTemplate,$keywordInfo,$noHeader);
+		return $xml;
+	}
+       
+       
+       
 	/* 
 	 * Reads a keyword from a given XML representation
 	 * @param string $xml the XML representation of a keyword
@@ -394,16 +414,21 @@ class tlKeyword extends tlDBObject implements iSerialization,iSerializationToXML
 		$this->notes = NULL;
 		
 		if (!$keyword || $keyword->getName() != 'keyword')
+		{
 			return self::E_WRONGFORMAT;
+		}
 			
 		$attributes = $keyword->attributes();
 		if (!isset($attributes['name']))
+		{
 			return self::E_WRONGFORMAT;
-			
+		}	
+		
 		$this->name = (string)$attributes['name'];
 		if ($keyword->notes)
+		{
 			$this->notes = (string)$keyword->notes[0];
-			
+		}	
 		return tl::OK;
 	}
 	//END interface iSerializationToXML

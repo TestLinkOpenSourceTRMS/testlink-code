@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.87 2010/02/09 19:24:35 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.88 2010/02/10 19:21:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100210	- franciscom - keywords XML export refactored
  * 20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
  * 20100204 - franciscom - copy_to() refactoring	
  * 20100201 - franciscom - get_testcases_deep() - added external_id in output
@@ -1019,6 +1020,12 @@ class testsuite extends tlObjectWithAttachments
 	*/
 	function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
 	{
+		static $keywordMgr;
+		if(is_null($keywordMgr))
+		{
+  	    	$keywordMgr = new tlKeyword();      
+		}	
+		
 	    $USE_RECURSIVE_MODE=true;
 		$xmlTC = null;
 		$bRecursive = @$optExport['RECURSIVE'];
@@ -1032,7 +1039,9 @@ class testsuite extends tlObjectWithAttachments
 				$kwMap = $this->getKeywords($container_id);
 				if ($kwMap)
 				{
-					$kwXML = exportKeywordDataToXML($kwMap,true);
+					// $kwXML = exportKeywordDataToXML($kwMap,true);
+					$kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
+
 				}	
 			}
 			

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.242 2010/02/04 15:56:34 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.243 2010/02/10 19:20:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100210	- franciscom - keywords XML export refactored
  * 20100204 - franciscom - copyKeywordsTo(),copyReqAssignmentTo() - interface changes
  * 20100201 - franciscom - getExternalID(), refactored to improve performance when used on loops
  * 20100124 - franciscom - BUGID 3090 - problems when trying to delete a test case that has 0 steps.
@@ -2333,7 +2334,7 @@ class testcase extends tlObjectWithAttachments
 		}
 		
 		$sql = " INSERT INTO {$this->tables['testcase_keywords']} (testcase_id,keyword_id) " .
-			     " VALUES ($id,$kw_id)";
+			   " VALUES ($id,$kw_id)";
 	
 		$result = ($this->db->exec_query($sql) ? 1 : 0);
 		if ($result)
@@ -2871,6 +2872,7 @@ class testcase extends tlObjectWithAttachments
 	  	if( is_null($reqMgr) )
 	  	{
 	  	    $reqMgr = new requirement_mgr($this->db);      
+	  	    $keywordMgr = new tlKeyword();      
 	  	}
 	
 		$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
@@ -2903,8 +2905,8 @@ class testcase extends tlObjectWithAttachments
 			$keywords = $this->getKeywords($tcase_id);
 			if ($keywords);
 			{
-				//SCHLUNDUS: should be refactored
-				$xmlKW = exportKeywordDataToXML($keywords,true);
+				// $xmlKW = exportKeywordDataToXML($keywords,true);
+				$xmlKW = "<keywords>" . $keywordMgr->toXMLString($keywords,true) . "</keywords>";
 				$tc_data[0]['xmlkeywords'] = $xmlKW;
 			}
 		}

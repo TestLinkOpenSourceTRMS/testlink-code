@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.546 2010/02/09 21:48:23 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.547 2010/02/10 18:21:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -793,6 +793,12 @@ $TLS_action_create_srs = "Create Requirement Specification document";
 // ----- gui/templates/inc_reqView.tpl -----
 $TLS_last_edit = "Last edit by";
 $TLS_warning_delete_requirement = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_btn_freeze_this_version = "Freeze this version";
+$TLS_warning_freeze_requirement = "You are going to freeze: %s <br /><br /> Are you sure?";
+$TLS_freeze = "Freeze";
+$TLS_can_not_edit_req = "You can not edit this version because it has been frozen.";
+$TLS_req_version_frozen = "Requirement version has been frozen.";
+$TLS_freeze_req = "Freeze Requirement";
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -2585,7 +2591,8 @@ $TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
 $TLS_audit_req_assigned_tc = "Requirement with title '{%1}' was assigned to the Test Case '{%2}'";
 $TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassigned from the Test Case '{%2}'";
 $TLS_audit_requirement_copy = "Req 'DOCID:{%1}' was created as a copy of Req 'DOCID:{%2}'";
-$TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%2} was deleted."; 
+$TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%3} was deleted."; 
+$TLS_audit_req_version_frozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was frozen.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";

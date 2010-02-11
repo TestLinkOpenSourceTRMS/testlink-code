@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2009/09/16 19:53:01 $ by $Author: schlundus $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2010/02/11 21:00:12 $ by $Author: havlat $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -38,7 +38,8 @@ $arrCheckboxes = array(
 	array( 'value' => 'body', 'description' => 'opt_show_tc_body', 'checked' => 'n'),
  	array( 'value' => 'author', 'description' => 'opt_show_tc_author', 'checked' => 'n'),
 	array( 'value' => 'keyword', 'description' => 'opt_show_tc_keys', 'checked' => 'n'),
-	array( 'value' => 'cfields', 'description' => 'opt_show_cfields', 'checked' => 'n')
+	array( 'value' => 'cfields', 'description' => 'opt_show_cfields', 'checked' => 'n'),
+	array( 'value' => 'headerNumbering', 'description' => 'opt_show_hdrNumbering', 'checked' => 'n')
 );
 
 if($args->testprojectOptReqs)
@@ -227,7 +228,7 @@ function initializeGui(&$db,$args)
 	          $gui->tree_title = lang_get('title_tp_print_navigator');
 	          $gui->ajaxTree->loadFromChildren = 1;
 	          $gui->ajaxTree->loader = '';
-	          $gui->mainTitle = lang_get('testplan_report');
+	          $gui->mainTitle = lang_get('test_plan');
 	    break;
     }
     $gui->mainTitle .=  ' - ' . lang_get('doc_opt_title');

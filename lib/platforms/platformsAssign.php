@@ -8,11 +8,11 @@
  * @package 	TestLink
  * @author 		eloff
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.10 2010/02/01 15:07:37 franciscom Exp $
+ * @version    	CVS: $Id: platformsAssign.php,v 1.11 2010/02/11 19:22:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- *  20091201 - Eloff      - added function init_option_panels
+ *  20091201 - Eloff - added function init_option_panels
  *	20090822 - franciscom - added logic to give warning to user when adding platforms
  *							to a test plan that has 0 platforms, but has linked test cases.
  *
@@ -128,6 +128,10 @@ function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
     return $platform_count_js;
 }
 
+/**
+ * 
+ *
+ */
 function init_args(&$opt_cfg)
 {
     $added = $opt_cfg->js_ot_name . "_addedRight";

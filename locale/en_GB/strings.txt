@@ -9,6 +9,7 @@
  * for strings used over all GUI. These definition should not be redefined. Next sections are 
  * related to particular pages. Comment with page filename indicate a begin of section. There 
  * must be defined all other strings. 
+ * Do not use html elements in this file.
  *
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
  * This must be a reserved prefix. The second part of variable name (after 
@@ -17,22 +18,17 @@
  *
  * Warning: be careful about format - the file is parsed by script
  * 		comment only with "//" except header
- * Warning: if JS string you must use \\n to get \n for end of line
+ * Warning: for JS string you must use \\n to get \n for end of line
  * Note: API interface is not localized (except error messages)
  * 
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.547 2010/02/10 18:21:38 franciscom Exp $
+ * @copyright 	2003, TestLink community 
+ * @version    	CVS: $Id: strings.txt,v 1.548 2010/02/11 21:01:26 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
- * @internal Revisions:
+ * @internal Revisions: Not listed - check repository history
  * 
- * 20071102 - franciscom - tcexecute strings
- * 20071101 - franciscom - view_file_format_doc
- * 20070930 - franciscom - show_tcase_spec
- * 20070520 - franciscom - milestones
- * 20070206 - franciscom - BUGID 618 - \n on JS messages
  **/
 
 // Define character set of this file (UTF-8 is common value) 
@@ -51,6 +47,7 @@ $TLS_automated = "Automated";
 $TLS_automatic = "Automatic";
 $TLS_build = "Build";
 $TLS_check_uncheck_all = "Toggle all";
+$TLS_confirm = "Confirm";
 $TLS_days	= "days";
 $TLS_desc = "Descending";
 $TLS_description = "Description";
@@ -58,6 +55,7 @@ $TLS_delete_confirm_question = "Are your sure you want to delete?";
 $TLS_doc_id = "Document ID";
 $TLS_destination_top = "Destination position top";
 $TLS_destination_bottom = "Destination position bottom";
+$TLS_error = "Error";
 $TLS_export = "Export";
 $TLS_file_type = 'File type';
 $TLS_filter_mode_and = 'Attention: Filter fields works in AND mode';
@@ -88,17 +86,6 @@ $TLS_req_spec_short = "Req. Spec.";
 $TLS_requirements_spec = "Requirements Spec.";
 $TLS_req_specification = "Req. Specification";
 $TLS_srs = "SRS";
-$TLS_step_actions = "Step actions";
-$TLS_step_details="Step details";
-$TLS_step_number="#";
-$TLS_step_number_verbose = "Step number";
-$TLS_step_number_x_created = "Step number: %s created";
-$TLS_edit_step_number_x = "Edit Step number: %s - Test Case: %s - Version: %s";
-$TLS_create_step = "Create Step - Test Case: %s - Version: %s";
-$TLS_delete_step = "Delete step";
-$TLS_warning_delete_step = "<p>You are going to delete step number: %s </p><p>Are you sure?</p>";
-$TLS_warning_step_number = " Step number must be a number and > 0";
-$TLS_warning_step_number_already_exists = " Step number %s already exists";
 $TLS_Role = "Role";
 $TLS_sort_table_by_column = "Click to change sort order";
 $TLS_scope = "Scope";
@@ -110,13 +97,13 @@ $TLS_tester = "Tester";
 $TLS_test_plan = "Test Plan";
 $TLS_testplan = $TLS_test_plan; // obsolete
 $TLS_testproject = "Test Project";
-$TLS_testplan_report = "Test Plan Report";
 $TLS_test_report = "Test Report";
 $TLS_test_suite = "Test Suite";
 $TLS_testsuite_created = "Test Suite created";
 $TLS_type = "Type";
 $TLS_title = "Title";
 $TLS_title_admin = "Administration";
+$TLS_warning = "Warning";
 
 $TLS_total = "Total";
 $TLS_Unknown = "Unknown";
@@ -317,16 +304,33 @@ $TLS_config_check_warnings = "There are security warnings for your consideration
                              "See details on file: %s. " .
                              "To disable any reference to these checkings, set \$tlCfg->config_check_warning_mode = 'SILENT';";
 
-// ----- infrastructureView.php -----
-$TLS_infrastructure_title = "Project infrastructure list";
-$TLS_infrastructure_create_title = "Define a new machine and press 'Add' button";
+// ----- infrastructureView.php & tpl -----
+$TLS_infrastructure_title = 'Project infrastructure overview';
+$TLS_infrastructure_create_title = "Define a device and press 'Save' button";
 $TLS_infrastructure_empty = "No item. Use 'Create' button to define.";
-$TLS_infrastructure_name = "Machine name";
-$TLS_infrastructure_ipaddress = "IP Address";
-$TLS_infrastructure_notes = "Notes";
-$TLS_infrastructure_delete = "Delete";
-$TLS_infrastructure_edit = "Edit";
-//$TLS_ = "";
+$TLS_infrastructure_name = 'Host name';
+$TLS_infrastructure_ipaddress = 'IP Address';
+$TLS_infrastructure_notes = 'Notes';
+$TLS_infrastructure_purpose = 'Purpose';
+$TLS_infrastructure_hw = 'Hardware';
+$TLS_infrastructure_delete = 'Delete';
+$TLS_infrastructure_owner = 'Owner';
+$TLS_infrastructure_alt_delete = 'Delete the selected device data';
+$TLS_infrastructure_alt_edit = 'Edit the selected device data';
+$TLS_infrastructure_dlg_delete_txt = 'Are you sure to delete the device?';
+$TLS_infrastructure_dlg_select_txt = 'Select a row at first.';
+$TLS_audit_infrastructure_created = 'A new device %s was created.';
+$TLS_audit_infrastructure_deleted = 'The device %s was deleted.';
+$TLS_infrastructure_msg_no_rights = 'You have not appropriate rights to modify infrastructure.';
+$TLS_infrastructure_msg_no_action = 'Invalid input data - no action was requested.';
+$TLS_infrastructure_create_success = 'A new device %s was created successfully.';
+$TLS_infrastructure_create_fails = 'Failed: A new device %s was not created.';
+$TLS_infrastructure_update_success = 'The device %s was updated successfully.';
+$TLS_infrastructure_update_fails = 'Failed: The device %s was not updated.';
+$TLS_infrastructure_delete_success = 'The device %s was deleted successfully.';
+$TLS_infrastructure_update_fails = 'Failed: The device %s was not deleted.';
+$TLS_infrastructure_name_exists = 'The device %s already exists in the project.';
+$TLS_infrastructure_ip_exists = 'The device IP address %s already exists in the project.';
 
 
 // ----- keywordsimport.php -----
@@ -2711,6 +2715,20 @@ $TLS_warning_context_range = "Context is out of range (must be a positive number
 $TLS_warning_empty_context = "Context (lines) must not be empty.";
 $TLS_warning_selected_versions = "You have to select two versions from the list.";
 $TLS_warning_same_selected_versions = "You have to select two different versions from the list.";
+
+// ----- grab from not-systematic developers -----
+$TLS_step_actions = "Step actions";
+$TLS_step_details="Step details";
+$TLS_step_number="#";
+$TLS_step_number_verbose = "Step number";
+$TLS_step_number_x_created = "Step number: %s created";
+$TLS_edit_step_number_x = "Edit Step number: %s - Test Case: %s - Version: %s";
+$TLS_create_step = "Create Step - Test Case: %s - Version: %s";
+$TLS_delete_step = "Delete step";
+$TLS_warning_delete_step = "<p>You are going to delete step number: %s </p><p>Are you sure?</p>";
+$TLS_warning_step_number = " Step number must be a number and > 0";
+$TLS_warning_step_number_already_exists = " Step number %s already exists";
+
 
 // ----- END ------------------------------------------------------------------
 ?>

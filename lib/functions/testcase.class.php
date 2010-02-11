@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.243 2010/02/10 19:20:59 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.244 2010/02/11 18:58:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2868,7 +2868,8 @@ class testcase extends tlObjectWithAttachments
 	function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
 	                                 $bNoXMLHeader = false,$optExport = array())
 	{
-		static $reqMgr=null; 
+		static $reqMgr; 
+		static $keywordMgr;
 	  	if( is_null($reqMgr) )
 	  	{
 	  	    $reqMgr = new requirement_mgr($this->db);      

@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.4 2009/11/19 20:05:39 schlundus Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.5 2010/02/12 00:20:12 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -595,7 +595,100 @@ class tlUser extends tlDBObject
 		return $effective_role;
 	}
 
+	/**
+	 * Gets all userids of users with a certain testplan role @TODO WRITE RIGHT COMMENTS FROM START
+	 *
+	 * @param resource &$db reference to database handler
+	 * @return array returns array of userids
+	 **/
+	protected function getUserNamesWithTestPlanRole(&$db)
+	{
+		$sql = "SELECT DISTINCT id FROM {$this->tables['users']} users," . 
+		         " {$this->tables['user_testplan_roles']} user_testplan_roles " .
+		         " WHERE  users.id = user_testplan_roles.user_id";
+		$sql .= " AND user_testplan_roles.role_id = {$this->dbID}";
+		$idSet = $db->fetchColumnsIntoArray($sql,"id");
+		
+		return $idSet; 
+	}
+
+
+	/**
+     * Get a list of names with a defined project right (for example for combo-box)
+     * used by ajax script getUsersWithRight.php
+     * 
+     * @param integer $db DB Identifier
+     * @param string $rightNick key corresponding with description in rights table
+     * @param integer $testprojectID Identifier of project
+     *
+     * @return array list of user IDs and names
+     * 
+     * @todo fix the case that user has default role with a right but project role without
+     * 		i.e. he should be listed
+     */
+	public function getNamesForProjectRight(&$db,$rightNick,$testprojectID = null)
+	{
+		if (is_null($testprojectID))
+		{
+			tLog('function getNamesForProjectRight() requires Test Project ID defined','ERROR');
+			return null;
+		}
+		
+		$output = array();
+		
+		//get users for default roles
+		$sql = "SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
+				" JOIN {$this->tables['role_rights']} a ON a.role_id=u.role_id" .
+				" JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
+				" WHERE b.description='{$rightNick}'";
+		$output1 = $db->fetchRowsIntoMap($sql,'id');
+
+		// get users for project roles
+		$sql = "SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
+				" JOIN {$this->tables['user_testproject_roles']} p ON p.user_id=u.id" .
+				" AND p.testproject_id=" . $testprojectID .
+				" JOIN {$this->tables['role_rights']} a ON a.role_id=p.role_id" .
+				" JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
+				" WHERE b.description='{$rightNick}'";
+		$output2 = $db->fetchRowsIntoMap($sql,'id');
+		
+		// merge arrays		
+		// the next function is available from php53 but we support php52
+		// $output = array_replace($output1, $output2);
+	    foreach($output2 as $k=>$v) 
+	    {
+       	    if( !isset($output1[$k]) ) 
+       	    {
+	       	    $output1[$k] = $v;
+      	    }
+	    }
+
+	    // format for ext-js combo-box (remove associated array)
+	    foreach($output1 as $k=>$v) 
+	    {
+       	    $output[] = $v;
+	    }
+		
+		return $output;
+	}
+
 	
+	/**
+     * Get a list of all names 
+     * used for replacement user ID by user login
+     * 
+     * @param integer $db DB Identifier
+     * @return array list of user IDs and names
+     */
+	public function getNames(&$db)
+	{
+		$sql = "SELECT id,login,first,last FROM {$this->tables['users']}";
+		$output = $db->fetchRowsIntoMap($sql,'id');
+
+		return $output;
+	}
+
+
 	/**
      * check right on effective role for user, using test project and test plan,
      * means that check right on effective role.

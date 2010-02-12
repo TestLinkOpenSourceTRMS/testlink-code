@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.90 2010/01/31 09:50:31 franciscom Exp $
+// $Id: testlink_library.js,v 1.91 2010/02/12 00:20:55 havlat Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -905,6 +905,40 @@ function toggleInput(oid)
 	{
     elem.value = (elem.value == 1) ? 0 : 1;
   }  
+}
+
+
+/**
+ * Show User feedback
+ * @param boolean success 	[0] = error
+ * @param string message 	localized text
+ */
+function showFeedback(success, msg_text)
+{
+	var base = document.getElementById('user_feedback');
+	if (base)
+	{
+    	if (success)
+    	{
+    		base.className = 'user_feedback';
+    	} else {
+	    	base.className = 'error';
+	    }
+		base.innerHTML = msg_text;
+	}
+/*	else
+	{
+		// add div element 'user_feedback' if don't exists
+		// havlatm: I don't know why doesn't work :-(
+		var oNewDiv = document.createElement("div");
+		var dim = document.body.insertBefore(oNewDiv, document.getElementsByTagName('div')[0]);
+		if (dim)
+		{
+    		dim.setAttribute('id','user_feedback');
+    		showFeedback(success, msg_text);
+		} 
+	}
+*/	 
 }
 
 

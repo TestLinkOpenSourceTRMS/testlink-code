@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: lang_api.php,v 1.26 2010/02/07 20:48:06 havlat Exp $
+ * @version    	CVS: $Id: lang_api.php,v 1.27 2010/02/12 00:20:12 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -82,6 +82,25 @@ function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 			$the_str = TL_LOCALIZE_TAG .$p_string;
 		}
 		return $the_str;
+}
+
+
+/**
+ * Retrieves an internationalized string and insert text into
+ * 
+ * @param string $base string to be localized
+ * @param string $modifier something to be inserted in the first string
+ * @return string localized with inserted name or something
+ */
+function langGetFormated( $text_key, $modifier )
+{
+	$text_localized = lang_get($text_key);
+	if (strpos($text_localized, TL_LOCALIZE_TAG) == 0)
+	{
+		$text_localized = sprintf($text_localized, $modifier);
+	}
+	
+	return $text_localized;
 }
 
 

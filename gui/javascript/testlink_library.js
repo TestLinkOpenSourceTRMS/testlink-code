@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.91 2010/02/12 00:20:55 havlat Exp $
+// $Id: testlink_library.js,v 1.92 2010/02/12 08:47:12 erikeloff Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
 // 20100131 - franciscom - BUGID 3118: Help files are not getting opened when selected in the dropdown 
 // 20090906 - franciscom - added openTestSuiteWindow()
 // 20090821 - havlatm - added support for session timeout
@@ -957,30 +958,6 @@ function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id)
 	window.open(fRoot+target_url+"?exec_id="+exec_id+"&tcversion_id="+tcversion_id+"&tplan_id="+tplan_id+"&tproject_id="+tproject_id,
 	            "execution_notes",windowCfg);
 }
-
-/* 
- * Session Timeout Warning functions: updateTimeCounter()
- * update counter from different frames (counter runs in navBar frame)
- * @see ../templates/navbar.tpl
- */
-function updateTimeCounter()
-{
-	// no frame (eg. login.php)
-	timeCounterFrame = window;
-
-	if (window.parent.name == "mainframe")
-	{
-		timeCounterFrame = window.parent.parent.titlebar;
-	}
-	if (window.parent.name == "workframe")
-	{
-		timeCounterFrame = window.parent.titlebar;
-	}
-
-	timeCounterFrame.timeoutMin = timeCounterFrame.sessionDurationMin;
-	timeCounterFrame.timeoutSec = timeCounterFrame.sessionDurationSec;
-}
-
 
 /* 
  * use to display test suite content (read only mode) on execution feature

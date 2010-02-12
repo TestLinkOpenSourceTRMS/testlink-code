@@ -1,10 +1,11 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.51 2010/01/31 09:50:44 franciscom Exp $
+	$Id: navBar.tpl,v 1.52 2010/02/12 08:47:12 erikeloff Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
-	  20100131 - franciscom - moved get_docs() to javascript library
+		20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
+		20100131 - franciscom - moved get_docs() to javascript library
 		20090902 - timeout warning 
 		20080504 - access to local documentation
 		20080211 - changes action for user management
@@ -13,83 +14,13 @@
 {lang_get var="labels"
           s="title_events,event_viewer,home,testproject,title_specification,title_execute,
              title_edit_personal_data,th_tcid,link_logout,title_admin,
-             search_testcase,title_results,title_user_mgmt, warn_session_timeout"}
+             search_testcase,title_results,title_user_mgmt"}
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}
-{literal}
-<script type="text/javascript">
-// -------- Session Timeout Warning functions -------
-/** 
- * Session Timeout Warning functions: timeoutDisplay()
- * @return string time for display
- * @used function timeoutDown()
- */
-function timeoutDisplay(min, sec) 
-{
-	var disp = "";
-	if (min <= 9) 
-		disp = " 0";
-	else
-		disp = " ";
-	disp += min + ":";
-	if (sec <= 9) 
-		disp += "0" + sec;
-	else 
-		disp += sec;
-	
-	return disp;
-}
-
-/** 
- * Session Timeout Warning functions: timeoutDown() 
- * decrease timer value, diplay it and warn
- * @used function timeoutInit()
- */
-function timeoutDown() 
-{
-	timeoutSec--;
-	if (timeoutSec == -1) 
-	{ 
-		timeoutSec = 59; 
-		timeoutMin--; 
-	}
-	if (timeoutMin < 5) 
-	{
-		timerObject.innerHTML = timeoutDisplay(timeoutMin, timeoutSec);
-	}
-	if (timeoutMin == 0 && timeoutSec == 0) 
-	{
-		alert(timerWarning);
-	}
-	else
-	{ 
-		setTimeout("timeoutDown()", 1000);
-	}
-}
-
-/* 
- * Session Timeout Warning functions: timeoutInit()
- * @used HTML: 
- * <body onload="timeIt(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
- * ...
- *	<form name="timerform">
- *	<input type="text" name="clock" size="7" value="0:10"><p>
- *	</form>
- */
-function timeoutInit(displayedTimer,sessionWarning) 
-{
-	timeoutMin = sessionDurationMin;
-	timeoutSec = sessionDurationSec;
-	timerObject = displayedTimer;
-	timerWarning = sessionWarning;
-	timeoutDown();
-}
-</script>
-{/literal}
 </head>
-<body style="min-width: 800px;" onload="timeoutInit(document.getElementById('clockan'),'{$labels.warn_session_timeout}')">
+<body style="min-width: 800px;">
 <div style="float:left; height: 100%;">
 	<a href="index.php" target="_parent">
 	<img alt="Company logo"	title="logo" style="width: 115px; height: 53px;" 
@@ -122,8 +53,7 @@ function timeoutInit(displayedTimer,sessionWarning)
 	<span style="float: right;">
    		<a href='lib/usermanagement/userInfo.php' target="mainframe" accesskey="i"
       		tabindex="6">{$labels.title_edit_personal_data}</a>
-	 | 	<a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}
-		<span id="clockan"></span></a>
+	 | 	<a href="logout.php" target="_parent" accesskey="q">{$labels.link_logout}</a>
 	</span>
 
 	{$session.testprojectTopMenu}

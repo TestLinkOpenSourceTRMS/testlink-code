@@ -1,9 +1,10 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.32 2009/09/16 19:53:00 schlundus Exp $
+$Id: inc_head.tpl,v 1.33 2010/02/12 08:47:12 erikeloff Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
+     20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
      20090801 - franciscom - moved include of prototype.js here because
                              is not anymore included on EXT-JS distribution
                              
@@ -60,8 +61,6 @@ rev :
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';
-	var sessionDurationMin = '{$session.maxlifetime_min}';
-	var sessionDurationSec = '{$session.maxlifetime_sec}';
 	
 	// To solve problem diplaying help
 	var SP_html_help_file  = '{$SP_html_help_file}';
@@ -77,8 +76,6 @@ rev :
 	// for ext js
 	var extjsLocation = '{$smarty.const.TL_EXTJS_RELATIVE_PATH}';
 	
-	// reset session time counter
-	updateTimeCounter();
 	//-->
 	</script> 
 {if $openHead == "no"} {* 'no' is default defined in config *}

@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Chad Rosen, Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: doAuthorize.php,v 1.33 2010/02/02 12:52:35 franciscom Exp $
+ * @version    	CVS: $Id: doAuthorize.php,v 1.34 2010/02/12 08:47:12 erikeloff Exp $
  * @link 		http://www.teamst.org/
  *
  * @todo Setting up cookies so that the user can automatically login next time
  *
  * @internal revisions:
+ * 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
  * 20100202 - franciscom - refactoring of doAuthorize (BUGID 0003129: After login failure blank page is displayed)
  *
  */
@@ -54,11 +55,6 @@ function doAuthorize(&$db,$login,$pwd)
 					//Setting user's session information
 					$_SESSION['currentUser'] = $user;
 					$_SESSION['lastActivity'] = time();
-					
-					// get session duration to indicate session end
-					$timeout = ini_get("session.gc_maxlifetime");
-					$_SESSION['maxlifetime_min'] = floor($timeout/60);
-					$_SESSION['maxlifetime_sec'] = $timeout % 60;
 					
 					global $g_tlLogger;
 					$g_tlLogger->endTransaction();

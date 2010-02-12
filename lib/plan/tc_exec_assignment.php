@@ -1,9 +1,10 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.44 2010/02/09 21:11:15 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.45 2010/02/12 08:28:18 erikeloff Exp $ 
  * 
  * rev :
+ *       20100212 - eloff - BUGID 3157 - fixes reassignment to other user
  *       20090807 - franciscom - new feature platforms
  *       20090201 - franciscom - new feature send mail to tester
  *       20080312 - franciscom - BUGID 1427
@@ -69,7 +70,7 @@ if(!is_null($args->doAction))
 					    if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
 					    {
 				            $op='upd';
-						    $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc];
+						    $features2[$op][$feature_id]['user_id'] = $args->tester_for_tcid[$key_tc][$platform_id];
 						    $features2[$op][$feature_id]['type'] = $task_test_execution;
 						    $features2[$op][$feature_id]['status'] = $open;
 						    $features2[$op][$feature_id]['assigner_id'] = $args->user_id;

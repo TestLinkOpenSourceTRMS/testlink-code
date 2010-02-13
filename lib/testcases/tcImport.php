@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.59 $
- * @modified $Date: 2010/02/01 16:07:29 $ by $Author: franciscom $
+ * @version $Revision: 1.60 $
+ * @modified $Date: 2010/02/13 13:53:59 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -169,56 +169,35 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 	$resultMap  = null;
 	if (file_exists($fileName))
 	{
-		$dom = domxml_open_file($fileName);
-		if ($dom)
-		{
-			$root = $dom->document_element();
-			
-			$xmlKeywords = $root->get_elements_by_tagname("keywords");
+		$xml = @simplexml_load_file($fileName);
+		if($xm !== FALSE)
+        {
+			$xmlKeywords = $xml->xpath('//keywords');
 			$kwMap = null;
 			if ($xmlKeywords)
 			{
 				$tproject = new testproject($db);
-				for($i = 0;$i < sizeof($xmlKeywords);$i++)
+				$loop2do = sizeof($xmlKeywords);
+				for($idx = 0; $idx < $loop2do ;$idx++)
 				{
-					$tproject->importKeywordsFromXML($tproject_id,$xmlKeywords[$i]->dump_node());
+					$tproject->importKeywordsFromSimpleXML($tproject_id,$xmlKeywords[$idx]);
 				}
 				$kwMap = $tproject->get_keywords_map($tproject_id);
 				$kwMap = array_flip($kwMap);
-				
+			}
+
+			if (!$bRecursive &&  ($xml->getName() == 'testcases') )
+			{
+				$resultMap = importTestCasesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic);
 			}
 			
-			if ($bRecursive && $root->tagname == 'testsuite')
+			// TO TEST
+			if ($bRecursive && ($xml->getName() == 'testsuites'))
 			{
 				$resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
 			}
-			else if (!$bRecursive && $root->tagname == 'testcases')
-			{
-				$resultMap = importTestCases($db,$root,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic);
-			}	
+
 		}
-	}
-	return $resultMap;
-}
-
-
-// --------------------------------------------------------------------------------------
-/*
-  function: importTestCases
-  args :
-  returns: 
-*/
-function importTestCases(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic)
-{
-	$resultMap = null;
-	if ($node->tagname == 'testcases')
-	{
-		$xmlTCs = $node->get_elements_by_tagname("testcase");
-		$tcData = importTCsFromXML($xmlTCs);
-		if ($tcData)
-		{
-			$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
-		}	
 	}
 	return $resultMap;
 }
@@ -319,6 +298,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		return;
 	}
 
+	new dBug($tcData);
+
 	$tprojectHas=array('customFields' => false, 'reqSpec' => false);
   	$hasCustomFieldsInfo=false;
   	$hasRequirements=false;
@@ -388,7 +369,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$kwIDs = null;
 		if (isset($tc['keywords']) && $tc['keywords'])
 		{
-			$kwIDs = buildKeywordList($kwMap,$tc['keywords'],true);
+			$kwIDs = implode(",",buildKeywordList($kwMap,$tc['keywords']));
 		}	
 		
 		$doCreate=true;
@@ -497,114 +478,22 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   args :
   returns: 
 */
-function buildKeywordList($kwMap,$keywords,$bList = false)
+function buildKeywordList($kwMap,$keywords)
 {
-	$kwIDs = array();
-	for($jdx = 0;$jdx < sizeof($keywords); $jdx++)
+	$items = array();
+	$loop2do = sizeof($keywords);
+	for($jdx = 0; $jdx <$loop2do ; $jdx++)
 	{
-		$kwIDs[] = $kwMap[$keywords[$jdx]['keyword']];
+		$items[] = $kwMap[$keywords[$jdx]['name']];
 	}
-	
-	if ($bList)
-	{
-		$kwIDs = implode(",",$kwIDs);
-	}	
-	return $kwIDs;
+	return $items;
 }
 
 
 // --------------------------------------------------------------------------------------
-/*
-  function: importTCsFromXML
-  args :
-  returns: 
-*/
-function importTCsFromXML($xmlTCs)
-{
-	$tcSet = null;
-	if (!$xmlTCs)
-		return $tcSet;
-		
-	$jdx = 0;
-	$loops2do=sizeof($xmlTCs);
-	for($idx = 0; $idx < $loops2do; $idx++)
-	{
-		$xmlTC = $xmlTCs[$idx];
-		if ($xmlTC->node_type() != XML_ELEMENT_NODE)
-		{
-			continue;
-		}
-		
-		$tc = importTCFromXML($xmlTC);
-		if ($tc)
-		{
-			// Test Case Steps
-			$steps = importStepsFromXML($xmlTC->get_elements_by_tagname("step"));
-			$tc['steps'] = $steps;
-			
-			$keywords = importKeywordsFromXML($xmlTC->get_elements_by_tagname("keyword"));
-			if ($keywords)
-			{
-				$tc['keywords'] = $keywords;
-			}
-
-			$cf = importCustomFieldsFromXML($xmlTC->get_elements_by_tagname("custom_field"));
-			if($cf)
-			{
-			    $tc['customfields'] = $cf;  
-			} 
-
-      // BUGID - 20090205 - franciscom
-			$requirements = importRequirementsFromXML($xmlTC->get_elements_by_tagname("requirement"));
-			if($requirements)
-			{
-			    $tc['requirements'] = $requirements;  
-			} 
-
-			$tcSet[$jdx++] = $tc;
-		}
-	}
-	return $tcSet;
-}
-
 
 // --------------------------------------------------------------------------------------
-/*
-  function: importTCFromXML()
-  args :
-  returns: 
-  
-  rev: 20090204 - franciscom - added node_order,externalid
-*/
-function importTCFromXML(&$xmlTC)
-{
-	if (!$xmlTC)
-	{
-		return null;
-	}
-	
-	// Test Case Steps
-	// $keyContent=array("summary","steps","expectedresults","preconditions");
-	$keyContent=array("summary","preconditions");
 
-	$tc = null;
-	$tc['name'] = $xmlTC->get_attribute("name");
-  	foreach($keyContent as $key)
-  	{
-  	    $tc[$key] = trim(getNodeContent($xmlTC,$key));
-  	}
-  
-  	$keyContent=array("node_order","externalid");
-	foreach($keyContent as $key)
-  	{
-  	    $tc[$key] = intval(trim(getNodeContent($xmlTC,$key)));
-  	}
-	
-	return $tc; 		
-}
-
-
-// --------------------------------------------------------------------------------------
 /*
   function: Check if at least the file starts seems OK
 */
@@ -765,113 +654,6 @@ function convert_special_char($target_string)
 	}
 }
 
-// --------------------------------------------------------------------------------------
-//SCHLUNDUS will be removed after refactoring
-function importKeywordsFromXML($xmlKeywords)
-{
-	if (!$xmlKeywords)
-		return null;
-		
-	$keywords = null;	
-	$j = 0;
-	for($i = 0;$i < sizeof($xmlKeywords);$i++)
-	{
-		$xmlKeyword = $xmlKeywords[$i];		
-		$keywordData = importKeywordFromXML($xmlKeyword);
-		if ($keywordData)
-			$keywords[$j++] = $keywordData;
-	}
-	return $keywords;
-}
-
-
-// --------------------------------------------------------------------------------------
-/**
- * Imports a single keywords from a XML Element
- *
- * @param object $fileName [ref] the XML Element to import from
- * @return array return null on error or an array of
- * 				 keyword['keyword'] => the keyword itself
- * 				 keyword['notes'] => the notes of keyword
- *
- **/
- //SCHLUNDUS will be removed after refactoring
-function importKeywordFromXML(&$xmlKeyword)
-{
-	if (!$xmlKeyword)
-		return null;
-	$keyword['keyword'] = $xmlKeyword->get_attribute("name");
-	$keyword['notes'] = trim(getNodeContent($xmlKeyword,'notes'));
-
-	return $keyword;
-}
-
-
-/*
-  function: importCustomFieldsFromXML
-
-  args:
-  
-  returns: 
-
-*/
-function importCustomFieldsFromXML($xmlItems)
-{
-	if (!$xmlItems)
-	{
-		return null;
-	}
-
-  $items = null;
-  $items_counter=0;
-  
-  $loop_qty = count($xmlItems);
-  for($idx=0; $idx < $loop_qty; $idx++)
-  {
-	    foreach( array('name','value') as $key )
-	    {
-	        $dummy[$key] = trim(getNodeContent($xmlItems[$idx],$key));
-	    }
-			$items[$items_counter++] = $dummy;
-  }
-
-	return $items;
-}
-
-
-/*
-  function: importRequirementsFromXML
-
-  args:
-  
-  returns: 
-
-*/
-function importRequirementsFromXML($xmlItems)
-{
-	if (!$xmlItems)
-	{
-		return null;
-	}
-
-  $items = null;
-  $items_counter=0;
-  
-  $loop_qty = count($xmlItems);
-  for($idx=0; $idx < $loop_qty; $idx++)
-  {
-	    foreach( array('req_spec_title','doc_id','title') as $key )
-	    {
-	        $dummy[$key] = trim(getNodeContent($xmlItems[$idx],$key));
-	    }
-			$items[$items_counter++] = $dummy;
-  }
-
-	return $items;
-}
-
-
-
 
 /* 20090117 - 
  contribution by mirosvad - 
@@ -966,6 +748,8 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
     static $missingReqSpecMsg;
     static $cachedReqSpec;
     $resultMsg=null;
+	$tables = tlObjectWithDB::getDBTables(array('requirements'));
+
 
     foreach($tcReq as $ydx => $value)
     {
@@ -993,9 +777,9 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
           // If not => create message for user feedback.
           if( !($useit=isset($cachedReqSpec[$value['req_spec_title']]['req'][$value['doc_id']])) )
           {
-              $sql="SELECT REQ.id from requirements REQ" .
-                   "WHERE REQ.req_doc_id='{$dbHandler->prepare_string($value['doc_id'])}' " .
-                   "AND REQ.srs_id={$req_spec_id} ";     
+              $sql = " SELECT REQ.id from {$tables['requirements']} REQ " .
+                     " WHERE REQ.req_doc_id='{$dbHandler->prepare_string($value['doc_id'])}' " .
+                     " AND REQ.srs_id={$req_spec_id} ";     
                    
               $rsx=$dbHandler->get_recordset($sql);
               if( $useit=((!is_null($rsx) && count($rsx) > 0) ? true : false) )
@@ -1034,29 +818,133 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
     return $resultMsg;
 }
 
-/**
- * 
- *
- */
-function importStepsFromXML($xmlItems)
+
+
+
+function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic)
 {
-	if (!$xmlItems)
+	$resultMap = null;
+	$xmlTCs = $simpleXMLObj->xpath('//testcase');
+	$tcData = getTestCaseSetFromSimpleXMLObj($xmlTCs);
+	if ($tcData)
+	{
+		$resultMap = saveImportedTCData($db,$tcData,$tproject_id,$parentID,$userID,$kwMap,$duplicateLogic);
+	}	
+	return $resultMap;
+}
+
+
+function getTestCaseSetFromSimpleXMLObj($xmlTCs)
+{
+	echo __FUNCTION__;
+	$tcSet = null;
+	if (!$xmlTCs)
+	{
+		return $tcSet;
+	}
+		
+	$jdx = 0;
+	$loops2do=sizeof($xmlTCs);
+	$tcaseSet = array();
+	
+	$tcXML['elements'] = array('string' => array("summary","preconditions"),
+			                   'integer' => array("node_order","externalid"));
+	$tcXML['attributes'] = array('string' => array("name"));
+
+	for($idx = 0; $idx < $loops2do; $idx++)
+	{
+        new dBug($xmlTCs[$idx]);
+        $dummy = getItemsFromSimpleXMLObj($xmlTCs[$idx],$tcXML);
+        $tc = $dummy[0]; 
+        
+		if ($tc)
+		{
+			// Test Case Steps
+			$steps = getStepsFromSimpleXMLObj($xmlTCs[$idx]->steps->step);
+			$tc['steps'] = $steps;
+
+			$keywords = getKeywordsFromSimpleXMLObj($xmlTCs[$idx]->keywords->keyword);
+			if ($keywords)
+			{
+				$tc['keywords'] = $keywords;
+			}
+
+			$cf = getCustomFieldsFromSimpleXMLObj($xmlTCs[$idx]->custom_fields->custom_field);
+			if($cf)
+			{
+			    $tc['customfields'] = $cf;  
+			} 
+
+			$requirements = getRequirementsFromSimpleXMLObj($xmlTCs[$idx]->requirements->requirement);
+			if($requirements)
+			{
+			    $tc['requirements'] = $requirements;  
+			} 
+   		}	
+    	$tcaseSet[$jdx++] = $tc;    
+        new dBug($tcaseSet);
+    }
+	
+	return $tcaseSet;
+}
+
+
+
+function getTestCaseFromSimpleXMLObj(&$xmlTC)
+{
+	if (!$xmlTC)
 	{
 		return null;
 	}
+	
+	$keyContent=array("summary","preconditions");
 
-  	$items = null;
-  	$items_counter=0;
-  	$loop_qty = count($xmlItems);
-  	$keys2extract = array('step_number','actions','expected_results'); 
-  	for($idx=0; $idx < $loop_qty; $idx++)
+	$tc = null;
+	$tc['name'] = $xmlTC->get_attribute("name");
+  	foreach($keyContent as $key)
   	{
-		foreach($keys2extract  as $key)
-		{
-		    $dummy[$key] = trim(getNodeContent($xmlItems[$idx],$key));
-		}
-		$items[$items_counter++] = $dummy;
+  	    $tc[$key] = trim(getNodeContent($xmlTC,$key));
   	}
+  
+  	$keyContent=array("node_order","externalid");
+	foreach($keyContent as $key)
+  	{
+  	    $tc[$key] = intval(trim(getNodeContent($xmlTC,$key)));
+  	}
+	
+	return $tc; 		
+}
+
+
+
+function getStepsFromSimpleXMLObj($simpleXMLItems)
+{
+  	$itemStructure['elements'] = array('string' => array("actions","expectedresults"),
+				                       'integer' => array("step_number"));
+	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
+	return $items;
+}
+
+function getCustomFieldsFromSimpleXMLObj($simpleXMLItems)
+{
+  	$itemStructure['elements'] = array('string' => array("name","value"));
+	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
+	return $items;
+
+}
+
+function getRequirementsFromSimpleXMLObj($simpleXMLItems)
+{
+  	$itemStructure['elements'] = array('string' => array("req_spec_title","doc_id","title"));
+	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
+	return $items;
+}
+
+function getKeywordsFromSimpleXMLObj($simpleXMLItems)
+{
+  	$itemStructure['elements'] = array('string' => array("notes"));
+  	$itemStructure['attributes'] = array('string' => array("name"));
+	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
 	return $items;
 }
 ?>

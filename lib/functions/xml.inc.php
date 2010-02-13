@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: xml.inc.php,v 1.14 2010/02/13 09:48:59 franciscom Exp $
+ * @version    	CVS: $Id: xml.inc.php,v 1.15 2010/02/13 18:22:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -90,20 +90,28 @@ function getNodeContent(&$node,$tag)
 
 /**
  * $simpleXMLItems
- * $itemStructure: has two keys elements, attributes
+ * $itemStructure: keys elements, attributes
  */
 function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
 {
+	// new dBug(__FUNCTION__);
+	// new dBug($simpleXMLItems);
+	// new dBug($itemStructure);
+
 	$items = null;
 	if($simpleXMLItems)
 	{
   		$items_counter=0;
   		$loop_qty = count($simpleXMLItems);
 
+        new dBug($loop_qty);
+        
   		for($idx=0; $idx < $loop_qty; $idx++)
   		{
+  			echo "\$idx:$idx<br>";
 			foreach($itemStructure['elements'] as $castType => $keyValues)
   			{
+  				// new dBug($castType);	new dBug($keyValues); 
 				foreach($keyValues as $key)
   				{
   					$dummy[$key] = null;
@@ -131,11 +139,9 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
   				}	
 
 			}
-
 			$items[$items_counter++] = $dummy;
   		}
   	}	
-	new dBug($items);
 	return $items;
 }
 

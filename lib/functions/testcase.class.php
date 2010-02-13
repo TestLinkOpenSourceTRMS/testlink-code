@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.244 2010/02/11 18:58:12 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.245 2010/02/13 18:22:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -401,16 +401,6 @@ class testcase extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$tcase_version_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
-	     
-		// $sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
-		//        " (id,tc_external_id,version,summary,steps,expected_results,preconditions," . 
-		//        "author_id,creation_ts,execution_type,importance) " . 
-	  	//        " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
-	  	//        $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($steps) . "'," .
-		//   	   "'" . $this->db->prepare_string($expected_results) .  "','" . 
-		//   	   $this->db->prepare_string($preconditions) . "'," . $author_id . "," .
-	    //        $this->db->db_now() . ", {$execution_type},{$importance} )";
-        //
 		$sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcversions']} " .
 		       " (id,tc_external_id,version,summary,preconditions," . 
 		       "author_id,creation_ts,execution_type,importance) " . 
@@ -4200,6 +4190,5 @@ class testcase extends tlObjectWithAttachments
 		}
 		return $ret;
 	}
-
 } // end class
 ?>

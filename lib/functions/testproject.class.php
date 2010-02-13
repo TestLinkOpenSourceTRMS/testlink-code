@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.152 2010/02/09 19:48:10 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.153 2010/02/13 18:23:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1035,32 +1035,42 @@ function setPublicStatus($id,$status)
 		}	
 	}
 
+	/**
+	 * @param $testproject_id
+	 * @param $fileName
+ 	 */
 	function importKeywordsFromXMLFile($testproject_id,$fileName)
 	{
-		$xml = simplexml_load_file($fileName);
-		return $this->importKeywordsFromSimpleXML($testproject_id,$xml);
+		$simpleXMLObj = simplexml_load_file($fileName);
+		return $this->importKeywordsFromSimpleXML($testproject_id,$simpleXMLObj);
 	}
 
-	function importKeywordsFromXML($testproject_id,$xml)
+
+	/**
+	 * @param $testproject_id
+	 * @param $xmlString
+ 	 */
+	function importKeywordsFromXML($testproject_id,$xmlString)
 	{
-		$xml = simplexml_load_string($xml);
-		return $this->importKeywordsFromSimpleXML($testproject_id,$xml);
+		$simpleXMLObj = simplexml_load_string($xmlString);
+		return $this->importKeywordsFromSimpleXML($testproject_id,$simpleXMLObj);
 	}
 
 	/**
-	 * 
-	 *
+	 * @param $testproject_id
+	 * @param $simpleXMLObj
  	 */
-	function importKeywordsFromSimpleXML($testproject_id,$xml)
+	function importKeywordsFromSimpleXML($testproject_id,$simpleXMLObj)
 	{
-		if (!$xml || $xml->getName() != 'keywords')
+		$status = tl::OK;
+		if(!$simpleXMLObj || $simpleXMLObj->getName() != 'keywords')
 		{
-			return tlKeyword::E_WRONGFORMAT;
+			$status = tlKeyword::E_WRONGFORMAT;
 		}
-		
-		if ($xml->keyword)
+	
+		if( ($status == tl::OK) && $simpleXMLObj->keyword )
 		{
-			foreach($xml->keyword as $keyword)
+			foreach($simpleXMLObj->keyword as $keyword)
 			{
 				$kw = new tlKeyword();
 				$kw->initialize(null,$testproject_id,NULL,NULL);

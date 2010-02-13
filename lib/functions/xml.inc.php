@@ -7,16 +7,18 @@
  * 
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: xml.inc.php,v 1.13 2010/02/10 19:21:00 franciscom Exp $
+ * @version    	CVS: $Id: xml.inc.php,v 1.14 2010/02/13 09:48:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 
- *	20081027 - martin - exportKeywordDataToXML moved here
+ *	20100213 - franciscom - new function getItemsFromSimpleXMLObj() 
  *
  */
 
-
+/**
+ * 
+ *
+ */
 function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
 
@@ -85,22 +87,58 @@ function getNodeContent(&$node,$tag)
 }
 
 
+
 /**
- * Exports the given keywords to a XML file
- * 
- * @param type $keywords the keywords to export in the form
- * 				 keywordData[$i]['keyword'] => the keyword itself
- * 				 keywordData[$i]['notes'] => the notes of keyword
- *
- * @return strings the generated XML Code
- * @todo SCHLUNDUS: will soon be removed
- * 		martin: moved from deleted keywords.inc.php; not used anywhere; I guess it could be removed
+ * $simpleXMLItems
+ * $itemStructure: has two keys elements, attributes
  */
-// function exportKeywordDataToXML($keywords,$bNoHeader = false)
-// {
-// 	$keywordRootElem = "<keywords>{{XMLCODE}}</keywords>";
-// 	$keywordElemTpl = "\t".'<keyword name="{{NAME}}"><notes><![CDATA['."\n||NOTES||\n]]>".'</notes></keyword>'."\n";
-// 	$keywordInfo = array("{{NAME}}" => "keyword","||NOTES||" => "notes");
-// 	return exportDataToXML($keywords,$keywordRootElem,$keywordElemTpl,$keywordInfo,$bNoHeader);
-// }
+function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
+{
+	$items = null;
+	if($simpleXMLItems)
+	{
+  		$items_counter=0;
+  		$loop_qty = count($simpleXMLItems);
+
+  		for($idx=0; $idx < $loop_qty; $idx++)
+  		{
+			foreach($itemStructure['elements'] as $castType => $keyValues)
+  			{
+				foreach($keyValues as $key)
+  				{
+  					$dummy[$key] = null;
+  					if( property_exists($simpleXMLItems[$idx],$key) )
+  					{
+  						$dummy[$key] = $simpleXMLItems[$idx]->$key;
+  				    	settype($dummy[$key],$castType);
+  				    }
+  				}
+  			}	
+
+			if( isset($itemStructure['attributes']) && !is_null($itemStructure['attributes']) )
+			{
+				foreach($itemStructure['attributes'] as $castType => $keyValues)
+  				{
+					foreach($keyValues as $key)
+  					{
+  						$dummy[$key] = null;
+  						if( isset($simpleXMLItems[$idx],$key) )
+  						{
+  							$dummy[$key] = $simpleXMLItems[$idx][$key];
+  					    	settype($dummy[$key],$castType);
+  					    }
+  					}
+  				}	
+
+			}
+
+			$items[$items_counter++] = $dummy;
+  		}
+  	}	
+	new dBug($items);
+	return $items;
+}
+
+
+
 ?>

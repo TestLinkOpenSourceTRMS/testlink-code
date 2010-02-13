@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.21 2010/01/06 15:13:38 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.22 2010/02/13 23:00:50 havlat Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 --  Database Type: Microsoft SQL Server
@@ -67,6 +67,10 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (20,'mgt_view_events');
 INSERT INTO /*prefix*/rights (id,description) VALUES (21,'mgt_view_usergroups');
 INSERT INTO /*prefix*/rights (id,description) VALUES (22,'events_mgt');
 INSERT INTO /*prefix*/rights (id,description) VALUES (23,'testproject_user_role_assignment');
+INSERT INTO /*prefix*/rights (id,description) VALUES (24,'platform_management');
+INSERT INTO /*prefix*/rights (id,description) VALUES (25,'platform_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (26,'project_infrastructure_edit');
+INSERT INTO /*prefix*/rights (id,description) VALUES (27,'project_infrastructure_view');
 
 SET IDENTITY_INSERT /*prefix*/rights OFF
 
@@ -94,6 +98,10 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,20);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,21);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,22);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,23);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
 
 --  Rights for guest role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (5,3);
@@ -124,6 +132,8 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,7);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,8);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,9);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,11);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
 
 --  Rights for leader role
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,1);
@@ -139,6 +149,10 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,10);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,11);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,15);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,16);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,24);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 
 --  admin account 
 --  SECURITY: change password after first login

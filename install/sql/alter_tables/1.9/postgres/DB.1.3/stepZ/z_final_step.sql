@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.2 $
-$Date: 2010/01/17 17:23:43 $
-$Author: franciscom $
+$Revision: 1.3 $
+$Date: 2010/02/13 23:00:50 $
+$Author: havlat $
 $Name:  $
 */
 
@@ -15,9 +15,11 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,27);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,24);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,26);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,26);
-INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (4,26);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
+INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
 
 INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.3',now(),'');

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.63 $
- * @modified $Date: 2010/02/14 17:33:58 $ by $Author: franciscom $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2010/02/14 18:03:49 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
@@ -499,7 +499,7 @@ function buildKeywordList($kwMap,$keywords)
 function check_xml_tc_tsuite($fileName,$recursiveMode)
 {
 	$xml = @simplexml_load_file($fileName);
-	$file_check = array('status_ok' => 0, 'msg' => 'dom_ko');    		  
+	$file_check = array('status_ok' => 0, 'msg' => 'xml_load_ko');    		  
 	if($xml !== FALSE)
 	{
 		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  

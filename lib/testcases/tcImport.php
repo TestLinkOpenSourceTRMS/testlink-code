@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.60 $
- * @modified $Date: 2010/02/13 13:53:59 $ by $Author: franciscom $
+ * @version $Revision: 1.61 $
+ * @modified $Date: 2010/02/14 16:48:17 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
@@ -40,7 +40,7 @@ $args = init_args();
 $resultMap = null;
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
-$dest_files = array('XML' => $dest_common . ".csv",
+$dest_files = array('XML' => $dest_common . ".xml",
                     'XLS' => $dest_common . ".xls");
 
 $dest=$dest_files['XML'];
@@ -170,7 +170,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 	if (file_exists($fileName))
 	{
 		$xml = @simplexml_load_file($fileName);
-		if($xm !== FALSE)
+		if($xml !== FALSE)
         {
 			$xmlKeywords = $xml->xpath('//keywords');
 			$kwMap = null;
@@ -192,9 +192,10 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 			}
 			
 			// TO TEST
-			if ($bRecursive && ($xml->getName() == 'testsuites'))
+			if ($bRecursive && ($xml->getName() == 'testsuite'))
 			{
-				$resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
+				// $resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
+				$resultMap = importTestSuitesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
 			}
 
 		}
@@ -297,8 +298,6 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	{
 		return;
 	}
-
-	new dBug($tcData);
 
 	$tprojectHas=array('customFields' => false, 'reqSpec' => false);
   	$hasCustomFieldsInfo=false;
@@ -820,7 +819,10 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
 
 
 
-
+/**
+ * 
+ *
+ */
 function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic)
 {
 	$resultMap = null;
@@ -833,10 +835,12 @@ function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id
 	return $resultMap;
 }
 
-
+/**
+ * 
+ *
+ */
 function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 {
-	echo __FUNCTION__;
 	$tcSet = null;
 	if (!$xmlTCs)
 	{
@@ -853,8 +857,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 
 	for($idx = 0; $idx < $loops2do; $idx++)
 	{
-        new dBug($xmlTCs[$idx]);
-        $dummy = getItemsFromSimpleXMLObj($xmlTCs[$idx],$tcXML);
+        $dummy = getItemsFromSimpleXMLObj(array($xmlTCs[$idx]),$tcXML);
         $tc = $dummy[0]; 
         
 		if ($tc)
@@ -882,9 +885,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 			} 
    		}	
     	$tcaseSet[$jdx++] = $tc;    
-        new dBug($tcaseSet);
     }
-	
 	return $tcaseSet;
 }
 
@@ -916,12 +917,33 @@ function getTestCaseFromSimpleXMLObj(&$xmlTC)
 }
 
 
-
+/**
+ * 
+ *
+ */
 function getStepsFromSimpleXMLObj($simpleXMLItems)
 {
   	$itemStructure['elements'] = array('string' => array("actions","expectedresults"),
 				                       'integer' => array("step_number"));
+				                       
+  	$itemStructure['transformations'] = array("expectedresults" => "expected_results");
+				                       
 	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
+
+    // need to do this due to (maybe) a wrong name choice for XML element
+	if( !is_null($items) )
+	{
+		$loop2do = count($items);
+		for($idx=0; $idx < $loop2do; $idx++)
+		{
+			$items[$idx]['expected_results'] = '';
+			if( isset($items[$idx]['expectedresults']) )
+			{
+				$items[$idx]['expected_results'] = $items[$idx]['expectedresults'];
+				unset($items[$idx]['expectedresults']);
+			}
+		}
+	}
 	return $items;
 }
 
@@ -946,5 +968,92 @@ function getKeywordsFromSimpleXMLObj($simpleXMLItems)
   	$itemStructure['attributes'] = array('string' => array("name"));
 	$items = getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure);
 	return $items;
+}
+
+
+/*
+  function: importTestSuite
+  args :
+  returns: 
+  
+  rev: 20090204 - franciscom - added node_order
+*/
+function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
+{
+	static $tsuiteXML;
+	static $tsuiteMgr;
+	static $callCounter = 0;
+	$resultMap = array();
+    
+	// $callCounter++;
+	if(is_null($tsuiteXML) )
+	{
+		$tsuiteXML = array();
+		$tsuiteXML['elements'] = array('string' => array("details"),
+			                           'integer' => array("node_order"));
+		$tsuiteXML['attributes'] = array('string' => array("name"));
+		
+		$tsuiteMgr = new testsuite($dbHandler);
+	}
+	
+	if($xml->getName() == 'testsuite')
+	{
+		
+		// getItemsFromSimpleXMLObj() first argument must be an array
+        $dummy = getItemsFromSimpleXMLObj(array($xml),$tsuiteXML);
+        $tsuite = current($dummy); 
+
+		$tsuiteID = $parentID;
+		if ($tsuite['name'] != "")
+		{
+			$ret = $tsuiteMgr->create($parentID,$tsuite['name'],$tsuite['details'],$tsuite['node_order']);
+			$tsuiteID = $ret['id'];
+			if (!$tsuiteID)
+			{
+				return null;
+			}	
+		}
+		else if($importIntoProject)
+		{
+			$tsuiteID = $tproject_id;
+		}
+
+		$childrenNodes = $xml->children();	
+		$loop2do = sizeof($childrenNodes);
+		
+		for($idx = 0; $idx < $loop2do; $idx++)
+		{
+			$target = $childrenNodes[$idx];
+			switch($target->getName())
+			{
+				case 'testcase':
+				    // getTestCaseSetFromSimpleXMLObj() first argument must be an array
+					$tcData = getTestCaseSetFromSimpleXMLObj(array($target));
+					$resultMap = array_merge($resultMap,saveImportedTCData($dbHandler,$tcData,$tproject_id,$tsuiteID,$userID,$kwMap));
+				break;
+
+				case 'testsuite':
+					$myself = __FUNCTION__;
+					$resultMap = array_merge($resultMap,$myself($dbHandler,$target,$tsuiteID,$tproject_id,$userID,$kwMap));
+				break;
+
+				// do not understand why we need to do this particular logic.
+				// Need to understand				
+				case 'details':
+					if (!$importIntoProject)
+					{
+						$keywords = getKeywordsFromSimpleXMLObj($target->xpath("//keyword"));
+						if ($keywords)
+						{
+							$kwIDs = buildKeywordList($kwMap,$keywords);
+							$tsuiteMgr->addKeywords($tsuiteID,$kwIDs);
+						}
+					}
+				break;
+				
+			}			
+		}
+	}
+	return $resultMap;
 }
 ?>

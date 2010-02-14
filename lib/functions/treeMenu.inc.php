@@ -8,12 +8,14 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.115 2009/12/12 10:11:29 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.116 2010/02/14 14:40:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *		
+ *	20100202 - asimon - changes for filtering, BUGID 2455, BUGID 3026
+ *						added filter_by_* - functions, changed generateExecTree()
  *	20091212 - franciscom - prepareNode(), generateTestSpecTree() interface changes
  *                          added logic to do filtering on test spec for execution type
  *
@@ -144,41 +146,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 				$tck_map=array();  // means filter everything
 			}
 		}
-        // echo 'tck_map'; 
-		// new dBug($tck_map);
-		
-		// 20091211 - franciscom
-		// if( !is_null($tck_map) && count($tck_map) > 0)
-		// {
-		// 	$testCaseSet = array_keys($tck_map);
-		// 	if( $my['options']['ignore_inactive_testcases'] )
-		// 	{
-		// 		$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
-		// 		       " SELECT count(TCV.id) AS num_active_versions, parent_id, tc_external_id " .
-		// 			   " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
-		// 			   " WHERE NH.parent_id IN  (" . implode(',',$testCaseSet) . ") " .
-		// 			   " AND NH.id = TCV.id AND TCV.active=1 "  .
-		// 			   " GROUP BY parent_id,tc_external_id " .
-		// 			   " HAVING count(TCV.id) > 0 ";
-		// 		$dataSet = $db->fetchRowsIntoMap($sql,'parent_id');
-		// 		new dBug($dataSet);
-		// 		
-		//     	$testCaseSet = count($dataSet) > 0 ? array_keys($dataSet) : array();
-		// 	}	 
-		// 	
-	    //     if( count($testCaseSet) > 0 )
-	    //     {
-	    //     	
-	    //     }
-		// 	
-		// 	// $sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
-		// 	//        " SELECT COALESCE(MAX(TCV.id),0) AS maxid, TCV.tc_external_id AS external_id" .
-		// 	// 	   " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
-		// 	// 	   " WHERE  NH.id = TCV.id AND TCV.active=1 AND NH.parent_id={$node['id']} " .
-		// 	// 	   " GROUP BY TCV.tc_external_id ";
-        // 
-		// }
-		
 		
 		// Important: prepareNode() will make changes to $test_spec like filtering by test case 
 		// keywords using $tck_map;
@@ -193,10 +160,6 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
 			                             $tplan_tcs,$pnFilters,$pnOptions);
-			                             
-		// 	                             $my['options']['hideTestCases'],
-		// 	                             DONT_FILTER_BY_TESTER,DONT_FILTER_BY_EXEC_STATUS,
-		// 	                             $my['options']['ignore_inactive_testcases']);
 		
 		foreach($testcase_counters as $key => $value)
 		{
@@ -400,12 +363,14 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		}
 		if ($node && $viewType == 'executionTree')
 		{
+			
 			$tpNode = isset($tplan_tcases[$node['id']]) ? $tplan_tcases[$node['id']] : null;
 			if (!$tpNode || (!is_null($my['filters']['assignedTo'])) && 
 					((isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && !is_null($tpNode['user_id'])) ||
-							(!isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && 
+							(!isset($my['filters']['assignedTo'][TL_USER_NOBODY]) && (!isset($my['filters']['assignedTo'][TL_USER_SOMEBODY])) && 
 							 !isset($my['filters']['assignedTo'][$tpNode['user_id']]))) || 
-							(!is_null($my['filters']['status']) && !isset($my['filters']['status'][$tpNode['exec_status']]))
+							(!is_null($my['filters']['status']) && !isset($my['filters']['status'][$tpNode['exec_status']])) ||
+							(isset($my['filters']['assignedTo'][TL_USER_SOMEBODY]) && !is_numeric($tpNode['user_id']))
 			)
 			{
 				$node = null;
@@ -657,7 +622,7 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
  *	20080224 - franciscom - added include_unassigned
  */
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
-                          $tplan_name,$getArguments,$filters,$additionalInfo) 
+                          $tplan_name,&$getArguments,$filters,$additionalInfo) 
 {
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -679,14 +644,15 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	if( property_exists($filters,'keyword') && !is_null($filters->keyword) )
 	{
 		$keyword_id = $filters->keyword->items;
-		$keywordsFilterType = $filters->keyword->type;
+		//$keywordsFilterType = $filters->keyword->type;
+		$keywordsFilterType = $filters->keywordsFilterType;
 	}
 	
 	$tc_id = $filters->tc_id; 
-	$build_id = $filters->build_id; 
+	$build_id = $filters->build_id;
 	$bHideTCs = $filters->hide_testcases;
 	$assignedTo = $filters->assignedTo; 
-	$status = $filters->status;
+	$status = $filters->filter_status;
 	$cf_hash = $filters->cf_hash;
 	$show_testsuite_contents = $filters->show_testsuite_contents;
 	$urgencyImportance = isset($filters->urgencyImportance) ? $filters->urgencyImportance : null;
@@ -736,6 +702,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$tplan_tcases = null;
     $apply_other_filters=true;
 
+    //debug TODO weg damit
+    //echo "<pre>";print_r($keyword_id); print_r($keywordsFilterType); echo "</pre>";
+    
+    
 	if($test_spec)
 	{
 		if(is_null($tc_id) || $tc_id >= 0)
@@ -757,8 +727,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// 	                                              $urgencyImportance);
             $linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
                                    'assigned_to' => $filters->assignedTo,
-                                   'exec_status' => $status,
-                                   'build_id' => $filters->build_id,
                                    'cf_hash' =>  $filters->cf_hash,
                                    'platform_id' => $filters->platform_id,
                                    'urgencyImportance' => $urgencyImportance);
@@ -774,8 +742,17 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			    // echo "DEBUG - with AND Condition<br>";
 			
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
-				$linkedFilters = array('tcase_id' => array_keys($filteredSet));
-				$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
+
+				// CAUTION: if $filteredSet is null,
+				// then get_linked_tcversions() thinks there are just no filters set,
+				// but really there are no testcases which match the wanted keyword criteria,
+				// so we have to set $tplan_tcases to null because there is no more filtering necessary
+				if ($filteredSet != null) {
+					$linkedFilters = array('tcase_id' => array_keys($filteredSet));
+					$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters);
+				} else {
+					$tplan_tcases = null;
+				}
 			}
 		}   
 		
@@ -785,73 +762,67 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$apply_other_filters=false;
 		}
 		
-		if( $apply_other_filters && property_exists($filters,'statusAllPrevBuilds') && 
-		    !is_null($filters->statusAllPrevBuilds) &&
-			!in_array($resultsCfg['status_code']['all'],(array)$filters->statusAllPrevBuilds) )
-		{
-			
-			// echo "DEBUG - Applying filter_by_same_status_for_build_set()<br>";
-			$tplan_tcases = filter_by_same_status_for_build_set($tplan_mgr,$tplan_tcases,$tplan_id,$filters);
-			if (is_null($tplan_tcases))
-			{
+		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
+				!is_null($filters->on_build_type) && in_array('n', $filters->on_build_type) &&
+				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
+				!is_null($filters->filter_status)) {
+			if (in_array($resultsCfg['status_code']['not_run'], (array)$filters->filter_status)) {
+				$tplan_tcases = filter_not_run_for_any_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+			} else {
+				$tplan_tcases = filter_by_status_for_any_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+			}
+			if (is_null($tplan_tcases)) {
 				$tplan_tcases = array();
 				$apply_other_filters=false;
 			}
 		}
 		
-		// 20090716 - franciscom - BUGID 2692
-		if( $apply_other_filters && property_exists($filters,'statusAnyOfPrevBuilds') && 
-		    !is_null($filters->statusAnyOfPrevBuilds) &&
-		    !in_array($resultsCfg['status_code']['all'],(array)$filters->statusAnyOfPrevBuilds) )
-		{
-			//@TODO - 20090719 - franciscom - refactor creating a function
-			$buildSet = $tplan_mgr->get_prev_builds($tplan_id,$filters->build_id,testplan::ACTIVE_BUILDS);
-			if( !is_null($buildSet) )
-			{
-				$buildSetQty=count($buildSet);
- 			    $targetStatus=current($filters->statusAnyOfPrevBuilds);
-
-				$buildIdList=array_keys($buildSet);
-				$testCaseSet=array_keys($tplan_tcases);
-				$testCaseQty=count($testCaseSet);
-				for($idx=0; $idx < $testCaseQty; $idx++ )
-				{
-					$tcversionSet[]=$tplan_tcases[$testCaseSet[$idx]]['tcversion_id'];
-		    	}
-				
-				// we will get records only for executed test cases
-				$options=null;
-				$options=array('groupByBuild' => 
-				               $targetStatus == $resultsCfg['status_code']['not_run'] ? 1 : 0);
-				// 20090815 - franciscom - platform feature               
-				$lastExecSet = $tcase_mgr->get_last_execution($testCaseSet,$tcversionSet,
-				    	                                      $tplan_id,$buildIdList,$filters->platform_id,$options);
-				                                              
-				$keySet=array_keys($lastExecSet);
-				$keySetQty=count($keySet);
-				if( $targetStatus == $resultsCfg['status_code']['not_run'])
-				{
-					for($idx=0; $idx < $keySetQty; $idx++ )
-					{
-						if( count($lastExecSet[$keySet[$idx]]) == $buildSetQty)
-						{
-							unset($tplan_tcases[$lastExecSet[$keySet[$idx]][0]['testcase_id']]);
-					    }
-		    		}
-		    	}
-		    	else
-		    	{
-					for($idx=0; $idx < $keySetQty; $idx++ )
-					{
-						if($lastExecSet[$keySet[$idx]]['status'] != $targetStatus)
-						{
-							unset($tplan_tcases[$lastExecSet[$keySet[$idx]]['testcase_id']]);
-						}
-		    		}
-		        }
+		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
+				!is_null($filters->on_build_type) && in_array('a', $filters->on_build_type) &&
+				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
+				!is_null($filters->filter_status)) {
+			$tplan_tcases = filter_by_same_status_for_all_builds($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+			if (is_null($tplan_tcases)) {
+				$tplan_tcases = array();
+				$apply_other_filters=false;
 			}
-        }
+		}		
 		
+		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
+				!is_null($filters->on_build_type) && in_array('s', $filters->on_build_type) &&
+				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
+				!is_null($filters->filter_status)) {
+			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+			if (is_null($tplan_tcases)) {
+				$tplan_tcases = array();
+				$apply_other_filters=false;
+			}
+		}
+		
+		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
+				!is_null($filters->on_build_type) && in_array('c', $filters->on_build_type) &&
+				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
+				!is_null($filters->filter_status)) {
+			$filters->filter_build_id = (0 == $build_id) ?
+				$tplan_mgr->get_max_build_id($tplan_id,testplan::GET_ACTIVE_BUILD,testplan::GET_OPEN_BUILD)
+                : $build_id;
+			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+			if (is_null($tplan_tcases)) {
+				$tplan_tcases = array();
+				$apply_other_filters=false;
+			}
+		}
+
+		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
+				!is_null($filters->on_build_type) && in_array('l', $filters->on_build_type) &&
+				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
+				!is_null($filters->filter_status)) {
+			$tplan_tcases = filter_by_status_for_last_execution($db, $tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+			if (is_null($tplan_tcases)) {
+				$tplan_tcases = array();
+				$apply_other_filters=false;
+			}
+		}
 		
 		// 20080224 - franciscom - 
 		// After reviewing code, seems that assignedTo has no sense because tp_tcs
@@ -859,12 +830,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// Then to avoid changes to prepareNode() due to include_unassigned,
 		// seems enough to set assignedTo to 0, if include_unassigned==true
 		// $assignedTo = $include_unassigned ? 0 : $assignedTo;
-		$assignedTo = $filters->include_unassigned ? null : $assignedTo;		                                                       
+		$assignedTo = $filters->include_unassigned ? null : $assignedTo;
 		
 		// $bForPrinting = $bHideTCs;
-		 
-		$pnFilters = array('assignedTo' => $assignedTo, 'status' => $status);
-		$pnOptions = array('hideTestCases' => $bHideTCs); 
+		
+		$pnFilters = array('assignedTo' => $assignedTo);
+		//$pnFilters = array('assignedTo' => $assignedTo, 'status' => $status);
+		$pnOptions = array('hideTestCases' => $bHideTCs);
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,$pnFilters,$pnOptions);
 
@@ -873,6 +845,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$test_spec[$key] = $testcase_counters[$key];
 		}
 		
+		$keys = implode(array_keys($tplan_tcases), ",");
+		$getArguments .= "&show_only_tcs=" . $keys;
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$getArguments,
 			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
 			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
@@ -1236,60 +1210,74 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 
 
 /**
- * filter Test cases by same status for build set
+ * remove the testcases that don't have the given result in any build
  * 
  * @param object &$tplan_mgr reference to test plan manager object
  * @param array &$tcase_set reference to test case set to filter
+ * @param integer $tplan_id ID of test plan
+ * @param array $filters filters to apply to test case set
+ * @return array new tcase_set
+ */
+function filter_by_status_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+	$key2remove=null;
+	$buildSet = $tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS);
+	
+	if( !is_null($buildSet) ) {
+		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,
+		                                   array_keys($buildSet),$filters->filter_status);  
+		                                                             
+		if( is_null($tcase_build_set) ) {
+			$tcase_set = array();
+		} else {
+			$key2remove=null;
+			foreach($tcase_set as $key_tcase_id => $value) {
+				if( !isset($tcase_build_set[$key_tcase_id]) ) {
+					$key2remove[]=$key_tcase_id;
+				}
+			}
+		}
+		
+	if( !is_null($key2remove) ) {
+			foreach($key2remove as $key) {
+				unset($tcase_set[$key]); 
+			}
+		}
+	}
+		
+	return $tcase_set;
+}
+
+/**
+ * filter testcases out that do not have the same execution result in all builds
+ * 
+ * @param object &$tplan_mgr reference to test plan manager object
+ * @param array &$tcase_set reference to test case set to filter
+ * @param integer $tplan_id ID of test plan
+ * @param array $filters filters to apply to test case set
  * 
  * @return array new tcase_set
  */
-function filter_by_same_status_for_build_set(&$tplan_mgr,&$tcase_set,$tplan_id,$filters)
-{
+function filter_by_same_status_for_all_builds(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
 	$key2remove=null;
-	$buildSet = $tplan_mgr->get_prev_builds($tplan_id,$filters->build_id,testplan::ACTIVE_BUILDS);
+	$buildSet = $tplan_mgr->get_builds($tplan_id, testplan::ACTIVE_BUILDS);
 	
-	if( !is_null($buildSet) )
-	{
-		$target_status=current($filters->statusAllPrevBuilds);
+	if( !is_null($buildSet) ) {
 		$tcase_build_set = $tplan_mgr->get_same_status_for_build_set($tplan_id,
-		                                                             array_keys($buildSet),$target_status);  
+		                                                             array_keys($buildSet),$filters->filter_status);  
 		                                                             
-		if($filters->statusAllPrevBuildsFilterType == 'IN')
-		{
-			if( is_null($tcase_build_set) )
-			{
-				$tcase_set = array();   
-			}
-			else
-			{
-				$key2remove=null;
-				foreach($tcase_set as $key_tcase_id => $value)
-				{
-					if( !isset($tcase_build_set[$key_tcase_id]) )
-					{
-						$key2remove[]=$key_tcase_id;  
-					}  
-				}  
+		if( is_null($tcase_build_set) ) {
+			$tcase_set = array();
+		} else {
+			$key2remove=null;
+			foreach($tcase_set as $key_tcase_id => $value) {
+				if( !isset($tcase_build_set[$key_tcase_id]) ) {
+					$key2remove[]=$key_tcase_id;
+				}
 			}
 		}
-		else
-		{
-			if( !is_null($tcase_build_set) )
-			{
-				$key2remove=null;
-				foreach($tcase_set as $key_tcase_id => $value)
-				{
-					if( isset($tcase_build_set[$key_tcase_id]) )
-					{
-						$key2remove[]=$key_tcase_id;  
-					}  
-				}  
-			}		          
-		}
-		if( !is_null($key2remove) )
-		{
-			foreach($key2remove as $key)
-			{
+		
+		if( !is_null($key2remove) ) {
+			foreach($key2remove as $key) {
 				unset($tcase_set[$key]); 
 			}
 		}
@@ -1297,6 +1285,117 @@ function filter_by_same_status_for_build_set(&$tplan_mgr,&$tcase_set,$tplan_id,$
 	
 	return $tcase_set;
 }
+
+/**
+ * filter testcases out which do not have the chosen status in the given build
+ * used by filter options 'result on specific build' and 'result on current build'
+ *  
+ * @param object &$tplan_mgr reference to test plan manager object
+ * @param array &$tcase_set reference to test case set to filter
+ * @param integer $tplan_id ID of test plan
+ * @param array $filters filters to apply to test case set
+ * @return array new tcase_set
+ */
+function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+	$key2remove=null;
+	$buildSet = array($filters->filter_build_id => $tplan_mgr->get_build_by_id($tplan_id,$filters->filter_build_id));
+	
+	if( !is_null($buildSet) ) {
+		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,
+		                                                array_keys($buildSet),$filters->filter_status);  
+		if( is_null($tcase_build_set) ) {
+			$tcase_set = array();
+		} else {
+			$key2remove=null;
+			foreach($tcase_set as $key_tcase_id => $value) {
+				if( !isset($tcase_build_set[$key_tcase_id]) ) {
+					$key2remove[]=$key_tcase_id;
+				}
+			}
+		}
+
+		if( !is_null($key2remove) ) {
+			foreach($key2remove as $key) {
+				unset($tcase_set[$key]); 
+			}
+		}
+	}
+	
+	return $tcase_set;
+}
+
+/**
+ * filter testcases by the result of their latest execution
+ * 
+ * @param object &$db reference to database handler
+ * @param object &$tplan_mgr reference to test plan manager object
+ * @param array &$tcase_set reference to test case set to filter
+ * @param integer $tplan_id ID of test plan
+ * @param array $filters filters to apply to test case set
+ * @return array new tcase_set
+ */
+function filter_by_status_for_last_execution(&$db, &$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+	$tables = tlObject::getDBTables('executions');
+	$in_status = implode("','", $filters->filter_status);
+	
+	foreach($tcase_set as $tc_id => $tc_info) {
+		// get last execution result for each testcase, 
+		// if it differs from the result in tcase_set the tcase will be deleted from set
+		$sql = " SELECT status FROM {$tables['executions']} E " .
+			   " WHERE tcversion_id = {$tc_info['tcversion_id']} AND testplan_id = {$tplan_id} " .
+			   " AND platform_id = {$tc_info['platform_id']} " .
+			   " AND status = '{$tc_info['exec_status']}' " .
+			   " AND status IN ('{$in_status}') " .
+			   " ORDER BY execution_ts DESC limit 1 ";
+		$result = null;
+		$result = $db->fetchArrayRowsIntoMap($sql,'status');
+		
+		if (is_null($result)) {
+			unset($tcase_set[$tc_id]);
+		}
+	}
+	
+	return $tcase_set;
+}
+
+
+/**
+ * filter out those testcases, that do not have at least one build in 'not run' status
+ * 
+ * @param object &$tplan_mgr reference to test plan manager object
+ * @param array &$tcase_set reference to test case set to filter
+ * @param integer $tplan_id ID of test plan
+ * @param array $filters filters to apply to test case set
+ * @return array new tcase_set
+ */
+function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+	$key2remove=null;
+	$buildSet = $tplan_mgr->get_builds($tplan_id);
+	
+	if( !is_null($buildSet) ) {
+		$tcase_build_set = $tplan_mgr->get_not_run_for_any_build($tplan_id, array_keys($buildSet));  
+		                                                             
+		if( is_null($tcase_build_set) ) {
+			$tcase_set = array();
+		} else {
+			$key2remove=null;
+			foreach($tcase_set as $key_tcase_id => $value) {
+				if( !isset($tcase_build_set[$key_tcase_id]) ) {
+					$key2remove[]=$key_tcase_id;
+				}
+			}
+		}
+		
+		if( !is_null($key2remove) ) {
+			foreach($key2remove as $key) {
+				unset($tcase_set[$key]); 
+			}
+		}
+	}
+	
+	return $tcase_set;
+}
+
 
 
 /** VERY IMPORTANT: node must be passed BY REFERENCE */

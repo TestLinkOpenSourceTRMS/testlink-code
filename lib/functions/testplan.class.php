@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.169 2010/02/14 15:42:10 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.170 2010/02/14 15:46:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20100214 - franciscom - BUGID 2455, BUGID 3026 - Contribution by julian,asimon
  *  20100206 - eloff - BUGID 3060 - Adding getStatusTotalsByPriority()
  *  20100206 - eloff - BUGID 3060 - Adding urgencyImportanceToPriorityLevel() method
  *  20100201 - franciscom - BUGID 3121 - Adding Platform to test plan after the execution completed,
@@ -843,7 +844,7 @@ class testplan extends tlObjectWithAttachments
 			{
 				$sql .= " UA.user_id IS NULL "; 
 			} 
-			// BUG ID2455
+			// BUGID 2455
             // new user filter "somebody" --> all asigned testcases
 			else if( in_array(TL_USER_SOMEBODY,(array)$my['filters']['assigned_to']) )
 			{

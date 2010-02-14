@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.22 2010/01/12 19:59:33 franciscom Exp $
+ * @version    	CVS: $Id: texts.php,v 1.23 2010/02/14 09:02:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -234,14 +234,17 @@ $TLS_htmltext_title['executeTest']	= "Test Case Execution";
 $TLS_htmltext['executeTest'] 		= "<h2>Purpose:</h2>
 
 <p>Allows user to execute Test cases. User can assign Test result
-to Test Case for Build. See help for more information about filter and settings " .
+to Test Case for a Build. See help for more information about filters and settings " .
 		"(click on the question mark icon).</p>
 
 <h2>Get started:</h2>
 
 <ol>
 	<li>User must have defined a Build for the Test Plan.</li>
-	<li>Select a Build from the drop down box and the \"Apply\" button in the navigation pane.</li>
+	<li>Select a Build from the drop down box</li>
+	<li>If you want to see only a few testcases instead of the whole tree,
+		you can choose which filters to apply. Click the \"Apply\"-Button 
+		after you have changed the filters.</li>	
 	<li>Click on a test case in the tree menu.</li>
 	<li>Fill out the test case result and any applicable notes or bugs.</li>
 	<li>Save results.</li>

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.548 2010/02/11 21:01:26 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.549 2010/02/14 08:58:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -563,12 +563,15 @@ $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
 $TLS_filter_on = "on";
 $TLS_filter_tcID = "Test Case ID";
-$TLS_include_unassigned_testcases = " - include unassigned Test Cases";
+$TLS_include_unassigned_testcases = "include unassigned Test Cases";
 $TLS_test_status_all_status = $TLS_test_status_all;
-$TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
-$TLS_filter_result_any_prev_builds = "Result on ANY of Previous Builds";
-$TLS_In = "In";
-$TLS_Out = "Not In";
+$TLS_filter_result_all_builds = "ALL Builds";
+$TLS_filter_result_any_build = "ANY Build";
+$TLS_filter_result_specific_build = "specific Build";
+$TLS_filter_result_latest_execution = "latest execution";
+$TLS_filter_result_current_build = "Build chosen for execution";
+$TLS_filter_somebody = "Somebody";
+$TLS_exec_build = "Build to execute";
 
 
 // ----- gui/templates/mainPage.tpl -----

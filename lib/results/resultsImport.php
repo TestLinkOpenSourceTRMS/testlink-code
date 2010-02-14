@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/02/14 16:45:22 $  by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/02/14 17:13:21 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
@@ -44,8 +44,6 @@ $gui->importTypes=array("XML" => "XML");
 $gui->importLimit=(TL_IMPORT_LIMIT / 1024);
 $gui->doImport = ($args->importType != "");
 $gui->testprojectName=$args->testprojectName;
-
-
 
 $resultMap=null;
 $dest=TL_TEMP_PATH . session_id()."-results.import";
@@ -367,13 +365,15 @@ function check_valid_ftype($upload_info,$import_type)
 */
 function check_xml_execution_results($fileName)
 {
-	$dom=domxml_open_file($fileName);
-	$file_check=array('status_ok' => 0, 'msg' => 'dom_ko');    		  
-	if ($dom)
+	$xml = @simplexml_load_file($fileName);
+	$file_check=array('status_ok' => 0, 'msg' => 'xml_ko');    		  
+	if($xml !== FALSE)
 	{
 		$file_check=array('status_ok' => 1, 'msg' => 'ok');    		  
 		$root=$dom->document_element();
-		if($root->tagname != 'results') {
+		$elementName = $xml->getName();
+		if($elementName != 'results') 
+		{
 			$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_results_import_format'));
 		}
 	}

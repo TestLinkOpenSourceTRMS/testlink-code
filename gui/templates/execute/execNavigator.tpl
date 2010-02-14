@@ -1,24 +1,26 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.31 2010/01/21 22:06:18 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.32 2010/02/14 14:56:33 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
-     20100109 - eloff      - BUGID 2800 - filter panel is now ext CollapsiblePanel
-     20090808 - franciscom - added contribution platform
-     20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
-     20081220 - franciscom - advanced/simple filters
-     20080621 - franciscom - adding ext js treemenu
-     20080427 - franciscom - refactoring
-     20080224 - franciscom - BUGID 1056
-     20070225 - franciscom - fixed auto-bug BUGID 642
-     20070212 - franciscom - name changes on html inputs
-                             use input_dimensions.conf
+  20100202 - asimon - BUGID 2455, BUGID 3026 - changes on filters
+  20100109 - eloff - BUGID 2800 - filter panel is now ext CollapsiblePanel
+  20090808 - franciscom - added contribution platform
+  20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
+  20081220 - franciscom - advanced/simple filters
+  20080621 - franciscom - adding ext js treemenu
+  20080427 - franciscom - refactoring
+  20080224 - franciscom - BUGID 1056
+  20070225 - franciscom - fixed auto-bug BUGID 642
+  20070212 - franciscom - name changes on html inputs
+                          use input_dimensions.conf
 
 *}
 {lang_get var="labels"
-          s="filter_result,caption_nav_filter_settings,filter_owner,TestPlan,
-             filter_result_all_prev_builds,filter_result_any_prev_builds,platform,
-             btn_apply_filter,build,keyword,filter_tcID,include_unassigned_testcases,priority"}
+          s="filter_result,caption_nav_filter_settings,filter_owner,test_plan,filter_on,
+             filter_result_all_prev_builds,filter_result_any_prev_builds,platform,exec_build,
+             filter_result_any_prev_builds,btn_apply_filter,build,keyword,filter_tcID,
+             include_unassigned_testcases,priority"}
        
        
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -69,15 +71,48 @@ rev :
 
 
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+
+str_option_any = '{$gui->str_option_any}';
+str_option_none = '{$gui->str_option_none}';
+str_option_somebody = '{$gui->str_option_somebody}';
+
+{literal}
+
+function triggerBuildChooser() {
+	if (document.getElementById("filter_on_build_type").options[document.getElementById("filter_on_build_type").options.selectedIndex].value == "s") {
+		document.getElementById("filter_build_id").disabled = false;
+	} else {
+		document.getElementById("filter_build_id").disabled = true;
+	}
+}
+
+function triggerAssignedBox() {
+	if ( document.getElementById("filter_assigned_to").options[document.getElementById("filter_assigned_to").options.selectedIndex].label == str_option_any
+			|| document.getElementById("filter_assigned_to").options[document.getElementById("filter_assigned_to").options.selectedIndex].label == str_option_none
+			|| document.getElementById("filter_assigned_to").options[document.getElementById("filter_assigned_to").options.selectedIndex].label == str_option_somebody ) {
+		document.getElementById("include_unassigned").disabled = true;
+	} else {
+		document.getElementById("include_unassigned").disabled = false;
+	}	
+}
+
+</script>
+{/literal}
+
 </head>
 
 {* ===================================================================== *}
-<body>
+
+<body onload="triggerBuildChooser();triggerAssignedBox();">
+
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {assign var="build_number" value=$gui->optBuild.selected }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1 class="title">{$labels.TestPlan}{$tlCfg->gui_title_separator_1} {$gui->tplan_name|escape}
+<h1 class="title">{$labels.test_plan}{$tlCfg->gui_title_separator_1} {$gui->tplan_name|escape}
 {$tlCfg->gui_separator_open}{$labels.build}{$tlCfg->gui_title_separator_1}
 {$gui->optBuild.items.$build_number|escape}{$tlCfg->gui_separator_close}</h1>
 
@@ -89,43 +124,54 @@ rev :
 	</div>
 
 <div id="tplan_settings" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
-<form method="post" id="filters">
+<form method="post" id="filters" name="filters">
   <input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
 	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 	
 	<table class="smallGrey" style="width:98%">
+	
+	{if $gui->map_tplans != '' }
 		<tr>
-			<th>{$labels.build}</th>
-			<td><select name="build_id">
-				{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
+			<td>{$labels.test_plan}</td>
+			<td>
+				<select name="tplan_id" onchange="this.form.submit()">
+			    {html_options options=$gui->map_tplans selected=$gui->tplan_id}
 				</select>
 			</td>
 		</tr>
-		{if $gui->optPlatform.items != ''}
+	{/if}
+		
 		  <tr>
-		  	<td>{$labels.platform}</td>
-		  	<td><select name="platform_id">
-		  		{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
+			<th>{$labels.exec_build}</th>
+			<td><select name="build_id" onchange="this.form.submit()">
+				{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
 		  		</select>
 		  	</td>
 		  </tr>
-		{/if}
+
 	</table>
 
 	<table class="smallGrey" width="98%">
+		
 		<tr>
 			<td>{$labels.filter_tcID}</td>
 			<td><input type="text" name="targetTestCase" value="{$gui->targetTestCase}" 
 			           maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
 		</tr>
+		
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<th>{$labels.keyword}</th>
 			<td>
 				<select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
+				
+				{html_radios name='keywordsFilterType' 
+                   options=$gui->keywordsFilterType->options
+                   selected=$gui->keywordsFilterType->selected }
 			</td>
 		</tr>
+		
 		<tr>
 			<th>{$labels.priority}</th>
 			<td>
@@ -135,6 +181,48 @@ rev :
 				</select>
 			</td>
 		</tr>
+		
+		{if $gui->optPlatform.items != ''}
+		<tr>
+		  	<td>{$labels.platform}</td>
+		  	<td><select name="platform_id">
+		  		{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
+			  	</select>
+			</td>
+		</tr>
+		{/if}
+
+		
+		<tr>
+			<th>{$labels.filter_owner}</th>
+			<td>
+ 			{if $gui->disable_filter_assigned_to}
+			  {$gui->assigned_to_user}
+			{else}
+			  {if $gui->advancedFilterMode }
+			  <select id="filter_assigned_to" name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}
+			  		onchange="triggerAssignedBox()">
+			  {else}
+				<select id="filter_assigned_to" name="filter_assigned_to"
+					onchange="triggerAssignedBox()">
+			  {/if}
+					{html_options options=$gui->users selected=$gui->filter_assigned_to}
+			  </select>
+			{/if}
+									
+			<br />
+			<input type="checkbox" id="include_unassigned" name="include_unassigned"
+  		           value="1" {if $gui->include_unassigned} checked="checked" {/if} />
+			{$labels.include_unassigned_testcases}
+			
+ 			</td>
+		</tr>
+		
+		{$gui->design_time_cfields}
+	
+	</table>
+	<table class="smallGrey" width="98%">	
+	
 		<tr>
 			<th>{$labels.filter_result}</th>
 			<td>
@@ -149,51 +237,23 @@ rev :
 		</tr>
 		
 		<tr>
-			<th>{$labels.filter_result_all_prev_builds}</th>
+			<th>{$labels.filter_on}</th>
 			<td>
-				<select name="filter_status_all_prev_builds">
-			  	{html_options options=$gui->resultAllPrevBuilds selected=$gui->resultAllPrevBuildsSelected}
-			  	</select>
-				<br />
-			  	{html_radios name='resultAllPrevBuildsFilterType' 
-                	options=$gui->resultAllPrevBuildsFilterType->options
-                   	selected=$gui->resultAllPrevBuildsFilterType->selected }
-      		</td>
-		</tr>
-		
-		<tr>
-			<th>{$labels.filter_result_any_prev_builds}</th>
-			<td>
-				<select name="statusAnyOfPrevBuilds">
-			  	{html_options options=$gui->statusAnyOfPrevBuilds selected=$gui->statusAnyOfPrevBuildsSelected}
+			  	<select name="filter_on_build_type" id="filter_on_build_type"
+			  		onchange="triggerBuildChooser()">
+				  	{html_options options=$gui->filter_on_build_type selected=$gui->optFilterBuildTypeSelected}
 			  	</select>
 			</td>
 		</tr>
-
-
-
 		
 		<tr>
-			<th>{$labels.filter_owner}</th>
-			<td>
- 			{if $gui->disable_filter_assigned_to}
-			  {$gui->assigned_to_user}
-			{else}
-			  {if $gui->advancedFilterMode }
-			  <select name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}>
-			  {else}
-				<select name="filter_assigned_to">
-			  {/if}
-					{html_options options=$gui->users selected=$gui->filter_assigned_to}
-			  </select>
-			{/if}
-			<br />
-			<input type="checkbox" id="include_unassigned" name="include_unassigned"
-  		           value="1" {if $gui->include_unassigned} checked="checked" {/if} />
-			{$labels.include_unassigned_testcases}
- 			</td>
+			<th>{$labels.build}</th>
+			<td><select id="filter_build_id" name="filter_build_id">
+				{html_options options=$gui->optBuild.items selected=$gui->optFilterBuild.selected}
+				</select>
+			</td>
 		</tr>
-		{$gui->design_time_cfields}
+	
 	</table>
 		
 		<div>
@@ -209,7 +269,7 @@ rev :
 
 
 {* ===================================================================== *}
-<div id="tree" style="overflow:auto; height:500px;border:1px solid #c3daf9;"></div>
+<div id="tree" style="overflow:auto; height:380px;border:1px solid #c3daf9;"></div>
 
 {if $gui->src_workframe != ''}
 <script type="text/javascript">

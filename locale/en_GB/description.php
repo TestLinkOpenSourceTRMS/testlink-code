@@ -20,7 +20,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.8 2009/10/23 10:10:10 havlat Exp $
+ * @version    	CVS: $Id: description.php,v 1.9 2010/02/14 14:57:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -151,52 +151,47 @@ After closing the add bug page, you will see relevant bug data on the execute pa
 </p>";
 
 // execFilter.html
-$TLS_hlp_executeFilter = "<h2>Setup Filter and Build for test execution</h2>
+$TLS_hlp_executeFilter = "<h2>Filter & Settings</h2>
 
-<p>The left pane consists from navigator through test cases assigned to the current " .
-"Test plan and table with settings and filter. These filters allows the user " .
-"to refine offered set of test cases before they are executed." .
-"Setup your filter, press the \"Apply\" button and select appropriate Test Case " .
-"from tree menu.</p>
+<p>Filter & Settings provide the opportunity to influence the set of shown test cases " .
+"before the execution. You can choose the test plan and the build you wish to execute " .
+"the test cases for and reduce the set of shown test cases by specifying other filters. <br />" .
+"Filters are applied to test case tree after clicking the \"Apply\" button. " .
+"Advanced Filters will allow you to specify a set of values for applicable filters by " .
+"using CTRL-Click inside the Multi-Select ListBox</p>
 
-<h3>Build</h3>
-<p>Users must choose a build that will be connected with a test result. " .
-"Builds are the basic component for the current Test Plan. Each test case " .
-"may be run more times per build. However the last results is count only. 
-<br />Builds can be created by leads using the Create New Build page.</p>
+<h3>Test Plan</h3>
+<p>You can choose the required test plan. According to the chosen test plan the appropriate " .
+"builds will be shown. After choosing a test plan filters will be reset and tree will be " .
+"updated without clicking the \"Apply\" button.</p>
 
-<h3>Test Case ID filter</h3>
-<p>Users can filter test cases by unique identifier. This ID is created automatically 
-during create time. Empty box means that the filter doesn't apply.</p> 
+<h3>Build to execute</h3>
+<p>You can choose the build you whish to execute the test cases for.</p>
 
-<h3>Priority filter</h3>
-<p>Users can filter test cases by test priority. Each test case importance is combined" .
-"with test urgency within the current Test plan. For example 'HIGH' priority test case " .
-"is shown if importance or urgency is HIGH and second attribute is at least MEDIUM level.</p> 
+<h3>Test Case ID Filter</h3>
+<p>You can explicitly filter by a single test case that is identified by its unique ID.</p>
 
-<h2>Result filter</h2>
-<p>Users can filter test cases by results. Results are what happened to that test 
-case during a particular build. Test cases can pass, fail, be blocked, or not be run." .
-"This filter is disabled by default.</p>
+<h3>Keyword Filter</h3>
+<p>You can filter test cases by the keywords that have been assigned. You can choose " .
+"multiple keywords by using CTRL-Click. If you chose more than one keyword you can " .
+"decide whether only test cases are shown that have all chosen keywords assigned " .
+"(radiobutton \"And\") or  at least one of the chosen keywords (radiobutton \"Or\").</p>
 
-<h3>User filter</h3>
-<p>Users can filter test cases by their assignee. The check-box allows to include also " .
-"\"unassigned\" tests into the resulted set in addtion.</p>";
-/*
-<h2>Most Current Result</h2>
-<p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted 
-by the build that is chosen from the dropdown box. In this state the tree will display 
-the test cases status. 
-<br />Example: User selects build 2 from the dropdown box and doesn't check the 'most 
-current' checkbox. All test cases will be shown with their status from build 2. 
-So, if test case 1 passed in build 2 it will be colored green.
-<br />If the user decideds to check the 'most current' checkbox the tree will be 
-colored by the test cases most recent result.
-<br />Ex: User selects build 2 from the dropdown box and this time checks 
-the 'most current' checkbox. All test cases will be shown with most current 
-status. So, if test case 1 passed in build 3, even though the user has also selected 
-build 2, it will be colored green.</p>
- */
+<h3>Priority Filter</h3>
+<p>You can filter test cases by test priority. The test priority is \"test case importance\" " .
+"combined with \"test urgency\" within the current test plan.</p> 
+
+<h3>User Filter</h3>
+<p>You can filter test cases that are not assigned (\"Nobody\") or assigned to \"Somebody\". " .
+"You can also filter test cases that are assigned to a specific tester. If you chose a specific " .
+"tester you also have the possibility to show test cases that are unassigned in addition to " .
+"those test cases (advanced Filters are available). </p>
+
+<h3>Result Filter</h3>
+<p>You can filter test cases by result (advanced Filters are available). You can filter by " .
+"result \"on chosen build for execution\", \"on latest execution\", \"on ALL builds\", " .
+"\"on ANY build\" and \"on specific build\". If \"specific build\" is chosen you then can " .
+"specify the build. </p>";
 
 
 // newest_tcversions.html

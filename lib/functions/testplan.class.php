@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.170 2010/02/14 15:46:54 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.171 2010/02/14 18:33:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2960,6 +2960,7 @@ class testplan extends tlObjectWithAttachments
 	 */
 	public function getStatusTotalsByPlatform($id)
 	{
+		$id = is_null($id) ? 2 : $id;
 		$code_verbose = $this->getStatusForReports();
         $platformSet = $this->getPlatforms($id,array('outputFormat' => 'map'));
         $totals = null;
@@ -2976,11 +2977,15 @@ class testplan extends tlObjectWithAttachments
 				$totals[$platformID]['details'][$status_verbose]['qty']=0;
 			}
         }
+        new dBug($totals);
         
 		// First step - get not run
 		$filters=null;
         $options=array('group_by_platform_tcversion' => true);
         $notRunResults = $this->getNotExecutedLinkedTCVersionsDetailed($id,$filters,$options);
+        
+        new dBug($notRunResults);
+        
         
         $loop2do = count($notRunResults);
         for($idx=0; $idx < $loop2do ; $idx++)
@@ -2988,7 +2993,21 @@ class testplan extends tlObjectWithAttachments
         	$totals[$notRunResults[$idx]['platform_id']]['total_tc']++;
         	$totals[$notRunResults[$idx]['platform_id']]['details']['not_run']['qty']++;
         }
-        	
+
+        // 20100214 - franciscom
+        // I've found this situation
+        // 1. start test plan WITHOUT platforms
+        // 2. run only a couple of tests
+        // 3. create platforms
+        // 4. assign platforms
+        //
+        // In this situation we will have a problem with ALL NOT RUNNED TEST CASES
+        // because not run do not get platform ID from executions file
+        // NEED TO BE FIXED
+        //
+
+        new dBug($totals);
+                	
 		// Second step - get other results
 		$filters = null;
 	    $options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true);

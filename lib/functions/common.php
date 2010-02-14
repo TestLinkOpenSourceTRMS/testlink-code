@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.187 2010/02/09 19:59:24 havlat Exp $
+ * @version    	CVS: $Id: common.php,v 1.188 2010/02/14 18:11:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
@@ -67,16 +67,6 @@ require_once("inputparameter.inc.php");
 require_once("testproject.class.php"); 
 require_once("treeMenu.inc.php");
 require_once("exec_cfield_mgr.class.php");
-/** 
- * domxml wrapper if the domxml extension is not loaded 
- * used for export/import functionality 
- * @TODO havlatm: Consider to remove and ask users to have domxml extension
- **/
-if (!extension_loaded("domxml"))
-{
-	require_once(TL_ABS_PATH . 'third_party'. DIRECTORY_SEPARATOR . 
-		'domxml'. DIRECTORY_SEPARATOR . 'domxml-php4-to-php5.php');
-}
 
 /**
  * Automatic loader for PHP classes

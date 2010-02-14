@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.168 2010/02/09 19:48:09 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.169 2010/02/14 15:42:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -843,6 +843,12 @@ class testplan extends tlObjectWithAttachments
 			{
 				$sql .= " UA.user_id IS NULL "; 
 			} 
+			// BUG ID2455
+            // new user filter "somebody" --> all asigned testcases
+			else if( in_array(TL_USER_SOMEBODY,(array)$my['filters']['assigned_to']) )
+			{
+				$sql .= " UA.user_id IS NOT NULL "; 
+			}
 			else
 			{
 				$sql_unassigned="";
@@ -2602,6 +2608,95 @@ class testplan extends tlObjectWithAttachments
 		return $recordset;
 	}
 
+
+	/**
+	 * BUGID 2455, BUGID 3026
+	 * find any builds which have the wanted status in the build set
+	 * 
+	 * @author asimon
+	 * @param integer $id Build ID
+	 * @param array $buildSet build set to check
+	 * @param array $status status to look for
+	 * @return array $recordset set of builds which match the search criterium
+	 */
+	function get_status_for_any_build($id,$buildSet,$status) 
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$node_types=$this->tree_manager->get_available_node_types();
+		$resultsCfg = config_get('results');
+
+		$build_in = implode(",", $buildSet);
+		$status_in = implode("','", (array)$status);
+
+		if( in_array($resultsCfg['status_code']['not_run'], (array)$status) ) {
+			//not run status
+			$sql = "/* $debugMsg */ SELECT distinct T.tcversion_id,E.build_id,NH.parent_id AS tcase_id " .
+				   " FROM {$this->tables['testplan_tcversions']}  T " .
+				   " JOIN {$this->tables['nodes_hierarchy']}  NH ON T.tcversion_id=NH.id " .
+				   " AND NH.node_type_id={$node_types['testcase_version']} " .
+				   " LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id " .
+				   " AND T.testplan_id=E.testplan_id AND E.build_id IN ({$build_in}) " .
+				   " WHERE T.testplan_id={$id} AND E.build_id IS NULL ";
+		} else {
+			//anything else
+			$sql = "/* $debugMsg */ SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS tcase_id," .
+			       " COUNT(EE.status) AS exec_qty " .
+				   " FROM {$this->tables['executions']} EE, {$this->tables['nodes_hierarchy']} NH," .
+				   " (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS last_exec_id " .
+				   "  FROM {$this->tables['executions']} E " .
+				   "  WHERE E.build_id IN ({$build_in}) GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
+				   " WHERE EE.build_id IN ({$build_in}) " .
+				   " AND EE.status IN ('" . $status_in . "') AND NH.node_type_id={$node_types['testcase_version']} " .
+				   " AND SQ1.last_exec_id=EE.id AND SQ1.tcversion_id=NH.id " .
+				   " GROUP BY status,SQ1.tcversion_id,NH.parent_id";
+		}
+
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		return $recordset;
+	}
+
+	
+	/**
+	 * BUGID 2455, BUGID 3026
+	 * find all builds for which a testcase has not been executed
+	 * 
+	 * @author asimon
+	 * @param integer $id Build ID
+	 * @param array $buildSet build set to check
+	 * @return array $new_set set of builds which match the search criterium
+	 */
+	function get_not_run_for_any_build($id,$buildSet) {
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$node_types=$this->tree_manager->get_available_node_types();
+		
+		$results = array();
+		
+		foreach ($buildSet as $build) {
+			$sql = "/* $debugMsg */ SELECT distinct T.tcversion_id, E.build_id, E.status, NH.parent_id AS tcase_id " .
+				   " FROM {$this->tables['testplan_tcversions']} T " .
+				   " JOIN {$this->tables['nodes_hierarchy']} NH ON T.tcversion_id=NH.id  AND NH.node_type_id=4 " .
+				   " LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id " .
+				   " AND T.testplan_id=E.testplan_id AND E.build_id=$build " .
+				   " WHERE T.testplan_id={$id} AND E.status IS NULL ";
+			
+			$results[] = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		}
+		
+		$recordset = array();
+		foreach ($results as $result) 
+		{
+			$recordset = array_merge_recursive($recordset, $result);
+		} 
+		
+		$new_set = array();
+		foreach ($recordset as $key => $val) {
+			$new_set[$val['tcase_id']] = $val;
+		}
+		
+		return $new_set;
+	}
 
 
 	/**

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.61 $
- * @modified $Date: 2010/02/14 16:48:17 $ by $Author: franciscom $
+ * @version $Revision: 1.62 $
+ * @modified $Date: 2010/02/14 16:53:13 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
+ *	20100214 - franciscom - refactoring to use only simpleXML functions
  *	20100106 - franciscom - Multiple Test Case Steps Feature
  *	20090831 - franciscom - preconditions
  *  20090506 - Requirements refactoring
@@ -498,24 +499,23 @@ function buildKeywordList($kwMap,$keywords)
 */
 function check_xml_tc_tsuite($fileName,$recursiveMode)
 {
-	$dom = domxml_open_file($fileName);
+	$xml = @simplexml_load_file($fileName);
 	$file_check = array('status_ok' => 0, 'msg' => 'dom_ko');    		  
-	
-	if ($dom)
+	if($xml !== FALSE)
 	{
 		$file_check = array('status_ok' => 1, 'msg' => 'ok');    		  
-		$root = $dom->document_element();
+		$elementName = $xml->getName();
 		if($recursiveMode)
 		{
-			if($root->tagname != 'testsuite')
+			if($elementName != 'testsuite')
 			{
 				$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tsuite_file'));
 			}	
 		}
 		else
 		{
-			if($root->tagname != 'testcases' && $root->tagname != 'testcase')
-			{
+			if($elementName != 'testcases' && $elementName != 'testcase')
+		    {
 				$file_check=array('status_ok' => 0, 'msg' => lang_get('wrong_xml_tcase_file'));
 			}	
 		}

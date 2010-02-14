@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.64 $
- * @modified $Date: 2010/02/14 18:03:49 $ by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2010/02/14 18:08:29 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
@@ -191,89 +191,11 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 				$resultMap = importTestCasesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic);
 			}
 			
-			// TO TEST
 			if ($bRecursive && ($xml->getName() == 'testsuite'))
 			{
-				// $resultMap = importTestSuite($db,$root,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
 				$resultMap = importTestSuitesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
 			}
 
-		}
-	}
-	return $resultMap;
-}
-
-
-// --------------------------------------------------------------------------------------
-/*
-  function: importTestSuite
-  args :
-  returns: 
-  
-  rev: 20090204 - franciscom - added node_order
-*/
-function importTestSuite(&$db,&$node,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
-{
-	$resultMap = array();
-	if ($node->tagname() == 'testsuite')
-	{
-		$name = $node->get_attribute("name");
-		$details = trim(getNodeContent($node,'details'));
-		$node_order = intval(trim(getNodeContent($node,'node_order')));
-		
-		$ts = null;
-		if ($name != "")
-		{
-			$ts = new testsuite($db);
-			$ret = $ts->create($parentID,$name,$details,$node_order);
-			$tsID = $ret['id'];
-			if (!$tsID)
-				return null;
-		}
-		else if ($importIntoProject)
-		{
-			$tsID = $tproject_id;
-		}
-		else
-		{
-			$tsID = $parentID;
-    }
-    
-		$cNodes = $node->child_nodes();	
-		$loop2do=sizeof($cNodes);
-		
-		for($idx = 0; $idx < $loop2do; $idx++)
-		{
-			$cNode = $cNodes[$idx];
-			if ($cNode->node_type() != XML_ELEMENT_NODE)
-			{
-				continue;
-			}
-			
-			$tagName = $cNode->tagname();
-			switch($tagName)
-			{
-				case 'testcase':
-					$tcData = importTCsFromXML(array($cNode));
-					$resultMap = array_merge($resultMap,saveImportedTCData($db,$tcData,$tproject_id,$tsID,$userID,$kwMap));
-					break;
-					
-				case 'testsuite':
-					$resultMap = array_merge($resultMap,importTestSuite($db,$cNode,$tsID,$tproject_id,$userID,$kwMap));
-					break;
-					
-				case 'details':
-					if (!$importIntoProject)
-					{
-						$keywords = importKeywordsFromXML($cNode->get_elements_by_tagname("keyword"));
-						if ($keywords)
-						{
-							$kwIDs = buildKeywordList($kwMap,$keywords);
-							$ts->addKeywords($tsID,$kwIDs);
-						}
-					}
-					break;
-			}
 		}
 	}
 	return $resultMap;

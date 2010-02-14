@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.89 2010/02/14 17:06:16 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.90 2010/02/14 18:12:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -326,27 +326,31 @@ function importReqDataFromCSVDoors($fileName)
 */
 function importReqDataFromXML($fileName)
 {
-	$dom = domxml_open_file($fileName);
-	$xmlReqs = null;
-	$xmlData = null;
-  	$field_size = config_get('field_size');
-
-	if ($dom)
-		$xmlReqs = $dom->get_elements_by_tagname("requirement");
-  
-	$num_elem = sizeof($xmlReqs);
-
-	for($i = 0;$i < $num_elem ;$i++)
-	{
-		$xmlReq = $xmlReqs[$i];
-		if ($xmlReq->node_type() != XML_ELEMENT_NODE)
-			continue;
-		$xmlData[$i]['req_doc_id'] = trim_and_limit(getNodeContent($xmlReq,"docid"),$field_size->req_docid);
-		$xmlData[$i]['title'] = trim_and_limit(getNodeContent($xmlReq,"title"),$field_size->req_title);
-		$xmlData[$i]['description'] = getNodeContent($xmlReq,"description");
-	}
-
-	return $xmlData;
+	// NEED TO BE REFACTORED TO:
+	// 1. support Nested Req Spec
+	// 2. use only simpleXML functions
+	//
+	// $dom = domxml_open_file($fileName);
+	// $xmlReqs = null;
+	// $xmlData = null;
+  	// $field_size = config_get('field_size');
+    // 
+	// if ($dom)
+	// 	$xmlReqs = $dom->get_elements_by_tagname("requirement");
+    // 
+	// $num_elem = sizeof($xmlReqs);
+    // 
+	// for($i = 0;$i < $num_elem ;$i++)
+	// {
+	// 	$xmlReq = $xmlReqs[$i];
+	// 	if ($xmlReq->node_type() != XML_ELEMENT_NODE)
+	// 		continue;
+	// 	$xmlData[$i]['req_doc_id'] = trim_and_limit(getNodeContent($xmlReq,"docid"),$field_size->req_docid);
+	// 	$xmlData[$i]['title'] = trim_and_limit(getNodeContent($xmlReq,"title"),$field_size->req_title);
+	// 	$xmlData[$i]['description'] = getNodeContent($xmlReq,"description");
+	// }
+    // 
+	// return $xmlData;
 }
 
 

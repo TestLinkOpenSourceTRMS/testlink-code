@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: xml.inc.php,v 1.16 2010/02/14 16:56:05 franciscom Exp $
+ * @version    	CVS: $Id: xml.inc.php,v 1.17 2010/02/14 18:12:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -71,20 +71,6 @@ function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = fals
 	$result .= str_replace("{{XMLCODE}}",$xmlCode,$rootTpl);
 	return $result;
 }
-
-
-function getNodeContent(&$node,$tag)
-{
-	if (!$node)
-		return null;
-	$nodes = $node->get_elements_by_tagname($tag);
-	if ($nodes)
-	{
-		return $nodes[0]->get_content();
-	}
-	return null;
-}
-
 
 
 /**

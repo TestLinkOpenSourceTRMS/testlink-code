@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/02/14 17:06:16 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/02/14 17:33:58 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -208,8 +208,10 @@ function initializeGui(&$argsObj,&$reqSpecMgr,$session)
     $gui->importFileGui = new stdClass();
     $gui->importFileGui->importTypes = $reqSpecMgr->get_import_file_types();
     $gui->importFileGui->importType = $argsObj->importType;
-    $gui->importFileGui->fileSizeLimitMsg=sprintf(lang_get('max_file_size_is'), TL_IMPORT_LIMIT . ' KB ');
-    $gui->importFileGui->maxFileSize=round(strval(TL_IMPORT_LIMIT)/1024);
+    
+    $file_size_limit = config_get('import_file_max_size_bytes');
+    $gui->importFileGui->fileSizeLimitMsg=sprintf(lang_get('max_file_size_is'), $file_size_limit  . ' KB ');
+    $gui->importFileGui->maxFileSize=round(strval($file_size_limit)/1024);
     
     $gui->importFileGui->return_to_url=$session['basehref'];
     if( is_null($argsObj->req_spec_id) )

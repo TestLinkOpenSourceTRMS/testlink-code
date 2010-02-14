@@ -6,8 +6,8 @@
  * Scope: Import keywords page
  *
  * Filename $RCSfile: keywordsImport.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/08/24 19:18:45 $ by $Author: schlundus $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/02/14 17:33:58 $ by $Author: franciscom $
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -61,6 +61,9 @@ $tlKeyword = new tlKeyword();
 $importTypes = $tlKeyword->getSupportedSerializationInterfaces();
 $formatStrings = $tlKeyword->getSupportedSerializationFormatDescriptions();
 			
+			
+$file_size_limit = config_get('import_file_max_size_bytes');
+			
 $smarty = new TLSmarty();
 $smarty->assign('import_type_selected',$args->importType);
 $smarty->assign('msg',$msg);  
@@ -68,8 +71,8 @@ $smarty->assign('keywordFormatStrings',$formatStrings);
 $smarty->assign('importTypes',$importTypes);
 $smarty->assign('tproject_name', $args->testproject_name);
 $smarty->assign('tproject_id', $args->testproject_id);
-$smarty->assign('fileSizeLimitMsg',sprintf(lang_get('max_file_size_is'), TL_IMPORT_LIMIT/1024 . ' KB '));
-$smarty->assign('importLimit',TL_IMPORT_LIMIT);
+$smarty->assign('fileSizeLimitMsg',sprintf(lang_get('max_file_size_is'), $file_size_limit/1024 . ' KB '));
+$smarty->assign('importLimit',$file_size_limit);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**

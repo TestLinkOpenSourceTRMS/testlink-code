@@ -4,11 +4,10 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.62 $
- * @modified $Date: 2010/02/14 16:53:13 $ by $Author: franciscom $
+ * @version $Revision: 1.63 $
+ * @modified $Date: 2010/02/14 17:33:58 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
- * Troubleshooting: check if DOM module is enabled
  * 
  * Revision:
  *	20100214 - franciscom - refactoring to use only simpleXML functions
@@ -136,7 +135,7 @@ else
 
 $gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $obj_mgr->get_import_file_types();
-$gui->importLimitKB=(TL_IMPORT_LIMIT / 1024);
+$gui->importLimitKB=(config_get('import_file_max_size_bytes') / 1024);
                           
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
 

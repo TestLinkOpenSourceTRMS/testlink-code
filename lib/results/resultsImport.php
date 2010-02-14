@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/02/14 17:13:21 $  by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/02/14 17:33:58 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
@@ -41,19 +41,27 @@ $gui->import_title=lang_get('title_results_import_to');
 $gui->buildID=$args->buildID;
 $gui->file_check=array('status_ok' => 1, 'msg' => 'ok');
 $gui->importTypes=array("XML" => "XML");
-$gui->importLimit=(TL_IMPORT_LIMIT / 1024);
+$gui->importLimit = config_get('import_file_max_size_bytes');
 $gui->doImport = ($args->importType != "");
 $gui->testprojectName=$args->testprojectName;
+
+new dBug($gui);
 
 $resultMap=null;
 $dest=TL_TEMP_PATH . session_id()."-results.import";
 
 $container_description=lang_get('import_xml_results');
 
+new dBug($_REQUEST);
+new dBug($_FILES);
+
+new dBug($args);
 if ($args->doUpload)
 {
 	// check the uploaded file
-	$source=isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
+	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
+
+	new dBug($source);
 		
 	if (($source != 'none') && ($source != ''))
 	{ 
@@ -62,11 +70,12 @@ if ($args->doUpload)
 		{
 			if (move_uploaded_file($source, $dest))
 			{
+				echo __FILE__;
 				switch($args->importType)
 				{
 					case 'XML':
-					$pcheck_fn="check_xml_execution_results";
-					$pimport_fn="importExecutionResultsFromXML";
+						$pcheck_fn="check_xml_execution_results";
+						$pimport_fn="importExecutionResultsFromXML";
 					break;
 				}
 				if ($pcheck_fn)
@@ -365,8 +374,10 @@ function check_valid_ftype($upload_info,$import_type)
 */
 function check_xml_execution_results($fileName)
 {
-	$xml = @simplexml_load_file($fileName);
 	$file_check=array('status_ok' => 0, 'msg' => 'xml_ko');    		  
+	$xml = @simplexml_load_file($fileName);
+    new dBug($xml);
+    
 	if($xml !== FALSE)
 	{
 		$file_check=array('status_ok' => 1, 'msg' => 'ok');    		  

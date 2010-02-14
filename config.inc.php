@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.282 2010/01/12 20:20:21 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.283 2010/02/14 17:33:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -932,7 +932,8 @@ $tlCfg->diffEngine->context = 5;
 
 /** Maximum uploadfile size to importing stuff in TL */
 // Also check your PHP settings (default is usually 2MBs)
-$tlCfg->import_max_size = '409600'; // in bytes
+// unit BYTES is required by MAX_FILE_SIZE HTML option
+$tlCfg->import_file_max_size_bytes = '409600';
 
 /** Maximum line size of the imported file */
 $tlCfg->import_max_row = '10000'; // in chars
@@ -1147,7 +1148,6 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
  * @TODO remove from TL - unfinished refactorization; 
  * use $tlCfg instead of old variables and constants
  */
-define('TL_IMPORT_LIMIT', $tlCfg->import_max_size); 
 define('TL_IMPORT_ROW_MAX', $tlCfg->import_max_row); 
 define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
 define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);

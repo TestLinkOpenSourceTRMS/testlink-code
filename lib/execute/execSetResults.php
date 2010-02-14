@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.148 $
- * @modified $Date: 2010/01/31 18:01:00 $ $Author: franciscom $
+ * @version $Revision: 1.149 $
+ * @modified $Date: 2010/02/14 14:25:25 $ $Author: franciscom $
  *
  * rev:
+ *  20100204 - asimon - BUGID 2455 & 3026, little changes for filtering
  *  20100121 - franciscom - missing platform feature refactoring
  *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
  *  20091111 - franciscom - BUGID 2938 - Feature: Save and Go to next test case in test suite.
@@ -279,6 +280,18 @@ if ($userid_array)
 }
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
 
+// BUGID 2455, BUGID 3026
+// remove testcases which shall not be displayed because they were filtered out
+if (isset($args->tcids_to_show) && $args->level == 'testsuite') {
+	foreach($gui->map_last_exec as $key => $tc) {
+		if (!in_array($tc['testcase_id'], $args->tcids_to_show)) {
+			//unset, tc shall not be displayed
+			unset($gui->map_last_exec[$key]);
+		}
+	}
+	//fix indexes for smarty
+	$gui->map_last_exec = array_values($gui->map_last_exec);
+}
 
 $gui->can_use_bulk_op=$args->level == 'testsuite' &&
                       (!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
@@ -455,6 +468,10 @@ function init_args($cfgObj)
 	$args->user = $_SESSION['currentUser'];
     $args->user_id = $args->user->dbID;
 
+   	// BUGID 2455,BUGID 3026
+	if (isset($_REQUEST['show_only_tcs']) && isset($_REQUEST['show_only_tcs']) != '') {
+		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
+	}
 
 	return $args;  
 }

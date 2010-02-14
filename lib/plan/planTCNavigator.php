@@ -3,12 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.34 2009/09/24 07:26:59 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.35 2010/02/14 11:00:57 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
  *
  * rev :
+ *	20100202 - asimon - BUGID 2455, BUGID 3026
  *  20081223 - franciscom - advanced/simple filter feature
  * 
  * ----------------------------------------------------------------------------------- */
@@ -17,16 +18,16 @@ require('../../config.inc.php');
 require_once("common.php");
 require_once("users.inc.php");
 require_once("treeMenu.inc.php");
+require_once('exec.inc.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
+$cfg = getCfg();
 
+$tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
-$args = init_args($tplan_mgr);
-$gui = initializeGui($db,$args,$tplan_mgr);
-$gui->additional_string = '';
-$gui->tree = buildTree($db,$gui,$args);
-
+$args = init_args($db,$cfg,$tplan_mgr,$tproject_mgr);
+$gui = initializeGui($db,$args,$cfg,$tplan_mgr);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -40,6 +41,20 @@ $smarty->assign('treeHeader', $gui->title);
 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+/*
+ * function: getCfg()
+ * 
+ * returns: configuration objects
+ */
+function getCfg()
+{
+    $cfg = new stdClass();
+    $cfg->gui = config_get('gui');
+    $cfg->exec = config_get('exec_cfg');
+    $cfg->results = config_get('results');
+    $cfg->testcase_cfg = config_get('testcase_cfg');
+    return $cfg;
+}
 
 /*
   function: init_args
@@ -48,7 +63,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
 
 */
-function init_args(&$tplanMgr)
+function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -89,8 +104,49 @@ function init_args(&$tplanMgr)
 	  	$args->src_workframe = '';
 	  }
 
+	// BUGID 2455
+	$args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
+	$args->tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id)
+    		. config_get('testcase_cfg')->glue_character;
+    $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : $args->tcasePrefix;
+	
+    if(!is_null($args->targetTestCase) && !empty($args->targetTestCase)	&& 
+        strcmp($args->targetTestCase,$args->tcasePrefix))
+	{
+	  	// need to get internal Id from External ID
+	  	$item_mgr = new testcase($dbHandler);
+	  	$args->tcase_id = $item_mgr->getInternalID($args->targetTestCase,$cfgObj->glue_character);
+	  	if($args->tcase_id == 0)
+	  	{
+	  	    $args->tcase_id = -1;  
+	  	}
+	}
+
+	$args->optResultSelected = isset($_REQUEST['filter_status']) ?
+			                   (array)$_REQUEST['filter_status'] : array($cfgObj->results['status_code']['all']);
+    if( !is_null($args->optResultSelected) )
+    {
+        if( in_array($cfgObj->results['status_code']['all'], $args->optResultSelected) )
+        {
+            $args->optResultSelected = array($cfgObj->results['status_code']['all']);
+        }
+        else if( !$args->advancedFilterMode && count($args->optResultSelected) > 0)
+        {
+            // Because user has switched to simple mode we will get ONLY first status
+            $args->optResultSelected=array($args->optResultSelected[0]);
+        }
+    }
+    $args->filter_status = $args->optResultSelected;
+	
+    $filter_cfg = config_get('filter_types');
+    $args->filter_on_build_type_selected = isset($_REQUEST['filter_on_build_type']) ?
+    							           (array)$_REQUEST['filter_on_build_type'] : (array)$filter_cfg['default_type'];
+	  
+	$args->optBuildSelected = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : -1;
+    $args->optFilterBuildSelected = isset($_REQUEST['filter_build_id']) ? $_REQUEST['filter_build_id'] : -1;
+    $args->optPlatformSelected = isset($_REQUEST['platform_id']) ? $_REQUEST['platform_id'] : null;
+	  
     // 20081221 - franciscom
-    // $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? intval($_REQUEST['filter_assigned_to']) : 0;
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? $_REQUEST['filter_assigned_to'] : null;                                                                                                                        
     if( !is_null($args->filter_assigned_to) )
     {
@@ -109,8 +165,8 @@ function init_args(&$tplanMgr)
             $args->filter_assigned_to=array($args->filter_assigned_to[0]);
         }
     }  
-               
-                                                                                                                        
+	$args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+    
     // 20070120 - franciscom -
     // is possible to call this page using a Test Project that have no test plans
     // in this situation the next to entries are undefined in SESSION
@@ -136,8 +192,11 @@ function init_args(&$tplanMgr)
    
   rev: 
 */
-function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
 {
+	
+	$platformMgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
+
     $gui = new stdClass();
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
@@ -145,22 +204,33 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
     $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
 
+    // WHY IS NEEDED ?
+    $gui->str_option_somebody = $gui_open . lang_get('filter_somebody') . $gui_close;
+    
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
+    $gui->include_unassigned = $argsObj->include_unassigned;
+    
     $gui->keywordsFilterItemQty=0;
     $gui->keyword_id=$argsObj->keyword_id; 
    	$gui->toggleFilterModeLabel='';
     $gui->advancedFilterMode=0;
     $gui->chooseFilterModeEnabled=0;
-
-
+	
+    $gui->targetTestCase = $argsObj->targetTestCase;
+	
     // We only want to use in the filter, keywords present in the test cases that are
     // linked to test plan, and NOT all keywords defined for test project
-    $gui->keywords_map=$tplanMgr->get_keywords_map($argsObj->tplan_id); 
+    $gui->keywords_map = array(0 => $gui->str_option_any) + (array)$tplanMgr->get_keywords_map($argsObj->tplan_id);
     if( !is_null($gui->keywords_map) )
     {
         $gui->keywordsFilterItemQty=min(count($gui->keywords_map),3);
     }
 
+    // BUGID 2455
+    $gui->optResultSelected = $argsObj->optResultSelected;
+    $gui->optFilterBuild = initFilterBuildInfo($dbHandler,$argsObj,$tplanMgr);
+    $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr);
+    
     $gui->keywordsFilterType=new stdClass();                                 
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;         
@@ -178,6 +248,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     $gui->src_workframe=$argsObj->src_workframe;
     $gui->draw_bulk_update_button=false;
 
+    $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
+    
+    $gui->optResult=createResultsMenu();
+    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
+
+	$filter_cfg = config_get('filter_types');
+    $gui->filter_on_build_type = createBuildFilterMenu();
+	$gui->optFilterBuildTypeSelected = $argsObj->filter_on_build_type_selected;
+  
     switch($argsObj->feature)
     {
       case 'planUpdateTC':
@@ -195,7 +274,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     	    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
     	                                             null,
      	                                             array(TL_USER_ANYBODY => $gui->str_option_any,
-	                                                       TL_USER_NOBODY => $gui->str_option_none) );
+	                                                       TL_USER_NOBODY => $gui->str_option_none,
+	                                                       TL_USER_SOMEBODY => $gui->str_option_somebody) );
           
     	    
     	    
@@ -215,6 +295,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
     	break;
     }
 
+
+	$gui->additional_string = '';
+	$gui->tree = buildTree($dbHandler,$gui,$argsObj,$cfgObj);
+
     return $gui;
 }
 
@@ -230,35 +314,58 @@ function initializeGui(&$dbHandler,&$argsObj,&$tplanMgr)
        20080821 - franciscom - added management of ajaxTree property
        
 */
-function buildTree(&$dbHandler,&$guiObj,&$argsObj)
+function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
 {
     // Developer remarks:
     // using global coupling is 99% (ALWAYS) BAD -> global $tlCfg;
     // use config_get() because:
     //
-    // - is standard practice on whole TL code (sued in 75 files).
+    // - is standard practice on whole TL code (used in 75 files).
     // - is better because you do not need to care about name
     //   of config object or variable.
     // 
     $filters = new stdClass();
     $additionalInfo = new stdClass();
 
+    $filters->keyword = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
     $filters->keyword_id = $argsObj->keyword_id;
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
-    $filters->platform_id = null;
+    $filters->platform_id = $argsObj->optPlatformSelected;
 
-    $filters->include_unassigned=1;
+    $filters->include_unassigned = $guiObj->include_unassigned;
     $filters->show_testsuite_contents=1;
    	$filters->hide_testcases = 0;
-
+   	
+   	// 2455
+   	$filters->tc_id = $argsObj->tcase_id;
+	
+    $filters->build_id = $argsObj->optBuildSelected;
+    $filters->filter_build_id = $argsObj->optFilterBuildSelected;
+    $filters->on_build_type = $argsObj->filter_on_build_type_selected;
+    
+    $filters->filter_status = null;
+    if( !is_null($argsObj->optResultSelected) )
+    {
+        if( !in_array($cfgObj->results['status_code']['all'], $guiObj->optResultSelected) )
+        {
+            // want to have code as key
+            $dummy = array_flip($argsObj->optResultSelected);
+            foreach( $dummy as $status_code => $value)
+            {
+                $dummy[$status_code] = $status_code;  
+            }
+            $filters->filter_status = $dummy;
+        }
+    }
+    
+    $filters->hide_testcases = false;
+    //$filters->show_testsuite_contents = $cfgObj->exec->show_testsuite_contents;
+       	
     // Set of filters Off
-    $filters->tc_id = null;
     $filters->build_id = 0;
     $filters->assignedTo = null;
     $filters->status = null;
     $filters->cf_hash = null;
-
-    $filters->statusAllPrevBuilds=null;
 
     switch($argsObj->feature)
     {
@@ -268,7 +375,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     
       case 'tc_exec_assignment':
     	$filters->assignedTo = $argsObj->filter_assigned_to;
-    	$filters->include_unassigned = 0;
       if( !is_null($filters->assignedTo) )
       {
           if( in_array(TL_USER_ANYBODY, $argsObj->filter_assigned_to) )
@@ -291,7 +397,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
     
     $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
     $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
-
+ 
     $guiObj->args = initializeGetArguments($argsObj,$filters);
     $treeMenu = generateExecTree($dbHandler,$guiObj->menuUrl,
                                  $argsObj->tproject_id,$argsObj->tproject_name,
@@ -326,13 +432,13 @@ function initializeGetArguments($argsObj,$filtersObj)
 {
     $kl='';
     $settings = '&include_unassigned=' . $filtersObj->include_unassigned;
-
-    if( is_array($argsObj->keyword_id) )
+	
+    if(is_array($argsObj->keyword_id) && !in_array(0, $argsObj->keyword_id))
     {
        $kl=implode(',',$argsObj->keyword_id);
        $settings .= '&keyword_id=' . $kl;
     }
-    else if($argsObj->keyword_id > 0)
+    else if(!is_array($argsObj->keyword_id) && $argsObj->keyword_id > 0)
     {
     	  $settings .= '&keyword_id='.$argsObj->keyword_id;
     }
@@ -347,4 +453,52 @@ function initializeGetArguments($argsObj,$filtersObj)
     
     return $settings;
 }
+
+
+/**
+ * initialize build info to choose as filter option
+ */
+function initFilterBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
+{
+    $htmlSelect = array('items' => null, 'selected' => null);
+    $htmlSelect['items'] = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
+   
+    $maxBuildID = $tplanMgr->get_max_build_id($argsObj->tplan_id,
+                                              testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
+
+    $argsObj->optFilterBuildSelected = $argsObj->optFilterBuildSelected > 0 ? $argsObj->optFilterBuildSelected : $maxBuildID;
+    if (!$argsObj->optFilterBuildSelected && sizeof($htmlSelect['items']))
+    {
+    	$argsObj->optFilterBuildSelected = key($htmlSelect['items']);
+    }
+    $htmlSelect['selected'] = $argsObj->optFilterBuildSelected;
+    
+    return $htmlSelect;
+}
+
+
+/**
+ * creates a map with platform information, useful to create on user
+ * interface an HTML select input.
+ * 
+ * @param resource &$dbHandler reference
+ * @param object &$argsObj reference contains user input
+ * @param tlPlatform &$platformMgr reference
+ *
+ */
+function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr)
+{
+    $htmlSelect = array('items' => null, 'selected' => null);
+    $htmlSelect['items'] = $platformMgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+    if( !is_null($htmlSelect['items']) && is_array($htmlSelect['items']) )
+    { 
+    	if (is_null($argsObj->optPlatformSelected)) 
+    	{
+    	    $argsObj->optPlatformSelected = key($htmlSelect['items']);
+    	}
+    	$htmlSelect['selected'] = $argsObj->optPlatformSelected;
+    } 
+    return $htmlSelect;
+}
+
 ?>

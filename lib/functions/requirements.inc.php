@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.88 2010/02/09 19:46:04 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.89 2010/02/14 17:06:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -239,6 +239,7 @@ function getReqDocIDs(&$db,$srs_id)
  */
 function loadImportedReq($CSVfile, $importType)
 {
+	$data = null;
 	$fileName = $CSVfile;
 	switch($importType)
 	{
@@ -261,9 +262,10 @@ function loadImportedReq($CSVfile, $importType)
 	if ($pfn)
 	{
 		$data = $pfn($fileName);
-		return $data;
 	}
-	return;
+	new dBug($data);
+	die();
+	return $data;
 
 }
 

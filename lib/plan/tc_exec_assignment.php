@@ -1,18 +1,20 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.45 2010/02/12 08:28:18 erikeloff Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.46 2010/02/14 17:10:32 franciscom Exp $ 
  * 
  * rev :
- *       20100212 - eloff - BUGID 3157 - fixes reassignment to other user
- *       20090807 - franciscom - new feature platforms
- *       20090201 - franciscom - new feature send mail to tester
- *       20080312 - franciscom - BUGID 1427
- *       20080114 - franciscom - added testcase external_id management
- *       20071228 - franciscom - BUG build combo of users using only users
- *                               that can execute test cases in testplan.
+ *	
+ *  BUGID 2455, BUGID 3026
+ *  20100212 - eloff - BUGID 3157 - fixes reassignment to other user
+ *  20090807 - franciscom - new feature platforms
+ *  20090201 - franciscom - new feature send mail to tester
+ *  20080312 - franciscom - BUGID 1427
+ *  20080114 - franciscom - added testcase external_id management
+ *  20071228 - franciscom - BUG build combo of users using only users
+ *                          that can execute test cases in testplan.
  * 
- *       20070912 - franciscom - BUGID 1041
+ *  20070912 - franciscom - BUGID 1041
  */         
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
@@ -31,6 +33,9 @@ $templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+
+new dBug($gui);
+
 
 $keywordsFilter = new stdClass();
 $keywordsFilter->items = null;
@@ -166,6 +171,40 @@ switch($args->level)
 		
 	case 'testsuite':
 		$out = keywordFilteredSpecView($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr);
+		
+        // --------------------------------------------------
+        // Check if this can not be done with logic already present on   keywordFilteredSpecView();
+		// BUGID 2455, BUGID 3026
+		if (isset($args->tcids_to_show)) 
+		{
+			$spec_tc_num = 0;
+			foreach($out['spec_view'] as $ts_key => $ts) 
+			{
+				foreach($ts['testcases'] as $tc_key => $tc) 
+				{
+					if (!in_array($tc['id'], $args->tcids_to_show)) 
+					{
+						// unset, tc shall not be displayed
+						unset($out['spec_view'][$ts_key]['testcases'][$tc_key]);
+					}
+				}
+				//fix number of testcases in this testsuite
+				$count = count($out['spec_view'][$ts_key]['testcases']);
+				$out['spec_view'][$ts_key]['testcase_qty'] = $count;
+				$spec_tc_num += $count;
+				
+				//don't show empty suites
+				if ($count == 0) 
+				{
+					unset($out['spec_view'][$ts_key]);
+				}
+			}
+			//fix number of testcases in whole specview and indexes, else smarty causes trouble
+			$out['spec_view'] = array_values($out['spec_view']);
+			$out['num_tc'] = $spec_tc_num;
+		}
+        // --------------------------------------------------
+		
 		break;
 
 	default:
@@ -226,6 +265,11 @@ function init_args()
         $args->filter_assigned_to = (array)$args->filter_assigned_to;  
     }
     
+ 	// BUGID 2455, BUGID 3026
+	if (isset($_REQUEST['show_only_tcs']) && isset($_REQUEST['show_only_tcs']) != '') 
+	{
+		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
+	}
 	  return $args;
 }
 

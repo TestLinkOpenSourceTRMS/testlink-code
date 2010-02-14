@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsImport.php,v 1.3 2009/11/25 18:16:47 franciscom Exp $
+ * @version    	CVS: $Id: platformsImport.php,v 1.4 2010/02/14 17:06:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -83,8 +83,10 @@ function doImport(&$dbHandler,$testproject_id)
 		$file_check['filename'] = $fInfo['name'];
 		$xml = false;
 		if (move_uploaded_file($source, $dest))
+		{
 			$xml = @simplexml_load_file($dest);
-
+        }
+         
 		if($xml !== FALSE)
         {
         	$file_check['status_ok'] = 1;

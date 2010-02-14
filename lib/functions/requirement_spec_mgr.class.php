@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2010/02/09 19:24:35 $ by $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2010/02/14 17:06:16 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1055,6 +1055,8 @@ function xmlToMapReqSpec($xml_item,$level=0)
     {
         return null;      
     }
+    echo __FUNCTION__;
+    new dBug($xml_item);
     
     $dummy=array();
     $dummy['node_order'] = (int)$xml_item->node_order;
@@ -1067,6 +1069,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
        $dummy[$key] = (string)$value;  // See PHP Manual SimpleXML documentation.
     }    
     
+    
     if( property_exists($xml_item,'custom_fields') )	              
     {
           $dummy['custom_fields']=array();
@@ -1076,6 +1079,8 @@ function xmlToMapReqSpec($xml_item,$level=0)
           }    
     }
     $mapped[]=array('req_spec' => $dummy, 'requirements' => null);
+
+    new dBug($dummy[$key]);
     
     // Process children
     if( property_exists($xml_item,'requirement') )	              
@@ -1095,6 +1100,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
             }    
         }    
     }        
+    new dBug($mapped);
     
     if( property_exists($xml_item,'req_spec') )	              
     {
@@ -1104,6 +1110,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
             $this->xmlToMapReqSpec($xml_item->req_spec[$idx],$depth);
         }
     }        
+    
     return $mapped;
 }
 

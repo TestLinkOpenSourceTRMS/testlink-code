@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: xml.inc.php,v 1.15 2010/02/13 18:22:18 franciscom Exp $
+ * @version    	CVS: $Id: xml.inc.php,v 1.16 2010/02/14 16:56:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -21,7 +21,6 @@
  */
 function exportDataToXML($items,$rootTpl,$elemTpl,$elemInfo,$bNoXMLHeader = false)
 {
-
     // echo __FUNCTION__; echo 'items <br>'; new dBug($items);
 	if (!$items)
 	{
@@ -104,8 +103,7 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
   		$items_counter=0;
   		$loop_qty = count($simpleXMLItems);
 
-        new dBug($loop_qty);
-        
+        // new dBug($loop_qty);
   		for($idx=0; $idx < $loop_qty; $idx++)
   		{
   			echo "\$idx:$idx<br>";

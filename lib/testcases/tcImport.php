@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.65 $
- * @modified $Date: 2010/02/14 18:08:29 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2010/02/14 18:13:09 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
@@ -808,33 +808,6 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
     	$tcaseSet[$jdx++] = $tc;    
     }
 	return $tcaseSet;
-}
-
-
-
-function getTestCaseFromSimpleXMLObj(&$xmlTC)
-{
-	if (!$xmlTC)
-	{
-		return null;
-	}
-	
-	$keyContent=array("summary","preconditions");
-
-	$tc = null;
-	$tc['name'] = $xmlTC->get_attribute("name");
-  	foreach($keyContent as $key)
-  	{
-  	    $tc[$key] = trim(getNodeContent($xmlTC,$key));
-  	}
-  
-  	$keyContent=array("node_order","externalid");
-	foreach($keyContent as $key)
-  	{
-  	    $tc[$key] = intval(trim(getNodeContent($xmlTC,$key)));
-  	}
-	
-	return $tc; 		
 }
 
 

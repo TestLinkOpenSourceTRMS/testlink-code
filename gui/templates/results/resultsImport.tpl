@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsImport.tpl,v 1.5 2009/03/29 14:10:01 franciscom Exp $
+$Id: resultsImport.tpl,v 1.6 2010/02/14 18:13:09 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 *}
 {include file="inc_head.tpl"}
@@ -31,12 +31,13 @@ Purpose: smarty template - manage import of test cases and test suites
 	<tr>
 	 <td>{$labels.local_file}</td> 
 	 <td>
+	  {* standard way to set a maximum size for upload value is size IN BYTES *}
 	 	<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimit}" /> {* restrict file size *}
 		<input type="file" name="uploadedFile" 
 	                        size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
   </tr>                              
 	</table>
-	<p>{$labels.max_size_cvs_file1} {$gui->importLimit} {$labels.max_size_cvs_file2}</p>
+	<p>{$labels.max_size_cvs_file1} {$gui->importLimit/1024} {$labels.max_size_cvs_file2}</p>
 	
 	<div class="groupBtn">
 		<input type="hidden" name="build" value="{$gui->buildID}" />

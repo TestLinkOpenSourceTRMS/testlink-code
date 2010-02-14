@@ -1,9 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.19 2010/01/23 09:31:05 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.20 2010/02/14 14:12:31 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
+
+	20100202 - asimon	- BUGID 2455/3026, changed filtering 
+	                    panel is now ext collapsible panel
 	20081223 - franciscom - advanced/simple filters
 	20080311 - franciscom - BUGID 1427
 * ---------------------------------------------------------------------- *}
@@ -11,7 +14,8 @@ Revisions :
 {lang_get var="labels" 
           s='btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,title_navigator,
              btn_bulk_update_to_latest_version,
-             filter_owner,TestPlan,test_plan,caption_nav_filter_settings'}
+             filter_owner,TestPlan,test_plan,caption_nav_filter_settings,
+             build,filter_tcID,filter_on,filter_result,platform, include_unassigned_testcases'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
 {if $gui->keywordsFilterItemQty == 0}
@@ -20,8 +24,30 @@ Revisions :
 
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
-          
+
+	{* includes Ext.ux.CollapsiblePanel *}
+	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
+    
+    <script type="text/javascript">
     {literal}
+	Ext.onReady(function() {
+		Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+
+		// Use a collapsible panel for filter settings
+		// and place a help icon in ther header
+		var panel = new Ext.ux.CollapsiblePanel({
+			id: 'tl_exec_filter_settings',
+			applyTo: 'filter_panel',
+			tools: [{
+				id: 'help',
+				handler: function(event, toolEl, panel) {
+					show_help(help_localized_text);
+				}
+			}]
+		});
+	});
+    </script>
+
     <script type="text/javascript">
     treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
                loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
@@ -56,23 +82,80 @@ function update2latest(id)
 	var action_url = fRoot+'/'+menuUrl+"?doAction=doBulkUpdateToLatest&level=testplan&id="+id+args;
 	parent.workframe.location = action_url;
 }
+
 </script>
 {/literal}
+
+<script type="text/javascript">
+
+str_option_any = '{$gui->str_option_any}';
+str_option_none = '{$gui->str_option_none}';
+str_option_somebody = '{$gui->str_option_somebody}';
+
+{literal}
+
+function triggerBuildChooser() 
+{
+  var build_type_combo;
+  var build_id_combo;
+  var index;
+  
+  build_id_combo = document.getElementById('filter_build_id');
+  build_type_combo = document.getElementById('filter_on_build_type');
+  index = build_type_combo.options.selectedIndex;
+  
+	build_id_combo.disabled = true;
+	if(build_type_combo[index].value == "s") 
+	{
+		build_id_combo.disabled = false;
+	} 
+}
+
+function triggerAssignedBox() 
+{
+  var filter_assigned_to;
+  var include_unassigned;
+  var index;
+  var choice;
+  
+  include_unassigned = document.getElementById("include_unassigned");
+  filter_assigned_to = document.getElementById("filter_assigned_to");
+  index = filter_assigned_to.options.selectedIndex
+  
+  choice = filter_assigned_to.options.options[index].label;
+  include_unassigned.disabled = false;
+	if ( choice == str_option_any	|| choice == str_option_none || choice == str_option_somebody ) 
+	{
+		include_unassigned.disabled = = true;
+	} 
+}
+
+</script>
+{/literal}
+
 </head>
-<body>
+
+<body onload="triggerBuildChooser();triggerAssignedBox();">
+
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$gui->additional_string|escape}</h1>
-<div style="margin: 3px;">
+
+{include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}
+<div id="filter_panel">
+	<div class="x-panel-header x-unselectable">
+		{$labels.caption_nav_filter_settings}
+	</div>
+
+<div id="filter_settings" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
 <form method="post" id="testSetNavigator" onSubmit="javascript:return pre_submit();">
 	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
 	<input type="hidden" id="called_url" name="called_url" value="" />
 	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 
-	<table class="smallGrey" style="width:100%;">
-		<caption>
-			{$labels.caption_nav_filter_settings}
-			{include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=true}
-		</caption>
+	<table class="smallGrey" style="width:98%;">
+		
     {if $gui->map_tplans != '' }
 		<tr>
 			<td>{$labels.test_plan}</td>
@@ -82,49 +165,109 @@ function update2latest(id)
 				</select>
 			</td>
 		</tr>
-		{/if}
+	{/if}
+		
+		<tr>
+			<td>{$labels.filter_tcID}</td>
+			<td><input type="text" name="targetTestCase" value="{$gui->targetTestCase}" 
+			           maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
+		</tr>
+		
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<td>{$labels.keyword}</td>
 			<td><select name="keyword_id[]" title="{$labels.keywords_filter_help}"
 			            multiple="multiple" size={$gui->keywordsFilterItemQty}>
 			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
 				</select>
-			</td>
-			<td>
+			
       {html_radios name='keywordsFilterType' 
                    options=$gui->keywordsFilterType->options
                    selected=$gui->keywordsFilterType->selected }
 			</td>
 		</tr>
 
-    {if $gui->testers }
+		{if $gui->optPlatform.items != ''}
+		  <tr>
+		  	<th>{$labels.platform}</th>
+		  	<td><select name="platform_id">
+		  		{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
+		  		</select>
+		  	</td>
+		  </tr>
+		{/if}
+		
+		 {if $gui->testers }
 		<tr>
 			<td>{$labels.filter_owner}</td>
 			<td>
 			  {if $gui->advancedFilterMode }
-			  <select name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}>
+			  <select name="filter_assigned_to[]" id="filter_assigned_to" 
+			  		multiple="multiple" size={$gui->assigneeFilterItemQty}
+			  		onchange="triggerAssignedBox()">
 			  {else}
-				<select name="filter_assigned_to">
+				<select name="filter_assigned_to" id="filter_assigned_to"
+					onchange="triggerAssignedBox()">
 			  {/if}
 					{html_options options=$gui->testers selected=$gui->filter_assigned_to}
 				</select>
+				
+				<br/>		
+				<input type="checkbox" id="include_unassigned" name="include_unassigned"
+	  		           value="1" {if $gui->include_unassigned} checked="checked" {/if} />
+				{$labels.include_unassigned_testcases}
+			
+ 			</td>
+		</tr>
+    	{/if}
+
+	</table>
+	<table class="smallGrey" style="width:98%;">
+
+   		<tr>
+			<th>{$labels.filter_result}</th>
+			<td>
+			  {if $gui->advancedFilterMode }
+			  	<select name="filter_status[]" multiple="multiple" size={$gui->statusFilterItemQty}>
+			  {else}
+			  	<select name="filter_status">
+			  {/if}
+			  	{html_options options=$gui->optResult selected=$gui->optResultSelected}
+			  	</select>
 			</td>
 		</tr>
-    {/if}
-
+		
 		<tr>
-			<td colspan="2">
+			<th>{$labels.filter_on}</th>
+			<td>
+			  	<select name="filter_on_build_type" id="filter_on_build_type"
+			  		      onchange="triggerBuildChooser()">
+				  	{html_options options=$gui->filter_on_build_type selected=$gui->optFilterBuildTypeSelected}
+			  	</select>
+			</td>
+		</tr>
+		
+		<tr>
+			<th>{$labels.build}</th>
+			<td><select id="filter_build_id" name="filter_build_id">
+				{html_options options=$gui->optFilterBuild.items selected=$gui->optFilterBuild.selected}
+				</select>
+			</td>
+		</tr>
+		
+		</table>
+		
+		<div>
 			<input type="submit" value="{$labels.btn_apply_filter}" 
 			       id="doUpdateTree" name="doUpdateTree" style="font-size: 90%;" />
-			</td>
+
 			{if $gui->chooseFilterModeEnabled}
-			<td><input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
+			<input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
 			     value="{$gui->toggleFilterModeLabel}"  
 			     onclick="toggleInput('advancedFilterMode');"
-			     style="font-size: 90%;"  /></td>
-      {/if}
-		</tr>
-	</table>
+			     style="font-size: 90%;"  />
+      		{/if}
+		</div>
+
 </form>
 </div>
 
@@ -133,6 +276,9 @@ function update2latest(id)
     	       name="doBulkUpdateToLatest" 
     	       onclick="update2latest({$gui->tplan_id})" />
 {/if}
+
+</div> {* end filter panel *}
+
 <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 
 <script type="text/javascript">

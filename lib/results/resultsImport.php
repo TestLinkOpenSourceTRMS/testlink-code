@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: resultsImport.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/08/21 07:07:13 $  by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/02/14 16:45:22 $  by $Author: franciscom $
 
  * @author - Kevin Levy
  *
@@ -20,7 +20,6 @@
 */
 require('../../config.inc.php');
 require_once('common.php');
-require_once('import.inc.php');
 require_once('csv.inc.php');
 require_once('xml.inc.php');
 testlinkInitPage($db);

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.549 2010/02/14 08:58:34 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.550 2010/02/15 20:14:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -572,6 +572,8 @@ $TLS_filter_result_latest_execution = "latest execution";
 $TLS_filter_result_current_build = "Build chosen for execution";
 $TLS_filter_somebody = "Somebody";
 $TLS_exec_build = "Build to execute";
+$TLS_filter_result_all_prev_builds = "ALL Previous Builds";
+$TLS_filter_result_any_prev_build = "ANY Previous Build";
 
 
 // ----- gui/templates/mainPage.tpl -----

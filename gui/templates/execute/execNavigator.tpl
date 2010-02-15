@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.32 2010/02/14 14:56:33 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.33 2010/02/15 20:16:22 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -19,7 +19,7 @@ rev :
 {lang_get var="labels"
           s="filter_result,caption_nav_filter_settings,filter_owner,test_plan,filter_on,
              filter_result_all_prev_builds,filter_result_any_prev_builds,platform,exec_build,
-             filter_result_any_prev_builds,btn_apply_filter,build,keyword,filter_tcID,
+             btn_apply_filter,build,keyword,filter_tcID,
              include_unassigned_testcases,priority"}
        
        

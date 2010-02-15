@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.131 2010/02/14 09:31:29 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.132 2010/02/15 20:20:04 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -471,19 +471,19 @@ $tlCfg->results['charts']['status_colour'] = array(
 /*
  * arrays for new filter types (BUGID 2455 & 3026)
  */
-$tlCfg->filter_types['status_code'] = array('latest_execution' => 1,
-    									    'all_builds' => 2,
-    									    'any_build' => 3,
+$tlCfg->build_filter_types['status_code'] = array('latest_execution' => 1,
+    									    'all_prev_builds' => 2,
+    									    'any_prev_build' => 3,
     									    'specific_build' => 4,
 										    'current_build' => 5);
 
-$tlCfg->filter_types['status_label'] = array('latest_execution' => 'filter_result_latest_execution',
-    									     'all_builds' => 'filter_result_all_builds',
-    									     'any_build' => 'filter_result_any_build',
-    									     'specific_build' => 'filter_result_specific_build',
-										     'current_build' => 'filter_result_current_build');
+$tlCfg->build_filter_types['status_label'] = array('latest_execution' => 'filter_result_latest_execution',
+    									           'all_prev_builds' => 'filter_result_all_prev_builds',
+    									           'any_prev_build' => 'filter_result_any_prev_build',
+    									           'specific_build' => 'filter_result_specific_build',
+										            'current_build' => 'filter_result_current_build');
 
-$tlCfg->filter_types['default_type'] = $tlCfg->filter_types['status_code']['current_build'];
+$tlCfg->build_filter_types['default_type'] = $tlCfg->filter_types['status_code']['current_build'];
 
 
 

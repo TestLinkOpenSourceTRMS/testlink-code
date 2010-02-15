@@ -9,7 +9,7 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.51 2010/01/11 22:10:31 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.52 2010/02/15 19:32:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -180,20 +180,22 @@ class database
 		{
 		    tLog($message,$logLevel,"DATABASE");
 		}
+		
 		// 20080927 - may be this causes lot of memory usage
 		if($this->logQueries)
 		{
 			array_push ($this->queries_array, array( $p_query, $t_elapsed, $ec, $emsg ) );
 		}
 
-		if ( !$t_result ) {
+		if ( !$t_result ) 
+		{
 			tLog("ERROR ON exec_query() - database.class.php <br />" . $this->error(htmlspecialchars($p_query)) . 
-					"<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");			
+				 "<br />THE MESSAGE : $message ", 'ERROR', "DATABASE");			
 			echo "<pre>"; debug_print_backtrace(); echo "</pre>";
-			return false;
-		} else {
-			return $t_result;
-		}
+			$t_result = false;
+		} 
+		return $t_result;
+		
 	}
 
 

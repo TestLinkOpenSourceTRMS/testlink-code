@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.12 2009/12/04 12:59:58 havlat Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.13 2010/02/15 08:32:56 erikeloff Exp $
 
 rev :
+     20100215 - eloff - BUGID 3160 - fixed missing platform column
      20090409 - amitkhullar - BUGID 2156 - added new option on 	Query Metrics for latest results
      20080524 - franciscom - BUGID 1430
      20070902 - franciscom - refactoring
@@ -111,6 +112,9 @@ progress();
 		<table class="simple sortable" style="color:blue; width: 100%; margin-left: 0px;" border="0">
 			<tr>
 				<th>{$sortHintIcon}{$labels.th_test_case}</th>
+				{if $gui->showPlatforms}
+					<th>{$sortHintIcon}{$labels.th_platform}</th>
+				{/if}
 				<th>{$sortHintIcon}{$labels.th_build}</th>
 				<th>{$sortHintIcon}{$labels.th_tester_id}</th>
 				<th>{$sortHintIcon}{$labels.th_execution_ts}</th>
@@ -229,9 +233,9 @@ progress();
 								  	<td>&nbsp;</td>
 								  {else}
 								  	<td>{$inst.execute_link}</td>
-								  	{if $gui->showPlatforms}
-								  	  <td>{$inst.platform_id}</td>
-								  	{/if}
+									{if $gui->showPlatforms}
+										<td>{$gui->platformSet[$inst.platform_id]|escape}</td>
+									{/if}
 								  	<td style="text-align:center;">{$gui->builds_html[$inst.build_id]|escape}</td>
 								  	<td style="text-align:center;">{$gui->users[$inst.tester_id]|escape}</td>
 								  	<td style="text-align:center;">{$inst.execution_ts|strip_tags|escape} </td>

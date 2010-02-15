@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2010/02/14 14:35:20 $ by $Author: franciscom $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2010/02/15 20:25:15 $ by $Author: franciscom $
  *
  * rev: 
  * 		20100202 - asimon - changed filtering, BUGID 2455, BUGID 3026
@@ -151,7 +151,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     $args->filter_status = $args->optResultSelected;
 	
     // BUGID 2455
-	$filter_cfg = config_get('filter_types');
+	$filter_cfg = config_get('build_filter_types');
     $args->filter_on_build_type_selected = isset($_REQUEST['filter_on_build_type']) ?
     							(array)$_REQUEST['filter_on_build_type'] : (array)$filter_cfg['default_type'];
     
@@ -565,7 +565,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
 
     // BUGID 2455, BUGID 3026
-	$filter_cfg = config_get('filter_types');
+	// $filter_cfg = config_get('build_filter_types');
     $gui->filter_on_build_type = createBuildFilterMenu();
 	$gui->optFilterBuildTypeSelected = $argsObj->filter_on_build_type_selected;
 

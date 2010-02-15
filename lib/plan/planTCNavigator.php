@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.35 2010/02/14 11:00:57 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.36 2010/02/15 20:25:15 franciscom Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -138,7 +138,7 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     }
     $args->filter_status = $args->optResultSelected;
 	
-    $filter_cfg = config_get('filter_types');
+    $filter_cfg = config_get('build_filter_types');
     $args->filter_on_build_type_selected = isset($_REQUEST['filter_on_build_type']) ?
     							           (array)$_REQUEST['filter_on_build_type'] : (array)$filter_cfg['default_type'];
 	  
@@ -253,7 +253,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     $gui->optResult=createResultsMenu();
     $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
 
-	$filter_cfg = config_get('filter_types');
+	// $filter_cfg = config_get('build_filter_types');
     $gui->filter_on_build_type = createBuildFilterMenu();
 	$gui->optFilterBuildTypeSelected = $argsObj->filter_on_build_type_selected;
   

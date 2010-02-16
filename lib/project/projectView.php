@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectView.php,v 1.12 2010/02/01 16:06:15 franciscom Exp $
+ * @version    	CVS: $Id: projectView.php,v 1.13 2010/02/16 21:46:32 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  */
@@ -20,8 +20,6 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-
-new dBug($args);
 
 $gui = new stdClass();
 $gui->doAction = $args->doAction;

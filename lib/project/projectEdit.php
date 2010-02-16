@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.43 2010/02/05 10:14:04 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.44 2010/02/16 21:46:32 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -48,7 +48,6 @@ $reloadType = 'none';
 
 $tproject_mgr = new testproject($db);
 $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
-new dBug($args);
 
 $gui = $args;
 $gui->canManage = has_rights($db,"mgt_modify_product");
@@ -69,7 +68,7 @@ switch($args->doAction)
 
     case 'edit':
     	$template = $templateCfg->default_template;
-    	$ui=edit($args,$tproject_mgr);
+    	$ui = edit($args,$tproject_mgr);
     	break;
 
     case 'doCreate':
@@ -150,6 +149,7 @@ switch($args->doAction)
         $smarty->assign('optReq', $args->optReq);
         $smarty->assign('optPriority', $args->optPriority);
         $smarty->assign('optAutomation', $args->optAutomation);
+        $smarty->assign('projectOptions', $args->projectOptions);
         $smarty->assign('tcasePrefix', $args->tcasePrefix);
         $smarty->assign('notes', $of->CreateHTML());
         $smarty->assign('found', $found);
@@ -158,21 +158,20 @@ switch($args->doAction)
 
 }
 
-/*
+/**
  * INITialize page ARGuments, using the $_REQUEST and $_SESSION
  * super-global hashes.
  * Important: changes in HTML input elements on the Smarty template
  *            must be reflected here.
  *
- *
- * @parameter hash request_hash the $_REQUEST
- * @parameter hash session_hash the $_SESSION
- * @return    object with html values tranformed and other
+ * @param array $request_hash the $_REQUEST
+ * @param hash session_hash the $_SESSION
+ * @return singleton object with html values tranformed and other
  *                   generated variables.
- *
+ * @internal
  * rev:20080112 - franciscom -
  *     20070206 - franciscom - BUGID 617
-*/
+ */
 function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
     $args = new stdClass();
@@ -183,14 +182,15 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 		$args->$value = isset($request_hash[$value]) ? trim($request_hash[$value]) : null;
 	}
 
-	// $intval_keys = array('optReq' => 0, 'tprojectID' => 0);
 	$intval_keys = array('tprojectID' => 0, 'copy_from_tproject_id' => 0);
 	foreach ($intval_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 
-	$checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,'optPriority' => 0,'optAutomation' => 0);
+	// get input from the project edit/create page
+	$checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,
+		'optPriority' => 0,'optAutomation' => 0,'optInfrastructure' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -221,14 +221,23 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 	return $args;
 }
 
-/*
-  function: doCreate
+/**
+ * Collect a test project options to a sinleton
+ * 
+ * @param array $argsObj the page input
+ * @return singleton data to be stored
+ */
+function prepareOptions($argsObj)
+{
+	  	$options = new stdClass();
+	  	$options->requirementsEnabled = $argsObj->optReq;
+	  	$options->testPriorityEnabled = $argsObj->optPriority;
+	  	$options->automationEnabled = $argsObj->optAutomation;
+	  	$options->infrastructureEnabled = $argsObj->optInfrastructure;
 
-  args:
+	  	return $options;
+}
 
-  returns:
-
-*/
 function doCreate($argsObj,&$tprojectMgr)
 {
 	$key2get=array('status_ok','msg');
@@ -250,14 +259,11 @@ function doCreate($argsObj,&$tprojectMgr)
 
 	if($op->status_ok)
 	{
-	  	$options = new stdClass();
-	  	
-	  	$options->requirement_mgmt = $argsObj->optReq;
-	  	$options->priority_mgmt = $argsObj->optPriority;
-	  	$options->automated_execution = $argsObj->optAutomation;
+	  	$options = prepareOptions($argsObj);
 	  	    
-		$new_id = $tprojectMgr->create($argsObj->tprojectName,$argsObj->color,$options,
-		                               $argsObj->notes,$argsObj->active,$argsObj->tcasePrefix,$argsObj->is_public);
+		$new_id = $tprojectMgr->projectCreate($argsObj->tprojectName, $argsObj->color,
+					$options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
+					$argsObj->is_public);
 									                 
 		if (!$new_id)
 		{
@@ -313,8 +319,8 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
     $op->template = null;
     $op->reloadType = 'none';
 
-    $oldObjData=$tprojectMgr->get_by_id($argsObj->tprojectID);
-    $op->oldName=$oldObjData['name'];
+    $oldObjData = $tprojectMgr->get_by_id($argsObj->tprojectID);
+    $op->oldName = $oldObjData['name'];
 
     $check_op = crossChecks($argsObj,$tprojectMgr);
     foreach($key2get as $key)
@@ -324,10 +330,10 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 
 	 if($op->status_ok)
 	 {
-        if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),$argsObj->color,
-        						 $argsObj->optReq, $argsObj->optPriority, $argsObj->optAutomation,
-        						 $argsObj->notes, $argsObj->active,$argsObj->tcasePrefix,
-        						 $argsObj->is_public) )
+	  	$options = prepareOptions($argsObj);
+        if( $tprojectMgr->projectUpdate($argsObj->tprojectID,trim($argsObj->tprojectName),
+        			$argsObj->color, $argsObj->notes, $options, $argsObj->active,
+        			$argsObj->tcasePrefix, $argsObj->is_public) )
         {
         	$op->msg = '';
         	$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
@@ -373,9 +379,10 @@ function edit(&$argsObj,&$tprojectMgr)
 	$argsObj->tprojectName = $tprojectInfo['name'];
 	$argsObj->color = $tprojectInfo['color'];
 	$argsObj->notes = $tprojectInfo['notes'];
-	$argsObj->optReq = $tprojectInfo['option_reqs'];
-	$argsObj->optPriority = $tprojectInfo['option_priority'];
-	$argsObj->optAutomation = $tprojectInfo['option_automation'];
+//	$argsObj->optReq = $tprojectInfo['option_reqs'];
+//	$argsObj->optPriority = $tprojectInfo['option_priority'];
+//	$argsObj->optAutomation = $tprojectInfo['option_automation'];
+	$argsObj->projectOptions = $tprojectInfo['opt'];
 	$argsObj->active = $tprojectInfo['active'];
 	$argsObj->tcasePrefix = $tprojectInfo['prefix'];
 	$argsObj->is_public = $tprojectInfo['is_public'];

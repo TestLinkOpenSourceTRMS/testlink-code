@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.60 $ $Author: havlat $
- * @modified $Date: 2009/11/11 14:07:16 $
+ * @version $Revision: 1.61 $ $Author: havlat $
+ * @modified $Date: 2010/02/16 21:47:13 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -66,6 +66,8 @@ $gui->grants['platform_management'] = $currentUser->hasRight($db,"platform_manag
 $gui->grants['configuration'] = $currentUser->hasRight($db,"system_configuraton");
 $gui->grants['usergroups'] = $currentUser->hasRight($db,"mgt_view_usergroups");
 $gui->grants['view_tc'] = $currentUser->hasRight($db,"mgt_view_tc");
+$gui->grants['project_infrastructure_view'] = ($_SESSION['testprojectOptions']->infrastructureEnabled 
+	&& ($currentUser->hasRight($db,"project_infrastructure_view") == 'yes')) ? 1 : 0;
 $gui->grants['modify_tc'] = null; 
 $gui->hasTestCases = false;
 
@@ -75,15 +77,15 @@ if($gui->grants['view_tc'])
 	$gui->hasTestCases = $tproject_mgr->count_testcases($testprojectID) > 0 ? 1 : 0;
 }
 
-$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null); 
+$smarty->assign('opt_requirements', isset($_SESSION['testprojectOptions']->requirementsEnabled) 
+		? $_SESSION['testprojectOptions']->requirementsEnabled : null); 
 
 
-// ----- Test Plan Section ----------------------------------
-//
-// @TODO - franciscom - 
-// we must understand if these two calls are really needed,
-// or is enough just call to getAccessibleTestPlans()
-// 
+// ----- Test Plan Section --------------------------------------------------------------
+/** 
+ * @TODO - franciscom - we must understand if these two calls are really needed,
+ * or is enough just call to getAccessibleTestPlans()
+ */
 $filters = array('plan_status' => ACTIVE);
 $gui->num_active_tplans = sizeof($tproject_mgr->get_all_testplans($testprojectID,$filters));
 
@@ -161,6 +163,7 @@ $gui->docs = getUserDocumentation();
 
 $smarty->assign('gui',$gui);
 $smarty->display('mainPage.tpl');
+
 
 /**
  * Get User Documentation 

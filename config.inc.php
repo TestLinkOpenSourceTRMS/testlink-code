@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.284 2010/02/16 19:25:18 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.285 2010/02/16 21:46:32 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -309,10 +309,7 @@ $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
 $tlCfg->user_self_signup = TRUE; 
 
 /** Validating new user login names */
-$tlCfg->validation_cfg->user_login_valid_regex='/^[\w \-]+$/';
-
-// with following expression you can allow . (dot) on login name
-// $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \- .]+$/'
+$tlCfg->validation_cfg->user_login_valid_regex='/^[\w \- .]+$/';
 
 /** Validating user email addresses */
 /* added final i - to allow also Upper Case - info taken from PHP Manual and Mantis */
@@ -463,7 +460,8 @@ $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 
 /* User can choose order of menu areas */
 $tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration' => 2 ,
-                                         'requirements' => 3, 'testSpecification' => 4);
+                                         'requirements' => 3, 'testSpecification' => 4,
+                                         'general' => 5);
 
 $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 ,
                                           'testPlanContents' => 3);

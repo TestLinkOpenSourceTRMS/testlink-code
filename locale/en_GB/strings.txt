@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.550 2010/02/15 20:14:22 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.551 2010/02/16 21:46:32 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -45,6 +45,7 @@ $TLS_any = "Any";
 $TLS_author	= "Author";
 $TLS_automated = "Automated";
 $TLS_automatic = "Automatic";
+$TLS_availability = "Availability";
 $TLS_build = "Build";
 $TLS_check_uncheck_all = "Toggle all";
 $TLS_confirm = "Confirm";
@@ -65,6 +66,7 @@ $TLS_importance	= "Importance";
 $TLS_imported = "Imported";
 $TLS_important_notice = "Important Notice";
 $TLS_keyword = "Keyword";
+$TLS_mandatory = "Mandatory fields";
 $TLS_manual = "Manual";
 $TLS_Milestone = "Milestone";
 $TLS_months	= "months";
@@ -1275,39 +1277,37 @@ $TLS_start_date = 'Start Date';
 
 
 // ----- gui/templates/projectEdit.tpl -----
-$TLS_btn_activate = "Activate";
-$TLS_btn_del = "Delete";
-$TLS_btn_edit_del = "Edit / Delete";
-$TLS_btn_inactivate = "Inactivate";
-$TLS_caption_edit_tproject = "Edit %s";
-$TLS_caption_new_tproject = "Create new Test Project";
-$TLS_color = "Color";
-$TLS_create_from_existent_tproject = "Create from existing Test Project?";
-$TLS_enable_requirements = "Requirements Management";
-$TLS_enable_priority = "Priority Management";
-$TLS_enable_automation = "Test Automation";
-$TLS_info_failed_loc_prod = "Failed to localize the Test Project.";
-$TLS_notes = "Related Notes";
-$TLS_testproject_alt_delete = "Delete Test Project";
-$TLS_testproject_alt_active = "Active";
-$TLS_testproject_alt_requirement_feature = "Requirements enabled";
-$TLS_testproject_alt_edit = "Edit Test Project";
-$TLS_testproject_txt_empty_list = "There are no Test Projects defined!";
-
-// Warning!!! - if JS string you must use \\n to get \n
-$TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related " .
-                            "data (including test results, plans, etc.). " .
-                            "You can also use to deactivate instead of delete.\\n" .
-                            "Recommendation: Execute a dump of database at first.\\n" .
-                            "Are you sure to delete the Test Project?";
-
-$TLS_tcase_id_prefix = "Test Case ID prefix";
-$TLS_warning_empty_tcase_prefix = "Test Case ID prefix cannot be empty!";
-$TLS_warning_empty_tproject_name = "Test Project name cannot be empty!";
+$TLS_caption_edit_tproject = 'Edit %s';
+$TLS_caption_new_tproject = 'Create a new project';
+$TLS_create_from_existent_tproject = 'Create from existing Test Project?';
+$TLS_testproject_color = 'Background color';
+$TLS_testproject_enable_automation = 'Enable Test Automation (API keys)';
+$TLS_testproject_enable_infrastructure = 'Enable Project Infrastructure';
+$TLS_testproject_enable_priority = 'Enable Testing Priority';
+$TLS_testproject_enable_requirements = 'Enable Requirements feature';
+$TLS_info_failed_loc_prod = 'Failed to localize the Test Project.';
+$TLS_testproject_description = 'Project description';
+$TLS_testproject_features = 'Enhanced features';
+$TLS_testproject_alt_color = 'Click Here to Pick up the Project background color';
+$TLS_testproject_alt_active = 'Active';
+$TLS_testproject_alt_requirement_feature = 'Requirements enabled';
+$TLS_testproject_alt_edit = 'Edit Test Project';
+$TLS_testproject_txt_empty_list = 'There are no Test Projects defined!';
+$TLS_testproject_prefix = 'Prefix (used for Test case ID)';
+$TLS_warning_empty_tcase_prefix = 'Test Case ID prefix cannot be empty!';
+$TLS_warning_empty_tproject_name = 'Project name cannot be empty!';
 
 
 // ----- gui/templates/projectView.tpl -----
-$TLS_title_testproject_management = "Test Project Management";
+$TLS_title_testproject_management = 'Test Project Management';
+$TLS_tcase_id_prefix = 'Prefix';
+$TLS_testproject_alt_delete = 'Delete the Test project and all related data.';
+// Warning!!! - if JS string you must use \\n to get \n
+$TLS_popup_product_delete = 'Warning! This action deletes irrevocable all Test Project related ' .
+                            'data (including test results, plans, etc.). ' .
+                            'You can also use to deactivate instead of delete.\\n' .
+                            'Recommendation: Execute a dump of database at first.\\n' .
+                            'Are you sure to delete the Test Project?';
 
 
 // ----- gui/templates/reqAssign.tpl -----

@@ -1,27 +1,24 @@
 <?php
-/*
-TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_18_to_19.php,v 1.4 2010/01/19 20:38:18 franciscom Exp $ 
-
-Migrate from 1.8.x tp 1.9.0
-
-Author: franciscom
-
-tasks:
-- create records on node_hierarchy for req_version
-  getting new IDs.
-  
-- create records on node_hierarchy for tcsteps
-  getting new IDs.
-
-  
-- Update IDs on ....
-
-rev:
-    20100119 - franciscom - migrate_req_specs() - drop title 
-	20100118 - franciscom - fixed bug on migrate_req_specs()
-      
-*/
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ *
+ * Migrate from 1.8.x tp 1.9.0
+ * tasks:
+ * - create records on node_hierarchy for req_version
+ *   getting new IDs.
+ * - create records on node_hierarchy for tcsteps
+ *   getting new IDs.
+ * - Update IDs on ....
+ * - Update project options
+ *  
+ * $Id: migrate_18_to_19.php,v 1.5 2010/02/16 21:46:32 havlat Exp $
+ * Author: franciscom
+ * 
+ * @internal rev:
+ * 	20100215 - havlatm - test project options
+ *  20100119 - franciscom - migrate_req_specs() - drop title
+ *	20100118 - franciscom - fixed bug on migrate_req_specs()
+ */
 
 // over this qty, the process will take a lot of time
 define('CRITICAL_TC_SPECS_QTY',2000);
@@ -29,16 +26,18 @@ define('FEEDBACK_STEP',2500);
 define('FULL_FEEDBACK',FALSE);
 define('DBVERSION4MIG', 'DB 1.2');
 
+
 function migrate_18_to_19(&$dbHandler,$tableSet)
 {
     migrate_requirements($dbHandler,$tableSet);
     migrate_req_specs($dbHandler,$tableSet);
     migrate_testcases($dbHandler,$tableSet);
+    migrate_project_options($dbHandler,$tableSet);
 }
+
 
 /**
  * migrate_requirements
- *
  */
 function migrate_requirements(&$dbHandler,$tableSet)
 {
@@ -104,7 +103,6 @@ function migrate_requirements(&$dbHandler,$tableSet)
 
 /**
  * migrate_req_specs
- *
  */
 function migrate_req_specs(&$dbHandler,$tableSet)
 {
@@ -115,41 +113,91 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 	//
 	if( !is_null($rs) && count($rs) > 0)
 	{
-	    $keyset = array_keys($rs);
-	    foreach($keyset as $id)
-	    {
+		$keyset = array_keys($rs);
+		foreach($keyset as $id)
+		{
 			$sql = " UPDATE {$tableSet['req_specs']} " .
-			       " SET doc_id = '" . "RSPEC-DOCID-" . $rs[$id]['id'] . "'" .
-			       " WHERE id={$rs[$id]['id']} ";
-	        $dbHandler->exec_query($sql);
-	    }
+				" SET doc_id = '" . "RSPEC-DOCID-" . $rs[$id]['id'] . "'" .
+				" WHERE id={$rs[$id]['id']} ";
+			$dbHandler->exec_query($sql);
+		}
 	} 
-    // STEP 3 - Remove fields from requirements
-    $adodbObj = $dbHandler->get_dbmgr_object();
-    $colNames = $adodbObj->MetaColumnNames($tableSet['req_specs']);
-    $cols2drop = array("title");
-    $cols2drop = array_flip($cols2drop);
-    foreach($cols2drop as $colname => $dummy)
-    {
-    	if( !isset($colNames[strtoupper($colname)]) )
-    	{
-    		unset($cols2drop[$colname]);
-    	}
-    	else
-    	{
-    		$cols2drop[$colname] = " DROP $colname ";
-    	}
-    }
-    $drop_clause = implode(",", $cols2drop);
-    $sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
-    $dbHandler->exec_query($sql);
-
-
+	// STEP 3 - Remove fields from requirements
+	$adodbObj = $dbHandler->get_dbmgr_object();
+	$colNames = $adodbObj->MetaColumnNames($tableSet['req_specs']);
+	$cols2drop = array("title");
+	$cols2drop = array_flip($cols2drop);
+	foreach($cols2drop as $colname => $dummy)
+	{
+		if( !isset($colNames[strtoupper($colname)]) )
+		{
+			unset($cols2drop[$colname]);
+		}
+		else
+		{
+			$cols2drop[$colname] = " DROP $colname ";
+		}
+	}
+	$drop_clause = implode(",", $cols2drop);
+	$sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
+	$dbHandler->exec_query($sql);
 }
+
+
+/**
+ * Migrate project options to json format
+ */
+function migrate_project_options(&$dbHandler,$tableSet)
+{
+	// get all projects in system
+	$sql = "SELECT * FROM {$tableSet['testprojects']}";
+	$rs = $dbHandler->get_recordset($sql);
+	
+	// Set new parameter
+	if( !is_null($rs) && count($rs) > 0)
+	{
+		$keyset = array_keys($rs);
+		foreach($keyset as $id)
+		{
+		  	$options = new stdClass();
+		  	$options->requirementsEnabled = $rs[$id]['option_reqs'];
+	  		$options->testPriorityEnabled = $rs[$id]['option_priority'];
+	  		$options->automationEnabled = $rs[$id]['option_automation'];
+	  		$options->infrastructureEnabled = FALSE;
+	  		
+	  		$serOptions = serialize($options);
+			
+			$sql = " UPDATE {$tableSet['testprojects']} SET" .
+					" options='" .  $serOptions . "', " .
+					" WHERE id=" . $rs[$id]['id'];
+			$dbHandler->exec_query($sql);
+		}
+	} 
+	
+	// STEP 3 - Remove fields from project
+	$adodbObj = $dbHandler->get_dbmgr_object();
+	$colNames = $adodbObj->MetaColumnNames($tableSet['testprojects']);
+	$cols2drop = array('option_reqs','option_priority','option_automation');
+	$cols2drop = array_flip($cols2drop);
+	foreach($cols2drop as $colname => $dummy)
+	{
+		if( !isset($colNames[strtoupper($colname)]) )
+		{
+			unset($cols2drop[$colname]);
+		}
+		else
+		{
+			$cols2drop[$colname] = " DROP $colname ";
+		}
+	}
+	$drop_clause = implode(",", $cols2drop);
+	$sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
+	$dbHandler->exec_query($sql);
+}
+
 
 /**
  * migrate_testcases
- *
  */
 function migrate_testcases(&$dbHandler,$tableSet)
 {

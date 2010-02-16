@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.153 2010/02/13 18:23:00 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.154 2010/02/16 21:46:32 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -99,12 +99,14 @@ class testproject extends tlObjectWithAttachments
 
 
 /**
- * Create a new test project
+ * Create a new Test project
  * 
- * @param string $name
- * @param string $color
- * @param boolean $optReq [1,0]
- * @param string $notes
+ * @param string $name Name of project
+ * @param string $color value according to CSS color definition
+ * @param string $notes project description (HTML text)
+ * @param array $options project features/options
+ * 				bolean keys: infrastructureEnabled, automationEnabled, 
+ * 				testPriorityEnabled, requirementsEnabled 
  * @param boolean $active [1,0] optional
  * @param string $tcasePrefix [''] 
  * @param boolean $is_public [1,0] optional
@@ -112,30 +114,29 @@ class testproject extends tlObjectWithAttachments
  * @return integer test project id or 0 (if fails)
  *
  * @internal Revisions:
- * 20060709 - franciscom - return type changed
+ *	20100213 - havlatm - support for options serialization, renamed
+ *	20060709 - franciscom - return type changed
  *                         added new optional argument active
- * 20080112 - franciscom - added $tcasePrefix
- * 20090601 - havlatm - update session if required
+ *	20080112 - franciscom - added $tcasePrefix
+ *	20090601 - havlatm - update session if required
  * 
  * @TODO havlatm: rollback node if create fails (DB consistency req.)
  * @TODO havlatm: $is_public parameter need review (do not agreed in team)
  * @TODO havlatm: described return parameter differs from reality
  * @TODO havlatm: parameter $options should be 
  */
-function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
+function projectCreate($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 {
-  
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);
 	$tcprefix = $this->formatTcPrefix($tcasePrefix);
+	$serOptions = serialize($options);
 
-	$sql = " INSERT INTO {$this->object_table} (id,color,option_reqs,option_priority," .
-	       " option_automation,notes,active,is_public,prefix) " .
+	$sql = " INSERT INTO {$this->object_table} (id,color," .
+	       " options,notes,active,is_public,prefix) " .
 	       " VALUES (" . $root_node_id . ", '" .
-	                     $this->db->prepare_string($color) . "'," .
-	                     $options->requirement_mgmt . "," .
-	                     $options->priority_mgmt . "," .
-	                     $options->automated_execution . ",'" .
+	                     $this->db->prepare_string($color) . "','" .
+	                     $serOptions . "','" .
 		                 $this->db->prepare_string($notes) . "'," .
 		                 $active . "," . $is_public . ",'" .
 		                 $this->db->prepare_string($tcprefix) . "')";
@@ -161,22 +162,25 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_publi
 }
 
 /**
- * Update Test project data in DB and session
+ * Update Test project data in DB and (if applicable) current session data
  *
- * @param type $id documentation
- * @param type $name documentation
- * @param type $color documentation
- * @param type $opt_req documentation
- * @param type $notes documentation
+ * @param integer $id project Identifier
+ * @param string $name Name of project
+ * @param string $color value according to CSS color definition
+ * @param string $notes project description (HTML text)
+ * @param array $options project features/options
+ * 				bolean keys: infrastructureEnabled, automationEnabled, 
+ * 				testPriorityEnabled, requirementsEnabled 
  * 
- * @return type documentation
+ * @return boolean result of DB update
  *
  * @internal
+ * 	20100213 - havlatm - options updated, renamed, header description
  *	20060312 - franciscom - name is setted on nodes_hierarchy table
  *
  **/
-function update($id, $name, $color, $opt_req, $optPriority, $optAutomation, 
-                $notes,$active=null,$tcasePrefix=null,$is_public=null)
+function projectUpdate($id, $name, $color, $notes,$options,$active=null,
+						$tcasePrefix=null,$is_public=null)
 {
     $status_ok=1;
 	$status_msg = 'ok';
@@ -199,11 +203,10 @@ function update($id, $name, $color, $opt_req, $optPriority, $optAutomation,
 	    $tcprefix=$this->formatTcPrefix($tcasePrefix);
 	    $add_upd .=",prefix='" . $this->db->prepare_string($tcprefix) . "'" ;
 	}
+	$serOptions = serialize($options);
 
 	$sql = " UPDATE {$this->object_table} SET color='" . $this->db->prepare_string($color) . "', ".
-			" option_reqs=" .  $opt_req . ", " .
-			" option_priority=" .  $optPriority . ", " .
-			" option_automation=" .  $optAutomation . ", " .
+			" options='" .  $serOptions . "', " .
 			" notes='" . $this->db->prepare_string($notes) . "' {$add_upd} " .
 			" WHERE id=" . $id;
 	$result = $this->db->exec_query($sql);
@@ -242,6 +245,7 @@ function update($id, $name, $color, $opt_req, $optPriority, $optAutomation,
 public function setSessionProject($projectId)
 {
 	$tproject_info = null;
+	
 	if ($projectId)
 	{
 		$tproject_info = $this->get_by_id($projectId);
@@ -253,9 +257,23 @@ public function setSessionProject($projectId)
 		$_SESSION['testprojectName'] = $tproject_info['name'];
 		$_SESSION['testprojectColor'] = $tproject_info['color'];
 		$_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
-		$_SESSION['testprojectOptReqs'] = isset($tproject_info['option_reqs']) ? $tproject_info['option_reqs'] : null;
-		$_SESSION['testprojectOptPriority'] = isset($tproject_info['option_priority']) ? $tproject_info['option_priority'] : null;
-		$_SESSION['testprojectOptAutomation'] = isset($tproject_info['option_automation']) ? $tproject_info['option_automation'] : null;
+
+		$_SESSION['testprojectOptions']->requirementsEnabled = 
+				isset($tproject_info['opt']->requirementsEnabled) 
+				? $tproject_info['opt']->requirementsEnabled : 0;
+		$_SESSION['testprojectOptions']->testPriorityEnabled = 
+				isset($tproject_info['opt']->testPriorityEnabled) 
+				? $tproject_info['opt']->testPriorityEnabled : 0;
+		$_SESSION['testprojectOptions']->automationEnabled = 
+				isset($tproject_info['opt']->automationEnabled) 
+				? $tproject_info['opt']->automationEnabled : 0;
+		$_SESSION['testprojectOptions']->infrastructureEnabled = 
+				isset($tproject_info['opt']->infrastructureEnabled) 
+				? $tproject_info['opt']->infrastructureEnabled : 0;
+		// the next three parameters are obsolete should be removed
+		$_SESSION['testprojectOptReqs'] = $_SESSION['testprojectOptions']->requirementsEnabled;
+		$_SESSION['testprojectOptPriority'] = $_SESSION['testprojectOptions']->testPriorityEnabled;
+		$_SESSION['testprojectOptAutomation'] = $_SESSION['testprojectOptions']->automationEnabled;
 
 		tLog("Test Project was activated: [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
 		tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
@@ -269,6 +287,7 @@ public function setSessionProject($projectId)
 		unset($_SESSION['testprojectID']);
 		unset($_SESSION['testprojectName']);
 		unset($_SESSION['testprojectColor']);
+		unset($_SESSION['testprojectOptions']);
 		unset($_SESSION['testprojectOptReqs']);
 		unset($_SESSION['testprojectOptPriority']);
 		unset($_SESSION['testprojectOptAutomation']);
@@ -276,6 +295,53 @@ public function setSessionProject($projectId)
 	}
 
 }
+
+
+/**
+ * Unserialize project options
+ * 
+ * @param array $recorset produced by getTestProject() 
+ */
+protected function parseTestProjectRecordset(&$recordset)
+{
+	if (count($recordset) > 0)
+	{
+		foreach ($recordset as $number => $row)
+		{
+			$recordset[$number]['opt'] = unserialize($row['options']);
+		}
+	}
+	else
+	{
+		$recordset = null;
+		tLog('parseTestProjectRecordset: No project on query', 'DEBUG');
+	}
+}
+
+
+/**
+ * Get Test project data according to parameter with unique value
+ * 
+ * @param string $condition (optional) additional SQL condition(s)
+ * @return array map with test project info; null if query fails
+ */
+protected function getTestProject($condition = null)
+{
+	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
+	       " FROM {$this->object_table} testprojects, " .
+	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
+	       " WHERE testprojects.id = nodes_hierarchy.id ";
+	if (!is_null($condition) )
+	{
+		$sql .= " AND " . $condition;
+    }
+    
+	$recordset = $this->db->get_recordset($sql);
+	$this->parseTestProjectRecordset($recordset);
+
+	return $recordset;
+}
+
 
 /**
  * Get Test project data according to name
@@ -285,20 +351,12 @@ public function setSessionProject($projectId)
  * 
  * @return array map with test project info; null if query fails
  */
-function get_by_name($name, $addClause = null)
+public function get_by_name($name, $addClause = null)
 {
-	$sql = " SELECT testprojects.*, nodes_hierarchy.name ".
-	       " FROM {$this->object_table} testprojects, " .
-	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy".
-	       " WHERE testprojects.id = nodes_hierarchy.id AND".
-	       "  nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'";
-   
-	if (!is_null($addClause) )
-	{
-		$sql .= " AND " . $addClause;
-    }
-	$recordset = $this->db->get_recordset($sql);
-	return $recordset;
+	$condition = "nodes_hierarchy.name='" . $this->db->prepare_string($name) . "'";
+	$condition .= is_null($addClause) ? '' : " AND {$addClause} ";
+
+	return $this->getTestProject($condition);
 }
 
 
@@ -310,13 +368,9 @@ function get_by_name($name, $addClause = null)
  */
 public function get_by_id($id)
 {
-	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
-	       " FROM {$this->object_table} testprojects, " .
-	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
-	       " WHERE testprojects.id = nodes_hierarchy.id ".
-	       " AND testprojects.id = {$id}";
-	$recordset = $this->db->get_recordset($sql);
-	return ($recordset ? $recordset[0] : null);
+	$condition = "testprojects.id=". intval($id);
+	$result = $this->getTestProject($condition);
+	return $result[0];
 }
 
 
@@ -331,18 +385,13 @@ public function get_by_id($id)
 public function get_by_prefix($prefix, $addClause = null)
 {
     $safe_prefix = $this->db->prepare_string($prefix);
-    
-	$sql = " SELECT testprojects.*,nodes_hierarchy.name ".
-	       " FROM {$this->object_table} testprojects, " .
-	       " {$this->tables['nodes_hierarchy']} nodes_hierarchy ".
-	       " WHERE testprojects.id = nodes_hierarchy.id ".
-	       " AND testprojects.prefix = '{$safe_prefix}'";
-	       
-	$sql .= is_null($addClause) ? '' : " AND {$addClause} ";
-	       
-	$recordset = $this->db->get_recordset($sql);
-	return ($recordset ? $recordset[0] : null);
+	$condition = "testprojects.prefix='{$safe_prefix}'";
+	$condition .= is_null($addClause) ? '' : " AND {$addClause} ";
+
+	$result = $this->getTestProject($condition);
+	return $result[0];
 }
+
 
 /*
  function: get_all
@@ -389,13 +438,24 @@ function get_all($filters=null,$options=null)
 	if( is_null($my['options']['access_key']))
 	{
 		$recordset = $this->db->get_recordset($sql);
+		$this->parseTestProjectRecordset($recordset);
 	}
 	else
 	{
 		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+		if (count($recordset) > 0)
+		{
+			foreach ($recordset as $number => $row)
+			{
+				$recordset[$number]['opt'] = unserialize($row['options']);
+			}
+		}
 	}	
+
+
 	return $recordset;
 }
+
 
 /*
 function: get_accessible_for_user
@@ -440,7 +500,6 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
     $user_info = $this->db->get_recordset($sql);
 	$role_id=$user_info[0]['role_id'];
 
-
 	$sql =  " SELECT nodes_hierarchy.name,testprojects.*
  	          FROM {$this->tables['nodes_hierarchy']} nodes_hierarchy
  	          JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id
@@ -466,6 +525,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
     if($output_type == 'array_of_map')
 	{
 	    $items = $this->db->get_recordset($sql);
+		$this->parseTestProjectRecordset($items);
 	    $do_post_process=0;
 	}
 	else
@@ -544,13 +604,15 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
 
 
 /**
- * displays smarty template to show test project info to users.
+ * Displays smarty template to show test project info to users.
  *
  * @param type $smarty [ref] smarty object
  * @param type $id test project
  * @param type $sqlResult [default = '']
  * @param type $action [default = 'update']
  * @param type $modded_item_id [default = 0]
+ * 
+ * @todo havlatm (20100214): smarty should not be in this class - move code to appropariate page
  **/
 function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
@@ -558,18 +620,11 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
 	$gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");
 	$gui->mgt_modify_product = has_rights($this->db,"mgt_modify_product");
 
-	
-	// $smarty->assign('modify_tc_rights', has_rights($this->db,"mgt_modify_tc"));
-	// $smarty->assign('mgt_modify_product', has_rights($this->db,"mgt_modify_product"));
-
 	$gui->sqlResult = '';
 	$gui->sqlAction = '';
 	if($sqlResult)
 	{
 		$gui->sqlResult = $sqlResult;
-		$gui->sqlAction = $sqlAction;
-		// $smarty->assign('sqlResult', $sqlResult);
-		// $smarty->assign('sqlAction', $action);
 	}
 
 	$gui->container_data = $this->get_by_id($id);
@@ -591,9 +646,8 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
 /**
  * Count testcases without considering active/inactive status.
  * 
- * @param integer $id: testproject id
+ * @param integer $id: test project identifier
  * @return integer count of test cases presents on test project.
- * 
  */
 function count_testcases($id)
 {
@@ -788,48 +842,40 @@ function count_testcases($id)
 		return $fstr;
 	}
 
-  /*
-    function: getTestCasePrefix
+
+	/*
+	 args : id: test project
+	 returns: null if query fails
+	 string
+	 */
+	function getTestCasePrefix($id)
+	{
+		$ret=null;
+		$sql = "SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
+		$ret = $this->db->fetchOneValue($sql);
+		return ($ret);
+	}
 
 
-    args : id: test project
-
-    returns: null if query fails
-             string
-
-  */
-  function getTestCasePrefix($id)
-  {
-  	$ret=null;
-  	$sql = "SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
-	$ret = $this->db->fetchOneValue($sql);
-  	return ($ret);
-  }
-
-  /*
-    function: generateTestCaseNumber
-
-
-    args: id: test project
-
-    returns: null if query fails
-             a new test case number
-
-  */
-function generateTestCaseNumber($id)
-{
-	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-  	$ret=null;
-    $sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
-           " SET tc_counter=tc_counter+1 WHERE id = {$id}";
-  	$recordset = $this->db->exec_query($sql);
-
-  	$sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$id}";
-  	$recordset = $this->db->get_recordset($sql);
-    $ret=$recordset[0]['tc_counter'];
-  	return ($ret);
-}
+	/*
+	 args: id: test project
+	 returns: null if query fails
+	 a new test case number
+	 */
+	function generateTestCaseNumber($id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
+		$ret=null;
+		$sql = "/* $debugMsg */ UPDATE {$this->object_table} " .
+			" SET tc_counter=tc_counter+1 WHERE id = {$id}";
+		$recordset = $this->db->exec_query($sql);
+		
+		$sql = " SELECT tc_counter  FROM {$this->object_table}  WHERE id = {$id}";
+		$recordset = $this->db->get_recordset($sql);
+		$ret=$recordset[0]['tc_counter'];
+		return ($ret);
+	}
 
 /** 
  * @param integer $id test project ID
@@ -1905,7 +1951,7 @@ function getTCasesLinkedToAnyTPlan($id)
            " FROM {$this->tables['nodes_hierarchy']} NHA " .
            " JOIN {$this->tables['testplan_tcversions']} ON NHA.id = tcversion_id ";
     
-    // get testplan id for target testèproject, to get test case versions linked to testplan.
+    // get testplan id for target testï¿½project, to get test case versions linked to testplan.
     $sql .= " JOIN {$this->tables['nodes_hierarchy']} NH ON testplan_id = NH.id  " .
             " WHERE NH.node_type_id = {$tplanNodeType} AND NH.parent_id ={$id}";
     $rs = $this->db->fetchRowsIntoMap($sql,'testcase_id');

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.18 2010/02/01 16:06:15 franciscom Exp $
+$Id: projectView.tpl,v 1.19 2010/02/16 21:46:32 havlat Exp $
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
@@ -23,10 +23,11 @@ Rev :
 {lang_get s='popup_product_delete' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
 
-{lang_get var="labels" s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,
-                          th_name,th_notes,testproject_alt_edit,testproject_alt_active,
-                          th_requirement_feature,testproject_alt_delete,btn_create,public,
-                          testproject_alt_requirement_feature,th_active,th_delete,th_id'}
+{lang_get var="labels" 
+		s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,
+		th_name,th_notes,testproject_alt_edit,testproject_alt_active,
+		th_requirement_feature,testproject_alt_delete,btn_create,public,
+		testproject_alt_requirement_feature,th_active,th_delete,th_id'}
 
 
 {include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
@@ -42,6 +43,15 @@ var del_action=fRoot+'{$deleteAction}';
 
 <h1 class="title">{$labels.title_testproject_management}</h1>
 <div class="workBack">
+
+{if $gui->canManage}
+<div class="groupBtn">
+	<form method="post" action="{$createAction}">
+		<input type="submit" name="create" value="{$labels.btn_create}" />
+	</form>
+</div>
+{/if}
+
 <div id="testproject_management_list">
 {if $gui->tprojects == ''}
 	{$labels.testproject_txt_empty_list}
@@ -53,7 +63,9 @@ var del_action=fRoot+'{$deleteAction}';
 			<th>{$sortHintIcon}{$labels.tcase_id_prefix}</th>
 			<th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
 			<th class="icon_cell">{$labels.th_active}</th>
+{* havlatm: the feature is not ready for using - must be disabled (developed by Francisco)
 			<th class="icon_cell">{$labels.public}</th>
+*}
 			{if $gui->canManage == "yes"}
 			<th class="icon_cell">{$labels.th_delete}</th>
 			{/if}
@@ -62,6 +74,7 @@ var del_action=fRoot+'{$deleteAction}';
 		<tr>
 			<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testproject.id}</span>
 			    <a href="{$editAction}{$testproject.id}">
+  					<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit_16.png"/>
 				     {$testproject.name|escape}
 				     {if $gsmarty_gui->show_icon_edit}
  				         <img title="{$labels.testproject_alt_edit}"
@@ -77,7 +90,7 @@ var del_action=fRoot+'{$deleteAction}';
 				{$testproject.prefix|escape}
 			</td>
 			<td class="clickable_icon">
-				{if $testproject.option_reqs eq 1}
+				{if $testproject.opt->requirementsEnabled}
   					<img style="border:none"
   				            title="{$labels.testproject_alt_requirement_feature}"
   				            alt="{$labels.testproject_alt_requirement_feature}"
@@ -87,7 +100,7 @@ var del_action=fRoot+'{$deleteAction}';
   				{/if}
 			</td>
 			<td class="clickable_icon">
-				{if $testproject.active eq 1}
+				{if $testproject.active}
   					<img style="border:none"
   				            title="{$labels.testproject_alt_active}"
   				            alt="{$labels.testproject_alt_active}"
@@ -96,8 +109,9 @@ var del_action=fRoot+'{$deleteAction}';
   					&nbsp;
   				{/if}
 			</td>
+{* havlatm: the feature is not ready for using - must be disabled (developed by Francisco)
 			<td class="clickable_icon">
-				{if $testproject.is_public eq 1}
+				{if $testproject.is_public}
   					<img style="border:none"
   				            title="{$labels.public}"
   				            alt="{$labels.public}"
@@ -106,7 +120,7 @@ var del_action=fRoot+'{$deleteAction}';
   					&nbsp;
   				{/if}
 			</td>
-
+*}
 			{if $gui->canManage == "yes"}
 			<td class="clickable_icon">
 				  <img style="border:none;cursor: pointer;"  alt="{$labels.testproject_alt_delete}"
@@ -124,13 +138,6 @@ var del_action=fRoot+'{$deleteAction}';
 {/if}
 </div>
 
- {if $gui->canManage}
- <div class="groupBtn">
-    <form method="post" action="{$createAction}">
-      <input type="submit" name="create" value="{$labels.btn_create}" />
-    </form>
-  </div>
- {/if}
 </div>
 
 {if $gui->doAction == "reloadAll"}

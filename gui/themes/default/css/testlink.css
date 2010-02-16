@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.24 2010/01/21 17:26:01 erikeloff Exp $
+$Id: testlink.css,v 1.25 2010/02/16 21:47:23 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -356,8 +356,13 @@ table.common th, table.simple th{
   	background:		transparent url(../images/white-top-bottom.gif) repeat-x 0 -1px;
 }
 
+table.common td,th{
+	padding:		3px;
+}
+
 table.common td, table.simple td, th{
 	vertical-align: top;
+	padding:		5px;
 }
 
 table.common caption, table.smallGrey caption {

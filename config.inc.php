@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.283 2010/02/14 17:33:57 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.284 2010/02/16 19:25:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -310,6 +310,9 @@ $tlCfg->user_self_signup = TRUE;
 
 /** Validating new user login names */
 $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \-]+$/';
+
+// with following expression you can allow . (dot) on login name
+// $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \- .]+$/'
 
 /** Validating user email addresses */
 /* added final i - to allow also Upper Case - info taken from PHP Manual and Mantis */

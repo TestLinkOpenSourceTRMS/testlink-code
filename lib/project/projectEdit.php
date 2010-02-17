@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.44 2010/02/16 21:46:32 havlat Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.45 2010/02/17 22:22:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
  *
  * @internal revision
+ * 20100217 - franciscom - fixed errors showed on event viewer due to missing properties
  * 20100119 - franciscom - BUGID 3048
  * 20091227 - franciscom - BUGID 3020
  * 20091121 - franciscom - BUGID - Julian Contribution
@@ -149,7 +150,7 @@ switch($args->doAction)
         $smarty->assign('optReq', $args->optReq);
         $smarty->assign('optPriority', $args->optPriority);
         $smarty->assign('optAutomation', $args->optAutomation);
-        $smarty->assign('projectOptions', $args->projectOptions);
+        $smarty->assign('projectOptions', prepareOptions($args));
         $smarty->assign('tcasePrefix', $args->tcasePrefix);
         $smarty->assign('notes', $of->CreateHTML());
         $smarty->assign('found', $found);
@@ -176,6 +177,9 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
     $args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
+	
+	new dBug($request_hash);
+	
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
 	{
@@ -190,7 +194,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 
 	// get input from the project edit/create page
 	$checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,
-		'optPriority' => 0,'optAutomation' => 0,'optInfrastructure' => 0);
+		                   'optPriority' => 0,'optAutomation' => 0,'optInfrastructure' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -222,7 +226,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 }
 
 /**
- * Collect a test project options to a sinleton
+ * Collect a test project options to a singleton
  * 
  * @param array $argsObj the page input
  * @return singleton data to be stored
@@ -262,8 +266,8 @@ function doCreate($argsObj,&$tprojectMgr)
 	  	$options = prepareOptions($argsObj);
 	  	    
 		$new_id = $tprojectMgr->projectCreate($argsObj->tprojectName, $argsObj->color,
-					$options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
-					$argsObj->is_public);
+					                          $options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
+					                          $argsObj->is_public);
 									                 
 		if (!$new_id)
 		{
@@ -376,12 +380,11 @@ function edit(&$argsObj,&$tprojectMgr)
 {
 	$tprojectInfo = $tprojectMgr->get_by_id($argsObj->tprojectID);
    
+    new dBug($tprojectInfo);
+    
 	$argsObj->tprojectName = $tprojectInfo['name'];
 	$argsObj->color = $tprojectInfo['color'];
 	$argsObj->notes = $tprojectInfo['notes'];
-//	$argsObj->optReq = $tprojectInfo['option_reqs'];
-//	$argsObj->optPriority = $tprojectInfo['option_priority'];
-//	$argsObj->optAutomation = $tprojectInfo['option_automation'];
 	$argsObj->projectOptions = $tprojectInfo['opt'];
 	$argsObj->active = $tprojectInfo['active'];
 	$argsObj->tcasePrefix = $tprojectInfo['prefix'];

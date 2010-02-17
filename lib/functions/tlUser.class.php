@@ -5,11 +5,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.5 2010/02/12 00:20:12 havlat Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.6 2010/02/17 22:57:43 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20100217 - franciscom - getNamesForProjectRight() - fixed error displayed on event viewer + refactoring
  *  20090726 - franciscom - new method getAccessibleTestPlans()
  * 	20090419 - franciscom - refactoring replace product with test project (where possible).
  *  20090101 - franciscom - changes to deleteFromDB() due to Foreing Key constraints
@@ -628,47 +629,52 @@ class tlUser extends tlDBObject
      */
 	public function getNamesForProjectRight(&$db,$rightNick,$testprojectID = null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		if (is_null($testprojectID))
 		{
-			tLog('function getNamesForProjectRight() requires Test Project ID defined','ERROR');
+			tLog( $debugMsg . ' requires Test Project ID defined','ERROR');
 			return null;
 		}
 		
 		$output = array();
 		
 		//get users for default roles
-		$sql = "SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
-				" JOIN {$this->tables['role_rights']} a ON a.role_id=u.role_id" .
-				" JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
-				" WHERE b.description='{$rightNick}'";
-		$output1 = $db->fetchRowsIntoMap($sql,'id');
+		$sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
+			   " JOIN {$this->tables['role_rights']} a ON a.role_id=u.role_id" .
+			   " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
+			   " WHERE b.description='{$rightNick}'";
+		$defaultRoles = $db->fetchRowsIntoMap($sql,'id');
 
 		// get users for project roles
-		$sql = "SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
-				" JOIN {$this->tables['user_testproject_roles']} p ON p.user_id=u.id" .
-				" AND p.testproject_id=" . $testprojectID .
-				" JOIN {$this->tables['role_rights']} a ON a.role_id=p.role_id" .
-				" JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
-				" WHERE b.description='{$rightNick}'";
-		$output2 = $db->fetchRowsIntoMap($sql,'id');
+		$sql = "/* $debugMsg */ SELECT DISTINCT u.id,u.login,u.first,u.last FROM {$this->tables['users']} u" .
+			   " JOIN {$this->tables['user_testproject_roles']} p ON p.user_id=u.id" .
+			   " AND p.testproject_id=" . $testprojectID .
+			   " JOIN {$this->tables['role_rights']} a ON a.role_id=p.role_id" .
+			   " JOIN {$this->tables['rights']} b ON a.right_id = b.id " .
+			   " WHERE b.description='{$rightNick}'";
+		$projectRoles = $db->fetchRowsIntoMap($sql,'id');
 		
 		// merge arrays		
 		// the next function is available from php53 but we support php52
 		// $output = array_replace($output1, $output2);
-	    foreach($output2 as $k=>$v) 
+	    if( !is_null($projectRoles) )
 	    {
-       	    if( !isset($output1[$k]) ) 
-       	    {
-	       	    $output1[$k] = $v;
-      	    }
+	    	foreach($projectRoles as $k => $v) 
+	    	{
+       		    if( !isset($defaultRoles[$k]) ) 
+       		    {
+	    	   	    $defaultRoles[$k] = $v;
+      		    }
+	    	}
 	    }
 
 	    // format for ext-js combo-box (remove associated array)
-	    foreach($output1 as $k=>$v) 
-	    {
-       	    $output[] = $v;
-	    }
-		
+	    // foreach($defaultRoles as $k => $v) 
+	    // {
+       	//     $output[] = $v;
+	    // }
+		$output = array_values($defaultRoles);   
+		   
 		return $output;
 	}
 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.54 2010/02/17 21:32:44 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.55 2010/02/17 21:39:00 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -314,7 +314,7 @@ rev:
 </div>
 </form>
 
-{if $session['testprojectOptAutomation']}
+{if $session['testprojectOptions']->automationEnabled}
   <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$labels.execution_type} {$smarty.const.TITLE_SEP}</span>
 		{$gui->execution_types[$args_testcase.execution_type]}

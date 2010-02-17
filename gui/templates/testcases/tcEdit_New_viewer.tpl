@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.19 2010/02/17 21:32:44 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.20 2010/02/17 21:38:16 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -69,7 +69,7 @@ Rev:
 {* <div>{$expected_results}</div>                                *} 
 {* {$layout3}                                                    *}
 
-		{if $session['testprojectOptAutomation']}
+		{if $session['testprojectOptions']->automationEnabled}
 			<div class="labelHolder">{$labels.execution_type}
 			<select name="exec_type" onchange="content_modified = true">
     	  	{html_options options=$gui->execution_types selected=$gui->tc.execution_type}

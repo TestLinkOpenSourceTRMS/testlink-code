@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.18 2009/12/10 21:06:35 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.19 2010/02/17 21:39:56 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -104,7 +104,7 @@ rev:
                          	selected=$gui->keywordsFilterType->selected }
 				</td>	
 			</tr>
-		  {if $session['testprojectOptAutomation']}
+		  {if $session['testprojectOptions']->automationEnabled}
 			<tr>
 				<td>{$labels.execution_type}</td>
 	  			<td>

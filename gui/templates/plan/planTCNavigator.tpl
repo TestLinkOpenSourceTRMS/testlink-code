@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.20 2010/02/14 14:12:31 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.21 2010/02/17 15:57:27 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -14,7 +14,7 @@ Revisions :
 {lang_get var="labels" 
           s='btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,title_navigator,
              btn_bulk_update_to_latest_version,
-             filter_owner,TestPlan,test_plan,caption_nav_filter_settings,
+             filter_owner,TestPlan,test_plan,caption_nav_filters,
              build,filter_tcID,filter_on,filter_result,platform, include_unassigned_testcases'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -82,60 +82,25 @@ function update2latest(id)
 	var action_url = fRoot+'/'+menuUrl+"?doAction=doBulkUpdateToLatest&level=testplan&id="+id+args;
 	parent.workframe.location = action_url;
 }
-
-</script>
 {/literal}
-
-<script type="text/javascript">
-
-str_option_any = '{$gui->str_option_any}';
-str_option_none = '{$gui->str_option_none}';
-str_option_somebody = '{$gui->str_option_somebody}';
-
-{literal}
-
-function triggerBuildChooser() 
-{
-  var build_type_combo;
-  var build_id_combo;
-  var index;
-  
-  build_id_combo = document.getElementById('filter_build_id');
-  build_type_combo = document.getElementById('filter_on_build_type');
-  index = build_type_combo.options.selectedIndex;
-  
-	build_id_combo.disabled = true;
-	if(build_type_combo[index].value == "s") 
-	{
-		build_id_combo.disabled = false;
-	} 
-}
-
-function triggerAssignedBox() 
-{
-  var filter_assigned_to;
-  var include_unassigned;
-  var index;
-  var choice;
-  
-  include_unassigned = document.getElementById("include_unassigned");
-  filter_assigned_to = document.getElementById("filter_assigned_to");
-  index = filter_assigned_to.options.selectedIndex
-  
-  choice = filter_assigned_to.options.options[index].label;
-  include_unassigned.disabled = false;
-	if ( choice == str_option_any	|| choice == str_option_none || choice == str_option_somebody ) 
-	{
-		include_unassigned.disabled = = true;
-	} 
-}
-
 </script>
-{/literal}
 
 </head>
 
-<body onload="triggerBuildChooser();triggerAssignedBox();">
+<body onload="javascript:
+	triggerBuildChooser(document.getElementById('filter_build_id'),
+						document.getElementById('filter_method'),
+						{$gui->filter_method_specific_build});
+	triggerAssignedBox(document.getElementById('filter_assigned_to'),
+						document.getElementById('include_unassigned'),
+						'{$gui->str_option_any}',
+						'{$gui->str_option_none}',
+						'{$gui->str_option_somebody}');
+	{if $gui->buildCount eq 1}
+	disableUnneededFilters(document.getElementById('filter_method'),
+							{$gui->filter_method_specific_build});
+	{/if}
+">
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -145,7 +110,7 @@ function triggerAssignedBox()
 {include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}
 <div id="filter_panel">
 	<div class="x-panel-header x-unselectable">
-		{$labels.caption_nav_filter_settings}
+		{$labels.caption_nav_filters}
 	</div>
 
 <div id="filter_settings" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
@@ -166,12 +131,6 @@ function triggerAssignedBox()
 			</td>
 		</tr>
 	{/if}
-		
-		<tr>
-			<td>{$labels.filter_tcID}</td>
-			<td><input type="text" name="targetTestCase" value="{$gui->targetTestCase}" 
-			           maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
-		</tr>
 		
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<td>{$labels.keyword}</td>
@@ -203,10 +162,16 @@ function triggerAssignedBox()
 			  {if $gui->advancedFilterMode }
 			  <select name="filter_assigned_to[]" id="filter_assigned_to" 
 			  		multiple="multiple" size={$gui->assigneeFilterItemQty}
-			  		onchange="triggerAssignedBox()">
+			  		onchange="javascript: triggerAssignedBox(document.getElementById('filter_assigned_to'),
+			  						document.getElementById('include_unassigned'),
+									'{$gui->str_option_any}', '{$gui->str_option_none}',
+									'{$gui->str_option_somebody}');">
 			  {else}
 				<select name="filter_assigned_to" id="filter_assigned_to"
-					onchange="triggerAssignedBox()">
+					onchange="javascript: triggerAssignedBox(document.getElementById('filter_assigned_to'),
+									document.getElementById('include_unassigned'),
+									'{$gui->str_option_any}', '{$gui->str_option_none}',
+									'{$gui->str_option_somebody}');">
 			  {/if}
 					{html_options options=$gui->testers selected=$gui->filter_assigned_to}
 				</select>
@@ -220,8 +185,9 @@ function triggerAssignedBox()
 		</tr>
     	{/if}
 
-	</table>
-	<table class="smallGrey" style="width:98%;">
+	{if $gui->buildCount neq 0}
+	
+	<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
 
    		<tr>
 			<th>{$labels.filter_result}</th>
@@ -239,9 +205,11 @@ function triggerAssignedBox()
 		<tr>
 			<th>{$labels.filter_on}</th>
 			<td>
-			  	<select name="filter_on_build_type" id="filter_on_build_type"
-			  		      onchange="triggerBuildChooser()">
-				  	{html_options options=$gui->filter_on_build_type selected=$gui->optFilterBuildTypeSelected}
+			  	<select name="filter_method" id="filter_method"
+			  		      onchange="javascript: triggerBuildChooser(document.getElementById('filter_build_id'),
+			  		      				document.getElementById('filter_method'),
+										{$gui->filter_method_specific_build});">
+				  	{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
 			  	</select>
 			</td>
 		</tr>
@@ -254,7 +222,8 @@ function triggerAssignedBox()
 			</td>
 		</tr>
 		
-		</table>
+	{/if}
+	</table>
 		
 		<div>
 			<input type="submit" value="{$labels.btn_apply_filter}" 

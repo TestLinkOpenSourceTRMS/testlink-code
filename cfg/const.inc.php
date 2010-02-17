@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.132 2010/02/15 20:20:04 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.133 2010/02/17 15:57:26 asimon83 Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -469,22 +469,38 @@ $tlCfg->results['charts']['status_colour'] = array(
 );
 
 /*
- * arrays for new filter types (BUGID 2455 & 3026)
+ * arrays for new filter types (BUGID 2455, BUGID 3026)
+ * used for testcase execution
  */
-$tlCfg->build_filter_types['status_code'] = array('latest_execution' => 1,
-    									    'all_prev_builds' => 2,
-    									    'any_prev_build' => 3,
+$tlCfg->execution_filter_methods['status_code'] = array('latest_execution' => 1,
+    									    'all_builds' => 2,
+    									    'any_build' => 3,
     									    'specific_build' => 4,
 										    'current_build' => 5);
 
-$tlCfg->build_filter_types['status_label'] = array('latest_execution' => 'filter_result_latest_execution',
-    									           'all_prev_builds' => 'filter_result_all_prev_builds',
-    									           'any_prev_build' => 'filter_result_any_prev_build',
-    									           'specific_build' => 'filter_result_specific_build',
-										            'current_build' => 'filter_result_current_build');
+$tlCfg->execution_filter_methods['status_label'] = array('latest_execution' => 'filter_result_latest_execution',
+    									     'all_builds' => 'filter_result_all_builds',
+    									     'any_build' => 'filter_result_any_build',
+    									     'specific_build' => 'filter_result_specific_build',
+										     'current_build' => 'filter_result_current_build');
 
-$tlCfg->build_filter_types['default_type'] = $tlCfg->filter_types['status_code']['current_build'];
+$tlCfg->execution_filter_methods['default_type'] = $tlCfg->filter_types['status_code']['current_build'];
 
+/*
+ * same as above, but without current build
+ * these are used for testcase execution assignment
+ */
+$tlCfg->execution_assignment_filter_methods['status_code'] = array('latest_execution' => 1,
+    									    'all_builds' => 2,
+    									    'any_build' => 3,
+    									    'specific_build' => 4);
+
+$tlCfg->execution_assignment_filter_methods['status_label'] = array('latest_execution' => 'filter_result_latest_execution',
+    									     'all_builds' => 'filter_result_all_builds',
+    									     'any_build' => 'filter_result_any_build',
+    									     'specific_build' => 'filter_result_specific_build');
+
+$tlCfg->execution_assignment_filter_methods['default_type'] = $tlCfg->filter_types['status_code']['latest_execution'];
 
 
 

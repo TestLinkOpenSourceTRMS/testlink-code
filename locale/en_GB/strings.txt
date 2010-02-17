@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.551 2010/02/16 21:46:32 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.552 2010/02/17 15:57:27 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -559,7 +559,9 @@ $TLS_was_success = " was successfully ";
 $TLS_TestPlan = $TLS_testplan;
 $TLS_btn_apply_filter = $TLS_btn_apply;
 $TLS_btn_update_menu = "Update menu";
-$TLS_caption_nav_filter_settings = "Filter & Settings ...";
+$TLS_caption_nav_filter_settings = "Filters & Settings";
+$TLS_caption_nav_filters = "Filters";
+$TLS_caption_nav_settings = "Settings";
 $TLS_current_build = "Current build";
 $TLS_filter_owner = "Assigned to";
 $TLS_filter_result = "Result";
@@ -1182,6 +1184,7 @@ $TLS_keywords_filter_help = "You can use OR/AND filtering";
 // ----- gui/templates/planTCNavigator.tpl -----
 $TLS_btn_update_all_testcases_to_latest_version = "Update all Test Cases to latest version";
 $TLS_btn_bulk_update_to_latest_version = "Bulk Update to latest version";
+$TLS_caption_nav_filters = "Filters";
 
 
 // ----- gui/templates/planPriority.tpl -----
@@ -2046,7 +2049,7 @@ $TLS_text_counter_feedback = "You may enter up to %d characters. Left ";
 
 // ----- lib/general/frmWorkArea.php -----
 $TLS_create_a_build = "Create a new build";
-$TLS_no_build_warning_part1 = "There are no Builds created for this Test Plan ";
+$TLS_no_build_warning_part1 = "There has to be at least one active and open Build for this Test Plan.";
 $TLS_no_build_warning_part2 = "Please create it first or ask your administrator.";
 
 

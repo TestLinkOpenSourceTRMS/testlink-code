@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: exec.inc.php,v 1.55 2010/02/15 20:25:15 franciscom Exp $
+ * @version    	CVS: $Id: exec.inc.php,v 1.56 2010/02/17 15:57:27 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -61,20 +61,6 @@ function createResultsMenu()
 	return $menu_data;
 }
 	
-
-/*
- * TODO comment
- */
-function createBuildFilterMenu() {
-	$filter_cfg = config_get('build_filter_types');
-	$menu_data = array();
-	foreach($filter_cfg['status_code'] as $status => $label) {
-		$code = $filter_cfg['status_code'][$status];
-		$menu_data[$code] = lang_get($filter_cfg['status_label'][$status]);
-	}
-	return $menu_data;
-}
-
 	
 /**
  * write execution result to DB

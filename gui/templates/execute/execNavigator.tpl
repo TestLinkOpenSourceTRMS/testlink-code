@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.33 2010/02/15 20:16:22 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.34 2010/02/17 15:57:26 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -18,10 +18,8 @@ rev :
 *}
 {lang_get var="labels"
           s="filter_result,caption_nav_filter_settings,filter_owner,test_plan,filter_on,
-             filter_result_all_prev_builds,filter_result_any_prev_builds,platform,exec_build,
-             btn_apply_filter,build,keyword,filter_tcID,
-             include_unassigned_testcases,priority"}
-       
+             platform,exec_build,btn_apply_filter,build,keyword,filter_tcID,
+             include_unassigned_testcases,priority,caption_nav_filters,caption_nav_settings"}       
        
 {assign var="keywordsFilterDisplayStyle" value=""}
 {if $gui->keywordsFilterItemQty == 0}
@@ -72,42 +70,25 @@ rev :
 
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-
-<script type="text/javascript">
-
-str_option_any = '{$gui->str_option_any}';
-str_option_none = '{$gui->str_option_none}';
-str_option_somebody = '{$gui->str_option_somebody}';
-
-{literal}
-
-function triggerBuildChooser() {
-	if (document.getElementById("filter_on_build_type").options[document.getElementById("filter_on_build_type").options.selectedIndex].value == "s") {
-		document.getElementById("filter_build_id").disabled = false;
-	} else {
-		document.getElementById("filter_build_id").disabled = true;
-	}
-}
-
-function triggerAssignedBox() {
-	if ( document.getElementById("filter_assigned_to").options[document.getElementById("filter_assigned_to").options.selectedIndex].label == str_option_any
-			|| document.getElementById("filter_assigned_to").options[document.getElementById("filter_assigned_to").options.selectedIndex].label == str_option_none
-			|| document.getElementById("filter_assigned_to").options[document.getElementById("filter_assigned_to").options.selectedIndex].label == str_option_somebody ) {
-		document.getElementById("include_unassigned").disabled = true;
-	} else {
-		document.getElementById("include_unassigned").disabled = false;
-	}	
-}
-
-</script>
-{/literal}
-
 </head>
 
 {* ===================================================================== *}
 
-<body onload="triggerBuildChooser();triggerAssignedBox();">
-
+<body onload="javascript:
+	triggerBuildChooser(document.getElementById('filter_build_id'),
+						document.getElementById('filter_method'),
+						{$gui->filter_method_specific_build});
+	triggerAssignedBox(document.getElementById('filter_assigned_to'),
+						document.getElementById('include_unassigned'),
+						'{$gui->str_option_any}',
+						'{$gui->str_option_none}',
+						'{$gui->str_option_somebody}');
+	{if $gui->filterBuildCount eq 1}
+	disableUnneededFilters(document.getElementById('filter_method'),
+							{$gui->filter_method_current_build});
+	{/if}
+">
+	
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {assign var="build_number" value=$gui->optBuild.selected }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -129,6 +110,8 @@ function triggerAssignedBox() {
 	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 	
 	<table class="smallGrey" style="width:98%">
+
+		<caption>{$labels.caption_nav_settings}</caption>
 	
 	{if $gui->map_tplans != '' }
 		<tr>
@@ -153,11 +136,7 @@ function triggerAssignedBox() {
 
 	<table class="smallGrey" width="98%">
 		
-		<tr>
-			<td>{$labels.filter_tcID}</td>
-			<td><input type="text" name="targetTestCase" value="{$gui->targetTestCase}" 
-			           maxlength="{#TC_ID_MAXLEN#}" size="{#TC_ID_SIZE#}"/></td>
-		</tr>
+		<caption>{$labels.caption_nav_filters}</caption>
 		
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<th>{$labels.keyword}</th>
@@ -201,10 +180,16 @@ function triggerAssignedBox() {
 			{else}
 			  {if $gui->advancedFilterMode }
 			  <select id="filter_assigned_to" name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}
-			  		onchange="triggerAssignedBox()">
+			  		onchange="javascript: triggerAssignedBox(document.getElementById('filter_assigned_to'),
+			  						document.getElementById('include_unassigned'),
+									'{$gui->str_option_any}', '{$gui->str_option_none}',
+									'{$gui->str_option_somebody}');">
 			  {else}
-				<select id="filter_assigned_to" name="filter_assigned_to"
-					onchange="triggerAssignedBox()">
+				<select name="filter_assigned_to" id="filter_assigned_to"
+					onchange="javascript: triggerAssignedBox(document.getElementById('filter_assigned_to'),
+									document.getElementById('include_unassigned'),
+									'{$gui->str_option_any}', '{$gui->str_option_none}',
+									'{$gui->str_option_somebody}');">
 			  {/if}
 					{html_options options=$gui->users selected=$gui->filter_assigned_to}
 			  </select>
@@ -220,8 +205,7 @@ function triggerAssignedBox() {
 		
 		{$gui->design_time_cfields}
 	
-	</table>
-	<table class="smallGrey" width="98%">	
+	<tr><td>&nbsp;</td></tr> {* empty row for a little optical separation *}
 	
 		<tr>
 			<th>{$labels.filter_result}</th>
@@ -239,9 +223,11 @@ function triggerAssignedBox() {
 		<tr>
 			<th>{$labels.filter_on}</th>
 			<td>
-			  	<select name="filter_on_build_type" id="filter_on_build_type"
-			  		onchange="triggerBuildChooser()">
-				  	{html_options options=$gui->filter_on_build_type selected=$gui->optFilterBuildTypeSelected}
+			  	<select name="filter_method" id="filter_method"
+			  		onchange="javascript: triggerBuildChooser(document.getElementById('filter_build_id'),
+			  		      				document.getElementById('filter_method'),
+										{$gui->filter_method_specific_build});">
+				  	{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
 			  	</select>
 			</td>
 		</tr>
@@ -249,7 +235,7 @@ function triggerAssignedBox() {
 		<tr>
 			<th>{$labels.build}</th>
 			<td><select id="filter_build_id" name="filter_build_id">
-				{html_options options=$gui->optBuild.items selected=$gui->optFilterBuild.selected}
+				{html_options options=$gui->optFilterBuild.items selected=$gui->optFilterBuild.selected}
 				</select>
 			</td>
 		</tr>

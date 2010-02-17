@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2010/02/15 20:25:15 $ by $Author: franciscom $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2010/02/17 15:57:27 $ by $Author: asimon83 $
  *
  * rev: 
+ * 		20100217 - asimon - added check for open builds on initBuildInfo()
  * 		20100202 - asimon - changed filtering, BUGID 2455, BUGID 3026
  *      20090828 - franciscom - added contribution platform feature
  *      20090828 - franciscom - BUGID 2296 - filter by Last Exec Result on Any of previous builds
@@ -90,7 +91,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     if($args->tplan_id != $_SESSION['testplanID']) {
     	//testplan was changed, so we reset the filters, they were chosen for another testplan
     	$keys2delete = array('tcase_id', 'targetTestCase', 'keyword_id', 'filter_status',
-    						'filter_on_build_type', 'filter_assigned_to', 'build_id', 'urgencyImportance',
+    						'filter_method', 'filter_assigned_to', 'build_id', 'urgencyImportance',
     						'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
     	foreach ($keys2delete as $key) {
     		unset($_REQUEST[$key]);
@@ -107,25 +108,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
     $args->advancedFilterMode = isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
-
-    $args->tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id)
-    		. config_get('testcase_cfg')->glue_character;
-    $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : $args->tcasePrefix;
-	    
-	if(!is_null($args->targetTestCase) && !empty($args->targetTestCase)
-			&& strcmp($args->targetTestCase,$args->tcasePrefix))
-	{
-	  	// need to get internal Id from External ID
-	  	$item_mgr = new testcase($dbHandler);
-	  	$cfg = config_get('testcase_cfg');
-	  	$args->tcase_id = $item_mgr->getInternalID($args->targetTestCase,$cfg->glue_character);
-	  	
-	  	if($args->tcase_id == 0)
-	  	{
-	  	    $args->tcase_id = -1;  
-	  	}
-	}
-
+    
     // Attention: Is an array because is a multiselect 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
@@ -151,9 +134,9 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     $args->filter_status = $args->optResultSelected;
 	
     // BUGID 2455
-	$filter_cfg = config_get('build_filter_types');
-    $args->filter_on_build_type_selected = isset($_REQUEST['filter_on_build_type']) ?
-    							(array)$_REQUEST['filter_on_build_type'] : (array)$filter_cfg['default_type'];
+	$filter_cfg = config_get('execution_filter_methods');
+    $args->filter_method_selected = isset($_REQUEST['filter_method']) ?
+    							(array)$_REQUEST['filter_method'] : (array)$filter_cfg['default_type'];
     
     $user_filter_default = null;
     switch($cfgObj->exec->user_filter_default)
@@ -333,22 +316,29 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
 }
 
 
-/*
-  function: initBuildInfo
-            only active builds no matter user role
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ * Initialize a map with build info to choose as build to execute, 
+ * for creating HTML Select in user interface.
+ * Load only active and open builds, no matter what role user has.
+ *
+ * @param resource &$dbHandler reference to database object
+ * @param stdClass &$argsObj reference to object with user input
+ * @param tlTestplan &$tplanMgr testplan manager object
+ * @return array $htmlSelect HTML-Select for build to execute selection
+ *
+ * @internal revisions:
+ * 20100217 - asimon - added also check for open status of builds,
+ * 						since builds have to be active AND open to be executed
+ * 
+ */
 function initBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
 {
     $htmlSelect = array('items' => null, 'selected' => null);
-    $htmlSelect['items'] = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
+    $htmlSelect['items'] = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,
+    										testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
    
     $maxBuildID = $tplanMgr->get_max_build_id($argsObj->tplan_id,
-                                              testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
+											testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
 
     $argsObj->optBuildSelected = $argsObj->optBuildSelected > 0 ? $argsObj->optBuildSelected : $maxBuildID;
     if (!$argsObj->optBuildSelected && sizeof($htmlSelect['items']))
@@ -360,13 +350,24 @@ function initBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
     return $htmlSelect;
 }
 
+/**
+ * Initialize a map with build info to choose as filter option, 
+ * for creating HTML Select in user interface.
+ * Load only active builds, as only they are to be displayed.
+ * 
+ * @author asimon
+ * @param resource &$dbHandler reference
+ * @param object &$argsObj reference contains user input arguments
+ * @param tlTestplan &$tplanMgr reference
+ * @return initialize HTML-Select for filter methods
+ */
 function initFilterBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
 {
     $htmlSelect = array('items' => null, 'selected' => null);
-    $htmlSelect['items'] = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
+    $htmlSelect['items'] = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,
+    											testplan::GET_ACTIVE_BUILD);
    
-    $maxBuildID = $tplanMgr->get_max_build_id($argsObj->tplan_id,
-                                              testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
+    $maxBuildID = $tplanMgr->get_max_build_id($argsObj->tplan_id, testplan::GET_ACTIVE_BUILD);
 
     $argsObj->optFilterBuildSelected = $argsObj->optFilterBuildSelected > 0 ? $argsObj->optFilterBuildSelected : $maxBuildID;
     if (!$argsObj->optFilterBuildSelected && sizeof($htmlSelect['items']))
@@ -421,12 +422,12 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
     $filters->include_unassigned = $guiObj->include_unassigned;
     
-    $filters->tc_id = $argsObj->tcase_id;
+    $filters->tc_id = $argsObj->tcase_id;	
     $filters->build_id = $argsObj->optBuildSelected;
     $filters->filter_build_id = $argsObj->optFilterBuildSelected;
    
     // BUGID 2455
-    $filters->on_build_type = $argsObj->filter_on_build_type_selected;
+    $filters->method = $argsObj->filter_method_selected;
    
     // in this way we have code as key
     $filters->assignedTo = $guiObj->filter_assigned_to;
@@ -531,13 +532,17 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->include_unassigned = $argsObj->include_unassigned;
     $gui->urgencyImportance = $argsObj->urgencyImportance;
-    $gui->targetTestCase = $argsObj->targetTestCase;
     
-    // Only active builds no matter user role
-    $gui->optBuild = initBuildInfo($dbHandler,$argsObj,$tplanMgr);    
+    $gui->optBuild = initBuildInfo($dbHandler,$argsObj,$tplanMgr);
     $gui->optFilterBuild = initFilterBuildInfo($dbHandler,$argsObj,$tplanMgr);
-    $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr);    
-       
+    $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr);
+    
+    // count of open builds that can be executed
+    $gui->buildCount = count($gui->optBuild['items']);
+    
+    // count of active builds that are shown and can be filtered
+    $gui->filterBuildCount = count($gui->optFilterBuild['items']);
+           
     $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
@@ -565,9 +570,11 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
 
     // BUGID 2455, BUGID 3026
-	// $filter_cfg = config_get('build_filter_types');
-    $gui->filter_on_build_type = createBuildFilterMenu();
-	$gui->optFilterBuildTypeSelected = $argsObj->filter_on_build_type_selected;
+	$filter_cfg = config_get('execution_filter_methods');
+    $gui->filter_methods = createExecutionFilterMethodMenu();
+	$gui->optFilterMethodSelected = $argsObj->filter_method_selected;
+	$gui->filter_method_specific_build = $filter_cfg['status_code']['specific_build'];
+	$gui->filter_method_current_build = $filter_cfg['status_code']['current_build'];
 
     $gui->advancedFilterMode=$argsObj->advancedFilterMode;
     if($gui->advancedFilterMode)
@@ -587,5 +594,23 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
  
     return $gui;
 }
+
+/**
+ * create map with filter methods for execution,
+ * used for creating HTML Select inputs
+ * 
+ * @author asimon
+ * @return $menu_data HTML Select (labels and values) 
+ */
+function createExecutionFilterMethodMenu() {
+	$filter_cfg = config_get('execution_filter_methods');
+	$menu_data = array();
+	foreach($filter_cfg['status_code'] as $status => $label) {
+		$code = $filter_cfg['status_code'][$status];
+		$menu_data[$code] = lang_get($filter_cfg['status_label'][$status]);
+	}
+	return $menu_data;
+}
+
 
 ?>

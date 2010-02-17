@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.36 2010/02/15 20:25:15 franciscom Exp $
+ * @version $Id: planTCNavigator.php,v 1.37 2010/02/17 15:57:27 asimon83 Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -56,13 +56,16 @@ function getCfg()
     return $cfg;
 }
 
-/*
-  function: init_args
 
-  args : pointer to test Plan manager
-  returns: 
-
-*/
+/**
+ * initializes user inputs
+ * 
+ * @param resource $dbHandler database handle
+ * @param stdClass $cfgObj configuration
+ * @param tlTestplan $tplanMgr reference to testplan manager
+ * @param tlTestproject $tprojectMgr reference to testproject manager
+ * @return stdClass $args user input values
+ */
 function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
@@ -96,33 +99,16 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
 
     if(isset($_REQUEST['doUpdateTree']) || isset($_REQUEST['called_by_me']))
     {
-		$args->src_workframe = $_SESSION['basehref'] . 
+    	$args->src_workframe = $_SESSION['basehref'] .
                       "lib/general/staticPage.php?key={$args->help_topic}";
     }
-	  else
-	  {
-	  	$args->src_workframe = '';
-	  }
+    else
+    {
+    	$args->src_workframe = '';
+    }
 
-	// BUGID 2455
-	$args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
-	$args->tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id)
-    		. config_get('testcase_cfg')->glue_character;
-    $args->targetTestCase = isset($_REQUEST['targetTestCase']) ? $_REQUEST['targetTestCase'] : $args->tcasePrefix;
-	
-    if(!is_null($args->targetTestCase) && !empty($args->targetTestCase)	&& 
-        strcmp($args->targetTestCase,$args->tcasePrefix))
-	{
-	  	// need to get internal Id from External ID
-	  	$item_mgr = new testcase($dbHandler);
-	  	$args->tcase_id = $item_mgr->getInternalID($args->targetTestCase,$cfgObj->glue_character);
-	  	if($args->tcase_id == 0)
-	  	{
-	  	    $args->tcase_id = -1;  
-	  	}
-	}
-
-	$args->optResultSelected = isset($_REQUEST['filter_status']) ?
+    $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
+    $args->optResultSelected = isset($_REQUEST['filter_status']) ?
 			                   (array)$_REQUEST['filter_status'] : array($cfgObj->results['status_code']['all']);
     if( !is_null($args->optResultSelected) )
     {
@@ -138,9 +124,9 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     }
     $args->filter_status = $args->optResultSelected;
 	
-    $filter_cfg = config_get('build_filter_types');
-    $args->filter_on_build_type_selected = isset($_REQUEST['filter_on_build_type']) ?
-    							           (array)$_REQUEST['filter_on_build_type'] : (array)$filter_cfg['default_type'];
+    $filter_cfg = config_get('execution_assignment_filter_methods');
+    $args->filter_method_selected = isset($_REQUEST['filter_method']) ?
+    							           (array)$_REQUEST['filter_method'] : (array)$filter_cfg['default_type'];
 	  
 	$args->optBuildSelected = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : -1;
     $args->optFilterBuildSelected = isset($_REQUEST['filter_build_id']) ? $_REQUEST['filter_build_id'] : -1;
@@ -205,6 +191,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
 
     // WHY IS NEEDED ?
+    // to get all assigned testcases, no matter to whom they are assigned
     $gui->str_option_somebody = $gui_open . lang_get('filter_somebody') . $gui_close;
     
     $gui->filter_assigned_to=$argsObj->filter_assigned_to;
@@ -215,8 +202,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
    	$gui->toggleFilterModeLabel='';
     $gui->advancedFilterMode=0;
     $gui->chooseFilterModeEnabled=0;
-	
-    $gui->targetTestCase = $argsObj->targetTestCase;
 	
     // We only want to use in the filter, keywords present in the test cases that are
     // linked to test plan, and NOT all keywords defined for test project
@@ -229,6 +214,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     // BUGID 2455
     $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->optFilterBuild = initFilterBuildInfo($dbHandler,$argsObj,$tplanMgr);
+    $gui->buildCount = count($gui->optFilterBuild['items']);
     $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr);
     
     $gui->keywordsFilterType=new stdClass();                                 
@@ -253,9 +239,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     $gui->optResult=createResultsMenu();
     $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
 
-	// $filter_cfg = config_get('build_filter_types');
-    $gui->filter_on_build_type = createBuildFilterMenu();
-	$gui->optFilterBuildTypeSelected = $argsObj->filter_on_build_type_selected;
+	$filter_cfg = config_get('execution_assignment_filter_methods');
+    $gui->filter_methods = createExecutionAssignmentFilterMethodMenu();
+    $gui->filter_method_specific_build = $filter_cfg['status_code']['specific_build'];
+	$gui->optFilterMethodSelected = $argsObj->filter_method_selected;
   
     switch($argsObj->feature)
     {
@@ -336,12 +323,10 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
     $filters->show_testsuite_contents=1;
    	$filters->hide_testcases = 0;
    	
-   	// 2455
-   	$filters->tc_id = $argsObj->tcase_id;
-	
+   	$filters->tc_id = $argsObj->tcase_id;	
     $filters->build_id = $argsObj->optBuildSelected;
     $filters->filter_build_id = $argsObj->optFilterBuildSelected;
-    $filters->on_build_type = $argsObj->filter_on_build_type_selected;
+    $filters->method = $argsObj->filter_method_selected;
     
     $filters->filter_status = null;
     if( !is_null($argsObj->optResultSelected) )
@@ -457,14 +442,22 @@ function initializeGetArguments($argsObj,$filtersObj)
 
 /**
  * initialize build info to choose as filter option
+ * loads only active builds
+ * 
+ * @author asimon
+ * @param resource &$dbHandler reference
+ * @param object &$argsObj reference contains user input arguments
+ * @param tlTestplan &$tplanMgr reference
+ * @return HTML-Select for builds (names and values)
  */
 function initFilterBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
 {
     $htmlSelect = array('items' => null, 'selected' => null);
-    $htmlSelect['items'] = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,ACTIVE);
+    $htmlSelect['items'] = $tplanMgr->get_builds_for_html_options($argsObj->tplan_id,
+    								testplan::GET_ACTIVE_BUILD);
    
     $maxBuildID = $tplanMgr->get_max_build_id($argsObj->tplan_id,
-                                              testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
+									testplan::GET_ACTIVE_BUILD);
 
     $argsObj->optFilterBuildSelected = $argsObj->optFilterBuildSelected > 0 ? $argsObj->optFilterBuildSelected : $maxBuildID;
     if (!$argsObj->optFilterBuildSelected && sizeof($htmlSelect['items']))
@@ -499,6 +492,24 @@ function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr)
     	$htmlSelect['selected'] = $argsObj->optPlatformSelected;
     } 
     return $htmlSelect;
+}
+
+
+/**
+ * create map with filter methods for execution assignment,
+ * used for creating HTML Select inputs
+ * 
+ * @author asimon
+ * @return $menu_data HTML Select (labels and values) 
+ */
+function createExecutionAssignmentFilterMethodMenu() {
+	$filter_cfg = config_get('execution_assignment_filter_methods');
+	$menu_data = array();
+	foreach($filter_cfg['status_code'] as $status => $label) {
+		$code = $filter_cfg['status_code'][$status];
+		$menu_data[$code] = lang_get($filter_cfg['status_label'][$status]);
+	}
+	return $menu_data;
 }
 
 ?>

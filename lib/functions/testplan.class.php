@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.171 2010/02/14 18:33:42 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.172 2010/02/17 15:57:27 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20100217 - asimon - added parameters open and active to getNumberOfBuilds()
  *  20100214 - franciscom - BUGID 2455, BUGID 3026 - Contribution by julian,asimon
  *  20100206 - eloff - BUGID 3060 - Adding getStatusTotalsByPriority()
  *  20100206 - eloff - BUGID 3060 - Adding urgencyImportanceToPriorityLevel() method
@@ -1946,21 +1947,35 @@ class testplan extends tlObjectWithAttachments
 
 
 	/**
-	 * Get the number of builds of a given TestPlan
+	 * Get the number of builds of a given Testplan
 	 *
 	 * @param int tplanID test plan id
 	 *
 	 * @return int number of builds
+	 * 
+	 * @internal revisions:
+	 * 20100217 - asimon - added parameters active and open to get only number of active/open builds
 	 */
-	function getNumberOfBuilds($tplanID)
+	function getNumberOfBuilds($tplanID, $active = null, $open = null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-
-		$sql = "SELECT count(id) AS num_builds FROM {$this->tables['builds']} builds " .
-		       "WHERE builds.testplan_id = " . $tplanID;
-		return $this->db->fetchOneValue($sql);
+		
+		$sql = "/* $debugMsg */ SELECT count(id) AS num_builds FROM {$this->tables['builds']} builds " .
+			       "WHERE builds.testplan_id = " . $tplanID;
+		
+		if( !is_null($active) )
+	 	{
+	 	   $sql .= " AND builds.active=" . intval($active) . " ";
+	 	}
+	 	if( !is_null($open) )
+	 	{
+	 	   $sql .= " AND builds.is_open=" . intval($open) . " ";
+	 	}
+		
+	 	return $this->db->fetchOneValue($sql);
 	}
 
+	
 	function _natsort_builds($builds_map)
 	{
 		// BUGID - sort in natural order (see natsort in PHP manual)

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.116 2010/02/14 14:40:25 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.117 2010/02/17 15:57:27 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -701,10 +701,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	$tplan_tcases = null;
     $apply_other_filters=true;
-
-    //debug TODO weg damit
-    //echo "<pre>";print_r($keyword_id); print_r($keywordsFilterType); echo "</pre>";
-    
     
 	if($test_spec)
 	{
@@ -762,8 +758,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$apply_other_filters=false;
 		}
 		
-		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
-				!is_null($filters->on_build_type) && in_array('n', $filters->on_build_type) &&
+		$filter_methods = config_get('execution_filter_methods');
+		
+		if( $apply_other_filters && property_exists($filters,'method') &&
+				!is_null($filters->method) && in_array($filter_methods['status_code']['any_build'], $filters->method) &&
 				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
 				!is_null($filters->filter_status)) {
 			if (in_array($resultsCfg['status_code']['not_run'], (array)$filters->filter_status)) {
@@ -777,8 +775,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			}
 		}
 		
-		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
-				!is_null($filters->on_build_type) && in_array('a', $filters->on_build_type) &&
+		if( $apply_other_filters && property_exists($filters,'method') &&
+				!is_null($filters->method) && in_array($filter_methods['status_code']['all_builds'], $filters->method) &&
 				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
 				!is_null($filters->filter_status)) {
 			$tplan_tcases = filter_by_same_status_for_all_builds($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
@@ -788,8 +786,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			}
 		}		
 		
-		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
-				!is_null($filters->on_build_type) && in_array('s', $filters->on_build_type) &&
+		if( $apply_other_filters && property_exists($filters,'method') &&
+				!is_null($filters->method) && in_array($filter_methods['status_code']['specific_build'], $filters->method) &&
 				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
 				!is_null($filters->filter_status)) {
 			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
@@ -799,8 +797,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			}
 		}
 		
-		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
-				!is_null($filters->on_build_type) && in_array('c', $filters->on_build_type) &&
+		if( $apply_other_filters && property_exists($filters,'method') &&
+				!is_null($filters->method) && in_array($filter_methods['status_code']['current_build'], $filters->method) &&
 				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
 				!is_null($filters->filter_status)) {
 			$filters->filter_build_id = (0 == $build_id) ?
@@ -813,8 +811,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			}
 		}
 
-		if( $apply_other_filters && property_exists($filters,'on_build_type') &&
-				!is_null($filters->on_build_type) && in_array('l', $filters->on_build_type) &&
+		if( $apply_other_filters && property_exists($filters,'method') &&
+				!is_null($filters->method) && in_array($filter_methods['status_code']['latest_execution'], $filters->method) &&
 				!in_array($resultsCfg['status_code']['all'],(array)$filters->filter_status) &&
 				!is_null($filters->filter_status)) {
 			$tplan_tcases = filter_by_status_for_last_execution($db, $tplan_mgr, $tplan_tcases, $tplan_id, $filters);

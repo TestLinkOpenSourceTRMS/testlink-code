@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.155 2010/02/17 19:03:03 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.156 2010/02/17 21:19:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100217 - franciscom - setSessionProject() refactoring
  * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
  * 20100203 - franciscom - addKeyword() return type changed
  * 20100201 - franciscom - delete() - missing delete of platforms
@@ -245,50 +246,41 @@ function projectUpdate($id, $name, $color, $notes,$options,$active=null,
 public function setSessionProject($id)
 {
 	$info = $id > 0 ? $this->get_by_id($id) : null;
-	if(!is_null($info))
-	{
-		$_SESSION['testprojectID'] = $info['id'];
-		$_SESSION['testprojectName'] = $info['name'];
-		$_SESSION['testprojectColor'] = $info['color'];
-		$_SESSION['testprojectPrefix'] = $info['prefix'];
 
-        $_SESSION['testprojectOptions'] = new stdClass();
-		$_SESSION['testprojectOptions']->requirementsEnabled = 
-				isset($info['opt']->requirementsEnabled) 
-				? $info['opt']->requirementsEnabled : 0;
-		$_SESSION['testprojectOptions']->testPriorityEnabled = 
-				isset($info['opt']->testPriorityEnabled) 
-				? $info['opt']->testPriorityEnabled : 0;
-		$_SESSION['testprojectOptions']->automationEnabled = 
-				isset($info['opt']->automationEnabled) 
-				? $info['opt']->automationEnabled : 0;
-		$_SESSION['testprojectOptions']->infrastructureEnabled = 
-				isset($info['opt']->infrastructureEnabled) 
-				? $info['opt']->infrastructureEnabled : 0;
-
-		// the next three parameters are obsolete should be removed
-		$_SESSION['testprojectOptReqs'] = $_SESSION['testprojectOptions']->requirementsEnabled;
-		$_SESSION['testprojectOptPriority'] = $_SESSION['testprojectOptions']->testPriorityEnabled;
-		$_SESSION['testprojectOptAutomation'] = $_SESSION['testprojectOptions']->automationEnabled;
-
-		tLog("Test Project was activated: [" . $info['id'] . "]" . $info['name'], 'INFO');
-		tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
-	}
-	else
-	{
+    $sessionCfg = array('keyPrefix' => 'testproject',
+                        'simpleKeys' => array('ID','Name','Color','Prefix','Options'),
+                        'deprecatedKeys' => array('OptReqs','OptPriority','OptAutomation'),     
+                        'optKeys' => array('requirementsEnabled','testPriorityEnabled','automationEnabled',
+		                                   'infrastructureEnabled'));
+  	if(is_null($info))
+  	{
 		if (isset($_SESSION['testprojectID']))
 		{
 			tLog("Test Project deactivated: [" . $_SESSION['testprojectID'] . "] " . $_SESSION['testprojectName']);
 		}
-		unset($_SESSION['testprojectID']);
-		unset($_SESSION['testprojectName']);
-		unset($_SESSION['testprojectColor']);
-		unset($_SESSION['testprojectOptions']);
-		unset($_SESSION['testprojectOptReqs']);
-		unset($_SESSION['testprojectOptPriority']);
-		unset($_SESSION['testprojectOptAutomation']);
-		unset($_SESSION['testprojectPrefix']);
-	}
+		foreach( array('simpleKeys','deprecatedKeys') as $mainKey)
+		{
+			foreach($sessionCfg[$mainKey] as $key)
+			{
+				unset($_SESSION[$sessionCfg['keyPrefix'] . $key]);
+			}
+		}
+  	}
+    else
+    {
+	    $_SESSION['testprojectOptions'] = new stdClass();
+   		foreach($sessionCfg['simpleKeys'] as $key)
+		{
+			$_SESSION[$sessionCfg['keyPrefix'] . $key] = $info[strtolower($key)];
+		}
+   		foreach($sessionCfg['optKeys'] as $key)
+		{
+        	$_SESSION['testprojectOptions']->$key = isset($info['opt']->$key) ? $info['opt']->$key : 0; 
+        }
+    
+		tLog("Test Project was activated: [" . $info['id'] . "]" . $info['name'], 'INFO');
+		tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
+    }
 
 }
 

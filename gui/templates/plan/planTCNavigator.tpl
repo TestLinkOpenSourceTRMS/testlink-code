@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.21 2010/02/17 15:57:27 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.22 2010/02/17 18:37:11 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -207,8 +207,8 @@ function update2latest(id)
 			<td>
 			  	<select name="filter_method" id="filter_method"
 			  		      onchange="javascript: triggerBuildChooser(document.getElementById('filter_build_id'),
-			  		      				document.getElementById('filter_method'),
-										{$gui->filter_method_specific_build});">
+			  		      				                                  document.getElementById('filter_method'),
+										                                        {$gui->filter_method_specific_build});">
 				  	{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
 			  	</select>
 			</td>

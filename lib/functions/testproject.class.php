@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.159 2010/02/17 21:59:36 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.160 2010/02/17 22:01:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -262,7 +262,7 @@ public function setSessionProject($id)
 		$_SESSION['testprojectOptions']->infrastructureEnabled = isset($info['opt']->infrastructureEnabled) ? 
 		                                                         $info['opt']->infrastructureEnabled : 0;
 
-		tLog("Test Project was activated: [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
+		tLog("Test Project was activated: [" . $info['id'] . "]" . $info['name'], 'INFO');
 	}
 	else
 	{

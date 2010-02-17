@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.160 2010/02/17 22:01:07 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.161 2010/02/17 22:02:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -253,6 +253,11 @@ public function setSessionProject($id)
 		$_SESSION['testprojectColor'] = $info['color'];
 		$_SESSION['testprojectPrefix'] = $info['prefix'];
 
+        if(!isset($_SESSION['testprojectOptions']) )
+        {
+        	$_SESSION['testprojectOptions'] = new stdClass();
+        }
+		
 		$_SESSION['testprojectOptions']->requirementsEnabled = isset($info['opt']->requirementsEnabled) ? 
 		                                                       $info['opt']->requirementsEnabled : 0;
 		$_SESSION['testprojectOptions']->testPriorityEnabled = isset($info['opt']->testPriorityEnabled) ? 

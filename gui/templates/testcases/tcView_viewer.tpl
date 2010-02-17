@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.52 2010/01/26 23:00:16 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.53 2010/02/17 18:56:09 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -18,7 +18,7 @@ rev:
 *}
 {lang_get var="labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
-             btn_edit,btn_del,btn_mv_cp,btn_del_this_version,btn_new_version,
+             btn_edit,btn_delete,btn_mv_cp,btn_del_this_version,btn_new_version,
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
              testproject,testsuite,title_test_case,summary,steps,btn_add_to_testplans,
              title_last_mod,title_created,by,expected_results,keywords,
@@ -106,7 +106,7 @@ rev:
 	     button, using $args_can_delete_testcase='no'
 	  *}
 		{if $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
-			<input type="submit" name="delete_tc" value="{$labels.btn_del}" />
+			<input type="submit" name="delete_tc" value="{$labels.btn_delete}" />
 	  {/if}
 	
 	  {* Double condition because for test case versions WE DO NOT DISPLAY this

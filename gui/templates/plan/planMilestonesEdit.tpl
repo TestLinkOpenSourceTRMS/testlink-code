@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.6 2009/09/10 17:17:16 franciscom Exp $
+$Id: planMilestonesEdit.tpl,v 1.7 2010/02/17 21:32:43 franciscom Exp $
 
 Rev:
 *}
@@ -167,7 +167,7 @@ function validateForm(f)
 		      	</td>
 		      </tr>
 
-          {if $session['testprojectOptPriority']}
+          {if $session['testprojectOptions']->testPriorityEnabled}
 		          <tr>
 		          	<th style="background:none;">{$labels.th_perc_a_prio}:</th>
 		          	<td>

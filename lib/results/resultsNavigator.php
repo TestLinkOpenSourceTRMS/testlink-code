@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.55 2009/09/05 18:19:07 schlundus Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.56 2010/02/17 21:32:44 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -96,7 +96,8 @@ function init_args($tlCfg)
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
    	$args->userID = $_SESSION['userID'];
-    $args->optReqs = $_SESSION['testprojectOptReqs'];
+    // $args->optReqs = $_SESSION['testprojectOptReqs'];
+    $args->optReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
 
     return $args;
 }

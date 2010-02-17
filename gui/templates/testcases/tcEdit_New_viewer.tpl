@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.18 2010/01/11 15:59:03 erikeloff Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.19 2010/02/17 21:32:44 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 Rev:
@@ -77,7 +77,7 @@ Rev:
 			</div>
     	{/if}
 
-	    {if $session['testprojectOptPriority']}
+	    {if $session['testprojectOptions']->testPriorityEnabled}
 		   	<div>
 			<span class="labelHolder">{$labels.test_importance}</span>
 			<select name="importance" onchange="content_modified = true">

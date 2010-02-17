@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.46 2010/02/14 17:10:32 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.47 2010/02/17 21:32:44 franciscom Exp $ 
  * 
  * rev :
  *	
@@ -219,7 +219,7 @@ $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
 $gui->has_tc = $out['num_tc'] > 0 ? 1:0;
 $gui->support_array = array_keys($gui->items);
 
-if ($_SESSION['testprojectOptPriority']) 
+if ($_SESSION['testprojectOptions']->testPriorityEnabled) 
 {
 	$urgencyCfg = config_get('urgency');
 	$gui->priority_labels = init_labels($urgencyCfg["code_label"]);

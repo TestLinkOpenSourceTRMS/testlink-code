@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.21 2010/02/09 21:16:54 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.22 2010/02/17 21:32:44 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -111,7 +111,7 @@ function check_action_precondition(container_id,action)
               {if $gui->platforms != ''}
 			      	  <td>{$labels.platform}</td>
               {/if}	
-			      	{if $session['testprojectOptPriority']}
+			      	{if $session['testprojectOptions']->testPriorityEnabled}
 			      	  <td align="center">{$labels.priority}</td>
 			      	{/if}
               <td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
@@ -151,7 +151,7 @@ function check_action_precondition(container_id,action)
 			      	        <td>{$gui->platforms[$platform_id]|escape}</td>
                     {/if}	
 
-            	    	{if $session['testprojectOptPriority']}
+            	    	{if $session['testprojectOptions']->testPriorityEnabled}
             	    		<td align="center">{if isset($gui->priority_labels[$tcase.priority])}{$gui->priority_labels[$tcase.priority]}{/if}</td>
             	    	{/if}
             	    	<td align="center">

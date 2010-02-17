@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesView.tpl,v 1.7 2009/09/10 17:17:16 franciscom Exp $
+$Id: planMilestonesView.tpl,v 1.8 2010/02/17 21:32:43 franciscom Exp $
 
 Rev:
   20090910 - franciscom - added start_date
@@ -44,7 +44,7 @@ var del_action=fRoot+'{$deleteAction}';
 			<th>{$labels.th_name}</th>
 			<th>{$labels.th_date_format}</th>
 			<th>{$labels.start_date}</th>
-			{if $session['testprojectOptPriority']}
+			{if $session['testprojectOptions']->testPriorityEnabled}
 				<th>{$labels.th_perc_a_prio}</th>
 				<th>{$labels.th_perc_b_prio}</th>
 				<th>{$labels.th_perc_c_prio}</th>

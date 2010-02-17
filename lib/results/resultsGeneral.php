@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.63 $
- * @modified $Date: 2010/02/06 10:06:37 $ by $Author: erikeloff $
+ * @version $Revision: 1.64 $
+ * @modified $Date: 2010/02/17 21:32:44 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
@@ -98,7 +98,7 @@ else // do report
 		$platr = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
 		$gui->statistics->platform = $tplan_mgr->tallyResultsForReport($platr);
 	}
-	if ($_SESSION['testprojectOptPriority'])
+	if($_SESSION['testprojectOptions']->testPriorityEnabled)
 	{
 		$items2loop[] = 'priorities';
 		$prios = $tplan_mgr->getStatusTotalsByPriority($args->tplan_id);

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.50 2010/01/12 18:27:49 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.51 2010/02/17 21:32:44 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -128,7 +128,7 @@ if ($lastResultMap != null)
 
 				$rowArray = array($suiteName, $link, $testCaseVersion);
 
-				if ($_SESSION['testprojectOptPriority']) 
+				if($_SESSION['testprojectOptions']->testPriorityEnabled) 
 				{
 					if( !isset($priorityCache[$tcase['tcversion_id']]) )
 					{

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.17 2010/02/06 10:06:37 erikeloff Exp $
+$Id: resultsGeneral.tpl,v 1.18 2010/02/17 21:32:44 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -98,7 +98,7 @@ Revisions:
              args_column_definition=$gui->columnsDefinition->platform
              args_column_data=$gui->statistics->platform}
     {/if}
-    {if $session['testprojectOptPriority']}
+    {if $session['testprojectOptions']->testPriorityEnabled}
       {include file="$this_template_dir/inc_results_show_table.tpl"
              args_title=$labels.title_report_tc_priorities
              args_first_column_header=$labels.priority
@@ -123,7 +123,7 @@ Revisions:
 
   	{* ----- results by milestones / priorities -------------------------------------- *}
 
-	{if $session['testprojectOptPriority']}
+	{if $session['testprojectOptions']->testPriorityEnabled}
 		{if $gui->statistics->milestones != ""}
 
 			<h2>{$labels.title_report_milestones}</h2>

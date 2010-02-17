@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.53 2010/02/17 18:56:09 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.54 2010/02/17 21:32:44 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -321,7 +321,7 @@ rev:
 	</div>
 {/if}
 
-{if $session['testprojectOptPriority']}
+{if $session['testprojectOptions']->testPriorityEnabled}
    <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$labels.test_importance} {$smarty.const.TITLE_SEP}</span>
 		{$gsmarty_option_importance[$args_testcase.importance]}

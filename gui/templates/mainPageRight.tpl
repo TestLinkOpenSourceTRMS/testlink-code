@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.21 2010/01/21 22:06:18 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.22 2010/02/17 21:32:43 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -223,7 +223,7 @@
 	   	<a href="{$gui->launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
 	    <br />
 
-		{if $session['testprojectOptPriority']}
+		{if $session['testprojectOptions']->testPriorityEnabled}
 			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	   		<a href="{$gui->launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
 		    <br />

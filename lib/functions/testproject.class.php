@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.156 2010/02/17 21:19:50 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.157 2010/02/17 21:35:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -279,7 +279,7 @@ public function setSessionProject($id)
         }
     
 		tLog("Test Project was activated: [" . $info['id'] . "]" . $info['name'], 'INFO');
-		tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
+		// tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
     }
 
 }

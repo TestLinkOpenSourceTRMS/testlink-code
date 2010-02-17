@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2010/02/17 21:32:44 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2010/02/17 21:35:09 $ by $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -159,7 +159,6 @@ function init_args()
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
 
     $args->basehref = $_SESSION['basehref'];
-    // $args->testprojectOptReqs = $_SESSION['testprojectOptReqs'];
     $args->testprojectOptReqs = $_SESSION['testprojectOptions']->requirementsEnabled;
     
     return $args;

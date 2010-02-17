@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.141 2010/01/24 18:27:06 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.142 2010/02/17 21:35:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -416,7 +416,13 @@ function init_args($spec_cfg,$otName)
     {
     	$args->do_refresh=$_SESSION['tcspec_refresh_on_action'] == "yes" ? 1 : 0 ;
     }
-    $args->opt_requirements = isset($_SESSION['testprojectOptReqs']) ? $_SESSION['testprojectOptReqs'] : null; 
+    
+	$args->opt_requirements = null;
+	if( isset($_SESSION['testprojectOptions']) )
+	{
+		$args->opt_requirements = $_SESSION['testprojectOptions']->requirementsEnabled;
+	} 
+
 	$args->basehref = $_SESSION['basehref'];
     return $args;
 }

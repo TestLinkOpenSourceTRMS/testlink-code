@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.158 2010/02/17 21:58:09 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.159 2010/02/17 21:59:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -244,12 +244,7 @@ function projectUpdate($id, $name, $color, $notes,$options,$active=null,
  */
 public function setSessionProject($id)
 {
-	$info = null;
-	
-	if ($id)
-	{
-		$info = $this->get_by_id($id);
-	}
+	$info = $id > 0 ? $this->get_by_id($id) : null ;
 
 	if ($info)
 	{

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.154 2010/02/16 21:46:32 havlat Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.155 2010/02/17 19:03:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -240,42 +240,38 @@ function projectUpdate($id, $name, $color, $notes,$options,$active=null,
 /**
  * Set session data related to a Test project
  * 
- * @param integer $projectId Project ID; zero causes unset data
+ * @param integer $id Project ID; zero causes unset data
  */
-public function setSessionProject($projectId)
+public function setSessionProject($id)
 {
-	$tproject_info = null;
-	
-	if ($projectId)
+	$info = $id > 0 ? $this->get_by_id($id) : null;
+	if(!is_null($info))
 	{
-		$tproject_info = $this->get_by_id($projectId);
-	}
+		$_SESSION['testprojectID'] = $info['id'];
+		$_SESSION['testprojectName'] = $info['name'];
+		$_SESSION['testprojectColor'] = $info['color'];
+		$_SESSION['testprojectPrefix'] = $info['prefix'];
 
-	if ($tproject_info)
-	{
-		$_SESSION['testprojectID'] = $tproject_info['id'];
-		$_SESSION['testprojectName'] = $tproject_info['name'];
-		$_SESSION['testprojectColor'] = $tproject_info['color'];
-		$_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
-
+        $_SESSION['testprojectOptions'] = new stdClass();
 		$_SESSION['testprojectOptions']->requirementsEnabled = 
-				isset($tproject_info['opt']->requirementsEnabled) 
-				? $tproject_info['opt']->requirementsEnabled : 0;
+				isset($info['opt']->requirementsEnabled) 
+				? $info['opt']->requirementsEnabled : 0;
 		$_SESSION['testprojectOptions']->testPriorityEnabled = 
-				isset($tproject_info['opt']->testPriorityEnabled) 
-				? $tproject_info['opt']->testPriorityEnabled : 0;
+				isset($info['opt']->testPriorityEnabled) 
+				? $info['opt']->testPriorityEnabled : 0;
 		$_SESSION['testprojectOptions']->automationEnabled = 
-				isset($tproject_info['opt']->automationEnabled) 
-				? $tproject_info['opt']->automationEnabled : 0;
+				isset($info['opt']->automationEnabled) 
+				? $info['opt']->automationEnabled : 0;
 		$_SESSION['testprojectOptions']->infrastructureEnabled = 
-				isset($tproject_info['opt']->infrastructureEnabled) 
-				? $tproject_info['opt']->infrastructureEnabled : 0;
+				isset($info['opt']->infrastructureEnabled) 
+				? $info['opt']->infrastructureEnabled : 0;
+
 		// the next three parameters are obsolete should be removed
 		$_SESSION['testprojectOptReqs'] = $_SESSION['testprojectOptions']->requirementsEnabled;
 		$_SESSION['testprojectOptPriority'] = $_SESSION['testprojectOptions']->testPriorityEnabled;
 		$_SESSION['testprojectOptAutomation'] = $_SESSION['testprojectOptions']->automationEnabled;
 
-		tLog("Test Project was activated: [" . $tproject_info['id'] . "]" . $tproject_info['name'], 'INFO');
+		tLog("Test Project was activated: [" . $info['id'] . "]" . $info['name'], 'INFO');
 		tLog("Test Project features REQ=" . $_SESSION['testprojectOptReqs'] . ", PRIORITY=" . $_SESSION['testprojectOptPriority']);
 	}
 	else

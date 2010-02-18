@@ -6,11 +6,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.49 2010/01/31 18:32:25 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.50 2010/02/18 13:18:09 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20100218 - asimon - BUGID 3026 - added parameter $testcaseFilter on keywordFilteredSpecView
+ *						to include functionality previously used on tc_exec_assignment.php
+ * 						to show only testcases present in filter argument
  *	20100119 - franciscom - addCustomFieldsToView() - missing work on platforms
  *	20090808 - franciscom - gen_spec_view() interface changes + refactoring
  *	20090325 - franciscom - added new info about when and who has linked a tcversion
@@ -339,9 +342,13 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 
 /**
  * 
+ * @internal revisions:
+ * 20100218 - asimon - BUGID 3026 - added parameter $testcaseFilter to include functionality
+ * 						previously used on tc_exec_assignment.php
+ * 						to show only testcases present in filter argument
  *
  */
-function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr)
+function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr, $testcaseFilter = null)
 {
 	$tsuiteMgr = new testsuite($dbHandler); 
 	$tprojectMgr = new testproject($dbHandler); 
@@ -368,7 +375,15 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 			                                                   $keywordsFilter->items,$keywordsFilter->type);
 		$testCaseSet = array_keys($keywordsTestCases);
 	}
-	
+
+	// BUGID 3026 - added $testcaseFilter
+	if (!is_null($testCaseSet) && !is_null($testcaseFilter)) {
+		$testCaseSet = array_intersect($testCaseSet, array($testcaseFilter));
+	} else if (is_null($testCaseSet) && !is_null($testcaseFilter)) {
+		$testCaseSet = $testcaseFilter;
+	}
+	// now get values as keys
+	$testCaseSet = array_combine($testCaseSet, $testCaseSet);
 	
 	// function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$linked_items,
     //                    $map_node_tccount,$filters=null, $options = null,$tproject_id = null)

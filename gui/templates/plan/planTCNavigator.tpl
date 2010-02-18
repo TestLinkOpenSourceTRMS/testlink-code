@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.22 2010/02/17 18:37:11 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.23 2010/02/18 13:18:09 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -88,16 +88,16 @@ function update2latest(id)
 </head>
 
 <body onload="javascript:
-	triggerBuildChooser(document.getElementById('filter_build_id'),
-						document.getElementById('filter_method'),
+	triggerBuildChooser('filter_build_id',
+						'filter_method',
 						{$gui->filter_method_specific_build});
-	triggerAssignedBox(document.getElementById('filter_assigned_to'),
-						document.getElementById('include_unassigned'),
+	triggerAssignedBox('filter_assigned_to',
+						'include_unassigned',
 						'{$gui->str_option_any}',
 						'{$gui->str_option_none}',
 						'{$gui->str_option_somebody}');
 	{if $gui->buildCount eq 1}
-	disableUnneededFilters(document.getElementById('filter_method'),
+	disableUnneededFilters('filter_method',
 							{$gui->filter_method_specific_build});
 	{/if}
 ">
@@ -162,14 +162,14 @@ function update2latest(id)
 			  {if $gui->advancedFilterMode }
 			  <select name="filter_assigned_to[]" id="filter_assigned_to" 
 			  		multiple="multiple" size={$gui->assigneeFilterItemQty}
-			  		onchange="javascript: triggerAssignedBox(document.getElementById('filter_assigned_to'),
-			  						document.getElementById('include_unassigned'),
+			  		onchange="javascript: triggerAssignedBox('filter_assigned_to',
+			  						'include_unassigned',
 									'{$gui->str_option_any}', '{$gui->str_option_none}',
 									'{$gui->str_option_somebody}');">
 			  {else}
 				<select name="filter_assigned_to" id="filter_assigned_to"
-					onchange="javascript: triggerAssignedBox(document.getElementById('filter_assigned_to'),
-									document.getElementById('include_unassigned'),
+					onchange="javascript: triggerAssignedBox('filter_assigned_to',
+									'include_unassigned',
 									'{$gui->str_option_any}', '{$gui->str_option_none}',
 									'{$gui->str_option_somebody}');">
 			  {/if}
@@ -206,8 +206,8 @@ function update2latest(id)
 			<th>{$labels.filter_on}</th>
 			<td>
 			  	<select name="filter_method" id="filter_method"
-			  		      onchange="javascript: triggerBuildChooser(document.getElementById('filter_build_id'),
-			  		      				                                  document.getElementById('filter_method'),
+			  		      onchange="javascript: triggerBuildChooser('filter_build_id',
+			  		      				                                  'filter_method',
 										                                        {$gui->filter_method_specific_build});">
 				  	{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
 			  	</select>

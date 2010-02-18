@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.92 2010/02/12 08:47:12 erikeloff Exp $
+// $Id: testlink_library.js,v 1.93 2010/02/18 13:18:08 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100216 - asimon - added triggerBuildChooser() and triggerAssignedBox() for BUGID 2455, BUGID 3026
 // 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
 // 20100131 - franciscom - BUGID 3118: Help files are not getting opened when selected in the dropdown 
 // 20090906 - franciscom - added openTestSuiteWindow()
@@ -986,4 +987,75 @@ function get_docs(name, server_name)
       var w = window.open();
       w.location = server_name + '/docs/' + name;
   }
+}
+
+/**
+ * used to disable the build chooser field if it should not be used
+ * (in case of some filter settings)
+ * (testcase execution & testcase execution assignment, BUGID 2455, BUGID 3026)
+ * 
+ * @author asimon
+ * @param build_id_combo box in which the build is chosen
+ * @param filter_method_combo box in which the filter method is chosen
+ * @param specific_build_value value for which the box shall be disabled
+ */
+function triggerBuildChooser(build_id_combo_id, filter_method_combo_id, specific_build_value) 
+{
+	build_id_combo = document.getElementById(build_id_combo_id);
+	filter_method_combo = document.getElementById(filter_method_combo_id);
+	var index = filter_method_combo.options.selectedIndex;  
+	build_id_combo.disabled = true;
+	
+	if(filter_method_combo[index].value == specific_build_value) 
+	{
+		build_id_combo.disabled = false;
+	} 
+}
+
+/**
+ * used to disable the "include unassigned testcases" checkbox when it should not be used
+ * (testcase execution & testcase execution assignment, BUGID 2455, BUGID 3026)
+ * 
+ * @author asimon
+ * @param filter_assigned_to combobox in which assignment is chosen
+ * @param include_unassigned checkbox for including unassigned testcases
+ * @param str_option_any string value anybody
+ * @param str_option_none string value nobody
+ * @param str_option_somebody string value somebody
+ */
+function triggerAssignedBox(filter_assigned_to_id, include_unassigned_id,
+							str_option_any, str_option_none, str_option_somebody) 
+{
+	filter_assigned_to = document.getElementById(filter_assigned_to_id);
+	include_unassigned = document.getElementById(include_unassigned_id);
+	var index = filter_assigned_to.options.selectedIndex;
+	var choice = filter_assigned_to.options[index].label;
+	include_unassigned.disabled = false;
+
+	if (choice == str_option_any || choice == str_option_none || choice == str_option_somebody) 
+	{
+		include_unassigned.disabled = true;
+		include_unassigned.checked = false;
+	} 
+}
+
+/**
+ * disable unneeded filters in the filter method combo box
+ * (testcase execution & testcase execution assignment, BUGID 2455, BUGID 3026)
+ * 
+ * @author asimon
+ * @param filter_method_combo the box which shall be disabled
+ * @param value2select the string which shall be selected in the box before disabling it
+ */
+function disableUnneededFilters(filter_method_combo_id, value2select) {
+	filter_method_combo = document.getElementById(filter_method_combo_id);
+	var length = filter_method_combo.options.length;
+	
+	for (var index = 0; index < length; index ++) {
+		if (filter_method_combo.options[index].value == value2select) {
+			filter_method_combo.options.selectedIndex = index;
+		}
+	}
+	
+	filter_method_combo.disabled = true;
 }

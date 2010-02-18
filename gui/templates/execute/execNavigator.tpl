@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.34 2010/02/17 15:57:26 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.35 2010/02/18 13:18:08 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -75,16 +75,16 @@ rev :
 {* ===================================================================== *}
 
 <body onload="javascript:
-	triggerBuildChooser(document.getElementById('filter_build_id'),
-						document.getElementById('filter_method'),
+	triggerBuildChooser('filter_build_id',
+						'filter_method',
 						{$gui->filter_method_specific_build});
-	triggerAssignedBox(document.getElementById('filter_assigned_to'),
-						document.getElementById('include_unassigned'),
+	triggerAssignedBox('filter_assigned_to',
+						'include_unassigned',
 						'{$gui->str_option_any}',
 						'{$gui->str_option_none}',
 						'{$gui->str_option_somebody}');
 	{if $gui->filterBuildCount eq 1}
-	disableUnneededFilters(document.getElementById('filter_method'),
+	disableUnneededFilters('filter_method',
 							{$gui->filter_method_current_build});
 	{/if}
 ">
@@ -180,14 +180,14 @@ rev :
 			{else}
 			  {if $gui->advancedFilterMode }
 			  <select id="filter_assigned_to" name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}
-			  		onchange="javascript: triggerAssignedBox(document.getElementById('filter_assigned_to'),
-			  						document.getElementById('include_unassigned'),
+			  		onchange="javascript: triggerAssignedBox('filter_assigned_to',
+			  						'include_unassigned',
 									'{$gui->str_option_any}', '{$gui->str_option_none}',
 									'{$gui->str_option_somebody}');">
 			  {else}
 				<select name="filter_assigned_to" id="filter_assigned_to"
-					onchange="javascript: triggerAssignedBox(document.getElementById('filter_assigned_to'),
-									document.getElementById('include_unassigned'),
+					onchange="javascript: triggerAssignedBox('filter_assigned_to',
+									'include_unassigned',
 									'{$gui->str_option_any}', '{$gui->str_option_none}',
 									'{$gui->str_option_somebody}');">
 			  {/if}
@@ -224,9 +224,8 @@ rev :
 			<th>{$labels.filter_on}</th>
 			<td>
 			  	<select name="filter_method" id="filter_method"
-			  		onchange="javascript: triggerBuildChooser(document.getElementById('filter_build_id'),
-			  		      				document.getElementById('filter_method'),
-										{$gui->filter_method_specific_build});">
+			  		onchange="javascript: triggerBuildChooser('filter_build_id',
+			  		      				'filter_method', {$gui->filter_method_specific_build});">
 				  	{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
 			  	</select>
 			</td>

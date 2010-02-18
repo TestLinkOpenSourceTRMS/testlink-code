@@ -1,11 +1,11 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.47 2010/02/17 21:32:44 franciscom Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.48 2010/02/18 13:18:09 asimon83 Exp $ 
  * 
  * rev :
  *	
- *  BUGID 2455, BUGID 3026
+ *  20100215 - asimon - BUGID 2455, BUGID 3026
  *  20100212 - eloff - BUGID 3157 - fixes reassignment to other user
  *  20090807 - franciscom - new feature platforms
  *  20090201 - franciscom - new feature send mail to tester
@@ -69,9 +69,9 @@ if(!is_null($args->doAction))
 				$feature_id = $args->feature_id[$key_tc][$platform_id];
 				if($args->has_prev_assignment[$key_tc][$platform_id] > 0)
 				{
-					if($args->tester_for_tcid[$key_tc][$platform_id] > 0)  
+					if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
 					{
-            	        // Do only is tester has changed
+            	        // Do only if tester has changed
 					    if( $args->has_prev_assignment[$key_tc][$platform_id] != $args->tester_for_tcid[$key_tc][$platform_id])
 					    {
 				            $op='upd';
@@ -170,41 +170,11 @@ switch($args->level)
 		break;
 		
 	case 'testsuite':
-		$out = keywordFilteredSpecView($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr);
+		// BUGID 3026
+		$tcaseFilter = (isset($args->tcids_to_show)) ? $args->tcids_to_show : null;
 		
-        // --------------------------------------------------
-        // Check if this can not be done with logic already present on   keywordFilteredSpecView();
-		// BUGID 2455, BUGID 3026
-		if (isset($args->tcids_to_show)) 
-		{
-			$spec_tc_num = 0;
-			foreach($out['spec_view'] as $ts_key => $ts) 
-			{
-				foreach($ts['testcases'] as $tc_key => $tc) 
-				{
-					if (!in_array($tc['id'], $args->tcids_to_show)) 
-					{
-						// unset, tc shall not be displayed
-						unset($out['spec_view'][$ts_key]['testcases'][$tc_key]);
-					}
-				}
-				//fix number of testcases in this testsuite
-				$count = count($out['spec_view'][$ts_key]['testcases']);
-				$out['spec_view'][$ts_key]['testcase_qty'] = $count;
-				$spec_tc_num += $count;
+		$out = keywordFilteredSpecView($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr, $tcaseFilter);
 				
-				//don't show empty suites
-				if ($count == 0) 
-				{
-					unset($out['spec_view'][$ts_key]);
-				}
-			}
-			//fix number of testcases in whole specview and indexes, else smarty causes trouble
-			$out['spec_view'] = array_values($out['spec_view']);
-			$out['num_tc'] = $spec_tc_num;
-		}
-        // --------------------------------------------------
-		
 		break;
 
 	default:

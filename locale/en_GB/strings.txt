@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.555 2010/02/18 21:52:10 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.556 2010/02/18 22:09:27 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -308,7 +308,7 @@ $TLS_config_check_warnings = "There are security warnings for your consideration
 
 // ----- lib/inventory/inventoryView.php & tpl -----
 $TLS_inventory_title = 'Inventory';
-$TLS_inventory_create_title = "Define a device and press 'Save' button";
+$TLS_inventory_create_title = "Define a device data";
 $TLS_inventory_empty = "No item. Use 'Create' button to define.";
 $TLS_inventory_name = 'Host name';
 $TLS_inventory_ipaddress = 'IP Address';

@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Add or modify a device in infrastructure list
+ * Add or modify a device in inventory list
  * 
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: setInfrastructure.php,v 1.1 2010/02/12 00:20:12 havlat Exp $
+ * @version    	CVS: $Id: setInventory.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
  *
  * @internal Revisions:
  * None
@@ -19,24 +19,24 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db,false,false,"checkRights");
 
-$data['userfeedback'] = lang_get('infrastructure_msg_no_action');
+$data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
-//$rightEdit = has_rights($db,"project_infrastructure_edit");
+//$rightEdit = has_rights($db,"project_inventory_edit");
 
 //if($args->testprojectId && $rightEdit)
 //if($args->testprojectId)
-if ($_SESSION['currentUser']->hasRight($db,"project_infrastructure_edit"))
+if ($_SESSION['currentUser']->hasRight($db,"project_inventory_edit"))
 {
-	$tlIs = new tlInfrastructure($args->testprojectId, $db);
-	$data['success'] = $tlIs->setInfrastructure($args);
+	$tlIs = new tlInventory($args->testprojectId, $db);
+	$data['success'] = $tlIs->setInventory($args);
 	$data['userfeedback'] = $tlIs->getUserFeedback();
 	$data['record'] = $tlIs->getCurrentData();
 }
 else
 {
 	tLog('User has not rights to set a device!','ERROR');
-	$data['userfeedback'] = lang_get('infrastructure_msg_no_rights');
+	$data['userfeedback'] = lang_get('inventory_msg_no_rights');
 }
 
 echo json_encode($data);
@@ -74,6 +74,6 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,"project_infrastructure_edit");
+	return $user->hasRight($db,"project_inventory_edit");
 }
 ?>

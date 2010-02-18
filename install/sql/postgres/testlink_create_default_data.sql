@@ -1,11 +1,11 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.28 2010/02/13 23:00:50 havlat Exp $
+--  $Id: testlink_create_default_data.sql,v 1.29 2010/02/18 21:52:10 havlat Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
 --
 --  20100106 - franciscom - added testcase_step node type
---  20091228 - franciscom - added new rights for project infrastructure
+--  20091228 - franciscom - added new rights for project 
 --  20091010 - franciscom - platform feature
 --  20090126 - havlatm - role definition update
 --  20090101 - franciscom - found some problem with serial column fo role table.
@@ -74,8 +74,8 @@ INSERT INTO /*prefix*/rights (id,description) VALUES (22,'events_mgt');
 INSERT INTO /*prefix*/rights (id,description) VALUES (23 ,'testproject_user_role_assignment');
 INSERT INTO /*prefix*/rights (id,description) VALUES (24 ,'platform_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (25 ,'platform_view');
-INSERT INTO /*prefix*/rights (id,description) VALUES (26 ,'project_infrastructure_edit');
-INSERT INTO /*prefix*/rights (id,description) VALUES (27 ,'project_infrastructure_view');
+INSERT INTO /*prefix*/rights (id,description) VALUES (26 ,'project_inventory_edit');
+INSERT INTO /*prefix*/rights (id,description) VALUES (27 ,'project_inventory_view');
 
 
 

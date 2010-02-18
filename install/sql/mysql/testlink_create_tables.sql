@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.74 2010/01/24 15:15:48 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.75 2010/02/18 21:52:11 havlat Exp $
 #
 # SQL script - create all DB tables for MySQL
 # tables are in alphabetic order  
@@ -285,7 +285,7 @@ CREATE TABLE /*prefix*/executions (
 ) DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE /*prefix*/infrastructure (
+CREATE TABLE /*prefix*/inventory (
   id int(10) unsigned NOT NULL auto_increment,
 	`testproject_id` INT( 10 ) UNSIGNED NOT NULL ,
 	`owner_id` INT(10) UNSIGNED NOT NULL ,
@@ -295,7 +295,7 @@ CREATE TABLE /*prefix*/infrastructure (
 	`creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	`modification_ts` TIMESTAMP NOT NULL,
 	PRIMARY KEY (`id`),
-	KEY /*prefix*/infrastructure_idx1 (`testproject_id`)
+	KEY /*prefix*/inventory_idx1 (`testproject_id`)
 ) DEFAULT CHARSET=utf8; 
 
 

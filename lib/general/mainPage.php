@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: mainPage.php,v $
- * @version $Revision: 1.61 $ $Author: havlat $
- * @modified $Date: 2010/02/16 21:47:13 $
+ * @version $Revision: 1.62 $ $Author: havlat $
+ * @modified $Date: 2010/02/18 21:52:10 $
  * @author Martin Havlat
  * 
  * Page has two functions: navigation and select Test Plan
@@ -66,8 +66,8 @@ $gui->grants['platform_management'] = $currentUser->hasRight($db,"platform_manag
 $gui->grants['configuration'] = $currentUser->hasRight($db,"system_configuraton");
 $gui->grants['usergroups'] = $currentUser->hasRight($db,"mgt_view_usergroups");
 $gui->grants['view_tc'] = $currentUser->hasRight($db,"mgt_view_tc");
-$gui->grants['project_infrastructure_view'] = ($_SESSION['testprojectOptions']->infrastructureEnabled 
-	&& ($currentUser->hasRight($db,"project_infrastructure_view") == 'yes')) ? 1 : 0;
+$gui->grants['project_inventory_view'] = ($_SESSION['testprojectOptions']->inventoryEnabled 
+	&& ($currentUser->hasRight($db,"project_inventory_view") == 'yes')) ? 1 : 0;
 $gui->grants['modify_tc'] = null; 
 $gui->hasTestCases = false;
 

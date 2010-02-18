@@ -5,7 +5,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.48 2010/01/20 11:14:40 havlat Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.49 2010/02/18 21:52:10 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -219,7 +219,7 @@ abstract class tlObject implements iSerialization
                         'events' => DB_TABLE_PREFIX . 'events',
                         'execution_bugs' => DB_TABLE_PREFIX . 'execution_bugs',
                         'executions' => DB_TABLE_PREFIX . 'executions',
-                        'infrastructure' => DB_TABLE_PREFIX . 'infrastructure',
+                        'inventory' => DB_TABLE_PREFIX . 'inventory',
                         'keywords' => DB_TABLE_PREFIX . 'keywords',
                         'milestones' => DB_TABLE_PREFIX . 'milestones',
                         'node_types' => DB_TABLE_PREFIX . 'node_types',

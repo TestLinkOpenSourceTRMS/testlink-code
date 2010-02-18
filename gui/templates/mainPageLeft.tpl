@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.21 2010/02/16 21:46:32 havlat Exp $     
+ $Id: mainPageLeft.tpl,v 1.22 2010/02/18 21:52:11 havlat Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -20,7 +20,7 @@
                           href_req_spec,href_req_assign,
                           title_test_spec,href_edit_tc,href_browse_tc,href_search_tc,
                           href_search_req, href_search_req_spec,
-                          href_platform_management, href_infrastructure,
+                          href_platform_management, href_inventory,
                           href_print_tc,href_keywords_assign'}
 
 
@@ -198,11 +198,11 @@
 			<a href="lib/platforms/platformsView.php">{$labels.href_platform_management}</a>
 		{/if}
 
- 		{* --- infrastructure view ---  *}
-		{if $gui->grants.project_infrastructure_view}
+ 		{* --- inventory view ---  *}
+		{if $gui->grants.project_inventory_view}
 			<br />
 	  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-			<a href="lib/infrastructure/infrastructureView.php">{$labels.href_infrastructure}</a>
+			<a href="lib/inventory/inventoryView.php">{$labels.href_inventory}</a>
 		{/if}
 	  
     </div>

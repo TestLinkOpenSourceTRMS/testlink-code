@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Get infrastructure data
+ * Get inventory data
  * 
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: getInfrastructure.php,v 1.1 2010/02/12 00:20:12 havlat Exp $
+ * @version    	CVS: $Id: getInventory.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
  *
  * @internal Revisions:
  * None
@@ -19,7 +19,7 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-$tlIs = new tlInfrastructure($_SESSION['testprojectID'], $db);
+$tlIs = new tlInventory($_SESSION['testprojectID'], $db);
 $data = $tlIs->getAll();
 
 $tlUser = new tlUser($_SESSION['userID']);

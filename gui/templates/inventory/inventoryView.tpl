@@ -2,10 +2,10 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * Smarty template - see and manage infrastructure table 
+ * Smarty template - see and manage inventory table 
  *
  * Author: Martin Havlat
- * CVS: $Id: infrastructureView.tpl,v 1.1 2010/02/12 00:20:12 havlat Exp $
+ * CVS: $Id: inventoryView.tpl,v 1.1 2010/02/18 21:52:10 havlat Exp $
  *
  * @todo		escape shown text (renderer: Ext.util.Format.htmlEncode(???))
  * @todo           // Highlight the row for 3 seconds
@@ -24,18 +24,18 @@
  *}
 <script type="text/javascript" src="../../ext-all-debug.js"></script>
 {lang_get var="labels" 
-          s="infrastructure_title,infrastructure_empty,sort_table_by_column,
-          infrastructure_name,infrastructure_notes,infrastructure_ipaddress,
-          infrastructure_purpose,infrastructure_hw,infrastructure_owner,
-          infrastructure_delete,infrastructure_alt_delete,infrastructure_alt_edit,
+          s="inventory_title,inventory_empty,sort_table_by_column,
+          inventory_name,inventory_notes,inventory_ipaddress,
+          inventory_purpose,inventory_hw,inventory_owner,
+          inventory_delete,inventory_alt_delete,inventory_alt_edit,
           btn_create,btn_save,btn_edit,btn_delete,btn_cancel,
-          infrastructure_create_title, infrastructure_dlg_select_txt,
-          infrastructure_dlg_delete_txt,
+          inventory_create_title, inventory_dlg_select_txt,
+          inventory_dlg_delete_txt,
           confirm, warning, error
           "}
 
 {include file="inc_head.tpl" openHead="yes"}
-{config_load file="input_dimensions.conf" section="infrastructure"}
+{config_load file="input_dimensions.conf" section="inventory"}
 {include file="inc_del_onclick.tpl"}
 
   	<style type="text/css">
@@ -52,15 +52,15 @@ var tls_save = '{$labels.btn_save}';
 var tls_cancel = '{$labels.btn_cancel}';
 var tls_edit = '{$labels.btn_edit}';
 var tls_delete = '{$labels.btn_delete}';
-var tls_th_name = '{$labels.infrastructure_name}';
-var tls_th_ip = '{$labels.infrastructure_ipaddress}';
-var tls_th_purpose = '{$labels.infrastructure_purpose}';
-var tls_th_hw = '{$labels.infrastructure_hw}';
-var tls_th_owner = '{$labels.infrastructure_owner}';
-var tls_th_notes = '{$labels.infrastructure_notes}';
-var tls_dlg_set_title = "{$labels.infrastructure_create_title}";
-var tls_dlg_delete_txt = "{$labels.infrastructure_dlg_delete_txt}";
-var tls_dlg_select_txt = "{$labels.infrastructure_dlg_select_txt}";
+var tls_th_name = '{$labels.inventory_name}';
+var tls_th_ip = '{$labels.inventory_ipaddress}';
+var tls_th_purpose = '{$labels.inventory_purpose}';
+var tls_th_hw = '{$labels.inventory_hw}';
+var tls_th_owner = '{$labels.inventory_owner}';
+var tls_th_notes = '{$labels.inventory_notes}';
+var tls_dlg_set_title = "{$labels.inventory_create_title}";
+var tls_dlg_delete_txt = "{$labels.inventory_dlg_delete_txt}";
+var tls_dlg_select_txt = "{$labels.inventory_dlg_select_txt}";
 var tls_confirm = "{$labels.confirm}";
 var tls_warning = "{$labels.warning}";
 var tls_error = "{$labels.error}";
@@ -70,7 +70,7 @@ var current_user_id = {$session.userID};
 
 Ext.onReady(function(){
 
-	/* ----- data infrastructure ---------------------------------------------------- */
+	/* ----- data inventory ---------------------------------------------------- */
 	var reader=new Ext.data.JsonReader
 	({},[
 			{name: 'id', type: 'int'}, 
@@ -86,7 +86,7 @@ Ext.onReady(function(){
 		
 	var store=new Ext.data.Store
 	({
-		url:'lib/infrastructure/getInfrastructure.php',
+		url:'lib/inventory/getInventory.php',
 		reader: reader,
 		idProperty: 'id',
 		autoLoad: true
@@ -96,7 +96,7 @@ Ext.onReady(function(){
 	/* ----- data owners ------------------------------------------------------------ */
 	/* @TODO params should be extracted from url */
 	var ownersStore =  new Ext.data.JsonStore({
-		url: 'lib/ajax/getUsersWithRight.php?right=project_infrastructure_view',
+		url: 'lib/ajax/getUsersWithRight.php?right=project_inventory_view',
 		root: 'rows',
 		fields: ['id','login'],
         autoLoad: true
@@ -119,12 +119,12 @@ Ext.onReady(function(){
 
 	var deviceEdit = function() 
 	{
-        var rows = infrastructureGrid.getSelectionModel().getSelections();
+        var rows = inventoryGrid.getSelectionModel().getSelections();
         if (rows.length > 0) 
         {
 			deviceEditForm.loadData( rows[0] );
 			editWindow.show();
-            infrastructureGrid.getView().refresh();
+            inventoryGrid.getView().refresh();
 		}
         else
         {
@@ -133,7 +133,7 @@ Ext.onReady(function(){
 	};		
 
 
-    var infrastructureGrid = new Ext.grid.GridPanel
+    var inventoryGrid = new Ext.grid.GridPanel
     ({
         store: store,
         columns: 
@@ -145,7 +145,7 @@ Ext.onReady(function(){
             {header: tls_th_owner, width: 100, dataIndex: 'owner', sortable: true},
             {header: tls_th_notes, dataIndex: 'notes', sortable: true}
         ],
-        renderTo:'infrastructureTable',
+        renderTo:'inventoryTable',
 		autoWidth:true,
         region:'center',
         margins: '0 5 5 5',
@@ -173,7 +173,7 @@ Ext.onReady(function(){
 			style: {padding: ' 0px 10px'},
             handler: function()
             {
-                var rows = infrastructureGrid.getSelectionModel().getSelections();
+                var rows = inventoryGrid.getSelectionModel().getSelections();
                 if (rows.length > 0) 
                 {
                 	for(var i = 0, r; r = rows[i]; i++)
@@ -183,12 +183,12 @@ Ext.onReady(function(){
 				        						function(btn){
 				            if (btn == 'yes')
 				            {
-                				var rows = infrastructureGrid.getSelectionModel().getSelections();
+                				var rows = inventoryGrid.getSelectionModel().getSelections();
                     			var id = rows[0].get('id');
 		                    	store.remove(rows[0]);
 		                    	Ext.Ajax.request
 		                    	({
-									url : 'lib/infrastructure/deleteInfrastructure.php?machineID=' + id,
+									url : 'lib/inventory/deleteInventory.php?machineID=' + id,
 									success: function ( result, request ) 
 									{
 										var jsonData = Ext.util.JSON.decode(result.responseText);
@@ -210,9 +210,9 @@ Ext.onReady(function(){
             }
         }] // tbar
 
-    }); // infrastructureGrid
+    }); // inventoryGrid
 
-    infrastructureGrid.on('rowdblclick', deviceEdit);
+    inventoryGrid.on('rowdblclick', deviceEdit);
 
 	// custom Vtype for vtype:'IPAddress' (used in form)
 	Ext.apply(Ext.form.VTypes, {
@@ -238,7 +238,7 @@ Ext.onReady(function(){
 					editWindow.hide();
 				}
 				showFeedback(action.result.success,action.result.userfeedback);
-//				infrastructureGrid.getView().refresh();
+//				inventoryGrid.getView().refresh();
 			},
 			failure:function(form, action) 
 			{
@@ -253,7 +253,7 @@ Ext.onReady(function(){
         baseCls: 'x-plain',
         layout:'absolute',
 		method: 'POST',
-        url:'lib/infrastructure/setInfrastructure.php',
+        url:'lib/inventory/setInventory.php',
         defaultType: 'textfield',
 //		defaults: {width: 230},
         items:  
@@ -413,86 +413,12 @@ Ext.onReady(function(){
 </head>
 <body {$body_onload}>
 
-<h1 class="title">{$labels.infrastructure_title}</h1>
+<h1 class="title">{$labels.inventory_title}</h1>
 
 <div id="user_feedback"></div>
 
 <div class="workBack">
-
-    <div id="infrastructureTable"></div>
-
-{*	<div class="groupBtn">
-	 	<input type="button" name="create_infrastructure" value="{$labels.btn_create}" 
-	 		onclick="javascript: document.getElementById('frame_create_machine').style.display = '';" />
-	 	<input type="button" name="create_infrastructure" value="{$labels.btn_create} json" 
-	 		onclick="javascript: editWindow.show(); /*app.init(); app();*/ " />
-	</div>
-
-	<div id="frame_create_machine" style="display:none; padding: 10px;">
-	<h2 style="padding-bottom:10px;">{$labels.infrastructure_create_title}</h2>
-	<form method="post">
-		<p><span class="form_label">{$labels.infrastructure_name}</span>
-		<span><input type="text" name="machineName" id="machineName" 
-					maxlength="{#MACHINE_NAME_MAXLEN#}" 
-					value="" size="{#MACHINE_NAME_SIZE#}"/>
-		</span></p>
-		<p><span class="form_label">{$labels.infrastructure_ipaddress}</span>
-		<input type="text" name="machineIp" id="machineIp" 
-					maxlength="{#MACHINE_IP_MAXLEN#}" 
-					value="" size="{#MACHINE_IP_SIZE#}"/>
-		</p>
-		<p><span class="form_label">{$labels.infrastructure_notes}</span>
-		<textarea name="machineNotes" id="machineNotes" cols="{#MACHINE_NOTES_COLS#}" 
-					rows="{#MACHINE_NOTES_ROWS#}">
-		</textarea>
-		</p>
-			  	
-	 	<input type="submit" name="doCreate" value="{$labels.btn_add}" />
-	</form>
-	</div>
-*}	
-{*
-	<table id='item_view'class="simple sortable" width="95%">
-		<tr>
-			<th>{$toggle_api_info_img}{$sortHintIcon}{$labels.infrastructure_name}</th> 			
-			<th class="{$noSortableColumnClass}">{$labels.infrastructure_ipaddress}</th>
-			<th class="{$noSortableColumnClass}">{$labels.infrastructure_notes}</th>
-			<th class="{$noSortableColumnClass}">{$labels.infrastructure_delete}</th>
-		</tr>
-		{foreach item=listItem from=$gui->infrastructureList}
-		<tr>
-			<td onclick="javascript: showEdit({$listItem.id})">
-				<span class="api_info" style='display:none'>
-					{$tlCfg->api->id_format|replace:"%s":$listItem.id}</span>
-					{$listItem.name|escape} 
-					{if $gsmarty_gui->show_icon_edit}
- 						<img title="{$labels.infrastructure_alt_edit}" 
- 				              alt="{$labels.infrastructure_alt_edit}" 
- 				              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
- 					{/if}  
-			</td>
-			<td>
-				{$listItem.ipaddress|escape}
-			</td>
-			<td>
-				{$listItem.data.notes|escape|truncate:1000}
-			</td>
-			<td class="clickable_icon">
-				  <img style="border:none;cursor: pointer;" 
-						alt="{$labels.infrastructure_alt_delete}"
-						title="{$labels.infrastructure_alt_delete}" 
-						onclick="javascript: delete_confirmation({$listItem.id},
-							'{$listItem.name|escape:'javascript'|escape}',
-					   		'{$labels.infrastructure_delete_dlg_title}',
-					   		'{$labels.infrastructure_delete_dlg_txt}');"
-						src="{$delete_img}"/>
-			</td>
-		</tr>
-		{/foreach}
-
-	</table>
-*}
-
+    <div id="inventoryTable"></div>
 </div>
 
 </body>

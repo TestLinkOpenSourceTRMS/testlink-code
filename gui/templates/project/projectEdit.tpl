@@ -3,10 +3,10 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.24 2010/02/17 22:04:36 franciscom Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.25 2010/02/18 21:52:11 havlat Exp $
  *
  * Revisions:
- *	20100212 - havlatm - infrastructure support
+ *	20100212 - havlatm - inventory support
  *	20100204 - franciscom - test project copy
  *  20090512 - franciscom - is_public attribute
  *  20080117 - franciscom - removed displayy of ID -> use projectview feature
@@ -28,11 +28,11 @@
 
 {lang_get var="labels" 
 	s='show_event_history,th_active,cancel,info_failed_loc_prod,invalid_query,
-	   create_from_existent_tproject,opt_no,caption_edit_tproject,caption_new_tproject,name,
-	   title_testproject_management,testproject_enable_priority, testproject_enable_automation,
-     public,testproject_color,testproject_alt_color,testproject_enable_requirements,
-     testproject_enable_infrastructure,testproject_features,testproject_description,
-     testproject_prefix,availability,mandatory'}
+	create_from_existent_tproject,opt_no,caption_edit_tproject,caption_new_tproject,name,
+	title_testproject_management,testproject_enable_priority, testproject_enable_automation,
+    public,testproject_color,testproject_alt_color,testproject_enable_requirements,
+    testproject_enable_inventory,testproject_features,testproject_description,
+    testproject_prefix,availability,mandatory'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -175,9 +175,9 @@
 			</tr>
 			<tr>
 				<td></td><td>
-					<input type="checkbox" name="optInfrastructure" 
-				  			{if $projectOptions->infrastructureEnabled} checked="checked" {/if} />
-					{$labels.testproject_enable_infrastructure}
+					<input type="checkbox" name="optInventory" 
+				  			{if $projectOptions->inventoryEnabled} checked="checked" {/if} />
+					{$labels.testproject_enable_inventory}
 				</td>
 			</tr>
 

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.45 2010/02/17 22:22:14 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.46 2010/02/18 21:52:11 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -177,9 +177,6 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 {
     $args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
-	
-	new dBug($request_hash);
-	
 	$nullable_keys = array('tprojectName','color','notes','doAction','tcasePrefix');
 	foreach ($nullable_keys as $value)
 	{
@@ -194,7 +191,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 
 	// get input from the project edit/create page
 	$checkbox_keys = array('is_public' => 0,'active' => 0,'optReq' => 0,
-		                   'optPriority' => 0,'optAutomation' => 0,'optInfrastructure' => 0);
+				'optPriority' => 0,'optAutomation' => 0,'optInventory' => 0);
 	foreach ($checkbox_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -237,7 +234,7 @@ function prepareOptions($argsObj)
 	  	$options->requirementsEnabled = $argsObj->optReq;
 	  	$options->testPriorityEnabled = $argsObj->optPriority;
 	  	$options->automationEnabled = $argsObj->optAutomation;
-	  	$options->infrastructureEnabled = $argsObj->optInfrastructure;
+	  	$options->inventoryEnabled = $argsObj->optInventory;
 
 	  	return $options;
 }
@@ -266,8 +263,8 @@ function doCreate($argsObj,&$tprojectMgr)
 	  	$options = prepareOptions($argsObj);
 	  	    
 		$new_id = $tprojectMgr->projectCreate($argsObj->tprojectName, $argsObj->color,
-					                          $options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
-					                          $argsObj->is_public);
+					$options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
+					$argsObj->is_public);
 									                 
 		if (!$new_id)
 		{
@@ -380,8 +377,6 @@ function edit(&$argsObj,&$tprojectMgr)
 {
 	$tprojectInfo = $tprojectMgr->get_by_id($argsObj->tprojectID);
    
-    new dBug($tprojectInfo);
-    
 	$argsObj->tprojectName = $tprojectInfo['name'];
 	$argsObj->color = $tprojectInfo['color'];
 	$argsObj->notes = $tprojectInfo['notes'];

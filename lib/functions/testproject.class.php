@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.161 2010/02/17 22:02:41 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.162 2010/02/18 21:52:10 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -105,7 +105,7 @@ class testproject extends tlObjectWithAttachments
  * @param string $color value according to CSS color definition
  * @param string $notes project description (HTML text)
  * @param array $options project features/options
- * 				bolean keys: infrastructureEnabled, automationEnabled, 
+ * 				bolean keys: inventoryEnabled, automationEnabled, 
  * 				testPriorityEnabled, requirementsEnabled 
  * @param boolean $active [1,0] optional
  * @param string $tcasePrefix [''] 
@@ -169,7 +169,7 @@ function projectCreate($name,$color,$options,$notes,$active=1,$tcasePrefix='',$i
  * @param string $color value according to CSS color definition
  * @param string $notes project description (HTML text)
  * @param array $options project features/options
- * 				bolean keys: infrastructureEnabled, automationEnabled, 
+ * 				bolean keys: inventoryEnabled, automationEnabled, 
  * 				testPriorityEnabled, requirementsEnabled 
  * 
  * @return boolean result of DB update
@@ -242,44 +242,54 @@ function projectUpdate($id, $name, $color, $notes,$options,$active=null,
  * 
  * @param integer $projectId Project ID; zero causes unset data
  */
-public function setSessionProject($id)
+public function setSessionProject($projectId)
 {
-	$info = $id > 0 ? $this->get_by_id($id) : null ;
-
-	if ($info)
+	$tproject_info = null;
+	
+	if ($projectId)
 	{
-		$_SESSION['testprojectID'] = $info['id'];
-		$_SESSION['testprojectName'] = $info['name'];
-		$_SESSION['testprojectColor'] = $info['color'];
-		$_SESSION['testprojectPrefix'] = $info['prefix'];
+		$tproject_info = $this->get_by_id($projectId);
+	}
+
+	if ($tproject_info)
+	{
+		$_SESSION['testprojectID'] = $tproject_info['id'];
+		$_SESSION['testprojectName'] = $tproject_info['name'];
+		$_SESSION['testprojectColor'] = $tproject_info['color'];
+		$_SESSION['testprojectPrefix'] = $tproject_info['prefix'];
 
         if(!isset($_SESSION['testprojectOptions']) )
         {
         	$_SESSION['testprojectOptions'] = new stdClass();
         }
-		
-		$_SESSION['testprojectOptions']->requirementsEnabled = isset($info['opt']->requirementsEnabled) ? 
-		                                                       $info['opt']->requirementsEnabled : 0;
-		$_SESSION['testprojectOptions']->testPriorityEnabled = isset($info['opt']->testPriorityEnabled) ? 
-		                                                       $info['opt']->testPriorityEnabled : 0;
-		$_SESSION['testprojectOptions']->automationEnabled = isset($info['opt']->automationEnabled) ? 
-		                                                     $info['opt']->automationEnabled : 0;
-		$_SESSION['testprojectOptions']->infrastructureEnabled = isset($info['opt']->infrastructureEnabled) ? 
-		                                                         $info['opt']->infrastructureEnabled : 0;
+		$_SESSION['testprojectOptions']->requirementsEnabled = 
+						isset($tproject_info['opt']->requirementsEnabled) 
+						? $tproject_info['opt']->requirementsEnabled : 0;
+		$_SESSION['testprojectOptions']->testPriorityEnabled = 
+						isset($tproject_info['opt']->testPriorityEnabled) 
+						? $tproject_info['opt']->testPriorityEnabled : 0;
+		$_SESSION['testprojectOptions']->automationEnabled = 
+						isset($tproject_info['opt']->automationEnabled) 
+						? $tproject_info['opt']->automationEnabled : 0;
+		$_SESSION['testprojectOptions']->inventoryEnabled = 
+						isset($tproject_info['opt']->inventoryEnabled) 
+						? $tproject_info['opt']->inventoryEnabled : 0;
 
-		tLog("Test Project was activated: [" . $info['id'] . "]" . $info['name'], 'INFO');
+		tLog("Test Project was activated: [" . $tproject_info['id'] . "]" . 
+				$tproject_info['name'], 'INFO');
 	}
 	else
 	{
 		if (isset($_SESSION['testprojectID']))
 		{
-			tLog("Test Project deactivated: [" . $_SESSION['testprojectID'] . "] " . $_SESSION['testprojectName']);
+			tLog("Test Project deactivated: [" . $_SESSION['testprojectID'] . "] " . 
+					$_SESSION['testprojectName'], 'INFO');
 		}
 		unset($_SESSION['testprojectID']);
 		unset($_SESSION['testprojectName']);
 		unset($_SESSION['testprojectColor']);
-		unset($_SESSION['testprojectPrefix']);
 		unset($_SESSION['testprojectOptions']);
+		unset($_SESSION['testprojectPrefix']);
 	}
 
 }

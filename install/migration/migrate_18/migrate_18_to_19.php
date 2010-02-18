@@ -11,7 +11,7 @@
  * - Update IDs on ....
  * - Update project options
  *  
- * $Id: migrate_18_to_19.php,v 1.5 2010/02/16 21:46:32 havlat Exp $
+ * $Id: migrate_18_to_19.php,v 1.6 2010/02/18 21:52:10 havlat Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -163,7 +163,7 @@ function migrate_project_options(&$dbHandler,$tableSet)
 		  	$options->requirementsEnabled = $rs[$id]['option_reqs'];
 	  		$options->testPriorityEnabled = $rs[$id]['option_priority'];
 	  		$options->automationEnabled = $rs[$id]['option_automation'];
-	  		$options->infrastructureEnabled = FALSE;
+	  		$options->inventoryEnabled = FALSE;
 	  		
 	  		$serOptions = serialize($options);
 			
@@ -191,7 +191,7 @@ function migrate_project_options(&$dbHandler,$tableSet)
 		}
 	}
 	$drop_clause = implode(",", $cols2drop);
-	$sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
+	$sql = "ALTER TABLE {$tableSet['testprojects']} {$drop_clause} ";
 	$dbHandler->exec_query($sql);
 }
 

@@ -1,5 +1,5 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.35 2010/02/13 23:00:50 havlat Exp $
+# $Id: testlink_create_default_data.sql,v 1.36 2010/02/18 21:52:11 havlat Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
@@ -67,8 +67,8 @@ INSERT INTO /*prefix*/rights  (id,description) VALUES (22,'events_mgt');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (23 ,'testproject_user_role_assignment');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (25 ,'platform_view');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (26 ,'project_infrastructure_edit');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (27 ,'project_infrastructure_view');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (26 ,'project_inventory_edit');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (27 ,'project_inventory_view');
 
 
 # Rights for Administrator role

@@ -1,6 +1,6 @@
--- $Revision: 1.7 $
--- $Date: 2010/01/24 15:18:25 $
--- $Author: franciscom $
+-- $Revision: 1.8 $
+-- $Date: 2010/02/18 21:52:10 $
+-- $Author: havlat $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -105,7 +105,7 @@ CREATE TABLE /*prefix*/testplan_platforms (
 );
 
 
-CREATE TABLE /*prefix*/infrastructure (
+CREATE TABLE /*prefix*/inventory (
 	id BIGSERIAL NOT NULL,
 	"testproject_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/testprojects (id),
 	"owner_id" BIGINT NOT NULL REFERENCES  /*prefix*/users (id),
@@ -116,8 +116,8 @@ CREATE TABLE /*prefix*/infrastructure (
 	"modification_ts" TIMESTAMP NULL,
 	PRIMARY KEY (id)
 );
-CREATE INDEX /*prefix*/infrastructure_idx1 ON /*prefix*/infrastructure (testproject_id);
-CREATE UNIQUE INDEX /*prefix*/infrastructure_uidx1 ON /*prefix*/infrastructure (name,testproject_id);
+CREATE INDEX /*prefix*/inventory_idx1 ON /*prefix*/infrastructure (testproject_id);
+CREATE UNIQUE INDEX /*prefix*/inventory_uidx1 ON /*prefix*/infrastructure (name,testproject_id);
 
 
 -- Step 3 - simple structure updates

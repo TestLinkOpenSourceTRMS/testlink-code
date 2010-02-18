@@ -3,12 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Delete a device in infrastructure list
+ * Delete a device in inventory list
  * 
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: deleteInfrastructure.php,v 1.1 2010/02/12 00:20:12 havlat Exp $
+ * @version    	CVS: $Id: deleteInventory.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
  *
  * @internal Revisions:
  * None
@@ -19,23 +19,23 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
-$data['userfeedback'] = lang_get('infrastructure_msg_no_action');
+$data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
 
 //if($args->testprojectId)
 //if($args->testprojectId && $rightEdit)
 //if(checkRights($db,$user))
-if ($_SESSION['currentUser']->hasRight($db,"project_infrastructure_edit"))
+if ($_SESSION['currentUser']->hasRight($db,"project_inventory_edit"))
 {
-	$tlIs = new tlInfrastructure($args->testprojectId, $db);
-	$data['success'] = $tlIs->deleteInfrastructure($args->machineID);
+	$tlIs = new tlInventory($args->testprojectId, $db);
+	$data['success'] = $tlIs->deleteInventory($args->machineID);
 	$data['userfeedback'] = $tlIs->getUserFeedback();
 }
 else
 {
 	tLog('User has not rights to set a device!','ERROR');
-	$data['userfeedback'] = lang_get('infrastructure_msg_no_rights');
+	$data['userfeedback'] = lang_get('inventory_msg_no_rights');
 }
 
 echo json_encode($data);
@@ -63,6 +63,6 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,"project_infrastructure_edit");
+	return $user->hasRight($db,"project_inventory_edit");
 }
 ?>

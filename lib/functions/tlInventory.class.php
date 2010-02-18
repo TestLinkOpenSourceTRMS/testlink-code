@@ -3,13 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Management and assignment of project infrastructure (servers, switches, etc.)
+ * Management and assignment of project inventory (servers, switches, etc.)
  *
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInfrastructure.class.php,v 1.1 2010/02/12 00:20:12 havlat Exp $
- * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInfrastructure.class.php?view=markup
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
+ * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
  * 
@@ -22,10 +22,12 @@ require_once('object.class.php');
 
 
 /**
- * Logic for Infrastructure feature
+ * Logic code for Inventory functionality
  * @package 	TestLink
+ * @author 		Martin Havlat
+ * @since 		TestLink 1.9
  */ 
-class tlInfrastructure extends tlObjectWithDB
+class tlInventory extends tlObjectWithDB
 {
 	/** @var integer the test project ID the server belongs to */
 	protected $testProjectID;
@@ -33,9 +35,9 @@ class tlInfrastructure extends tlObjectWithDB
 	 * @var array with a machine data; by default include keys:
 	 * 		purpose, notes, spec
 	 */
-	protected $infrastructureContent = array();
+	protected $inventoryContent = array();
 	/** @var integer the server owner ID */
-	protected $infrastructureID;
+	protected $inventoryID;
 	/** @var integer the item (server/machine) ID */
 	protected $ownerID = 0;
 	/** @var string the host-name of the server/machine */
@@ -73,18 +75,18 @@ class tlInfrastructure extends tlObjectWithDB
 	}
 	
 	/**
-	 * Initializes the infrastructure object
+	 * Initializes the inventory object
 	 * @param array $inputData the name of the server
 	 */
-	public function initInfrastructureData($inputData)
+	public function initInventoryData($inputData)
 	{
-		$this->infrastructureId = intval($inputData->machineID);
+		$this->inventoryId = intval($inputData->machineID);
 		$this->name = $inputData->machineName;
 		$this->ipAddress = $inputData->machineIp;
 		$this->ownerID = $inputData->machineOwner;
-		$this->infrastructureContent['notes'] = $inputData->machineNotes;
-		$this->infrastructureContent['purpose'] = $inputData->machinePurpose;
-		$this->infrastructureContent['hardware'] = $inputData->machineHw;
+		$this->inventoryContent['notes'] = $inputData->machineNotes;
+		$this->inventoryContent['purpose'] = $inputData->machinePurpose;
+		$this->inventoryContent['hardware'] = $inputData->machineHw;
 	}
 
 	/**
@@ -94,13 +96,13 @@ class tlInfrastructure extends tlObjectWithDB
 	public function getCurrentData()
 	{
 		$out = new stdClass();
-		$out->machineID = $this->infrastructureId;
+		$out->machineID = $this->inventoryId;
 		$out->machineName = $this->name;
 		$out->machineIp = $this->ipAddress;
 		$out->machineOwner = $this->ownerID;
-		$out->machineNotes = $this->infrastructureContent['notes'];
-		$out->machinePurpose = $this->infrastructureContent['purpose'];
-		$out->machineHw = $this->infrastructureContent['hardware'];
+		$out->machineNotes = $this->inventoryContent['notes'];
+		$out->machinePurpose = $this->inventoryContent['purpose'];
+		$out->machineHw = $this->inventoryContent['hardware'];
 		
 		return $out;
 	}
@@ -108,11 +110,12 @@ class tlInfrastructure extends tlObjectWithDB
 	/** 
 	 * Returns a query which can be used to read one or multiple items from a db
 	 * 
-	 * @param mixed $ids integer or array of integer - ID of infrastructure items
+	 * @param mixed $ids integer or array of integer - ID of inventory items
 	 */
 	public function executeQuery($ids = null)
 	{
-		$query = " SELECT * FROM {$this->tables['infrastructure']} ";
+		$query = " SELECT * FROM {$this->tables['inventory']} " .
+				" WHERE  testproject_id={$this->testProjectID}";
 		
 		$clauses = null;
 		if (!is_null($ids))
@@ -124,7 +127,7 @@ class tlInfrastructure extends tlObjectWithDB
 		}
 		if ($clauses)
 		{
-			$query .= " WHERE " . implode(" AND ",$clauses);
+			$query .= " AND " . implode(" AND ",$clauses);
 		}
 		
 		$recordset = $this->db->get_recordset($query);
@@ -153,14 +156,14 @@ class tlInfrastructure extends tlObjectWithDB
 	{
 		$name = $db->prepare_string($this->name);
 		$ip = $db->prepare_string($this->ipAddress);
-		$this->infrastructureContent['hardware'] = $db->prepare_string($this->infrastructureContent['hardware']);
-		$this->infrastructureContent['notes'] = $db->prepare_string($this->infrastructureContent['notes']);
-		$this->infrastructureContent['purpose'] = $db->prepare_string($this->infrastructureContent['purpose']);
-		$data_serialized = serialize($this->infrastructureContent);
+		$this->inventoryContent['hardware'] = $db->prepare_string($this->inventoryContent['hardware']);
+		$this->inventoryContent['notes'] = $db->prepare_string($this->inventoryContent['notes']);
+		$this->inventoryContent['purpose'] = $db->prepare_string($this->inventoryContent['purpose']);
+		$data_serialized = serialize($this->inventoryContent);
 
-		if (is_null($this->infrastructureId) || ($this->infrastructureId == 0))
+		if (is_null($this->inventoryId) || ($this->inventoryId == 0))
 		{
-			$query = " INSERT INTO {$this->tables['infrastructure']} (name," .
+			$query = " INSERT INTO {$this->tables['inventory']} (name," .
 					"testproject_id,content,ipaddress,owner_id,creation_ts) " .
 					" VALUES ('" . $name .	"'," . $this->testProjectID . ",'" . 
 					$data_serialized . "','" . $ip . "'," . $this->ownerID . "," . 
@@ -169,33 +172,33 @@ class tlInfrastructure extends tlObjectWithDB
 			$result = $this->db->exec_query($query);
 			if ($result)
 			{
-				$this->infrastructureId = $db->insert_id($this->tables['infrastructure']);
-				logAuditEvent(TLS("audit_infrastructure_created",$this->name),"CREATE",$this->name,"infrastructure");
-				$this->userFeedback = langGetFormated('infrastructure_create_success',$this->name);
+				$this->inventoryId = $db->insert_id($this->tables['inventory']);
+				logAuditEvent(TLS("audit_inventory_created",$this->name),"CREATE",$this->name,"inventory");
+				$this->userFeedback = langGetFormated('inventory_create_success',$this->name);
 			}
 			else
 			{
-				$this->userFeedback = langGetFormated('infrastructure_create_fails',$this->name);
-				tLog('Internal error: An infrastructure device "'.$this->name.'" was not created.', 'ERROR');
+				$this->userFeedback = langGetFormated('inventory_create_fails',$this->name);
+				tLog('Internal error: An inventory device "'.$this->name.'" was not created.', 'ERROR');
 			}	
 		}
 		else
 		{
-			$query = "UPDATE {$this->tables['infrastructure']} " .
+			$query = "UPDATE {$this->tables['inventory']} " .
 					" SET name='{$name}', content='{$data_serialized}', " .
 				    " ipaddress='{$ip}', modification_ts=" . $this->db->db_now() .
 				    ", testproject_id={$this->testProjectID}, owner_id=" . $this->ownerID .
-					" WHERE id={$this->infrastructureId}";
+					" WHERE id={$this->inventoryId}";
 			$result = $this->db->exec_query($query);
 			if ($result)
 			{
-				tLog('An infrastructure device "'.$this->name.'" was not updated.', 'INFO');
-				$this->userFeedback = langGetFormated('infrastructure_update_success',$this->name);
+				tLog('A device "'.$this->name.'" was not updated.', 'INFO');
+				$this->userFeedback = langGetFormated('inventory_update_success',$this->name);
 			}
 			else
 			{
-				$this->setUserFeedback(langGetFormated('infrastructure_update_fails',$this->name));
-				tLog('Internal error: An infrastructure device "'.$this->name.'" was not updated.', 'ERROR');
+				$this->setUserFeedback(langGetFormated('inventory_update_fails',$this->name));
+				tLog('Internal error: An inventory device "'.$this->name.'" was not updated.', 'ERROR');
 			}	
 		}
 
@@ -210,7 +213,7 @@ class tlInfrastructure extends tlObjectWithDB
 	 */
 	protected function deleteFromDB()
 	{
-		$sql = "DELETE FROM {$this->tables['infrastructure']} WHERE id = " . $this->infrastructureId;
+		$sql = "DELETE FROM {$this->tables['inventory']} WHERE id = " . $this->inventoryId;
 		$result = $this->db->exec_query($sql);
 		return $result ? tl::OK : tl::ERROR;	
 	}
@@ -221,20 +224,20 @@ class tlInfrastructure extends tlObjectWithDB
 	 * @param resource &$db [ref] database connection
 	 * @return integer returns tl::OK on success, tl:ERROR else
 	 */
-	public function deleteInfrastructure($itemID)
+	public function deleteInventory($itemID)
 	{
-		$this->infrastructureId = $itemID;
+		$this->inventoryId = $itemID;
 		$result = $this->deleteFromDB();
 
 		if ($result == tl::OK)
 		{
-			logAuditEvent(TLS("audit_infrastructure_deleted",$this->name),"DELETE",$this->name,"infrastructure");
-			$this->userFeedback = langGetFormated('infrastructure_delete_success',$this->name);
+			logAuditEvent(TLS("audit_inventory_deleted",$this->name),"DELETE",$this->name,"inventory");
+			$this->userFeedback = langGetFormated('inventory_delete_success',$this->name);
 		}
 		else
 		{
-			$this->userFeedback = langGetFormated('infrastructure_update_fails',$this->name);
-			tLog('Internal error: An infrastructure device "'.$this->name.'" was not deleted.', 'ERROR');
+			$this->userFeedback = langGetFormated('inventory_update_fails',$this->name);
+			tLog('Internal error: The device "'.$this->name.'" was not deleted.', 'ERROR');
 		}	
 
 		return $result;	
@@ -242,15 +245,15 @@ class tlInfrastructure extends tlObjectWithDB
 
 
 	/**
-	 * create or update an infrastructure
+	 * create or update an inventory
 	 * 
 	 * @param array $data list of parameters 
 	 * @return boolean result of action 	 
 	 **/
-	public function setInfrastructure($data)
+	public function setInventory($data)
 	{
-		$this->initInfrastructureData($data);
-		$result = $this->checkInfrastructureData();
+		$this->initInventoryData($data);
+		$result = $this->checkInventoryData();
 		if ($result == tl::OK)
 		{
 			$result = $this->writeToDB($this->db);
@@ -295,32 +298,32 @@ class tlInfrastructure extends tlObjectWithDB
 	 * 
 	 * @return integer return tl::OK if the keyword is found, else tlKeyword::E_NAMEALREADYEXISTS 
 	 */
-	private function checkInfrastructureData()
+	private function checkInventoryData()
 	{
 		$result = tl::OK;
 		$name = $this->db->prepare_string(strtoupper($this->name));
 		$ipAddress = $this->db->prepare_string(strtoupper($this->ipAddress));
 
-		if (is_null($this->infrastructureId) || ($this->infrastructureId == 0))
+		if (is_null($this->inventoryId) || ($this->inventoryId == 0))
 		{
-			$query = " SELECT id FROM {$this->tables['infrastructure']} " .
+			$query = " SELECT id FROM {$this->tables['inventory']} " .
 					 " WHERE name='" . $name.
 			         "' AND testproject_id={$this->testProjectID}";
 			if ($this->db->fetchFirstRow($query))
 			{
 				$result = self::E_NAMEALREADYEXISTS;
-				$this->userFeedback = langGetFormated('infrastructure_name_exists',$this->name);
+				$this->userFeedback = langGetFormated('inventory_name_exists',$this->name);
 			}
 
 			if ($result && !empty($ipAddress))
 			{
-				$query = " SELECT id FROM {$this->tables['infrastructure']} " .
+				$query = " SELECT id FROM {$this->tables['inventory']} " .
 						 " WHERE ipaddress='" . $ipAddress . 
 			    	     "' AND testproject_id={$this->testProjectID}";
 				if ($this->db->fetchFirstRow($query))
 				{
 					$result = self::E_IPALREADYEXISTS;
-					$this->userFeedback = langGetFormated('infrastructure_ip_exists',$this->name);
+					$this->userFeedback = langGetFormated('inventory_ip_exists',$this->name);
 				}
 			}
 		}

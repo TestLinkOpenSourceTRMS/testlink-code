@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.77 2010/02/04 10:51:35 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.78 2010/02/18 06:55:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *                   
+ * 20100218 - franciscom - string_custom_field_input() changes on checkbox management
  * 20100204 - franciscom - getByLinkID() - new method
  * 20090823 - franciscom - added logic to remove 255 size limit
  * 20090718 - franciscom - buildLocationMap()
@@ -672,7 +673,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 			foreach( $t_values as $t_option )
 			{
 				$str_out .= '<input type="checkbox" name="' . $input_name . '[]"' . " id=\"{$input_name}\"";
-				if( in_array( $t_option, $t_checked_values ) )
+				
+				// 20100218 - franciscom - added check $t_option != '' to make check box start NOT CHECKED
+				if( $t_option != '' && in_array($t_option, $t_checked_values) )
 				{
 					  $str_out .= ' value="' . $t_option . '" checked="checked">&nbsp;' . $t_option . '&nbsp;&nbsp;';
 				}
@@ -680,6 +683,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				{
 					  $str_out .= ' value="' . $t_option . '">&nbsp;' . $t_option . '&nbsp;&nbsp;';
 				}
+				
 			}
  	    break;
 
@@ -818,6 +822,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     }
     if( !is_null($cfield) )
     {
+      new dBug($cfield);
       foreach($cfield as $field_id => $type_and_value)
       {
         $value = $type_and_value['cf_value'];

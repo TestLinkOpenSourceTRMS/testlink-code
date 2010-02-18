@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.13 2010/02/15 08:32:56 erikeloff Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.14 2010/02/18 08:48:21 amkhullar Exp $
 
 rev :
+     20100218 - amitkhullar - BUGID 2541
      20100215 - eloff - BUGID 3160 - fixed missing platform column
      20090409 - amitkhullar - BUGID 2156 - added new option on 	Query Metrics for latest results
      20080524 - franciscom - BUGID 1430
@@ -221,8 +222,9 @@ progress();
 			    		{/if}
 			    		{foreach key=executionInstance item=array from=$gui->suiteList[$suiteId]}
 			    			{assign var=inst value=$gui->suiteList[$suiteId][$executionInstance]}
-			    			<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
+
 			    			{if $gui->displayResults[$inst.status] }
+			    			<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
 								  {if $inst.status == $gui->resultsCfg.status_code.not_run}
 								  	<td>{$inst.testcasePrefix|escape}{$inst.external_id}:&nbsp;{$inst.name|escape}</td>
 								  	{if $gui->showPlatforms}
@@ -250,8 +252,9 @@ progress();
 								  	<td>{$inst.notes}&nbsp;</td>
 								  	<td style="text-align:center;">{$inst.bugString}&nbsp;</td>
 								  {/if}
+							</tr>
 			    			{/if}
-			    			</tr>
+
 			    		{/foreach}
 			    		{if $gui->display->suite_summaries}
 			    			</table>

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.552 2010/02/17 15:57:27 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.553 2010/02/18 20:33:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2410,7 +2410,7 @@ $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associate
 // ----- lib/project/project_req_spec_mgmt.tpl -----
 $TLS_btn_new_req_spec = "New Requirement Specification";
 $TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
-
+$TLS_btn_export_all_reqspec = "Export All Requirement Specifications";
 
 // ----- reqSpecEdit.php -----
 $TLS_delete_req_spec = "Delete Requirement Specification";

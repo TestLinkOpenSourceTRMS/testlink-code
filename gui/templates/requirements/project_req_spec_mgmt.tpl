@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.13 2010/02/18 20:32:56 franciscom Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.14 2010/02/18 21:29:20 franciscom Exp $
 
 rev: 20080415 - franciscom - refactoring
 *}
@@ -13,6 +13,10 @@ rev: 20080415 - franciscom - refactoring
 
 {assign var="url_args" value="reqSpecEdit.php?doAction=reorder&amp;tproject_id="}
 {assign var="req_spec_reorder_url" value="$basehref$req_module$url_args}
+
+{assign var="url_args" value="reqExport.php?scope=tree&tproject_id="}
+{assign var="req_export_url"  value="$basehref$req_module$url_args"}
+
 
 {include file="inc_head.tpl"}
 
@@ -28,7 +32,7 @@ rev: 20080415 - franciscom - refactoring
 
 			<input type="button" id="export_all" name="export_all"
 			       value="{$labels.btn_export_all_reqspec}"
-			       onclick="location='{$req_spec_new_url}{$gui->tproject_id}'" />
+			       onclick="location='{$req_export_url}{$gui->tproject_id}'" />
 
 		</form>
 	</div>

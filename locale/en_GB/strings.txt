@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.553 2010/02/18 20:33:07 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.554 2010/02/18 21:29:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1441,6 +1441,7 @@ $TLS_platform_unlink_warning_message = "The selected platform(s) are being used.
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Export requirements";
+$TLS_all_reqspecs_in_tproject = "All Requirement Specs in Test Project";
 
 
 

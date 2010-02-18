@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqExport.tpl,v 1.6 2009/03/23 08:10:07 franciscom Exp $ *}
+{* $Id: reqExport.tpl,v 1.7 2010/02/18 21:29:20 franciscom Exp $ *}
 {* Purpose: smarty template - req export initial page *}
 {* revisions:
 *}
@@ -72,6 +72,8 @@ function validateForm(f)
 	 <div class="groupBtn">
 		<input type="hidden" id="doAction" name="doAction" value="export" />
 		<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+		<input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
+		<input type="hidden" name="tproject_id" value="{$gui->tproject_id}" />
 		<input type="submit" id="export" name="export" value="{$labels.btn_export}" 
 		       onclick="doAction.value='doExport'" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 

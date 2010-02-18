@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2010/02/14 17:06:16 $ by $Author: franciscom $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2010/02/18 21:29:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -366,12 +366,12 @@ function get_metrics($id)
   */
 function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 {
-    // RMS - REFACTORING
+   	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
                 "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
                 "RSPEC.modification_ts,NH.name AS title";
 
-	$sql = "SELECT {$fields2get}, NH.node_order " .
+	$sql = "/* $debugMsg */SELECT {$fields2get}, NH.node_order " .
 	       " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH " .
 	       " WHERE NH.id=RSPEC.id" .
 	       " AND testproject_id={$tproject_id}";
@@ -1056,7 +1056,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
         return null;      
     }
     echo __FUNCTION__;
-    new dBug($xml_item);
+    new dBug($xml_item->getName());
     
     $dummy=array();
     $dummy['node_order'] = (int)$xml_item->node_order;
@@ -1612,6 +1612,21 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 		}
      	return $target_doc;
      }
+
+	/**
+	 * 
+	 *
+ 	 */
+	function getFirstLevelInTestProject($tproject_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  	$sql = "/* $debugMsg */ SELECT * from {$this->tables['nodes_hierarchy']} " .
+	  	       " WHERE parent_id = {$tproject_id} " .
+	  	       " AND node_type_id = {$this->node_types_descr_id['requirement_spec']} " .
+	  	       " ORDER BY node_order,id";
+		$rs = $this->db->fetchRowsIntoMap($sql,'id');
+		return $rs;
+	}
 
 
 } // class end

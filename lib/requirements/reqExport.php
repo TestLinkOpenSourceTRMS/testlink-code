@@ -5,10 +5,10 @@
  *
  * Filename $RCSfile: reqExport.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/04/28 19:22:34 $ by $Author: schlundus $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/02/18 21:29:20 $ by $Author: franciscom $
  *
- * This page this allows users to export requirements.
+ * Allows users to export requirements.
  *
 **/
 require_once("../../config.inc.php");
@@ -61,9 +61,14 @@ function init_args()
 	$args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 	$args->req_spec_id = isset($_REQUEST['req_spec_id']) ? $_REQUEST['req_spec_id'] : null;
 	$args->export_filename = isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : "";
-	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
-   return $args;  
+	
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : 0;
+    if( $args->tproject_id == 0 )
+    {	
+		$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	}
+	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'branch';
+	return $args;  
 }
 
 
@@ -73,17 +78,34 @@ function init_args()
  */
 function initializeGui(&$argsObj,&$req_spec_mgr)
 {
-   $gui = new stdClass();
-   $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
-   $gui->exportTypes = $req_spec_mgr->get_export_file_types();
-   $gui->exportType = $argsObj->exportType; 
-   $gui->req_spec_id = $argsObj->req_spec_id;
-   $gui->export_filename = trim($argsObj->export_filename);
-   if($gui->export_filename == "")
-   {
-       $gui->export_filename = $gui->req_spec['title'] . '-req.xml';
-   }
-   return $gui;  
+	$gui = new stdClass();
+	$gui->exportTypes = $req_spec_mgr->get_export_file_types();
+	$gui->exportType = $argsObj->exportType; 
+	$gui->scope = $argsObj->scope;
+	$gui->tproject_id = $argsObj->tproject_id;
+	
+	switch($argsObj->scope)
+    {
+  		case 'tree':
+			 $gui->req_spec['title'] = lang_get('all_reqspecs_in_tproject');
+			 $gui->req_spec_id = 0;
+  			 $exportFileName = 'all-req.xml';
+  		break;
+  		
+  		case 'branch':
+			 $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
+			 $gui->req_spec_id = $argsObj->req_spec_id;
+			 $exportFileName = $gui->req_spec['title'] . '-req.xml';
+  		break;
+  		
+	}
+	
+	$gui->export_filename = trim($argsObj->export_filename);
+	if($gui->export_filename == "")
+	{
+	    $gui->export_filename = $exportFileName;
+	}
+	return $gui;  
 }
 
 
@@ -108,8 +130,27 @@ function doExport(&$argsObj,&$req_spec_mgr)
 			$pfn = "exportReqSpecToXML";
 			$fileName = 'reqs.xml';
   			$content = TL_XMLEXPORT_HEADER;
-  			$content .= "<requirement-specification>\n";
-			$content .= $req_spec_mgr->$pfn($argsObj->req_spec_id,$argsObj->tproject_id);
+ 			
+  			switch($argsObj->scope)
+  			{
+  				case 'tree':
+  					$reqSpecSet = $req_spec_mgr->getFirstLevelInTestProject($argsObj->tproject_id);
+  					$reqSpecSet = array_keys($reqSpecSet);
+  				break;
+  				
+  				case 'branch':
+  					$reqSpecSet = array($argsObj->req_spec_id);
+  				break;
+  			}
+			
+			$content .= "<requirement-specification>\n";
+  			if(!is_null($reqSpecSet))
+  			{
+  				foreach($reqSpecSet as $reqSpecID)
+  				{
+					$content .= $req_spec_mgr->$pfn($reqSpecID,$argsObj->tproject_id);
+				}
+			}
 			$content .= "</requirement-specification>\n";
 			break;
 	}

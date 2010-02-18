@@ -1,12 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.12 2009/03/16 21:35:39 schlundus Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.13 2010/02/18 20:32:56 franciscom Exp $
 
 rev: 20080415 - franciscom - refactoring
 *}
 {* ------------------------------------------------------------------------- *}
 
-{lang_get var="labels" s="btn_reorder_req_spec,btn_new_req_spec"}
+{lang_get var="labels" s="btn_reorder_req_spec,btn_new_req_spec,btn_export_all_reqspec"}
 {assign var="req_module" value='lib/requirements/'}
 {assign var="url_args" value="reqSpecEdit.php?doAction=create&amp;tproject_id="}
 {assign var="req_spec_new_url" value="$basehref$req_module$url_args"}
@@ -25,6 +25,11 @@ rev: 20080415 - franciscom - refactoring
 			<input type="button" id="new_req_spec" name="new_req_spec"
 			       value="{$labels.btn_new_req_spec}"
 			       onclick="location='{$req_spec_new_url}{$gui->tproject_id}'" />
+
+			<input type="button" id="export_all" name="export_all"
+			       value="{$labels.btn_export_all_reqspec}"
+			       onclick="location='{$req_spec_new_url}{$gui->tproject_id}'" />
+
 		</form>
 	</div>
 </div>

@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: xml.inc.php,v 1.17 2010/02/14 18:12:17 franciscom Exp $
+ * @version    	CVS: $Id: xml.inc.php,v 1.18 2010/02/20 19:37:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -92,7 +92,7 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
         // new dBug($loop_qty);
   		for($idx=0; $idx < $loop_qty; $idx++)
   		{
-  			echo "\$idx:$idx<br>";
+  			// echo "DEBUG - " . __FUNCTION__ . " \$idx:$idx<br>";
 			foreach($itemStructure['elements'] as $castType => $keyValues)
   			{
   				// new dBug($castType);	new dBug($keyValues); 

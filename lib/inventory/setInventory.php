@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: setInventory.php,v 1.3 2010/02/20 09:27:29 franciscom Exp $
+ * @version    	CVS: $Id: setInventory.php,v 1.4 2010/02/20 18:35:44 havlat Exp $
  *
  * @internal Revisions:
  * None
@@ -17,14 +17,15 @@
 
 require_once('../../config.inc.php');
 require_once('common.php');
-testlinkInitPage($db,false,false,"checkRights");
+testlinkInitPage($db);
 
 $data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
+
 if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management"))
 {
-	$tlIs = new tlInventory($args->testprojectId, $db);
+	$tlIs = new tlInventory($_SESSION['testprojectID'], $db);
 	$data['success'] = $tlIs->setInventory($args);
 	$data['success'] = ($data['success'] == 1 /*$tlIs->OK*/) ? true : false;
 	$data['userfeedback'] = $tlIs->getUserFeedback();
@@ -53,24 +54,7 @@ function init_args()
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
     
-//    $args->doCreate = isset($_REQUEST['doCreate']) ? 1 : 0;
-//    $args->doDelete = isset($_REQUEST['doDelete']) ? 1 : 0;
-        
-    // from session
-    $args->testprojectId = $_SESSION['testprojectID'];
-    $args->userId = $_SESSION['userID'];
-
     return $args;
 }
 
-/**
- * @param $db resource the database connection handle
- * @param $user the current active user
- * 
- * @return boolean returns true if the page can be accessed
- */
-function checkRights(&$db,&$user)
-{
-	return $user->hasRight($db,"project_inventory_management");
-}
 ?>

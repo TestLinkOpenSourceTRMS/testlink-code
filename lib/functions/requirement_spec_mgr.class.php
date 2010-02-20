@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2010/02/20 15:03:18 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2010/02/20 15:35:51 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1085,7 +1085,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
              $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
           }    
     }
-    $mapped[]=array('req_spec' => $dummy, 'requirements' => null);
+    $mapped[]=array('req_spec' => $dummy, 'requirements' => null, 'level' => $dummy['level']);
 
     new dBug($dummy[$key]);
     

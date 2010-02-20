@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/02/20 14:30:56 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/02/20 15:35:51 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -40,8 +40,6 @@ switch($args->doAction)
     case 'uploadFile':
         $dummy = doUploadFile($db,$gui->fileName,$args,$req_spec_mgr);
         $gui->items = $dummy->items;
-        new dBug($gui);
-        die();
         $gui->file_check = $dummy->file_check;
         if($gui->file_check['status_ok'] == 0)
         {
@@ -67,7 +65,6 @@ switch($args->scope)
 }
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);
-$smarty->assign('try_upload',$args->bUpload);
 $smarty->assign('req_spec_id', $args->req_spec_id);
 $smarty->assign('reqSpec', $req_spec);
 $smarty->assign('arrImport', $arrImport);
@@ -213,6 +210,8 @@ function initializeGui(&$argsObj,&$reqSpecMgr,$session)
     $gui=new stdClass();
     $gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
     $gui->items=null;
+	$gui->try_upload = $argsObj->bUpload;
+
     $gui->doAction=$argsObj->doAction;
 	$gui->scope = $argsObj->scope;
 	
@@ -293,20 +292,13 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     	                
     	                if($retval->file_check['status_ok'])
     	                { 
-    	                	
-    	                	switch($argsObj->scope)
+    	                	$retval->items = array();
+    	                	foreach($xml->req_spec as $xkm)
     	                	{
-    	                		case 'tree':
-    	                			$element = 'requirement-specification';
-    	                		break;
-    	                		
-    	                		case 'branch':
-    	                			$element = 'req_spec';
-    	                		break;
+    	                		new dBug($xkm);
+    	                		$retval->items = array_merge($retval->items,$reqSpecMgr->xmlToMapReqSpec($xkm));
     	                	}
-    	                	new dBug($xml);
     	                	
-	                        $retval->items = $reqSpecMgr->xmlToMapReqSpec($xml->req_spec);
     	                	new dBug($retval->items);
 	                        
 	                    }

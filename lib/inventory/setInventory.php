@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: setInventory.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
+ * @version    	CVS: $Id: setInventory.php,v 1.2 2010/02/20 00:25:05 havlat Exp $
  *
  * @internal Revisions:
  * None
@@ -30,6 +30,7 @@ if ($_SESSION['currentUser']->hasRight($db,"project_inventory_edit"))
 {
 	$tlIs = new tlInventory($args->testprojectId, $db);
 	$data['success'] = $tlIs->setInventory($args);
+	$data['success'] = ($data['success'] == 1 /*$tlIs->OK*/) ? true : false;
 	$data['userfeedback'] = $tlIs->getUserFeedback();
 	$data['record'] = $tlIs->getCurrentData();
 }
@@ -46,7 +47,7 @@ function init_args()
     $_REQUEST = strings_stripSlashes($_REQUEST);
 	$iParams = array("machineID" => array(tlInputParameter::INT_N),
 					"machineOwner" => array(tlInputParameter::INT_N),
-			        "machineName" => array(tlInputParameter::STRING_N,1,100),
+			        "machineName" => array(tlInputParameter::STRING_N,0,100),
 			        "machineIp" => array(tlInputParameter::STRING_N,0,50),
 			        "machineNotes" => array(tlInputParameter::STRING_N,0,1000),
 			        "machinePurpose" => array(tlInputParameter::STRING_N,0,1000),

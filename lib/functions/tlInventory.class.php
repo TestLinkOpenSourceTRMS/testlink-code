@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.2 2010/02/20 00:25:05 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
@@ -37,9 +37,9 @@ class tlInventory extends tlObjectWithDB
 	 */
 	protected $inventoryContent = array();
 	/** @var integer the server owner ID */
-	protected $inventoryID;
+	protected $inventoryId;
 	/** @var integer the item (server/machine) ID */
-	protected $ownerID = 0;
+	protected $ownerId = 0;
 	/** @var string the host-name of the server/machine */
 	protected $name;
 	/** @var string IP address of the server */
@@ -47,7 +47,7 @@ class tlInventory extends tlObjectWithDB
 
 	/** error codes */
 	const E_NAMEALREADYEXISTS = -1;
-	//const E_NAMELENGTH = -2;
+	const E_NAMELENGTH = -2;
 	const E_IPALREADYEXISTS = -4;
 	const E_DBERROR = -8;
 	//const E_WRONGFORMAT = -16;
@@ -73,21 +73,23 @@ class tlInventory extends tlObjectWithDB
 		parent::__destruct();
 		$this->testProjectID = null;
 	}
+
 	
 	/**
 	 * Initializes the inventory object
 	 * @param array $inputData the name of the server
 	 */
-	public function initInventoryData($inputData)
+	protected function initInventoryData($inputData)
 	{
 		$this->inventoryId = intval($inputData->machineID);
 		$this->name = $inputData->machineName;
 		$this->ipAddress = $inputData->machineIp;
-		$this->ownerID = $inputData->machineOwner;
+		$this->ownerId = $inputData->machineOwner;
 		$this->inventoryContent['notes'] = $inputData->machineNotes;
 		$this->inventoryContent['purpose'] = $inputData->machinePurpose;
 		$this->inventoryContent['hardware'] = $inputData->machineHw;
 	}
+
 
 	/**
 	 * Get the current array
@@ -99,7 +101,7 @@ class tlInventory extends tlObjectWithDB
 		$out->machineID = $this->inventoryId;
 		$out->machineName = $this->name;
 		$out->machineIp = $this->ipAddress;
-		$out->machineOwner = $this->ownerID;
+		$out->machineOwner = $this->ownerId;
 		$out->machineNotes = $this->inventoryContent['notes'];
 		$out->machinePurpose = $this->inventoryContent['purpose'];
 		$out->machineHw = $this->inventoryContent['hardware'];
@@ -107,12 +109,13 @@ class tlInventory extends tlObjectWithDB
 		return $out;
 	}
 
+
 	/** 
 	 * Returns a query which can be used to read one or multiple items from a db
 	 * 
 	 * @param mixed $ids integer or array of integer - ID of inventory items
 	 */
-	public function executeQuery($ids = null)
+	protected function executeQuery($ids = null)
 	{
 		$query = " SELECT * FROM {$this->tables['inventory']} " .
 				" WHERE  testproject_id={$this->testProjectID}";
@@ -145,6 +148,7 @@ class tlInventory extends tlObjectWithDB
 		}
 		return $recordset;
 	}
+
 	
 	/** 
 	 * Writes an keyword into the database
@@ -166,7 +170,7 @@ class tlInventory extends tlObjectWithDB
 			$query = " INSERT INTO {$this->tables['inventory']} (name," .
 					"testproject_id,content,ipaddress,owner_id,creation_ts) " .
 					" VALUES ('" . $name .	"'," . $this->testProjectID . ",'" . 
-					$data_serialized . "','" . $ip . "'," . $this->ownerID . "," . 
+					$data_serialized . "','" . $ip . "'," . $this->ownerId . "," . 
 					$this->db->db_now() . ")";
 				
 			$result = $this->db->exec_query($query);
@@ -187,7 +191,7 @@ class tlInventory extends tlObjectWithDB
 			$query = "UPDATE {$this->tables['inventory']} " .
 					" SET name='{$name}', content='{$data_serialized}', " .
 				    " ipaddress='{$ip}', modification_ts=" . $this->db->db_now() .
-				    ", testproject_id={$this->testProjectID}, owner_id=" . $this->ownerID .
+				    ", testproject_id={$this->testProjectID}, owner_id=" . $this->ownerId .
 					" WHERE id={$this->inventoryId}";
 			$result = $this->db->exec_query($query);
 			if ($result)
@@ -227,18 +231,30 @@ class tlInventory extends tlObjectWithDB
 	public function deleteInventory($itemID)
 	{
 		$this->inventoryId = $itemID;
-		$result = $this->deleteFromDB();
 
-		if ($result == tl::OK)
+		// check existence / get name of the record		
+		$recordset = $this->	executeQuery($this->inventoryId);
+		if(!is_null($recordset))
 		{
-			logAuditEvent(TLS("audit_inventory_deleted",$this->name),"DELETE",$this->name,"inventory");
-			$this->userFeedback = langGetFormated('inventory_delete_success',$this->name);
+			$this->name = $recordset[0]['name'];
+			$result = $this->deleteFromDB();
+
+			if ($result == tl::OK)
+			{
+				logAuditEvent(TLS("audit_inventory_deleted",$this->name),"DELETE",$this->name,"inventory");
+				$this->userFeedback = langGetFormated('inventory_delete_success',$this->name);
+			}
+			else
+			{
+				$this->userFeedback = langGetFormated('inventory_delete_fails',$this->name);
+				tLog('Internal error: The device "'.$this->name.'" was not deleted.', 'ERROR');
+			}	
 		}
 		else
 		{
-			$this->userFeedback = langGetFormated('inventory_update_fails',$this->name);
+			$this->userFeedback = lang_get('inventory_no_device').' ID='.$this->inventoryId;
 			tLog('Internal error: The device "'.$this->name.'" was not deleted.', 'ERROR');
-		}	
+		}
 
 		return $result;	
 	}
@@ -258,73 +274,72 @@ class tlInventory extends tlObjectWithDB
 		{
 			$result = $this->writeToDB($this->db);
 		}
-		return $result ? tl::OK : tl::ERROR;
+		return $result;
 	}
 
 
 	/**
+	 * Get all data for the project
 	 * 
-	 * @param resource $db [ref] the database connection
-	 * @param array $ids the database identifiers of the keywords
-	 * @param integer $detailLevel an optional detaillevel, any combination of TLOBJ_O_GET_DETAIL Flags
-	 * 
-	 * @return array returns the created keywords (tlKeyword) on success, or null else
-	 */
-/*	static public function getByIDs(&$db,$ids,$detailLevel = self::TLOBJ_O_GET_DETAIL_FULL)
-	{
-		return tlDBObject::createObjectsFromDB($db,$ids,__CLASS__,false,$detailLevel);
-	}
-*/
-
-	/**
-	 * currently not implemented
-	 * 
-	 * @param resource $db 
-	 * @param string $whereClause
-	 * @param string $column
-	 * @param string $orderBy
-	 * @param integer $detailLevel
-	 * @return integer returns tl::E_NOT_IMPLEMENTED
+	 * @return array 
 	 */
 	public function getAll()
 	{
 		$data = self::executeQuery(); 
 		return $data;
 	}
-	//END interface iDBSerialization
+
 
 	/**
 	 * checks a server name and IP for a certain testproject already exists in the database
+	 * some checks are valid for create only
 	 * 
 	 * @return integer return tl::OK if the keyword is found, else tlKeyword::E_NAMEALREADYEXISTS 
 	 */
-	private function checkInventoryData()
+	protected function checkInventoryData()
 	{
 		$result = tl::OK;
 		$name = $this->db->prepare_string(strtoupper($this->name));
 		$ipAddress = $this->db->prepare_string(strtoupper($this->ipAddress));
 
-		if (is_null($this->inventoryId) || ($this->inventoryId == 0))
+		if (strlen($name) == 0)
+		{
+			$result = self::E_NAMELENGTH;
+			$this->userFeedback = langGetFormated('inventory_name_empty',$name);
+		}
+
+		if ($result == tl::OK)
 		{
 			$query = " SELECT id FROM {$this->tables['inventory']} " .
 					 " WHERE name='" . $name.
 			         "' AND testproject_id={$this->testProjectID}";
+			         
+			if ($this->inventoryId > 0) // for update
+			{
+				$query .= ' AND NOT id='.$this->inventoryId;
+			}
+			tlog($query . ' ok ' . $this->inventoryId,'ERROR');
 			if ($this->db->fetchFirstRow($query))
 			{
 				$result = self::E_NAMEALREADYEXISTS;
 				$this->userFeedback = langGetFormated('inventory_name_exists',$this->name);
 			}
+		}
 
-			if ($result && !empty($ipAddress))
+		if ($result == tl::OK && !empty($ipAddress))
+		{
+			$query = " SELECT id FROM {$this->tables['inventory']} " .
+					 " WHERE ipaddress='" . $ipAddress . 
+		    	     "' AND testproject_id={$this->testProjectID}";
+
+			if ($this->inventoryId > 0) // for update
 			{
-				$query = " SELECT id FROM {$this->tables['inventory']} " .
-						 " WHERE ipaddress='" . $ipAddress . 
-			    	     "' AND testproject_id={$this->testProjectID}";
-				if ($this->db->fetchFirstRow($query))
-				{
-					$result = self::E_IPALREADYEXISTS;
-					$this->userFeedback = langGetFormated('inventory_ip_exists',$this->name);
-				}
+				$query .= ' AND NOT id='.$this->inventoryId;
+			}
+			if ($this->db->fetchFirstRow($query))
+			{
+				$result = self::E_IPALREADYEXISTS;
+				$this->userFeedback = langGetFormated('inventory_ip_exists',$ipAddress);
 			}
 		}
 		

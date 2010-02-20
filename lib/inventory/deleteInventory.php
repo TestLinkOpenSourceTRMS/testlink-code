@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: deleteInventory.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
+ * @version    	CVS: $Id: deleteInventory.php,v 1.2 2010/02/20 00:25:05 havlat Exp $
  *
  * @internal Revisions:
  * None
@@ -23,13 +23,11 @@ $data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
 
-//if($args->testprojectId)
-//if($args->testprojectId && $rightEdit)
-//if(checkRights($db,$user))
 if ($_SESSION['currentUser']->hasRight($db,"project_inventory_edit"))
 {
 	$tlIs = new tlInventory($args->testprojectId, $db);
 	$data['success'] = $tlIs->deleteInventory($args->machineID);
+	$data['success'] = ($data['success'] == 1 /*$tlIs->OK*/) ? true : false;
 	$data['userfeedback'] = $tlIs->getUserFeedback();
 }
 else

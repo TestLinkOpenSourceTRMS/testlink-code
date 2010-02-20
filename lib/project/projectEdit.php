@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.46 2010/02/18 21:52:11 havlat Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.47 2010/02/20 00:25:05 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -34,7 +34,6 @@ $gui_cfg = config_get('gui');
 $templateCfg = templateConfiguration();
 
 $session_tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
-
 $template = null;
 
 
@@ -147,10 +146,7 @@ switch($args->doAction)
         $smarty->assign('id', $args->tprojectID);
         $smarty->assign('name', $args->tprojectName);
         $smarty->assign('active', $args->active);
-        $smarty->assign('optReq', $args->optReq);
-        $smarty->assign('optPriority', $args->optPriority);
-        $smarty->assign('optAutomation', $args->optAutomation);
-        $smarty->assign('projectOptions', prepareOptions($args));
+		$smarty->assign('projectOptions', prepareOptions($args));
         $smarty->assign('tcasePrefix', $args->tcasePrefix);
         $smarty->assign('notes', $of->CreateHTML());
         $smarty->assign('found', $found);
@@ -223,7 +219,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 }
 
 /**
- * Collect a test project options to a singleton
+ * Collect a test project options (input from form) to a singleton
  * 
  * @param array $argsObj the page input
  * @return singleton data to be stored

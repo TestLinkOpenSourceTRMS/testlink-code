@@ -3,7 +3,7 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.25 2010/02/18 21:52:11 havlat Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.26 2010/02/20 00:25:05 havlat Exp $
  *
  * Revisions:
  *	20100212 - havlatm - inventory support
@@ -155,28 +155,28 @@
 			<tr>
 				<td></td><td>
 				  	<input type="checkbox" name="optReq" 
-				  			{if $projectOptions->requirementsEnabled} checked="checked"	{/if} />
+				  			{if $gui->projectOptions->requirementsEnabled} checked="checked"	{/if} />
 					{$labels.testproject_enable_requirements}
 				</td>
 			</tr>
 			<tr>
 				<td></td><td>
 					<input type="checkbox" name="optPriority" 
-							{if $projectOptions->testPriorityEnabled} checked="checked"	{/if} />
+							{if $gui->projectOptions->testPriorityEnabled} checked="checked"	{/if} />
 					{$labels.testproject_enable_priority}
 				</td>
 			</tr>
 			<tr>
 				<td></td><td>
 					<input type="checkbox" name="optAutomation" 
-				  			{if $projectOptions->automationEnabled} checked="checked" {/if} />
+				  			{if $gui->projectOptions->automationEnabled} checked="checked" {/if} />
 					{$labels.testproject_enable_automation}
 				</td>
 			</tr>
 			<tr>
 				<td></td><td>
 					<input type="checkbox" name="optInventory" 
-				  			{if $projectOptions->inventoryEnabled} checked="checked" {/if} />
+				  			{if $gui->projectOptions->inventoryEnabled} checked="checked" {/if} />
 					{$labels.testproject_enable_inventory}
 				</td>
 			</tr>

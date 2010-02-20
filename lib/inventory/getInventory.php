@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: getInventory.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
+ * @version    	CVS: $Id: getInventory.php,v 1.2 2010/02/20 09:27:29 franciscom Exp $
  *
  * @internal Revisions:
  * None
@@ -26,19 +26,20 @@ $tlUser = new tlUser($_SESSION['userID']);
 $users = $tlUser->getNames($db);
 
 // fill login instead of user ID
-foreach($data as $k => $v) 
+if( !is_null($data) )
 {
-	if ($v['owner_id'] != '0')
+	foreach($data as $k => $v) 
 	{
-		$data[$k]['owner'] = $users[$v['owner_id']]['login'];
-	}
-	else
-	{
-		$data[$k]['owner'] = '';
+		if ($v['owner_id'] != '0')
+		{
+			$data[$k]['owner'] = $users[$v['owner_id']]['login'];
+		}
+		else
+		{
+			$data[$k]['owner'] = '';
+		}
 	}
 }
-
 //new dBug($data);
 echo json_encode($data);
-
 ?>

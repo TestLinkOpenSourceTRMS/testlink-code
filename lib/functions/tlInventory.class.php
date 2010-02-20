@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.2 2010/02/20 00:25:05 havlat Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.3 2010/02/20 09:27:29 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
@@ -31,17 +31,22 @@ class tlInventory extends tlObjectWithDB
 {
 	/** @var integer the test project ID the server belongs to */
 	protected $testProjectID;
+
 	/** 
 	 * @var array with a machine data; by default include keys:
 	 * 		purpose, notes, spec
 	 */
 	protected $inventoryContent = array();
+
 	/** @var integer the server owner ID */
 	protected $inventoryId;
+
 	/** @var integer the item (server/machine) ID */
 	protected $ownerId = 0;
+
 	/** @var string the host-name of the server/machine */
 	protected $name;
+
 	/** @var string IP address of the server */
 	protected $ipAddress = '';
 
@@ -117,16 +122,21 @@ class tlInventory extends tlObjectWithDB
 	 */
 	protected function executeQuery($ids = null)
 	{
-		$query = " SELECT * FROM {$this->tables['inventory']} " .
-				" WHERE  testproject_id={$this->testProjectID}";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$query = "/* $debugMsg */ SELECT * FROM {$this->tables['inventory']} " .
+				 " WHERE  testproject_id={$this->testProjectID}";
 		
 		$clauses = null;
 		if (!is_null($ids))
 		{
 			if (!is_array($ids))
+			{
 				$clauses[] = "id = {$ids}";
-			else		
+			}
+			else
+			{		
 				$clauses[] = "id IN (".implode(",",$ids).")";
+			}	
 		}
 		if ($clauses)
 		{
@@ -158,6 +168,7 @@ class tlInventory extends tlObjectWithDB
 	 */
 	protected function writeToDB(&$db)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$name = $db->prepare_string($this->name);
 		$ip = $db->prepare_string($this->ipAddress);
 		$this->inventoryContent['hardware'] = $db->prepare_string($this->inventoryContent['hardware']);
@@ -167,9 +178,9 @@ class tlInventory extends tlObjectWithDB
 
 		if (is_null($this->inventoryId) || ($this->inventoryId == 0))
 		{
-			$query = " INSERT INTO {$this->tables['inventory']} (name," .
-					"testproject_id,content,ipaddress,owner_id,creation_ts) " .
-					" VALUES ('" . $name .	"'," . $this->testProjectID . ",'" . 
+			$query = "/* $debugMsg */ INSERT INTO {$this->tables['inventory']} (name," .
+					 " testproject_id,content,ipaddress,owner_id,creation_ts) " .
+					 " VALUES ('" . $name .	"'," . $this->testProjectID . ",'" . 
 					$data_serialized . "','" . $ip . "'," . $this->ownerId . "," . 
 					$this->db->db_now() . ")";
 				
@@ -188,11 +199,11 @@ class tlInventory extends tlObjectWithDB
 		}
 		else
 		{
-			$query = "UPDATE {$this->tables['inventory']} " .
-					" SET name='{$name}', content='{$data_serialized}', " .
-				    " ipaddress='{$ip}', modification_ts=" . $this->db->db_now() .
-				    ", testproject_id={$this->testProjectID}, owner_id=" . $this->ownerId .
-					" WHERE id={$this->inventoryId}";
+			$query = "/* $debugMsg */UPDATE {$this->tables['inventory']} " .
+					 " SET name='{$name}', content='{$data_serialized}', " .
+				     " ipaddress='{$ip}', modification_ts=" . $this->db->db_now() .
+				     ", testproject_id={$this->testProjectID}, owner_id=" . $this->ownerId .
+					 " WHERE id={$this->inventoryId}";
 			$result = $this->db->exec_query($query);
 			if ($result)
 			{
@@ -217,7 +228,8 @@ class tlInventory extends tlObjectWithDB
 	 */
 	protected function deleteFromDB()
 	{
-		$sql = "DELETE FROM {$this->tables['inventory']} WHERE id = " . $this->inventoryId;
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ DELETE FROM {$this->tables['inventory']} WHERE id = " . $this->inventoryId;
 		$result = $this->db->exec_query($sql);
 		return $result ? tl::OK : tl::ERROR;	
 	}
@@ -233,7 +245,7 @@ class tlInventory extends tlObjectWithDB
 		$this->inventoryId = $itemID;
 
 		// check existence / get name of the record		
-		$recordset = $this->	executeQuery($this->inventoryId);
+		$recordset = $this->executeQuery($this->inventoryId);
 		if(!is_null($recordset))
 		{
 			$this->name = $recordset[0]['name'];
@@ -279,7 +291,7 @@ class tlInventory extends tlObjectWithDB
 
 
 	/**
-	 * Get all data for the project
+	 * Get all inventory data for the project
 	 * 
 	 * @return array 
 	 */
@@ -298,6 +310,7 @@ class tlInventory extends tlObjectWithDB
 	 */
 	protected function checkInventoryData()
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$result = tl::OK;
 		$name = $this->db->prepare_string(strtoupper($this->name));
 		$ipAddress = $this->db->prepare_string(strtoupper($this->ipAddress));
@@ -310,7 +323,8 @@ class tlInventory extends tlObjectWithDB
 
 		if ($result == tl::OK)
 		{
-			$query = " SELECT id FROM {$this->tables['inventory']} " .
+			
+			$query = "/* $debugMsg */ SELECT id FROM {$this->tables['inventory']} " .
 					 " WHERE name='" . $name.
 			         "' AND testproject_id={$this->testProjectID}";
 			         
@@ -328,7 +342,7 @@ class tlInventory extends tlObjectWithDB
 
 		if ($result == tl::OK && !empty($ipAddress))
 		{
-			$query = " SELECT id FROM {$this->tables['inventory']} " .
+			$query = "/* $debugMsg */ SELECT id FROM {$this->tables['inventory']} " .
 					 " WHERE ipaddress='" . $ipAddress . 
 		    	     "' AND testproject_id={$this->testProjectID}";
 
@@ -345,6 +359,5 @@ class tlInventory extends tlObjectWithDB
 		
 		return $result;
 	}
-
 }
 ?>

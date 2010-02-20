@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: inventoryView.php,v 1.1 2010/02/18 21:52:10 havlat Exp $
+ * @version    	CVS: $Id: inventoryView.php,v 1.2 2010/02/20 09:27:29 franciscom Exp $
  *
  *	@todo redirect if no right
  *
@@ -24,7 +24,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $gui = new stdClass();
-$gui->rightEdit = has_rights($db,"project_inventory_edit");
+$gui->rightEdit = has_rights($db,"project_inventory_management");
 $gui->rightView = has_rights($db,"project_inventory_view");
 
 $smarty = new TLSmarty();

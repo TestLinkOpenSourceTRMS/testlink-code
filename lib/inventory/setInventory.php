@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: setInventory.php,v 1.2 2010/02/20 00:25:05 havlat Exp $
+ * @version    	CVS: $Id: setInventory.php,v 1.3 2010/02/20 09:27:29 franciscom Exp $
  *
  * @internal Revisions:
  * None
@@ -22,11 +22,7 @@ testlinkInitPage($db,false,false,"checkRights");
 $data['userfeedback'] = lang_get('inventory_msg_no_action');
 $data['success'] = FALSE;
 $args = init_args();
-//$rightEdit = has_rights($db,"project_inventory_edit");
-
-//if($args->testprojectId && $rightEdit)
-//if($args->testprojectId)
-if ($_SESSION['currentUser']->hasRight($db,"project_inventory_edit"))
+if ($_SESSION['currentUser']->hasRight($db,"project_inventory_management"))
 {
 	$tlIs = new tlInventory($args->testprojectId, $db);
 	$data['success'] = $tlIs->setInventory($args);
@@ -75,6 +71,6 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,"project_inventory_edit");
+	return $user->hasRight($db,"project_inventory_management");
 }
 ?>

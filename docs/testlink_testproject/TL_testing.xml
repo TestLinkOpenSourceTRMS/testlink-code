@@ -16,11 +16,7 @@
 	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
-
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="7" name="Create FIRST Test Project - TEMPLATE ON">
 	<node_order><![CDATA[1]]></node_order>
@@ -29,11 +25,7 @@
 	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
-
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="9" name="Create Test Project - No conflict">
 	<node_order><![CDATA[2]]></node_order>
@@ -42,11 +34,7 @@
 	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
-
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="11" name="Rename Test Project - NO NAME CONFLICT">
 	<node_order><![CDATA[3]]></node_order>
@@ -55,11 +43,7 @@
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
-
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="13" name="Set Test Project INACTIVE">
 	<node_order><![CDATA[5]]></node_order>
@@ -68,11 +52,7 @@
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
-
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="15" name="Delete EMPTY  Test Project">
 	<node_order><![CDATA[7]]></node_order>
@@ -81,11 +61,7 @@
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
-
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="17" name="Delete Test Project WITHOUT PLATFORMS">
 	<node_order><![CDATA[8]]></node_order>
@@ -94,11 +70,7 @@
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
-
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="19" name="Delete Test Project WITH PLATFORMS  NOT ASSIGNED">
 	<node_order><![CDATA[9]]></node_order>
@@ -108,10 +80,7 @@
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="21" name="Delete Test Project  WORST CASE ">
 	<node_order><![CDATA[10]]></node_order>
@@ -121,10 +90,7 @@
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 </testsuite><testsuite name="Requirements Feature" >
 <node_order><![CDATA[3]]></node_order>
 <details><![CDATA[]]> 
@@ -143,10 +109,7 @@
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="28" name="Create NEW VERSION - Source Version 1">
 	<node_order><![CDATA[101]]></node_order>
@@ -157,10 +120,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="30" name="Create NEW VERSION - Source Version &lt;&gt; 1">
 	<node_order><![CDATA[101]]></node_order>
@@ -169,11 +129,7 @@ Choose version 1 and create new version]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
-
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 </testsuite></testsuite><testsuite name="Test Specification" >
 <node_order><![CDATA[4]]></node_order>
 <details><![CDATA[]]> 
@@ -189,10 +145,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
+</testcase>
 
 <testcase internalid="36" name="Delete EMPTY Test Suite">
 	<node_order><![CDATA[101]]></node_order>
@@ -202,11 +155,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="38" name="Delete NOT EMPTY Test Suite ">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[15]]></externalid>
@@ -215,11 +164,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="40" name="Copy EMPTY Test Suite Simple">
 	<node_order><![CDATA[102]]></node_order>
 	<externalid><![CDATA[16]]></externalid>
@@ -228,11 +173,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="42" name="Copy NOT EMPTY Test Suite ">
 	<node_order><![CDATA[102]]></node_order>
 	<externalid><![CDATA[17]]></externalid>
@@ -241,11 +182,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="44" name="Move EMPTY Test Suite via DRAG &amp; DROP">
 	<node_order><![CDATA[103]]></node_order>
 	<externalid><![CDATA[18]]></externalid>
@@ -254,11 +191,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="46" name="Move NOT EMPTY Test Suite via DRAG &amp; DROP">
 	<node_order><![CDATA[103]]></node_order>
 	<externalid><![CDATA[19]]></externalid>
@@ -267,11 +200,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="48" name="Rename Test Suite 'Easy'">
 	<node_order><![CDATA[104]]></node_order>
 	<externalid><![CDATA[20]]></externalid>
@@ -280,11 +209,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="50" name="Copy EMPTY Test Suite + KEYWORDS">
 	<node_order><![CDATA[105]]></node_order>
 	<externalid><![CDATA[21]]></externalid>
@@ -293,11 +218,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="52" name="Copy EMPTY Test Suite + CUSTOM FIELDS">
 	<node_order><![CDATA[106]]></node_order>
 	<externalid><![CDATA[22]]></externalid>
@@ -306,11 +227,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="54" name="Copy EMPTY Test Suite + KEYWORDS + CUSTOM FIELDS ">
 	<node_order><![CDATA[107]]></node_order>
 	<externalid><![CDATA[23]]></externalid>
@@ -319,11 +236,7 @@ Choose version 1 and create new version]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="56" name="Export Test Suite XML simple">
 	<node_order><![CDATA[108]]></node_order>
 	<externalid><![CDATA[24]]></externalid>
@@ -337,11 +250,7 @@ Test Cases has NO Custom Fields]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="58" name="Export Test Suite XML with keywords">
 	<node_order><![CDATA[109]]></node_order>
 	<externalid><![CDATA[25]]></externalid>
@@ -355,11 +264,7 @@ Test Cases has NO Custom Fields]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite><testsuite name="Test Case Management" >
+</testcase></testsuite><testsuite name="Test Case Management" >
 <node_order><![CDATA[2]]></node_order>
 <details><![CDATA[]]> 
 </details>
@@ -373,11 +278,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="63" name="Edit Test Case - Template DISABLED">
 	<node_order><![CDATA[1]]></node_order>
 	<externalid><![CDATA[27]]></externalid>
@@ -386,11 +287,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="65" name="Edit Test Case - Template ENABLED">
 	<node_order><![CDATA[2]]></node_order>
 	<externalid><![CDATA[28]]></externalid>
@@ -399,11 +296,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="67" name="Copy Test Case - Dest: Same Test Suite TOP">
 	<node_order><![CDATA[3]]></node_order>
 	<externalid><![CDATA[29]]></externalid>
@@ -412,11 +305,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="69" name="Copy Test Case - Dest: Same Test Suite BOTTOM ">
 	<node_order><![CDATA[3]]></node_order>
 	<externalid><![CDATA[30]]></externalid>
@@ -425,11 +314,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="71" name="Create Test Case Step - easy">
 	<node_order><![CDATA[4]]></node_order>
 	<externalid><![CDATA[31]]></externalid>
@@ -438,11 +323,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="73" name="Create Test Step with conflict - SAME STEP Number">
 	<node_order><![CDATA[5]]></node_order>
 	<externalid><![CDATA[32]]></externalid>
@@ -451,11 +332,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="75" name="Create Test Step with invalid step number -&gt; 0">
 	<node_order><![CDATA[6]]></node_order>
 	<externalid><![CDATA[33]]></externalid>
@@ -464,11 +341,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="77" name="Reorder Test Case Steps - easy">
 	<node_order><![CDATA[7]]></node_order>
 	<externalid><![CDATA[34]]></externalid>
@@ -477,11 +350,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="79" name="Delete Test Case Step">
 	<node_order><![CDATA[8]]></node_order>
 	<externalid><![CDATA[35]]></externalid>
@@ -490,11 +359,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite></testsuite><testsuite name="Platforms Management" >
+</testcase></testsuite></testsuite><testsuite name="Platforms Management" >
 <node_order><![CDATA[5]]></node_order>
 <details><![CDATA[]]> 
 </details><testsuite name="Create / Update / Delete Platforms" >
@@ -509,11 +374,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="85" name="Create Platform without Conflicts">
 	<node_order><![CDATA[2]]></node_order>
 	<externalid><![CDATA[37]]></externalid>
@@ -522,11 +383,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite><testsuite name="Add / Remove Platforms" >
+</testcase></testsuite><testsuite name="Add / Remove Platforms" >
 <node_order><![CDATA[1]]></node_order>
 <details><![CDATA[]]> 
 </details>
@@ -538,11 +395,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="90" name="Save Platform Assignament WITH RIGHT PANEL EMPTY">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[39]]></externalid>
@@ -551,11 +404,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite></testsuite><testsuite name="Custom Fields Management" >
+</testcase></testsuite></testsuite><testsuite name="Custom Fields Management" >
 <node_order><![CDATA[6]]></node_order>
 <details><![CDATA[]]> 
 </details></testsuite><testsuite name="Test Plan Management" >
@@ -570,11 +419,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite><testsuite name="Build Management" >
+</testcase></testsuite><testsuite name="Build Management" >
 <node_order><![CDATA[8]]></node_order>
 <details><![CDATA[]]> 
 </details>
@@ -586,11 +431,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="99" name="Create Build - &quot;easy&quot; - WITH RELEASE DATE">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[42]]></externalid>
@@ -599,11 +440,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite><testsuite name="Milestones Management" >
+</testcase></testsuite><testsuite name="Milestones Management" >
 <node_order><![CDATA[9]]></node_order>
 <details><![CDATA[]]> 
 </details></testsuite><testsuite name="User Management" >
@@ -633,11 +470,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="110" name="DBMS - Postgres">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[44]]></externalid>
@@ -646,11 +479,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite></testsuite><testsuite name="Test Case Assignment to TEST PLAN" >
+</testcase></testsuite></testsuite><testsuite name="Test Case Assignment to TEST PLAN" >
 <node_order><![CDATA[14]]></node_order>
 <details><![CDATA[]]> 
 </details></testsuite><testsuite name="User Execution Assignment" >
@@ -692,11 +521,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite><testsuite name="Update Linked Test Case Versions" >
+</testcase></testsuite><testsuite name="Update Linked Test Case Versions" >
 <node_order><![CDATA[25]]></node_order>
 <details><![CDATA[]]> 
 </details>
@@ -708,11 +533,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-
+</testcase>
 <testcase internalid="128" name="Request Update for a Test Suite">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[47]]></externalid>
@@ -721,11 +542,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite><testsuite name="Login" >
+</testcase></testsuite><testsuite name="Login" >
 <node_order><![CDATA[26]]></node_order>
 <details><![CDATA[/** Testauite:<br /> Fill in:<br />  <table border="0"> <tbody><tr><td>Title</td><td>Scope</td></tr> <tr><td>Author name</td></tr> </tbody></table> <br />   **/]]> 
 </details>
@@ -737,11 +554,7 @@ Delete]]></summary>
 	<executiontype><![CDATA[1]]></executiontype>
 	<importance><![CDATA[2]]></importance>
 
-<keywords><keyword name=""><notes><![CDATA[
-
-]]></notes></keyword>
-</keywords></testcase>
-</testsuite><testsuite name="Test Reports and Metrics" >
+</testcase></testsuite><testsuite name="Test Reports and Metrics" >
 <node_order><![CDATA[27]]></node_order>
 <details><![CDATA[]]> 
 </details><testsuite name="Charts" >

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.559 2010/02/20 09:06:07 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.560 2010/02/20 13:47:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -325,8 +325,8 @@ $TLS_inventory_msg_no_rights = 'You have not appropriate rights to modify invent
 $TLS_inventory_msg_no_action = 'Invalid input data - no action was requested.';
 
 // ----- lib/functions/inventory.class.php -----
-$TLS_audit_inventory_created = 'A new device %s was created.';
-$TLS_audit_inventory_deleted = 'The device %s was deleted.';
+$TLS_audit_inventory_created = 'A new device {%1} was created - Test Project {%2}.';
+$TLS_audit_inventory_deleted = 'The device {%1} was deleted - Test Project {%2}.';
 $TLS_inventory_create_success = 'A new device %s was created successfully.';
 $TLS_inventory_create_fails = 'Failed: A new device %s was not created.';
 $TLS_inventory_update_success = 'The device %s was updated successfully.';

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.3 2010/02/20 09:27:29 franciscom Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.4 2010/02/20 13:47:48 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
@@ -168,6 +168,9 @@ class tlInventory extends tlObjectWithDB
 	 */
 	protected function writeToDB(&$db)
 	{
+		$auditData = $this->getAuditData();
+		$auditData = current($auditData);
+	
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$name = $db->prepare_string($this->name);
 		$ip = $db->prepare_string($this->ipAddress);
@@ -188,7 +191,8 @@ class tlInventory extends tlObjectWithDB
 			if ($result)
 			{
 				$this->inventoryId = $db->insert_id($this->tables['inventory']);
-				logAuditEvent(TLS("audit_inventory_created",$this->name),"CREATE",$this->name,"inventory");
+				logAuditEvent(TLS("audit_inventory_created",$this->name,$auditData['tproject_name']),
+				              "CREATE",$this->name,"inventory");
 				$this->userFeedback = langGetFormated('inventory_create_success',$this->name);
 			}
 			else
@@ -242,6 +246,8 @@ class tlInventory extends tlObjectWithDB
 	 */
 	public function deleteInventory($itemID)
 	{
+		$auditData = $this->getAuditData();
+		$auditData = current($auditData);
 		$this->inventoryId = $itemID;
 
 		// check existence / get name of the record		
@@ -253,7 +259,8 @@ class tlInventory extends tlObjectWithDB
 
 			if ($result == tl::OK)
 			{
-				logAuditEvent(TLS("audit_inventory_deleted",$this->name),"DELETE",$this->name,"inventory");
+				logAuditEvent(TLS("audit_inventory_deleted",$this->name,$auditData['tproject_name']),
+				              "DELETE",$this->name,"inventory");
 				$this->userFeedback = langGetFormated('inventory_delete_success',$this->name);
 			}
 			else
@@ -359,5 +366,21 @@ class tlInventory extends tlObjectWithDB
 		
 		return $result;
 	}
+	
+	/**
+	 * 
+ 	 *
+     */
+	protected function getAuditData()
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = " /* $debugMsg */ " .
+		       " SELECT id, name AS tproject_name FROM {$this->tables['nodes_hierarchy']} " .
+		       " WHERE id = {$this->testProjectID} ";
+  		$info = $this->db->fetchRowsIntoMap($sql,'id');
+		return $info;        
+	}
+
+	
 }
 ?>

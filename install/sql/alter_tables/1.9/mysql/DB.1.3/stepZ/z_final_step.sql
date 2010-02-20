@@ -1,7 +1,7 @@
 /* 
-$Revision: 1.3 $
-$Date: 2010/02/18 21:52:10 $
-$Author: havlat $
+$Revision: 1.4 $
+$Date: 2010/02/20 09:06:06 $
+$Author: franciscom $
 $Name:  $
 
 z_final_step.sql
@@ -11,7 +11,7 @@ MySQL
 /* system data update */
 INSERT INTO /*prefix*/rights  (id,description) VALUES (24 ,'platform_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (25 ,'platform_view');
-INSERT INTO /*prefix*/rights  (id,description) VALUES (26 ,'project_inventory_edit');
+INSERT INTO /*prefix*/rights  (id,description) VALUES (26 ,'project_inventory_management');
 INSERT INTO /*prefix*/rights  (id,description) VALUES (27 ,'project_inventory_view');
 
 /* default rights update [platforms, inventory]: leader and admin all, test analyst view)

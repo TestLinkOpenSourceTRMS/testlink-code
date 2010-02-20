@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.558 2010/02/20 08:07:55 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.559 2010/02/20 09:06:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1930,6 +1930,8 @@ $TLS_desc_mgt_view_events = "Event viewer (read only access)";
 $TLS_desc_events_mgt = "Event management";
 $TLS_desc_platforms_view="Platform view (read only access)";
 $TLS_desc_platforms_management="Platform Management";
+$TLS_desc_project_inventory_view="Inventory view (read only access)";
+$TLS_desc_project_inventory_management="Inventory Management";
 
 
 $TLS_desc_role_management = "Role management";

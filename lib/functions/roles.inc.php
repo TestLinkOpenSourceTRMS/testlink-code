@@ -33,14 +33,15 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.57 2009/08/10 18:57:58 schlundus Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.58 2010/02/20 09:06:07 franciscom Exp $
  * 
  *
  * @internal rev: 
- *      20090425 - franciscom - BUGID 2417 - new right for test projects
- *      20081030 - franciscom - added new rights -> system
- *      20070901 - franciscom - BUGID 1016
- *      20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
+ *	20100220 - franciscom - added inventory rights
+ *  20090425 - franciscom - BUGID 2417 - new right for test projects
+ *  20081030 - franciscom - added new rights -> system
+ *  20070901 - franciscom - BUGID 1016
+ *  20070819 - franciscom - added get_tplan_effective_role(), get_tproject_effective_role()
  */
 
 /** localization support */ 
@@ -100,8 +101,9 @@ function init_global_rights_maps()
 							);
 	
 	$g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),
-	                          "testproject_user_role_assignment" => lang_get('desc_user_role_assignment')
-							  );						
+	                          "testproject_user_role_assignment" => lang_get('desc_user_role_assignment'),
+                              "project_inventory_management" => lang_get('desc_project_inventory_management'),
+                              "project_inventory_view" => lang_get('desc_project_inventory_view') );						
 	
 	$g_rights_cf = array("cfield_view" => lang_get('desc_cfield_view'),
 						 "cfield_management" => lang_get('desc_cfield_management'));

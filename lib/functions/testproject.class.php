@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.162 2010/02/18 21:52:10 havlat Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.163 2010/02/20 09:06:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1321,8 +1321,8 @@ function setPublicStatus($id,$status)
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
     	$fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title";
+                    "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+                    "RSPEC.modification_ts,NH.name AS title";
     
 	    $fields = is_null($fields) ? $fields2get : implode(',',$fields);
     	$sql = "  /* $debugMsg */ SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .

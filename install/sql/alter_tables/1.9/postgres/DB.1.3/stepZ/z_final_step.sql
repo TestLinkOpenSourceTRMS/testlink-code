@@ -1,14 +1,14 @@
 /* 
-$Revision: 1.4 $
-$Date: 2010/02/18 21:52:11 $
-$Author: havlat $
+$Revision: 1.5 $
+$Date: 2010/02/20 09:06:07 $
+$Author: franciscom $
 $Name:  $
 */
 
 -- update config data
 INSERT INTO /*prefix*/rights (id,description) VALUES (24 ,'platform_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (25 ,'platform_view');
-INSERT INTO /*prefix*/rights (id,description) VALUES (26 ,'project_inventory_edit');
+INSERT INTO /*prefix*/rights (id,description) VALUES (26 ,'project_inventory_management');
 INSERT INTO /*prefix*/rights (id,description) VALUES (27 ,'project_inventory_view');
 
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (8,24);

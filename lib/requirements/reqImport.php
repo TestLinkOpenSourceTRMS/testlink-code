@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/02/14 17:33:58 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/02/20 09:06:07 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -43,6 +43,8 @@ switch($args->doAction)
     case 'uploadFile':
         $dummy = doUploadFile($db,$gui->fileName,$args,$req_spec_mgr);
         $gui->items = $dummy->items;
+        new dBug($gui);
+        die();
         $gui->file_check = $dummy->file_check;
         if($gui->file_check['status_ok'] == 0)
         {
@@ -56,6 +58,7 @@ switch($args->doAction)
     
         
 }
+
 
 /**
  * doExecuteImport
@@ -262,7 +265,7 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     	                
     	                if($retval->file_check['status_ok'])
     	                { 
-	                        $retval->items=$reqSpecMgr->xmlToMapReqSpec($xml->req_spec);
+	                        $retval->items = $reqSpecMgr->xmlToMapReqSpec($xml->req_spec);
     	                	new dBug($retval->items);
 	                        
 	                    }

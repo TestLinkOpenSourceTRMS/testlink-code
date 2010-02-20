@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.58 2010/02/18 21:52:10 havlat Exp $
+-- $Id: testlink_create_tables.sql,v 1.59 2010/02/20 08:48:59 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -709,7 +709,7 @@ CREATE TABLE /*prefix*/inventory (
 	"modification_ts" TIMESTAMP NULL,
 	PRIMARY KEY (id)
 );
-CREATE INDEX /*prefix*/inventory_idx1 ON /*prefix*/infrastructure (testproject_id);
-CREATE UNIQUE INDEX /*prefix*/inventory_uidx1 ON /*prefix*/infrastructure (name,testproject_id);
+CREATE INDEX /*prefix*/inventory_idx1 ON /*prefix*/inventory (testproject_id);
+CREATE UNIQUE INDEX /*prefix*/inventory_uidx1 ON /*prefix*/inventory (name,testproject_id);
 
 

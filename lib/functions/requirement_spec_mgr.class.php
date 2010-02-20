@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2010/02/18 21:29:20 $ by $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2010/02/20 15:03:18 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1054,6 +1054,13 @@ function xmlToMapReqSpec($xml_item,$level=0)
     if( is_null($xml_item) )
     {
         return null;      
+    }
+    
+    // used to reset static structures if calling this in loop
+    if($level == 0)
+    {
+    	$iterations = 0;
+    	$mapped = null;
     }
     echo __FUNCTION__;
     new dBug($xml_item->getName());

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.19 2010/02/16 21:46:32 havlat Exp $
+$Id: projectView.tpl,v 1.20 2010/02/20 08:01:27 franciscom Exp $
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
@@ -74,7 +74,6 @@ var del_action=fRoot+'{$deleteAction}';
 		<tr>
 			<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$testproject.id}</span>
 			    <a href="{$editAction}{$testproject.id}">
-  					<img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit_16.png"/>
 				     {$testproject.name|escape}
 				     {if $gsmarty_gui->show_icon_edit}
  				         <img title="{$labels.testproject_alt_edit}"

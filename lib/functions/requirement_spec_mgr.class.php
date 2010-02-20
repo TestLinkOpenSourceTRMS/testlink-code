@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2010/02/20 15:35:51 $ by $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2010/02/20 16:50:22 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -55,11 +55,15 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   var $db;
   var $cfield_mgr;
   var $tree_mgr;
-  var $import_file_types = array("csv" => "CSV",
-                                 "csv_doors" => "CSV (Doors)",
-                                 "XML" => "XML",
-								 "DocBook" => "DocBook");
-
+  
+  // 20100220 - franciscom - I'm will work only on XML
+  // then remove other formats till other dev do refactor
+  // var $import_file_types = array("csv" => "CSV",
+  //                                "csv_doors" => "CSV (Doors)",
+  //                                "XML" => "XML",
+  //							    "DocBook" => "DocBook");
+  // 
+  var $import_file_types = array("XML" => "XML");
   var $export_file_types = array("XML" => "XML");
   var $my_node_type;
   var $node_types_descr_id;
@@ -1062,8 +1066,6 @@ function xmlToMapReqSpec($xml_item,$level=0)
     	$iterations = 0;
     	$mapped = null;
     }
-    echo __FUNCTION__;
-    new dBug($xml_item->getName());
     
     $dummy=array();
     $dummy['node_order'] = (int)$xml_item->node_order;
@@ -1085,10 +1087,9 @@ function xmlToMapReqSpec($xml_item,$level=0)
              $dummy['custom_fields'][(string)$key->name]= (string)$key->value;
           }    
     }
-    $mapped[]=array('req_spec' => $dummy, 'requirements' => null, 'level' => $dummy['level']);
+    $mapped[]=array('req_spec' => $dummy, 'requirements' => null, 
+                    'level' => $dummy['level']);
 
-    new dBug($dummy[$key]);
-    
     // Process children
     if( property_exists($xml_item,'requirement') )	              
     {
@@ -1107,8 +1108,6 @@ function xmlToMapReqSpec($xml_item,$level=0)
             }    
         }    
     }        
-    new dBug($mapped);
-    
     if( property_exists($xml_item,'req_spec') )	              
     {
         $loop2do=count($xml_item->req_spec);
@@ -1362,7 +1361,8 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
    
     $loop2do = count($items);
     $container_id[0] = (is_null($parent_id) || $parent_id == 0) ? $tproject_id : $parent_id;
-    
+
+            
     for($idx = 0;$idx < $loop2do; $idx++)
     {
         $elem = $items[$idx]['req_spec'];

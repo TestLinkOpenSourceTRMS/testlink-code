@@ -1,6 +1,6 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.11 2010/02/20 15:35:51 franciscom Exp $
+$Id: reqImport.tpl,v 1.12 2010/02/20 16:50:21 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -30,7 +30,7 @@ Revision:
 {assign var="viewer_template" value=$smarty.template|replace:"$bn":"inc_req_import_viewer.tpl"}
 {assign var="req_module" value='lib/requirements/'}
 {assign var="url_args" value="reqSpecView.php?req_spec_id="}
-{assign var="req_spec_view_url" value="$basehref$req_module$url_args$req_spec_id"}
+{assign var="req_spec_view_url" value="$basehref$req_module$url_args$gui->req_spec_id"}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -40,12 +40,12 @@ Revision:
 </head>
 
 <body>
-<h1 class="title">{$gui->mainTitle|escape}</h1>
+<h1 class="title">{$gui->main_descr|escape}</h1>
 
 <div class="workBack">
 
   {if  $gui->doAction == 'askFileName'}
-  <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?req_spec_id={$reqSpec.id}">
+  <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}">
 		<input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
     {include file="inc_gui_import_file.tpl" args=$gui->importFileGui}
   </form>
@@ -54,7 +54,7 @@ Revision:
     <script>
     alert("{$gui->file_check.msg}");
     </script>
-  {elseif $gui->try_upload  && ($gui->arrImport eq "") }
+  {elseif $gui->try_upload  && ($gui->arrImport == "") }
     <script>
     alert("{$labels.check_req_file_structure}");
     </script>
@@ -63,7 +63,7 @@ Revision:
   {elseif $gui->doAction == 'uploadFile'}
 
     {if $gui->importType == 'XML' && !is_null($gui->items)}
-  	  <form method='post' action='{$SCRIPT_NAME}?req_spec_id={$reqSpec.id}'>
+  	  <form method='post' action='{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}'>
  		  <input type='hidden' value="{$gui->importType}" name='importType' />
 		  <input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
 
@@ -83,7 +83,7 @@ Revision:
   	
   {/if}
   
-  {if $importResult != '' && $file_check.status_ok }
+  {if $gui->importResult != '' && $gui->file_check.status_ok }
   	<p class="info">{$importResult}</p>
 
   	<table class="simple">
@@ -103,7 +103,7 @@ Revision:
   	{/section}
   	</table>
 
-  {elseif $gui->try_upload && $file_check.status_ok && ($arrImport neq "") }
+  {elseif $gui->try_upload && $gui->file_check.status_ok && ($gui->arrImport != "") }
 
   	{* second screen *}
   	<h2>{$labels.title_req_import_check_input}</h2>
@@ -111,7 +111,7 @@ Revision:
   	<p>{$labels.req_import_check_note}</p>
 
   	<div>
-  	<form method='post' action='{$SCRIPT_NAME}?req_spec_id={$reqSpec.id}'>
+  	<form method='post' action='{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}'>
 
   		<p>{$labels.req_import_option_header}
   		<select name="conflicts">
@@ -121,7 +121,7 @@ Revision:
 
   		<p><input type="checkbox" name="noEmpty" checked="checked" />{$labels.req_import_dont_empty}</p>
 
-  		<input type="hidden" name="req_spec_id" value="{$reqSpec.id}" />
+  		<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
   		<input type='hidden' value='{$gui->fileName}' name='uploadedFile' />
   		<input type='hidden' value='{$gui->importType}' name='importType' />
 

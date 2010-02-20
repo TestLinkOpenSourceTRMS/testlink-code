@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.22 2010/02/18 21:52:11 havlat Exp $     
+ $Id: mainPageLeft.tpl,v 1.23 2010/02/20 08:07:37 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -19,8 +19,8 @@
                           href_roles_management,title_requirements,
                           href_req_spec,href_req_assign,
                           title_test_spec,href_edit_tc,href_browse_tc,href_search_tc,
-                          href_search_req, href_search_req_spec,
-                          href_platform_management, href_inventory,
+                          href_search_req, href_search_req_spec,href_inventory,
+                          href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign'}
 
 

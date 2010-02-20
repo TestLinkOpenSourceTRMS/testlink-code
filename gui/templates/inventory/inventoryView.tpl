@@ -5,7 +5,7 @@
  * Smarty template - see and manage inventory table 
  *
  * Author: Martin Havlat
- * CVS: $Id: inventoryView.tpl,v 1.1 2010/02/18 21:52:10 havlat Exp $
+ * CVS: $Id: inventoryView.tpl,v 1.2 2010/02/20 21:09:50 havlat Exp $
  *
  * @todo		escape shown text (renderer: Ext.util.Format.htmlEncode(???))
  * @todo           // Highlight the row for 3 seconds
@@ -226,25 +226,28 @@ Ext.onReady(function(){
 
 	var buttonHandler = function(button,event) 
 	{
-		deviceEditForm.form.submit
-		({
-			waitMsg: 'Saving Data...',
-			success:function(form, action, o) 
-			{
-				store.reload();
-//				store.insert(action.result.record["machineID"],action.result.record);
-				if (action.result.success)
+		if(deviceEditForm.form.isValid())
+		{
+			deviceEditForm.form.submit
+			({
+				waitMsg: 'Saving Data...',
+				success:function(form, action, o) 
 				{
-					editWindow.hide();
+					store.reload();
+	//				store.insert(action.result.record["machineID"],action.result.record);
+					if (action.result.success)
+					{
+						editWindow.hide();
+					}
+					showFeedback(action.result.success,action.result.userfeedback);
+	//				inventoryGrid.getView().refresh();
+				},
+				failure:function(form, action) 
+				{
+					Ext.MessageBox.alert(tls_error, action.result.userfeedback);
 				}
-				showFeedback(action.result.success,action.result.userfeedback);
-//				inventoryGrid.getView().refresh();
-			},
-			failure:function(form, action) 
-			{
-				Ext.MessageBox.alert(tls_error, action.result.userfeedback);
-			}
-		});
+			});
+		}
 	};		
 
 	
@@ -274,6 +277,7 @@ Ext.onReady(function(){
 	            name: 'machineName',
 	            id: 'editName',
 	            itemCls: 'required',
+	            maxLength: 255,
 	            anchor:'100%'  // anchor width by percentage
 	        },{
 	            x: 0,
@@ -319,6 +323,7 @@ Ext.onReady(function(){
 	            id: 'editPurpose',
 	            xtype: 'textarea',
 	            name: 'machinePurpose',
+	            maxLength: 2000,
 		        style: {
 		            width: '100%',
 		            height: '60px',
@@ -335,6 +340,7 @@ Ext.onReady(function(){
 	            id: 'editHw',
 	            xtype: 'textarea',
 	            name: 'machineHw',
+	            maxLength: 2000,
 		        style: {
 		            width: '100%',
 		            height: '60px',
@@ -351,6 +357,7 @@ Ext.onReady(function(){
 	            id: 'editNotes',
 	            xtype: 'textarea',
 	            name: 'machineNotes',
+	            maxLength: 2000,
 		        style: {
 		            width: '100%',
 		            height: '60px',

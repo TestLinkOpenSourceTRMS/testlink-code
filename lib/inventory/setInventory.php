@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: setInventory.php,v 1.4 2010/02/20 18:35:44 havlat Exp $
+ * @version    	CVS: $Id: setInventory.php,v 1.5 2010/02/20 21:09:51 havlat Exp $
  *
  * @internal Revisions:
  * None
@@ -44,11 +44,11 @@ function init_args()
     $_REQUEST = strings_stripSlashes($_REQUEST);
 	$iParams = array("machineID" => array(tlInputParameter::INT_N),
 					"machineOwner" => array(tlInputParameter::INT_N),
-			        "machineName" => array(tlInputParameter::STRING_N,0,100),
+			        "machineName" => array(tlInputParameter::STRING_N,0,255),
 			        "machineIp" => array(tlInputParameter::STRING_N,0,50),
-			        "machineNotes" => array(tlInputParameter::STRING_N,0,1000),
-			        "machinePurpose" => array(tlInputParameter::STRING_N,0,1000),
-			        "machineHw" => array(tlInputParameter::STRING_N,0,500),
+			        "machineNotes" => array(tlInputParameter::STRING_N,0,2000),
+			        "machinePurpose" => array(tlInputParameter::STRING_N,0,2000),
+			        "machineHw" => array(tlInputParameter::STRING_N,0,2000),
 	 				);
 
 	$args = new stdClass();

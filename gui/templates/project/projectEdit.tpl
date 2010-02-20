@@ -3,7 +3,7 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.26 2010/02/20 00:25:05 havlat Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.27 2010/02/20 18:12:02 havlat Exp $
  *
  * Revisions:
  *	20100212 - havlatm - inventory support
@@ -88,17 +88,6 @@
 		<form name="edit_testproject" id="edit_testproject"
 		      method="post" action="{$managerURL}"
 		      onSubmit="javascript:return validateForm(this);">
-
-	    {if $gui->canManage == "yes"}
-		<div class="groupBtn">
-		    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
-                  added hidden   *}
-    		<input type="hidden" name="doAction" value="{$doActionValue}" />
-			<input type="hidden" name="tprojectID" value="{$id}" />
-		    <input type="submit" name="doActionButton" value="{$buttonValue}" />
-			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
-		</div>
-		{/if}
 
 		<table id="item_view" class="common" style="width:100%; padding:3px;">
 
@@ -200,6 +189,20 @@
 			    </td>
       		</tr>
 *}
+
+			<tr><td cols="2">
+		    {if $gui->canManage == "yes"}
+				<div class="groupBtn">
+		    	{* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
+                  added hidden   *}
+    			<input type="hidden" name="doAction" value="{$doActionValue}" />
+				<input type="hidden" name="tprojectID" value="{$id}" />
+			    <input type="submit" name="doActionButton" value="{$buttonValue}" />
+				<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
+				</div>
+			{/if}
+			</td></tr>
+
 		</table>
 		</form>
 		<p>* {$labels.mandatory}</p>

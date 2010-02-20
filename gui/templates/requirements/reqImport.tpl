@@ -1,6 +1,6 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.9 2009/04/06 10:24:41 franciscom Exp $
+$Id: reqImport.tpl,v 1.10 2010/02/20 14:30:44 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -35,8 +35,7 @@ Revision:
 </head>
 
 <body>
-<h1 class="title">{$reqSpec.title|escape}{$smarty.const.TITLE_SEP}
-	{$labels.title_req_import}</h1>
+<h1 class="title">{$gui->mainTitle|escape}</h1>
 
 <div class="workBack">
 

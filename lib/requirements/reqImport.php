@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/02/20 09:06:07 $ by $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/02/20 14:30:56 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -35,9 +35,6 @@ $gui = initializeGui($args,$req_spec_mgr,$_SESSION);
 $importResult = null;
 $arrImport = null;
 
-
-new dBug($args);
-
 switch($args->doAction)
 {
     case 'uploadFile':
@@ -55,9 +52,31 @@ switch($args->doAction)
     case 'executeImport':
         $dummy = doExecuteImport($db,$gui->fileName,$args,$req_spec_mgr);
     break;
-    
-        
 }
+
+switch($args->scope)
+{
+	case 'tree':
+		$req_spec = '';
+	break;
+
+	case 'branch':
+		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
+	break;
+
+}
+$smarty = new TLSmarty;
+$smarty->assign('gui',$gui);
+$smarty->assign('try_upload',$args->bUpload);
+$smarty->assign('req_spec_id', $args->req_spec_id);
+$smarty->assign('reqSpec', $req_spec);
+$smarty->assign('arrImport', $arrImport);
+$smarty->assign('importResult', $importResult);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
+
+
 
 
 /**
@@ -87,15 +106,6 @@ function doExecuteImport(&$dbHandler,$fileName,&$args,&$reqSpecMgr)
     return $retval;    
 }
 
-$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
-$smarty = new TLSmarty;
-$smarty->assign('gui',$gui);
-$smarty->assign('try_upload',$args->bUpload);
-$smarty->assign('req_spec_id', $args->req_spec_id);
-$smarty->assign('reqSpec', $req_spec);
-$smarty->assign('arrImport', $arrImport);
-$smarty->assign('importResult', $importResult);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 
@@ -131,7 +141,9 @@ function init_args()
     
     $args->achecked_req=isset($request['achecked_req']) ? $request['achecked_req'] : null;
     $args->tproject_id = $_SESSION['testprojectID'];
+    $args->tproject_name = $_SESSION['testprojectName'];
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
+   	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'branch';
     
     return $args;
 }
@@ -161,7 +173,6 @@ function check_valid_ftype($upload_info,$import_type)
 	$mime_import_types['text/plain'] = array('CSV' => 'CSV', 'CSV_DOORS' => 'CSV_DOORS');
 	$mime_import_types['application/octet-stream'] = array('CSV' => 'CSV');
 	$mime_import_types['text/xml'] = array('XML' => 'XML');
-	// 20081103 - sisajr
 	$mime_import_types['text/xml'] = array('DocBook' => 'XML');
 	
 	if(isset($mime_import_types[$upload_info['type']])) 
@@ -203,6 +214,20 @@ function initializeGui(&$argsObj,&$reqSpecMgr,$session)
     $gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
     $gui->items=null;
     $gui->doAction=$argsObj->doAction;
+	$gui->scope = $argsObj->scope;
+	
+    switch($gui->scope)
+    {
+    	case 'tree':
+    		$gui->mainTitle = sprintf(lang_get('tproject_import_requirements'),$argsObj->tproject_name);
+    	break;
+    	
+    	case 'branch':
+			$gui->req_spec = $reqSpecMgr->get_by_id($argsObj->req_spec_id);
+    		$gui->mainTitle = sprintf(lang_get('reqspec_import_requirements'),$gui->req_spec['title']);
+    	break;
+    }
+  
   
     $gui->importTypes = $reqSpecMgr->get_import_file_types();
     $gui->importType = $argsObj->importType;
@@ -225,11 +250,14 @@ function initializeGui(&$argsObj,&$reqSpecMgr,$session)
     {
         $gui->importFileGui->return_to_url .= "lib/requirements/reqSpecView.php?req_spec_id=$argsObj->req_spec_id";
     } 
-    
     return $gui;    
 }
 
 
+/**
+ * 
+ *
+ */
 function checkRights(&$db,&$user)
 {
 	return ($user->hasRight($db,'mgt_view_req') && $user->hasRight($db,'mgt_modify_req'));
@@ -265,6 +293,19 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     	                
     	                if($retval->file_check['status_ok'])
     	                { 
+    	                	
+    	                	switch($argsObj->scope)
+    	                	{
+    	                		case 'tree':
+    	                			$element = 'requirement-specification';
+    	                		break;
+    	                		
+    	                		case 'branch':
+    	                			$element = 'req_spec';
+    	                		break;
+    	                	}
+    	                	new dBug($xml);
+    	                	
 	                        $retval->items = $reqSpecMgr->xmlToMapReqSpec($xml->req_spec);
     	                	new dBug($retval->items);
 	                        

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsImport.php,v 1.5 2010/02/14 17:33:58 franciscom Exp $
+ * @version    	CVS: $Id: platformsImport.php,v 1.6 2010/02/21 17:07:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -42,7 +42,8 @@ switch($args->doAction)
 
 $obj_mgr = new cfield_mgr($db);
 $gui->importTypes = array('XML' => 'XML');
-$gui->importLimitKB = (config_get('import_file_max_size_bytes') / 1024);
+$gui->importLimitBytes = config_get('import_file_max_size_bytes');
+$gui->max_size_import_file_msg = sprintf(lang_get('max_size_file_msg'), $gui->importLimitBytes/1024);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsImport.tpl,v 1.2 2009/11/19 20:05:39 schlundus Exp $
+$Id: platformsImport.tpl,v 1.3 2010/02/21 17:07:22 franciscom Exp $
 Purpose: smarty template - manage import of platforms
 
 rev: 
@@ -74,13 +74,13 @@ function validateForm(f)
     	<tr>
     		<td>{$labels.local_file}</td>
     	    <td>
-    	    	<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> 
+    	    	<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> 
     	    	<input type="file" name="targetFilename" value=""
     	                           size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/>
     	    </td>
     	</tr>
     	</table>
-    	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
+    	<p>{$gui->max_size_import_file_msg}</p>
     	<div class="groupBtn">
     		<input type="hidden" name="doAction" id="doAction" value="doImport" />
     		<input type="hidden" name="goback_url" value="{ $gui->goback_url|escape}" />

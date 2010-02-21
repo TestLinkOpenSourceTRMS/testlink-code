@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.66 $
- * @modified $Date: 2010/02/14 18:13:09 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2010/02/21 14:50:58 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
@@ -37,6 +37,8 @@ $gui = new stdClass();
 $templateCfg = templateConfiguration();
 $pcheck_fn=null;
 $args = init_args();
+$gui->useRecursion = $args->useRecursion;
+
 $resultMap = null;
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
@@ -51,7 +53,7 @@ if(!is_null($args->importType))
 
 $file_check = array('status_ok' => 1, 'msg' => 'ok');
 
-if($args->bRecursive)
+if($args->useRecursion)
 {
 	$import_title = lang_get('title_tsuite_import_to');  
 	$container_description = lang_get('test_suite');
@@ -100,14 +102,14 @@ if ($args->do_upload)
 			  }
 	      if(!is_null($pcheck_fn))
 	      {
-				    $file_check = $pcheck_fn($dest,$args->bRecursive);
+				    $file_check = $pcheck_fn($dest,$args->useRecursion);
 				}
 		}
 		if($file_check['status_ok'] && $pimport_fn)
 		{
 			tLog('Check is Ok.');
 			$resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,
-										           $args->userID,$args->bRecursive,
+										           $args->userID,$args->useRecursion,
 										           $args->bIntoProject,$args->action_on_duplicated_name);
 		}
 	}
@@ -119,7 +121,7 @@ if ($args->do_upload)
 	}
 }
 
-if($args->bRecursive)
+if($args->useRecursion)
 {
   $obj_mgr = new testsuite($db);
   $gui->actionOptions=null;
@@ -144,7 +146,6 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
 $smarty->assign('import_title',$import_title);  
 $smarty->assign('file_check',$file_check);  
-$smarty->assign('bRecursive',$args->bRecursive); 
 $smarty->assign('resultMap',$resultMap); 
 $smarty->assign('containerID', $args->container_id);
 $smarty->assign('container_name', $container_name);
@@ -161,7 +162,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
 */
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
-                                   $userID,$bRecursive,$importIntoProject = 0,
+                                   $userID,$useRecursion,$importIntoProject = 0,
                                    $duplicateLogic=null)
 {
 	tLog('importTestCaseDataFromXML called for file: '. $fileName);
@@ -186,12 +187,12 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
 				$kwMap = array_flip($kwMap);
 			}
 
-			if (!$bRecursive &&  ($xml->getName() == 'testcases') )
+			if (!$useRecursion &&  ($xml->getName() == 'testcases') )
 			{
 				$resultMap = importTestCasesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,$duplicateLogic);
 			}
 			
-			if ($bRecursive && ($xml->getName() == 'testsuite'))
+			if ($useRecursion && ($xml->getName() == 'testsuite'))
 			{
 				$resultMap = importTestSuitesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
 			}
@@ -468,14 +469,14 @@ function check_xml_tc_tsuite($fileName,$recursiveMode)
       Refactoring by franciscom
 */
 function importTestCaseDataFromSpreadsheet(&$db,$fileName,$parentID,$tproject_id,
-                                           $userID,$bRecursive,$importIntoProject = 0)
+                                           $userID,$useRecursion,$importIntoProject = 0)
 {
 	$xmlTCs = null;
 	$resultMap  = null;
 	$xml_filename=$fileName . '.xml';
 	create_xml_tcspec_from_xls($fileName,$xml_filename);
 	$resultMap=importTestCaseDataFromXML($db,$xml_filename,$parentID,$tproject_id,$userID,
-	                                     $bRecursive,$importIntoProject);
+	                                     $useRecursion,$importIntoProject);
 	unlink($fileName);
 	unlink($xml_filename);
 	
@@ -937,7 +938,8 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 					if (!$importIntoProject)
 					{
 						$keywords = getKeywordsFromSimpleXMLObj($target->xpath("//keyword"));
-						if ($keywords)
+						new dBug($keywords);
+						if($keywords)
 						{
 							$kwIDs = buildKeywordList($kwMap,$keywords);
 							$tsuiteMgr->addKeywords($tsuiteID,$kwIDs);

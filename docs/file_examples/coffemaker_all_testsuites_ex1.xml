@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Check Options" >
+<node_order><![CDATA[0]]></node_order>
+<details><![CDATA[Check all options available]]> 
+</details></testsuite><testsuite name="Inventory" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Recipes" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[Recipe Management]]> 
+</details></testsuite></testsuite>

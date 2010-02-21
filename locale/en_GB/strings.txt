@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.563 2010/02/21 09:36:41 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.564 2010/02/21 17:06:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -107,6 +107,8 @@ $TLS_type = "Type";
 $TLS_title = "Title";
 $TLS_title_admin = "Administration";
 $TLS_warning = "Warning";
+$TLS_max_size_file_msg = "Max. allowed file size:  %s KB";
+
 
 $TLS_total = "Total";
 $TLS_Unknown = "Unknown";

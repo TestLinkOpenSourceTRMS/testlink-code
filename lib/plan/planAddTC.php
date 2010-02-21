@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.92 2010/02/21 09:51:44 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.93 2010/02/21 10:05:43 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -213,6 +213,11 @@ if($do_display)
     {
 		initDrawSaveButtons($gui);
     }
+    
+    // This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
+	setAdditionalGuiData($gui);
+    
+    
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
 }
@@ -401,29 +406,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	// 
 	$gui->warning_msg = new stdClass();
 	$gui->warning_msg->executed = lang_get('executed_can_not_be_removed');
-	$actionTitle = 'title_remove_test_from_plan';
-	$buttonValue = 'btn_remove_selected_tc';
-	$gui->exec_order_input_disabled = 'disabled="disabled"';
-
 	if( $gui->can_remove_executed_testcases )
 	{
 		$gui->warning_msg->executed = lang_get('has_been_executed');
 	}
-
-	if( $gui->full_control )
-	{
-    	$actionTitle = 'title_add_test_to_plan';
-    	$buttonValue = 'btn_add_selected_tc';
-		if( $gui->has_linked_items )
-		{
-	    	$actionTitle = 'title_add_remove_test_to_plan';
-	    	$buttonValue = 'btn_add_remove_selected_tc';
-		}
-		$gui->exec_order_input_disabled = ' ';
-	}
-	$gui->actionTitle = lang_get($actionTitle);
-	$gui->buttonValue = lang_get($buttonValue);
-
     return $gui;
 }
 
@@ -663,5 +649,31 @@ function initDrawSaveButtons(&$guiObj)
 			break;
 		}
 	}
+}
+
+
+/**
+ * 
+ *
+ */
+function setAdditionalGuiData($guiObj)
+{	
+	$actionTitle = 'title_remove_test_from_plan';
+	$buttonValue = 'btn_remove_selected_tc';
+  	$guiObj->exec_order_input_disabled = 'disabled="disabled"';
+
+   	if( $guiObj->full_control )
+	{
+    	$actionTitle = 'title_add_test_to_plan';
+    	$buttonValue = 'btn_add_selected_tc';
+		if( $guiObj->has_linked_items )
+		{
+	    	$actionTitle = 'title_add_remove_test_to_plan';
+	    	$buttonValue = 'btn_add_remove_selected_tc';
+		}
+		$guiObj->exec_order_input_disabled = ' ';
+	}
+	$guiObj->actionTitle = lang_get($actionTitle);
+	$guiObj->buttonValue = lang_get($buttonValue);
 }
 ?>

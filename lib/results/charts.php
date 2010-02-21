@@ -1,17 +1,17 @@
 <?php
-/** TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * 
- * @filesource $RCSfile: charts.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/10/25 19:22:53 $ by $Author: franciscom $
- * @author kevin
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Revisions:
- *  20081121 - franciscom - BUGID - added check of needed PHP extensions to avoid blank page
- *  20081027 - franciscom - refactored to use pChart and improve performance
- *	20080812 - havlatm - simplyfied, polite
+ * @package 	TestLink
+ * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: charts.php,v 1.29 2010/02/21 17:24:23 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- **/
+ * @internal Revisions:
+ * 20100221 - franciscom - fixed call to getPlatforms()	
+ */
 require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
@@ -26,12 +26,11 @@ $tproject_id=$_SESSION['testprojectID'];
 $tplan_info = $tplan_mgr->get_by_id($gui->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 
-$tplan_mgr->getStatusTotalsByPlatform($gui->tplan_id);
+// ??
+// $tplan_mgr->getStatusTotalsByPlatform($gui->tplan_id);
 $gui->can_use_charts = checkLibGd();
 $totals = $tplan_mgr->getStatusTotals($gui->tplan_id);
 
-
-// $tplan_mgr->
 
 if($gui->can_use_charts == 'OK')  
 {
@@ -45,14 +44,10 @@ if($gui->can_use_charts == 'OK')
     unset($_SESSION['statistics']);
     
     $re=new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
-    // $_SESSION['statistics']['getTotalsForPlan']=$re->getTotalsForPlan();
     $_SESSION['statistics']['getTopLevelSuites'] = $re->getTopLevelSuites();
     $_SESSION['statistics']['getAggregateMap'] = $re->getAggregateMap();
     $_SESSION['statistics']['getAggregateOwnerResults'] = $re->getAggregateOwnerResults();
     $_SESSION['statistics']['getAggregateKeywordResults']= $re->getAggregateKeywordResults();
-
-    // new dBug($_SESSION['statistics']);
-    
     
     $pathToScripts = "lib/results/";
     $chartsUrl=new stdClass();
@@ -61,7 +56,7 @@ if($gui->can_use_charts == 'OK')
     $chartsUrl->ownerBarChart = $pathToScripts . "ownerBarChart.php";
     $chartsUrl->topLevelSuitesBarChart = $pathToScripts . "topLevelSuitesBarChart.php";
     
-    $platformSet = $tplan_mgr->getPlatforms($gui->tplan_id);
+    $platformSet = $tplan_mgr->getPlatforms($gui->tplan_id,array('outputFormat' => 'map'));
     $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
 
     $gui->charts = array(lang_get('overall_metrics') => $chartsUrl->overallPieChart);

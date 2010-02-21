@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.246 2010/02/21 15:07:49 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.247 2010/02/21 16:38:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1345,8 +1345,14 @@ class testcase extends tlObjectWithAttachments
 		        
 	 			foreach($tcase_info as $tcversion)
 				{
+					// 20100221 - franciscom - 
+					// IMPORTANT NOTICE:
+					// In order to implement COPY to another test project, WE CAN NOT ASK
+					// to method create_tcversion() to create inside itself THE STEPS.
+					// Passing NULL as steps we instruct create_tcversion() TO DO NOT CREATE STEPS
+					// 
 					$op = $this->create_tcversion($newTCObj['id'],$newTCObj['external_id'],$tcversion['version'],
-					                              $tcversion['summary'],$tcversion['preconditions'],$tcversion['steps'],
+					                              $tcversion['summary'],$tcversion['preconditions'],null,
 					                              $tcversion['author_id'],$tcversion['execution_type'],$tcversion['importance']);
 					
 	    			if( $op['status_ok'] )
@@ -1511,15 +1517,6 @@ class testcase extends tlObjectWithAttachments
 	function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 	{
 	    $now = $this->db->db_now();
-	    // $sql="INSERT INTO {$this->tables['tcversions']} (id,version,tc_external_id,author_id,creation_ts," .
-	    //      "                        summary,preconditions,steps,expected_results,importance,execution_type) " .
-	    //      " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
-	    //      "        tc_external_id, " .
-	    //      "        {$user_id} AS author_id, {$now} AS creation_ts," .
-	    //      "        summary,preconditions,steps,expected_results,importance,execution_type " .
-	    //      " FROM {$this->tables['tcversions']} " .
-	    //      " WHERE id={$from_tcversion_id} ";
-
 	    $sql="/* $debugMsg */ " . 
 	         " INSERT INTO {$this->tables['tcversions']} " . 
 	         " (id,version,tc_external_id,author_id,creation_ts,summary,importance,execution_type) " .

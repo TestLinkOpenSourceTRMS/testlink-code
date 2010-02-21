@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.8 2009/11/22 16:02:58 franciscom Exp $
+$Id: tcImport.tpl,v 1.9 2010/02/21 15:07:49 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev: 20091122 - franciscom - refacoting to use alert_message()
@@ -52,7 +52,7 @@ rev: 20091122 - franciscom - refacoting to use alert_message()
 	</table>
 	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">
-		<input type="hidden" name="bRecursive" value="{$bRecursive}" />
+		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
 		<input type="hidden" name="bIntoProject" value="{$bIntoProject}" />
 		<input type="hidden" name="containerID" value="{$containerID}" />
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> {* restrict file size *}

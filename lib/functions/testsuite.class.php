@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.88 2010/02/10 19:21:00 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.89 2010/02/21 15:07:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -74,6 +74,7 @@ class testsuite extends tlObjectWithAttachments
     const CHECK_DUPLICATE_NAME=1;
     const DONT_CHECK_DUPLICATE_NAME=0;
     const DEFAULT_ORDER=0;
+    const USE_RECURSIVE_MODE = 1;
   
 	/** @var database handler */
  	var $db;
@@ -1026,10 +1027,10 @@ class testsuite extends tlObjectWithAttachments
   	    	$keywordMgr = new tlKeyword();      
 		}	
 		
-	    $USE_RECURSIVE_MODE=true;
+		// echo __FUNCTION__ . '<br>';
 		$xmlTC = null;
-		$bRecursive = @$optExport['RECURSIVE'];
-		if ($bRecursive)
+		$doRecursion = isset($optExport['RECURSIVE']) ? $optExport['RECURSIVE'] : 0;
+		if($doRecursion)
 		{
 		    $cfXML = null;
 			$kwXML = null;
@@ -1039,9 +1040,7 @@ class testsuite extends tlObjectWithAttachments
 				$kwMap = $this->getKeywords($container_id);
 				if ($kwMap)
 				{
-					// $kwXML = exportKeywordDataToXML($kwMap,true);
 					$kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
-
 				}	
 			}
 			
@@ -1065,7 +1064,7 @@ class testsuite extends tlObjectWithAttachments
 			$xmlTC = "<testcases>";
 	    }
 	  
-		$test_spec = $this->get_subtree($container_id,$USE_RECURSIVE_MODE);
+		$test_spec = $this->get_subtree($container_id,self::USE_RECURSIVE_MODE);
 	
 	 
 		$childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null ;
@@ -1077,7 +1076,7 @@ class testsuite extends tlObjectWithAttachments
 		    {
 		    	$cNode = $childNodes[$idx];
 		    	$nTable = $cNode['node_table'];
-		    	if ($bRecursive && $nTable == 'testsuites')
+		    	if ($doRecursion && $nTable == 'testsuites')
 		    	{
 		    		$xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
 		    	}
@@ -1092,12 +1091,7 @@ class testsuite extends tlObjectWithAttachments
 		    	}
 		    }
 		}   
-		 
-		if ($bRecursive)
-			$xmlTC .= "</testsuite>";
-		else
-			$xmlTC .= "</testcases>";
-			
+		$xmlTC .= $doRecursion ? "</testsuite>" : "</testcases>"; 
 		return $xmlTC;
 	}
 	
@@ -1330,8 +1324,6 @@ class testsuite extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		// Get source_id cfields assignment
 		$sourceItems = $this->cfield_mgr->getByLinkID($source_id,array('scope' => 'design'));
-        new dBug($sourceItems);
-        
 		if( !is_null($sourceItems) )
 		{
 		    $sql = "/* $debugMsg */ " . 

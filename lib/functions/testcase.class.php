@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.245 2010/02/13 18:22:56 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.246 2010/02/21 15:07:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2880,7 +2880,6 @@ class testcase extends tlObjectWithAttachments
 	    // each UPPER CASE word in this map KEY, MUST HAVE AN OCCURENCE on $elemTpl
 	    // value is a key inside $tc_data[0]
 	    //
-		
 		if( !is_null($cfMap) && count($cfMap) > 0 )
 		{
 			$cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
@@ -2894,9 +2893,8 @@ class testcase extends tlObjectWithAttachments
 		if ($optExport['KEYWORDS'])
 		{
 			$keywords = $this->getKeywords($tcase_id);
-			if ($keywords);
+			if(!is_null($keywords))
 			{
-				// $xmlKW = exportKeywordDataToXML($keywords,true);
 				$xmlKW = "<keywords>" . $keywordMgr->toXMLString($keywords,true) . "</keywords>";
 				$tc_data[0]['xmlkeywords'] = $xmlKW;
 			}

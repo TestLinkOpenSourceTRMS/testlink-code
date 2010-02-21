@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/02/21 14:35:38 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/02/21 15:07:50 $ by $Author: franciscom $
  *
  * Scope: test case and test suites export
  * 
@@ -101,8 +101,7 @@ if ($args->doExport)
 	$tcase_mgr = new testcase($db);
 	$tsuite_mgr = new testsuite($db);
 	
-	$optExport = array('KEYWORDS' => $args->exportKeywords,'RECURSIVE' => $args->useRecursion);
-	
+	$optExport = array('KEYWORDS' => $args->exportKeywords, 'RECURSIVE' => $args->useRecursion);
 	$pfn = null;
 	switch($args->exportType)
 	{

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.25 2010/02/01 16:44:09 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.26 2010/02/21 15:07:49 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -29,13 +29,13 @@ rev :
 {assign var="container_id" value=$gui->container_data.id}
 {assign var="tcImportAction"
         value="lib/testcases/tcImport.php?containerID=$container_id"}
-{assign var="importToTProjectAction"  value="$basehref$tcImportAction&amp;bIntoProject=1&amp;bRecursive=1&amp;"}
-{assign var="importToTSuiteAction"  value="$basehref$tcImportAction&amp;bRecursive=1"}
+{assign var="importToTProjectAction"  value="$basehref$tcImportAction&amp;bIntoProject=1&amp;useRecursion=1&amp;"}
+{assign var="importToTSuiteAction"  value="$basehref$tcImportAction&amp;useRecursion=1"}
 {assign var="importTestCasesAction"  value="$basehref$tcImportAction"}
 {assign var="tcExportAction"
         value="lib/testcases/tcExport.php?containerID=$container_id"}
 {assign var="exportTestCasesAction"  value="$basehref$tcExportAction"}
-{assign var="tsuiteExportAction" value="$basehref$tcExportAction&amp;bRecursive=1"}
+{assign var="tsuiteExportAction" value="$basehref$tcExportAction&amp;useRecursion=1"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {assign var="ext_version" value="-2.0"}

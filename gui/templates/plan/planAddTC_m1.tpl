@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.40 2010/02/09 21:14:27 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.41 2010/02/21 08:56:24 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -16,7 +16,7 @@ rev:
 *}
 {lang_get var="labels" 
           s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
-             select_all_to_add,select_all_to_remove,
+             select_all_to_add,select_all_to_remove,check_uncheck_all_for_remove,
              th_id,th_test_case,version,execution_order,th_platform,
              no_testcase_available,btn_save_custom_fields,send_mail_to_tester,
              has_been_executed,inactive_testcase,btn_save_exec_order,
@@ -179,13 +179,13 @@ Ext.onReady(function(){
              {if $ts.linked_testcase_qty gt 0 }
   				      <td>&nbsp;</td>
   				      <td>
-  				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" 
+  				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/disconnect.png" 
                      onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
-                     title="{$labels.check_uncheck_all_checkboxes}" />
-  				      {$labels.remove_tc}
+                     title="{$labels.check_uncheck_all_for_remove}" />
   				      </td>
-  				      <td>
-  				      {$labels.added_on_date}
+  				      <td align="center">
+  				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/date.png"  
+  				           title="{$labels.added_on_date}" />
   				      </td>
              {/if}
             </tr>   

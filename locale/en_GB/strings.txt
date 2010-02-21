@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.562 2010/02/21 08:54:42 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.563 2010/02/21 09:36:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1153,6 +1153,8 @@ $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 // ----- gui/templates/planAddTC_m1.tpl -----
 $TLS_add_tc = "Add";
 $TLS_added_on_date = "Added on date";
+$TLS_info_added_on_date = "Date when Test case was added to test plan";
+
 $TLS_add_remove_selected_tc_hint = "Operation will be applied to ALL Test suites";
 $TLS_btn_add_remove_selected_tc = "Add / Remove selected";
 $TLS_btn_add_selected_tc = "Add selected";

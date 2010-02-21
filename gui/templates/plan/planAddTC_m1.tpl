@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.41 2010/02/21 08:56:24 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.42 2010/02/21 09:08:58 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -174,7 +174,13 @@ Ext.onReady(function(){
              {if $gui->usePlatforms} <td>{$labels.th_platform}</td> {/if}
   			     <td>{$labels.th_test_case}</td>
   			     <td>{$labels.version}</td>
-             <td>{$labels.execution_order}</td>
+             <td align="center">
+   				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/timeline_marker.png" 
+                     title="{$labels.execution_order}" />
+  				   </td>
+
+             
+             
              
              {if $ts.linked_testcase_qty gt 0 }
   				      <td>&nbsp;</td>

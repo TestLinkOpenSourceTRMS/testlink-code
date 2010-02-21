@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcExport.tpl,v 1.8 2009/11/22 16:02:58 franciscom Exp $ 
+$Id: tcExport.tpl,v 1.9 2010/02/21 14:34:50 franciscom Exp $ 
 
 test case export initial page 
 
@@ -75,7 +75,7 @@ function validateForm(f)
   		<input type="hidden" name="testcase_id" value="{$gui->tcID}" />
   		<input type="hidden" name="tcversion_id" value="{$gui->tcVersionID}" />
   		<input type="hidden" name="containerID" value="{$gui->containerID}" />
-  		<input type="hidden" name="bRecursive" value="{$gui->bRecursive}" />
+  		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
   		<input type="submit" name="export" value="{$labels.btn_export}" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
   			                   onclick="javascript:history.back();" />

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/02/21 14:35:38 $ by $Author: franciscom $
  *
  * Scope: test case and test suites export
  * 
@@ -40,7 +40,7 @@ $exporting_just_one_tc = 0;
 $node_id = $args->container_id;
 $check_children = 0;
 
-if($args->bRecursive)
+if($args->useRecursion)
 {
 	// Exporting situations:
 	// All test suites in test project
@@ -86,20 +86,22 @@ if( $check_children )
 	                                  array("testplan" => "exclude_me",
 	                                        "requirement_spec" => "exclude_me",
 	                                        "requirement" => "exclude_me"));	
+	
+	$gui->nothing_todo_msg='';
 	if(count($children)==0)
+	{
 		$gui->do_it = 0 ;
-	else
-		$gui->nothing_todo_msg='';
+	}
 }
 $node = $tree_mgr->get_node_hierarchy_info($node_id);
 
 
-if ($args->bExport)
+if ($args->doExport)
 {
 	$tcase_mgr = new testcase($db);
 	$tsuite_mgr = new testsuite($db);
 	
-	$optExport = array('KEYWORDS' => $args->bKeywords,'RECURSIVE' => $args->bRecursive);
+	$optExport = array('KEYWORDS' => $args->exportKeywords,'RECURSIVE' => $args->useRecursion);
 	
 	$pfn = null;
 	switch($args->exportType)
@@ -130,7 +132,7 @@ if ($args->bExport)
 	}
 }
 
-if( $args->bRecursive )
+if( $args->useRecursion )
 {
   // we are working on a testsuite
   $obj_mgr = new testsuite($db);
@@ -145,7 +147,7 @@ $gui->exportTypes=$obj_mgr->get_export_file_types();
 $gui->tproject_name=$args->tproject_name;
 $gui->tproject_id=$args->tproject_id;
 $gui->tcID=$args->tcase_id; 
-$gui->bRecursive=$args->bRecursive ? 1 : 0;
+$gui->useRecursion=$args->useRecursion ? 1 : 0;
 $gui->tcVersionID=$args->tcversion_id;
 $gui->containerID=$args->container_id;
 
@@ -167,13 +169,13 @@ function init_args()
     $_REQUEST = strings_stripSlashes($_REQUEST);
     
     $args = new stdClass();
-    $args->bExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
-    $args->bKeywords = isset($_REQUEST['bKeywords']) ? 1 : 0;
+    $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
+    $args->exportKeywords = isset($_REQUEST['bKeywords']) ? 1 : 0;
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
     $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
     $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
-    $args->bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : false;
+    $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : false;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = $_SESSION['testprojectName'];
     $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;

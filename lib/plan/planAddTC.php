@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.91 2010/02/09 21:14:47 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.92 2010/02/21 09:51:44 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -199,12 +199,16 @@ if($do_display)
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$filters,$opt);
   
+  	
   	$gui->has_tc = ($out['num_tc'] > 0 ? 1 : 0);
 	$gui->items = $out['spec_view'];
 	$gui->has_linked_items = $out['has_linked_items'];
 	$gui->add_custom_fields = $opt['add_custom_fields'];
     $gui->drawSavePlatformsButton = false;
     $gui->drawSaveCFieldsButton = false;
+
+    // new dBug($gui->items);
+    // die();
     if( !is_null($gui->items) )
     {
 		initDrawSaveButtons($gui);
@@ -375,6 +379,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
     $gui->testerID = $argsObj->testerID;
     $gui->send_mail = $argsObj->send_mail;
+    $gui->send_mail_checked = '';
     if($gui->send_mail)
     {
     	$gui->send_mail_checked = ' checked="checked" ';

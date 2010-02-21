@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.67 $
- * @modified $Date: 2010/02/21 14:50:58 $ by $Author: franciscom $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2010/02/21 16:55:11 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
@@ -37,6 +37,7 @@ $gui = new stdClass();
 $templateCfg = templateConfiguration();
 $pcheck_fn=null;
 $args = init_args();
+
 $gui->useRecursion = $args->useRecursion;
 
 $resultMap = null;
@@ -458,7 +459,7 @@ function check_xml_tc_tsuite($fileName,$recursiveMode)
         parentID: testcases parent node (container)
         tproject_id: testproject where to import testcases 
         userID: who is doing import.
-        bRecursive: 1 -> recursive, used when importing testsuites
+        useRecursion: 1 -> recursive, used when importing testsuites
         [importIntoProject]: default 0
         
   
@@ -604,7 +605,7 @@ function init_args()
        
         
     $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-    $args->bRecursive = isset($_REQUEST['bRecursive']) ? $_REQUEST['bRecursive'] : 0;
+    $args->useRecursion = isset($_REQUEST['useRecursion']) ? $_REQUEST['useRecursion'] : 0;
     $args->location = isset($_REQUEST['location']) ? $_REQUEST['location'] : null; 
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
     $args->bIntoProject = isset($_REQUEST['bIntoProject']) ? intval($_REQUEST['bIntoProject']) : 0;

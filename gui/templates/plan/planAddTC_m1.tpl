@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.42 2010/02/21 09:08:58 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.43 2010/02/21 09:37:51 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -19,7 +19,7 @@ rev:
              select_all_to_add,select_all_to_remove,check_uncheck_all_for_remove,
              th_id,th_test_case,version,execution_order,th_platform,
              no_testcase_available,btn_save_custom_fields,send_mail_to_tester,
-             has_been_executed,inactive_testcase,btn_save_exec_order,
+             inactive_testcase,btn_save_exec_order,info_added_on_date,
              executed_can_not_be_removed,added_on_date,btn_save_platform,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              tester_assignment_on_add,check_uncheck_all_checkboxes_for_rm'}
@@ -215,6 +215,7 @@ Ext.onReady(function(){
      				    {if $gui->full_control || $linked_version_id != 0}
      					    {assign var="drawPlatformChecks" value=0}
                   {if $gui->usePlatforms }
+                    {* Feature id is indexed by platform id then 0 => has no platform assigned *}
                     {if !isset($tcase.feature_id[0])}
                       {assign var="drawPlatformChecks" value=1}
                     {/if}
@@ -287,7 +288,7 @@ Ext.onReady(function(){
                       {if $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;{$gui->warning_msg->executed}{/if}
                       {if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
             			  </td>
-            			  <td>
+            			  <td title="{$labels.info_added_on_date}">
             			  	{if $tcase.linked_ts[0] != ''}{localize_date d=$tcase.linked_ts[0]}{else}&nbsp;{/if}  
             			  </td>
                   {/if}
@@ -327,8 +328,12 @@ Ext.onReady(function(){
   	   				        <td>
   	   				          <input type='checkbox' name='{$rm_cb}[{$tcID}][{$platform.id}]' id='{$rm_cb}{$tcID}[{$platform.id}]' 
   	      			  		         value='{$linked_version_id}' />
+                        {if $tcase.executed[$platform.id] eq 'yes'}&nbsp;&nbsp;&nbsp;
+   				                  <img src="{$smarty.const.TL_THEME_IMG_DIR}/lightning.png" 
+                            title="{$gui->warning_msg->executed}" />
+                        {/if}
   	                  </td>
-  	                  <td>{localize_date d=$tcase.linked_ts[$platform.id]}</td>
+  	                  <td title="{$labels.info_added_on_date}">{localize_date d=$tcase.linked_ts[$platform.id]}</td>
                     {/if}
                   </tr>
   			          {if isset($tcase.custom_fields[$platform.id])}

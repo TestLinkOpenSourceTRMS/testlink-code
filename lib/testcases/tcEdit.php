@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.143 2010/02/21 15:07:50 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.144 2010/02/21 16:11:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -47,7 +47,7 @@ $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
-new dBug($args);
+// new dBug($args);
 $templateCfg = templateConfiguration('tcEdit');
 
 $commandMgr = new testcaseCommands($db);
@@ -303,7 +303,7 @@ if ($show_newTC_form)
 			                                              null,null,null,$locationFilter);
     }
 
-    new dBug($cf_smarty);
+    // new dBug($cf_smarty);
 
 	$gui->cf = $cf_smarty;
 	$gui->tc = $tc_default;
@@ -331,7 +331,7 @@ function init_args($spec_cfg,$otName)
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    new dBug($_REQUEST);
+    // new dBug($_REQUEST);
 
     $rightlist_html_name = $otName . "_newRight";
     $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";

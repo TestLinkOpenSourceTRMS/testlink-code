@@ -1,4 +1,4 @@
-readDB<?php
+<?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
@@ -8,7 +8,7 @@ readDB<?php
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.6 2010/02/22 09:50:37 havlat Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.7 2010/02/22 09:52:13 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9

@@ -36,8 +36,9 @@ to update from older version.
 
 New features within 1.8: 
     * Platforms - possibility to test with several configuration/environment
-    * Requirements versioning
+    * Requirements versions, type
     * Test case: Step-by-step structure
+    * Inventory
     * Compatibility with PHP5.3 
     
 See CHANGELOG file for detailed list.
@@ -112,7 +113,7 @@ When accessing Installer page you will found following options:
    do only following steps from Install procedure:
                                            Transfer files
                                            Uncompress files
- - Copy your old config_db.inc.php to NEW DIRECTORY.
+ - Copy your old config_db.inc.php and custom_config.inc.php to NEW DIRECTORY.
  - Launch TestLink
  - TestLink will check Database version, and if some upgrade/migration 
    is needed will launch automatically the installer.

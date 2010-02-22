@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.25 2010/02/16 21:47:23 havlat Exp $
+$Id: testlink.css,v 1.26 2010/02/22 20:59:48 havlat Exp $
 
 Purpose: Default TestLink CSS
 
@@ -362,7 +362,6 @@ table.common td,th{
 
 table.common td, table.simple td, th{
 	vertical-align: top;
-	padding:		5px;
 }
 
 table.common caption, table.smallGrey caption {

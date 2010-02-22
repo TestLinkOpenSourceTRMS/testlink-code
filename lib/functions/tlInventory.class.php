@@ -1,4 +1,4 @@
-<?php
+readDB<?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.5 2010/02/22 09:30:19 havlat Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.6 2010/02/22 09:50:37 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
@@ -120,7 +120,7 @@ class tlInventory extends tlObjectWithDB
 	 * 
 	 * @param mixed $ids integer or array of integer - ID of inventory items
 	 */
-	protected function executeQuery($ids = null)
+	protected function readDB($ids = null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$query = "/* $debugMsg */ SELECT * FROM {$this->tables['inventory']} " .
@@ -161,10 +161,11 @@ class tlInventory extends tlObjectWithDB
 
 	
 	/** 
-	 * Writes an keyword into the database
+	 * Writes a device into the database 
+	 * (both create and update request are supported - based on $this->inventoryId)
 	 * 
-	 * @param resource $db [ref] the database connection
-	 * @return integer returns tl::OK on success, tl::ERROR else
+	 * @param integer $db [ref] the database connection
+	 * @return integer returns tl::OK on success, tl::E_DBERROR else
 	 */
 	protected function writeToDB(&$db)
 	{
@@ -251,7 +252,7 @@ class tlInventory extends tlObjectWithDB
 		$this->inventoryId = $itemID;
 
 		// check existence / get name of the record		
-		$recordset = $this->executeQuery($this->inventoryId);
+		$recordset = $this->readDB($this->inventoryId);
 		if(!is_null($recordset))
 		{
 			$this->name = $recordset[0]['name'];
@@ -304,16 +305,17 @@ class tlInventory extends tlObjectWithDB
 	 */
 	public function getAll()
 	{
-		$data = self::executeQuery(); 
+		$data = self::readDB(); 
 		return $data;
 	}
 
 
 	/**
-	 * checks a server name and IP for a certain testproject already exists in the database
-	 * some checks are valid for create only
+	 * Checks a server name and IP for a certain testproject already exists in the database
+	 * Checking works for both create and update request
 	 * 
-	 * @return integer return tl::OK if the keyword is found, else tlKeyword::E_NAMEALREADYEXISTS 
+	 * @return integer return tl::OK on success, else error code like 
+	 * 			is tlInventory::E_NAMEALREADYEXISTS 
 	 */
 	protected function checkInventoryData()
 	{

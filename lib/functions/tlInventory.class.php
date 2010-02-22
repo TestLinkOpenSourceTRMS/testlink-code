@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.4 2010/02/20 13:47:48 franciscom Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.5 2010/02/22 09:30:19 havlat Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
@@ -339,7 +339,7 @@ class tlInventory extends tlObjectWithDB
 			{
 				$query .= ' AND NOT id='.$this->inventoryId;
 			}
-			tlog($query . ' ok ' . $this->inventoryId,'ERROR');
+
 			if ($this->db->fetchFirstRow($query))
 			{
 				$result = self::E_NAMEALREADYEXISTS;

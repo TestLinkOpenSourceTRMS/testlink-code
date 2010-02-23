@@ -8,7 +8,7 @@
  * IMPORTANT - LIMITATIONS:
  * User has to login before clicking the link!
  * If user is not logged in he is redirected to login page. 
- * After login main page is shown, Clicking the link again than it works!
+ * After login main page is shown, Clicking the link again then it works!
  *
  * How this feature works:
  * 
@@ -21,24 +21,24 @@
  * - direct link to requirement specification REQ-SPEC-AK89 in test project KAOS:
  * http://<testlink_home>/linkto.php?tprojectPrefix=KAOS&item=reqspec&id=REQ-SPEC-AK89
  * 
+ * Anchors:
+ * If anchors are set (in scope, etc.) in the linked document, you can specify these
+ * by using &anchor=anchorname, e.g.
+ * http://<testlink_home>/linkto.php?tprojectPrefix=KAOS&item=testcase&id=KAOS-4&anchor=importantpart
+ * 
  * Specials:
  * - tree for requirement specification or test specification are expanded to the level of the item you created the link to
  * - if a user has no right to view item he is redirected to main page
  * - if item does not exist an errormessage shows
  * 
- * IMPORTANT - LIMITATIONS:
- * User has to login before clicking the link!
- * If user is not logged in he is redirected to login page. 
- * After login main page is shown, Clicking the link again than it works!
- * 
- *
  * @package 	TestLink
  * @author 		asimon
- * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: linkto.php,v 1.3 2009/12/15 19:25:09 franciscom Exp $
+ * @copyright 	2007-2010, TestLink community 
+ * @version    	CVS: $Id: linkto.php,v 1.4 2010/02/23 14:42:14 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100223 - asimon 	  - added anchor functionality
  *  20091215 - asimon     - refactored process_req() with new method in requirement_mgr class
  *	20091215 - franciscom - refactored
  *	20091214 - asimon83   - refactoring like requested in issue comments
@@ -69,13 +69,18 @@ if (!isset($_GET['load'])) {
 	$item = isset($_GET['item']) ? "item=" . $_GET['item'] : '';
 	$id = isset($_GET['id']) ? "id=" . $_GET['id'] : '';
 	$tprojectPrefix = isset($_GET['tprojectPrefix']) ? "tprojectPrefix=" . $_GET['tprojectPrefix'] : '';
+	$anchor = isset($_GET['anchor']) ? 'anchor=' . $_GET['anchor'] : "";
 	$smarty->assign('titleframe', 'lib/general/navBar.php');
-	$smarty->assign('mainframe', 'linkto.php?' . $item . '&' . $id . '&' . $tprojectPrefix . '&load');
+	$smarty->assign('mainframe', 'linkto.php?' . $item . '&' . $id . '&' . $tprojectPrefix . '&load&' . $anchor);
 	$smarty->display('main.tpl');
 } 
 else 
 {
 	// inner frame, parameters passed 
+	
+	// add anchor
+	$anchor = isset($_GET['anchor']) ? '#' . $_GET['anchor'] : "";
+	
 	// figure out what to display 
 	//
 	// key: item, value: url to tree management page
@@ -132,7 +137,11 @@ else
 	
 	if($op['status_ok'])
 	{
-		$smarty->assign('workframe', $jump_to['url']);
+		//add anchor
+		$url = $jump_to['url'] . $anchor;
+		$smarty->assign('workframe', $url);
+		print_r(array());
+		print_r($jump_to);
 		$smarty->assign('treeframe', $itemCode[$_GET['item']]);
 		$smarty->display('frmInner.tpl');
     }
@@ -161,7 +170,7 @@ function process_testcase(&$dbHandler,$externalID,$tprojectID, $tprojectPrefix)
 	$tcaseID = $tcase_mgr->getInternalID($externalID);
 	if($tcaseID > 0)
 	{
-		$ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}&";
+		$ret['url'] = "lib/testcases/archiveData.php?edit=testcase&id={$tcaseID}";
         $cookie = buildCookie($dbHandler,$tcaseID,$tprojectID,'ys-tproject_');
 		setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
 	}
@@ -189,7 +198,7 @@ function process_req(&$dbHandler,$docID,$tprojectID,$tprojectPrefix)
     {    
 		// link to open in requirement frame
 		$req = current($req);
-		$ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id={$req['id']}&";
+		$ret['url'] = "lib/requirements/reqView.php?item=requirement&requirement_id={$req['id']}";
 
         $cookie = buildCookie($dbHandler,$req['id'],$tprojectID,'ys-requirement_spec');
 		setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');
@@ -216,7 +225,7 @@ function process_reqspec(&$dbHandler,$docID,$tprojectID,$tprojectPrefix)
     {
     	$reqSpec = current($reqSpec);
     	$id = $reqSpec['id'];
-		$ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}&";
+		$ret['url'] = "lib/requirements/reqSpecView.php?req_spec_id={$id}";
 
         $cookie = buildCookie($dbHandler,$id,$tprojectID,'ys-requirement_spec');
 		setcookie($cookie['value'], $cookie['path'], TL_COOKIE_KEEPTIME, '/');

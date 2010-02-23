@@ -1,11 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.23 2010/02/18 13:18:09 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.24 2010/02/23 12:45:45 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
 
-	20100202 - asimon	- BUGID 2455/3026, changed filtering 
+	20100218 - asimon - BUGID 3049, changed root_href
+	20100202 - asimon - BUGID 2455, BUGID 3026, changed filtering 
 	                    panel is now ext collapsible panel
 	20081223 - franciscom - advanced/simple filters
 	20080311 - franciscom - BUGID 1427
@@ -57,7 +58,11 @@ Revisions :
     <script type="text/javascript">
 	    treeCfg.root_name = '{$gui->ajaxTree->root_node->name}';
 	    treeCfg.root_id = {$gui->ajaxTree->root_node->id};
-	    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
+	    // treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
+	    // BUGID 3049
+	    //treeCfg.root_href = "javascript:parent.workframe.location=fRoot+'lib/testcases/archiveData.php" +
+	    //					"?edit=testplan&level=testplan&id={$gui->tplan_id}'";
+	    treeCfg.root_href = "javascript:PL({$gui->tplan_id})";
 	    treeCfg.children = {$gui->ajaxTree->children};
     </script>
     

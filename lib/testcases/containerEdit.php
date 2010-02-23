@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.107 $
- * @modified $Date: 2010/02/04 09:23:09 $ by $Author: franciscom $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2010/02/23 12:45:45 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  *	@internal revisions
+ *  20100223 - asimon - added removeTestcaseAssignments() for BUGID 3049
  *	20100204 - franciscom - changes in $tsuiteMgr->copy_to() call	
  *	20100202 - franciscom - BUGID 3130: TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error
  *                          (bug created due change in show() interface
@@ -18,11 +19,12 @@
  *	20080223 - franciscom - BUGID 1408
  *	20080129 - franciscom - contribution - tuergeist@gmail.com - doTestSuiteReorder() remove global coupling
  *	20080122 - franciscom - BUGID 1312
-*/
+ */
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
+require_once("specview.php"); //BUGID 3049
 $editorCfg=getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
 
@@ -30,6 +32,7 @@ testlinkInitPage($db);
 
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
+$tplan_mgr = new testplan($db);
 $tsuite_mgr = new testsuite($db);
 $tcase_mgr = new testcase($db);
 
@@ -47,29 +50,27 @@ $spec_cfg = config_get('spec_cfg');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
 
-
 new dBug($args);
-
 
 $a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
                 'del_testsuites_bulk' => 'containerDeleteBulk.tpl',
                 'updateTCorder' => 'containerView.tpl',
-                'move_testcases_viewer' => 'containerMoveTC.tpl');
-   
+                'move_testcases_viewer' => 'containerMoveTC.tpl');   
    
 $a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
 					'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
                     'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
                     'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
-                    'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0);
+                    'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0, 'doUnassignFromPlan' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
 
 $the_tpl = null;
 $action = null;
+
 foreach ($a_actions as $the_key => $the_val)
 {
 	if (isset($_POST[$the_key]) )
@@ -201,6 +202,11 @@ switch($action)
     	copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
     	break;
 
+    // BUGID 3049
+    case 'doUnassignFromPlan':
+    	removeTestcaseAssignments($db, $args, $tplan_mgr, $smarty, $template_dir);
+    	break;
+    	
     default:
     	trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
     	break;
@@ -331,7 +337,7 @@ function init_args($optionTransferCfg)
 
     // integer values
     $keys2loop=array('testsuiteID' => null, 'containerID' => null,
-                     'objectID' => null, 'copyKeywords' => 0);
+                     'objectID' => null, 'copyKeywords' => 0, 'tplan_id' => 0);
     foreach($keys2loop as $key => $value)
     {
        $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
@@ -832,4 +838,75 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
 function deleteTestSuitesBulk(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,$level)
 {
 }
+
+
+/**
+ * BUGID 3049
+ * remove all testcase assignments from a testplan
+ * 
+ * @param resource $dbHandler database handle
+ * @param stdClass $argsObj user input 
+ * @param tlTestplan $tplan_mgr testplan
+ * @param tlSmarty $smartyObj smarty object
+ * @param string $tmpl_dir template  directory
+ */
+function removeTestcaseAssignments(&$dbHandler, &$argsObj, &$tplan_mgr, &$smartyObj, $tmpl_dir) {
+	$gui = new stdClass();
+	$gui->tplan_id = $argsObj->tplan_id;
+	$tplan = $tplan_mgr->get_by_id($argsObj->tplan_id);
+	$gui->tplan_name = $tplan['name'];
+	$gui->container_data['name'] = $tplan['name'];
+	$gui->tplan_description = $tplan['notes'];
+	$gui->mainTitle = lang_get('remove_assigned_testcases');
+	$tproject_mgr = new testproject($dbHandler);
+	$tproject = $tproject_mgr->get_by_id($tplan['testproject_id']);
+	$gui->tproject_name = $tproject['name'];
+	$gui->tproject_description = $tproject['notes'];
+	$gui->draw_tc_unassign_button = false;
+	
+	$gui->level = 'testplan';
+	$gui->mainTitle = lang_get('remove_assigned_testcases');
+	$gui->page_title = lang_get('testplan');
+	$gui->refreshTree = false;
+
+	if($argsObj->doAction == 'doUnassignFromPlan') {
+		// this is done manually in a loop for all platforms as a workaround
+		// because get_linked_tcversions() gets each testcase only once,
+		// not once for each platform
+		$platformMgr = new tlPlatform($dbHandler);
+		$platforms = $platformMgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+		$map = array();
+		
+		// get all platforms
+		foreach ($platforms as $platform_id => $platform_name) {
+			$map = array_merge($map, $tplan_mgr->get_linked_tcversions(
+									$gui->tplan_id, array('platform_id' => $platform_id)));
+		}
+		
+		//now we add those testcases which are not assigned to a platform
+		$map = array_merge($map, $tplan_mgr->get_linked_tcversions($gui->tplan_id));
+				
+		$ids = array();
+
+		foreach ($map as $tc_id => $tc) {
+			if (isset($tc['user_id']) && is_numeric($tc['user_id'])) {
+				$ids[] = $tc['feature_id'];
+			}
+		}
+
+		if (count($ids)) {
+			$assignment_mgr = new assignment_mgr($dbHandler);
+			$assignment_mgr->delete_by_feature_id($ids);
+			$gui->result = sprintf(lang_get('unassigned_all_tcs_msg'), $gui->tplan_name);
+		} else {
+			//no items to unlink
+			$gui->result = sprintf(lang_get('nothing_to_unassign_msg'), $gui->tplan_name);
+		}
+
+		$smartyObj->assign('gui', $gui);
+		$smartyObj->display($tmpl_dir . 'containerView.tpl');
+	}
+
+}
+
 ?>

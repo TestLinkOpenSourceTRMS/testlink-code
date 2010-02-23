@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2010/02/17 15:57:27 $ by $Author: asimon83 $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2010/02/23 12:45:45 $ by $Author: asimon83 $
  *
  * rev: 
+ *      20100222 - asimon - fixes in initializeGui() for testplan select box when there are no builds
  * 		20100217 - asimon - added check for open builds on initBuildInfo()
  * 		20100202 - asimon - changed filtering, BUGID 2455, BUGID 3026
  *      20090828 - franciscom - added contribution platform feature
@@ -90,7 +91,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     
     if($args->tplan_id != $_SESSION['testplanID']) {
     	//testplan was changed, so we reset the filters, they were chosen for another testplan
-    	$keys2delete = array('tcase_id', 'targetTestCase', 'keyword_id', 'filter_status',
+    	$keys2delete = array('tcase_id', 'targetTestCase', 'keyword_id', 'filter_status','keywordsFilterType',
     						'filter_method', 'filter_assigned_to', 'build_id', 'urgencyImportance',
     						'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
     	foreach ($keys2delete as $key) {
@@ -521,11 +522,18 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->treeColored = $argsObj->treeColored;
     
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
+    
     $gui->map_tplans = array();
     foreach($tplans as $key => $value)
     {
-    	$gui->map_tplans[$value['id']] = $value['name'];
+    	//dont take testplans into selection which have no builds assigned
+    	$items = $tplanMgr->get_builds($value['id'],
+    							testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
+		if (is_array($items) && count($items)) {
+    		$gui->map_tplans[$value['id']] = $value['name'];
+    	}    	
     }
+    
     $gui->tplan_id = $argsObj->tplan_id;
     $gui->tplan_name = $argsObj->tplan_name;
     

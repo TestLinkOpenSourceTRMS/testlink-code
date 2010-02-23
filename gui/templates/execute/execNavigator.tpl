@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.35 2010/02/18 13:18:08 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.36 2010/02/23 12:45:45 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20100222 - asimon - moved plattform select box from filters to settings panel
   20100202 - asimon - BUGID 2455, BUGID 3026 - changes on filters
   20100109 - eloff - BUGID 2800 - filter panel is now ext CollapsiblePanel
   20090808 - franciscom - added contribution platform
@@ -115,7 +116,7 @@ rev :
 	
 	{if $gui->map_tplans != '' }
 		<tr>
-			<td>{$labels.test_plan}</td>
+			<th>{$labels.test_plan}</th>
 			<td>
 				<select name="tplan_id" onchange="this.form.submit()">
 			    {html_options options=$gui->map_tplans selected=$gui->tplan_id}
@@ -124,13 +125,23 @@ rev :
 		</tr>
 	{/if}
 		
-		  <tr>
-			<th>{$labels.exec_build}</th>
-			<td><select name="build_id" onchange="this.form.submit()">
-				{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
-		  		</select>
-		  	</td>
-		  </tr>
+	{if $gui->optPlatform.items != ''}
+	<tr>
+	  	<th>{$labels.platform}</th>
+	  	<td><select name="platform_id" onchange="this.form.submit()">
+	  		{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
+		  	</select>
+		</td>
+	</tr>
+	{/if}
+		
+	  <tr>
+		<th>{$labels.exec_build}</th>
+		<td><select name="build_id" onchange="this.form.submit()">
+			{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
+	  		</select>
+	  	</td>
+	  </tr>
 
 	</table>
 
@@ -160,17 +171,6 @@ rev :
 				</select>
 			</td>
 		</tr>
-		
-		{if $gui->optPlatform.items != ''}
-		<tr>
-		  	<td>{$labels.platform}</td>
-		  	<td><select name="platform_id">
-		  		{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
-			  	</select>
-			</td>
-		</tr>
-		{/if}
-
 		
 		<tr>
 			<th>{$labels.filter_owner}</th>

@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.26 2010/02/21 15:07:49 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.27 2010/02/23 12:45:45 asimon83 Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
+	20100212 - asimon - BUGID 3049 - added removing of testplan assignment feature
     20100102 - franciscom - refactoring to use $gui
     20080805 - franciscom - fixed undefined variable log warning.
                             BUGID 1661 - removed reorder button if tree component support drag & drop
@@ -24,7 +25,8 @@ rev :
 	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
 	           btn_del_testsuites_bulk,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
-	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc'}
+	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc,
+	           btn_unassign_all_tcs, unassign_all_tcs_msgbox_title, th_testplan_name,'}
 
 {assign var="container_id" value=$gui->container_data.id}
 {assign var="tcImportAction"
@@ -40,6 +42,26 @@ rev :
 {include file="inc_head.tpl" openHead="yes"}
 {assign var="ext_version" value="-2.0"}
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/ext{$ext_version}/css/ext-all.css" />
+{include file="inc_del_onclick.tpl" openHead="yes"}
+
+<script type="text/javascript">
+{literal}
+
+function unassign_tcs(btn) {
+	if (btn == "yes") {
+		document.getElementById("tc_unassign_from_tp").submit();
+	}
+}
+
+function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
+	Ext.Msg.confirm(msgbox_title, msgbox_content, function(btn) {
+		unassign_tcs(btn);
+	});
+}					
+
+{/literal}
+</script>
+
 </head>
 
 <body>
@@ -115,6 +137,60 @@ rev :
 	         attach_id=$gui->id attach_tableName="nodes_hierarchy"
 	         attach_attachmentInfos=$gui->attachmentInfos
 	         attach_downloadOnly=$bDownloadOnly}
+
+
+{* ----- TEST PLAN (for BUGID 3049) ----------------------------------------------- *}
+{elseif $gui->level == 'testplan'}
+
+	{if $gui->draw_tc_unassign_button}
+		<form id="tc_unassign_from_tp" name="tc_unassign_from_tp" action="lib/testcases/containerEdit.php?tplan_id={$gui->tplan_id}" method="post">
+		{*<form id="tc_unassign_from_tp" name="tc_unassign_from_tp" action="lib/testcases/tcUnassignFromPlan.php?doAction=doUnassignFromPlan&tplan_id={$gui->tplan_id}" method="post">*}
+		<input type="hidden" name="doAction" value="doUnassignFromPlan" />
+		<input type="hidden" name="doUnassignFromPlan" value="doUnassignFromPlan" />
+		<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
+		<input type="button" name="unassign_all_tcs" value="{$labels.btn_unassign_all_tcs}"
+			  	onclick="javascript: warn_unassign_tcs({$gui->tplan_id}, '{$gui->tplan_name}',
+			  	'{$labels.unassign_all_tcs_msgbox_title}', '{$gui->unassign_all_tcs_warning_msg}');"/>
+		</form>
+	{/if}
+	
+	{if $gui->result}
+	<div class="user_feedback">
+		<p>{$gui->result}</p>
+	</div>
+	{/if}
+	
+	<table class="simple" >
+		<tr>
+			<th>{$labels.th_product_name}</th>
+		</tr>
+		<tr>
+			<td>{$gui->tproject_name|escape}</td>
+		</tr>
+		<tr>
+			<th>{$labels.th_notes}</th>
+		</tr>
+		<tr>
+			<td>{$gui->tproject_description}</td>
+		</tr>
+
+	</table>
+
+	<table class="simple" >
+		<tr>
+			<th>{$labels.th_testplan_name}</th>
+		</tr>
+		<tr>
+			<td>{$gui->tplan_name|escape}</td>
+		</tr>
+		<tr>
+			<th>{$labels.th_notes}</th>
+		</tr>
+		<tr>
+			<td>{$gui->tplan_description}</td>
+		</tr>
+
+	</table>
 
 {* ----- TEST SUITE ----------------------------------------------------- *}
 {elseif $gui->level == 'testsuite'}

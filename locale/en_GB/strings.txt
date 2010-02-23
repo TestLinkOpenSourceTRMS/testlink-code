@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.564 2010/02/21 17:06:56 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.565 2010/02/23 12:45:45 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -522,8 +522,10 @@ $TLS_btn_new_testsuite = "New child Test Suite";
 $TLS_btn_new_tc = "Create Test Cases";
 $TLS_btn_reorder = "Reorder children";
 $TLS_container_title_testproject = $TLS_testproject;
+$TLS_container_title_testplan = $TLS_testplan;
 $TLS_edit_testproject_basic_data = "Edit Test Project basic data";
 $TLS_th_product_name = "Test Project Name";
+$TLS_th_testplan_name = "Test Plan Name";
 
 
 // ----- gui/templates/cfields/cfieldsEdit.tpl -----
@@ -1842,6 +1844,7 @@ $TLS_href_tc_exec_assignment = "Assign Test Case execution";
 $TLS_href_update_tplan = "Update Linked Test Case Versions";
 $TLS_href_platform_assign = "Add / Remove Platforms";
 $TLS_current_test_plan = "Current testplan";
+$TLS_href_tc_unassign_from_tp = "Remove linked Test Cases From Test Plan";
 
 $TLS_href_upd_mod_tc = "Update modified Test Cases";
 $TLS_msg_no_rights_for_tp = "<br /> You don't have permissions for any ACTIVE Test Plan";
@@ -2187,6 +2190,13 @@ $TLS_testplan_report = "Test Plan Report";
 $TLS_testspecification_report = "Test Specification Report";
 
 
+// ----- lib/testcases/tcUnassignFromPlan.php -----
+$TLS_remove_assigned_testcases = "Remove all assigned Test Cases From Test Plan";
+$TLS_btn_unassign_all_tcs = "Remove all assigned Test Cases";
+$TLS_unassign_all_tcs_msgbox_title = "Remove all assigned Test Cases?";
+$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all assigned Test Cases will be deleted from Test Plan %s.";
+$TLS_unassigned_all_tcs_msg = "All assigned Test Cases have been unassigned for Test Plan %s.";
+$TLS_nothing_to_unassign_msg = "There are no Test Cases assigned to users for Test Plan %s.";
 
 // ----- lib/project/projectedit.php -----
 $TLS_error_product_name_duplicate = "There's already Test Project named %s.";

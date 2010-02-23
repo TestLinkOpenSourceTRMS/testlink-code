@@ -20,7 +20,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.9 2010/02/14 14:57:49 franciscom Exp $
+ * @version    	CVS: $Id: description.php,v 1.10 2010/02/23 12:45:45 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -167,9 +167,6 @@ $TLS_hlp_executeFilter = "<h2>Filter & Settings</h2>
 
 <h3>Build to execute</h3>
 <p>You can choose the build you whish to execute the test cases for.</p>
-
-<h3>Test Case ID Filter</h3>
-<p>You can explicitly filter by a single test case that is identified by its unique ID.</p>
 
 <h3>Keyword Filter</h3>
 <p>You can filter test cases by the keywords that have been assigned. You can choose " .

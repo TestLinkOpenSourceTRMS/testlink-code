@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.37 2010/02/17 15:57:27 asimon83 Exp $
+ * @version $Id: planTCNavigator.php,v 1.38 2010/02/23 12:45:45 asimon83 Exp $
  * @author Martin Havlat
  *
  * Test navigator for Test Plan
@@ -90,6 +90,37 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
     
+	// 20070120 - franciscom -
+    // is possible to call this page using a Test Project that have no test plans
+    // in this situation the next to entries are undefined in SESSION
+    $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+    $args->tplan_name = isset($_SESSION['testplanName']) ? $_SESSION['testplanName'] : '';
+
+    if($args->tplan_id != 0)
+    {
+		$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+		$tplan_info = $tplanMgr->get_by_id($args->tplan_id);
+		$args->tplan_name = $tplan_info['name'];
+    
+    
+		if($args->tplan_id != $_SESSION['testplanID']) {
+	    	//testplan was changed, so we reset the filters, they were chosen for another testplan
+	    	$keys2delete = array('keyword_id', 'filter_status', 'keywordsFilterType',
+	    						'filter_method', 'filter_assigned_to', 'urgencyImportance',
+	    						'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
+	    	foreach ($keys2delete as $key) {
+	    		unset($_REQUEST[$key]);
+	    	}
+	    	$currentUser = $_SESSION['currentUser'];
+	    	$arrPlans = $currentUser->getAccessibleTestPlans($dbHandler,$args->tproject_id);
+			foreach ($arrPlans as $plan) {
+				if ($plan['id'] == $args->tplan_id) {
+					setSessionTestPlan($plan);
+				}
+			}
+	    }
+    }
+    
     // Array because is a multiselect input
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
@@ -131,7 +162,11 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
 	$args->optBuildSelected = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : -1;
     $args->optFilterBuildSelected = isset($_REQUEST['filter_build_id']) ? $_REQUEST['filter_build_id'] : -1;
     $args->optPlatformSelected = isset($_REQUEST['platform_id']) ? $_REQUEST['platform_id'] : null;
-	  
+	
+    if (in_array(0, (array)$args->optPlatformSelected)) {
+		$args->optPlatformSelected = null;
+    }
+        
     // 20081221 - franciscom
     $args->filter_assigned_to = isset($_REQUEST['filter_assigned_to']) ? $_REQUEST['filter_assigned_to'] : null;                                                                                                                        
     if( !is_null($args->filter_assigned_to) )
@@ -153,19 +188,6 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     }  
 	$args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
     
-    // 20070120 - franciscom -
-    // is possible to call this page using a Test Project that have no test plans
-    // in this situation the next to entries are undefined in SESSION
-    $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-    $args->tplan_name = isset($_SESSION['testplanName']) ? $_SESSION['testplanName'] : '';
-
-    if($args->tplan_id != 0)
-    {
-		    $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
-		    $tplan_info = $tplanMgr->get_by_id($args->tplan_id);
-		    $args->tplan_name = $tplan_info['name'];
-    }
-
     return $args;
 }
 
@@ -215,7 +237,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->optFilterBuild = initFilterBuildInfo($dbHandler,$argsObj,$tplanMgr);
     $gui->buildCount = count($gui->optFilterBuild['items']);
-    $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr);
+    $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr, $gui->str_option_any);
     
     $gui->keywordsFilterType=new stdClass();                                 
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
@@ -317,7 +339,9 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
     $filters->keyword = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
     $filters->keyword_id = $argsObj->keyword_id;
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
-    $filters->platform_id = $argsObj->optPlatformSelected;
+    if ($argsObj->optPlatformSelected != null) {
+    	$filters->platform_id = $argsObj->optPlatformSelected;
+    }
 
     $filters->include_unassigned = $guiObj->include_unassigned;
     $filters->show_testsuite_contents=1;
@@ -479,10 +503,11 @@ function initFilterBuildInfo(&$dbHandler,&$argsObj,&$tplanMgr)
  * @param tlPlatform &$platformMgr reference
  *
  */
-function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr)
+function initPlatformInfo(&$dbHandler,&$argsObj,&$platformMgr, $str_any)
 {
     $htmlSelect = array('items' => null, 'selected' => null);
-    $htmlSelect['items'] = $platformMgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+    $htmlSelect['items'] = array(0 => $str_any) + (array)$platformMgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+    
     if( !is_null($htmlSelect['items']) && is_array($htmlSelect['items']) )
     { 
     	if (is_null($argsObj->optPlatformSelected)) 

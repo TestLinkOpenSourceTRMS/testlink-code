@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.93 2010/02/18 13:18:08 asimon83 Exp $
+// $Id: testlink_library.js,v 1.94 2010/02/23 12:45:44 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100223 - asimon - added PL() for BUGID 3049
 // 20100216 - asimon - added triggerBuildChooser() and triggerAssignedBox() for BUGID 2455, BUGID 3026
 // 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
 // 20100131 - franciscom - BUGID 3118: Help files are not getting opened when selected in the dropdown 
@@ -207,6 +208,18 @@ function EP(id)
 	                 "&level=testproject&id="+id+args+"&"+pParams;
 
 	//alert(_FUNCTION_NAME_ + " " +action_url);
+	parent.workframe.location = action_url;
+}
+
+/*
+function: PL
+          printing of Test Plan for BUGID 3049
+args: id
+*/
+function PL(id)
+{
+	var _FUNCTION_NAME_="PL";
+	var action_url = fRoot + 'lib/testcases/archiveData.php?edit=testplan&level=testplan&id=' + id;
 	parent.workframe.location = action_url;
 }
 

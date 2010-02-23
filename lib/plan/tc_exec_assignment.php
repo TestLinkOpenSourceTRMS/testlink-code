@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.48 2010/02/18 13:18:09 asimon83 Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.49 2010/02/23 12:45:45 asimon83 Exp $ 
  * 
  * rev :
  *	
@@ -106,6 +106,7 @@ if(!is_null($args->doAction))
 			}
 			
 		}
+		
     foreach($features2 as $key => $values)
     {
         if( count($features2[$key]) > 0 )

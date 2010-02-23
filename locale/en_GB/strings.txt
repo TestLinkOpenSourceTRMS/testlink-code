@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.565 2010/02/23 12:45:45 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.566 2010/02/23 13:08:22 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2191,10 +2191,10 @@ $TLS_testspecification_report = "Test Specification Report";
 
 
 // ----- lib/testcases/tcUnassignFromPlan.php -----
-$TLS_remove_assigned_testcases = "Remove all assigned Test Cases From Test Plan";
-$TLS_btn_unassign_all_tcs = "Remove all assigned Test Cases";
+$TLS_remove_assigned_testcases = "Unassign all assigned Test Cases for Test Plan";
+$TLS_btn_unassign_all_tcs = "Unassign all assigned Test Cases";
 $TLS_unassign_all_tcs_msgbox_title = "Remove all assigned Test Cases?";
-$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all assigned Test Cases will be deleted from Test Plan %s.";
+$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all Test Case assignments will be removed for Test Plan %s.";
 $TLS_unassigned_all_tcs_msg = "All assigned Test Cases have been unassigned for Test Plan %s.";
 $TLS_nothing_to_unassign_msg = "There are no Test Cases assigned to users for Test Plan %s.";
 

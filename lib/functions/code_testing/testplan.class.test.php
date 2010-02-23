@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testplan.class.test.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2008/08/15 11:27:28 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2010/02/23 20:04:24 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
@@ -17,6 +17,8 @@
 require_once('../../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
+
+define('DBUG_ON',1);
 
 $object_item="Testplan Manager";
 $object_class="testplan";
@@ -31,6 +33,43 @@ echo "<hr>";
 echo "<pre> $object_item - constructor - $object_class(&\$db)";echo "</pre>";
 $obj_mgr=new $object_class($db);
 new dBug($obj_mgr);
+
+// echo "<pre> testplan - get_linked_tcversions(\$tplan_id,\$tcase_id=null,\$keyword_id=0,\$executed=null,
+//                                              \$assigned_to=null,\$exec_status=null,\$build_id=0,
+//                                              \$cf_hash = null)";echo "</pre>";
+// 
+
+$tplan_id = 1212;
+echo "<pre> testplan - get_linked_tcversions(\$id,\$filters=null,\$options=null)";echo "</pre>";
+echo "<pre> get_linked_tcversions($tplan_id)";echo "</pre>";
+$linked_tcversions=$obj_mgr->get_linked_tcversions($tplan_id);
+new dBug($linked_tcversions);
+
+$options = array('output' => 'mapOfMap');
+echo "<pre> testplan - get_linked_tcversions(\$id,\$filters=null,\$options=null)";echo "</pre>";
+
+echo "<pre> get_linked_tcversions($tplan_id,null,$options)";echo "</pre>";
+new dBug($options);
+$linked_tcversions=$obj_mgr->get_linked_tcversions($tplan_id,null,$options);
+new dBug($linked_tcversions);
+
+$options = array('output' => 'array');
+echo "<pre> testplan - get_linked_tcversions(\$id,\$filters=null,\$options=null)";echo "</pre>";
+
+echo "<pre> get_linked_tcversions($tplan_id,null,$options)";echo "</pre>";
+new dBug($options);
+$linked_tcversions=$obj_mgr->get_linked_tcversions($tplan_id,null,$options);
+new dBug($linked_tcversions);
+
+die();
+
+
+
+
+
+
+
+
 
 $target_testproject=new stdClass(); 
 $target_testproject->name='Testplan Class Unit Test';
@@ -94,6 +133,11 @@ echo "<pre> $object_item - constructor - $object_class(&\$db)";echo "</pre>";
 $obj_mgr=new $object_class($db);
 new dBug($obj_mgr);
 
+
+
+
+
+
 $build = new stdClass();
 $build->name='Build Code Testing';
 $build->notes='Build created running Code Testing code by TestLink Development Team';
@@ -150,9 +194,13 @@ echo "<pre>            count_testcases($tplan_id)";echo "</pre>";
 $count_testcases=$tplan_mgr->count_testcases($tplan_id);
 new dBug("Number of testcase linked to test plan=" . $count_testcases);
 
-echo "<pre> testplan - get_linked_tcversions(\$tplan_id,\$tcase_id=null,\$keyword_id=0,\$executed=null,
-                                             \$assigned_to=null,\$exec_status=null,\$build_id=0,
-                                             \$cf_hash = null)";echo "</pre>";
+// echo "<pre> testplan - get_linked_tcversions(\$tplan_id,\$tcase_id=null,\$keyword_id=0,\$executed=null,
+//                                              \$assigned_to=null,\$exec_status=null,\$build_id=0,
+//                                              \$cf_hash = null)";echo "</pre>";
+// 
+
+
+echo "<pre> testplan - get_linked_tcversions(\$id,\$filters=null,\$options=null)";echo "</pre>";
 
 echo "<pre>            get_linked_tcversions($tplan_id)";echo "</pre>";
 $linked_tcversions=$tplan_mgr->get_linked_tcversions($tplan_id);

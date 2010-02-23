@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.285 2010/02/16 21:46:32 havlat Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.286 2010/02/23 10:51:29 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -173,9 +173,6 @@ $tlCfg->charts_font_size = 8;
 // ----------------------------------------------------------------------------
 /* [SERVER ENVIRONMENT] */
 
-/** Error reporting - do we want php errors to show up for users */
-error_reporting(E_ALL);
-
 /** 
  * @var integer Set the session timeout for inactivity [minutes].
  * Default high value disables this feature.
@@ -200,6 +197,9 @@ $tlCfg->sessionInactivityTimeout = 9900;
 
 // ----------------------------------------------------------------------------
 /* [LOGGING] */
+
+/** Error reporting - do we want php errors to show up for users */
+error_reporting(E_ALL);
 
 /** @var string Default level of logging (NONE, ERROR, INFO, DEBUG, EXTENDED) */
 $tlCfg->log_level = 'ERROR';
@@ -311,16 +311,19 @@ $tlCfg->user_self_signup = TRUE;
 /** Validating new user login names */
 $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \- .]+$/';
 
-/** Validating user email addresses */
-/* added final i - to allow also Upper Case - info taken from PHP Manual and Mantis */
-// $tlCfg->validation_cfg->user_email_valid_regex = "/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`" .
-// 		                        "{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i";
-// 
-
-/* Taken from Ext-js VTypes.js */
-// "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
+/** 
+ * Validating user email addresses
+ * Example of other possibilities:
+ * <code>
+ * $regex = "/^[a-z0-9!#$%&'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\/=?^_`{|}~-]+)*" .
+ * 		 "@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i";
+ * $regex = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
+ * </code>
+ **/
 $tlCfg->validation_cfg->user_email_valid_regex_js =  "/^(\w+)([-+.][\w]+)*@(\w[-\w]*\.){1,5}([A-Za-z]){2,4}$/";
 $tlCfg->validation_cfg->user_email_valid_regex_php = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/U";
+
+
 // --------------------------------------------------------------------------------------
 /* [API] */
 
@@ -375,10 +378,13 @@ $tlCfg->gui->round_corners->exec_history = ENABLED;
 $tlCfg->gui->round_corners->tc_title = ENABLED;
 $tlCfg->gui->round_corners->tc_spec = ENABLED;
 
-/** Display name definition (used to build a human readable display name for users) */
-// '%first% %last%'          -> John Cook
-// '%last%, %first%'          -> John Cook
-// '%first% %last% %login%'    -> John Cook [ux555]
+/** 
+ * Display name definition (used to build a human readable display name for users)
+ * Example of values:
+ * 		'%first% %last%'          -> John Cook
+ * 		'%last%, %first%'          -> John Cook
+ * 		'%first% %last% %login%'    -> John Cook [ux555]
+ **/
 $tlCfg->username_format = '%login%';
 
 /** Configure the frame frmWorkArea navigator width */
@@ -387,86 +393,76 @@ $tlCfg->frame_workarea_default_width = "30%";
 /** true => icon edit will be added into <a href> as indication an edit features */
 $tlCfg->gui->show_icon_edit = false;
 
-/** Order to use when building a testproject combobox (value must be SQL compliant)*/
-// 'ORDER BY name'
-// 'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
+/** 
+ * Order to use when building a testproject combobox (value must be SQL compliant)
+ * For example:
+ * 		'ORDER BY name'
+ * 		'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
+ **/
 $tlCfg->gui->tprojects_combo_order_by = 'ORDER BY nodes_hierarchy.id DESC';
 
 // used to round percentages on metricsDashboard.php
 $tlCfg->dashboard_precision = 2;
 
-/** Choose what kind of webeditor you want to use in every TL area.
- *
+/** 
+ * Choose what kind of webeditor you want to use in every TL area. This configuration 
+ * will be used if no element with search key (area) is found on this structure.
+ * Every element is a mp with this configuration keys:
+ * 
+ * 'type':
+ *        'fckeditor'
+ *        'tinymce'
+ *        'none' -> use plain text area input field
+ * 'toolbar': only applicable for type = 'fckeditor'
+ *			name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
+ * 			TestLink stores own definitions in <testlink_dir>/cfg/tl_fckeditor_config.js
+ * 'configFile': only applicable for type = 'fckeditor'
+ * 			See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath
+ * 'height': the height in px for FCKEditor 
+ * 'width': the width in px for FCKEditor
+ * 'cols': the number of cols for tinymce and none
+ * 'rows': the number of rows for tinymce and none
+ * 
+ * The next keys/areas are supported: 
+ * 		'all' (default setting),
+ * 		'design', 'testplan', 'build', 'testproject', 'role', 'requirement', 'requirement_spec'.
+ * 
+ * Examples:
+ * <code>
+ * // Copy this to custom_config.inc.php if you want use 'tinymce' as default.
+ * $tlCfg->gui->text_editor['all'] = array( 'type' => 'tinymce');
+ * // Copy this to custom_config.inc.php if you want use 'nome' as default.
+ * $tlCfg->gui->text_editor['all'] = array( 'type' => 'none');
+ * //This configuration is useful only if default type is set to 'fckeditor'
+ * $tlCfg->gui->text_editor['design'] = array('toolbar' => 'tl_mini');
+ * 
+ * $tlCfg->gui->text_editor['testplan'] = array( 'type' => 'none');
+ * $tlCfg->gui->text_editor['build'] = array( 'type' => 'fckeditor','toolbar' => 'tl_mini');
+ * $tlCfg->gui->text_editor['testproject'] = array( 'type' => 'tinymce');
+ * $tlCfg->gui->text_editor['role'] = array( 'type' => 'tinymce');
+ * $tlCfg->gui->text_editor['requirement'] = array( 'type' => 'none');
+ * $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
+ * </code>
+ * 
+ * Hint: After doing configuration changes, clean you Browser's cookies and cache 
  */
 $tlCfg->gui->text_editor = array();
-
-// This configuration will be used if no element with search key (area) is found
-// on this structure.
-// Every element is a mp with this configuration keys:
-//
-// 'type':
-//        'fckeditor'
-//        'tinymce'
-//        'none' -> use plain text area input field
-//
-// 'toolbar': only applicable for type = 'fckeditor'
-//            name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
-//
-// 'configFile': only applicable for type = 'fckeditor'
-//               (See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath)
-//
-// 'height': the height in px for FCKEditor 
-// 'width': the width in px for FCKEditor
-// 'cols': the number of cols for tinymce and none
-// 'rows': the number of rows for tinymce and none
-// Hint: After doing configuration changes, clean you Browser's cookies and cache 
-//
 $tlCfg->gui->text_editor['all'] = array( 
 									'type' => 'fckeditor', 
                                     'toolbar' => 'tl_default', 
                                     'configFile' => 'cfg/tl_fckeditor_config.js',
 								);
-
-// Copy this to custom_config.inc.php if you want use 'tinymce' as default.
-// $tlCfg->gui->text_editor['all'] = array( 'type' => 'tinymce');
-// 
-// Copy this to custom_config.inc.php if you want use 'nome' as default.
-// $tlCfg->gui->text_editor['all'] = array( 'type' => 'none');
-
-// Suggested for BETTER Performance with lot of testcases
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 
-// Enable and configure this if you want to have different
-// webeditor type in different TL areas
-// You can not define new areas without making changes to php code
-//
-// $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');  // BETTER Performance with lot of testcases
-// 
-// This configuration is useful only if default type is set to 'fckeditor'
-// $tlCfg->gui->text_editor['design'] = array('toolbar' => 'tl_mini');
-// 
-// $tlCfg->gui->text_editor['testplan'] = array( 'type' => 'none');
-// $tlCfg->gui->text_editor['build'] = array( 'type' => 'fckeditor','toolbar' => 'tl_mini');
-// $tlCfg->gui->text_editor['testproject'] = array( 'type' => 'tinymce');
-// $tlCfg->gui->text_editor['role'] = array( 'type' => 'tinymce');
-// $tlCfg->gui->text_editor['requirement'] = array( 'type' => 'none');
-// $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
-
-/** 
- * fckeditor Toolbar - modify which icons will be available in html edit pages
- * refer to fckeditor configuration file 
- **/
-// $tlCfg->fckeditor_default_toolbar = 'tl_default';
-
-/* User can choose order of menu areas */
+/** User can choose order of menu areas */
 $tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration' => 2 ,
                                          'requirements' => 3, 'testSpecification' => 4,
                                          'general' => 5);
-
 $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 ,
                                           'testPlanContents' => 3);
 
-/** Enable warning on a changed content before an user leave a page.
+/** 
+ * Enable warning on a changed content before an user leave a page.
  *
  * Tested in:
  * - IE8        OK
@@ -493,7 +489,10 @@ $tlCfg->treemenu_show_testcase_id = TRUE;
 // ----------------------------------------------------------------------------
 /* [GUI: Javascript libraries] */
 
-/** ENABLED -> use EXT JS library; DISABLED - simple html */
+/** 
+ * ENABLED -> use EXT JS library; DISABLED - simple html 
+ * @TODO havlatm: I guess it should be removed
+ **/
 $g_use_ext_js_library = ENABLED;
 
 // May be in future another table sort engine will be better

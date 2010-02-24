@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.63 2010/02/23 12:45:45 asimon83 Exp $
+ * @version $Id: archiveData.php,v 1.64 2010/02/24 08:31:13 asimon83 Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -58,27 +58,16 @@ switch($args->feature)
 		$gui->id = $args->id;
 		$gui->tplan_id = $args->id;
 		
-		// look if there are assigned testcases which we could unassign
-		$platformMgr = new tlPlatform($db);
-		$platforms = $platformMgr->getLinkedToTestplanAsMap($gui->tplan_id);
-
-		//if there are platforms we get testcases for each platform
-		$map = array();
-			
-		foreach ($platforms as $platform_id => $platform_name) {
-			$map = array_merge($map, $tplan_mgr->get_linked_tcversions(
-									$gui->tplan_id, array('platform_id' => $platform_id)));
-		}
-		//now we add those testcases which are not assigned to a platform
-		$map = array_merge($map, $tplan_mgr->get_linked_tcversions($gui->tplan_id));
+		$options = array('output' => 'array');
+		$linked_tcversions=$tplan_mgr->get_linked_tcversions($gui->tplan_id,null,$options);
 		
-		foreach ($map as $tc_id => $tc) {
+		foreach ($linked_tcversions as $tc_id => $tc) {
 			if (!isset($tc['user_id']) || !is_numeric($tc['user_id'])) {
-				unset($map[$tc_id]);
+				unset($linked_tcversions[$tc_id]);
 			}
 		}
 		
-		if (count($map) != 0) {
+		if (count($linked_tcversions) != 0) {
 			// yes, we have testcases to unassign, draw the button
 			$gui->draw_tc_unassign_button = true;
 		} else {

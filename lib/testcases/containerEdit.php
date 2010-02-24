@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.108 $
- * @modified $Date: 2010/02/23 12:45:45 $ by $Author: asimon83 $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2010/02/24 08:31:13 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  *	@internal revisions
@@ -870,25 +870,11 @@ function removeTestcaseAssignments(&$dbHandler, &$argsObj, &$tplan_mgr, &$smarty
 	$gui->refreshTree = false;
 
 	if($argsObj->doAction == 'doUnassignFromPlan') {
-		// this is done manually in a loop for all platforms as a workaround
-		// because get_linked_tcversions() gets each testcase only once,
-		// not once for each platform
-		$platformMgr = new tlPlatform($dbHandler);
-		$platforms = $platformMgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
-		$map = array();
-		
-		// get all platforms
-		foreach ($platforms as $platform_id => $platform_name) {
-			$map = array_merge($map, $tplan_mgr->get_linked_tcversions(
-									$gui->tplan_id, array('platform_id' => $platform_id)));
-		}
-		
-		//now we add those testcases which are not assigned to a platform
-		$map = array_merge($map, $tplan_mgr->get_linked_tcversions($gui->tplan_id));
-				
+		$options = array('output' => 'array');
+		$linked_tcversions=$tplan_mgr->get_linked_tcversions($gui->tplan_id,null,$options);
+			
 		$ids = array();
-
-		foreach ($map as $tc_id => $tc) {
+		foreach ($linked_tcversions as $tc_id => $tc) {
 			if (isset($tc['user_id']) && is_numeric($tc['user_id'])) {
 				$ids[] = $tc['feature_id'];
 			}
@@ -899,7 +885,7 @@ function removeTestcaseAssignments(&$dbHandler, &$argsObj, &$tplan_mgr, &$smarty
 			$assignment_mgr->delete_by_feature_id($ids);
 			$gui->result = sprintf(lang_get('unassigned_all_tcs_msg'), $gui->tplan_name);
 		} else {
-			//no items to unlink
+			//no items to unassign
 			$gui->result = sprintf(lang_get('nothing_to_unassign_msg'), $gui->tplan_name);
 		}
 

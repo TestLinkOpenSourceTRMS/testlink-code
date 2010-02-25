@@ -1,9 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.26 2010/02/22 20:59:48 havlat Exp $
+$Id: testlink.css,v 1.27 2010/02/25 21:36:10 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
+20100225 - eloff - BUGID 3217 - Ext removes bullets from all lists, re-add bullets to our lists
 20080517 - franciscom - auto width in simple table creates an ugly effect
                         on test suite and test case view, on test spec feature.
                         Reset to original class.
@@ -90,6 +91,17 @@ form
 	margin: 		0px;
 	padding: 		0px;
 } 
+
+/* 20100225 - eloff - BUGID 3217 - Ext removes bullets from all lists, re-add bullets to our lists */
+.workBack ol {
+    margin: 1em 40px;
+    list-style-type: decimal;
+}
+.workBack ul {
+    margin: 1em 40px;
+    list-style-type: disc;
+    list-style-position: outside;
+}
 
 /* ***** Links ***** */
 /* A Visited link is still blue */

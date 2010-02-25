@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.43 2010/02/21 09:37:51 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.44 2010/02/25 21:35:07 erikeloff Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20100225 - eloff - changes custom fields to span all 8 columns
     20100129 - franciscom - drawSavePlatformsButton logic moved to planAddTC.php
     20100122 - eloff - BUGID 3078 - check drawSavePlatformsButton first
     20100122 - eloff - BUGID 3084 - fixes alignment of columns
@@ -298,7 +299,7 @@ Ext.onReady(function(){
                 {* This piece will be used ONLY when platforms are not used or not assigned yet *}
   			        {if isset($tcase.custom_fields[0])}
         			    <input type='hidden' name='linked_with_cf[{$tcase.feature_id}]' value='{$tcase.feature_id}' />
-                  <tr><td colspan="7">{$tcase.custom_fields[0]}</td></tr>
+                  <tr><td colspan="8">{$tcase.custom_fields[0]}</td></tr>
                 {/if}
               {/if}
               

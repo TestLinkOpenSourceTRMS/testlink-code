@@ -6,11 +6,12 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.16 2010/02/02 20:23:31 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.17 2010/02/25 19:58:31 erikeloff Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
  *
+ *	20100225 - eloff - rename platformVisibleForTestplan() to platformsActiveForTestplan()
  *	20100202 - franciscom - create() - changed return type
  *	20100201 - franciscom - linkToTestplan(), unlinkFromTestplan() - refactoring to manage null	as $id
  *		                    deleteByTestProject() - new method.
@@ -275,18 +276,18 @@ class tlPlatform extends tlObjectWithDB
 
 	/**
 	 * Logic to determine if platforms should be visible for a given testplan.
-	 * @return bool true if the testplan has more than one linked platforms
+	 * @return bool true if the testplan has one or more linked platforms;
 	 *              otherwise false.
 	 */
-	public function platformVisibleForTestplan($testplan_id)
+	public function platformsActiveForTestplan($testplan_id)
 	{
 		$sql =  " SELECT COUNT(0) AS num " .
 				" FROM {$this->tables['testplan_platforms']} " .
 				" WHERE testplan_id = {$testplan_id}";
 		$num_tplans = $this->db->fetchOneValue($sql);
-		return ($num_tplans > 1);
+		return ($num_tplans > 0);
 	}
-	
+
 	/**
 	 * @param string $orderBy
 	 * @return array Returns all platforms associated to a given testplan

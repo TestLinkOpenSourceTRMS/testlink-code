@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.93 2010/02/21 10:05:43 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.94 2010/02/25 19:58:31 erikeloff Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100225 - eloff - BUGID 3205 - Don't show "save platforms" when platforms aren't used
  * 20100129 - franciscom - moved here from template, logic to initialize:
  *                         drawSavePlatformsButton,drawSaveCFieldsButton        
  *                         
@@ -393,7 +394,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	$platform_mgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
 	$gui->platforms = $platform_mgr->getLinkedToTestplan($argsObj->tplan_id);
 	$gui->platformsForHtmlOptions = null;
-	$gui->usePlatforms = !is_null($gui->platforms);
+	$gui->usePlatforms = $platform_mgr->platformsActiveForTestplan($argsObj->tplan_id);
 	if($gui->usePlatforms)
 	{
 		$gui->platformsForHtmlOptions[0]='';
@@ -600,27 +601,32 @@ function initDrawSaveButtons(&$guiObj)
 {
 	$keySet = array_keys($guiObj->items);
 
-    // Logic to initialize drawSavePlatformsButton
-	foreach($keySet as $key)
+	// 20100225 - eloff - BUGID 3205 - check only when platforms are active
+	// Logic to initialize drawSavePlatformsButton.
+	if ($guiObj->usePlatforms)
 	{
-		$breakLoop = false;
-		$testSuite = &$guiObj->items[$key];
-		if($testSuite['linked_testcase_qty'] > 0)
+		// Looks for a platform with id = 0
+		foreach($keySet as $key)
 		{
-			$tcaseSet = array_keys($testSuite['testcases']);
-			foreach($tcaseSet as $tcaseKey)
+			$breakLoop = false;
+			$testSuite = &$guiObj->items[$key];
+			if($testSuite['linked_testcase_qty'] > 0)
 			{
-				if( isset($testSuite['testcases'][$tcaseKey]['feature_id'][0]) )
+				$tcaseSet = array_keys($testSuite['testcases']);
+				foreach($tcaseSet as $tcaseKey)
 				{
-					$breakLoop = true;
-					$guiObj->drawSavePlatformsButton = true;
-					break;
+					if( isset($testSuite['testcases'][$tcaseKey]['feature_id'][0]) )
+					{
+						$breakLoop = true;
+						$guiObj->drawSavePlatformsButton = true;
+						break;
+					}
 				}
 			}
-		} 
-		if( $breakLoop )
-		{
-			break;
+			if( $breakLoop )
+			{
+				break;
+			}
 		}
 	}
     

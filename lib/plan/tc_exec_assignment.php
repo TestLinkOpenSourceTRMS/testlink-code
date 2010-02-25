@@ -1,10 +1,11 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.49 2010/02/23 12:45:45 asimon83 Exp $ 
+ * @version $Id: tc_exec_assignment.php,v 1.50 2010/02/25 19:58:31 erikeloff Exp $ 
  * 
  * rev :
  *	
+ *  20100225 - eloff - remove unnecessary call to platformVisibleForTestplan
  *  20100215 - asimon - BUGID 2455, BUGID 3026
  *  20100212 - eloff - BUGID 3157 - fixes reassignment to other user
  *  20090807 - franciscom - new feature platforms
@@ -258,7 +259,6 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
-    $gui->show_platforms=$platform_mgr->platformVisibleForTestplan($argsObj->tplan_id);
     $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
     
     $gui->send_mail = $argsObj->send_mail;

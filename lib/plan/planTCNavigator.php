@@ -3,16 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planTCNavigator.php,v 1.38 2010/02/23 12:45:45 asimon83 Exp $
- * @author Martin Havlat
- *
  * Test navigator for Test Plan
+ * 
  *
- * rev :
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.39 2010/02/27 19:43:53 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ * 
+ * @internal Revisions:
  *	20100202 - asimon - BUGID 2455, BUGID 3026
  *  20081223 - franciscom - advanced/simple filter feature
- * 
- * ----------------------------------------------------------------------------------- */
+ **/
 
 require('../../config.inc.php');
 require_once("common.php");
@@ -339,7 +342,9 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
     $filters->keyword = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
     $filters->keyword_id = $argsObj->keyword_id;
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
-    if ($argsObj->optPlatformSelected != null) {
+    $filters->platform_id = null;
+    if($argsObj->optPlatformSelected != null) 
+    {
     	$filters->platform_id = $argsObj->optPlatformSelected;
     }
 

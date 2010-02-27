@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsExport.php,v 1.3 2009/11/25 18:17:45 franciscom Exp $
+ * @version    	CVS: $Id: platformsExport.php,v 1.4 2010/02/27 09:02:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *	
+ * 20100227 - franciscom - BUGID 0003229
  *
  */
 require_once("../../config.inc.php");
@@ -78,10 +79,12 @@ function init_args()
 */
 function doExport(&$db,$filename,$testproject_id)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	$tables = tlObjectWithDB::getDBTables(array('platforms'));
     $adodbXML = new ADODB_XML("1.0", "UTF-8");
     
-    $sql = " SELECT name,testproject_id,notes " .
+    // BUGID 0003229
+    $sql = "/* $debugMsg */ SELECT name,notes " .
 		   " FROM {$tables['platforms']} PLAT " .
 		   " WHERE PLAT.testproject_id={$testproject_id}";
 	

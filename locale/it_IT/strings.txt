@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2009/02/02 22:30:53 $ $Author: havlat $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2010/02/27 19:27:18 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -525,6 +525,10 @@ $TLS_test_case_id = "ID";
 $TLS_title_created = "Creata il ";
 $TLS_title_last_mod = "Ultima modifica il ";
 
+$TLS_current_coverage = "Collegato";
+$TLS_coverage_number = "Crea";
+$TLS_testsuite_title_addition = "generato automaticamente dalla specifica dei requisiti";
+$TLS_testcase_title_addition = "generato automaticamente dal requisito";
 
 
 // gui/templates/buildEdit.tpl

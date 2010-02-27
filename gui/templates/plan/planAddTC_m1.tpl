@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.44 2010/02/25 21:35:07 erikeloff Exp $
+$Id: planAddTC_m1.tpl,v 1.45 2010/02/27 19:35:12 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20100227 - franciscom - changed logic to hide diwv with buttons when test suite has not test cases
     20100225 - eloff - changes custom fields to span all 8 columns
     20100129 - franciscom - drawSavePlatformsButton logic moved to planAddTC.php
     20100122 - eloff - BUGID 3078 - check drawSavePlatformsButton first
@@ -72,44 +73,50 @@ Ext.onReady(function(){
 </head>
 <body class="fixedheader">
 <form name="addTcForm" id="addTcForm" method="post">
-	<div id="header-wrap">
-		<h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$gui->actionTitle}
-		{include file="inc_help.tpl" helptopic="hlp_planAddTC" show_help_icon=true}
-		</h1>
-		{include file="inc_update.tpl" result=$sqlResult}
 
-		<div class="groupBtn">
-			{$labels.tester_assignment_on_add}
-			<select name="testerID"  id="testerID">
-				{html_options options=$gui->testers selected=$gui->testerID}
-			</select>
-			<span style="margin-left:20px;">
-			  <input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked}/>
-			  {$labels.send_mail_to_tester}
-			</span>
-		</div>
-		
-		<div class="groupBtn">
-			<input type="hidden" name="doAction" id="doAction" value="default" />
-			<input type="submit" name="doAddRemove" value="{$gui->buttonValue}"
-				     onclick="doAction.value=this.name" />
-			{if $gui->full_control eq 1}
-			  <input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}"
-				       onclick="doAction.value=this.name" />
+   <div id="header-wrap">
+	  	<h1 class="title">{$gui->pageTitle|escape}{$tlCfg->gui->title_separator_2}{$gui->actionTitle}
+	  	{include file="inc_help.tpl" helptopic="hlp_planAddTC" show_help_icon=true}
+	  	</h1>
 
-				{if $gui->drawSaveCFieldsButton}
-				  <input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}"
-					       onclick="doAction.value=this.name" />
-				{/if}
-				{if $gui->drawSavePlatformsButton}
-				  <input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}"
-					       onclick="doAction.value=this.name" />
-				{/if}
-			{/if}
-			</div>
-		</div>
-  </div> <!-- header-wrap -->
+	    {if $gui->has_tc }
+	  	  {include file="inc_update.tpl" result=$sqlResult}
+        
+	  	  <div class="groupBtn">
+	  	  	{$labels.tester_assignment_on_add}
+	  	  	<select name="testerID"  id="testerID">
+	  	  		{html_options options=$gui->testers selected=$gui->testerID}
+	  	  	</select>
+	  	  	<span style="margin-left:20px;">
+	  	  	  <input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked}/>
+	  	  	  {$labels.send_mail_to_tester}
+	  	  	</span>
+	  	  </div>
+	  	  
+	  	  <div class="groupBtn">
+	  	  	<input type="hidden" name="doAction" id="doAction" value="default" />
+	  	  	<input type="submit" name="doAddRemove" value="{$gui->buttonValue}"
+	  	  		     onclick="doAction.value=this.name" />
+	  	  	{if $gui->full_control eq 1}
+	  	  	  <input type="submit" name="doReorder" value="{$labels.btn_save_exec_order}"
+	  	  		       onclick="doAction.value=this.name" />
+        
+	  	  		{if $gui->drawSaveCFieldsButton}
+	  	  		  <input type="submit" name="doSaveCustomFields" value="{$labels.btn_save_custom_fields}"
+	  	  			       onclick="doAction.value=this.name" />
+	  	  		{/if}
+	  	  		{if $gui->drawSavePlatformsButton}
+	  	  		  <input type="submit" name="doSavePlatforms" value="{$labels.btn_save_platform}"
+	  	  			       onclick="doAction.value=this.name" />
+	  	  		{/if}
+	  	  	{/if}
+	  	  	</div>
+	  	  </div>
+      {else}
+	    <div class="info">{$labels.no_testcase_available}</div>
+	  	{/if}  
 
+    </div> <!-- header-wrap -->
 
 {if $gui->has_tc }
   <div class="workBack">
@@ -286,7 +293,10 @@ Ext.onReady(function(){
   						        {else}
             			  		&nbsp;
             			  	{/if}
-                      {if $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;{$gui->warning_msg->executed}{/if}
+                      {if $tcase.executed[0] eq 'yes'}&nbsp;&nbsp;&nbsp;
+   				                  <img src="{$smarty.const.TL_THEME_IMG_DIR}/lightning.png" 
+                            title="{$gui->warning_msg->executed}" />
+                      {/if}
                       {if $is_active eq 0}&nbsp;&nbsp;&nbsp;{$labels.inactive_testcase}{/if}
             			  </td>
             			  <td title="{$labels.info_added_on_date}">
@@ -362,11 +372,7 @@ Ext.onReady(function(){
       </div>
   	{/foreach}
   </div>
-
-{else}
-	<div class="info">{$labels.no_testcase_available}</div>
 {/if}
-
 </form>
 
 {* 

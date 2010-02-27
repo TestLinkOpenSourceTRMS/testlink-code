@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.89 2010/02/21 15:07:50 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.90 2010/02/27 18:58:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100227 - franciscom - BUGID 0003233: After test suite edit, display of Test suite do not 
+ *                         have upload button enabled for attachment
  * 20100210	- franciscom - keywords XML export refactored
  * 20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
  * 20100204 - franciscom - copy_to() refactoring	
@@ -409,7 +411,10 @@ class testsuite extends tlObjectWithAttachments
 	    $gui->sqlResult = '';
 		$gui->sqlAction = '';
 
-  	    $my['options'] = array('show_mode' => 'readonly'); 	
+        // BUGID 0003233: After test suite edit, display of Test suite do not 
+        //                have upload button enabled for attachment
+  	    // $my['options'] = array('show_mode' => 'readonly'); 	
+  	    $my['options'] = array('show_mode' => 'readwrite'); 	
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
         $gui->modify_tc_rights = has_rights($this->db,"mgt_modify_tc");

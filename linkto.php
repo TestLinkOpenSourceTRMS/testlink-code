@@ -34,14 +34,14 @@
  * @package 	TestLink
  * @author 		asimon
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: linkto.php,v 1.4 2010/02/23 14:42:14 asimon83 Exp $
+ * @version    	CVS: $Id: linkto.php,v 1.5 2010/02/28 09:50:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *  20100223 - asimon 	  - added anchor functionality
- *  20091215 - asimon     - refactored process_req() with new method in requirement_mgr class
+ *  20100223 - asimon - added anchor functionality
+ *  20091215 - asimon - refactored process_req() with new method in requirement_mgr class
  *	20091215 - franciscom - refactored
- *	20091214 - asimon83   - refactoring like requested in issue comments
+ *	20091214 - asimon83 - refactoring like requested in issue comments
  */
 
 // use output buffer to prevent headers/data from being sent before 

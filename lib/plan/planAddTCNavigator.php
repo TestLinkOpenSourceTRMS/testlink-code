@@ -1,31 +1,37 @@
 <?php
 /** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * @version $Id: planAddTCNavigator.php,v 1.48 2009/12/10 21:04:37 franciscom Exp $
- * @author Martin Havlat
- * 
+ * @package 	TestLink
+ * @author 		Martin Havlat
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.49 2010/02/28 10:36:58 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
  *	It builds the javascript tree that allow the user select a required part 
  *	Test specification. Keywords should be used for filter.
- * 
- * rev :
- *      20090415 - franciscom - BUGID 2384 - Tree doesnt load properly in Add / Remove Test Cases
- *      20090118 - franciscom - added logic to switch for EXTJS tree type
- *                              how to build tree when there are filters
  *
- * 
- * ----------------------------------------------------------------------------------- */
+ * @internal Revisions:
+ *
+ * 20100228 - franciscom - BUGID 0001927: filter on keyword - Filter tree when add/remove testcases - KO
+ * 20090415 - franciscom - BUGID 2384 - Tree doesnt load properly in Add / Remove Test Cases
+ * 20090118 - franciscom - added logic to switch (for EXTJS tree type), how tree is builded
+ *                         when there are filters
+ */
+
+
+
 require('../../config.inc.php');
 require_once("common.php");
 require_once("treeMenu.inc.php");
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
-
 $args = init_args();
-$gui = initializeGui($db,$args,$_SESSION['basehref']);
+$gui = initializeGui($db,$args);
+$gui->ajaxTree = initAjaxTree($args,$_SESSION['basehref']);
 $gui->tree = buildTree($db,$gui,$args);
 
 $smarty = new TLSmarty();
@@ -124,50 +130,6 @@ function initializeGui(&$dbHandler,&$argsObj,$basehref)
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
     
-    
-    // 20080622 - francisco.mancardi@gruppotesi.com
-    // $tcasePrefix=$tprojectMgr->getTestCasePrefix($argsObj->tproject_id);
-    
-    $gui->ajaxTree=new stdClass();
-    $gui->ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
-                           "root_node={$argsObj->tproject_id}&" .
-                           "show_tcases=0";
-                            
-                           // 20080629 - franciscom
-                           // "filter_node={$argsObj->tsuites_to_show}";
-
-    $gui->ajaxTree->root_node=new stdClass();
-    $gui->ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";
-    $gui->ajaxTree->root_node->id=$argsObj->tproject_id;
-    $gui->ajaxTree->root_node->name=$argsObj->tproject_name;
-  
-    // 20080831 - franciscom - Custom attribute
-    // You can access to it's value using public property 'attributes' of object of Class Ext.tree.TreeNode 
-    // example: mynode.attributes.testlink_node_type
-    //
-    // Important: 
-    // Fore root node (this node)
-    // You need to initialize every custom property you want to add to root node
-    // on the js file that create it (treebyloader.js) and smarty template
-    // 
-    //
-    // Also this property must be managed in php code used to generate JSON code.
-    //
-    // I'appologize for using MAGIC constant
-    $gui->ajaxTree->root_node->testlink_node_type='testproject';
-
-  
-    // Prefix for cookie used to save tree state
-    $gui->ajaxTree->cookiePrefix="planaddtc_{$gui->ajaxTree->root_node->id}_{$argsObj->user_id}_";
-
-    // not allowed in this feature
-    $gui->ajaxTree->dragDrop=new stdClass();
-    $gui->ajaxTree->dragDrop->enabled=false;
-    $gui->ajaxTree->dragDrop->BackEndUrl='';
-    // TRUE -> beforemovenode() event will use our custom implementation 
-    $gui->ajaxTree->dragDrop->useBeforeMoveNode=FALSE;
-    
-    
     return $gui;
 }
 
@@ -182,70 +144,113 @@ function initializeGui(&$dbHandler,&$argsObj,$basehref)
 */
 function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 {
-    $keywordsFilter = null;
-    $my_workframe = $_SESSION['basehref']. $guiObj->menuUrl .                      
-                    "?edit=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
-    if($argsObj->doUpdateTree)
-    {
+	$treeMenu = null;
+	$my_workframe = $_SESSION['basehref']. $guiObj->menuUrl .                      
+	                "?edit=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
+	
+	if($argsObj->doUpdateTree)
+	{
 	     $guiObj->src_workframe = $my_workframe; 
 	}
-    else if($argsObj->called_by_me)
-    {
-       // -------------------------------------------------------------------------------
-       // 20090308 - franciscom - think this is result of cut/paste from other
-       //                         piece of TL (look at edit=testsuite that has no use on 
-       //                         test case testplan assignment.
-       //
-       // Explain what is objective of this chunck of code 
-       // Warning:
-       // Algorithm based on field order on URL call
-       // 
-       $dummy = explode('?',$argsObj->called_url);
-       
-       $qs = explode('&',$dummy[1]);
-       if($qs[0] == 'edit=testsuite')
-       {
- 			    $guiObj->src_workframe = $dummy[0] . "?" . $qs[0] . "&" . $guiObj->args;
-       }
-       else 
-       {
- 			    $guiObj->src_workframe = $my_workframe; 
- 			 }   
- 			 // -------------------------------------------------------------------------------
-    }
-  
-    $filters = array();
-    $filters['keywords'] = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
-    $applyFilter = !is_null($keywordsFilter);
+	else if($argsObj->called_by_me)
+	{
+		// -------------------------------------------------------------------------------
+		// 20090308 - franciscom - think this is result of cut/paste from other
+		//                         piece of TL (look at edit=testsuite that has no use on 
+		//                         test case testplan assignment.
+		//
+		// Explain what is objective of this chunck of code 
+		// Warning:
+		// Algorithm based on field order on URL call
+		// 
+	   	$dummy = explode('?',$argsObj->called_url);
+	   
+	   	$qs = explode('&',$dummy[1]);
+	   	if($qs[0] == 'edit=testsuite')
+	   	{
+			    $guiObj->src_workframe = $dummy[0] . "?" . $qs[0] . "&" . $guiObj->args;
+	   	}
+	   	else 
+	   	{
+			    $guiObj->src_workframe = $my_workframe; 
+		}   
+		// -------------------------------------------------------------------------------
+	}
 
-    $treeMenu = null;
-    if($applyFilter)
-    {
-        // $treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,  
-        //                                  $guiObj->menuUrl,NOT_FOR_PRINTING,
-        //                                  HIDE_TESTCASES,ACTION_TESTCASE_DISABLE,
-        //                                  $guiObj->args, $keywordsFilter,IGNORE_INACTIVE_TESTCASES);
-           
-		$options = array('getArguments' => $guiObj->args,
-		                 'forPrinting' => NOT_FOR_PRINTING, 'hideTestCases' => HIDE_TESTCASES,
+	$filters = array();
+	$filters['keywords'] = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
+	$applyFilter = !is_null($filters['keywords']); // BUGID 0001927
+	if($applyFilter)
+	{
+		$options = array('forPrinting' => NOT_FOR_PRINTING, 'hideTestCases' => HIDE_TESTCASES,
 		                 'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
-		                 'ignore_inactive_testcases' => IGNORE_INACTIVE_TESTCASES);
-    	
-    	$treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,
-    	                                 $guiObj->menuUrl,$filters,$options);
-           
-           
-           
-        // When using filters I need to switch to static generated tree, that's reason why
-        // I'm creating from scratch ajaxTree.
+		                 'ignore_inactive_testcases' => IGNORE_INACTIVE_TESTCASES,
+		                 'getArguments' => $guiObj->args);
+		
+		$treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,
+		                                 $guiObj->menuUrl,$filters,$options);
+	       
+	    // When using filters I need to switch to static generated tree, instead of Lazy Loading Ajax Tree
+	    // that's reason why I'm re-creating from scratch ajaxTree.
+	    //
+	    $cookiePrefix = $guiObj->ajaxTree->cookiePrefix;
 		$guiObj->ajaxTree = new stdClass();
-        $guiObj->ajaxTree->loader = '';
-        $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
-         
-        // BUGID 2384 - if we return '' or null => EXT JS does not like it, we need to
-        // return json string that represents an EMPTY Tree => [] 
-        $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "[]";
-    }
-    return $treeMenu;
+	    $guiObj->ajaxTree->loader = '';
+	    $guiObj->ajaxTree->root_node = $treeMenu->rootnode;
+		$guiObj->ajaxTree->cookiePrefix = $cookiePrefix;
+	     
+	    // BUGID 2384 - if we return '' or null => EXT JS does not like it, we need to
+	    // return json string that represents an EMPTY Tree => [] 
+	    $guiObj->ajaxTree->children = $treeMenu->menustring ? $treeMenu->menustring : "[]";
+	}
+	return $treeMenu;
+}
+
+
+/**
+ * init ajax tree class
+ *
+ */
+function initAjaxTree($argsObj,$basehref)
+{
+    // need to understand if this is useless
+    // 20080629 - franciscom
+    // "filter_node={$argsObj->tsuites_to_show}";
+    $ajaxTree=new stdClass();
+    $ajaxTree->loader=$basehref . 'lib/ajax/gettprojectnodes.php?' .
+                      "root_node={$argsObj->tproject_id}&show_tcases=0";
+                            
+
+    $ajaxTree->root_node=new stdClass();
+    $ajaxTree->root_node->href="javascript:EP({$argsObj->tproject_id})";
+    $ajaxTree->root_node->id=$argsObj->tproject_id;
+    $ajaxTree->root_node->name=$argsObj->tproject_name;
+  
+    // 20080831 - franciscom - Custom attribute
+    // You can access to it's value using public property 'attributes' of object of Class Ext.tree.TreeNode 
+    // example: mynode.attributes.testlink_node_type
+    //
+    // Important: 
+    // For root node (this node)
+    // You need to initialize every custom property you want to add to root node
+    // on the js file that create it (treebyloader.js) and smarty template
+    // 
+    // Also this property must be managed in php code used to generate JSON code.
+    //
+    // I'appologize for using MAGIC constant
+    $ajaxTree->root_node->testlink_node_type='testproject';
+
+    // Prefix for cookie used to save tree state
+    $ajaxTree->cookiePrefix="planaddtc_{$ajaxTree->root_node->id}_{$argsObj->user_id}_";
+
+    // not allowed in this feature
+    $ajaxTree->dragDrop=new stdClass();
+    $ajaxTree->dragDrop->enabled=false;
+    $ajaxTree->dragDrop->BackEndUrl='';
+
+    // TRUE -> beforemovenode() event will use our custom implementation 
+    $ajaxTree->dragDrop->useBeforeMoveNode=FALSE;
+
+    return $ajaxTree;
 }
 ?>

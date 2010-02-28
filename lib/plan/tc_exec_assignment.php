@@ -1,22 +1,28 @@
 <?php
 /** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: tc_exec_assignment.php,v 1.50 2010/02/25 19:58:31 erikeloff Exp $ 
- * 
- * rev :
- *	
- *  20100225 - eloff - remove unnecessary call to platformVisibleForTestplan
- *  20100215 - asimon - BUGID 2455, BUGID 3026
- *  20100212 - eloff - BUGID 3157 - fixes reassignment to other user
- *  20090807 - franciscom - new feature platforms
- *  20090201 - franciscom - new feature send mail to tester
- *  20080312 - franciscom - BUGID 1427
- *  20080114 - franciscom - added testcase external_id management
- *  20071228 - franciscom - BUG build combo of users using only users
- *                          that can execute test cases in testplan.
- * 
- *  20070912 - franciscom - BUGID 1041
- */         
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * @package 	TestLink
+ * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
+ * @copyright 	2005-2009, TestLink community 
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.51 2010/02/28 16:11:08 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal revisions:
+ * 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
+ * 20100225 - eloff - remove unnecessary call to platformVisibleForTestplan
+ * 20100215 - asimon - BUGID 2455, BUGID 3026
+ * 20100212 - eloff - BUGID 3157 - fixes reassignment to other user
+ * 20090807 - franciscom - new feature platforms
+ * 20090201 - franciscom - new feature send mail to tester
+ * 20080312 - franciscom - BUGID 1427
+ * 20080114 - franciscom - added testcase external_id management
+ * 20071228 - franciscom - BUG build combo of users using only users
+ *                         that can execute test cases in testplan.
+ * 20070912 - franciscom - BUGID 1041
+ */
+         
 require_once(dirname(__FILE__)."/../../config.inc.php");
 require_once("common.php");
 require_once("treeMenu.inc.php");
@@ -34,10 +40,6 @@ $templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
-
-new dBug($gui);
-
-
 $keywordsFilter = new stdClass();
 $keywordsFilter->items = null;
 $keywordsFilter->type = null;
@@ -141,29 +143,22 @@ switch($args->level)
 {
 	case 'testcase':
 		// build the data need to call gen_spec_view
-		// $my_path = $tree_mgr->get_path($args->id);
-		// $idx_ts = count($my_path) - 1;
-		// $tsuite_data = $my_path[$idx_ts - 1];
         $xx=$tcase_mgr->getPathLayered(array($args->id));
-        $tsuite_data['id'] = end(array_keys($xx));
+        $yy = array_keys($xx);  // done to silence warning on end()
+        $tsuite_data['id'] = end($yy);
         $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
 		
-		$status_quo = $tcase_mgr->get_versions_status_quo($args->id, $args->version_id);
-		$linked_items[$args->id] = $status_quo[$args->version_id];
-		$linked_items[$args->id]['testsuite_id'] = $tsuite_data['id'];
-		$linked_items[$args->id]['tc_id'] = $args->id;
-		
-		$exec_assignment = $tcase_mgr->get_version_exec_assignment($args->version_id,$args->tplan_id);
-		$linked_items[$args->id]['user_id'] = $exec_assignment[$args->version_id]['user_id'];
-		$linked_items[$args->id]['feature_id'] = $exec_assignment[$args->version_id]['feature_id'];
+		// 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
+        $getFilters = array('tcase_id' => $args->id);		
+        $getOptions = array('output' => 'mapOfArray');
+		$linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$getFilters,$getOptions);
+
 		$filters = array('keywords' => $keywordsFilter->items );	
 		$opt = array('write_button_only_if_linked' => 1 );	
 		
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 						        $linked_items,null,$filters,$opt);
-			
 
-        // new dBug($my_out);							           
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.
 		$out = array();

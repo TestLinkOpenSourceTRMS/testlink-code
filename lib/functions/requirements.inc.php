@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.91 2010/03/01 10:38:07 asimon83 Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.92 2010/03/01 13:03:46 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -900,25 +900,23 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 		$cfg->target = 'popup'; // use a reasonable default value if nothing is set in config
 	}
 
+	$string2replace = array();
 	if ($cfg->target == 'popup') {
 		// use javascript to open popup window
-		$reqlink = '<a href="javascript:openLinkedReqWindow(%s,\'%s\')">%s%s</a>';
-		$reqspeclink = '<a href="javascript:openLinkedReqSpecWindow(%s,\'%s\')">%s%s</a>';
+		$string2replace['req'] = '<a href="javascript:openLinkedReqWindow(%s,\'%s\')">%s%s</a>';
+		$string2replace['req_spec'] = '<a href="javascript:openLinkedReqSpecWindow(%s,\'%s\')">%s%s</a>';
 	} else if ($cfg->target == 'window') {
-		// use linkto.php to open in a new window/tab, so we need testproject prefix
-		$reqlink = '<a target="_blank" href="linkto.php?' .
-					'item=req&tprojectPrefix=%s&id=%s&anchor=%s">%s%s</a>';
-		$reqspeclink = '<a target="_blank" href="linkto.php?' .
-					'item=reqspec&tprojectPrefix=%s&id=%s&anchor=%s">%s%s</a>';
-
-		// the following variable is a marker for the actual link replacing that another id must be used
-		$linkto_used = true;
+		$target = 'target="_blank"';
+		$string2replace['req'] = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
+					'item=requirement&requirement_id=%s#%s">%s%s</a>';
+		$string2replace['req_spec'] = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
+					'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
 	} else if ($cfg->target == 'frame') {
 		// open in same frame
 		$target = 'target="_self"';
-		$reqlink = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
+		$string2replace['req'] = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
 					'item=requirement&requirement_id=%s#%s">%s%s</a>';
-		$reqspeclink = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
+		$string2replace['req_spec'] = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
 					'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
 	}
 
@@ -929,7 +927,7 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 	// first for reqs
 	if ($cfg->req_link_title->type == 'string' && $cfg->req_link_title->value != '') {
 		// use user-configured string as link title
-		$title['req'] = $cfg->req_link_title->value;
+		$title['req'] = lang_get($cfg->req_link_title->value);
 	} else if ($cfg->req_link_title->type == 'none') {
 		$title['req'] = '';
 	} else {
@@ -939,7 +937,7 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 	// now for the req specs
 	if ($cfg->req_spec_link_title->type == 'string' && $cfg->req_spec_link_title->value != '') {
 		// use user-configured string as link title
-		$title['req_spec'] = $cfg->req_spec_link_title->value;
+		$title['req_spec'] = lang_get($cfg->req_spec_link_title->value);
 	} else if ($cfg->req_spec_link_title->type == 'none') {
 		$title['req_spec'] = '';
 	} else {
@@ -955,10 +953,6 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 		"#\[req[\s]*(tproj=([\w]+))*[\s]*(anchor=([\w]+))*[\s]*(tproj=([\w]+))*\](.*)\[/req\]#iU";
 	$patterns2search['req_spec'] =
 		"#\[req_spec[\s]*(tproj=([\w]+))*[\s]*(anchor=([\w]+))*[\s]*(tproj=([\w]+))*\](.*)\[/req_spec\]#iU";
-
-	$string2replace = array();
-	$string2replace['req'] = $reqlink;
-	$string2replace['req_spec'] = $reqspeclink;
 
 	$sql2exec = array();
 	$sql2exec['req'] = " SELECT id, req_doc_id AS doc_id " .
@@ -1003,15 +997,8 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 					continue;
 				}
 				
-				if ($linkto_used) {
-					// linkto.php is used, so we need a little change in order of string replacing
-					$urlString = sprintf($string2replace[$accessKey], $matched_prefix, $rs[0]['doc_id'],
-											$matched_anchor, $title[$accessKey], $rs[0]['doc_id']);
-				} else {
-					$urlString = sprintf($string2replace[$accessKey], $matched_prefix, $rs[0]['id'],
-										$matched_anchor, $title[$accessKey], $rs[0]['doc_id']);
-				}
-				
+				$urlString = sprintf($string2replace[$accessKey], $rs[0]['id'],
+									$matched_anchor, $title[$accessKey], $rs[0]['doc_id']);
 				$scope = str_replace($matched_string,$urlString,$scope);
 			}
 		}

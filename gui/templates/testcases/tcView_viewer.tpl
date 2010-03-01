@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.55 2010/02/17 21:39:00 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.56 2010/03/01 20:49:24 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100301 - franciscom - BUGID 3181
     20100125 - franciscom - added check to display info about steps only if test case has steps
     20100124 - franciscom - fixed problem on display of test case version assignemt 
                             to different test plans + add table sorting
@@ -390,6 +391,7 @@ rev:
           <td style="width:10%;text-align:center;">{$version_info.version}</td>
           <td>{$version_info.tplan_name|escape}</td>
           <td>
+          {* BUGID 3181 *}
           {if $version_info.platform_id > 0}
             {$gui->platforms[$version_info.platform_id]|escape}
           {/if}          

@@ -6,11 +6,15 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.247 2010/02/21 16:38:49 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.248 2010/03/01 20:51:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100301	- franciscom - changes on show() to solve 
+ *                         BUGID 3181: From test case specification, after adding the test case 
+ *                         to test a plan with platforms, platforms are not displayed
+ *                                     
  * 20100210	- franciscom - keywords XML export refactored
  * 20100204 - franciscom - copyKeywordsTo(),copyReqAssignmentTo() - interface changes
  * 20100201 - franciscom - getExternalID(), refactored to improve performance when used on loops
@@ -606,7 +610,8 @@ class testcase extends tlObjectWithAttachments
 	    $gui->bodyOnLoad="";
 	    $gui->bodyOnUnload="";
 	    $gui->submitCode="";
-	    $gui->dialogName='';
+	    $gui->dialogName = '';
+	    $gui->platforms = null;
 	
 		$gui_cfg = config_get('gui');
 		$the_tpl = config_get('tpl');
@@ -686,14 +691,17 @@ class testcase extends tlObjectWithAttachments
 		}
 		if($status_ok)
 	    {
-	        $path2root=$this->tree_manager->get_path($a_id[0]);
-	        $tproject_id=$path2root[0]['parent_id'];
-	        $info=$this->tproject_mgr->get_by_id($tproject_id);
+	        $path2root = $this->tree_manager->get_path($a_id[0]);
+	        $tproject_id = $path2root[0]['parent_id'];
+	        $info = $this->tproject_mgr->get_by_id($tproject_id);
+
+			$platformMgr = new tlPlatform($this->db,$tproject_id);
+	        $gui->platforms = $platformMgr->getAllAsMap();
 	        
 	        // BUGID 2378
-	        $testplans=$this->tproject_mgr->get_all_testplans($tproject_id,array('plan_status' =>1) );
-	        $gui->has_testplans=!is_null($testplans) && count($testplans) > 0 ? 1 : 0;
-	        $requirements_feature=$info['option_reqs'];
+	        $testplans = $this->tproject_mgr->get_all_testplans($tproject_id,array('plan_status' =>1) );
+	        $gui->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
+	        $requirements_feature = $info['option_reqs'];
 	        if( $viewer_defaults['display_testproject'] )
 	        {
 	            $gui->tprojectName=$info['name'];
@@ -723,7 +731,7 @@ class testcase extends tlObjectWithAttachments
 		   	}
 	    }
 	    
-	    if (sizeof($a_id))
+	    if($status_ok && sizeof($a_id))
 	    {
 		  	$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');
 		  	$allReqs = $req_mgr->get_all_for_tcase($a_id);
@@ -736,13 +744,11 @@ class testcase extends tlObjectWithAttachments
 		  		}
 		  		
 		  		$tc_array[0]['tc_external_id'] = $tcasePrefix . $tc_array[0]['tc_external_id'];
+
 		  		// get the status quo of execution and links of tc versions
 		  		$status_quo_map[] = $this->get_versions_status_quo($tc_id);
 
-                // ATTENTION TO PLATFORMS
 		  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
-
-
 		  		$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 		  		$tc_current = $tc_array[0];
 		  		$gui->tc_current_version[] = array($tc_current);
@@ -772,13 +778,8 @@ class testcase extends tlObjectWithAttachments
 		  		$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
 		  		$arrReqs[] = $tcReqs;
 		  		
-		  		// foreach($verboseLocationCode as $locationKey => $locationCode)
 		  		foreach($filters as $locationKey => $locationFilter)
 		  		{ 
-		  			//	function html_table_of_custom_field_values($id,$scope='design',$filters=null,$execution_id=null,
-	                //                           $testplan_id=null,$tproject_id = null,
-	                //                           $formatOptions=null,$link_id=null)
-                    //
 		  			$cf_smarty[$cfx][$locationKey] = 
 		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
 		  				                                         null,null,$tproject_id);
@@ -1091,11 +1092,34 @@ class testcase extends tlObjectWithAttachments
 					   " AND    NHB.id = TTC.testplan_id " .
 					   " AND    NH.parent_id = {$id}";
 						    
-	      if(!is_null($tplan_id))
-	      {
-	          $sql .= " AND TTC.testplan_id={$tplan_id} ";  
-	      }  					    
-	        $recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
+	      		if(!is_null($tplan_id))
+	      		{
+	      		    $sql .= " AND TTC.testplan_id={$tplan_id} ";  
+	      		}  					    
+	        	$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
+				// TO BE ANALISED
+				if( !is_null($recordset) )
+				{
+					// need to change third access key from sequential index to platform_id
+					$version2loop = array_keys($recordset);
+					foreach( $version2loop as $accessKey)
+					{	
+						$tplan2loop = array_keys($recordset[$accessKey]);
+						foreach( $tplan2loop as $tplanKey)
+						{	
+							$elem2loop = array_keys($recordset[$accessKey][$tplanKey]);
+							foreach( $elem2loop as $elemKey)
+							{	
+								$newKey = $recordset[$accessKey][$tplanKey][$elemKey]['platform_id'];
+								$recordset[$accessKey][$tplanKey][$newKey] = $recordset[$accessKey][$tplanKey][$elemKey];
+								if( !($elemKey == 0 && $newKey == 0) )
+								{
+									unset($recordset[$accessKey][$tplanKey][$elemKey]);
+								}
+							}
+					    }
+					}
+				}	
 		  break;
 	
 	     case "EXECUTED":

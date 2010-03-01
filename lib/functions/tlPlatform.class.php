@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.17 2010/02/25 19:58:31 erikeloff Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.18 2010/03/01 20:39:18 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -260,7 +260,8 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function getAllAsMap($accessKey='id',$output='columns',$orderBy=' ORDER BY name ')
 	{
-		$sql =  " SELECT id, name " .
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql =  "/* $debugMsg */  SELECT id, name " .
 				" FROM {$this->tables['platforms']} " .
 				" WHERE testproject_id = {$this->tproject_id} {$orderBy}";
 		if( $output == 'columns' )
@@ -281,9 +282,10 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function platformsActiveForTestplan($testplan_id)
 	{
-		$sql =  " SELECT COUNT(0) AS num " .
-				" FROM {$this->tables['testplan_platforms']} " .
-				" WHERE testplan_id = {$testplan_id}";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ SELECT COUNT(0) AS num " .
+			   " FROM {$this->tables['testplan_platforms']} " .
+			   " WHERE testplan_id = {$testplan_id}";
 		$num_tplans = $this->db->fetchOneValue($sql);
 		return ($num_tplans > 0);
 	}
@@ -294,11 +296,12 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function getLinkedToTestplan($testplanID,$orderBy=' ORDER BY name ')
 	{
-		$sql =  " SELECT P.id, P.name, P.notes " .
-				" FROM {$this->tables['platforms']} P " .
-				" JOIN {$this->tables['testplan_platforms']} TP " .
-				" ON P.id = TP.platform_id " .
-				" WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ SELECT P.id, P.name, P.notes " .
+			   " FROM {$this->tables['platforms']} P " .
+			   " JOIN {$this->tables['testplan_platforms']} TP " .
+			   " ON P.id = TP.platform_id " .
+			   " WHERE  TP.testplan_id = {$testplanID} {$orderBy}";
 		return $this->db->get_recordset($sql);
 	}
 

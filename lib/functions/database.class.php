@@ -9,7 +9,7 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.52 2010/02/15 19:32:42 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.53 2010/03/01 20:13:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -748,6 +748,7 @@ class database
 	 * @param string $sql the query to be executed
 	 * @param string $column_main_key the name of the column
 	 * @param string $column_sec_key the name of the column
+	 * @param boolean $cumulative
 	 * @param integer $limit (optional) number of rows
 	 * 
 	 * @return array $items[$row[$column_main_key]][$row[$column_sec_key]]

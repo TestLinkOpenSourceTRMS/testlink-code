@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Amit Khullar - amkhullar@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcAssign2Tplan.php,v 1.5 2010/01/24 10:50:44 franciscom Exp $
+ * @version    	CVS: $Id: tcAssign2Tplan.php,v 1.6 2010/03/01 20:43:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -79,7 +79,8 @@ if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id,arr
            {
            		foreach($platform_info as $platform_id => $value)
            		{
-               		$gui->tplans[$tplan_id][$platform_id]['tcversion_id']=$value['id'];                            
+               		// $gui->tplans[$tplan_id][$platform_id]['tcversion_id']=$value['id'];                            
+               		$gui->tplans[$tplan_id][$platform_id]['tcversion_id']=$value['tcversion_id'];                            
                		$gui->tplans[$tplan_id][$platform_id]['version']=$value['version'];
                		$gui->tplans[$tplan_id][$platform_id]['draw_checkbox'] = false;
            		}

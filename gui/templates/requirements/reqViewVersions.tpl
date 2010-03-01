@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.11 2010/02/09 22:16:49 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.12 2010/03/01 10:38:07 asimon83 Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -78,7 +78,8 @@ var pF_freeze_req_version = freeze_req_version;
           s='no_records_found,other_versions,version,title_test_case,match_count'}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
-<h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
+{* fixed a little bug, here $gui->pageTitle was called instead of $gui->main_descr *}
+<h1 class="title">{$gui->main_descr}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
 {if !isset($refresh_tree) }
   {assign var="refresh_tree" value=false}

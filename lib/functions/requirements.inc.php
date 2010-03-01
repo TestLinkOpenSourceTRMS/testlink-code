@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.90 2010/02/14 18:12:11 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.91 2010/03/01 10:38:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100301 - asimon - modified req_link_replace()
  * 20091202 - franciscom - added contribution req_link_replace()
  * 20090815 - franciscom - get_last_execution() call changes
  * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
@@ -873,62 +874,149 @@ function check_syntax_csv_doors($fileName)
   return($ret);
 }
 
+/**
+ * replace BBCode-link tagged links in req/reqspec scope with actual links
+ *
+ * @internal revisions:
+ * 20100301 - asimon - added anchor and tproj parameters to tags
+ * 
+ * @param resource $dbHandler database handle
+ * @param string $scope text in which to replace tags with links
+ * @param integer $tprojectID ID of testproject to which req/reqspec belongs
+ * @return string $scope text with generated links
+ */
 function req_link_replace($dbHandler, $scope, $tprojectID) 
 {
 	$tree_mgr = new tree($dbHandler);
+	$tproject_mgr = new testproject($dbHandler);
+	$prefix = $tproject_mgr->getTestCasePrefix($tprojectID);
 	$tables = tlObjectWithDB::getDBTables(array('requirements', 'req_specs'));
-	
-	$patterns2search = array();
-	$patterns2search['req'] = "#\[req\](.*)\[/req\]#iU";
-	$patterns2search['req_spec'] = "#\[req_spec\](.*)\[/req_spec\]#iU";
+	$cfg = config_get('internal_links');
 
-	$string2search = array();
-	$string2search['req'] = "[req]%s[/req]";
-	$string2search['req_spec'] = "[req_spec]%s[/req_spec]";
-	
+	/*
+	 * configure target in which link shall open
+	 */
+	if (!isset($cfg->target)) {
+		$cfg->target = 'popup'; // use a reasonable default value if nothing is set in config
+	}
+
+	if ($cfg->target == 'popup') {
+		// use javascript to open popup window
+		$reqlink = '<a href="javascript:openLinkedReqWindow(%s,\'%s\')">%s%s</a>';
+		$reqspeclink = '<a href="javascript:openLinkedReqSpecWindow(%s,\'%s\')">%s%s</a>';
+	} else if ($cfg->target == 'window') {
+		// use linkto.php to open in a new window/tab, so we need testproject prefix
+		$reqlink = '<a target="_blank" href="linkto.php?' .
+					'item=req&tprojectPrefix=%s&id=%s&anchor=%s">%s%s</a>';
+		$reqspeclink = '<a target="_blank" href="linkto.php?' .
+					'item=reqspec&tprojectPrefix=%s&id=%s&anchor=%s">%s%s</a>';
+
+		// the following variable is a marker for the actual link replacing that another id must be used
+		$linkto_used = true;
+	} else if ($cfg->target == 'frame') {
+		// open in same frame
+		$target = 'target="_self"';
+		$reqlink = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
+					'item=requirement&requirement_id=%s#%s">%s%s</a>';
+		$reqspeclink = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
+					'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
+	}
+
+	/*
+	 * configure link title (first part of the generated link)
+	 */
+	$title = array();
+	// first for reqs
+	if ($cfg->req_link_title->type == 'string' && $cfg->req_link_title->value != '') {
+		// use user-configured string as link title
+		$title['req'] = $cfg->req_link_title->value;
+	} else if ($cfg->req_link_title->type == 'none') {
+		$title['req'] = '';
+	} else {
+		// default: use item type as name (localized name for req)
+		$title['req'] = lang_get('requirement') . ": ";
+	}
+	// now for the req specs
+	if ($cfg->req_spec_link_title->type == 'string' && $cfg->req_spec_link_title->value != '') {
+		// use user-configured string as link title
+		$title['req_spec'] = $cfg->req_spec_link_title->value;
+	} else if ($cfg->req_spec_link_title->type == 'none') {
+		$title['req_spec'] = '';
+	} else {
+		// default: use short item type as name (localized name for req spec)
+		$title['req_spec'] = lang_get('req_spec_short') . ": ";
+	}
+
+	/*
+	 * now the actual replacing
+	 */
+	$patterns2search = array();
+	$patterns2search['req'] =
+		"#\[req[\s]*(tproj=([\w]+))*[\s]*(anchor=([\w]+))*[\s]*(tproj=([\w]+))*\](.*)\[/req\]#iU";
+	$patterns2search['req_spec'] =
+		"#\[req_spec[\s]*(tproj=([\w]+))*[\s]*(anchor=([\w]+))*[\s]*(tproj=([\w]+))*\](.*)\[/req_spec\]#iU";
+
 	$string2replace = array();
-	$string2replace['req'] = '<a href="lib/requirements/reqView.php?' .
-	                         'item=requirement&requirement_id=%s">' . 'Req: %s</a>';
-	
-	$string2replace['req_spec'] = '<a href="lib/requirements/reqSpecView.php?' .
-	                              'item=req_spec&req_spec_id=%s">' . 'Req. Spec.: %s</a>';
-	
+	$string2replace['req'] = $reqlink;
+	$string2replace['req_spec'] = $reqspeclink;
+
 	$sql2exec = array();
 	$sql2exec['req'] = " SELECT id, req_doc_id AS doc_id " .
-	                   " FROM {$tables['requirements']} WHERE req_doc_id in ";
-	            
+	                   " FROM {$tables['requirements']} WHERE req_doc_id=";
+	 
 	$sql2exec['req_spec'] = " SELECT id, doc_id FROM {$tables['req_specs']} " .
-	                        " WHERE doc_id in " ;
-  
+	                        " WHERE doc_id=" ;
+
 	foreach($patterns2search as $accessKey => $pattern )
 	{
-  		$matches = array();
-    	preg_match_all($pattern, $scope, $matches);
-	  
-	    if( count($matches[1]) == 0 )
-	    {
-	    	continue;
-	    }
+		$matches = array();
+		preg_match_all($pattern, $scope, $matches);
 
-	  	foreach ($matches[1] as $key => $value) 
-	  	{
-	  		$matches[1][$key] = "'" . $value . "'";
-	  	}
-	  	$list = implode(",", $matches[1]);
+		if( count($matches[7]) == 0 )
+		{
+			continue;
+		}
 
-	  	$sql = $sql2exec[$accessKey] . "({$list})";
-    	$rs = $dbHandler->get_recordset($sql);
-	  	foreach ($rs as $row) 
-	  	{
-	  		$root = $tree_mgr->getTreeRoot($row['id']);
-	  		if ($tprojectID == $root) 
-	  		{
-	  			$target = sprintf($string2search[$accessKey],$row['doc_id']);
-	  			$urlString = sprintf($string2replace[$accessKey],$row['id'],$row['doc_id']);
-	  		    $scope = str_replace($target,$urlString,$scope);
-	  		}
-	  	}
+		foreach ($matches[0] as $key => $matched_string) {
+
+			// get testproject prefix, if that was found with regex
+			// if not, get prefix of current project
+			if ($matches[2][$key] != '') {
+				$matched_prefix = $matches[2][$key];
+			} else if ($matches[6][$key] != '') {
+				$matched_prefix = $matches[6][$key];
+			} else {
+				$matched_prefix = $prefix;
+			}
+			
+			$matched_anchor = $matches[4][$key];
+			$matched_doc_id = $matches[7][$key];
+			
+			$sql = $sql2exec[$accessKey] . "'{$matched_doc_id}'";
+			$rs = $dbHandler->get_recordset($sql);
+			
+			if (count($rs)) {
+				// get root of linked node and check
+				$real_root = $tree_mgr->getTreeRoot($rs[0]['id']);
+				$matched_root_info = $tproject_mgr->get_by_prefix($matched_prefix);
+				if ($real_root != $matched_root_info['id']) {
+					continue;
+				}
+				
+				if ($linkto_used) {
+					// linkto.php is used, so we need a little change in order of string replacing
+					$urlString = sprintf($string2replace[$accessKey], $matched_prefix, $rs[0]['doc_id'],
+											$matched_anchor, $title[$accessKey], $rs[0]['doc_id']);
+				} else {
+					$urlString = sprintf($string2replace[$accessKey], $matched_prefix, $rs[0]['id'],
+										$matched_anchor, $title[$accessKey], $rs[0]['doc_id']);
+				}
+				
+				$scope = str_replace($matched_string,$urlString,$scope);
+			}
+		}
 	}
+	
 	return $scope;
 }
 

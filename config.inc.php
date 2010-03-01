@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.287 2010/02/28 09:51:29 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.288 2010/03/01 10:38:06 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -912,15 +912,46 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('not_run','pa
 $tlCfg->req_cfg->coverageStatusAlgorithm['checkFail']['all']='failed';
 $tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
 
-// Contribution 
-// ENABLED: links to other requirements/requirement specifications are
-//          automatically generated from the corresponding Document ID.
-// usage:
+
+// Linking between requirements/requirement specifications
+//
+$tlCfg->internal_links =  new stdClass();
+
+//
+// TRUE: links to other requirements/requirement specifications are
+//       automatically generated from the corresponding Document ID, enclosed by tags (like BBCode).
+//
+// Usage:
 // link to requirements: [req]req_doc_id[/req]
 // link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]
+//
+// FALSE: no links are automatically created.
 // 
-// DISABLED: no links are automatically created.
-$tlCfg->req_cfg->internal_links = ENABLED; 
+$tlCfg->internal_links->enable =  TRUE;
+
+// how a linked document (requirement/requirement specification) should be displayed.
+// posible values:
+//                'window': new window/tab will be used (depending on browser configuration)
+//                'frame' : same frame as the clicked link
+//                'popup' (default): popup window  (ATTENTION to browser pop-up block).
+// 
+$tlCfg->internal_links->target = 'popup';
+
+// title for automatically created link
+// possible values:
+//                 'string': lang_get() will be used to localize
+//                 'none': no title will be generated, only link with ID
+//                 'item' (default): localized type of item (e.g. "Requirement: ",  "Req Spec")
+//                                   will be used as title for the generated link
+//
+$tlCfg->internal_links->req_link_title = new stdClass();
+$tlCfg->internal_links->req_link_title->type = 'item';
+$tlCfg->internal_links->req_link_title->value = '';
+
+$tlCfg->internal_links->req_spec_link_title = new stdClass();
+$tlCfg->internal_links->req_spec_link_title->type = 'item';
+$tlCfg->internal_links->req_spec_link_title->value = '';
+
 
 // Requirement/testcase diff
 // default value of lines to show before and after each difference

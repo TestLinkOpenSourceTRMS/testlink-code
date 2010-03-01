@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.68 $
- * @modified $Date: 2010/02/05 19:12:10 $ by $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2010/03/01 10:38:07 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -251,7 +251,7 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 		if($result["status_ok"])
 		{
 
-			if (config_get('req_cfg')->internal_links) 
+			if (config_get('internal_links')->enable )
 			{
 				$scope = req_link_replace($this->db, $scope, $tproject_id);
 			}
@@ -308,7 +308,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
 
     /* contribution by asimon83/mx-julian */
-	if (config_get('req_cfg')->internal_links) 
+	if (config_get('internal_links')->enable ) 
 	{
 		$scope = req_link_replace($this->db, $scope, $tproject_id);
 	}

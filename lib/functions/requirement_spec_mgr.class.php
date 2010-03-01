@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2010/02/20 16:50:22 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2010/03/01 10:38:07 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -163,7 +163,7 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,
     if ($chk['status_ok'])
     {
     	/* contribution by asimon83/mx-julian */
-		if( config_get('req_cfg')->internal_links ) 
+		if( config_get('internal_links')->enable ) 
 		{
 			$scope = req_link_replace($this->db, $scope, $tproject_id);
 		}
@@ -421,7 +421,7 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
     	{
     		
     		/* contribution by asimon83/mx-julian */
-			if( config_get('req_cfg')->internal_links ) 
+			if( config_get('internal_links')->enable  ) 
 			{
 				$scope = req_link_replace($this->db, $scope, $tproject_id);
 			}

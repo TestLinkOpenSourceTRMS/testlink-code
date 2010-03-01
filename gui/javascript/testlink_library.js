@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.94 2010/02/23 12:45:44 asimon83 Exp $
+// $Id: testlink_library.js,v 1.95 2010/03/01 10:38:06 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100301 - asimon - added openLinkedReqWindow() and openLinkedReqSpecWindow()
 // 20100223 - asimon - added PL() for BUGID 3049
 // 20100216 - asimon - added triggerBuildChooser() and triggerAssignedBox() for BUGID 2455, BUGID 3026
 // 20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
@@ -704,6 +705,50 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 }
 
 
+/**
+ * open a requirement in a popup window
+ * 
+ * @param req_id Requirement ID
+ * @param anchor string with anchor name
+ */
+function openLinkedReqWindow(req_id, anchor)
+{
+	if (anchor == null) {
+		anchor = '';
+	} else {
+		anchor = '#' + anchor;
+	}
+	
+	var windowCfg='';
+	var feature_url = "lib/requirements/reqView.php";
+	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + anchor;
+
+	windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+feature_url,"Requirement",windowCfg);
+}
+
+
+/**
+ * open a req spec in a popup window
+ * 
+ * @param reqspec_id Requirement Specification ID
+ * @param anchor string with anchor name
+ */
+function openLinkedReqSpecWindow(reqspec_id, anchor)
+{
+	if (anchor == null) {
+		anchor = '';
+	} else {
+		anchor = '#' + anchor;
+	}
+	
+	var windowCfg='';
+	var feature_url = "lib/requirements/reqSpecView.php";
+	feature_url += "?req_spec_id=" + reqspec_id + anchor;
+
+	windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+feature_url,"Requirement Specification",windowCfg);
+}
 
 
 /*

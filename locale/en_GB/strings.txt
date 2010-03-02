@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.566 2010/02/23 13:08:22 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.567 2010/03/02 10:18:00 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1844,8 +1844,6 @@ $TLS_href_tc_exec_assignment = "Assign Test Case execution";
 $TLS_href_update_tplan = "Update Linked Test Case Versions";
 $TLS_href_platform_assign = "Add / Remove Platforms";
 $TLS_current_test_plan = "Current testplan";
-$TLS_href_tc_unassign_from_tp = "Remove linked Test Cases From Test Plan";
-
 $TLS_href_upd_mod_tc = "Update modified Test Cases";
 $TLS_msg_no_rights_for_tp = "<br /> You don't have permissions for any ACTIVE Test Plan";
 $TLS_testplan_role = "Test Plan role ";
@@ -2190,14 +2188,6 @@ $TLS_testplan_report = "Test Plan Report";
 $TLS_testspecification_report = "Test Specification Report";
 
 
-// ----- lib/testcases/tcUnassignFromPlan.php -----
-$TLS_remove_assigned_testcases = "Unassign all assigned Test Cases for Test Plan";
-$TLS_btn_unassign_all_tcs = "Unassign all assigned Test Cases";
-$TLS_unassign_all_tcs_msgbox_title = "Remove all assigned Test Cases?";
-$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all Test Case assignments will be removed for Test Plan %s.";
-$TLS_unassigned_all_tcs_msg = "All assigned Test Cases have been unassigned for Test Plan %s.";
-$TLS_nothing_to_unassign_msg = "There are no Test Cases assigned to users for Test Plan %s.";
-
 // ----- lib/project/projectedit.php -----
 $TLS_error_product_name_duplicate = "There's already Test Project named %s.";
 $TLS_error_tcase_prefix_exists = "Test Case ID prefix %s already exists";
@@ -2373,6 +2363,12 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 $TLS_delete = "Delete";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
 $TLS_warning_empty_com_name = "Please give a name to Test Suite";
+$TLS_remove_assigned_testcases = "Unassign all assigned Test Cases for Test Plan";
+$TLS_btn_unassign_all_tcs = "Unassign all assigned Test Cases";
+$TLS_unassign_all_tcs_msgbox_title = "Remove all assigned Test Cases?";
+$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all Test Case assignments will be removed for Test Plan %s.";
+$TLS_unassigned_all_tcs_msg = "All assigned Test Cases have been unassigned for Test Plan %s.";
+$TLS_nothing_to_unassign_msg = "There are no Test Cases assigned to users for Test Plan %s.";
 
 
 

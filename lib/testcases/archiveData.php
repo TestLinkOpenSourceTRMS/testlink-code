@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.64 2010/02/24 08:31:13 asimon83 Exp $
+ * @version $Id: archiveData.php,v 1.65 2010/03/02 10:18:00 asimon83 Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -61,6 +61,14 @@ switch($args->feature)
 		$options = array('output' => 'array');
 		$linked_tcversions=$tplan_mgr->get_linked_tcversions($gui->tplan_id,null,$options);
 		
+		$tplan = $tplan_mgr->get_by_id($args->id);
+		$gui->tplan_name = $tplan['name'];
+		$gui->container_data['name'] = $tplan['name'];
+		$gui->tplan_description = $tplan['notes'];
+		$tproject = $tproject_mgr->get_by_id($tplan['testproject_id']);
+		$gui->tproject_name = $tproject['name'];
+		$gui->tproject_description = $tproject['notes'];
+				
 		foreach ($linked_tcversions as $tc_id => $tc) {
 			if (!isset($tc['user_id']) || !is_numeric($tc['user_id'])) {
 				unset($linked_tcversions[$tc_id]);
@@ -71,23 +79,17 @@ switch($args->feature)
 			// yes, we have testcases to unassign, draw the button
 			$gui->draw_tc_unassign_button = true;
 		} else {
+			// nothing to unassign --> no button, but a little message
 			$gui->draw_tc_unassign_button = false;
+			$gui->result = sprintf(lang_get('nothing_to_unassign_msg'), $gui->tplan_name);
 		}
-
-		$tplan = $tplan_mgr->get_by_id($args->id);
-		$gui->tplan_name = $tplan['name'];
-		$gui->container_data['name'] = $tplan['name'];
-		$gui->tplan_description = $tplan['notes'];
-		$tproject = $tproject_mgr->get_by_id($tplan['testproject_id']);
-		$gui->tproject_name = $tproject['name'];
-		$gui->tproject_description = $tproject['notes'];
 				
 		$gui->level = 'testplan';
 		$gui->mainTitle = lang_get('remove_assigned_testcases');
 		$gui->page_title = lang_get('testplan');
 		$gui->refreshTree = false;
 		$gui->unassign_all_tcs_warning_msg = 
-				sprintf(lang_get('unassign_all_tcs_warning_msg'), "{$gui->tplan_name}");
+				sprintf(lang_get('unassign_all_tcs_warning_msg'), $gui->tplan_name);
 		
 		$smarty->assign('gui', $gui);
 		$smarty->display($templateCfg->template_dir . 'containerView.tpl');

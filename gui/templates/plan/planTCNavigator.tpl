@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.24 2010/02/23 12:45:45 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.25 2010/03/02 09:19:37 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
 
+	20100302 - asimon - BUGID 3049, added button in filter frame
 	20100218 - asimon - BUGID 3049, changed root_href
 	20100202 - asimon - BUGID 2455, BUGID 3026, changed filtering 
 	                    panel is now ext collapsible panel
@@ -16,7 +17,8 @@ Revisions :
           s='btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,title_navigator,
              btn_bulk_update_to_latest_version,
              filter_owner,TestPlan,test_plan,caption_nav_filters,
-             build,filter_tcID,filter_on,filter_result,platform, include_unassigned_testcases'}
+             build,filter_tcID,filter_on,filter_result,platform, include_unassigned_testcases,
+             btn_unassign_all_tcs'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
 {if $gui->keywordsFilterItemQty == 0}
@@ -58,10 +60,7 @@ Revisions :
     <script type="text/javascript">
 	    treeCfg.root_name = '{$gui->ajaxTree->root_node->name}';
 	    treeCfg.root_id = {$gui->ajaxTree->root_node->id};
-	    // treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
 	    // BUGID 3049
-	    //treeCfg.root_href = "javascript:parent.workframe.location=fRoot+'lib/testcases/archiveData.php" +
-	    //					"?edit=testplan&level=testplan&id={$gui->tplan_id}'";
 	    treeCfg.root_href = "javascript:PL({$gui->tplan_id})";
 	    treeCfg.children = {$gui->ajaxTree->children};
     </script>
@@ -87,13 +86,25 @@ function update2latest(id)
 	var action_url = fRoot+'/'+menuUrl+"?doAction=doBulkUpdateToLatest&level=testplan&id="+id+args;
 	parent.workframe.location = action_url;
 }
+
+/**
+ * open page to unassign all testcases in workframe
+ *
+ * @param id Testplan ID
+ */
+function goToUnassignPage(id)
+{
+	var action_url = fRoot + 'lib/testcases/containerEdit.php?doAction=doUnassignFromPlan&tplan_id=' + id;
+	parent.workframe.location = action_url;
+}
+
 {/literal}
 </script>
 
 </head>
 
 <body onload="javascript:
-	triggerBuildChooser('filter_build_id',
+	triggerBuildChooser('deactivatable',
 						'filter_method',
 						{$gui->filter_method_specific_build});
 	triggerAssignedBox('filter_assigned_to',
@@ -111,6 +122,17 @@ function update2latest(id)
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$gui->additional_string|escape}</h1>
+
+{*<form method="post" action="" />
+<input type="submit" id="unassign_all_tcs_button" name="unassign_all_tcs_button" value="unassign_all_tcs_button"/>
+</form>*}
+
+{if $gui->draw_tc_unassign_button}
+	<form id="tc_unassign_from_tp" name="tc_unassign_from_tp" method="post" >
+	<input type="button" name="unassign_all_tcs" value="{$labels.btn_unassign_all_tcs}" 
+		onclick="javascript:PL({$gui->tplan_id});" />
+	</form>
+{/if}
 
 {include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}
 <div id="filter_panel">
@@ -211,7 +233,7 @@ function update2latest(id)
 			<th>{$labels.filter_on}</th>
 			<td>
 			  	<select name="filter_method" id="filter_method"
-			  		      onchange="javascript: triggerBuildChooser('filter_build_id',
+			  		      onchange="javascript: triggerBuildChooser('deactivatable',
 			  		      				                                  'filter_method',
 										                                        {$gui->filter_method_specific_build});">
 				  	{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
@@ -219,7 +241,7 @@ function update2latest(id)
 			</td>
 		</tr>
 		
-		<tr>
+		<tr id="deactivatable">
 			<th>{$labels.build}</th>
 			<td><select id="filter_build_id" name="filter_build_id">
 				{html_options options=$gui->optFilterBuild.items selected=$gui->optFilterBuild.selected}

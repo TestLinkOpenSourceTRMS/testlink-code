@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planTCNavigator.php,v 1.39 2010/02/27 19:43:53 franciscom Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.40 2010/03/02 09:19:37 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -191,6 +191,23 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     }  
 	$args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
     
+	// check wether we draw the "unassign all assigned testcases" button
+	$options = array('output' => 'array');
+	$linked_tcversions=$tplanMgr->get_linked_tcversions($args->tplan_id,null,$options);
+	
+	foreach ($linked_tcversions as $tc_id => $tc) {
+		if (!isset($tc['user_id']) || !is_numeric($tc['user_id'])) {
+			unset($linked_tcversions[$tc_id]);
+		}
+	}
+	
+	if (count($linked_tcversions) != 0) {
+		// yes, we have testcases to unassign, draw the button
+		$args->draw_tc_unassign_button = true;
+	} else {
+		$args->draw_tc_unassign_button = false;
+	}
+
     return $args;
 }
 
@@ -253,11 +270,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     {
     	$gui->map_tplans[$value['id']] = $value['name'];
     }
+    
     $gui->tplan_id=$argsObj->tplan_id;
-    $gui->testers=null;
+	$gui->testers=null;
    	$gui->title = lang_get('title_test_plan_navigator');
     $gui->src_workframe=$argsObj->src_workframe;
     $gui->draw_bulk_update_button=false;
+    $gui->draw_tc_unassign_button = $argsObj->draw_tc_unassign_button;
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
     
@@ -274,10 +293,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
       case 'planUpdateTC':
     	    $gui->menuUrl = "lib/plan/planUpdateTC.php";
     	    $gui->draw_bulk_update_button=true;
+    	    $gui->draw_tc_unassign_button=false;
     	break;
     
       case 'test_urgency':
     	    $gui->menuUrl = "lib/plan/planUrgency.php";
+    	    $gui->draw_bulk_update_button=false;
+    	    $gui->draw_tc_unassign_button=false;
 	    break;
     
       case 'tc_exec_assignment':

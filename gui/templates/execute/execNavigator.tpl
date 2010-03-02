@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.36 2010/02/23 12:45:45 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.37 2010/03/02 09:19:37 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -76,7 +76,7 @@ rev :
 {* ===================================================================== *}
 
 <body onload="javascript:
-	triggerBuildChooser('filter_build_id',
+	triggerBuildChooser('deactivatable',
 						'filter_method',
 						{$gui->filter_method_specific_build});
 	triggerAssignedBox('filter_assigned_to',
@@ -224,14 +224,14 @@ rev :
 			<th>{$labels.filter_on}</th>
 			<td>
 			  	<select name="filter_method" id="filter_method"
-			  		onchange="javascript: triggerBuildChooser('filter_build_id',
+			  		onchange="javascript: triggerBuildChooser('deactivatable',
 			  		      				'filter_method', {$gui->filter_method_specific_build});">
 				  	{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
 			  	</select>
 			</td>
 		</tr>
 		
-		<tr>
+		<tr id="deactivatable">
 			<th>{$labels.build}</th>
 			<td><select id="filter_build_id" name="filter_build_id">
 				{html_options options=$gui->optFilterBuild.items selected=$gui->optFilterBuild.selected}

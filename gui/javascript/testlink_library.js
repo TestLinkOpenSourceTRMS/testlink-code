@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.95 2010/03/01 10:38:06 asimon83 Exp $
+// $Id: testlink_library.js,v 1.96 2010/03/02 09:19:37 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -1048,7 +1048,7 @@ function get_docs(name, server_name)
 }
 
 /**
- * used to disable the build chooser field if it should not be used
+ * used to disable the build chooser field (and make it invisible) if it should not be used
  * (in case of some filter settings)
  * (testcase execution & testcase execution assignment, BUGID 2455, BUGID 3026)
  * 
@@ -1057,16 +1057,16 @@ function get_docs(name, server_name)
  * @param filter_method_combo box in which the filter method is chosen
  * @param specific_build_value value for which the box shall be disabled
  */
-function triggerBuildChooser(build_id_combo_id, filter_method_combo_id, specific_build_value) 
+function triggerBuildChooser(deactivatable_id, filter_method_combo_id, specific_build_value) 
 {
-	build_id_combo = document.getElementById(build_id_combo_id);
+	deactivatable = document.getElementById(deactivatable_id);
 	filter_method_combo = document.getElementById(filter_method_combo_id);
 	var index = filter_method_combo.options.selectedIndex;  
-	build_id_combo.disabled = true;
+	deactivatable.style.visibility = "hidden";
 	
 	if(filter_method_combo[index].value == specific_build_value) 
 	{
-		build_id_combo.disabled = false;
+		deactivatable.style.visibility = "visible";
 	} 
 }
 

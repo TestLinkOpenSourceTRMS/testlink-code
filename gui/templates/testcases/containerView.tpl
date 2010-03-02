@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.27 2010/02/23 12:45:45 asimon83 Exp $ *}
+{* $Id: containerView.tpl,v 1.28 2010/03/02 09:19:37 asimon83 Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -26,7 +26,7 @@ rev :
 	           btn_del_testsuites_bulk,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc,
-	           btn_unassign_all_tcs, unassign_all_tcs_msgbox_title, th_testplan_name,'}
+	           btn_unassign_all_tcs, unassign_all_tcs_msgbox_title, th_testplan_name'}
 
 {assign var="container_id" value=$gui->container_data.id}
 {assign var="tcImportAction"

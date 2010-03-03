@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.47 $
- * @modified $Date: 2010/02/09 22:18:12 $ by $Author: franciscom $
+ * @version $Revision: 1.48 $
+ * @modified $Date: 2010/03/03 10:41:24 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *  20100303 - asimon - bugfix, changed max length of req_doc_id in init_args() to 64 from 32
+ *  					--> TODO why aren't the constants used here instead of magic numbers?
  *  20100205 - asimon - added requirement freezing
  *	20091217 - franciscom - added type management 
  *	20091202 - franciscom - fixed bug on webeditor value init.
@@ -59,7 +61,7 @@ function init_args()
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 					 "req_spec_id" => array(tlInputParameter::INT_N),
 					 "containerID" => array(tlInputParameter::INT_N),
-					 "reqDocId" => array(tlInputParameter::STRING_N,0,32),
+					 "reqDocId" => array(tlInputParameter::STRING_N,0,64), 
 					 "req_title" => array(tlInputParameter::STRING_N,0,100),
 					 "scope" => array(tlInputParameter::STRING_N),
 					 "reqStatus" => array(tlInputParameter::STRING_N,0,1),

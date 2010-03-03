@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithCF.tpl,v 1.4 2009/04/28 08:32:31 amkhullar Exp $
+$Id: testCasesWithCF.tpl,v 1.5 2010/03/03 16:05:56 asimon83 Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
 rev:  
+ 20100303 - asimon - made table ext js sortable
+ 
 *}
 
 {lang_get var="labels" 
@@ -24,13 +26,13 @@ rev:
 
 {if $gui->warning_msg == ''}
     {if ($gui->resultSet) }
-        <table class="simple">
+        <table class="simple sortable">
 	          <tr>
-	          <th> {$labels.test_case}</th>
-	          <th> {$labels.build}</th>
-	          <th> {$labels.th_owner} </th>
-	          <th> {$labels.date} </th>
-	          <th> {$labels.status} </th>
+	          <th nowrap>{$sortHintIcon} {$labels.test_case}</th>
+	          <th nowrap>{$sortHintIcon} {$labels.build}</th>
+	          <th nowrap>{$sortHintIcon} {$labels.th_owner} </th>
+	          <th nowrap>{$sortHintIcon} {$labels.date} </th>
+	          <th nowrap>{$sortHintIcon} {$labels.status} </th>
 	          {foreach from=$gui->cfields item=cfield}
 	              <th>{$cfield.label|escape}</th>
 	          {/foreach}

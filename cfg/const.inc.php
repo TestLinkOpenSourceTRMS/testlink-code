@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.133 2010/02/17 15:57:26 asimon83 Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.134 2010/03/04 21:20:17 havlat Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -21,7 +21,7 @@
 /* [GLOBAL SETTINGS] */
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION', '1.9 (Beta 3 - Development)'); 
+define('TL_VERSION', '1.9 (Beta 4 - Development)'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part
@@ -64,7 +64,7 @@ define('COLLAPSE', 0);
 define('EXPAND',1 );
 
 
-/** @TODO havlatm: use ON || 'OFF' constant */
+/** @TODO havlatm: remove, use ON || 'OFF' constant */
 define('TL_FILTER_OFF',null);
 
 // used in several functions instead of MAGIC NUMBERS - Don't change 
@@ -535,7 +535,7 @@ $g_role_colour = array (
 	'senior tester' => '#FFA',
 	'guest'         => 'pink',
 	'test designer' => 'cyan',
-	'<no rights>'   => 'salmon',
+	'<no rights>'   => 'grey',
 	'<inherited>'   => 'seashell' 
 );
 
@@ -569,6 +569,7 @@ $tlCfg->testcase_urgency_default = MEDIUM;
  * @var array Used to get localized string to show to users
  * key: numeric code
  * value: id to use with lang_get() to get the string, from strings.txt (or custom_strings.txt)
+ * @since 1.8 
  */
 $tlCfg->urgency['code_label'] = array(
 	HIGH => 'urgency_high',
@@ -582,6 +583,7 @@ $tlCfg->urgency['code_label'] = array(
 
 /**
  * data status constants are applicable for data like requirement, test case, Test Plan 
+ * @since 2.0 
  */
 /** Review status: design phase; data are not available for review or using */ 
 define('TL_REVIEW_STATUS_DRAFT', 	1);
@@ -595,7 +597,7 @@ define('TL_REVIEW_STATUS_FUTURE', 	5);
 
 /** 
  * @var array localization identifiers for review states
- * @since 1.9 
+ * @since 2.0 
  **/
 $tlCfg->text_status_labels = array(
 		TL_REVIEW_STATUS_DRAFT => 'review_status_draft', 
@@ -756,9 +758,9 @@ $tlCfg->gui->custom_fields->time_format = 'H:i:s';
 
 /** 
  * Review types - user can define type for his review comment (disabled by default)
- * @since TestLink version 1.9 
+ * @since TestLink version 2.0 
  **/
-$tlCfg->review_types = array(1 => 'type_undefined',
+$tlCfg->review_types = array(1 => 'undefined',
 	                         2 => 'typo', 
 	                         3 => 'recommendation', 
 	                         4 => 'question', 

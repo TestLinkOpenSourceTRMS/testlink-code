@@ -11,7 +11,7 @@
  * - Update IDs on ....
  * - Update project options
  *  
- * $Id: migrate_18_to_19.php,v 1.6 2010/02/18 21:52:10 havlat Exp $
+ * $Id: migrate_18_to_19.php,v 1.7 2010/03/05 10:57:13 asimon83 Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -168,7 +168,7 @@ function migrate_project_options(&$dbHandler,$tableSet)
 	  		$serOptions = serialize($options);
 			
 			$sql = " UPDATE {$tableSet['testprojects']} SET" .
-					" options='" .  $serOptions . "', " .
+					" options='" .  $serOptions . "'" .
 					" WHERE id=" . $rs[$id]['id'];
 			$dbHandler->exec_query($sql);
 		}

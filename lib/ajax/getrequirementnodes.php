@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.10 2009/12/08 18:08:30 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.11 2010/03/06 11:08:37 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -19,6 +19,7 @@
 *   - Assign requirements to test cases
 *
 *	@internal revision
+*	20100306 - franciscom - BUGID 0003003: EXTJS does not count # req's
 *	20091208 - franciscom - added management of new attribute 'forbbiden_parent'
 *                           to manage req spec movement when child req spec management is ENABLED.  
 *	20091122 - franciscom - manage rep spec doc id
@@ -72,15 +73,6 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
     $nodes = null;
     $filter_node_type = $show_children ? '' : ",'requirement'";
-
-    // $sql = " SELECT NHA.*, NT.description AS node_type " . 
-    //        " FROM {$tables['nodes_hierarchy']} NHA, {$tables['node_types']}  NT " .
-    //        " WHERE NHA.node_type_id=NT.id " .
-    //        " AND parent_id = {$parent} " .
-    //        " AND NT.description NOT IN " .
-    //        " ('testcase','testsuite','testcase_version','testplan'{$filter_node_type}) ";
-
-
     $sql = " SELECT NHA.*, NT.description AS node_type, RSPEC.doc_id " . 
            " FROM {$tables['nodes_hierarchy']} NHA JOIN {$tables['node_types']}  NT " .
            " ON NHA.node_type_id=NT.id " .
@@ -100,6 +92,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     $nodeSet = $dbHandler->get_recordset($sql);
 	if(!is_null($nodeSet)) 
 	{
+		
         // BUGID 2309
         $sql =  " SELECT DISTINCT req_doc_id AS doc_id,NHA.id" .
                 " FROM {$tables['requirements']} REQ JOIN {$tables['nodes_hierarchy']} NHA ON NHA.id = REQ.id  " .
@@ -108,7 +101,9 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                 " WHERE NHB.id = {$parent} AND NT.description = 'requirement'";
         $requirements = $dbHandler->fetchRowsIntoMap($sql,'id');
 
-	    $tproject_mgr = new testproject($dbHandler);
+	    $treeMgr = new tree($dbHandler);
+	    $ntypes = $treeMgr->get_available_node_types();
+		$peerTypes = array('target' => $ntypes['requirement'], 'container' => $ntypes['requirement_spec']); 
 	    foreach($nodeSet as $key => $row)
 	    {
 	        $path['text'] = htmlspecialchars($row['name']);                                  
@@ -133,9 +128,20 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	                break;
 
                 case 'requirement_spec':
+                	// BUGID 0003003: EXTJS does not count # req's
+                    $req_list = array();
+	                $treeMgr->getAllItemsID($row['id'],$req_list,$peerTypes);
+
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
 	                $path['text'] = htmlspecialchars($row['doc_id'] . "::") . $path['text'];
                     $path['forbbiden_parent'] = $forbbiden_parent[$row['node_type']];
+   	        		if(!is_null($req_list))
+	        		{
+	        			$item_qty = count($req_list);
+	        			$path['text'] .= "({$item_qty})";   
+	        		}
+
+
 	                break;
 
                 case 'requirement':
@@ -145,6 +151,8 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
                     $path['forbbiden_parent'] = $forbbiden_parent[$row['node_type']];
 	                break;
             }
+
+            
             $nodes[] = $path;                                                                        
 	    }	// foreach	
     }

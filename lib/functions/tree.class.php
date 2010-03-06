@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.82 2010/02/09 19:24:35 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.83 2010/03/06 11:08:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100306 - franciscom - get_subtree_list() new argument to change output type
+ *						   new method() - getAllItemsID - BUGID 0003003: EXTJS does not count # req's
  * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
  * 20091220 - franciscom - new method createHierarchyMap()
  * 20090926 - franciscom - get_subtree() - interface changes
@@ -189,16 +191,19 @@ class tree extends tlObject
               node is can be considered as root of subtree.
               
     args : node_id: root of subtree
+           node_type_id: null => no filter, if present ONLY NODES OF this type will be included
+           output: null => list, not null => array
+
     
-    returns: list (string with nodes_id, using ',' as list separator).
+    returns: output=null => list (string with nodes_id, using ',' as list separator).
+             output != null => array
 
 	*/
-	function get_subtree_list($node_id,$node_type_id=null)
+	function get_subtree_list($node_id,$node_type_id=null,$output=null)
 	{
 	    $nodes = array();
 	  	$this->_get_subtree_list($node_id,$nodes,$node_type_id);
-	  	$node_list = implode(',',$nodes);
-	  	
+	  	$node_list = is_null($output) ? implode(',',$nodes) : $nodes;
 	    return($node_list);
 	}
   
@@ -732,10 +737,6 @@ class tree extends tlObject
 	       added key_type arguments, useful only fo recursive mode
 	
 	*/
-	// function get_subtree($node_id,$exclude_node_types=null,$exclude_children_of=null,
-	//                               $exclude_branches=null,$and_not_in_clause='',
-	//                               $bRecursive = false,
-	//                               $order_cfg=array("type" =>'spec_order'),$key_type='std')
 	function get_subtree($node_id,$filters=null,$options=null)
 	{
         $my['filters'] = array('exclude_node_types' => null, 'exclude_children_of' => null,
@@ -1296,6 +1297,48 @@ class tree extends tlObject
 		
 	    return $hmap;
   }
+
+	/**
+	 * getAllItemsID
+ 	 *
+ 	 * @internal revisions
+ 	 * based on code from testproject->get_all_testcases_id
+ 	 *
+ 	 */
+	function getAllItemsID($parentList,&$itemSet,$coupleTypes)
+	{
+		static $debugMsg;
+		if (!$debugMsg)
+		{
+		}
+		$sql = "/* $debugMsg */  " .
+		       " SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} " .
+		       " WHERE parent_id IN ({$parentList})";
+		$sql .= " AND node_type_id IN ({$coupleTypes['target']},{$coupleTypes['container']}) "; 
+		
+		$result = $this->db->exec_query($sql);
+		if ($result)
+		{
+			$containerSet = array();
+			while($row = $this->db->fetch_array($result))
+			{
+				if ($row['node_type_id'] == $coupleTypes['target'])
+				{
+					$itemSet[] = $row['id'];
+				}
+				else
+				{
+				  	$containerSet[] = $row['id'];
+				}
+			}
+			if (sizeof($containerSet))
+			{
+				$containerSet  = implode(",",$containerSet);
+				$this->getAllItemsID($containerSet,$itemSet,$coupleTypes);
+			}
+		}	
+	}
+
 
 
  

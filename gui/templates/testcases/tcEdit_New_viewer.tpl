@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.20 2010/02/17 21:38:16 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.21 2010/03/06 16:43:14 erikeloff Exp $
 Purpose: smarty template - create new testcase
 
-Rev:
-    20090831 - franciscom - preconditions
-    20090718 - franciscom - added management of custom field location
-    20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
+@internal Revisions:
+	20100306 - eloff - BUGID 3062 - Check for duplicate name
+	20090831 - franciscom - preconditions
+	20090718 - franciscom - added management of custom field location
+	20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
 *}
 
 {* ---------------------------------------------------------------- *}
@@ -34,6 +35,7 @@ Rev:
 			maxlength="{#TESTCASE_NAME_MAXLEN#}"
 			onchange="content_modified = true"
 			onkeypress="content_modified = true"
+			onkeyup="checkDuplicateName()"
 			{if isset($gui->tc.name)}
 		       value="{$gui->tc.name|escape}"
 			{else}
@@ -41,6 +43,7 @@ Rev:
 		   	{/if}
 			title="{$labels.alt_add_tc_name}"/>
   			{include file="error_icon.tpl" field="testcase_name"}
+			<span id="testcase_name_warning" class="warning"></span>
 		<p />
 
 		<div class="labelHolder">{$labels.summary}</div>

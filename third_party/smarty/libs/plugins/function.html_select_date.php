@@ -4,7 +4,6 @@
  * @package Smarty
  * @subpackage plugins
  */
-function.html_select_date.php
 /**
  * Smarty {html_select_date} plugin
  *

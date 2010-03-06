@@ -8,13 +8,16 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.96 2010/02/04 08:30:55 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.97 2010/03/06 18:00:37 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ * 20100306 - contribution by romans - BUGID 0003235: Printing Out Test Report Shows 
+ *                                     empty Column Headers for "Steps" and "Step Actions"
+ *
  *  20100106 - franciscom - Multiple Test Case Steps Feature
  *  20100105 - franciscom - added tableColspan,firstColWidth config 
  *  20090906 - franciscom - added contribution by Eloff:
@@ -805,10 +808,12 @@ function initRenderTestCaseCfg(&$tcaseMgr)
         }    
     }
 
-    // 20090902 - franciscom - preconditions
+    // 20100306 - contribution by romans
+	// BUGID 0003235: Printing Out Test Report Shows empty Column Headers for "Steps" and "Step Actions"
     $labelsKeys=array('last_exec_result', 'testnotes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
-                      'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions');
+                      'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
+                      'step_number', 'step_actions');
     $labelsQty=count($labelsKeys);         
     for($idx=0; $idx < $labelsQty; $idx++)
     {

@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.16 2009/12/08 14:43:37 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.17 2010/03/06 11:08:50 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -137,8 +137,9 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 		       		$path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
                   	// BUGID 1928
                   	if(is_null($showTestCaseID))
+                  	{
                   		$showTestCaseID = config_get('treemenu_show_testcase_id');
-                  	
+                  	}
                   	if($showTestCaseID)
 	                {
 	                	$path['text'] = htmlspecialchars($tcprefix . $external[$row['id']]['tc_external_id'] . ":") .

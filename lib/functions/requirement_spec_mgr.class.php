@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2010/03/01 10:38:07 $ by $Author: asimon83 $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2010/03/06 23:56:46 $ by $Author: amkhullar $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ *  20100307 - amitkhullar - small bug fix for Requirements based report.
  *  20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
  * 	20091228 - franciscom - get_requirements() - refactored to manage req versions
  *                          get_coverage() - refactored to manage req versions
@@ -314,7 +315,7 @@ function get_coverage($id)
 function get_metrics($id)
 {
 	$output = array('notTestable' => 0, 'total' => 0, 'covered' => 0, 'uncovered' => 0);
-
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	// $output['notTestable'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
 	$getFilters = array('status' => NON_TESTABLE_REQ);
     $output['notTestable'] = $this->get_requirements_count($id,'all',null,$getFilters);
@@ -338,7 +339,7 @@ function get_metrics($id)
 	$rs = $this->db->get_recordset($sql);
 	if (!is_null($rs))
 	{
-		$output['covered'] = $count($rs);
+		$output['covered'] = count($rs);
 	}
 	$output['uncovered'] = $output['expectedTotal'] - $output['total'];
 

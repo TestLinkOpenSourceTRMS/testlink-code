@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.50 2010/02/18 13:18:09 asimon83 Exp $
+ * @version    	CVS: $Id: specview.php,v 1.51 2010/03/07 00:07:33 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 
+ *  20100218 - amitkhullar - Bug fix for Uncovered Test Cases report not working
  *  20100218 - asimon - BUGID 3026 - added parameter $testcaseFilter on keywordFilteredSpecView
  *						to include functionality previously used on tc_exec_assignment.php
  * 						to show only testcases present in filter argument
@@ -832,13 +832,14 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 			}
 			$outRef['tcversions_qty']++;
 		}
+		//new dbug($linked_items);
 		
 		if(!is_null($linked_items))
 		{
 			foreach($linked_items as $linked_testcase)
-			{
-				if(($linked_testcase[0]['tc_id'] == $testCase['testcase_id']) &&
-				   ($linked_testcase[0]['tcversion_id'] == $testCase['id']) )
+			{ 
+				if(($linked_testcase['tc_id'] == $testCase['testcase_id']) &&
+				   ($linked_testcase['tcversion_id'] == $testCase['id']) )
 				{
 					// This can be written only once no matter platform qty
 					if( !isset($outRef['tcversions'][$testCase['id']]) )

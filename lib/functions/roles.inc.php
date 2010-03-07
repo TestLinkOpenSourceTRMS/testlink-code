@@ -33,10 +33,11 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.58 2010/02/20 09:06:07 franciscom Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.59 2010/03/07 10:12:34 franciscom Exp $
  * 
  *
  * @internal rev: 
+ *	20100307 - franciscom - removed wrong right due to copy/paste BUGID 3249
  *	20100220 - franciscom - added inventory rights
  *  20090425 - franciscom - BUGID 2417 - new right for test projects
  *  20081030 - franciscom - added new rights -> system
@@ -101,7 +102,6 @@ function init_global_rights_maps()
 							);
 	
 	$g_rights_product = array("mgt_modify_product" => lang_get('desc_mgt_modify_product'),
-	                          "testproject_user_role_assignment" => lang_get('desc_user_role_assignment'),
                               "project_inventory_management" => lang_get('desc_project_inventory_management'),
                               "project_inventory_view" => lang_get('desc_project_inventory_view') );						
 	

@@ -4,13 +4,12 @@
  *
  * Filename $RCSfile: userRightMatrix.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/08/07 06:48:51 $  $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/03/07 10:06:28 $  $Author: franciscom $
  *
  * @author Andreas Morsing
  *
- * This page allows configuration of the accessrights needed for
- * executing pages
+ * Configuration of the access rights needed for executing pages
  *
  * rev:
  *      20080120 - franciscom - buildnew -> buildedit 
@@ -60,22 +59,22 @@ $tplan_admin= array("$tplan_admin_url/planupdatetc.php" => array("testplan_plann
        				"$tplan_admin_url/plantcnavigator.php" => array("testplan_planning",),														
        				"$tplan_admin_url/plantcremove.php" => array("testplan_planning",));														
 
-$reports=array("$reports_url/resultsallbuilds.php" => array("testplan_metrics",),														
-						   "$reports_url/resultsbugs.php" => array("testplan_metrics",),														
-						   "$reports_url/resultsbuild.php" => array("testplan_metrics",),														
-						   "$reports_url/resultsbystatus.php" => array("testplan_metrics",),														
-						   "$reports_url/resultsgeneral.php" => array("testplan_metrics",),														
-						   "$reports_url/resultsnavigator.php" => array("testplan_metrics",),														
-						   "$reports_url/resultssend.php" => array("testplan_metrics",),														
-						   "$reports_url/resultstc.php" => array("testplan_metrics",));														
+$reports=array(	"$reports_url/resultsallbuilds.php" => array("testplan_metrics",),														
+				"$reports_url/resultsbugs.php" => array("testplan_metrics",),														
+				"$reports_url/resultsbuild.php" => array("testplan_metrics",),														
+				"$reports_url/resultsbystatus.php" => array("testplan_metrics",),														
+				"$reports_url/resultsgeneral.php" => array("testplan_metrics",),														
+				"$reports_url/resultsnavigator.php" => array("testplan_metrics",),														
+				"$reports_url/resultssend.php" => array("testplan_metrics",),														
+				"$reports_url/resultstc.php" => array("testplan_metrics",));														
 
 
 $tc_admin=array("$tc_admin_url/containeredit.php" => array("mgt_modify_tc","mgt_view_tc",),														
-   						  "$tc_admin_url/tcedit.php" => array("mgt_modify_tc","mgt_view_tc",),														
-       					"$tc_admin_url/tcimport.php" => array("mgt_modify_tc","mgt_view_tc",),														
-       					"$tc_admin_url/searchform.php" => null,
-       					"$tc_admin_url/searchdata.php" => null,
-       					"$tc_admin_url/listtestcases.php" => null);
+				"$tc_admin_url/tcedit.php" => array("mgt_modify_tc","mgt_view_tc",),														
+				"$tc_admin_url/tcimport.php" => array("mgt_modify_tc","mgt_view_tc",),														
+       			"$tc_admin_url/searchform.php" => null,
+       			"$tc_admin_url/searchdata.php" => null,
+       			"$tc_admin_url/listtestcases.php" => null);
 
 
 $print_data=array("$print_url/printdata.php" => null,													

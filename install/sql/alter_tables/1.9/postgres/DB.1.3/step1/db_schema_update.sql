@@ -1,6 +1,6 @@
--- $Revision: 1.8 $
--- $Date: 2010/02/18 21:52:10 $
--- $Author: havlat $
+-- $Revision: 1.9 $
+-- $Date: 2010/03/08 20:17:40 $
+-- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -50,6 +50,8 @@
 --
 --
 -- internal revision:
+--  20100308 - franciscom - req_relations table added
+--
 --  20100113 - franciscom
 --  work started
 --
@@ -118,6 +120,17 @@ CREATE TABLE /*prefix*/inventory (
 );
 CREATE INDEX /*prefix*/inventory_idx1 ON /*prefix*/infrastructure (testproject_id);
 CREATE UNIQUE INDEX /*prefix*/inventory_uidx1 ON /*prefix*/infrastructure (name,testproject_id);
+
+
+CREATE TABLE /*prefix*/req_relations (
+	id BIGSERIAL NOT NULL,
+  source_id INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id),
+  destination_id  INTEGER NOT NULL DEFAULT '0' REFERENCES  /*prefix*/requirements (id),
+  relation_type INT2 NOT NULL DEFAULT '1',
+  author_id BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+	creation_ts TIMESTAMP NOT NULL DEFAULT now(),
+	PRIMARY KEY (id)
+);
 
 
 -- Step 3 - simple structure updates

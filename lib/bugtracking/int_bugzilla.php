@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugzilla.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2009/04/02 20:16:15 $ $Author: schlundus $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2010/03/08 13:18:21 $ $Author: asimon83 $
  *
  * @author Arjen van Summeren - 20051010 - inserted function getBugSummary($id) again, 
  *                                         corrected getBugStatusString($id)
@@ -16,6 +16,7 @@
  * they should be changed for your environment
  *
  * rev: 
+ * 20100308 - Julian - added function checkBugID_existence()
  * 20080321 - franciscom - BUGID 1444 - user contribution pvmeerbe
  * 20051202 - scs - added returning null in some cases
  * 20051229 - scs - added ADOdb support
@@ -146,7 +147,7 @@ class bugzillaInterface extends bugtrackingInterface
 	 **/
 	function getBugStatusString($id)
 	{
-		$status = $this->getBUGStatus($id);
+		$status = $this->getBugStatus($id);
 		
 		//if the bug wasn't found the status is null and we simply display the bugID
 		$str = htmlspecialchars($id);
@@ -154,9 +155,26 @@ class bugzillaInterface extends bugtrackingInterface
 		{
 			//strike through all bugs that have a resolved, verified, or closed status.. 
 			if('RESOLVED' == $status || 'VERIFIED' == $status || 'CLOSED' == $status)
-				$str = "<del>" . htmlspecialchars($id). "</del>";
+				$str = "<s>" . htmlspecialchars($id). "</s>";
 		}
 		return $str;
+	}
+	
+	/**
+	 * checks is bug id is present on BTS
+	 * 
+	 * @return bool 
+	 **/
+	function checkBugID_existence($id)
+	{
+		$status_ok=0;	
+		$query = "SELECT bug_status FROM {$this->dbSchema}.bugs WHERE bug_id=".$id."";
+		$result = $this->dbConnection->exec_query($query);
+		if ($result && ($this->dbConnection->num_rows($result) == 1) )
+		{
+			$status_ok=1;   
+		}
+		return $status_ok;
 	}
 }
 ?>

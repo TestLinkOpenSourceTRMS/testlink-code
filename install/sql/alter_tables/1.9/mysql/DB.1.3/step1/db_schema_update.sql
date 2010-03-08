@@ -5,7 +5,7 @@
  * SQL script: Update schema MySQL database for TestLink 1.9 from version 1.8 
  * "/ *prefix* /" - placeholder for tables with defined prefix, used by sqlParser.class.php.
  *
- * $Id: db_schema_update.sql,v 1.7 2010/02/18 21:52:10 havlat Exp $
+ * $Id: db_schema_update.sql,v 1.8 2010/03/08 20:04:37 franciscom Exp $
  *
  * Important Warning: 
  * This file will be processed by sqlParser.class.php, that uses SEMICOLON to find end of SQL Sentences.
@@ -13,6 +13,9 @@
  * USE SEMICOLONS ONLY to signal END of SQL Statements.
  *
  * internal revision:
+ *
+ *  20100308 - Julian
+ *  req_relations table added
  *
  *  20090919 - franciscom
  *  value size for custom fields
@@ -42,6 +45,16 @@ CREATE TABLE /*prefix*/req_versions (
   `modifier_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`,`version`)
+) DEFAULT CHARSET=utf8;
+
+CREATE TABLE /*prefix*/req_relations (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `source_id` int(10) unsigned NOT NULL,
+  `destination_id` int(10) unsigned NOT NULL,
+  `relation_type` smallint(5) unsigned NOT NULL default '1',
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE /*prefix*/tcsteps (  

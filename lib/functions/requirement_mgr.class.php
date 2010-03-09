@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.70 $
- * @modified $Date: 2010/03/09 19:29:17 $ by $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2010/03/09 20:29:38 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -130,7 +130,8 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
                 "REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
                 "REQV.modification_ts,NH_REQ.name AS title";
 	$where_clause = " WHERE NH_REQV.parent_id ";
-	if(is_array($id))
+	
+	if( ($id_is_array=is_array($id)) )
 	{
 		$where_clause .= "IN (" . implode(",",$id) . ") ";
 	}
@@ -148,6 +149,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 	{
 		if( is_null($version_id) )
 		{
+		    // search by "human" version number
 		    $where_clause .= " AND REQV.version = {$version_number} ";
 		}
 		else 
@@ -169,7 +171,30 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 	       " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
            $where_clause . $filter_clause . $my['options']['order_by'];
 
-	$recordset = $this->db->get_recordset($sql);
+
+	if ($version_id != self::LATEST_VERSION)
+	{
+		$recordset = $this->db->get_recordset($sql);
+	}
+	else
+	{
+	    // 20090413 - franciscom - 
+	    // But, how performance wise can be do this, instead of using MAX(version)
+	    // and a group by? 
+	    //           
+	    // 20100309 - franciscom - 
+	    // if $id was a list then this will return something USELESS
+	    //           
+	    if( !$id_is_array )
+	    {         
+			$recordset = array($this->db->fetchFirstRow($sql));
+		}	
+		else
+		{
+			// Write to event viewer ???
+		}
+	}
+
   	$rs = null;
   	$userCache = null;  // key: user id, value: display name
   	if(!is_null($recordset))

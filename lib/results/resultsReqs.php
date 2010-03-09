@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2010/03/09 18:32:15 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2010/03/09 18:55:52 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -24,8 +24,8 @@ require_once('requirements.inc.php');
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
-$tables = tlObjectWithDB::getDBTables(array('req_coverage','nodes_hierarchy',
-                                            'tcversions','requirements'));
+$tables = tlObjectWithDB::getDBTables(array('req_coverage','nodes_hierarchy','tcversions',
+                                            'requirements','req_versions'));
 
 $args = init_args();
 $gui = new stdClass();
@@ -71,23 +71,26 @@ if(!is_null($args->req_spec_id))
 	$gui->reqSpecName = $gui->reqSpecSet[$gui->req_spec_id];
 
     $opt = array('only_executed' => true);
+    // 20100309 - What about platforms ? franciscom 
 	$tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,$opt);
+	$execMap = getLastExecutions($db,$tcs,$args->tplan_id);
 	
 	// BUGID 1063
     // 20090506 - franciscom - Requirements Refactoring
 	$sql = " SELECT DISTINCT REQ.id AS req_id, COALESCE(RC.testcase_id,0) AS testcase_id, " .
-	       " NH_REQ.name AS req_title,status AS req_status, NH.name AS testcase_name, " .
-	       " TCV.tc_external_id,TCV.version,req_doc_id " .
+	       " NH_REQ.name AS req_title, REQV.status AS req_status, NH.name AS testcase_name, " .
+	       " TCV.tc_external_id,TCV.version,REQ.req_doc_id " .
 	       " FROM {$tables['requirements']} REQ" .
 	       " JOIN {$tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+	       " JOIN {$tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = REQ.id " .
+	       " JOIN {$tables['req_versions']} REQV ON REQV.id = NH_REQV.id AND REQV.active=1 " .
 	       " LEFT OUTER JOIN {$tables['req_coverage']}  RC ON REQ.id = RC.req_id " .
 	       " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NH ON RC.testcase_id = NH.id " .
 	       " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NHB ON NHB.parent_id = NH.id " .
 	       " LEFT OUTER JOIN {$tables['tcversions']} TCV ON TCV.id=NHB.id " .
-	       " WHERE status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}"; 
+	       " WHERE REQV.status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}"; 
 
 	$reqs = $db->fetchRowsIntoMap($sql,'req_id',database::CUMULATIVE);
-	$execMap = getLastExecutions($db,$tcs,$args->tplan_id);
 	$gui->metrics = $req_spec_mgr->get_metrics($args->req_spec_id);
 
 	$coverage = getReqCoverage($db,$reqs,$execMap);                                                               

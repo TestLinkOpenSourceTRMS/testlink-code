@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.248 2010/03/01 20:51:20 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.249 2010/03/09 05:48:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100309 - franciscom - get_exec_status() - interface changes
+ *						   get_linked_versions() - interface changes                        
  * 20100301	- franciscom - changes on show() to solve 
  *                         BUGID 3181: From test case specification, after adding the test case 
  *                         to test a plan with platforms, platforms are not displayed
@@ -1066,7 +1068,7 @@ class testcase extends tlObjectWithAttachments
 	                  testplan_id
 	                  tplan_name
 	*/
-	function get_linked_versions($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null)
+	function get_linked_versions($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null,$platform_id=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  	$active_filter='';
@@ -1080,10 +1082,10 @@ class testcase extends tlObjectWithAttachments
 		{
 			case "ALL":
 		        $sql = "/* $debugMsg */ " . 	    
-				       "SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id, " .
-					   "tcversions.*, TTC.testplan_id, TTC.tcversion_id, TTC.platform_id," . 
+				       " SELECT NH.parent_id AS testcase_id, NH.id AS tcversion_id, " .
+					   " tcversions.*, TTC.testplan_id, TTC.tcversion_id, TTC.platform_id," . 
 					   " NHB.name AS tplan_name " .
-					   "FROM   {$this->tables['nodes_hierarchy']} NH," .
+					   " FROM   {$this->tables['nodes_hierarchy']} NH," .
 					   " {$this->tables['tcversions']} tcversions," .
 					   " {$this->tables['testplan_tcversions']} TTC, " .
 					   " {$this->tables['nodes_hierarchy']} NHB    " .
@@ -1094,8 +1096,15 @@ class testcase extends tlObjectWithAttachments
 						    
 	      		if(!is_null($tplan_id))
 	      		{
-	      		    $sql .= " AND TTC.testplan_id={$tplan_id} ";  
+	      		    $sql .= " AND TTC.testplan_id = {$tplan_id} ";  
 	      		}  					    
+	      		
+	      		// 20100308 - franciscom
+	      		if(!is_null($platform_id))
+	      		{
+	      		    $sql .= " AND TTC.platform_id = {$platform_id} ";  
+	      		}  					    
+	      		
 	        	$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
 				// TO BE ANALISED
 				if( !is_null($recordset) )
@@ -1123,11 +1132,11 @@ class testcase extends tlObjectWithAttachments
 		  break;
 	
 	     case "EXECUTED":
-		      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id);
+		      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id,$platform_id);
 		  break;
 	
 		  case "NOT_EXECUTED":
-		      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id);
+		      $recordset=$this->get_exec_status($id,$exec_status,$active_status,$tplan_id,$platform_id);
 	      break;
 	  }
 
@@ -1940,7 +1949,7 @@ class testcase extends tlObjectWithAttachments
 	       maintaining the really executed version in tcversion_number (version number displayed
 	       on User Interface) field we need to change algorithm.
 	*/
-	function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null)
+	function get_exec_status($id,$exec_status="ALL",$active_status='ALL',$tplan_id=null,$platform_id=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $active_status = strtoupper($active_status);
@@ -1978,6 +1987,11 @@ class testcase extends tlObjectWithAttachments
 	    {
 	        $sql .= " AND T.tplan_id = {$tplan_id} "; 
 	    }    
+		if(!is_null($platform_id))
+	    {
+	        $sql .= " AND T.platform_id = {$platform_id} "; 
+	    }    
+
 	    $sql .= " ORDER BY version,tplan_name";
 		$rs = $this->db->get_recordset($sql);
 

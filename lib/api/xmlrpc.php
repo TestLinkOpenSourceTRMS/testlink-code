@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2010/03/09 06:45:44 $ by $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2010/03/09 06:50:47 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -3619,23 +3619,29 @@ public function getTestCase($args)
          
         if( $status )
         {
+        	$platform_name = null;
+        	$platform_id = null;
         	if($name_exists)
         	{ 
         		// file_put_contents('c:\checkPlatformIdentity.txt', $this->args[self::$platformNameParamName]);                            
         		// file_put_contents('c:\checkPlatformIdentity.txt', serialize($platformInfo));                            
         		// $this->errors[]=$platformInfo;
+        		$platform_name = $this->args[self::$platformNameParamName];
         		$status = in_array($this->args[self::$platformNameParamName],$platformInfo);
             }
             else
             {
+            	$platform_id = $this->args[self::$platformIDParamName];
             	$status = isset($platformInfo[$this->args[self::$platformIDParamName]]);
             }
             
         	if( !$status )
         	{
         		// Platform does not exist in target testplan
+        		// Can I Try to understand if platform exists on test project ?
+				// $this->tprojectMgr->        		
    			    $msg = sprintf($messagePrefix . PLATFORM_NOT_LINKED_TO_TESTPLAN_STR,
-                               $this->args[self::$platformNameParamName],$tplanInfo['name']);
+                               $platform_name,$platform_id,$tplanInfo['name']);
    				$this->errors[] = new IXR_Error(PLATFORM_NOT_LINKED_TO_TESTPLAN, $msg);
         	}	
         }

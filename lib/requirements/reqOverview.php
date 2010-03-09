@@ -81,14 +81,14 @@ if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
 
 		// create the link to display
 		$title = $req[0]['req_doc_id'] . $glue_char . $req[0]['title'];
-		$linked_title = '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . $title . '</a>';
+		$linked_title = '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . htmlentities($title) . '</a>';
 		
 		// reqspec-"path" to requirement
 		$path = $tree_mgr->get_path($req[0]['srs_id']);
 		foreach ($path as $key => $p) {
 			$path[$key] = $p['name'];
 		}
-		$path = implode("/", $path);
+		$path = htmlentities(implode("/", $path));
 			
 		foreach($req as $version) {
 			
@@ -115,7 +115,7 @@ if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
 			
 			// get custom field values for this req
 			foreach ($fields as $cf) {
-	    		$result[] = $cf['value'];
+	    		$result[] = htmlentities($cf['value']);
 	    	}
 	    	
 	    	$results[] = $result;

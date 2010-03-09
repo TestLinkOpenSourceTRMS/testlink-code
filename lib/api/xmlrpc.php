@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2010/03/09 06:16:00 $ by $Author: franciscom $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2010/03/09 06:30:40 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -635,61 +635,73 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access private
 	 */    
-    protected function checkBuildID()
+    protected function checkBuildID($msg_prefix)
     {
         $tplan_id=$this->args[self::$testPlanIDParamName];
 	   	$status=true;
 	   	$try_again=false;
-      
-	   	if(!$this->_isBuildIDPresent())
-	   	{
-            $try_again=true;
-			if($this->_isBuildNamePresent())
-			{
-                $buildInfo=$this->tplanMgr->get_build_by_name($tplan_id,
-                                                              trim($this->args[self::$buildNameParamName])); 
-                if( !is_null($buildInfo) )
-                {
-                    $this->args[self::$buildIDParamName]=$buildInfo['id'];
-                    $try_again=false;
-                }
-			}
-		}
+      	
+      	// First thing is to know is test plan has any build
+      	$buildQty = $this->tplanMgr->getNumberOfBuilds($tplan_id);
+      	if( $buildQty == 0)
+      	{
+			$status = false;
+			$tplan_info = $this->tplanMgr->get_by_id($tplan_id);
+            $msg = $msg_prefix . sprintf(TPLAN_HAS_NO_BUILDS_STR,$tplan_info['name'],$tplan_info['id']);
+            $this->errors[] = new IXR_Error(TPLAN_HAS_NO_BUILDS,$msg);
+      	} 
 	   	
-	   	if($try_again)
+	   	if( $status )
 	   	{
-			// this means we aren't supposed to guess the buildid
-			if(false == $this->checkGuess())   		
-			{
-				$this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
-				$this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);				
-    	    	$status=false;
-			}
-			else
-			{
-				$setBuildResult = $this->_setBuildID2Latest();
-				if(false == $setBuildResult)
+	   		if(!$this->_isBuildIDPresent())
+	   		{
+        	    $try_again=true;
+				if($this->_isBuildNamePresent())
 				{
-					$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
-					$status=false;
+        	        $buildInfo=$this->tplanMgr->get_build_by_name($tplan_id,
+        	                                                      trim($this->args[self::$buildNameParamName])); 
+        	        if( !is_null($buildInfo) )
+        	        {
+        	            $this->args[self::$buildIDParamName]=$buildInfo['id'];
+        	            $try_again=false;
+        	        }
 				}
 			}
-	   	}
-	   	
-	   	if( $status)
-	   	{
-	   	    $buildID = $this->dbObj->prepare_int($this->args[self::$buildIDParamName]);
-          $buildInfo=$this->tplanMgr->get_build_by_id($tplan_id,$buildID); 
-          if( is_null($buildInfo) )
-          {
-              $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
-              $msg = sprintf(BAD_BUILD_FOR_TPLAN_STR,$buildID,$tplan_info['name'],$tplan_id);          
-			    	  $this->errors[] = new IXR_Error(BAD_BUILD_FOR_TPLAN, $msg);				
-			    	  $status=false;
-          }
-      }
-      
-      return $status;
+	   		
+	   		if($try_again)
+	   		{
+				// this means we aren't supposed to guess the buildid
+				if(false == $this->checkGuess())   		
+				{
+					$this->errors[] = new IXR_Error(BUILDID_NOGUESS, BUILDID_NOGUESS_STR);
+					$this->errors[] = new IXR_Error(NO_BUILDID, NO_BUILDID_STR);				
+    		    	$status=false;
+				}
+				else
+				{
+					$setBuildResult = $this->_setBuildID2Latest();
+					if(false == $setBuildResult)
+					{
+						$this->errors[] = new IXR_Error(NO_BUILD_FOR_TPLANID, NO_BUILD_FOR_TPLANID_STR);
+						$status=false;
+					}
+				}
+	   		}
+	   		
+	   		if( $status)
+	   		{
+	   		    $buildID = $this->dbObj->prepare_int($this->args[self::$buildIDParamName]);
+        	  $buildInfo=$this->tplanMgr->get_build_by_id($tplan_id,$buildID); 
+        	  if( is_null($buildInfo) )
+        	  {
+        	      $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
+        	      $msg = sprintf(BAD_BUILD_FOR_TPLAN_STR,$buildID,$tplan_info['name'],$tplan_id);          
+				    	  $this->errors[] = new IXR_Error(BAD_BUILD_FOR_TPLAN, $msg);				
+				    	  $status=false;
+        	  }
+        	}
+       	} 
+		return $status;
     }
      
 
@@ -3564,7 +3576,7 @@ public function getTestCase($args)
 	 * Helper method to see if the platform identity provided is valid 
 	 * This is the only method that should be called directly to check platform identity
 	 * 	
-	 * If everything OK, test case internal ID is setted.
+	 * If everything OK, platform id is setted.
 	 *
 	 * @return boolean
 	 * @access private

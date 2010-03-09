@@ -34,6 +34,7 @@ $gui = init_gui($args);
 
 $glue_char = config_get('gui_title_separator_1');
 $msg_key = 'no_linked_req_cf';
+$charset = config_get('charset');
 
 
 if (isset($args->all_versions)) {
@@ -81,14 +82,15 @@ if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
 
 		// create the link to display
 		$title = $req[0]['req_doc_id'] . $glue_char . $req[0]['title'];
-		$linked_title = '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . htmlentities($title) . '</a>';
+		$linked_title = '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . 
+							htmlentities($title, ENT_COMPAT, $charset) . '</a>';
 		
 		// reqspec-"path" to requirement
 		$path = $tree_mgr->get_path($req[0]['srs_id']);
 		foreach ($path as $key => $p) {
 			$path[$key] = $p['name'];
 		}
-		$path = htmlentities(implode("/", $path));
+		$path = htmlentities(implode("/", $path), ENT_COMPAT, $charset);
 			
 		foreach($req as $version) {
 			
@@ -115,7 +117,7 @@ if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
 			
 			// get custom field values for this req
 			foreach ($fields as $cf) {
-	    		$result[] = htmlentities($cf['value']);
+	    		$result[] = htmlentities($cf['value'], ENT_COMPAT, $charset);
 	    	}
 	    	
 	    	$results[] = $result;
@@ -137,7 +139,7 @@ if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
 	        );
 
 	    foreach($gui->cfields as $cf) {
-	    	$columns[] = $cf['label'];
+	    	$columns[] = htmlentities($cf['label'], ENT_COMPAT, $charset);
 	    }
 	    
 	    // create table object, fill it with columns and row data and give it a title

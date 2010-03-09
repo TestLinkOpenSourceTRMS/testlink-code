@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.69 $
- * @modified $Date: 2010/03/01 10:38:07 $ by $Author: asimon83 $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2010/03/09 19:29:17 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20100309 - franciscom - get_by_id() removed useless code pointed by BUGID 3254
  *	20100124 - franciscom - BUGID 0003089: Req versions new attributes - active and open 
  *							new methods updateActive(),updateOpen()
  *  20091228 - franciscom - exportReqToXML() - added expected_coverage
@@ -145,25 +146,17 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 	}
 	else
 	{
-		if(is_array($version_id))
+		if( is_null($version_id) )
 		{
-		    $versionid_list = implode(",",$version_id);
-		    $where_clause .= " AND REQV.version IN ({$versionid_list}) ";
+		    $where_clause .= " AND REQV.version = {$version_number} ";
 		}
-        else
-        {
-			if( is_null($version_id) )
-			{
-			    $where_clause .= " AND REQV.version = {$version_number} ";
-			}
-			else 
-			{
-			    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
-			    {
-			    	$where_clause .= " AND REQV.id = {$version_id} ";
-			    }
-	    	}
-        }
+		else 
+		{
+		    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
+		    {
+		    	$where_clause .= " AND REQV.id = {$version_id} ";
+		    }
+		}
     }
   
 	$sql = " /* $debugMsg */ SELECT {$fields2get}, REQ_SPEC.testproject_id, " .
@@ -468,7 +461,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 function get_coverage($id)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id " .
+    $sql = "/* $debugMsg */ SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id " .
   	       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
   	       " {$this->tables['nodes_hierarchy']} NHB, " .
   	       " {$this->tables['tcversions']} TCV, " .

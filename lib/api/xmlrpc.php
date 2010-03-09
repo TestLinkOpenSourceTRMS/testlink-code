@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2010/03/09 06:14:12 $ by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2010/03/09 06:16:00 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -3609,9 +3609,9 @@ public function getTestCase($args)
         {
         	if($name_exists)
         	{ 
-        		file_put_contents('c:\checkPlatformIdentity.txt', $this->args[self::$platformNameParamName]);                            
-        		file_put_contents('c:\checkPlatformIdentity.txt', serialize($platformInfo));                            
-        		$this->errors[]=$platformInfo;
+        		// file_put_contents('c:\checkPlatformIdentity.txt', $this->args[self::$platformNameParamName]);                            
+        		// file_put_contents('c:\checkPlatformIdentity.txt', serialize($platformInfo));                            
+        		// $this->errors[]=$platformInfo;
         		$status = in_array($this->args[self::$platformNameParamName],$platformInfo);
             }
             else

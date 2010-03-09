@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.250 2010/03/09 06:54:36 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.251 2010/03/09 19:47:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100309 - franciscom - get_by_id() - improvements on control to apply when LATEST_VERSION is requested.
  * 20100309 - franciscom - get_exec_status() - interface changes
  *						   get_linked_versions() - interface changes                        
  *						   BUGID 0003253
@@ -1708,7 +1709,7 @@ class testcase extends tlObjectWithAttachments
 	function get_by_id($id,$version_id = self::ALL_VERSIONS, 
 	                   $active_status='ALL',$open_status='ALL',$version_number=1)
 	{
-		$tcid_list = '';
+		$tcid_list = null;
 		$where_clause = '';
 		$active_filter = '';
 	
@@ -1722,7 +1723,7 @@ class testcase extends tlObjectWithAttachments
 			$where_clause = " WHERE NHA.parent_id = {$id} ";
 		}
 	
-		if(is_array($version_id))
+		if( ($version_id_is_array=is_array($version_id)) )
 		{
 		    $versionid_list = implode(",",$version_id);
 		    $where_clause .= " AND tcversions.id IN ({$versionid_list}) ";
@@ -1764,18 +1765,30 @@ class testcase extends tlObjectWithAttachments
 	         $active_filter
 	         ORDER BY tcversions.version DESC";
 	
-	    
-		if ($version_id != self::LATEST_VERSION)
-		{
-			$recordset = $this->db->get_recordset($sql);
-		}
-		else
+	
+	    // Control improvements
+		if( !$version_id_is_array && $version_id == self::LATEST_VERSION)
 		{
 		    // 20090413 - franciscom - 
 		    // But, how performance wise can be do this, instead of using MAX(version)
 		    // and a group by? 
-		    //                              
-			$recordset = array($this->db->fetchFirstRow($sql));
+		    //           
+		    // 20100309 - franciscom - 
+		    // if $id was a list then this will return something USELESS
+		    //           
+		    if( is_null($tcid_list) )
+		    {         
+				$recordset = array($this->db->fetchFirstRow($sql));
+			}	
+			else
+			{
+				// Write to event viewer ???
+				// throw exception ??
+			}
+		}
+		else
+		{
+			$recordset = $this->db->get_recordset($sql);
 	    }
 	
 	    // Multiple Test Case Steps

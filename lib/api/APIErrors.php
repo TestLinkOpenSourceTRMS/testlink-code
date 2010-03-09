@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.27 2009/09/17 17:29:28 franciscom Exp $
+ * $Id: APIErrors.php,v 1.28 2010/03/09 05:41:30 franciscom Exp $
  */
 
 /** 
@@ -136,6 +136,9 @@ define('PLATFORM_NOT_LINKED_TO_TESTPLAN_STR', lang_get('API_PLATFORM_NOT_LINKED_
 
 define('TESTPLAN_HAS_NO_PLATFORMS', 3041);
 define('TESTPLAN_HAS_NO_PLATFORMS_STR',lang_get('API_TESTPLAN_HAS_NO_PLATFORMS',null,1));
+
+define('TCASEID_NOT_IN_TPLANID_FOR_PLATFORM', 3042);
+define('TCASEID_NOT_IN_TPLANID_FOR_PLATFORM_STR', lang_get('API_TCASEID_NOT_IN_TPLANID_FOR_PLATFORM',null,1));
 
 
 /**

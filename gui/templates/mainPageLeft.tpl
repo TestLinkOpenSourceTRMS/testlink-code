@@ -1,10 +1,11 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.23 2010/02/20 08:07:37 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.24 2010/03/09 09:45:02 asimon83 Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
- rev :                                                 
- 	  20100106 - asimon     - contribution for 2976 req/reqspec search                                    
+ rev :         
+ 	  20100309 - asimon - BUGID 3227, added link for req overview page
+ 	  20100106 - asimon - contribution for 2976 req/reqspec search                                    
       20090808 - franciscom - grouping rights on gui->grants
       20081228 - franciscom - new feature user can choose vertical order of link groups
       20070523 - franciscom - test case search link enabled only if session testproject
@@ -21,7 +22,7 @@
                           title_test_spec,href_edit_tc,href_browse_tc,href_search_tc,
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
-                          href_print_tc,href_keywords_assign'}
+                          href_print_tc,href_keywords_assign, href_req_overview'}
 
 
 
@@ -229,6 +230,10 @@
       {if $gui->grants.reqs_view == "yes"}
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
         <a href="{$gui->launcher}?feature=reqSpecMgmt">{$labels.href_req_spec}</a><br/>
+        
+        {* BUGID 3227 *}
+        <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+        <a href="lib/requirements/reqOverview.php">{$labels.href_req_overview}</a><br/>
         
         {* contribution for 2976 req/reqspec search *}
         <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />

@@ -20,7 +20,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.10 2010/02/23 12:45:45 asimon83 Exp $
+ * @version    	CVS: $Id: description.php,v 1.11 2010/03/09 09:45:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -228,6 +228,12 @@ wrong designed requirements.</p>
 requirements within the specification screen. These Test Cases are created into Test Suite
 with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
+";
+
+$TLS_hlp_req_coverage_table = "<h3>Coverage:</h3>
+A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
+to test it completely. 8 of those have already been created and linked to this Requirement, which 
+makes a coverage of 40 percent.
 ";
 
 

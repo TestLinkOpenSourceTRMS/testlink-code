@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.568 2010/03/09 05:43:14 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.569 2010/03/09 09:45:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1801,6 +1801,7 @@ $TLS_href_keywords_view = "View Keywords";
 $TLS_href_print_tc = "Generate Test Specification document";
 $TLS_href_req_assign = "Assign Requirements";
 $TLS_href_req_spec = "Requirement Specification document";
+$TLS_href_req_overview = "Requirement Overview";
 $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Cases";
 $TLS_href_tproject_management = "Test Project Management";
@@ -2285,10 +2286,12 @@ $TLS_link_report_test_report = "Test Report";
 $TLS_link_report_total_bugs = "Bugs per Test Case";
 $TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
 $TLS_link_report_tcases_with_cf = "Test Cases with Custom Fields info";
+$TLS_link_report_reqs_with_cf = "Requirements with Custom Fields info";
 $TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
+$TLS_caption_requirementsWithCF = $TLS_link_report_reqs_with_cf;
 $TLS_link_report_free_testcases_on_testproject = "Test Cases not assigned to Any Test Plan";
 
-
+$TLS_no_linked_req_cf='There are no Requirements with Custom Field information';
 $TLS_no_linked_tc_cf='There are no Test Cases with Custom Field information';
 
 $TLS_format_html = 'HTML';
@@ -2431,6 +2434,16 @@ $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associate
 $TLS_btn_new_req_spec = "New Requirement Specification";
 $TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
 $TLS_btn_export_all_reqspec = "Export All Requirement Specifications";
+
+
+// ----- lib/requirements/reqOverview.php -----
+$TLS_caption_req_overview = "Requirement Overview";
+$TLS_no_linked_req_cf = 'There are no Requirements with Custom Field information';
+$TLS_th_coverage = 'Coverage';
+$TLS_all_versions_displayed = 'All versions of each requirement are shown.';
+$TLS_latest_version_displayed = 'Only the latest version of each requirement is shown.';
+$TLS_dont_show_all_versions_btn = 'Show only latest version of each requirement';
+$TLS_show_all_versions_btn = 'Show all versions of each requirement';
 
 
 // ----- reqSpecEdit.php -----

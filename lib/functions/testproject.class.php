@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.163 2010/02/20 09:06:07 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.164 2010/03/09 09:45:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100309 - asimon - BUGID 3227 - added get_all_requirement_ids() and count_all_requirements()
  * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
  * 20100203 - franciscom - addKeyword() return type changed
  * 20100201 - franciscom - delete() - missing delete of platforms
@@ -2168,6 +2169,60 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 	
 } // end function copy_as
 
+
+/**
+ * recursive function to get an array with all requirement IDs in testproject
+ * 
+ * @param string $IDList commaseparated list of Container-IDs - can be testproject ID or reqspec IDs 
+ * @param array &$reqSpecIDs reference to array of resulting IDs - into this the IDs will be written
+ */
+public function get_all_requirement_ids($IDList, &$reqIDs) {
+	
+	static $reqNodeTypeID = null;
+	static $reqSpecNodeTypeID = null;
+	static $debugMsg = null;
+	
+	if (!$reqNodeTypeID) {
+		$debugMsg = "/* Class: " . __CLASS__ . " - Method: " . __FUNCTION__ . " */";
+		$reqNodeTypeID = $this->tree_manager->node_descr_id['requirement'];
+		$reqSpecNodeTypeID = $this->tree_manager->node_descr_id['requirement_spec'];
+	}
+	
+	$sql = $debugMsg .
+			" SELECT id, node_type_id FROM {$this->tables['nodes_hierarchy']}" .
+			" WHERE parent_id IN ($IDList)" .
+			" AND node_type_id IN ($reqNodeTypeID, $reqSpecNodeTypeID)";
+	
+	$result = $this->db->exec_query($sql);
+	if ($result) {
+		$reqSpecIDs = array();
+		
+		while($row = $this->db->fetch_array($result)) {
+			if ($row['node_type_id'] == $reqNodeTypeID) {
+				$reqIDs[] = $row['id'];
+			}
+			$reqSpecIDs[] = $row['id'];
+		}
+		
+		if (count($reqSpecIDs)) {
+			$reqSpecIDs = implode(",", $reqSpecIDs);
+			$this->get_all_requirement_ids($reqSpecIDs, $reqIDs);
+		}
+	}
+}
+
+
+/**
+ * uses get_all_requirements_ids() to count all requirements in testproject
+ * 
+ * @param integer $tp_id ID of testproject
+ * @return integer count of requirements in given testproject
+ */
+public function count_all_requirements($tp_id) {
+	$ids = array();
+	$this->get_all_requirement_ids($tp_id, $ids);
+	return count($ids);
+}
 
 /**
  * Copy user roles to a new Test Project

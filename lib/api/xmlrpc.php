@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2010/03/09 06:30:40 $ by $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2010/03/09 06:45:44 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -3628,7 +3628,7 @@ public function getTestCase($args)
             }
             else
             {
-            	$status = isset($platformInfo,$this->args[self::$platformIDParamName]);
+            	$status = isset($platformInfo[$this->args[self::$platformIDParamName]]);
             }
             
         	if( !$status )

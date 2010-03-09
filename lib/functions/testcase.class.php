@@ -6,13 +6,15 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.249 2010/03/09 05:48:05 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.250 2010/03/09 06:54:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100309 - franciscom - get_exec_status() - interface changes
  *						   get_linked_versions() - interface changes                        
+ *						   BUGID 0003253
+ *
  * 20100301	- franciscom - changes on show() to solve 
  *                         BUGID 3181: From test case specification, after adding the test case 
  *                         to test a plan with platforms, platforms are not displayed
@@ -4130,9 +4132,6 @@ class testcase extends tlObjectWithAttachments
 	function get_step_numbers($tcversion_id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		
-		$step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
-		
 		$sql = "/* $debugMsg */ " . 
 		       " SELECT TCSTEPS.id, TCSTEPS.step_number FROM {$this->tables['tcsteps']} TCSTEPS " .
 		       " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .

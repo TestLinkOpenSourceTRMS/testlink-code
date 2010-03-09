@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.567 2010/03/02 10:18:00 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.568 2010/03/09 05:43:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2560,6 +2560,9 @@ $TLS_API_CFG_DELETE_EXEC_DISABLED = "Configuration does not allow delete executi
 
 $TLS_API_PLATFORM_NOT_LINKED_TO_TESTPLAN = "Platform (name=%s) is not linked to test plan (name:%s).";
 $TLS_API_TESTPLAN_HAS_NO_PLATFORMS = "Test plan (name:%s) has no platforms linked";
+
+$TLS_API_TCASEID_NOT_IN_TPLANID_FOR_PLATFORM = "Test Case (name=%s/id=%s) is not associated with " .
+                                               "Test Plan (name=%s/id=%s) for Platform (name=%s/id=%s).";
 
 
 // ----- audit log entries -----

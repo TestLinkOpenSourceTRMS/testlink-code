@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2010/03/09 05:48:44 $ by $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2010/03/09 06:14:12 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1013,7 +1013,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	$tplan_id = $this->args[self::$testPlanIDParamName];
     	$tcase_id = $this->args[self::$testCaseIDParamName];
         $platform_id = !is_null($platformInfo) ? key($platformInfo) : null;
-
+        
     	$info = $this->tcaseMgr->get_linked_versions($tcase_id,"ALL","ALL",$tplan_id,$platform_id);
         $status_ok = !is_null($info);
         if( $status_ok )
@@ -1025,7 +1025,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
             $tcase_info = $this->tcaseMgr->get_by_id($tcase_id);
             
-            if( is_null($platformID) )
+            if( is_null($platform_id) )
             {
             	$msg = sprintf(TCASEID_NOT_IN_TPLANID_STR,$tcase_info[0]['name'],
             	               $this->args[self::$testCaseExternalIDParamName],$tplan_info['name'],$tplan_id);          
@@ -1925,7 +1925,7 @@ class TestlinkXMLRPCServer extends IXR_Server
         	$platformSet = $this->tplanMgr->getPlatforms($this->args[self::$testPlanIDParamName],
         	                                              array('outputFormat' => 'map'));  
 			$targetPlatform = null;
-			if( !is_null($platformInfo) )
+			if( !is_null($platformSet) )
             {       
 	    		$status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],$platformSet,$msg_prefix);
 				if($status_ok)
@@ -1933,6 +1933,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 					$targetPlatform[$this->args[self::$platformIDParamName]] = $platformSet[$this->args[self::$platformIDParamName]];
 				}
 	    	}
+	    	
 			$status_ok = $status_ok && $this->_checkTCIDAndTPIDValid($targetPlatform,$msg_prefix);
 	    }
 	

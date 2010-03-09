@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/09/28 08:44:20 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/03/09 18:32:15 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -48,9 +48,10 @@ $req_spec_mgr = new requirement_spec_mgr($db);
 //get list of available Req Specification
 // $gui->reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tproject_id);
 $gui->reqSpecSet = $tproject_mgr->genComboReqSpec($args->tproject_id);
+$gui->reqSpecSet = ($reqSpecQty = count($gui->reqSpecSet)) > 0 ? $gui->reqSpecSet : null;
 
 //set the first ReqSpec if not defined via request
-if (!$args->req_spec_id && count($gui->reqSpecSet))
+if($reqSpecQty > 0 && !$args->req_spec_id)
 {
 	reset($gui->reqSpecSet);
 	$args->req_spec_id = key($gui->reqSpecSet);
@@ -60,9 +61,15 @@ if (!$args->req_spec_id && count($gui->reqSpecSet))
 $tplan_mgr = new testplan($db);
 $tplanInfo = $tplan_mgr->get_by_id($args->tplan_id);
 $gui->tplan_name = $tplanInfo["name"];
+$gui->withoutTestCase = '';
+$gui->req_spec_id = null;
+$gui->reqSpecName = '';
 
 if(!is_null($args->req_spec_id))
 {
+	$gui->req_spec_id = $args->req_spec_id;
+	$gui->reqSpecName = $gui->reqSpecSet[$gui->req_spec_id];
+
     $opt = array('only_executed' => true);
 	$tcs = $tplan_mgr->get_linked_tcversions($args->tplan_id,$opt);
 	
@@ -92,15 +99,16 @@ if(!is_null($args->req_spec_id))
 	                                       $gui->metrics['notTestable'];
 }
 
-$gui->req_spec_id = $args->req_spec_id;
-$gui->reqSpecName = $gui->reqSpecSet[$gui->req_spec_id];
-
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$iParams = array("req_spec_id" => array(tlInputParameter::INT_N));

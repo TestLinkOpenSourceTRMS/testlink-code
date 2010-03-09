@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2010/02/09 19:44:37 $ by $Author: havlat $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2010/03/09 05:48:44 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20100308 - franciscom - BUGID 3243 - checkPlatformIdentity()
  *	20100205 - franciscom - BUGID 3140 - _checkTCIDAndTPIDValid()	
  *	20091228 - franciscom - checkReqSpecQuality() - refactoring due to req versioning feature
  *	20091212 - franciscom - BUGID 2998 - contribution - getTestSuiteByID()
@@ -1007,12 +1008,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @return boolean
 	 * @access private
 	 */            
-    private function _checkTCIDAndTPIDValid($messagePrefix='')
+    private function _checkTCIDAndTPIDValid($platformInfo=null,$messagePrefix='')
     {  	
     	$tplan_id = $this->args[self::$testPlanIDParamName];
     	$tcase_id = $this->args[self::$testCaseIDParamName];
+        $platform_id = !is_null($platformInfo) ? key($platformInfo) : null;
 
-    	$info=$this->tcaseMgr->get_linked_versions($tcase_id,"ALL","ALL",$tplan_id);
+    	$info = $this->tcaseMgr->get_linked_versions($tcase_id,"ALL","ALL",$tplan_id,$platform_id);
         $status_ok = !is_null($info);
         if( $status_ok )
         {
@@ -1022,9 +1024,21 @@ class TestlinkXMLRPCServer extends IXR_Server
         {
             $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
             $tcase_info = $this->tcaseMgr->get_by_id($tcase_id);
-            $msg = sprintf(TCASEID_NOT_IN_TPLANID_STR,$tcase_info[0]['name'],
-                           $this->args[self::$testCaseExternalIDParamName],$tplan_info['name'],$tplan_id);          
-            $this->errors[] = new IXR_Error(TCASEID_NOT_IN_TPLANID, $msg);
+            
+            if( is_null($platformID) )
+            {
+            	$msg = sprintf(TCASEID_NOT_IN_TPLANID_STR,$tcase_info[0]['name'],
+            	               $this->args[self::$testCaseExternalIDParamName],$tplan_info['name'],$tplan_id);          
+            	$this->errors[] = new IXR_Error(TCASEID_NOT_IN_TPLANID, $msg);
+            }
+            else
+            {
+            	
+            	$msg = sprintf(TCASEID_NOT_IN_TPLANID_FOR_PLATFORM_STR,$tcase_info[0]['name'],
+            	               $this->args[self::$testCaseExternalIDParamName],
+            	               $tplan_info['name'],$tplan_id,$platformInfo[$platform_id],$platform_id);          
+            	$this->errors[] = new IXR_Error(TCASEID_NOT_IN_TPLANID_FOR_PLATFORM, $msg);
+            }
         }
         return $status_ok;      
     }
@@ -1184,9 +1198,11 @@ class TestlinkXMLRPCServer extends IXR_Server
         $status_ok=true;
                 
         // Checks are done in order
-        $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity',
-                                '_checkTCIDAndTPIDValid',);       
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");       
+        $checkFunctions = array('authenticate','checkTestPlanID','checkTestCaseIdentity');
+
+        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && 
+                   $this->_checkTCIDAndTPIDValid(null,$msg_prefix) &&
+                   $this->userHasRight("mgt_view_tc");       
 
         if( $status_ok )
         {
@@ -1899,13 +1915,25 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$resultInfo[0]["status"] = true;
 		
         $checkFunctions = array('authenticate','checkTestCaseIdentity','checkTestPlanID',
-                                'checkBuildID','checkStatus','_checkTCIDAndTPIDValid');
+                                'checkBuildID','checkStatus');
                                 
         $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
 
    	    if($status_ok)
 		{			
-	    	$status_ok=$this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],$msg_prefix);
+			// This check is needed only if test plan has platforms
+        	$platformSet = $this->tplanMgr->getPlatforms($this->args[self::$testPlanIDParamName],
+        	                                              array('outputFormat' => 'map'));  
+			$targetPlatform = null;
+			if( !is_null($platformInfo) )
+            {       
+	    		$status_ok = $this->checkPlatformIdentity($this->args[self::$testPlanIDParamName],$platformSet,$msg_prefix);
+				if($status_ok)
+				{
+					$targetPlatform[$this->args[self::$platformIDParamName]] = $platformSet[$this->args[self::$platformIDParamName]];
+				}
+	    	}
+			$status_ok = $status_ok && $this->_checkTCIDAndTPIDValid($targetPlatform,$msg_prefix);
 	    }
 	
 		if($status_ok && $this->userHasRight("testplan_execute"))
@@ -2022,11 +2050,6 @@ class TestlinkXMLRPCServer extends IXR_Server
                                              sprintf($messagePrefix . INVALID_TESTCASE_EXTERNAL_ID_STR,$tcaseExternalID));                  
             }
 		}
-        // else
-		// {  
-		//     $my_errors[] = new IXR_Error(NO_TCASEID, $messagePrefix . NO_TCASEID_STR);
-		//    	$status=false;
-		// }
 	    if( $status )
 	    {
 	        $my_errors=null;
@@ -2176,7 +2199,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	        
 	        if($status && $this->_isTestCaseIDPresent($messagePrefix))
 	        {
-	            $status &=$this->_checkTCIDAndTPIDValid($messagePrefix);
+	            $status &=$this->_checkTCIDAndTPIDValid(null,$messagePrefix);
 	        }
 	        if($status && $this->_isBuildIDPresent($messagePrefix))  
 	        {
@@ -3537,57 +3560,80 @@ public function getTestCase($args)
 
 
 	/**
-	 * Helper method to see if the testcase identity provided is valid 
-	 * Identity can be specified in one of these modes:
-	 *
-	 * test case internal id
-	 * test case external id  (PREFIX-NNNN) 
-	 * 
-	 * This is the only method that should be called directly to check test case identoty
+	 * Helper method to see if the platform identity provided is valid 
+	 * This is the only method that should be called directly to check platform identity
 	 * 	
 	 * If everything OK, test case internal ID is setted.
 	 *
 	 * @return boolean
 	 * @access private
 	 */    
-    protected function checkPlatformIdentity($tplanID,$messagePrefix='')
+    protected function checkPlatformIdentity($tplanID,$platformInfo=null,$messagePrefix='')
     {
         $status=true;
         $platformID=0;
         $myErrors=array();
 
-        // // if platform name is present get ID
-        $status=$this->_isParamPresent(self::$platformNameParamName,$messagePrefix);
+        $name_exists = $this->_isParamPresent(self::$platformNameParamName,$messagePrefix);
+        $id_exists = $this->_isParamPresent(self::$platformIDParamName,$messagePrefix);
+        $status = $name_exists | $id_exists;
+        // for debug - file_put_contents('c:\checkPlatformIdentity.txt', $status ? 1:0);                            
+
+        if(!$status)
+        {
+        	$pname = self::$platformNameParamName . ' OR ' . self::$platformIDParamName; 
+	        $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
+	        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+		}        
+        
         if($status)
         {
-        	// get test plan name is useful for error messages
-        	$tplanInfo = $this->tplanMgr->get_by_id($tplanID);
-        	$platformInfo = $this->tplanMgr->getPlatforms($tplanID);  
-        	if( !is_null($platformInfo))
-        	{
-        		$status = in_array($this->args[self::$platformNameParamName],$platformInfo);
-        	
-        		if( !$status )
-        		{
-        			// Platform does not exist in target testplan
-   				    $msg = sprintf($messagePrefix . PLATFORM_NOT_LINKED_TO_TESTPLAN_STR,
-        	                       $this->args[self::$platformNameParamName],$tplanInfo['name']);
-   					$this->errors[] = new IXR_Error(PLATFORM_NOT_LINKED_TO_TESTPLAN, $msg);
-        		}	
-        	}
-            else
+      		// get test plan name is useful for error messages
+       		$tplanInfo = $this->tplanMgr->get_by_id($tplanID);
+       		if(is_null($platformInfo))
+       		{
+       			$platformInfo = $this->tplanMgr->getPlatforms($tplanID,array('outputFormat' => 'map'));  
+       		}
+
+            if(is_null($platformInfo))
             {
         		$status = false;
    				$msg = sprintf($messagePrefix . TESTPLAN_HAS_NO_PLATFORMS_STR,$tplanInfo['name']);
    				$this->errors[] = new IXR_Error(TESTPLAN_HAS_NO_PLATFORMS, $msg);
             }
             
-        } 
+        }
+         
+        if( $status )
+        {
+        	if($name_exists)
+        	{ 
+        		file_put_contents('c:\checkPlatformIdentity.txt', $this->args[self::$platformNameParamName]);                            
+        		file_put_contents('c:\checkPlatformIdentity.txt', serialize($platformInfo));                            
+        		$this->errors[]=$platformInfo;
+        		$status = in_array($this->args[self::$platformNameParamName],$platformInfo);
+            }
+            else
+            {
+            	$status = isset($platformInfo,$this->args[self::$platformIDParamName]);
+            }
+            
+        	if( !$status )
+        	{
+        		// Platform does not exist in target testplan
+   			    $msg = sprintf($messagePrefix . PLATFORM_NOT_LINKED_TO_TESTPLAN_STR,
+                               $this->args[self::$platformNameParamName],$tplanInfo['name']);
+   				$this->errors[] = new IXR_Error(PLATFORM_NOT_LINKED_TO_TESTPLAN, $msg);
+        	}	
+        }
         
         if($status)
         {
-        	$dummy = array_flip($platformInfo);
-        	$this->args[self::$platformIDParamName]=$dummy[$this->args[self::$platformNameParamName]];
+        	if($name_exists)
+        	{ 
+ 	       		$dummy = array_flip($platformInfo);
+        		$this->args[self::$platformIDParamName] = $dummy[$this->args[self::$platformNameParamName]];
+        	}
         }
 	    return $status;
     }   

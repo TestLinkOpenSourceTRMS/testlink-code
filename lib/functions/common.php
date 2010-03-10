@@ -13,11 +13,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.188 2010/02/14 18:11:54 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.189 2010/03/10 20:48:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
+ * 	20100310 - franciscom - changes to make code compatible with smarty 3
  * 	20100207 - havlatm - cleanup
  * 	20100124 - eloff - added $redirect parameter to checkSessionValid()
  * 	20100124 - eloff - BUGID 3012 - added buildExternalIdString()
@@ -60,6 +61,10 @@ require_once('roles.inc.php');
 /** Testlink Smarty class wrapper sets up the default smarty settings for testlink */
 require_once('tlsmarty.inc.php');
 
+// Needed to avoid problems with Smarty 3
+spl_autoload_register('tlAutoload');
+
+
 /** Input data validation */
 require_once("inputparameter.inc.php");
 
@@ -72,7 +77,8 @@ require_once("exec_cfield_mgr.class.php");
  * Automatic loader for PHP classes
  * See PHP Manual for details 
  */
-function __autoload($class_name) 
+// function __autoload($class_name) 
+function tlAutoload($class_name) 
 {
 	// exceptions
 	$tlClasses = null;

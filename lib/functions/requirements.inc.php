@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.92 2010/03/01 13:03:46 asimon83 Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.93 2010/03/10 21:30:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -19,7 +19,7 @@
  * 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
  * 20090331 - amitkhullar - BUGFIX 2292
  * 20090304 - franciscom - BUGID 2171
- * 20081103 - sisajr     - DocBook XML import
+ * 20081103 - sisajr - DocBook XML import
  * 20070710 - franciscom - BUGID 939
  * 20070705 - franciscom - improved management of arrReqStatus
  * 20070617 - franciscom - removed include of deprecated file
@@ -87,13 +87,15 @@ function renderRequirements(&$db,$srs_id)
 	{
 		foreach ($arrReq as $REQ)
 		{
-			$output .= '<h3>' .htmlspecialchars($REQ["req_doc_id"]). " - " .
-						     htmlspecialchars($REQ['title']) . "</h3>\n<div>" .
-						     $REQ['scope'] . "</div>\n";
+			$output .= '<h3>' . htmlspecialchars($REQ["req_doc_id"]). " - " .
+					   htmlspecialchars($REQ['title']) . "</h3>\n<div>" .
+					   $REQ['scope'] . "</div>\n";
 		}
 	}
 	else
+	{
 		$output .= '<p>' . lang_get('none') . '</p>';
+	}
 	$output .= "\n</div>";
 
 	return $output;
@@ -110,13 +112,10 @@ function exportReqDataToXML($reqData)
 	$rootElem = "<requirements>{{XMLCODE}}</requirements>";
 	$elemTpl = "\t".'<requirement><docid><![CDATA['."\n||DOCID||\n]]>".
 	           '</docid><title><![CDATA['."\n||TITLE||\n]]>".'</title>'.
-					   '<description><![CDATA['."\n||DESCRIPTION||\n]]>".'</description>'.
+	   	       '<description><![CDATA['."\n||DESCRIPTION||\n]]>".'</description>'.
 					   '</requirement>'."\n";
-	$info = array (
-							"||DOCID||" => "req_doc_id",
-							"||TITLE||" => "title",
-							"||DESCRIPTION||" => "scope",
-						);
+	$info = array("||DOCID||" => "req_doc_id","||TITLE||" => "title",
+				  "||DESCRIPTION||" => "scope");
 	return exportDataToXML($reqData,$rootElem,$elemTpl,$info);
 }
 
@@ -204,9 +203,7 @@ function compareImportedReqs($arrImportSource, $map_cur_reqdoc_id)
 				$status = lang_get('conflict');
 				tLog('REQ: '. $data['req_doc_id'] . "\n CONTENT: ".$data['description']);
 			}
-			$arrImport[] = array($data['req_doc_id'],
-								           trim($data['title']),
-								           $data['description'], $status);
+			$arrImport[] = array($data['req_doc_id'],trim($data['title']),$data['description'], $status);
 		}
 	}
 
@@ -615,118 +612,119 @@ function exportReqDataToCSV($reqData)
  */
 function getReqCoverage(&$dbHandler,$reqs,&$execMap)
 {
-  $tree_mgr = new tree($dbHandler);
-  
-  $coverageAlgorithm=config_get('req_cfg')->coverageStatusAlgorithm;
-  $resultsCfg=config_get('results');
-  $status2check=array_keys($resultsCfg['status_label_for_exec_ui']);
- 
-  $coverage['byStatus']=null;
-  $coverage['withTestCase']=null;
-  $coverage['withoutTestCase']=null;
-  
-  
-  $coverage['byStatus']=$resultsCfg['status_label_for_exec_ui'];
-  $status_counters=array();
-  foreach($coverage['byStatus'] as $status_code => $value)
-  {
-      $coverage['byStatus'][$status_code]=array();
-      $status_counters[$resultsCfg['status_code'][$status_code]]=0;
-  }
+	$tree_mgr = new tree($dbHandler);
+	
+	$coverageAlgorithm=config_get('req_cfg')->coverageStatusAlgorithm;
+	$resultsCfg=config_get('results');
+	$status2check=array_keys($resultsCfg['status_label_for_exec_ui']);
+	
+	// $coverage['byStatus']=null;
+	$coverage['withTestCase']=null;
+	$coverage['withoutTestCase']=null;
+	$coverage['byStatus']=$resultsCfg['status_label_for_exec_ui'];
+	$status_counters=array();
+	foreach($coverage['byStatus'] as $status_code => $value)
+	{
+	    $coverage['byStatus'][$status_code]=array();
+	    $status_counters[$resultsCfg['status_code'][$status_code]]=0;
+	}
   
 	$reqs_qty=count($reqs);
 	if($reqs_qty > 0)
 	{
 		foreach($reqs as $requirement_id => $req_tcase_set)
 		{
-			  $first_key=key($req_tcase_set);
-			  $item_qty = count($req_tcase_set);
-			  $req = array("id" => $requirement_id, "title" => $req_tcase_set[$first_key]['req_title'],"req_doc_id" => $req_tcase_set[$first_key]["req_doc_id"]);
-			  foreach($status_counters as $key => $value)
-			  {
-			      $status_counters[$key]=0;
-			  }
-			  if( $req_tcase_set[$first_key]['testcase_id'] > 0 )
-			  {
-			  	$coverage['withTestCase'][$requirement_id] = 1;
-			  }
-			  else
-			  {
-			    $coverage['withoutTestCase'][$requirement_id] = $req;  
-			  }
+			$first_key=key($req_tcase_set);
+			$item_qty = count($req_tcase_set);
+			$req = array("id" => $requirement_id, "title" => $req_tcase_set[$first_key]['req_title'],
+			             "req_doc_id" => $req_tcase_set[$first_key]["req_doc_id"]);
+			
+			foreach($status_counters as $key => $value)
+			{
+			    $status_counters[$key]=0;
+			}
+			if( $req_tcase_set[$first_key]['testcase_id'] > 0 )
+			{
+				$coverage['withTestCase'][$requirement_id] = 1;
+			}
+			else
+			{
+			  $coverage['withoutTestCase'][$requirement_id] = $req;  
+			}
 			  	
-			  for($idx = 0; $idx < $item_qty; $idx++)
-			  {
-			       $item_info=$req_tcase_set[$idx];
-			       if( $idx==0 ) // just to avoid useless assignments
-			       {
-			           $req['title']=$item_info['req_title'];  
-			       } 
-             
-			  	   // BUGID 1063
-			  	   if( $item_info['testcase_id'] > 0 )
-			  	   {
-                  $exec_status = $resultsCfg['status_code']['not_run'];
-                  $tcase_path='';
-			  	        if (isset($execMap[$item_info['testcase_id']]) && sizeof($execMap[$item_info['testcase_id']]))
-			  	        {
-			  	            $execInfo = end($execMap[$item_info['testcase_id']]);
-			  	            $tcase_path=$execInfo['tcase_path'];
-
-			  	            if( isset($execInfo['status']) && trim($execInfo['status']) !='')
-			  	            {
-			  	        	       $exec_status = $execInfo['status'];
-			  	        	  }    
-			  	        }
-			  	        else
-			  	        {
-                      $path_info=$tree_mgr->get_full_path_verbose($item_info['testcase_id']);
-                      unset($path_info[$item_info['testcase_id']][0]); // remove test project name
-                      $path_info[$item_info['testcase_id']][]='';
-		                  $tcase_path=implode(' / ',$path_info[$item_info['testcase_id']]);
-			  	        }
-			  	        $status_counters[$exec_status]++;
-			            $req['tcList'][] = array("tcID" => $item_info['testcase_id'],
-			                                     "title" => $item_info['testcase_name'],
-			             			     "tcaseExternalID" => $item_info['tc_external_id'],
-							     "version" => $item_info['version'],
-			             			     "tcase_path" => $tcase_path,
-			  	   		  	     "status" => $exec_status,
-			  	   		  	     "status_label" => $resultsCfg['status_label']
-			  	   		  						                                         [$resultsCfg['code_status'][$exec_status]]);
-             }
-			   } // for($idx = 0; $idx < $item_qty; $idx++)
+			for($idx = 0; $idx < $item_qty; $idx++)
+			{
+				$item_info=$req_tcase_set[$idx];
+				if( $idx==0 ) // just to avoid useless assignments
+				{
+				    $req['title']=$item_info['req_title'];  
+				} 
+            
+				// BUGID 1063
+				if( $item_info['testcase_id'] > 0 )
+				{
+					$exec_status = $resultsCfg['status_code']['not_run'];
+					$tcase_path='';
+					if (isset($execMap[$item_info['testcase_id']]) && sizeof($execMap[$item_info['testcase_id']]))
+					{
+					    $execInfo = end($execMap[$item_info['testcase_id']]);
+					    $tcase_path=$execInfo['tcase_path'];
+					    if( isset($execInfo['status']) && trim($execInfo['status']) !='')
+					    {
+						       $exec_status = $execInfo['status'];
+						}    
+					}
+					else
+					{
+						$path_info=$tree_mgr->get_full_path_verbose($item_info['testcase_id']);
+						unset($path_info[$item_info['testcase_id']][0]); // remove test project name
+						$path_info[$item_info['testcase_id']][]='';
+						$tcase_path=implode(' / ',$path_info[$item_info['testcase_id']]);
+					}
+				    $status_counters[$exec_status]++;
+					$req['tcList'][] = array("tcID" => $item_info['testcase_id'],
+			                                 "title" => $item_info['testcase_name'],
+			        		                 "tcaseExternalID" => $item_info['testcase_external_id'],
+					                         "version" => $item_info['testcase_version'],
+			        		                 "tcase_path" => $tcase_path,
+				   	  	                     "status" => $exec_status,
+				   	  	                     "status_label" => $resultsCfg['status_label'][$resultsCfg['code_status'][$exec_status]]);
+				}
+			} // for($idx = 0; $idx < $item_qty; $idx++)
 		    
-			   // We analyse counters
-			   $go_away=0;
-         foreach( $coverageAlgorithm['checkOrder'] as $checkKey )
-         {
-             foreach( $coverageAlgorithm['checkType'][$checkKey] as $tcase_status )
-             {
-                 if($checkKey == 'atLeastOne')
-                 {
-                     if($status_counters[$resultsCfg['status_code'][$tcase_status]] > 0 )
-                     {
-                         $coverage['byStatus'][$tcase_status][] = $req;
-                         $go_away=1;
-                         break;
-                     }
-                 }
-                 if($checkKey == 'all')
-                 {
-                     if($status_counters[$resultsCfg['status_code'][$tcase_status]] == $item_qty )
-                     {
-                         $coverage['byStatus'][$tcase_status][] = $req;
-                         $go_away=1;
-                         break;
-                     }
-	                     //-amitkhullar - 20090331 - BUGFIX 2292
-	                     elseif ($status_counters[$resultsCfg['status_code'][$tcase_status]] > 0 )
-	                     {   
+		    
+		    
+		    
+			// We analyse counters
+			$go_away=0;
+         	foreach( $coverageAlgorithm['checkOrder'] as $checkKey )
+         	{
+             	foreach( $coverageAlgorithm['checkType'][$checkKey] as $tcase_status )
+             	{
+                 	if($checkKey == 'atLeastOne')
+                 	{
+                     	if($status_counters[$resultsCfg['status_code'][$tcase_status]] > 0 )
+                     	{
+                         	$coverage['byStatus'][$tcase_status][] = $req;
+                         	$go_away=1;
+                         	break;
+                     	}
+                 	}
+                 	if($checkKey == 'all')
+                 	{
+                    	if($status_counters[$resultsCfg['status_code'][$tcase_status]] == $item_qty )
+                     	{
+                        	$coverage['byStatus'][$tcase_status][] = $req;
+                        	$go_away=1;
+                        	break;
+                     	}
+	                    //-amitkhullar - 20090331 - BUGFIX 2292
+	                    elseif ($status_counters[$resultsCfg['status_code'][$tcase_status]] > 0 )
+	                    {   
 	                        $coverage['byStatus'][$tcase_status][] = $req;
 	                        $go_away=1;
 	                        break;
-	                     }
+	                    }
 	                     //@todo: Francisco , I have commented the code you put in for BUGID 2171, 
 	                     // please verify the same once.
 	                     /*elseif ( isset($coverageAlgorithm['checkFail']) && 

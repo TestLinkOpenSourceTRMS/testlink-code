@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/03/09 18:55:52 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/03/10 21:30:43 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -77,9 +77,10 @@ if(!is_null($args->req_spec_id))
 	
 	// BUGID 1063
     // 20090506 - franciscom - Requirements Refactoring
-	$sql = " SELECT DISTINCT REQ.id AS req_id, COALESCE(RC.testcase_id,0) AS testcase_id, " .
-	       " NH_REQ.name AS req_title, REQV.status AS req_status, NH.name AS testcase_name, " .
-	       " TCV.tc_external_id,TCV.version,REQ.req_doc_id " .
+	$sql = " SELECT MAX(REQV.version), REQ.id AS req_id, NH_REQ.name AS req_title,REQ.req_doc_id, " .
+	       " REQV.status AS req_status, " .
+	       " COALESCE(RC.testcase_id,0) AS testcase_id, NH.name AS testcase_name, " .
+	       " TCV.tc_external_id AS testcase_external_id,TCV.version AS testcase_version " .
 	       " FROM {$tables['requirements']} REQ" .
 	       " JOIN {$tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
 	       " JOIN {$tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = REQ.id " .
@@ -88,9 +89,15 @@ if(!is_null($args->req_spec_id))
 	       " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NH ON RC.testcase_id = NH.id " .
 	       " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NHB ON NHB.parent_id = NH.id " .
 	       " LEFT OUTER JOIN {$tables['tcversions']} TCV ON TCV.id=NHB.id " .
-	       " WHERE REQV.status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}"; 
+	       " WHERE REQV.status = '" . TL_REQ_STATUS_VALID . "' AND srs_id = {$args->req_spec_id}" .
+	       " GROUP BY REQ.id,NH_REQ.name,REQ.req_doc_id,REQV.status, " .
+	       " COALESCE(RC.testcase_id,0),NH.name,TCV.tc_external_id,TCV.version";
 
+	// Why CUMULATIVE ?
+	// because can be linked to different test cases ?
 	$reqs = $db->fetchRowsIntoMap($sql,'req_id',database::CUMULATIVE);
+	new dBug($reqs);
+
 	$gui->metrics = $req_spec_mgr->get_metrics($args->req_spec_id);
 
 	$coverage = getReqCoverage($db,$reqs,$execMap);                                                               

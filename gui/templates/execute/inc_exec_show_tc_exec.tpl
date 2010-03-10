@@ -1,10 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.14 2009/12/25 18:57:37 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.15 2010/03/10 13:53:57 asimon83 Exp $
 Purpose: 
 Author: franciscom
 
-Rev:           
+Rev:     
+	20100310 - Julian - BUGID 2454 - now showing lock-symbol for attachment column if
+						build is closed
+						
     20090909 - franciscom - removed code regarding $gui->grants->edit_exec_notes,
                             that on 1.11 was commented, and on 1.12 uncommented
                             creating an empty row with icon and link to edit notes.
@@ -238,6 +241,12 @@ Rev:
       			         alt="{$labels.alt_attachment_mgmt}"
       			         style="border:none" /></a>
               </td>
+			  {*BUGID 2454*}
+			  {else}
+				<td align="center">
+					<img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">
+				</td>
+			  {*END BUGID 2454*}
   	      {/if}
 
     			{if $gsmarty_bugInterfaceOn}

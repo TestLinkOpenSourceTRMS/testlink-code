@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2009/12/25 18:44:49 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/03/11 07:34:11 $ $Author: asimon83 $
  *
  * @author Andreas Morsing
  *
@@ -19,12 +19,16 @@
  *
  *
  * rev:
- *     20081217 - franciscom - BUGID 1939
- *                             removed global coupling, usign config_get()
- *     20081102 - franciscom - refactored to ease configuration
- *     20080207 - needles - added notation for Seapine's TestTrackPro
- *     20070505 - franciscom - TL_INTERFACE_BUGS -> $g_interface_bugs
- *     20070304 - franciscom - added new method checkBugID_existence()
+ *	20100311 - Julian - BUGID 3256, BUGID 3098
+						function checkBugID_existence() has to return true
+						in this parent class to be able to add bugs if
+						function has not been overloaded in child classes
+ *	20081217 - franciscom - BUGID 1939
+ *							removed global coupling, usign config_get()
+ *	20081102 - franciscom - refactored to ease configuration
+ *	20080207 - needles - added notation for Seapine's TestTrackPro
+ *	20070505 - franciscom - TL_INTERFACE_BUGS -> $g_interface_bugs
+ *	20070304 - franciscom - added new method checkBugID_existence()
  *
  *
 **/
@@ -326,12 +330,14 @@ class bugtrackingInterface
 
 	/**
 	* checks if bug id is present on BTS
+	* Function has to be overloaded on child classes
 	*
 	* @return bool
 	**/
 	function checkBugID_existence($id)
 	{
-		return false;
+		// BUGID 3256, BUGID 3098
+		return true;
 	}
 }
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.71 $
- * @modified $Date: 2010/03/09 20:29:38 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2010/03/11 21:30:20 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1375,7 +1375,7 @@ function html_table_of_custom_field_values($id)
 	function copy_to($id,$parent_id,$user_id,$tproject_id=null,$options=null)
 	{
 	    $new_item = array('id' => -1, 'status_ok' => 0, 'msg' => 'ok', 'mappings' => null);
-	    $my['options'] = array();
+		$my['options'] = array('copy_also' => null);
 	    $my['options'] = array_merge($my['options'], (array)$options);
     
    	    if( is_null($my['options']['copy_also']) )

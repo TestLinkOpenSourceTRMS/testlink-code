@@ -8,12 +8,13 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.4 2010/03/11 08:04:36 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.5 2010/03/11 14:14:18 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
+ * 20100311 - asimon - fixed a little bug (only notice) when no cfields are defined
  * 20100310 - asimon - refactoring as requested
  * 20100309 - asimon - initial commit
  * 		
@@ -46,7 +47,11 @@ if(count($gui->reqIDs)) {
 	
 	$gui->cfields = $cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement',
                                                                  null, 'name');
-    
+	if (!count($gui->cfields)) {
+			//manage the case where no custom fields are defined
+			$gui->cfields = array();
+	}
+		
     // array to gather table data row per row
 	$rows = array();    
 	
@@ -65,6 +70,10 @@ if(count($gui->reqIDs)) {
 		//seems to work now
 		
 		$fields = $req_mgr->get_linked_cfields($id);
+		if (!count($fields)) {
+			//manage the case where no custom fields are defined
+			$fields = array();
+		}
     	
 		// coverage data
 		$current = count($req_mgr->get_coverage($id));
@@ -211,8 +220,6 @@ function init_gui(&$argsObj) {
 	$gui->pageTitle = lang_get('caption_req_overview');
 	$gui->warning_msg = '';
 	$gui->tproject_name = $argsObj->tproject_name;
-	$gui->tplan_name = $argsObj->tplan_name;
-	$gui->tplan_id = $argsObj->tplan_id;
 	$gui->all_versions = $argsObj->all_versions;
 	
 	return $gui;

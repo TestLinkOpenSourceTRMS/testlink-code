@@ -1,13 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.16 2009/09/05 18:19:07 schlundus Exp $
+$Id: resultsReqs.tpl,v 1.17 2010/03/11 20:49:06 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
-rev: 20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
-rev: 20090305 - franciscom - added test case path on displayy
-     20090114 - franciscom - BUGID 1977
-     20090111 - franciscom - BUGID 1967 + Refactoring
+rev: 
+    20100311 - franciscom - BUGID 3267
+    20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
+    20090305 - franciscom - added test case path on displayy
+    20090114 - franciscom - BUGID 1977
+    20090111 - franciscom - BUGID 1967 + Refactoring
 *}
 {lang_get var='labels'
           s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcase,th_version,
@@ -48,12 +50,12 @@ rev: 20090305 - franciscom - added test case path on displayy
   		</td>
   	</tr>
     <tr><td>&nbsp;</td></tr>
-    <tr><td>{$labels.req_total_count}</td><td>{$gui->metrics.expectedTotal}</td></tr>
-    <tr><td>{$labels.req_title_in_tl}</td><td>{$gui->metrics.total}</td></tr>
-    <tr><td>{$labels.req_title_covered}</td><td>{$gui->metrics.covered}</td></tr>
-    <tr><td>{$labels.req_title_uncovered}</td><td>{$gui->metrics.total-$gui->metrics.notTestable-$gui->metrics.covered}</td></tr>
-    <tr><td>{$labels.req_title_not_in_tl}</td><td>{$gui->metrics.uncovered}</td></tr>
-    <tr><td>{$labels.req_title_nottestable}</td><td>{$gui->metrics.notTestable}</td></tr>
+    <tr><td>{$labels.req_total_count}</td><td align="right">{$gui->metrics.expectedTotal}</td></tr>
+    <tr><td>{$labels.req_title_in_tl}</td><td align="right">{$gui->metrics.total}</td></tr>
+    <tr><td>{$labels.req_title_covered}</td><td align="right">{$gui->metrics.covered}</td></tr>
+    <tr><td>{$labels.req_title_uncovered}</td><td align="right">{$gui->metrics.total-$gui->metrics.notTestable-$gui->metrics.covered}</td></tr>
+    <tr><td>{$labels.req_title_not_in_tl}</td><td align="right">{$gui->metrics.uncovered}</td></tr>
+    <tr><td>{$labels.req_title_nottestable}</td><td align="right">{$gui->metrics.notTestable}</td></tr>
   </table>
   </form>  
 </div>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Req Spec LEVEL 1 - 001"  doc_id="REQ-SPEC-L1-001" >
+<node_order><![CDATA[0]]></node_order>
+<scope><![CDATA[Req. Spec LEVEL 1 - 001]]> 
+</scope>	<requirement>
+		<docid><![CDATA[RQ-001]]></docid>
+		<title><![CDATA[Requirement 001]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+/** requirement.txt  Fill in:<br /> Title<br /> Scope<br /> Author name<br />  **/
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-002]]></docid>
+		<title><![CDATA[Requirement 002]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+REQ 002
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-003]]></docid>
+		<title><![CDATA[Requirement 003]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+REQ 003
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[4]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-004-01]]></docid>
+		<title><![CDATA[Requirement 004-01]]></title>
+		<node_order><![CDATA[1]]></node_order>
+		<description><![CDATA[
+Requirement 004-01
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[4]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-005-01]]></docid>
+		<title><![CDATA[Requirement 005-01]]></title>
+		<node_order><![CDATA[2]]></node_order>
+		<description><![CDATA[
+REQ 005 - 01
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[5]]></expected_coverage>
+	</requirement>
+</req_spec><req_spec title="Req Spec LEVEL 2 - 001"  doc_id="REQ-SPEC-L1-002" >
+<node_order><![CDATA[0]]></node_order>
+<scope><![CDATA[Req. Spec LEVEL 1 - 001]]> 
+</scope><req_spec title="Req Spec LEVEL 2 - 002"  doc_id="REQ-SPEC-LEVEL-2-002" >
+<node_order><![CDATA[0]]></node_order>
+<scope><![CDATA[LEVEL 2]]> 
+</scope>	<requirement>
+		<docid><![CDATA[RQ-003-01 [2]]]></docid>
+		<title><![CDATA[Requirement 003-91]]></title>
+		<node_order><![CDATA[1]]></node_order>
+		<description><![CDATA[
+REQ 003-01
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[4]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-002-01 [2]]]></docid>
+		<title><![CDATA[Requirement 002-01]]></title>
+		<node_order><![CDATA[2]]></node_order>
+		<description><![CDATA[
+REQ 002 - 01
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-001-01 [1]]]></docid>
+		<title><![CDATA[Requirement 001-01]]></title>
+		<node_order><![CDATA[3]]></node_order>
+		<description><![CDATA[
+/** requirement.txt  Fill in:<br /> Title<br /> Scope<br /> Author name<br />  **/
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+	</requirement>
+</req_spec>	<requirement>
+		<docid><![CDATA[RQ-003-01]]></docid>
+		<title><![CDATA[Requirement 003-91]]></title>
+		<node_order><![CDATA[1]]></node_order>
+		<description><![CDATA[
+REQ 003-01
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[4]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-002-01]]></docid>
+		<title><![CDATA[Requirement 002-01]]></title>
+		<node_order><![CDATA[2]]></node_order>
+		<description><![CDATA[
+REQ 002 - 01
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-001-01]]></docid>
+		<title><![CDATA[Requirement 001-01]]></title>
+		<node_order><![CDATA[3]]></node_order>
+		<description><![CDATA[
+/** requirement.txt  Fill in:<br /> Title<br /> Scope<br /> Author name<br />  **/
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+	</requirement>
+</req_spec></requirement-specification>

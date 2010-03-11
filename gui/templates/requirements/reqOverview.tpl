@@ -1,11 +1,12 @@
 {* 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: reqOverview.tpl,v 1.1 2010/03/09 09:45:02 asimon83 Exp $
+ * $Id: reqOverview.tpl,v 1.2 2010/03/11 08:04:35 asimon83 Exp $
  *
  * Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * revisions:
+ * 20100310 - asimon - refactoring
  * 20100309 - asimon - initial commit
  *
  *}
@@ -28,6 +29,18 @@
 	{/if}
 	{$matrix->renderHeadSection($tableID)}
 {/foreach}
+
+{*******************************************************
+ * TODO: Sorting for column coverage is not working yet,
+ * have to add this later when there's a bit more time 
+{literal}
+<script type="text/javascript">
+function coverageCompare(val) {
+	//TODO
+}
+</script>
+{/literal}
+********************************************************}
 
 {*****************************************************************************
  * this code could be used later, when I have figured out how to use this tooltip in combination with table.
@@ -90,7 +103,9 @@ Ext.onReady(function(){
 	
 	<p>{lang_get s='hlp_req_coverage_table'}</p>
 {else}
+	<div class="user_feedback">
     {$gui->warning_msg}
+    </div>
 {/if}    
 
 </div>

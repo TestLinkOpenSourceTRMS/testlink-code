@@ -5,15 +5,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @filesource $RCSfile: reqOverview.php,v $
- * @version $$
- * @modified $$
- * @author asimon
+ * @package TestLink
+ * @author Andreas Simon
+ * @copyright 2010, TestLink community
+ * @version CVS: $Id: reqOverview.php,v 1.4 2010/03/11 08:04:36 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
+ * 20100310 - asimon - refactoring as requested
  * 20100309 - asimon - initial commit
  * 		
  */
@@ -27,7 +28,6 @@ $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 $req_mgr = new requirement_mgr($db);
-$tree_mgr = new tree($db);
 
 $args = init_args($tproject_mgr);
 $gui = init_gui($args);
@@ -36,44 +36,33 @@ $glue_char = config_get('gui_title_separator_1');
 $msg_key = 'no_linked_req_cf';
 $charset = config_get('charset');
 
+$gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 
-if (isset($args->all_versions)) {
-	$gui->all_versions = $args->all_versions;
-}
-
-
-if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
-{
-	// get type labels
+if(count($gui->reqIDs)) {
+	
+	// get type and status labels
 	$type_labels = init_labels(config_get('req_cfg')->type_labels);
 	$status_labels = init_labels(config_get('req_status'));
-	
-	$reqIDs = array();
-	$tproject_mgr->get_all_requirement_ids($args->tproject_id, $reqIDs);
-	$gui->reqIDs = $reqIDs;
 	
 	$gui->cfields = $cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement',
                                                                  null, 'name');
     
-	if(!is_null($gui->cfields)) {
-		foreach($gui->cfields as $key => $values) {
-			$cf_place_holder['cfields'][$key]='';
-		}
-	}
-    
-	$results = array();    
+    // array to gather table data row per row
+	$rows = array();    
 	
-	foreach($reqIDs as $id) {
+	foreach($gui->reqIDs as $id) {
 		
 		// now get the rest of information for this requirement
-		if (isset($args->all_versions)) {
-			$req = $req_mgr->get_by_id($id, requirement_mgr::ALL_VERSIONS);
-		} else {
-			$req = $req_mgr->get_by_id($id, requirement_mgr::LATEST_VERSION);
-			// see BUGID 3254:
-			// above function doesn't work as expected, therefore I delete older versions manually:
-			$req = array(0 => $req[0]); // <-- TODO this line can be deleted when above function is fixed
-		}
+		$version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
+		$req = $req_mgr->get_by_id($id, $version_option);
+		
+		// TODO see BUGID 3254:
+		// above function doesn't work as expected, therefore I delete older versions manually
+		// this if statement can be deleted when function is fixed
+		//if ($version_option == requirement_mgr::LATEST_VERSION) {
+			//$req = array(0 => $req[0]);
+		//}
+		//seems to work now
 		
 		$fields = $req_mgr->get_linked_cfields($id);
     	
@@ -86,7 +75,7 @@ if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
 							htmlentities($title, ENT_COMPAT, $charset) . '</a>';
 		
 		// reqspec-"path" to requirement
-		$path = $tree_mgr->get_path($req[0]['srs_id']);
+		$path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
 		foreach ($path as $key => $p) {
 			$path[$key] = $p['name'];
 		}
@@ -97,20 +86,33 @@ if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
 			// get content for each row to display
 	    	$result = array();
 	    	
+	    	/**
+	    	 * IMPORTANT: 
+	    	 * the order of following items in this array has to be
+	    	 * the same as column headers are below!!!
+	    	 * 
+	    	 * should be:
+	    	 * 1. path
+	    	 * 2. title
+	    	 * 3. version
+	    	 * 4. coverage
+	    	 * 5. type
+	    	 * 6. status
+	    	 * 7. all custom fields in order of $fields
+	    	 */
+	    	
 	    	$result[] = $path;
 	    	$result[] = $linked_title;	    	
 			$result[] = $version['version'];
 	    	
 			// coverage
 	    	$expected = $version['expected_coverage'];
-	    	if ($expected != 0) {
+	    	$coverage_string = "100% (0/0)";
+	    	if ($expected) {
 	    		$percentage = round(100 / $expected * $current, 2);
 				$coverage_string = "{$percentage}% ({$current}/{$expected})";
-	    	} else {
-	    		$coverage_string = "100% (0/0)";
 	    	}
-	    	$coverage = '<div id="tooltip-' . $id . '">' . $coverage_string . '</div>';
-			$result[] = $coverage;
+	    	$result[] = $coverage_string;
 
 			$result[] = $type_labels[$version['type']];
 			$result[] = $status_labels[$version['status']];
@@ -120,35 +122,51 @@ if($tproject_mgr->count_all_requirements($args->tproject_id) > 0)
 	    		$result[] = htmlentities($cf['value'], ENT_COMPAT, $charset);
 	    	}
 	    	
-	    	$results[] = $result;
+	    	$rows[] = $result;
     	}
     }
 
-    if(($gui->row_qty = count($results)) > 0 ) {
+    if(($gui->row_qty = count($rows)) > 0 ) {
     	    	
         $gui->pageTitle .= " - " . lang_get('match_count') . ": " . $gui->row_qty;
 		
-        // get column titles for the table
+        // get column header titles for the table
+        
+        /**
+    	 * IMPORTANT: 
+    	 * the order of following items in this array has to be
+    	 * the same as row content above!!!
+    	 * 
+    	 * should be:
+    	 * 1. path
+    	 * 2. title
+    	 * 3. version
+    	 * 4. coverage
+    	 * 5. type
+    	 * 6. status
+    	 * 7. then all custom fields in order of $fields
+    	 */
         $columns = array(
-        	array('title' => lang_get('req_spec_short'), 'width' => 200),
-        	array('title' => lang_get('title'), 'width' => 150),
-        	array('title' => lang_get('version'), 'width' => 50),
-        	lang_get('th_coverage'),
-	        lang_get('type'),
-	        lang_get('status')	        
-	        );
+                        array('title' => lang_get('req_spec_short'), 'width' => 200),
+       	                array('title' => lang_get('title'), 'width' => 150),
+                        array('title' => lang_get('version'), 'width' => 50),
+                        lang_get('th_coverage'),
+	                    lang_get('type'),
+	                    lang_get('status')        
+	                    );
 
 	    foreach($gui->cfields as $cf) {
 	    	$columns[] = htmlentities($cf['label'], ENT_COMPAT, $charset);
 	    }
 	    
 	    // create table object, fill it with columns and row data and give it a title
-	    $matrix = new tlExtTable($columns, $results);
+	    $matrix = new tlExtTable($columns, $rows);
+	    //$matrix->addType('coverage', array(TL_EXT_TABLE_CUSTOM_SORT)); //later, first implement sorting
         $matrix->title = lang_get('requirements');        
         $gui->tableSet= array($matrix);
-    } else {
-    	$gui->warning_msg = lang_get($msg_key);
     }
+} else {
+    $gui->warning_msg = lang_get($msg_key);
 }
 
 $smarty = new TLSmarty();
@@ -166,9 +184,7 @@ function init_args(&$tproject_mgr)
 {
 	$args = new stdClass();
 
-	if (isset($_REQUEST['all_versions'])) {
-		$args->all_versions = true;
-	}	
+	$args->all_versions = isset($_REQUEST['all_versions']);
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';
@@ -194,16 +210,17 @@ function init_gui(&$argsObj) {
 	
 	$gui->pageTitle = lang_get('caption_req_overview');
 	$gui->warning_msg = '';
-	$gui->tproject_name = $args->tproject_name;
-	$gui->tplan_name = $args->tplan_name;
-	$gui->tplan_id = $args->tplan_id;
+	$gui->tproject_name = $argsObj->tproject_name;
+	$gui->tplan_name = $argsObj->tplan_name;
+	$gui->tplan_id = $argsObj->tplan_id;
+	$gui->all_versions = $argsObj->all_versions;
 	
 	return $gui;
 }
 
 
 /*
- * rights check function for testlinkInitPage
+ * rights check function for testlinkInitPage()
  */
 function checkRights(&$db, &$user)
 {

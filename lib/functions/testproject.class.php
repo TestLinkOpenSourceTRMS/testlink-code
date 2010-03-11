@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.164 2010/03/09 09:45:03 asimon83 Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.165 2010/03/11 08:04:36 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *
+ * 20100310 - asimon - BUGID 3227 - refactored get_all_requirement_ids() and count_all_requirements()
+ *                                  to not be recursive and pascal-like anymore
+ *                                  and to use new method on tree class
  * 20100309 - asimon - BUGID 3227 - added get_all_requirement_ids() and count_all_requirements()
  * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
  * 20100203 - franciscom - addKeyword() return type changed
@@ -2171,44 +2173,24 @@ function copy_as($id,$new_id,$user_id,$new_name=null,$options=null)
 
 
 /**
- * recursive function to get an array with all requirement IDs in testproject
+ * function to get an array with all requirement IDs in testproject
  * 
  * @param string $IDList commaseparated list of Container-IDs - can be testproject ID or reqspec IDs 
- * @param array &$reqSpecIDs reference to array of resulting IDs - into this the IDs will be written
+ * @return array $reqIDs result IDs
+ * 
+ * @internal revisions:
+ * 20100310 - asimon - removed recursion logic
  */
-public function get_all_requirement_ids($IDList, &$reqIDs) {
+public function get_all_requirement_ids($IDList) {
 	
-	static $reqNodeTypeID = null;
-	static $reqSpecNodeTypeID = null;
-	static $debugMsg = null;
+	$coupleTypes = array();
+	$coupleTypes['target'] = $this->tree_manager->node_descr_id['requirement'];
+	$coupleTypes['container'] = $this->tree_manager->node_descr_id['requirement_spec'];
 	
-	if (!$reqNodeTypeID) {
-		$debugMsg = "/* Class: " . __CLASS__ . " - Method: " . __FUNCTION__ . " */";
-		$reqNodeTypeID = $this->tree_manager->node_descr_id['requirement'];
-		$reqSpecNodeTypeID = $this->tree_manager->node_descr_id['requirement_spec'];
-	}
-	
-	$sql = $debugMsg .
-			" SELECT id, node_type_id FROM {$this->tables['nodes_hierarchy']}" .
-			" WHERE parent_id IN ($IDList)" .
-			" AND node_type_id IN ($reqNodeTypeID, $reqSpecNodeTypeID)";
-	
-	$result = $this->db->exec_query($sql);
-	if ($result) {
-		$reqSpecIDs = array();
-		
-		while($row = $this->db->fetch_array($result)) {
-			if ($row['node_type_id'] == $reqNodeTypeID) {
-				$reqIDs[] = $row['id'];
-			}
-			$reqSpecIDs[] = $row['id'];
-		}
-		
-		if (count($reqSpecIDs)) {
-			$reqSpecIDs = implode(",", $reqSpecIDs);
-			$this->get_all_requirement_ids($reqSpecIDs, $reqIDs);
-		}
-	}
+	$reqIDs = array();
+	$this->tree_manager->getAllItemsID($IDList,$reqIDs,$coupleTypes);
+
+	return $reqIDs;
 }
 
 
@@ -2219,9 +2201,7 @@ public function get_all_requirement_ids($IDList, &$reqIDs) {
  * @return integer count of requirements in given testproject
  */
 public function count_all_requirements($tp_id) {
-	$ids = array();
-	$this->get_all_requirement_ids($tp_id, $ids);
-	return count($ids);
+	return count($this->get_all_requirement_ids($tp_id));
 }
 
 /**

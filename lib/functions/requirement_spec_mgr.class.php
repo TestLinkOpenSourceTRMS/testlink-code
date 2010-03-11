@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2010/03/06 23:56:46 $ by $Author: amkhullar $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2010/03/11 21:41:02 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ *	20100311 - franciscom - fixed bug due to missed isset() control
  *  20100307 - amitkhullar - small bug fix for Requirements based report.
  *  20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
  * 	20091228 - franciscom - get_requirements() - refactored to manage req versions
@@ -316,7 +317,6 @@ function get_metrics($id)
 {
 	$output = array('notTestable' => 0, 'total' => 0, 'covered' => 0, 'uncovered' => 0);
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	// $output['notTestable'] = $this->db->fetchFirstRowSingleColumn($sql,'cnt');
 	$getFilters = array('status' => NON_TESTABLE_REQ);
     $output['notTestable'] = $this->get_requirements_count($id,'all',null,$getFilters);
 
@@ -1525,7 +1525,8 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			  	$parent_decode[$id]=$new_item['id'];
 				foreach($subtree as $the_key => $elem)
 				{
-				  	$the_parent_id=$parent_decode[$elem['parent_id']];
+					// 20100311 - franciscom
+				  	$the_parent_id=isset($parent_decode[$elem['parent_id']]) ? $parent_decode[$elem['parent_id']] : null;
 					switch ($elem['node_type_id'])
 					{
 						case $this->node_types_descr_id['requirement']:

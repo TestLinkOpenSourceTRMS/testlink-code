@@ -8,12 +8,13 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.5 2010/03/11 14:14:18 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.6 2010/03/12 10:03:20 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
+ * 20100312 - asimon - replaced "100%"-value (in case where req has no coverage) by N/A-string
  * 20100311 - asimon - fixed a little bug (only notice) when no cfields are defined
  * 20100310 - asimon - refactoring as requested
  * 20100309 - asimon - initial commit
@@ -48,7 +49,7 @@ if(count($gui->reqIDs)) {
 	$gui->cfields = $cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement',
                                                                  null, 'name');
 	if (!count($gui->cfields)) {
-			//manage the case where no custom fields are defined
+			// manage the case where no custom fields are defined
 			$gui->cfields = array();
 	}
 		
@@ -64,14 +65,14 @@ if(count($gui->reqIDs)) {
 		// TODO see BUGID 3254:
 		// above function doesn't work as expected, therefore I delete older versions manually
 		// this if statement can be deleted when function is fixed
-		//if ($version_option == requirement_mgr::LATEST_VERSION) {
-			//$req = array(0 => $req[0]);
-		//}
-		//seems to work now
+		// if ($version_option == requirement_mgr::LATEST_VERSION) {
+			// $req = array(0 => $req[0]);
+		// }
+		// seems to work now
 		
 		$fields = $req_mgr->get_linked_cfields($id);
 		if (!count($fields)) {
-			//manage the case where no custom fields are defined
+			// manage the case where no custom fields are defined
 			$fields = array();
 		}
     	
@@ -116,7 +117,7 @@ if(count($gui->reqIDs)) {
 	    	
 			// coverage
 	    	$expected = $version['expected_coverage'];
-	    	$coverage_string = "100% (0/0)";
+	    	$coverage_string = lang_get('not_aplicable') . " (0/0)";
 	    	if ($expected) {
 	    		$percentage = round(100 / $expected * $current, 2);
 				$coverage_string = "{$percentage}% ({$current}/{$expected})";

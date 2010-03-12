@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.134 2010/03/04 21:20:17 havlat Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.135 2010/03/12 08:07:49 asimon83 Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -484,7 +484,7 @@ $tlCfg->execution_filter_methods['status_label'] = array('latest_execution' => '
     									     'specific_build' => 'filter_result_specific_build',
 										     'current_build' => 'filter_result_current_build');
 
-$tlCfg->execution_filter_methods['default_type'] = $tlCfg->filter_types['status_code']['current_build'];
+$tlCfg->execution_filter_methods['default_type'] = $tlCfg->execution_filter_methods['status_code']['current_build'];
 
 /*
  * same as above, but without current build
@@ -500,7 +500,7 @@ $tlCfg->execution_assignment_filter_methods['status_label'] = array('latest_exec
     									     'any_build' => 'filter_result_any_build',
     									     'specific_build' => 'filter_result_specific_build');
 
-$tlCfg->execution_assignment_filter_methods['default_type'] = $tlCfg->filter_types['status_code']['latest_execution'];
+$tlCfg->execution_assignment_filter_methods['default_type'] = $tlCfg->execution_assignment_filter_methods['status_code']['latest_execution'];
 
 
 
@@ -651,6 +651,53 @@ $tlCfg->req_cfg->type_labels = array(
 		TL_REQ_TYPE_INTERFACE => 'req_type_interface', 
 		TL_REQ_TYPE_NON_FUNCTIONAL => 'req_type_non_functional', 
 		TL_REQ_TYPE_CONSTRAIN => 'req_type_constrain');
+
+		
+
+/** 
+ * All possible types of requirement relations.
+ * 
+ * Important:
+ * When you add your own relation types here,
+ * you also have to add localization strings
+ * and configure those below.
+ * 
+ * @since TestLink 1.9
+ **/
+define('TL_REQ_REL_TYPE_PARENT_CHILD', 1);
+define('TL_REQ_REL_TYPE_BLOCKS_DEPENDS', 2);
+define('TL_REQ_REL_TYPE_RELATED', 3);
+
+
+
+/** 
+ * Localization identifiers for requirement relation types.
+ * Types, which are configured above, have to be configured 
+ * here too with attributes "source" and "destination".
+ * 
+ * Form has to be like this:
+ * 
+ * $tlCfg->req_cfg->rel_type_labels = array(
+ *		RELATIONNAME => array(
+ *			'source' => 'SOURCE_LOCALIZATION_KEY',
+ *			'destination' => 'DESTINATION_LOCALIZATION_KEY'),
+ *		...
+ * 
+ * @since TestLink 1.9
+ **/
+$tlCfg->req_cfg->rel_type_labels = array(
+	TL_REQ_REL_TYPE_PARENT_CHILD => array(
+		'source' => 'req_rel_is_parent_of',
+		'destination' => 'req_rel_is_child_of'),
+	TL_REQ_REL_TYPE_BLOCKS_DEPENDS => array(
+		'source' => 'req_rel_blocks',
+		'destination' => 'req_rel_depends'),
+	TL_REQ_REL_TYPE_RELATED => array( // this is a flat relation, so strings are identical
+		'source' => 'req_rel_is_related_to',
+		'destination' => 'req_rel_is_related_to')
+	);
+
+	
 
 /** 
  * @var array controls is expected_coverage must be requested at user interface.

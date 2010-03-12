@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: getExecNotes.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/01/29 20:49:29 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/03/12 08:07:49 $ by $Author: asimon83 $
  *
  *
- * rev:	20100129 - BUGID 3113 - franciscom
- *		solved ONLY for  $webeditorType == 'none'
- *
- * 		20090530: franciscom - try to improve usability in order to allow edit online
+ * rev:	
+ * 20100312 - BUGID 3269 - asimon
+ * 20100129 - BUGID 3113 - franciscom
+ *			solved ONLY for  $webeditorType == 'none'
+ * 20090530: franciscom - try to improve usability in order to allow edit online
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -32,14 +33,15 @@ $args = init_args();
 $webeditorCfg = getWebEditorCfg('execution');
 $map = get_execution($db,$args->exec_id);
 
-if( $webeditorCfg['type'] != 'none' )
-{
-    $notesContent=createExecNotesWebEditor($args->exec_id,$_SESSION['basehref'],$webeditorCfg,$map[0]['notes']);
-}
-else
-{
+// BUGID 3269
+//if( $webeditorCfg['type'] != 'none' )
+//{
+//    $notesContent=createExecNotesWebEditor($args->exec_id,$_SESSION['basehref'],$webeditorCfg,$map[0]['notes']);
+//}
+//else
+//{
     $notesContent=$map[0]['notes'];
-}
+//}
 
 $readonly = $args->readonly > 0 ? 'readonly="readonly"' : ''; 
 $smarty = new TLSmarty();

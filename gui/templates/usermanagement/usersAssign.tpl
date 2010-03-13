@@ -1,8 +1,9 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.16 2009/11/29 16:26:03 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.17 2010/03/13 23:19:16 erikeloff Exp $ 
 
 rev:
+    20100314 - eloff - BUGID 3272 - send assign form via POST to allow more data to be sent
     20091129 - franciscom - ISSUE 2554 - coloruing
     20090426 - franciscom - BUGID 2442- added bulk setting management
     20070818 - franciscom
@@ -72,7 +73,7 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
    during refresh feature, and then we have a bad refresh on page getting a bug.
 *}
 {if $gui->features neq ''}
-<form method="get" action="{$umgmt}/usersAssign.php"
+<form method="post" action="{$umgmt}/usersAssign.php"
 	{if $tlCfg->demoMode}
 		onsubmit="alert('{$labels.warn_demo}'); return false;"
 	{/if}>

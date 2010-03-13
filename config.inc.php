@@ -18,10 +18,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.288 2010/03/01 10:38:06 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.289 2010/03/13 09:37:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20100313 - franciscom - BUGID 0003275
  *  20100112 - asimon - BUGID 2976 - $tlCfg->req_cfg->search 
  *  20100110 - eloff - BUGID 2036 - changed $tlCfg->gui->checkNotSaved to true
  *  20100106 - franciscom - added $tlCfg->diffEngine - diff for test case and req (Contribution)
@@ -472,7 +473,12 @@ $tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 
  * Does not work in Webkit browsers (Chrome, Safari) when using frames.
  * Bug in webkit: https://bugs.webkit.org/show_bug.cgi?id=19418
  */
-$tlCfg->gui->checkNotSaved = true;
+ 
+// franciscom - 
+// BUGID 0003275 + post on forum: // http://www.teamst.org/phpBB2/viewtopic.php?t=3075
+// seems that with config options that will be used on javascript via smarty template variables
+// we are having problems using FALSE/TRUE => use 0/1 (or our CONSTANT DISABLED/ENABLED)
+$tlCfg->gui->checkNotSaved = ENABLED;
 
 
 // ----------------------------------------------------------------------------

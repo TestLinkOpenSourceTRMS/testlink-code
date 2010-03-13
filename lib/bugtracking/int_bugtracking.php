@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2010/03/11 07:34:11 $ $Author: asimon83 $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2010/03/13 10:21:53 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -20,9 +20,10 @@
  *
  * rev:
  *	20100311 - Julian - BUGID 3256, BUGID 3098
-						function checkBugID_existence() has to return true
-						in this parent class to be able to add bugs if
-						function has not been overloaded in child classes
+ *						function checkBugID_existence() has to return true
+ *						in this parent class to be able to add bugs if
+ *						function has not been overloaded in child classes
+ *
  *	20081217 - franciscom - BUGID 1939
  *							removed global coupling, usign config_get()
  *	20081102 - franciscom - refactored to ease configuration
@@ -35,8 +36,9 @@
 require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 
 // Add new bugtracking interfaces here
+// If user configures an interface not declared here, nothing happens => no error
 $btslist = array('BUGZILLA','MANTIS','JIRA', 'JIRASOAP', 'TRACKPLUS',
-				    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ');
+		    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ');
 
 $bts = array_flip($btslist);
 
@@ -341,12 +343,11 @@ class bugtrackingInterface
 	}
 }
 
-//DONT TOUCH ANYTHING BELOW THIS NOTICE!
+// -----------------------------------------------------------------------------------
+// DONT TOUCH ANYTHING BELOW THIS NOTICE!
+// -----------------------------------------------------------------------------------
 $g_bugInterfaceOn = false;
 $g_bugInterface = null;
-
-// global $g_interface_bugs;
-
 $bts_type = config_get('interface_bugs');
 if (isset($bts[$bts_type]))
 {

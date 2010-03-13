@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.68 $
- * @modified $Date: 2010/02/21 16:55:11 $ by $Author: franciscom $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2010/03/13 10:11:14 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
@@ -939,7 +939,6 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 					if (!$importIntoProject)
 					{
 						$keywords = getKeywordsFromSimpleXMLObj($target->xpath("//keyword"));
-						new dBug($keywords);
 						if($keywords)
 						{
 							$kwIDs = buildKeywordList($kwMap,$keywords);

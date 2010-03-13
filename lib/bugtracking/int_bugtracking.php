@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2010/03/13 10:21:53 $ $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/03/13 11:01:32 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -116,7 +116,9 @@ class bugtrackingInterface
 
 		if (!$result['status'])
 		{
-			tLog('Connect to Bug Tracker database fails!!! ' . $result['dbms_msg'], 'ERROR');
+			$connection_args = "(Host:$this->dbHost - DBName: $this->dbName - User: $this->dbUser) "; 
+			$msg = sprintf(lang_get('BTS_connect_to_database_fails'),$connection_args);
+			tLog($msg  . $result['dbms_msg'], 'ERROR');
 			$this->dbConnection = null;
 		}
 
@@ -365,5 +367,11 @@ if (isset($bts[$bts_type]))
 		$g_bugInterface->connect();
 	}
 	$g_bugInterfaceOn = ($g_bugInterface && $g_bugInterface->isConnected());
+	if(!$g_bugInterfaceOn)
+	{
+		// Log to event viewer
+		$msg = sprintf(lang_get('BTS_integration_failure'),$g_interface_bugs);
+		logWarningEvent($msg,"PHP");
+	}
 }
 ?>

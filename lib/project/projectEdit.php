@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.47 2010/02/20 00:25:05 havlat Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.48 2010/03/13 10:07:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
  *
  * @internal revision
+ * 20100313 - franciscom - reduced interface 'width' with smarty
  * 20100217 - franciscom - fixed errors showed on event viewer due to missing properties
  * 20100119 - franciscom - BUGID 3048
  * 20091227 - franciscom - BUGID 3020
@@ -51,11 +52,9 @@ $args = init_args($tproject_mgr, $_REQUEST, $session_tproject_id);
 
 $gui = $args;
 $gui->canManage = has_rights($db,"mgt_modify_product");
-
+$gui->found = 'yes';
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg) ;
-
-$found = 'yes';
 $status_ok = 1;
 
 switch($args->doAction)
@@ -139,17 +138,10 @@ switch($args->doAction)
         {
             $smarty->assign($prop,$value);
         }
+        $smarty->assign('gui', $args);
+        $smarty->assign('notes', $of->CreateHTML());
         $smarty->assign('user_feedback', $user_feedback);
         $smarty->assign('feedback_type', 'ultrasoft');
-
-        $smarty->assign('gui', $args);
-        $smarty->assign('id', $args->tprojectID);
-        $smarty->assign('name', $args->tprojectName);
-        $smarty->assign('active', $args->active);
-		$smarty->assign('projectOptions', prepareOptions($args));
-        $smarty->assign('tcasePrefix', $args->tcasePrefix);
-        $smarty->assign('notes', $of->CreateHTML());
-        $smarty->assign('found', $found);
         $smarty->display($templateCfg->template_dir . $template);
     break;
 
@@ -214,7 +206,7 @@ function init_args($tprojectMgr,$request_hash, $session_tproject_id)
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->testprojects = null;
-
+	$args->projectOptions = prepareOptions($args);
 	return $args;
 }
 

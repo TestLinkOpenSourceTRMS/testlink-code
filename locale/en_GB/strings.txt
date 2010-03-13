@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.575 2010/03/13 14:27:38 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.576 2010/03/13 14:49:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2693,6 +2693,9 @@ $TLS_select_user = "User (Default All)";
 
 // ----- int_mantis.php -----
 // Used to display at User interface label as title attribute
+// Attention must follow rule: issue_status_, because there is logic
+// build on this.
+// 
 $TLS_issue_status_new = "New issue";
 $TLS_issue_status_feedback = "Feedback";
 $TLS_issue_status_acknowledged = "Acknowledged issue ";
@@ -2700,7 +2703,7 @@ $TLS_issue_status_confirmed = "Confirmed issue";
 $TLS_issue_status_assigned = "Assigned issue";
 $TLS_issue_status_resolved = "Resolved issue";
 $TLS_issue_status_closed = "Closed issue";
-$TLS_custom_undefined_on_tl = 'Custom status NOT CONFIGURED on Test Link';
+$TLS_issue_status_custom_undefined_on_tl = 'Custom status NOT CONFIGURED on Test Link - see event viewer';
 $TLS_access_to_bts="Access issue tracking system";
 
 

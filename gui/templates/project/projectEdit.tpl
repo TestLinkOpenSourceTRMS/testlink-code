@@ -3,7 +3,7 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.27 2010/02/20 18:12:02 havlat Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.28 2010/03/13 10:07:20 franciscom Exp $
  *
  * Revisions:
  *	20100212 - havlatm - inventory support
@@ -71,9 +71,9 @@
 <h1 class="title">
 	{$main_descr|escape}  {$tlCfg->gui_title_separator_1}
 	{$caption|escape}
-	{if $mgt_view_events eq "yes" and $id}
+	{if $mgt_view_events eq "yes" and $gui->tprojectID}
 		<img style="margin-left:5px;" class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
-			     onclick="showEventHistoryFor('{$id}','testprojects')" 
+			     onclick="showEventHistoryFor('{$gui->tprojectID}','testprojects')" 
 			     alt="{$labels.show_event_history}" title="{$labels.show_event_history}"/>
 	{/if}
 </h1>
@@ -83,7 +83,7 @@
 {/if}
 
 <div class="workBack">
-	{if $found == "yes"}
+	{if $gui->found == "yes"}
 		<div style="width:80%; margin: auto;">
 		<form name="edit_testproject" id="edit_testproject"
 		      method="post" action="{$managerURL}"
@@ -91,7 +91,7 @@
 
 		<table id="item_view" class="common" style="width:100%; padding:3px;">
 
-			{if $id eq 0}
+			{if $gui->tprojectID eq 0}
 		    {if $gui->testprojects != ''}
 	 		<tr>
 	 			<td>{$labels.create_from_existent_tproject}</td>
@@ -109,14 +109,14 @@
 			<tr>
 				<td>{$labels.name} *</td>
 				<td><input type="text" name="tprojectName" size="{#TESTPROJECT_NAME_SIZE#}"
-						value="{$name|escape}" maxlength="{#TESTPROJECT_NAME_MAXLEN#}" />
+						value="{$gui->tprojectName|escape}" maxlength="{#TESTPROJECT_NAME_MAXLEN#}" />
 				  	{include file="error_icon.tpl" field="tprojectName"}
 				</td>
 			</tr>
 			<tr>
 				<td>{$labels.testproject_prefix} *</td>
 				<td><input type="text" name="tcasePrefix" size="{#TESTCASE_PREFIX_SIZE#}"
-	  		           value="{$tcasePrefix|escape}" maxlength="{#TESTCASE_PREFIX_MAXLEN#}" />
+	  		           value="{$gui->tcasePrefix|escape}" maxlength="{#TESTCASE_PREFIX_MAXLEN#}" />
 				  	{include file="error_icon.tpl" field="tcasePrefix"}
 				</td>
 			</tr>
@@ -175,7 +175,7 @@
 			</tr>
 			<tr>
 				<td></td><td>
-			    	<input type="checkbox" name="active" {if $active eq 1} checked="checked" {/if} />
+			    	<input type="checkbox" name="active" {if $gui->active eq 1} checked="checked" {/if} />
 			    	{$labels.th_active}
 			    </td>
       		</tr>
@@ -196,7 +196,7 @@
 		    	{* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
                   added hidden   *}
     			<input type="hidden" name="doAction" value="{$doActionValue}" />
-				<input type="hidden" name="tprojectID" value="{$id}" />
+				<input type="hidden" name="tprojectID" value="{$gui->tprojectID}" />
 			    <input type="submit" name="doActionButton" value="{$buttonValue}" />
 				<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
 				</div>
@@ -209,8 +209,8 @@
 	</div>
 	{else}
 		<p class="info">
-		{if $name neq ''}
-			{$labels.info_failed_loc_prod} - {$name|escape}!<br />
+		{if $gui->tprojectName != ''}
+			{$labels.info_failed_loc_prod} - {$gui->tprojectName|escape}!<br />
 		{/if}
 		{$labels.invalid_query}: {$sqlResult|escape}</p>
 	{/if}

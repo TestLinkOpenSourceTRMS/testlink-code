@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.574 2010/03/13 11:00:15 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.575 2010/03/13 14:27:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2700,6 +2700,7 @@ $TLS_issue_status_confirmed = "Confirmed issue";
 $TLS_issue_status_assigned = "Assigned issue";
 $TLS_issue_status_resolved = "Resolved issue";
 $TLS_issue_status_closed = "Closed issue";
+$TLS_custom_undefined_on_tl = 'Custom status NOT CONFIGURED on Test Link';
 $TLS_access_to_bts="Access issue tracking system";
 
 
@@ -2776,5 +2777,6 @@ $TLS_warning_step_number_already_exists = " Step number %s already exists";
 
 $TLS_BTS_integration_failure = " Integration with Bugtracking System: %s - Failed";
 $TLS_BTS_connect_to_database_fails = "Connect to Bug Tracker database fails: %s";
+$TLS_MANTIS_status_not_configured = 'Get Bug Status: %s from Mantis DB, but status is not configured on int_mantis.php';
 // ----- END ------------------------------------------------------------------
 ?>

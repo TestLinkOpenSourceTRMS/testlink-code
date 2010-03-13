@@ -10,8 +10,8 @@
  * then to change Test Project user need to use main Test Project Combo
  * 
  * @package 	TestLink
- * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: usersAssign.php,v 1.27 2009/11/29 16:25:02 franciscom Exp $
+ * @copyright 	2005-2010, TestLink community
+ * @version    	CVS: $Id: usersAssign.php,v 1.28 2010/03/13 23:11:36 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -89,7 +89,7 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
 // --------------------------------------------------------------------------
 // Important: 
 // Must be done here after having done update, to get current information
-$gui->users = tlUser::getAll($db,null,null,null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+$gui->users = tlUser::getAll($db,"WHERE active=1",null,null,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
 checkSessionValid($db);
 $args->user = $_SESSION['currentUser'];
 // --------------------------------------------------------------------------

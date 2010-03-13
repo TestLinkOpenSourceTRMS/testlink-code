@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.149 $
- * @modified $Date: 2010/02/14 14:25:25 $ $Author: franciscom $
+ * @version $Revision: 1.150 $
+ * @modified $Date: 2010/03/13 13:57:33 $ $Author: franciscom $
  *
  * rev:
+ *  20100313 - franciscom - BUGID 3276
  *  20100204 - asimon - BUGID 2455 & 3026, little changes for filtering
  *  20100121 - franciscom - missing platform feature refactoring
  *	20091205 - franciscom - BUGID 0002469: CFG-Parameters to show notes/details on test-execution
@@ -42,17 +43,22 @@ require_once('exec.inc.php');
 require_once("attachments.inc.php");
 require_once("specview.php");
 require_once("web_editor.php");
-$cfg=getCfg();
 
+$cfg=getCfg();
+require_once(require_web_editor($cfg->editorCfg['type']));
+
+// BUGID 3276
+// CRITIC:
+// If call to testlinkInitPage() is done AFTER require_once for BTS
+// log to event viewer fails, but log to file works ok
+testlinkInitPage($db);
 if($cfg->bts_type != 'NO')
 {
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' . 
                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
 }
 
-require_once(require_web_editor($cfg->editorCfg['type']));
 
-testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tcversion_id = null;

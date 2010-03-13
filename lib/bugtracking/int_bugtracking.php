@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/03/13 11:01:32 $ $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/03/13 14:04:30 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -110,16 +110,17 @@ class bugtrackingInterface
 		{
 			return false;
 		}
-
+       
 		$this->dbConnection = new database($this->dbType);
 		$result = $this->dbConnection->connect(false, $this->dbHost,$this->dbUser,$this->dbPass, $this->dbName);
 
 		if (!$result['status'])
 		{
-			$connection_args = "(Host:$this->dbHost - DBName: $this->dbName - User: $this->dbUser) "; 
+			$this->dbConnection = null;
+			$bts_type = config_get('interface_bugs');
+			$connection_args = "(interface: $bts_type - Host:$this->dbHost - DBName: $this->dbName - User: $this->dbUser) "; 
 			$msg = sprintf(lang_get('BTS_connect_to_database_fails'),$connection_args);
 			tLog($msg  . $result['dbms_msg'], 'ERROR');
-			$this->dbConnection = null;
 		}
 
 		elseif (BUG_TRACK_DB_TYPE == 'mysql')
@@ -366,12 +367,14 @@ if (isset($bts[$bts_type]))
 	{
 		$g_bugInterface->connect();
 	}
+	
+	// Important: connect() do log if something fails
 	$g_bugInterfaceOn = ($g_bugInterface && $g_bugInterface->isConnected());
-	if(!$g_bugInterfaceOn)
-	{
-		// Log to event viewer
-		$msg = sprintf(lang_get('BTS_integration_failure'),$g_interface_bugs);
-		logWarningEvent($msg,"PHP");
-	}
+	// if(!$g_bugInterfaceOn)
+	// {
+	// 	// Log to event viewer
+	// 	$msg = sprintf(lang_get('BTS_integration_failure'),$g_interface_bugs);
+	// 	logWarningEvent($msg,"PHP");
+	// }
 }
 ?>

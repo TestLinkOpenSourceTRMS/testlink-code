@@ -3,12 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.110 $
- * @modified $Date: 2010/03/14 15:54:02 $ by $Author: franciscom $
+ * @version $Revision: 1.111 $
+ * @modified $Date: 2010/03/14 17:31:48 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  *	@internal revisions
  *  20100314 - franciscom - added logic to refresh tree when copying N test cases 	
+ * 						    added logic to get user choice regarding refresh tree from SESSION.
  *  20100223 - asimon - added removeTestcaseAssignments() for BUGID 3049
  *	20100204 - franciscom - changes in $tsuiteMgr->copy_to() call	
  *	20100202 - franciscom - BUGID 3130: TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error
@@ -30,7 +31,6 @@ $editorCfg=getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
-
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
@@ -47,7 +47,7 @@ $opt_cfg->js_ot_name = 'ot';
 
 $args = init_args($opt_cfg);
 $gui_cfg = config_get('gui');
-$spec_cfg = config_get('spec_cfg');
+// $spec_cfg = config_get('spec_cfg');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
 
@@ -216,11 +216,9 @@ switch($action)
 
 if($the_tpl)
 {
-	// echo "DEBUG - \$action;$action<br>";
-	// echo "DEBUG - \$the_tpl:$the_tpl<br>";
+	// echo "DEBUG - \$action;$action<br>";	echo "DEBUG - \$the_tpl:$the_tpl<br>";	
 	// echo "DEBUG - \$refreshTree:$refreshTree<br>";
-
-	$smarty->assign('refreshTree',$refreshTree && $spec_cfg->automatic_tree_refresh);
+	$smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
 	$smarty->display($template_dir . $the_tpl);
 }
 
@@ -354,6 +352,18 @@ function init_args($optionTransferCfg)
     	$args->containerID = $args->tprojectID;
     }
 
+	// BUGID 
+	// Get user choice for refresh tree after each operation
+	if(isset($_SESSION['tcspec_refresh_on_action']))
+	{
+		$args->refreshTree = $_SESSION['tcspec_refresh_on_action'] == 'yes' ? 1 : 0;
+    }
+    else
+    {
+    	// use default from config.inc.php
+    	$spec_cfg = config_get('spec_cfg');
+    	$args->refreshTree = $spec_cfg->automatic_tree_refresh ? 1 : 0;
+    }
     return $args;
 }
 

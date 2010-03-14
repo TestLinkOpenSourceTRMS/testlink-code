@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.289 2010/03/13 09:37:20 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.290 2010/03/14 16:30:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -671,8 +671,9 @@ $g_spec_cfg->steps_results_layout = 'vertical';
 $g_spec_cfg->show_tsuite_filter = ENABLED;
 
 // ENABLED -> every time user do some operation on test specification
-//      tree is updated on screen.
+//            tree is updated on screen.
 // DISABLED -> tree will not be updated, user can update it manually.
+// Anyway on user interface user will be able to change this choice
 $g_spec_cfg->automatic_tree_refresh = ENABLED;
 
 // ENABLED -> user can edit executed tc versions

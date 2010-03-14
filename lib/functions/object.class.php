@@ -5,11 +5,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.49 2010/02/18 21:52:10 havlat Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.50 2010/03/14 08:53:56 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100314 - franciscom - added req_relations in getDBTables()
  * 20091227 - franciscom - new method getAttachmentTableName()
  * 20090806 - franciscom - platforms feature
  * 20090615 - franciscom - fixed bug on getDBTables()
@@ -77,6 +78,12 @@ abstract class tlObject implements iSerialization
 	 */
 	protected $serializationFormatDescriptors;
 
+	/**
+	 * @var array useful to manage DB where TL table names must have a prefix.
+	 *		key: table name WITHOUT prefix
+	 *		value: table name WITH PREFIX
+	 * @see getDBTables()	
+	 */
     protected $tables = null;
 	
 	/** class constructor */
@@ -227,6 +234,7 @@ abstract class tlObject implements iSerialization
                         'object_keywords' => DB_TABLE_PREFIX . 'object_keywords',
                         'platforms' => DB_TABLE_PREFIX . 'platforms',
                         'req_coverage' => DB_TABLE_PREFIX . 'req_coverage',
+                        'req_relations' => DB_TABLE_PREFIX . 'req_relations',
                         'req_specs' => DB_TABLE_PREFIX . 'req_specs',
                         'req_suites' => DB_TABLE_PREFIX . 'req_suites',
                         'requirements' => DB_TABLE_PREFIX . 'requirements',

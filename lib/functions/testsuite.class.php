@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.90 2010/02/27 18:58:05 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.91 2010/03/14 15:39:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -410,6 +410,8 @@ class testsuite extends tlObjectWithAttachments
 		$gui->cf = '';
 	    $gui->sqlResult = '';
 		$gui->sqlAction = '';
+		// 20100314 - franciscom 
+		$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
 
         // BUGID 0003233: After test suite edit, display of Test suite do not 
         //                have upload button enabled for attachment
@@ -439,7 +441,6 @@ class testsuite extends tlObjectWithAttachments
 		$gui->cf = $this->html_table_of_custom_field_values($id);
 		$gui->keywords_map = $this->get_keywords_map($id,' ORDER BY keyword ASC ');
 		$gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
-		$gui->refreshTree = false;
 		$gui->id = $id;
 	 	$gui->idpage_title = lang_get('testsuite');
 		$gui->level = 'testsuite';

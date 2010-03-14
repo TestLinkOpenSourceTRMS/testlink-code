@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.150 $
- * @modified $Date: 2010/03/13 13:57:33 $ $Author: franciscom $
+ * @version $Revision: 1.151 $
+ * @modified $Date: 2010/03/14 09:58:20 $ $Author: franciscom $
  *
  * rev:
  *  20100313 - franciscom - BUGID 3276
@@ -141,12 +141,6 @@ if($args->doExec == 1)
 //
 
 // 20081221 - franciscom                              
-
-//$linked_tcversions = $tplan_mgr->get_linked_tcversions($args->tplan_id,$args->tc_id,$args->keyword_id,$get_mode,
-//                                                       $args->filter_assigned_to,
-//                                                       $args->filter_status,$args->build_id,
-//                                                       $args->cf_selected,$args->include_unassigned);
-
 $options = array('only_executed' => true, 'output' => 'mapOfArray',
                  'include_unassigned' => $args->include_unassigned);
 if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))

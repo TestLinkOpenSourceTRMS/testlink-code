@@ -1,0 +1,11 @@
+This is an example of simple Test Suite templates.
+You can create use JUST ONE template.
+Right now you are getting content of file:
+[your TL installation dir]/docs/item_templates/testsuite.txt
+you can change this configuration using configuration options:
+
+$tlCfg->testsuite_template->details->type 
+$tlCfg->testsuite_template->details->value 
+
+present on config.inc.php, that you can redefine on: custom_config.inc.php
+

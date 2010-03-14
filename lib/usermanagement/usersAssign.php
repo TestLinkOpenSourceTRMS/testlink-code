@@ -11,10 +11,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.28 2010/03/13 23:11:36 erikeloff Exp $
+ * @version    	CVS: $Id: usersAssign.php,v 1.29 2010/03/14 09:18:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20100313 - erikeloff - BUGID 3271 - show only active users on assign to project/test plan
  *	20091129 - franciscom - ISSUE 2554 - colouring
  *
  */

@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.109 $
- * @modified $Date: 2010/02/24 08:31:13 $ by $Author: asimon83 $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2010/03/14 15:54:02 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  *	@internal revisions
+ *  20100314 - franciscom - added logic to refresh tree when copying N test cases 	
  *  20100223 - asimon - added removeTestcaseAssignments() for BUGID 3049
  *	20100204 - franciscom - changes in $tsuiteMgr->copy_to() call	
  *	20100202 - franciscom - BUGID 3130: TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error
@@ -50,14 +51,13 @@ $spec_cfg = config_get('spec_cfg');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
 
-new dBug($args);
-
 $a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
                 'del_testsuites_bulk' => 'containerDeleteBulk.tpl',
                 'updateTCorder' => 'containerView.tpl',
-                'move_testcases_viewer' => 'containerMoveTC.tpl');   
+                'move_testcases_viewer' => 'containerMoveTC.tpl',
+                'do_copy_tcase_set' => 'containerMoveTC.tpl');   
    
 $a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
 					'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
@@ -199,7 +199,9 @@ switch($action)
     	break;
 
     case 'do_copy_tcase_set':
-    	copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
+    	$op = copyTestCases($smarty,$template_dir,$tsuite_mgr,$tcase_mgr,$args);
+    	$refreshTree = $op['refreshTree'];
+    	moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
     	break;
 
     // BUGID 3049
@@ -214,6 +216,10 @@ switch($action)
 
 if($the_tpl)
 {
+	// echo "DEBUG - \$action;$action<br>";
+	// echo "DEBUG - \$the_tpl:$the_tpl<br>";
+	// echo "DEBUG - \$refreshTree:$refreshTree<br>";
+
 	$smarty->assign('refreshTree',$refreshTree && $spec_cfg->automatic_tree_refresh);
 	$smarty->display($template_dir . $the_tpl);
 }
@@ -675,42 +681,48 @@ function initializeOptionTransfer(&$tprojectMgr,&$tsuiteMgr,$argsObj,$doAction)
   returns: -
 
 */
-function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$argsObj)
+function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$argsObj,$feedback='')
 {
 	$tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
 	$testcase_cfg = config_get('testcase_cfg');
 	$glue = $testcase_cfg->glue_character;
 	
-	// $testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID),
-	//                                                   array($argsObj->testsuiteID => 'exclude'));
-	//                                                   
+	$containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
+	$containerName = $argsObj->tsuite_name;
+	if( is_null($containerName) )
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($argsObj->objectID);
+		$containerName = $dummy['name'];
+	}
+	
+	
   	// 20081225 - franciscom have discovered that exclude selected testsuite branch is not good
   	//            when you want to move lots of testcases from one testsuite to it's children
   	//            testsuites. (in this situation tree drag & drop is not ergonomic).
   	$testsuites = $tprojectMgr->gen_combo_test_suites($argsObj->tprojectID);	                                                  
 	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID) . $glue;
 
-   // 20081225 - franciscom
-   // While testing with PostGres have found this behaivour:
-   // No matter is UPPER CASE has used on field aliases, keys on hash returned by
-   // ADODB are lower case.
-   // Accessing this keys on Smarty template using UPPER CASE fails.
-   // Solution: have changed case on Smarty to lower case.
-   //         
- 	 $sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
-            " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
-            " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
-            " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
-            " WHERE NHB.parent_id=NHA.id " .
-            " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
-            " AND NHA.parent_id={$argsObj->testsuiteID} " .
-            " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id " .
-            " ORDER BY TCORDER,TCNAME";
+	// 20081225 - franciscom
+	// While testing with PostGres have found this behaivour:
+	// No matter is UPPER CASE has used on field aliases, keys on hash returned by
+	// ADODB are lower case.
+	// Accessing this keys on Smarty template using UPPER CASE fails.
+	// Solution: have changed case on Smarty to lower case.
+	//         
+	$sql = "SELECT NHA.id AS tcid, NHA.name AS tcname, NHA.node_order AS tcorder," .
+	       " MAX(TCV.version) AS tclastversion, TCV.tc_external_id AS tcexternalid" .
+	       " FROM {$tables['nodes_hierarchy']} NHA, {$tables['nodes_hierarchy']}  NHB, " .
+	       " {$tables['node_types']} NT, {$tables['tcversions']}  TCV " .
+	       " WHERE NHB.parent_id=NHA.id " .
+	       " AND TCV.id=NHB.id AND NHA.node_type_id = NT.id AND NT.description='testcase'" .
+	       " AND NHA.parent_id={$containerID} " .
+	       " GROUP BY NHA.id,NHA.name,NHA.node_order,TCV.tc_external_id " .
+	       " ORDER BY TCORDER,TCNAME";
 
-  $children = $dbHandler->get_recordset($sql);
+  	$children = $dbHandler->get_recordset($sql);
     
  	// check if operation can be done
-	$user_feedback = '';
+	$user_feedback = $feedback;
 	if(!is_null($children) && (sizeof($children) > 0) && sizeof($testsuites))
 	{
 	    $op_ok = true;
@@ -728,8 +740,8 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
 	$smartyObj->assign('testcases', $children);
 	$smartyObj->assign('old_containerID', $argsObj->tprojectID); //<<<<-- check if is needed
 	$smartyObj->assign('containers', $testsuites);
-	$smartyObj->assign('objectID', $argsObj->testsuiteID);
-	$smartyObj->assign('object_name', $argsObj->tsuite_name);
+	$smartyObj->assign('objectID', $containerID);
+	$smartyObj->assign('object_name', $containerName);
 	$smartyObj->assign('top_checked','checked=checked');
 	$smartyObj->assign('bottom_checked','');
 }
@@ -746,25 +758,30 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
 */
 function copyTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$tcaseMgr,$argsObj)
 {
-    if(sizeof($argsObj->tcaseSet) > 0)
+	$op = array('refreshTree' => false, 'userfeedback' => '');
+    if( ($qty=sizeof($argsObj->tcaseSet)) > 0)
     {
+		$msg_id = $qty == 1 ? 'one_testcase_copied' : 'testcase_set_copied';
+   		$op['userfeedback'] = sprintf(lang_get($msg_id),$qty);
+
         $check_names_for_duplicates_cfg = config_get('check_names_for_duplicates');
         $action_on_duplicate_name_cfg = config_get('action_on_duplicate_name');
 
         foreach($argsObj->tcaseSet as $key => $tcaseid)
         {
-            $op=$tcaseMgr->copy_to($tcaseid, $argsObj->containerID, $argsObj->userID,
-	                               $argsObj->copyKeywords,$check_names_for_duplicates_cfg,
-	                               $action_on_duplicate_name_cfg);
+            $copy_op = $tcaseMgr->copy_to($tcaseid, $argsObj->containerID, $argsObj->userID,
+	                                      $argsObj->copyKeywords,$check_names_for_duplicates_cfg,
+	                    	              $action_on_duplicate_name_cfg);
         }
         
         $guiObj = new stdClass();
    		$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
 		$guiObj->id = $argsObj->objectID;
-
-        $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID);
+		$guiObj->refreshTree = true;
+        // $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID);
+    	$op['refreshTree'] = true;
     }
-
+    return $op;
 }
 
 

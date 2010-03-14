@@ -1,11 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMoveTC.tpl,v 1.5 2009/04/27 07:56:54 franciscom Exp $
+$Id: containerMoveTC.tpl,v 1.6 2010/03/14 15:54:41 franciscom Exp $
 Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
 
 rev :
+     20100314 - franciscom - added feedback when op ok (used when copy test cases)
+                             and logic to refresh left side tree 
      20090425 - franciscom - BUGID 2422 - add checbox for bulk operation
      20080329 - contributed by Eugenia Drosdezki
                 refactored by franciscom
@@ -65,6 +67,10 @@ function check_action_precondition(container_id,action,msg)
 	<form id="move_copy_testcases" name="move_copy_testcases" method="post"
 	      action="lib/testcases/containerEdit.php?objectID={$objectID}">
 
+    {if $user_feedback != ''}
+      <div class="user_feedback">{$user_feedback}</div>
+      <br />
+    {/if}
 		<p>{$labels.choose_target}:
 			<select name="containerID" id="containerID">
 				  {html_options options=$containers}
@@ -120,5 +126,9 @@ function check_action_precondition(container_id,action,msg)
 {/if}
 
 </div>
+{* 20100314 - franciscom *}
+{if $refreshTree}
+   {include file="inc_refreshTree.tpl"}
+{/if}
 </body>
 </html>

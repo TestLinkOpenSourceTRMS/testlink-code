@@ -1,12 +1,15 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.76 2010/03/08 20:02:41 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.77 2010/03/14 08:54:28 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
 # tables are in alphabetic order  
 #
 # ATTENTION: do not use a different naming convention, that one already in use.
+#
+# IMPORTANT NOTE:
+# each NEW TABLE added here NEED TO BE DEFINED in object.class.php getDBTables()
 #
 # IMPORTANT NOTE - DATETIME or TIMESTAMP
 # Extracted from MySQL Manual

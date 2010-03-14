@@ -1,8 +1,11 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.22 2010/02/13 23:00:50 havlat Exp $
+--  $Id: testlink_create_default_data.sql,v 1.23 2010/03/14 08:54:28 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --  
+-- IMPORTANT NOTE:
+-- each NEW TABLE added here NEED TO BE DEFINED in object.class.php getDBTables()
+--
 --  Database Type: Microsoft SQL Server
 --
 --  20090426 - franciscom - new right testproject_user_role_assignment

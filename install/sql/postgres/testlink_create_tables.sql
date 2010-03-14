@@ -1,9 +1,12 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.60 2010/03/08 20:15:33 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.61 2010/03/14 08:54:28 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
+-- IMPORTANT NOTE:
+-- each NEW TABLE added here NEED TO BE DEFINED in object.class.php getDBTables()
+--
 -- ATTENTION: do not use a different naming convention, that one already in use.
 -- 
 -- Naming convention for column regarding date/time of creation or change

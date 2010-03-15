@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.251 2010/03/09 19:47:38 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.252 2010/03/15 12:23:14 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *
+ * 20100315 - amitkhullar - Added chkBox options for Requirements and CFields for Export.
  * 20100309 - franciscom - get_by_id() - improvements on control to apply when LATEST_VERSION is requested.
  * 20100309 - franciscom - get_exec_status() - interface changes
  *						   get_linked_versions() - interface changes                        
@@ -2900,9 +2900,11 @@ class testcase extends tlObjectWithAttachments
 	
 	  returns:
 	
-	  rev: 20100105 - franciscom - added execution_type, importance
-	  	   20090204 - franciscom - added export of node_order
-	       20080206 - franciscom - added externalid
+	  rev:
+	   * 20100315 - amitkhullar - Added options for Requirements and CFields for Export.
+	   * 20100105 - franciscom - added execution_type, importance
+	   * 20090204 - franciscom - added export of node_order
+	   * 20080206 - franciscom - added externalid
 	
 	*/
 	function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
@@ -2921,7 +2923,9 @@ class testcase extends tlObjectWithAttachments
 		{
 			$tproject_id = $this->getTestProjectFromTestCase($tcase_id);
 		}
-	    
+        	// Get Custom Field Data
+		if ($optExport['CFIELDS'])
+		{
 		$cfMap = $this->get_linked_cfields_at_design($tcase_id,null,null,$tproject_id);
 
 	    // ||yyy||-> tags,  {{xxx}} -> attribute 
@@ -2939,7 +2943,9 @@ class testcase extends tlObjectWithAttachments
 		    $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
 		    $tc_data[0]['xmlcustomfields'] = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
 		} 
+		}
 		
+		// Get Keywords
 		if ($optExport['KEYWORDS'])
 		{
 			$keywords = $this->getKeywords($tcase_id);
@@ -2949,8 +2955,9 @@ class testcase extends tlObjectWithAttachments
 				$tc_data[0]['xmlkeywords'] = $xmlKW;
 			}
 		}
-		  
-		// Requirements
+    		// Get Requirements
+		if ($optExport['REQS'])
+		{
 	  	$requirements = $reqMgr->get_all_for_tcase($tcase_id);
 	  	if( !is_null($requirements) && count($requirements) > 0 )
 	  	{
@@ -2965,7 +2972,7 @@ class testcase extends tlObjectWithAttachments
 			                    "||REQ_DOC_ID||" => "req_doc_id","||REQ_TITLE||" => "title");
 			$tc_data[0]['xmlrequirements'] = exportDataToXML($requirements,$reqRootElem,$reqElemTemplate,$reqDecode,true);
 	  	}
-		
+		}
 		// ------------------------------------------------------------------------------------
         // Multiple Test Case Steps Feature
        	$stepRootElem = "<steps>{{XMLCODE}}</steps>";

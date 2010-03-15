@@ -1,15 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcExport.tpl,v 1.9 2010/02/21 14:34:50 franciscom Exp $ 
+$Id: tcExport.tpl,v 1.10 2010/03/15 12:25:56 amkhullar Exp $ 
 
 test case export initial page 
 
 Revisions:
+20100315 - amitkhullar - Added chkBox options for Requirements and CFields for Export.
 20091122 - franciscom - refacoting to use alert_message()
 
 * ----------------------------------------------------------------- *}
 {lang_get var="labels" 
-          s='export_filename,warning_empty_filename,file_type,warning,
+          s='export_filename,warning_empty_filename,file_type,warning,export_cfields,title_req_export,
              view_file_format_doc,export_with_keywords,btn_export,btn_cancel'} 
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -64,6 +65,14 @@ function validateForm(f)
 	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
   	</td>
   	</tr>
+    <tr>
+    <td>{$labels.title_req_export}</td>
+    <td><input type="checkbox" name="bRequirements" value="1" checked /></td>
+    </tr>  	
+    <tr>
+    <td>{$labels.export_cfields}</td>
+    <td><input type="checkbox" name="bcFields" value="1" checked /></td>
+    </tr>
     <tr>
     <td>{$labels.export_with_keywords}</td>
     <td><input type="checkbox" name="bKeywords" value="0" /></td>

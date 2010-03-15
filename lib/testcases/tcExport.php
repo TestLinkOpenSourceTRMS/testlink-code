@@ -5,12 +5,13 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/02/21 15:07:50 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/03/15 12:22:35 $ by $Author: amkhullar $
  *
  * Scope: test case and test suites export
  * 
  * Revisions:
+ * 20100315 - amitkhullar - Added chkBox options for Requirements and CFields for Export.
  * 20081027 - martin - cleanup
  * 20070113 - franciscom - added logic to create message when there is 
  *                         nothing to export.
@@ -101,7 +102,7 @@ if ($args->doExport)
 	$tcase_mgr = new testcase($db);
 	$tsuite_mgr = new testsuite($db);
 	
-	$optExport = array('KEYWORDS' => $args->exportKeywords, 'RECURSIVE' => $args->useRecursion);
+	$optExport = array('REQS' => $args->exportReqs, 'CFIELDS' => $args->exportcFields,'KEYWORDS' => $args->exportKeywords, 'RECURSIVE' => $args->useRecursion);
 	$pfn = null;
 	switch($args->exportType)
 	{
@@ -169,6 +170,8 @@ function init_args()
     
     $args = new stdClass();
     $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
+    $args->exportReqs = isset($_REQUEST['bRequirements']) ? 1 : 0;
+    $args->exportcFields = isset($_REQUEST['bcFields']) ? 1 : 0;
     $args->exportKeywords = isset($_REQUEST['bKeywords']) ? 1 : 0;
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
     $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;

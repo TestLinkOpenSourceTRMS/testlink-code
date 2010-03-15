@@ -1,11 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcExport.tpl,v 1.11 2010/03/15 21:42:59 franciscom Exp $ 
+$Id: tcExport.tpl,v 1.12 2010/03/15 22:21:05 franciscom Exp $ 
 
 test case export initial page 
 
 Revisions:
-20100315 - amitkhullar - Added chkBox options for Requirements and CFields for Export.
+20100315 - franciscom - improvements on goback management
+20100315 - amitkhullar - Added checkboxes options for Requirements and CFields for Export.
 20091122 - franciscom - refacoting to use alert_message()
 
 * ----------------------------------------------------------------- *}
@@ -86,8 +87,9 @@ function validateForm(f)
   		<input type="hidden" name="containerID" value="{$gui->containerID}" />
   		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
   		<input type="submit" name="export" value="{$labels.btn_export}" />
-  		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-  			                   onclick="javascript:history.back();" />
+  		<input type="button" name="cancel" value="{$labels.btn_cancel}"
+    		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+    		     {else}  onclick="javascript:history.back();" {/if} />
   	</div>
   </form>
 {else}

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.57 2010/03/15 12:26:30 amkhullar Exp $
+$Id: tcView_viewer.tpl,v 1.58 2010/03/15 22:21:05 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -49,6 +49,10 @@ rev:
 
 {assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id&step_id="}
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}
+
+{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id"}
+{assign var="tcExportAction" value="lib/testcases/tcExport.php?goback_url="}
+{assign var="exportTestCaseAction" value="$basehref$tcExportAction$basehref$tcViewAction"}
 
 
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
@@ -152,7 +156,7 @@ rev:
 	</span>
 
 	<span>
-	<form id="tcexport" name="tcexport" method="post" action="lib/testcases/tcExport.php" >
+	<form id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
 		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$labels.btn_export}" />

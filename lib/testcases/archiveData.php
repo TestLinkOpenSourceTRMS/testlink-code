@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.66 2010/03/15 21:13:00 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.67 2010/03/15 22:21:20 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -147,6 +147,7 @@ function init_args(&$viewerCfg)
 {
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
 			         "id" => array(tlInputParameter::INT_N),
+			         "tcase_id" => array(tlInputParameter::INT_N),
 			         "tcversion_id" => array(tlInputParameter::INT_N),
 			         "targetTestCase" => array(tlInputParameter::STRING_N,0,24),
 			         "show_path" => array(tlInputParameter::INT_N),
@@ -158,7 +159,7 @@ function init_args(&$viewerCfg)
     R_PARAMS($iParams,$args);
 	
 	// echo __FUNCTION__;
-	// new dBug($args);
+	new dBug($args);
 	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     //@TODO schlundus, rename Parameter from edit to feature
@@ -170,6 +171,11 @@ function init_args(&$viewerCfg)
    		 $args->tcversion_id = testcase::ALL_VERSIONS;
     }
     
+    if(intval($args->tcase_id) > 0)
+    {
+    	$args->feature = 'testcase';
+    	$args->id = intval($args->tcase_id);
+    }
    	switch($args->feature)
     {
 		case 'testsuite':

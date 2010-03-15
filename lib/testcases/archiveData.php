@@ -3,7 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.67 2010/03/15 22:21:20 franciscom Exp $
+ * @version $Id: archiveData.php,v 1.68 2010/03/15 22:23:04 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
@@ -30,8 +30,6 @@ $args = init_args($viewerArgs);
 $smarty = new TLSmarty();
 $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
-
-// new dBug($_REQUEST);
 
 switch($args->feature)
 {
@@ -158,9 +156,6 @@ function init_args(&$viewerCfg)
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
 	
-	// echo __FUNCTION__;
-	new dBug($args);
-	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     //@TODO schlundus, rename Parameter from edit to feature
     $args->feature = $args->edit;
@@ -170,12 +165,14 @@ function init_args(&$viewerCfg)
    	{
    		 $args->tcversion_id = testcase::ALL_VERSIONS;
     }
-    
+  
+  	// used to manage goback  
     if(intval($args->tcase_id) > 0)
     {
     	$args->feature = 'testcase';
     	$args->id = intval($args->tcase_id);
     }
+    
    	switch($args->feature)
     {
 		case 'testsuite':

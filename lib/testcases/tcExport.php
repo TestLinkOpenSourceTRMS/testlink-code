@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/03/15 12:22:35 $ by $Author: amkhullar $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/03/15 21:43:23 $ by $Author: franciscom $
  *
  * Scope: test case and test suites export
  * 
@@ -102,7 +102,8 @@ if ($args->doExport)
 	$tcase_mgr = new testcase($db);
 	$tsuite_mgr = new testsuite($db);
 	
-	$optExport = array('REQS' => $args->exportReqs, 'CFIELDS' => $args->exportcFields,'KEYWORDS' => $args->exportKeywords, 'RECURSIVE' => $args->useRecursion);
+	$optExport = array('REQS' => $args->exportReqs, 'CFIELDS' => $args->exportcFields,
+	                   'KEYWORDS' => $args->exportKeywords, 'RECURSIVE' => $args->useRecursion);
 	$pfn = null;
 	switch($args->exportType)
 	{
@@ -170,9 +171,9 @@ function init_args()
     
     $args = new stdClass();
     $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
-    $args->exportReqs = isset($_REQUEST['bRequirements']) ? 1 : 0;
-    $args->exportcFields = isset($_REQUEST['bcFields']) ? 1 : 0;
-    $args->exportKeywords = isset($_REQUEST['bKeywords']) ? 1 : 0;
+    $args->exportReqs = isset($_REQUEST['exportReqs']) ? 1 : 0;
+    $args->exportCFields = isset($_REQUEST['exportCFields']) ? 1 : 0;
+    $args->exportKeywords = isset($_REQUEST['exportKeywords']) ? 1 : 0;
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
     $args->tcase_id = isset($_REQUEST['testcase_id']) ? intval($_REQUEST['testcase_id']) : 0;
     $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;

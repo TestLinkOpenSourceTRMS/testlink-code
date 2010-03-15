@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcExport.tpl,v 1.10 2010/03/15 12:25:56 amkhullar Exp $ 
+$Id: tcExport.tpl,v 1.11 2010/03/15 21:42:59 franciscom Exp $ 
 
 test case export initial page 
 
@@ -67,15 +67,15 @@ function validateForm(f)
   	</tr>
     <tr>
     <td>{$labels.title_req_export}</td>
-    <td><input type="checkbox" name="bRequirements" value="1" checked /></td>
+    <td><input type="checkbox" name="exportReqs" value="1" checked /></td>
     </tr>  	
     <tr>
     <td>{$labels.export_cfields}</td>
-    <td><input type="checkbox" name="bcFields" value="1" checked /></td>
+    <td><input type="checkbox" name="exportCFields" value="1" checked /></td>
     </tr>
     <tr>
     <td>{$labels.export_with_keywords}</td>
-    <td><input type="checkbox" name="bKeywords" value="0" /></td>
+    <td><input type="checkbox" name="exportKeywords" value="0" /></td>
     </tr>
 
   	</table>

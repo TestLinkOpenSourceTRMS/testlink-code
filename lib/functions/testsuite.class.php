@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.92 2010/03/15 12:23:14 amkhullar Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.93 2010/03/15 21:56:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20100315 - amitkhullar - Added chkBox options for Requirements and CFields for Export.
+ * 20100315 - amitkhullar - Added options for Requirements and CFields for Export.
  * 20100227 - franciscom - BUGID 0003233: After test suite edit, display of Test suite do not 
  *                         have upload button enabled for attachment
  * 20100210	- franciscom - keywords XML export refactored
@@ -1051,16 +1051,16 @@ class testsuite extends tlObjectWithAttachments
 			}
 			if ($optExport['CFIELDS'])
 		    {
-			// 20090106 - franciscom - custom fields
-	        $cfMap=$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
-			if( !is_null($cfMap) && count($cfMap) > 0 )
-		    {
-	            $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-		        $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
-		      	                         '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
-		        $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
-		        $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
-		    } 
+				// 20090106 - franciscom - custom fields
+	        	$cfMap=$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
+				if( !is_null($cfMap) && count($cfMap) > 0 )
+		    	{
+	        	    $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+		    	    $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
+		    	  	                         '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+		    	    $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
+		    	    $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+		    	} 
 		    }
 	        $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
 	                 "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .

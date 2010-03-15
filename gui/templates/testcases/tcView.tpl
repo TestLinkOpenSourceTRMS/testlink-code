@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.32 2010/01/26 23:00:16 franciscom Exp $
+$Id: tcView.tpl,v 1.33 2010/03/15 20:47:28 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
+    20100315 - franciscom - fixed refresh tree issue 
     20100106 - franciscom - Multiple Test Case Steps Feature
     20090418 - franciscom - BUGID 2364 
     20090414 - franciscom - BUGID 2378
@@ -116,8 +117,9 @@ function validateStepsReorder(formOID)
 {if !isset($gui->refresh_tree) }
   {assign var="refresh_tree" value=false}
 {/if}
-{include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refresh_tree}
 
+{* {include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refresh_tree} *}
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 <div class="workBack">
 
 {if $gui->tc_current_version}
@@ -270,5 +272,9 @@ function validateStepsReorder(formOID)
 {/if}
 
 </div>
+{* 20100315 - franciscom *}
+{if $gui->refresh_tree == "yes"}
+	{include file="inc_refreshTree.tpl"}
+{/if}
 </body>
 </html>

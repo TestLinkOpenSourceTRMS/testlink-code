@@ -1,14 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.6 2009/11/22 16:19:56 franciscom Exp $
+$Id: containerEdit.tpl,v 1.7 2010/03/15 12:25:13 amkhullar Exp $
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
+20100315 - amitkhullar - Added Cancel button
 20091122 - franciscom - refactoring to use alert_message() and $labels
 
 *}
 {lang_get var="labels"
-          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,warning'}
+          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -59,6 +60,7 @@ function validateForm(f)
 
 		<div style="float: right;">
 			<input type="submit" name="update_testsuite" value="{$labels.btn_save}" />
+		<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
 		</div>
 	 
 	 {assign var=this_template_dir value=$smarty.template|dirname}
@@ -77,7 +79,11 @@ function validateForm(f)
    <a href={$gsmarty_href_keywordsView}>{$labels.tc_keywords}</a>
 	 {include file="opt_transfer.inc.tpl" option_transfer=$opt_cfg}
 	 </div>
-
+	<br></br>
+	<div style="float: left;">
+		<input type="submit" name="update_testsuite" value="{$labels.btn_save}" />
+		<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
+	</div>
 	</form>
 </div>
 

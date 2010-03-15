@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcAssign2Tplan.tpl,v 1.5 2010/01/24 10:51:04 franciscom Exp $
+$Id: tcAssign2Tplan.tpl,v 1.6 2010/03/15 12:25:36 amkhullar Exp $
 Purpose: manage assignment of A test case version to N test plans 
          while working on test specification 
  
@@ -8,7 +8,7 @@ rev: BUGID 2378
     
 *}
 {lang_get var='labels' 
-          s='testproject,test_plan,th_id,please_select_one_testplan,platform,
+          s='testproject,test_plan,th_id,please_select_one_testplan,platform,btn_cancel,
              cancel,warning,version,btn_add,testplan_usage,no_test_plans' }
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -72,6 +72,8 @@ function check_action_precondition(container_id,action)
 <input type="submit" id="add2testplan"  name="add2testplan" value="{$labels.btn_add}"       
        onclick="return check_action_precondition('checkboxes','default');" />
 {/if}
+<input type="button" name="cancel" value="{$labels.btn_cancel}" 
+  			                   onclick="javascript:history.back();" />  
 </form>
 {else}
   {$labels.no_test_plans}

@@ -105,46 +105,8 @@
  
  
 ]]> 
-</details></testsuite><testsuite name="Login" >
-<node_order><![CDATA[4]]></node_order>
-<details><![CDATA[/** Testauite:<br /> Fill in:<br />  <table border="0"> <tbody><tr><td>Title</td><td>Scope</td></tr> <tr><td>Author name</td></tr> </tbody></table> <br />   **/ 
- 
- 
- 
-]]> 
-</details>
-<testcase internalid="854" name="Login with wrong user/password">
-	<node_order><![CDATA[100]]></node_order>
-	<externalid><![CDATA[6]]></externalid>
-	<summary><![CDATA[]]></summary>
-	<preconditions><![CDATA[]]></preconditions>
-	<executiontype><![CDATA[1]]></executiontype>
-	<importance><![CDATA[2]]></importance>
-
-</testcase>
-</testsuite><testsuite name="Manage your personal data" >
-<node_order><![CDATA[5]]></node_order>
-<details><![CDATA[ 
- 
- 
- 
-]]> 
-</details></testsuite><testsuite name="Metrics Dashboard" >
-<node_order><![CDATA[6]]></node_order>
-<details><![CDATA[ 
- 
- 
- 
-]]> 
-</details></testsuite><testsuite name="Milestones Management" >
-<node_order><![CDATA[7]]></node_order>
-<details><![CDATA[ 
- 
- 
- 
-]]> 
 </details></testsuite><testsuite name="Installation" >
-<node_order><![CDATA[8]]></node_order>
+<node_order><![CDATA[4]]></node_order>
 <details><![CDATA[ 
  
  
@@ -185,6 +147,44 @@
 
 </testcase>
 </testsuite></testsuite><testsuite name="Keyword Management" >
+<node_order><![CDATA[5]]></node_order>
+<details><![CDATA[ 
+ 
+ 
+ 
+]]> 
+</details></testsuite><testsuite name="Login" >
+<node_order><![CDATA[6]]></node_order>
+<details><![CDATA[/** Testauite:<br /> Fill in:<br />  <table border="0"> <tbody><tr><td>Title</td><td>Scope</td></tr> <tr><td>Author name</td></tr> </tbody></table> <br />   **/ 
+ 
+ 
+ 
+]]> 
+</details>
+<testcase internalid="854" name="Login with wrong user/password">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[6]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite><testsuite name="Manage your personal data" >
+<node_order><![CDATA[7]]></node_order>
+<details><![CDATA[ 
+ 
+ 
+ 
+]]> 
+</details></testsuite><testsuite name="Metrics Dashboard" >
+<node_order><![CDATA[8]]></node_order>
+<details><![CDATA[ 
+ 
+ 
+ 
+]]> 
+</details></testsuite><testsuite name="Milestones Management" >
 <node_order><![CDATA[9]]></node_order>
 <details><![CDATA[ 
  

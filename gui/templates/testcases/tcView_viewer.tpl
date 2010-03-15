@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.56 2010/03/01 20:49:24 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.57 2010/03/15 12:26:30 amkhullar Exp $
 viewer for test case in test specification
 
 rev:
@@ -364,7 +364,7 @@ rev:
       			  <td>
       				{section name=item loop=$args_reqs}
       					<span onclick="javascript: open_top('{$hrefReqMgmt}{$args_reqs[item].id}');"
-      					style="cursor:  pointer;">[{$args_reqs[item].req_spec_title|escape}]&nbsp;{$args_reqs[item].req_doc_id|escape}:{$args_reqs[item].title|escape}</span>
+      					style="cursor:  pointer;  color: #0000ff; ">[{$args_reqs[item].req_spec_title|escape}]&nbsp;{$args_reqs[item].req_doc_id|escape}:{$args_reqs[item].title|escape}</span>
       					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}
       					{$labels.none}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2010/02/18 06:42:10 $  by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2010/03/15 21:12:35 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -197,8 +197,6 @@ class testcaseCommands
 				$this->tcaseMgr->html_table_of_custom_field_inputs($argsObj->tcase_id,null,'design','',
 				                                                   null,null,null,$locationFilter);
 		}	
-        new dBug($cf_smarty);
-
    		$templateCfg = templateConfiguration('tcEdit');
 		$guiObj->cf = $cf_smarty;
     	$guiObj->tc=$tc_data[0];

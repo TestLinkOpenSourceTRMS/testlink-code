@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Id: archiveData.php,v 1.65 2010/03/02 10:18:00 asimon83 Exp $
+ * @version $Id: archiveData.php,v 1.66 2010/03/15 21:13:00 franciscom Exp $
  * @author Martin Havlat
  *
  * Allows you to show test suites, test cases.
  * Normally launched from tree navigator.
  *
  * rev :
+ *  20100315 - franciscom - fixed refesh tree logic	
  *  20100223 - asimon - BUGID 3049
  *  20100124 - franciscom - pass platform info to testcase.show()
  *	20100103 - franciscom - changes on calls to show()
@@ -30,6 +31,8 @@ $smarty = new TLSmarty();
 $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
 
+// new dBug($_REQUEST);
+
 switch($args->feature)
 {
 	case 'testproject':
@@ -37,9 +40,6 @@ switch($args->feature)
 		$item_mgr = new $args->feature($db);
 		$gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$gui->id = $args->id;
-		// $smarty->assign('id',$args->id);
-		// $smarty->assign('attachmentInfos',$attachments);
-		
 		if($args->feature == 'testproject')
 		{
 			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id);
@@ -88,8 +88,7 @@ switch($args->feature)
 		$gui->mainTitle = lang_get('remove_assigned_testcases');
 		$gui->page_title = lang_get('testplan');
 		$gui->refreshTree = false;
-		$gui->unassign_all_tcs_warning_msg = 
-				sprintf(lang_get('unassign_all_tcs_warning_msg'), $gui->tplan_name);
+		$gui->unassign_all_tcs_warning_msg = sprintf(lang_get('unassign_all_tcs_warning_msg'), $gui->tplan_name);
 		
 		$smarty->assign('gui', $gui);
 		$smarty->display($templateCfg->template_dir . 'containerView.tpl');
@@ -100,6 +99,7 @@ switch($args->feature)
 		$path_info = null;
 		$get_path_info = false;
 		$item_mgr = new testcase($db);
+		$viewerArgs['refresh_tree'] = 'no';
     	
    		// has been called from a test case search
 		if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
@@ -157,6 +157,9 @@ function init_args(&$viewerCfg)
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
 	
+	// echo __FUNCTION__;
+	// new dBug($args);
+	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     //@TODO schlundus, rename Parameter from edit to feature
     $args->feature = $args->edit;
@@ -177,13 +180,18 @@ function init_args(&$viewerCfg)
 			$args->id = is_null($args->id) ? 0 : $args->id;
 			$spec_cfg = config_get('spec_cfg');
 			$viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
-			$viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh ? "yes" : "no";
 			$viewerCfg['disable_edit'] = 0;
 
-			if(isset($_SESSION['tcspec_refresh_on_action']))
-			{
-				$viewerCfg['refresh_tree'] = $_SESSION['tcspec_refresh_on_action'];
-            }
+			// need to understand if using this logic is ok
+			// Why I'm ignoring $args->tcspec_refresh_on_action ?
+			// Seems here I have to set refresh always to NO!!!
+			//
+			// $viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh ? "yes" : "no";
+			// if(isset($_SESSION['tcspec_refresh_on_action']))
+			// {
+			// 	$viewerCfg['refresh_tree'] = $_SESSION['tcspec_refresh_on_action'];
+            // }
+            $viewerCfg['refresh_tree'] = 'no';
 			break;
     }
     $cfg = config_get('testcase_cfg');

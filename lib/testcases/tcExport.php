@@ -5,13 +5,13 @@
  *
  * Filename $RCSfile: tcExport.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/03/15 21:44:34 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/03/15 21:44:58 $ by $Author: franciscom $
  *
  * Scope: test case and test suites export
  * 
  * Revisions:
- * 20100315 - amitkhullar - Added chkBox options for Requirements and CFields for Export.
+ * 20100315 - amitkhullar - Added checkboxes options for Requirements and CFields for Export.
  * 20081027 - martin - cleanup
  * 20070113 - franciscom - added logic to create message when there is 
  *                         nothing to export.

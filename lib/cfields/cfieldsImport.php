@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: cfieldsImport.php,v 1.4 2010/02/14 17:33:57 franciscom Exp $
+ * @version    	CVS: $Id: cfieldsImport.php,v 1.5 2010/03/15 20:22:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *		20090719 - franciscom - db table prefix management		
+ * 20100315 - franciscom - added tlInputParameter() on init_args
+ * 20090719 - franciscom - db table prefix management		
  *
  */
 require('../../config.inc.php');
@@ -21,13 +22,13 @@ require_once('common.php');
 require_once('xml.inc.php');
 
 testlinkInitPage($db,false,false,"checkRights");
-$gui=new stdClass();
 $templateCfg = templateConfiguration();
-$gui->page_title=lang_get('import_cfields');
-
-$args = init_args();
 
 $resultMap = null;
+$args = init_args();
+
+$gui=new stdClass();
+$gui->page_title=lang_get('import_cfields');
 $gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
 $gui->file_check = array('show_results' => 0, 'status_ok' => 1, 
                          'msg' => 'ok', 'filename' => '');
@@ -64,10 +65,18 @@ function init_args()
 {
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-  	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
-  	$args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
+
+	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
+	 				 "export_filename" => array(tlInputParameter::STRING_N,0,100),
+	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048));
+
+	R_PARAMS($iParams,$args);
+
+  	// $args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
+  	// $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
+  	// $args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
+
   	$args->userID = $_SESSION['userID'];
-  	$args->goback_url = isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
 	return $args;
 }

@@ -1,19 +1,24 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsView.tpl,v 1.7 2010/01/21 22:05:10 franciscom Exp $ 
+$Id: cfieldsView.tpl,v 1.8 2010/03/15 20:25:00 franciscom Exp $ 
 
 rev :
+     20100315 - franciscom - added management on goback_url for export action
      20090503 - franciscom - BUGID 2425 - commented show_on_design and show_on_testplan_design 
                                           till new implementation
-     
      20080810 - franciscom - BUGID 1650 (REQ)
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {assign var="cfViewAction" value="lib/cfields/cfieldsView.php"}
+
 {assign var="cfImportAction" value="lib/cfields/cfieldsImport.php?goback_url="}
 {assign var="importCfieldsAction" value="$basehref$cfImportAction$basehref$cfViewAction"}
+
+{assign var="cfExportAction" value="lib/cfields/cfieldsExport.php?goback_url="}
+{assign var="exportCfieldsAction" value="$basehref$cfExportAction$basehref$cfViewAction"}
+
 
 {lang_get var="labels"
           s="name,label,type,title_cfields_mgmt,manage_cfield,btn_cfields_create,
@@ -62,7 +67,7 @@ rev :
     </form>
     </span>
     <span>
-	  <form method="post" action="lib/cfields/cfieldsExport.php" name="cfieldsExport">
+	  <form method="post" action="{$exportCfieldsAction}" name="cfieldsExport">
 		  <input type="submit" name="export_cf" id="export_cf"
 		         style="margin-left: 3px;" value="{$labels.btn_export}" />
 		         

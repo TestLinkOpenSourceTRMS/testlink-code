@@ -1,9 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsExport.tpl,v 1.2 2009/02/07 19:44:03 schlundus Exp $ 
+$Id: cfieldsExport.tpl,v 1.3 2010/03/15 20:25:00 franciscom Exp $ 
 Purpose: smarty template - custom fields export
 rev:
-
+  20100315 - franciscom - improvement on goback management
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -69,8 +69,11 @@ function validateForm(f)
   	  <input type="hidden" name="doAction" id="doAction" value="" />
   		<input type="submit" name="doExport" id="doExport" value="{$labels.btn_export}" 
   		                     onclick="doAction.value=this.id" />
-  		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
-  			                   onclick="javascript:history.back();" />
+  		<input type="button" name="cancel" value="{$labels.btn_cancel}"
+    		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+    		     {else}  onclick="javascript:history.back();" {/if} />
+
+
   	</div>
   </form>
 {else}

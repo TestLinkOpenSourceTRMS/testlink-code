@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: cfieldsExport.php,v 1.3 2009/07/19 19:23:05 franciscom Exp $
+ * @version    	CVS: $Id: cfieldsExport.php,v 1.4 2010/03/15 20:23:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *		20090719 - franciscom - db table prefix management		
+ * 20100315 - franciscom - added tlInputParameter() on init_args + goback managament
+ * 20090719 - franciscom - db table prefix management		
  *
  */
 require_once("../../config.inc.php");
@@ -21,14 +22,14 @@ require_once("common.php");
 require_once('../../third_party/adodb_xml/class.ADODB_XML.php');
 
 testlinkInitPage($db,false,false,"checkRights");
-$gui = new stdClass();
 $templateCfg = templateConfiguration();
+$args = init_args();
 
+$gui = new stdClass();
 $gui->page_title = lang_get('export_cfields');
 $gui->do_it = 1;
 $gui->nothing_todo_msg = '';
-
-$args = init_args();
+$gui->goback_url = !is_null($args->goback_url) ? $args->goback_url : ''; 
 $gui->export_filename = is_null($args->export_filename) ? 'customFields.xml' : $args->export_filename;
 $gui->exportTypes = array('XML' => 'XML');
 
@@ -59,8 +60,14 @@ function init_args()
 {
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
-	$args->doAction = isset($_REQUEST['doAction']) ? $_REQUEST['doAction'] : null;
-	$args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
+
+	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
+	 				 "export_filename" => array(tlInputParameter::STRING_N,0,100),
+	 				 "goback_url" => array(tlInputParameter::STRING_N,0,2048));
+
+	R_PARAMS($iParams,$args);
+  	$args->userID = $_SESSION['userID'];
+
 	return $args;
 }
 

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/03/13 14:04:30 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/03/16 08:33:21 $ $Author: amkhullar $
  *
  * @author Andreas Morsing
  *
@@ -274,9 +274,13 @@ class bugtrackingInterface
 		$valid = true;	
 	  	$forbidden_chars = '/\D/i';  
 		if (preg_match($forbidden_chars, $id))
+    	{
 			$valid = false;	
+    	}
 		else 
-      		$valid = (intval($id) > 0);	
+    	{
+	    	$valid = (intval($id) > 0);	
+    	}
 
       	return $valid;
 	}

@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.290 2010/03/14 16:30:52 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.291 2010/03/16 08:34:21 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -246,6 +246,7 @@ $g_removeEventsOlderThan = 30;
  * 'BUGZILLA'  : edit configuration in TL_ABS_PATH/cfg/bugzilla.cfg.php
  * 'MANTIS'    : edit configuration in TL_ABS_PATH/cfg/mantis.cfg.php
  * 'JIRA'      : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
+ * 'JIRASOAP'  : edit configuration in TL_ABS_PATH/cfg/jira.cfg.php
  * 'TRACKPLUS' : edit configuration in TL_ABS_PATH/cfg/trackplus.cfg.php
  * 'EVENTUM'   : edit configuration in TL_ABS_PATH/cfg/eventum.cfg.php
  * 'SEAPINE'   : edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php

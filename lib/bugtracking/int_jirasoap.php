@@ -4,19 +4,19 @@
  *
  * Filename $RCSfile: int_jirasoap.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/08/18 19:58:14 $ $Author: schlundus $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/03/16 08:33:40 $ $Author: amkhullar $
  *
  * @author amitkhullar <amkhullar@gmail.com>
  *
  * Integration with JIRA Using SOAP Interface.
  *
- *
+ * 20100316 - amitkhullar - BugID 3287
  *
 **/
 /** Interface name */
 define('BUG_INTERFACE_CLASSNAME',"jirasoapInterface");
-set_error_handler("exception_error_handler", E_ALL);
+//set_error_handler("exception_error_handler", E_ALL);
 class jirasoapInterface extends bugtrackingInterface
 {
     var $dbHost = null;
@@ -29,7 +29,7 @@ class jirasoapInterface extends bugtrackingInterface
     var $jiraUsername = BUG_TRACK_USERNAME;
     var $jiraPassword = BUG_TRACK_PASSWORD;
     var $baseURL = BUG_TRACK_HREF;
-    var $bugDetails = BUG_TRACK_DETAILS;
+    //var $bugDetails = BUG_TRACK_DETAILS;
     var $soapURL =  null;
     var $client = null;
 
@@ -351,7 +351,7 @@ class jirasoapInterface extends bugtrackingInterface
         }
         if($status_ok)
         {
-            $forbidden_chars = '/[!|£%&/()=?]/';
+            $forbidden_chars = '/[!|£%&()\/=?]/';
             if (preg_match($forbidden_chars, $id))
             {
                 $status_ok = false;
@@ -366,7 +366,7 @@ class jirasoapInterface extends bugtrackingInterface
      **/
     function checkBugID_existence($id)
     {
-        $status_ok = 0;
+        $status_ok = 1; //BUG 3287
         $status = $this->checkBugID($id);
         if ($status)
         {

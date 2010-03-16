@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.93 2010/03/15 21:56:59 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.94 2010/03/16 04:32:17 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20100315 - amitkhullar - Added options for Requirements and CFields for Export.
+ * 20100315 - amitkhullar - Added options for CFields for Export.
  * 20100227 - franciscom - BUGID 0003233: After test suite edit, display of Test suite do not 
  *                         have upload button enabled for attachment
  * 20100210	- franciscom - keywords XML export refactored

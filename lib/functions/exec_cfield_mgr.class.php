@@ -8,10 +8,11 @@
  * @package 	TestLink
  * @author 		jbarchibald
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.11 2009/09/10 09:12:58 havlat Exp $
+ * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.12 2010/03/16 13:17:17 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *      20100316 - Julian - cosmetical changes for input field sizes of custom fields
  *      20090514 - franciscom - localize label
  *      20071006 - franciscom - exec_cfield_mgr() interface change
  *                              get_linked_cfields() interface change
@@ -57,14 +58,27 @@ class exec_cfield_mgr extends cfield_mgr
 function html_table_of_custom_field_inputs($htmlInputSize=0)
 {
     $cf_smarty = '';
+	$inputSize = 0;
+	
+	$custom_field_types_id=array_flip($this->custom_field_types);
+	
     if( !is_null($this->cf_map) )
     {
         foreach($this->cf_map as $cf_id => $cf_info)
         {
+			// special input size for list and multiselect list
+			if ($cf_info['type'] == $custom_field_types_id['list']) { 
+				$inputSize = 3; 
+			} else if ($cf_info['type'] == $custom_field_types_id['multiselection list']) {
+				$inputSize = 4;
+			} else { 
+				$inputSize = $htmlInputSize; 
+			}
+			
             // true => do not create input in audit log
             $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
             $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-                          $this->string_custom_field_input($cf_info,'',$htmlInputSize) . "</td></tr>\n";
+                          $this->string_custom_field_input($cf_info,'',$inputSize) . "</td></tr>\n";
         }
     }
     
@@ -107,11 +121,18 @@ function html_table_of_custom_field_inputs($htmlInputSize=0)
             if ($value['type'] == $custom_field_types_id['date'] ) {
                 unset($cf[$key]);
             }
-
-            // Need to debug how this will work as well.. there is always something selected by default.
-            if ($value['type'] == $custom_field_types_id['list'] ) {
+			
+			if ($value['type'] == $custom_field_types_id['datetime'] ) {
                 unset($cf[$key]);
             }
+
+            // the following is commented out because the custom field lists 
+            // don't have something preselected anymore
+            //
+            // Need to debug how this will work as well.. there is always something selected by default.
+            // if ($value['type'] == $custom_field_types_id['list'] ) {
+                // unset($cf[$key]);
+            //}
         }
       } // if( !is_null($cf) and count($cf) > 0 )
       return($cf);

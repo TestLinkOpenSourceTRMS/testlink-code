@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.96 2010/03/02 09:19:37 asimon83 Exp $
+// $Id: testlink_library.js,v 1.97 2010/03/16 13:17:17 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -723,7 +723,7 @@ function openLinkedReqWindow(req_id, anchor)
 	var feature_url = "lib/requirements/reqView.php";
 	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + anchor;
 
-	windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
+	windowCfg="width=800,height=400,resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+feature_url,"Requirement",windowCfg);
 }
 
@@ -746,7 +746,7 @@ function openLinkedReqSpecWindow(reqspec_id, anchor)
 	var feature_url = "lib/requirements/reqSpecView.php";
 	feature_url += "?req_spec_id=" + reqspec_id + anchor;
 
-	windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
+	windowCfg="width=800,height=400,resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+feature_url,"Requirement Specification",windowCfg);
 }
 
@@ -1059,8 +1059,8 @@ function get_docs(name, server_name)
  */
 function triggerBuildChooser(deactivatable_id, filter_method_combo_id, specific_build_value) 
 {
-	deactivatable = document.getElementById(deactivatable_id);
-	filter_method_combo = document.getElementById(filter_method_combo_id);
+	var deactivatable = document.getElementById(deactivatable_id);
+	var filter_method_combo = document.getElementById(filter_method_combo_id);
 	var index = filter_method_combo.options.selectedIndex;  
 	deactivatable.style.visibility = "hidden";
 	
@@ -1084,8 +1084,8 @@ function triggerBuildChooser(deactivatable_id, filter_method_combo_id, specific_
 function triggerAssignedBox(filter_assigned_to_id, include_unassigned_id,
 							str_option_any, str_option_none, str_option_somebody) 
 {
-	filter_assigned_to = document.getElementById(filter_assigned_to_id);
-	include_unassigned = document.getElementById(include_unassigned_id);
+	var filter_assigned_to = document.getElementById(filter_assigned_to_id);
+	var include_unassigned = document.getElementById(include_unassigned_id);
 	var index = filter_assigned_to.options.selectedIndex;
 	var choice = filter_assigned_to.options[index].label;
 	include_unassigned.disabled = false;

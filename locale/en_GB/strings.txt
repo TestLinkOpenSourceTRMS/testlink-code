@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.577 2010/03/14 15:35:11 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.578 2010/03/17 19:38:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2351,6 +2351,9 @@ $TLS_no_reqspec_defined_can_not_import="Requirements are present on import file 
                                        "but can not be imported because there are no " .
                                        "Requirement Specification defined for this Test Project"; 
 
+$TLS_same_internalID = 'Same Internal ID';
+$TLS_same_externalID = 'Same External ID (only applicable to Test Cases)';
+$TLS_same_name = 'Same name';
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "There are no Test Cases to export";

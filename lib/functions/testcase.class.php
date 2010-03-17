@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.253 2010/03/15 21:51:31 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.254 2010/03/17 21:58:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100317 - franciscom - new method get_by_external()
  * 20100315 - amitkhullar - Added  options for Requirements and CFields for Export.
  * 20100309 - franciscom - get_by_id() - improvements on control to apply when LATEST_VERSION is requested.
  * 20100309 - franciscom - get_exec_status() - interface changes
@@ -474,13 +475,13 @@ class testcase extends tlObjectWithAttachments
 	    }
 			
 	    $sql = " SELECT DISTINCT NHA.id,NHA.name,TCV.tc_external_id" .
-			       " FROM {$this->tables['nodes_hierarchy']} NHA, " .
-			       " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['tcversions']} TCV  " .
-			       " WHERE NHA.node_type_id = {$this->my_node_type} " .
-			       " AND NHB.parent_id=NHA.id " .
-			       " AND TCV.id=NHB.id " .
-			       " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
-			       " AND NHA.parent_id={$parent_id} {$check_criteria}";
+			   " FROM {$this->tables['nodes_hierarchy']} NHA, " .
+			   " {$this->tables['nodes_hierarchy']} NHB, {$this->tables['tcversions']} TCV  " .
+			   " WHERE NHA.node_type_id = {$this->my_node_type} " .
+			   " AND NHB.parent_id=NHA.id " .
+			   " AND TCV.id=NHB.id " .
+			   " AND NHB.node_type_id = {$this->node_types_descr_id['testcase_version']} " .
+			   " AND NHA.parent_id={$parent_id} {$check_criteria}";
 	
 		$rs = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
 	    if( is_null($rs) || count($rs) == 0 )
@@ -4243,5 +4244,33 @@ class testcase extends tlObjectWithAttachments
 		}
 		return $ret;
 	}
+
+	/**
+	 * get by external id
+	 *
+	 */
+	function get_by_external($external_id, $parent_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $recordset = null;
+		$sql = "/* $debugMsg */ " . 	    
+	           " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .
+	           " NH_TCASE_PARENT.name AS tsuite_name, TCV.tc_external_id " .
+			   " FROM {$this->tables['nodes_hierarchy']} NH_TCASE, " .
+			   " {$this->tables['nodes_hierarchy']} NH_TCASE_PARENT, " .
+			   " {$this->tables['nodes_hierarchy']} NH_TCVERSIONS," .
+			   " {$this->tables['tcversions']}  TCV  " .
+			   " WHERE NH_TCVERSIONS.id=TCV.id " .
+			   " AND NH_TCVERSIONS.parent_id=NH_TCASE.id " .
+			   " AND NH_TCASE_PARENT.id=NH_TCASE.parent_id " .
+			   " AND NH_TCASE.node_type_id = {$this->my_node_type} " .
+			   " AND TCV.tc_external_id=$external_id ";
+	   
+		$sql .= " AND NH_TCASE_PARENT.id = {$parent_id}" ;
+		$recordset = $this->db->fetchRowsIntoMap($sql,'id');
+	    return $recordset;
+	}
+
+
 } // end class
 ?>

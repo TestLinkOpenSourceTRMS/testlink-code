@@ -1,14 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.9 2010/02/21 15:07:49 franciscom Exp $
+$Id: tcImport.tpl,v 1.10 2010/03/17 22:00:23 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
-rev: 20091122 - franciscom - refacoting to use alert_message()
+rev: 20091122 - franciscom - refacotirng to use alert_message()
 *}
 
 {lang_get var="labels"
           s='file_type,view_file_format_doc,local_file,
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
+             duplicate_criteria,action_for_duplicates,
              action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -40,8 +41,17 @@ rev: 20091122 - franciscom - refacoting to use alert_message()
 	    <td><input type="file" name="uploadedFile" 
 	                           size="{#FILENAME_SIZE#}" maxlength="{#FILENAME_MAXLEN#}"/></td>
 	</tr>
+	{if $gui->hitOptions != ''}
+	  <tr><td>{$labels.duplicate_criteria} </td>
+	      <td><select name="hit_criteria" id="hit_criteria">
+	  			  {html_options options=$gui->hitOptions selected=$gui->hitCriteria}
+	  		    </select>
+      </td>
+	  </tr>
+	{/if}
+
 	{if $gui->actionOptions != ''}
-	<tr><td>{$labels.action_on_duplicated_name} </td>
+	<tr><td>{$labels.action_for_duplicates} </td>
 	    <td><select name="action_on_duplicated_name">
 				  {html_options options=$gui->actionOptions selected=$gui->action_on_duplicated_name}
 			    </select>

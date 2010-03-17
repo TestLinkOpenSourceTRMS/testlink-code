@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.69 $
- * @modified $Date: 2010/03/13 10:11:14 $ by $Author: franciscom $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2010/03/17 22:00:18 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20100317 - franciscom - BUGID 3236 - work in progress
  *	20100214 - franciscom - refactoring to use only simpleXML functions
  *	20100106 - franciscom - Multiple Test Case Steps Feature
  *	20090831 - franciscom - preconditions
@@ -109,9 +110,17 @@ if ($args->do_upload)
 		if($file_check['status_ok'] && $pimport_fn)
 		{
 			tLog('Check is Ok.');
-			$resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,
-										           $args->userID,$args->useRecursion,
-										           $args->bIntoProject,$args->action_on_duplicated_name);
+			$opt = array();
+			$opt['useRecursion'] = $args->useRecursion;
+			$opt['importIntoProject'] = $args->bIntoProject;
+			$opt['duplicateLogic'] = array('hitCriteria' => $args->hit_criteria,
+			                               'actionOnHit' => $args->action_on_duplicated_name);
+			
+			
+			// $resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,
+			// 						 $args->userID,$args->useRecursion,
+			// 					     ,$args->action_on_duplicated_name);
+			$resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,$args->userID,$opt);
 		}
 	}
 	else
@@ -126,6 +135,7 @@ if($args->useRecursion)
 {
   $obj_mgr = new testsuite($db);
   $gui->actionOptions=null;
+  $gui->hitOptions=null;
 }
 else
 {
@@ -133,6 +143,10 @@ else
   $gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
                             'generate_new' => lang_get('generate_new_testcase'),
                             'create_new_version' => lang_get('create_new_testcase_version'));
+
+  $gui->hitOptions=array('name' => lang_get('same_name'),
+                         'internalID' => lang_get('same_internalID'),
+                         'externalID' => lang_get('same_externalID'));
 
 }
 
@@ -162,13 +176,23 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   args :
   returns: 
 */
-function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
-                                   $userID,$useRecursion,$importIntoProject = 0,
-                                   $duplicateLogic=null)
+// function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
+//                                    $userID,$useRecursion,$importIntoProject = 0,
+//                                    $duplicateLogic=null)
+function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$options=null)
 {
 	tLog('importTestCaseDataFromXML called for file: '. $fileName);
 	$xmlTCs = null;
 	$resultMap  = null;
+	$my = array();
+	$my['options'] = array('useRecursion' => false, 'importIntoProject' => 0,
+	                       'duplicateLogic' => array('hitCriteria' => 'name', 'actionOnHit' => null)); 
+    $my['options'] = array_merge($my['options'], (array)$options);
+    foreach($my['options'] as $varname => $value)
+    {
+    	$$varname = $value;
+    }
+	
 	if (file_exists($fileName))
 	{
 		$xml = @simplexml_load_file($fileName);
@@ -211,18 +235,23 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
   returns: 
   
   rev:
+ 	  20100317 - franciscom - manage different criteria to decide that test case
+ 	  	                      is present on system
+ 	  	                                 		
       20090204 - franciscom - use value of node_order readed from file
       
       configure create to rename test case if exists 
 */
+//function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
+//                            $userID,$kwMap,$actionOnDuplicatedName='generate_new')
+
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
-                            $userID,$kwMap,$actionOnDuplicatedName='generate_new')
+                            $userID,$kwMap,$duplicatedLogic = array('hitCriteria' => 'name', 'actionOnHit' => null))
 {
 	if (!$tcData)
 	{
 		return;
 	}
-
 	$tprojectHas=array('customFields' => false, 'reqSpec' => false);
   	$hasCustomFieldsInfo=false;
   	$hasRequirements=false;
@@ -273,6 +302,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$steps = $tc['steps'];
 		$node_order = isset($tc['node_order']) ? intval($tc['node_order']) : testcase::DEFAULT_ORDER;
 		$externalid = $tc['externalid'];
+		$internalid = $tc['internalid'];
 		$preconditions = $tc['preconditions'];
 		$exec_type = isset($tc['execution_type']) ? $tc['execution_type'] : TESTCASE_EXECUTION_TYPE_MANUAL;
 		$importance = isset($tc['importance']) ? $tc['importance'] : MEDIUM;		
@@ -296,9 +326,29 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		}	
 		
 		$doCreate=true;
-		if( $actionOnDuplicatedName == 'update_last_version' )
+		if( $duplicatedLogic['actionOnHit'] == 'update_last_version' )
 		{
-			$info=$tcase_mgr->getDuplicatesByName($name,$container_id);
+			switch($duplicatedLogic['hitCriteria'])
+			{
+				case 'name':
+					$info = $tcase_mgr->getDuplicatesByName($name,$container_id);
+				break;
+				
+				case 'internalID':
+					$dummy = $tcase_mgr->tree_manager->get_node_hierarchy_info($internalid,$container_id);
+					if( !is_null($dummy) )
+					{
+						$info[$internalid] = $dummy;
+					}
+				break;
+		
+				case 'externalID':
+					$info = $tcase_mgr->get_by_external($externalid,$container_id);
+				break;
+		
+				
+   		 	}
+
    		 	if( !is_null($info) )
    		 	{
    		 		$tcase_qty = count($info);
@@ -331,7 +381,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		if( $doCreate )
 		{
 		    $createOptions = array( 'check_duplicate_name' => testcase::CHECK_DUPLICATE_NAME, 
-	                                'action_on_duplicate_name' => $actionOnDuplicatedName);
+	                                'action_on_duplicate_name' => $duplicatedLogic['actionOnHit']);
 
 		    if ($ret = $tcase_mgr->create($container_id,$name,$summary,$preconditions,$steps,
 		                                  $userID,$kwIDs,$node_order,testcase::AUTOMATIC_ID,
@@ -602,6 +652,9 @@ function init_args()
 
     $key='action_on_duplicated_name';
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'generate_new';
+
+    $key='hit_criteria';
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'name';
        
         
     $args->importType = isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
@@ -761,6 +814,8 @@ function importTestCasesFromSimpleXML(&$db,&$simpleXMLObj,$parentID,$tproject_id
 /**
  * 
  *
+ * @internal revisions
+ * 20100317 - added internalid - BUGID 3236
  */
 function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 {
@@ -776,7 +831,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 	
 	$tcXML['elements'] = array('string' => array("summary","preconditions"),
 			                   'integer' => array("node_order","externalid"));
-	$tcXML['attributes'] = array('string' => array("name"));
+	$tcXML['attributes'] = array('string' => array("name"), 'integer' =>array('internalid'));
 
 	for($idx = 0; $idx < $loops2do; $idx++)
 	{

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.578 2010/03/17 19:38:07 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.579 2010/03/17 19:45:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2325,6 +2325,7 @@ $TLS_error_sendreport_no_email_credentials = "Email for this user is not specifi
 
 // ----- lib/testcases/tcImport.php -----
 $TLS_action_on_duplicated_name = "Action for duplicated names";
+$TLS_action_for_duplicates = "Action for duplicates";
 $TLS_already_exists_updated = "Already exists, data of LAST version has been updated.";
 $TLS_please_choose_file_to_import = "Please choose file to import";
 $TLS_title_tc_import_to = "Import Test Cases";
@@ -2351,9 +2352,11 @@ $TLS_no_reqspec_defined_can_not_import="Requirements are present on import file 
                                        "but can not be imported because there are no " .
                                        "Requirement Specification defined for this Test Project"; 
 
-$TLS_same_internalID = 'Same Internal ID';
-$TLS_same_externalID = 'Same External ID (only applicable to Test Cases)';
-$TLS_same_name = 'Same name';
+$TLS_same_internalID = 'has same Internal ID';
+$TLS_same_externalID = 'has same External ID'; // (only applicable to Test Cases)';
+$TLS_same_name = 'has same name';
+$TLS_duplicate_criteria = "Consider Test Case as duplicate if";
+
 
 // ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "There are no Test Cases to export";

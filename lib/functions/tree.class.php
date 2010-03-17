@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.83 2010/03/06 11:08:27 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.84 2010/03/17 21:58:01 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100317 - franciscom - get_node_hierarchy_info() interface changes.
  * 20100306 - franciscom - get_subtree_list() new argument to change output type
  *						   new method() - getAllItemsID - BUGID 0003003: EXTJS does not count # req's
  * 20100209 - franciscom - BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
@@ -159,28 +160,33 @@ class tree extends tlObject
               get all node hierarchy info from hierarchy table
 
     args : node_id: node id
-                    can be ana array
+                    can be an array
+           [parent_id]         
     
     returns: 
 
   */
-	function get_node_hierarchy_info($node_id) 
+	function get_node_hierarchy_info($node_id,$parent_id = null) 
 	{
-	  $sql = "SELECT * FROM {$this->object_table} WHERE id";
-	  $getidx=-1;
-	  $result=null;
-	  
-	  if( is_array($node_id) )
-	  {
-	      $sql .= " IN (" . implode(",",$node_id) . ") ";
-        $result=$this->db->fetchRowsIntoMap($sql,'id');    
-	  }
-	  else
-	  {
-	      $sql .= "= {$node_id}";
-		    $rs=$this->db->get_recordset($sql);
-		    $result=!is_null($rs) ? $rs[0] : null;
-	  } 
+	  	$sql = "SELECT * FROM {$this->object_table} WHERE id";
+	  	$getidx=-1;
+	  	$result=null;
+	  	
+	  	if( is_array($node_id) )
+	  	{
+	  	    $sql .= " IN (" . implode(",",$node_id) . ") ";
+      	  	$result=$this->db->fetchRowsIntoMap($sql,'id');    
+	  	}
+	  	else
+	  	{
+	  	    $sql .= "= {$node_id}";
+	  	    if( !is_null($parent_id) )
+	  	    {
+	  	    	$sql .= " AND parent_id={$parent_id} ";	
+	  	    }
+			$rs=$this->db->get_recordset($sql);
+			$result=!is_null($rs) ? $rs[0] : null;
+	  	} 
 		return $result;
 	}
 

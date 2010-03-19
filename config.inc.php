@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.292 2010/03/19 15:04:09 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.293 2010/03/19 19:53:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -971,7 +971,7 @@ $tlCfg->internal_links->req_spec_link_title->value = '';
 // additionally you can configure your own types.
 $tlCfg->req_cfg->relations = new stdClass();
 $tlCfg->req_cfg->relations->enable = TRUE;
-$tlCfg->req_cfg->relations->relations_between_different_testprojects = FALSE;
+$tlCfg->req_cfg->relations->interproject_linking = FALSE;
 
 // Requirement/testcase diff
 // default value of lines to show before and after each difference

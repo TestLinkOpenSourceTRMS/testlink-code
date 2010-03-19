@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2010/03/19 15:04:09 $ by $Author: asimon83 $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2010/03/19 22:03:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -512,16 +512,13 @@ class reqCommands
 		$op = array('ok' => true, 'msg' => $ok_msg);
 		$own_id = $argsObj->relation_source_req_id;
 		$authorID = $argsObj->user_id;
-		$tables = $this->reqMgr->getDBTables('req_relations');
-		$relTable = $tables['req_relations'];
-		
-		$tp = $argsObj->tproject_id;
+		$tproject_id = $argsObj->tproject_id;
 		if (isset($argsObj->relation_destination_testproject_id)) {
 			// relation destination belongs to another project
-			$tp = $argsObj->relation_destination_testproject_id;
+			$tproject_id = $argsObj->relation_destination_testproject_id;
 		}
 		
-		$other_req = $this->reqMgr->getByDocID($argsObj->relation_destination_req_doc_id, $tp);
+		$other_req = $this->reqMgr->getByDocID($argsObj->relation_destination_req_doc_id, $tproject_id);
 		if (count($other_req) < 1) {
 			// req doc ID was not ok
 			$op['ok'] = false;
@@ -544,13 +541,11 @@ class reqCommands
 			}
 			
 			if (!is_numeric($authorID) || !is_numeric($source_id) || !is_numeric($destination_id)) {
-				// at least one ID is not a number
 				$op['ok'] = false;
 				$op['msg'] = '<div class="error">' . lang_get('rel_add_error') . '</div>';
 			}
 			
 			if ($source_id == $destination_id) {
-				// don't link to yourself!
 				$op['ok'] = false;
 				$op['msg'] = '<div class="error">' . lang_get('rel_add_error_self') . '</div>';
 			}

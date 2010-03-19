@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.74 $
- * @modified $Date: 2010/03/19 21:23:51 $ by $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2010/03/19 22:03:15 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1780,28 +1780,13 @@ function html_table_of_custom_field_values($id)
 	public function check_if_relation_exists($first_id, $second_id, $rel_type_id) {
 		
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
-		// $table = $this->tables['req_relations'];
-		// $fields2get = 'source_id, destination_id, relation_type';
-		// $where = "WHERE ((source_id=$first_id AND destination_id=$second_id)"
-		// 				. " OR (source_id=$second_id AND destination_id=$first_id))"
-		// 				. " AND relation_type=$rel_type_id";
-		// $sql = " $debugMsg SELECT $fields2get FROM $table $where ";
-	    // 
-	    // 
-	    // 
-		// $result = $this->db->exec_query($sql);
-    	// if ($this->db->num_rows($result) > 0) {
-    	// 	// we already have this relation type for these two reqs
-		// 	return true;
-    	// }
-    	// return false;
 		$sql = " $debugMsg SELECT COUNT(0) AS qty " .
 			   " FROM {$this->tables['req_relations']} " .
 			   " WHERE ((source_id=$first_id AND destination_id=$second_id) " . 
 			   " OR (source_id=$second_id AND destination_id=$first_id)) " . 
 			   " AND relation_type=$rel_type_id";
-		$rs = $this->db->fetchRowsIntoMap($sql,'qty');
-    	return($rs['qty'] > 0);
+		$rs = $this->db->get_recordset($sql);
+    	return($rs[0]['qty'] > 0);
 	}
 	
 	

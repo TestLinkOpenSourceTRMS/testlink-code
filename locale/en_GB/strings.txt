@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.580 2010/03/19 15:04:09 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.581 2010/03/19 21:22:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2257,15 +2257,14 @@ $TLS_relations = "Relations";
 $TLS_new_relation = "New relation";
 $TLS_relation_project = "In TestProject";
 $TLS_in = "in project";
-$TLS_relation_destination_doc_id = "related Requirement Document ID";
+$TLS_relation_destination_doc_id = "Requirement Document ID";
 $TLS_new_rel_add_success = "New relation was added successfully.";
-$TLS_rel_add_error_dest_id = "Error adding new relation: Destination Document ID was invalid.";
+$TLS_rel_add_error_dest_id = "Destination Document ID is invalid.";
 $TLS_rel_add_error = "Error adding new relation.";
-$TLS_rel_add_error_self = "Error adding new relation: A Requirement cannot have a relation to itself.";
-$TLS_rel_add_error_exists_already = "Error adding new relation: There already is" .
-									" a relation of the same type between these two requirements.";
+$TLS_rel_add_error_self = "A Requirement cannot have a relation to itself.";
+$TLS_rel_add_error_exists_already = "There already is a relation of the same type between these two requirements.";
 $TLS_delete_rel_success = "Relation was deleted successfully.";
-$TLS_error_deleting_rel = "Error, relation could not be deleted.";
+$TLS_error_deleting_rel = "Relation could not be deleted.";
 $TLS_delete_rel_msgbox_title = "Delete relation";
 $TLS_delete_rel_msgbox_msg = "Really delete relation #%i?";
 $TLS_img_title_delete_relation = "Click to delete this relation.";

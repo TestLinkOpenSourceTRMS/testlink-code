@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.581 2010/03/19 21:22:58 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.582 2010/03/19 22:41:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -108,6 +108,10 @@ $TLS_title = "Title";
 $TLS_title_admin = "Administration";
 $TLS_warning = "Warning";
 $TLS_max_size_file_msg = "Max. allowed file size:  %s KB";
+
+$TLS_parent_child='is Parent or is Child';
+$TLS_blocks_depends = 'Blocks or Depends';
+$TLS_related_to='is related to';
 
 
 $TLS_total = "Total";
@@ -2262,7 +2266,7 @@ $TLS_new_rel_add_success = "New relation was added successfully.";
 $TLS_rel_add_error_dest_id = "Destination Document ID is invalid.";
 $TLS_rel_add_error = "Error adding new relation.";
 $TLS_rel_add_error_self = "A Requirement cannot have a relation to itself.";
-$TLS_rel_add_error_exists_already = "There already is a relation of the same type between these two requirements.";
+$TLS_rel_add_error_exists_already = "A relation of similar type (\"%s\") already exists between these two requirements.";
 $TLS_delete_rel_success = "Relation was deleted successfully.";
 $TLS_error_deleting_rel = "Relation could not be deleted.";
 $TLS_delete_rel_msgbox_title = "Delete relation";

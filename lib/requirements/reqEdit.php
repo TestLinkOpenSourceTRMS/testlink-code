@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.48 $
- * @modified $Date: 2010/03/03 10:41:24 $ by $Author: asimon83 $
+ * @version $Revision: 1.49 $
+ * @modified $Date: 2010/03/19 15:04:09 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
+ * 	                    BUGID 1748, requirement relations
  *  20100303 - asimon - bugfix, changed max length of req_doc_id in init_args() to 64 from 32
  *  					--> TODO why aren't the constants used here instead of magic numbers?
  *  20100205 - asimon - added requirement freezing
@@ -73,7 +75,13 @@ function init_args()
 			 		 "itemSet" => array(tlInputParameter::ARRAY_INT),
 					 "testcase_count" => array(tlInputParameter::ARRAY_INT),
 					 "req_version_id" => array(tlInputParameter::INT_N),
-					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL));	
+					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
+					 // BUGID 1748
+					 "relation_id" => array(tlInputParameter::INT_N),
+					 "relation_source_req_id" => array(tlInputParameter::INT_N),
+					 "relation_type" => array(tlInputParameter::STRING_N),
+					 "relation_destination_req_doc_id" => array(tlInputParameter::STRING_N,0,64),
+					 "relation_destination_testproject_id" => array(tlInputParameter::INT_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -82,12 +90,16 @@ function init_args()
 	$args->title = $args->req_title;
 	$args->arrReqIds = $args->req_id_cbox;
 
-
 	$args->basehref = $_SESSION['basehref'];
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : "";
 	$args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 
+	// BUGID 3307 - set to 0 if null, to avoid database errors with null value
+	if (!is_numeric($args->expected_coverage)) {
+		$args->expected_coverage = 0;
+	}
+	
 	return $args;
 }
 
@@ -107,10 +119,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                              'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
                              'copy' => 'doCopy', 'doCopy' => 'doCopy',
                              'doCreateVersion' => 'doCreateVersion',
-                             'doDeleteVersion' => '', 'doFreezeVersion' => 'doFreezeVersion',);
-
-
-
+                             'doDeleteVersion' => '', 'doFreezeVersion' => 'doFreezeVersion',
+                             // BUGID 1748
+                             'doAddRelation' => 'doAddRelation', 'doDeleteRelation' => 'doDeleteRelation');
 
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
 	switch($argsObj->doAction)
@@ -146,6 +157,9 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "doCopy":
         case "doCreateVersion":
         case "doDeleteVersion":
+        // BUGID 1748
+        case "doAddRelation":
+        case "doDeleteRelation":
             $renderType = 'template';
             $key2loop = get_object_vars($opObj);
             foreach($key2loop as $key => $value)
@@ -164,7 +178,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
             }
             else
             {
-                $renderType = 'redirect';  
+                $renderType = 'redirect';
             } 
         break;
     }

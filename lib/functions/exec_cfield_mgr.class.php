@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		jbarchibald
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.12 2010/03/16 13:17:17 asimon83 Exp $
+ * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.13 2010/03/19 15:04:09 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -70,7 +70,7 @@ function html_table_of_custom_field_inputs($htmlInputSize=0)
 			if ($cf_info['type'] == $custom_field_types_id['list']) { 
 				$inputSize = 3; 
 			} else if ($cf_info['type'] == $custom_field_types_id['multiselection list']) {
-				$inputSize = 4;
+				$inputSize = 3;
 			} else { 
 				$inputSize = $htmlInputSize; 
 			}

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.579 2010/03/17 19:45:16 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.580 2010/03/19 15:04:09 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2243,6 +2243,41 @@ $TLS_bulk_assigment_done = '%s assignments has been done';
 $TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';
 $TLS_req_title_available = 'Available Requirements';
 $TLS_no_req_spec_available = "No Requirements Specification available for this Test Project";
+
+
+// ----- requirement relations (BUGID 1748)
+$TLS_relation_id = "#";
+$TLS_current_req = "Current requirement";
+$TLS_relation_type = "Type";
+$TLS_relation_document = "Related Requirement";
+$TLS_relation_status = "Status";
+$TLS_relation_set_by = "Set by";
+$TLS_relation_delete = "Delete";
+$TLS_relations = "Relations";
+$TLS_new_relation = "New relation";
+$TLS_relation_project = "In TestProject";
+$TLS_in = "in project";
+$TLS_relation_destination_doc_id = "related Requirement Document ID";
+$TLS_new_rel_add_success = "New relation was added successfully.";
+$TLS_rel_add_error_dest_id = "Error adding new relation: Destination Document ID was invalid.";
+$TLS_rel_add_error = "Error adding new relation.";
+$TLS_rel_add_error_self = "Error adding new relation: A Requirement cannot have a relation to itself.";
+$TLS_rel_add_error_exists_already = "Error adding new relation: There already is" .
+									" a relation of the same type between these two requirements.";
+$TLS_delete_rel_success = "Relation was deleted successfully.";
+$TLS_error_deleting_rel = "Error, relation could not be deleted.";
+$TLS_delete_rel_msgbox_title = "Delete relation";
+$TLS_delete_rel_msgbox_msg = "Really delete relation #%i?";
+$TLS_img_title_delete_relation = "Click to delete this relation.";
+
+
+// ----- configured requirement relation types (BUGID 1748) -----
+$TLS_req_rel_is_parent_of = "parent of";
+$TLS_req_rel_is_child_of = "child of";
+$TLS_req_rel_blocks = "blocks";
+$TLS_req_rel_depends = "depends on";
+$TLS_req_rel_is_related_to = "related to";
+
 
 
 // ----- lib/results/resultsBugs.php -----

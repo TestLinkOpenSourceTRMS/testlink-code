@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.151 $
- * @modified $Date: 2010/03/14 09:58:20 $ $Author: franciscom $
+ * @version $Revision: 1.152 $
+ * @modified $Date: 2010/03/19 15:04:09 $ $Author: asimon83 $
  *
  * rev:
  *  20100313 - franciscom - BUGID 3276
@@ -460,7 +460,7 @@ function init_args($cfgObj)
     $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
     
     // 20090419 - franciscom - BUGID
-    $args->refreshTree=isset($_REQUEST['refreshTree']) ? 1 : 0;
+    $args->refreshTree=isset($_REQUEST['refreshTree']) ? 1 : 0; //TODO asimon can this be set selectively for applying only after test execution?
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	
 	//BUGID 2267

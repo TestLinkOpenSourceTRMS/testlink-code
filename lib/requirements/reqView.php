@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2009/12/31 10:53:13 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2010/03/19 15:04:09 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
  *	@internal revision
+ *  20100319 - asimon - BUGID 1748 - implemented display of req relations
  *	20091217 - franciscom - display type and expected coverage
  */
 require_once('../../config.inc.php');
@@ -41,7 +42,9 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 function init_args()
 {
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
-			         "showReqSpecTitle" => array(tlInputParameter::INT_N));	
+			         "showReqSpecTitle" => array(tlInputParameter::INT_N),
+					 // BUGID 1748
+			         "relation_add_result_msg" => array(tlInputParameter::STRING_N));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -49,7 +52,9 @@ function init_args()
     $args->req_id = $args->requirement_id;
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
     $args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
-    
+    $user = $_SESSION['currentUser'];
+	$args->userID = $user->dbID;
+	
     return $args;
 }
 
@@ -99,11 +104,74 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->attachmentTableName = $req_mgr->getAttachmentTableName();
     $gui->reqStatus = init_labels(config_get('req_status'));
     $gui->reqTypeDomain = init_labels($gui->req_cfg->type_labels);
+
+    // added req relations for BUGID 1748
+    $gui->req_relations = FALSE;
+    $gui->req_relation_select = FALSE;
+    $gui->testproject_select = FALSE;
+    $gui->req_add_result_msg = isset($argsObj->relation_add_result_msg) ? 
+    							$argsObj->relation_add_result_msg : "";
+    
+    if ($gui->req_cfg->relations->enable) {
+    	$gui->req_relations = $req_mgr->get_relations($gui->req_id);
+    	$gui->req_relation_select = initRelationTypeSelect($db, $argsObj, $req_mgr);
+    	if ($gui->req_cfg->relations->relations_between_different_testprojects) {
+    		$gui->testproject_select = initTestprojectSelect($db, $argsObj, $tproject_mgr);
+    	}
+    }
+    
     return $gui;
 }
+
 
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'mgt_view_req');
 }
+
+
+/**
+ * Initializes the select field for the localized requirement relation types.
+ * 
+ * @param resource $db reference to database handler
+ * @param array $args reference to user input data
+ * @return array $htmlSelect info needed to create select box on template
+ */
+function initRelationTypeSelect(&$db, &$args, &$reqMgr) {
+	
+	$htmlSelect = array('items' => null, 'selected' => null);
+	$labels = $reqMgr->get_all_relation_labels();
+	$htmlSelect['items'] = array();
+	
+	foreach ($labels as $key => $lab) {
+		$htmlSelect['items'][$key . "_source"] = $lab['source'];
+		if ($lab['source'] != $lab['destination']) {
+			$htmlSelect['items'][$key . "_destination"] = $lab['destination'];
+		}
+	}
+	
+	// preselect last key in array, with standard configuration that's "related to"
+	// next line seems weird, but is done because PHP complains about passing function return value as reference
+	$items = $htmlSelect['items'];
+	$htmlSelect['selected'] = array_pop(array_keys($items));
+	
+	return $htmlSelect;
+}
+
+/**
+ * Initializes the select field for the testprojects.
+ * 
+ * @param resource $db reference to database handler
+ * @param array $args reference to user input data
+ * 
+ * @return array $htmlSelect array with info, needed to create testproject select box on template
+ */
+function initTestprojectSelect(&$db, &$args, &$tprojectMgr) {
+	
+	$testprojects = $tprojectMgr->get_accessible_for_user($args->userID, 'map', config_get('gui')->tprojects_combo_order_by);	
+	$htmlSelect = array('items' => $testprojects, 'selected' => $args->tproject_id);
+	
+	return $htmlSelect;
+}
+
 ?>

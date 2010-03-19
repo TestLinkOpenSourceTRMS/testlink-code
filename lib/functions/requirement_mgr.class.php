@@ -5,14 +5,18 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.72 $
- * @modified $Date: 2010/03/11 21:30:20 $ by $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2010/03/19 15:04:09 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20100319 - asimon - BUGID 1748 - added functions for requirement relations: 
+ *	                    get_relations(), get_all_relation_labels(), delete_relation(),
+ *	                    add_relation(), check_if_relation_exists(), delete_all_relations()
+ *                      modified delete() to also delete all relations with req
  *	20100309 - franciscom - get_by_id() removed useless code pointed by BUGID 3254
  *	20100124 - franciscom - BUGID 0003089: Req versions new attributes - active and open 
  *							new methods updateActive(),updateOpen()
@@ -41,7 +45,7 @@
  *                          delete() - fixed delete order due to FK.
  *  20090222 - franciscom - exportReqToXML() - (will be available for TL 1.9)
  *  20081129 - franciscom - BUGID 1852 - bulk_assignment() 
-*/
+ */
 
 // Needed to use extends tlObjectWithAttachments, If not present autoload fails.
 require_once( dirname(__FILE__) . '/attachments.inc.php');
@@ -383,6 +387,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     function: delete
               Requirement
               Requirement link to testcases
+              Requirement relations
               Requirement custom fields values
               Attachments
 
@@ -470,6 +475,9 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
 	  		$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where_clause_this;
 	  		$result = $this->db->exec_query($sql);
+	  		
+	  		//also delete relations to other requirements
+	  		$this->delete_all_relations($id);
 		}
 	
 	    $result = (!$result) ? lang_get('error_deleting_req') : 'ok';
@@ -1681,5 +1689,219 @@ function html_table_of_custom_field_values($id)
 	}	
 
 
+	/**
+	 * load relations for a given requirement ID
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @param int $id Requirement-ID
+	 * 
+	 * @return array $relations the relations in which this req is either parent or child
+	 */
+	public function get_relations($requirement_id) {
+		
+		$relations = array();
+		$tp_mgr = new testproject($this->db);
+		$req = $this->get_by_id($requirement_id);
+		$relations['num_relations'] = 0;
+	    $relations['req'] = $req[0];
+		$relations['relations'] = array();
+		
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+		$table = $this->tables['req_relations'];
+		$interproject_linking = config_get('req_cfg')->relations->relations_between_different_testprojects;
+		
+		$fields2get = 'id, source_id, destination_id, relation_type, author_id, creation_ts';
+		$where = "WHERE source_id=$requirement_id OR destination_id=$requirement_id";
+		$order = 'ORDER BY id ASC';
+		$sql = " $debugMsg SELECT $fields2get FROM $table $where $order ";
+		
+		// load relations for this req
+		$result = $this->db->exec_query($sql);
+    	if ($this->db->num_rows($result) > 0) {
+    		while($row = $this->db->fetch_array($result)) {
+    			$relations['relations'][] = $row;
+    		}
+    	}
+    	
+    	// get translated labels
+    	$labels = $this->get_all_relation_labels();
+    	
+    	// get additional data for the relations
+    	foreach($relations['relations'] as $key => $rel) {
+    		
+    		// is this relation configured?
+    		if (in_array($rel['relation_type'], array_keys($labels))) { 
+	    		$relations['relations'][$key]['source_localized'] = $labels[$rel['relation_type']]['source'];
+	    		$relations['relations'][$key]['destination_localized'] = $labels[$rel['relation_type']]['destination'];
+	    		
+	    		if ($requirement_id == $rel['source_id']) {
+	    			// this is the source (parent) document
+	    			$relations['relations'][$key]['type_localized'] = $relations['relations'][$key]['source_localized'];
+	    			$other_req_id = $rel['destination_id'];
+	    		} else {
+	    			// this is the destination (child) document
+	    			$relations['relations'][$key]['type_localized'] = $relations['relations'][$key]['destination_localized'];
+	    			$other_req_id = $rel['source_id'];
+	    		}
+	    		
+	    		// get data for document at the other end of this relation
+	    		$other_req = $this->get_by_id($other_req_id);
+		    		    		
+	    		// only add it, if either interproject linking is on or if it is in the same project
+	    		if ($interproject_linking || ($other_req[0]['testproject_id'] == $relations['req']['testproject_id'])) {
+	    		
+		    		$relations['relations'][$key]['related_req'] = $other_req[0];
+		    		$other_tp = $tp_mgr->get_by_id($other_req[0]['testproject_id']);
+		    		$relations['relations'][$key]['related_req']['testproject_name'] = $other_tp['name'];
+		    		
+		    		// relation creator info
+		    		$user = tlUser::getByID($this->db,$rel['author_id']);
+		    		$relations['relations'][$key]['author'] = $user->getDisplayName();
+	    		} else {
+	    			// this relation goes to another testproject, and relations between projects are disabled
+    				unset($relations['relations'][$key]);
+	    		}
+    		} else {
+    			// this relation is not configured, don't show it
+    			unset($relations['relations'][$key]);
+    		}    		
+    	} // end foreach
+    	
+    	// count them!
+    	$relations['num_relations'] = count($relations['relations']);
+    	
+//		echo "<pre>\nRelations:\n\n";
+//		print_r($relations); // TODO remove debug
+//		echo "</pre>";
+		
+		return $relations;
+	}
+	
+	
+	/**
+	 * checks if there is a relation of a given type between two requirements
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @param integer $first_id requirement ID to check
+	 * @param integer $second_id another requirement ID to check
+	 * @param integer $rel_type_id relation type ID to check
+	 * 
+	 * @return true, if relation already exists, false if not
+	 */
+	public function check_if_relation_exists($first_id, $second_id, $rel_type_id) {
+		
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+		$table = $this->tables['req_relations'];
+		$fields2get = 'source_id, destination_id, relation_type';
+		$where = "WHERE ((source_id=$first_id AND destination_id=$second_id)"
+						. " OR (source_id=$second_id AND destination_id=$first_id))"
+						. " AND relation_type=$rel_type_id";
+		$sql = " $debugMsg SELECT $fields2get FROM $table $where ";
+	
+		$result = $this->db->exec_query($sql);
+    	if ($this->db->num_rows($result) > 0) {
+    		// we already have this relation type for these two reqs
+			return true;
+    	}
+    	return false;
+	}
+	
+	
+	/**
+	 * add a relation of a given type between two requirements
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @param integer $source_id ID of source requirement
+	 * @param integer $destination_id ID of destination requirement
+	 * @param integer $relation_type_id relation type ID to set
+	 * @param integer $author_id user's ID
+	 */
+	public function add_relation($source_id, $destination_id, $relation_type_id, $author_id) {
+		
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+		$table = $this->tables['req_relations'];
+		$time = $this->db->db_now();
+		$sql = " $debugMsg INSERT INTO $table "
+				. " (source_id, destination_id, relation_type, author_id, creation_ts) "
+				. " values ($source_id, $destination_id, $relation_type_id, $author_id, $time)";
+		$this->db->exec_query($sql);
+	}
+	
+	
+	/**
+	 * delete an existing relation with between two requirements
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @param int $id requirement relation id
+	 */
+	public function delete_relation($id) {
+		
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+		$table = $this->tables['req_relations'];
+		$sql = " $debugMsg DELETE FROM $table "
+				. " WHERE id=$id ";
+		$this->db->exec_query($sql);
+	}
+	
+	
+	/**
+	 * delete all existing relations for (from or to) a given req id, no matter which project
+	 * they belong to or which other requirement they are related to
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @param int $id requirement ID (can be array of IDs)
+	 */
+	public function delete_all_relations($id) {
+		
+		$id_list = implode(",", (array)$id);
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+		$table = $this->tables['req_relations'];
+		$sql = " $debugMsg DELETE FROM $table "
+				. " WHERE source_id IN ($id_list) OR destination_id IN ($id_list) ";
+		$this->db->exec_query($sql);
+	}
+	
+	
+	/**
+	 * initialize the requirement relation labels
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @return array $labels a map with all labels in following form:
+	 *		Array
+	 *		(
+	 *			    [1] => Array
+	 *			        (
+	 *			            [source] => parent of
+	 *			            [destination] => child of
+	 *			        )
+	 *			    [2] => Array
+	 *			        (
+	 *			            [source] => blocks
+	 *			            [destination] => depends on
+	 *			        )
+	 *			    [3] => Array
+	 *			        (
+	 *			            [source] => related to
+	 *			            [destination] => related to
+	 *			        )
+	 *			)
+	 */
+	public static function get_all_relation_labels() {
+		
+		$labels = config_get('req_cfg')->rel_type_labels;
+		
+		foreach ($labels as $key => $label) {
+			$labels[$key] = init_labels($label);
+		}
+		
+		return $labels;
+	}
+	
 } // class end
 ?>

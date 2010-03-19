@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.22 2009/12/31 09:55:18 franciscom Exp $
+$Id: reqEdit.tpl,v 1.23 2010/03/19 15:04:09 asimon83 Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20100319 - asimon - BUGID 1748 - added logic to add and remove requirement relations
 20091231 - franciscom - added logic to display and check expected coverage
                         attribute based on req type, with configuration
                         managed using $tlCfg->req_cfg->type_expected_coverage
@@ -204,15 +205,29 @@ function configure_attr(oid_type,cfg)
   	<br />
  	<br />
  	
+ 	{* BUGID 3307 - made input only hidden instead of completely disabled in case of disabled feature
+ 	 *              this should avoid errors in all underlying functions (database and the rest) 
+ 	 *}
+    {*if $gui->req_cfg->expected_coverage_management}
+    	{assign var=inputtype value="text"}
+    {else}
+    	{assign var=inputtype value="hidden"}
+    {/if*}
+    
     {if $gui->req_cfg->expected_coverage_management}
-  	<div class="labelHolder" id="expected_coverage_container"> <label for="expected_coverage">{$labels.expected_coverage}</label>
+  		<div class="labelHolder" id="expected_coverage_container"> <label for="expected_coverage">{$labels.expected_coverage}</label>
+  	{*/if*}
+  	
   	<input type="text" name="expected_coverage" id="expected_coverage"
   		        size="{#REQ_EXPECTED_COVERAGE_SIZE#}" maxlength="{#REQ_EXPECTED_COVERAGE_MAXLEN#}"
   		        value="{$gui->req.expected_coverage}" />
-  		    {include file="error_icon.tpl" field="req_title"}
- 	  </div>
+  	{include file="error_icon.tpl" field="expected_coverage"}
+  	
+ 	{*if $gui->req_cfg->expected_coverage_management*}
+ 		</div>
+ 	{/if}
+ 	
   	<br />
-    {/if}  	
     
    	{* Custom fields *}
    	{if $gui->cfields != ""}

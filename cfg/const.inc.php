@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.135 2010/03/12 08:07:49 asimon83 Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.136 2010/03/19 15:04:09 asimon83 Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -655,7 +655,7 @@ $tlCfg->req_cfg->type_labels = array(
 		
 
 /** 
- * All possible types of requirement relations.
+ * All possible types of requirement relations (BUGID 1748).
  * 
  * Important:
  * When you add your own relation types here,
@@ -671,9 +671,10 @@ define('TL_REQ_REL_TYPE_RELATED', 3);
 
 
 /** 
- * Localization identifiers for requirement relation types.
+ * Localization identifiers for requirement relation types (BUGID 1748).
  * Types, which are configured above, have to be configured 
  * here too with attributes "source" and "destination".
+ * Last value will be selected in GUI as default.
  * 
  * Form has to be like this:
  * 

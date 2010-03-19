@@ -4,12 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2010/02/09 22:19:24 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2010/03/19 15:04:09 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
+ * 
+ *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
+ *                      BUGID 1748 - added doAddRelation() and doDeleteRelation() for req relations
  *  20100205 - asimon - added doFreezeVersion()
  *	20091217 - franciscom - added reqTypeDomain
  *	20091216 - franciscom - create_tc_from_requirement() interface changes 
@@ -72,7 +75,8 @@ class reqCommands
 		$obj->req_spec_id = null;
 		$obj->req_id = null;
 		$obj->req = null;
-		$obj->expected_coverage = null;
+		// BUGID 3307 - set default to 0 instead of null to avoid DB errors
+		$obj->expected_coverage = 0;
  
         return $obj;
     }
@@ -100,7 +104,8 @@ class reqCommands
 		$obj->req_spec_id = $argsObj->req_spec_id;
 		$obj->req_id = null;
 		$obj->req = null;
-		$obj->expected_coverage = null;
+		// BUGID 3307 - set default to 0 instead of null to avoid database error
+		$obj->expected_coverage = 0;
 		$obj->display_path = false;
  		return $obj;	
 	}
@@ -492,5 +497,117 @@ class reqCommands
 		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
   	}
+  	
+  	
+	/**
+	 * Add a relation from one requirement to another.
+	 * 
+	 * @param stdClass $args input parameters
+	 * @return stdClass $obj 
+	 */
+	public function doAddRelation($argsObj) {
+		
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+		$ok_msg = '<div class="info">' . lang_get('new_rel_add_success') . '</div>';
+		$op = array('ok' => true, 'msg' => $ok_msg);
+		$own_id = $argsObj->relation_source_req_id;
+		$authorID = $argsObj->user_id;
+		$tables = $this->reqMgr->getDBTables('req_relations');
+		$relTable = $tables['req_relations'];
+		
+		$tp = $argsObj->tproject_id;
+		if (isset($argsObj->relation_destination_testproject_id)) {
+			// relation destination belongs to another project
+			$tp = $argsObj->relation_destination_testproject_id;
+		}
+		
+		$other_req = $this->reqMgr->getByDocID($argsObj->relation_destination_req_doc_id, $tp);
+		if (count($other_req) < 1) {
+			// req doc ID was not ok
+			$op['ok'] = false;
+			$op['msg'] = '<div class="error">' . lang_get('rel_add_error_dest_id') . '</div>';
+		}
+		
+		if ($op['ok']) {
+			// are all the IDs we have ok?
+			$other_req = array_shift($other_req);
+			$other_id = $other_req['id'];
+			$source_id = $own_id;
+			$destination_id = $other_id;
+			
+			if (strpos($argsObj->relation_type, "_source")) {
+				$rel_id = (int)str_replace("_source", "", $argsObj->relation_type);
+			} else {
+				$rel_id = (int)str_replace("_destination", "", $argsObj->relation_type);
+				$source_id = $other_id;
+				$destination_id = $own_id;
+			}
+			
+			if (!is_numeric($authorID) || !is_numeric($source_id) || !is_numeric($destination_id)) {
+				// at least one ID is not a number
+				$op['ok'] = false;
+				$op['msg'] = '<div class="error">' . lang_get('rel_add_error') . '</div>';
+			}
+			
+			if ($source_id == $destination_id) {
+				// don't link to yourself!
+				$op['ok'] = false;
+				$op['msg'] = '<div class="error">' . lang_get('rel_add_error_self') . '</div>';
+			}
+		}
+			
+		if ($op['ok']) {
+			$exists = $this->reqMgr->check_if_relation_exists($source_id, $destination_id, $rel_id);
+			if ($exists) {
+				$op['ok'] = false;
+				$op['msg'] = '<div class="error">' . lang_get('rel_add_error_exists_already') . '</div>';
+			}
+		}
+		
+		if ($op['ok']) {
+			$this->reqMgr->add_relation($source_id, $destination_id, $rel_id, $authorID);
+		}
+		
+		$obj = $this->initGuiBean();		
+		$obj->template = "reqView.php?requirement_id={$own_id}&relation_add_result_msg=" . $op['msg'];
+		
+		return $obj;	
+	}
+	
+	
+	/**
+	 * delete a relation to another requirement
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @param stcClass $argsObj user input data 
+	 * 
+	 * @return stdClass $object data for template to display
+	 */
+	public function doDeleteRelation($argsObj) {
+		
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+		$ok_msg = '<div class="info">' . lang_get('delete_rel_success') . '</div>';
+		$op = array('ok' => true, 'msg' => $ok_msg);
+		
+		$relation_id = $argsObj->relation_id;
+		$requirement_id = $argsObj->requirement_id;
+		
+		if (is_null($relation_id) || !is_numeric($relation_id)
+			|| is_null($requirement_id) || !is_numeric($requirement_id)) {
+			$op['ok'] = false;
+			$op['msg'] = '<div class="error">' . lang_get('error_deleting_rel') . '</div>';
+		}
+		
+		if ($op['ok']) {
+			$this->reqMgr->delete_relation($relation_id);
+		}
+		
+		$obj = $this->initGuiBean();		
+		$obj->template = "reqView.php?requirement_id=$requirement_id&relation_add_result_msg=" . $op['msg'];
+		
+		return $obj;
+	}
 }
+
 ?>

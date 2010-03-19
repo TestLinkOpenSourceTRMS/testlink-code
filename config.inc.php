@@ -18,10 +18,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.291 2010/03/16 08:34:21 amkhullar Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.292 2010/03/19 15:04:09 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100311 - asimon - BUGID 1748 - $tlCfg->req_cfg->relations
  *	20100313 - franciscom - BUGID 0003275
  *  20100112 - asimon - BUGID 2976 - $tlCfg->req_cfg->search 
  *  20100110 - eloff - BUGID 2036 - changed $tlCfg->gui->checkNotSaved to true
@@ -960,6 +961,17 @@ $tlCfg->internal_links->req_spec_link_title = new stdClass();
 $tlCfg->internal_links->req_spec_link_title->type = 'item';
 $tlCfg->internal_links->req_spec_link_title->value = '';
 
+
+// Relations between requirement documents:
+// 
+// The relation types have to be configured in cfg/const.inc.php
+// and their respective localization values in locale strings.txt.
+
+// There are some preconfigured standard types which you can use,
+// additionally you can configure your own types.
+$tlCfg->req_cfg->relations = new stdClass();
+$tlCfg->req_cfg->relations->enable = TRUE;
+$tlCfg->req_cfg->relations->relations_between_different_testprojects = FALSE;
 
 // Requirement/testcase diff
 // default value of lines to show before and after each difference

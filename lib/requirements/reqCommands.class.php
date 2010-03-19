@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2010/03/19 22:03:28 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2010/03/19 22:53:51 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -37,6 +37,8 @@ class reqCommands
 	    
 	    $this->reqStatusDomain = init_labels(config_get('req_status'));
 	    $this->reqTypeDomain = init_labels(config_get('req_cfg')->type_labels);
+	    $this->reqRelationTypeDescr = init_labels(config_get('req_cfg')->rel_type_description);
+
 	    
 	    $type_ec = config_get('req_cfg')->type_expected_coverage;
 	    $this->attrCfg = array();
@@ -502,17 +504,18 @@ class reqCommands
 	/**
 	 * Add a relation from one requirement to another.
 	 * 
-	 * @param stdClass $args input parameters
+	 * @param stdClass $argsObj input parameters
 	 * @return stdClass $obj 
 	 */
 	public function doAddRelation($argsObj) {
 		
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
-		$ok_msg = '<div class="info">' . lang_get('new_rel_add_success') . '</div>';
-		$op = array('ok' => true, 'msg' => $ok_msg);
+		// $ok_msg = '<div class="info">' . lang_get('new_rel_add_success') . '</div>';
+		$op = array('ok' => true, 'msg' => lang_get('new_rel_add_success'));
 		$own_id = $argsObj->relation_source_req_id;
 		$authorID = $argsObj->user_id;
 		$tproject_id = $argsObj->tproject_id;
+
 		if (isset($argsObj->relation_destination_testproject_id)) {
 			// relation destination belongs to another project
 			$tproject_id = $argsObj->relation_destination_testproject_id;
@@ -522,48 +525,50 @@ class reqCommands
 		if (count($other_req) < 1) {
 			// req doc ID was not ok
 			$op['ok'] = false;
-			$op['msg'] = '<div class="error">' . lang_get('rel_add_error_dest_id') . '</div>';
+			$op['msg'] = lang_get('rel_add_error_dest_id');
 		}
 		
 		if ($op['ok']) {
 			// are all the IDs we have ok?
-			$other_req = array_shift($other_req);
+			$other_req = current($other_req);
+			
 			$other_id = $other_req['id'];
 			$source_id = $own_id;
 			$destination_id = $other_id;
-			
-			if (strpos($argsObj->relation_type, "_source")) {
-				$rel_id = (int)str_replace("_source", "", $argsObj->relation_type);
-			} else {
-				$rel_id = (int)str_replace("_destination", "", $argsObj->relation_type);
+			$relTypeID = (int)current((explode('_',$argsObj->relation_type)));
+			if( strpos($argsObj->relation_type, "_destination") ) 
+			{
 				$source_id = $other_id;
 				$destination_id = $own_id;
 			}
+
+			
 			
 			if (!is_numeric($authorID) || !is_numeric($source_id) || !is_numeric($destination_id)) {
 				$op['ok'] = false;
-				$op['msg'] = '<div class="error">' . lang_get('rel_add_error') . '</div>';
+				$op['msg'] = lang_get('rel_add_error');
 			}
 			
-			if ($source_id == $destination_id) {
+			if ( $op['ok'] && ($source_id == $destination_id)) {
 				$op['ok'] = false;
-				$op['msg'] = '<div class="error">' . lang_get('rel_add_error_self') . '</div>';
+				$op['msg'] = lang_get('rel_add_error_self');
 			}
 		}
 			
 		if ($op['ok']) {
-			$exists = $this->reqMgr->check_if_relation_exists($source_id, $destination_id, $rel_id);
+			$exists = $this->reqMgr->check_if_relation_exists($source_id, $destination_id, $relTypeID);
 			if ($exists) {
 				$op['ok'] = false;
-				$op['msg'] = '<div class="error">' . lang_get('rel_add_error_exists_already') . '</div>';
+				$op['msg'] = sprintf(lang_get('rel_add_error_exists_already'),$this->reqRelationTypeDescr[$relTypeID]);
 			}
 		}
 		
 		if ($op['ok']) {
-			$this->reqMgr->add_relation($source_id, $destination_id, $rel_id, $authorID);
+			$this->reqMgr->add_relation($source_id, $destination_id, $relTypeID, $authorID);
 		}
 		
 		$obj = $this->initGuiBean();		
+		$op['msg']  = ($op['ok'] ? '<div class="info">' : '<div class="error">') . $op['msg'] . '</div>';
 		$obj->template = "reqView.php?requirement_id={$own_id}&relation_add_result_msg=" . $op['msg'];
 		
 		return $obj;	

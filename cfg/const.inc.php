@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.136 2010/03/19 15:04:09 asimon83 Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.137 2010/03/19 22:54:05 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -658,15 +658,22 @@ $tlCfg->req_cfg->type_labels = array(
  * All possible types of requirement relations (BUGID 1748).
  * 
  * Important:
- * When you add your own relation types here,
- * you also have to add localization strings
+ * When you add your own relation types here, you also have to add localization strings
  * and configure those below.
  * 
+ * Add you types ONLY AFTER LAST RESERVED
+ *
  * @since TestLink 1.9
  **/
 define('TL_REQ_REL_TYPE_PARENT_CHILD', 1);
 define('TL_REQ_REL_TYPE_BLOCKS_DEPENDS', 2);
 define('TL_REQ_REL_TYPE_RELATED', 3);
+define('TL_REQ_REL_TYPE_RESERVED_1', 4);
+define('TL_REQ_REL_TYPE_RESERVED_2', 5);
+define('TL_REQ_REL_TYPE_RESERVED_3', 6);
+define('TL_REQ_REL_TYPE_RESERVED_4', 7);
+define('TL_REQ_REL_TYPE_RESERVED_5', 8);
+define('TL_REQ_REL_TYPE_RESERVED_6', 9);
 
 
 
@@ -674,6 +681,7 @@ define('TL_REQ_REL_TYPE_RELATED', 3);
  * Localization identifiers for requirement relation types (BUGID 1748).
  * Types, which are configured above, have to be configured 
  * here too with attributes "source" and "destination".
+ *
  * Last value will be selected in GUI as default.
  * 
  * Form has to be like this:
@@ -698,6 +706,11 @@ $tlCfg->req_cfg->rel_type_labels = array(
 		'destination' => 'req_rel_is_related_to')
 	);
 
+
+
+$tlCfg->req_cfg->rel_type_description = array(TL_REQ_REL_TYPE_PARENT_CHILD => 'parent_child',
+	                                          TL_REQ_REL_TYPE_BLOCKS_DEPENDS => 'blocks_depends',
+	                                          TL_REQ_REL_TYPE_RELATED => 'related_to');
 	
 
 /** 

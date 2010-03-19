@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.13 2010/03/19 15:04:09 asimon83 Exp $
+$Id: reqViewVersions.tpl,v 1.14 2010/03/19 21:23:51 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -16,9 +16,12 @@ rev:
 {lang_get s='delete_rel_msgbox_msg' var='delete_rel_msgbox_msg' }
 {lang_get s='delete_rel_msgbox_title' var='delete_rel_msgbox_title' }
 
-{lang_get var='relationlabels' s='relation_id, relation_type, relation_document, relation_status, relation_project,
-             				relation_set_by, relation_delete, relations, new_relation, by, title_created,
-             				relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req'}
+{lang_get var='labels' 
+          s='relation_id, relation_type, relation_document, relation_status, relation_project,
+             relation_set_by, relation_delete, relations, new_relation, by, title_created,
+             relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req,
+             no_records_found,other_versions,version,title_test_case,match_count'}
+
 
 {include file="inc_head.tpl" openHead='yes'}
 {include file="inc_del_onclick.tpl"}
@@ -108,8 +111,6 @@ var pF_delete_req_relation = delete_req_relation;
 {/if}
 
 {assign var=this_template_dir value=$smarty.template|dirname}
-{lang_get var='labels' 
-          s='no_records_found,other_versions,version,title_test_case,match_count'}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 {* fixed a little bug, here $gui->pageTitle was called instead of $gui->main_descr *}
@@ -186,7 +187,7 @@ var pF_delete_req_relation = delete_req_relation;
 		
 		<table class="simple" id="relations">
 		
-			<tr><th colspan="7">{$relationlabels.relations}</th></tr>
+			<tr><th colspan="7">{$labels.relations}</th></tr>
 		
 			{if $gui->req_add_result_msg}
 				<tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
@@ -196,50 +197,50 @@ var pF_delete_req_relation = delete_req_relation;
 		
 			<tr style="height:40px; vertical-align: middle;"><td style="height:40px; vertical-align: middle;" colspan="7">
 			
-				<span class="bold">{$relationlabels.new_relation}:</span> {$relationlabels.current_req}
+				<span class="bold">{$labels.new_relation}:</span> {$labels.current_req}
 					
 				<select name="relation_type">
 				{html_options options=$gui->req_relation_select.items selected=$gui->req_relation_select.selected}
 				</select>
 		
-				<input type="text" name="relation_destination_req_doc_id" value="{$relationlabels.relation_destination_doc_id}" 
+				<input type="text" name="relation_destination_req_doc_id" value="{$labels.relation_destination_doc_id}" 
 				size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}" 
 				onclick="javascript:this.value=''" />
 			
 				{* show input for testproject only if cross-project linking is enabled *}
-				{if $gui->req_cfg->relations->relations_between_different_testprojects}
-						{$relationlabels.relation_project} <select name="relation_destination_testproject_id">
+				{if $gui->req_cfg->relations->interproject_linking}
+						{$labels.relation_project} <select name="relation_destination_testproject_id">
 						{html_options options=$gui->testproject_select.items selected=$gui->testproject_select.selected}
 						</select>
 				{/if}	
 				
 				<input type="hidden" name="doAction" value="doAddRelation" />
 				<input type="hidden" name="relation_source_req_id" value="{$gui->req_id}" />
-				<input type="submit" name="relation_submit_btn" value="{$relationlabels.btn_add}" />
+				<input type="submit" name="relation_submit_btn" value="{$labels.btn_add}" />
 				
 				</td></tr>
 			
 		{if $gui->req_relations.num_relations}
 			
 			<tr>
-				<th>{$relationlabels.relation_id}</th>
-				<th>{$relationlabels.relation_type}</th>
+				<th>{$labels.relation_id}</th>
+				<th>{$labels.relation_type}</th>
 				
-				{if $gui->req_cfg->relations->relations_between_different_testprojects}
-				{assign var=colspan value=1}
+				{if $gui->req_cfg->relations->interproject_linking}
+				  {assign var=colspan value=1}
 				{else}
-				{assign var=colspan value=2}
+				  {assign var=colspan value=2}
 				{/if}
 				
-				<th colspan="{$colspan}">{$relationlabels.relation_document}</th>
-				<th>{$relationlabels.relation_status}</th>
+				<th colspan="{$colspan}">{$labels.relation_document}</th>
+				<th>{$labels.relation_status}</th>
 				
-				{if $gui->req_cfg->relations->relations_between_different_testprojects}
-					<th>{$relationlabels.relation_project}</th>
+				{if $gui->req_cfg->relations->interproject_linking}
+					<th>{$labels.relation_project}</th>
 				{/if}
 				
-				<th>{$relationlabels.relation_set_by}</th>
-				<th>{$relationlabels.relation_delete}</th>
+				<th>{$labels.relation_set_by}</th>
+				<th>{$labels.relation_delete}</th>
 			</tr>
 			
 			{foreach item=relation from=$gui->req_relations.relations}
@@ -252,11 +253,11 @@ var pF_delete_req_relation = delete_req_relation;
 					<td>{$gui->reqStatus.$status|escape}</td>
 					
 					{* show related testproject name only if cross-project linking is enabled *}
-					{if $gui->req_cfg->relations->relations_between_different_testprojects}
+					{if $gui->req_cfg->relations->interproject_linking}
 						<td>{$relation.related_req.testproject_name|escape}</td>
 					{/if}
 					
-					<td><span title="{$relationlabels.title_created} {$relation.creation_ts} {$relationlabels.by} {$relation.author|escape}">
+					<td><span title="{$labels.title_created} {$relation.creation_ts} {$labels.by} {$relation.author|escape}">
 						{$relation.author|escape}</span></td>
 
 					<td align="center">
@@ -264,8 +265,7 @@ var pF_delete_req_relation = delete_req_relation;
 	             	                                                 delete_rel_msgbox_title, delete_rel_msgbox_msg, 
 	             	                                                 pF_delete_req_relation);">
 	      			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" 
-	      			    	title="{$relationlabels.img_title_delete_relation}"
-	      			        style="border:none" /></a>
+	      			    	   title="{$labels.img_title_delete_relation}"  style="border:none" /></a>
 	              </td>
 				</tr>
 			{/foreach}

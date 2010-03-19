@@ -4,12 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2010/03/19 15:04:09 $ by $Author: asimon83 $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2010/03/19 21:23:51 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
+ *
  *	@internal revision
+ *	20100319 - franciscom - refactoring of BUGID 1748 
  *  20100319 - asimon - BUGID 1748 - implemented display of req relations
  *	20091217 - franciscom - display type and expected coverage
  */
@@ -41,9 +43,9 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
  */
 function init_args()
 {
+	// BUGID 1748
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 			         "showReqSpecTitle" => array(tlInputParameter::INT_N),
-					 // BUGID 1748
 			         "relation_add_result_msg" => array(tlInputParameter::STRING_N));	
 		
 	$args = new stdClass();
@@ -110,12 +112,12 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->req_relation_select = FALSE;
     $gui->testproject_select = FALSE;
     $gui->req_add_result_msg = isset($argsObj->relation_add_result_msg) ? 
-    							$argsObj->relation_add_result_msg : "";
+    							     $argsObj->relation_add_result_msg : "";
     
     if ($gui->req_cfg->relations->enable) {
     	$gui->req_relations = $req_mgr->get_relations($gui->req_id);
     	$gui->req_relation_select = initRelationTypeSelect($db, $argsObj, $req_mgr);
-    	if ($gui->req_cfg->relations->relations_between_different_testprojects) {
+    	if ($gui->req_cfg->relations->interproject_linking) {
     		$gui->testproject_select = initTestprojectSelect($db, $argsObj, $tproject_mgr);
     	}
     }
@@ -135,13 +137,13 @@ function checkRights(&$db,&$user)
  * 
  * @param resource $db reference to database handler
  * @param array $args reference to user input data
+ * @param ref $reqMrg reference to requirement manager object
  * @return array $htmlSelect info needed to create select box on template
  */
 function initRelationTypeSelect(&$db, &$args, &$reqMgr) {
 	
-	$htmlSelect = array('items' => null, 'selected' => null);
+	$htmlSelect = array('items' => array(), 'selected' => null);
 	$labels = $reqMgr->get_all_relation_labels();
-	$htmlSelect['items'] = array();
 	
 	foreach ($labels as $key => $lab) {
 		$htmlSelect['items'][$key . "_source"] = $lab['source'];
@@ -150,11 +152,11 @@ function initRelationTypeSelect(&$db, &$args, &$reqMgr) {
 		}
 	}
 	
-	// preselect last key in array, with standard configuration that's "related to"
-	// next line seems weird, but is done because PHP complains about passing function return value as reference
-	$items = $htmlSelect['items'];
-	$htmlSelect['selected'] = array_pop(array_keys($items));
-	
+	// preselect last key in array (with standard configuration that's "related to")
+	// Developer hint:
+	// end(array_keys($htmlSelect['items'])) -> generates E_STRICT PHP warning
+	$keys = array_keys($htmlSelect['items']);
+	$htmlSelect['selected'] = end($keys);
 	return $htmlSelect;
 }
 
@@ -168,7 +170,8 @@ function initRelationTypeSelect(&$db, &$args, &$reqMgr) {
  */
 function initTestprojectSelect(&$db, &$args, &$tprojectMgr) {
 	
-	$testprojects = $tprojectMgr->get_accessible_for_user($args->userID, 'map', config_get('gui')->tprojects_combo_order_by);	
+	$testprojects = $tprojectMgr->get_accessible_for_user($args->userID, 'map', 
+	                                                      config_get('gui')->tprojects_combo_order_by);	
 	$htmlSelect = array('items' => $testprojects, 'selected' => $args->tproject_id);
 	
 	return $htmlSelect;

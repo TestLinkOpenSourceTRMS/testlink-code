@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.73 $
- * @modified $Date: 2010/03/19 15:04:09 $ by $Author: asimon83 $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2010/03/19 21:23:51 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1690,91 +1690,78 @@ function html_table_of_custom_field_values($id)
 
 
 	/**
-	 * load relations for a given requirement ID
+	 * get relations for a given requirement ID
 	 * 
 	 * @author Andreas Simon
 	 * 
-	 * @param int $id Requirement-ID
+	 * @param int $id Requirement ID
 	 * 
-	 * @return array $relations the relations in which this req is either parent or child
+	 * @return array $relations in which this req is either source or destination
 	 */
-	public function get_relations($requirement_id) {
-		
-		$relations = array();
-		$tp_mgr = new testproject($this->db);
-		$req = $this->get_by_id($requirement_id);
-		$relations['num_relations'] = 0;
-	    $relations['req'] = $req[0];
-		$relations['relations'] = array();
+	public function get_relations($id) 
+	{
 		
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
-		$table = $this->tables['req_relations'];
-		$interproject_linking = config_get('req_cfg')->relations->relations_between_different_testprojects;
-		
-		$fields2get = 'id, source_id, destination_id, relation_type, author_id, creation_ts';
-		$where = "WHERE source_id=$requirement_id OR destination_id=$requirement_id";
-		$order = 'ORDER BY id ASC';
-		$sql = " $debugMsg SELECT $fields2get FROM $table $where $order ";
-		
-		// load relations for this req
-		$result = $this->db->exec_query($sql);
-    	if ($this->db->num_rows($result) > 0) {
-    		while($row = $this->db->fetch_array($result)) {
-    			$relations['relations'][] = $row;
-    		}
-    	}
+		$relations = array();
+		$relations['num_relations'] = 0;
+	    $relations['req'] = current($this->get_by_id($id));
+		$relations['relations'] = array();
+
+		$tproject_mgr = new testproject($this->db);
+		$interproject_linking = config_get('req_cfg')->relations->interproject_linking;
+
+		$sql = " $debugMsg SELECT id, source_id, destination_id, relation_type, author_id, creation_ts " . 
+			   " FROM {$this->tables['req_relations']} " .
+			   " WHERE source_id=$id OR destination_id=$id " .
+			   " ORDER BY id ASC ";
+   
+    	$relations['relations']= $this->db->get_recordset($sql);  
     	
-    	// get translated labels
-    	$labels = $this->get_all_relation_labels();
-    	
-    	// get additional data for the relations
-    	foreach($relations['relations'] as $key => $rel) {
-    		
-    		// is this relation configured?
-    		if (in_array($rel['relation_type'], array_keys($labels))) { 
-	    		$relations['relations'][$key]['source_localized'] = $labels[$rel['relation_type']]['source'];
-	    		$relations['relations'][$key]['destination_localized'] = $labels[$rel['relation_type']]['destination'];
-	    		
-	    		if ($requirement_id == $rel['source_id']) {
-	    			// this is the source (parent) document
-	    			$relations['relations'][$key]['type_localized'] = $relations['relations'][$key]['source_localized'];
-	    			$other_req_id = $rel['destination_id'];
-	    		} else {
-	    			// this is the destination (child) document
-	    			$relations['relations'][$key]['type_localized'] = $relations['relations'][$key]['destination_localized'];
-	    			$other_req_id = $rel['source_id'];
-	    		}
-	    		
-	    		// get data for document at the other end of this relation
-	    		$other_req = $this->get_by_id($other_req_id);
-		    		    		
-	    		// only add it, if either interproject linking is on or if it is in the same project
-	    		if ($interproject_linking || ($other_req[0]['testproject_id'] == $relations['req']['testproject_id'])) {
-	    		
-		    		$relations['relations'][$key]['related_req'] = $other_req[0];
-		    		$other_tp = $tp_mgr->get_by_id($other_req[0]['testproject_id']);
-		    		$relations['relations'][$key]['related_req']['testproject_name'] = $other_tp['name'];
-		    		
-		    		// relation creator info
-		    		$user = tlUser::getByID($this->db,$rel['author_id']);
-		    		$relations['relations'][$key]['author'] = $user->getDisplayName();
-	    		} else {
-	    			// this relation goes to another testproject, and relations between projects are disabled
+    	if( !is_null($relations['relations']) && count($relations['relations']) > 0 )
+    	{
+    		$labels = $this->get_all_relation_labels();
+			$label_keys = array_keys($labels);
+    		foreach($relations['relations'] as $key => $rel) {
+        	
+    			// is this relation type is configured?
+    			if( ($relTypeAllowed = in_array($rel['relation_type'],$label_keys)) ) 
+    			{ 
+	    			$relations['relations'][$key]['source_localized'] = $labels[$rel['relation_type']]['source'];
+	    			$relations['relations'][$key]['destination_localized'] = $labels[$rel['relation_type']]['destination'];
+	    			
+	    			if ($id == $rel['source_id']) {
+	    				$type_localized = 'source_localized';
+	    				$other_key = 'destination_id';
+	    			} else {
+	    				$type_localized = 'destination_localized';
+	    				$other_key = 'source_id';
+	    			}
+	    			$relations['relations'][$key]['type_localized'] = $relations['relations'][$key][$type_localized];
+	    			$other_req = $this->get_by_id($rel[$other_key]);
+			    		    		
+	    			// only add it, if either interproject linking is on or if it is in the same project
+	    			$relTypeAllowed = false;
+	    			if ($interproject_linking || ($other_req[0]['testproject_id'] == $relations['req']['testproject_id'])) {
+	    			
+	    				$relTypeAllowed = true;
+			    		$relations['relations'][$key]['related_req'] = $other_req[0];
+			    		$other_tproject = $tproject_mgr->get_by_id($other_req[0]['testproject_id']);
+			    		$relations['relations'][$key]['related_req']['testproject_name'] = $other_tproject['name'];
+			    		
+			    		$user = tlUser::getByID($this->db,$rel['author_id']);
+			    		$relations['relations'][$key]['author'] = $user->getDisplayName();
+	    			} 
+    			} 
+    			
+    			if( !$relTypeAllowed )
+    			{
     				unset($relations['relations'][$key]);
-	    		}
-    		} else {
-    			// this relation is not configured, don't show it
-    			unset($relations['relations'][$key]);
-    		}    		
-    	} // end foreach
-    	
-    	// count them!
-    	$relations['num_relations'] = count($relations['relations']);
-    	
-//		echo "<pre>\nRelations:\n\n";
-//		print_r($relations); // TODO remove debug
-//		echo "</pre>";
-		
+    			}
+    			   		
+    		} // end foreach
+    		
+    		$relations['num_relations'] = count($relations['relations']);
+		}
 		return $relations;
 	}
 	
@@ -1793,19 +1780,28 @@ function html_table_of_custom_field_values($id)
 	public function check_if_relation_exists($first_id, $second_id, $rel_type_id) {
 		
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
-		$table = $this->tables['req_relations'];
-		$fields2get = 'source_id, destination_id, relation_type';
-		$where = "WHERE ((source_id=$first_id AND destination_id=$second_id)"
-						. " OR (source_id=$second_id AND destination_id=$first_id))"
-						. " AND relation_type=$rel_type_id";
-		$sql = " $debugMsg SELECT $fields2get FROM $table $where ";
-	
-		$result = $this->db->exec_query($sql);
-    	if ($this->db->num_rows($result) > 0) {
-    		// we already have this relation type for these two reqs
-			return true;
-    	}
-    	return false;
+		// $table = $this->tables['req_relations'];
+		// $fields2get = 'source_id, destination_id, relation_type';
+		// $where = "WHERE ((source_id=$first_id AND destination_id=$second_id)"
+		// 				. " OR (source_id=$second_id AND destination_id=$first_id))"
+		// 				. " AND relation_type=$rel_type_id";
+		// $sql = " $debugMsg SELECT $fields2get FROM $table $where ";
+	    // 
+	    // 
+	    // 
+		// $result = $this->db->exec_query($sql);
+    	// if ($this->db->num_rows($result) > 0) {
+    	// 	// we already have this relation type for these two reqs
+		// 	return true;
+    	// }
+    	// return false;
+		$sql = " $debugMsg SELECT COUNT(0) AS qty " .
+			   " FROM {$this->tables['req_relations']} " .
+			   " WHERE ((source_id=$first_id AND destination_id=$second_id) " . 
+			   " OR (source_id=$second_id AND destination_id=$first_id)) " . 
+			   " AND relation_type=$rel_type_id";
+		$rs = $this->db->fetchRowsIntoMap($sql,'qty');
+    	return($rs['qty'] > 0);
 	}
 	
 	
@@ -1816,17 +1812,16 @@ function html_table_of_custom_field_values($id)
 	 * 
 	 * @param integer $source_id ID of source requirement
 	 * @param integer $destination_id ID of destination requirement
-	 * @param integer $relation_type_id relation type ID to set
+	 * @param integer $type_id relation type ID to set
 	 * @param integer $author_id user's ID
 	 */
-	public function add_relation($source_id, $destination_id, $relation_type_id, $author_id) {
+	public function add_relation($source_id, $destination_id, $type_id, $author_id) {
 		
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
-		$table = $this->tables['req_relations'];
 		$time = $this->db->db_now();
-		$sql = " $debugMsg INSERT INTO $table "
-				. " (source_id, destination_id, relation_type, author_id, creation_ts) "
-				. " values ($source_id, $destination_id, $relation_type_id, $author_id, $time)";
+		$sql = " $debugMsg INSERT INTO {$this->tables['req_relations']} "	. 
+			   " (source_id, destination_id, relation_type, author_id, creation_ts) " .
+			   " values ($source_id, $destination_id, $type_id, $author_id, $time)";
 		$this->db->exec_query($sql);
 	}
 	
@@ -1841,9 +1836,7 @@ function html_table_of_custom_field_values($id)
 	public function delete_relation($id) {
 		
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
-		$table = $this->tables['req_relations'];
-		$sql = " $debugMsg DELETE FROM $table "
-				. " WHERE id=$id ";
+		$sql = " $debugMsg DELETE FROM {$this->tables['req_relations']} WHERE id=$id ";
 		$this->db->exec_query($sql);
 	}
 	
@@ -1858,11 +1851,10 @@ function html_table_of_custom_field_values($id)
 	 */
 	public function delete_all_relations($id) {
 		
-		$id_list = implode(",", (array)$id);
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
-		$table = $this->tables['req_relations'];
-		$sql = " $debugMsg DELETE FROM $table "
-				. " WHERE source_id IN ($id_list) OR destination_id IN ($id_list) ";
+		$id_list = implode(",", (array)$id);
+		$sql = " $debugMsg DELETE FROM {$this->tables['req_relations']} " . 
+			   " WHERE source_id IN ($id_list) OR destination_id IN ($id_list) ";
 		$this->db->exec_query($sql);
 	}
 	

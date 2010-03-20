@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2010/03/11 21:41:02 $ by $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2010/03/20 18:49:35 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
+ *	20100320 - franciscom - xmlToMapReqSpec() added type attribute
  *	20100311 - franciscom - fixed bug due to missed isset() control
  *  20100307 - amitkhullar - small bug fix for Requirements based report.
  *  20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
@@ -139,7 +140,9 @@ class requirement_spec_mgr extends tlObjectWithAttachments
           scope
           countReq
           user_id: requirement spec author
-          type:
+          [type]
+          [node_order]
+          [options]
 
     returns: map with following keys:
              status_ok -> 1/0
@@ -152,15 +155,17 @@ class requirement_spec_mgr extends tlObjectWithAttachments
         20080318 - franciscom - removed code to get last inserted id
 
   */
-function create($tproject_id,$parent_id,$doc_id,$title, $scope, 
-                $countReq,$user_id, $type = TL_REQ_SPEC_TYPE_FEATURE,
-                $node_order=null, $options=null)
+function create($tproject_id,$parent_id,$doc_id,$title, $scope,$countReq,$user_id, 
+				$type = TL_REQ_SPEC_TYPE_FEATURE,$node_order=null, $options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $result=array('status_ok' => 0, 'msg' => 'ko', 'id' => 0);
     $title=trim($title);
     $chk=$this->check_main_data($title,$doc_id,$tproject_id,$parent_id);
     $result['msg']=$chk['msg'];
+    
+	$my['options'] = array( 'actionOnDuplicate' => "block");
+	$my['options'] = array_merge($my['options'], (array)$options);
 
     if ($chk['status_ok'])
     {
@@ -209,15 +214,15 @@ function create($tproject_id,$parent_id,$doc_id,$title, $scope,
 function get_by_id($id)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title,RSPEC.doc_id";
-    
-    $sql = "/* $debugMsg */ SELECT {$fields2get}, '' AS author, '' AS modifier, NH.node_order " .
+    $sql = "/* $debugMsg */ " . 
+    	   " SELECT '' AS author, '' AS modifier, NH.node_order, " .
+    	   " RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+           " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+           " RSPEC.modification_ts,NH.name AS title,RSPEC.doc_id " .
     	   " FROM {$this->object_table} RSPEC,  {$this->tables['nodes_hierarchy']} NH" .
     	   " WHERE RSPEC.id = NH.id " . 
     	   " AND RSPEC.id = {$id}";
- 	       
+       
 	$recordset = $this->db->get_recordset($sql);
     $rs = null;
     if(!is_null($recordset))
@@ -372,11 +377,10 @@ function get_metrics($id)
 function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 {
    	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title";
-
-	$sql = "/* $debugMsg */SELECT {$fields2get}, NH.node_order " .
+	$sql = "/* $debugMsg */ " . 
+	       " SELECT RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+           " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+           " RSPEC.modification_ts,NH.name AS title,NH.node_order " .
 	       " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH " .
 	       " WHERE NH.id=RSPEC.id" .
 	       " AND testproject_id={$tproject_id}";
@@ -664,14 +668,15 @@ function get_requirements($id, $range = 'all', $testcase_id = null, $options=nul
   */
 function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=self::CASE_SENSITIVE)
 {
-    $fields2get="RSPEC.id,testproject_id,RSPEC,doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title";
-    
+   	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
   	$output=null;
   	$title=trim($title);
     $the_title=$this->db->prepare_string($title);
-  	$sql = "SELECT {$fields2get} FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH";
+  	$sql = "/* $debugMsg */ " .
+  		   " SELECT RSPEC.id,testproject_id,RSPEC,doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+           " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+           " RSPEC.modification_ts,NH.name AS title " .
+  	       " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH";
 
     switch ($case_analysis)
     {
@@ -829,7 +834,6 @@ function get_by_title($title,$tproject_id=null,$parent_id=null,$case_analysis=se
   	if($ret['status_ok'])
   	{
 		$ret['msg']='ok';
-      	// $rs = $this->getByDocID($doc_id,$tproject_id,$my_parent_id,$case_analysis);
       	$rs = $this->getByDocID($doc_id,$tproject_id);
   		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
       	{                                  
@@ -944,6 +948,7 @@ function getReqTree($id)
  * Developed using exportTestSuiteDataToXML() as model
  *
  * @internal revision
+ * 20100320 - franciscom - added TYPE
  * 20091122 - franciscom - added doc id management  
  */
 function exportReqSpecToXML($id,$tproject_id,$optExport=array())
@@ -965,6 +970,7 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 		$containerData = $this->get_by_id($id);
 	  	$xmlData = "<req_spec title=\"" . htmlspecialchars($containerData['title']) . '" ' .
 	  	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" >' .
+	               "\n<type><![CDATA[{$containerData['type']}]]></type>\n" .
 	               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
 	               "<scope><![CDATA[{$containerData['scope']}]]> \n</scope>{$cfXML}";
 	}
@@ -1071,6 +1077,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
     $dummy=array();
     $dummy['node_order'] = (int)$xml_item->node_order;
     $dummy['scope'] = (string)$xml_item->scope;
+    $dummy['type'] = (int)$xml_item->type;
     $dummy['level'] = $level;
     $depth=$level+1;
     
@@ -1341,13 +1348,17 @@ function html_table_of_custom_field_values($id,$tproject_id)
   *
   *  
   */
-function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
+function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {
 	$items = $this->xmlToMapReqSpec($xml);
     $req_mgr = new requirement_mgr($this->db);
     $copy_reqspec = null;
     $copy_req = null;
+	$getOptions = array('output' => 'minimun');
     $has_filters = !is_null($filters);
+	$my['options'] = array( 'actionOnDuplicate' => "update");
+	$my['options'] = array_merge($my['options'], (array)$options);
+
     
     if($has_filters)
     {
@@ -1370,8 +1381,25 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
         $depth = $elem['level'];
         
         $req_spec_order = isset($elem['node_order']) ? $elem['node_order'] : 0;
-        $result = $this->create($tproject_id,$container_id[$depth],$elem['doc_id'],$elem['title'],
-                                $elem['scope'],$req_spec_order,$author_id);
+		
+		// 20100320 - 
+		// Check if inside container_id a req spec with same DOCID exists, is yes 
+		// follows $my['options']['actionOnDuplicate'] 
+		//
+		$check_status = $this->getByDocID($elem['doc_id'],$tproject_id,$container_id[$depth],$getOptions);
+        new dBug($check_status); 
+        new dBug($elem);
+		if(is_null($check_status))
+		{
+        	$result = $this->create($tproject_id,$container_id[$depth],$elem['doc_id'],$elem['title'],
+            	                    $elem['scope'],$req_spec_order,$author_id);
+        }
+        else
+        {
+			$result = $this->update($id,$elem['doc_id'],$elem['title'], $elem['scope'],
+									$countReq,$author_id,$type);
+        }
+        
         if($result['status_ok'])
         {
             $container_id[$depth+1] = $result['id']; 
@@ -1401,9 +1429,13 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
 
     args : doc_id:
            [tproject_id] 
-           [parent_id] 
-           [case_analysis]: control case sensitive search.
-                            default 0 -> case sensivite search
+           [parent_id]
+           [options]: 
+           			 [case]: control case sensitive search.
+                             default 0 -> case sensivite search
+           			 [access_key]:
+           			 [check_criteria]:
+           			 [output]:
 
     returns: map.
              key: req spec id
@@ -1419,16 +1451,13 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null)
                     modifier_id
                     modification_ts
   */
-// function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$case_analysis=self::CASE_SENSITIVE)
 function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	$my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 'case' => 'sensitive');
+	$my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 
+							'case' => 'sensitive', 'output' => 'standard');
 	$my['options'] = array_merge($my['options'], (array)$options);
 
-    $fields2get="RSPEC.id,testproject_id,RSPEC.doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts,NH.name AS title";
     
   	$output=null;
     $the_doc_id=$this->db->prepare_string(trim($doc_id));
@@ -1444,20 +1473,23 @@ function getByDocID($doc_id,$tproject_id=null,$parent_id=null,$options=null)
 			$check_criteria = " LIKE '{$the_doc_id}%' ";
 		break;
 	}
-  	$sql = " /* $debugMsg */ SELECT {$fields2get} " .
-  	       " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH " .
- 		   " WHERE RSPEC.doc_id {$check_criteria} ";
+	$sql = " /* $debugMsg */ SELECT ";
+	switch($my['options']['output'])
+	{
+		case 'standard':
+  			 $sql .= " RSPEC.id,testproject_id,RSPEC.doc_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
+           			 " RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
+           			 " RSPEC.modification_ts,NH.name AS title ";
+        break;
+           			 
+		case 'minimun':
+  			 $sql .= " RSPEC.id,testproject_id,RSPEC.doc_id,NH.name AS title ";
+        break;
+		
+	}
 
-    // switch ($case_analysis)
-    // {
-    //     case self::CASE_SENSITIVE:
-    //         $sql .= " WHERE RSPEC.doc_id='{$the_doc_id}'";
-    //     break;
-    // 
-    //     case self::CASE_INSENSITIVE:
-    //         $sql .= " WHERE UPPER(RSPEC.doc_id)='" . strtoupper($the_doc_id) . "'";    
-    //     break;
-    // }
+	$sql .= " FROM {$this->object_table} RSPEC, {$this->tables['nodes_hierarchy']} NH " .
+ 		    " WHERE RSPEC.doc_id {$check_criteria} ";
 
   	if( !is_null($tproject_id) )
   	{

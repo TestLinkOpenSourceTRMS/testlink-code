@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.2 2010/03/20 13:00:45 franciscom Exp $
+$Id: inc_req_import_viewer.tpl,v 1.3 2010/03/20 14:17:53 franciscom Exp $
 
 
 rev :
@@ -10,10 +10,6 @@ rev :
                           btn_update_selected_tc,doc_id_short,
                           scope,warning,check_uncheck_children_checkboxes,
                           title,version,assigned_to,assign_to,note_keyword_filter, priority'}
-
-{include file="inc_head.tpl" openHead="yes"}
-{include file="inc_jsCheckboxes.tpl"}
-{include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
 	var check_msg="";
@@ -32,12 +28,8 @@ function check_action_precondition(container_id,action)
 </script>
 {/literal}
 
-</head>
 {* prefix for checkbox name ADD*}   
 {assign var="add_cb" value="achecked_tc"}
-
-<body class="fixedheader">
-<form id='reqspec_import' name='reqspec_import' method='post'>
 
   {* --------------------------------------------------------------------------------------------------------------- *}
 	<h1 class="title">{$gui->main_descr|escape}</h1>
@@ -111,6 +103,3 @@ function check_action_precondition(container_id,action)
 	{/foreach}
 	</div>
   {/if}
-</form>
-</body>
-</html>

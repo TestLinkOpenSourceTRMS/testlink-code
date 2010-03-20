@@ -1,15 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.1 2010/03/19 21:36:28 franciscom Exp $
+$Id: inc_req_import_viewer.tpl,v 1.2 2010/03/20 13:00:45 franciscom Exp $
 
 
 rev :
 
 *}
 {lang_get var="labels" s='btn_do,check_uncheck_all_checkboxes,th_id,
-                          btn_update_selected_tc,
-                          details,warning,check_uncheck_children_checkboxes,
-                          th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority'}
+                          btn_update_selected_tc,doc_id_short,
+                          scope,warning,check_uncheck_children_checkboxes,
+                          title,version,assigned_to,assign_to,note_keyword_filter, priority'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -70,10 +70,9 @@ function check_action_precondition(container_id,action)
 			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$div_id}_","add_value_{$div_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />
 			      	</td>
-              <td class="tcase_id_cell">{$labels.th_id}</td> 
-              <td>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
-              	{$labels.version}{$gsmarty_gui->role_separator_close}</td>
-              <td align="center">&nbsp;&nbsp;{$labels.details}</td>
+              <td class="tcase_id_cell">{$labels.doc_id_short}</td> 
+              <td>{$labels.title}</td>
+              <td align="center">&nbsp;&nbsp;{$labels.scope}</td>
             </tr>
             {* ---------------------------------------------------------------------------------------------------- *}
       

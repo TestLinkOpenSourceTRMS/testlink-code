@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.582 2010/03/19 22:41:25 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.583 2010/03/20 13:00:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -55,6 +55,7 @@ $TLS_desc = "Descending";
 $TLS_description = "Description";
 $TLS_delete_confirm_question = "Are your sure you want to delete?";
 $TLS_doc_id = "Document ID";
+$TLS_doc_id_short = "Doc ID";
 $TLS_destination_top = "Destination position top";
 $TLS_destination_bottom = "Destination position bottom";
 $TLS_error = "Error";

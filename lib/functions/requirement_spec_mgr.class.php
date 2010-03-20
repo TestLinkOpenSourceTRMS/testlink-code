@@ -5,14 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2010/03/20 18:49:35 $ by $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2010/03/20 18:58:40 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:  
- *	20100320 - franciscom - xmlToMapReqSpec() added type attribute
+ *	20100320 - franciscom - xmlToMapReqSpec() added attributes: type,total_req 
  *	20100311 - franciscom - fixed bug due to missed isset() control
  *  20100307 - amitkhullar - small bug fix for Requirements based report.
  *  20100209 - franciscom - changes in delete_subtree_objects() call due to BUGID 3147 
@@ -972,6 +972,7 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	  	           " doc_id=\"" . htmlspecialchars($containerData['doc_id']) . '" >' .
 	               "\n<type><![CDATA[{$containerData['type']}]]></type>\n" .
 	               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
+	               "\n<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
 	               "<scope><![CDATA[{$containerData['scope']}]]> \n</scope>{$cfXML}";
 	}
 	else
@@ -1078,6 +1079,7 @@ function xmlToMapReqSpec($xml_item,$level=0)
     $dummy['node_order'] = (int)$xml_item->node_order;
     $dummy['scope'] = (string)$xml_item->scope;
     $dummy['type'] = (int)$xml_item->type;
+    $dummy['total_req'] = (int)$xml_item->total_req;
     $dummy['level'] = $level;
     $depth=$level+1;
     
@@ -1392,7 +1394,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 		if(is_null($check_status))
 		{
         	$result = $this->create($tproject_id,$container_id[$depth],$elem['doc_id'],$elem['title'],
-            	                    $elem['scope'],$req_spec_order,$author_id);
+            	                    $elem['scope'],$elem['total_req'],$author_id,$elem['type'],$req_spec_order);
         }
         else
         {

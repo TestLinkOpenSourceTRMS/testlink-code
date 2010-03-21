@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.75 $
- * @modified $Date: 2010/03/19 22:03:15 $ by $Author: franciscom $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2010/03/21 17:57:58 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -129,12 +129,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
     	$filter_clause = implode(" AND ",$dummy);
     }
 
-    $fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,REQV.scope,REQV.status,REQV.type,REQV.active," . 
-                "REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
-                "REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
-                "REQV.modification_ts,NH_REQ.name AS title";
 	$where_clause = " WHERE NH_REQV.parent_id ";
-	
 	if( ($id_is_array=is_array($id)) )
 	{
 		$where_clause .= "IN (" . implode(",",$id) . ") ";
@@ -165,7 +160,11 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 		}
     }
   
-	$sql = " /* $debugMsg */ SELECT {$fields2get}, REQ_SPEC.testproject_id, " .
+	$sql = " /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+		   " REQV.scope,REQV.status,REQV.type,REQV.active," . 
+           " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
+           " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+           " REQV.modification_ts,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
 	       " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
 	       " FROM {$this->object_table} REQ " .
 	       " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
@@ -313,7 +312,7 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
   */
 
 function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $type,
-                $expected_coverage,$skip_controls=0)
+                $expected_coverage,$node_order=null,$skip_controls=0)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
@@ -344,10 +343,14 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	{
  		$sql = array();
 
-  		$sql[] = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
-  		  	     " SET name='" . $this->db->prepare_string($title) . "'" .
-  		  	     " WHERE id={$id}";
- 	  	
+  		$q = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+  		  	 " SET name='" . $this->db->prepare_string($title) . "'";
+	  	if( !is_null($node_order) )
+	  	{
+  			$q .= ', node_order= ' . abs(intval($node_order));  	     
+	  	}
+ 	  	$sql[] = $q . " WHERE id={$id}";
+
 	  	$sql[] = "/* $debugMsg */ UPDATE {$this->tables['requirements']} " .
 	  	         " SET req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'" .
 	  	         " WHERE id={$id}";
@@ -587,10 +590,6 @@ function get_coverage($id)
 function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = null, $tc_count=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    $fields2get="RSPEC.id,testproject_id,RSPEC.scope,RSPEC.total_req,RSPEC.type," .
-                "RSPEC.author_id,RSPEC.creation_ts,RSPEC.modifier_id," .
-                "RSPEC.modification_ts, NH.parent_id, NH.name AS title";
-    
     $tcase_mgr = new testcase($this->db);
    	$tsuite_mgr = new testsuite($this->db);
 
@@ -1324,10 +1323,9 @@ function html_table_of_custom_field_values($id)
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 	    $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 
-	                            'case' => 'sensitive');
+	                            'case' => 'sensitive', 'output' => 'standard');
 	    $my['options'] = array_merge($my['options'], (array)$options);
     	
-    	$fields2get="REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title";
     	   
   		$output=null;
   		$the_doc_id = $this->db->prepare_string(trim($doc_id));
@@ -1343,15 +1341,35 @@ function html_table_of_custom_field_values($id)
 	    	break;
 	    }
   		
-		$sql = " /* $debugMsg */ SELECT {$fields2get}, REQ_SPEC.testproject_id, " .
-		       " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
-		       " FROM {$this->object_table} REQ " .
-		       " /* Get Req info from NH */ " .
-		       " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
-		       " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
-		       " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-		       " WHERE REQ.req_doc_id {$check_criteria} ";
+		// $sql = " /* $debugMsg */ " . 
+		// 	   " SELECT REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+		//        " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+		//        " FROM {$this->object_table} REQ " .
+		//        " /* Get Req info from NH */ " .
+		//        " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+		//        " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+		//        " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+		//        " WHERE REQ.req_doc_id {$check_criteria} ";
 
+		$sql = " /* $debugMsg */ SELECT ";
+		switch($my['options']['output'])
+		{
+			case 'standard':
+				 $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+		       			 " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
+		    break;
+		       			 
+			case 'minimun':
+				 $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id";
+		    break;
+			
+		}
+		$sql .= " FROM {$this->object_table} REQ " .
+		       	" /* Get Req info from NH */ " .
+		       	" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+		       	" JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+		       	" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+				" WHERE REQ.req_doc_id {$check_criteria} ";
   		
   		if( !is_null($tproject_id) )
   		{

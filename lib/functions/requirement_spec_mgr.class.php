@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2010/03/20 18:58:40 $ by $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2010/03/21 17:57:58 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -408,7 +408,8 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
              msg -> some simple message, useful when status_ok ==0
 
   */
-  function update($id,$doc_id,$title, $scope, $countReq,$user_id,$type = TL_REQ_SPEC_TYPE_FEATURE)
+  function update($id,$doc_id,$title, $scope, $countReq,$user_id,
+  				  $type = TL_REQ_SPEC_TYPE_FEATURE,$node_order = null)
   {
 		$result['status_ok'] = 1;
 	  	$result['msg'] = 'ok';
@@ -439,7 +440,8 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
 			       " doc_id='" . $this->db->prepare_string($doc_id) . "', " .
 			       " type='" . $this->db->prepare_string($type) . "', " .
 			       " total_req ='" . $this->db->prepare_string($countReq) . "', " .
-			       " modifier_id={$user_id},modification_ts={$db_now} WHERE id={$id}";
+			       " modifier_id={$user_id},modification_ts={$db_now} ";
+			$sql .= "WHERE id={$id}";
     	    if (!$this->db->exec_query($sql))
 			{
     	        $result['msg']=lang_get('error_updating_reqspec');
@@ -449,8 +451,12 @@ function get_all_in_testproject($tproject_id,$order_by=" ORDER BY title")
     	    {
   		        // need to update node on tree
     	        $sql = " UPDATE {$this->tables['nodes_hierarchy']} " .
-  		    	       " SET name='" . $this->db->prepare_string($title) . "'" .
-  		    	       " WHERE id={$id}";
+  		    	       " SET name='" . $this->db->prepare_string($title) . "'";
+				if( !is_null($node_order) )
+				{
+					$sql .= ",node_order=" . intval($node_order);
+				}       
+  		    	$sql .= " WHERE id={$id}";
     	    
   		    	if (!$this->db->exec_query($sql))
   		    	{
@@ -1345,13 +1351,14 @@ function html_table_of_custom_field_values($id,$tproject_id)
 
 
  /**
-  * 
+  * create a req spec tree on system from $xml data
   *
   *
   *  
   */
 function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {
+	$user_feedback = null;
 	$items = $this->xmlToMapReqSpec($xml);
     $req_mgr = new requirement_mgr($this->db);
     $copy_reqspec = null;
@@ -1360,6 +1367,15 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     $has_filters = !is_null($filters);
 	$my['options'] = array( 'actionOnDuplicate' => "update");
 	$my['options'] = array_merge($my['options'], (array)$options);
+
+	$labels = array('import_req_spec_created' => '', 'import_req_spec_skipped' => '',
+					'import_req_spec_updated' => '', 'import_req_spec_ancestor_skipped' => '',
+					'import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '');
+	foreach($labels as $key => $dummy)
+	{
+		$labels[$key] = lang_get($key);
+	}
+
 
     
     if($has_filters)
@@ -1376,51 +1392,127 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     $loop2do = count($items);
     $container_id[0] = (is_null($parent_id) || $parent_id == 0) ? $tproject_id : $parent_id;
 
-            
+	// items is an array of req. specs
+	$skip_level = -1;
     for($idx = 0;$idx < $loop2do; $idx++)
     {
-        $elem = $items[$idx]['req_spec'];
-        $depth = $elem['level'];
+        $rspec = $items[$idx]['req_spec'];
+        $depth = $rspec['level'];
+        if( $skip_level > 0 && $depth >= $skip_level)
+        {
+        	$msgID = 'import_req_spec_ancestor_skipped';
+        	$user_feedback[] = array($rspec['doc_id'],$rspec['title'],sprintf($labels[$msgID],$rspec['doc_id']));
+        	continue;
+        }
         
-        $req_spec_order = isset($elem['node_order']) ? $elem['node_order'] : 0;
+        $req_spec_order = isset($rspec['node_order']) ? $rspec['node_order'] : 0;
 		
 		// 20100320 - 
-		// Check if inside container_id a req spec with same DOCID exists, is yes 
-		// follows $my['options']['actionOnDuplicate'] 
+		// Check if req spec with same DOCID exists, inside container_id
+		// If there is a hit
+		//	  We will go in update 
+		// If Check fails, need to repeat check on WHOLE Testproject.
+		// If now there is a HIT we can not import this branch
+		// If Check fails => we can import creating a new one.
 		//
-		$check_status = $this->getByDocID($elem['doc_id'],$tproject_id,$container_id[$depth],$getOptions);
-        new dBug($check_status); 
-        new dBug($elem);
-		if(is_null($check_status))
+		// Important thing:
+		// Working in this way, i.e. doing check while walking the structure to import
+		// we can end importing struct with 'holes'.
+		//
+ 		$check_in_container = $this->getByDocID($rspec['doc_id'],$tproject_id,$container_id[$depth],$getOptions);
+		$skip_level = $depth + 1;
+		$result['status_ok'] = 0;
+   		$msgID = 'import_req_spec_skipped';
+		
+ 		new dBug($rspec);
+ 		new dBug($check_in_container);
+     	if(is_null($check_in_container))
 		{
-        	$result = $this->create($tproject_id,$container_id[$depth],$elem['doc_id'],$elem['title'],
-            	                    $elem['scope'],$elem['total_req'],$author_id,$elem['type'],$req_spec_order);
+			$check_in_tproject = $this->getByDocID($rspec['doc_id'],$tproject_id,null,$getOptions);
+ 			new dBug($check_in_tproject);
+			
+			if(is_null($check_in_tproject))
+			{
+        		$msgID = 'import_req_spec_created';
+				new dBug($msgID);
+        		$result = $this->create($tproject_id,$container_id[$depth],$rspec['doc_id'],$rspec['title'],
+            		                    $rspec['scope'],$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
+        	}
         }
         else
         {
-			$result = $this->update($id,$elem['doc_id'],$elem['title'], $elem['scope'],
-									$countReq,$author_id,$type);
+        	$msgID = 'import_req_spec_updated';
+		    new dBug($msgID);
+		    $reqSpecID = key($check_in_container);
+			$result = $this->update($reqSpecID,$rspec['doc_id'],$rspec['title'],$rspec['scope'],
+									$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
+       		$result['id'] = $reqSpecID;
         }
-        
+        $user_feedback[] = array($rspec['doc_id'],$rspec['title'],sprintf($labels[$msgID],$rspec['doc_id']));
+		new dBug($user_feedback);
+		        
         if($result['status_ok'])
         {
-            $container_id[$depth+1] = $result['id']; 
-            $requirementSet = $items[$idx]['requirements'];
-            $create_requirements = (!$has_filters || isset($copy_req[$idx])) && !is_null($requirementSet);
-            if($create_requirements)
+        	$skip_level = -1;
+            $container_id[$depth+1] = ($reqSpecID = $result['id']); 
+            $reqSet = $items[$idx]['requirements'];
+            $create_req = (!$has_filters || isset($copy_req[$idx])) && !is_null($reqSet);
+            if($create_req)
             {
-                $items_qty = isset($copy_req[$idx]) ? count($copy_req[$idx]) : count($requirementSet);
-                $keys2insert = isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($requirementSet);
+                $items_qty = isset($copy_req[$idx]) ? count($copy_req[$idx]) : count($reqSet);
+                $keys2insert = isset($copy_req[$idx]) ? $copy_req[$idx] : array_keys($reqSet);
                 for($jdx = 0;$jdx < $items_qty; $jdx++)
                 {
-                     $req = $requirementSet[$keys2insert[$jdx]];
-                     $req_mgr->create($result['id'],$req['docid'],$req['title'],$req['description'],
-                                      $author_id,$req['status'],$req['type'],
-                                      $req['expected_coverage'],$req['node_order']);
+                    $req = $reqSet[$keys2insert[$jdx]];
+                    
+                    // Check:
+                    // If item with SAME DOCID exists inside container
+					// If there is a hit
+					//	   We will follow user option: update,create new version
+					//
+					// If do not exist check must be repeated, but on WHOLE test project
+					// 	If there is a hit -> we can not create
+					//		else => create
+					// 
+                    // 
+                    // 20100321 - we do not manage yet user option
+					$msgID = 'import_req_skipped';
+					$check_in_reqspec = $req_mgr->getByDocID($req['docid'],$tproject_id,$reqSpecID,$getOptions);
+
+					new dBug($req);
+					new dBug($check_in_reqspec,array('label' => 'check_in_reqspec'));
+					
+     				if(is_null($check_in_reqspec))
+					{
+						$check_in_tproject = $this->getByDocID($req['docid'],$tproject_id,null,$getOptions);
+						if(is_null($check_in_tproject))
+						{
+                    		$req_mgr->create($result['id'],$req['docid'],$req['title'],$req['description'],
+                            		         $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+                            		         $req['node_order']);
+  				     		$msgID = 'import_req_created';
+                       }             		 
+                    }
+                    else
+                    {
+                    	// function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $type,
+                		// 				   $expected_coverage,$node_order=null,$skip_controls=0)
+                		//
+						// Need to get Last Version no matter active or not.
+						// What to do if is Frozen ??? -> now ignore and update anyway
+						$reqID = key($check_in_reqspec);
+						$last_version = $req_mgr->get_last_version_info($reqID);
+						$result = $req_mgr->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
+												   $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+												   $req['node_order']);
+			     		$msgID = 'import_req_updated';
+                    }               		 
                 } 
-            }  // if($create_requirements)   
+        		$user_feedback[] = array($req['docid'],$req['title'], sprintf($labels[$msgID],$req['docid']));
+            }  // if($create_req)   
         } // if($result['status_ok'])
     }    
+    return $user_feedback;
 }
 
 

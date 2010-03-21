@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirements>
+	<requirement>
+		<docid><![CDATA[RQ-KL-RPT-002-X1]]></docid>
+		<title><![CDATA[Raptor Gamma Ray Shield]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+
+
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-KL-RPT-002-XZ]]></docid>
+		<title><![CDATA[Raptor Iridium Shield]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+
+
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+</requirements>

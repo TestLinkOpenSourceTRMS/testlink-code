@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.3 2010/03/20 14:17:53 franciscom Exp $
+$Id: inc_req_import_viewer.tpl,v 1.4 2010/03/21 14:42:58 franciscom Exp $
 
 
 rev :
@@ -62,7 +62,7 @@ function check_action_precondition(container_id,action)
 			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$div_id}_","add_value_{$div_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />
 			      	</td>
-              <td class="tcase_id_cell">{$labels.doc_id_short}</td> 
+              <td>{$labels.doc_id_short}</td> 
               <td>{$labels.title}</td>
               <td align="center">&nbsp;&nbsp;{$labels.scope}</td>
             </tr>
@@ -76,9 +76,12 @@ function check_action_precondition(container_id,action)
                     		                        value="1" />
             	    	</td>
             	    	<td>
-            	    		{$req.docid|escape}::{$req.title|escape}
+            	    		{$req.docid|escape}
             	    	</td>
-            	    	<td align="center">
+                    <td>
+            	    	{$req.title|escape}
+            	    	</td>
+                    <td align="center">
             	    		{$req.description|escape}
             	    	</td>
                   </tr>

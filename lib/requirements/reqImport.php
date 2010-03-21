@@ -4,14 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/02/20 16:50:22 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/03/21 17:57:23 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  * 
- * 20081103 - sisajr     - DocBook XML extension
+ * 20081103 - sisajr - DocBook XML extension
  * 20080504 - franciscom - removed tmp file after import
  * 20061014 - franciscom - added check on file mime type
  *                         using check_valid_ftype()
@@ -31,6 +31,8 @@ $req_spec_mgr = new requirement_spec_mgr($db);
 
 $args = init_args();
 $gui = initializeGui($args,$req_spec_mgr,$_SESSION);
+
+new dBug($_REQUEST);
 
 $importResult = null;
 $arrImport = null;
@@ -53,7 +55,8 @@ switch($args->doAction)
     break;
     
     case 'executeImport':
-        $dummy = doExecuteImport($db,$gui->fileName,$args,$req_spec_mgr);
+        $arrImport = doExecuteImport($db,$gui->fileName,$args,$req_spec_mgr);
+        $importResult = lang_get('import_done');
     break;
 }
 
@@ -71,6 +74,8 @@ switch($args->scope)
 
 $gui->arrImport = $arrImport;
 $gui->importResult = $importResult;
+
+new dBug($gui);
 
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);
@@ -91,17 +96,19 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     $retval->items = null;
     $retval->msg = '';
     
+    new dBug($argsObj);
+    
 	if($argsObj->importType == 'XML')
 	{
 		$xml = simplexml_load_file($fileName);
 	    
-	    // NOT USED YET
 	    // if achecked_req is null => user has not selected any requirement, anyway we are going to create reqspec tree
 	    $filter['requirements'] = $argsObj->achecked_req;
-	    
+	    $retval->items = array();
         foreach($xml->req_spec as $xkm)
     	{
-    		$reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,$argsObj->user_id);
+    		$dummy = $reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,$argsObj->user_id);
+    		$retval->items = array_merge($retval->items,$dummy);
     	}
 	       
 	    

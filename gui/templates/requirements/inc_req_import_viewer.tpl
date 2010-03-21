@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.4 2010/03/21 14:42:58 franciscom Exp $
+$Id: inc_req_import_viewer.tpl,v 1.5 2010/03/21 17:57:08 franciscom Exp $
 
 
 rev :
@@ -59,7 +59,7 @@ function check_action_precondition(container_id,action)
 			      <tr style="background-color:#059; font-weight:bold; color:white">
 			      	<td width="5" align="center">
 			          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
-			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$div_id}_","add_value_{$div_id}");'
+			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$div_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />
 			      	</td>
               <td>{$labels.doc_id_short}</td> 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.49 $
- * @modified $Date: 2010/03/19 15:04:09 $ by $Author: asimon83 $
+ * @version $Revision: 1.50 $
+ * @modified $Date: 2010/03/21 17:57:30 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -60,6 +60,7 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
  */
 function init_args()
 {
+	// BUGID 1748
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 					 "req_spec_id" => array(tlInputParameter::INT_N),
 					 "containerID" => array(tlInputParameter::INT_N),
@@ -76,7 +77,6 @@ function init_args()
 					 "testcase_count" => array(tlInputParameter::ARRAY_INT),
 					 "req_version_id" => array(tlInputParameter::INT_N),
 					 "copy_testcase_assignment" => array(tlInputParameter::CB_BOOL),
-					 // BUGID 1748
 					 "relation_id" => array(tlInputParameter::INT_N),
 					 "relation_source_req_id" => array(tlInputParameter::INT_N),
 					 "relation_type" => array(tlInputParameter::STRING_N),

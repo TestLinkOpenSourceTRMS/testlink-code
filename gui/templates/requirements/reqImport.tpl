@@ -1,6 +1,6 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.12 2010/02/20 16:50:21 franciscom Exp $
+$Id: reqImport.tpl,v 1.13 2010/03/21 17:57:08 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -62,25 +62,25 @@ Revision:
   
   {elseif $gui->doAction == 'uploadFile'}
 
-    {if $gui->importType == 'XML' && !is_null($gui->items)}
-  	  <form method='post' action='{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}'>
- 		  <input type='hidden' value="{$gui->importType}" name='importType' />
-		  <input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
+    {if !is_null($gui->items)}
+      {if $gui->importType == 'XML'}
+  	    <form method='post' action='{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}'>
+ 		    <input type='hidden' value="{$gui->importType}" name='importType' />
+		    <input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
+        {include file="$viewer_template" }
+  	    	<div class="groupBtn">
+  	    		<input type='submit' name='executeImport' value="{$labels.btn_import}" />
+  	    		<input type="button" name="cancel" value="{$labels.btn_cancel}"
+  	    			onclick="javascript: location.href='{$req_spec_view_url}';" />
+  	    	</div>
+  	    </form>
+  	  {/if}
+  	  
+      {if $gui->importType != 'XML'}
+        {* NEED TO BE DEVELOPED *}  	
+  	  {/if}
+  	{/if}
 
-      {include file="$viewer_template" }
-  	  	<div class="groupBtn">
-  	  		<input type='submit' name='executeImport' value="{$labels.btn_import}" />
-  	  		<input type="button" name="cancel" value="{$labels.btn_cancel}"
-  	  			onclick="javascript: location.href='{$req_spec_view_url}';" />
-  	  	</div>
-  	  </form>
-  	{/if}
-  	
-    {if $gui->importType != 'XML' && !is_null($gui->items)}
-  	
-  	{/if}
-  	
-  	
   {/if}
   
   {if $gui->importResult != '' && $gui->file_check.status_ok }
@@ -92,19 +92,22 @@ Revision:
   		<th>{$labels.title}</th>
   		<th style="width: 20%;">{$labels.Result}</th>
   	</tr>
-  	{section name=result loop=$gui->arrImport}
-  	<tr>
-  		<td>{$gui->arrImport[result][0]|escape}</td>
-  		<td>{$gui->arrImport[result][1]|escape}</td>
-  		<td>{$gui->arrImport[result][2]|escape}</td>
-  	</tr>
-  	{sectionelse}
+  	{if $gui->arrImport->items != ''}
+ 	    {foreach from=$gui->arrImport->items key=idx item=import_feedback}
+  	  <tr>
+  	  	<td>{$import_feedback[0]|escape}</td>
+  	  	<td>{$import_feedback[1]|escape}</td>
+  	  	<td>{$import_feedback[2]|escape}</td>
+  	  </tr>
+  	  {/foreach}
+  	{else}
   	<tr><td>{$labels.req_msg_norequirement}</td></tr>
-  	{/section}
+  	{/if}
   	</table>
+  	
+   {elseif $gui->try_upload && $gui->file_check.status_ok && ($gui->arrImport != "") }
 
-  {elseif $gui->try_upload && $gui->file_check.status_ok && ($gui->arrImport != "") }
-
+    {* NEED TO BE RE-TESTED - 20100321 *}
   	{* second screen *}
   	<h2>{$labels.title_req_import_check_input}</h2>
 
@@ -153,8 +156,9 @@ Revision:
   		{/section}
   	</table>
   	</div>
-
+ 	
  {/if}
+
 </div>
 
 </body>

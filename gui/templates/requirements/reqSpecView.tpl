@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.38 2010/03/21 18:17:50 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.39 2010/03/21 18:21:29 franciscom Exp $ *}
 {*
    Purpose: view a requirement specification
    Author: Martin Havlat
@@ -29,10 +29,10 @@
 {assign var="url_args" value="reqExport.php?req_spec_id="}
 {assign var="req_export_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqImport.php?useRecursion=1&req_spec_id="}
+{assign var="url_args" value="reqImport.php?scope=branch&req_spec_id="}
 {assign var="req_spec_import_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
-{assign var="url_args" value="reqExport.php?useRecursion=1&req_spec_id="}
+{assign var="url_args" value="reqExport.php?scope=branch&req_spec_id="}
 {assign var="req_spec_export_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
 {assign var="url_args" value="reqEdit.php?doAction=reorder&amp;req_spec_id="}

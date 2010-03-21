@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.84 2010/03/17 21:58:01 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.85 2010/03/21 10:03:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -561,9 +561,8 @@ class tree extends tlObject
 		{
 			$order = abs(intval($order));
 			$node_id = intval($node_id);
-		  $sql = "UPDATE {$this->object_table} SET node_order = {$order}
-		      	    WHERE id = {$node_id}";
-		  $result = $this->db->exec_query($sql);
+		  	$sql = "UPDATE {$this->object_table} SET node_order = {$order} WHERE id = {$node_id}";
+		  	$result = $this->db->exec_query($sql);
 		}
 	}
 	

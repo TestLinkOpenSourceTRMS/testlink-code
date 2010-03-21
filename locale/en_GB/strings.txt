@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.584 2010/03/21 09:10:23 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.585 2010/03/21 16:40:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2835,5 +2835,7 @@ $TLS_import_req_spec_updated = 'Updated - Req. Spec. - Doc ID:%s';
 $TLS_import_req_created = 'Created - Requirement - Doc ID:%s';
 $TLS_import_req_skipped = 'Skipped - Requirement - Doc ID:%s - Already exists on other branch';
 $TLS_import_req_updated = 'Updated - - Requirement - Doc ID:%s';
+$TLS_import_done = 'Import done';
+
 // ----- END ------------------------------------------------------------------
 ?>

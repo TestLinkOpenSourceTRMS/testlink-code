@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.583 2010/03/20 13:00:46 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.584 2010/03/21 09:10:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2828,5 +2828,12 @@ $TLS_BTS_connect_to_database_fails = "Connect to Bug Tracker database fails: %s"
 $TLS_MANTIS_status_not_configured = 'Get Bug Status: %s from Mantis DB, but status is not configured on int_mantis.php';
 $TLS_testcase_set_copied = "%s test cases has been copied";
 $TLS_one_testcase_copied = "test case has been copied";
+
+$TLS_import_req_spec_created = 'Created - Req. Spec. - Doc ID:%s';
+$TLS_import_req_spec_skipped = 'Skipped - Req. Spec. - Doc ID:%s - Already exists on other branch';
+$TLS_import_req_spec_updated = 'Updated - Req. Spec. - Doc ID:%s';
+$TLS_import_req_created = 'Created - Requirement - Doc ID:%s';
+$TLS_import_req_skipped = 'Skipped - Requirement - Doc ID:%s - Already exists on other branch';
+$TLS_import_req_updated = 'Updated - - Requirement - Doc ID:%s';
 // ----- END ------------------------------------------------------------------
 ?>

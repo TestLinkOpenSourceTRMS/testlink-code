@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.587 2010/03/21 18:06:13 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.588 2010/03/21 19:11:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -767,9 +767,9 @@ $TLS_btn_copy_requirements = "Copy Requirements";
 $TLS_btn_copy_req_spec = "Copy";
 $TLS_btn_delete_spec = "Delete document";
 $TLS_btn_edit_spec = "Edit document";
-$TLS_btn_export_reqs = "Export requirements";
+$TLS_btn_export_reqs = "Export Child Requirements";
 $TLS_btn_export_req_spec = "Export Req. Spec.";
-$TLS_btn_import_reqs = "Import requirements";
+$TLS_btn_import_reqs = "Import Requirements";
 $TLS_btn_import_req_spec = "Import Req. Spec.";
 $TLS_btn_req_create = "Create Requirement";
 $TLS_btn_spec_list = "List of all documents";

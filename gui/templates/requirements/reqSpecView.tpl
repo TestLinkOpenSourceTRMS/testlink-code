@@ -1,10 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.37 2010/02/18 21:29:20 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.38 2010/03/21 18:17:50 franciscom Exp $ *}
 {*
-   Purpose: smarty template - view a requirement specification
+   Purpose: view a requirement specification
    Author: Martin Havlat
 
-   rev: 20071226 - franciscom - fieldset class added (thanks ext je team)
+   rev: 20100321 - franciscom - req_spec_import/export url
+        20071226 - franciscom - fieldset class added (thanks ext je team)
         20071106 - franciscom - added ext js library
         20070102 - franciscom - added javascript validation of checked requirements
 *}
@@ -27,6 +28,12 @@
 
 {assign var="url_args" value="reqExport.php?req_spec_id="}
 {assign var="req_export_url"  value="$basehref$req_module$url_args$reqSpecID"}
+
+{assign var="url_args" value="reqImport.php?useRecursion=1&req_spec_id="}
+{assign var="req_spec_import_url"  value="$basehref$req_module$url_args$reqSpecID"}
+
+{assign var="url_args" value="reqExport.php?useRecursion=1&req_spec_id="}
+{assign var="req_spec_export_url"  value="$basehref$req_module$url_args$reqSpecID"}
 
 {assign var="url_args" value="reqEdit.php?doAction=reorder&amp;req_spec_id="}
 {assign var="req_reorder_url"  value="$basehref$req_module$url_args$reqSpecID"}

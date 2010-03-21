@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2010/03/21 17:57:58 $ by $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2010/03/21 19:28:06 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -981,10 +981,10 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	               "\n<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
 	               "<scope><![CDATA[{$containerData['scope']}]]> \n</scope>{$cfXML}";
 	}
-	else
-	{
-		$xmlData = "<requirement>";
-	}
+	// else
+	// {
+	// 	$xmlData = "<requirement>";
+	// }
   
 	$req_spec = $this->getReqTree($id);
 	$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
@@ -1014,10 +1014,10 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	{
 		$xmlData .= "</req_spec>";
 	}
-	else
-	{
-		$xmlData .= "</requirement>";
-	}
+	// else
+	// {
+	// 	$xmlData .= "</requirement>";
+	// }
 	return $xmlData;
 }
 

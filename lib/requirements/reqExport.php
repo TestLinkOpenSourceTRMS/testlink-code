@@ -5,11 +5,14 @@
  *
  * Filename $RCSfile: reqExport.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/02/18 21:29:20 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/03/21 19:28:34 $ by $Author: franciscom $
  *
  * Allows users to export requirements.
  *
+ * 20100321 - franciscom - manage export of :
+ *			               req. spec => full tree or branch (new to 1.9)
+ *                         child (direct children) requirements inside a req. spec
 **/
 require_once("../../config.inc.php");
 require_once("csv.inc.php");
@@ -67,7 +70,7 @@ function init_args()
     {	
 		$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	}
-	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'branch';
+	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 	return $args;  
 }
 
@@ -95,7 +98,13 @@ function initializeGui(&$argsObj,&$req_spec_mgr)
   		case 'branch':
 			 $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
 			 $gui->req_spec_id = $argsObj->req_spec_id;
-			 $exportFileName = $gui->req_spec['title'] . '-req.xml';
+			 $exportFileName = $gui->req_spec['title'] . '-req-spec.xml';
+  		break;
+
+  		case 'items':
+			 $gui->req_spec = $req_spec_mgr->get_by_id($argsObj->req_spec_id);
+			 $gui->req_spec_id = $argsObj->req_spec_id;
+			 $exportFileName = $gui->req_spec['title'] . '-child_req.xml';
   		break;
   		
 	}
@@ -130,28 +139,32 @@ function doExport(&$argsObj,&$req_spec_mgr)
 			$pfn = "exportReqSpecToXML";
 			$fileName = 'reqs.xml';
   			$content = TL_XMLEXPORT_HEADER;
+			$optionsForExport['RECURSIVE'] = $argsObj->scope == 'items' ? false : true;
+ 			$openTag = $argsObj->scope == 'items' ? "requirements>" : 'requirement-specification>';
  			
   			switch($argsObj->scope)
   			{
   				case 'tree':
   					$reqSpecSet = $req_spec_mgr->getFirstLevelInTestProject($argsObj->tproject_id);
   					$reqSpecSet = array_keys($reqSpecSet);
+  					
   				break;
   				
   				case 'branch':
+  				case 'items':
   					$reqSpecSet = array($argsObj->req_spec_id);
   				break;
   			}
 			
-			$content .= "<requirement-specification>\n";
+			$content .= "<" . $openTag . "\n";
   			if(!is_null($reqSpecSet))
   			{
   				foreach($reqSpecSet as $reqSpecID)
   				{
-					$content .= $req_spec_mgr->$pfn($reqSpecID,$argsObj->tproject_id);
+					$content .= $req_spec_mgr->$pfn($reqSpecID,$argsObj->tproject_id,$optionsForExport);
 				}
 			}
-			$content .= "</requirement-specification>\n";
+			$content .= "</" . $openTag . "\n";
 			break;
 	}
 

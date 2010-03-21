@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/03/21 17:57:23 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2010/03/21 19:28:34 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  * 
+ * 20100321 - franciscom - work on import child requirements XML format - not finished
  * 20081103 - sisajr - DocBook XML extension
  * 20080504 - franciscom - removed tmp file after import
  * 20061014 - franciscom - added check on file mime type
@@ -32,7 +33,7 @@ $req_spec_mgr = new requirement_spec_mgr($db);
 $args = init_args();
 $gui = initializeGui($args,$req_spec_mgr,$_SESSION);
 
-new dBug($_REQUEST);
+new dBug($args);
 
 $importResult = null;
 $arrImport = null;
@@ -60,6 +61,7 @@ switch($args->doAction)
     break;
 }
 
+// need to understand if has any sense
 switch($args->scope)
 {
 	case 'tree':
@@ -67,10 +69,12 @@ switch($args->scope)
 	break;
 
 	case 'branch':
+	default:
 		$req_spec = $req_spec_mgr->get_by_id($args->req_spec_id);
 	break;
-
 }
+
+new dBug($req_spec);
 
 $gui->arrImport = $arrImport;
 $gui->importResult = $importResult;
@@ -105,6 +109,8 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 	    // if achecked_req is null => user has not selected any requirement, anyway we are going to create reqspec tree
 	    $filter['requirements'] = $argsObj->achecked_req;
 	    $retval->items = array();
+	    
+	    new dBug($xml);
         foreach($xml->req_spec as $xkm)
     	{
     		$dummy = $reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,$argsObj->user_id);
@@ -145,6 +151,9 @@ function init_args()
     $args->conflictSolution = isset($request['conflicts']) ? $request['conflicts'] : null;
     $args->bUpload = isset($request['uploadFile']) ? 1 : 0;
     
+    // useRecursion: used when you want to work on test project or req. spec
+    $args->useRecursion = isset($request['useRecursion']) ? 1 : 0;
+    
     $args->doAction='askFileName';
     $action_keys = array('uploadFile','executeImport');
     foreach($action_keys as $action)
@@ -160,7 +169,7 @@ function init_args()
     $args->tproject_id = $_SESSION['testprojectID'];
     $args->tproject_name = $_SESSION['testprojectName'];
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
-   	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'branch';
+   	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
     
     return $args;
 }
@@ -308,12 +317,36 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 			        if( strcasecmp($argsObj->importType,'XML') == 0 )
 			        {
     	                $retval->file_check['status_ok']=!(($xml=simplexml_load_file($fileName)) === FALSE);
+    	       
+    	       			new dBug($xml);
     	                if($retval->file_check['status_ok'])
     	                { 
+    	                	
     	                	$retval->items = array();
-    	                	foreach($xml->req_spec as $xkm)
+    	                	
+    	                	// we can have two types of files:
+    	                	// 1. req. specs + requirements
+    	                	// 2. just requirements
+    	                	if( property_exists($xml,'req_spec') )
+    	                	{ 
+    	                		foreach($xml->req_spec as $xkm)
+    	                		{
+    	                			$retval->items = array_merge($retval->items,$reqSpecMgr->xmlToMapReqSpec($xkm));
+    	                		}
+    	                	}
+    	                	else
     	                	{
-    	                		$retval->items = array_merge($retval->items,$reqSpecMgr->xmlToMapReqSpec($xkm));
+   	                		    $reqMgr = new requirement_mgr($dbHandler);
+    	                		$loop2do=count($xml->requirement);
+        						for($zdx=0; $zdx <= $loop2do; $zdx++)
+        						{
+        						    $xml_req=$reqMgr->xmlToMapRequirement($xml->requirement[$zdx]);
+        						    if(!is_null($xml_req))
+        						    { 
+        						        $retval->items[]=$xml_req;
+        						    }    
+        						}    
+        						new dBug($retval->items);
     	                	}
 	                    }
 	                    else

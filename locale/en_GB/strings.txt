@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.590 2010/03/22 19:16:02 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.591 2010/03/22 19:21:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2233,6 +2233,9 @@ $TLS_please_choose_req_file = "Please choose the file to upload";
 $TLS_req_import_finished = "The import is finished!";
 $TLS_tproject_import_requirements = '%s : Import Requirements';
 $TLS_reqspec_import_requirements = '%s : Import Requirements';
+$TLS_tproject_import_req_spec = '%s : Import Req. Specs';
+$TLS_reqspec_import_req_spec = '%s : Import Req. Specs';
+
 
 
 // ----- lib/req/reqSpecView.php -----

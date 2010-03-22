@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2010/03/21 19:28:06 $ by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2010/03/22 22:06:21 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -59,13 +59,6 @@ class requirement_spec_mgr extends tlObjectWithAttachments
   var $cfield_mgr;
   var $tree_mgr;
   
-  // 20100220 - franciscom - I'm will work only on XML
-  // then remove other formats till other dev do refactor
-  // var $import_file_types = array("csv" => "CSV",
-  //                                "csv_doors" => "CSV (Doors)",
-  //                                "XML" => "XML",
-  //							    "DocBook" => "DocBook");
-  // 
   var $import_file_types = array("XML" => "XML");
   var $export_file_types = array("XML" => "XML");
   var $my_node_type;
@@ -96,37 +89,37 @@ class requirement_spec_mgr extends tlObjectWithAttachments
 	    $this->object_table=$this->tables['req_specs'];
 	}
 
-  /*
-    function: get_export_file_types
-              getter
-
-    args: -
-
-    returns: map
-             key: export file type code
-             value: export file type verbose description
-
-  */
+	/*
+	  function: get_export_file_types
+	            getter
+	
+	  args: -
+	
+	  returns: map
+	           key: export file type code
+	           value: export file type verbose description
+	
+	*/
 	function get_export_file_types()
 	{
-     return $this->export_file_types;
-  }
+    	return $this->export_file_types;
+  	}
 
-  /*
-    function: get_impor_file_types
-              getter
-
-    args: -
-
-    returns: map
-             key: import file type code
-             value: import file type verbose description
-
-  */
+	/*
+	  function: get_impor_file_types
+	            getter
+	
+	  args: -
+	
+	  returns: map
+	           key: import file type code
+	           value: import file type verbose description
+	
+	*/
 	function get_import_file_types()
 	{
-     return $this->import_file_types;
-  }
+     	return $this->import_file_types;
+  	}
 
 
   /*

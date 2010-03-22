@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.95 2010/03/22 21:20:48 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.96 2010/03/22 22:06:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -139,6 +139,8 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 		$title = trim_and_limit($data['title'],$field_size->req_title);
 		$scope = $data['description'];
 
+		new dBug($data);
+		
 		if (($emptyScope == 'on') && empty($scope))
 		{
 			// skip rows with empty scope
@@ -146,30 +148,29 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 		}
 		else
 		{
-			if ($map_cur_reqdoc_id && array_search($docID, $map_cur_reqdoc_id))
+			$crash = $map_cur_reqdoc_id && array_search($docID, $map_cur_reqdoc_id);
+			// echo "\$crash: $crash";
+			if($crash)
 			{
 				// process conflict according to choosen solution
 				tLog('Conflict found. solution: ' . $conflictSolution);
+				$status['msg'] = 'Error';
 				if ($conflictSolution == 'overwrite')
 				{
 					$row_curr_data = getReqByReqdocId($db,$docID);
 					$req_id = key($row_curr_data);
 					$status = $req_mgr->update($req_id,$docID,$title,$scope,$userID,
-							                       $row_curr_data[$req_id]['status'],
-							                       $row_curr_data[$req_id]['type'],SKIP_CONTROLS);
+							                   $row_curr_data[$req_id]['status'],
+							                   $row_curr_data[$req_id]['type'],SKIP_CONTROLS);
 
-					if ($status == 'ok') {
-						$status = lang_get('req_import_result_overwritten');
+					if ($status == 'ok') 
+					{
+						$status['msg'] = lang_get('req_import_result_overwritten');
 					}
 				}
 				elseif ($conflictSolution == 'skip') {
 					// no work
-					$status = lang_get('req_import_result_skipped');
-				}
-
-				else
-				{
-					$status = 'Error';
+					$status['msg'] = lang_get('req_import_result_skipped');
 				}
 
 			} else {
@@ -188,26 +189,54 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 20061014 - franciscom -
 algorithm changes, now is the docid the attribute that must be unique
 */
-function compareImportedReqs($arrImportSource, $map_cur_reqdoc_id)
+function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID)
 {
-	
-	echo __FUNCTION__;
+	$reqMgr = new requirement_mgr($dbHandler);
 	$arrImport = null;
-	new dBug($arrImportSource);
-	
-	if (sizeof($arrImportSource))
+	if( ($loop2do=count($arrImportSource)) )
 	{
-		foreach ($arrImportSource as $data)
-		{
-			$status = lang_get('ok');
-			$req_doc_id = $data['req_doc_id'];
+		$labels = array('ok' => '', 'import_req_conflicts_other_branch' => '',
+						'import_req_exists_here' => '');
 
-			if ($map_cur_reqdoc_id &&  in_array($req_doc_id, $map_cur_reqdoc_id,true))
+		foreach($labels as $key => $dummy)
+		{
+			$labels[$key] = lang_get($key);
+		}
+		
+		
+		$getOptions = array('output' => 'minimun');
+	    				
+		for($idx=0 ; $idx < $loop2do; $idx++)
+		{
+			$msgID = 'ok';
+			$req = $arrImportSource[$idx];
+
+    		// Check:
+            // If item with SAME DOCID exists inside container
+			// If there is a hit
+			//	   We will follow user option: update,create new version
+			//
+			// If do not exist check must be repeated, but on WHOLE test project
+			// 	If there is a hit -> we can not create
+			//		else => create
+			// 
+            // 
+            // 20100321 - we do not manage yet user option
+			$check_in_reqspec = $reqMgr->getByDocID($req['req_doc_id'],$tprojectID,$reqSpecID,$getOptions);
+     		if(is_null($check_in_reqspec))
 			{
-				$status = lang_get('conflict');
-				tLog('REQ: '. $data['req_doc_id'] . "\n CONTENT: ".$data['description']);
-			}
-			$arrImport[] = array($data['req_doc_id'],trim($data['title']),$data['description'], $status);
+				$check_in_tproject = $reqMgr->getByDocID($req['req_doc_id'],$tprojectID,null,$getOptions);
+				if(!is_null($check_in_tproject))
+				{
+					$msgID = 'import_req_conflicts_other_branch';	
+               	}             		 
+            }
+            else
+            {
+            	$msgID = 'import_req_exists_here';
+            }
+            
+			$arrImport[] = array($req['req_doc_id'],trim($req['title']),$req['description'], $labels[$msgID]);
 		}
 	}
 
@@ -218,8 +247,8 @@ function compareImportedReqs($arrImportSource, $map_cur_reqdoc_id)
 function getReqDocIDs(&$db,$srs_id)
 {
   	$req_spec_mgr = new requirement_spec_mgr($db);
-
 	$arrCurrentReq = $req_spec_mgr->get_requirements($srs_id);
+
 	$result = null;
 	if (count($arrCurrentReq))
 	{
@@ -569,22 +598,23 @@ function importReqDataFromDocBook($fileName)
   returns:
 
 */
-function doImport(&$dbHandler,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,$doImport)
+function doReqImport(&$dbHandler,$tprojectID,$userID,$reqSpecID,$fileName,$importType,$emptyScope,
+					 $conflictSolution,$doImport)
 {
 	$arrImportSource = loadImportedReq($fileName, $importType);
 	$arrImport = null;
 
 	if (count($arrImportSource))
 	{
-		$map_cur_reqdoc_id = getReqDocIDs($dbHandler,$idSRS);
+		$map_cur_reqdoc_id = getReqDocIDs($dbHandler,$reqSpecID);
 		if ($doImport)
 		{
 			$arrImport = executeImportedReqs($dbHandler,$arrImportSource, $map_cur_reqdoc_id,
-		                                   $conflictSolution, $emptyScope, $idSRS, $userID);
+		                                     $conflictSolution, $emptyScope, $reqSpecID, $userID);
 		}
 		else
 		{
-			$arrImport = compareImportedReqs($arrImportSource, $map_cur_reqdoc_id);
+			$arrImport = compareImportedReqs($dbHandler,$arrImportSource,$tprojectID,$reqSpecID);
 		}
 	}
 	return $arrImport;
@@ -690,10 +720,6 @@ function getReqCoverage(&$dbHandler,$reqs,&$execMap)
 				   	  	                     "status_label" => $resultsCfg['status_label'][$resultsCfg['code_status'][$exec_status]]);
 				}
 			} // for($idx = 0; $idx < $item_qty; $idx++)
-		    
-		    
-		    new dBug($req);
-		    
 		    
 		    
 			// We analyse counters
@@ -816,6 +842,7 @@ function check_syntax($fileName,$importType)
 		case 'XML':
 			$pfn = "check_syntax_xml";
 			break;
+
 		// 20081103 - sisajr
 		case 'DocBook':
 			$pfn = "check_syntax_xml";

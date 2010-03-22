@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.76 $
- * @modified $Date: 2010/03/21 17:57:58 $ by $Author: franciscom $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2010/03/22 22:06:21 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -58,6 +58,17 @@ class requirement_mgr extends tlObjectWithAttachments
 	var $node_types_descr_id;
     var $node_types_id_descr;
 	var $attachmentTableName;
+
+
+	// 20100220 - franciscom - I'm will work only on XML
+	// then remove other formats till other dev do refactor
+	var $import_file_types = array("csv" => "CSV",
+	                               "csv_doors" => "CSV (Doors)",
+	                               "XML" => "XML",
+							       "DocBook" => "DocBook");
+
+	var $export_file_types = array("XML" => "XML");
+
 	
     const AUTOMATIC_ID=0;
     const ALL_VERSIONS=0;
@@ -89,6 +100,41 @@ class requirement_mgr extends tlObjectWithAttachments
 
 
 	}
+
+	/*
+	  function: get_export_file_types
+	            getter
+	
+	  args: -
+	
+	  returns: map
+	           key: export file type code
+	           value: export file type verbose description
+	
+	*/
+	function get_export_file_types()
+	{
+    	return $this->export_file_types;
+  	}
+
+	/*
+	  function: get_impor_file_types
+	            getter
+	
+	  args: -
+	
+	  returns: map
+	           key: import file type code
+	           value: import file type verbose description
+	
+	*/
+	function get_import_file_types()
+	{
+     	return $this->import_file_types;
+  	}
+
+
+
 
 
 /*

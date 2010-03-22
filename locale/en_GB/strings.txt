@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.588 2010/03/21 19:11:56 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.589 2010/03/22 08:40:16 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -188,12 +188,9 @@ $TLS_req_type_interface = 'Interface';
 $TLS_req_type_non_functional = 'Non functional';
 $TLS_req_type_constrain = 'Constrain';
 
-$TLS_req_spec_type_info = "Informational";
-$TLS_req_spec_type_feature = 'Feature';
-$TLS_req_spec_type_use_case = 'Use Case';
-$TLS_req_spec_type_interface = 'Interface';
-$TLS_req_spec_type_non_functional = 'Non functional';
-$TLS_req_spec_type_constrain = 'Constrain';
+$TLS_req_spec_type_section = "Section";
+$TLS_req_spec_type_user_req_spec = "User Requirement Specification";
+$TLS_req_spec_type_system_req_spec = "System Requirement Specification";
 
 
 $TLS_exec_not_run_result_note = "Important Notice: Once a Result is updated from 'Not Run' to another value, " .

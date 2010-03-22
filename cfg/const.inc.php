@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.137 2010/03/19 22:54:05 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.138 2010/03/22 08:40:16 asimon83 Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -728,13 +728,9 @@ $tlCfg->req_cfg->type_expected_coverage = array(TL_REQ_TYPE_INFO => false);
 
 
 
-// Need to be defined better
-define('TL_REQ_SPEC_TYPE_INFO', 1); 
-define('TL_REQ_SPEC_TYPE_FEATURE', 2);
-define('TL_REQ_SPEC_TYPE_USE_CASE', 3);
-define('TL_REQ_SPEC_TYPE_INTERFACE', 4);
-define('TL_REQ_SPEC_TYPE_NON_FUNCTIONAL', 5);
-define('TL_REQ_SPEC_TYPE_CONSTRAIN', 6);
+define('TL_REQ_SPEC_TYPE_SECTION', 1); 
+define('TL_REQ_SPEC_TYPE_USER_REQ_SPEC', 2);
+define('TL_REQ_SPEC_TYPE_SYSTEM_REQ_SPEC', 3);
 
 
 // define('TL_REQ_SPEC_TYPE_FUNCTIONAL_AND_DATA', 1);
@@ -750,13 +746,9 @@ define('TL_REQ_SPEC_TYPE_CONSTRAIN', 6);
 
 
 $tlCfg->req_spec_cfg->type_labels = array(
-		TL_REQ_SPEC_TYPE_INFO => 'req_spec_type_info', 
-		TL_REQ_SPEC_TYPE_FEATURE => 'req_spec_type_feature',
-		TL_REQ_SPEC_TYPE_USE_CASE => 'req_spec_type_use_case', 
-		TL_REQ_SPEC_TYPE_INTERFACE => 'req_spec_type_interface', 
-		TL_REQ_SPEC_TYPE_NON_FUNCTIONAL => 'req_spec_type_non_functional', 
-		TL_REQ_SPEC_TYPE_CONSTRAIN => 'req_spec_type_constrain');
-
+		TL_REQ_SPEC_TYPE_SECTION => 'req_spec_type_section', 
+		TL_REQ_SPEC_TYPE_USER_REQ_SPEC => 'req_spec_type_user_req_spec',
+		TL_REQ_SPEC_TYPE_SYSTEM_REQ_SPEC => 'req_spec_type_system_req_spec');
 
 
 /**

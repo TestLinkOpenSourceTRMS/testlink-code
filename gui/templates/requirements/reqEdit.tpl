@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.23 2010/03/19 15:04:09 asimon83 Exp $
+$Id: reqEdit.tpl,v 1.24 2010/03/22 14:20:52 asimon83 Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20100319 - asimon - BUGID 1748 - added logic to add and remove requirement relations
@@ -100,8 +100,13 @@ internal revision
    */
 	window.onload = function()
   {
-			focusInputField('reqDocId');
+	 focusInputField('reqDocId');
+     {/literal}
+     {* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
+     {if $gui->req_cfg->expected_coverage_management}
       configure_attr('reqType',js_attr_cfg);
+     {/if}
+     {literal}
   }
  
   
@@ -198,32 +203,25 @@ function configure_attr(oid_type,cfg)
 
   	<div class="labelHolder" id="reqType_container"> <label for="reqType">{$labels.type}</label>
      	<select name="reqType" id="reqType"
-     	     	  onchange="configure_attr('reqType',js_attr_cfg);" >
+     	{* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
+     	{if $gui->req_cfg->expected_coverage_management}
+     	     	  onchange="configure_attr('reqType',js_attr_cfg);"
+     	{/if}
+     	>
   			{html_options options=$gui->reqTypeDomain selected=$gui->req.type}
   		</select>
   	</div>
   	<br />
  	<br />
  	
- 	{* BUGID 3307 - made input only hidden instead of completely disabled in case of disabled feature
- 	 *              this should avoid errors in all underlying functions (database and the rest) 
- 	 *}
-    {*if $gui->req_cfg->expected_coverage_management}
-    	{assign var=inputtype value="text"}
-    {else}
-    	{assign var=inputtype value="hidden"}
-    {/if*}
-    
-    {if $gui->req_cfg->expected_coverage_management}
+ 	{if $gui->req_cfg->expected_coverage_management}
   		<div class="labelHolder" id="expected_coverage_container"> <label for="expected_coverage">{$labels.expected_coverage}</label>
-  	{*/if*}
   	
-  	<input type="text" name="expected_coverage" id="expected_coverage"
+  		<input type="text" name="expected_coverage" id="expected_coverage"
   		        size="{#REQ_EXPECTED_COVERAGE_SIZE#}" maxlength="{#REQ_EXPECTED_COVERAGE_MAXLEN#}"
   		        value="{$gui->req.expected_coverage}" />
-  	{include file="error_icon.tpl" field="expected_coverage"}
+  		{include file="error_icon.tpl" field="expected_coverage"}
   	
- 	{*if $gui->req_cfg->expected_coverage_management*}
  		</div>
  	{/if}
  	

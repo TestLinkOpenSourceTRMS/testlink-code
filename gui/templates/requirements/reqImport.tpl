@@ -1,6 +1,6 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.13 2010/03/21 17:57:08 franciscom Exp $
+$Id: reqImport.tpl,v 1.14 2010/03/22 22:07:18 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -45,20 +45,20 @@ Revision:
 <div class="workBack">
 
   {if  $gui->doAction == 'askFileName'}
-  <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}">
-		<input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
-    {include file="inc_gui_import_file.tpl" args=$gui->importFileGui}
-  </form>
-
-  {if $gui->file_check.status_ok eq 0}
-    <script>
-    alert("{$gui->file_check.msg}");
-    </script>
-  {elseif $gui->try_upload  && ($gui->arrImport == "") }
-    <script>
-    alert("{$labels.check_req_file_structure}");
-    </script>
-  {/if}
+    <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}">
+	  	<input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
+      {include file="inc_gui_import_file.tpl" args=$gui->importFileGui}
+    </form>
+    
+    {if $gui->file_check.status_ok eq 0}
+      <script>
+      alert("{$gui->file_check.msg}");
+      </script>
+    {elseif $gui->try_upload  && ($gui->arrImport == "") }
+      <script>
+      alert("{$labels.check_req_file_structure}");
+      </script>
+    {/if}
   
   {elseif $gui->doAction == 'uploadFile'}
 
@@ -78,6 +78,53 @@ Revision:
   	  
       {if $gui->importType != 'XML'}
         {* NEED TO BE DEVELOPED *}  	
+  	    <h2>{$labels.title_req_import_check_input}</h2>
+  	    <p>{$labels.req_import_check_note}</p>
+  	    <div>
+  	    <form method='post' action='{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}'>
+  	    	<p>{$labels.req_import_option_header}
+  	    	<select name="conflicts">
+  	    		<option value ="skip">{$labels.req_import_option_skip}</option>
+  	    		<option value ="overwrite" selected="selected">{$labels.req_import_option_overwrite}</option>
+  	    	</select></p>
+        
+  	    	<p><input type="checkbox" name="noEmpty" checked="checked" />{$labels.req_import_dont_empty}</p>
+        
+  	    	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
+  	    	<input type='hidden' value='{$gui->fileName}' name='uploadedFile' />
+  	    	<input type='hidden' value='{$gui->importType}' name='importType' />
+        
+  	    	<div class="groupBtn">
+  	    		<input type='submit' name='executeImport' value="{$labels.btn_import}" />
+  	    		<input type="button" name="cancel" value="{$labels.btn_cancel}"
+  	    			onclick="javascript: location.href='{$req_spec_view_url}';" />
+  	    	</div>
+  	    </form>
+  	    <div>
+  	    <table class="simple">
+  	    	<tr>
+  	    		<th>{$labels.req_doc_id}</th>
+  	    		<th>{$labels.title}</th>
+  	    		<th>{$labels.scope}</th>
+  	    		<th>{$labels.status}</th>
+  	    	</tr>
+  	      {if $gui->items != ''}
+ 	          {foreach from=$gui->items key=idx item=import_feedback}
+  	    	  <tr>
+  	    	  	<td>{$import_feedback[0]|escape}</td>
+  	    	  	<td>{$import_feedback[1]|escape}</td>
+  	    	  	<td>{$import_feedback[2]|strip_tags|strip|truncate:#TRUNCATE_SCOPE#}</td>
+  	    	  	<td>{$import_feedback[3]|escape}</td>
+  	    	  </tr>
+  	    	  {/foreach}
+  	      {else}
+  	        <tr><td>{$labels.req_msg_norequirement}</td></tr>
+  	    	{/if}  
+  	    </table>
+  	    </div>
+
+
+  	    </div>
   	  {/if}
   	{/if}
 
@@ -92,8 +139,8 @@ Revision:
   		<th>{$labels.title}</th>
   		<th style="width: 20%;">{$labels.Result}</th>
   	</tr>
-  	{if $gui->arrImport->items != ''}
- 	    {foreach from=$gui->arrImport->items key=idx item=import_feedback}
+  	{if $gui->items != ''}
+ 	    {foreach from=$gui->items key=idx item=import_feedback}
   	  <tr>
   	  	<td>{$import_feedback[0]|escape}</td>
   	  	<td>{$import_feedback[1]|escape}</td>
@@ -101,62 +148,9 @@ Revision:
   	  </tr>
   	  {/foreach}
   	{else}
-  	<tr><td>{$labels.req_msg_norequirement}</td></tr>
+  	  <tr><td>{$labels.req_msg_norequirement}</td></tr>
   	{/if}
   	</table>
-  	
-   {elseif $gui->try_upload && $gui->file_check.status_ok && ($gui->arrImport != "") }
-
-    {* NEED TO BE RE-TESTED - 20100321 *}
-  	{* second screen *}
-  	<h2>{$labels.title_req_import_check_input}</h2>
-
-  	<p>{$labels.req_import_check_note}</p>
-
-  	<div>
-  	<form method='post' action='{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}'>
-
-  		<p>{$labels.req_import_option_header}
-  		<select name="conflicts">
-  			<option value ="skip">{$labels.req_import_option_skip}</option>
-  			<option value ="overwrite" selected="selected">{$labels.req_import_option_overwrite}</option>
-  		</select></p>
-
-  		<p><input type="checkbox" name="noEmpty" checked="checked" />{$labels.req_import_dont_empty}</p>
-
-  		<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
-  		<input type='hidden' value='{$gui->fileName}' name='uploadedFile' />
-  		<input type='hidden' value='{$gui->importType}' name='importType' />
-
-  		<div class="groupBtn">
-  			<input type='submit' name='executeImport' value="{$labels.btn_import}" />
-  			<input type="button" name="cancel" value="{$labels.btn_cancel}"
-  				onclick="javascript: location.href='{$req_spec_view_url}';" />
-  		</div>
-  	</form>
-  	</div>
-
-  	<div>
-  	<table class="simple">
-  		<tr>
-  			<th>{$labels.req_doc_id}</th>
-  			<th>{$labels.title}</th>
-  			<th>{$labels.scope}</th>
-  			<th>{$labels.status}</th>
-  		</tr>
-  		{section name=row loop=$arrImport}
-  		<tr>
-  			<td>{$arrImport[row][0]|escape}</td>
-  			<td>{$arrImport[row][1]|escape}</td>
-  			<td>{$arrImport[row][2]|strip_tags|strip|truncate:100}</td>
-  			<td>{$arrImport[row][3]|escape}</td>
-  		</tr>
-  		{sectionelse}
-  		<tr><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
-  		{/section}
-  	</table>
-  	</div>
- 	
  {/if}
 
 </div>

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/03/21 19:28:34 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/03/22 22:05:18 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -31,23 +31,19 @@ $templateCfg = templateConfiguration();
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $args = init_args();
-$gui = initializeGui($args,$req_spec_mgr,$_SESSION);
-
-new dBug($args);
-
-$importResult = null;
-$arrImport = null;
+$gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr);
+$gui->importResult = null;
+$gui->items = null;
 
 switch($args->doAction)
 {
     case 'uploadFile':
         $dummy = doUploadFile($db,$gui->fileName,$args,$req_spec_mgr);
+
         $gui->items = $dummy->items;
         $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
         $gui->has_items = $gui->items_qty > 0;
-        
         $gui->support_array = $gui->has_items ? array_keys($gui->items): array();  // do know is if really needed
-
         $gui->file_check = $dummy->file_check;
         if($gui->file_check['status_ok'] == 0)
         {
@@ -56,8 +52,9 @@ switch($args->doAction)
     break;
     
     case 'executeImport':
-        $arrImport = doExecuteImport($db,$gui->fileName,$args,$req_spec_mgr);
-        $importResult = lang_get('import_done');
+        $dummy = doExecuteImport($db,$gui->fileName,$args,$req_spec_mgr);
+		$gui->items = $dummy->items;        
+        $gui->importResult = lang_get('import_done');
     break;
 }
 
@@ -74,19 +71,10 @@ switch($args->scope)
 	break;
 }
 
-new dBug($req_spec);
-
-$gui->arrImport = $arrImport;
-$gui->importResult = $importResult;
-
-new dBug($gui);
-
 $smarty = new TLSmarty;
+
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-
-
-
 
 
 
@@ -99,8 +87,6 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     $retval = new stdClass();
     $retval->items = null;
     $retval->msg = '';
-    
-    new dBug($argsObj);
     
 	if($argsObj->importType == 'XML')
 	{
@@ -116,13 +102,11 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     		$dummy = $reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,$argsObj->user_id);
     		$retval->items = array_merge($retval->items,$dummy);
     	}
-	       
-	    
 	}
 	else
 	{
-	    $retval->items = doImport($dbHandler,$argsObj->user_id,$argsObj->req_spec_id,$fileName,
- 	    				          $argsObj->importType,$argsObj->emptyScope,$argsObj->conflictSolution,true);
+	    $retval->items = doReqImport($dbHandler,$argsObj->tproject_id,$argsObj->user_id,$argsObj->req_spec_id,$fileName,
+ 	    				             $argsObj->importType,$argsObj->emptyScope,$argsObj->conflictSolution,true);
 	}
 	unlink($fileName);
 	$retval->msg = lang_get('req_import_finished');
@@ -234,7 +218,7 @@ function check_valid_ftype($upload_info,$import_type)
  * create object that will be used by Smarty template
  *
  */
-function initializeGui(&$argsObj,&$reqSpecMgr,$session)
+function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr)
 {
     $gui=new stdClass();
     $gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
@@ -249,28 +233,36 @@ function initializeGui(&$argsObj,&$reqSpecMgr,$session)
     switch($gui->scope)
     {
     	case 'tree':
-    		$gui->main_descr = sprintf(lang_get('tproject_import_requirements'),$argsObj->tproject_name);
+    		$gui->main_descr = sprintf(lang_get('tproject_import_req_spec'),$argsObj->tproject_name);
+   			$gui->importTypes = $reqSpecMgr->get_import_file_types();
     	break;
     	
     	case 'branch':
-    	default:
+			$gui->req_spec = $reqSpecMgr->get_by_id($argsObj->req_spec_id);
+    		$gui->main_descr = sprintf(lang_get('reqspec_import_req_spec'),$gui->req_spec['title']);
+    		$gui->importTypes = $reqSpecMgr->get_import_file_types();
+    	break;
+    	
+    	case 'items':
 			$gui->req_spec = $reqSpecMgr->get_by_id($argsObj->req_spec_id);
     		$gui->main_descr = sprintf(lang_get('reqspec_import_requirements'),$gui->req_spec['title']);
+   		    $reqMgr = new requirement_mgr($dbHandler);
+    		$gui->importTypes = $reqMgr->get_import_file_types();
     	break;
     }
-  
-  
-    $gui->importTypes = $reqSpecMgr->get_import_file_types();
+
+	new dBug($gui->importTypes);
+	
     $gui->importType = $argsObj->importType;
     $gui->fileName = TL_TEMP_PATH . "importReq-" . session_id() . ".tmp";
     
     $gui->importFileGui = new stdClass();
-    $gui->importFileGui->importTypes = $reqSpecMgr->get_import_file_types();
+    $gui->importFileGui->importTypes = $gui->importTypes;
     $gui->importFileGui->importType = $argsObj->importType;
     
     $file_size_limit = config_get('import_file_max_size_bytes');
-    $gui->importFileGui->fileSizeLimitMsg=sprintf(lang_get('max_file_size_is'), $file_size_limit  . ' KB ');
     $gui->importFileGui->maxFileSize=round(strval($file_size_limit)/1024);
+    $gui->importFileGui->fileSizeLimitMsg=sprintf(lang_get('max_file_size_is'), $gui->importFileGui->maxFileSize  . ' KB ');
     
     $gui->importFileGui->return_to_url=$session['basehref'];
     if( is_null($argsObj->req_spec_id) )
@@ -356,8 +348,9 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 		    	    }
                     else
 					{
-					    $retval->items = doImport($dbHandler,$argsObj->user_id,$argsObj->req_spec_id,$fileName,
- 					   				              $argsObj->importType,$argsObj->emptyScope,$argsObj->conflictSolution,false);
+					    $retval->items = doReqImport($dbHandler,$argsObj->tproject_id,$argsObj->user_id,$argsObj->req_spec_id,
+					    							 $fileName,$argsObj->importType,$argsObj->emptyScope,
+ 					   				                 $argsObj->conflictSolution,false);
 					}
 			   }
 			}

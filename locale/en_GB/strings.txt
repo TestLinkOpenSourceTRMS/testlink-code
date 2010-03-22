@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.589 2010/03/22 08:40:16 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.590 2010/03/22 19:16:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -638,6 +638,7 @@ $TLS_title_choose_file_type = "Choose file type";
 $TLS_title_choose_local_file = "Choose a Local File to Upload";
 $TLS_title_req_import = "Import requirements";
 $TLS_title_req_import_check_input = "Check import data";
+$TLS_title_req_spec_import = "Import Req. Spec.";
 
 
 
@@ -1457,7 +1458,8 @@ $TLS_platform_unlink_warning_message = "The selected platform(s) are being used.
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Export requirements";
-$TLS_all_reqspecs_in_tproject = "All Requirement Specs in Test Project";
+$TLS_title_req_spec_export = "Export Req. Spec.";
+$TLS_all_reqspecs_in_tproject = "All Req. Specs in Test Project";
 
 
 

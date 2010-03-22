@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.14 2010/03/19 21:23:51 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.15 2010/03/22 17:53:09 asimon83 Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -13,17 +13,18 @@ rev:
 {lang_get s='delete' var="del_msgbox_title" }
 {lang_get s='freeze' var="freeze_msgbox_title" }
 
-{lang_get s='delete_rel_msgbox_msg' var='delete_rel_msgbox_msg' }
-{lang_get s='delete_rel_msgbox_title' var='delete_rel_msgbox_title' }
+{lang_get s='delete_rel_msgbox_msg' var='delete_rel_msgbox_msg'}
+{lang_get s='delete_rel_msgbox_title' var='delete_rel_msgbox_title'}
+{lang_get s='warning_empty_reqdoc_id' var='warning_empty_reqdoc_id'}
 
 {lang_get var='labels' 
           s='relation_id, relation_type, relation_document, relation_status, relation_project,
              relation_set_by, relation_delete, relations, new_relation, by, title_created,
              relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req,
-             no_records_found,other_versions,version,title_test_case,match_count'}
+             no_records_found,other_versions,version,title_test_case,match_count, warning'}
 
 
-{include file="inc_head.tpl" openHead='yes'}
+{include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 
 {config_load file="input_dimensions.conf"}
@@ -63,9 +64,23 @@ function freeze_req_version(btn, text, o_id)
 
 // BUGID 1748
 {/literal}
+var alert_box_title = "{$labels.warning}";
 var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg}';
 var delete_rel_msgbox_title = '{$delete_rel_msgbox_title}';
+var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id}';
 {literal}
+
+function validate_req_docid_input(input_id, original_value) {
+
+	var input = document.getElementById(input_id);
+
+	if (isWhitespace(input.value) || input.value == original_value) {
+    	alert_message(alert_box_title,warning_empty_reqdoc_id);
+		return false;
+	}
+
+	return true;
+}
 
 function delete_req_relation(btn, text, req_id, relation_id) {
 	var my_action=fRoot + 'lib/requirements/reqEdit.php?doAction=doDeleteRelation&requirement_id='
@@ -183,7 +198,9 @@ var pF_delete_req_relation = delete_req_relation;
 	{if $gui->req_cfg->relations->enable} {* show this part only if relation feature is enabled *}
 	
 		{* form to enter a new relation *}
-		<form method="post" action="lib/requirements/reqEdit.php">
+		<form method="post" action="lib/requirements/reqEdit.php" 
+				onSubmit="javascript:return validate_req_docid_input('relation_destination_req_doc_id', 
+				                                                     '{$labels.relation_destination_doc_id}');">
 		
 		<table class="simple" id="relations">
 		
@@ -203,7 +220,8 @@ var pF_delete_req_relation = delete_req_relation;
 				{html_options options=$gui->req_relation_select.items selected=$gui->req_relation_select.selected}
 				</select>
 		
-				<input type="text" name="relation_destination_req_doc_id" value="{$labels.relation_destination_doc_id}" 
+				<input type="text" name="relation_destination_req_doc_id" id="relation_destination_req_doc_id"
+						value="{$labels.relation_destination_doc_id}" 
 				size="{#REQ_DOCID_SIZE#}" maxlength="{#REQ_DOCID_MAXLEN#}" 
 				onclick="javascript:this.value=''" />
 			
@@ -249,7 +267,8 @@ var pF_delete_req_relation = delete_req_relation;
 					<td>{$relation.id}</td>
 					<td class="bold">{$relation.type_localized|escape}</td>
 					<td colspan="{$colspan}"><a href="javascript:openLinkedReqWindow({$relation.related_req.id})">
-						{$relation.related_req.req_doc_id|escape|truncate:20}:{$relation.related_req.title|escape|truncate:20}</a></td>
+						{$relation.related_req.req_doc_id|escape|truncate:#REQ_DOCID_SIZE#}:
+						{$relation.related_req.title|escape|truncate:#REQ_DOCID_SIZE#}</a></td>
 					<td>{$gui->reqStatus.$status|escape}</td>
 					
 					{* show related testproject name only if cross-project linking is enabled *}

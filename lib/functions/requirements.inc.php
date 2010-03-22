@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.94 2010/03/11 21:41:28 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.95 2010/03/22 21:20:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -190,7 +190,11 @@ algorithm changes, now is the docid the attribute that must be unique
 */
 function compareImportedReqs($arrImportSource, $map_cur_reqdoc_id)
 {
+	
+	echo __FUNCTION__;
 	$arrImport = null;
+	new dBug($arrImportSource);
+	
 	if (sizeof($arrImportSource))
 	{
 		foreach ($arrImportSource as $data)
@@ -261,8 +265,6 @@ function loadImportedReq($CSVfile, $importType)
 	{
 		$data = $pfn($fileName);
 	}
-	new dBug($data);
-	die();
 	return $data;
 
 }
@@ -273,28 +275,24 @@ function loadImportedReq($CSVfile, $importType)
  */
 function importReqDataFromCSV($fileName)
 {
-  $field_size=config_get('field_size');
-  $delimiter=',';
-
-  // CSV line format
+  	$field_size=config_get('field_size');
+  	$delimiter=',';
+  	
+  	// CSV line format
 	$destKeys = array("req_doc_id","title","description");
 
-  // lenght will be adjusted to these values
-  $field_length = array("req_doc_id" => $field_size->req_docid,
-					              "title" => $field_size->req_title);
+  	// lenght will be adjusted to these values
+  	$field_length = array("req_doc_id" => $field_size->req_docid, "title" => $field_size->req_title);
 
 	$reqData = importCSVData($fileName,$destKeys,$delimiter,count($destKeys));
-
-	// 20061015 - franciscom
-	// adjust value length to field length to avoid problems during inset
 	if ($reqData)
 	{
 		foreach($reqData as $key => $value)
 		{
-	     foreach($field_length as $fkey => $len)
-		   {
-	       $reqData[$key][$fkey]=trim_and_limit($reqData[$key][$fkey],$len);
-		   }
+	     	foreach($field_length as $fkey => $len)
+		   	{
+	       		$reqData[$key][$fkey]=trim_and_limit($reqData[$key][$fkey],$len);
+		   	}
 		}
 	}
 	return $reqData;
@@ -306,14 +304,15 @@ function importReqDataFromCSV($fileName)
  */
 function importReqDataFromCSVDoors($fileName)
 {
-	$delimiter = ',';
-  	$bWithHeader = true;
-  	$bDontSkipHeader = false;
 
 	$destKeys = array("Object Identifier" => "title","Object Text" => "description",
-					          "Created By","Created On","Last Modified By","Last Modified On");
+					  "Created By","Created On","Last Modified By","Last Modified On");
 
-	$reqData = importCSVData($fileName,$destKeys,$delimiter,0,$bWithHeader,$bDontSkipHeader);
+	$delimiter = ',';
+  	$withHeader = true;
+  	$dontSkipHeader = false;
+
+	$reqData = importCSVData($fileName,$destKeys,$delimiter,0,$withHeader,$dontSkipHeader);
 
 	return $reqData;
 }
@@ -383,7 +382,7 @@ function getDocBookTableAsHtmlString($docTable)
 		if ($tgroup->node_name() != DOCBOOK_TABLE_GROUP)
 		{
 			continue;
-    }
+    	}
     
 		$table = "";
 		foreach ($tgroup->child_nodes() as $tbody)
@@ -396,17 +395,16 @@ function getDocBookTableAsHtmlString($docTable)
 					if ($row->node_name() != DOCBOOK_TABLE_ROW)
 					{
 						continue;
-          }
+          			}
 
 					$table_row = "<tr>";
-
 					foreach ($row->child_nodes() as $entry)
 					{
 						if ($entry->node_name() == DOCBOOK_TABLE_ENTRY)
 						{
 							$table_row .= "<th>" . $entry->get_content() . "</th>";
 						}	
-          }
+          			}
           
 					$table_row .= "</tr>";
 					$table .= $table_row;
@@ -418,20 +416,18 @@ function getDocBookTableAsHtmlString($docTable)
 			{
 				foreach ($tbody->child_nodes() as $row)
 				{
+					$table_row = "<tr>";
 					if ($row->node_name() != DOCBOOK_TABLE_ROW)
 					{
 						continue;
-          }
-          
-					$table_row = "<tr>";
-
+          			}
 					foreach ($row->child_nodes() as $entry)
 					{
 						if ($entry->node_name() == DOCBOOK_TABLE_ENTRY)
 						{
 							$table_row .= "<td>" . $entry->get_content() . "</td>";
 						}	
-          }
+			        }
 					$table_row .= "</tr>";
 					$table .= $table_row;
 				}
@@ -454,7 +450,7 @@ function importReqDataFromDocBook($fileName)
 	$dom = domxml_open_file($fileName);
 	$xmlReqs = null;
 	$xmlData = null;
-  $field_size=config_get('field_size');  
+  	$field_size=config_get('field_size');  
 
 	// get all Requirement elements in the document
 	if ($dom)
@@ -470,8 +466,10 @@ function importReqDataFromDocBook($fileName)
 	{
 		$xmlReq = $xmlReqs[$i];
 		if ($xmlReq->node_type() != XML_ELEMENT_NODE)
+		{
 			continue;
-
+		}
+		
 		// get all child elements of this requirement
 		$children = $xmlReq->child_nodes();
 
@@ -495,10 +493,13 @@ function importReqDataFromDocBook($fileName)
 				$list = "";
 				foreach ($child->child_nodes() as $item)
 					if ($item->node_name() == DOCBOOK_LIST_ITEM)
+					{
 						$list .= "<li>" . $item->get_content() . "</li>";
+					}
 					else
+					{
 						$list .= "<p>" . $item->get_content() . "</p>";
-
+					}
 				$description .= "<ul>" . $list . "</ul>";
 				continue;
 			}
@@ -568,19 +569,17 @@ function importReqDataFromDocBook($fileName)
   returns:
 
 */
-function doImport(&$db,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,$bImport)
+function doImport(&$dbHandler,$userID,$idSRS,$fileName,$importType,$emptyScope,$conflictSolution,$doImport)
 {
 	$arrImportSource = loadImportedReq($fileName, $importType);
-
 	$arrImport = null;
+
 	if (count($arrImportSource))
 	{
-		// $arrReqTitles = getReqTitles($db,$idSRS);
-		$map_cur_reqdoc_id = getReqDocIDs($db,$idSRS);
-
-		if ($bImport)
+		$map_cur_reqdoc_id = getReqDocIDs($dbHandler,$idSRS);
+		if ($doImport)
 		{
-			$arrImport = executeImportedReqs($db,$arrImportSource, $map_cur_reqdoc_id,
+			$arrImport = executeImportedReqs($dbHandler,$arrImportSource, $map_cur_reqdoc_id,
 		                                   $conflictSolution, $emptyScope, $idSRS, $userID);
 		}
 		else
@@ -794,7 +793,7 @@ function getLastExecutions(&$db,$tcaseSet,$tplanId)
 // 20061009 - franciscom
 function getReqByReqdocId(&$db,$reqdoc_id)
 {
-	$sql = "SELECT * FROM requirements " .
+	$sql = " SELECT * FROM requirements " .
 	       " WHERE req_doc_id='" . $db->prepare_string($reqdoc_id) . "'";
 
 	return($db->fetchRowsIntoMap($sql,'id'));
@@ -890,62 +889,53 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 	$prefix = $tproject_mgr->getTestCasePrefix($tprojectID);
 	$tables = tlObjectWithDB::getDBTables(array('requirements', 'req_specs'));
 	$cfg = config_get('internal_links');
-
-	/*
-	 * configure target in which link shall open
-	 */
-	if (!isset($cfg->target)) {
-		$cfg->target = 'popup'; // use a reasonable default value if nothing is set in config
-	}
-
 	$string2replace = array();
-	if ($cfg->target == 'popup') {
-		// use javascript to open popup window
-		$string2replace['req'] = '<a href="javascript:openLinkedReqWindow(%s,\'%s\')">%s%s</a>';
-		$string2replace['req_spec'] = '<a href="javascript:openLinkedReqSpecWindow(%s,\'%s\')">%s%s</a>';
-	} else if ($cfg->target == 'window') {
-		$target = 'target="_blank"';
-		$string2replace['req'] = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
-					'item=requirement&requirement_id=%s#%s">%s%s</a>';
-		$string2replace['req_spec'] = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
-					'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
-	} else if ($cfg->target == 'frame') {
-		// open in same frame
-		$target = 'target="_self"';
-		$string2replace['req'] = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
-					'item=requirement&requirement_id=%s#%s">%s%s</a>';
-		$string2replace['req_spec'] = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
-					'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
-	}
-
-	/*
-	 * configure link title (first part of the generated link)
-	 */
 	$title = array();
-	// first for reqs
+
+	// configure target in which link shall open
+	// use a reasonable default value if nothing is set in config
+	$cfg->target = isset($cfg->target) ? $cfg->target :'popup';
+
+	switch($cfg->target)
+	{
+		case 'popup':
+			// use javascript to open popup window
+			$string2replace['req'] = '<a href="javascript:openLinkedReqWindow(%s,\'%s\')">%s%s</a>';
+			$string2replace['req_spec'] = '<a href="javascript:openLinkedReqSpecWindow(%s,\'%s\')">%s%s</a>';
+		break;
+		
+		case 'window':
+	    case 'frame':// open in same frame
+			$target = ($cfg->target == 'window') ? 'target="_blank"' : 'target="_self"';
+			$string2replace['req'] = '<a ' . $target . ' href="lib/requirements/reqView.php?' .
+						             'item=requirement&requirement_id=%s#%s">%s%s</a>';
+			$string2replace['req_spec'] = '<a ' . $target . ' href="lib/requirements/reqSpecView.php?' .
+						                  'item=req_spec&req_spec_id=%s#%s">%s%s</a>';
+		break;
+    }
+
+    
+	// configure link title (first part of the generated link)
+	// default: use item type as name (localized name for req)
+	$title['req'] = lang_get('requirement') . ": "; 
+	// default: use short item type as name (localized name for req spec)
+	$title['req_spec'] = lang_get('req_spec_short') . ": ";
+
 	if ($cfg->req_link_title->type == 'string' && $cfg->req_link_title->value != '') {
-		// use user-configured string as link title
 		$title['req'] = lang_get($cfg->req_link_title->value);
 	} else if ($cfg->req_link_title->type == 'none') {
 		$title['req'] = '';
-	} else {
-		// default: use item type as name (localized name for req)
-		$title['req'] = lang_get('requirement') . ": ";
-	}
+	} 
+	
 	// now for the req specs
 	if ($cfg->req_spec_link_title->type == 'string' && $cfg->req_spec_link_title->value != '') {
 		// use user-configured string as link title
 		$title['req_spec'] = lang_get($cfg->req_spec_link_title->value);
 	} else if ($cfg->req_spec_link_title->type == 'none') {
 		$title['req_spec'] = '';
-	} else {
-		// default: use short item type as name (localized name for req spec)
-		$title['req_spec'] = lang_get('req_spec_short') . ": ";
-	}
+	} 
 
-	/*
-	 * now the actual replacing
-	 */
+	// now the actual replacing
 	$patterns2search = array();
 	$patterns2search['req'] =
 		"#\[req[\s]*(tproj=([\w]+))*[\s]*(anchor=([\w]+))*[\s]*(tproj=([\w]+))*\](.*)\[/req\]#iU";

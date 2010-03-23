@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.254 2010/03/17 21:58:30 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.255 2010/03/23 07:26:52 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100323 - asimon - fixed BUGID 3316 in show()
  * 20100317 - franciscom - new method get_by_external()
  * 20100315 - amitkhullar - Added  options for Requirements and CFields for Export.
  * 20100309 - franciscom - get_by_id() - improvements on control to apply when LATEST_VERSION is requested.
@@ -707,7 +708,11 @@ class testcase extends tlObjectWithAttachments
 	        // BUGID 2378
 	        $testplans = $this->tproject_mgr->get_all_testplans($tproject_id,array('plan_status' =>1) );
 	        $gui->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
-	        $requirements_feature = $info['option_reqs'];
+	        
+	        // BUGID 3316
+	        // $requirements_feature = $info['option_reqs'];
+	        $requirements_feature = unserialize($info['options'])->requirementsEnabled;
+	        
 	        if( $viewer_defaults['display_testproject'] )
 	        {
 	            $gui->tprojectName=$info['name'];

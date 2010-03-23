@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.255 2010/03/23 07:26:52 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.256 2010/03/23 11:39:47 havlat Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -566,14 +566,15 @@ class testcase extends tlObjectWithAttachments
 	}
 	
 	
-	/*
-	  function: show
-	
-	  args :
-	        $smarty: reference to smarty object (controls viewer).
-	        $id: test case id
-	        [$version_id]: you can work on ONE test case version, or on ALL
-	                       default: ALL
+	/**
+	 * Show Test Case logic
+	 * 
+	 * @param object $smarty reference to smarty object (controls viewer).
+	 * @param integer $id Test case unique identifier
+	 * @param integer $version_id (optional) you can work on ONE test case version, 
+	 * 				or on ALL; default: ALL
+	 * 
+	 * @internal
 	
 	        [viewer_args]: map with keys
 	                       action
@@ -627,7 +628,7 @@ class testcase extends tlObjectWithAttachments
 		$tcase_cfg = config_get('testcase_cfg');
 	
 		$req_mgr = new requirement_mgr($this->db);
-		$requirements_feature=null;
+
 		$tc_other_versions = array();
 		$status_quo_map = array();
 		$keywords_map = array();
@@ -708,10 +709,6 @@ class testcase extends tlObjectWithAttachments
 	        // BUGID 2378
 	        $testplans = $this->tproject_mgr->get_all_testplans($tproject_id,array('plan_status' =>1) );
 	        $gui->has_testplans = !is_null($testplans) && count($testplans) > 0 ? 1 : 0;
-	        
-	        // BUGID 3316
-	        // $requirements_feature = $info['option_reqs'];
-	        $requirements_feature = unserialize($info['options'])->requirementsEnabled;
 	        
 	        if( $viewer_defaults['display_testproject'] )
 	        {
@@ -816,7 +813,7 @@ class testcase extends tlObjectWithAttachments
 		$gui->testcase_other_versions = $tc_other_versions;
 		$gui->arrReqs = $arrReqs;
 		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
-		$gui->opt_requirements = $requirements_feature;
+		$gui->opt_requirements = $info['opt']->requirementsEnabled;
 		$gui->keywords_map = $keywords_map;
 		$smarty->assign('gui',$gui);
 		$smarty->display($template_dir . $my_template);

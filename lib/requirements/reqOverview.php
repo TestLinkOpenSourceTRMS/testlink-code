@@ -8,12 +8,13 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.6 2010/03/12 10:03:20 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.7 2010/03/23 09:51:01 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
+ * 20100323 - asimon - added number of requirement relations to table
  * 20100312 - asimon - replaced "100%"-value (in case where req has no coverage) by N/A-string
  * 20100311 - asimon - fixed a little bug (only notice) when no cfields are defined
  * 20100310 - asimon - refactoring as requested
@@ -62,7 +63,7 @@ if(count($gui->reqIDs)) {
 		$version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
 		$req = $req_mgr->get_by_id($id, $version_option);
 		
-		// TODO see BUGID 3254:
+		// BUGID 3254:
 		// above function doesn't work as expected, therefore I delete older versions manually
 		// this if statement can be deleted when function is fixed
 		// if ($version_option == requirement_mgr::LATEST_VERSION) {
@@ -79,17 +80,20 @@ if(count($gui->reqIDs)) {
 		// coverage data
 		$current = count($req_mgr->get_coverage($id));
 
+		// number of relations
+		$relations = $req_mgr->count_relations($id);
+		
 		// create the link to display
 		$title = $req[0]['req_doc_id'] . $glue_char . $req[0]['title'];
 		$linked_title = '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . 
-							htmlentities($title, ENT_COMPAT, $charset) . '</a>';
+							htmlentities($title, ENT_QUOTES, $charset) . '</a>';
 		
 		// reqspec-"path" to requirement
 		$path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
 		foreach ($path as $key => $p) {
 			$path[$key] = $p['name'];
 		}
-		$path = htmlentities(implode("/", $path), ENT_COMPAT, $charset);
+		$path = htmlentities(implode("/", $path), ENT_QUOTES, $charset);
 			
 		foreach($req as $version) {
 			
@@ -108,7 +112,8 @@ if(count($gui->reqIDs)) {
 	    	 * 4. coverage
 	    	 * 5. type
 	    	 * 6. status
-	    	 * 7. all custom fields in order of $fields
+	    	 * 7. relations
+	    	 * 8. all custom fields in order of $fields
 	    	 */
 	    	
 	    	$result[] = $path;
@@ -126,10 +131,11 @@ if(count($gui->reqIDs)) {
 
 			$result[] = $type_labels[$version['type']];
 			$result[] = $status_labels[$version['status']];
+			$result[] = $relations;
 			
 			// get custom field values for this req
 			foreach ($fields as $cf) {
-	    		$result[] = htmlentities($cf['value'], ENT_COMPAT, $charset);
+	    		$result[] = htmlentities($cf['value'], ENTQUOTES, $charset);
 	    	}
 	    	
 	    	$rows[] = $result;
@@ -154,7 +160,8 @@ if(count($gui->reqIDs)) {
     	 * 4. coverage
     	 * 5. type
     	 * 6. status
-    	 * 7. then all custom fields in order of $fields
+    	 * 7. relations
+    	 * 8. then all custom fields in order of $fields
     	 */
         $columns = array(
                         array('title' => lang_get('req_spec_short'), 'width' => 200),
@@ -162,11 +169,12 @@ if(count($gui->reqIDs)) {
                         array('title' => lang_get('version'), 'width' => 50),
                         lang_get('th_coverage'),
 	                    lang_get('type'),
-	                    lang_get('status')        
+	                    lang_get('status'),
+	                    lang_get('th_relations')
 	                    );
 
 	    foreach($gui->cfields as $cf) {
-	    	$columns[] = htmlentities($cf['label'], ENT_COMPAT, $charset);
+	    	$columns[] = htmlentities($cf['label'], ENT_QUOTES, $charset);
 	    }
 	    
 	    // create table object, fill it with columns and row data and give it a title

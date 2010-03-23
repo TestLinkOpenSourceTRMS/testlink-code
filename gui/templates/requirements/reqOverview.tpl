@@ -1,6 +1,6 @@
 {* 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: reqOverview.tpl,v 1.2 2010/03/11 08:04:35 asimon83 Exp $
+ * $Id: reqOverview.tpl,v 1.3 2010/03/23 09:51:01 asimon83 Exp $
  *
  * Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -31,7 +31,7 @@
 {/foreach}
 
 {*******************************************************
- * TODO: Sorting for column coverage is not working yet,
+ * @TODO: Sorting for column coverage is not working yet,
  * have to add this later when there's a bit more time 
 {literal}
 <script type="text/javascript">

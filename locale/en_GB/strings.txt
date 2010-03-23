@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.592 2010/03/22 22:04:43 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.593 2010/03/23 09:51:01 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2263,6 +2263,7 @@ $TLS_relation_status = "Status";
 $TLS_relation_set_by = "Set by";
 $TLS_relation_delete = "Delete";
 $TLS_relations = "Relations";
+$TLS_th_relations = "# Related Req.";
 $TLS_new_relation = "New relation";
 $TLS_relation_project = "In TestProject";
 $TLS_in = "in project";

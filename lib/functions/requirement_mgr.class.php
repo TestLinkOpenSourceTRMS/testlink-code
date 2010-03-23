@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.77 $
- * @modified $Date: 2010/03/22 22:06:21 $ by $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2010/03/23 09:51:01 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20100323 - asimon - BUGID 1748 - added count_relations()
  *  20100319 - asimon - BUGID 1748 - added functions for requirement relations: 
  *	                    get_relations(), get_all_relation_labels(), delete_relation(),
  *	                    add_relation(), check_if_relation_exists(), delete_all_relations()
@@ -1851,6 +1852,27 @@ function html_table_of_custom_field_values($id)
 			   " AND relation_type=$rel_type_id";
 		$rs = $this->db->get_recordset($sql);
     	return($rs[0]['qty'] > 0);
+	}
+	
+	
+	/**
+	 * Get count of all relations for a requirement, no matter if it is source or destination
+	 * or what type of relation it is.
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @param integer $id requirement ID to check
+	 * 
+	 * @return integer $count
+	 */
+	public function count_relations($id) {
+		
+		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
+		$sql = " $debugMsg SELECT COUNT(*) AS qty " .
+			   " FROM {$this->tables['req_relations']} " .
+			   " WHERE source_id=$id OR destination_id=$id ";
+		$rs = $this->db->get_recordset($sql);
+    	return($rs[0]['qty']);
 	}
 	
 	

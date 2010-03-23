@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.7 2010/03/23 09:51:01 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.8 2010/03/23 12:28:33 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
- * 20100323 - asimon - added number of requirement relations to table
+ * 20100323 - asimon - show columns for relations and coverage only if these features are enabled.
+ *                     added number of requirement relations to table.
  * 20100312 - asimon - replaced "100%"-value (in case where req has no coverage) by N/A-string
  * 20100311 - asimon - fixed a little bug (only notice) when no cfields are defined
  * 20100310 - asimon - refactoring as requested
@@ -38,6 +39,9 @@ $gui = init_gui($args);
 $glue_char = config_get('gui_title_separator_1');
 $msg_key = 'no_linked_req_cf';
 $charset = config_get('charset');
+$req_cfg = config_get('req_cfg');
+$coverage_enabled = $req_cfg->relations->enable;
+$relations_enabled = $req_cfg->expected_coverage_management;
 
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 
@@ -80,8 +84,10 @@ if(count($gui->reqIDs)) {
 		// coverage data
 		$current = count($req_mgr->get_coverage($id));
 
-		// number of relations
-		$relations = $req_mgr->count_relations($id);
+		// number of relations, if feature is enabled
+		if ($relations_enabled) {
+			$relations = $req_mgr->count_relations($id);
+		}
 		
 		// create the link to display
 		$title = $req[0]['req_doc_id'] . $glue_char . $req[0]['title'];
@@ -109,10 +115,10 @@ if(count($gui->reqIDs)) {
 	    	 * 1. path
 	    	 * 2. title
 	    	 * 3. version
-	    	 * 4. coverage
+	    	 * 4. coverage (if enabled)
 	    	 * 5. type
 	    	 * 6. status
-	    	 * 7. relations
+	    	 * 7. relations (if enabled)
 	    	 * 8. all custom fields in order of $fields
 	    	 */
 	    	
@@ -121,17 +127,21 @@ if(count($gui->reqIDs)) {
 			$result[] = $version['version'];
 	    	
 			// coverage
-	    	$expected = $version['expected_coverage'];
-	    	$coverage_string = lang_get('not_aplicable') . " (0/0)";
-	    	if ($expected) {
-	    		$percentage = round(100 / $expected * $current, 2);
-				$coverage_string = "{$percentage}% ({$current}/{$expected})";
-	    	}
-	    	$result[] = $coverage_string;
-
+			if ($coverage_enabled) {
+		    	$expected = $version['expected_coverage'];
+		    	$coverage_string = lang_get('not_aplicable') . " (0/0)";
+		    	if ($expected) {
+		    		$percentage = round(100 / $expected * $current, 2);
+					$coverage_string = "{$percentage}% ({$current}/{$expected})";
+		    	}
+		    	$result[] = $coverage_string;
+			}
 			$result[] = $type_labels[$version['type']];
 			$result[] = $status_labels[$version['status']];
-			$result[] = $relations;
+			
+			if ($relations_enabled) {
+				$result[] = $relations;
+			}
 			
 			// get custom field values for this req
 			foreach ($fields as $cf) {
@@ -157,29 +167,35 @@ if(count($gui->reqIDs)) {
     	 * 1. path
     	 * 2. title
     	 * 3. version
-    	 * 4. coverage
+    	 * 4. coverage (if enabled)
     	 * 5. type
     	 * 6. status
-    	 * 7. relations
+    	 * 7. relations (if enabled)
     	 * 8. then all custom fields in order of $fields
     	 */
-        $columns = array(
-                        array('title' => lang_get('req_spec_short'), 'width' => 200),
-       	                array('title' => lang_get('title'), 'width' => 150),
-                        array('title' => lang_get('version'), 'width' => 50),
-                        lang_get('th_coverage'),
-	                    lang_get('type'),
-	                    lang_get('status'),
-	                    lang_get('th_relations')
-	                    );
-
+        $columns = array();
+        $columns[] = array('title' => lang_get('req_spec_short'), 'width' => 200);
+        $columns[] = array('title' => lang_get('title'), 'width' => 150);
+        $columns[] = array('title' => lang_get('version'), 'width' => 50);
+        
+        if ($coverage_enabled) {
+	    	$columns[] = lang_get('th_coverage');
+	    }
+	            
+        $columns[] = lang_get('type');
+        $columns[] = lang_get('status');
+	    
+		if ($relations_enabled) {
+	    	$columns[] = lang_get('th_relations');
+	    }
+        
 	    foreach($gui->cfields as $cf) {
 	    	$columns[] = htmlentities($cf['label'], ENT_QUOTES, $charset);
 	    }
-	    
+
 	    // create table object, fill it with columns and row data and give it a title
 	    $matrix = new tlExtTable($columns, $rows);
-	    //$matrix->addType('coverage', array(TL_EXT_TABLE_CUSTOM_SORT)); //later, first implement sorting
+	    // $matrix->addType('coverage', array(TL_EXT_TABLE_CUSTOM_SORT)); //later, first implement sorting
         $matrix->title = lang_get('requirements');        
         $gui->tableSet= array($matrix);
     }

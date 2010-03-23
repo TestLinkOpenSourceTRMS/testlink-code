@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2010/03/19 22:53:51 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/03/23 10:18:17 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
  * 
+ * 	20100323 - asimon - BUGID 3312 - fixed audit log message when freezing a req version
  *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
  *                      BUGID 1748 - added doAddRelation() and doDeleteRelation() for req relations
  *  20100205 - asimon - added doFreezeVersion()
@@ -280,7 +281,9 @@ class reqCommands
         $req_version = $req_version[0];
 
 		$this->reqMgr->updateOpen($req_version['version_id'], false);
-		logAuditEvent(TLS("audit_req_version_frozen",$req_version['version_id'],
+		
+		// BUGID 3312
+		logAuditEvent(TLS("audit_req_version_frozen",$req_version['version'],
 		                  $req_version['req_doc_id'],$req_version['title']),
 		              "FREEZE",$argsObj->req_version_id,"req_version");
   

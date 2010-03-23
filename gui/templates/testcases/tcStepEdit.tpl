@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.7 2010/01/27 08:16:23 erikeloff Exp $ 
+$Id: tcStepEdit.tpl,v 1.8 2010/03/23 20:23:27 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -16,7 +16,8 @@ rev:
 
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
-             btn_save,cancel,warning_unsaved"}
+             expected_results,step_details,step_number_verbose,
+             btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
@@ -98,6 +99,32 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 	<input type="hidden" name="doAction" value="" />
  	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 	<input type="hidden" name="step_id" value="{$gui->step_id}" />
+
+
+  {if $gui->steps != ''}
+  <table class="simple">
+  	<tr>
+  		<th width="{$tableColspan}">{$labels.step_number}</th>
+  		<th>{$labels.step_details}</th>
+  		<th>{$labels.expected_results}</th>
+  		<th width="25">{$labels.execution_type_short_descr}</th>
+  	</tr>
+  
+   	{foreach from=$gui->steps item=step_info }
+  	<tr>
+  		<td style="text-align:righ;">{$step_info.step_number}</td>
+  		<td >{$step_info.actions}</td>
+  		<td >{$step_info.expected_results}</td>
+  		<td>{$gui->execution_types[$step_info.execution_type]}</td>
+  	</tr>
+    {/foreach}	
+  </table>	
+  <p>
+  <hr>
+
+  {/if}
+
+
 
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 

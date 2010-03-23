@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.9 2010/01/03 16:48:46 franciscom Exp $
+$Id: tcNew.tpl,v 1.10 2010/03/23 20:23:26 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20100103 - franciscom - refactoring to use $gui
@@ -67,6 +67,31 @@ function validateForm(f)
 <form method="post" action="lib/testcases/tcEdit.php?containerID={$gui->containerID}"
       name="tc_new" id="tc_new"
       onSubmit="javascript:return validateForm(this);">
+
+
+  {if $gui->steps != ''}
+  <table class="simple">
+  	<tr>
+  		<th width="{$tableColspan}">{$labels.step_number}</th>
+  		<th>{$labels.step_details}</th>
+  		<th>{$labels.expected_results}</th>
+  		<th width="25">{$labels.execution_type_short_descr}</th>
+  	</tr>
+  
+   	{foreach from=$gui->steps item=step_info }
+  	<tr>
+  		<td style="text-align:righ;">{$step_info.step_number}</td>
+  		<td >{$step_info.actions}</td>
+  		<td >{$step_info.expected_results}</td>
+  		<td>{$gui->execution_types[$step_info.execution_type]}</td>
+  	</tr>
+    {/foreach}	
+  </table>	
+  <p>
+  <hr>
+  {/if}
+
+
 
 	<div class="groupBtn">
 	    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}

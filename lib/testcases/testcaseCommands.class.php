@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2010/03/15 21:12:35 $  by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2010/03/23 20:23:51 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -197,6 +197,7 @@ class testcaseCommands
 				$this->tcaseMgr->html_table_of_custom_field_inputs($argsObj->tcase_id,null,'design','',
 				                                                   null,null,null,$locationFilter);
 		}	
+		
    		$templateCfg = templateConfiguration('tcEdit');
 		$guiObj->cf = $cf_smarty;
     	$guiObj->tc=$tc_data[0];
@@ -437,6 +438,10 @@ class testcaseCommands
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
+        
+   		// Get all existent steps
+		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+        
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;
@@ -511,13 +516,15 @@ class testcaseCommands
 		$guiObj->step_exec_type = $argsObj->exec_type;
 		$guiObj->step_number = $stepInfo['step_number'];
 
+		// Get all existent steps
+		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
 
 		$templateCfg = templateConfiguration('tcStepEdit');
 		$guiObj->template=$templateCfg->default_template;
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
-		
 		return $guiObj;
 	}
 

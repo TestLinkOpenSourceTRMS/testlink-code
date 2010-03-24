@@ -5,14 +5,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @package 	TestLink
- * @author		asimon
+ * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.1 2010/01/12 20:03:19 franciscom Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.2 2010/03/24 12:46:35 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20100324 - asimon - added searching for requirement relation type (BUGID 1748)
  */
 
 require_once("../../config.inc.php");
@@ -40,7 +41,7 @@ $gui->tcasePrefix .= $tcase_cfg->glue_character;
 if ($args->tprojectID)
 {
 	$tables = tlObjectWithDB::getDBTables(
-							array('cfield_design_values', 'nodes_hierarchy', 'req_specs', 
+							array('cfield_design_values', 'nodes_hierarchy', 'req_specs', 'req_relations', 
 								'req_versions', 'requirements', 'req_coverage', 'tcversions'));
 	$filter = null;
 	$from = null;
@@ -81,6 +82,31 @@ if ($args->tprojectID)
 		$filter['by_coverage'] = " AND RV.expected_coverage={$coverage} ";
 	}
 	
+	if ($args->relation_type != "notype") {
+		
+		// search by relation type		
+		// $args->relation_type is a string in following form
+		// e.g. 3_destination or 2_source or only 4
+		// must be treated different
+		
+		$relation_type = (int)current((explode('_',$args->relation_type)));
+		
+		if (strpos($args->relation_type, "_destination")) {
+			$relation_side = "destination_id=NHP.id ";
+		} else if (strpos($args->relation_type, "_source")) {
+			$relation_side = "source_id=NHP.id ";
+		} else {
+			$relation_side = " source_id=NHP.id OR destination_id=NHP.id ";
+		}		
+		
+		$from['by_relation_type'] = " , {$tables['req_relations']} RR "; 
+        $filter['by_relation_type'] = " AND RR.relation_type={$relation_type} " .
+                                      " AND ( $relation_side ) ";
+	} else {
+    	// avoid E_NOTICE because of undefined index
+    	$from['by_relation_type'] = null;
+    }
+	
 	if($args->custom_field_id > 0) {
 		//search by custom fields
         $args->custom_field_id = $db->prepare_string($args->custom_field_id);
@@ -89,6 +115,9 @@ if ($args->tprojectID)
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
                                      " AND CFD.node_id=NHP.id " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
+    } else {
+    	// avoid E_NOTICE because of undefined index
+    	$from['by_custom_field'] = null;
     }
 	
     if ($args->tcid != "" && strcmp($args->tcid, $gui->tcasePrefix) != 0) {
@@ -104,6 +133,9 @@ if ($args->tprojectID)
     	$filter['by_tcid'] = "AND TCV.tc_external_id='$tcid' AND TCV.id = NHA.id " .
     						" AND NHA.parent_id = NHAP.id AND RC.testcase_id = NHAP.id " .
     						" AND RC.req_id = NHP.id ";
+    } else {
+    	// avoid E_NOTICE because of undefined index
+    	$from['by_tcid'] = null;
     }
     
 	if ($args->reqStatus != "nostatus") {
@@ -114,7 +146,7 @@ if ($args->tprojectID)
 	
 	$sql = "SELECT DISTINCT NHP.id, NHP.name FROM {$tables['nodes_hierarchy']} NH," . 
   			"{$tables['nodes_hierarchy']} NHP, {$tables['requirements']} REQ," .
-			"{$tables['req_versions']} RV {$from['by_custom_field']} {$from['by_tcid']} " .
+			"{$tables['req_versions']} RV {$from['by_custom_field']} {$from['by_tcid']} {$from['by_relation_type']} " .
 			"WHERE NH.parent_id = NHP.id AND RV.id=NH.id AND REQ.id=NHP.id ";
 	
 	if ($filter)
@@ -124,11 +156,13 @@ if ($args->tprojectID)
 	$map = $db->fetchRowsIntoMap($sql,'id');
 	
 	//dont show requirements from different testprojects than the selected one
-	foreach ($map as $item) {
-		$id = $item['id'];
-		$pid = $tproject_mgr->tree_manager->getTreeRoot($id);
-		if ($pid != $args->tprojectID) {
-			unset($map[$id]);
+	if (count($map)) {
+		foreach ($map as $item) {
+			$id = $item['id'];
+			$pid = $tproject_mgr->tree_manager->getTreeRoot($id);
+			if ($pid != $args->tprojectID) {
+				unset($map[$id]);
+			}
 		}
 	}
 }
@@ -174,9 +208,9 @@ function init_args()
 
 	$strnull = array('requirement_document_id', 'name','scope', 'reqStatus',
 						'custom_field_value', 'targetRequirement',
-						'version', 'tcid', 'reqType');
-	foreach($strnull as $keyvar)
-	{
+						'version', 'tcid', 'reqType', 'relation_type');
+	
+	foreach($strnull as $keyvar) {
 		$args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;
 		$args->$keyvar = !is_null($args->$keyvar) && strlen($args->$keyvar) > 0 ? trim($args->$keyvar) : null;
 	}

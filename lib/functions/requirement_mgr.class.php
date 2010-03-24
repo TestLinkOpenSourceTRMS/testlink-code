@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.78 $
- * @modified $Date: 2010/03/23 09:51:01 $ by $Author: asimon83 $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2010/03/24 12:46:36 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select here from reqView.php
+ *                                   as it is now used from multiple files.
  *  20100323 - asimon - BUGID 1748 - added count_relations()
  *  20100319 - asimon - BUGID 1748 - added functions for requirement relations: 
  *	                    get_relations(), get_all_relation_labels(), delete_relation(),
@@ -1966,5 +1968,41 @@ function html_table_of_custom_field_values($id)
 		return $labels;
 	}
 	
+	
+	/**
+	 * Initializes the select field for the localized requirement relation types.
+	 * 
+	 * @author Andreas Simon
+	 * 
+	 * @return array $htmlSelect info needed to create select box on multiple templates
+	 */
+	function init_relation_type_select() {
+		
+		$htmlSelect = array('items' => array(), 'selected' => null, 'equal_relations' => array());
+		$labels = $this->get_all_relation_labels();
+		
+		foreach ($labels as $key => $lab) {
+			$htmlSelect['items'][$key . "_source"] = $lab['source'];
+			if ($lab['source'] != $lab['destination']) {
+				// relation is not equal as labels for source and dest are different
+				$htmlSelect['items'][$key . "_destination"] = $lab['destination']; 
+			} else {
+				// mark this as equal relation - no parent/child, makes searching simpler
+				$htmlSelect['equal_relations'][] = $key . "_source"; 
+			}
+		}
+		
+		// set "related to" as default preselected value in forms
+		if (defined('TL_REQ_REL_TYPE_RELATED') && isset($htmlSelect[TL_REQ_REL_TYPE_RELATED . "_source"])) {
+			$selected_key = TL_REQ_REL_TYPE_RELATED . "_source";
+		} else {
+			// "related to" is not configured, so take last element as selected one
+			$keys = array_keys($htmlSelect['items']);
+			$selected_key = end($keys);
+		}
+		$htmlSelect['selected'] = $selected_key;
+		
+		return $htmlSelect;
+	}
 } // class end
 ?>

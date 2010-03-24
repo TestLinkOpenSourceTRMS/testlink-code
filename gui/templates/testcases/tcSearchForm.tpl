@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.11 2010/01/24 11:07:09 franciscom Exp $
+$Id: tcSearchForm.tpl,v 1.12 2010/03/24 12:46:36 asimon83 Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
@@ -31,7 +31,7 @@ rev :
 		<tr>
 			<td>{$labels.th_tcid}</td>
 			<td><input type="text" name="targetTestCase" id="TCID"  
-			           size="{#TCID_SIZE#}" maxlength="{#TCID_MAXLEN#}" value="{$gui->tcasePrefix}"/></td>
+			           size="{#TC_ID_SIZE#}" maxlength="{#TC_ID_MAXLEN#}" value="{$gui->tcasePrefix}"/></td>
 		</tr>
 		<tr>
 			<td>{$labels.th_tcversion}</td>

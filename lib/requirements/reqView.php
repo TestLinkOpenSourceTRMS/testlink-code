@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/03/19 21:23:51 $ by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2010/03/24 12:46:34 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
  *
  *	@internal revision
+ *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select to requirement_mgr
+ *                                   as it is now used from multiple files
  *	20100319 - franciscom - refactoring of BUGID 1748 
  *  20100319 - asimon - BUGID 1748 - implemented display of req relations
  *	20091217 - franciscom - display type and expected coverage
@@ -116,7 +118,7 @@ function initialize_gui(&$dbHandler,$argsObj)
     
     if ($gui->req_cfg->relations->enable) {
     	$gui->req_relations = $req_mgr->get_relations($gui->req_id);
-    	$gui->req_relation_select = initRelationTypeSelect($db, $argsObj, $req_mgr);
+    	$gui->req_relation_select = $req_mgr->init_relation_type_select();
     	if ($gui->req_cfg->relations->interproject_linking) {
     		$gui->testproject_select = initTestprojectSelect($db, $argsObj, $tproject_mgr);
     	}
@@ -131,34 +133,6 @@ function checkRights(&$db,&$user)
 	return $user->hasRight($db,'mgt_view_req');
 }
 
-
-/**
- * Initializes the select field for the localized requirement relation types.
- * 
- * @param resource $db reference to database handler
- * @param array $args reference to user input data
- * @param ref $reqMrg reference to requirement manager object
- * @return array $htmlSelect info needed to create select box on template
- */
-function initRelationTypeSelect(&$db, &$args, &$reqMgr) {
-	
-	$htmlSelect = array('items' => array(), 'selected' => null);
-	$labels = $reqMgr->get_all_relation_labels();
-	
-	foreach ($labels as $key => $lab) {
-		$htmlSelect['items'][$key . "_source"] = $lab['source'];
-		if ($lab['source'] != $lab['destination']) {
-			$htmlSelect['items'][$key . "_destination"] = $lab['destination'];
-		}
-	}
-	
-	// preselect last key in array (with standard configuration that's "related to")
-	// Developer hint:
-	// end(array_keys($htmlSelect['items'])) -> generates E_STRICT PHP warning
-	$keys = array_keys($htmlSelect['items']);
-	$htmlSelect['selected'] = end($keys);
-	return $htmlSelect;
-}
 
 /**
  * Initializes the select field for the testprojects.

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.24 2010/03/22 14:20:52 asimon83 Exp $
+$Id: reqEdit.tpl,v 1.25 2010/03/24 12:46:36 asimon83 Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20100319 - asimon - BUGID 1748 - added logic to add and remove requirement relations
@@ -201,6 +201,12 @@ function configure_attr(oid_type,cfg)
   	<br />
  	<br />
 
+	{if $gui->req.type}
+		{assign var="preSelectedType" value=$gui->req.type}
+	{else}
+		{assign var="preSelectedType" value=$gui->preSelectedType}
+	{/if}
+
   	<div class="labelHolder" id="reqType_container"> <label for="reqType">{$labels.type}</label>
      	<select name="reqType" id="reqType"
      	{* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
@@ -208,7 +214,7 @@ function configure_attr(oid_type,cfg)
      	     	  onchange="configure_attr('reqType',js_attr_cfg);"
      	{/if}
      	>
-  			{html_options options=$gui->reqTypeDomain selected=$gui->req.type}
+  			{html_options options=$gui->reqTypeDomain selected=$preSelectedType}
   		</select>
   	</div>
   	<br />
@@ -217,9 +223,15 @@ function configure_attr(oid_type,cfg)
  	{if $gui->req_cfg->expected_coverage_management}
   		<div class="labelHolder" id="expected_coverage_container"> <label for="expected_coverage">{$labels.expected_coverage}</label>
   	
+  		{if $gui->req.expected_coverage}
+			{assign var="coverage_to_display" value=$gui->req.expected_coverage}
+		{else}
+			{assign var="coverage_to_display" value=$gui->expected_coverage}
+		{/if}
+  	
   		<input type="text" name="expected_coverage" id="expected_coverage"
   		        size="{#REQ_EXPECTED_COVERAGE_SIZE#}" maxlength="{#REQ_EXPECTED_COVERAGE_MAXLEN#}"
-  		        value="{$gui->req.expected_coverage}" />
+  		        value="{$coverage_to_display}" />
   		{include file="error_icon.tpl" field="expected_coverage"}
   	
  		</div>

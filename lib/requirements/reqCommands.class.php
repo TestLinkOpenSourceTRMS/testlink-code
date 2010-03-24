@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2010/03/23 10:18:17 $ by $Author: asimon83 $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2010/03/24 12:46:35 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -107,8 +107,17 @@ class reqCommands
 		$obj->req_spec_id = $argsObj->req_spec_id;
 		$obj->req_id = null;
 		$obj->req = null;
-		// BUGID 3307 - set default to 0 instead of null to avoid database error
-		$obj->expected_coverage = 0;
+		
+		// BUGID 3307 - set default to number instead of null to avoid database error
+		$obj->expected_coverage = 1;
+		
+		// set a default value other than informational for type, 
+		// so the "expected coverage" field is showing for new req
+		$obj->preSelectedType = 0;
+		if (defined('TL_REQ_TYPE_USE_CASE') && isset($obj->reqTypeDomain[TL_REQ_TYPE_USE_CASE])) {
+			$obj->preSelectedType = TL_REQ_TYPE_USE_CASE;
+		}
+		
 		$obj->display_path = false;
  		return $obj;	
 	}
@@ -543,9 +552,7 @@ class reqCommands
 			{
 				$source_id = $other_id;
 				$destination_id = $own_id;
-			}
-
-			
+			}			
 			
 			if (!is_numeric($authorID) || !is_numeric($source_id) || !is_numeric($destination_id)) {
 				$op['ok'] = false;

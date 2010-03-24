@@ -1,6 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
 Purpose: show form for requirement search.
+
+revisions:
+20100323 - asimon - added searching for req relation types (BUGID 1748)
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -10,7 +13,7 @@ Purpose: show form for requirement search.
           s='caption_search_form, custom_field, search_type_like,
              custom_field_value,btn_find,requirement_document_id, req_expected_coverage,
              title_search_req, reqid, reqversion, caption_search_form_req, title, scope,
-             coverage, status, type, version, th_tcid'}
+             coverage, status, type, version, th_tcid, has_relation_type'}
 
 
 {include file="inc_head.tpl"}
@@ -69,6 +72,18 @@ Purpose: show form for requirement search.
 			</tr>
 		{/if}		
 		
+		{if $gui->filter_by.relation_type}
+			<tr>
+				<td>{$labels.has_relation_type}</td>
+				<td>
+					<select id="relation_type" name="relation_type" />
+						<option value="notype">&nbsp;</option>
+						{html_options options=$gui->req_relation_select.items}
+					</select>
+				</td>				
+			</tr>
+		{/if}
+		
 		{if $gui->filter_by.design_scope_custom_fields}
 		    <tr>
    	    	<td>{$labels.custom_field}</td>
@@ -92,7 +107,7 @@ Purpose: show form for requirement search.
 		<tr>
 			<td>{$labels.th_tcid}</td>
 			<td><input type="text" name="tcid" value="{$gui->tcasePrefix}" 
-			           size="{#TCID_SIZE#}" maxlength="{#TCID_MAXLEN#}" /></td>
+			           size="{#TC_ID_SIZE#}" maxlength="{#TC_ID_MAXLEN#}" /></td>
 		</tr>
 		
 	  		

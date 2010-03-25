@@ -1,13 +1,13 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
  * Navigation for installation scripts
- * 
+ *
  * @package 	TestLink
- * @copyright 	2007, TestLink community 
- * @version    	CVS: $Id: index.php,v 1.16 2009/11/10 16:10:20 havlat Exp $
+ * @copyright 	2007, TestLink community
+ * @version    	CVS: $Id: index.php,v 1.17 2010/03/25 08:57:02 amkhullar Exp $
  *
  * @internal Revisions:
  *  20091103 - havlatm - Total GUI redesign
@@ -16,7 +16,7 @@
  *	20080120 - franciscom - added link to README
  *	20080103 - franciscom - minor adjustments on link descriptions
  */
- 
+
 require_once("../cfg/const.inc.php");
 
 session_start();
@@ -31,7 +31,7 @@ $_SESSION['testlink_version'] = TL_VERSION;
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<link href="../gui/themes/default/images/favicon.ico" rel="icon" type="image/gif"/>
 	<style type="text/css">@import url('./css/style.css');</style>
-</head>	
+</head>
 
 <body>
 <div class="tlPager">
@@ -39,17 +39,17 @@ $_SESSION['testlink_version'] = TL_VERSION;
     TestLink <?php echo $_SESSION['testlink_version'] ?> Installation</h1>
 <div class="tlLiner">&nbsp;</div>
 <div class="tlStory">
-		<p>You are installing TestLink. Select your case 'New installation' 
+		<p>You are installing TestLink. Select your case 'New installation'
 		or 'Upgrade from older version'.</p>
-		<p>Open <a target="_blank" href="../docs/installation_manual.pdf">Installation manual</a>  
-		for more information or troubleshooting. You could also look at 
-		<a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>. 
+		<p>Open <a target="_blank" href="../docs/testlink_installation_manual.pdf">Installation manual</a>
+		for more information or troubleshooting. You could also look at
+		<a href="../README">README</a> or <a href="../CHANGELOG">Changes Log</a>.
 		You are welcome to visit our <a target="_blank" href="http://www.teamst.org">
-		forum</a> to browse or discuss. 
+		forum</a> to browse or discuss.
 		</p>
 		<p><ul>
 		<li><a href="installIntro.php?type=new">New installation</a></li>
-   		<li><a href="installIntro.php?type=upgrade_1.8_to_1.9">Upgrade from 1.8.x 
+   		<li><a href="installIntro.php?type=upgrade_1.8_to_1.9">Upgrade from 1.8.x
    		versions to 1.9.x </a>. Older releases should be migrated to 1.8 version at first.</li>
 		</ul></p>
 </div>

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.594 2010/03/24 12:46:37 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.595 2010/03/25 04:45:06 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1664,7 +1664,7 @@ $TLS_user_bulk_assignment = "Bulk user assignment";
 $TLS_mail_subject_testcase_assigned = 'Test Link - Test Case Assignment - Test Plan';
 $TLS_mail_subject_testcase_assignment_removed = 'Test Link - Test Case Assignment REMOVED - Test Plan';
 $TLS_mail_testcase_assigned = "Following Test Cases has been assigned to you %s by %s <br /><br />";
-$TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments AS BEEN REMOVED  by %s <br /><br />";
+$TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments HAS BEEN REMOVED  by %s <br /><br />";
 $TLS_send_mail_to_tester = "Send mail notification to tester";
 
 

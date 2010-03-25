@@ -8,12 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.8 2010/03/23 12:28:33 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.9 2010/03/25 11:18:11 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
+ * 20100325 - asimon - added html comments with padded numbers/strings for easier and
+ *                     corrent sorting to columns title/version/coverage/relations
  * 20100323 - asimon - show columns for relations and coverage only if these features are enabled.
  *                     added number of requirement relations to table.
  * 20100312 - asimon - replaced "100%"-value (in case where req has no coverage) by N/A-string
@@ -87,12 +89,16 @@ if(count($gui->reqIDs)) {
 		// number of relations, if feature is enabled
 		if ($relations_enabled) {
 			$relations = $req_mgr->count_relations($id);
+			$padded_relations = sprintf("%010d", $relations);
+			$relations = "<!-- $padded_relations -->" . $relations;
 		}
 		
 		// create the link to display
-		$title = $req[0]['req_doc_id'] . $glue_char . $req[0]['title'];
-		$linked_title = '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . 
-							htmlentities($title, ENT_QUOTES, $charset) . '</a>';
+		$title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $charset) . $glue_char . 
+					htmlentities($req[0]['title'], ENT_QUOTES, $charset);
+		$linked_title = '<!-- ' . $title . ' -->' . //add html comment with title for easier sorting 
+							'<a href="javascript:openLinkedReqWindow(' . $id . ')">' . 
+							$title . '</a>';
 		
 		// reqspec-"path" to requirement
 		$path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
@@ -123,19 +129,26 @@ if(count($gui->reqIDs)) {
 	    	 */
 	    	
 	    	$result[] = $path;
-	    	$result[] = $linked_title;	    	
-			$result[] = $version['version'];
+	    	$result[] = $linked_title;
+
+	    	// version number
+	    	$version_num = $version['version'];
+	    	$padded_version_num = sprintf("%010d", $version_num);
+	    	$version_str = "<!-- $padded_version_num -->$version_num";
+			$result[] = $version_str;
 	    	
 			// coverage
 			if ($coverage_enabled) {
 		    	$expected = $version['expected_coverage'];
-		    	$coverage_string = lang_get('not_aplicable') . " (0/0)";
+		    	$coverage_string = lang_get('not_aplicable') . " ($current/0)";
 		    	if ($expected) {
 		    		$percentage = round(100 / $expected * $current, 2);
-					$coverage_string = "{$percentage}% ({$current}/{$expected})";
+		    		$padded_percentage = sprintf("%010d", $percentage); //bring all percentages to same length
+					$coverage_string = "<!-- $padded_percentage --> {$percentage}% ({$current}/{$expected})";
 		    	}
 		    	$result[] = $coverage_string;
 			}
+			
 			$result[] = $type_labels[$version['type']];
 			$result[] = $status_labels[$version['status']];
 			
@@ -145,13 +158,13 @@ if(count($gui->reqIDs)) {
 			
 			// get custom field values for this req
 			foreach ($fields as $cf) {
-	    		$result[] = htmlentities($cf['value'], ENTQUOTES, $charset);
+	    		$result[] = htmlentities($cf['value'], ENT_QUOTES, $charset);
 	    	}
 	    	
 	    	$rows[] = $result;
     	}
     }
-
+    
     if(($gui->row_qty = count($rows)) > 0 ) {
     	    	
         $gui->pageTitle .= " - " . lang_get('match_count') . ": " . $gui->row_qty;
@@ -195,8 +208,7 @@ if(count($gui->reqIDs)) {
 
 	    // create table object, fill it with columns and row data and give it a title
 	    $matrix = new tlExtTable($columns, $rows);
-	    // $matrix->addType('coverage', array(TL_EXT_TABLE_CUSTOM_SORT)); //later, first implement sorting
-        $matrix->title = lang_get('requirements');        
+        $matrix->title = lang_get('requirements');
         $gui->tableSet= array($matrix);
     }
 } else {

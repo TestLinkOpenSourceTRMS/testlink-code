@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		-
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: usersView.php,v 1.32 2010/01/11 19:17:10 franciscom Exp $
+ * @version    	CVS: $Id: usersView.php,v 1.33 2010/03/26 22:21:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100326 - franciscom - BUGID 3324
  *	20100106 - franciscom - security improvement - checkUserOrderBy()
  *                         (after scanning with Acunetix Web Security Scanner)
  *                          
@@ -36,8 +37,8 @@ $orderBy->dir = array('order_by_login_dir' => 'asc');
 	
 switch($args->operation)
 {
-	case 'delete':
-		//user cannot delete itself
+	case 'disable':
+		// user cannot disable => inactivate itself
 		if ($args->user_id != $args->currentUserID)
 		{
 			$user = new tlUser($args->user_id);
@@ -45,21 +46,48 @@ switch($args->operation)
 			if ($sqlResult >= tl::OK)
 			{
 				$userLogin = $user->login;
-				$sqlResult = $user->deleteFromDB($db);
+				$sqlResult = $user->setActive($db,0);
 				if ($sqlResult >= tl::OK)
 				{
-					logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$args->user_id,"users");
-					$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
+					logAuditEvent(TLS("audit_user_disabled",$user->login),"DISABLE",$args->user_id,"users");
+					$user_feedback = sprintf(lang_get('user_disabled'),$userLogin);
 				}
 			}
 		}
-
+    	
 		if ($sqlResult != tl::OK)
-			$user_feedback = lang_get('error_user_not_deleted');
-
+		{
+			$user_feedback = lang_get('error_user_not_disabled');
+	    }
+		
 		$orderBy->type = $args->user_order_by;
 		$orderBy->dir = $args->order_by_dir;
-		break;
+	break;
+		
+	// case 'delete':
+	// 	//user cannot delete itself
+	// 	if ($args->user_id != $args->currentUserID)
+	// 	{
+	// 		$user = new tlUser($args->user_id);
+	// 		$sqlResult = $user->readFromDB($db);
+	// 		if ($sqlResult >= tl::OK)
+	// 		{
+	// 			$userLogin = $user->login;
+	// 			$sqlResult = $user->deleteFromDB($db);
+	// 			if ($sqlResult >= tl::OK)
+	// 			{
+	// 				logAuditEvent(TLS("audit_user_deleted",$user->login),"DELETE",$args->user_id,"users");
+	// 				$user_feedback = sprintf(lang_get('user_deleted'),$userLogin);
+	// 			}
+	// 		}
+	// 	}
+    // 
+	// 	if ($sqlResult != tl::OK)
+	// 		$user_feedback = lang_get('error_user_not_deleted');
+    // 
+	// 	$orderBy->type = $args->user_order_by;
+	// 	$orderBy->dir = $args->order_by_dir;
+	// 	break;
 
 	case 'order_by_role':
 	case 'order_by_login':

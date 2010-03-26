@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.16 2009/06/04 19:53:27 schlundus Exp $
+$Id: usersView.tpl,v 1.17 2010/03/26 22:21:11 franciscom Exp $
 
 Purpose: smarty template - users overview
 *}
@@ -11,10 +11,13 @@ Purpose: smarty template - users overview
 {assign var="createUserAction" value="$userActionMgr?doAction=create"}
 {assign var="editUserAction" value="$userActionMgr?doAction=edit&amp;user_id="}
 
-{lang_get s='warning_delete_user' var="warning_msg"}
-{lang_get s='delete' var="del_msgbox_title" }
+{* {lang_get s='warning_delete_user' var="warning_msg"} *}
+{* {lang_get s='delete' var="del_msgbox_title" } *}
+{lang_get s='warning_disable_user' var="warning_msg"}
+{lang_get s='disable' var="del_msgbox_title" } *}
+
 <script type="text/javascript">
-	var del_action=fRoot+"lib/usermanagement/usersView.php?operation=delete&user=";
+	var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 </script>
 </head>
 
@@ -22,8 +25,8 @@ Purpose: smarty template - users overview
 {lang_get var="labels"
           s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
-             alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
-             order_by_login,order_by_login_dir,alt_active_user"}
+             disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
+             alt_disable_user,order_by_login,order_by_login_dir,alt_active_user"}
 
 <body {$body_onload}>
 
@@ -71,7 +74,7 @@ Purpose: smarty template - users overview
 
 				<th>{$labels.th_locale}</th>
 				<th style="width:50px;">{$labels.th_active}</th>
-				<th style="width:50px;">{$labels.th_delete}</th>
+				<th style="width:50px;">{$labels.disable}</th>
 			</tr>
 
 			{section name=row loop=$users start=0}
@@ -107,8 +110,8 @@ Purpose: smarty template - users overview
 				</td>
 				<td align="center">
 				  <img style="border:none;cursor: pointer;"
-               alt="{$labels.alt_delete_user}"
-					     title="{$labels.alt_delete_user}"
+               alt="{$labels.alt_disable_user}"
+					     title="{$labels.alt_disable_user}"
 					     onclick="delete_confirmation({$user->dbID},'{$user->login|escape:'javascript'|escape}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');"
 				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>

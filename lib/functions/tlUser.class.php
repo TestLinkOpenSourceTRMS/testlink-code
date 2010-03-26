@@ -5,11 +5,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.6 2010/02/17 22:57:43 franciscom Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.7 2010/03/26 22:11:20 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20100326 - franciscom - setActive() method
  *	20100217 - franciscom - getNamesForProjectRight() - fixed error displayed on event viewer + refactoring
  *  20090726 - franciscom - new method getAccessibleTestPlans()
  * 	20090419 - franciscom - refactoring replace product with test project (where possible).
@@ -899,5 +900,16 @@ class tlUser extends tlDBObject
 		
 		return tlDBObject::createObjectsFromDBbySQL($db,$sql,'id',__CLASS__,true,$detailLevel);
 	}
+
+	/** 
+	 */
+	public function setActive(&$db,$value)
+	{
+		$booleanVal = intval($value) > 0 ? 1 : 0;
+		$sql = " UPDATE {$this->tables['users']} SET active = {$booleanVal} " .
+			   " WHERE id = " . $this->dbID;
+		$result = $db->exec_query($sql);
+	}
+
 }
 ?>

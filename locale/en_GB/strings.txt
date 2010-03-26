@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.598 2010/03/26 22:15:22 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.599 2010/03/26 22:21:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1012,6 +1012,7 @@ $TLS_before_steps_results = "Before steps";
 $TLS_No = "No";
 $TLS_Yes = "Yes";
 $TLS_alt_delete_user = "Really delete the selected user?";
+$TLS_alt_disable_user = "Set user Inactive";
 $TLS_alt_edit_user = "Edit user";
 $TLS_order_by_login = "Order by login";
 $TLS_order_by_role_descr = "Order by role description";
@@ -1024,6 +1025,7 @@ $TLS_th_role = "Role";
 $TLS_th_api = "API Key";
 //$TLS_api_gen_key_action = "generate";
 $TLS_warning_delete_user = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_warning_disable_user = "You are going to disable: %s <br /><br /> Are you sure?";
 $TLS_order_by_login_dir = "Order by login";
 $TLS_order_by_role_dir = "Order by role";
 $TLS_alt_active_user = "Active user";

@@ -1,8 +1,9 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.17 2010/03/26 22:21:11 franciscom Exp $
+$Id: usersView.tpl,v 1.18 2010/03/26 22:23:39 franciscom Exp $
 
 Purpose: smarty template - users overview
+20100326 - franciscom - BUGID 3324
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}

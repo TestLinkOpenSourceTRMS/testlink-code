@@ -5,8 +5,8 @@
 *
 * Filename $RCSfile: usersEdit.php,v $
 *
-* @version $Revision: 1.35 $
-* @modified $Date: 2009/08/28 20:37:04 $ $Author: schlundus $
+* @version $Revision: 1.36 $
+* @modified $Date: 2010/03/26 21:39:26 $ $Author: franciscom $
 *
 * Allows editing a user
 */
@@ -209,8 +209,9 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 function initializeUserProperties(&$userObj,&$argsObj)
 {
 	if (!is_null($argsObj->login))
+	{
     	$userObj->login = $argsObj->login;
-
+	}
 	$userObj->emailAddress = $argsObj->emailAddress;
 	$userObj->firstName = $argsObj->firstName;
 	$userObj->lastName = $argsObj->lastName;
@@ -254,7 +255,9 @@ function renderGui(&$smartyObj,&$argsObj,$templateCfg)
     }
 
     if($doRender)
+    {
         $smartyObj->display($templateCfg->template_dir . $tpl);
+    }    
 }
 
 function checkRights(&$db,&$user)

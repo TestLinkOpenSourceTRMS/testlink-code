@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcStepEditViewer.tpl,v 1.6 2010/03/23 20:23:27 franciscom Exp $
+$Id: tcStepEditViewer.tpl,v 1.7 2010/03/26 22:50:42 franciscom Exp $
 Purpose: test case step edit/create viewer
 
 Rev:
+ 20100326 - franciscom - step number can not be edited anymore
  20100111 - eloff - BUGID 2036 - Check modified content before exit
 *}
 
@@ -31,14 +32,17 @@ Rev:
 
 
 	<p />
-	<div class="labelHolder"><label for="step_number">{$labels.step_number_verbose}</label></div>
-	<div>	
-		<input type="text" name="step_number" id="step_number"
+	<div class="labelHolder"><label for="step_number">{$labels.step_number_verbose}:</label>{$gui->step_number}</div>
+	<div>
+  <input type="hidden" name="step_number" id="step_number"  value="{$gui->step_number}">
+	{*	
+		<input type="text" name="step_number" id="step_number" readonly="readonly"
 			     value="{$gui->step_number}" size="{#STEP_NUMBER_SIZE#}"
 			     maxlength="{#STEP_NUMBER_MAXLEN#}"
 			     onchange="content_modified = true"	onkeypress="content_modified = true"/>
   	       {include file="error_icon.tpl" field="step_number"}
 		<p />
+  *}
 		{$layout1}
 
 		<div class="labelHolder">{$labels.step_details}</div>

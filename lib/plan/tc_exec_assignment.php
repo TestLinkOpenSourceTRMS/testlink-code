@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.51 2010/02/28 16:11:08 franciscom Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.52 2010/03/26 11:41:59 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
+ * 20100326 - amitkhullar - BUGID 3346: Update the date on updating test case asssigments
  * 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
  * 20100225 - eloff - remove unnecessary call to platformVisibleForTestplan
  * 20100215 - asimon - BUGID 2455, BUGID 3026
@@ -85,6 +86,7 @@ if(!is_null($args->doAction))
 						    $features2[$op][$feature_id]['tcase_id'] = $key_tc;
 						    $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
             	            $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];					    
+            	            $features2[$op][$feature_id]['creation_ts'] = $db_now; //BUGID 3346
 						}
 					} 
 					else

@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/03/23 20:23:51 $  by $Author: franciscom $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2010/03/26 22:40:17 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
+ *	20100326 -  franciscom - BUGID 3326: Editing a test step: execution type always "Manual"
  *	20100123 - franciscom - added logic to check for step number existence
  *                          added missing method doDeleteStep()
  *	20100106 - franciscom - Multiple Test Case Steps Feature
@@ -499,7 +500,7 @@ class testcaseCommands
 		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
-
+        
         $oWebEditorKeys = array('steps' => 'actions', 'expected_results' => 'expected_results');
   		foreach($oWebEditorKeys as $key => $field)
    		{
@@ -513,8 +514,8 @@ class testcaseCommands
 		$guiObj->tcase_id = $argsObj->tcase_id;
 		$guiObj->tcversion_id = $argsObj->tcversion_id;
 		$guiObj->step_id = $argsObj->step_id;
-		$guiObj->step_exec_type = $argsObj->exec_type;
-		$guiObj->step_number = $stepInfo['step_number'];
+		$guiObj->step_exec_type = $stepInfo['execution_type'];
+		$guiObj->step_number = $stepInfo['step_number']; // BUGID 3326: Editing a test step: execution type always "Manual"
 
 		// Get all existent steps
 		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);

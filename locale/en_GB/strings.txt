@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.597 2010/03/26 22:13:38 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.598 2010/03/26 22:15:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -128,6 +128,8 @@ $TLS_assigned = "assigned";
 $TLS_create = "create";
 $TLS_copy = "copy";
 $TLS_delete = "delete";
+$TLS_disable = "disable";
+
 $TLS_executed	= "executed";
 $TLS_move	= "Move";
 $TLS_remove = "remove";

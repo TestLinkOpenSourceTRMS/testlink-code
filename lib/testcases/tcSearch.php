@@ -8,13 +8,14 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.5 2010/01/24 11:07:09 franciscom Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.6 2010/03/26 21:33:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100326 - franciscom - BUGID 3334 - search fails if test case has 0 steps
  *  20100124 - franciscom - BUGID 3077 - search on preconditions
- *	20100106	 - franciscom - Multiple Test Case Steps Feature
+ *	20100106 - franciscom - Multiple Test Case Steps Feature
  *	20090228 - franciscom - if targetTestCase == test case prefix => 
  *                             consider as empty => means search all.
  *
@@ -127,11 +128,13 @@ if ($args->tprojectID)
     
     $sqlCount  = "SELECT COUNT(NH_TC.id) ";
     
+    // BUGID 3334 - search fails if test case has 0 steps
+    // Added LEFT OUTER
     $sqlPart2 = " FROM {$tables['nodes_hierarchy']} NH_TC " .
                 " JOIN {$tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TC.id  " .
-                " JOIN {$tables['nodes_hierarchy']} NH_TCSTEPS ON NH_TCSTEPS.parent_id = NH_TCV.id " .
                 " JOIN {$tables['tcversions']} TCV ON NH_TCV.id = TCV.id " .
-                " JOIN {$tables['tcsteps']} TCSTEPS ON NH_TCSTEPS.id = TCSTEPS.id  " .
+                " LEFT OUTER JOIN {$tables['nodes_hierarchy']} NH_TCSTEPS ON NH_TCSTEPS.parent_id = NH_TCV.id " .
+                " LEFT OUTER JOIN {$tables['tcsteps']} TCSTEPS ON NH_TCSTEPS.id = TCSTEPS.id  " .
                 " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']} " .
                 " WHERE 1=1 ";
            

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.8 2010/03/23 20:23:27 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.9 2010/03/27 15:02:00 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -16,7 +16,7 @@ rev:
 
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
-             expected_results,step_details,step_number_verbose,
+             expected_results,step_details,step_number_verbose,btn_cancel,
              btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
@@ -129,9 +129,9 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
 		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
-		
-		<input type="button" name="go_back" value="{$labels.cancel}" 
-		       onclick="history.back();"/>
+  	<input type="button" name="go_back" value="{$labels.btn_cancel}"
+    	     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+    	     {else}  onclick="javascript:history.back();" {/if} />
 	</div>	
 
 	{assign var=this_template_dir value=$smarty.template|dirname}

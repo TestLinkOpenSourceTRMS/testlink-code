@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2010/03/26 22:40:17 $  by $Author: franciscom $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2010/03/27 15:01:45 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
- *	20100326 -  franciscom - BUGID 3326: Editing a test step: execution type always "Manual"
+ *	20100327 - franciscom - improvements in goback logic 	
+ *	20100326 - franciscom - BUGID 3326: Editing a test step: execution type always "Manual"
  *	20100123 - franciscom - added logic to check for step number existence
  *                          added missing method doDeleteStep()
  *	20100106 - franciscom - Multiple Test Case Steps Feature
@@ -423,6 +424,9 @@ class testcaseCommands
 	function createStep(&$argsObj,$request)
 	{
 	    $guiObj = $this->initGuiBean();
+		$guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : ''; 
+
+
 		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
 		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
 

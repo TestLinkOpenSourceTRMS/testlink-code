@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.59 2010/03/19 15:04:09 asimon83 Exp $
+$Id: tcView_viewer.tpl,v 1.60 2010/03/27 15:02:00 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100327 - franciscom - fixed problem with goback from create step
     20100301 - franciscom - BUGID 3181
     20100125 - franciscom - added check to display info about steps only if test case has steps
     20100124 - franciscom - fixed problem on display of test case version assignemt 
@@ -34,6 +35,14 @@ rev:
 {* will be useful in future to semplify changes *}
 {assign var="tableColspan" value=$gui->tableColspan} 
 {assign var="addInfoDivStyle" value='style="padding: 5px 3px 4px 10px;"'}
+
+
+{assign var="module" value='lib/testcases/'}
+{assign var="tcase_id" value=$args_testcase.testcase_id}
+{assign var="tcversion_id" value=$args_testcase.id}
+
+{* Used on several operations to implement goback *}
+{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id"}
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
@@ -41,16 +50,13 @@ rev:
 {assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
 {assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
 
-{assign var="module" value='lib/testcases/'}
-{assign var="tcase_id" value=$args_testcase.testcase_id}
-{assign var="tcversion_id" value=$args_testcase.id}
 {assign var="url_args" value="tcAssign2Tplan.php?tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {assign var="hrefAddTc2Tplan"  value="$basehref$module$url_args"}
 
-{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id&step_id="}
+{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{assign var="url_args" value="$url_args&goback_url=$basehref$tcViewAction&step_id="}
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}
 
-{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id"}
 {assign var="tcExportAction" value="lib/testcases/tcExport.php?goback_url="}
 {assign var="exportTestCaseAction" value="$basehref$tcExportAction$basehref$tcViewAction"}
 
@@ -194,6 +200,7 @@ rev:
  	{/if}
 
 <form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
+<input type="hidden" name="goback_url" value="{$basehref}{$tcViewAction}" />
 <table class="simple">
   {if $args_show_title == "yes"}
 	<tr>

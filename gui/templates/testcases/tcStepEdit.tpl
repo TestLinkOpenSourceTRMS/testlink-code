@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.11 2010/03/27 15:41:35 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.12 2010/03/27 16:21:29 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -16,10 +16,17 @@ rev:
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
-{* Used on several operations to implement goback *}
+{assign var="module" value='lib/testcases/'}
 {assign var="tcase_id" value=$gui->tcase_id}
+{assign var="tcversion_id" value=$gui->tcversion_id}
+
+{* Used on several operations to implement goback *}
 {assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id"}
 {assign var="goBackAction" value="$basehref$tcViewAction"}
+
+{assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
+{assign var="url_args" value="$url_args&goback_url=$basehref$tcViewAction&step_id="}
+{assign var="hrefEditStep"  value="$basehref$module$url_args"}
 
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
@@ -121,8 +128,8 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
   
    	{foreach from=$gui->steps item=step_info }
   	<tr>
-  		<td style="text-align:righ;">{$step_info.step_number}</td>
-  		<td >{$step_info.actions}</td>
+		  <td style="text-align:righ;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
+  		<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
   		<td >{$step_info.expected_results}</td>
   		<td>{$gui->execution_types[$step_info.execution_type]}</td>
   	</tr>

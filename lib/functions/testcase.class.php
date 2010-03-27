@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.256 2010/03/23 11:39:47 havlat Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.257 2010/03/27 16:22:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1555,6 +1555,7 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $now = $this->db->db_now();
 	    $sql="/* $debugMsg */ " . 
 	         " INSERT INTO {$this->tables['tcversions']} " . 

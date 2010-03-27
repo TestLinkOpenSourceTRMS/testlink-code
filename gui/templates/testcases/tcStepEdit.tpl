@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.9 2010/03/27 15:02:00 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.10 2010/03/27 15:28:51 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
+	20100327 - franciscom - improvements on goback logic
 	20100125 - franciscom - fixed bug on checks on existence of step number
 	20100124 - eloff - BUGID 3088 - Check valid session before submit
 	20100123 - franciscom - checks on existence of step number
@@ -13,6 +14,12 @@ rev:
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
+
+{* Used on several operations to implement goback *}
+{assign var="tcase_id" value=$gui->tcase_id}
+{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id"}
+{assign var="goBackAction" value="$basehref$tcViewAction"}
 
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
@@ -94,11 +101,13 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 
 <form method="post" action="lib/testcases/tcEdit.php" name="tcStepEdit"
       onSubmit="return validateForm(this,'{$gui->step_set}',{$gui->step_number});">
+
 	<input type="hidden" name="testcase_id" value="{$gui->tcase_id}" />
 	<input type="hidden" name="tcversion_id" value="{$gui->tcversion_id}" />
 	<input type="hidden" name="doAction" value="" />
  	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 	<input type="hidden" name="step_id" value="{$gui->step_id}" />
+	<input type="hidden" name="goback_url" value="{$goBackAction}" />
 
 
   {if $gui->steps != ''}
@@ -124,12 +133,10 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 
   {/if}
 
-
-
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
 		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
-  	<input type="button" name="go_back" value="{$labels.btn_cancel}"
+  	<input type="button" name="cancel" value="{$labels.btn_cancel}"
     	     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     	     {else}  onclick="javascript:history.back();" {/if} />
 	</div>	

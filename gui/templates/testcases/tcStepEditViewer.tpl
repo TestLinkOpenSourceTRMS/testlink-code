@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcStepEditViewer.tpl,v 1.7 2010/03/26 22:50:42 franciscom Exp $
+$Id: tcStepEditViewer.tpl,v 1.8 2010/03/27 15:28:51 franciscom Exp $
 Purpose: test case step edit/create viewer
 
 Rev:
@@ -25,11 +25,6 @@ Rev:
 	{assign var="layout3" value="</td></tr></table><br />"}
 {/if}
 {* ---------------------------------------------------------------- *}
-
-
-
-
-
 
 	<p />
 	<div class="labelHolder"><label for="step_number">{$labels.step_number_verbose}:</label>{$gui->step_number}</div>

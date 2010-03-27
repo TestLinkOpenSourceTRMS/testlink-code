@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2010/03/27 15:23:47 $  by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2010/03/27 15:42:13 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -169,7 +169,6 @@ class testcaseCommands
     		$opt_list = $argsObj->assigned_keywords_list;
     		$guiObj->initWebEditorFromTemplate = false;
 		}
-
         keywords_opt_transf_cfg($otCfg, $opt_list);
     	$guiObj->opt_cfg=$otCfg;
 		$templateCfg = templateConfiguration('tcNew');
@@ -486,6 +485,9 @@ class testcaseCommands
 			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
 		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
 		}	
+
+   		// Get all existent steps
+		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
 
 		$max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
 		$max_step++;;

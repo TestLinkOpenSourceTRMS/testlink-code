@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.257 2010/03/27 16:22:39 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.258 2010/03/27 16:26:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -620,6 +620,7 @@ class testcase extends tlObjectWithAttachments
 	    $gui->submitCode="";
 	    $gui->dialogName = '';
 	    $gui->platforms = null;
+		$gui->tableColspan = '';
 	
 		$gui_cfg = config_get('gui');
 		$the_tpl = config_get('tpl');

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.10 2010/03/27 15:28:51 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.11 2010/03/27 15:41:35 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -113,7 +113,7 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
   {if $gui->steps != ''}
   <table class="simple">
   	<tr>
-  		<th width="{$tableColspan}">{$labels.step_number}</th>
+  		<th width="{$gui->tableColspan}">{$labels.step_number}</th>
   		<th>{$labels.step_details}</th>
   		<th>{$labels.expected_results}</th>
   		<th width="25">{$labels.execution_type_short_descr}</th>

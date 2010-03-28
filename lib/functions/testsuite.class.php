@@ -6,10 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.94 2010/03/16 04:32:17 amkhullar Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.95 2010/03/28 16:07:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100328 - franciscom - get_by_id() interface and return set changes
+ *						   get_children() - new method - contribution - BUGID 2645
  * 20100315 - amitkhullar - Added options for CFields for Export.
  * 20100227 - franciscom - BUGID 0003233: After test suite edit, display of Test suite do not 
  *                         have upload button enabled for attachment
@@ -343,29 +345,39 @@ class testsuite extends tlObjectWithAttachments
 	
 	/*
 	  function: get_by_id
-	            get info for one test suite
+	            get info for one (or several) test suite(s)
 	
 	  args : id: testsuite id
 	  
 	  returns: map with following keys:
 	           
-	           id: 	testsuite id (node id)
+	           id: 	testsuite id (node id) (can be an array)
 	           details
 	           name: testsuite name
 	  
 	  
 	  rev :
+	  		20100328 - BUGID 2645 - contribution - added parent_id
 	        20070324 - added node_order in result set
 	
 	*/
-	function get_by_id($id)
+	function get_by_id($id, $order_by = '')
 	{
-		$sql = " SELECT testsuites.*, NH.name, NH.node_type_id, NH.node_order " .
-		       "  FROM {$this->tables['testsuites']} testsuites, " .
-		       " {$this->tables['nodes_hierarchy']}  NH " .
-		       "  WHERE testsuites.id = NH.id  AND testsuites.id = {$id}";
-	    $recordset = $this->db->get_recordset($sql);
-	    return($recordset ? $recordset[0] : null);
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ SELECT TS.*, NH.name, NH.node_type_id, NH.node_order, NH.parent_id " .
+		       "  FROM {$this->tables['testsuites']} TS, " .
+		       " {$this->tables['nodes_hierarchy']} NH   WHERE TS.id = NH.id AND TS.id "; 
+
+		$sql .= is_array($id) ? " IN (" . implode(',',$id) . ")" : " = {$id} ";
+		$sql .= $order_by;
+		
+		
+	    $rs = $this->db->fetchRowsIntoMap($sql,'id');
+		if( !is_null($rs) )
+	    {
+	    	$rs = count($rs) == 1 ? current($rs) : $rs;
+	    }
+	    return $rs;
 	}
 	
 	
@@ -793,25 +805,25 @@ class testsuite extends tlObjectWithAttachments
 	    $testcases=null;
 	    $only_id=($details=='only_id') ? true : false;             				
 	    $subtree=$this->tree_manager->get_children($id,array('testsuite' => 'exclude_me'));
-		  $doit=!is_null($subtree);
-		  if($doit)
-		  {
-		    $tsuite=$this->get_by_id($id);
-		    $tsuiteName=$tsuite['name'];
-		  	$testcases = array();
-		  	foreach ($subtree as $the_key => $elem)
-		  	{
-		  		if ($only_id)
-		  		{
-		  			$testcases[] = $elem['id'];
-		  		}
-		  		else
-		  		{
-		  			$testcases[]= $elem;
-		  		}	
-		  	}
-		  	$doit = count($testcases) > 0;
-		  }
+		$doit=!is_null($subtree);
+		if($doit)
+		{
+		  $tsuite=$this->get_by_id($id);
+		  $tsuiteName=$tsuite['name'];
+			$testcases = array();
+			foreach ($subtree as $the_key => $elem)
+			{
+				if ($only_id)
+				{
+					$testcases[] = $elem['id'];
+				}
+				else
+				{
+					$testcases[]= $elem;
+				}	
+			}
+			$doit = count($testcases) > 0;
+		}
 	    
 	    if($doit && $details=='full')
 	    {
@@ -1343,6 +1355,26 @@ class testsuite extends tlObjectWithAttachments
 		}
     }
 
+
+	/**
+	 * get_children
+	 * get test suites with parent = testsuite with given id
+	 *
+	 */
+	function get_children($id)
+	{
+	    $itemSet = null;
+	    $subtree = $this->tree_manager->get_children($id, array('testcase' => 'exclude_me'));
+	    if(!is_null($subtree))
+	    {
+			foreach( $subtree as $the_key => $elem)
+			{
+	    		$itemKeys[] = $elem['id'];
+			}
+	    	$itemSet = $this->get_by_id($itemKeys, 'ORDER BY node_order');
+	    }
+	    return $itemSet;
+	}
 
 } // end class
 

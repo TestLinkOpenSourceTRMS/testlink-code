@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.144 2010/02/21 16:11:53 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.145 2010/03/28 17:41:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -427,6 +427,8 @@ function init_args($spec_cfg,$otName)
 	} 
 
 	$args->basehref = $_SESSION['basehref'];
+
+    $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
     return $args;
 }
 
@@ -475,8 +477,11 @@ function createWebEditors($basehref,$editorCfg,$editorSet=null)
     $specGUICfg=config_get('spec_cfg');
     $layout=$specGUICfg->steps_results_layout;
     
-    $cols=array('steps' => array('horizontal' => 38, 'vertical' => null),
-                'expected_results' => array('horizontal' => 38, 'vertical' => null));
+    // $cols=array('steps' => array('horizontal' => 38, 'vertical' => null),
+    //             'expected_results' => array('horizontal' => 38, 'vertical' => null));
+       
+    $cols=array('steps' => array('horizontal' => 38, 'vertical' => 44),
+                'expected_results' => array('horizontal' => 38, 'vertical' => 44));
         
     $owe = new stdClass();
     
@@ -596,7 +601,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
                              'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
                              'doDeleteStep' => '', 'doReorderSteps' => '');
 
-	$initWebEditorFromTemplate = $opObj->initWebEditorFromTemplate;                             
+	$initWebEditorFromTemplate = property_exists($opObj,'initWebEditorFromTemplate') ? $opObj->initWebEditorFromTemplate : false;                             
     $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg); 
 
 	foreach ($oWebEditor->cfg as $key => $value)

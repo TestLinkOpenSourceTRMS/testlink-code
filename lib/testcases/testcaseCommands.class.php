@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2010/03/28 17:41:26 $  by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2010/03/28 17:42:02 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -465,8 +465,6 @@ class testcaseCommands
      */
 	function doCreateStep(&$argsObj,$request)
 	{
-		new dBug($_REQUEST);
-		
 	    $guiObj = $this->initGuiBean($argsObj);
 		$guiObj->user_feedback = '';
 		$guiObj->step_exec_type = $argsObj->exec_type;
@@ -505,9 +503,6 @@ class testcaseCommands
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
-
-		new dBug($guiObj);
-		
 		return $guiObj;
 	}
 

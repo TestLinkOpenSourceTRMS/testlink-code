@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.293 2010/03/19 19:53:25 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.294 2010/03/28 17:42:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -450,11 +450,9 @@ $tlCfg->dashboard_precision = 2;
  * Hint: After doing configuration changes, clean you Browser's cookies and cache 
  */
 $tlCfg->gui->text_editor = array();
-$tlCfg->gui->text_editor['all'] = array( 
-									'type' => 'fckeditor', 
-                                    'toolbar' => 'tl_default', 
-                                    'configFile' => 'cfg/tl_fckeditor_config.js',
-								);
+$tlCfg->gui->text_editor['all'] = array('type' => 'fckeditor', 
+                                    	'toolbar' => 'tl_default', 
+                                    	'configFile' => 'cfg/tl_fckeditor_config.js',);
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 
 /** User can choose order of menu areas */

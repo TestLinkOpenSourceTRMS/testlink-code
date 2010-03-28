@@ -5,12 +5,14 @@
  *
  * Filename $RCSfile: util.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/06/09 20:22:54 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2010/03/28 16:29:20 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
  */
+
+define('DBUG_ON',1);  // ADDED to enable ALWAYS dBug()
 
 function show_api_db_sample_msg()
 {
@@ -21,6 +23,7 @@ function show_api_db_sample_msg()
 
 function runTest(&$client,$method,$args,$feedback_id=1)
 {
+	
     new dBug($args);
     $html_id="result_{$feedback_id}";
     

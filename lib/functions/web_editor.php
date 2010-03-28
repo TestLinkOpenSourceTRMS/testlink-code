@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: web_editor.php,v 1.11 2009/06/25 19:37:53 havlat Exp $
+ * @version    	CVS: $Id: web_editor.php,v 1.12 2010/03/28 17:17:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  * @uses 		common.php
@@ -34,15 +34,15 @@ function getWebEditorCfg($feature='all')
 {
     $cfg = config_get('gui');
     $defaultCfg = $cfg->text_editor['all'];
-	  $webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
+	$webEditorCfg = isset($cfg->text_editor[$feature]) ? $cfg->text_editor[$feature] : $defaultCfg;
   
-	  foreach($defaultCfg as $key => $value)
+	foreach($defaultCfg as $key => $value)
   	{
-    	  if(!isset($webEditorCfg[$key]))
-    	  {
+		if(!isset($webEditorCfg[$key]))
+		{
           	$webEditorCfg[$key] = $defaultCfg[$key];
         }  	
-	  } 
+	} 
     return $webEditorCfg;
 }
 

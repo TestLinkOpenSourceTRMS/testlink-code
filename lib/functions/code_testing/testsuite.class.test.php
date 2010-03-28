@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testsuite.class.test.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2010/02/02 20:40:37 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/03/28 16:07:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -24,12 +24,14 @@ echo "<pre> testsuite - constructor - testsuite(&\$db)";echo "</pre>";
 $tsuite_mgr=new testsuite($db);
 new dBug($tsuite_mgr);
 
-echo "<pre> testsuite - get_all()";echo "</pre>";
-echo "<pre>             get_all()";echo "</pre>";
-$all_tsuites_in_my_tl=$tsuite_mgr->get_all();
-new dBug($all_tsuites_in_my_tl);
+$tsuite_id=689;
+echo "<pre> testsuite - get_children(\$id)";echo "</pre>";
+echo "<pre>             get_children($tsuite_id)";echo "</pre>";
+$tsuite_info=$tsuite_mgr->get_children($tsuite_id);
+new dBug($tsuite_info);
 
-$tsuite_id=1229;
+
+$tsuite_id=676;
 echo "<pre> testsuite - get_by_id(\$id)";echo "</pre>";
 echo "<pre>             get_by_id($tsuite_id)";echo "</pre>";
 $tsuite_info=$tsuite_mgr->get_by_id($tsuite_id);
@@ -37,6 +39,24 @@ new dBug($tsuite_info);
 
 $tsuite_name=$tsuite_info['name'];
 
+$tsuite_id = array();
+$tsuite_id[]=676;
+$tsuite_id[]=804;
+$tsuite_id[]=826;
+
+
+echo "<pre> testsuite - get_by_id(\$id)";echo "</pre>";
+echo "<pre>             get_by_id($tsuite_id)";echo "</pre>";
+$tsuite_info=$tsuite_mgr->get_by_id($tsuite_id);
+new dBug($tsuite_info);
+die();
+
+
+
+echo "<pre> testsuite - get_all()";echo "</pre>";
+echo "<pre>             get_all()";echo "</pre>";
+$all_tsuites_in_my_tl=$tsuite_mgr->get_all();
+new dBug($all_tsuites_in_my_tl);
 
 echo "<pre> testsuite - get_by_name(\$name)";echo "</pre>";
 echo "<pre>             get_by_name($tsuite_name)";echo "</pre>";

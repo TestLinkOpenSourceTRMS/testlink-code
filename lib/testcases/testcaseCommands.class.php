@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2010/03/27 15:42:13 $  by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2010/03/28 17:41:26 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -455,6 +455,7 @@ class testcaseCommands
         
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
+		$guiObj->action = __FUNCTION__;
 		return $guiObj;
 	}
 
@@ -464,6 +465,8 @@ class testcaseCommands
      */
 	function doCreateStep(&$argsObj,$request)
 	{
+		new dBug($_REQUEST);
+		
 	    $guiObj = $this->initGuiBean($argsObj);
 		$guiObj->user_feedback = '';
 		$guiObj->step_exec_type = $argsObj->exec_type;
@@ -474,9 +477,11 @@ class testcaseCommands
 		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
 		                              $tcaseInfo[0]['version']); 
 
-        // Get all used test steps numbers to undertand is choosen one is free
-
-        $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$argsObj->step_number,
+		$new_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
+		$new_step++;
+				
+        // $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$argsObj->step_number,
+        $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,
                                            $argsObj->steps,$argsObj->expected_results,
                                            $argsObj->exec_type);	
                                            	
@@ -485,6 +490,8 @@ class testcaseCommands
 			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
 		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
 		}	
+
+		$guiObj->action = __FUNCTION__;
 
    		// Get all existent steps
 		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
@@ -499,6 +506,8 @@ class testcaseCommands
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 
+		new dBug($guiObj);
+		
 		return $guiObj;
 	}
 

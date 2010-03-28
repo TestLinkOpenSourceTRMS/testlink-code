@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.138 2010/03/22 08:40:16 asimon83 Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.139 2010/03/28 13:54:35 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -227,6 +227,9 @@ $g_field_size->req_docid = 64;
 $g_field_size->req_title = 100;
 $g_field_size->requirement_title = 100;
 $g_field_size->docid = 64;
+
+// execution table
+$g_field_size->bug_id = 16;
 
 
 // --------------------------------------------------------------------------------------

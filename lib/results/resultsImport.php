@@ -3,22 +3,19 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: resultsImport.php,v $
- *
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/02/14 18:02:47 $  by $Author: franciscom $
-
- * @author - Kevin Levy
- *
- * rev :
- *		20100214 - franciscom - xml managed using simpleXML
- *      20080906 - franciscom - must be refactored to accept both type of test case id:
- *                              - internal (nodes_hierarchy)
- *                              - external
+ * Results import from XML file
  * 
- *      20071101 - franciscom - added manish contribution
- *      20070904 - franciscom - refactoring
-*/
+ * @package 	TestLink
+ * @author 		Kevin Levy
+ * @copyright 	2010, TestLink community 
+ * @version    	CVS: $Id: resultsImport.php,v 1.16 2010/03/28 13:54:35 franciscom Exp $
+ *
+ * @internal Revisions:
+ * 20100328 - franciscom - BUGID 3331 add bug id management
+ * 20100214 - franciscom - xml managed using simpleXML
+ *
+ **/
+
 require('../../config.inc.php');
 require_once('common.php');
 require_once('csv.inc.php');
@@ -146,6 +143,7 @@ function importResults(&$db, &$xml,&$tplan_id, &$userID, $buildID)
   
   returns: 
 
+  20100328 - franciscom - BUGID 3331 manage bug id	
 */
 function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
 {
@@ -153,8 +151,22 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
 	{
 		return;
 	}
-	$tables = tlObjectWithDB::getDBTables(array('executions'));
+	$debugMsg = ' FUNCTION: ' . __FUNCTION__;
+	$tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs'));
 	
+	// Get Column definitions to get size dinamically instead of create constants
+	$columnDef = array();
+	$adodbObj = $db->get_dbmgr_object();
+    $columnDef['execution_bugs'] = $adodbObj->MetaColumns($tables['execution_bugs']);
+    $keySet = array_keys($columnDef['execution_bugs']);
+    foreach($keySet as $keyName)
+    {
+    	if( ($keylow=strtolower($keyName)) != $keyName )
+    	{ 
+    		$columnDef['execution_bugs'][$keylow] = $columnDef['execution_bugs'][$keyName];
+    		unset($columnDef['execution_bugs'][$keyName]);
+    	}
+    } 
 	$user=new tlUser($userID);
   	$user->readFromDB($db);
   
@@ -180,7 +192,7 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
 	  	$status_ok=true;
 		$tcase_exec=$resultData[$idx];
 		
-		$checks=check_exec_values($db,$tcase_mgr,$user_mgr,$tcaseCfg,$tcase_exec);
+		$checks=check_exec_values($db,$tcase_mgr,$user_mgr,$tcaseCfg,$tcase_exec,$columnDef['execution_bugs']);
     	$status_ok=$checks['status_ok'];		
 		if($status_ok)
 		{
@@ -223,7 +235,6 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
 		    {
 		    	$tcversion_id=$info_on_case['tcversion_id'];
 		    	$version=$info_on_case['version'];
-		    	
           		$notes=$db->prepare_string(trim($notes));
           		
           		// N.B.: db_now() returns an string ready to be used in an SQL insert
@@ -240,13 +251,22 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
               		$tester_name=$user->login;
               		$tester_id=$userID;
           		}
-          
-		      	$sql = "INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
+          		$sql = " /* $debugMsg */ " .
+		      	       " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
 		               " tcversion_id,execution_ts,notes,tcversion_number)" .
 	          	       " VALUES ({$buildID}, {$tester_id},'{$result_code}',{$tplan_id}, ".
 	          	       " {$tcversion_id},{$execution_ts},'{$notes}', {$version})";
 	          	$db->exec_query($sql); 
 
+				// BUGID 3331 
+				if( isset($tcase_exec['bug_id']) )
+				{ 
+					$execution_id = $db->insert_id($tables['executions']);
+          			$sql = " /* $debugMsg */ " .
+		      		       " INSERT INTO {$tables['execution_bugs']} (bug_id,execution_id)" .
+	          		       " VALUES ('" . $db->prepare_string($tcase_exec['bug_id']) . "', {$execution_id} )";
+	          		$db->exec_query($sql); 
+				}
 		    	$message=sprintf(lang_get('import_results_ok'),$tcase_identity,$version,$tester_name,
 		    	                 $resulstCfg['code_status'][$result_code],$execution_ts);
 
@@ -278,12 +298,12 @@ function importExecutionsFromXML($xmlTCExecSet)
 	    $exec_qty=sizeof($xmlTCExecSet);
 	    for($idx=0; $idx <$exec_qty ; $idx++)
 	    {
-	    	  $xmlTCExec=$xmlTCExecSet[$idx];
-	    	  $execInfo = importExecutionFromXML($xmlTCExec);
-	    	  if ($execInfo)
-	    	  {
-	    	  	$execInfoSet[$jdx++]=$execInfo;
-	    	  }
+	    	$xmlTCExec=$xmlTCExecSet[$idx];
+	    	$execInfo = importExecutionFromXML($xmlTCExec);
+	    	if ($execInfo)
+	    	{
+	    		$execInfoSet[$jdx++]=$execInfo;
+	    	}
 	    }
 	}
 	return $execInfoSet;
@@ -303,15 +323,20 @@ function importExecutionFromXML(&$xmlTCExec)
 	{
 		return null;
     }
-    
 	$execInfo=array();;
 	$execInfo['tcase_id'] = isset($xmlTCExec["id"]) ? (int)$xmlTCExec["id"] : 0;
 	$execInfo['tcase_external_id'] = (string) $xmlTCExec["external_id"];
+
+	// Developer Note - 20100328 - franciscom: 
+	// seems that no PHP error is generated when trying to access an undefined
+	// property. Do not know if will not be better anyway to use property_exists()
+	//    
   	$execInfo['tcase_name'] = (string) $xmlTCExec->name;
 	$execInfo['result'] = (string) trim($xmlTCExec->result);
 	$execInfo['notes'] = (string) trim($xmlTCExec->notes);
   	$execInfo['timestamp'] = (string) trim($xmlTCExec->timestamp);
   	$execInfo['tester'] = (string) trim($xmlTCExec->tester);
+  	$execInfo['bug_id'] = (string) trim($xmlTCExec->bug_id); // BUGID 3331
 	return $execInfo; 		
 }
 
@@ -377,9 +402,9 @@ function init_args()
            msg -> array with localized messages  
 
 */
-function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues)
+function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues,&$columnDef)
 {
-	$tables = tlObjectWithDB::getDBTables(array('users'));
+	$tables = tlObjectWithDB::getDBTables(array('users','execution_bugs'));
 
     $checks=array('status_ok' => false, 'tcase_id' => 0, 'tester_id' => 0, 
                   'msg' => array()); 
@@ -440,6 +465,17 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues)
 		    $checks['msg'][]=sprintf(lang_get('invalid_tester'),$identity,$execValues['tester']); 
 		}
     }
+    // BUGID 3331
+    $execValues['bug_id'] = trim($execValues['bug_id']);
+    if($checks['status_ok'] && $execValues['bug_id'] != '' )
+    {
+		if( ($field_len = strlen($execValues['bug_id'])) > $columnDef['bug_id']->max_length )
+		{
+		    $checks['status_ok']=false;
+		    $checks['msg'][]=sprintf(lang_get('bug_id_invalid_len'),$field_len,$columnDef['bug_id']->max_length); 
+		}
+		
+	}
     return $checks;
 }
 ?>

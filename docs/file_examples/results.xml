@@ -20,5 +20,6 @@
   <testcase external_id="1256" >   
     <result>f</result>
     <notes>Using INTERNAL ID as link </notes>
+    <bug_id>ISSUE-66</bug_id>
   </testcase>
 </results>

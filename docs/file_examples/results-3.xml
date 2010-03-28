@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+  <testcase id="1337" >
+    <!-- if not present logged user  will be used -->
+    <!-- tester LOGIN Name -->
+    <tester>user001</tester>  
+    <!-- if not present now() will be used -->
+    <timestamp>2008-09-08 14:00:00</timestamp>  
+    <result>p</result>
+    <notes>functionality works great </notes>
+    <bug_id>ISSUE-9990</bug_id>
+    <bug_id>ISSUE-9990</bug_id>  <!-- Duplicated Will not be inserted -->
+  </testcase>
+  
+  <!-- ANOTHER EXE for SAME test case -->
+  <testcase external_id="POL-1" >
+    <result>f</result>
+    <notes>functionality works great KIMI</notes>
+  </testcase>
+  
+  <!-- Using INTERNAL ID -->
+  <testcase id="1335" >   
+    <result>f</result>
+    <notes>Using INTERNAL ID as link </notes>
+    <bug_id>ISSUE-660</bug_id>
+    <bug_id>ISSUE-664</bug_id>
+    <bug_id>ISSUE-667</bug_id>
+  </testcase>
+</results>

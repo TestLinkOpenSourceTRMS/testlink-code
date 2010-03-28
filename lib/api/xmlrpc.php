@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2010/03/09 06:50:47 $ by $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2010/03/28 16:28:50 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20100328 - franciscom - BUGID 2645 - contribution - getChildrenTestSuites()
  *	20100308 - franciscom - BUGID 3243 - checkPlatformIdentity()
  *	20100205 - franciscom - BUGID 3140 - _checkTCIDAndTPIDValid()	
  *	20091228 - franciscom - checkReqSpecQuality() - refactoring due to req versioning feature
@@ -274,6 +275,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
                                 'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
 	                            'tl.getTestSuitesForTestPlan' => 'this:getTestSuitesForTestPlan',
+	                            'tl.getTestSuitesForTestSuite' => 'this:getTestSuitesForTestSuite',
 	                            'tl.getTestCasesForTestSuite'	=> 'this:getTestCasesForTestSuite',
 	                            'tl.getTestCasesForTestPlan' => 'this:getTestCasesForTestPlan',
 	                            'tl.getTestCaseIDByName' => 'this:getTestCaseIDByName',
@@ -3746,6 +3748,35 @@ public function getTestCase($args)
             return $this->errors;
         }
     }
+
+	/**
+	 * get list of TestSuites which are DIRECT children of a given TestSuite
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["testsuiteid"]
+	 * @return mixed $resultInfo
+	 *
+	 * @access public
+	 */
+	public function getTestSuitesForTestSuite($args)
+	{
+	    $operation=__FUNCTION__;
+	    $msg_prefix="({$operation}) - ";
+	
+	    $this->_setArgs($args);
+	    $status_ok = $this->_runChecks(array('authenticate','checkTestSuiteID'),$msg_prefix) && 
+	                 $this->userHasRight("mgt_view_tc");
+	    if( $status_ok )
+	    {
+	        $testSuiteID = $this->args[self::$testSuiteIDParamName];
+	        $tsuiteMgr = new testsuite($this->dbObj);
+	        $items = $tsuiteMgr->get_children($testSuiteID);
+	    }
+	    return $status_ok ? $items : $this->errors;
+	}
+
+
 
 } // class end
 

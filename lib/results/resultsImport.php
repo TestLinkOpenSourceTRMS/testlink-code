@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy
  * @copyright 	2010, TestLink community 
- * @version    	CVS: $Id: resultsImport.php,v 1.16 2010/03/28 13:54:35 franciscom Exp $
+ * @version    	CVS: $Id: resultsImport.php,v 1.17 2010/03/28 15:03:35 franciscom Exp $
  *
  * @internal Revisions:
  * 20100328 - franciscom - BUGID 3331 add bug id management
@@ -262,10 +262,21 @@ function saveImportedResultData(&$db,$resultData,&$tplan_id,$userID,$buildID)
 				if( isset($tcase_exec['bug_id']) )
 				{ 
 					$execution_id = $db->insert_id($tables['executions']);
-          			$sql = " /* $debugMsg */ " .
-		      		       " INSERT INTO {$tables['execution_bugs']} (bug_id,execution_id)" .
-	          		       " VALUES ('" . $db->prepare_string($tcase_exec['bug_id']) . "', {$execution_id} )";
-	          		$db->exec_query($sql); 
+					foreach($tcase_exec['bug_id'] as $bug_id)
+					{
+						$bug_id = trim($bug_id);
+						$sql = " /* $debugMsg */ " .						
+							   " SELECT execution_id AS check_qty FROM  {$tables['execution_bugs']} " .
+							   " WHERE bug_id = '{$bug_id}' AND execution_id={$execution_id} ";
+						$rs = $db->get_recordset($sql); 
+						if( is_null($rs) )
+						{
+          					$sql = " /* $debugMsg */ " .
+		      				       " INSERT INTO {$tables['execution_bugs']} (bug_id,execution_id)" .
+	          				       " VALUES ('" . $db->prepare_string($bug_id) . "', {$execution_id} )";
+	          				$db->exec_query($sql); 
+	          			}
+	          		}
 				}
 		    	$message=sprintf(lang_get('import_results_ok'),$tcase_identity,$version,$tester_name,
 		    	                 $resulstCfg['code_status'][$result_code],$execution_ts);
@@ -323,6 +334,9 @@ function importExecutionFromXML(&$xmlTCExec)
 	{
 		return null;
     }
+    
+    new dBug($xmlTCExec);
+    
 	$execInfo=array();;
 	$execInfo['tcase_id'] = isset($xmlTCExec["id"]) ? (int)$xmlTCExec["id"] : 0;
 	$execInfo['tcase_external_id'] = (string) $xmlTCExec["external_id"];
@@ -336,7 +350,15 @@ function importExecutionFromXML(&$xmlTCExec)
 	$execInfo['notes'] = (string) trim($xmlTCExec->notes);
   	$execInfo['timestamp'] = (string) trim($xmlTCExec->timestamp);
   	$execInfo['tester'] = (string) trim($xmlTCExec->tester);
-  	$execInfo['bug_id'] = (string) trim($xmlTCExec->bug_id); // BUGID 3331
+
+	$bugQty = count($xmlTCExec->bug_id);
+	if( ($bugQty = count($xmlTCExec->bug_id)) > 0 )
+	{
+		foreach($xmlTCExec->bug_id as $bug)
+		{
+			$execInfo['bug_id'][] = (string) $bug; // BUGID 3331  
+		}
+	}
 	return $execInfo; 		
 }
 

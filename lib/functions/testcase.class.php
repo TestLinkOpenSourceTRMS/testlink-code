@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.259 2010/03/27 16:27:58 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.260 2010/03/30 17:54:52 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100330 - eloff - BUGID 3329 - fixes test plan usage with platforms
  * 20100323 - asimon - fixed BUGID 3316 in show()
  * 20100317 - franciscom - new method get_by_external()
  * 20100315 - amitkhullar - Added  options for Requirements and CFields for Export.
@@ -1113,23 +1114,21 @@ class testcase extends tlObjectWithAttachments
 	      		}  					    
 	      		
 	        	$recordset = $this->db->fetchMapRowsIntoMap($sql,'tcversion_id','testplan_id',database::CUMULATIVE);
-				// TO BE ANALISED
+				// 20100330 - eloff - BUGID 3329
 				if( !is_null($recordset) )
 				{
-					// need to change third access key from sequential index to platform_id
-					$version2loop = array_keys($recordset);
-					foreach( $version2loop as $accessKey)
-					{	
-						$tplan2loop = array_keys($recordset[$accessKey]);
-						foreach( $tplan2loop as $tplanKey)
-						{	
-							$elem2loop = array_keys($recordset[$accessKey][$tplanKey]);
-							foreach( $elem2loop as $elemKey)
+					// changes third access key from sequential index to platform_id
+					foreach ($recordset as $accessKey => $testplan)
+					{
+						foreach ($testplan as $tplanKey => $elements)
+						{
+							foreach ($elements as $elemKey => $element)
 							{	
-								$newKey = $recordset[$accessKey][$tplanKey][$elemKey]['platform_id'];
-								$recordset[$accessKey][$tplanKey][$newKey] = $recordset[$accessKey][$tplanKey][$elemKey];
-								if( !($elemKey == 0 && $newKey == 0) )
+								$newKey = $element['platform_id'];
+								if ($elemKey != $newKey)
 								{
+									// Move test case to new index and unset the old
+									$recordset[$accessKey][$tplanKey][$newKey] = $recordset[$accessKey][$tplanKey][$elemKey];
 									unset($recordset[$accessKey][$tplanKey][$elemKey]);
 								}
 							}

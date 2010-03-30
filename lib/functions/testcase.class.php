@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.260 2010/03/30 17:54:52 erikeloff Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.261 2010/03/30 21:50:54 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1120,18 +1120,16 @@ class testcase extends tlObjectWithAttachments
 					// changes third access key from sequential index to platform_id
 					foreach ($recordset as $accessKey => $testplan)
 					{
-						foreach ($testplan as $tplanKey => $elements)
+						foreach ($testplan as $tplanKey => $testcases)
 						{
-							foreach ($elements as $elemKey => $element)
-							{	
-								$newKey = $element['platform_id'];
-								if ($elemKey != $newKey)
-								{
-									// Move test case to new index and unset the old
-									$recordset[$accessKey][$tplanKey][$newKey] = $recordset[$accessKey][$tplanKey][$elemKey];
-									unset($recordset[$accessKey][$tplanKey][$elemKey]);
-								}
+							// Use a temporary array to avoid key collisions
+							$newArray = array();
+							foreach ($testcases as $elemKey => $element)
+							{
+								$platform_id = $element['platform_id'];
+								$newArray[$platform_id] = $element;
 							}
+							$recordset[$accessKey][$tplanKey] = $newArray;
 					    }
 					}
 				}	

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.38 2010/03/31 22:16:30 erikeloff Exp $ *}
+{* $Id: execNavigator.tpl,v 1.39 2010/03/31 22:17:12 erikeloff Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -104,161 +104,155 @@ rev :
 
 {* include localized help message as a js-variable without icon *}
 {include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}
-<div id="settings_panel">
-	<div class="x-panel-header x-unselectable">
-		{$labels.caption_nav_settings}
-	</div>
-
-<div id="tplan_settings" class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%">
 <form method="post" id="filters" name="filters">
-  <input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
-	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
-	
-	<table>
-
-	{if $gui->map_tplans != '' }
-		<tr>
-			<th>{$labels.test_plan}</th>
-			<td>
-				<select name="tplan_id" onchange="this.form.submit()">
-			    {html_options options=$gui->map_tplans selected=$gui->tplan_id}
-				</select>
-			</td>
-		</tr>
-	{/if}
-		
-	{if $gui->optPlatform.items != ''}
-	<tr>
-	  	<th>{$labels.platform}</th>
-	  	<td><select name="platform_id" onchange="this.form.submit()">
-	  		{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
-		  	</select>
-		</td>
-	</tr>
-	{/if}
-		
-	  <tr>
-		<th>{$labels.exec_build}</th>
-		<td><select name="build_id" onchange="this.form.submit()">
-			{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
-	  		</select>
-	  	</td>
-	  </tr>
-
-	</table>
-</div>
-</div>
-<div id="filter_panel">
-	<div class="x-panel-header x-unselectable">
-		{$labels.caption_nav_filters}
-	</div>
-	<div class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%">
-
-	<table>
-		
-		<tr style="{$keywordsFilterDisplayStyle}">
-			<th>{$labels.keyword}</th>
-			<td>
-				<select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
-			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
-				</select>
-				
-				{html_radios name='keywordsFilterType' 
-                   options=$gui->keywordsFilterType->options
-                   selected=$gui->keywordsFilterType->selected }
-			</td>
-		</tr>
-		
-		<tr>
-			<th>{$labels.priority}</th>
-			<td>
-				<select name="urgencyImportance">
-				<option value="">{$gui->str_option_any}</option>
-				{html_options options=$gsmarty_option_importance selected=$gui->urgencyImportance}
-				</select>
-			</td>
-		</tr>
-		
-		<tr>
-			<th>{$labels.filter_owner}</th>
-			<td>
- 			{if $gui->disable_filter_assigned_to}
-			  {$gui->assigned_to_user}
-			{else}
-			  {if $gui->advancedFilterMode }
-			  <select id="filter_assigned_to" name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}
-			  		onchange="javascript: triggerAssignedBox('filter_assigned_to',
-			  						'include_unassigned',
-									'{$gui->str_option_any}', '{$gui->str_option_none}',
-									'{$gui->str_option_somebody}');">
-			  {else}
-				<select name="filter_assigned_to" id="filter_assigned_to"
-					onchange="javascript: triggerAssignedBox('filter_assigned_to',
-									'include_unassigned',
-									'{$gui->str_option_any}', '{$gui->str_option_none}',
-									'{$gui->str_option_somebody}');">
-			  {/if}
-					{html_options options=$gui->users selected=$gui->filter_assigned_to}
-			  </select>
-			{/if}
-									
-			<br />
-			<input type="checkbox" id="include_unassigned" name="include_unassigned"
-  		           value="1" {if $gui->include_unassigned} checked="checked" {/if} />
-			{$labels.include_unassigned_testcases}
-			
- 			</td>
-		</tr>
-		
-		{$gui->design_time_cfields}
-	
-	<tr><td>&nbsp;</td></tr> {* empty row for a little optical separation *}
-	
-		<tr>
-			<th>{$labels.filter_result}</th>
-			<td>
-			  {if $gui->advancedFilterMode }
-			  	<select name="filter_status[]" multiple="multiple" size={$gui->statusFilterItemQty}>
-			  {else}
-			  	<select name="filter_status">
-			  {/if}
-			  	{html_options options=$gui->optResult selected=$gui->optResultSelected}
-			  	</select>
-			</td>
-		</tr>
-		
-		<tr>
-			<th>{$labels.filter_on}</th>
-			<td>
-			  	<select name="filter_method" id="filter_method"
-			  		onchange="javascript: triggerBuildChooser('deactivatable',
-			  		      				'filter_method', {$gui->filter_method_specific_build});">
-				  	{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
-			  	</select>
-			</td>
-		</tr>
-		
-		<tr id="deactivatable">
-			<th>{$labels.build}</th>
-			<td><select id="filter_build_id" name="filter_build_id">
-				{html_options options=$gui->optFilterBuild.items selected=$gui->optFilterBuild.selected}
-				</select>
-			</td>
-		</tr>
-	
-	</table>
-		
-		<div>
-			<input type="submit" name="submitOptions" value="{$labels.btn_apply_filter}" 
-					style="font-size: 90%;" />
-			<input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
-					value="{$gui->toggleFilterModeLabel}" style="font-size: 90%;"  
-					onclick="toggleInput('advancedFilterMode');" />
+	<div id="settings_panel">
+		<div class="x-panel-header x-unselectable">
+			{$labels.caption_nav_settings}
 		</div>
-</form>
-</div>
-</div> {* end filter panel *}
 
+		<div id="tplan_settings" class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%">
+			<input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
+			<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
+
+			<table>
+			{if $gui->map_tplans != '' }
+				<tr>
+					<th>{$labels.test_plan}</th>
+					<td>
+						<select name="tplan_id" onchange="this.form.submit()">
+						{html_options options=$gui->map_tplans selected=$gui->tplan_id}
+						</select>
+					</td>
+				</tr>
+			{/if}
+
+			{if $gui->optPlatform.items != ''}
+				<tr>
+					<th>{$labels.platform}</th>
+					<td>
+						<select name="platform_id" onchange="this.form.submit()">
+						{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
+						</select>
+					</td>
+				</tr>
+			{/if}
+				<tr>
+					<th>{$labels.exec_build}</th>
+					<td>
+						<select name="build_id" onchange="this.form.submit()">
+						{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
+						</select>
+					</td>
+				</tr>
+
+			</table>
+		</div>
+	</div>
+	<div id="filter_panel">
+		<div class="x-panel-header x-unselectable">
+			{$labels.caption_nav_filters}
+		</div>
+		<div class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%">
+			<table>
+				<tr style="{$keywordsFilterDisplayStyle}">
+					<th>{$labels.keyword}</th>
+					<td>
+						<select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
+						{html_options options=$gui->keywords_map selected=$gui->keyword_id}
+						</select>
+
+						{html_radios name='keywordsFilterType'
+						   options=$gui->keywordsFilterType->options
+						   selected=$gui->keywordsFilterType->selected }
+					</td>
+				</tr>
+
+				<tr>
+					<th>{$labels.priority}</th>
+					<td>
+						<select name="urgencyImportance">
+						<option value="">{$gui->str_option_any}</option>
+						{html_options options=$gsmarty_option_importance selected=$gui->urgencyImportance}
+						</select>
+					</td>
+				</tr>
+
+				<tr>
+					<th>{$labels.filter_owner}</th>
+					<td>
+					{if $gui->disable_filter_assigned_to}
+						{$gui->assigned_to_user}
+					{else}
+						{if $gui->advancedFilterMode }
+						<select id="filter_assigned_to" name="filter_assigned_to[]" multiple="multiple" size={$gui->assigneeFilterItemQty}
+							onchange="javascript: triggerAssignedBox('filter_assigned_to',
+											'include_unassigned',
+											'{$gui->str_option_any}', '{$gui->str_option_none}',
+											'{$gui->str_option_somebody}');">
+						{else}
+						<select name="filter_assigned_to" id="filter_assigned_to"
+							onchange="javascript: triggerAssignedBox('filter_assigned_to',
+											'include_unassigned',
+											'{$gui->str_option_any}', '{$gui->str_option_none}',
+											'{$gui->str_option_somebody}');">
+						{/if}
+						{html_options options=$gui->users selected=$gui->filter_assigned_to}
+						</select>
+					{/if}
+						<br />
+						<input type="checkbox" id="include_unassigned" name="include_unassigned"
+						value="1" {if $gui->include_unassigned} checked="checked" {/if} />
+						{$labels.include_unassigned_testcases}
+
+					</td>
+				</tr>
+
+				{$gui->design_time_cfields}
+				<tr><td>&nbsp;</td></tr> {* empty row for a little visual separation *}
+
+				<tr>
+					<th>{$labels.filter_result}</th>
+					<td>
+					{if $gui->advancedFilterMode }
+						<select name="filter_status[]" multiple="multiple" size={$gui->statusFilterItemQty}>
+					{else}
+						<select name="filter_status">
+					{/if}
+						{html_options options=$gui->optResult selected=$gui->optResultSelected}
+						</select>
+					</td>
+				</tr>
+
+				<tr>
+					<th>{$labels.filter_on}</th>
+					<td>
+						<select name="filter_method" id="filter_method"
+							onchange="javascript: triggerBuildChooser('deactivatable',
+												'filter_method', {$gui->filter_method_specific_build});">
+							{html_options options=$gui->filter_methods selected=$gui->optFilterMethodSelected}
+						</select>
+					</td>
+				</tr>
+
+				<tr id="deactivatable">
+					<th>{$labels.build}</th>
+					<td><select id="filter_build_id" name="filter_build_id">
+						{html_options options=$gui->optFilterBuild.items selected=$gui->optFilterBuild.selected}
+						</select>
+					</td>
+				</tr>
+			</table>
+
+			<div>
+				<input type="submit" name="submitOptions" value="{$labels.btn_apply_filter}"
+						style="font-size: 90%;" />
+				<input type="submit" id="toggleFilterMode"  name="toggleFilterMode"
+						value="{$gui->toggleFilterModeLabel}" style="font-size: 90%;"
+						onclick="toggleInput('advancedFilterMode');" />
+			</div>
+		</div>
+	</div>
+</form> {* end filter panel *}
 
 {* ===================================================================== *}
 <div id="tree" style="overflow:auto; height:380px;border:1px solid #c3daf9;"></div>

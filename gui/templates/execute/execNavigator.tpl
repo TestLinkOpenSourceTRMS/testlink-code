@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.37 2010/03/02 09:19:37 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.38 2010/03/31 22:16:30 erikeloff Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -45,15 +45,19 @@ rev :
 
 		// Use a collapsible panel for filter settings
 		// and place a help icon in ther header
-		var panel = new Ext.ux.CollapsiblePanel({
-			id: 'tl_exec_filter_settings',
-			applyTo: 'filter_panel',
+		var settingsPanel = new Ext.ux.CollapsiblePanel({
+			id: 'tl_exec_filter',
+			applyTo: 'settings_panel',
 			tools: [{
 				id: 'help',
 				handler: function(event, toolEl, panel) {
 					show_help(help_localized_text);
 				}
 			}]
+		});
+		var filtersPanel = new Ext.ux.CollapsiblePanel({
+			id: 'tl_exec_settings',
+			applyTo: 'filter_panel'
 		});
 	});
 </script>
@@ -100,20 +104,18 @@ rev :
 
 {* include localized help message as a js-variable without icon *}
 {include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}
-<div id="filter_panel">
+<div id="settings_panel">
 	<div class="x-panel-header x-unselectable">
-		{$labels.caption_nav_filter_settings}
+		{$labels.caption_nav_settings}
 	</div>
 
-<div id="tplan_settings" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
+<div id="tplan_settings" class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%">
 <form method="post" id="filters" name="filters">
   <input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
 	<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 	
-	<table class="smallGrey" style="width:98%">
+	<table>
 
-		<caption>{$labels.caption_nav_settings}</caption>
-	
 	{if $gui->map_tplans != '' }
 		<tr>
 			<th>{$labels.test_plan}</th>
@@ -144,10 +146,15 @@ rev :
 	  </tr>
 
 	</table>
+</div>
+</div>
+<div id="filter_panel">
+	<div class="x-panel-header x-unselectable">
+		{$labels.caption_nav_filters}
+	</div>
+	<div class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%">
 
-	<table class="smallGrey" width="98%">
-		
-		<caption>{$labels.caption_nav_filters}</caption>
+	<table>
 		
 		<tr style="{$keywordsFilterDisplayStyle}">
 			<th>{$labels.keyword}</th>

@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.17 2010/04/03 10:18:38 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.18 2010/04/03 13:38:08 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
 	20100403 - franciscom - added create step button while editing existent step
+	                        BUGID 3359 - copy test case step
 	20100327 - franciscom - improvements on goback logic
 	20100125 - franciscom - fixed bug on checks on existence of step number
 	20100124 - eloff - BUGID 3088 - Check valid session before submit
@@ -107,6 +108,11 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
     <div class="messages" align="center">{$warning_edit_msg}</div>
 {/if}
 
+{*
+DEBUG: $gui->operation: {$gui->operation} <br>
+DEBUG: $gui->action: {$gui->action} <br>
+*}
+
 <form method="post" action="lib/testcases/tcEdit.php" name="tcStepEdit"
       onSubmit="return validateForm(this,'{$gui->step_set}',{$gui->step_number});">
 
@@ -118,12 +124,15 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 	<input type="hidden" name="step_number" value="{$gui->step_number}" />
 	<input type="hidden" name="goback_url" value="{$goBackAction}" />
 	<div class="groupBtn">
-		<input id="do_update" type="submit" name="do_update" 
+		<input id="do_update_step" type="submit" name="do_update_step" 
 		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
 
     {if $gui->operation == 'doUpdateStep'}
-		  <input id="do_create" type="submit" name="do_create" 
+		  <input id="do_create_step" type="submit" name="do_create_step" 
 		         onclick="doAction.value='createStep'" value="{$labels.btn_create_step}" />
+
+		  <input id="do_copy_step" type="submit" name="do_copy_step" 
+		         onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
     {/if}
 
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"
@@ -183,12 +192,15 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
   </table>	
   <p>
 	<div class="groupBtn">
-		<input id="do_update" type="submit" name="do_update" 
+		<input id="do_update_step" type="submit" name="do_update_step" 
 		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
 
     {if $gui->operation == 'doUpdateStep'}
-		  <input id="do_create" type="submit" name="do_create" 
+		  <input id="do_create_step" type="submit" name="do_create_step" 
 		         onclick="doAction.value='createStep'" value="{$labels.btn_create_step}" />
+
+		  <input id="do_copy_step" type="submit" name="do_copy_step" 
+		         onclick="doAction.value='doCopyStep'" value="{$labels.btn_copy_step}" />
     {/if}
 
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"

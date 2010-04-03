@@ -4,11 +4,12 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2010/03/28 17:42:02 $  by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/04/03 13:37:05 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
+ *	20100403 - franciscom - BUGID 3359 - doCopyStep 	
  *	20100327 - franciscom - improvements in goback logic 	
  *	20100326 - franciscom - BUGID 3326: Editing a test step: execution type always "Manual"
  *	20100123 - franciscom - added logic to check for step number existence
@@ -610,6 +611,55 @@ class testcaseCommands
 		return $guiObj;
 	}
 
+	/**
+   	 * doCopyStep
+     *
+     */
+	function doCopyStep(&$argsObj,$request)
+	{
+	    $guiObj = $this->initGuiBean($argsObj);
+		$guiObj->user_feedback = '';
+		$guiObj->step_exec_type = $argsObj->exec_type;
+        $guiObj->tcversion_id = $argsObj->tcversion_id;
+		
+		// need to document difference bewteen these two similar concepts
+		$guiObj->action = __FUNCTION__;
+		$guiObj->operation = 'doUpdateStep';
+		
+		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
+		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'), $argsObj->step_number,
+		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 
+
+		$new_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
+		$new_step++;
+
+	    $source_info = $this->tcaseMgr->get_steps($argsObj->tcversion_id,$argsObj->step_number);
+	    $source_info = current($source_info);
+        $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,$source_info['actions'],
+                                 		   $source_info['expected_results'],$source_info['execution_type']);			
+
+		if( $op['status_ok'] )
+		{
+			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created_as_copy'),$new_step,$argsObj->step_number);
+		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+		}	
+
+
+   		// Get all existent steps
+		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+
+		// After copy I would like to return to target step in edit mode, 
+		// is enough to set $guiObj->step_number to target test step
+		$guiObj->step_number = $argsObj->step_number;
+
+		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
+		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
+    	$templateCfg = templateConfiguration('tcStepEdit');
+  		$guiObj->template=$templateCfg->default_template;
+		return $guiObj;
+	}
 
 } // end class  
 ?>

@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.145 2010/03/28 17:41:35 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.146 2010/04/03 13:37:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100403 - franciscom - BUGID 3359: Copy Test Case Step
  *  20100124 - franciscom - fixed bug on copy test cases - do not obey to top or bottom user choice
  *  20100106 - franciscom - Multiple Test Case Steps Feature
  *  20100104 - franciscom - fixed bug on create new version, now is created
@@ -96,6 +97,7 @@ switch($args->doAction)
     case "createStep":
     case "editStep":
     case "doCreateStep":
+    case "doCopyStep":
     case "doUpdateStep":
     case "doDeleteStep":
     case "doReorderSteps":
@@ -581,6 +583,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 /**
  * manage GUI rendering
  *
+ * BUGID 3359
  */
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 {
@@ -598,6 +601,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
     $actionOperation = array('create' => 'doCreate', 'doCreate' => 'doCreate',
                              'edit' => 'doUpdate','delete' => 'doDelete', 'doDelete' => '',
                              'createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
+                             'doCopyStep' => 'doUpdateStep',
                              'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
                              'doDeleteStep' => '', 'doReorderSteps' => '');
 
@@ -649,6 +653,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
         case "doUpdateStep":
         case "doDeleteStep":
         case "doReorderSteps":
+        case "doCopyStep":
             $renderType = 'template';
             
             // Document !!!!

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.18 2010/04/03 13:38:08 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.19 2010/04/03 14:41:24 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -150,8 +150,8 @@ DEBUG: $gui->action: {$gui->action} <br>
   		{/if}  
   	</tr>
   
-  {if $gui->steps != ''}
-   	{foreach from=$gui->steps item=step_info }
+  {if $gui->tcaseSteps != ''}
+   	{foreach from=$gui->tcaseSteps item=step_info }
   	  <tr>
       {if $step_info.step_number == $gui->step_number}
 		    <td style="text-align:righ;">{$gui->step_number}</td>

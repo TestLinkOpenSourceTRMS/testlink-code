@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.14 2010/04/03 08:15:36 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.15 2010/04/03 09:55:38 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -93,7 +93,7 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 <body onLoad="focusInputField('step')">
 <h1 class="title">{$gui->main_descr}</h1> 
 
-<div class="workBack" style="width:98.6%;">
+<div class="workBack" style="width:97%;">
 
 {if $gui->user_feedback != ''}
 	<div>
@@ -114,33 +114,8 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 	<input type="hidden" name="doAction" value="" />
  	<input type="hidden" name="show_mode" value="{$gui->show_mode}" />
 	<input type="hidden" name="step_id" value="{$gui->step_id}" />
+	<input type="hidden" name="step_number" value="{$gui->step_number}" />
 	<input type="hidden" name="goback_url" value="{$goBackAction}" />
-
-
-  {if $gui->steps != ''}
-  <table class="simple" style="width:99%;">
-  	<tr>
-  		<th width="{$gui->tableColspan}">{$labels.step_number}</th>
-  		<th>{$labels.step_details}</th>
-  		<th>{$labels.expected_results}</th>
-  		<th width="25">{$labels.execution_type_short_descr}</th>
-  	</tr>
-  
-   	{foreach from=$gui->steps item=step_info }
-  	<tr>
-		  <td style="text-align:righ;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
-  		<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
-  		<td >{$step_info.expected_results}</td>
-  		<td>{$gui->execution_types[$step_info.execution_type]}</td>
-  	</tr>
-    {/foreach}
-  
-    	
-  </table>	
-  <p>
-  <hr>
-
-  {/if}
 
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
@@ -150,14 +125,63 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
     	     {else}  onclick="javascript:history.back();" {/if} />
 	</div>	
 
-	{assign var=this_template_dir value=$smarty.template|dirname}
-	{include file="$this_template_dir/tcStepEditViewer.tpl"}
-	
+  <table class="simple">
+  	<tr>
+  		<th width="{$gui->tableColspan}">{$labels.step_number}</th>
+  		<th>{$labels.step_details}</th>
+  		<th>{$labels.expected_results}</th>
+      {if $session['testprojectOptions']->automationEnabled}
+  		  <th width="25">{$labels.execution_type_short_descr}</th>
+  		{/if}  
+  	</tr>
+  
+  {if $gui->steps != ''}
+   	{foreach from=$gui->steps item=step_info }
+  	  <tr>
+      {if $step_info.step_number == $gui->step_number}
+		    <td style="text-align:righ;">{$gui->step_number}</td>
+  		  <td>{$steps}</td>
+  		  <td>{$expected_results}</td>
+		    {if $session['testprojectOptions']->automationEnabled}
+		    <td>
+		    	<select name="exec_type" onchange="content_modified = true">
+        	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
+	        </select>
+      	</td>
+      	{/if}
+      {else}
+        <td style="text-align:righ;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
+  	  	<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+  	  	<td >{$step_info.expected_results}</td>
+        {if $session['testprojectOptions']->automationEnabled}
+  	  	  <td>{$gui->execution_types[$step_info.execution_type]}</td>
+  	  	{/if}  
+      {/if}
+  	  </tr>
+    {/foreach}
+  {/if}
+  {if $gui->action == 'createStep' || $gui->action == 'doCreateStep'}
+  	<tr>
+		  <td style="text-align:righ;">{$gui->step_number}</td>
+  		<td>{$steps}</td>
+  		<td>{$expected_results}</td>
+		    {if $session['testprojectOptions']->automationEnabled}
+		    <td>
+		    	<select name="exec_type" onchange="content_modified = true">
+        	  	{html_options options=$gui->execution_types selected=$gui->step_exec_type}
+	        </select>
+      	</td>
+      	{/if}
+  	</tr>
+  {/if}
+  </table>	
+  <p>
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
 		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
-		<input type="button" name="go_back" value="{$labels.cancel}" 
-		       onclick="history.back();"/>
+  	<input type="button" name="cancel" value="{$labels.btn_cancel}"
+    	     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
+    	     {else}  onclick="javascript:history.back();" {/if} />
 	</div>	
 </form>
 

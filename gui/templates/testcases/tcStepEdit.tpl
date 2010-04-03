@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.15 2010/04/03 09:55:38 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.16 2010/04/03 09:59:45 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -152,9 +152,9 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
       {else}
         <td style="text-align:righ;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
   	  	<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
-  	  	<td >{$step_info.expected_results}</td>
+  	  	<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
         {if $session['testprojectOptions']->automationEnabled}
-  	  	  <td>{$gui->execution_types[$step_info.execution_type]}</td>
+  	  	  <td><a href="{$hrefEditStep}{$step_info.id}">{$gui->execution_types[$step_info.execution_type]}</a></td>
   	  	{/if}  
       {/if}
   	  </tr>

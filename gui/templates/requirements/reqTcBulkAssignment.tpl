@@ -6,8 +6,13 @@ Author: Francisco Mancardi
 
 Purpose: Requirements Bulk Assignment
          
-rev: 20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature         
+rev: 
+    20100403 - franciscom - added config_load
+    20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature         
 *}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {lang_get var="labels"
           s="req_doc_id,scope,req,req_title_bulk_assign,no_req_spec_available,
              please_select_a_req,test_case,req_title_assign,btn_close,
@@ -91,7 +96,7 @@ function check_action_precondition(form_id,action)
         		<td><span class="bold">{$gui->requirements[row].req_doc_id|escape}</span></td>
         		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->requirements[row].id}">
         			{$gui->requirements[row].title|escape}</a></span></td>
-        		<td>{$gui->requirements[row].scope|strip_tags|strip|truncate:30}</td>
+        	  <td>{$gui->requirements[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
         	</tr>
         	{sectionelse}
         	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>

@@ -3,6 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Id: reqAssign.tpl,v 1.6 2006/07/15 19:55:30 schlundus Exp $
 Purpose: smarty template - assign REQ to one test case
 
+20100403 - franciscom - SCOPE_SHORT_TRUNCATE
 20080512 - franciscom - added new parameter to manage "close window" button display.
                         Is used when this feature is called on a new window, not from menu.
                         
@@ -14,6 +15,9 @@ Purpose: smarty template - assign REQ to one test case
 2. added control via javascrit on quantity of checked checkboxes
 
 *}
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{config_load file="input_dimensions.conf" section=$cfg_section}
+
 {lang_get var="labels"
           s="please_select_a_req,test_case,req_title_assign,btn_close,
              warning_req_tc_assignment_impossible,req_spec,warning,
@@ -94,7 +98,7 @@ function check_action_precondition(form_id,action)
     		<td><span class="bold">{$gui->arrAssignedReq[row].req_doc_id|escape}</span></td>
     		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrAssignedReq[row].id}">
     			{$gui->arrAssignedReq[row].title|escape}</a></span></td>
-    		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:30}</td>
+    		<td>{$gui->arrAssignedReq[row].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
     	</tr>
     	{sectionelse}
     	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement}</span></td></tr>
@@ -146,7 +150,7 @@ function check_action_precondition(form_id,action)
       		<td><span class="bold">{$gui->arrUnassignedReq[row2].req_doc_id|escape}</span></td>
       		<td><span class="bold"><a href="lib/requirements/reqView.php?requirement_id={$gui->arrUnassignedReq[row2].id}">
       			{$gui->arrUnassignedReq[row2].title|escape}</a></span></td>
-      		<td>{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:30}</td>
+      		<td>{$gui->arrUnassignedReq[row2].scope|strip_tags|strip|truncate:#SCOPE_SHORT_TRUNCATE#}</td>
       	</tr>
       	{sectionelse}
       	<tr><td></td><td><span class="bold">{$labels.req_msg_norequirement66}</span></td></tr>

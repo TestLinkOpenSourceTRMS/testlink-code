@@ -1,12 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.16 2010/04/03 08:20:57 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.17 2010/04/03 08:40:58 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
    rev: 
-   20100403 - francisco - adding #TRUNCATE_SCOPE#
+   20100403 - francisco - adding #SCOPE_TRUNCATE#
    20091209 - asimon     - contrib for testcase creation, BUGID 2996
 *}
 {assign var="req_module" value='lib/requirements/'}
@@ -127,7 +127,7 @@ function check_action_precondition(form_id,action,msg)
     		                                           value="{$gui->all_reqs[row].id}"/></td>{/if}
     		<td style="padding:2px;"><span class="bold">{$gui->all_reqs[row].req_doc_id|escape}</span></td>
     		<td style="padding:2px;"><span class="bold">{$gui->all_reqs[row].title|escape}</a></span></td>
-    		<td style="padding:2px;">{$gui->all_reqs[row].scope|strip_tags|strip|truncate:#TRUNCATE_SCOPE#}</td>
+    		<td style="padding:2px;">{$gui->all_reqs[row].scope|strip_tags|strip|truncate:#SCOPE_TRUNCATE#}</td>
     		
     		{* contribution for testcase creation, BUGID 2996 *}
     		<td style="padding:2px;"><input name="testcase_count[{$gui->all_reqs[row].id}]" type="text" size="3" maxlength="3" value="1"></td>

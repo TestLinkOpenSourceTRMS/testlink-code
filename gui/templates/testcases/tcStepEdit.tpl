@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.16 2010/04/03 09:59:45 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.17 2010/04/03 10:18:38 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
+	20100403 - franciscom - added create step button while editing existent step
 	20100327 - franciscom - improvements on goback logic
 	20100125 - franciscom - fixed bug on checks on existence of step number
 	20100124 - eloff - BUGID 3088 - Check valid session before submit
@@ -30,8 +31,8 @@ rev:
 
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
-             expected_results,step_details,step_number_verbose,btn_cancel,
-             btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr"}
+             expected_results,step_details,step_number_verbose,btn_cancel,btn_create_step,
+             btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
@@ -93,7 +94,7 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 <body onLoad="focusInputField('step')">
 <h1 class="title">{$gui->main_descr}</h1> 
 
-<div class="workBack" style="width:97%;">
+<div class="workBack" style="width:98.6%;">
 
 {if $gui->user_feedback != ''}
 	<div>
@@ -116,16 +117,21 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 	<input type="hidden" name="step_id" value="{$gui->step_id}" />
 	<input type="hidden" name="step_number" value="{$gui->step_number}" />
 	<input type="hidden" name="goback_url" value="{$goBackAction}" />
-
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
 		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
+
+    {if $gui->operation == 'doUpdateStep'}
+		  <input id="do_create" type="submit" name="do_create" 
+		         onclick="doAction.value='createStep'" value="{$labels.btn_create_step}" />
+    {/if}
+
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"
     	     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     	     {else}  onclick="javascript:history.back();" {/if} />
 	</div>	
 
-  <table class="simple">
+  <table class="simple" style="width:99%;">
   	<tr>
   		<th width="{$gui->tableColspan}">{$labels.step_number}</th>
   		<th>{$labels.step_details}</th>
@@ -179,6 +185,12 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 	<div class="groupBtn">
 		<input id="do_update" type="submit" name="do_update" 
 		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />
+
+    {if $gui->operation == 'doUpdateStep'}
+		  <input id="do_create" type="submit" name="do_create" 
+		         onclick="doAction.value='createStep'" value="{$labels.btn_create_step}" />
+    {/if}
+
   	<input type="button" name="cancel" value="{$labels.btn_cancel}"
     	     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     	     {else}  onclick="javascript:history.back();" {/if} />

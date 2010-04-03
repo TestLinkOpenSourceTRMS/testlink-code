@@ -1,6 +1,6 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.14 2010/03/22 22:07:18 franciscom Exp $
+$Id: reqImport.tpl,v 1.15 2010/04/03 08:49:40 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -113,7 +113,7 @@ Revision:
   	    	  <tr>
   	    	  	<td>{$import_feedback[0]|escape}</td>
   	    	  	<td>{$import_feedback[1]|escape}</td>
-  	    	  	<td>{$import_feedback[2]|strip_tags|strip|truncate:#TRUNCATE_SCOPE#}</td>
+  	    	  	<td>{$import_feedback[2]|strip_tags|strip|truncate:#SCOPE_TRUNCATE#}</td>
   	    	  	<td>{$import_feedback[3]|escape}</td>
   	    	  </tr>
   	    	  {/foreach}

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.146 2010/04/03 13:37:28 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.147 2010/04/03 14:41:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -28,10 +28,6 @@
  *  20080105 - franciscom - REQID 1248 - added logic to manage copy/move on top or bottom
  *  20071106 - BUGID 1165
  **/
-
-
-
-
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
@@ -43,12 +39,12 @@ require_once(require_web_editor($cfg->webEditorCfg['type']));
 testlinkInitPage($db);
 $optionTransferName = 'ot';
 $args = init_args($cfg->spec,$optionTransferName);
+
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tree_mgr = new tree($db);
 $tsuite_mgr = new testsuite($db);
 
-// new dBug($args);
 $templateCfg = templateConfiguration('tcEdit');
 
 $commandMgr = new testcaseCommands($db);
@@ -248,9 +244,6 @@ else if($args->do_create_new_version)
 	$viewer_args['user_feedback'] = $user_feedback;
 	
 	// used to implement go back ??
-	// $smarty->assign('loadOnCancelURL',
-	//                 $_SESSION['basehref'].'/lib/testcases/archiveData.php?edit=testcase&id='.$args->tcase_id);
-	
 	// 20090419 - BUGID - 
 	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
 	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id;
@@ -293,6 +286,7 @@ if ($show_newTC_form)
   	    {
   	  		$of->Value = $args->$key;
 		}
+		
 		$smarty->assign($key, $of->CreateHTML($rows,$cols));
   	} // foreach ($a_oWebEditor_cfg as $key)
 
@@ -304,9 +298,6 @@ if ($show_newTC_form)
 			$tcase_mgr->html_table_of_custom_field_inputs($args->tcase_id,$args->container_id,'design','',
 			                                              null,null,null,$locationFilter);
     }
-
-    // new dBug($cf_smarty);
-
 	$gui->cf = $cf_smarty;
 	$gui->tc = $tc_default;
 	$gui->containerID = $args->container_id;
@@ -333,8 +324,6 @@ function init_args($spec_cfg,$otName)
     $args = new stdClass();
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    // new dBug($_REQUEST);
-
     $rightlist_html_name = $otName . "_newRight";
     $args->assigned_keywords_list = isset($_REQUEST[$rightlist_html_name])? $_REQUEST[$rightlist_html_name] : "";
     $args->container_id = isset($_REQUEST['containerID']) ? intval($_REQUEST['containerID']) : 0;
@@ -342,11 +331,13 @@ function init_args($spec_cfg,$otName)
     $args->tcversion_id = isset($_REQUEST['tcversion_id']) ? intval($_REQUEST['tcversion_id']) : 0;
     
     $args->name = isset($_REQUEST['testcase_name']) ? $_REQUEST['testcase_name'] : null;
+
+	// Normally Rich Web Editors	
     $args->summary = isset($_REQUEST['summary']) ? $_REQUEST['summary'] : null;
     $args->preconditions = isset($_REQUEST['preconditions']) ? $_REQUEST['preconditions'] : null;
     $args->steps = isset($_REQUEST['steps']) ? $_REQUEST['steps'] : null;
-    
     $args->expected_results = isset($_REQUEST['expected_results']) ? $_REQUEST['expected_results'] : null;
+
     $args->new_container_id = isset($_REQUEST['new_container']) ? intval($_REQUEST['new_container']) : 0;
     $args->old_container_id = isset($_REQUEST['old_container']) ? intval($_REQUEST['old_container']) : 0;
     $args->has_been_executed = isset($_REQUEST['has_been_executed']) ? intval($_REQUEST['has_been_executed']) : 0;
@@ -411,6 +402,7 @@ function init_args($spec_cfg,$otName)
 	$args->step_number = isset($_REQUEST['step_number']) ? intval($_REQUEST['step_number']) : 0;
 	$args->step_id = isset($_REQUEST['step_id']) ? intval($_REQUEST['step_id']) : 0;
 	$args->step_set = isset($_REQUEST['step_set']) ? $_REQUEST['step_set'] : null;
+	$args->tcaseSteps = isset($_REQUEST['tcaseSteps']) ? $_REQUEST['tcaseSteps'] : null;
 
         
     // from session
@@ -478,10 +470,7 @@ function createWebEditors($basehref,$editorCfg,$editorSet=null)
 {
     $specGUICfg=config_get('spec_cfg');
     $layout=$specGUICfg->steps_results_layout;
-    
-    // $cols=array('steps' => array('horizontal' => 38, 'vertical' => null),
-    //             'expected_results' => array('horizontal' => 38, 'vertical' => null));
-       
+
     $cols=array('steps' => array('horizontal' => 38, 'vertical' => 44),
                 'expected_results' => array('horizontal' => 38, 'vertical' => 44));
         
@@ -607,7 +596,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 
 	$initWebEditorFromTemplate = property_exists($opObj,'initWebEditorFromTemplate') ? $opObj->initWebEditorFromTemplate : false;                             
     $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg); 
-
 	foreach ($oWebEditor->cfg as $key => $value)
   	{
   		$of = &$oWebEditor->editor[$key];
@@ -621,6 +609,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
     	    case "doCreate":
     	    case "doDelete":
     	    case "doCreateStep":
+    	    case "doCopyStep":
+    	    case "doUpdateStep":
   				$initWebEditorFromTemplate = false;
   				$of->Value = $argsObj->$key;
   			break;
@@ -636,8 +626,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
   		{
 			$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');	
 		}	
+		// $guiObj->webEditor[$key] = $of->CreateHTML($rows,$cols);
 		$smartyObj->assign($key, $of->CreateHTML($rows,$cols));
-
 	}
       
     switch($argsObj->doAction)
@@ -660,7 +650,15 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
             $key2loop = get_object_vars($opObj);
             foreach($key2loop as $key => $value)
             {
-                $guiObj->$key = $value;
+            	$guiObj->$key = $value;
+            	// if( isset($guiObj->webEditor[$key]) )
+            	// {
+            	// 	$guiObj->webEditor[$key] = $value;
+            	// }
+            	// else
+            	// {
+                // 	$guiObj->$key = $value;
+                // }
             }
             $guiObj->operation = $actionOperation[$argsObj->doAction];
             

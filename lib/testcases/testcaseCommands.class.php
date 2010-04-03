@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2010/04/03 13:37:05 $  by $Author: franciscom $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2010/04/03 14:41:13 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -145,7 +145,7 @@ class testcaseCommands
 		$options = array('check_duplicate_name' => config_get('check_names_for_duplicates'),
 		                 'action_on_duplicate_name' => 'block');
 		$tcase = $this->tcaseMgr->create($argsObj->container_id,$argsObj->name,$argsObj->summary,$argsObj->preconditions,
-		                            	 $argsObj->steps,$argsObj->user_id,$argsObj->assigned_keywords_list,
+		                            	 $argsObj->tcaseSteps,$argsObj->user_id,$argsObj->assigned_keywords_list,
 		                            	 $new_order,testcase::AUTOMATIC_ID,
 		                            	 $argsObj->exec_type,$argsObj->importance,$options);
        
@@ -239,7 +239,7 @@ class testcaseCommands
         $tc_old = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 
         $ret=$this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
-		                             $argsObj->summary, $argsObj->preconditions, $argsObj->steps, 
+		                             $argsObj->summary, $argsObj->preconditions, $argsObj->tcaseSteps, 
 		                             $argsObj->user_id,$argsObj->assigned_keywords_list,
 		                             testcase::DEFAULT_ORDER, $argsObj->exec_type, $argsObj->importance);
 
@@ -452,7 +452,7 @@ class testcaseCommands
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
         
    		// Get all existent steps
-		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
         
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
@@ -478,11 +478,8 @@ class testcaseCommands
 
 		$new_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
 		$new_step++;
-				
-        // $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$argsObj->step_number,
         $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,
-                                           $argsObj->steps,$argsObj->expected_results,
-                                           $argsObj->exec_type);	
+                                           $argsObj->steps,$argsObj->expected_results,$argsObj->exec_type);	
                                            	
 		if( $op['status_ok'] )
 		{
@@ -493,7 +490,7 @@ class testcaseCommands
 		$guiObj->action = __FUNCTION__;
 
    		// Get all existent steps
-		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
 
 		$max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
 		$max_step++;;
@@ -536,7 +533,7 @@ class testcaseCommands
 		$guiObj->step_number = $stepInfo['step_number']; // BUGID 3326: Editing a test step: execution type always "Manual"
 
 		// Get all existent steps
-		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
@@ -544,6 +541,7 @@ class testcaseCommands
 		$templateCfg = templateConfiguration('tcStepEdit');
 		$guiObj->template=$templateCfg->default_template;
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+        
 		return $guiObj;
 	}
 
@@ -569,8 +567,10 @@ class testcaseCommands
 		$guiObj->step_id = $argsObj->step_id;
 		$guiObj->step_number = $stepInfo['step_number'];
 		$guiObj->step_exec_type = $argsObj->exec_type;
-		$guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&edit=testcase&id={$argsObj->tcase_id}";
 		
+		// 20100403
+		// Want to remain on same screen till user choose to cancel => go away
+		$guiObj = $this->editStep(&$argsObj,$request);  
 		return $guiObj;
 	}
 
@@ -647,7 +647,7 @@ class testcaseCommands
 
 
    		// Get all existent steps
-		$guiObj->steps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
 
 		// After copy I would like to return to target step in edit mode, 
 		// is enough to set $guiObj->step_number to target test step

@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.15 2010/01/21 22:06:18 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.16 2010/04/03 08:20:57 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
    rev: 
-  20091209 - asimon     - contrib for testcase creation, BUGID 2996
+   20100403 - francisco - adding #TRUNCATE_SCOPE#
+   20091209 - asimon     - contrib for testcase creation, BUGID 2996
 *}
 {assign var="req_module" value='lib/requirements/'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -126,7 +127,7 @@ function check_action_precondition(form_id,action,msg)
     		                                           value="{$gui->all_reqs[row].id}"/></td>{/if}
     		<td style="padding:2px;"><span class="bold">{$gui->all_reqs[row].req_doc_id|escape}</span></td>
     		<td style="padding:2px;"><span class="bold">{$gui->all_reqs[row].title|escape}</a></span></td>
-    		<td style="padding:2px;">{$gui->all_reqs[row].scope|strip_tags|strip|truncate:100}</td>
+    		<td style="padding:2px;">{$gui->all_reqs[row].scope|strip_tags|strip|truncate:#TRUNCATE_SCOPE#}</td>
     		
     		{* contribution for testcase creation, BUGID 2996 *}
     		<td style="padding:2px;"><input name="testcase_count[{$gui->all_reqs[row].id}]" type="text" size="3" maxlength="3" value="1"></td>

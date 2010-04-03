@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.601 2010/04/03 10:16:09 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.602 2010/04/03 12:59:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -144,7 +144,7 @@ $TLS_btn_cancel	= "Cancel";
 $TLS_btn_check 	= "Check";
 $TLS_btn_close 	= "Close";
 $TLS_btn_cp = "Copy";
-$TLS_btn_copy_step = "Create step copy";
+$TLS_btn_copy_step = "Copy step";
 $TLS_btn_create = "Create";
 $TLS_btn_create_step = "Create step";
 $TLS_btn_delete = "Delete";
@@ -2830,6 +2830,7 @@ $TLS_step_details="Step details";
 $TLS_step_number="#";
 $TLS_step_number_verbose = "Step number";
 $TLS_step_number_x_created = "Step number: %s created";
+$TLS_step_number_x_created_as_copy = "Step number: %s created as copy of %s";
 $TLS_edit_step_number_x = "Edit Step number: %s - Test Case: %s - Version: %s";
 $TLS_create_step = "Create Step - Test Case: %s - Version: %s";
 $TLS_delete_step = "Delete step";

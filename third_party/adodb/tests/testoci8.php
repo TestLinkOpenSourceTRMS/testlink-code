@@ -10,7 +10,7 @@ V4.80 8 Mar 2006  (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved
 	
   Latest version is available at http://adodb.sourceforge.net
 */
-error_reporting(63);
+error_reporting(E_ALL | E_STRICT);
 include("../adodb.inc.php");
 include("../tohtml.inc.php");
 

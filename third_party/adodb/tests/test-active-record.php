@@ -11,10 +11,11 @@
 		}
 	}
 
-	$db = NewADOConnection('mysql://root@localhost/northwind');
+	$db = NewADOConnection('mysql://root@localhost/northwind?persist');
 	$db->debug=1;
 	ADOdb_Active_Record::SetDatabaseAdapter($db);
 
+	
 	$db->Execute("CREATE TEMPORARY TABLE `persons` (
 	                `id` int(10) unsigned NOT NULL auto_increment,
 	                `name_first` varchar(100) NOT NULL default '',
@@ -34,8 +35,9 @@
 	            ) ENGINE=MyISAM;
 	           ");
 			   
-	class Person extends ADOdb_Active_Record{}
+	class Person extends ADOdb_Active_Record{ function ret($v) {return $v;} }
 	$person = new Person();
+	ADOdb_Active_Record::$_quoteNames = '111';
 	
 	echo "<p>Output of getAttributeNames: ";
 	var_dump($person->getAttributeNames());

@@ -13,7 +13,7 @@
 error_reporting(E_ALL);
 include_once('../adodb.inc.php');
 
-foreach(array('sapdb','sybase','mysql','access','oci8po','postgres','odbc_mssql','odbc','db2','firebird','informix') as $dbType) {
+foreach(array('sapdb','sybase','mysql','access','oci8po','odbc_mssql','odbc','db2','firebird','postgres','informix') as $dbType) {
 	echo "<h3>$dbType</h3><p>";
 	$db = NewADOConnection($dbType);
 	$dict = NewDataDictionary($db);
@@ -48,12 +48,14 @@ foreach(array('sapdb','sybase','mysql','access','oci8po','postgres','odbc_mssql'
 	$flds = "
 ID            I           AUTO KEY,
 FIRSTNAME     VARCHAR(30) DEFAULT 'Joan' INDEX idx_name,
-LASTNAME      VARCHAR(28) DEFAULT 'Chen' key INDEX idx_name,
+LASTNAME      VARCHAR(28) DEFAULT 'Chen' key INDEX idx_name INDEX idx_lastname,
 averylonglongfieldname X(1024) DEFAULT 'test',
 price         N(7.2)  DEFAULT '0.00',
 MYDATE        D      DEFDATE INDEX idx_date,
 BIGFELLOW     X      NOTNULL,
-TS            T      DEFTIMESTAMP";
+TS_SECS            T      DEFTIMESTAMP,
+TS_SUBSEC   TS DEFTIMESTAMP
+";
 
 
 	$sqla = $dict->CreateDatabase('KUTU',array('postgres'=>"LOCATION='/u01/postdata'"));

@@ -238,6 +238,13 @@ $person = new person();
 $peopleArray = $person->Find("name like ? order by age", array('Sm%'));
 </pre>
 
+<h3><li>Quoting Identifiers</h3>
+<p>You can force column names to be quoted in INSERT and UPDATE statements, typically because you are using reserved words as column names by setting
+<pre>
+ADODB_Active_Record::$_quoteNames = true;
+</pre>
+<p>Default is false.
+
 <h3><li>Error Handling and Debugging</h3>
 <p>
 In PHP5, if adodb-exceptions.inc.php is included, then errors are thrown. Otherwise errors are handled by returning a value. False by default means an error has occurred. You can get the last error message using the ErrorMsg() function. 
@@ -282,15 +289,22 @@ try {
 <h3><li>Primary Keys</h3>
 <p>
 ADOdb_Active_Record does not require the table to have a primary key. You can insert records for such a table, but you will not be able to update nor delete. 
-<p>Sometimes you are retrieving data from a view or table that has no primary key, but has a unique index. You can dynamically set the primary key of a table through the constructor, or using ADOdb_Active_Record::SetPrimaryKeys():
+<p>Sometimes you are retrieving data from a view or table that has no primary key, but has a unique index. You can dynamically set the primary key of a table through the constructor:
 <pre>
 	$pkeys = array('category','prodcode');
 	
 	// set primary key using constructor
 	$rec = new ADOdb_Active_Record('Products', $pkeys);
 	
-	 // or use method
-	$rec->SetPrimaryKeys($pkeys);
+	// or define a new class
+	class Product extends ADOdb_Active_Record {
+		function __construct()
+		{
+			parent::__construct('Products', array('prodid'));
+		}
+	}
+	
+	$rec = new Product();
 </pre>
 
 
@@ -622,8 +636,9 @@ example, we load a window of 100 records at a time:
 	#  ADODB_Active_Record::ClassHasMany('Account', 'transactions','account_id'); 
 	$acc = new Account();
 	$acc->Load('id=23');
+	
+	$start = 0;
 	while(true) {
-		$start = 0;
 		$acc->LoadRelations('transactions',"tx_done=0 order by trxdate", $start, $start+100);
 		if (!$acc->transactions) break;
 		foreach ($acc->transactions as $k => $trx) {
@@ -632,6 +647,9 @@ example, we load a window of 100 records at a time:
 			$trx->save();
 		}
 		$start += 100;
+		unset($acc->transactions);
+
+
 	}
 </pre>
 <p>The $offset is 0-based, and $limit is the number of records to retrieve. The default is to ignore $offset (-1) and $limit (-1).
@@ -1012,6 +1030,10 @@ is more powerful but more complex. My personal preference is to keep it simpler,
  <p>PHP5 specific: Change PHP5 implementation of Active Record to use __get() and __set() for better performance.
 
 <h3> Change Log</h3>
+<p>0.93
+<p>You can force column names to be quoted in INSERT and UPDATE statements, typically because you are using reserved words as column names by setting
+ADODB_Active_Record::$_quoteNames = true;
+
 <p>0.92
 <p>Fixed some issues with incompatible fetch modes (ADODB_FETCH_ASSOC) causing problems in UpdateActiveTable.
 <p>Added support for functions that support predefining one-to-many relationships:<br> 

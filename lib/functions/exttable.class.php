@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.3 2009/11/30 21:52:19 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.4 2010/04/04 17:55:14 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -152,7 +152,8 @@ class tlExtTable extends tlTable
 
 	{
 		$s = '[';
-		for ($i=0;$i<sizeof($this->columns); $i++) {
+		$n_columns = sizeof($this->columns);
+		for ($i=0; $i < $n_columns; $i++) {
 			$column = $this->columns[$i];
 			$s .= "{name: 'idx$i'";
 			if (is_array($column)) {

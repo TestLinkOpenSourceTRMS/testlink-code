@@ -9,13 +9,18 @@
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.4 2009/07/10 21:21:44 havlat Exp $
+ * @version    	CVS: $Id: date_api.php,v 1.5 2010/04/05 19:52:06 franciscom Exp $
  * @link 		http://www.teamst.org/
  *
  * @internal Revisions:
  * 
- * 		20080816 - franciscom
- *      added code to manage datetime Custom Fields (Mantis contribution on 2005)
+ *	20100405 - franciscom - fixed problems found while trying to solve BUGID 3295
+ *							some logic on create_range_option_list() was not clear
+ *							and may be has never worked ok !!!.
+ *							added BLANK option also for time.
+ *
+ *	20080816 - franciscom
+ *	added code to manage datetime Custom Fields (Mantis contribution on 2005)
  *       
  */
  
@@ -132,58 +137,64 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 		
 	} else {
 		// 20080816 -  $t_date = array( 0, 0, 0 );
+		// 20100405 - think is WRONG use valid value (0) for time
 		$t_date = array( 0, 0, 0, 0, 0, 0 );
+		$t_date = array( 0, 0, 0, -1, -1, -1 );
 	}
 	
 	$t_disable = '' ;
 	if ( $p_default_disable == true ) {
 		$t_disable = 'disabled' ;
 	}
-	$t_blank_line = '' ;
+	$t_blank_line_date = '' ;
+	$t_blank_line_time = '' ;
 	if ( $p_allow_blank == true ) {
-		$t_blank_line = "<option value=\"0\"></option>" ;
+		$t_blank_line_date = "<option value=\"0\"></option>" ;
+		$t_blank_line_time = "<option value=\"-1\"></option>" ;
 	}
 	
 	foreach( $t_chars as $t_char ) {
 		if (strcmp( $t_char, "M") == 0) {
 			$str_out .= "<select name=\"" . $p_name . "_month\" $t_disable>" ;
-			$str_out .=  $t_blank_line ;
+			$str_out .=  $t_blank_line_date ;
 			$str_out .= create_month_option_list( $t_date[1] ) ;
 			$str_out .= "</select>\n" ;
 		}
 		if (strcmp( $t_char, "m") == 0) {
 			$str_out .= "<select  name=\"" . $p_name . "_month\" $t_disable>" ;
-			$str_out .= $t_blank_line ;
+			$str_out .= $t_blank_line_date ;
 			$str_out .= create_numeric_month_option_list( $t_date[1] ) ;
 			$str_out .= "</select>\n" ;
 		}
 		if (strcasecmp( $t_char, "D") == 0) {
 			$str_out .= "<select  name=\"" . $p_name . "_day\" $t_disable>" ;
-			$str_out .= $t_blank_line ;
+			$str_out .= $t_blank_line_date ;
 			$str_out .= create_day_option_list( $t_date[2] ) ;
 			$str_out .= "</select>\n" ;
 		}
 		if (strcasecmp( $t_char, "Y") == 0) {
 			$str_out .= "<select  name=\"" . $p_name . "_year\" $t_disable>" ;
-			$str_out .= $t_blank_line ;
+			$str_out .= $t_blank_line_date ;
 			$str_out .= create_year_range_option_list( $t_date[0], $p_year_start, $p_year_end ) ;
 			$str_out .= "</select>\n" ;
 		}
 		
 		// -----------------------------------------------------------------
-		// 20080816 - franciscom
 		if (strcasecmp( $t_char, "H") == 0) {
 			$str_out .= "<select name=\"" . $p_name . "_hour\" $t_disable>" ;
+			$str_out .= $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[3], 0, 23); 
 			$str_out .= "</select>\n" ;
 		}
 		if (strcasecmp( $t_char, "i") == 0) {
 			$str_out .= "<select name=\"" . $p_name . "_minute\" $t_disable>" ;
+			$str_out .= $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[4], 0, 59); 
-			echo "</select>\n" ;
+			$str_out .= "</select>\n" ;
 		}
 		if (strcasecmp( $t_char, "s") == 0) {
 			$str_out .= "<select name=\"" . $p_name . "_second\" $t_disable>" ;
+			$str_out .= $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[5], 0, 59); 
 			$str_out .= "</select>\n" ;
 		}
@@ -191,14 +202,18 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 	return $str_out;
 }
 
-   
+
+/**
+ * 
+ *
+ */
 function create_range_option_list($p_value, $p_min, $p_max ) 
 {
 	$option_list='';
 	for ($idx=$p_min; $idx<=$p_max; $idx++) 
 	{
 		$selected='';
-		$selected = ($idx+1 == $p_value) ? ' selected="selected" ' :'';
+		$selected = ($idx == $p_value) ? ' selected="selected" ' :'';
 		$option_list .="<option value=\"$idx\" {$selected}> $idx </option>";
 	}
 	return $option_list;

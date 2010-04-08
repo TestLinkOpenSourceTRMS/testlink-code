@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.11 2010/03/06 11:08:37 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.12 2010/04/08 15:11:33 asimon83 Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -37,7 +37,7 @@ $filter_node=isset($_REQUEST['filter_node']) ? $_REQUEST['filter_node'] : null;
 $show_children=isset($_REQUEST['show_children']) ? $_REQUEST['show_children'] : 1;
 $operation=isset($_REQUEST['operation']) ? $_REQUEST['operation']: 'manage';
 
-// for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));                            
+// for debug - file_put_contents('d:\request.txt', serialize($_REQUEST));
 $nodes = display_children($db,$root_node,$node,$filter_node,$show_children,$operation);
 echo json_encode($nodes);
 
@@ -59,10 +59,10 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
     
     switch($operation)
     {
-        // case 'print':
-        //     $js_function=array('testproject' => 'TPROJECT_PTP',
-        //                        'testsuite' =>'TPROJECT_PTS', 'testcase' => 'TPROJECT_PTS');
-        // break;
+        case 'print':
+        	$js_function=array('testproject' => 'TPROJECT_PTP_RS',
+        	                   'requirement_spec' =>'TPROJECT_PRS', 'requirement' => 'openLinkedReqWindow');
+        break;
         
         case 'manage':
         default:
@@ -140,8 +140,9 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	        			$item_qty = count($req_list);
 	        			$path['text'] .= "({$item_qty})";   
 	        		}
-
-
+					
+					
+	        		
 	                break;
 
                 case 'requirement':

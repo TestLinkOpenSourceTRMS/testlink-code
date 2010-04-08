@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.602 2010/04/03 12:59:33 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.603 2010/04/08 15:11:33 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1633,8 +1633,8 @@ $TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
 // ----- gui/templates/printDocOptions.tpl -----
 $TLS_doc_opt_title = 'Document options';
 $TLS_doc_opt_guide = 'Modify options for required structure of document. ' .
-                     '<br />Select the top line in tree menu for all or a required ' .
-                     'suite to generate a document content.';
+                     '<br />Select the top line in tree menu for all or a specific ' .
+                     'element to generate a document content.';
 $TLS_tr_td_show_as = "Show as";
 $TLS_check_uncheck_all_options = "check / uncheck all";
 
@@ -1811,6 +1811,7 @@ $TLS_href_keywords_assign = "Assign Keywords";
 $TLS_href_keywords_manage = "Keyword Management";
 $TLS_href_keywords_view = "View Keywords";
 $TLS_href_print_tc = "Generate Test Specification document";
+$TLS_href_print_req = "Generate Requirement Specification document";
 $TLS_href_req_assign = "Assign Requirements";
 $TLS_href_req_spec = "Requirement Specification document";
 $TLS_href_req_overview = "Requirement Overview";
@@ -1840,7 +1841,7 @@ $TLS_title_search_req_spec = "Search";
 $TLS_requirements = "Requirements";
 $TLS_req_specs = "Req. Specs";
 $TLS_req_expected_coverage = "Expected no. of testcases";
-$TLS_has_relation_type = "Has relations of type";
+$TLS_has_relation_type = "Has relation of type";
 $TLS_reqid = "Requirement ID";
 
 
@@ -2185,6 +2186,7 @@ $TLS_unknown_platform="Warning/Critic<br>" .
 						          " without platorms, all linked test cases will be updated with this platform ";
 
 // ----- lib/results/printDocOptions.php -----
+$TLS_opt_show_hdrNumbering = "Header Numbering";
 $TLS_opt_show_toc = "Table of Contents";
 $TLS_opt_show_suite_txt = "Test Suite description";
 $TLS_opt_show_tplan_txt = "Test Plan description";
@@ -2196,11 +2198,26 @@ $TLS_opt_show_tc_keys = "Test Case keywords";
 $TLS_opt_show_cfields	= "Test Case Custom Fields";
 $TLS_opt_show_passfail = "Test results";
 $TLS_opt_show_metrics = "Metrics";
+$TLS_opt_req_spec_scope = "Requirement Specification Doc. Scope";
+$TLS_opt_req_spec_author = "Requirement Specification Doc. Author";
+$TLS_opt_req_spec_overwritten_count_reqs = "Requirement Specification Doc. Overwritten Count of REQs";
+$TLS_opt_req_spec_type = "Requirement Specification Doc. Type";
+$TLS_opt_req_spec_cf = "Requirement Specification Doc. Custom Fields";
+$TLS_opt_req_scope = "Requirement Scope";
+$TLS_opt_req_author = "Requirement Author";
+$TLS_opt_req_status = "Requirement Status";
+$TLS_opt_req_type = "Requirement Type";
+$TLS_opt_req_cf = "Requirement Custom Fields";
+$TLS_opt_req_relations = "Requirement Relations";
+$TLS_opt_req_linked_tcs = "Requirement related Test Cases";
+$TLS_opt_req_coverage = "Requirement Coverage";
 $TLS_title_tc_print_navigator = "Navigator - Print Test Specification";
+$TLS_title_req_print_navigator = "Navigator - Print Requirement Specification";
 $TLS_title_tp_print_navigator = "Navigator - Print Test Plan ";
 $TLS_testplan_report = "Test Plan Report";
 $TLS_testspecification_report = "Test Specification Report";
-
+$TLS_requirement_specification_report = "Requirement Specification Report";
+$TLS_related_tcs = "Related Test Cases";
 
 // ----- lib/project/projectedit.php -----
 $TLS_error_product_name_duplicate = "There's already Test Project named %s.";

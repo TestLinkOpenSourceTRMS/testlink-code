@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.24 2010/03/09 09:45:02 asimon83 Exp $     
+ $Id: mainPageLeft.tpl,v 1.25 2010/04/08 15:11:33 asimon83 Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :         
@@ -22,7 +22,8 @@
                           title_test_spec,href_edit_tc,href_browse_tc,href_search_tc,
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
-                          href_print_tc,href_keywords_assign, href_req_overview'}
+                          href_print_tc,href_keywords_assign, href_req_overview,
+                          href_print_req'}
 
 
 
@@ -242,11 +243,16 @@
         <a href="{$gui->launcher}?feature=searchReqSpec">{$labels.href_search_req_spec}</a>
         
 	   	{/if}
+	   	
 		{if $gui->grants.reqs_edit == "yes"}
 			<br />
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
        		<a href="lib/general/frmWorkArea.php?feature=assignReqs">{$labels.href_req_assign}</a>
-       	{/if}
+
+  	        <br />
+  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+          	<a href="{$gui->launcher}?feature=printReqSpec">{$labels.href_print_req}</a>
+  		 {/if}
     </div>
   {/if}
   {* ---------------------------------------------------------------------------------------- *}

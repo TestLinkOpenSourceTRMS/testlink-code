@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/01/12 18:27:49 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/04/08 15:11:32 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ *  20100326 - asimon - BUGID 3067 - refactored to include requirement document printing
  *	20090906 - franciscom - added platform contribution
  *	20090922 - amkhullar - added a check box to enable/disable display of TC custom fields.
  *  20090309 - franciscom - BUGID 2205 - use test case execution while printing test plan
@@ -42,7 +43,12 @@ $doc_info->content_range = $args->level;
 // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
 $printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
 		                   'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0, 
-		                   'cfields' => 0, 'testplan' => 0, 'metrics' => 0  );
+		                   'cfields' => 0, 'testplan' => 0, 'metrics' => 0,
+		                    'req_spec_scope' => 0,'req_spec_author' => 0,
+		                    'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,
+		                    'req_spec_cf' => 0,'req_scope' => 0,'req_author' => 0,
+		                    'req_status' => 0,'req_type' => 0,'req_cf' => 0,'req_relations' => 0,
+		                    'req_linked_tcs' => 0,'req_coverage' => 0);
 foreach($printingOptions as $opt => $val)
 {
 	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));
@@ -77,19 +83,34 @@ switch ($doc_info->type)
 		$doc_info->type_name = lang_get('test_report');
 		break;
 		
-	case DOC_REQ_SPEC: 
+	case DOC_REQ_SPEC:
 		$doc_info->type_name = lang_get('req_spec');
 		break;
 }
 
-$my['options']=array('recursive' => true, 'order_cfg' => $order_cfg );
-$my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me', 
+switch ($doc_info->type)
+{
+	case DOC_REQ_SPEC:
+		$my['options']=array('recursive' => true, 'order_cfg' => $order_cfg );
+		$my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me', 
+                                                      'testsuite'=>'exclude me',
+					                                  'testcase'=>'exclude me'),
+                       'exclude_children_of' => array('testcase'=>'exclude my children',
+		                                              'requirement'=>'exclude my children',
+                                                      'testsuite'=> 'exclude my children'));
+	break;
+		
+	default:
+		$my['options']=array('recursive' => true, 'order_cfg' => $order_cfg );
+		$my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me', 
                                                       'requirement_spec'=>'exclude me', 
 					                                  'requirement'=>'exclude me'),
                        'exclude_children_of' => array('testcase'=>'exclude my children',
-                                                      'requirement_spec'=> 'exclude my children'));      
+                                                      'requirement_spec'=> 'exclude my children'));     
+	break;
+}
 
-$test_spec = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
+$subtree = $tree_manager->get_subtree($args->itemID,$my['filters'],$my['options']);
 
 $tproject_info = $tproject->get_by_id($args->tproject_id);
 $doc_info->tproject_name = htmlspecialchars($tproject_info['name']);
@@ -103,18 +124,41 @@ if ($user)
 $treeForPlatform = null;
 switch ($doc_info->type)
 {
+	case DOC_REQ_SPEC:
+		switch($doc_info->content_range)
+		{
+			case 'testproject':
+				$tree = &$subtree;
+				$doc_info->title = $doc_info->tproject_name;
+			break;
+    	      
+			case 'reqspec':
+    	      	$spec_mgr = new requirement_spec_mgr($db);
+    	  	    $spec = $spec_mgr->get_by_id($args->itemID);
+    	  	    $spec['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
+    	  	    $spec['node_type_id'] = $hash_descr_id['requirement_spec'];
+    	  	    $tree['childNodes'][0] = &$spec;
+				$doc_info->title = htmlspecialchars($args->tproject_name . 
+    	  	                                        $tlCfg->gui_title_separator_2 . $spec['title']);  	               
+			break;    
+    	} // $doc_info->content_range
+    	
+    	$treeForPlatform[0] = $tree;
+    	break;
+	break;
+		
     case DOC_TEST_SPEC: // test specification
 		switch($doc_info->content_range)
 		{
 			case 'testproject':
-				$tree = &$test_spec;
+				$tree = &$subtree;
 				$doc_info->title = $doc_info->tproject_name;
 				break;
     	      
 			case 'testsuite':
     	      	$tsuite = new testsuite($db);
     	  	    $tInfo = $tsuite->get_by_id($args->itemID);
-    	  	    $tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+    	  	    $tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     	  	    $tree['childNodes'] = array($tInfo);
 				$doc_info->title = htmlspecialchars(isset($tInfo['name']) ? $args->tproject_name .
     	  	      	               $tlCfg->gui_title_separator_2.$tInfo['name'] : $args->tproject_name);
@@ -158,8 +202,8 @@ switch ($doc_info->type)
     	   	    	  // IMPORTANTE NOTE:
     	   	    	  // We are in a loop and we use tree on prepareNode, that changes it,
     	   	    	  // then we can not use anymore a reference to test_spec
-    	   	    	  // $tree = &$test_spec;
-    	   	    	  $tree = $test_spec;
+    	   	    	  // $tree = &$subtree;
+    	   	    	  $tree = $subtree;
     	   	    	  if (!$tp_tcs)
     	   	    	  {
     	   	    		   $tree['childNodes'] = null;
@@ -200,7 +244,7 @@ switch ($doc_info->type)
 						$tcase_filter=!is_null($tp_tcs) ? array_keys((array)$tp_tcs): null;
     	            	
 						$tInfo['node_type_id'] = $hash_descr_id['testsuite'];
-						$tInfo['childNodes'] = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null;
+						$tInfo['childNodes'] = isset($subtree['childNodes']) ? $subtree['childNodes'] : null;
     	   	        	
 						//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 						$dummy = null;
@@ -275,6 +319,16 @@ if ($treeForPlatform)
 			$tree['node_type_id'] = $hash_descr_id['testproject'];
 			switch ($doc_info->type)
 			{
+				case DOC_REQ_SPEC:	
+					$docText .= renderSimpleChapter(lang_get('testproject') . " " . lang_get('scope'), 
+					                                $doc_info->tproject_scope);
+					                                
+					$docText .= renderSimpleChapter(lang_get('requirement_specification_report'), " ");
+					                                
+					$docText .= renderReqSpecTreeForPrinting($db, $tree, $printingOptions, 
+					                                         null, 0, 1, $args->user_id,0,$args->tproject_id);
+				break;
+				
 				case DOC_TEST_SPEC:
 					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
 					$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,

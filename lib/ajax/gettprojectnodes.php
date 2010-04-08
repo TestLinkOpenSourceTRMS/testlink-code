@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.17 2010/03/06 11:08:50 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.18 2010/04/08 15:11:33 asimon83 Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -111,7 +111,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	    $tproject_mgr = new testproject($dbHandler);
 	    foreach($nodeSet as $key => $row)
 	    {
-	        $path['text'] = htmlspecialchars($row['name']);                                  
+	        $path['text'] = htmlspecialchars($row['name']);
 	        $path['id'] = $row['id'];                                                           
         
           	// this attribute/property is used on custom code on drag and drop

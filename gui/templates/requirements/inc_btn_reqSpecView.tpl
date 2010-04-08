@@ -1,13 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.17 2010/03/21 18:18:13 franciscom Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.18 2010/04/08 15:11:32 asimon83 Exp $
 
-rev: 20090321 - franciscom 
+rev: 20100326 - asimon - removed print button
+     20090321 - franciscom 
      20080925 - franciscom - child requirements/folder management 
      20080924 - franciscom - if req spec has no requirements then disable certain features
 *}
 {lang_get var='labels'
-          s='btn_req_create,btn_generate_doc,btn_new_req_spec,btn_analyse,btn_export_req_spec,
+          s='btn_req_create,btn_new_req_spec,btn_analyse,btn_export_req_spec,
              req_select_create_tc,btn_import_req_spec,btn_import_reqs,
              btn_export_reqs,btn_edit_spec,btn_delete_spec,
              btn_show_direct_link,btn_copy_requirements,btn_copy_req_spec'}
@@ -40,9 +41,6 @@ rev: 20090321 - franciscom
 		           onclick="location='{$req_spec_export_url}'" />
 
   		{/if}
-  		<input type="button" name="print_req_spec" value="{$labels.btn_generate_doc}"
-  			onclick="javascript: window.open('{$basehref}{$req_module}reqSpecPrint.php?req_spec_id={$gui->req_spec.id}', 
-  		        '_blank','left=100,top=50,fullscreen=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no,width=600,height=650');" />
   		<input type="button" name="analyse" value="{$labels.btn_analyse}"
   			onclick="javascript: location.href=fRoot+'{$req_module}reqSpecAnalyse.php?req_spec_id={$gui->req_spec.id}';" />
   		<input type="submit" name="copy_req_spec" id="copy_req_spec" value="{$labels.btn_copy_req_spec}" 

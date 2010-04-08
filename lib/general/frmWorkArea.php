@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/01/12 20:04:41 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/04/08 15:11:33 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -49,6 +49,7 @@ $aa_tfp = array(
      'searchReqSpec' => 'lib/requirements/reqSpecSearchForm.php',
 	 
      'printTestSpec' => 'lib/results/printDocOptions.php?type=testspec',
+     'printReqSpec' => 'lib/results/printDocOptions.php?type=reqspec',
      'keywordsAssign' => 'lib/testcases/listTestCases.php?feature=keywordsAssign',
      'planAddTC'    => 'lib/plan/planAddTCNavigator.php',
      'planRemoveTC' => 'lib/plan/planTCNavigator.php?feature=removeTC&help_topic=planRemoveTC',

@@ -8,14 +8,17 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.97 2010/03/06 18:00:37 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.98 2010/04/08 15:11:33 asimon83 Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
- * 20100306 - contribution by romans - BUGID 0003235: Printing Out Test Report Shows 
+ *  20100326 - asimon - started refactoring and moving of requirement printing functions from 
+ *                      req classes to this file for generation of req spec document
+ *                      like it is done for testcases (BUGID 3067)
+ *  20100306 - contribution by romans - BUGID 0003235: Printing Out Test Report Shows
  *                                     empty Column Headers for "Steps" and "Step Actions"
  *
  *  20100106 - franciscom - Multiple Test Case Steps Feature
@@ -78,6 +81,362 @@
 
 /** uses get_bugs_for_exec() */
 require_once("exec.inc.php");
+
+
+/**
+ * render a requirement as HTML code for printing
+ * 
+ * @author Andreas Simon
+ * 
+ * @param resource $db
+ * @param array $node the node to be printed
+ * @param array $printingOptions
+ * @param string $tocPrefix Prefix to be printed in TOC before title of node
+ * @param int $level
+ * @param int $tprojectID
+ * 
+ * @return string $output HTML Code
+ */
+function renderRequirementNodeForPrinting(&$db,$node, &$printingOptions, $tocPrefix, $level, $tprojectID) {
+	
+	static $tableColspan;
+	static $firstColWidth;
+	static $labels;
+	static $title_separator;
+	static $req_mgr;
+	static $tplan_mgr;
+	static $req_cfg;
+	static $req_spec_cfg;
+	static $reqStatusLabels;
+	static $reqTypeLabels;
+	
+	if (!$req_mgr) {
+		$req_cfg = config_get('req_cfg');
+		$req_spec_cfg = config_get('req_spec_cfg');
+		$firstColWidth = '20%';
+		$tableColspan = 2;
+		$labels = array('requirement' => 'requirement', 'status' => 'status', 
+		                'scope' => 'scope', 'type' => 'type', 'author' => 'author',
+		                'relations' => 'relations',
+		                'coverage' => 'coverage',
+		                'custom_field' => 'custom_field', 'relation_project' => 'relation_project',
+		                'related_tcs' => 'related_tcs');
+		$labels = init_labels($labels);
+		$reqStatusLabels = init_labels(config_get('req_status'));
+	    $reqTypeLabels = init_labels($req_cfg->type_labels);
+		$title_separator = config_get('gui_title_separator_1');
+		$req_mgr = new requirement_mgr($db);
+		$tplan_mgr = new testplan($db);
+	}
+	
+	$arrReq = $req_mgr->get_by_id($node['id']);
+	$req = $arrReq[0];
+	$name =  htmlspecialchars($req["req_doc_id"] . $title_separator . $req['title']);
+		
+	$output = "<table class=\"req\"><tr><th colspan=\"$tableColspan\">" .
+	          "<span class=\"label\">{$labels['requirement']}:</span> " . $name . "</th></tr>\n";	
+	
+	if ($printingOptions['toc']) {
+		$printingOptions['tocCode'] .= '<p style="padding-left: ' . 
+	                                     (15*$level).'px;"><a href="#' . prefixToHTMLID('req'.$node['id']) . '">' .
+	       	                             $name . '</a></p>';
+		$output .= '<a name="' . prefixToHTMLID('req'.$node['id']) . '"></a>';
+	}
+
+	if ($printingOptions['req_author']) {
+		$author = tlUser::getById($db,$req['author_id']);
+		$output .=  '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
+		            $labels['author'] . "</span></td><td> " . 
+		            htmlspecialchars($author->getDisplayName()) . "</td></tr>\n";
+	}
+	          	
+	if ($printingOptions['req_status']) {
+		$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
+		           $labels['status'] . "</span></td>" .
+		           "<td>" . $reqStatusLabels[$req['status']] . "</td></tr>";
+	}
+	
+	if ($printingOptions['req_type']) {
+		$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
+		           $labels['type'] . "</span></td>" .
+		           "<td>" . $reqTypeLabels[$req['type']] . "</td></tr>";
+	} 
+	
+	if ($printingOptions['req_coverage']) {
+		$current = count($req_mgr->get_coverage($req['id']));
+		$expected = $req['expected_coverage'];
+    	$coverage = lang_get('not_aplicable') . " ($current/0)";
+    	if ($expected) {
+    		$percentage = round(100 / $expected * $current, 2);
+			$coverage = "{$percentage}% ({$current}/{$expected})";
+    	}
+    	
+    	$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['coverage'] . "</span></td>" .
+		           "<td>$coverage</td></tr>";
+	} 
+	
+	if ($printingOptions['req_scope']) {
+		$output .= "<tr><td colspan=\"$tableColspan\"><span class=\"label\">" . $labels['scope'] . 
+		           "</span><br/>" . $req['scope'] . "</td></tr>";
+	}
+		
+	if ($printingOptions['req_relations']) {
+		$relations = $req_mgr->get_relations($req['id']);
+
+		if ($relations['num_relations']) {
+			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['relations'] . "</span></td>" .
+			           "<td>";
+			
+			foreach ($relations['relations'] as $rel) {
+				$output .= "{$rel['type_localized']}: <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . 
+				           htmlspecialchars($rel['related_req']['req_doc_id']) . $title_separator .
+			               htmlspecialchars($rel['related_req']['title']) . "</br>" .
+				           "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$labels['status']}: " .
+				           "{$reqStatusLabels[$rel['related_req']['status']]} <br/>";
+				if ($req_cfg->relations->interproject_linking) {
+					$output .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$labels['relation_project']}: " .
+					           htmlspecialchars($rel['related_req']['testproject_name']) . " <br/>";
+				}
+			}
+			
+			$output .= "</td></tr>";
+		}
+	} 
+	
+	if ($printingOptions['req_linked_tcs']) {
+		$req_coverage = $req_mgr->get_coverage($req['id']);
+		
+		if (count($req_coverage)) {
+			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . $labels['related_tcs'] . "</span></td>" .
+			           "<td>";
+			           
+			foreach ($req_coverage as $tc) {
+				$output .= htmlentities($tc['tc_external_id'] . $title_separator .
+				                        $tc['name']) . "<br/>";
+			}
+			           
+			$output .= "</td></tr>";
+		}
+	}
+	
+	if ($printingOptions['req_cf']) {
+		$linked_cf = $req_mgr->get_linked_cfields($req['id']);
+		foreach ($linked_cf as $key => $cf) {
+			$cfname = $labels['custom_field'] . $title_separator . htmlspecialchars($cf['name']);
+			$value = htmlspecialchars($cf['value']);
+			
+			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
+			           $cfname . "</span></td>" .
+			           "<td>$value</td></tr>";
+		}
+	}
+	
+	$output .= "</table><br/>";
+
+	return $output;
+}
+
+
+/**
+ * render a requirement specification node as HTML code for printing
+ * 
+ * @author Andreas Simon
+ * 
+ * @param resource $db
+ * @param array $node the node to be printed
+ * @param array $printingOptions
+ * @param string $tocPrefix Prefix to be printed in TOC before title of node
+ * @param int $level
+ * @param int $tprojectID
+ * 
+ * @return string $output HTML Code
+ */
+function renderReqSpecNodeForPrinting(&$db, &$node, &$printingOptions, $tocPrefix, $level, $tprojectID) {
+	static $tableColspan;
+	static $firstColWidth;
+	static $labels;
+	static $title_separator;
+	static $req_spec_mgr;
+	static $tplan_mgr;
+	static $req_spec_cfg;
+	static $reqSpecTypeLabels;
+	
+	if (!$req_spec_mgr) {
+		$req_spec_cfg = config_get('req_spec_cfg');
+		$firstColWidth = '20%';
+		$tableColspan = 2;
+		$labels = array('requirements_spec' => 'requirements_spec', 
+		                'scope' => 'scope', 'type' => 'type', 'author' => 'author',
+		                'relations' => 'relations', 'overwritten_count' => 'req_total',
+		                'coverage' => 'coverage',
+		                'custom_field' => 'custom_field', 'not_aplicable' => 'not_aplicable');
+		$labels = init_labels($labels);
+		$reqSpecTypeLabels = init_labels($req_spec_cfg->type_labels);
+		$title_separator = config_get('gui_title_separator_1');
+		$req_spec_mgr = new requirement_spec_mgr($db);
+		$tplan_mgr = new testplan($db);
+	}
+	
+	$spec = $req_spec_mgr->get_by_id($node['id']);
+	
+	$name = htmlspecialchars($spec['doc_id'] . $title_separator . $spec['title']);
+	
+	$docHeadingNumbering = '';
+	if ($printingOptions['headerNumbering']) {
+		$docHeadingNumbering = "$tocPrefix. ";
+	}
+	
+	$output = "<table class=\"req_spec\"><tr><th colspan=\"$tableColspan\">" .
+	        "<span class=\"label\">{$docHeadingNumbering}{$labels['requirements_spec']}:</span> " .
+ 			$name . "</th></tr>\n";
+ 		
+	if ($printingOptions['toc'])
+	{
+	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;">' .
+				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $name" . "</a></p>\n";
+		$output .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
+	}
+	
+	if ($printingOptions['req_spec_author']) {
+		// get author name for node
+		$author = tlUser::getById($db, $spec['author_id']);
+		$output .=  '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
+		            $labels['author'] . "</span></td><td> " . 
+		            htmlspecialchars($author->getDisplayName()) . "</td></tr>\n";
+	}
+	
+	if ($printingOptions['req_spec_type']) {
+		$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
+		           $labels['type'] . "</span></td>" .
+		           "<td>" . $reqSpecTypeLabels[$spec['type']] . "</td></tr>";
+	}
+	
+	if ($printingOptions['req_spec_overwritten_count_reqs']) {
+		$current = $req_spec_mgr->get_requirements_count($spec['id']);
+		$expected = $spec['total_req'];
+    	$coverage = $labels['not_aplicable'] . " ($current/0)";
+    	if ($expected) {
+    		$percentage = round(100 / $expected * $current, 2);
+			$coverage = "{$percentage}% ({$current}/{$expected})";
+    	}
+		
+		$output .= '<tr><td width="' . $firstColWidth . '"><span class="label">' . 
+		           $labels['overwritten_count'] . " (" . $labels['coverage'] . ")</span></td>" .
+		           "<td>" . $coverage . "</td></tr>";
+	}
+
+	if ($printingOptions['req_spec_scope']) {
+		$output .= "<tr><td colspan=\"$tableColspan\"><span class=\"label\">" . $labels['scope'] . 
+		           "</span><br/>" . $spec['scope'] . "</td></tr>";
+	}
+	
+	if ($printingOptions['req_spec_cf']) {
+		$linked_cf = $req_spec_mgr->get_linked_cfields($spec['id']);
+		foreach ($linked_cf as $key => $cf) {
+			$cfname = $labels['custom_field'] . $title_separator . htmlspecialchars($cf['name']);
+			$value = htmlspecialchars($cf['value']);
+			
+			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
+			           $cfname . "</span></td>" .
+			           "<td>$value</td></tr>";
+		}
+	}
+	
+	$output .= "</table><br/>\n";
+	
+	return $output;
+}
+
+
+/**
+ * render a complete tree, consisting of mixed requirement and req spec nodes, 
+ * as HTML code for printing
+ * 
+ * @author Andreas Simon
+ * 
+ * @param resource $db
+ * @param array $node the node to be printed
+ * @param array $printingOptions
+ * @param string $tocPrefix Prefix to be printed in TOC before title of each node
+ * @param int $level
+ * @param int $tprojectID
+ * @param int $user_id ID of user which shall be printed as author of the document
+ * 
+ * @return string $output HTML Code
+ */
+function renderReqSpecTreeForPrinting(&$db, &$node, &$printingOptions,
+                                       $tocPrefix, $rsCnt, $level, $user_id,
+                                       $tplan_id = 0, $tprojectID = 0) {
+	
+	static $tree_mgr;
+	static $map_id_descr;
+	static $tplan_mgr;
+ 	$code = null;
+
+	if(!$tree_mgr)
+	{ 
+ 	    $tplan_mgr = new testplan($db);
+	    $tree_mgr = new tree($db);
+ 	    $map_id_descr = $tree_mgr->node_types;
+ 	}
+ 	$verbose_node_type = $map_id_descr[$node['node_type_id']];
+ 	
+    switch($verbose_node_type)
+	{
+		case 'testproject':
+
+			break;
+
+		case 'requirement_spec':
+            $tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $rsCnt;
+            $code .= renderReqSpecNodeForPrinting($db,$node,$printingOptions,
+                               $tocPrefix, $level, $tprojectID);
+		break;
+
+		case 'requirement':
+			$tocPrefix .= (!is_null($tocPrefix) ? "." : '') . $rsCnt;
+			$code .= renderRequirementNodeForPrinting($db, $node, $printingOptions,
+			                              $tocPrefix, $level, $tprojectID);
+	    break;
+	}
+	
+	if (isset($node['childNodes']) && $node['childNodes'])
+	{
+	  
+		$childNodes = $node['childNodes'];
+		$rsCnt = 0;
+   	    $children_qty = sizeof($childNodes);
+		for($i = 0;$i < $children_qty ;$i++)
+		{
+			$current = $childNodes[$i];
+			if(is_null($current))
+			{
+				continue;
+            }
+            
+			if (isset($current['node_type_id']) && 
+			    $map_id_descr[$current['node_type_id']] == 'requirement_spec')
+			{
+			    $rsCnt++;
+			}
+			
+			$code .= renderReqSpecTreeForPrinting($db, $current, $printingOptions,
+			                                       $tocPrefix, $rsCnt, $level+1, $user_id,
+			                                       $tplan_id, $tprojectID);
+		}
+	}
+	
+	if ($verbose_node_type == 'testproject')
+	{
+		if ($printingOptions['toc'])
+		{
+			$code = str_replace("{{INSERT_TOC}}",$printingOptions['tocCode'],$code);
+		}
+	}
+
+	return $code;
+}
+
 
 /**
  * render HTML header
@@ -180,7 +539,7 @@ function renderSimpleChapter($title, $content)
 	if ($content != "")
 	{
 		$output .= '<h1 class="doclevel">'.$title."</h1>\n";
-		$output .= '<div class="txtlevel">' .$content . "</div>\n";
+		$output .= '<div class="txtlevel">' .$content . "</div>\n <br/>";
 	}
 	return $output;
 }
@@ -204,7 +563,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 	static $map_id_descr;
 	static $tplan_mgr;
  	$code = null;
-
+ 	
 	if(!$tree_mgr)
 	{ 
  	    $tplan_mgr = new testplan($db);
@@ -371,7 +730,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     $tcInfo = $tc_mgr->get_by_id($id,$versionID);
     if ($tcInfo)
     {
-    	$tcInfo = $tcInfo[0];  
+    	$tcInfo = $tcInfo[0];
     }
     $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
 	$name = htmlspecialchars($node['name']);

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2010/02/17 21:35:09 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2010/04/08 15:11:32 $ by $Author: asimon83 $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,6 +14,8 @@
  *		Test specification/ Test plan.
  *
  * rev :
+ *  	20100326 - asimon - refactored to include requirement documents
+ *                          added init_checkboxes()
  *		20090322 - amkhullar - added new option custom fields while printing Test plan/report
  * 		20090222 - havlatm - added new options 
  *
@@ -27,59 +29,32 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args);
+$arrCheckboxes = init_checkboxes($args);
 
-// Important Notice:
-// If you made add/remove elements from this array, you must update
-// $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
-$arrCheckboxes = array(
-	array( 'value' => 'toc', 'description' => 'opt_show_toc', 'checked' => 'n'),
-	array( 'value' => 'header', 'description' => 'opt_show_suite_txt', 'checked' => 'n'),
-	array( 'value' => 'summary', 'description' => 'opt_show_tc_summary', 'checked' => 'y'),
-	array( 'value' => 'body', 'description' => 'opt_show_tc_body', 'checked' => 'n'),
- 	array( 'value' => 'author', 'description' => 'opt_show_tc_author', 'checked' => 'n'),
-	array( 'value' => 'keyword', 'description' => 'opt_show_tc_keys', 'checked' => 'n'),
-	array( 'value' => 'cfields', 'description' => 'opt_show_cfields', 'checked' => 'n'),
-	array( 'value' => 'headerNumbering', 'description' => 'opt_show_hdrNumbering', 'checked' => 'n')
-);
-
-if($args->testprojectOptReqs)
-{
-	$arrCheckboxes[] = array( 'value' => 'requirement', 
-	                          'description' => 'opt_show_tc_reqs', 'checked' => 'n');
-}
-
-$bAddTestPlanID = false; 
-if($args->doc_type == 'testplan')
-{
-	$arrCheckboxes[] = array( 'value' => 'testplan', 
-	                          'description' => 'opt_show_tplan_txt', 'checked' => 'n');
-	$bAddTestPlanID = true;
-}
-else if($args->doc_type == 'testreport')
-{
-	$arrCheckboxes[] = array( 'value' => 'passfail', 
-	                          'description' => 'opt_show_passfail', 'checked' => 'y');
-	$arrCheckboxes[] = array( 'value' => 'metrics', 
-	                          'description' => 'opt_show_metrics', 'checked' => 'n');
-	$bAddTestPlanID = true;
-}
-foreach($arrCheckboxes as $key => $elem)
-{
-	$arrCheckboxes[$key]['description'] = lang_get($elem['description']);
-}
-
-// generate tree for product test specification
 $workPath = 'lib/results/printDocument.php';
-$getArguments = "&type=" . $args->doc_type; 
-if ($bAddTestPlanID)
-	$getArguments .= '&docTestPlanId=' . $args->tplan_id;
 
-// generate tree for Test Specification
+$bAddTestPlanID = false;
+if($args->doc_type == 'testplan') {
+	$bAddTestPlanID = true;
+} else if ($args->doc_type == 'testreport')	{
+	$bAddTestPlanID = true;
+}
+
+$getArguments = "&type=" . $args->doc_type; 
+
+if ($bAddTestPlanID) {
+	$getArguments .= '&docTestPlanId=' . $args->tplan_id;
+}
+
+// generate tree
 $tree = null;
 switch($args->doc_type) 
 {
     case 'testspec':
-	    break;
+	break;
+	    
+	case 'reqspec':
+	break;
 
     case 'testplan':
     case 'testreport':
@@ -139,6 +114,7 @@ $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $getArguments);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+
 /**
  * get user input and create an object with properties representing this inputs.
  * @return stdClass object 
@@ -182,6 +158,7 @@ function init_args()
 function initializeGui(&$db,$args)
 {
     $tcaseCfg = config_get('testcase_cfg');
+    $reqCfg = config_get('req_cfg');
         
     $gui = new stdClass();
     $gui->mainTitle = '';
@@ -198,10 +175,29 @@ function initializeGui(&$db,$args)
      
     // Prefix for cookie used to save tree state
     $gui->ajaxTree->cookiePrefix = 'print' . str_replace(' ', '_', $args->doc_type) . '_';
-    $gui->doc_type = $args->doc_type;    
+    $gui->doc_type = $args->doc_type;
     
     switch($args->doc_type)
     {
+    	// BUGID 3067
+    	case 'reqspec':
+    		$gui->tree_title = lang_get('title_req_print_navigator');
+            
+           	$gui->ajaxTree->loader =  $args->basehref . 'lib/ajax/getrequirementnodes.php?' .
+                                   "root_node={$args->tproject_id}&" .
+                                   "show_children=0&operation=print";
+	        
+	       	$gui->ajaxTree->loadFromChildren = 0;
+	       	$gui->ajaxTree->root_node->href = "javascript:TPROJECT_PTP_RS({$args->tproject_id})";
+           	$gui->ajaxTree->root_node->id = $args->tproject_id;
+
+            $req_qty = $tprojectMgr->count_all_requirements($args->tproject_id);
+            $gui->ajaxTree->root_node->name = htmlspecialchars($args->tproject_name) . " ($req_qty)";
+            $gui->ajaxTree->cookiePrefix .= $gui->ajaxTree->root_node->id . "_" ;
+	        $gui->mainTitle = lang_get('requirement_specification_report');
+    	break;
+    	// end BUGID 3067
+    	
 		case 'testspec':
 			$gui->tree_title = lang_get('title_tc_print_navigator');
             
@@ -239,4 +235,126 @@ function initializeGui(&$db,$args)
 	                           FORMAT_MSWORD => lang_get('format_msword'));
     return $gui;  
 }
+
+/**
+ * Initializes the checkbox options.
+ * Made this a function to simplify handling of differences 
+ * between printing for requirements and testcases and to make code more readable.
+ * 
+ * @author Andreas Simon
+ * 
+ * @param stdClass $args reference to user input parameters
+ * 
+ * @return array $arrCheckboxes
+ */
+function init_checkboxes(&$args) {
+	
+	// Important Notice:
+	// If you want to add or remove elements in this array, you must also update
+	// $printingOptions in printDocument.php and tree_getPrintPreferences() in testlink_library.js
+	
+	$arrCheckboxes = array();
+	
+	// these are the options which are always needed, type-specific ones follow below in switch
+	$arrCheckboxes[] = array( 'value' => 'toc', 
+			                          'description' => 'opt_show_toc', 
+			                          'checked' => 'n');
+	$arrCheckboxes[] = array( 'value' => 'headerNumbering', 
+			                          'description' => 'opt_show_hdrNumbering', 
+			                          'checked' => 'n');
+	
+	switch($args->doc_type) {
+		
+		case 'reqspec':
+			
+			$arrCheckboxes[] = array( 'value' => 'req_spec_scope', 
+			                          'description' => 'opt_req_spec_scope', 
+			                          'checked' => 'y');
+			$arrCheckboxes[] = array( 'value' => 'req_spec_author', 
+			                          'description' => 'opt_req_spec_author', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_spec_overwritten_count_reqs', 
+			                          'description' => 'opt_req_spec_overwritten_count_reqs', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_spec_type', 
+			                          'description' => 'opt_req_spec_type', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_spec_cf', 
+			                          'description' => 'opt_req_spec_cf', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_scope', 
+			                          'description' => 'opt_req_scope', 
+			                          'checked' => 'y');
+			$arrCheckboxes[] = array( 'value' => 'req_author', 
+			                          'description' => 'opt_req_author', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_status', 
+			                          'description' => 'opt_req_status', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_type', 
+			                          'description' => 'opt_req_type', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_cf', 
+			                          'description' => 'opt_req_cf', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_relations', 
+			                          'description' => 'opt_req_relations',
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_linked_tcs',
+			                          'description' => 'opt_req_linked_tcs', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'req_coverage', 
+			                          'description' => 'opt_req_coverage', 
+			                          'checked' => 'n');
+		break;
+		
+		default:
+			
+			$arrCheckboxes[] = array( 'value' => 'header', 
+			                          'description' => 'opt_show_suite_txt', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'summary', 
+			                          'description' => 'opt_show_tc_summary', 
+			                          'checked' => 'y');
+			$arrCheckboxes[] = array( 'value' => 'body', 
+			                          'description' => 'opt_show_tc_body', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'author', 
+			                          'description' => 'opt_show_tc_author', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'keyword', 
+			                          'description' => 'opt_show_tc_keys', 
+			                          'checked' => 'n');
+			$arrCheckboxes[] = array( 'value' => 'cfields', 
+			                          'description' => 'opt_show_cfields', 
+			                          'checked' => 'n');
+
+			if($args->testprojectOptReqs) {
+				$arrCheckboxes[] = array( 'value' => 'requirement',
+                                          'description' => 'opt_show_tc_reqs', 
+                                          'checked' => 'n');
+			}
+
+			if($args->doc_type == 'testplan') {
+				$arrCheckboxes[] = array( 'value' => 'testplan',
+                                          'description' => 'opt_show_tplan_txt', 
+                                          'checked' => 'n');
+			} else if ($args->doc_type == 'testreport')	{
+				$arrCheckboxes[] = array( 'value' => 'passfail',
+                                          'description' => 'opt_show_passfail', 
+                                          'checked' => 'y');
+				$arrCheckboxes[] = array( 'value' => 'metrics',
+                                          'description' => 'opt_show_metrics', 
+                                          'checked' => 'n');
+			}
+		break;		
+	}
+
+	foreach ($arrCheckboxes as $key => $elem) {
+		$arrCheckboxes[$key]['description'] = lang_get($elem['description']);
+	}
+	
+	return $arrCheckboxes;
+}
+
 ?>

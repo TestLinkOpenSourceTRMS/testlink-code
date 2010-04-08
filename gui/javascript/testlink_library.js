@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.97 2010/03/16 13:17:17 asimon83 Exp $
+// $Id: testlink_library.js,v 1.98 2010/04/08 15:11:32 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -287,6 +287,23 @@ function TPROJECT_PTC(id)
 	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=tc&id="+id+args;
 }
 
+
+/* Generate doc: all Req Specs, complete project */
+function TPROJECT_PTP_RS(id)
+{
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=testproject&id="+id+args+"&"+pParams;
+}
+
+
+/* Generate doc: one Req Spec (with children) */
+function TPROJECT_PRS(id)
+{
+	var pParams = tree_getPrintPreferences();
+	parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=reqspec&id="+id+args+"&"+pParams;
+}
+
+
 /*
   function: TPLAN_PTS
             Test PLAN Print Test Suite
@@ -499,6 +516,7 @@ function confirm_and_submit(msg,form_id,field_id,field_value,action_field_id,act
   returns:
 
   rev  :
+         20100325 - asimon - added additional fields for req spec document printing
          20070509 - franciscom - added 'author'
          20070218 - franciscom - added tcspec_refresh_on_action
                                  useful on test case specification edit NOT Printing
@@ -507,7 +525,11 @@ function tree_getPrintPreferences()
 {
 	var params = [];
 	var fields = ['header','summary','toc','body','passfail', 'cfields','testplan', 'metrics', 
-	              'tcspec_refresh_on_action','author','requirement','keyword'];
+	              'tcspec_refresh_on_action','author','requirement','keyword',
+	              'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
+	              'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
+	              'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 
+	              'headerNumbering'];
 
   for (var idx= 0;idx < fields.length;idx++)
 	{

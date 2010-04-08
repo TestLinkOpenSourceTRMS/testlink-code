@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.17 2010/01/21 22:06:18 franciscom Exp $ 
+$Id: printDocOptions.tpl,v 1.18 2010/04/08 15:11:32 asimon83 Exp $ 
 Purpose: show tree on print feature
 
 rev: 20080820 - franciscom - added code to manage EXTJS tree component
@@ -78,7 +78,7 @@ rev: 20080820 - franciscom - added code to manage EXTJS tree component
 		</tr>
 		{/section}
 		<tr>
-		{if $docType == 'testspec'}
+		{if $docType == 'testspec' || $docType == 'reqspec'}
 			<td>{$labels.tr_td_show_as}</td>
 			<td>
 				<select id="format" name="format">

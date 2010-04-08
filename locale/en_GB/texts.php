@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.24 2010/02/23 13:08:22 asimon83 Exp $
+ * @version    	CVS: $Id: texts.php,v 1.25 2010/04/08 15:11:33 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -198,6 +198,28 @@ wrong designed requirements.</p>
 requirements within the specification screen. These Test Cases are created into Test Suite
 with name defined in configuration <i>(default is: \$tlCfg->req_cfg->default_testsuite_name =
 'Test suite created by Requirement - Auto';)</i>. Title and Scope are copied to these Test cases.</p>";
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
+$TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
+<p>From here you can print a single requirement, all the requirements within a requirement specification,
+or all the requirements in a test project.</p>
+<h2>Get Started:</h2>
+<ol>
+<li>
+<p>Select the parts of the requirements you want to display, and then click on a requirement, 
+requirement specification, or the test project. A printable page will be displayed.</p>
+</li>
+<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want 
+the information displayed as HTML, OpenOffice Writer or in a Micosoft Word document. 
+See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
+'{$locale}');\">help</span> for more information.</p>
+</li>
+<li><p>Use your browser's print functionality to actually print the information.<br />
+<i>Note: Make sure to only print the right-hand frame.</i></p>
+</li>
+</ol>";
 
 
 // ------------------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 /***********************************************************************/
 /* TestLink Open Source Project - http://testlink.sourceforge.net/     */
-/* $Id: tl_documents.css,v 1.4 2009/03/29 17:31:29 franciscom Exp $        */
+/* $Id: tl_documents.css,v 1.5 2010/04/08 15:11:34 asimon83 Exp $        */
 /* Purpose: Basic schema for print documentation css                   */
 /* rev: 20090329 - franciscom - added style per printing custom fields */
 /***********************************************************************/
@@ -69,19 +69,25 @@ p.important {
 }
 
 
-table.tc, table.tc td, table.tc th {
+table.tc, table.tc td, table.tc th, 
+table.req, table.req td, table.req th,
+table.req_spec, table.req_spec td, table.req_spec th {
 	border: 			1px solid #DDD;
 	border-collapse:	collapse;
 	font-size:			11px;
 	padding:			2px;
 }
 
-table.tc {
+table.tc, table.req, table.req_spec {
 	margin:				5px 0px;
 	width:				95%;
 }
 
-table.tc th {
+table.req {
+	margin-left: 50px;
+}
+
+table.tc th, table.req th, table.req_spec th {
 	font-weight:    	bold;
 	background:     	#EEE;
 	text-align:			left;

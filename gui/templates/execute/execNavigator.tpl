@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.39 2010/03/31 22:17:12 erikeloff Exp $ *}
+{* $Id: execNavigator.tpl,v 1.40 2010/04/09 09:54:29 erikeloff Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20100409 - eloff - BUGID 3050 - changed filter panels background to grey
   20100222 - asimon - moved plattform select box from filters to settings panel
   20100202 - asimon - BUGID 2455, BUGID 3026 - changes on filters
   20100109 - eloff - BUGID 2800 - filter panel is now ext CollapsiblePanel
@@ -110,14 +111,14 @@ rev :
 			{$labels.caption_nav_settings}
 		</div>
 
-		<div id="tplan_settings" class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%">
+		<div id="tplan_settings" class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%; background: #EEE">
 			<input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
 			<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 
 			<table>
 			{if $gui->map_tplans != '' }
 				<tr>
-					<th>{$labels.test_plan}</th>
+					<th width="75">{$labels.test_plan}</th>
 					<td>
 						<select name="tplan_id" onchange="this.form.submit()">
 						{html_options options=$gui->map_tplans selected=$gui->tplan_id}
@@ -152,7 +153,7 @@ rev :
 		<div class="x-panel-header x-unselectable">
 			{$labels.caption_nav_filters}
 		</div>
-		<div class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%">
+		<div class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%; background: #eee">
 			<table>
 				<tr style="{$keywordsFilterDisplayStyle}">
 					<th>{$labels.keyword}</th>
@@ -168,7 +169,7 @@ rev :
 				</tr>
 
 				<tr>
-					<th>{$labels.priority}</th>
+					<th width="75">{$labels.priority}</th>
 					<td>
 						<select name="urgencyImportance">
 						<option value="">{$gui->str_option_any}</option>

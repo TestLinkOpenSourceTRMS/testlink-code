@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.262 2010/04/09 19:37:09 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.263 2010/04/09 20:30:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100409 - franciscom - BUGID 3367: Error after trying to copy a test case that the name is in the size limit.
  * 20100330 - eloff - BUGID 3329 - fixes test plan usage with platforms
  * 20100323 - asimon - fixed BUGID 3316 in show()
  * 20100317 - franciscom - new method get_by_external()
@@ -294,15 +295,17 @@ class testcase extends tlObjectWithAttachments
 	       $ret['msg'] = 'ok';
 		     $ret['new_name']
 		     
-	rev: 20090120 - franciscom - added new action_on_duplicate_name	     
+	rev: 
+		20100409 - franciscom - improved check on name len.
+								BUGID 3367: Error after trying to copy a test case that 
+								the name is in the size limit.
+		20090120 - franciscom - added new action_on_duplicate_name	     
 	*/
-	// function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-	//                            $check_duplicate_name=0,
-	//                            $action_on_duplicate_name='generate_new')
-	//                            
 	function create_tcase_only($parent_id,$name,$order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
 	                           $options=null)
 	{
+		$dummy = config_get('field_size');
+		$name_max_len = $dummy->testcase_name;
         $getOptions = array();
 		$ret = array('id' => -1,'external_id' => 0, 'status_ok' => 1,'msg' => 'ok', 
 		             'new_name' => '', 'version_number' => 1, 'has_duplicate' => false);
@@ -338,12 +341,23 @@ class testcase extends tlObjectWithAttachments
 			            {
 			            	case 'stringPrefix':
 			            		$name = $algo_cfg->text . " " . $name ;
+			            		$final_len = strlen($name);
+			            		if( $final_len > $name_max_len)
+			            		{
+			            			$name = substr($name,0,$name_max_len);
+			            		}
 			            	break;
 			            	
 			            	case 'counterSuffix':
 			            	    $mask =  !is_null($algo_cfg->text) ? $algo_cfg->text : '#%s';
             	            	$nameSet = array_flip(array_keys($itemSet));
-			            		$target = $name . sprintf($mask,++$siblingQty);
+			            		$target = $name . ($suffix = sprintf($mask,++$siblingQty));
+								// BUGID 3367
+			            		$final_len = strlen($target);
+			            		if( $final_len > $name_max_len)
+			            		{
+			            			$target = substr($target,strlen($suffix),$name_max_len);
+			            		}
                                 
                                 // Need to recheck if new generated name does not crash with existent name
                                 // why? Suppose you have created:
@@ -355,12 +369,18 @@ class testcase extends tlObjectWithAttachments
             					// it will be 3 => I will get duplicated name.
             					while( isset($nameSet[$target]) )
             					{
-			            			$target = $name . sprintf($mask,++$siblingQty);
+			            			$target = $name . ($suffix = sprintf($mask,++$siblingQty));
+									// BUGID 3367
+			            			$final_len = strlen($target);
+			            			if( $final_len > $name_max_len)
+			            			{
+			            				$target = substr($target,strlen($suffix),$name_max_len);
+			            			}
             					}
                                 $name = $target;
 			            	break;
 			            } 
-
+						
 				        $ret['status_ok'] = 1;
 						$ret['new_name'] = $name;
 						$ret['msg'] = sprintf(lang_get('created_with_title'),$name);

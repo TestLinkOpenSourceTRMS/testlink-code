@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.70 $
- * @modified $Date: 2010/03/17 22:00:18 $ by $Author: franciscom $
+ * @version $Revision: 1.71 $
+ * @modified $Date: 2010/04/09 19:41:47 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20100409 - franciscom - added import importance and execution_type
  *	20100317 - franciscom - BUGID 3236 - work in progress
  *	20100214 - franciscom - refactoring to use only simpleXML functions
  *	20100106 - franciscom - Multiple Test Case Steps Feature
@@ -38,7 +39,6 @@ $gui = new stdClass();
 $templateCfg = templateConfiguration();
 $pcheck_fn=null;
 $args = init_args();
-
 $gui->useRecursion = $args->useRecursion;
 
 $resultMap = null;
@@ -89,23 +89,23 @@ if ($args->do_upload)
 		$file_check['status_ok'] = 1;
 		if (move_uploaded_file($source, $dest))
 		{
-			  tLog('Renamed uploaded file: '.$source);
-			  switch($args->importType)
-			  {
-			  	case 'XML':
-			  		$pcheck_fn = "check_xml_tc_tsuite";
-			  		$pimport_fn = "importTestCaseDataFromXML";
-			  		break;
-        
-			  	case 'XLS':
-			  		$pcheck_fn = null;
-			  		$pimport_fn = "importTestCaseDataFromSpreadsheet";
-			  		break;
-			  }
-	      if(!is_null($pcheck_fn))
-	      {
-				    $file_check = $pcheck_fn($dest,$args->useRecursion);
-				}
+			tLog('Renamed uploaded file: '.$source);
+			switch($args->importType)
+			{
+				case 'XML':
+					$pcheck_fn = "check_xml_tc_tsuite";
+					$pimport_fn = "importTestCaseDataFromXML";
+					break;
+			
+				case 'XLS':
+					$pcheck_fn = null;
+					$pimport_fn = "importTestCaseDataFromSpreadsheet";
+					break;
+			}
+	      	if(!is_null($pcheck_fn))
+	      	{
+				$file_check = $pcheck_fn($dest,$args->useRecursion);
+			}
 		}
 		if($file_check['status_ok'] && $pimport_fn)
 		{
@@ -830,7 +830,7 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 	$tcaseSet = array();
 	
 	$tcXML['elements'] = array('string' => array("summary","preconditions"),
-			                   'integer' => array("node_order","externalid"));
+			                   'integer' => array("node_order","externalid","execution_type","importance"));
 	$tcXML['attributes'] = array('string' => array("name"), 'integer' =>array('internalid'));
 
 	for($idx = 0; $idx < $loops2do; $idx++)

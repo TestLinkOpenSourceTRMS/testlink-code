@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.261 2010/03/30 21:50:54 erikeloff Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.262 2010/04/09 19:37:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -3004,7 +3004,7 @@ class testcase extends tlObjectWithAttachments
 				       "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
 		               "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
 		               "\t<preconditions><![CDATA[||PRECONDITIONS||]]></preconditions>\n" .
-		               "\t<executiontype><![CDATA[||EXECUTIONTYPE||]]></executiontype>\n" .
+		               "\t<execution_type><![CDATA[||EXECUTIONTYPE||]]></execution_type>\n" .
 		               "\t<importance><![CDATA[||IMPORTANCE||]]></importance>\n" .
 		               "||STEPS||\n" .
 		               "||KEYWORDS||||CUSTOMFIELDS||||REQUIREMENTS||</testcase>\n";

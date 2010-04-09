@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/02/07 21:46:40 $  $Author: havlat $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/04/09 17:24:21 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
+ * 20100408 - franciscom - BUGID 3361 FatalError after trying to assign requirements to an empty test suite
  * 20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature
  * 20080512 - franciscom - new input argument to control display/hide of close button
  * 20070617 - franciscom - refactoring
@@ -34,7 +35,10 @@ $gui->selectedReqSpec = $args->idReqSpec;
 
 $bulkCounter = 0;
 $bulkDone = false;
+$bulkMsg = null;
 $pfn = null;
+
+new dBug($args);
 
 switch($args->doAction)
 {
@@ -47,9 +51,18 @@ switch($args->doAction)
 	    break;  
 
     case 'bulkassign':
-      	$bulkCounter = doBulkAssignment($db,$args);
+    	// BUGID 3361
+    	// need to check if we have test cases to work on
+       	$tsuite_mgr = new testsuite($dbHandler);
+        $tcase_set = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
+
+		$bulkCounter = 0;
       	$bulkDone = true;
       	$args->edit = 'testsuite';
+		if( !is_null($tcase_set) && count($tcase_set) > 0 )
+		{
+      		$bulkCounter = doBulkAssignment($db,$args,$tcase_set);
+      	}
 	    break;  
 
     case 'switchspec':
@@ -137,6 +150,10 @@ function init_args()
     return $args;
 }
 
+/**
+ * 
+ *
+ */
 function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
 {
     $tproject_mgr = new testproject($dbHandler);
@@ -154,35 +171,53 @@ function processTestSuite(&$dbHandler,&$argsObj,&$guiObj)
     $guiObj->tsuite_id = $argsObj->id;
     if(!is_null($guiObj->req_specs) && count($guiObj->req_specs))
     {  
-       $guiObj->has_req_spec = true;
+		$guiObj->has_req_spec = true;
        
-       if(is_null($argsObj->idReqSpec))
-       {
-          $guiObj->selectedReqSpec = key($guiObj->req_specs);
-       }
+       	if(is_null($argsObj->idReqSpec))
+       	{
+			$guiObj->selectedReqSpec = key($guiObj->req_specs);
+       	}
        
-       $req_spec_mgr = new requirement_spec_mgr($dbHandler);
-       $guiObj->requirements =$req_spec_mgr->get_requirements($guiObj->selectedReqSpec);
-       
-       $tsuite_mgr = new testsuite($dbHandler);
-       $tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
-       $guiObj->tcase_number = count($tcase_set);    
-       $guiObj->bulkassign_warning_msg = sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number);
+       	$req_spec_mgr = new requirement_spec_mgr($dbHandler);
+       	$guiObj->requirements =$req_spec_mgr->get_requirements($guiObj->selectedReqSpec);
+       	
+       	$tsuite_mgr = new testsuite($dbHandler);
+       	$tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
+       	$guiObj->tcase_number = count($tcase_set);    
+       	if( $guiObj->tcase_number > 0 )
+       	{
+			$guiObj->bulkassign_warning_msg = sprintf(lang_get('bulk_req_assign_msg'),$guiObj->tcase_number);
+		}
+		else
+		{
+			$guiObj->bulkassign_warning_msg = lang_get('bulk_req_assign_no_test_cases');
+		}	
     }
-
     return $guiObj;
 }
 
-function doBulkAssignment(&$dbHandler,&$argsObj)
+/**
+ * 
+ *
+ */
+function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
 {
 	$req_mgr = new requirement_mgr($dbHandler);
     $assignmentCounter = 0;
 	$requirements = array_keys($argsObj->reqIdSet);
     if(!is_null($requirements) && count($requirements) > 0)
     {
-        $tsuite_mgr = new testsuite($dbHandler);
-        $tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
-        $assignmentCounter = $req_mgr->bulk_assignment($requirements,$tcase_set);
+		$tcase_set = $targetTestCaseSet;
+    	if( is_null($tcase_set) )
+    	{
+        	$tsuite_mgr = new testsuite($dbHandler);
+        	$tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
+   		}
+   		if( !is_null($tcase_set) && count($tcase_set) )
+   		{
+        	$assignmentCounter = $req_mgr->bulk_assignment($requirements,$tcase_set);
+        }
+
     } 
     return $assignmentCounter;
 }

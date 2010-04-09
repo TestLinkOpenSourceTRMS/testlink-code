@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.12 2010/03/24 12:46:36 asimon83 Exp $
+$Id: tcSearchForm.tpl,v 1.13 2010/04/09 21:07:58 franciscom Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
+  20100409 - franciscom - BUGID 3371 Search Test Cases based on Test Importance
   20100124 - franciscom - BUGID 3077 - search on preconditions
   20090228 - franciscom - pre-fill test case id with testcase prefix
 *}
@@ -13,7 +14,7 @@ rev :
 {lang_get var="labels" 
           s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,
              th_title,summary,steps,expected_results,keyword,custom_field,
-             search_type_like,preconditions,filter_mode_and,
+             search_type_like,preconditions,filter_mode_and,test_importance,
              custom_field_value,btn_find,requirement_document_id'}
 
 
@@ -62,6 +63,18 @@ rev :
 			<td><input type="text" name="expected_results" 
 			           size="{#RESULTS_SIZE#}" maxlength="{#RESULTS_MAXLEN#}" /></td>
 		</tr>
+		
+    {if $session['testprojectOptions']->testPriorityEnabled}
+		  <tr>
+		  	<td>{$labels.test_importance}</td>
+		  	<td>
+		  	<select name="importance">
+      	  	{html_options options=$gui->option_importance}
+	      </select>
+	      </td>
+		  </tr>
+		{/if}
+		
 		
 		{if $gui->filter_by.keyword}
 		<tr>

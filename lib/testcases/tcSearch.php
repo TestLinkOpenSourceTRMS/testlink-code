@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.6 2010/03/26 21:33:30 franciscom Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.7 2010/04/09 21:09:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100409 - franciscom - BUGID 3371 - Search Test Cases based on Test Importance
  *	20100326 - franciscom - BUGID 3334 - search fails if test case has 0 steps
  *  20100124 - franciscom - BUGID 3077 - search on preconditions
  *	20100106 - franciscom - Multiple Test Case Steps Feature
@@ -32,6 +33,7 @@ $tcase_cfg = config_get('testcase_cfg');
 $gui = initializeGui();
 $map = null;
 $args = init_args();
+
 if ($args->tprojectID)
 {
 	$tables = tlObjectWithDB::getDBTables(array('cfield_design_values','nodes_hierarchy',
@@ -121,10 +123,15 @@ if ($args->tprojectID)
                                          " ON RC.testcase_id = NH_TC.id ";
     	$filter['by_requirement_doc_id'] = " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' ";
     }   
+
+	// BUGID 3371 
+   	if( $args->importance > 0)
+    {
+        $filter['importance'] = " AND TCV.importance = {$args->importance} ";
+	}  
     
     $sqlFields = " SELECT NH_TC.id AS testcase_id,NH_TC.name,TCV.id AS tcversion_id," .
                  " TCV.summary, TCV.version, TCV.tc_external_id "; 
-                 // " TCSTEPS.actions, TCSTEPS.expected_results";
     
     $sqlCount  = "SELECT COUNT(NH_TC.id) ";
     
@@ -182,6 +189,10 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 
+/**
+ *
+ *
+ */
 function init_args()
 {
 	$args = new stdClass();
@@ -196,7 +207,8 @@ function init_args()
 					 "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
 					 "preconditions" => array(tlInputParameter::STRING_N,0,50),
 					 "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
-	);	
+					 "importance" => array(tlInputParameter::INT_N)
+					 );	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);

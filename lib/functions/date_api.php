@@ -9,7 +9,7 @@
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.5 2010/04/05 19:52:06 franciscom Exp $
+ * @version    	CVS: $Id: date_api.php,v 1.6 2010/04/09 19:47:09 franciscom Exp $
  * @link 		http://www.teamst.org/
  *
  * @internal Revisions:
@@ -138,7 +138,7 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 	} else {
 		// 20080816 -  $t_date = array( 0, 0, 0 );
 		// 20100405 - think is WRONG use valid value (0) for time
-		$t_date = array( 0, 0, 0, 0, 0, 0 );
+		// $t_date = array( 0, 0, 0, 0, 0, 0 );
 		$t_date = array( 0, 0, 0, -1, -1, -1 );
 	}
 	

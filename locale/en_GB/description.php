@@ -20,9 +20,11 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.11 2010/03/09 09:45:03 asimon83 Exp $
+ * @version    	CVS: $Id: description.php,v 1.12 2010/04/09 10:42:04 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
+ * @internal Revisions:
+ * 20100409 - eloff - BUGID 3050 - Update execution help text
  **/
 
 
@@ -151,22 +153,29 @@ After closing the add bug page, you will see relevant bug data on the execute pa
 </p>";
 
 // execFilter.html
-$TLS_hlp_executeFilter = "<h2>Filter & Settings</h2>
+$TLS_hlp_executeFilter = "<h2>Settings</h2>
 
-<p>Filter & Settings provide the opportunity to influence the set of shown test cases " .
-"before the execution. You can choose the test plan and the build you wish to execute " .
-"the test cases for and reduce the set of shown test cases by specifying other filters. <br />" .
-"Filters are applied to test case tree after clicking the \"Apply\" button. " .
-"Advanced Filters will allow you to specify a set of values for applicable filters by " .
-"using CTRL-Click inside the Multi-Select ListBox</p>
+<p>Settings allows you to select the test plan, build and platform (if available) to
+be executed.</p>
 
 <h3>Test Plan</h3>
-<p>You can choose the required test plan. According to the chosen test plan the appropriate " .
-"builds will be shown. After choosing a test plan filters will be reset and tree will be " .
-"updated without clicking the \"Apply\" button.</p>
+<p>You can choose the required test plan. According to the chosen test plan the appropriate
+builds will be shown. After choosing a test plan filters will be reset.</p>
+
+<h3>Platform</h3>
+<p>If the platforms feature is used, you must select the appropriate platform before execution.</p>
 
 <h3>Build to execute</h3>
 <p>You can choose the build you whish to execute the test cases for.</p>
+
+<h2>Filters</h2>
+<p>Filters provide the opportunity to further influence the set of shown test cases
+before the execution. You can reduce the set of shown test cases by specifying filters
+and click the \"Apply\" button.</p>
+
+<p> Advanced Filters will allow you to specify a set of values for applicable filters by
+using CTRL-Click inside the Multi-Select ListBox</p>
+
 
 <h3>Keyword Filter</h3>
 <p>You can filter test cases by the keywords that have been assigned. You can choose " .

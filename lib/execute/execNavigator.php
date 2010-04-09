@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2010/02/23 12:45:45 $ by $Author: asimon83 $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2010/04/09 09:55:34 $ by $Author: erikeloff $
  *
- * rev: 
+ * rev:
+ *      20100409 - eloff - BUGID 3050 - remember selected platform and build in session
  *      20100222 - asimon - fixes in initializeGui() for testplan select box when there are no builds
- * 		20100217 - asimon - added check for open builds on initBuildInfo()
- * 		20100202 - asimon - changed filtering, BUGID 2455, BUGID 3026
+ *      20100217 - asimon - added check for open builds on initBuildInfo()
+ *      20100202 - asimon - changed filtering, BUGID 2455, BUGID 3026
  *      20090828 - franciscom - added contribution platform feature
  *      20090828 - franciscom - BUGID 2296 - filter by Last Exec Result on Any of previous builds
  *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
@@ -104,7 +105,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 				setSessionTestPlan($plan);
 			}
 		}
-    }
+	}
 
     $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
@@ -176,12 +177,32 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     	$args->urgencyImportance = null;
     }
     
-    // CRITIC: values assigned here will be used on functions initBuildInfo(), initPlatformInfo()
-    //         if we can here we need to change functions
-    $args->optBuildSelected = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : -1;
-    $args->optFilterBuildSelected = isset($_REQUEST['filter_build_id']) ? $_REQUEST['filter_build_id'] : -1;
-    $args->optPlatformSelected = isset($_REQUEST['platform_id']) ? $_REQUEST['platform_id'] : null;
-    $args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+	// CRITIC: values assigned here will be used on functions initBuildInfo(), initPlatformInfo()
+	//         if we can here we need to change functions
+
+	// Set active platform (remember in session)
+	$args->optPlatformSelected = isset($_REQUEST['platform_id']) ? $_REQUEST['platform_id'] : null;
+	if (is_null($args->optPlatformSelected) && isset($_SESSION['platformID']))
+	{
+		$args->optPlatformSelected =  intval($_SESSION['platformID']);
+	}
+	if ($args->optPlatformSelected != $_SESSION['platformID'])
+	{
+		$_SESSION['platformID'] = $args->optPlatformSelected;
+	}
+
+	// Set active build (remember in session)
+	$args->optBuildSelected = isset($_REQUEST['build_id']) ? $_REQUEST['build_id'] : -1;
+	if ($args->optBuildSelected == -1 && isset($_SESSION['buildID']))
+	{
+		$args->optBuildSelected = intval($_SESSION['buildID']);
+	}
+	if ($args->optBuildSelected != $_SESSION['buildID'])
+	{
+		$_SESSION['buildID'] = $args->optBuildSelected;
+	}
+	$args->optFilterBuildSelected = isset($_REQUEST['filter_build_id']) ? $_REQUEST['filter_build_id'] : -1;
+	$args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
     return $args;
 }

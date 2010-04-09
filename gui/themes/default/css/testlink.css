@@ -1,9 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.27 2010/02/25 21:36:10 erikeloff Exp $
+$Id: testlink.css,v 1.28 2010/04/09 10:42:57 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
+20100409 - eloff - add styles for help headings to show structure better
 20100225 - eloff - BUGID 3217 - Ext removes bullets from all lists, re-add bullets to our lists
 20080517 - franciscom - auto width in simple table creates an ugly effect
                         on test suite and test case view, on test spec feature.
@@ -268,6 +269,17 @@ span.help
 	border: 		medium solid #808080;
 }
 
+#tlhelp h2 {
+	font-weight: bold;
+	font-size: 120%;
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px solid #aaa;
+}
+
+#tlhelp p {
+	margin: 0 0 1em 0.5em;
+}
 
 
 /* ***** Messages ******************************************************* */

@@ -1,13 +1,19 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.8 2009/12/07 20:12:18 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.9 2010/04/10 17:24:06 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
+        20100410 - franciscom - BUGID 3370
         20081109 - franciscom - refactoring 
         20070113 - franciscom - use of smarty config file
 *}
+{lang_get var="labels"
+          s="title_nav_results,title_report_type,btn_print,test_plan,show_inactive_tplans"}
+
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes"}
+
+
 
 {literal}
 <script type="text/javascript">
@@ -27,7 +33,7 @@ function pre_submit()
 
 <body>
 
-<h1 class="title">{lang_get s='title_nav_results'}</h1>
+<h1 class="title">{$labels.title_nav_results}</h1>
 
 <div style="margin:0px; padding:0px;">
 <form method="get" id="resultsNavigator" onSubmit="javascript:return pre_submit();">
@@ -35,23 +41,29 @@ function pre_submit()
 	<input type="hidden" id="called_url" name="called_url" value="" />
 
 	<div class="menu_bar">
-		<span>{lang_get s='title_report_type'}
+		<span>{$labels.title_report_type}
 		<select name="format" onchange="this.form.submit();">
 		    {html_options options=$arrReportTypes selected=$selectedReportType}
 		</select>
 		</span>
 
-		<span style="margin-left:20px;"><input type="button" name="print" value="{lang_get s='btn_print'}" 
+		<span style="margin-left:20px;"><input type="button" name="print" value="{$labels.btn_print}" 
 			onclick="javascript: reportPrint();" style="margin-left:5px;" /></span>
 	</div>
 
 	<div style="margin:3px" >
-
-		<span style="padding-right: 10px">{lang_get s='test_plan'} 
+		<span style="padding-right: 10px">{$labels.test_plan} 
 		<select name="tplan_id" onchange="pre_submit();this.form.submit()">
 			{html_options options=$gui->tplans selected=$gui->tplan_id}
 		</select>
 		</span>
+		<br>
+		{* BUGID 3370 *}
+		<span>{$labels.show_inactive_tplans}
+		<input type="checkbox" {$gui->checked_show_inactive_tplans} onclick="this.form.submit();" 
+		       id="show_inactive_tplans" name="show_inactive_tplans" >
+		</span>
+		
 	</div>
 </form>
 </div>

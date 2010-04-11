@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.49 2010/02/28 10:36:58 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.50 2010/04/11 15:30:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -15,6 +15,7 @@
  *
  * @internal Revisions:
  *
+ * 20100410 - franciscom - BUGID 2797 - filter by test case execution type
  * 20100228 - franciscom - BUGID 0001927: filter on keyword - Filter tree when add/remove testcases - KO
  * 20090415 - franciscom - BUGID 2384 - Tree doesnt load properly in Add / Remove Test Cases
  * 20090118 - franciscom - added logic to switch (for EXTJS tree type), how tree is builded
@@ -45,8 +46,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
 /*
-  function: get input data 
-
+  function: init_args()
+  			get input data 
   args: -
 
   returns: object expected parameters
@@ -72,6 +73,7 @@ function init_args()
  
     $args->keywordsFilterType =isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
 
+    $args->exec_type = isset($_REQUEST['exec_type']) ? intval($_REQUEST['exec_type']) : 0;
     return $args;
 }
 
@@ -85,13 +87,15 @@ function init_args()
       20080622 - franciscom - changes for ext js tree
       20080429 - franciscom
 */
-function initializeGui(&$dbHandler,&$argsObj,$basehref)
+function initializeGui(&$dbHandler,&$argsObj)
 {
     $gui = new stdClass();
     $tprojectMgr = new testproject($dbHandler);
     $tcaseCfg = config_get('testcase_cfg'); 
+    $gui_open = config_get('gui_separator_open');
+    $gui_close = config_get('gui_separator_close');
 
-
+    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
     $gui->do_reload = 0;
     $gui->src_workframe = null;
     
@@ -113,6 +117,13 @@ function initializeGui(&$dbHandler,&$argsObj,$basehref)
 
     $gui->tplan_id = $argsObj->tplan_id;
 
+	// 20100410    
+    $tcaseMgr = new testcase($dbHandler);
+    $gui->exec_type = $argsObj->exec_type; 
+    $gui->exec_type_map = $tcaseMgr->get_execution_types(); 
+    $gui->exec_type_map = array(0 => $gui->str_option_any) + $gui->exec_type_map;
+
+
     $gui->menuUrl = 'lib/plan/planAddTC.php';
     $gui->args = '&tplan_id=' . $gui->tplan_id;
     if(is_array($argsObj->keyword_id))
@@ -125,10 +136,13 @@ function initializeGui(&$dbHandler,&$argsObj,$basehref)
 		    $gui->args .= '&keyword_id='.$argsObj->keyword_id;
     }
     $gui->args .= '&keywordsFilterType=' . $argsObj->keywordsFilterType;
+    $gui->args .= '&executionType=' . $argsObj->exec_type;
+
 
     $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+
     
     return $gui;
 }
@@ -179,7 +193,14 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 
 	$filters = array();
 	$filters['keywords'] = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
-	$applyFilter = !is_null($filters['keywords']); // BUGID 0001927
+
+	// BUGID 2797
+	$filters['executionType'] = buildExecTypeFilter($argsObj->exec_type,$guiObj);
+
+	// $applyFilter = !is_null($filters['keywords']); // BUGID 0001927
+	$applyFilter = !is_null($filters['keywords']) || 
+				   (!is_null($filters['executionType']) && intval($filters['executionType']) > 0);
+
 	if($applyFilter)
 	{
 		$options = array('forPrinting' => NOT_FOR_PRINTING, 'hideTestCases' => HIDE_TESTCASES,
@@ -189,7 +210,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 		
 		$treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,
 		                                 $guiObj->menuUrl,$filters,$options);
-	       
 	    // When using filters I need to switch to static generated tree, instead of Lazy Loading Ajax Tree
 	    // that's reason why I'm re-creating from scratch ajaxTree.
 	    //

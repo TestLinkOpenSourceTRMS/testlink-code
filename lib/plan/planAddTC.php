@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.94 2010/02/25 19:58:31 erikeloff Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.95 2010/04/11 15:30:42 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100411 - BUGID 2797 - filter by test case execution type	
  * 20100225 - eloff - BUGID 3205 - Don't show "save platforms" when platforms aren't used
  * 20100129 - franciscom - moved here from template, logic to initialize:
  *                         drawSavePlatformsButton,drawSaveCFieldsButton        
@@ -176,9 +177,43 @@ if($do_display)
 	$tsuite_data = $tsuite_mgr->get_by_id($args->object_id);
 		
 	// This does filter on keywords ALWAYS in OR mode.
+	//
+	// CRITIC:
+	// We have arrived after clicking in a node of Test Spec Tree where we have two classes of filters
+	// 1. filters on attribute COMMON to all test case versions => TEST CASE attribute like keyword_id
+	// 2. filters on attribute that can change on each test case version => execution type.
+	//
+	// For attributes at Version Level, filter is done ON LAST ACTIVE version, that can be NOT the VERSION
+	// already linked to test plan.
+	// This can produce same weird effects like this:
+	//
+	//  1. Test Suite A - create TC1 - Version 1 - exec type MANUAL
+	//  2. Test Suite A - create TC2 - Version 1 - exec type AUTO
+	//  3. Test Suite A - create TC3 - Version 1 - exec type MANUAL
+	//  4. Use feature ADD/REMOVE test cases from test plan.
+	//  5. Add TC1 - Version 1 to test plan
+	//  6. Apply filter on exec type AUTO
+	//  7. Tree will display (Folder) Test Suite A with 1 element
+	//  8. click on folder, then on RIGHT pane:
+	//     TC2 - Version 1 NOT ASSIGNED TO TEST PLAN is displayed
+	//  9. Use feature edits test cases, to create a new version for TC1 -> Version 2 - exec type AUTO
+	// 10. Use feature ADD/REMOVE test cases from test plan.
+	// 11. Apply filter on exec type AUTO
+	// 12. Tree will display (Folder) Test Suite A with 2 elements
+	// 13. click on folder, then on RIGHT pane:
+	//     TC2 - Version 1 NOT ASSIGNED TO TEST PLAN is displayed
+	//     TC1 - Version 2 NOT ASSIGNED TO TEST PLAN is displayed  ----> THIS IS RIGHT but WRONG
+	//     Only one TC version can be linked to test plan, and TC1 already is LINKED BUT with VERSION 1.
+	//     Version 2 is displayed because it has EXEC TYPE AUTO
+	// 
+	// How to solve ?
+	// Filters regarding this kind of attributes WILL BE NOT APPLIEDED to get linked items
+	// In this way counters on Test Spec Tree and amount of TC displayed on right pane will be coherent.
+	// 
+	
 	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
 	$testCaseSet = null;
-	if(!is_null($keywordsFilter))
+	if(!is_null($keywordsFilter) )
 	{ 
 	    // With this pieces we implement the AND type of keyword filter.
 	    $keywordsTestCases = $tproject_mgr->get_keywords_tcases($args->tproject_id,$keywordsFilter->items,
@@ -196,7 +231,10 @@ if($do_display)
 	$cfields=$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
     $opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
     $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
-    $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet);
+
+	// 20100411 - BUGID 2797 - filter by test case execution type
+    $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 'exec_type' => $args->executionType);
+
 	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$filters,$opt);
   
@@ -208,8 +246,6 @@ if($do_display)
     $gui->drawSavePlatformsButton = false;
     $gui->drawSaveCFieldsButton = false;
 
-    // new dBug($gui->items);
-    // die();
     if( !is_null($gui->items) )
     {
 		initDrawSaveButtons($gui);
@@ -267,6 +303,12 @@ function init_args()
 	$args->userID = $_SESSION['currentUser']->dbID;
 	$args->testerID = isset($_REQUEST['testerID']) ? intval($_REQUEST['testerID']) : 0;
     $args->send_mail = isset($_REQUEST['send_mail']) ? $_REQUEST['send_mail'] : false;
+
+	// BUGID 2797 - filter by test case execution type
+	// 0 -> Any, but has to be converter to null to be used on call to other functions
+	$args->executionType = isset($_REQUEST['executionType']) ? intval($_REQUEST['executionType']) : 0;
+	$args->executionType = ($args->executionType > 0) ? intval($_REQUEST['executionType']) : null;
+
 
 	return $args;
 }

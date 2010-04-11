@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.52 2010/03/09 04:06:11 amkhullar Exp $
+ * @version    	CVS: $Id: specview.php,v 1.53 2010/04/11 14:50:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20100411 - franciscom - BUGID 2797 - filter by test case execution type
+ *
  *  20100218 - asimon - BUGID 3026 - added parameter $testcaseFilter on keywordFilteredSpecView
  *						to include functionality previously used on tc_exec_assignment.php
  * 						to show only testcases present in filter argument
@@ -178,7 +180,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	                       'prune_unlinked_tcversions' => 0,
 	                       'add_custom_fields' => 0);
 
-	$my['filters'] = array('keywords' => 0, 'testcases' => null);
+	// BUGID 2797 - filter by test case execution type
+	$my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null);
 	foreach( $my as $key => $settings)
 	{
 		if( !is_null($$key) && is_array($$key) )
@@ -203,10 +206,14 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	$hash_descr_id = $tcase_mgr->tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 
+	// BUGID 2797 - filter by test case execution type
 	$filters = array('keyword_id' => $my['filters']['keywords'], 
 	                 'tcase_id' => $my['filters']['testcases'], 
-		             'tcase_node_type_id' => $hash_descr_id['testcase']);
-	$test_spec = getTestSpecFromNode($db,$tobj_id,$id,$spec_view_type,$filters);
+		             'tcase_node_type_id' => $hash_descr_id['testcase'],
+		             'exec_type' => $my['filters']['exec_type']);
+		             
+	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$tobj_id,$id,$spec_view_type,$filters);
+	
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
 	$idx = 0;
 	$a_tcid = array();
@@ -220,12 +227,6 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
       	                                                               $test_spec,$platforms);
 	} 
 
-    // new dBug($a_tcid);
-    // new dBug($a_tsuite_idx);
-    // new dBug($tsuite_tcqty);
-    // new dBug($out);
-	// new dBug($linked_items);
-	
 	// This code has been replace (see below on Remove empty branches)
 	// Once we have created array with testsuite and children testsuites
 	// we are trying to remove nodes that has 0 test case count.
@@ -254,6 +255,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 		$tcaseSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS);
 		$result = addLinkedVersionsInfo($tcaseSet,$a_tsuite_idx,$out,$linked_items);
 	}
+	
 	
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
 	// that do not need to be displayed on user interface.
@@ -312,15 +314,37 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 }
 
 
-/*
-  rev: 20080919 - franciscom - BUGID 2716
-*/
+/**
+ * get linked versions filtered by Keyword ID
+ * Filter is done ONLY on attributes THAT ARE COMMON to ALL test case versions,
+ * because (till now) while adding/removing test cases user works on Test Spec Tree
+ * and filter applied to this tree acts on:
+ *
+ * 1. attributes COMMON to all versions
+ * 2. attributes present ON LAST ACTIVE version.
+ *	
+ * But do no make considerations regarding versions linked to test plan
+ * DEV NOTE: may be this has to be changed in future ?	
+ *
+ * @param ref $argsObj: stdClass object with information about filters
+ * @param ref $tplanMgr: test plan manager object
+ * @param ref $tcaseMgr: test case manager object
+ *  
+ *
+ * @internal Revisions:
+ *	
+ *	20080919 - franciscom - BUGID 2716
+ *
+ */
 function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 {
 	$doFilterByKeyword=(!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
 	
 	// Multiple step algoritm to apply keyword filter on type=AND
 	// get_linked_tcversions filters by keyword ALWAYS in OR mode.
+	//
+	// BUGID 2797 - filter by test case execution type
+	// $filters = array('keyword_id' => $argsObj->keyword_id, 'exec_type' => $argsObj->executionType);
 	$filters = array('keyword_id' => $argsObj->keyword_id);
 	$options = array('output' => 'mapOfArray');
 	$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$options);
@@ -408,22 +432,32 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
  * @param integer $masterContainerId can be a Test Project Id, or a Test Plan id.
  *                          is used only if keyword id filter has been specified
  *                          to get all keyword defined on masterContainer.
+ *
  * @param integer $nodeId node that will be root of the view we want to build.
  * 
+ * @param string $specViewType: type of view requested
+ *
+ * @param array $filters
+ *
  * @return array map with view (test cases subtree)
  * 
+ * 20100411 - franciscom - added logic to filter by execution type
  */
-function getTestSpecFromNode(&$dbHandler,$masterContainerId,$nodeId,$specViewType,$filters)
+function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,$masterContainerId,$nodeId,$specViewType,$filters)
 {
-	$applyFilters=false;
-	$testCaseSet=null;
+	$applyFilters = false;
+	$testCaseSet = null;
+	$tck_map = null;
 	$tobj_mgr = new testproject($dbHandler);
 	$test_spec = $tobj_mgr->get_subtree($nodeId);
-	$useFilter=array('keyword_id' => false, 'tcase_id' => false);
+	$key2loop = null;
+	
+	// 20100411 - BUGID 2797 - filter by test case execution type
+	$useFilter=array('keyword_id' => false, 'tcase_id' => false, 'exec_id' => false);
 	
 	if(($useFilter['keyword_id']=$filters['keyword_id'] > 0))
 	{
-		$applyFilters=true;
+		$applyFilters = true;
 		switch ($specViewType)
 		{
 			case 'testplan':
@@ -433,46 +467,64 @@ function getTestSpecFromNode(&$dbHandler,$masterContainerId,$nodeId,$specViewTyp
 		$tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
 	}  
 	
+	
 	if( ($useFilter['tcase_id']=!is_null($filters['tcase_id']) ))
 	{
-		$applyFilters=true;
+		$applyFilters = true;
 		$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
 	}
-	
+
+	if( ($useFilter['exec_type'] = !is_null($filters['exec_type']) ))
+	{
+		$applyFilters = true;
+	}
+
 	if( $applyFilters )
 	{
 		$key2loop = array_keys($test_spec);
 		
-		// foreach($test_spec as $key => $node)
-		// {
-		// 	if( ($node['node_type_id'] == $filters['tcase_node_type_id']) && 
-		// 			( 
-		// 					($useFilter['keyword_id'] && !isset($tck_map[$node['id']]) ) ||
-		// 					($useFilter['tcase_id'] && !in_array($node['id'],$testCaseSet))
-		// 			)  
-		// 	)
-		// 	{
-		// 		$test_spec[$key]=null; 
-		// 	}
-		// }
-		
-        // 20091206 - franciscom 
+		// first step: generate list of TEST CASE NODES
+		$itemSet = null ;
 		foreach($key2loop as $key)
 		{
-			if( ($test_spec[$key]['node_type_id'] == $filters['tcase_node_type_id']) && 
-				( 
-					($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$key]['id']]) ) ||
-					($useFilter['tcase_id'] && !in_array($test_spec[$key]['id'],$testCaseSet))
-				)  
-			)
+			if( ($test_spec[$key]['node_type_id'] == $filters['tcase_node_type_id']) )
 			{
-				$test_spec[$key]=null; 
+				$itemSet[$test_spec[$key]['id']] = $key; 
+			}
+		}
+		$itemKeys = $itemSet;
+		foreach($itemKeys as $key => $tspecKey)
+		{
+			if( ($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) ||
+				($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet))
+			  )	
+			{
+				$test_spec[$tspecKey]=null; 
+				unset($itemSet[$key]);
+			}
+		}
+		
+		if( $useFilter['exec_type'] && count($itemSet[$key]) > 0 )
+		{
+			$targetSet = array_keys($itemSet);
+			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet);
+			$tcvidSet = array_keys($tcversionSet);
+			// $options = array('access_key' => 'testcase_id');
+			$options = null;
+			$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['exec_type'],$options);
+			$setToRemove = array_diff_key($tcversionSet,$allowedSet);
+			if( !is_null($setToRemove) &&  count($setToRemove) > 0 )
+			{
+				foreach($setToRemove as $key => $value)
+				{
+					$tspecKey = $itemSet[$value['id']]; 	
+					$test_spec[$tspecKey]=null; 
+				}
 			}
 		}
 	}
 	
 	unset($tobj_mgr);
-	
 	return $test_spec;
 }
 
@@ -698,7 +750,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 				$outRef['tcversions_execution_type'] = array();
 				$outRef['tcversions_qty'] = 0;
 				$outRef['linked_version_id'] = 0;
-				$outRef['executed'] = null; 'no';
+				$outRef['executed'] = null; // 'no';
 	
 				// useful for tc_exec_assignment.php          
 				$outRef['user_id'] = null; //0;
@@ -914,5 +966,4 @@ function getPlatforms($db,$tproject_id,$testplan_id)
 	}
 	return $platforms;
 }
-
 ?>

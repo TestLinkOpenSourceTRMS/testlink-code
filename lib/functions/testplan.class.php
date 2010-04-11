@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.172 2010/02/17 15:57:27 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.173 2010/04/11 14:50:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -924,7 +924,7 @@ class testplan extends tlObjectWithAttachments
 			}
 			break;
 		}
-
+		
         // Multiple Test Case Steps Feature
         if( !is_null($recordset) )
         {
@@ -2992,14 +2992,14 @@ class testplan extends tlObjectWithAttachments
 				$totals[$platformID]['details'][$status_verbose]['qty']=0;
 			}
         }
-        new dBug($totals);
+        // new dBug($totals);
         
 		// First step - get not run
 		$filters=null;
         $options=array('group_by_platform_tcversion' => true);
         $notRunResults = $this->getNotExecutedLinkedTCVersionsDetailed($id,$filters,$options);
         
-        new dBug($notRunResults);
+        // new dBug($notRunResults);
         
         
         $loop2do = count($notRunResults);
@@ -3021,7 +3021,7 @@ class testplan extends tlObjectWithAttachments
         // NEED TO BE FIXED
         //
 
-        new dBug($totals);
+        // new dBug($totals);
                 	
 		// Second step - get other results
 		$filters = null;

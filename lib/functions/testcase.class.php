@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.265 2010/04/11 09:44:52 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.266 2010/04/11 14:50:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20100411 - franciscom - new method - get_last_active_version()
+ * 20100411 - franciscom - new methods: get_last_active_version(),filter_tcversions_by_exec_type()
  * 20100409 - franciscom - BUGID 3367: Error after trying to copy a test case that the name is in the size limit.
  * 20100330 - eloff - BUGID 3329 - fixes test plan usage with platforms
  * 20100323 - asimon - fixed BUGID 3316 in show()
@@ -4329,6 +4329,32 @@ class testcase extends tlObjectWithAttachments
 			   " AND NH_TCVERSION.parent_id IN ({$itemSet}) " .
 			   " GROUP BY NH_TCVERSION.parent_id " .
 			   " ORDER BY NH_TCVERSION.parent_id ";
+
+		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+	    return $recordset;
+	}
+
+
+	/**
+	 * for a given set of test cases, search on the ACTIVE version set, and return for each test case, 
+	 * the corresponding MAX(version number) 
+	 *
+	 */
+	function filter_tcversions_by_exec_type($tcversion_id,$exec_type,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $recordset = null;
+	    $itemSet = implode(',',(array)$tcversion_id);
+
+	    $my['options'] = array( 'access_key' => 'id');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
+		$sql = "/* $debugMsg */ " . 	    
+			   " SELECT TCV.id, NH_TCVERSION.parent_id AS testcase_id " .
+			   " FROM {$this->tables['tcversions']} TCV " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
+			   " ON NH_TCVERSION.id = TCV.id AND TCV.execution_type={$exec_type}" .
+			   " AND NH_TCVERSION.id IN ({$itemSet}) ";
 
 		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
 	    return $recordset;

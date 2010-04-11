@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/11/29 19:18:42 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/04/11 09:28:17 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -27,6 +27,15 @@ echo "<pre> testcase - constructor - testcase(&\$db)";echo "</pre>";
 $tcase_mgr=new testcase($db);
 // new dBug($tcase_mgr);
 
+$items = array(1628,1626,1616,392,531);
+$va = $tcase_mgr->get_last_active_version(1628);
+new dBug($va);
+die();
+
+// SELECT MAX(version) AS version, NH_TCVERSION.parent_id AS id  FROM tcversions TCV  
+// JOIN nodes_hierarchy NH_TCVERSION  ON NH_TCVERSION.id = TCV.id AND TCV.active=1  
+// AND NH_TCVERSION.parent_id IN ()  GROUP BY NH_TCVERSION.parent_id  ORDER BY NH_TCVERSION.parent_id , -1) called at [C:\usr\local\xampp-1.7.2\xampp\htdocs\head-20100315\lib\functions\database.class.php:593]
+// #1  database->fetchRowsIntoMap(/* Class:testcase - Method: get_last_active_version 
 
 // $old_article = file_get_contents('./old_article.txt');
 // $new_article = $_REQUEST['article']; /* Let's say that someone pasted a new article to html form */

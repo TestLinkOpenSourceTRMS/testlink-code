@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testcase.class.test.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/04/11 09:28:17 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/04/11 09:45:02 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -28,8 +28,19 @@ $tcase_mgr=new testcase($db);
 // new dBug($tcase_mgr);
 
 $items = array(1628,1626,1616,392,531);
-$va = $tcase_mgr->get_last_active_version(1628);
+$va = $tcase_mgr->get_last_active_version($items);
 new dBug($va);
+
+$va = $tcase_mgr->get_last_active_version($items[0]);
+new dBug($va);
+
+$options = array('access_key' => 'id', 'max_field' => 'version');
+$va = $tcase_mgr->get_last_active_version($items,$options);
+new dBug($options);
+new dBug($items);
+new dBug($va);
+
+
 die();
 
 // SELECT MAX(version) AS version, NH_TCVERSION.parent_id AS id  FROM tcversions TCV  

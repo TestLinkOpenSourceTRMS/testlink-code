@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.85 2010/03/21 10:03:52 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.86 2010/04/11 08:47:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -197,7 +197,22 @@ class tree extends tlObject
               node is can be considered as root of subtree.
               
     args : node_id: root of subtree
-           node_type_id: null => no filter, if present ONLY NODES OF this type will be included
+           node_type_id: null => no filter
+           				if present ONLY NODES OF this type will be ANALIZED and traversed
+           				Example:
+           				TREE
+           					|__ TSUITE_1
+           							|
+           							|__TSUITE_2
+           							|     |__TC_XZ
+           							|
+           							|__TC1
+           							|__TC2
+           							
+           				node_type_id = TC and ROOT=Tree => output=NULL			
+           				node_type_id = TC and ROOT=TSUITE_1 => output=TC1,TC2
+
+           				
            output: null => list, not null => array
 
     

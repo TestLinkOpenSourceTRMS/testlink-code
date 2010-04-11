@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.263 2010/04/09 20:30:16 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.264 2010/04/11 09:28:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100411 - franciscom - new method - get_last_active_version()
  * 20100409 - franciscom - BUGID 3367: Error after trying to copy a test case that the name is in the size limit.
  * 20100330 - eloff - BUGID 3329 - fixes test plan usage with platforms
  * 20100323 - asimon - fixed BUGID 3316 in show()
@@ -4288,6 +4289,30 @@ class testcase extends tlObjectWithAttachments
 			   " AND TCV.tc_external_id=$external_id ";
 	   
 		$sql .= " AND NH_TCASE_PARENT.id = {$parent_id}" ;
+		$recordset = $this->db->fetchRowsIntoMap($sql,'id');
+	    return $recordset;
+	}
+
+
+	/**
+	 * for a given set of test cases, search on the ACTIVE version set, and return for each test case, 
+	 * the corresponding MAX(version number) 
+	 *
+	 */
+	function get_last_active_version($id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $recordset = null;
+	    $itemSet = implode(',',(array)$id);
+		$sql = "/* $debugMsg */ " . 	    
+			   " SELECT MAX(version) AS version, NH_TCVERSION.parent_id AS id " .
+			   " FROM {$this->tables['tcversions']} TCV " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
+			   " ON NH_TCVERSION.id = TCV.id AND TCV.active=1 " .
+			   " AND NH_TCVERSION.parent_id IN ({$itemSet}) " .
+			   " GROUP BY NH_TCVERSION.parent_id " .
+			   " ORDER BY NH_TCVERSION.parent_id ";
+
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id');
 	    return $recordset;
 	}

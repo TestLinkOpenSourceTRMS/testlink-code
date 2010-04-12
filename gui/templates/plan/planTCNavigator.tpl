@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.25 2010/03/02 09:19:37 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.26 2010/04/12 11:48:12 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
 
+	20100412 - asimon - BUGID 3379, changed displaying of some filters
 	20100302 - asimon - BUGID 3049, added button in filter frame
 	20100218 - asimon - BUGID 3049, changed root_href
 	20100202 - asimon - BUGID 2455, BUGID 3026, changed filtering 
@@ -104,9 +105,12 @@ function goToUnassignPage(id)
 </head>
 
 <body onload="javascript:
+	{* BUGID 3379 *}
+	{if $gui->buildCount > 1}
 	triggerBuildChooser('deactivatable',
 						'filter_method',
 						{$gui->filter_method_specific_build});
+	{/if}
 	triggerAssignedBox('filter_assigned_to',
 						'include_unassigned',
 						'{$gui->str_option_any}',

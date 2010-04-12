@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.102 $
- * @modified $Date: 2010/04/09 09:55:34 $ by $Author: erikeloff $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2010/04/12 11:48:03 $ by $Author: asimon83 $
  *
  * rev:
  *      20100409 - eloff - BUGID 3050 - remember selected platform and build in session
@@ -571,7 +571,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     
     // count of active builds that are shown and can be filtered
     $gui->filterBuildCount = count($gui->optFilterBuild['items']);
-           
+    
     $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;

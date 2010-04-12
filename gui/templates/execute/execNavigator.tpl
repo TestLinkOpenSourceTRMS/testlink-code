@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.40 2010/04/09 09:54:29 erikeloff Exp $ *}
+{* $Id: execNavigator.tpl,v 1.41 2010/04/12 11:48:14 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20100412 - asimon - BUGID 3379 - changed display method for some filters 
   20100409 - eloff - BUGID 3050 - changed filter panels background to grey
   20100222 - asimon - moved plattform select box from filters to settings panel
   20100202 - asimon - BUGID 2455, BUGID 3026 - changes on filters
@@ -81,9 +82,11 @@ rev :
 {* ===================================================================== *}
 
 <body onload="javascript:
+	{if $gui->filterBuildCount > 1}
 	triggerBuildChooser('deactivatable',
 						'filter_method',
 						{$gui->filter_method_specific_build});
+	{/if}
 	triggerAssignedBox('filter_assigned_to',
 						'include_unassigned',
 						'{$gui->str_option_any}',
@@ -94,7 +97,7 @@ rev :
 							{$gui->filter_method_current_build});
 	{/if}
 ">
-	
+
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {assign var="build_number" value=$gui->optBuild.selected }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -111,11 +114,11 @@ rev :
 			{$labels.caption_nav_settings}
 		</div>
 
-		<div id="tplan_settings" class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%; background: #EEE">
+		<div id="tplan_settings" class="x-panel-body exec_additional_info" "style="padding-top: 3px;">
 			<input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
 			<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 
-			<table>
+			<table class="smallGrey" style="width:98%;">
 			{if $gui->map_tplans != '' }
 				<tr>
 					<th width="75">{$labels.test_plan}</th>
@@ -153,8 +156,8 @@ rev :
 		<div class="x-panel-header x-unselectable">
 			{$labels.caption_nav_filters}
 		</div>
-		<div class="x-panel-body exec_additional_info" style="font-size: smaller; width: 100%; background: #eee">
-			<table>
+		<div class="x-panel-body exec_additional_info" style="padding-top: 3px;">
+			<table class="smallGrey" style="width:98%;">
 				<tr style="{$keywordsFilterDisplayStyle}">
 					<th>{$labels.keyword}</th>
 					<td>

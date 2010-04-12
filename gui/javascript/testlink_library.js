@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.98 2010/04/08 15:11:32 asimon83 Exp $
+// $Id: testlink_library.js,v 1.99 2010/04/12 11:48:07 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -1074,12 +1074,12 @@ function get_docs(name, server_name)
  * (in case of some filter settings)
  * (testcase execution & testcase execution assignment, BUGID 2455, BUGID 3026)
  * 
- * @author asimon
+ * @author Andreas Simon
  * @param build_id_combo box in which the build is chosen
  * @param filter_method_combo box in which the filter method is chosen
  * @param specific_build_value value for which the box shall be disabled
  */
-function triggerBuildChooser(deactivatable_id, filter_method_combo_id, specific_build_value) 
+function triggerBuildChooser(deactivatable_id, filter_method_combo_id, specific_build_value)
 {
 	var deactivatable = document.getElementById(deactivatable_id);
 	var filter_method_combo = document.getElementById(filter_method_combo_id);
@@ -1096,7 +1096,7 @@ function triggerBuildChooser(deactivatable_id, filter_method_combo_id, specific_
  * used to disable the "include unassigned testcases" checkbox when it should not be used
  * (testcase execution & testcase execution assignment, BUGID 2455, BUGID 3026)
  * 
- * @author asimon
+ * @author Andreas Simon
  * @param filter_assigned_to combobox in which assignment is chosen
  * @param include_unassigned checkbox for including unassigned testcases
  * @param str_option_any string value anybody
@@ -1123,7 +1123,7 @@ function triggerAssignedBox(filter_assigned_to_id, include_unassigned_id,
  * disable unneeded filters in the filter method combo box
  * (testcase execution & testcase execution assignment, BUGID 2455, BUGID 3026)
  * 
- * @author asimon
+ * @author Andreas Simon
  * @param filter_method_combo the box which shall be disabled
  * @param value2select the string which shall be selected in the box before disabling it
  */

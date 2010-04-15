@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.51 2010/04/15 17:44:29 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.52 2010/04/15 18:29:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -104,9 +104,13 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->keywords_map = $tprojectMgr->get_keywords_map($argsObj->tproject_id); 
     if(!is_null($gui->keywords_map))
     {
+        $gui->keywords_map = array( 0 => $gui->str_option_any) + $gui->keywords_map;
         $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
     }
 
+    new dBug($gui->keywords_map);
+	new dBug($gui->keywordsFilterItemQty);
+	
     // filter using user roles
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
     $gui->map_tplans = array();

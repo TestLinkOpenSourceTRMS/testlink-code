@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: execNavigator.php,v $
  *
- * @version $Revision: 1.103 $
- * @modified $Date: 2010/04/12 11:48:03 $ by $Author: asimon83 $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2010/04/15 18:43:54 $ by $Author: franciscom $
  *
  * rev:
  *      20100409 - eloff - BUGID 3050 - remember selected platform and build in session
@@ -581,8 +581,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->keywords_map = $tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
     if(!is_null($gui->keywords_map))
     {
-        $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
         $gui->keywords_map = array( 0 => $gui->str_option_any) + $gui->keywords_map;
+        $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
     }
     
     // 20090517 - francisco.mancardi@gruppotesi.com

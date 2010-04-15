@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.54 2010/04/15 17:45:45 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.55 2010/04/15 18:36:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -504,7 +504,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			}
 		}
 		
-		if( $useFilter['exec_type'] && count($itemSet[$key]) > 0 )
+		if( $useFilter['exec_type'] && count($itemSet) > 0 )
 		{
 			$targetSet = array_keys($itemSet);
 			$options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
@@ -570,7 +570,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			}  // end switch
 		}
 	} // if apply filters
-	
 	unset($tobj_mgr);
 	return $test_spec;
 }

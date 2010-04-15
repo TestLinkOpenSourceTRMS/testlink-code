@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.57 2010/04/15 19:35:15 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.58 2010/04/15 19:36:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -580,7 +580,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		}
 	} // if apply filters
 	unset($tobj_mgr);
-	die();
 	return $test_spec;
 }
 

@@ -6,10 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.267 2010/04/15 17:45:45 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.268 2010/04/15 19:58:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20100411 - franciscom - BUGID 3387 - changes in show()
  * 20100411 - franciscom - new methods: get_last_active_version(),filter_tcversions_by_exec_type()
  * 20100409 - franciscom - BUGID 3367: Error after trying to copy a test case that the name is in the size limit.
  * 20100330 - eloff - BUGID 3329 - fixes test plan usage with platforms
@@ -704,11 +706,13 @@ class testcase extends tlObjectWithAttachments
 	    }
 	
 	    // fine grain control of operations
-	    if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == 'no' )
+	    // if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == 'no' )
+		// BUGID 3387
+	    if( $viewer_defaults['disable_edit'] == 1 || has_rights($this->db,"mgt_modify_tc") == false)
 	    {
 	        $mode = 'editDisabled';
 	    }
-	    $gui->show_mode=$mode;
+	    $gui->show_mode = $mode;
 	    $gui->can_do = $this->getShowViewerActions($mode);
 	    
 		if(is_array($id))

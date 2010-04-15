@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.61 2010/04/15 19:59:04 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.62 2010/04/15 20:06:13 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100415 - franciscom - move compare version feature out of edit control, because seems OK
+                            that no user right is needed to compare.
     20100327 - franciscom - fixed problem with goback from create step
     20100301 - franciscom - BUGID 3181
     20100125 - franciscom - added check to display info about steps only if test case has steps
@@ -172,23 +174,23 @@ rev:
 		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
 		*}
 	</form>
-	
-	</div>
-	<div>
-	
-	{* compare versions *}
-	{if $args_testcase.version > 1}
-	<form id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
-			<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-			<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
-	</form>
-	{/if}
-	
 	</span>
 	
+	</div>
+{/if} {* user can edit *}
+
+	<div>
+	<span>
+	{* compare versions *}
+	{if $args_testcase.version > 1}
+	  <form id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
+	  		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+	  		<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
+	  </form>
+	{/if}
+	</span>
   </div> {* class="groupBtn" *}
 
-{/if} {* user can edit *}
 
 
 {* --------------------------------------------------------------------------------------- *}

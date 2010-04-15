@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.55 2010/04/15 18:36:39 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.56 2010/04/15 18:41:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -455,7 +455,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	// 20100411 - BUGID 2797 - filter by test case execution type
 	$useFilter=array('keyword_id' => false, 'tcase_id' => false, 'exec_type' => false);
 	
-	if(($useFilter['keyword_id']=$filters['keyword_id'] > 0))
+	if(($useFilter['keyword_id']=$filters['keyword_id'][0] > 0))
 	{
 		$applyFilters = true;
 		switch ($specViewType)

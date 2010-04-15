@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.56 2010/04/15 18:41:53 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.57 2010/04/15 19:35:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -428,18 +428,28 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
  *	will return subtree that start at nodeId.
  *	If filters are given, the subtree returned is filtered.
  * 
+ *	Important Notice regaring keyword filtering
+ *	Keyword filter logic inside this function seems to work ONLY on OR mode.
+ *	Then how the AND mode is implemented ?
+ *	Filter for test case id is used, and the test case set has been generated
+ *	applying AND or OR logic (following user's choice).
+ *	Then seems that logic regarding keywords here, may be can be removed
+ *
  * @param integer $masterContainerId can be a Test Project Id, or a Test Plan id.
- *                          is used only if keyword id filter has been specified
- *                          to get all keyword defined on masterContainer.
+ *                is used only if keyword id filter has been specified
+ *                to get all keyword defined on masterContainer.
  *
  * @param integer $nodeId node that will be root of the view we want to build.
  * 
  * @param string $specViewType: type of view requested
  *
  * @param array $filters
+ *	  			filters['keyword_id']: array of keywords 
  *
+ * 
  * @return array map with view (test cases subtree)
  * 
+ * @internal revisions
  * 20100411 - franciscom - added logic to filter by execution type
  */
 function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContainerId,$nodeId,$specViewType,$filters)
@@ -478,7 +488,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	{
 		$applyFilters = true;
 	}
-
 	if( $applyFilters )
 	{
 		$key2loop = array_keys($test_spec);
@@ -571,6 +580,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		}
 	} // if apply filters
 	unset($tobj_mgr);
+	die();
 	return $test_spec;
 }
 

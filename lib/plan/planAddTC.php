@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.95 2010/04/11 15:30:42 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.96 2010/04/15 17:44:29 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -235,7 +235,7 @@ if($do_display)
 	// 20100411 - BUGID 2797 - filter by test case execution type
     $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 'exec_type' => $args->executionType);
 
-	$out = gen_spec_view($db,'testproject',$args->tproject_id,$args->object_id,$tsuite_data['name'],
+	$out = gen_spec_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$filters,$opt);
   
   	

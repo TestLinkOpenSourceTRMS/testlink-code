@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.50 2010/04/11 15:30:42 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.51 2010/04/15 17:44:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -203,13 +203,16 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 
 	if($applyFilter)
 	{
+		// 20100412 - franciscom
+		$filters['testplan'] = $argsObj->tplan_id;
 		$options = array('forPrinting' => NOT_FOR_PRINTING, 'hideTestCases' => HIDE_TESTCASES,
 		                 'tc_action_enabled' => ACTION_TESTCASE_DISABLE,
 		                 'ignore_inactive_testcases' => IGNORE_INACTIVE_TESTCASES,
-		                 'getArguments' => $guiObj->args);
+		                 'getArguments' => $guiObj->args, 'viewType' => 'testSpecTreeForTestPlan');
 		
 		$treeMenu = generateTestSpecTree($dbHandler,$argsObj->tproject_id, $argsObj->tproject_name,
 		                                 $guiObj->menuUrl,$filters,$options);
+		                                 
 	    // When using filters I need to switch to static generated tree, instead of Lazy Loading Ajax Tree
 	    // that's reason why I'm re-creating from scratch ajaxTree.
 	    //

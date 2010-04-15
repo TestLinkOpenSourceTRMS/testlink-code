@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.117 2010/02/17 15:57:27 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.118 2010/04/15 17:45:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *		
+ *	20100415 - franciscom - BUGID 2797 - filter by test case execution type
  *	20100202 - asimon - changes for filtering, BUGID 2455, BUGID 3026
  *						added filter_by_* - functions, changed generateExecTree()
  *	20091212 - franciscom - prepareNode(), generateTestSpecTree() interface changes
@@ -87,11 +88,15 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
     $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
 	$my = array();
+	
+	// 20100412 - franciscom
 	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0,'getArguments' => '', 
 	                       'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
-	                       'exclude_branches' => null);
+	                       'exclude_branches' => null, 'viewType' => 'testSpecTree');
 
-	$my['filters'] = array('keywords' => null, 'executionType' => null);
+	// 20100412 - franciscom
+	// testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
+	$my['filters'] = array('keywords' => null, 'executionType' => null, 'testplan' => null);
 
 	$my['options'] = array_merge($my['options'], (array)$options);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -155,7 +160,11 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 			$pnFilters['executionType'] = $my['filters']['executionType']->items;
 		}
 	    
+	    $pnFilters['testplan'] = $my['filters']['testplan'];
+	    
+	    // 20100412 - franciscom
 	    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 
+	    				   'viewType' => $my['options']['viewType'],	
 		                   'ignoreInactiveTestCases' => $my['options']['ignore_inactive_testcases']);
 		
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
@@ -286,12 +295,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *         'blocked'
  *         'not run'
  *
- * 
+ * @internal Revisions
+ * 20100415 - franciscom -  BUGID 2797
  */
-// function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
-//                      $tplan_tcases = null,$bHideTCs = 0,$assignedTo = null,$status = null, 
-//                      $ignore_inactive_testcases=0,$show_tc_id=1,$bGetExternalTcID = 1)
-                     
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
                      $tplan_tcases = null,$filters=null, $options=null)
 {
@@ -307,7 +313,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	if (!$tables)
 	{
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
-        $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
+        $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy','testplan_tcversions'));
     }	
 	if (!$hash_id_descr)
 	{
@@ -325,7 +331,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	if (!$my)
 	{
 		$my = array();
-		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1,
+		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
 		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0);
 		
 		$my['filters'] = array('status' => null, 'assignedTo' => null, 'executionType' => null);
@@ -353,7 +359,9 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	
 	if($node_type == 'testcase')
 	{
-		$viewType = is_null($tplan_tcases) ? 'testSpecTree' : 'executionTree';
+		// $viewType = is_null($tplan_tcases) ? 'testSpecTree' : 'executionTree';
+		$viewType = $my['options']['viewType'];
+		
 		if ($enabledFilters['keywords'])
 		{
 			if (!isset($tck_map[$node['id']]))
@@ -442,10 +450,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		}
 		
 		// -------------------------------------------------------------------
-		if ($node && $viewType=='testSpecTree')
+		if ($node && ($viewType=='testSpecTree' || $viewType=='testSpecTreeForTestPlan') )
 		{
 			$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
-			       " SELECT COALESCE(MAX(TCV.id),0) AS maxid, TCV.tc_external_id AS external_id" .
+			       " SELECT COALESCE(MAX(TCV.id),0) AS targetid, TCV.tc_external_id AS external_id" .
 				   " FROM {$tables['tcversions']} TCV, {$tables['nodes_hierarchy']} NH " .
 				   " WHERE  NH.id = TCV.id {$activeVersionClause} AND NH.parent_id={$node['id']} " .
 				   " GROUP BY TCV.tc_external_id ";
@@ -458,15 +466,37 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			else
 			{	
 			    $node['external_id'] = $rs[0]['external_id'];
+			    $target_id = $rs[0]['targetid'];
+				
 				if( $enabledFilters['executionType'] )
 				{
+					// BUGID 2797 
+					switch ($viewType)
+					{
+						case 'testSpecTreeForTestPlan':
+							// Try to get info from linked tcversions
+							// Platform is not needed
+							$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
+								   " SELECT DISTINCT TPTCV.tcversion_id AS targetid " .
+								   " FROM {$tables['tcversions']} TCV " .
+								   " JOIN {$tables['nodes_hierarchy']} NH " .
+								   " ON NH.id = TCV.id {$activeVersionClause} " .
+								   " AND NH.parent_id={$node['id']} " .
+								   " JOIN {$tables['testplan_tcversions']} TPTCV " .
+								   " ON TPTCV.tcversion_id = TCV.id " .
+								   " AND TPTCV.testplan_id = {$my['filters']['testplan']}";
+			    			$rs = $db->get_recordset($sql);
+							$target_id = !is_null($rs) ? $rs[0]['targetid'] : $target_id;
+						break;	
+					}		
+					
 					$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
-					       " SELECT TCV.execution_type " .
+						   " SELECT TCV.execution_type " .
 						   " FROM {$tables['tcversions']} TCV " .
-						   " WHERE TCV.id = {$rs[0]['maxid']} " .
+						   " WHERE TCV.id = {$target_id} " .
 						   " AND TCV.execution_type = {$my['filters']['executionType']} ";
-						   
 			    	$rs = $db->fetchRowsIntoMap($sql,'execution_type');
+										   
 			    	if(is_null($rs))
 			    	{
 			    		$node = null;
@@ -728,15 +758,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                    'urgencyImportance' => $urgencyImportance);
 			   
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-		    // echo "DEBUG - First Call to get_linked_tcversions()<br>";
-			// new dBug($tplan_tcases);   
-			// new dBug($test_spec);   
-			   
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'AND')
 			{
-			    // echo "DEBUG - \$doFilterByKeyword:" . ($doFilterByKeyword ? 'ON' : 'OFF') . "<br>";
-			    // echo "DEBUG - with AND Condition<br>";
-			
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
 
 				// CAUTION: if $filteredSet is null,
@@ -834,7 +857,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		
 		$pnFilters = array('assignedTo' => $assignedTo);
 		//$pnFilters = array('assignedTo' => $assignedTo, 'status' => $status);
-		$pnOptions = array('hideTestCases' => $bHideTCs);
+		
+		// 20100412 - franciscom
+		$pnOptions = array('hideTestCases' => $bHideTCs, 'viewType' => 'executionTree');
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,$pnFilters,$pnOptions);
 
@@ -909,8 +934,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 		// echo "Removing: {$node['id']} <br>";
 		unset($tcase_node[$node['id']]);
 	}
-	// new dBug($tcase_node);
-	
 	if (isset($node['childNodes']) && $node['childNodes'])
 	{
 	    // 20080615 - franciscom - need to work always original object
@@ -980,7 +1003,9 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 		
 		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 		$filters = null;
- 	    $options = array('hideTestCases' => 0);
+		
+		// 20100412 - franciscon
+ 	    $options = array('hideTestCases' => 0, 'viewType' => 'testSpecTree');
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 		                                 $tck_map,$tplan_tcases,$filters,$options);
 		$test_spec['testcase_count'] = $testcase_counters['testcase_count'];
@@ -1039,7 +1064,7 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 		}	
 		//@TODO: schlundus, can we speed up with NO_EXTERNAL?
 		$filters = null;
-		$options = array('hideTestCases' => 0);
+		$options = array('hideTestCases' => 0, 'viewType' => 'executionTree');
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,
 			                             $tck_map,$tplan_tcases,$filters,$options);
 		
@@ -1104,8 +1129,6 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 		$status_code_descr=$resultsCfg['code_status'];
 		$status_verbose=$resultsCfg['status_label'];
 	}
-	
-	// new dBug($node);
 	
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;

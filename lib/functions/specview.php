@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.53 2010/04/11 14:50:35 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.54 2010/04/15 17:45:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -212,8 +212,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 		             'tcase_node_type_id' => $hash_descr_id['testcase'],
 		             'exec_type' => $my['filters']['exec_type']);
 		             
-	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$tobj_id,$id,$spec_view_type,$filters);
-	
+	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$filters);
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
 	$idx = 0;
 	$a_tcid = array();
@@ -443,7 +442,7 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
  * 
  * 20100411 - franciscom - added logic to filter by execution type
  */
-function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,$masterContainerId,$nodeId,$specViewType,$filters)
+function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContainerId,$nodeId,$specViewType,$filters)
 {
 	$applyFilters = false;
 	$testCaseSet = null;
@@ -451,9 +450,10 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,$masterContainerId,$nodeId,$
 	$tobj_mgr = new testproject($dbHandler);
 	$test_spec = $tobj_mgr->get_subtree($nodeId);
 	$key2loop = null;
+	$useAllowed = false;
 	
 	// 20100411 - BUGID 2797 - filter by test case execution type
-	$useFilter=array('keyword_id' => false, 'tcase_id' => false, 'exec_id' => false);
+	$useFilter=array('keyword_id' => false, 'tcase_id' => false, 'exec_type' => false);
 	
 	if(($useFilter['keyword_id']=$filters['keyword_id'] > 0))
 	{
@@ -462,7 +462,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,$masterContainerId,$nodeId,$
 		{
 			case 'testplan':
 				$tobj_mgr = new testplan($dbHandler); 
-				break;  
+			break;  
 		}
 		$tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
 	}  
@@ -507,22 +507,69 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,$masterContainerId,$nodeId,$
 		if( $useFilter['exec_type'] && count($itemSet[$key]) > 0 )
 		{
 			$targetSet = array_keys($itemSet);
-			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet);
-			$tcvidSet = array_keys($tcversionSet);
-			// $options = array('access_key' => 'testcase_id');
-			$options = null;
-			$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['exec_type'],$options);
-			$setToRemove = array_diff_key($tcversionSet,$allowedSet);
-			if( !is_null($setToRemove) &&  count($setToRemove) > 0 )
+			$options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
+			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$options);
+		
+			switch($specViewType)
 			{
-				foreach($setToRemove as $key => $value)
-				{
-					$tspecKey = $itemSet[$value['id']]; 	
-					$test_spec[$tspecKey]=null; 
-				}
-			}
+			
+				case 'testPlanLinking':
+					// We need to analise linked items and spec
+					foreach($targetSet as $idx => $key)
+					{
+						$targetTestCase = $tcversionSet[$key]['testcase_id'];			
+						if( isset($linkedItems[$targetTestCase]) )
+						{
+							$item = current($linkedItems[$targetTestCase]);
+						}
+						else
+						{
+							$item = null;
+							if( isset($test_spec[$itemSet[$targetTestCase]]) )
+							{
+								$item = $tcversionSet[$targetTestCase];
+							}
+						}
+						if( !is_null($item) )
+						{
+							if( $item['execution_type'] != $filters['exec_type'] )
+							{
+								$tspecKey = $itemSet[$targetTestCase]; 	
+								$test_spec[$tspecKey]=null; 
+							}
+						}						
+					}
+				break;
+				
+				default:
+					$tcvidSet = array_keys($tcversionSet);
+					// $options = array('access_key' => 'testcase_id');
+					$options = null;
+					$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['exec_type'],$options);
+					if( !is_null($allowedSet) &&  count($allowedSet) > 0 )
+					{
+						$useAllowed = true;
+						foreach($allowedSet as $key => $value)
+						{
+							$tspecKey = $itemSet[$value['testcase_id']]; 	
+							$test_spec[$tspecKey]['version']=$value['version']; 
+						}
+						reset($allowedSet);
+					}
+	        		
+					$setToRemove = array_diff_key($tcversionSet,$allowedSet);
+					if( !is_null($setToRemove) &&  count($setToRemove) > 0 )
+					{
+						foreach($setToRemove as $key => $value)
+						{
+							$tspecKey = $itemSet[$value['testcase_id']]; 	
+							$test_spec[$tspecKey]=null; 
+						}
+					}
+				break;	
+			}  // end switch
 		}
-	}
+	} // if apply filters
 	
 	unset($tobj_mgr);
 	return $test_spec;

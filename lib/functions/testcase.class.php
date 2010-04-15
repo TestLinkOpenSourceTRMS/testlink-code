@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.266 2010/04/11 14:50:36 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.267 2010/04/15 17:45:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -4295,8 +4295,8 @@ class testcase extends tlObjectWithAttachments
 
 
 	/**
-	 * for a given set of test cases, search on the ACTIVE version set, and return for each test case, 
-	 * the corresponding MAX(version number) 
+	 * for a given set of test cases, search on the ACTIVE version set, and returns for each test case, 
+	 * an map with: the corresponding MAX(version number), oher info
 	 *
 	 */
 	function get_last_active_version($id,$options=null)
@@ -4312,17 +4312,18 @@ class testcase extends tlObjectWithAttachments
 	    {
 	   		case 'version':
 	   			$maxClause = " SELECT MAX(TCV.version) AS version ";
+	   			$selectClause = " SELECT TCV.version AS version ";
 	   		break;	
 
 	   		case 'tcversion_id':
 	   			$maxClause = " SELECT MAX(TCV.id) AS tcversion_id ";
+	   			$selectClause = " SELECT TCV.id AS tcversion_id ";
 	   		break;	
 	   		
 	   	}
 	    
-	    
 		$sql = "/* $debugMsg */ " . 	    
-			   " {$maxClause}, NH_TCVERSION.parent_id AS id " .
+			   " {$maxClause}, NH_TCVERSION.parent_id AS testcase_id " .
 			   " FROM {$this->tables['tcversions']} TCV " .
 			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
 			   " ON NH_TCVERSION.id = TCV.id AND TCV.active=1 " .
@@ -4330,14 +4331,26 @@ class testcase extends tlObjectWithAttachments
 			   " GROUP BY NH_TCVERSION.parent_id " .
 			   " ORDER BY NH_TCVERSION.parent_id ";
 
-		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+		// $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+		// HERE FIXED access keys
+		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+		if( !is_null($recordset) )
+		{
+			
+			$keySet = implode(',',array_keys($recordset));
+			$sql = "/* $debugMsg */ " . 	    
+				   " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
+				   " TCV.version,TCV.execution_type " .
+				   " FROM {$this->tables['tcversions']} TCV " .
+				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
+				   " ON NH_TCVERSION.id = TCV.id AND NH_TCVERSION.id IN ({$keySet}) ";
+			$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+		}
 	    return $recordset;
 	}
 
 
 	/**
-	 * for a given set of test cases, search on the ACTIVE version set, and return for each test case, 
-	 * the corresponding MAX(version number) 
 	 *
 	 */
 	function filter_tcversions_by_exec_type($tcversion_id,$exec_type,$options=null)
@@ -4346,15 +4359,17 @@ class testcase extends tlObjectWithAttachments
 	    $recordset = null;
 	    $itemSet = implode(',',(array)$tcversion_id);
 
-	    $my['options'] = array( 'access_key' => 'id');
+	    $my['options'] = array( 'access_key' => 'tcversion_id');
 	    $my['options'] = array_merge($my['options'], (array)$options);
 	    
 		$sql = "/* $debugMsg */ " . 	    
-			   " SELECT TCV.id, NH_TCVERSION.parent_id AS testcase_id " .
+			   " SELECT TCV.id AS tcversion_id, NH_TCVERSION.parent_id AS testcase_id, TCV.version " .
 			   " FROM {$this->tables['tcversions']} TCV " .
 			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
 			   " ON NH_TCVERSION.id = TCV.id AND TCV.execution_type={$exec_type}" .
 			   " AND NH_TCVERSION.id IN ({$itemSet}) ";
+
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
 		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
 	    return $recordset;

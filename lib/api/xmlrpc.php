@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2010/03/28 16:28:50 $ by $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2010/04/15 10:12:21 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,7 +22,8 @@
  * 
  *
  * rev : 
- *	20100328 - franciscom - BUGID 2645 - contribution - getChildrenTestSuites()
+ *	20100415 - franciscom - BUGID 3385 - contribution - getTestPlanPlatforms() (refactored)
+ *	20100328 - franciscom - BUGID 2645 - contribution - getTestSuitesForTestSuite()
  *	20100308 - franciscom - BUGID 3243 - checkPlatformIdentity()
  *	20100205 - franciscom - BUGID 3140 - _checkTCIDAndTPIDValid()	
  *	20091228 - franciscom - checkReqSpecQuality() - refactoring due to req versioning feature
@@ -271,6 +272,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.getTestProjectByName' => 'this:getTestProjectByName',
 	                            'tl.getTestPlanByName' => 'this:getTestPlanByName',
 	                            'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
+								'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',
 	                            'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
 	                            'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
                                 'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
@@ -3775,6 +3777,52 @@ public function getTestCase($args)
 	    }
 	    return $status_ok ? $items : $this->errors;
 	}
+
+
+	/**
+     * Returns the list of platforms associated to a given test plan
+     *
+     * @param
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param int $args["testplanid"]
+     * @return mixed $resultInfo
+     * 
+     * @access public
+     */
+	public function getTestPlanPlatforms($args)
+    {
+	    $operation=__FUNCTION__;
+        $msg_prefix="({$operation}) - ";
+    	$this->_setArgs($args);	
+		$status_ok = false;
+		$items = null;
+		
+		// Checks if a test plan id was provided
+		$status_ok = $this->_isParamPresent(self::$testPlanIDParamName,$msg_prefix,self::SET_ERROR);
+		
+		if($status_ok)
+		{
+			// Checks if the provided test plan id is valid
+			$status_ok=$this->_runChecks(array('authenticate','checkTestPlanID'),$msg_prefix);
+		}
+        if($status_ok)
+        {
+			$tplanID = $this->args[self::$testPlanIDParamName];
+        	// get test plan name is useful for error messages
+			$tplanInfo = $this->tplanMgr->get_by_id($tplanID);
+        	$items = $this->tplanMgr->getPlatforms($tplanID);  
+      		$status_ok = !is_null($platformInfo);
+      		
+            if(! ($status_ok = !is_null($items)) )
+            {
+   				$msg = sprintf($messagePrefix . TESTPLAN_HAS_NO_PLATFORMS_STR,$tplanInfo['name']);
+   				$this->errors[] = new IXR_Error(TESTPLAN_HAS_NO_PLATFORMS, $msg);
+            }
+        }
+	    return $status_ok ? $items : $this->errors;
+    }   
+
 
 
 

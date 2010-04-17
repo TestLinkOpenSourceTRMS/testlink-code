@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.119 2010/04/17 13:32:47 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.120 2010/04/17 15:59:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *		
+ *	20100417 - franciscom - BUGID 2498 - spec tree  - filter by test case spec importance
  *	20100417 - franciscom - BUGID 3380 - execution tree - filter by test case execution type
  *	20100415 - franciscom - BUGID 2797 - filter by test case execution type
  *	20100202 - asimon - changes for filtering, BUGID 2455, BUGID 3026
@@ -80,10 +81,6 @@ function filterString($str)
  */
  
  
-// function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$bForPrinting=0,
-// 				$bHideTCs = 0,$tc_action_enabled = 1,$getArguments = '',$keywordsFilter=null,
-// 				$ignore_inactive_testcases=0,$exclude_branches=null)
-
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
     $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
@@ -97,7 +94,9 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 
 	// 20100412 - franciscom
 	// testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
-	$my['filters'] = array('keywords' => null, 'executionType' => null, 'testplan' => null);
+	// 20100417 - franciscom - BUGID 2498
+	$my['filters'] = array('keywords' => null, 'executionType' => null, 'importance' => null,
+	                       'testplan' => null);
 
 	$my['options'] = array_merge($my['options'], (array)$options);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -159,6 +158,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	    if(!is_null($my['filters']['executionType']))
 		{
 			$pnFilters['executionType'] = $my['filters']['executionType']->items;
+		}
+
+		// BUGID 2498
+	    if(!is_null($my['filters']['importance']))
+		{
+			$pnFilters['importance'] = $my['filters']['importance']->items;
 		}
 	    
 	    $pnFilters['testplan'] = $my['filters']['testplan'];
@@ -310,6 +315,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     static $my;
     static $enabledFilters;
     static $activeVersionClause;
+    static $filterOnTCVersionAttribute;
+
     
 	if (!$tables)
 	{
@@ -345,7 +352,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	{
 	  $enabledFilters['keywords'] = !is_null($tck_map);
 	  $enabledFilters['executionType'] = !is_null($my['filters']['executionType']);
-	  $activeVersionClause = $enabledFilters['executionType'] ? " AND TCV.active=1 " : '';
+	  $enabledFilters['importance'] = !is_null($my['filters']['importance']);
+	  $filterOnTCVersionAttribute = $enabledFilters['executionType'] || $enabledFilters['importance'];
+
+	  // $activeVersionClause = $enabledFilters['executionType'] ? " AND TCV.active=1 " : '';
+	  $activeVersionClause = $filterOnTCVersionAttribute ? " AND TCV.active=1 " : '';
 	}
 	
 	
@@ -469,7 +480,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			    $node['external_id'] = $rs[0]['external_id'];
 			    $target_id = $rs[0]['targetid'];
 				
-				if( $enabledFilters['executionType'] )
+				// if( $enabledFilters['executionType'] )
+				if( $filterOnTCVersionAttribute )
 				{
 					// BUGID 2797 
 					switch ($viewType)
@@ -494,10 +506,19 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 					$sql = " /* $debugMsg - line:" . __LINE__ . " */ " . 
 						   " SELECT TCV.execution_type " .
 						   " FROM {$tables['tcversions']} TCV " .
-						   " WHERE TCV.id = {$target_id} " .
-						   " AND TCV.execution_type = {$my['filters']['executionType']} ";
+						   " WHERE TCV.id = {$target_id} ";
+					 	   
+					if( $enabledFilters['executionType'] )
+					{
+						$sql .= " AND TCV.execution_type = {$my['filters']['executionType']} ";
+					}
+					
+					if( $enabledFilters['importance'] )
+					{
+						$sql .= " AND TCV.importance = {$my['filters']['importance']} ";
+					}
+					
 			    	$rs = $db->fetchRowsIntoMap($sql,'execution_type');
-										   
 			    	if(is_null($rs))
 			    	{
 			    		$node = null;
@@ -1507,10 +1528,10 @@ function buildKeywordsFilter($keywordsId,&$guiObj)
 
 
 /**
- * generate array with test case execution type for a filter
+ * generate object with test case execution type for a filter
  *
  */
-function buildExecTypeFilter($execTypeSet,&$guiObj)
+function buildExecTypeFilter($execTypeSet)
 {
     $itemsFilter = null;
     
@@ -1521,12 +1542,31 @@ function buildExecTypeFilter($execTypeSet,&$guiObj)
         {
             $itemsFilter = new stdClass();
             $itemsFilter->items = $execTypeSet;
-            //$itemsFilter->type = isset($guiObj->keywordsFilterType) ? $guiObj->keywordsFilterType->selected: 'OR';
         }
     }
     
     return $itemsFilter;
 }
 
+/**
+ * generate object with test case importance for a filter
+ *
+ */
+function buildImportanceFilter($importance)
+{
+    $itemsFilter = null;
+    
+    if(!is_null($importance))
+    {
+        $items = array_flip((array)$importance);
+        if(!isset($items[0]))
+        {
+            $itemsFilter = new stdClass();
+            $itemsFilter->items = $importance;
+        }
+    }
+    
+    return $itemsFilter;
+}
 
 ?>

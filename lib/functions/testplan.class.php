@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.176 2010/04/17 21:53:47 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.177 2010/04/17 22:18:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -664,9 +664,9 @@ class testplan extends tlObjectWithAttachments
         // @TODO - 20091004 - franciscom
         // Think that this subquery in not good when we add execution filter
 		// $last_exec_subquery = " AND E.id IN ( SELECT MAX(id) " .
-		// 	 		          "               FROM  {$this->tables['executions']} executions " .
-		// 			          "               WHERE testplan_id={$id} %EXECSTATUSFILTER%" .
-		// 			          " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
+		// 	 		             "               FROM  {$this->tables['executions']} executions " .
+		// 			             "               WHERE testplan_id={$id} %EXECSTATUSFILTER%" .
+		// 			             " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
 
 		// I've had confirmation of BAD query;
 		// BUGID 3356: "Failed Test Cases" report is not updated when a test case 
@@ -761,11 +761,18 @@ class testplan extends tlObjectWithAttachments
 			if(count($my['filters']['exec_status']) > 0)
 			{
 				$otherexec['filter']=" E.status IN ('" . implode("','",$my['filters']['exec_status']) . "') ";
-				$status_filter=str_ireplace("E.", "executions.", $otherexec['filter']);
-			    $sql_subquery = str_ireplace("%EXECSTATUSFILTER%", "AND {$status_filter}", $last_exec_subquery);
+				
+				// 20100417 - franciscom - BUGID 3356
+				// $status_filter=str_ireplace("E.", "executions.", $otherexec['filter']);
+			    // $sql_subquery = str_ireplace("%EXECSTATUSFILTER%", "AND {$status_filter}", $last_exec_subquery);
+
+				// code commented before BUGID 3356
 			    // $sql_subquery = str_ireplace("E.", "executions.", $sql_subquery);
 				// $sql_subquery = $last_exec_subquery;
-				$executions['filter'] = " ( {$otherexec['filter']} {$sql_subquery} ) ";  
+				
+				// 20100417 - franciscom - BUGID 3356
+				// $executions['filter'] = " ( {$otherexec['filter']} {$sql_subquery} ) ";  
+				$executions['filter'] = " ( {$otherexec['filter']} {$last_exec_subquery} ) ";  
 			}
 			if( !is_null($notrun['filter']) )
 			{
@@ -919,9 +926,7 @@ class testplan extends tlObjectWithAttachments
 		// BUGID 989 - added NHB.node_order (test case order)
 		$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,platform_id,E.id ASC";
 
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
-		switch($my['options']['output'])
+ 		switch($my['options']['output'])
 		{ 
 			case 'array':
 			$recordset = $this->db->get_recordset($sql);

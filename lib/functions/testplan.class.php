@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.173 2010/04/11 14:50:36 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.174 2010/04/17 13:36:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -566,7 +566,7 @@ class testplan extends tlObjectWithAttachments
 		 	[tsuites_id]: default null.
 		 	              If present only tcversions that are children of this testsuites
 		 	              will be included
-		 	[exec_type] default null -> all types
+		 	[exec_type] default null -> all types. 
 		 	[platform_id]              
 		     		
          [options]: map with following keys
@@ -676,6 +676,7 @@ class testplan extends tlObjectWithAttachments
 			$platforms['filter'] = " AND T.platform_id = {$my['filters']['platform_id']} ";
 	    }
 		
+		// 20100417- Why to use a list ? - must be checked if is on
 		if( !is_null($my['filters']['exec_type']) )
 		{
 			$tcversion_exec_type['filter'] = "AND TCV.execution_type IN (" . 

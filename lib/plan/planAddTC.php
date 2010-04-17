@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.96 2010/04/15 17:44:29 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.97 2010/04/17 17:54:58 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100417 - BUGDID 2498 - filter by test case importance
  * 20100411 - BUGID 2797 - filter by test case execution type	
  * 20100225 - eloff - BUGID 3205 - Don't show "save platforms" when platforms aren't used
  * 20100129 - franciscom - moved here from template, logic to initialize:
@@ -233,7 +234,8 @@ if($do_display)
     $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
 
 	// 20100411 - BUGID 2797 - filter by test case execution type
-    $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 'exec_type' => $args->executionType);
+    $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 
+                     'exec_type' => $args->executionType, 'importance' => $args->importance);
 
 	$out = gen_spec_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$filters,$opt);
@@ -307,8 +309,11 @@ function init_args()
 	// BUGID 2797 - filter by test case execution type
 	// 0 -> Any, but has to be converter to null to be used on call to other functions
 	$args->executionType = isset($_REQUEST['executionType']) ? intval($_REQUEST['executionType']) : 0;
-	$args->executionType = ($args->executionType > 0) ? intval($_REQUEST['executionType']) : null;
+	$args->executionType = ($args->executionType > 0) ? $args->executionType : null;
 
+	// 0 -> Any, but has to be converter to null to be used on call to other functions
+	$args->importance = isset($_REQUEST['importance']) ? intval($_REQUEST['importance']) : 0;
+	$args->importance = ($args->importance > 0) ? $args->importance : null;
 
 	return $args;
 }

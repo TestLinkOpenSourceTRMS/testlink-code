@@ -9,13 +9,16 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.175 2010/04/17 15:42:06 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.176 2010/04/17 21:53:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
  * 	20100417 - franciscom - get_linked_tcversions() added importance on output data
+ *                          BUGID 3356: Failed Test Cases" report is not updated when a test case 
+ *                                      has been changed from "Failed" to "Passed"		 
+ *
  *  20100217 - asimon - added parameters open and active to getNumberOfBuilds()
  *  20100214 - franciscom - BUGID 2455, BUGID 3026 - Contribution by julian,asimon
  *  20100206 - eloff - BUGID 3060 - Adding getStatusTotalsByPriority()
@@ -619,7 +622,10 @@ class testplan extends tlObjectWithAttachments
                            - tcversion_id if has executions.
 
 	rev :
-		 20100417 - franciscom - added importance on output data 
+		 20100417 - franciscom - added importance on output data
+		 		  				 BUGID 3356: "Failed Test Cases" report is not updated when a test case 
+		 		  				 			  has been changed from "Failed" to "Passed"		 
+		 		  				 			  
          20090814 - franciscom - interface changes due to platform feature
 	*/
 	public function get_linked_tcversions($id,$filters=null,$options=null)
@@ -648,17 +654,33 @@ class testplan extends tlObjectWithAttachments
  		// Cast to array to handle $options = null
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 		$my['options'] = array_merge($my['options'], (array)$options);
+
+		// new dBug($my['filters']);
+		// new dBug($my['options']);
         
 		$groupByPlatform=($my['options']['output']=='mapOfMap') ? ',platform_id' : '';
         $groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
         
         // @TODO - 20091004 - franciscom
         // Think that this subquery in not good when we add execution filter
+		// $last_exec_subquery = " AND E.id IN ( SELECT MAX(id) " .
+		// 	 		          "               FROM  {$this->tables['executions']} executions " .
+		// 			          "               WHERE testplan_id={$id} %EXECSTATUSFILTER%" .
+		// 			          " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
+
+		// I've had confirmation of BAD query;
+		// BUGID 3356: "Failed Test Cases" report is not updated when a test case 
+		// 		  				 			  has been changed from "Failed" to "Passed"		 
+		//
+        // SUBQUERY CAN NOT HAVE ANY KIND OF FILTERING other that test plan.
+        // Adding exec status, means that we will get last exec WITH THIS STATUS, and not THE LATEST EXEC   
 		$last_exec_subquery = " AND E.id IN ( SELECT MAX(id) " .
 			 		          "               FROM  {$this->tables['executions']} executions " .
-					          "               WHERE testplan_id={$id} %EXECSTATUSFILTER%" .
+					          "               WHERE testplan_id={$id} " .
 					          " GROUP BY tcversion_id,testplan_id {$groupByPlatform} {$groupByBuild} )";
-
+           
+           
+           
 		$resultsCfg = config_get('results');
 		$status_not_run=$resultsCfg['status_code']['not_run'];
 		$sql_subquery='';
@@ -670,7 +692,8 @@ class testplan extends tlObjectWithAttachments
 		if( $my['options']['last_execution'] )
 		{
 			$executions['filter'] = " {$last_exec_subquery} ";
-			$executions['filter'] = str_ireplace("%EXECSTATUSFILTER%", "", $executions['filter']);
+			// 20100417 - franciscom - BUGID 3356
+			// $executions['filter'] = str_ireplace("%EXECSTATUSFILTER%", "", $executions['filter']);
 		}
 		
 		if( !is_null($my['filters']['platform_id']) )
@@ -895,6 +918,9 @@ class testplan extends tlObjectWithAttachments
 		
 		// BUGID 989 - added NHB.node_order (test case order)
 		$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,platform_id,E.id ASC";
+
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
 		switch($my['options']['output'])
 		{ 
 			case 'array':

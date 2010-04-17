@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.268 2010/04/15 19:58:17 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.269 2010/04/17 15:42:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100417 - franciscom - new method - filter_tcversions()
+ *						   get_last_active_version() - changes on output data 
  * 20100411 - franciscom - BUGID 3387 - changes in show()
  * 20100411 - franciscom - new methods: get_last_active_version(),filter_tcversions_by_exec_type()
  * 20100409 - franciscom - BUGID 3367: Error after trying to copy a test case that the name is in the size limit.
@@ -4302,6 +4304,8 @@ class testcase extends tlObjectWithAttachments
 	 * for a given set of test cases, search on the ACTIVE version set, and returns for each test case, 
 	 * an map with: the corresponding MAX(version number), oher info
 	 *
+	 * @internal Revisions
+	 * 20100417 - franciscom - added importance on output data
 	 */
 	function get_last_active_version($id,$options=null)
 	{
@@ -4344,7 +4348,7 @@ class testcase extends tlObjectWithAttachments
 			$keySet = implode(',',array_keys($recordset));
 			$sql = "/* $debugMsg */ " . 	    
 				   " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
-				   " TCV.version,TCV.execution_type " .
+				   " TCV.version,TCV.execution_type,TCV.importance " .
 				   " FROM {$this->tables['tcversions']} TCV " .
 				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
 				   " ON NH_TCVERSION.id = TCV.id AND NH_TCVERSION.id IN ({$keySet}) ";
@@ -4366,6 +4370,8 @@ class testcase extends tlObjectWithAttachments
 	    $my['options'] = array( 'access_key' => 'tcversion_id');
 	    $my['options'] = array_merge($my['options'], (array)$options);
 	    
+	    
+	    
 		$sql = "/* $debugMsg */ " . 	    
 			   " SELECT TCV.id AS tcversion_id, NH_TCVERSION.parent_id AS testcase_id, TCV.version " .
 			   " FROM {$this->tables['tcversions']} TCV " .
@@ -4373,12 +4379,44 @@ class testcase extends tlObjectWithAttachments
 			   " ON NH_TCVERSION.id = TCV.id AND TCV.execution_type={$exec_type}" .
 			   " AND NH_TCVERSION.id IN ({$itemSet}) ";
 
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
 	    return $recordset;
 	}
 
+	/**
+	 * 
+	 *
+	 */
+	function filter_tcversions($tcversion_id,$filters,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $recordset = null;
+	    $itemSet = implode(',',(array)$tcversion_id);
+
+	    $my['options'] = array( 'access_key' => 'tcversion_id');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
+		$sql = "/* $debugMsg */ " . 	    
+			   " SELECT TCV.id AS tcversion_id, NH_TCVERSION.parent_id AS testcase_id, TCV.version " .
+			   " FROM {$this->tables['tcversions']} TCV " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
+			   " ON NH_TCVERSION.id = TCV.id ";
+
+		if ( !is_null($filters) )
+		{
+			foreach($filters as $key => $value)
+			{
+				if( !is_null($value) )
+				{	   
+					$sql .= " AND TCV.{$key}={$value} ";
+				}	  
+			}
+		}
+		$sql .= " AND NH_TCVERSION.id IN ({$itemSet}) ";
+
+		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+	    return $recordset;
+	}
 
 } // end class
 ?>

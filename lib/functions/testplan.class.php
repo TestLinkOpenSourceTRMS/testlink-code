@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.174 2010/04/17 13:36:14 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.175 2010/04/17 15:42:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ * 	20100417 - franciscom - get_linked_tcversions() added importance on output data
  *  20100217 - asimon - added parameters open and active to getNumberOfBuilds()
  *  20100214 - franciscom - BUGID 2455, BUGID 3026 - Contribution by julian,asimon
  *  20100206 - eloff - BUGID 3060 - Adding getStatusTotalsByPriority()
@@ -618,6 +619,7 @@ class testplan extends tlObjectWithAttachments
                            - tcversion_id if has executions.
 
 	rev :
+		 20100417 - franciscom - added importance on output data 
          20090814 - franciscom - interface changes due to platform feature
 	*/
 	public function get_linked_tcversions($id,$filters=null,$options=null)
@@ -799,6 +801,7 @@ class testplan extends tlObjectWithAttachments
 			$builds['join']=" LEFT OUTER JOIN {$this->tables['builds']} B ON B.id=E.build_id ";
 	    }
 		
+		// 20100417 - added TCV.importance
 		// 20090719 - added SQL comment on query text to make debug simpler.
 		$sql = "/* $debugMsg */ " .
 		       " SELECT NHB.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
@@ -806,7 +809,7 @@ class testplan extends tlObjectWithAttachments
 			   " T.platform_id, PLAT.name as platform_name ,T.id AS feature_id, T.tcversion_id AS tcversion_id,  " .
 			   " T.node_order AS execution_order, T.creation_ts AS linked_ts, T.author_id AS linked_by," .
 			   " TCV.version AS version, TCV.active," .
-			   " TCV.tc_external_id AS external_id, TCV.execution_type," .
+			   " TCV.tc_external_id AS external_id, TCV.execution_type,TCV.importance," .
 			   " E.id AS exec_id, E.tcversion_number," .
 			   " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, {$more_exec_fields}" .
 			   " E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, " .

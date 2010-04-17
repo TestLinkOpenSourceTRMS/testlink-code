@@ -1,31 +1,37 @@
 <?php
-/**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later.
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: execNavigator.php,v $
+ * link/unlink test cases to a test plan
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2010/04/15 18:43:54 $ by $Author: franciscom $
+ * @package 	TestLink
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: execNavigator.php,v 1.105 2010/04/17 13:32:47 franciscom Exp $
+ * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
+ * @link 		http://www.teamst.org/index.php
+ * 
+ * @internal Revisions:
+ * 20100417 - franciscom - BUGID 3380 execution type filter
+ * 20100409 - eloff - BUGID 3050 - remember selected platform and build in session
+ * 20100222 - asimon - fixes in initializeGui() for testplan select box when there are no builds
+ * 20100217 - asimon - added check for open builds on initBuildInfo()
+ * 20100202 - asimon - changed filtering, BUGID 2455, BUGID 3026
+ * 20090828 - franciscom - added contribution platform feature
+ * 20090828 - franciscom - BUGID 2296 - filter by Last Exec Result on Any of previous builds
+ * 20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
+ * 20081220 - franciscom - advanced/simple filters
+ * 20081217 - franciscom - only users that have effective role with right 
+ *                         that allow test case execution are displayed on
+ *                         filter by user combo.
+ *                        
+ * 20080517 - franciscom - fixed testcase filter bug
+ * 20080428 - franciscom - keyword filter can be done on multiple keywords
+ * 20080224 - franciscom - refactoring
+ * 20080224 - franciscom - BUGID 1056
  *
- * rev:
- *      20100409 - eloff - BUGID 3050 - remember selected platform and build in session
- *      20100222 - asimon - fixes in initializeGui() for testplan select box when there are no builds
- *      20100217 - asimon - added check for open builds on initBuildInfo()
- *      20100202 - asimon - changed filtering, BUGID 2455, BUGID 3026
- *      20090828 - franciscom - added contribution platform feature
- *      20090828 - franciscom - BUGID 2296 - filter by Last Exec Result on Any of previous builds
- *      20081227 - franciscom - BUGID 1913 - filter by same results on ALL previous builds
- *      20081220 - franciscom - advanced/simple filters
- *      20081217 - franciscom - only users that have effective role with right 
- *                              that allow test case execution are displayed on
- *                              filter by user combo.
- *                             
- *      20080517 - franciscom - fixed testcase filter bug
- *      20080428 - franciscom - keyword filter can be done on multiple keywords
- *      20080224 - franciscom - refactoring
- *      20080224 - franciscom - BUGID 1056
  **/
+
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once("users.inc.php");
@@ -138,7 +144,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     // BUGID 2455
 	$filter_cfg = config_get('execution_filter_methods');
     $args->filter_method_selected = isset($_REQUEST['filter_method']) ?
-    							(array)$_REQUEST['filter_method'] : (array)$filter_cfg['default_type'];
+    							    (array)$_REQUEST['filter_method'] : (array)$filter_cfg['default_type'];
     
     $user_filter_default = null;
     switch($cfgObj->exec->user_filter_default)
@@ -203,6 +209,9 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 	}
 	$args->optFilterBuildSelected = isset($_REQUEST['filter_build_id']) ? $_REQUEST['filter_build_id'] : -1;
 	$args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+
+	// BUGID 3380
+    $args->exec_type = isset($_REQUEST['exec_type']) ? intval($_REQUEST['exec_type']) : 0;
 
     return $args;
 }
@@ -447,6 +456,10 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $filters->tc_id = $argsObj->tcase_id;	
     $filters->build_id = $argsObj->optBuildSelected;
     $filters->filter_build_id = $argsObj->optFilterBuildSelected;
+
+	// BUGID 3380
+    $filters->exec_type = $argsObj->exec_type > 0 ? $argsObj->exec_type : null;
+
    
     // BUGID 2455
     $filters->method = $argsObj->filter_method_selected;
@@ -541,6 +554,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->getArguments = null;
     
     $gui->treeColored = $argsObj->treeColored;
+    
+    // 20100417 - franciscom
+    // BUGID 3380
+    $tcaseMgr = new testcase($dbHandler);
+    $gui->exec_type = $argsObj->exec_type; 
+    $gui->exec_type_map = $tcaseMgr->get_execution_types(); 
+    $gui->exec_type_map = array(0 => $gui->str_option_any) + $gui->exec_type_map;
+	unset($tcaseMgr);
+    
     
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
     

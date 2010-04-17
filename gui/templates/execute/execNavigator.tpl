@@ -1,11 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.41 2010/04/12 11:48:14 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.42 2010/04/17 13:32:04 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20100417 - franciscom - BUGID 3380 - filter by execution type 
   20100412 - asimon - BUGID 3379 - changed display method for some filters 
   20100409 - eloff - BUGID 3050 - changed filter panels background to grey
-  20100222 - asimon - moved plattform select box from filters to settings panel
+  20100222 - asimon - moved platform select box from filters to settings panel
   20100202 - asimon - BUGID 2455, BUGID 3026 - changes on filters
   20100109 - eloff - BUGID 2800 - filter panel is now ext CollapsiblePanel
   20090808 - franciscom - added contribution platform
@@ -21,7 +22,7 @@ rev :
 *}
 {lang_get var="labels"
           s="filter_result,caption_nav_filter_settings,filter_owner,test_plan,filter_on,
-             platform,exec_build,btn_apply_filter,build,keyword,filter_tcID,
+             platform,exec_build,btn_apply_filter,build,keyword,filter_tcID,execution_type,
              include_unassigned_testcases,priority,caption_nav_filters,caption_nav_settings"}       
        
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -97,7 +98,7 @@ rev :
 							{$gui->filter_method_current_build});
 	{/if}
 ">
-
+	
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {assign var="build_number" value=$gui->optBuild.selected }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -161,7 +162,11 @@ rev :
 				<tr style="{$keywordsFilterDisplayStyle}">
 					<th>{$labels.keyword}</th>
 					<td>
-						<select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
+					  {if $gui->advancedFilterMode}
+						  <select name="keyword_id[]" multiple="multiple" size={$gui->keywordsFilterItemQty}>
+					  {else}
+					    <select name="keyword_id" >
+						{/if}
 						{html_options options=$gui->keywords_map selected=$gui->keyword_id}
 						</select>
 
@@ -210,6 +215,18 @@ rev :
 
 					</td>
 				</tr>
+
+		    {if $session['testprojectOptions']->automationEnabled}
+          {* BUGID 3380 *}
+		    	<tr>
+		    		<td>{$labels.execution_type}</td>
+	      			<td>
+		    	    <select name="exec_type">
+        	  	  {html_options options=$gui->exec_type_map selected=$gui->exec_type}
+	        	  </select>
+		    		</td>	
+		    	</tr>
+	      {/if}
 
 				{$gui->design_time_cfields}
 				<tr><td>&nbsp;</td></tr> {* empty row for a little visual separation *}

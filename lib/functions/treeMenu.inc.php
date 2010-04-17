@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.118 2010/04/15 17:45:45 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.119 2010/04/17 13:32:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *		
+ *	20100417 - franciscom - BUGID 3380 - execution tree - filter by test case execution type
  *	20100415 - franciscom - BUGID 2797 - filter by test case execution type
  *	20100202 - asimon - changes for filtering, BUGID 2455, BUGID 3026
  *						added filter_by_* - functions, changed generateExecTree()
@@ -638,18 +639,16 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
  * - Remove Test cases from test plan
  * 
  * @internal Revisions:
- * 
- *	20071002 - jbarchibald - BUGID 1051 - added cf element to parameter list
- *	20070204 - franciscom - changed $bForPrinting -> $bHideTCs
- *
  * operation: string that can take the following values:
- *            testcase_execution
- *            remove_testcase_from_testplan
- *             
+ *            - testcase_execution
+ *            - remove_testcase_from_testplan
  *            and changes how the URL's are build.
+ *
  *	20080617 - franciscom - return type changed to use extjs tree component
  *	20080305 - franciscom - interface refactoring
  *	20080224 - franciscom - added include_unassigned
+ *	20071002 - jbarchibald - BUGID 1051 - added cf element to parameter list
+ *	20070204 - franciscom - changed $bForPrinting -> $bHideTCs
  */
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                           $tplan_name,&$getArguments,$filters,$additionalInfo) 
@@ -747,15 +746,14 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
 			
 			$opt = array('include_unassigned' => $filters->include_unassigned);
-			// $tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$tc_id,$keyword_id,
-			// 	                                              null,$assignedTo,$status,$build_id,
-			// 	                                              $cf_hash,$filters->include_unassigned,
-			// 	                                              $urgencyImportance);
+
+			// 20100417 - BUGID 3380 - execution type
             $linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
                                    'assigned_to' => $filters->assignedTo,
                                    'cf_hash' =>  $filters->cf_hash,
                                    'platform_id' => $filters->platform_id,
-                                   'urgencyImportance' => $urgencyImportance);
+                                   'urgencyImportance' => $urgencyImportance,
+                                   'exec_type' => $filters->exec_type);
 			   
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'AND')

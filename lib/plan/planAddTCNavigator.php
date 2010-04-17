@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.52 2010/04/15 18:29:34 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.53 2010/04/17 17:51:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -15,6 +15,7 @@
  *
  * @internal Revisions:
  *
+ * 20100417 - franciscom - BUGID 2498: Add test case to test plan - Filter Test Cases based on Test Importance
  * 20100410 - franciscom - BUGID 2797 - filter by test case execution type
  * 20100228 - franciscom - BUGID 0001927: filter on keyword - Filter tree when add/remove testcases - KO
  * 20090415 - franciscom - BUGID 2384 - Tree doesnt load properly in Add / Remove Test Cases
@@ -74,6 +75,10 @@ function init_args()
     $args->keywordsFilterType =isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
 
     $args->exec_type = isset($_REQUEST['exec_type']) ? intval($_REQUEST['exec_type']) : 0;
+    
+    // BUGID 2498
+    $args->importance = isset($_REQUEST['importance']) ? intval($_REQUEST['importance']) : 0;
+
     return $args;
 }
 
@@ -121,6 +126,9 @@ function initializeGui(&$dbHandler,&$argsObj)
 
     $gui->tplan_id = $argsObj->tplan_id;
 
+	// 20100417 
+    $gui->importance = $argsObj->importance; 
+
 	// 20100410    
     $tcaseMgr = new testcase($dbHandler);
     $gui->exec_type = $argsObj->exec_type; 
@@ -141,6 +149,7 @@ function initializeGui(&$dbHandler,&$argsObj)
     }
     $gui->args .= '&keywordsFilterType=' . $argsObj->keywordsFilterType;
     $gui->args .= '&executionType=' . $argsObj->exec_type;
+    $gui->args .= '&importance=' . $argsObj->importance;
 
 
     $gui->keywordsFilterType = new stdClass();
@@ -198,12 +207,13 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 	$filters = array();
 	$filters['keywords'] = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
 
-	// BUGID 2797
-	$filters['executionType'] = buildExecTypeFilter($argsObj->exec_type,$guiObj);
-
-	// $applyFilter = !is_null($filters['keywords']); // BUGID 0001927
+	
+	$filters['executionType'] = buildExecTypeFilter($argsObj->exec_type); // BUGID 2797
+	$filters['importance'] = buildImportanceFilter($argsObj->importance); // BUGID 2498
+    
 	$applyFilter = !is_null($filters['keywords']) || 
-				   (!is_null($filters['executionType']) && intval($filters['executionType']) > 0);
+				   (!is_null($filters['executionType']) && intval($filters['executionType']->items) > 0) ||
+				   (!is_null($filters['importance']) && intval($filters['importance']->items) > 0);
 
 	if($applyFilter)
 	{

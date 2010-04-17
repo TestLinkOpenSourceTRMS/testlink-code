@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.58 2010/04/15 19:36:18 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.59 2010/04/17 15:43:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *	20100417 - franciscom - BUGID 2498  Add test case to test plan - Filter Test Cases based on Test Importance
  *  20100411 - franciscom - BUGID 2797 - filter by test case execution type
  *
  *  20100218 - asimon - BUGID 3026 - added parameter $testcaseFilter on keywordFilteredSpecView
@@ -207,12 +208,15 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	$hash_id_descr = array_flip($hash_descr_id);
 
 	// BUGID 2797 - filter by test case execution type
-	$filters = array('keyword_id' => $my['filters']['keywords'], 
-	                 'tcase_id' => $my['filters']['testcases'], 
-		             'tcase_node_type_id' => $hash_descr_id['testcase'],
-		             'exec_type' => $my['filters']['exec_type']);
+	$pfFilters = array('keyword_id' => $my['filters']['keywords'], 
+	                   'tcase_id' => $my['filters']['testcases'], 
+		               'tcase_node_type_id' => $hash_descr_id['testcase'],
+		               'execution_type' => $my['filters']['exec_type'],
+		               'importance' => $my['filters']['importance'] );
 		             
-	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$filters);
+	// $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$filters);
+	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
+	
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
 	$idx = 0;
 	$a_tcid = array();
@@ -222,8 +226,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 		$cfg = array('node_types' => $hash_id_descr, 'write_status' => $write_status,
 		             'is_uncovered_view_type' => $is_uncovered_view_type);
 		             
-      	list($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out) = buildSkeleton($id,$name,$cfg,
-      	                                                               $test_spec,$platforms);
+      	list($a_tcid,$a_tsuite_idx,$tsuite_tcqty,$out) = buildSkeleton($id,$name,$cfg,$test_spec,$platforms);
 	} 
 
 	// This code has been replace (see below on Remove empty branches)
@@ -450,6 +453,7 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
  * @return array map with view (test cases subtree)
  * 
  * @internal revisions
+ * 20100417 - franciscom - BUGID 2498 - added logic to filter by importance (defined on test case spec)
  * 20100411 - franciscom - added logic to filter by execution type
  */
 function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContainerId,$nodeId,$specViewType,$filters)
@@ -484,10 +488,17 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
 	}
 
-	if( ($useFilter['exec_type'] = !is_null($filters['exec_type']) ))
+	if( ($useFilter['execution_type'] = !is_null($filters['execution_type']) ))
 	{
 		$applyFilters = true;
 	}
+	
+	// BUGID 
+	if( ($useFilter['importance'] = !is_null($filters['importance']) ))
+	{
+		$applyFilters = true;
+	}
+	
 	if( $applyFilters )
 	{
 		$key2loop = array_keys($test_spec);
@@ -512,8 +523,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 				unset($itemSet[$key]);
 			}
 		}
-		
-		if( $useFilter['exec_type'] && count($itemSet) > 0 )
+		if( count($itemSet) > 0 && ($useFilter['execution_type'] || $useFilter['importance']) )
 		{
 			$targetSet = array_keys($itemSet);
 			$options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
@@ -541,7 +551,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 						}
 						if( !is_null($item) )
 						{
-							if( $item['execution_type'] != $filters['exec_type'] )
+							if( $useFilter['exec_type'] && ($item['execution_type'] != $filters['exec_type']) || 
+							    $useFilter['importance'] && ($item['importance'] != $filters['importance']) )
 							{
 								$tspecKey = $itemSet[$targetTestCase]; 	
 								$test_spec[$tspecKey]=null; 
@@ -554,7 +565,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 					$tcvidSet = array_keys($tcversionSet);
 					// $options = array('access_key' => 'testcase_id');
 					$options = null;
-					$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['exec_type'],$options);
+					// $allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['exec_type'],$options);
+					$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters,$options);
 					if( !is_null($allowedSet) &&  count($allowedSet) > 0 )
 					{
 						$useAllowed = true;

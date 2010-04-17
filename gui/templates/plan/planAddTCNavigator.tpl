@@ -1,11 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.19 2010/04/11 15:33:37 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.20 2010/04/17 20:53:18 franciscom Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
 Revisions:          
+  20100417 - franciscom - BUGID 2498 - filter by test case spec importance
   20100410 - franciscom - BUGID 2797 - filter by test case execution type
 	20080629 - franciscom - fixed missed variable bug
   20080622 - franciscom - ext js tree support
@@ -13,7 +14,7 @@ Revisions:
 * ------------------------------------------------------------------------ *}
 
 {lang_get var="labels" 
-          s='keywords_filter_help,btn_apply_filter,execution_type,
+          s='keywords_filter_help,btn_apply_filter,execution_type,importance,
              btn_update_menu,title_navigator,keyword,test_plan,keyword,caption_nav_filter_settings'}
 
 {assign var="keywordsFilterDisplayStyle" value=""}
@@ -115,6 +116,18 @@ function pre_submit()
 				</td>	
 			</tr>
 	  {/if}
+
+		<tr>
+			<th>{$labels.importance}</th>
+			<td>
+				<select name="importance">
+				<option value="">{$gui->str_option_any}</option>
+				{html_options options=$gsmarty_option_importance selected=$gui->importance}
+				</select>
+			</td>
+		</tr>
+
+
 		<tr>
 			<td>
 				<input type="submit" value="{$labels.btn_apply_filter}" name="doUpdateTree" />

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.120 2010/04/17 15:59:46 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.121 2010/04/17 18:09:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -302,7 +302,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *         'not run'
  *
  * @internal Revisions
- * 20100415 - franciscom -  BUGID 2797
+ * 20100417 - franciscom -  BUGID 2498 - filter by test case importance
+ * 20100415 - franciscom -  BUGID 2797 - filter by test case execution type
  */
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
                      $tplan_tcases = null,$filters=null, $options=null)
@@ -313,9 +314,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	static $debugMsg;
     static $tables;
     static $my;
-    static $enabledFilters;
+    static $enabledFiltersOn;
     static $activeVersionClause;
     static $filterOnTCVersionAttribute;
+    static $filtersApplied;
 
     
 	if (!$tables)
@@ -348,15 +350,20 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 	}
 	
-	if(!$enabledFilters)
+	if(!$enabledFiltersOn)
 	{
-	  $enabledFilters['keywords'] = !is_null($tck_map);
-	  $enabledFilters['executionType'] = !is_null($my['filters']['executionType']);
-	  $enabledFilters['importance'] = !is_null($my['filters']['importance']);
-	  $filterOnTCVersionAttribute = $enabledFilters['executionType'] || $enabledFilters['importance'];
-
-	  // $activeVersionClause = $enabledFilters['executionType'] ? " AND TCV.active=1 " : '';
-	  $activeVersionClause = $filterOnTCVersionAttribute ? " AND TCV.active=1 " : '';
+		$enabledFiltersOn['keywords'] = !is_null($tck_map);
+		$enabledFiltersOn['executionType'] = !is_null($my['filters']['executionType']);
+		$enabledFiltersOn['importance'] = !is_null($my['filters']['importance']);
+		$filterOnTCVersionAttribute = $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'];
+		
+		$filtersApplied = false;
+		foreach($enabledFiltersOn as $filterValue)
+		{
+			$filtersApplied = $filtersApplied || $filterValue; 
+		}
+		
+		$activeVersionClause = $filterOnTCVersionAttribute ? " AND TCV.active=1 " : '';
 	}
 	
 	
@@ -374,7 +381,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		// $viewType = is_null($tplan_tcases) ? 'testSpecTree' : 'executionTree';
 		$viewType = $my['options']['viewType'];
 		
-		if ($enabledFilters['keywords'])
+		if ($enabledFiltersOn['keywords'])
 		{
 			if (!isset($tck_map[$node['id']]))
 			{
@@ -480,7 +487,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			    $node['external_id'] = $rs[0]['external_id'];
 			    $target_id = $rs[0]['targetid'];
 				
-				// if( $enabledFilters['executionType'] )
 				if( $filterOnTCVersionAttribute )
 				{
 					// BUGID 2797 
@@ -508,12 +514,12 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 						   " FROM {$tables['tcversions']} TCV " .
 						   " WHERE TCV.id = {$target_id} ";
 					 	   
-					if( $enabledFilters['executionType'] )
+					if( $enabledFiltersOn['executionType'] )
 					{
 						$sql .= " AND TCV.execution_type = {$my['filters']['executionType']} ";
 					}
 					
-					if( $enabledFilters['importance'] )
+					if( $enabledFiltersOn['importance'] )
 					{
 						$sql .= " AND TCV.importance = {$my['filters']['importance']} ";
 					}
@@ -554,7 +560,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		$init_value = $node ? 1 : 0;
 		$tcase_counters[$tc_status_descr]=$init_value;
 		$tcase_counters['testcase_count']=$init_value;
-		// if ($bHideTCs)
 		if ( $my['options']['hideTestCases'] )
 		{
 			$node = null;
@@ -594,8 +599,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		}
 
         // node must be dstroyed if empty had we have using filtering conditions
-		if (($enabledFilters['keywords'] || $enabledFilters['executionType'] || !is_null($tplan_tcases)) && 
-			 !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
+		// if( ($enabledFiltersOn['keywords'] || $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'] ||
+		// 	 !is_null($tplan_tcases)) && !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
+		if( ($filtersApplied || !is_null($tplan_tcases)) && 
+			!$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
 		{
 			$node = null;
 		}
@@ -607,7 +614,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		
         // If is an EMPTY Test suite and we have added filtering conditions,
         // We will destroy it.
-		if ($enabledFilters['executionType'] || $enabledFilters['keywords'] || !is_null($tplan_tcases) )
+		// if ($enabledFiltersOn['executionType'] || $enabledFiltersOn['keywords'] || !is_null($tplan_tcases) )
+		if ($filtersApplied || !is_null($tplan_tcases) )
 		{
 			$node = null;
 		}	

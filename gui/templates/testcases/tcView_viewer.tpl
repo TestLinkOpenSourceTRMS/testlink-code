@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.62 2010/04/15 20:06:13 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.63 2010/04/17 21:17:05 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100417 - franciscom - BUGID 3376: Remove link in test case action name
     20100415 - franciscom - move compare version feature out of edit control, because seems OK
                             that no user right is needed to compare.
     20100327 - franciscom - fixed problem with goback from create step
@@ -287,17 +288,20 @@ rev:
 	</tr>
   {/if}
 	{if $args_testcase.steps != ''}
+	{* BUGID 3376 *}
  	{foreach from=$args_testcase.steps item=step_info }
 	<tr>
-		<td style="text-align:right;"><span class="order_info" style='display:none'>
+		<td style="text-align:right;{if $edit_enabled}cursor:pointer;{/if}" 
+		    {if $edit_enabled} onclick="window.open('{$hrefEditStep}{$step_info.id}','_self')" {/if}>
+		<span class="order_info" style='display:none'>
 		<input type="text" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
 		       value="{$step_info.step_number}" 
 			     size="{#STEP_NUMBER_SIZE#}" 	maxlength="{#STEP_NUMBER_MAXLEN#}"
   	{include file="error_icon.tpl" field="step_number"}
-		</span>{if $edit_enabled}<a href="{$hrefEditStep}{$step_info.id}">{/if}{$step_info.step_number}</a></td>
-		<td >{if $edit_enabled}<a href="{$hrefEditStep}{$step_info.id}">{/if}{$step_info.actions}</a></td>
-		<td >{$step_info.expected_results}</td>
-		<td>{$gui->execution_types[$step_info.execution_type]}</td>
+		</span>{$step_info.step_number}</td>
+		<td {if $edit_enabled} style="cursor:pointer;" onclick="window.open('{$hrefEditStep}{$step_info.id}','_self')" {/if}>{$step_info.actions}</td>
+		<td {if $edit_enabled} style="cursor:pointer;" onclick="window.open('{$hrefEditStep}{$step_info.id}','_self')" {/if}>{$step_info.expected_results}</td>
+		<td {if $edit_enabled} style="cursor:pointer;" onclick="window.open('{$hrefEditStep}{$step_info.id}','_self')" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
 
     {if $edit_enabled}
 		<td class="clickable_icon">

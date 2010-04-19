@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.605 2010/04/19 19:43:11 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.606 2010/04/19 21:02:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1032,6 +1032,7 @@ $TLS_order_by_login_dir = "Order by login";
 $TLS_order_by_role_dir = "Order by role";
 $TLS_alt_active_user = "Active user";
 $TLS_show_inactive_users = "Show inactive users";
+$TLS_hide_inactive_users = "Hide inactive users";
 
 // ----- gui/templates/login.tpl -----
 $TLS_btn_login = "Login";

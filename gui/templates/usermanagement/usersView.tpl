@@ -1,8 +1,10 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.18 2010/03/26 22:23:39 franciscom Exp $
+$Id: usersView.tpl,v 1.19 2010/04/19 20:58:33 franciscom Exp $
 
 Purpose: smarty template - users overview
+
+20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
 20100326 - franciscom - BUGID 3324
 *}
 {include file="inc_head.tpl" openHead="yes"}
@@ -12,14 +14,47 @@ Purpose: smarty template - users overview
 {assign var="createUserAction" value="$userActionMgr?doAction=create"}
 {assign var="editUserAction" value="$userActionMgr?doAction=edit&amp;user_id="}
 
-{* {lang_get s='warning_delete_user' var="warning_msg"} *}
-{* {lang_get s='delete' var="del_msgbox_title" } *}
 {lang_get s='warning_disable_user' var="warning_msg"}
 {lang_get s='disable' var="del_msgbox_title" } *}
 
 <script type="text/javascript">
 	var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 </script>
+
+{literal}
+<script type="text/javascript">
+function toggleRowByClass(oid,className,displayValue)
+{
+  var trTags = document.getElementsByTagName("tr");
+  var cbox = document.getElementById(oid);
+  
+  for( idx=0; idx < trTags.length; idx++ ) 
+  {
+    if( trTags[idx].className == className ) 
+    {
+      if( displayValue == undefined )
+      {
+        // if( trTags[idx].style.display == 'none' ) 
+        if( cbox.checked )
+        {
+          trTags[idx].style.display = 'none';
+        }
+        else
+        {
+          trTags[idx].style.display = 'table-row';
+        }
+      } 
+      else
+      {
+        trTags[idx].style.display = displayValue;
+      }
+    }
+  }
+
+}
+</script>
+{/literal}
+
 </head>
 
 
@@ -27,6 +62,7 @@ Purpose: smarty template - users overview
           s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
              disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
+             show_inactive_users,hide_inactive_users,
              alt_disable_user,order_by_login,order_by_login_dir,alt_active_user"}
 
 <body {$body_onload}>
@@ -47,6 +83,9 @@ Purpose: smarty template - users overview
 
 	  {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
 
+    {$labels.hide_inactive_users}
+    <input name="hide_inactive_users" id="hide_inactive_users" type="checkbox" {$checked_hide_inactive_users} 
+           value="on" onclick="toggleRowByClass('hide_inactive_users','inactive_user')">
 		<table class="simple" width="95%">
 			<tr>
 				<th {if $user_order_by == 'order_by_login'}style="background-color: #c8dce8;color: black;"{/if}>
@@ -84,8 +123,12 @@ Purpose: smarty template - users overview
 				{assign var="r_n" value=$user->globalRole->name}
 				{assign var="r_d" value=$user->globalRole->getDisplayName()}
 				{assign var="userID" value=$user->dbID}
-
-				<tr {if $role_colour[$r_n] neq ''} style="background-color: {$role_colour[$r_n]};" {/if}>
+        {if $user->isActive eq 1}
+          {assign var="user_row_class" value=''}
+        {else}
+          {assign var="user_row_class" value='class="inactive_user"'}
+        {/if}
+				<tr {$user_row_class} {if $role_colour[$r_n] neq ''} style="background-color: {$role_colour[$r_n]};" {/if}>
 				<td><a href="{$editUserAction}{$user->dbID}">
 				    {$user->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}

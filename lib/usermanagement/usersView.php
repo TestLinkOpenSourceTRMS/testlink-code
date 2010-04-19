@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		-
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: usersView.php,v 1.34 2010/04/19 20:58:53 franciscom Exp $
+ * @version    	CVS: $Id: usersView.php,v 1.35 2010/04/19 20:59:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -191,7 +191,6 @@ function init_args()
 
 	$pParams = R_PARAMS($iParams);
 
-    new dBug($pParams);
 	$args = new stdClass();
 	$args->operation = $pParams["operation"];
     $args->user_order_by = ($pParams["user_order_by"] != '') ? $pParams["user_order_by"] : 'order_by_login';

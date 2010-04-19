@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/04/16 22:27:34 $ $Author: havlat $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/04/19 19:00:55 $ $Author: franciscom $
  * @author Pavel Kalian
  * @author Martin Havlat
  *
@@ -325,8 +325,11 @@ $TLS_title_delete_attachment = "Smazat přílohu";
 $TLS_btn_yes_del_comp = "Ano, smazat testovací sadu";
 $TLS_container_title_testsuite = $TLS_test_suite;
 $TLS_linked_but_not_executed = "Propojený s jedním nebo více testovacími plány, ale neprovedený";
-$TLS_question_del = "Skutečně smazat";
+$TLS_question_del_testsuite = "Skutečně smazat";
 $TLS_th_link_exec_status = "Stav propojení a provedení";
+$TLS_testsuite_successfully_deleted = "The Test Suite was successfully deleted";
+$TLS_no_links = "No dependent data.";
+$TLS_linked_and_executed = "Test case was added into a Test Plan and has results.";
 
 
 

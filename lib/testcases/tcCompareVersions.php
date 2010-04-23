@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tcCompareVersions.php,v 1.3 2010/01/11 19:18:17 franciscom Exp $
+ * @version    	CVS: $Id: tcCompareVersions.php,v 1.4 2010/04/23 14:02:42 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected testcase versions with each other.
@@ -87,18 +87,19 @@ if ($args->compare_selected_versions) {
 	}
 	
 	foreach($diff_array as $key => $val) {
+		$localized_key = lang_get($key);
 		$diff_array[$key]["diff"] = $differ->inline($val["left"], $gui->version_short . 
 								$args->version_left, $val["right"], $gui->version_short . 
 								$args->version_right, $args->context);
 		$diff_array[$key]["count"] = count($differ->changes);
-		$diff_array[$key]["heading"] = lang_get($key);
+		$diff_array[$key]["heading"] = $localized_key;
 		
 		//are there any changes? then display! if not, nothing to show here
 		if ($diff_array[$key]["count"] > 0) {
-			$diff_array[$key]["message"] = sprintf($labels["num_changes"], $key, 
+			$diff_array[$key]["message"] = sprintf($labels["num_changes"], $localized_key, 
 											$diff_array[$key]["count"]);
 		} else {
-			$diff_array[$key]["message"] = sprintf($labels["no_changes"], $key);
+			$diff_array[$key]["message"] = sprintf($labels["no_changes"], $localized_key);
 		}
 	}	
 

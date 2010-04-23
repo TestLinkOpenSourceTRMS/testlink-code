@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.154 2009/12/23 13:42:41 erikeloff Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.155 2010/04/23 19:42:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -1309,6 +1309,7 @@ class results extends tlObjectWithDB
 									'suiteName' => $allSuites[$info['testsuite_id']],
 									'assigner_id' => $info['assigner_id'],
 									'feature_id' => $info['feature_id'],
+									'version' => '',
 									'execute_link' => '');
 				
 				if ($info['tcversion_id'] != $info['executed'])
@@ -1347,7 +1348,11 @@ class results extends tlObjectWithDB
 						$sql .= " ORDER BY execution_ts ASC ";
 						
 					}
+					  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
 					$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
+					// new dBug($execQuery);
+					
 					if ($execQuery)
 					{
 						if ($lastResult != $this->map_tc_status['not_run']) 
@@ -1356,6 +1361,7 @@ class results extends tlObjectWithDB
 							{
 								$exec_row = $execInfo[0];
 								
+								$infoToSave['version'] = $exec_row['tcversion_number'];
 								$infoToSave['build_id'] = $exec_row['build_id'];
 								$infoToSave['platform_id'] = $exec_row['platform_id'];
 								$infoToSave['tester_id'] = $exec_row['tester_id'];

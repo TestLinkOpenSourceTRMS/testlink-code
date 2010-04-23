@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.4 2010/04/04 17:55:14 franciscom Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.5 2010/04/23 19:42:21 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100423 - franciscom - refactoring to allow more flexibility
  *	20090909 - franciscom - changed to allow multiple tables
  *	new method renderCommonGlobals()
  * 
@@ -20,33 +21,24 @@
 require_once('table.class.php');
 
 /**
- * Constants that are used as options for custom types
- */
-define('TL_EXT_TABLE_CUSTOM_RENDERER', 1000);
-define('TL_EXT_TABLE_CUSTOM_SORT', 1001);
-
-/**
  * Helper class used for EXT-JS tables. There is an option to use custom type
  * in order to use custom rendering and sorting if needed.
  */
 class tlExtTable extends tlTable
 {
 	/**
-	 * Array of custom types that have custom rendering and/or sorting available.
-	 * By default the types 'status' and 'priority' are available.
-	 * @see addType($type)
+	 * Array of custom behaviour indexed by column type.
+	 * Behaviour means custom rendering and/or sorting available.
+	 * @see $addCustomBehaviour($type,$behaviour)
 	 */
-	protected $types = array(
-		'status'	=> array(TL_EXT_TABLE_CUSTOM_RENDERER, TL_EXT_TABLE_CUSTOM_SORT),
-		'priority'	=> array(TL_EXT_TABLE_CUSTOM_RENDERER)
-	);
+	protected $customBehaviour = array();
 
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.
-	 * For use of column['type'] see $this->types
+	 * For use of column['type'] see $this->customTypes
 	 *
 	 * @see tlTable::__construct($columns, $data)
-	 * @see addType($type)
+	 * @see addCustomBehaviour($type,$behaviour)
 	 */
 	public function __construct($columns, $data)
 	{
@@ -54,21 +46,21 @@ class tlExtTable extends tlTable
 	}
 
 	/**
-	 * Adds a new type that will be available to custom rendering and/or sorting
+	 * Adds behaivour for type that will be available to custom rendering and/or sorting
 	 *
-	 * By adding a new type you must also make sure that the related JS-function exists.
+	 * By adding a behaivour for new type you must also make sure that the related JS-function exists.
 	 * For example if you add the type "color", you also need to create a
-	 * JS-funtion "colorRenderer(val)" that creates custom markup for rendering.
+	 * JS-funtion "colorRendererMethod(val)" that creates custom markup for rendering.
 	 *
 	 * To enable this type 'color' call:
-	 * $table->addType('color', array(TL_EXT_TABLE_CUSTOM_RENDERER))
+	 * $table->addType('color', array('render' => 'colorRendererMethod'))
 	 *
-	 * @param string $type The new type to enable.
-	 * @param array $options the custom things to enable for this type
+	 * @param string $type new type.
+	 * @param map $behaviour the custom things to enable for this type
 	 **/
-	public function addType($type, $options)
+	public function addCustomBehaviour($type, $behaviour)
 	{
-		$this->types[$type] = $options;
+		$this->customBehaviour[$type] = $behaviour;
 	}
 
 	/**
@@ -86,7 +78,6 @@ class tlExtTable extends tlTable
 				// Escape data
 				if (is_string($val)) 
 				{
-					// $row_string .= "\"$val\",";
 					$row_string .= "'" . $val . "',";
 				} 
 				else if (is_array($val)) 
@@ -127,10 +118,11 @@ class tlExtTable extends tlTable
 				if (isset($column['width'])) {
 					$s .= ",width: {$column['width']}";
 				}
-				// Attach a custom renderer
-				if (isset($column['type']) &&
-				    in_array(TL_EXT_TABLE_CUSTOM_RENDERER, $this->types[$column['type']])) {
-					$s .= ",renderer: {$column['type']}Renderer";
+				if( isset($column['type']) && isset($this->customBehaviour[$column['type']]) &&
+					isset($this->customBehaviour[$column['type']]['render']) ) 
+				{
+					// Attach a custom renderer
+					$s .= ",renderer: {$this->customBehaviour[$column['type']]['render']}";
 				}
 			}
 			$s .= "},\n";
@@ -156,12 +148,16 @@ class tlExtTable extends tlTable
 		for ($i=0; $i < $n_columns; $i++) {
 			$column = $this->columns[$i];
 			$s .= "{name: 'idx$i'";
-			if (is_array($column)) {
-				if (isset($column['type']) &&
-				    in_array(TL_EXT_TABLE_CUSTOM_SORT, $this->types[$column['type']])) {
-					$s .= ", sortType: statusCompare";
+			if (is_array($column)) 
+			{
+				if(	isset($column['type']) &&
+					isset($this->customBehaviour[$column['type']]) &&
+					isset($this->customBehaviour[$column['type']]['sort']) )
+				{	
+					$s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
 				}
 			}
+			
 			$s .= "},\n";
 		}
 		$s = trim($s,",\n");

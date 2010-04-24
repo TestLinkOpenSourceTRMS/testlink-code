@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.606 2010/04/19 21:02:13 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.607 2010/04/24 15:47:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2339,6 +2339,7 @@ $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 
 // ----- lib/results/resultsTC.php -----
 $TLS_result_on_last_build = '[Last Build]';
+$TLS_tcversion_indicator = '[v %s]';
 
 
 // ----- cfg/reports.cfg.php -----

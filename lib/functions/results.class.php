@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.155 2010/04/23 19:42:32 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.156 2010/04/24 15:54:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -419,7 +419,6 @@ class results extends tlObjectWithDB
       		$element = $this->tallyResults($results,sizeOf($results),$item_name);
       		
 		  	$element[$item_name] = $keywordIdNamePairs[$keywordId];
-      		// new dBug($element);
 			$rValue[$keywordId] = $element;
 		}
 
@@ -733,9 +732,6 @@ class results extends tlObjectWithDB
 	 */
 	private function tallyResults($results,$totalCases,$item_name=null)
 	{
-		// new dBug($item_name);
-		// 
-		// new dBug($results);
 		
 		if ($results == null)
 		{
@@ -1309,9 +1305,8 @@ class results extends tlObjectWithDB
 									'suiteName' => $allSuites[$info['testsuite_id']],
 									'assigner_id' => $info['assigner_id'],
 									'feature_id' => $info['feature_id'],
-									'version' => '',
 									'execute_link' => '');
-				
+							
 				if ($info['tcversion_id'] != $info['executed'])
 				{
 					$executionExists = false;
@@ -1351,8 +1346,6 @@ class results extends tlObjectWithDB
 					  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
 					$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
-					// new dBug($execQuery);
-					
 					if ($execQuery)
 					{
 						if ($lastResult != $this->map_tc_status['not_run']) 

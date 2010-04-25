@@ -1,23 +1,32 @@
 <?php
-/**
-* TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsByStatus.php,v 1.75 2010/01/25 17:35:25 franciscom Exp $
-*
-* @author	Martin Havlat <havlat@users.sourceforge.net>
-* @author Chad Rosen
-* @author KL
-*
-*
-* rev : 
-*	20100124 - eloff - use buildExternalIdString()
-*	20091016 - franciscom - work still is needed to display LINK to BUG
-*	20091011 - franciscom - refactoring to do not use result.class
-*	20090517 - franciscom - fixed management of deleted testers
-*	20090414 - amikhullar - BUGID: 2374 - Show Assigned User in the Not Run Test Cases Report 
-*	20090325 - amkhullar  - BUGID 2249
-*	20090325 - amkhullar  - BUGID 2267
-*	20080602 - franciscom - changes due to BUGID 1504
-*	20070623 - franciscom - BUGID 911
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later. 
+ *
+ * Manages test plan operations and related items like Custom fields, 
+ * Builds, Custom fields, etc
+ *
+ * @package 	TestLink
+ * @author	Martin Havlat <havlat@users.sourceforge.net>
+ * @author Chad Rosen
+ * @author 		kevyn levy
+ *
+ * @copyright 	2007-2010, TestLink community 
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.76 2010/04/25 10:32:18 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ *
+ * @internal Revisions:
+ *	20100425 - franciscom - BUGID 3356
+ *	20100124 - eloff - use buildExternalIdString()
+ *	20091016 - franciscom - work still is needed to display LINK to BUG
+ *	20091011 - franciscom - refactoring to do not use result.class
+ *	20090517 - franciscom - fixed management of deleted testers
+ *	20090414 - amikhullar - BUGID: 2374 - Show Assigned User in the Not Run Test Cases Report 
+ *	20090325 - amkhullar  - BUGID 2249
+ *	20090325 - amkhullar  - BUGID 2267
+ *	20080602 - franciscom - changes due to BUGID 1504
+ *	20070623 - franciscom - BUGID 911
 */
 require('../../config.inc.php');
 require_once('common.php');
@@ -38,9 +47,7 @@ $tcase_mgr = new testcase($db);
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
-// 20100112 - franciscom
 $getOpt = array('outputFormat' => 'map');
-// $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,'map');
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 if( is_null($gui->platformSet) )
 {
@@ -62,6 +69,7 @@ $fl=$tproject_mgr->tree_manager->get_children($args->tproject_id,
 
 $loop2do = count($fl);
 $topLevelSuites=null;
+$myRBB = null;
 for($idx=0 ; $idx < $loop2do; $idx++)
 {
 	$topLevelSuites[$fl[$idx]['id']]=array('name' => $fl[$idx]['name'], 'items' => null);
@@ -77,8 +85,8 @@ if( $args->type == $statusCode['not_run'] )
 else
 {
 	$filters = array('exec_status' => array($args->type));
-	$options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true, 'details' => 'summary',
-	               'execution_details' => 'add_build');
+	$options = array('output' => 'array' , 'last_execution' => true, 'only_executed' => true, 'details' => 'summary',
+	                 'execution_details' => 'add_build');
 	$myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 	$user_key='tester_id';
 }
@@ -122,6 +130,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 	    $level = $levelCache[$item['tc_id']];
 		if( $args->type == $statusCode['not_run'] )
 		{
+			// When not run, test case version, is the version currently linked to test plan
 			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
 							array('suiteName' => $verbosePath, 'level' => $level,
 							      'testTitle' => htmlspecialchars($tcaseName),
@@ -133,9 +142,11 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 		}			
 		else
 		{
+			// BUGID 3356
+			// When test case has been runned, version must be get from executions.tcversion_number 
 			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
 							array('suiteName' => $verbosePath, 'testTitle' => htmlspecialchars($tcaseName),
-			                      'testVersion' => $item['version'], 
+			                      'testVersion' => $item['tcversion_number'], 
 			                      'platformName' => htmlspecialchars($item['platform_name']),
 			                      'buildName' => htmlspecialchars($item['build_name']),
 			                      'testerName' => htmlspecialchars($testerName),

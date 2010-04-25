@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.177 2010/04/17 22:18:41 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.178 2010/04/25 17:42:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100425 - franciscom - BUGID 2463 - changes in getStatusTotalsByAssignedTesterPlatform()
  * 	20100417 - franciscom - get_linked_tcversions() added importance on output data
  *                          BUGID 3356: Failed Test Cases" report is not updated when a test case 
  *                                      has been changed from "Failed" to "Passed"		 
@@ -3211,6 +3212,7 @@ class testplan extends tlObjectWithAttachments
 		$user_platform = null;
 		$options = array('output' => 'mapOfMap');
     	$execResults = $this->get_linked_tcversions($id,$filters,$options);
+    	
 	    if( !is_null($execResults) )
 	    {
 	    	$tcaseSet = array_keys($execResults);
@@ -3220,28 +3222,48 @@ class testplan extends tlObjectWithAttachments
             	$platformIDSet = array_keys($execResults[$tcaseID]);
             	foreach($platformIDSet as $platformID)
             	{
+            		
+            		$testedBy = $testcaseInfo[$platformID]['tester_id'];
             		$assignedTo = $testcaseInfo[$platformID]['user_id'];
             		$assignedTo = !is_null($assignedTo) && $assignedTo > 0 ? $assignedTo : TL_USER_NOBODY;
             		$execStatus = $testcaseInfo[$platformID]['exec_status'];
-            		
+					
             		// to avoid errors due to bad or missing config
             		$verboseStatus = isset($code_verbose[$execStatus]) ? $code_verbose[$execStatus] : $execStatus;
             		
-            		if( !isset($user_platform[$assignedTo][$platformID]) )
+            		// 20100425 - francisco.mancardi@gruppotesi.com
+            		if( $assignedTo != TL_USER_NOBODY )
             		{
-            			$user_platform[$assignedTo][$platformID]['total']=0;
+            			if( !isset($user_platform[$assignedTo][$platformID]) )
+            			{
+            				$user_platform[$assignedTo][$platformID]['total']=0;
+            			}
+            			
+            			if( !isset($user_platform[$assignedTo][$platformID][$verboseStatus]) )
+            			{
+            				$user_platform[$assignedTo][$platformID][$verboseStatus]=0;
+            			}
+            		}   
+            		
+            		$testerBoy = is_null($testedBy) ? $assignedTo : $testedBy; 
+            		if( !isset($user_platform[$testerBoy][$platformID]) )
+            		{
+            			$user_platform[$testerBoy][$platformID]['total']=0;
             		}
             		
-            		if( !isset($user_platform[$assignedTo][$platformID][$verboseStatus]) )
+            		if( !isset($user_platform[$testerBoy][$platformID][$verboseStatus]) )
             		{
-            			$user_platform[$assignedTo][$platformID][$verboseStatus]=0;
+            			$user_platform[$testerBoy][$platformID][$verboseStatus]=0;
             		}   
-            		$user_platform[$assignedTo][$platformID]['total']++;
-            		$user_platform[$assignedTo][$platformID][$verboseStatus]++;
+                    
+            		$user_platform[$testerBoy][$platformID]['total']++;
+            		$user_platform[$testerBoy][$platformID][$verboseStatus]++;
+                   
 				}
             } 
         }
-	    
+
+		new dBug($user_platform);	    
         return $user_platform;
     }
 
@@ -3446,6 +3468,121 @@ class testplan extends tlObjectWithAttachments
             return LOW;
         }
     }
+
+
+	// -------------------
+    /**
+     * 
+	 * @param id: test plan id
+	 * @return map: 
+ 	 *             key: user id
+ 	 *             value: map with key=platform id
+ 	 *                             value: map with keys: 'total' and verbose status
+ 	 *                                             values: test case count.
+ 	 *                              
+ 	 */
+	public function getStatusTotalsByTesterPlatform($id)
+	{
+		$code_verbose = $this->getStatusForReports();
+		$filters = null;
+		$user_platform = null;
+		$options = array('output' => 'mapOfMap');
+    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
+    	
+    	new dBug($execResults);
+    	
+	    if( !is_null($execResults) )
+	    {
+	    	$tcaseSet = array_keys($execResults);
+            foreach($tcaseSet as $tcaseID)
+            {
+            	$testcaseInfo=$execResults[$tcaseID];
+            	$platformIDSet = array_keys($execResults[$tcaseID]);
+            	foreach($platformIDSet as $platformID)
+            	{
+            		$testedBy = $testcaseInfo[$platformID]['tester_id'];
+            		$testedBy = !is_null($testedBy) && $testedBy > 0 ? $testedBy : TL_USER_NOBODY;
+            		$execStatus = $testcaseInfo[$platformID]['exec_status'];
+            		
+            		// to avoid errors due to bad or missing config
+            		$verboseStatus = isset($code_verbose[$execStatus]) ? $code_verbose[$execStatus] : $execStatus;
+            		
+            		if( !isset($user_platform[$testedBy][$platformID]) )
+            		{
+            			$user_platform[$testedBy][$platformID]['total']=0;
+            		}
+            		
+            		if( !isset($user_platform[$testedBy][$platformID][$verboseStatus]) )
+            		{
+            			$user_platform[$testedBy][$platformID][$verboseStatus]=0;
+            		}   
+            		$user_platform[$testedBy][$platformID]['total']++;
+            		$user_platform[$testedBy][$platformID][$verboseStatus]++;
+				}
+            } 
+        }
+	    
+        return $user_platform;
+    }
+
+    /**
+     * 
+	 * @param id: test plan id
+	 * @return map: 
+ 	 *             key: user id
+ 	 *             value: map with key=platform id
+ 	 *                             value: map with keys: 'total' and verbose status
+ 	 *                                             values: test case count.
+ 	 *                              
+ 	 */
+	public function getStatusTotalsByTester($id)
+	{
+		$unassigned = lang_get('unassigned');
+		$data_set = $this->getStatusTotalsByAssignedTesterPlatform($id);
+	    if( !is_null($data_set) )
+	    {
+			$code_verbose = $this->getStatusForReports();
+
+	    	$userSet = array_keys($data_set);
+	    	// need to find a better way (with less overhead and data movement) to do this
+            $userCol=tlUser::getByIDs($this->db,$userSet,tlUser::TLOBJ_O_GET_DETAIL_MINIMUM);
+            foreach($userSet as $testedBy)
+            {
+            	$user_platform[$testedBy]['type'] = 'tester';
+            	$user_platform[$testedBy]['name'] = $unassigned; 
+            	if( $testedBy > 0 )
+            	{
+            		$user_platform[$testedBy]['name'] = $userCol[$testedBy]->getDisplayName();;
+            	}
+            	$user_platform[$testedBy]['total_tc'] = 0;
+            	
+   				foreach($code_verbose as $status_code => $status_verbose)
+			    {
+					$user_platform[$testedBy]['details'][$status_verbose]['qty']=0;
+			    }
+            	
+            	// this will be removed from final result
+            	$user_platform[$testedBy]['details']['total']['qty'] = 0;
+            	
+            	$platformIDSet = array_keys($data_set[$assignedTo]);
+            	foreach($platformIDSet as $platformID)
+            	{
+            		foreach( $data_set[$testedBy][$platformID] as $verboseStatus => $counter)
+            		{
+            			if( !isset($user_platform[$testedBy]['details'][$verboseStatus]) )
+            			{
+            				$user_platform[$testedBy]['details'][$verboseStatus]['qty']=0;
+            			}   
+            		    $user_platform[$testedBy]['details'][$verboseStatus]['qty'] += $counter;
+            		}
+				}
+				$user_platform[$testedBy]['total_tc']=$user_platform[$testedBy]['details']['total']['qty'];
+				unset($user_platform[$testedBy]['details']['total']);
+            } 
+        }
+        return $user_platform;
+    }
+
 
 
 

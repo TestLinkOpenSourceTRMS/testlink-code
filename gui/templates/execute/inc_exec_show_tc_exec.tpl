@@ -1,10 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.15 2010/03/10 13:53:57 asimon83 Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.16 2010/04/26 12:21:22 mx-julian Exp $
 Purpose: 
 Author: franciscom
 
-Rev:     
+Rev:  
+	20100426 - Julian - BUGID 2454 - minor changes to properly show executions if exec
+						history was configured
+						
 	20100310 - Julian - BUGID 2454 - now showing lock-symbol for attachment column if
 						build is closed
 						
@@ -167,8 +170,12 @@ Rev:
 				<th style="text-align:left">{$labels.test_exec_by}</th>
 				<th style="text-align:center">{$labels.exec_status}</th>
 				<th style="text-align:center">{$labels.testcaseversion}</th>
-
-				{if $attachment_model->show_upload_column && !$att_download_only}
+				
+				{* BUGID 2545: adjusted if statement to show executions properly
+				 *	if execution history was configured 
+				 *}
+				{if ($attachment_model->show_upload_column && !$att_download_only) || 
+				    ($attachment_model->show_upload_column && $gui->history_on)}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
 				{else}		
             {assign var="my_colspan" value=$my_colspan-1}
@@ -235,7 +242,11 @@ Rev:
 
   				<td  style="text-align:center">{$tc_old_exec.tcversion_number}</td>
 
-          {if $attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open}
+		  {* BUGID 2545: adjusted if statement to show executions properly
+		   *   if execution history was configured 
+		   *}
+          {if ($attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open) ||
+              ($attachment_model->show_upload_column && $gui->history_on == 1 && $tc_old_exec.build_is_open) }
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
       			         alt="{$labels.alt_attachment_mgmt}"

@@ -2317,6 +2317,7 @@ $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 
 // ----- lib/results/resultsTC.php -----
 $TLS_result_on_last_build = '[Letztes Build]';
+$TLS_tcversion_indicator = ' [v%s]';
 
 
 // ----- cfg/reports.cfg.php -----

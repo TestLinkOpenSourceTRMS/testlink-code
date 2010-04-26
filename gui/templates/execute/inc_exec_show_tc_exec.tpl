@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.17 2010/04/26 12:47:10 mx-julian Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.18 2010/04/26 13:09:54 mx-julian Exp $
 Purpose: 
 Author: franciscom
 
@@ -172,7 +172,7 @@ Rev:
 				<th style="text-align:center">{$labels.testcaseversion}</th>
 				
 				{* BUGID 2545: show attachments column even if all builds are closed *}
-				{if $attachment_model->show_upload_column}
+				{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
 				{else}		
             {assign var="my_colspan" value=$my_colspan-1}
@@ -242,8 +242,9 @@ Rev:
 		  {* BUGID 2545: adjusted if statement to show executions properly
 		   *   if execution history was configured 
 		   *}
-          {if ($attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open) ||
-              ($attachment_model->show_upload_column && $gui->history_on == 1 && $tc_old_exec.build_is_open) }
+          {if ($attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open 
+               && $gsmarty_attachments->enabled) || ($attachment_model->show_upload_column && $gui->history_on == 1 
+               && $tc_old_exec.build_is_open && $gsmarty_attachments->enabled) }
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
       			         alt="{$labels.alt_attachment_mgmt}"
@@ -251,9 +252,11 @@ Rev:
               </td>
 			  {*BUGID 2454*}
 			  {else}
-				<td align="center">
-					<img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">
-				</td>
+			  	{if $attachment_model->show_upload_column && $gsmarty_attachments->enabled}
+					<td align="center">
+						<img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">
+					</td>
+				{/if}
 			  {*END BUGID 2454*}
   	      {/if}
 

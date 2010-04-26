@@ -1,9 +1,10 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.19 2010/04/19 20:58:33 franciscom Exp $
+$Id: usersView.tpl,v 1.20 2010/04/26 09:43:29 asimon83 Exp $
 
 Purpose: smarty template - users overview
 
+20100426 - asimon - removed forgotten comment end sign (template syntax error)
 20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
 20100326 - franciscom - BUGID 3324
 *}
@@ -15,7 +16,7 @@ Purpose: smarty template - users overview
 {assign var="editUserAction" value="$userActionMgr?doAction=edit&amp;user_id="}
 
 {lang_get s='warning_disable_user' var="warning_msg"}
-{lang_get s='disable' var="del_msgbox_title" } *}
+{lang_get s='disable' var="del_msgbox_title" }
 
 <script type="text/javascript">
 	var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";

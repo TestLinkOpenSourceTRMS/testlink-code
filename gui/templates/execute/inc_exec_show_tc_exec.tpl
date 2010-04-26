@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.16 2010/04/26 12:21:22 mx-julian Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.17 2010/04/26 12:47:10 mx-julian Exp $
 Purpose: 
 Author: franciscom
 
@@ -171,11 +171,8 @@ Rev:
 				<th style="text-align:center">{$labels.exec_status}</th>
 				<th style="text-align:center">{$labels.testcaseversion}</th>
 				
-				{* BUGID 2545: adjusted if statement to show executions properly
-				 *	if execution history was configured 
-				 *}
-				{if ($attachment_model->show_upload_column && !$att_download_only) || 
-				    ($attachment_model->show_upload_column && $gui->history_on)}
+				{* BUGID 2545: show attachments column even if all builds are closed *}
+				{if $attachment_model->show_upload_column}
 						<th style="text-align:center">{$labels.attachment_mgmt}</th>
 				{else}		
             {assign var="my_colspan" value=$my_colspan-1}

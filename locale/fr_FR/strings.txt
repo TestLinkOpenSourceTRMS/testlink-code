@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author GrdScarabe, Thomas Courbon, Alexandre Da Costa, brice.grichy
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.21 2009/06/09 21:47:20 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.22 2010/04/27 19:52:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * French translation
@@ -208,13 +208,13 @@ $TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user		= "Utilisateur inconnu, merci de r&eacute;essayer";
-$TLS_contact_admin	= "<br />Si vous avez quelque probl&egrave;me que ce soit prochainement, merci de contacter votre administrateur.";
+$TLS_contact_admin	= "Si vous avez quelque probl&egrave;me que ce soit prochainement, merci de contacter votre administrateur.";
 $TLS_mail_empty_address = "Vous n'avez pas sp&eacute;cifier d'adresse email dans votre profil utilisateur! Veuillez contacter votre administrateur TestLink pour r&eacute;initialiser votre mot de passe!";
 $TLS_mail_passwd_subject = "Votre nouveau mot de passe TestLink.";
 $TLS_mail_problems	= "Erreurs dans la mise en place du syst&egrave;me d'envoi d'email, merci de contacter votre administrateur.";
 $TLS_page_title_lost_passwd = "TestLink - Oublie de mot de passe";
 $TLS_your_info_for_passwd = "Entrez vos informations utilisateurs pour que votre nouveau mot de passe vous soit envoy&eacute;.";
-$TLS_your_password_is	= "Votre nouveau mot de passe TestLink est : <br />";
+$TLS_your_password_is	= "Votre nouveau mot de passe TestLink est :";
 
 
 

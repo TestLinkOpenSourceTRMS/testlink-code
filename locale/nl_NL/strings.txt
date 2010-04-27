@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/03/12 23:03:29 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/04/27 19:52:35 $ by $Author: franciscom $
  * @author Reinder (Baamster)
  *
  * Dutch localization (originally written on 1.7.4 version)
@@ -242,14 +242,14 @@ $TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "Gebruiker niet gevonden, probeer het a.u.b. nogmaals";
-$TLS_contact_admin = "<br>Neem contact op met uw beheerder als u nog problemen ondervind.";
+$TLS_contact_admin = "Neem contact op met uw beheerder als u nog problemen ondervind.";
 $TLS_mail_empty_address = "U heeft geen email adres gespecificeerd in uw profiel! " .
                           "Neem a.u.b. contact op met uw beheerder om uw wachtwoord te resetten!";
 $TLS_mail_passwd_subject = "Uw nieuwe wachtwoord.";
 $TLS_mail_problems = "Fouten in de mail instelling, neem a.u.b. contact op met uw beheerder.";
 $TLS_page_title_lost_passwd = "TestLink - Wachtwoord verloren";
 $TLS_your_info_for_passwd = "Voeg uw gebruikersinformatie in zodat uw nieuwe wachtwoord naar u kan worden gemaild.";
-$TLS_your_password_is = "Uw nieuwe wachtwoord is: <br>";
+$TLS_your_password_is = "Uw nieuwe wachtwoord is:";
 
 
 

@@ -360,14 +360,14 @@ $TLS_wrong_keywords_file = "Fehlerhafte Stichwort-Datei (falsches Format)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "Der angegebene Benutzer konnte nicht gefunden werden. Versuchen Sie es bitte erneut.";
-$TLS_contact_admin = "<br />Bei weiteren Probleme kontaktieren Sie bitte Ihren Systemadministrator.";
+$TLS_contact_admin = "Bei weiteren Probleme kontaktieren Sie bitte Ihren Systemadministrator.";
 $TLS_mail_empty_address = "Sie haben in Ihrem Benutzerprofil keine Email-Adresse angegeben!  " .
 						  "Bitte kontaktieren Sie Ihren Administrator, um Ihr Passwort zurücksetzen zu lassen!";
 $TLS_mail_passwd_subject = "Ihr neues TestLink Passwort";
 $TLS_mail_problems = "Das Emailsystem wurde nicht korrekt installiert. Bitte informieren Sie Ihren Administrator über dieses Problem";
 $TLS_page_title_lost_passwd = "TestLink - Passwort vergessen";
 $TLS_your_info_for_passwd = "Geben Sie bitte Ihren Benutzernamen ein, damit Ihnen ein neues Passwort zugeschickt wird.";
-$TLS_your_password_is = "Ihr neues TestLink Passwort lautet: <br>";
+$TLS_your_password_is = "Ihr neues TestLink Passwort lautet:";
 
 
 

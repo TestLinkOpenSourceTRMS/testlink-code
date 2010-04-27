@@ -10,9 +10,9 @@
 
  * Filename $RCSfile: strings.txt,v $
 
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
 
- * @modified $Date: 2009/08/18 19:58:15 $ by $Author: schlundus $
+ * @modified $Date: 2010/04/27 19:52:35 $ by $Author: franciscom $
 
  *
 
@@ -266,19 +266,13 @@ $TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
 // ----- lostPassword.php -----
 $TLS_bad_user = "USer tak ketemu, coba lagi";
 
-$TLS_contact_admin = "<br />bila masih ada masalah lainnya, harap kontak administrator Anda.";
-
+$TLS_contact_admin = "bila masih ada masalah lainnya, harap kontak administrator Anda.";
 $TLS_mail_empty_address = "Anda tidak menuliskan alamat email di Profil User Anda! Harap kontak administrator Test Link untuk me-reset Password Anda!";
-
 $TLS_mail_passwd_subject = "Password TestLink baru Anda.";
-
 $TLS_mail_problems = "Error saat setup email, harap kontak administrator Anda.";
-
 $TLS_page_title_lost_passwd = "TestLink - Password Hilang";
-
 $TLS_your_info_for_passwd = "Masukkan Informasi User sehingga Password Anda yang baru bisa di-emailkan.";
-
-$TLS_your_password_is = "Password Test Link Anda yang baru adalah: <br>";
+$TLS_your_password_is = "Password Test Link Anda yang baru adalah:";
 
 
 

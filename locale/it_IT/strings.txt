@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2010/02/27 19:27:18 $ $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/04/27 19:52:35 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -202,13 +202,13 @@ $TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "L'utente non esiste. Prego riprovare";
-$TLS_contact_admin = "<br>Se si riscontrano altri problemi per favore contattare l'amministratore!.";
+$TLS_contact_admin = "Se si riscontrano altri problemi per favore contattare l'amministratore!.";
 $TLS_mail_empty_address = "Non hai specificato l'indirizzo mail nel tuo profilo! Per favore contattare l'amministratore TestLink per reimpostare la password!";
 $TLS_mail_passwd_subject = "La tua nuova password per TestLink";
 $TLS_mail_problems = "La mail non è impostata correttamente. Per favore contattare l'amministratore";
 $TLS_page_title_lost_passwd = "TestLink - Password persa";
 $TLS_your_info_for_passwd = "Inserisci le tue informazioni utente, così che la nuova password ti potrà essere spedita via mail";
-$TLS_your_password_is = "La tua nuova password per TestLink è: <br>";
+$TLS_your_password_is = "La tua nuova password per TestLink è:";
 
 
 

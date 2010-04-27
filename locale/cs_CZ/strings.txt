@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/04/19 19:00:55 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/04/27 19:52:33 $ $Author: franciscom $
  * @author Pavel Kalian
  * @author Martin Havlat
  *
@@ -257,7 +257,7 @@ $TLS_mail_passwd_subject = "Vaše nové heslo pro TestLink.";
 $TLS_mail_problems 		= "Chyby v nastavení pošty, kontaktujte prosím svého správce.";
 $TLS_page_title_lost_passwd = "TestLink - Ztracené heslo";
 $TLS_your_info_for_passwd = "Zadejte své přihlašovací informace, aby Vám mohlo být heslo zasláno elektronickou poštou.";
-$TLS_your_password_is 	= "Vaše nové heslo pro TestLink je: <br>";
+$TLS_your_password_is 	= "Vaše nové heslo pro TestLink je:";
 
 
 

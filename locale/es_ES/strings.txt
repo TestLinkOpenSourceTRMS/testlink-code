@@ -10,9 +10,9 @@
 
  *
 
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
 
- * @modified $Date: 2009/03/03 19:46:56 $ $Author: schlundus $
+ * @modified $Date: 2010/04/27 19:52:34 $ $Author: franciscom $
 
  *
 
@@ -345,22 +345,14 @@ $TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "Usuario no encontrado. Por favor, inténtalo de nuevo";
-
-$TLS_contact_admin = "<br>Si los problemas persisten, por favor, contacta con tu administrador.";
-
+$TLS_contact_admin = "Si los problemas persisten, por favor, contacta con tu administrador.";
 $TLS_mail_empty_address = "¡No existe una dirección de e-mail en tu perfil de usuario! " .
-
                          " ¡Por favor, contacta con tu administrador de TestLink respecto a cómo restablecer tu contraseña!";
-
 $TLS_mail_passwd_subject = "Tu nueva contraseña para TestLink.";
-
 $TLS_mail_problems = "Error en la configuración del correo. Por favor, contacta con tu administrador.";
-
 $TLS_page_title_lost_passwd = "TestLink - Contraseña perdida";
-
 $TLS_your_info_for_passwd = "Introduce tu Información de Usuario para que la nueva contraseña te pueda ser enviada vía e-mail.";
-
-$TLS_your_password_is = "Tu nueva contraseña para TestLink es: <br>";
+$TLS_your_password_is = "Tu nueva contraseña para TestLink es:";
 
 
 

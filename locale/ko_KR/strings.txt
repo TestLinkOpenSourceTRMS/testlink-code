@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/06/01 21:41:06 $ by $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/04/27 19:52:35 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Jiun PARK (DQA Team, OPENTECH INC. R&D Center) E-mail : rustyheart@gmail.com
@@ -261,14 +261,14 @@ $TLS_wrong_keywords_file = "잘 못 된 키워드 파일입니다 (잘못된 형
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "사용자를 찾을 수 없습니다, 다시 시도 하세요.";
-$TLS_contact_admin = "<br />문제가 계속 되면 관리자에게 연락 하세요.";
+$TLS_contact_admin = "문제가 계속 되면 관리자에게 연락 하세요.";
 $TLS_mail_empty_address = "당신의 사용자 정보에 이메일 주소가 없습니다! " .
                           " 비밀번호를 재설정 하려면 관리자에게 연락 하세요!";
 $TLS_mail_passwd_subject = "당신의 새 TestLink 비밀번호.";
 $TLS_mail_problems = "메일 설정에 문제가 있습니다. 관리자에게 연락 하세요.";
 $TLS_page_title_lost_passwd = "TestLink - 비밀번호 찾기";
 $TLS_your_info_for_passwd = "사용자 정보를 입력하면, 새 비밀번호가 메일로 전달 됩니다.";
-$TLS_your_password_is = "당신의 새 TestLink 비밀번호 입니다 : <br />";
+$TLS_your_password_is = "당신의 새 TestLink 비밀번호 입니다 :";
 
 
 

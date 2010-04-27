@@ -23,7 +23,7 @@
  * @author 		Kirsi Mäkinen, Jan-Erik Finlander, Juho Kauppi
  * @author 		Heikki Alonen, Jari Ahonen, Otto Moilanen
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.1 2009/06/17 21:19:23 havlat Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.2 2010/04/27 19:52:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * 
@@ -244,14 +244,14 @@ $TLS_wrong_keywords_file = "Väärä avainsanatiedosto (väärä muotoilu)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "Käyttäjää ei löytynyt, olkaa hyvä ja yrittäkää uudestaan";
-$TLS_contact_admin = "<br/>Jos teillä on edelleen ongelmia, ottakaa yhteyttä ylläpitäjään.";
+$TLS_contact_admin = "Jos teillä on edelleen ongelmia, ottakaa yhteyttä ylläpitäjään.";
 $TLS_mail_empty_address = "Käyttäjäprofiiliinne ei ole määritelty sähköpostiosoitetta! " .
 " Salasanan palauttamiseksi, olkaa hyvä ja ottakaa yhteys TestLinkin ylläpitäjään!";
 $TLS_mail_passwd_subject = "Uusi TestLink salasananne.";
 $TLS_mail_problems = "Virhe sähköpostiasetuksissa, olkaa hyvä ja ottakaa yhteys ylläpitäjään.";
 $TLS_page_title_lost_passwd = "TestLink - Unohtuiko salasana";
 $TLS_your_info_for_passwd = "Anna käyttäjätiedot, jotta uusi salasana voidaan lähettää sinulle.";
-$TLS_your_password_is = "Uusi TestLink salasanasi on: <br/>";//
+$TLS_your_password_is = "Uusi TestLink salasanasi on:";//
 
 // ----- login.php -----
 $TLS_bad_user_passwd = "Yritä uudestaan! Väärä käyttäjätunnus tai salasana!";

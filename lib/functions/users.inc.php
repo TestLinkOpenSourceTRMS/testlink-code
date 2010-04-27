@@ -8,21 +8,22 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.105 2009/12/15 13:46:34 erikeloff Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.106 2010/04/27 19:54:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
  * 
- *      20091215 - eloff      - read active testplan from cookie into session
- *      20090817 - franciscom - getUsersForHtmlOptions() - implementation changes
- *      20090517 - franciscom - getTestersForHtmlOptions() interface changes
- *                              buildUserMap() added prefix to tag inactive users
- *      20081221 - franciscom - buildUserMap() interface changes
- *      20081213 - franciscom - refactoring removing old config options 
- *      20080822 - franciscom - resetPassword() - added generatePassword()
- *      20080405 - franciscom - getGrantsForUserMgmt()
- *      20080315 - franciscom - added initalize_tabsmenu()
- *      20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
+ *	20100427 - franciscom - BUGID 3396 
+ *	20091215 - eloff - read active testplan from cookie into session
+ *	20090817 - franciscom - getUsersForHtmlOptions() - implementation changes
+ *	20090517 - franciscom - getTestersForHtmlOptions() interface changes
+ *	                        buildUserMap() added prefix to tag inactive users
+ *	20081221 - franciscom - buildUserMap() interface changes
+ *	20081213 - franciscom - refactoring removing old config options 
+ *	20080822 - franciscom - resetPassword() - added generatePassword()
+ *	20080405 - franciscom - getGrantsForUserMgmt()
+ *	20080315 - franciscom - added initalize_tabsmenu()
+ *	20080210 - franciscom - fixed message for error tlUser::E_PWDDONTMATCH
  *
  */
 
@@ -227,12 +228,14 @@ function resetPassword(&$db,$userID,&$errorMsg)
 
 			if ($result >= tl::OK)
 			{
-				$msgBody = lang_get('your_password_is') . $newPassword . lang_get('contact_admin');
+				// BUGID 3396
+				$msgBody = lang_get('your_password_is') . "\n\n" . $newPassword . "\n\n" . lang_get('contact_admin');
 				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,
-		                           lang_get('mail_passwd_subject'), $msgBody);
-
+		                               lang_get('mail_passwd_subject'), $msgBody);
 				if ($mail_op->status_ok)
-					$result = $user->writeToDB($db);
+				{
+					$result = $user->writePasswordToDB($db); // BUGID 3396
+				}
 				else
 				{
 					$result = tl::ERROR;
@@ -241,9 +244,7 @@ function resetPassword(&$db,$userID,&$errorMsg)
 			}
 		}
 	}
-	if ($errorMsg != "")
-		$errorMsg = getUserErrorMessage($result);
-
+	$errorMsg = ($errorMsg != "") ? getUserErrorMessage($result) : $errorMsg;
 	return $result;
 }
 

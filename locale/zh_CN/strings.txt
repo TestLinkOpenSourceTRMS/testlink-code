@@ -5,11 +5,11 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2009/12/21 12:38:56 $ $Author: havlat $
- * @modified $Date: 2009/12/21 12:38:56 $ $Author: havlat $
- * @modified $Date: 2009/12/21 12:38:56 $ $Author: havlat $
- * @modified $Date: 2009/12/21 12:38:56 $ $Author: havlat $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/04/27 19:52:36 $ $Author: franciscom $
+ * @modified $Date: 2010/04/27 19:52:36 $ $Author: franciscom $
+ * @modified $Date: 2010/04/27 19:52:36 $ $Author: franciscom $
+ * @modified $Date: 2010/04/27 19:52:36 $ $Author: franciscom $
  *
  * N.B.:
  * Here we are defining GLOBAL variables.
@@ -271,13 +271,13 @@ $TLS_wrong_keywords_file = "错误的关键字文件(格式错误)";
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "用户不存在，请重试";
-$TLS_contact_admin = "<br>如果你还有问题，请与系统管理员联系。";
+$TLS_contact_admin = "如果你还有问题，请与系统管理员联系。";
 $TLS_mail_empty_address = "你没有在你的用户档案信息中指定电子邮件地址！请与TestLink系统管理员联系，重新设置你的密码！";
 $TLS_mail_passwd_subject = "新的TestLink密码";
 $TLS_mail_problems = "邮件功能没有正确安装，请与系统管理员联系。";
 $TLS_page_title_lost_passwd = "TestLink - 忘记密码";
 $TLS_your_info_for_passwd = "输入你的用户信息，以便可以通过电子邮件发送你的新密码。";
-$TLS_your_password_is = "你的TestLink新密码是：<br>";
+$TLS_your_password_is = "你的TestLink新密码是：";
 
 
 

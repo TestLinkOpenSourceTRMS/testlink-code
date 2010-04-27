@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2010/04/04 10:06:52 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/04/27 19:52:36 $ by $Author: franciscom $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Milton Campos
@@ -339,14 +339,14 @@ $TLS_wrong_keywords_file = "Arquivos de palavra-chave incorreto (formato incorre
 
 // ----- lostPassword.php -----
 $TLS_bad_user = "Usuário não encontrado, por favor tente de novo";
-$TLS_contact_admin = "<br> Qualquer dúvida contate o Administrador do sistema.";
+$TLS_contact_admin = "Qualquer dúvida contate o Administrador do sistema.";
 $TLS_mail_empty_address = "Você não tem um e-mail especificado no seu perfil!".
                           "Por favor entre em contato com o administrador para recuperar sua senha!";
 $TLS_mail_passwd_subject = "Sua nova senha de acesso ao TestLink.";
 $TLS_mail_problems = "Erro na configuração do e-mail, entre em contato com o Administrador.";
 $TLS_page_title_lost_passwd = "TestLink - Senha Perdida";
 $TLS_your_info_for_passwd = "Entre com seu Usuário e sua nova senha será enviada por e-mail.";
-$TLS_your_password_is = "Sua nova senha de acesso ao TestLink é: <br>";
+$TLS_your_password_is = "Sua nova senha de acesso ao TestLink é:";
 
 
 

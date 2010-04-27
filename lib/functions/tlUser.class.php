@@ -5,11 +5,13 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.7 2010/03/26 22:11:20 franciscom Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.8 2010/04/27 19:54:49 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	
+ *	20100427 - franciscom - BUGID 3396 - writePasswordToDB() method
  *	20100326 - franciscom - setActive() method
  *	20100217 - franciscom - getNamesForProjectRight() - fixed error displayed on event viewer + refactoring
  *  20090726 - franciscom - new method getAccessibleTestPlans()
@@ -387,13 +389,13 @@ class tlUser extends tlDBObject
 			if($this->dbID)
 			{
 				$sql = "UPDATE {$this->tables['users']} " .
-			       "SET first = '" . $db->prepare_string($this->firstName) . "'" .
-			       ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
-			       ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
-				   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
-				   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
-				   ", role_id = ". $db->prepare_string($this->globalRoleID) . 
-				   ", active = ". $db->prepare_string($this->isActive);
+			       	   "SET first = '" . $db->prepare_string($this->firstName) . "'" .
+			       	   ", last = '" .  $db->prepare_string($this->lastName)    . "'" .
+			       	   ", email = '" . $db->prepare_string($this->emailAddress)   . "'" .
+				   	   ", locale = ". "'" . $db->prepare_string($this->locale) . "'" . 
+				   	   ", password = ". "'" . $db->prepare_string($this->password) . "'" .
+				   	   ", role_id = ". $db->prepare_string($this->globalRoleID) . 
+				   	   ", active = ". $db->prepare_string($this->isActive);
 				$sql .= " WHERE id = " . $this->dbID;
 				$result = $db->exec_query($sql);
 			}
@@ -496,12 +498,18 @@ class tlUser extends tlDBObject
 	public function setPassword($pwd)
 	{
 		if (self::isPasswordMgtExternal())
+		{
 			return self::S_PWDMGTEXTERNAL;
-
+		}
 		$pwd = trim($pwd);	
 		if ($pwd == "")
+		{
 			return self::E_PWDEMPTY;
+		}
 		$this->password = $this->encryptPassword($pwd);
+		
+		new dBug($this->password);
+		
 		return tl::OK;
 	}
 	
@@ -910,6 +918,26 @@ class tlUser extends tlDBObject
 			   " WHERE id = " . $this->dbID;
 		$result = $db->exec_query($sql);
 	}
+
+
+	/** 
+	 * Writes user password into the database
+	 * 
+	 * @param resource &$db reference to database handler
+	 * @return integer tl::OK if no problem written to the db, else error code
+	 */
+	public function writePasswordToDB(&$db)
+	{
+		if($this->dbID)
+		{
+			$sql = "UPDATE {$this->tables['users']} " .
+		       	   " SET password = ". "'" . $db->prepare_string($this->password) . "'";
+			$sql .= " WHERE id = " . $this->dbID;
+			$result = $db->exec_query($sql);
+		}
+		$result = $result ? tl::OK : self::E_DBERROR;
+		return $result;
+	}	
 
 }
 ?>

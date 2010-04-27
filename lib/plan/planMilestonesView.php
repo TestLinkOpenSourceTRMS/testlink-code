@@ -1,14 +1,22 @@
 <?php
+
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
+ * 
+ * Define urgency of a Test Suite. 
+ * It requires "prioritization" feature enabled.
  *
- * @filesource $RCSfile: planMilestonesView.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2009/09/10 17:17:16 $ by $Author: franciscom $
+ * @package 	TestLink
  * @author Francisco Mancardi
- *
-**/
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: planMilestonesView.php,v 1.9 2010/04/27 18:22:48 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ * 
+ * @internal Revisions:
+ *	20100427 - franciscom - added standard documentation file header
+ **/
+
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("testplan.class.php");
@@ -17,7 +25,6 @@ testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initialize_gui($db,$args);
-
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.19 2010/04/03 14:41:24 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.20 2010/04/27 14:44:41 mx-julian Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -143,7 +143,11 @@ DEBUG: $gui->action: {$gui->action} <br>
   <table class="simple" style="width:99%;">
   	<tr>
   		<th width="{$gui->tableColspan}">{$labels.step_number}</th>
-  		<th>{$labels.step_details}</th>
+  		{* Julian: added width to show columns step details and expected
+  		 * results at approximately same size (step details get 45%
+  		 * expected results get the rest)
+  		 *}
+  		<th width="45%">{$labels.step_details}</th>
   		<th>{$labels.expected_results}</th>
       {if $session['testprojectOptions']->automationEnabled}
   		  <th width="25">{$labels.execution_type_short_descr}</th>

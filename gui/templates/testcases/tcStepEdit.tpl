@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.20 2010/04/27 14:44:41 mx-julian Exp $ 
+$Id: tcStepEdit.tpl,v 1.21 2010/04/29 06:41:19 mx-julian Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -158,7 +158,7 @@ DEBUG: $gui->action: {$gui->action} <br>
    	{foreach from=$gui->tcaseSteps item=step_info }
   	  <tr>
       {if $step_info.step_number == $gui->step_number}
-		    <td style="text-align:righ;">{$gui->step_number}</td>
+		    <td style="text-align:left;">{$gui->step_number}</td>
   		  <td>{$steps}</td>
   		  <td>{$expected_results}</td>
 		    {if $session['testprojectOptions']->automationEnabled}
@@ -169,7 +169,7 @@ DEBUG: $gui->action: {$gui->action} <br>
       	</td>
       	{/if}
       {else}
-        <td style="text-align:righ;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
+        <td style="text-align:left;"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.step_number}</a></td>
   	  	<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
   	  	<td ><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
         {if $session['testprojectOptions']->automationEnabled}
@@ -181,7 +181,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   {/if}
   {if $gui->action == 'createStep' || $gui->action == 'doCreateStep'}
   	<tr>
-		  <td style="text-align:righ;">{$gui->step_number}</td>
+		  <td style="text-align:left;">{$gui->step_number}</td>
   		<td>{$steps}</td>
   		<td>{$expected_results}</td>
 		    {if $session['testprojectOptions']->automationEnabled}

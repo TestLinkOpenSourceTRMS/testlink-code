@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.64 2010/04/17 23:00:14 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.65 2010/04/29 06:41:18 mx-julian Exp $
 viewer for test case in test specification
 
 rev:
@@ -291,7 +291,7 @@ rev:
 	{* BUGID 3376 *}
  	{foreach from=$args_testcase.steps item=step_info }
 	<tr>
-		<td style="text-align:right;">
+		<td style="text-align:left;">
 		<span class="order_info" style='display:none'>
 		<input type="text" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
 		       value="{$step_info.step_number}" 

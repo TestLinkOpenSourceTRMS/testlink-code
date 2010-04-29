@@ -1,11 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.20 2010/04/17 20:53:18 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.21 2010/04/29 14:56:26 asimon83 Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
 Revisions:          
+  20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
+                      them with new included template inc_tc_filter_panel.tpl
   20100417 - franciscom - BUGID 2498 - filter by test case spec importance
   20100410 - franciscom - BUGID 2797 - filter by test case execution type
 	20080629 - franciscom - fixed missed variable bug
@@ -24,6 +26,36 @@ Revisions:
 
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
+
+	{* BUGID 3301 *}
+	{* includes Ext.ux.CollapsiblePanel *}
+	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
+	{literal}
+	<script type="text/javascript">
+		treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+		           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+		Ext.onReady(function() {
+			Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+	
+			// Use a collapsible panel for filter settings
+			// and place a help icon in ther header
+			var settingsPanel = new Ext.ux.CollapsiblePanel({
+				id: 'tl_exec_filter',
+				applyTo: 'settings_panel',
+				tools: [{
+					id: 'help',
+					handler: function(event, toolEl, panel) {
+						show_help(help_localized_text);
+					}
+				}]
+			});
+			var filtersPanel = new Ext.ux.CollapsiblePanel({
+				id: 'tl_exec_settings',
+				applyTo: 'filter_panel'
+			});
+		});
+	</script>
+	{/literal}
 
     {if $gui->ajaxTree->loader == '' }
         {literal}
@@ -75,67 +107,11 @@ function pre_submit()
 
 <h1 class="title">{$labels.title_navigator}</h1>
 <div style="margin: 3px;">
-<form method="post" id="planAddTCNavigator" onSubmit="javascript:return pre_submit();">
-	<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
- 	<input type="hidden" id="called_url" name="called_url" value="" />
 
-	<table class="smallGrey" width="100%">
-		<caption>
-			{$labels.caption_nav_filter_settings}
-			{* include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=true *}
-		</caption>
-		<tr>
-			<td>{$labels.test_plan}</td>
-			<td>
-				<select name="tplan_id" onchange="pre_submit();this.form.submit()">
-			    {html_options options=$gui->map_tplans selected=$gui->tplan_id}
-				</select>
-			</td>
-		</tr>
-		<tr style="{$keywordsFilterDisplayStyle}">
-			<td>{$labels.keyword}</td>
-			<td><select name="keyword_id[]" title="{$labels.keywords_filter_help}"
-			            multiple="multiple" size={$gui->keywordsFilterItemQty}>
-			    {html_options options=$gui->keywords_map selected=$gui->keyword_id}
-				</select>
-			</td>
-			<td>
-     			 {html_radios name='keywordsFilterType' 
-                   	options=$gui->keywordsFilterType->options
-                   	selected=$gui->keywordsFilterType->selected }
-			</td>
-		</tr>
-		{* BUGID *}
-		{if $session['testprojectOptions']->automationEnabled}
-			<tr>
-				<td>{$labels.execution_type}</td>
-	  			<td>
-			    <select name="exec_type">
-    	  	  {html_options options=$gui->exec_type_map selected=$gui->exec_type}
-	    	  </select>
-				</td>	
-			</tr>
-	  {/if}
-
-		<tr>
-			<th>{$labels.importance}</th>
-			<td>
-				<select name="importance">
-				<option value="">{$gui->str_option_any}</option>
-				{html_options options=$gsmarty_option_importance selected=$gui->importance}
-				</select>
-			</td>
-		</tr>
-
-
-		<tr>
-			<td>
-				<input type="submit" value="{$labels.btn_apply_filter}" name="doUpdateTree" />
-			</td>
-		</tr>
-	</table>
-</form>
-</div>
+{* BUGID 3301 *}
+{include file='testcases/inc_tc_filter_panel.tpl'
+         showSettings='yes'
+         showFilters='yes'}
 
 <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 

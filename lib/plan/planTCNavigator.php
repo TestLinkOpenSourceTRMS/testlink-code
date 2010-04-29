@@ -9,10 +9,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planTCNavigator.php,v 1.41 2010/03/02 10:18:00 asimon83 Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.42 2010/04/29 14:56:24 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ *  20100428 - asimon - BUGID 3301 and related issues - changed name or case 
+ *                      of some variables used in new common template,
+ *                      added filtering by custom fields
  *	20100202 - asimon - BUGID 2455, BUGID 3026
  *  20081223 - franciscom - advanced/simple filter feature
  **/
@@ -30,7 +33,10 @@ $cfg = getCfg();
 $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
 $args = init_args($db,$cfg,$tplan_mgr,$tproject_mgr);
-$gui = initializeGui($db,$args,$cfg,$tplan_mgr);
+
+// BUGID 3301
+$exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
+$gui = initializeGui($db,$args,$cfg,$tplan_mgr, $exec_cfield_mgr);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -73,9 +79,9 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 
-    $args = new stdClass();
+	$args = new stdClass();
 
-    $args->feature = $_REQUEST['feature'];
+	$args->feature = $_REQUEST['feature'];
     switch($args->feature)
     {
       	case 'planUpdateTC':
@@ -109,8 +115,8 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
 		if($args->tplan_id != $_SESSION['testplanID']) {
 	    	//testplan was changed, so we reset the filters, they were chosen for another testplan
 	    	$keys2delete = array('keyword_id', 'filter_status', 'keywordsFilterType',
-	    						'filter_method', 'filter_assigned_to', 'urgencyImportance',
-	    						'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
+	    	                    'filter_method', 'filter_assigned_to', 'urgencyImportance',
+	    	                    'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
 	    	foreach ($keys2delete as $key) {
 	    		unset($_REQUEST[$key]);
 	    	}
@@ -191,7 +197,7 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     }  
 	$args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
     
-    return $args;
+	return $args;
 }
 
 /*
@@ -202,8 +208,9 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
   returns:
    
   rev: 
+  20100428 - asimon - BUGID 3301, added exec_cfield_mgr
 */
-function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
+function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_mgr)
 {
 	
 	$platformMgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
@@ -212,35 +219,39 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
     
-    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
-    $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
+    $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
+    $gui->strOptionNone = $gui_open . lang_get('nobody') . $gui_close;
 
     // WHY IS NEEDED ?
     // to get all assigned testcases, no matter to whom they are assigned
-    $gui->str_option_somebody = $gui_open . lang_get('filter_somebody') . $gui_close;
+    $gui->strOptionSomebody = $gui_open . lang_get('filter_somebody') . $gui_close;
+
+    // BUGID 3301
+    $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
+    $gui->feature = $argsObj->feature;
     
-    $gui->filter_assigned_to=$argsObj->filter_assigned_to;
-    $gui->include_unassigned = $argsObj->include_unassigned;
+    $gui->filterAssignedTo=$argsObj->filter_assigned_to;
+    $gui->includeUnassigned = $argsObj->include_unassigned;
     
     $gui->keywordsFilterItemQty=0;
-    $gui->keyword_id=$argsObj->keyword_id; 
+    $gui->keywordID=$argsObj->keyword_id; 
    	$gui->toggleFilterModeLabel='';
     $gui->advancedFilterMode=0;
     $gui->chooseFilterModeEnabled=0;
 	
     // We only want to use in the filter, keywords present in the test cases that are
     // linked to test plan, and NOT all keywords defined for test project
-    $gui->keywords_map = array(0 => $gui->str_option_any) + (array)$tplanMgr->get_keywords_map($argsObj->tplan_id);
-    if( !is_null($gui->keywords_map) )
+    $gui->keywordsMap = array(0 => $gui->strOptionAny) + (array)$tplanMgr->get_keywords_map($argsObj->tplan_id);
+    if( !is_null($gui->keywordsMap) )
     {
-        $gui->keywordsFilterItemQty=min(count($gui->keywords_map),3);
+        $gui->keywordsFilterItemQty=min(count($gui->keywordsMap),3);
     }
 
     // BUGID 2455
     $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->optFilterBuild = initFilterBuildInfo($dbHandler,$argsObj,$tplanMgr);
     $gui->buildCount = count($gui->optFilterBuild['items']);
-    $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr, $gui->str_option_any);
+    $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr, $gui->strOptionAny);
     
     $gui->keywordsFilterType=new stdClass();                                 
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
@@ -248,40 +259,40 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
 
     // filter using user roles
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
-    $gui->map_tplans = array();
+    $gui->mapTPlans = array();
     foreach($tplans as $key => $value)
     {
-    	$gui->map_tplans[$value['id']] = $value['name'];
+    	$gui->mapTPlans[$value['id']] = $value['name'];
     }
     
-    $gui->tplan_id=$argsObj->tplan_id;
+    $gui->tPlanID=$argsObj->tplan_id;
 	$gui->testers=null;
    	$gui->title = lang_get('title_test_plan_navigator');
     $gui->src_workframe=$argsObj->src_workframe;
-    $gui->draw_bulk_update_button=false;
+    $gui->drawBulkUpdateButton=false;
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
     
     $gui->optResult=createResultsMenu();
-    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
+    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->strOptionAny;
 
 	$filter_cfg = config_get('execution_assignment_filter_methods');
-    $gui->filter_methods = createExecutionAssignmentFilterMethodMenu();
-    $gui->filter_method_specific_build = $filter_cfg['status_code']['specific_build'];
+    $gui->filterMethods = createExecutionAssignmentFilterMethodMenu();
+    $gui->filterMethodSpecificBuild = $filter_cfg['status_code']['specific_build'];
 	$gui->optFilterMethodSelected = $argsObj->filter_method_selected;
   
     switch($argsObj->feature)
     {
       case 'planUpdateTC':
     	    $gui->menuUrl = "lib/plan/planUpdateTC.php";
-    	    $gui->draw_bulk_update_button=true;
-    	    $gui->draw_tc_unassign_button=false;
+    	    $gui->drawBulkUpdateButton=true;
+    	    $gui->drawTCUnassignButton=false;
     	break;
     
       case 'test_urgency':
     	    $gui->menuUrl = "lib/plan/planUrgency.php";
-    	    $gui->draw_bulk_update_button=false;
-    	    $gui->draw_tc_unassign_button=false;
+    	    $gui->drawBulkUpdateButton=false;
+    	    $gui->drawTCUnassignButton=false;
 	    break;
     
       case 'tc_exec_assignment':
@@ -289,9 +300,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
     	    $gui->menuUrl = "lib/plan/tc_exec_assignment.php";
     	    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
     	                                             null,
-     	                                             array(TL_USER_ANYBODY => $gui->str_option_any,
-	                                                       TL_USER_NOBODY => $gui->str_option_none,
-	                                                       TL_USER_SOMEBODY => $gui->str_option_somebody) );
+     	                                             array(TL_USER_ANYBODY => $gui->strOptionAny,
+	                                                       TL_USER_NOBODY => $gui->strOptionNone,
+	                                                       TL_USER_SOMEBODY => $gui->strOptionSomebody) );
           
     	    
     	    
@@ -308,13 +319,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
           }
           $gui->chooseFilterModeEnabled=1;  
           $gui->toggleFilterModeLabel=lang_get($label);
-          $gui->draw_tc_unassign_button=true;
+          $gui->drawTCUnassignButton=true;
     	break;
     }
 
-
-	$gui->additional_string = '';
-	$gui->tree = buildTree($dbHandler,$gui,$argsObj,$cfgObj);
+    $gui->additional_string = '';
+    // BUGID 3301
+	$gui->tree = buildTree($dbHandler,$gui,$argsObj,$cfgObj, $exec_cfield_mgr);
 
     return $gui;
 }
@@ -327,11 +338,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr)
   returns: string used by different tree components to render tree.
            also add ajaxTree property to guiObj
   
-  rev: 20081221 - franciscom -
+  rev: 20100428 - asimon - added exec_cfield_mgr
+       20081221 - franciscom -
        20080821 - franciscom - added management of ajaxTree property
        
 */
-function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
+function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj, &$exec_cfield_mgr)
 {
     // Developer remarks:
     // using global coupling is 99% (ALWAYS) BAD -> global $tlCfg;
@@ -353,7 +365,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
     	$filters->platform_id = $argsObj->optPlatformSelected;
     }
 
-    $filters->include_unassigned = $guiObj->include_unassigned;
+    $filters->include_unassigned = $guiObj->includeUnassigned;
     $filters->show_testsuite_contents=1;
    	$filters->hide_testcases = 0;
    	
@@ -384,7 +396,11 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
     $filters->build_id = 0;
     $filters->assignedTo = null;
     $filters->status = null;
-    $filters->cf_hash = null;
+    $filters->exec_type = null;
+    
+    // BUGID 3301
+    //$filters->cf_hash = null;
+    $filters->cf_hash = $exec_cfield_mgr->get_set_values();
 
     switch($argsObj->feature)
     {
@@ -402,7 +418,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
           }
           else
           {
-              $dummy = array_flip($guiObj->filter_assigned_to);
+              $dummy = array_flip($guiObj->filterAssignedTo);
               foreach( $dummy as $key => $value)
               {
                   $dummy[$key] = $key;  
@@ -413,10 +429,9 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
     	break;
     }
     
-    
     $additionalInfo->useCounters=CREATE_TC_STATUS_COUNTERS_OFF;
     $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
- 
+    
     $guiObj->args = initializeGetArguments($argsObj,$filters);
     $treeMenu = generateExecTree($dbHandler,$guiObj->menuUrl,
                                  $argsObj->tproject_id,$argsObj->tproject_name,
@@ -443,7 +458,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj)
 
   returns:
 
-  rev: 20080427 - franciscom - added cfgObj arguments
+  rev: 20100428 - asimon - added cf_hash filter
+       20080427 - franciscom - added cfgObj arguments
        20080224 - franciscom - added include_unassigned
 
 */
@@ -469,6 +485,12 @@ function initializeGetArguments($argsObj,$filtersObj)
     }
     
     $settings .= '&tplan_id=' . $argsObj->tplan_id;
+    
+    // BUGID 3301
+	if ($filtersObj->cf_hash)
+    {
+    	 $settings .= '&cfields='. serialize($filtersObj->cf_hash);
+    }
     
     return $settings;
 }

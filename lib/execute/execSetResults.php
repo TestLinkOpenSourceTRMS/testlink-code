@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.152 $
- * @modified $Date: 2010/03/19 15:04:09 $ $Author: asimon83 $
+ * @version $Revision: 1.153 $
+ * @modified $Date: 2010/04/29 14:56:23 $ $Author: asimon83 $
  *
  * rev:
+ *  20100428 - asimon - BUGID 3301 and related, added logic to refresh tree after tc execution
  *  20100313 - franciscom - BUGID 3276
  *  20100204 - asimon - BUGID 2455 & 3026, little changes for filtering
  *  20100121 - franciscom - missing platform feature refactoring
@@ -460,8 +461,24 @@ function init_args($cfgObj)
     $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
     
     // 20090419 - franciscom - BUGID
-    $args->refreshTree=isset($_REQUEST['refreshTree']) ? 1 : 0; //TODO asimon can this be set selectively for applying only after test execution?
-	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
+    // BUGID 3301 and related - asimon - changed refresh tree logic 
+    // to adapt behavior of other forms (like tc edit)
+    // additionally modified to only refresh on saving of test results, not on every click
+    if(isset($_SESSION['tcspec_refresh_on_action']))
+	{
+		$args->refreshTree = $_SESSION['tcspec_refresh_on_action'] == 'yes' ? 1 : 0;
+    }
+    else
+    {
+    	// use default from config
+    	$args->refreshTree = $cfgObj->spec_cfg->automatic_tree_refresh ? 1 : 0;
+    }
+    // if nothing has been executed (no status sent), don't refresh tree, ignore settings
+    if (is_null($args->status)) {
+    	$args->refreshTree = 0; 
+    }
+    
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	
 	//BUGID 2267
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
@@ -473,7 +490,7 @@ function init_args($cfgObj)
 		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
 	}
 
-	return $args;  
+	return $args;
 }
 
 

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.53 2010/04/17 17:51:41 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.54 2010/04/29 14:56:24 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -15,6 +15,9 @@
  *
  * @internal Revisions:
  *
+ * 20100428 - asimon - BUGID 3301 and related issues - changed name or case 
+ *                     of some variables used in new common template,
+ *                     added custom field filtering logic
  * 20100417 - franciscom - BUGID 2498: Add test case to test plan - Filter Test Cases based on Test Importance
  * 20100410 - franciscom - BUGID 2797 - filter by test case execution type
  * 20100228 - franciscom - BUGID 0001927: filter on keyword - Filter tree when add/remove testcases - KO
@@ -32,9 +35,11 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
-$gui = initializeGui($db,$args);
+// BUGID 3301 - added exec_cfield_mgr here
+$exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
+$gui = initializeGui($db,$args, $exec_cfield_mgr);
 $gui->ajaxTree = initAjaxTree($args,$_SESSION['basehref']);
-$gui->tree = buildTree($db,$gui,$args);
+$gui->tree = buildTree($db,$gui,$args, $exec_cfield_mgr);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
@@ -88,11 +93,12 @@ function init_args()
   args :
   returns: 
 
-  rev:20080629 - franciscom - added missed argument basehref
+  rev:20100428 - asimon - BUGID 3301, added exec_cfield_mgr
+      20080629 - franciscom - added missed argument basehref
       20080622 - franciscom - changes for ext js tree
       20080429 - franciscom
 */
-function initializeGui(&$dbHandler,&$argsObj)
+function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
 {
     $gui = new stdClass();
     $tprojectMgr = new testproject($dbHandler);
@@ -100,44 +106,43 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
 
-    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
+    $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
     $gui->do_reload = 0;
     $gui->src_workframe = null;
     
     $gui->keywordsFilterItemQty = 0;
-    $gui->keyword_id = $argsObj->keyword_id; 
-    $gui->keywords_map = $tprojectMgr->get_keywords_map($argsObj->tproject_id); 
-    if(!is_null($gui->keywords_map))
+    $gui->keywordID = $argsObj->keyword_id; 
+    $gui->keywordsMap = $tprojectMgr->get_keywords_map($argsObj->tproject_id); 
+    if(!is_null($gui->keywordsMap))
     {
-        $gui->keywords_map = array( 0 => $gui->str_option_any) + $gui->keywords_map;
-        $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
+        $gui->keywordsMap = array( 0 => $gui->strOptionAny) + $gui->keywordsMap;
+        $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
     }
 
-    new dBug($gui->keywords_map);
+    new dBug($gui->keywordsMap);
 	new dBug($gui->keywordsFilterItemQty);
 	
     // filter using user roles
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
-    $gui->map_tplans = array();
+    $gui->mapTPlans = array();
     foreach($tplans as $key => $value)
     {
-    	$gui->map_tplans[$value['id']] = $value['name'];
+    	$gui->mapTPlans[$value['id']] = $value['name'];
     }
 
-    $gui->tplan_id = $argsObj->tplan_id;
+    $gui->tPlanID = $argsObj->tplan_id;
 
 	// 20100417 
     $gui->importance = $argsObj->importance; 
 
 	// 20100410    
     $tcaseMgr = new testcase($dbHandler);
-    $gui->exec_type = $argsObj->exec_type; 
-    $gui->exec_type_map = $tcaseMgr->get_execution_types(); 
-    $gui->exec_type_map = array(0 => $gui->str_option_any) + $gui->exec_type_map;
-
+    $gui->execType = $argsObj->exec_type; 
+    $gui->execTypeMap = $tcaseMgr->get_execution_types(); 
+    $gui->execTypeMap = array(0 => $gui->strOptionAny) + $gui->execTypeMap;
 
     $gui->menuUrl = 'lib/plan/planAddTC.php';
-    $gui->args = '&tplan_id=' . $gui->tplan_id;
+    $gui->args = '&tplan_id=' . $gui->tPlanID;
     if(is_array($argsObj->keyword_id))
     {
 		    $kl = implode(',',$argsObj->keyword_id);
@@ -156,6 +161,8 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
 
+    // BUGID 3301
+    $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
     
     return $gui;
 }
@@ -167,9 +174,12 @@ function initializeGui(&$dbHandler,&$argsObj)
   args :
   
   returns: 
+  
+  rev:
+  20100428 - asimon - BUGID 3301, added exec_cfield_mgr
 
 */
-function buildTree(&$dbHandler,&$guiObj,&$argsObj)
+function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$exec_cfield_mgr)
 {
 	$treeMenu = null;
 	$my_workframe = $_SESSION['basehref']. $guiObj->menuUrl .                      
@@ -211,7 +221,10 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj)
 	$filters['executionType'] = buildExecTypeFilter($argsObj->exec_type); // BUGID 2797
 	$filters['importance'] = buildImportanceFilter($argsObj->importance); // BUGID 2498
     
-	$applyFilter = !is_null($filters['keywords']) || 
+	// BUGID 3301
+    $filters['cf_hash'] = $exec_cfield_mgr->get_set_values();
+	
+	$applyFilter = !is_null($filters['cf_hash']) || !is_null($filters['keywords']) || 
 				   (!is_null($filters['executionType']) && intval($filters['executionType']->items) > 0) ||
 				   (!is_null($filters['importance']) && intval($filters['importance']->items) > 0);
 

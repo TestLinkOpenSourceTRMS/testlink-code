@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		jbarchibald
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.13 2010/03/19 15:04:09 asimon83 Exp $
+ * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.14 2010/04/29 14:56:25 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -226,7 +226,9 @@ function html_table_of_custom_field_inputs($htmlInputSize=0)
             case 'float':
             case 'email':
             case 'string':
-                $cf_tmp = isset($_POST[$cf_name]) ? $_POST[$cf_name] : null;
+                // BUGID 3301 - replaced POST with REQUEST
+            	// $cf_tmp = isset($_POST[$cf_name]) ? $_POST[$cf_name] : null;
+                $cf_tmp = isset($_REQUEST[$cf_name]) ? $_REQUEST[$cf_name] : null;
 
                 if ($cf_tmp) {
                     $cf_selected[$id] = $cf_tmp;

@@ -2,13 +2,16 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.47 2009/12/12 10:12:14 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.48 2010/04/29 14:56:26 asimon83 Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
 *	@internal revision
+*   20100428 - asimon - BUGID 3301 and related issues - changed name or case 
+*                       of some variables used in new common template,
+*                       added custom field filtering logic
 *	20091210 - franciscom - test case execution type filter
 *   20090308 - franciscom - added option Any in keywords filter
 *   20090210 - BUGID 2062 - franciscom -
@@ -21,7 +24,6 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
-
 $spec_cfg = config_get('spec_cfg');
 
 $feature_action = array('edit_tc' => "lib/testcases/archiveData.php",
@@ -33,6 +35,10 @@ $treeDragDropEnabled =  array('edit_tc' => (has_rights($db,"mgt_modify_tc") == '
                               'assignReqs' => false);
 
 $args = init_args($spec_cfg);
+
+// BUGID 3301
+$exec_cfield_mgr = new exec_cfield_mgr($db,$args->tproject_id);
+
 if(isset($feature_action[$args->feature]))
 {
 	$workPath = $feature_action[$args->feature];
@@ -44,7 +50,7 @@ else
 }
 
 // Here lazy loading tree configuration is done
-$gui = initializeGui($db,$args,$tproject_mgr,$treeDragDropEnabled[$args->feature]);
+$gui = initializeGui($db,$args,$tproject_mgr,$treeDragDropEnabled[$args->feature], $exec_cfield_mgr);
 
 $draw_filter = $spec_cfg->show_tsuite_filter;
 $exclude_branches = null;
@@ -60,7 +66,12 @@ if($spec_cfg->show_tsuite_filter)
 $filters = array();
 $filters['keywords'] = buildKeywordsFilter($args->keyword_id,$gui);
 $filters['executionType'] = buildExecTypeFilter($args->exec_type,$gui);
-$applyFilter = !is_null($filters['keywords']) || !is_null($filters['executionType']);
+
+// BUGID 3301
+$filters['cf_hash'] = $exec_cfield_mgr->get_set_values();
+
+$applyFilter = !is_null($filters['keywords']) || !is_null($filters['executionType']) 
+            || !is_null($filters['cf_hash']);
 
 if($applyFilter)
 {
@@ -97,8 +108,8 @@ if($applyFilter)
 
 $gui->treeHeader = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 $gui->draw_filter = $draw_filter;
-$gui->tsuites_combo = $tsuites_combo;
-$gui->tcspec_refresh_on_action = $args->do_refresh;
+$gui->tsuitesCombo = $tsuites_combo;
+$gui->tcSpecRefreshOnAction = $args->do_refresh;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -199,12 +210,13 @@ function init_args($spec_cfg)
   
   returns: stdClass object
   
-  rev: 20080817 - franciscom
+  rev: 20100428 - asimon - BUGID 3301 - added $exec_cfield_mgr for custom field filtering
+       20080817 - franciscom
        added code to get total number of testcases in a test project, to display
        it on root tree node.
 
 */
-function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled)
+function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exec_cfield_mgr)
 {
     $tcaseCfg = config_get('testcase_cfg');
     $gui_open = config_get('gui_separator_open');
@@ -212,7 +224,7 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled)
         
     $gui = new stdClass();
     $gui->tree = null;
-    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
+    $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
 
     $tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id);
     
@@ -256,28 +268,32 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled)
     $gui->ajaxTree->root_node->testlink_node_type='testproject';
 
     
-    $gui->tsuite_choice = $args->tsuites_to_show;  
+    $gui->tsuiteChoice = $args->tsuites_to_show;
     
     // 20090118 - franciscom    
     $gui->keywordsFilterType = new stdClass();
     $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterType->selected = $args->keywordsFilterType;
     $gui->keywordsFilterItemQty = 0;
-    $gui->keyword_id = $args->keyword_id; 
-    $gui->keywords_map = $tprojectMgr->get_keywords_map($args->tproject_id); 
-    if(!is_null($gui->keywords_map))
+    $gui->keywordID = $args->keyword_id; 
+    $gui->keywordsMap = $tprojectMgr->get_keywords_map($args->tproject_id); 
+    if(!is_null($gui->keywordsMap))
     {
-        $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
-        $gui->keywords_map = array(0 => $gui->str_option_any) + $gui->keywords_map;
+        $gui->keywordsMap = array(0 => $gui->strOptionAny) + $gui->keywordsMap;
+    	$gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
     }
 
 
     // 20091210 - franciscom    
     $tcaseMgr = new testcase($dbHandler);
-    $gui->exec_type = $args->exec_type; 
-    $gui->exec_type_map = $tcaseMgr->get_execution_types(); 
-    $gui->exec_type_map = array(0 => $gui->str_option_any) + $gui->exec_type_map;
-     
+    $gui->execType = $args->exec_type; 
+    $gui->execTypeMap = $tcaseMgr->get_execution_types(); 
+    $gui->execTypeMap = array(0 => $gui->strOptionAny) + $gui->execTypeMap;
+    
+    // BUGID 3301
+    $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
+    $gui->feature = $args->feature;
+    
     return $gui;  
 }
 ?>

@@ -8,12 +8,18 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.121 2010/04/17 18:09:27 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.122 2010/04/29 14:56:24 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *		
+ *
+ *  20100428 - asimon - BUGID 3301 and related: 
+ *                      added filtering by custom fields to generateTestSpecTree(),
+ *                      added importance setting in prepareNode() because of 
+ *                      "undefined" error in event log,
+ *                      added function filter_by_cfield_values() 
+ *                      which is used from generateTestSpecTree()
  *	20100417 - franciscom - BUGID 2498 - spec tree  - filter by test case spec importance
  *	20100417 - franciscom - BUGID 3380 - execution tree - filter by test case execution type
  *	20100415 - franciscom - BUGID 2797 - filter by test case execution type
@@ -67,6 +73,7 @@ function filterString($str)
  * @param array $exclude_branches map key=node_id
  * 
  * @internal Revisions:
+ * 20100428 - asimon - BUGID 3301, added filtering by custom fields
  * 20090328 - franciscom - BUGID 2299, that was generated during 20090308 
  *                         trying to fix another not reported bug.
  * 20090308 - franciscom - changed arguments in str_ireplace() call
@@ -111,10 +118,11 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	$menustring = null;
 	
 	$tproject_mgr = new testproject($db);
-	$tree_manager = &$tproject_mgr->tree_manager;
-	
+	$tree_manager = &$tproject_mgr->tree_manager;	
 	
 	$tcase_node_type = $tree_manager->node_descr_id['testcase'];
+	// BUGID 3301
+	$tsuite_node_type = $tree_manager->node_descr_id['testsuite'];
 	$hash_descr_id = $tree_manager->get_available_node_types();
 	$hash_id_descr = array_flip($hash_descr_id);
 	$status_descr_code=$resultsCfg['status_code'];
@@ -131,7 +139,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	// Added root node for test specification -> testproject
 	$test_spec['name'] = $tproject_name;
 	$test_spec['id'] = $tproject_id;
-	$test_spec['node_type_id'] = $hash_descr_id['testproject'];;
+	$test_spec['node_type_id'] = $hash_descr_id['testproject'];
 	
 	$map_node_tccount=array();
 	$tplan_tcs=null;
@@ -168,6 +176,13 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	    
 	    $pnFilters['testplan'] = $my['filters']['testplan'];
 	    
+	    // BUGID 3301 - added filtering by custom field values
+	    if (isset($my['filters']['cf_hash']) && isset($test_spec['childNodes'])) {
+	    	$test_spec['childNodes'] = filter_by_cf_values($test_spec['childNodes'], 
+	    	                                               $my['filters']['cf_hash'], $db,
+	    	                                               $tsuite_node_type, $tcase_node_type);
+	    }
+		
 	    // 20100412 - franciscom
 	    $pnOptions = array('hideTestCases' => $my['options']['hideTestCases'], 
 	    				   'viewType' => $my['options']['viewType'],	
@@ -343,8 +358,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		$my = array();
 		$my['options'] = array('hideTestCases' => 0, 'showTestCaseID' => 1, 'viewType' => 'testSpecTree',
 		                       'getExternalTestCaseID' => 1,'ignoreInactiveTestCases' => 0);
-		
-		$my['filters'] = array('status' => null, 'assignedTo' => null, 'executionType' => null);
+
+		// asimon - added importance here because of "undefined" error in event log
+		$my['filters'] = array('status' => null, 'assignedTo' => null, 
+		                       'importance' => null, 'executionType' => null);
 		
 		$my['options'] = array_merge($my['options'], (array)$options);
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -777,13 +794,13 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			$opt = array('include_unassigned' => $filters->include_unassigned);
 
 			// 20100417 - BUGID 3380 - execution type
-            $linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
+			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
                                    'assigned_to' => $filters->assignedTo,
                                    'cf_hash' =>  $filters->cf_hash,
                                    'platform_id' => $filters->platform_id,
                                    'urgencyImportance' => $urgencyImportance,
                                    'exec_type' => $filters->exec_type);
-			   
+			
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'AND')
 			{
@@ -1254,6 +1271,99 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			unset($node[$key]); 
 		}  
 	}
+}
+
+
+/**
+ * Filter out the testcases that don't have the given value 
+ * in their custom field(s) from the tree.
+ * Recursive function.
+ * 
+ * @author Andreas Simon
+ * @since 1.9
+ * 
+ * @param array &$tcase_tree reference to test case set/tree to filter
+ * @param array &$cf_hash reference to selected custom field information
+ * @param resource &$db reference to DB handler object
+ * @param int $node_type_testsuite ID of node type for testsuites
+ * @param int $node_type_testcase ID of node type for testcase
+ * 
+ * @return array $tcase_tree filtered tree structure
+ */
+function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite, $node_type_testcase) {
+	static $tables = null;
+	static $debugMsg = null;
+	
+	if (!$debugMsg) {
+		$tables = tlObject::getDBTables('cfield_design_values');
+		$debugMsg = 'Function: ' . __FUNCTION__;
+	}
+	
+	// This code is in parts based on (NOT simply copy/pasted)
+	// some filter code used in testplan class.
+	// Implemented because we have a tree here, 
+	// not simple one-dimensional array of testcases like in tplan class.
+	
+	foreach ($tcase_tree as $key => &$node) {
+		
+		if ($node['node_type_id'] == $node_type_testsuite && !is_null($node['childNodes'])) {			
+			// node is suite and has childs, recurse one level deeper
+			
+			$node['childNodes'] = filter_by_cf_values($node['childNodes'], $cf_hash, $db, 
+			                                          $node_type_testsuite, $node_type_testcase);
+			
+			// now remove testsuite node if it is empty after filtering
+			if (!count($node['childNodes'])) {
+				unset($tcase_tree[$key]);
+			}
+			
+		} else if ($node['node_type_id'] == $node_type_testcase) {
+			// node is testcase, check if we need to delete it
+			
+			$passed = false;
+			
+			foreach ($cf_hash as $cf_id => $cf_value)
+			{
+				// there will never be more than one record that has a field_id / node_id combination
+				$sql = " /* $debugMsg */ SELECT value FROM {$tables['cfield_design_values']} " .
+				       " WHERE field_id = $cf_id " .
+				       " AND node_id = {$node['id']} ";
+				
+				$result = $db->exec_query($sql);
+				$row = $db->fetch_array($result);
+				
+				// push both to arrays so we can compare
+				$possibleValues = explode ('|', $row['value']);
+				$valuesSelected = explode ('|', $cf_value);
+				
+				// we want to match any selected item from list and checkboxes.
+				if ( count($valuesSelected) ) {
+					foreach ($valuesSelected as $vs_id => $vs_value) {
+						$found = array_search($vs_value, $possibleValues);
+						if (is_int($found)) {
+							$passed = true;
+						} else {
+							$passed = false;
+							break;
+						}
+					}
+				}
+
+				// jumping out of foreach here creates AND search
+				// removing this if would cause OR search --> first found value counts
+				if (!$passed) {
+					break;
+				}
+			}
+			
+			// now delete node if no match was found
+			if (!$passed) {
+				unset($tcase_tree[$key]);
+			}			
+		}
+	}
+
+	return $tcase_tree;
 }
 
 

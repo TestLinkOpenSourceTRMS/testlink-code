@@ -7,11 +7,13 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.105 2010/04/17 13:32:47 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.106 2010/04/29 14:56:23 asimon83 Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100428 - asimon - BUGID 3301 and related issues - changed name or case 
+ *                     of some variables used in new common template
  * 20100417 - franciscom - BUGID 3380 execution type filter
  * 20100409 - eloff - BUGID 3050 - remember selected platform and build in session
  * 20100222 - asimon - fixes in initializeGui() for testplan select box when there are no builds
@@ -190,9 +192,12 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 	$args->optPlatformSelected = isset($_REQUEST['platform_id']) ? $_REQUEST['platform_id'] : null;
 	if (is_null($args->optPlatformSelected) && isset($_SESSION['platformID']))
 	{
-		$args->optPlatformSelected =  intval($_SESSION['platformID']);
+		$args->optPlatformSelected = intval($_SESSION['platformID']);
 	}
-	if ($args->optPlatformSelected != $_SESSION['platformID'])
+	
+	// BUGID 3301 - added isset() checks in if statements for undefined errors in log 
+	// because of undefined index warning in event log
+	if (isset($_SESSION['platformID']) && $args->optPlatformSelected != $_SESSION['platformID'])
 	{
 		$_SESSION['platformID'] = $args->optPlatformSelected;
 	}
@@ -203,7 +208,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 	{
 		$args->optBuildSelected = intval($_SESSION['buildID']);
 	}
-	if ($args->optBuildSelected != $_SESSION['buildID'])
+	if (!isset($_SESSION['buildID']) || $args->optBuildSelected != $_SESSION['buildID'])
 	{
 		$_SESSION['buildID'] = $args->optBuildSelected;
 	}
@@ -213,6 +218,30 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 	// BUGID 3380
     $args->exec_type = isset($_REQUEST['exec_type']) ? intval($_REQUEST['exec_type']) : 0;
 
+    // BUGID 3301 - refresh on action logic borrowed from listTestCases.php
+    $args->tcspec_refresh_on_action = isset($_REQUEST['tcspec_refresh_on_action']) ? 
+                                      $_REQUEST['tcspec_refresh_on_action'] : null;
+    $args->hidden_tcspec_refresh_on_action = isset($_REQUEST['hidden_tcspec_refresh_on_action']) ? 
+                                      $_REQUEST['hidden_tcspec_refresh_on_action'] : null;
+    $args->do_refresh = "no";
+   
+    if (!is_null($args->hidden_tcspec_refresh_on_action))
+    {
+    	if (!is_null($args->tcspec_refresh_on_action))
+    	{
+    		$args->do_refresh = $args->tcspec_refresh_on_action ? "yes" : "no";
+        }
+    }
+    else if (isset($_SESSION["tcspec_refresh_on_action"]))
+    {
+    	$args->do_refresh = ($_SESSION["tcspec_refresh_on_action"] == "yes") ? "yes" : "no";
+    }
+    else
+    {	
+    	$args->do_refresh = ($cfgObj->spec_cfg->automatic_tree_refresh > 0) ? "yes": "no";
+    }
+	$_SESSION['tcspec_refresh_on_action'] = $args->do_refresh;
+	
     return $args;
 }
 
@@ -334,13 +363,13 @@ function buildAssigneeFilter(&$dbHandler,&$guiObj,&$argsObj,$cfgObj)
     switch ($exec_view_mode)
     {
     	case 'all':
- 		    $guiObj->filter_assigned_to = is_null($argsObj->filter_assigned_to) ? null : $argsObj->filter_assigned_to;
+ 		    $guiObj->filterAssignedTo = is_null($argsObj->filter_assigned_to) ? null : $argsObj->filter_assigned_to;
     		break;
     
     	case 'assigned_to_me':
     		$guiObj->disable_filter_assigned_to = true;
     		$argsObj->filter_assigned_to = (array)$argsObj->user->dbID;
-            $guiObj->filter_assigned_to = $argsObj->filter_assigned_to;
+            $guiObj->filterAssignedTo = $argsObj->filter_assigned_to;
     		$guiObj->assigned_to_user = $argsObj->user->getDisplayName();
     		break;
     }
@@ -451,7 +480,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     
     $filters->keyword = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
-    $filters->include_unassigned = $guiObj->include_unassigned;
+    $filters->include_unassigned = $guiObj->includeUnassigned;
     
     $filters->tc_id = $argsObj->tcase_id;	
     $filters->build_id = $argsObj->optBuildSelected;
@@ -465,16 +494,16 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $filters->method = $argsObj->filter_method_selected;
    
     // in this way we have code as key
-    $filters->assignedTo = $guiObj->filter_assigned_to;
+    $filters->assignedTo = $guiObj->filterAssignedTo;
     if( !is_null($filters->assignedTo) )
     {
-        if( in_array(TL_USER_ANYBODY, $guiObj->filter_assigned_to) )
+        if( in_array(TL_USER_ANYBODY, $guiObj->filterAssignedTo) )
         {
             $filters->assignedTo = null;
         }
         else
         {
-            $dummy = array_flip($guiObj->filter_assigned_to);
+            $dummy = array_flip($guiObj->filterAssignedTo);
             foreach( $dummy as $key => $value)
             {
                 $dummy[$key] = $key;  
@@ -544,9 +573,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
     
-    $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
-    $gui->str_option_none = $gui_open . lang_get('nobody') . $gui_close;
-    $gui->str_option_somebody = $gui_open . lang_get('filter_somebody') . $gui_close;
+    //BUGID 3301
+    $gui->tcSpecRefreshOnAction = $argsObj->do_refresh;
+    
+    $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
+    $gui->strOptionNone = $gui_open . lang_get('nobody') . $gui_close;
+    $gui->strOptionSomebody = $gui_open . lang_get('filter_somebody') . $gui_close;
         
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
     $gui->menuUrl = 'lib/execute/execSetResults.php';
@@ -558,31 +590,32 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     // 20100417 - franciscom
     // BUGID 3380
     $tcaseMgr = new testcase($dbHandler);
-    $gui->exec_type = $argsObj->exec_type; 
-    $gui->exec_type_map = $tcaseMgr->get_execution_types(); 
-    $gui->exec_type_map = array(0 => $gui->str_option_any) + $gui->exec_type_map;
+    $gui->execType = $argsObj->exec_type; 
+    $gui->execTypeMap = $tcaseMgr->get_execution_types(); 
+    $gui->execTypeMap = array(0 => $gui->strOptionAny) + $gui->execTypeMap;
 	unset($tcaseMgr);
     
     
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
     
-    $gui->map_tplans = array();
+    $gui->mapTPlans = array();
     foreach($tplans as $key => $value)
     {
     	//dont take testplans into selection which have no builds assigned
     	$items = $tplanMgr->get_builds($value['id'],
     							testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
 		if (is_array($items) && count($items)) {
-    		$gui->map_tplans[$value['id']] = $value['name'];
+    		$gui->mapTPlans[$value['id']] = $value['name'];
     	}    	
     }
     
-    $gui->tplan_id = $argsObj->tplan_id;
-    $gui->tplan_name = $argsObj->tplan_name;
+    $gui->tPlanID = $argsObj->tplan_id;
+    $gui->tPlanName = $argsObj->tplan_name;
     
     $gui->optResultSelected = $argsObj->optResultSelected;
-    $gui->include_unassigned = $argsObj->include_unassigned;
+    $gui->includeUnassigned = $argsObj->include_unassigned;
     $gui->urgencyImportance = $argsObj->urgencyImportance;
+    $gui->urgencyImportanceSelectable = TRUE; // TODO should this depend on project settings?
     
     $gui->optBuild = initBuildInfo($dbHandler,$argsObj,$tplanMgr);
     $gui->optFilterBuild = initFilterBuildInfo($dbHandler,$argsObj,$tplanMgr);
@@ -599,33 +632,34 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
     $gui->keywordsFilterItemQty = 0;
 
-    $gui->keyword_id = $argsObj->keyword_id; 
-    $gui->keywords_map = $tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
-    if(!is_null($gui->keywords_map))
+    $gui->keywordID = $argsObj->keyword_id; 
+    $gui->keywordsMap = $tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
+    if(!is_null($gui->keywordsMap))
     {
-        $gui->keywords_map = array( 0 => $gui->str_option_any) + $gui->keywords_map;
-        $gui->keywordsFilterItemQty = min(count($gui->keywords_map),3);
+        $gui->keywordsMap = array( 0 => $gui->strOptionAny) + $gui->keywordsMap;
+        $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
     }
     
     // 20090517 - francisco.mancardi@gruppotesi.com
     // Assigned to combo must contain ALSO inactive users
     $users = tlUser::getAll($dbHandler,null,"id",null);
-	$gui->users = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
-	                                       $users,array(TL_USER_ANYBODY => $gui->str_option_any,
-	                                       TL_USER_NOBODY => $gui->str_option_none,
-	                                       TL_USER_SOMEBODY => $gui->str_option_somebody),'any' );
+	// BUGID 3301: $gui->users --> $gui->testers
+    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
+	                                       $users,array(TL_USER_ANYBODY => $gui->strOptionAny,
+	                                       TL_USER_NOBODY => $gui->strOptionNone,
+	                                       TL_USER_SOMEBODY => $gui->strOptionSomebody),'any' );
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
     
     $gui->optResult=createResultsMenu();
-    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->str_option_any;
+    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->strOptionAny;
 
     // BUGID 2455, BUGID 3026
 	$filter_cfg = config_get('execution_filter_methods');
-    $gui->filter_methods = createExecutionFilterMethodMenu();
+    $gui->filterMethods = createExecutionFilterMethodMenu();
 	$gui->optFilterMethodSelected = $argsObj->filter_method_selected;
-	$gui->filter_method_specific_build = $filter_cfg['status_code']['specific_build'];
-	$gui->filter_method_current_build = $filter_cfg['status_code']['current_build'];
+	$gui->filterMethodSpecificBuild = $filter_cfg['status_code']['specific_build'];
+	$gui->filterMethodCurrentBuild = $filter_cfg['status_code']['current_build'];
 
     $gui->advancedFilterMode=$argsObj->advancedFilterMode;
     if($gui->advancedFilterMode)

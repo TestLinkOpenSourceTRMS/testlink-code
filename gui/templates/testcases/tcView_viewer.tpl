@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.66 2010/04/29 07:13:45 mx-julian Exp $
+$Id: tcView_viewer.tpl,v 1.67 2010/04/29 08:11:00 mx-julian Exp $
 viewer for test case in test specification
 
 rev:
@@ -398,7 +398,7 @@ rev:
   {* Test Case version Test Plan Assignment *}
   <br />
 	<div {$addInfoDivStyle}>
-	  {$labels.testplan_usage}
+	  <span class="bold"> {$labels.testplan_usage} </span>
 		<table class="simple sortable">
     <th>{$labels.version}</th>
     <th>{$sortHintIcon}{$labels.test_plan}</th>

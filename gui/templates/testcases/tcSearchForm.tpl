@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.13 2010/04/09 21:07:58 franciscom Exp $
+$Id: tcSearchForm.tpl,v 1.14 2010/05/01 19:15:20 franciscom Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
@@ -8,7 +8,7 @@ rev :
   20100124 - franciscom - BUGID 3077 - search on preconditions
   20090228 - franciscom - pre-fill test case id with testcase prefix
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 

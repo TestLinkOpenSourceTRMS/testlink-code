@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.10 2010/03/23 20:23:26 franciscom Exp $
+$Id: tcNew.tpl,v 1.11 2010/05/01 19:15:20 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20100103 - franciscom - refactoring to use $gui
@@ -9,7 +9,7 @@ Purpose: smarty template - create new testcase
 BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed.
  ----------------------------------------------------------------- *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,
@@ -78,7 +78,7 @@ function validateForm(f)
   		<th width="25">{$labels.execution_type_short_descr}</th>
   	</tr>
   
-   	{foreach from=$gui->steps item=step_info }
+   	{foreach from=$gui->steps item=step_info}
   	<tr>
   		<td style="text-align:righ;">{$step_info.step_number}</td>
   		<td >{$step_info.actions}</td>
@@ -114,7 +114,7 @@ function validateForm(f)
 </div>
 
 {if $gui->sqlResult eq 'ok'}
-	{if ($smarty.session.tcspec_refresh_on_action eq "yes") }
+	{if ($smarty.session.tcspec_refresh_on_action eq "yes")}
 		{include file="inc_refreshTree.tpl"}
 	{/if}
 {/if}

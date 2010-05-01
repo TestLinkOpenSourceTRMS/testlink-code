@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcAssign2Tplan.tpl,v 1.6 2010/03/15 12:25:36 amkhullar Exp $
+$Id: tcAssign2Tplan.tpl,v 1.7 2010/05/01 19:15:19 franciscom Exp $
 Purpose: manage assignment of A test case version to N test plans 
          while working on test specification 
  
@@ -9,7 +9,7 @@ rev: BUGID 2378
 *}
 {lang_get var='labels' 
           s='testproject,test_plan,th_id,please_select_one_testplan,platform,btn_cancel,
-             cancel,warning,version,btn_add,testplan_usage,no_test_plans' }
+             cancel,warning,version,btn_add,testplan_usage,no_test_plans'}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}

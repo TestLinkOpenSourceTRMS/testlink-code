@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.10 2010/03/17 22:00:23 franciscom Exp $
+$Id: tcImport.tpl,v 1.11 2010/05/01 19:15:20 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev: 20091122 - franciscom - refacotirng to use alert_message()
@@ -12,7 +12,7 @@ rev: 20091122 - franciscom - refacotirng to use alert_message()
              duplicate_criteria,action_for_duplicates,
              action_on_duplicated_name,warning,btn_cancel,title_imp_tc_data'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes"}

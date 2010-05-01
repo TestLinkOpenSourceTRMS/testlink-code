@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.67 2010/04/29 08:11:00 mx-julian Exp $
+$Id: tcView_viewer.tpl,v 1.68 2010/05/01 19:12:22 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
     20100417 - franciscom - BUGID 3376: Remove link in test case action name
     20100415 - franciscom - move compare version feature out of edit control, because seems OK
                             that no user right is needed to compare.
@@ -32,8 +33,8 @@ rev:
              test_plan,platform,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
-{lang_get s='warning_delete_step' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_delete_step' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 {* will be useful in future to semplify changes *}
 {assign var="tableColspan" value=$gui->tableColspan} 
@@ -81,7 +82,7 @@ rev:
 {/if}
 {assign var="warning_edit_msg" value=""}
 
-{if $args_can_do->edit == "yes" }
+{if $args_can_do->edit == "yes"}
 
   {assign var="edit_enabled" value=0}
   {* 20070628 - franciscom - Seems logical you can disable some you have executed before *}
@@ -126,7 +127,7 @@ rev:
 	  {* Double condition because for test case versions WE DO NOT DISPLAY this
 	     button, using $args_can_move_copy='no'
 	  *}
-	  {if $args_can_do->copy == "yes" && $args_can_move_copy == "yes" }
+	  {if $args_can_do->copy == "yes" && $args_can_move_copy == "yes"}
 	   		<input type="submit" name="move_copy_tc"   value="{$labels.btn_mv_cp}" />
 	     	{assign var="go_newline" value="<br />"}
 	  {/if}
@@ -135,7 +136,7 @@ rev:
 			 <input type="submit" name="delete_tc_version" value="{$labels.btn_del_this_version}" />
 	  {/if}
 
-	 	{if $args_can_do->create_new_version == "yes" }
+	 	{if $args_can_do->create_new_version == "yes"}
   		<input type="submit" name="do_create_new_version"   value="{$labels.btn_new_version}" />
 	  {/if}
 
@@ -222,7 +223,7 @@ rev:
 
 	<tr class="time_stamp_creation">
   		<td colspan="{$tableColspan}">
-      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts }&nbsp;
+      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts}&nbsp;
       		{$labels.by}&nbsp;{$author_userinfo->getDisplayName()|escape}
   		</td>
   </tr>
@@ -289,7 +290,7 @@ rev:
   {/if}
 	{if $args_testcase.steps != ''}
 	{* BUGID 3376 *}
- 	{foreach from=$args_testcase.steps item=step_info }
+ 	{foreach from=$args_testcase.steps item=step_info}
 	<tr>
 		<td style="text-align:left;">
 		<span class="order_info" style='display:none'>
@@ -394,7 +395,7 @@ rev:
 	</div>
 	{/if}
 	
-{if $args_linked_versions != null }
+{if $args_linked_versions != null}
   {* Test Case version Test Plan Assignment *}
   <br />
 	<div {$addInfoDivStyle}>

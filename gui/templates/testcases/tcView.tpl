@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.33 2010/03/15 20:47:28 franciscom Exp $
+$Id: tcView.tpl,v 1.34 2010/05/01 19:15:20 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -35,7 +35,7 @@ var del_action=fRoot+'{$deleteStepAction}';
 {/if}
 
 {* need by refresh on upload logic used when this template is called while executing *}
-{if $gui->bodyOnLoad != '' }
+{if $gui->bodyOnLoad != ''}
 <script language="JavaScript">
   var {$gui->dialogName} = new std_dialog('&refreshTree');
 </script>  
@@ -114,7 +114,7 @@ function validateStepsReorder(formOID)
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
-{if !isset($gui->refresh_tree) }
+{if !isset($gui->refresh_tree)}
   {assign var="refresh_tree" value=false}
 {/if}
 
@@ -142,7 +142,7 @@ function validateStepsReorder(formOID)
 	      {/foreach}
 	      {* <br /> *}
 	  {/if}
-    {if $gui->show_title == 'no' }
+    {if $gui->show_title == 'no'}
 	    {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
     {/if}
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>

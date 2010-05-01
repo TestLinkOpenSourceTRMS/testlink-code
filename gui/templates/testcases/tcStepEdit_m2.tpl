@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit_m2.tpl,v 1.2 2010/04/03 10:20:23 franciscom Exp $ 
+$Id: tcStepEdit_m2.tpl,v 1.3 2010/05/01 19:15:20 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -12,7 +12,7 @@ rev:
 
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 
@@ -129,7 +129,7 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
   	</tr>
   
   {if $gui->steps != ''}
-   	{foreach from=$gui->steps item=step_info }
+   	{foreach from=$gui->steps item=step_info}
   	  <tr>
       {if $step_info.step_number == $gui->step_number}
 		    <td style="text-align:righ;">{$gui->step_number}</td>

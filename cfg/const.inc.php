@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.139 2010/03/28 13:54:35 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.140 2010/05/01 14:27:09 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -21,7 +21,7 @@
 /* [GLOBAL SETTINGS] */
 
 /** TestLink Release version (MUST BE changed before the release day) */
-define('TL_VERSION', '1.9 (Beta 4 - Development)'); 
+define('TL_VERSION', '1.9 (Beta 5 - Development)'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php
 // want to point to root install dir, need to remove fixed part

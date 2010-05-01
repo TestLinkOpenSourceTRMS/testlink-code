@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: opt_transfer.inc.tpl,v 1.9 2007/12/16 12:20:57 schlundus Exp $
+$Id: opt_transfer.inc.tpl,v 1.10 2010/05/01 19:06:26 franciscom Exp $
 Purpose: manage the OptionTransfer.js created by Matt Kruse
          http://www.JavascriptToolbox.com/
          JavaScript Toolbox - Option Transfer - Move Select Box Options Back And Forth
@@ -11,7 +11,7 @@ Author: Francisco Mancardi
   
    <div class="option_transfer_container">
     <table cellspacing="0" cellpadding="0" border="0" width="100%">
-      {if $option_transfer->global_lbl neq '' }
+      {if $option_transfer->global_lbl neq ''}
   		<caption style="font-weight:bold;">
   	  {$option_transfer->global_lbl}
     	&nbsp;{$option_transfer->additional_global_lbl|escape}

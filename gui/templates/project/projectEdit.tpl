@@ -3,9 +3,10 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.28 2010/03/13 10:07:20 franciscom Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.29 2010/05/01 18:21:03 franciscom Exp $
  *
  * Revisions:
+ *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *	20100212 - havlatm - inventory support
  *	20100204 - franciscom - test project copy
  *  20090512 - franciscom - is_public attribute
@@ -19,7 +20,7 @@
  *	20070214 - franciscom - BUGID 628: Name edit � Invalid action parameter/other 
  *			behaviours if �Enter� pressed.
  *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}

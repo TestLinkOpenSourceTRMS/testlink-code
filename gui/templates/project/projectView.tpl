@@ -1,17 +1,18 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.20 2010/02/20 08:01:27 franciscom Exp $
+$Id: projectView.tpl,v 1.21 2010/05/01 18:19:22 franciscom Exp $
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
      some variables smarty and javascript are created on the inc_*.tpl files.
 
 Rev :
+    20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
     20080805 - franciscom - api config refactoring
     20080116 - franciscom - added option to show/hide id useful for API
 
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
@@ -20,8 +21,8 @@ Rev :
 {assign var="editAction" value="$managerURL?doAction=edit&amp;tprojectID="}
 {assign var="createAction" value="$managerURL?doAction=create"}
 
-{lang_get s='popup_product_delete' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='popup_product_delete' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 {lang_get var="labels" 
 		s='title_testproject_management,testproject_txt_empty_list,tcase_id_prefix,

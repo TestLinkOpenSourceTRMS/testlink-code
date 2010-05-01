@@ -1,17 +1,18 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.25 2010/04/08 15:11:33 asimon83 Exp $     
+ $Id: mainPageLeft.tpl,v 1.26 2010/05/01 18:17:23 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :         
+    20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  	  20100309 - asimon - BUGID 3227, added link for req overview page
  	  20100106 - asimon - contribution for 2976 req/reqspec search                                    
-      20090808 - franciscom - grouping rights on gui->grants
-      20081228 - franciscom - new feature user can choose vertical order of link groups
-      20070523 - franciscom - test case search link enabled only if session testproject
-                              has test cases.
-      20070523 - franciscom - new config constant $smarty.const.TL_ITEM_BULLET_IMG
-      20070227 - franciscom - fixed minor presentation bug
+    20090808 - franciscom - grouping rights on gui->grants
+    20081228 - franciscom - new feature user can choose vertical order of link groups
+    20070523 - franciscom - test case search link enabled only if session testproject
+                            has test cases.
+    20070523 - franciscom - new config constant $smarty.const.TL_ITEM_BULLET_IMG
+    20070227 - franciscom - fixed minor presentation bug
 *}
 {lang_get var='labels' s='title_product_mgmt,href_tproject_management,href_admin_modules,
                           href_assign_user_roles,href_cfields_management,
@@ -35,7 +36,7 @@
 {assign var="display_left_block_5" value=true}
 {if $gui->testprojectID && 
 	    ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
-       $gui->cfield_management == "yes" || $gui->grants.keywords_view == "yes")	}
+       $gui->cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
     {assign var="display_left_block_1" value=true}
 
     <script  type="text/javascript">
@@ -59,7 +60,7 @@
 {/if}
 
 
-{if $gui->grants.mgt_users == "yes" }
+{if $gui->grants.mgt_users == "yes"}
     {assign var="display_left_block_2" value=true}
 
     <script type="text/javascript">
@@ -156,7 +157,7 @@
   <div id="menu_left_block_4"></div><br />
   <div id="menu_left_block_5"></div><br />
   
-	{if $display_left_block_1 }
+	{if $display_left_block_1}
     <div id='testproject_topics'>
 	  {if $gui->grants.project_edit == "yes"}
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
@@ -213,7 +214,7 @@
 
 
   {* ------------------------------------------------- *}
-	{if $display_left_block_2 }
+	{if $display_left_block_2}
     <div id='usermanagement_topics'>
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
         <a href="lib/usermanagement/usersView.php">{$labels.href_user_management}</a>
@@ -226,7 +227,7 @@
 
 
   {* ---------------------------------------------------------------------------------------- *}
- 	{if $display_left_block_3 }
+ 	{if $display_left_block_3}
     <div id="requirements_topics" >
       {if $gui->grants.reqs_view == "yes"}
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
@@ -259,7 +260,7 @@
 
 
   {* ---------------------------------------------------------------------------------------- *}
- 	{if $display_left_block_4 }
+ 	{if $display_left_block_4}
       <div id="testspecification_topics" >
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
   		<a href="{$gui->launcher}?feature=editTc">

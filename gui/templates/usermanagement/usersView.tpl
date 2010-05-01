@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.21 2010/05/01 19:45:41 franciscom Exp $
+$Id: usersView.tpl,v 1.22 2010/05/01 20:18:50 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -63,8 +63,7 @@ function toggleRowByClass(oid,className,displayValue)
           s="title_user_mgmt,th_login,title_user_mgmt,th_login,th_first_name,th_last_name,th_email,
              th_role,order_by_role_descr,order_by_role_dir,th_locale,th_active,th_api,th_delete,
              disable,alt_edit_user,Yes,No,alt_delete_user,no_permissions_for_action,btn_create,
-             show_inactive_users,hide_inactive_users,
-             alt_disable_user,order_by_login,order_by_login_dir,alt_active_user"}
+             show_inactive_users,hide_inactive_users,alt_disable_user,order_by_login,order_by_login_dir,alt_active_user"}
 
 <body {$body_onload}>
 
@@ -119,7 +118,7 @@ function toggleRowByClass(oid,className,displayValue)
 			</tr>
 
 			{section name=row loop=$users start=0}
-				{assign var="user" value="$users[row]"}
+				{assign var="user" value="{$users[row]}"}
 				{assign var="userLocale" value=$user->locale}
 				{assign var="r_n" value=$user->globalRole->name}
 				{assign var="r_d" value=$user->globalRole->getDisplayName()}

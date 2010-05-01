@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.25 2009/08/29 23:18:02 havlat Exp $
+$Id: usersEdit.tpl,v 1.26 2010/05/01 19:45:41 franciscom Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -118,7 +118,7 @@ function validateForm(f,check_password)
 {assign var="show_password_field" value=1}
 
 
-{if $operation == 'doCreate' }
+{if $operation == 'doCreate'}
    {assign var="check_password" value=1}
    {if $userData neq null}
        {assign var="user_login" value=$userData->login}
@@ -132,7 +132,7 @@ function validateForm(f,check_password)
    {assign var="show_password_field" value=0}
 {/if}
 
-{if $external_password_mgmt eq 1 }
+{if $external_password_mgmt eq 1}
   {assign var="check_password" value=0}
   {assign var="reset_password_enabled" value=0}
   {assign var="show_password_field" value=0}
@@ -189,7 +189,7 @@ function validateForm(f,check_password)
 
 		{if $show_password_field}
 		     <tr>
-			    {if $external_password_mgmt eq 0 }
+			    {if $external_password_mgmt eq 0}
  			      <th style="background:none;">{$labels.th_password}</th>
 		        <td><input type="password" id="password" name="password"
 		                   size="{#PASSWD_SIZE#}"
@@ -246,7 +246,7 @@ function validateForm(f,check_password)
 			</td>
 		</tr>
 
-    {if $external_password_mgmt eq 1 }
+    {if $external_password_mgmt eq 1}
       <td>{$labels.password_mgmt_is_external}</td>
     {/if}
 

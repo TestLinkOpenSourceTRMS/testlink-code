@@ -1,10 +1,10 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.19 2010/01/11 20:27:52 franciscom Exp $
+$Id: userInfo.tpl,v 1.20 2010/05/01 19:45:41 franciscom Exp $
 
 rev: 20080908 - franciscom - email validity check
 *}
-{assign var="cfg_section" value="login" }
+{assign var="cfg_section" value="login"}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels'
@@ -168,7 +168,7 @@ function checkPasswords(oldp,newp,newp_check)
 
 <hr />
 <h2>{lang_get s="title_personal_passwd"}</h2>
-{if $external_password_mgmt eq 0 }
+{if $external_password_mgmt eq 0}
 	<form name="changePass" method="post" action="{$action_mgmt}"
 		{if $tlCfg->demoMode}
 		onsubmit="alert('{lang_get s="warn_demo"}'); return false;">

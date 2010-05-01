@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.17 2010/03/13 23:19:16 erikeloff Exp $ 
+$Id: usersAssign.tpl,v 1.18 2010/05/01 19:45:41 franciscom Exp $ 
 
 rev:
     20100314 - eloff - BUGID 3272 - send assign form via POST to allow more data to be sent
@@ -129,7 +129,7 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
     	<tr>
     		<th>{$sortHintIcon}{$labels.User}</th>
     		{assign var="featureVerbose" value=$gui->featureType}
-    		<th>{$sortHintIcon}{lang_get s=th_roles_$featureVerbose} ({$my_feature_name|escape})</th>
+    		<th>{$sortHintIcon}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$gui->users item=user}
     	{assign var="globalRoleName" value=$user->globalRole->name}
@@ -143,19 +143,19 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
           {* get role name to add to inherited in order to give 
              better information to user
           *}
-          {if $gui->userFeatureRoles[$uID].is_inherited == 1 }
-            {assign var="ikx" value=$gui->userFeatureRoles[$uID].effective_role_id }
+          {if $gui->userFeatureRoles[$uID].is_inherited == 1}
+            {assign var="ikx" value=$gui->userFeatureRoles[$uID].effective_role_id}
           {else}
-            {assign var="ikx" value=$gui->userFeatureRoles[$uID].uplayer_role_id }
+            {assign var="ikx" value=$gui->userFeatureRoles[$uID].uplayer_role_id}
           {/if}
-			    {assign var="inherited_role_name" value=$gui->optRights[$ikx]->name }
+			    {assign var="inherited_role_name" value=$gui->optRights[$ikx]->name}
              <select name="userRole[{$uID}]" id="userRole_{$uID}">
 		      {foreach key=role_id item=role from=$gui->optRights}
 		        <option value="{$role_id}"
 		          {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 
 		               $gui->userFeatureRoles[$uID].is_inherited==0) || 
 		               ($role_id == $smarty.const.TL_ROLES_INHERITED && 
-		                $gui->userFeatureRoles[$uID].is_inherited==1) }
+		                $gui->userFeatureRoles[$uID].is_inherited==1)}
 		            selected="selected" {/if} >
                 {$role->getDisplayName()|escape}
                 {if $role_id == $smarty.const.TL_ROLES_INHERITED}

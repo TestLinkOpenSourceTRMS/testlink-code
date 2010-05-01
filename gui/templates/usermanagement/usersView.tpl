@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.20 2010/04/26 09:43:29 asimon83 Exp $
+$Id: usersView.tpl,v 1.21 2010/05/01 19:45:41 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -16,7 +16,7 @@ Purpose: smarty template - users overview
 {assign var="editUserAction" value="$userActionMgr?doAction=edit&amp;user_id="}
 
 {lang_get s='warning_disable_user' var="warning_msg"}
-{lang_get s='disable' var="del_msgbox_title" }
+{lang_get s='disable' var="del_msgbox_title"}
 
 <script type="text/javascript">
 	var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";

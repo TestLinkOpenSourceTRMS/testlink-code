@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.20 2009/08/29 23:18:02 havlat Exp $
+$Id: rolesEdit.tpl,v 1.21 2010/05/01 19:45:41 franciscom Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -61,7 +61,7 @@ function validateForm(f)
 
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 

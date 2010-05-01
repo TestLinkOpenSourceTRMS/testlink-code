@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrder.tpl,v 1.2 2008/05/06 06:26:12 franciscom Exp $ 
+$Id: containerOrder.tpl,v 1.3 2010/05/01 18:53:33 franciscom Exp $ 
 Purpose: smarty template - reorder container contents
 
 rev :
@@ -34,7 +34,7 @@ rev :
 				<td>{$arraySelect[idx].id}</td>
 				<td class="bold">{$arraySelect[idx].name|escape}</td>
 				<td>
-				{lang_get s=node_type_dbtable_$node_table }</td>
+				{lang_get s=node_type_dbtable_$node_table}</td>
 				<td>
 					<input type="hidden" name="id[{$arraySelect[idx].id}]" 
 						value="{$arraySelect[idx].id}" />

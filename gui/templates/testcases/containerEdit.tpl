@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.7 2010/03/15 12:25:13 amkhullar Exp $
+$Id: containerEdit.tpl,v 1.8 2010/05/01 18:53:33 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
@@ -10,7 +10,7 @@ Purpose: smarty template - edit test specification: containers
 *}
 {lang_get var="labels"
           s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning'}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$editorType}

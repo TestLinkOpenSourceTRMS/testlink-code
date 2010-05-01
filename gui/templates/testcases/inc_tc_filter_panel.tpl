@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.1 2010/04/29 14:56:24 asimon83 Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.2 2010/05/01 18:47:12 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -11,7 +11,8 @@
  * That template was also the base for most of the html code used in here.
  *
  * @author Andreas Simon
- * @since 1.9
+ * @internal revision
+ *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *}
 
 
@@ -406,7 +407,7 @@
 				
 	      {html_radios name='keywordsFilterType' 
 	                   options=$keywordsFilterType->options
-	                   selected=$keywordsFilterType->selected }
+	                   selected=$keywordsFilterType->selected}
 				</td>
 			</tr>
 		{/if}
@@ -452,7 +453,7 @@
 				{if $disableFilterAssignedTo && $assignedToUser}
 					{$assignedToUser}
 				{else}
-					  {if $advancedFilterMode }
+					  {if $advancedFilterMode}
 					  <select name="filter_assigned_to[]" id="filter_assigned_to" 
 					  		multiple="multiple" size={$assigneeFilterItemQty}
 					  		{html_options options=$testers selected=$filterAssignedTo}

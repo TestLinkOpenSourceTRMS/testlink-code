@@ -1,6 +1,6 @@
 /*!
- * Ext JS Library 3.0.0
- * Copyright(c) 2006-2009 Ext JS, LLC
+ * Ext JS Library 3.2.0
+ * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
@@ -19,7 +19,7 @@ Ext = {
      * The version of the framework
      * @type String
      */
-    version : '3.0'
+    version : '3.2.0'
 };
 
 /**
@@ -46,20 +46,6 @@ Ext.apply = function(o, c, defaults){
 (function(){
     var idSeed = 0,
         toString = Object.prototype.toString,
-        //assume it's not null and not an array
-        isIterable = function(v){
-            //check for array or arguments
-            if(Ext.isArray(v) || v.callee){
-                return true;
-            }
-            //check for node list type
-            if(/NodeList|HTMLCollection/.test(toString.call(v))){
-                return true;
-            }
-            //NodeList has an item and length property
-            //IXMLDOMNodeList has nextNode method, needs to be checked first.
-            return ((v.nextNode || v.item) && Ext.isNumber(v.length));
-        },
         ua = navigator.userAgent.toLowerCase(),
         check = function(r){
             return r.test(ua);
@@ -67,7 +53,7 @@ Ext.apply = function(o, c, defaults){
         DOC = document,
         isStrict = DOC.compatMode == "CSS1Compat",
         isOpera = check(/opera/),
-        isChrome = check(/chrome/),
+        isChrome = check(/\bchrome\b/),
         isWebKit = check(/webkit/),
         isSafari = !isChrome && check(/safari/),
         isSafari2 = isSafari && check(/applewebkit\/4/), // unique to Safari 2
@@ -97,10 +83,10 @@ Ext.apply = function(o, c, defaults){
     Ext.apply(Ext, {
         /**
          * URL to a blank file used by Ext when in secure mode for iframe src and onReady src to prevent
-         * the IE insecure content warning (defaults to javascript:false).
+         * the IE insecure content warning (<tt>'about:blank'</tt>, except for IE in secure mode, which is <tt>'javascript:""'</tt>).
          * @type String
          */
-        SSL_SECURE_URL : 'javascript:false',
+        SSL_SECURE_URL : isSecure && isIE ? 'javascript:""' : 'about:blank',
         /**
          * True if the browser is in strict (standards-compliant) mode, as opposed to quirks mode
          * @type Boolean
@@ -130,11 +116,17 @@ Ext.apply = function(o, c, defaults){
         enableGarbageCollector : true,
 
         /**
-         * True to automatically purge event listeners after uncaching an element (defaults to false).
-         * Note: this only happens if {@link #enableGarbageCollector} is true.
+         * True to automatically purge event listeners during garbageCollection (defaults to false).
          * @type Boolean
          */
         enableListenerCollection : false,
+
+        /**
+         * EXPERIMENTAL - True to cascade listener removal to child elements when an element is removed.
+         * Currently not optimized for performance.
+         * @type Boolean
+         */
+        enableNestedListenerRemoval : false,
 
         /**
          * Indicates whether to use native browser parsing for JSON methods.
@@ -154,7 +146,7 @@ Ext.apply = function(o, c, defaults){
         applyIf : function(o, c){
             if(o){
                 for(var p in c){
-                    if(Ext.isEmpty(o[p])){
+                    if(!Ext.isDefined(o[p])){
                         o[p] = c[p];
                     }
                 }
@@ -169,34 +161,35 @@ Ext.apply = function(o, c, defaults){
          * @return {String} The generated Id.
          */
         id : function(el, prefix){
-            return (el = Ext.getDom(el) || {}).id = el.id || (prefix || "ext-gen") + (++idSeed);
+            el = Ext.getDom(el, true) || {};
+            if (!el.id) {
+                el.id = (prefix || "ext-gen") + (++idSeed);
+            }
+            return el.id;
         },
 
         /**
-         * Extends one class with another class and optionally overrides members with the passed literal. This class
-         * also adds the function "override()" to the class that can be used to override
-         * members on an instance.
-         * * <p>
-         * This function also supports a 2-argument call in which the subclass's constructor is
-         * not passed as an argument. In this form, the parameters are as follows:</p><p>
-         * <div class="mdetail-params"><ul>
-         * <li><code>superclass</code>
-         * <div class="sub-desc">The class being extended</div></li>
-         * <li><code>overrides</code>
-         * <div class="sub-desc">A literal with members which are copied into the subclass's
-         * prototype, and are therefore shared among all instances of the new class.<p>
-         * This may contain a special member named <tt><b>constructor</b></tt>. This is used
-         * to define the constructor of the new class, and is returned. If this property is
-         * <i>not</i> specified, a constructor is generated and returned which just calls the
-         * superclass's constructor passing on its parameters.</p></div></li>
-         * </ul></div></p><p>
-         * For example, to create a subclass of the Ext GridPanel:
+         * <p>Extends one class to create a subclass and optionally overrides members with the passed literal. This method
+         * also adds the function "override()" to the subclass that can be used to override members of the class.</p>
+         * For example, to create a subclass of Ext GridPanel:
          * <pre><code>
 MyGridPanel = Ext.extend(Ext.grid.GridPanel, {
     constructor: function(config) {
-        // Your preprocessing here
-        MyGridPanel.superclass.constructor.apply(this, arguments);
-        // Your postprocessing here
+
+//      Create configuration for this Grid.
+        var store = new Ext.data.Store({...});
+        var colModel = new Ext.grid.ColumnModel({...});
+
+//      Create a new config object containing our computed properties
+//      *plus* whatever was in the config parameter.
+        config = Ext.apply({
+            store: store,
+            colModel: colModel
+        }, config);
+
+        MyGridPanel.superclass.constructor.call(this, config);
+
+//      Your postprocessing here
     },
 
     yourMethod: function() {
@@ -204,13 +197,25 @@ MyGridPanel = Ext.extend(Ext.grid.GridPanel, {
     }
 });
 </code></pre>
-         * </p>
-         * @param {Function} subclass The class inheriting the functionality
-         * @param {Function} superclass The class being extended
-         * @param {Object} overrides (optional) A literal with members which are copied into the subclass's
-         * prototype, and are therefore shared between all instances of the new class.
-         * @return {Function} The subclass constructor.
-         * @method extend
+         *
+         * <p>This function also supports a 3-argument call in which the subclass's constructor is
+         * passed as an argument. In this form, the parameters are as follows:</p>
+         * <div class="mdetail-params"><ul>
+         * <li><code>subclass</code> : Function <div class="sub-desc">The subclass constructor.</div></li>
+         * <li><code>superclass</code> : Function <div class="sub-desc">The constructor of class being extended</div></li>
+         * <li><code>overrides</code> : Object <div class="sub-desc">A literal with members which are copied into the subclass's
+         * prototype, and are therefore shared among all instances of the new class.</div></li>
+         * </ul></div>
+         *
+         * @param {Function} superclass The constructor of class being extended.
+         * @param {Object} overrides <p>A literal with members which are copied into the subclass's
+         * prototype, and are therefore shared between all instances of the new class.</p>
+         * <p>This may contain a special member named <tt><b>constructor</b></tt>. This is used
+         * to define the constructor of the new class, and is returned. If this property is
+         * <i>not</i> specified, a constructor is generated and returned which just calls the
+         * superclass's constructor passing on its parameters.</p>
+         * <p><b>It is essential that you call the superclass constructor in any provided constructor. See example code.</b></p>
+         * @return {Function} The subclass constructor from the <code>overrides</code> parameter, or a generated one if not provided.
          */
         extend : function(){
             // inline overrides
@@ -246,7 +251,7 @@ MyGridPanel = Ext.extend(Ext.grid.GridPanel, {
                 });
                 sbp.override = io;
                 Ext.override(sb, overrides);
-                sb.extend = function(o){Ext.extend(sb, o);};
+                sb.extend = function(o){return Ext.extend(sb, o);};
                 return sb;
             };
         }(),
@@ -272,7 +277,7 @@ Ext.override(MyClass, {
             if(overrides){
                 var p = origclass.prototype;
                 Ext.apply(p, overrides);
-                if(Ext.isIE && overrides.toString != origclass.toString){
+                if(Ext.isIE && overrides.hasOwnProperty('toString')){
                     p.toString = overrides.toString;
                 }
             }
@@ -290,6 +295,7 @@ Company.data.CustomStore = function(config) { ... }
          * @param {String} namespace1
          * @param {String} namespace2
          * @param {String} etc
+         * @return {Object} The namespace object. (If multiple arguments are passed, this will be the last namespace created)
          * @method namespace
          */
         namespace : function(){
@@ -310,18 +316,20 @@ Company.data.CustomStore = function(config) { ... }
          * @param {String} pre (optional) A prefix to add to the url encoded string
          * @return {String}
          */
-        urlEncode: function(o, pre){
-            var undef, buf = [], key, e = encodeURIComponent;
+        urlEncode : function(o, pre){
+            var empty,
+                buf = [],
+                e = encodeURIComponent;
 
-            for(key in o){
-                undef = !Ext.isDefined(o[key]);
-                Ext.each(undef ? key : o[key], function(val, i){
-                    buf.push("&", e(key), "=", (val != key || !undef) ? e(val) : "");
+            Ext.iterate(o, function(key, item){
+                empty = Ext.isEmpty(item);
+                Ext.each(empty ? key : item, function(val){
+                    buf.push('&', e(key), '=', (!Ext.isEmpty(val) && (val != key || !empty)) ? (Ext.isDate(val) ? Ext.encode(val).replace(/"/g, '') : e(val)) : '');
                 });
-            }
+            });
             if(!pre){
                 buf.shift();
-                pre = "";
+                pre = '';
             }
             return pre + buf.join('');
         },
@@ -336,6 +344,9 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
          * @return {Object} A literal with members
          */
         urlDecode : function(string, overwrite){
+            if(Ext.isEmpty(string)){
+                return {};
+            }
             var obj = {},
                 pairs = string.split('&'),
                 d = decodeURIComponent,
@@ -352,11 +363,11 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
         },
 
         /**
-         * Appends content to the query string of a URL, which handles logic for whether to place
+         * Appends content to the query string of a URL, handling logic for whether to place
          * a question mark or ampersand.
-         * @param {String} url The url to append to.
-         * @@param {String} s The content to append to the url.
-         * @return (String) The appended string
+         * @param {String} url The URL to append to.
+         * @param {String} s The content to append to the URL.
+         * @return (String) The resulting URL
          */
         urlAppend : function(url, s){
             if(!Ext.isEmpty(s)){
@@ -372,33 +383,62 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
          * @param {Iterable} the iterable object to be turned into a true Array.
          * @return (Array) array
          */
-        toArray : function(){
-            return isIE ?
-                function(a, i, j, res){
-                    res = [];
-                    Ext.each(a, function(v) {
-                        res.push(v);
-                    });
-                    return res.slice(i || 0, j || res.length);
-                } :
-                function(a, i, j){
-                    return Array.prototype.slice.call(a, i || 0, j || a.length);
-                }
-        }(),
+         toArray : function(){
+             return isIE ?
+                 function(a, i, j, res){
+                     res = [];
+                     for(var x = 0, len = a.length; x < len; x++) {
+                         res.push(a[x]);
+                     }
+                     return res.slice(i || 0, j || res.length);
+                 } :
+                 function(a, i, j){
+                     return Array.prototype.slice.call(a, i || 0, j || a.length);
+                 }
+         }(),
+
+        isIterable : function(v){
+            //check for array or arguments
+            if(Ext.isArray(v) || v.callee){
+                return true;
+            }
+            //check for node list type
+            if(/NodeList|HTMLCollection/.test(toString.call(v))){
+                return true;
+            }
+            //NodeList has an item and length property
+            //IXMLDOMNodeList has nextNode method, needs to be checked first.
+            return ((typeof v.nextNode != 'undefined' || v.item) && Ext.isNumber(v.length));
+        },
 
         /**
-         * Iterates an array calling the passed function with each item, stopping if your function returns false. If the
-         * passed array is not really an array, your function is called once with it.
-         * The supplied function is called with (Object item, Number index, Array allItems).
-         * @param {Array/NodeList/Mixed} array
-         * @param {Function} fn
-         * @param {Object} scope
+         * Iterates an array calling the supplied function.
+         * @param {Array/NodeList/Mixed} array The array to be iterated. If this
+         * argument is not really an array, the supplied function is called once.
+         * @param {Function} fn The function to be called with each item. If the
+         * supplied function returns false, iteration stops and this method returns
+         * the current <code>index</code>. This function is called with
+         * the following arguments:
+         * <div class="mdetail-params"><ul>
+         * <li><code>item</code> : <i>Mixed</i>
+         * <div class="sub-desc">The item at the current <code>index</code>
+         * in the passed <code>array</code></div></li>
+         * <li><code>index</code> : <i>Number</i>
+         * <div class="sub-desc">The current index within the array</div></li>
+         * <li><code>allItems</code> : <i>Array</i>
+         * <div class="sub-desc">The <code>array</code> passed as the first
+         * argument to <code>Ext.each</code>.</div></li>
+         * </ul></div>
+         * @param {Object} scope The scope (<code>this</code> reference) in which the specified function is executed.
+         * Defaults to the <code>item</code> at the current <code>index</code>
+         * within the passed <code>array</code>.
+         * @return See description for the fn parameter.
          */
-        each: function(array, fn, scope){
+        each : function(array, fn, scope){
             if(Ext.isEmpty(array, true)){
                 return;
             }
-            if(!isIterable(array) || Ext.isPrimitive(array)){
+            if(!Ext.isIterable(array) || Ext.isPrimitive(array)){
                 array = [array];
             }
             for(var i = 0, len = array.length; i < len; i++){
@@ -420,22 +460,25 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
          * <li>Arrays : <tt>(Object item, Number index, Array allItems)</tt>
          * <div class="sub-desc">
          * When iterating an array, the supplied function is called with each item.</div></li>
-         * <li>Objects : <tt>(String key, Object value)</tt>
+         * <li>Objects : <tt>(String key, Object value, Object)</tt>
          * <div class="sub-desc">
          * When iterating an object, the supplied function is called with each key-value pair in
-         * the object.</div></li>
+         * the object, and the iterated object</div></li>
          * </ul></div>
-         * @param {Object} scope The scope to call the supplied function with, defaults to
-         * the specified <tt>object</tt>
+         * @param {Object} scope The scope (<code>this</code> reference) in which the specified function is executed. Defaults to
+         * the <code>object</code> being iterated.
          */
         iterate : function(obj, fn, scope){
-            if(isIterable(obj)){
+            if(Ext.isEmpty(obj)){
+                return;
+            }
+            if(Ext.isIterable(obj)){
                 Ext.each(obj, fn, scope);
                 return;
             }else if(Ext.isObject(obj)){
                 for(var prop in obj){
                     if(obj.hasOwnProperty(prop)){
-                        if(fn.call(scope || obj, prop, obj[prop]) === false){
+                        if(fn.call(scope || obj, prop, obj[prop], obj) === false){
                             return;
                         };
                     }
@@ -445,6 +488,8 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
 
         /**
          * Return the dom node for the passed String (id), dom node, or Ext.Element.
+         * Optional 'strict' flag is needed for IE since it can return 'name' and
+         * 'id' elements by using getElementById.
          * Here are some examples:
          * <pre><code>
 // gets dom node based on id
@@ -464,11 +509,29 @@ function(el){
          * @param {Mixed} el
          * @return HTMLElement
          */
-        getDom : function(el){
+        getDom : function(el, strict){
             if(!el || !DOC){
                 return null;
             }
-            return el.dom ? el.dom : (Ext.isString(el) ? DOC.getElementById(el) : el);
+            if (el.dom){
+                return el.dom;
+            } else {
+                if (Ext.isString(el)) {
+                    var e = DOC.getElementById(el);
+                    // IE returns elements with the 'name' and 'id' attribute.
+                    // we do a strict check to return the element with only the id attribute
+                    if (e && isIE && strict) {
+                        if (el == e.getAttribute('id')) {
+                            return e;
+                        } else {
+                            return null;
+                        }
+                    }
+                    return e;
+                } else {
+                    return el;
+                }
+            }
         },
 
         /**
@@ -480,21 +543,31 @@ function(el){
         },
 
         /**
-         * Removes a DOM node from the document.  The body node will be ignored if passed in.
+         * Removes a DOM node from the document.
+         */
+        /**
+         * <p>Removes this element from the document, removes all DOM event listeners, and deletes the cache reference.
+         * All DOM event listeners are removed from this element. If {@link Ext#enableNestedListenerRemoval} is
+         * <code>true</code>, then DOM event listeners are also removed from all child nodes. The body node
+         * will be ignored if passed in.</p>
          * @param {HTMLElement} node The node to remove
          */
-        removeNode : isIE ? function(){
+        removeNode : isIE && !isIE8 ? function(){
             var d;
             return function(n){
                 if(n && n.tagName != 'BODY'){
+                    (Ext.enableNestedListenerRemoval) ? Ext.EventManager.purgeElement(n, true) : Ext.EventManager.removeAll(n);
                     d = d || DOC.createElement('div');
                     d.appendChild(n);
                     d.innerHTML = '';
+                    delete Ext.elCache[n.id];
                 }
             }
         }() : function(n){
             if(n && n.parentNode && n.tagName != 'BODY'){
+                (Ext.enableNestedListenerRemoval) ? Ext.EventManager.purgeElement(n, true) : Ext.EventManager.removeAll(n);
                 n.parentNode.removeChild(n);
+                delete Ext.elCache[n.id];
             }
         },
 
@@ -515,8 +588,8 @@ function(el){
         },
 
         /**
-         * Returns true if the passed object is a JavaScript array, otherwise false.
-         * @param {Object} object The object to test
+         * Returns true if the passed value is a JavaScript array, otherwise false.
+         * @param {Mixed} value The value to test
          * @return {Boolean}
          */
         isArray : function(v){
@@ -524,16 +597,25 @@ function(el){
         },
 
         /**
-         * Returns true if the passed object is a JavaScript Object, otherwise false.
+         * Returns true if the passed object is a JavaScript date object, otherwise false.
          * @param {Object} object The object to test
          * @return {Boolean}
          */
-        isObject : function(v){
-            return v && typeof v == "object";
+        isDate : function(v){
+            return toString.apply(v) === '[object Date]';
         },
 
         /**
-         * Returns true if the passed object is a JavaScript 'primitive', a string, number or boolean.
+         * Returns true if the passed value is a JavaScript Object, otherwise false.
+         * @param {Mixed} value The value to test
+         * @return {Boolean}
+         */
+        isObject : function(v){
+            return !!v && Object.prototype.toString.call(v) === '[object Object]';
+        },
+
+        /**
+         * Returns true if the passed value is a JavaScript 'primitive', a string, number or boolean.
          * @param {Mixed} value The value to test
          * @return {Boolean}
          */
@@ -542,8 +624,8 @@ function(el){
         },
 
         /**
-         * Returns true if the passed object is a JavaScript Function, otherwise false.
-         * @param {Object} object The object to test
+         * Returns true if the passed value is a JavaScript Function, otherwise false.
+         * @param {Mixed} value The value to test
          * @return {Boolean}
          */
         isFunction : function(v){
@@ -551,38 +633,47 @@ function(el){
         },
 
         /**
-         * Returns true if the passed object is a number. Returns false for non-finite numbers.
-         * @param {Object} v The object to test
+         * Returns true if the passed value is a number. Returns false for non-finite numbers.
+         * @param {Mixed} value The value to test
          * @return {Boolean}
          */
-        isNumber: function(v){
+        isNumber : function(v){
             return typeof v === 'number' && isFinite(v);
         },
 
         /**
-         * Returns true if the passed object is a string.
-         * @param {Object} v The object to test
+         * Returns true if the passed value is a string.
+         * @param {Mixed} value The value to test
          * @return {Boolean}
          */
-        isString: function(v){
+        isString : function(v){
             return typeof v === 'string';
         },
 
         /**
-         * Returns true if the passed object is a boolean.
-         * @param {Object} v The object to test
+         * Returns true if the passed value is a boolean.
+         * @param {Mixed} value The value to test
          * @return {Boolean}
          */
-        isBoolean: function(v){
+        isBoolean : function(v){
             return typeof v === 'boolean';
         },
 
         /**
-         * Returns true if the passed object is not undefined.
-         * @param {Object} v The object to test
+         * Returns true if the passed value is an HTMLElement
+         * @param {Mixed} value The value to test
          * @return {Boolean}
          */
-        isDefined: function(v){
+        isElement : function(v) {
+            return v ? !!v.tagName : false;
+        },
+
+        /**
+         * Returns true if the passed value is not undefined.
+         * @param {Mixed} value The value to test
+         * @return {Boolean}
+         */
+        isDefined : function(v){
             return typeof v !== 'undefined';
         },
 
@@ -595,7 +686,7 @@ function(el){
          * True if the detected browser uses WebKit.
          * @type Boolean
          */
-        isWebKit: isWebKit,
+        isWebKit : isWebKit,
         /**
          * True if the detected browser is Chrome.
          * @type Boolean
@@ -695,13 +786,15 @@ Company.data.CustomStore = function(config) { ... }
      * @param {String} namespace1
      * @param {String} namespace2
      * @param {String} etc
-     * @method namespace
+     * @return {Object} The namespace object. (If multiple arguments are passed, this will be the last namespace created)
+     * @method ns
      */
     Ext.ns = Ext.namespace;
 })();
 
-Ext.ns("Ext", "Ext.util", "Ext.lib", "Ext.data");
+Ext.ns("Ext.util", "Ext.lib", "Ext.data");
 
+Ext.elCache = {};
 
 /**
  * @class Function
@@ -709,9 +802,9 @@ Ext.ns("Ext", "Ext.util", "Ext.lib", "Ext.data");
  */
 Ext.apply(Function.prototype, {
      /**
-     * Creates an interceptor function. The passed fcn is called before the original one. If it returns false,
+     * Creates an interceptor function. The passed function is called before the original one. If it returns false,
      * the original one is not called. The resulting function returns the results of the original function.
-     * The passed fcn is called with the parameters of the original function. Example usage:
+     * The passed function is called with the parameters of the original function. Example usage:
      * <pre><code>
 var sayHi = function(name){
     alert('Hi, ' + name);
@@ -729,7 +822,8 @@ sayHiToFriend('Fred');  // no alert
 sayHiToFriend('Brian'); // alerts "Hi, Brian"
 </code></pre>
      * @param {Function} fcn The function to call before the original
-     * @param {Object} scope (optional) The scope of the passed fcn (Defaults to scope of original function or window)
+     * @param {Object} scope (optional) The scope (<code><b>this</b></code> reference) in which the passed function is executed.
+     * <b>If omitted, defaults to the scope in which the original function is called or the browser window.</b>
      * @return {Function} The new function
      */
     createInterceptor : function(fcn, scope){
@@ -804,10 +898,11 @@ var btn = new Ext.Button({
 // "Hi, Fred. You clicked the "Say Hi" button."
 btn.on('click', sayHi.createDelegate(btn, ['Fred']));
 </code></pre>
-     * @param {Object} obj (optional) The object for which the scope is set
+     * @param {Object} scope (optional) The scope (<code><b>this</b></code> reference) in which the function is executed.
+     * <b>If omitted, defaults to the browser window.</b>
      * @param {Array} args (optional) Overrides arguments for the call. (Defaults to the arguments passed by the caller)
      * @param {Boolean/Number} appendArgs (optional) if True args are appended to call args instead of overriding,
-     *                                             if a number the args are inserted at the specified position
+     * if a number the args are inserted at the specified position
      * @return {Function} The new function
      */
     createDelegate : function(obj, args, appendArgs){
@@ -846,10 +941,11 @@ sayHi.defer(2000, this, ['Fred']);
 }).defer(100);
 </code></pre>
      * @param {Number} millis The number of milliseconds for the setTimeout call (if less than or equal to 0 the function is executed immediately)
-     * @param {Object} obj (optional) The object for which the scope is set
+     * @param {Object} scope (optional) The scope (<code><b>this</b></code> reference) in which the function is executed.
+     * <b>If omitted, defaults to the browser window.</b>
      * @param {Array} args (optional) Overrides arguments for the call. (Defaults to the arguments passed by the caller)
      * @param {Boolean/Number} appendArgs (optional) if True args are appended to call args instead of overriding,
-     *                                             if a number the args are inserted at the specified position
+     * if a number the args are inserted at the specified position
      * @return {Number} The timeout id that can be used with clearTimeout
      */
     defer : function(millis, obj, args, appendArgs){
@@ -896,12 +992,16 @@ Ext.applyIf(Array.prototype, {
     /**
      * Checks whether or not the specified object exists in the array.
      * @param {Object} o The object to check for
+     * @param {Number} from (Optional) The index at which to begin the search
      * @return {Number} The index of o in the array (or -1 if it is not found)
      */
-    indexOf : function(o){
-        for (var i = 0, len = this.length; i < len; i++){
-            if(this[i] == o){
-                return i;
+    indexOf : function(o, from){
+        var len = this.length;
+        from = from || 0;
+        from += (from < 0) ? len : 0;
+        for (; from < len; ++from){
+            if(this[from] === o){
+                return from;
             }
         }
         return -1;
@@ -924,7 +1024,7 @@ Ext.applyIf(Array.prototype, {
  * @class Ext
  */
 
-Ext.ns("Ext.grid", "Ext.dd", "Ext.tree", "Ext.form", "Ext.menu",
+Ext.ns("Ext.grid", "Ext.list", "Ext.dd", "Ext.tree", "Ext.form", "Ext.menu",
        "Ext.state", "Ext.layout", "Ext.app", "Ext.ux", "Ext.chart", "Ext.direct");
     /**
      * Namespace alloted for extensions to the framework.
@@ -933,7 +1033,9 @@ Ext.ns("Ext.grid", "Ext.dd", "Ext.tree", "Ext.form", "Ext.menu",
      */
 
 Ext.apply(Ext, function(){
-    var E = Ext, idSeed = 0;
+    var E = Ext, 
+        idSeed = 0,
+        scrollWidth = null;
 
     return {
         /**
@@ -949,7 +1051,7 @@ Ext.apply(Ext, function(){
          * For other browsers it uses an inline data URL.
          * @type String
          */
-        BLANK_IMAGE_URL : Ext.isIE6 || Ext.isIE7 ?
+        BLANK_IMAGE_URL : Ext.isIE6 || Ext.isIE7 || Ext.isAir ?
                             'http:/' + '/extjs.com/s.gif' :
                             'data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==',
 
@@ -966,23 +1068,14 @@ Ext.apply(Ext, function(){
         },
 
         /**
-         * Returns true if the passed object is a JavaScript date object, otherwise false.
-         * @param {Object} object The object to test
-         * @return {Boolean}
-         */
-        isDate : function(v){
-            return Object.prototype.toString.apply(v) === '[object Date]';
-        },
-
-        /**
          * Utility method for validating that a value is numeric, returning the specified default value if it is not.
          * @param {Mixed} value Should be a number, but any type will be handled appropriately
          * @param {Number} defaultValue The value to return if the original value is non-numeric
          * @return {Number} Value, if numeric, else defaultValue
          */
         num : function(v, defaultValue){
-            v = Number(v === null || typeof v == 'boolean'? NaN : v);
-            return isNaN(v)? defaultValue : v;
+            v = Number(Ext.isEmpty(v) || Ext.isArray(v) || Ext.isBoolean(v) || (Ext.isString(v) && v.trim().length == 0) ? NaN : v);
+            return isNaN(v) ? defaultValue : v;
         },
 
         /**
@@ -1008,7 +1101,7 @@ Ext.apply(Ext, function(){
          * @return {String}
          */
         escapeRe : function(s) {
-            return s.replace(/([.*+?^${}()|[\]\/\\])/g, "\\$1");
+            return s.replace(/([-.*+?^${}()|[\]\/\\])/g, "\\$1");
         },
 
         sequence : function(o, name, fn, scope){
@@ -1055,6 +1148,31 @@ Ext.addBehaviors({
                 cache = null;
             }
         },
+        
+        /**
+         * Utility method for getting the width of the browser scrollbar. This can differ depending on
+         * operating system settings, such as the theme or font size.
+         * @param {Boolean} force (optional) true to force a recalculation of the value.
+         * @return {Number} The width of the scrollbar.
+         */
+        getScrollBarWidth: function(force){
+            if(!Ext.isReady){
+                return 0;
+            }
+            
+            if(force === true || scrollWidth === null){
+                    // Append our div, do our calculation and then remove it
+                var div = Ext.getBody().createChild('<div class="x-hide-offsets" style="width:100px;height:50px;overflow:hidden;"><div style="height:200px;"></div></div>'),
+                    child = div.child('div', true);
+                var w1 = child.offsetWidth;
+                div.setStyle('overflow', (Ext.isWebKit || Ext.isGecko) ? 'auto' : 'scroll');
+                var w2 = child.offsetWidth;
+                div.remove();
+                // Need to add 2 to ensure we leave enough space
+                scrollWidth = w1 - w2 + 2;
+            }
+            return scrollWidth;
+        },
 
 
         // deprecated
@@ -1084,14 +1202,14 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
     }
 });
          * </code></pre> 
-         * @param {Object} The destination object.
-         * @param {Object} The source object.
-         * @param {Array/String} Either an Array of property names, or a comma-delimited list
+         * @param {Object} dest The destination object.
+         * @param {Object} source The source object.
+         * @param {Array/String} names Either an Array of property names, or a comma-delimited list
          * of property names to copy.
          * @return {Object} The modified object.
         */
         copyTo : function(dest, source, names){
-            if(typeof names == 'string'){
+            if(Ext.isString(names)){
                 names = names.split(/[,;\s]/);
             }
             Ext.each(names, function(name){
@@ -1230,7 +1348,7 @@ ImageComponent = Ext.extend(Ext.BoxComponent, {
          * @return {Number} The mean.
          */
         mean : function(arr){
-           return Ext.sum(arr) / arr.length;
+           return arr.length > 0 ? Ext.sum(arr) / arr.length : undefined;
         },
 
         /**
@@ -1286,14 +1404,14 @@ Ext.invoke(Ext.query("p"), "getAttribute", "id");
          * </code></pre>
          * @param {Array|NodeList} arr The Array of items to invoke the method on.
          * @param {String} methodName The method name to invoke.
-         * @param {Anything} ... Arguments to send into the method invocation.
+         * @param {...*} args Arguments to send into the method invocation.
          * @return {Array} The results of invoking the method on each item in the array.
          */
         invoke : function(arr, methodName){
             var ret = [],
                 args = Array.prototype.slice.call(arguments, 2);
             Ext.each(arr, function(v,i) {
-                if (v && typeof v[methodName] == "function") {
+                if (v && Ext.isFunction(v[methodName])) {
                     ret.push(v[methodName].apply(v, args));
                 } else {
                     ret.push(undefined);
@@ -1417,7 +1535,7 @@ Ext.zip(
                     case RegExp: return 'regexp';
                     case Date: return 'date';
                 }
-                if(typeof o.length == 'number' && typeof o.item == 'function') {
+                if(Ext.isNumber(o.length) && Ext.isFunction(o.item)) {
                     return 'nodelist';
                 }
             }
@@ -1464,7 +1582,8 @@ var sayGoodbye = sayHi.createSequence(function(name){
 sayGoodbye('Fred'); // both alerts show
 </code></pre>
      * @param {Function} fcn The function to sequence
-     * @param {Object} scope (optional) The scope of the passed fcn (Defaults to scope of original function or window)
+     * @param {Object} scope (optional) The scope (<code><b>this</b></code> reference) in which the passed function is executed.
+     * <b>If omitted, defaults to the scope in which the original function is called or the browser window.</b>
      * @return {Function} The new function
      */
     createSequence : function(fcn, scope){
@@ -1609,6 +1728,7 @@ Ext.TaskMgr.start({
 });
 
  * </code></pre>
+ * <p>See the {@link #start} method for details about how to configure a task object.</p>
  * Also see {@link Ext.util.DelayedTask}. 
  * 
  * @constructor
@@ -1680,21 +1800,25 @@ Ext.util.TaskRunner = function(interval){
     /**
      * Starts a new task.
      * @method start
-     * @param {Object} task A config object that supports the following properties:<ul>
-     * <li><code>run</code> : Function<div class="sub-desc">The function to execute each time the task is run. The
-     * function will be called at each interval and passed the <code>args</code> argument if specified.  If a
-     * particular scope is required, be sure to specify it using the <code>scope</code> argument.</div></li>
+     * @param {Object} task <p>A config object that supports the following properties:<ul>
+     * <li><code>run</code> : Function<div class="sub-desc"><p>The function to execute each time the task is invoked. The
+     * function will be called at each interval and passed the <code>args</code> argument if specified, and the
+     * current invocation count if not.</p>
+     * <p>If a particular scope (<code>this</code> reference) is required, be sure to specify it using the <code>scope</code> argument.</p>
+     * <p>Return <code>false</code> from this function to terminate the task.</p></div></li>
      * <li><code>interval</code> : Number<div class="sub-desc">The frequency in milliseconds with which the task
-     * should be executed.</div></li>
+     * should be invoked.</div></li>
      * <li><code>args</code> : Array<div class="sub-desc">(optional) An array of arguments to be passed to the function
-     * specified by <code>run</code>.</div></li>
+     * specified by <code>run</code>. If not specified, the current invocation count is passed.</div></li>
      * <li><code>scope</code> : Object<div class="sub-desc">(optional) The scope (<tt>this</tt> reference) in which to execute the
      * <code>run</code> function. Defaults to the task config object.</div></li>
-     * <li><code>duration</code> : Number<div class="sub-desc">(optional) The length of time in milliseconds to execute
+     * <li><code>duration</code> : Number<div class="sub-desc">(optional) The length of time in milliseconds to invoke
      * the task before stopping automatically (defaults to indefinite).</div></li>
-     * <li><code>repeat</code> : Number<div class="sub-desc">(optional) The number of times to execute the task before
+     * <li><code>repeat</code> : Number<div class="sub-desc">(optional) The number of times to invoke the task before
      * stopping automatically (defaults to indefinite).</div></li>
-     * </ul>
+     * </ul></p>
+     * <p>Before each invocation, Ext injects the property <code>taskRunCount</code> into the task object so
+     * that calculations based on the repeat count can be performed.</p>
      * @return {Object} The task
      */
     this.start = function(task){
@@ -1748,6 +1872,7 @@ var task = {
 }
 Ext.TaskMgr.start(task);
 </code></pre>
+ * <p>See the {@link #start} method for details about how to configure a task object.</p>
  * @singleton
  */
 Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
@@ -1765,6 +1890,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
 	var doc = document,
 		isCSS1 = doc.compatMode == "CSS1Compat",
 		MAX = Math.max,		
+        ROUND = Math.round,
 		PARSEINT = parseInt;
 		
 	Ext.lib.Dom = {
@@ -1842,7 +1968,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
 	            if (el.getBoundingClientRect) {
 	                b = el.getBoundingClientRect();
 	                scroll = fly(document).getScroll();
-	                ret = [b.left + scroll.left, b.top + scroll.top];
+	                ret = [ROUND(b.left + scroll.left), ROUND(b.top + scroll.top)];
 	            } else {  
 		            p = el;		
 		            hasAbsolute = fly(el).isStyle("position", "absolute");
@@ -1915,24 +2041,23 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
     return Ext.lib.Region.getRegion(el);
 };Ext.lib.Event = function() {
     var loadComplete = false,
-        listeners = [],
-        unloadListeners = [],
+        unloadListeners = {},
         retryCount = 0,
         onAvailStack = [],
         _interval,
         locked = false,
         win = window,
         doc = document,
-        
-        // constants            
+
+        // constants
         POLL_RETRYS = 200,
         POLL_INTERVAL = 20,
         EL = 0,
-        TYPE = 1,
-        FN = 2,
-        WFN = 3,
-        OBJ = 3,
-        ADJ_SCOPE = 4,   
+        TYPE = 0,
+        FN = 1,
+        WFN = 2,
+        OBJ = 2,
+        ADJ_SCOPE = 3,
         SCROLLLEFT = 'scrollLeft',
         SCROLLTOP = 'scrollTop',
         UNLOAD = 'unload',
@@ -1963,7 +2088,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                 ret = function(){};
             }
             return ret;
-        }(),    
+        }(),
         // private
         doRemove = function(){
             var ret;
@@ -1973,7 +2098,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                         eventName = MOUSEOVER;
                     } else if (eventName == 'mouseleave') {
                         eventName = MOUSEOUT;
-                    }                        
+                    }
                     el.removeEventListener(eventName, fn, (capture));
                 };
             } else if (win.detachEvent) {
@@ -1984,44 +2109,19 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                 ret = function(){};
             }
             return ret;
-        }();        
+        }();
 
-    var isXUL = Ext.isGecko ? function(node){ 
-        return Object.prototype.toString.call(node) == '[object XULElement]';
-    } : function(){};
-        
-    var isTextNode = Ext.isGecko ? function(node){
-        try{
-            return node.nodeType == 3;
-        }catch(e) {
-            return false;
-        }
-
-    } : function(node){
-        return node.nodeType == 3;
-    };
-        
     function checkRelatedTarget(e) {
-        var related = pub.getRelatedTarget(e);
-        return !(isXUL(related) || elContains(e.currentTarget,related));
+        return !elContains(e.currentTarget, pub.getRelatedTarget(e));
     }
 
     function elContains(parent, child) {
-       if(parent && parent.firstChild){  
+       if(parent && parent.firstChild){
          while(child) {
             if(child === parent) {
                 return true;
             }
-            try {
-                child = child.parentNode;
-            } catch(e) {
-                // In FF if you mouseout an text input element
-                // thats inside a div sometimes it randomly throws
-                // Permission denied to get property HTMLDivElement.parentNode
-                // See https://bugzilla.mozilla.org/show_bug.cgi?id=208427
-                
-                return false;
-            }                
+            child = child.parentNode;
             if(child && (child.nodeType != 1)) {
                 child = null;
             }
@@ -2030,43 +2130,32 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         return false;
     }
 
-        
-    // private  
-    function _getCacheIndex(el, eventName, fn) {
-        var index = -1;
-        Ext.each(listeners, function (v,i) {
-            if(v && v[FN] == fn && v[EL] == el && v[TYPE] == eventName) {
-                index = i;
-            }
-        });
-        return index;
-    }
-                    
     // private
     function _tryPreloadAttach() {
-        var ret = false,                
+        var ret = false,
             notAvail = [],
-            element,
-            tryAgain = !loadComplete || (retryCount > 0);                       
-        
+            element, i, len, v,
+            tryAgain = !loadComplete || (retryCount > 0);
+
         if (!locked) {
             locked = true;
-            
-            Ext.each(onAvailStack, function (v,i,a){
+
+            for (i = 0, len = onAvailStack.length; i < len; i++) {
+                v = onAvailStack[i];
                 if(v && (element = doc.getElementById(v.id))){
                     if(!v.checkReady || loadComplete || element.nextSibling || (doc && doc.body)) {
                         element = v.override ? (v.override === true ? v.obj : v.override) : element;
                         v.fn.call(element, v.obj);
-                        onAvailStack[i] = null;
+                        onAvailStack.remove(v);
                     } else {
                         notAvail.push(v);
                     }
-                }   
-            });
+                }
+            }
 
             retryCount = (notAvail.length === 0) ? 0 : retryCount - 1;
 
-            if (tryAgain) { 
+            if (tryAgain) {
                 startInterval();
             } else {
                 clearInterval(_interval);
@@ -2077,20 +2166,20 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         }
         return ret;
     }
-    
-    // private              
-    function startInterval() {            
-        if(!_interval){                    
+
+    // private
+    function startInterval() {
+        if(!_interval){
             var callback = function() {
                 _tryPreloadAttach();
             };
             _interval = setInterval(callback, POLL_INTERVAL);
         }
     }
-    
-    // private 
+
+    // private
     function getScroll() {
-        var dd = doc.documentElement, 
+        var dd = doc.documentElement,
             db = doc.body;
         if(dd && (dd[SCROLLTOP] || dd[SCROLLLEFT])){
             return [dd[SCROLLLEFT], dd[SCROLLTOP]];
@@ -2100,7 +2189,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             return [0, 0];
         }
     }
-        
+
     // private
     function getPageCoord (ev, xy) {
         ev = ev.browserEvent || ev;
@@ -2117,8 +2206,9 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
     }
 
     var pub =  {
-        onAvailable : function(p_id, p_fn, p_obj, p_override) {             
-            onAvailStack.push({ 
+        extAdapter: true,
+        onAvailable : function(p_id, p_fn, p_obj, p_override) {
+            onAvailStack.push({
                 id:         p_id,
                 fn:         p_fn,
                 obj:        p_obj,
@@ -2129,66 +2219,67 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             startInterval();
         },
 
-
+        // This function should ALWAYS be called from Ext.EventManager
         addListener: function(el, eventName, fn) {
-            var ret;                
-            el = Ext.getDom(el);                
+            el = Ext.getDom(el);
             if (el && fn) {
-                if (UNLOAD == eventName) {
-                    ret = !!(unloadListeners[unloadListeners.length] = [el, eventName, fn]);                    
-                } else {
-                    listeners.push([el, eventName, fn, ret = doAdd(el, eventName, fn, false)]);
+                if (eventName == UNLOAD) {
+                    if (unloadListeners[el.id] === undefined) {
+                        unloadListeners[el.id] = [];
+                    }
+                    unloadListeners[el.id].push([eventName, fn]);
+                    return fn;
                 }
+                return doAdd(el, eventName, fn, false);
             }
-            return !!ret;
+            return false;
         },
 
+        // This function should ALWAYS be called from Ext.EventManager
         removeListener: function(el, eventName, fn) {
-            var ret = false,
-                index, 
-                cacheItem;
-
             el = Ext.getDom(el);
-
-            if(!fn) {                   
-                ret = this.purgeElement(el, false, eventName);
-            } else if (UNLOAD == eventName) {   
-                Ext.each(unloadListeners, function(v, i, a) {
-                    if( v && v[0] == el && v[1] == eventName && v[2] == fn) {
-                        unloadListeners.splice(i, 1);
-                        ret = true;
+            var i, len, li, lis;
+            if (el && fn) {
+                if(eventName == UNLOAD){
+                    if((lis = unloadListeners[el.id]) !== undefined){
+                        for(i = 0, len = lis.length; i < len; i++){
+                            if((li = lis[i]) && li[TYPE] == eventName && li[FN] == fn){
+                                unloadListeners[el.id].splice(i, 1);
+                            }
+                        }
                     }
-                });
-            } else {    
-                index = arguments[3] || _getCacheIndex(el, eventName, fn);
-                cacheItem = listeners[index];
-                
-                if (el && cacheItem) {
-                    doRemove(el, eventName, cacheItem[WFN], false);     
-                    cacheItem[WFN] = cacheItem[FN] = null;                       
-                    listeners.splice(index, 1);     
-                    ret = true;
+                    return;
                 }
+                doRemove(el, eventName, fn, false);
             }
-            return ret;
         },
 
         getTarget : function(ev) {
-            ev = ev.browserEvent || ev;                
+            ev = ev.browserEvent || ev;
             return this.resolveTextNode(ev.target || ev.srcElement);
         },
 
-        resolveTextNode : function(node) {
-            return node && !isXUL(node) && isTextNode(node) ? node.parentNode : node;
+        resolveTextNode : Ext.isGecko ? function(node){
+            if(!node){
+                return;
+            }
+            // work around firefox bug, https://bugzilla.mozilla.org/show_bug.cgi?id=101197
+            var s = HTMLElement.prototype.toString.call(node);
+            if(s == '[xpconnect wrapped native prototype]' || s == '[object XULElement]'){
+                return;
+            }
+            return node.nodeType == 3 ? node.parentNode : node;
+        } : function(node){
+            return node && node.nodeType == 3 ? node.parentNode : node;
         },
 
         getRelatedTarget : function(ev) {
             ev = ev.browserEvent || ev;
-            return this.resolveTextNode(ev.relatedTarget || 
+            return this.resolveTextNode(ev.relatedTarget ||
                     (ev.type == MOUSEOUT ? ev.toElement :
                      ev.type == MOUSEOVER ? ev.fromElement : null));
         },
-        
+
         getPageX : function(ev) {
             return getPageCoord(ev, "X");
         },
@@ -2198,26 +2289,11 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         },
 
 
-        getXY : function(ev) {                             
+        getXY : function(ev) {
             return [this.getPageX(ev), this.getPageY(ev)];
         },
 
-// Is this useful?  Removing to save space unless use case exists.
-//             getTime: function(ev) {
-//                 ev = ev.browserEvent || ev;
-//                 if (!ev.time) {
-//                     var t = new Date().getTime();
-//                     try {
-//                         ev.time = t;
-//                     } catch(ex) {
-//                         return t;
-//                     }
-//                 }
-
-//                 return ev.time;
-//             },
-
-        stopEvent : function(ev) {                            
+        stopEvent : function(ev) {
             this.stopPropagation(ev);
             this.preventDefault(ev);
         },
@@ -2239,7 +2315,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                 ev.returnValue = false;
             }
         },
-        
+
         getEvent : function(e) {
             e = e || win.event;
             if (!e) {
@@ -2261,92 +2337,50 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         },
 
         //clearCache: function() {},
+        // deprecated, call from EventManager
+        getListeners : function(el, eventName) {
+            Ext.EventManager.getListeners(el, eventName);
+        },
+
+        // deprecated, call from EventManager
+        purgeElement : function(el, recurse, eventName) {
+            Ext.EventManager.purgeElement(el, recurse, eventName);
+        },
 
         _load : function(e) {
             loadComplete = true;
-            var EU = Ext.lib.Event;    
+            var EU = Ext.lib.Event;
             if (Ext.isIE && e !== true) {
         // IE8 complains that _load is null or not an object
         // so lets remove self via arguments.callee
                 doRemove(win, "load", arguments.callee);
             }
-        },            
-        
-        purgeElement : function(el, recurse, eventName) {
-            var me = this;
-            Ext.each( me.getListeners(el, eventName), function(v){
-                if(v){
-                    me.removeListener(el, v.type, v.fn);
-                }
-            });
-
-            if (recurse && el && el.childNodes) {
-                Ext.each(el.childNodes, function(v){
-                    me.purgeElement(v, recurse, eventName);
-                });
-            }
-        },
-
-        getListeners : function(el, eventName) {
-            var me = this,
-                results = [], 
-                searchLists;
-
-            if (eventName){  
-                searchLists = eventName == UNLOAD ? unloadListeners : listeners;
-            }else{
-                searchLists = listeners.concat(unloadListeners);
-            }
-
-            Ext.each(searchLists, function(v, i){
-                if (v && v[EL] == el && (!eventName || eventName == v[TYPE])) {
-                    results.push({
-                                type:   v[TYPE],
-                                fn:     v[FN],
-                                obj:    v[OBJ],
-                                adjust: v[ADJ_SCOPE],
-                                index:  i
-                            });
-                }   
-            });                
-
-            return results.length ? results : null;
         },
 
         _unload : function(e) {
-             var EU = Ext.lib.Event, 
-                i, 
-                j, 
-                l, 
-                len, 
-                index,
-                scope;
-                
+             var EU = Ext.lib.Event,
+                i, j, l, v, ul, id, len, index, scope;
 
-            Ext.each(unloadListeners, function(v) {
-                if (v) {
-                    try{
-                        scope =  v[ADJ_SCOPE] ? (v[ADJ_SCOPE] === true ? v[OBJ] : v[ADJ_SCOPE]) :  win; 
-                        v[FN].call(scope, EU.getEvent(e), v[OBJ]);
-                    }catch(ex){}
-                }   
-            });     
 
-            unloadListeners = null;
-
-            if(listeners && (j = listeners.length)){                    
-                while(j){                        
-                    if((l = listeners[index = --j])){
-                        EU.removeListener(l[EL], l[TYPE], l[FN], index);
-                    }                        
+            for (id in unloadListeners) {
+                ul = unloadListeners[id];
+                for (i = 0, len = ul.length; i < len; i++) {
+                    v = ul[i];
+                    if (v) {
+                        try{
+                            scope = v[ADJ_SCOPE] ? (v[ADJ_SCOPE] === true ? v[OBJ] : v[ADJ_SCOPE]) :  win;
+                            v[FN].call(scope, EU.getEvent(e), v[OBJ]);
+                        }catch(ex){}
+                    }
                 }
-                //EU.clearCache();
-            }
+            };
+
+            Ext.EventManager._unload();
 
             doRemove(win, UNLOAD, EU._unload);
-        }            
-    };        
-    
+        }
+    };
+
     // Initialize stuff.
     pub.on = pub.addListener;
     pub.un = pub.removeListener;
@@ -2355,375 +2389,381 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
     } else {
         doAdd(win, "load", pub._load);
     }
-    doAdd(win, UNLOAD, pub._unload);    
+    doAdd(win, UNLOAD, pub._unload);
     _tryPreloadAttach();
-    
+
     return pub;
-}();/*
- * Portions of this file are based on pieces of Yahoo User Interface Library
- * Copyright (c) 2007, Yahoo! Inc. All rights reserved.
- * YUI licensed under the BSD License:
- * http://developer.yahoo.net/yui/license.txt
- */
-    Ext.lib.Ajax = function() {	    
-	    var activeX = ['MSXML2.XMLHTTP.3.0',
-			           'MSXML2.XMLHTTP',
-			           'Microsoft.XMLHTTP'],
-            CONTENTTYPE = 'Content-Type';
-			           
-		// private
-		function setHeader(o) {
-	        var conn = o.conn,
-	        	prop;
-	        
-	        function setTheHeaders(conn, headers){
-		     	for (prop in headers) {
-                    if (headers.hasOwnProperty(prop)) {
-                        conn.setRequestHeader(prop, headers[prop]);
-                    }
-                }   
-	        }		
-	        
-            if (pub.defaultHeaders) {
-	            setTheHeaders(conn, pub.defaultHeaders);
-            }
+}();
+/*
+* Portions of this file are based on pieces of Yahoo User Interface Library
+* Copyright (c) 2007, Yahoo! Inc. All rights reserved.
+* YUI licensed under the BSD License:
+* http://developer.yahoo.net/yui/license.txt
+*/
+Ext.lib.Ajax = function() {
+    var activeX = ['MSXML2.XMLHTTP.3.0',
+                   'MSXML2.XMLHTTP',
+                   'Microsoft.XMLHTTP'],
+        CONTENTTYPE = 'Content-Type';
 
-            if (pub.headers) {
-				setTheHeaders(conn, pub.headers);
-                pub.headers = null;                
+    // private
+    function setHeader(o) {
+        var conn = o.conn,
+            prop;
+
+        function setTheHeaders(conn, headers){
+            for (prop in headers) {
+                if (headers.hasOwnProperty(prop)) {
+                    conn.setRequestHeader(prop, headers[prop]);
+                }
             }
-        }    
-        
-        // private
-        function createExceptionObject(tId, callbackArg, isAbort, isTimeout) {	        
-            return {
-	            tId : tId,
-	            status : isAbort ? -1 : 0,
-	            statusText : isAbort ? 'transaction aborted' : 'communication failure',
-                    isAbort: true,
-                    isTimeout: true,
-	            argument : callbackArg
-            };
-        }  
-        
-        // private 
-        function initHeader(label, value) {         
-			(pub.headers = pub.headers || {})[label] = value;			            
         }
-	    
-        // private
-        function createResponseObject(o, callbackArg) {
-            var headerObj = {},
-                headerStr,              
-                conn = o.conn,
-                t,
-                s;
 
-            try {
-                headerStr = o.conn.getAllResponseHeaders();   
-                Ext.each(headerStr.replace(/\r\n/g, '\n').split('\n'), function(v){
-                    t = v.indexOf(':');
-                    if(t >= 0){
-                        s = v.substr(0, t).toLowerCase();
-                        if(v.charAt(t + 1) == ' '){
-                            ++t;
-                        }
-                        headerObj[s] = v.substr(t + 1);
-                    }
-                });
-            } catch(e) {}
-                        
-            return {
-                tId : o.tId,
-                status : conn.status,
-                statusText : conn.statusText,
-                getResponseHeader : function(header){return headerObj[header.toLowerCase()];},
-                getAllResponseHeaders : function(){return headerStr},
-                responseText : conn.responseText,
-                responseXML : conn.responseXML,
-                argument : callbackArg
-            };
+        if (pub.defaultHeaders) {
+            setTheHeaders(conn, pub.defaultHeaders);
         }
-        
-        // private
-        function releaseObject(o) {
-            o.conn = null;
-            o = null;
-        }        
-	    
-        // private
-        function handleTransactionResponse(o, callback, isAbort, isTimeout) {
-            if (!callback) {
-                releaseObject(o);
-                return;
-            }
 
-            var httpStatus, responseObject;
+        if (pub.headers) {
+            setTheHeaders(conn, pub.headers);
+            delete pub.headers;
+        }
+    }
 
-            try {
-                if (o.conn.status !== undefined && o.conn.status != 0) {
-                    httpStatus = o.conn.status;
-                }
-                else {
-                    httpStatus = 13030;
-                }
-            }
-            catch(e) {
-                httpStatus = 13030;
-            }
+    // private
+    function createExceptionObject(tId, callbackArg, isAbort, isTimeout) {
+        return {
+            tId : tId,
+            status : isAbort ? -1 : 0,
+            statusText : isAbort ? 'transaction aborted' : 'communication failure',
+            isAbort: isAbort,
+            isTimeout: isTimeout,
+            argument : callbackArg
+        };
+    }
 
-            if ((httpStatus >= 200 && httpStatus < 300) || (Ext.isIE && httpStatus == 1223)) {
-                responseObject = createResponseObject(o, callback.argument);
-                if (callback.success) {
-                    if (!callback.scope) {
-                        callback.success(responseObject);
+    // private
+    function initHeader(label, value) {
+        (pub.headers = pub.headers || {})[label] = value;
+    }
+
+    // private
+    function createResponseObject(o, callbackArg) {
+        var headerObj = {},
+            headerStr,
+            conn = o.conn,
+            t,
+            s,
+            // see: https://prototype.lighthouseapp.com/projects/8886/tickets/129-ie-mangles-http-response-status-code-204-to-1223
+            isBrokenStatus = conn.status == 1223;
+
+        try {
+            headerStr = o.conn.getAllResponseHeaders();
+            Ext.each(headerStr.replace(/\r\n/g, '\n').split('\n'), function(v){
+                t = v.indexOf(':');
+                if(t >= 0){
+                    s = v.substr(0, t).toLowerCase();
+                    if(v.charAt(t + 1) == ' '){
+                        ++t;
                     }
-                    else {
-                        callback.success.apply(callback.scope, [responseObject]);
-                    }
+                    headerObj[s] = v.substr(t + 1);
                 }
+            });
+        } catch(e) {}
+
+        return {
+            tId : o.tId,
+            // Normalize the status and statusText when IE returns 1223, see the above link.
+            status : isBrokenStatus ? 204 : conn.status,
+            statusText : isBrokenStatus ? 'No Content' : conn.statusText,
+            getResponseHeader : function(header){return headerObj[header.toLowerCase()];},
+            getAllResponseHeaders : function(){return headerStr},
+            responseText : conn.responseText,
+            responseXML : conn.responseXML,
+            argument : callbackArg
+        };
+    }
+
+    // private
+    function releaseObject(o) {
+        if (o.tId) {
+            pub.conn[o.tId] = null;
+        }
+        o.conn = null;
+        o = null;
+    }
+
+    // private
+    function handleTransactionResponse(o, callback, isAbort, isTimeout) {
+        if (!callback) {
+            releaseObject(o);
+            return;
+        }
+
+        var httpStatus, responseObject;
+
+        try {
+            if (o.conn.status !== undefined && o.conn.status != 0) {
+                httpStatus = o.conn.status;
             }
             else {
-                switch (httpStatus) {
-                    case 12002:
-                    case 12029:
-                    case 12030:
-                    case 12031:
-                    case 12152:
-                    case 13030:
-                        responseObject = createExceptionObject(o.tId, callback.argument, (isAbort ? isAbort : false), isTimeout);
-                        if (callback.failure) {
-                            if (!callback.scope) {
-                                callback.failure(responseObject);
-                            }
-                            else {
-                                callback.failure.apply(callback.scope, [responseObject]);
-                            }
-                        }
-                        break;
-                    default:
-                        responseObject = createResponseObject(o, callback.argument);
-                        if (callback.failure) {
-                            if (!callback.scope) {
-                                callback.failure(responseObject);
-                            }
-                            else {
-                                callback.failure.apply(callback.scope, [responseObject]);
-                            }
-                        }
-                }
+                httpStatus = 13030;
             }
-
-            releaseObject(o);
-            responseObject = null;
-        }  
-        
-        // private
-        function handleReadyState(o, callback){
-	    callback = callback || {};
-            var conn = o.conn,
-            	tId = o.tId,
-            	poll = pub.poll,
-		cbTimeout = callback.timeout || null;
-
-            if (cbTimeout) {
-                pub.timeout[tId] = setTimeout(function() {
-                    pub.abort(o, callback, true);
-                }, cbTimeout);
-            }
-
-            poll[tId] = setInterval(
-                function() {
-                    if (conn && conn.readyState == 4) {
-                        clearInterval(poll[tId]);
-                        poll[tId] = null;
-
-                        if (cbTimeout) {
-                            clearTimeout(pub.timeout[tId]);
-                            pub.timeout[tId] = null;
-                        }
-
-                        handleTransactionResponse(o, callback);
-                    }
-                },
-                pub.pollInterval);
         }
-        
-        // private
-        function asyncRequest(method, uri, callback, postData) {
-            var o = getConnectionObject() || null;
+        catch(e) {
+            httpStatus = 13030;
+        }
 
-            if (o) {
-                o.conn.open(method, uri, true);
-
-                if (pub.useDefaultXhrHeader) {                    
-                	initHeader('X-Requested-With', pub.defaultXhrHeader);
+        if ((httpStatus >= 200 && httpStatus < 300) || (Ext.isIE && httpStatus == 1223)) {
+            responseObject = createResponseObject(o, callback.argument);
+            if (callback.success) {
+                if (!callback.scope) {
+                    callback.success(responseObject);
                 }
-
-                if(postData && pub.useDefaultHeader && (!pub.headers || !pub.headers[CONTENTTYPE])){
-                    initHeader(CONTENTTYPE, pub.defaultPostHeader);
+                else {
+                    callback.success.apply(callback.scope, [responseObject]);
                 }
-
-                if (pub.defaultHeaders || pub.headers) {
-                    setHeader(o);
-                }
-
-                handleReadyState(o, callback);
-                o.conn.send(postData || null);
             }
+        }
+        else {
+            switch (httpStatus) {
+                case 12002:
+                case 12029:
+                case 12030:
+                case 12031:
+                case 12152:
+                case 13030:
+                    responseObject = createExceptionObject(o.tId, callback.argument, (isAbort ? isAbort : false), isTimeout);
+                    if (callback.failure) {
+                        if (!callback.scope) {
+                            callback.failure(responseObject);
+                        }
+                        else {
+                            callback.failure.apply(callback.scope, [responseObject]);
+                        }
+                    }
+                    break;
+                default:
+                    responseObject = createResponseObject(o, callback.argument);
+                    if (callback.failure) {
+                        if (!callback.scope) {
+                            callback.failure(responseObject);
+                        }
+                        else {
+                            callback.failure.apply(callback.scope, [responseObject]);
+                        }
+                    }
+            }
+        }
+
+        releaseObject(o);
+        responseObject = null;
+    }
+
+    // private
+    function handleReadyState(o, callback){
+    callback = callback || {};
+        var conn = o.conn,
+            tId = o.tId,
+            poll = pub.poll,
+            cbTimeout = callback.timeout || null;
+
+        if (cbTimeout) {
+            pub.conn[tId] = conn;
+            pub.timeout[tId] = setTimeout(function() {
+                pub.abort(o, callback, true);
+            }, cbTimeout);
+        }
+
+        poll[tId] = setInterval(
+            function() {
+                if (conn && conn.readyState == 4) {
+                    clearInterval(poll[tId]);
+                    poll[tId] = null;
+
+                    if (cbTimeout) {
+                        clearTimeout(pub.timeout[tId]);
+                        pub.timeout[tId] = null;
+                    }
+
+                    handleTransactionResponse(o, callback);
+                }
+            },
+            pub.pollInterval);
+    }
+
+    // private
+    function asyncRequest(method, uri, callback, postData) {
+        var o = getConnectionObject() || null;
+
+        if (o) {
+            o.conn.open(method, uri, true);
+
+            if (pub.useDefaultXhrHeader) {
+                initHeader('X-Requested-With', pub.defaultXhrHeader);
+            }
+
+            if(postData && pub.useDefaultHeader && (!pub.headers || !pub.headers[CONTENTTYPE])){
+                initHeader(CONTENTTYPE, pub.defaultPostHeader);
+            }
+
+            if (pub.defaultHeaders || pub.headers) {
+                setHeader(o);
+            }
+
+            handleReadyState(o, callback);
+            o.conn.send(postData || null);
+        }
+        return o;
+    }
+
+    // private
+    function getConnectionObject() {
+        var o;
+
+        try {
+            if (o = createXhrObject(pub.transactionId)) {
+                pub.transactionId++;
+            }
+        } catch(e) {
+        } finally {
             return o;
         }
-        
-        // private
-        function getConnectionObject() {
-            var o;      	
+    }
 
-            try {
-                if (o = createXhrObject(pub.transactionId)) {
-                    pub.transactionId++;
-                }
-            } catch(e) {
-            } finally {
-                return o;
+    // private
+    function createXhrObject(transactionId) {
+        var http;
+
+        try {
+            http = new XMLHttpRequest();
+        } catch(e) {
+            for (var i = 0; i < activeX.length; ++i) {
+                try {
+                    http = new ActiveXObject(activeX[i]);
+                    break;
+                } catch(e) {}
             }
+        } finally {
+            return {conn : http, tId : transactionId};
         }
-	       
-        // private
-        function createXhrObject(transactionId) {
-            var http;
-            	
-            try {
-                http = new XMLHttpRequest();                
-            } catch(e) {
-                for (var i = 0; i < activeX.length; ++i) {	            
-                    try {
-                        http = new ActiveXObject(activeX[i]);                        
-                        break;
-                    } catch(e) {}
+    }
+
+    var pub = {
+        request : function(method, uri, cb, data, options) {
+            if(options){
+                var me = this,
+                    xmlData = options.xmlData,
+                    jsonData = options.jsonData,
+                    hs;
+
+                Ext.applyIf(me, options);
+
+                if(xmlData || jsonData){
+                    hs = me.headers;
+                    if(!hs || !hs[CONTENTTYPE]){
+                        initHeader(CONTENTTYPE, xmlData ? 'text/xml' : 'application/json');
+                    }
+                    data = xmlData || (!Ext.isPrimitive(jsonData) ? Ext.encode(jsonData) : jsonData);
                 }
-            } finally {
-                return {conn : http, tId : transactionId};
             }
+            return asyncRequest(method || options.method || "POST", uri, cb, data);
+        },
+
+        serializeForm : function(form) {
+            var fElements = form.elements || (document.forms[form] || Ext.getDom(form)).elements,
+                hasSubmit = false,
+                encoder = encodeURIComponent,
+                element,
+                options,
+                name,
+                val,
+                data = '',
+                type;
+
+            Ext.each(fElements, function(element) {
+                name = element.name;
+                type = element.type;
+
+                if (!element.disabled && name){
+                    if(/select-(one|multiple)/i.test(type)) {
+                        Ext.each(element.options, function(opt) {
+                            if (opt.selected) {
+                                data += String.format("{0}={1}&", encoder(name), encoder((opt.hasAttribute ? opt.hasAttribute('value') : opt.getAttribute('value') !== null) ? opt.value : opt.text));
+                            }
+                        });
+                    } else if(!/file|undefined|reset|button/i.test(type)) {
+                            if(!(/radio|checkbox/i.test(type) && !element.checked) && !(type == 'submit' && hasSubmit)){
+
+                                data += encoder(name) + '=' + encoder(element.value) + '&';
+                                hasSubmit = /submit/i.test(type);
+                            }
+                    }
+                }
+            });
+            return data.substr(0, data.length - 1);
+        },
+
+        useDefaultHeader : true,
+        defaultPostHeader : 'application/x-www-form-urlencoded; charset=UTF-8',
+        useDefaultXhrHeader : true,
+        defaultXhrHeader : 'XMLHttpRequest',
+        poll : {},
+        timeout : {},
+        conn: {},
+        pollInterval : 50,
+        transactionId : 0,
+
+//  This is never called - Is it worth exposing this?
+//          setProgId : function(id) {
+//              activeX.unshift(id);
+//          },
+
+//  This is never called - Is it worth exposing this?
+//          setDefaultPostHeader : function(b) {
+//              this.useDefaultHeader = b;
+//          },
+
+//  This is never called - Is it worth exposing this?
+//          setDefaultXhrHeader : function(b) {
+//              this.useDefaultXhrHeader = b;
+//          },
+
+//  This is never called - Is it worth exposing this?
+//          setPollingInterval : function(i) {
+//              if (typeof i == 'number' && isFinite(i)) {
+//                  this.pollInterval = i;
+//              }
+//          },
+
+//  This is never called - Is it worth exposing this?
+//          resetDefaultHeaders : function() {
+//              this.defaultHeaders = null;
+//          },
+
+        abort : function(o, callback, isTimeout) {
+            var me = this,
+                tId = o.tId,
+                isAbort = false;
+
+            if (me.isCallInProgress(o)) {
+                o.conn.abort();
+                clearInterval(me.poll[tId]);
+                me.poll[tId] = null;
+                clearTimeout(pub.timeout[tId]);
+                me.timeout[tId] = null;
+
+                handleTransactionResponse(o, callback, (isAbort = true), isTimeout);
+            }
+            return isAbort;
+        },
+
+        isCallInProgress : function(o) {
+            // if there is a connection and readyState is not 0 or 4
+            return o.conn && !{0:true,4:true}[o.conn.readyState];
         }
-	         
-	    var pub = {
-	        request : function(method, uri, cb, data, options) {
-			    if(options){
-			        var me = this,		        
-			        	xmlData = options.xmlData,
-			        	jsonData = options.jsonData,
-                        hs;
-			        	
-			        Ext.applyIf(me, options);	        
-		            
-		            if(xmlData || jsonData){
-                        hs = me.headers;
-                        if(!hs || !hs[CONTENTTYPE]){
-			                initHeader(CONTENTTYPE, xmlData ? 'text/xml' : 'application/json');
-                        }
-			            data = xmlData || (Ext.isObject(jsonData) ? Ext.encode(jsonData) : jsonData);
-			        }
-			    }		    		    
-			    return asyncRequest(method || options.method || "POST", uri, cb, data);
-	        },
-	
-	        serializeForm : function(form) {
-		        var fElements = form.elements || (document.forms[form] || Ext.getDom(form)).elements,
-	            	hasSubmit = false,
-	            	encoder = encodeURIComponent,
-		        	element,
-	            	options, 
-	            	name, 
-	            	val,             	
-	            	data = '',
-	            	type;
-	            	
-		        Ext.each(fElements, function(element) {		            
-	                name = element.name;	             
-					type = element.type;
-					
-	                if (!element.disabled && name){
-		                if(/select-(one|multiple)/i.test(type)){			                
-				            Ext.each(element.options, function(opt) {
-					            if (opt.selected) {
-						            data += String.format("{0}={1}&", 						            					  
-						            					 encoder(name),						            					 
-						            					  (opt.hasAttribute ? opt.hasAttribute('value') : opt.getAttributeNode('value').specified) ? opt.value : opt.text);
-                                }								
-                            });
-		                } else if(!/file|undefined|reset|button/i.test(type)) {
-			                if(!(/radio|checkbox/i.test(type) && !element.checked) && !(type == 'submit' && hasSubmit)){
-                                    
-                                data += encoder(name) + '=' + encoder(element.value) + '&';                     
-                                hasSubmit = /submit/i.test(type);    
-                            } 		                
-		                } 
-	                }
-	            });            
-	            return data.substr(0, data.length - 1);
-	        },
-	        
-	        useDefaultHeader : true,
-	        defaultPostHeader : 'application/x-www-form-urlencoded; charset=UTF-8',
-	        useDefaultXhrHeader : true,
-	        defaultXhrHeader : 'XMLHttpRequest',        
-	        poll : {},
-	        timeout : {},
-	        pollInterval : 50,
-	        transactionId : 0,
-	        
-//	This is never called - Is it worth exposing this?  		        
-// 	        setProgId : function(id) {
-// 	            activeX.unshift(id);
-// 	        },
-
-//	This is never called - Is it worth exposing this?  	
-// 	        setDefaultPostHeader : function(b) {
-// 	            this.useDefaultHeader = b;
-// 	        },
-	        
-//	This is never called - Is it worth exposing this?  	
-// 	        setDefaultXhrHeader : function(b) {
-// 	            this.useDefaultXhrHeader = b;
-// 	        },
-
-//	This is never called - Is it worth exposing this?        	
-// 	        setPollingInterval : function(i) {
-// 	            if (typeof i == 'number' && isFinite(i)) {
-// 	                this.pollInterval = i;
-// 	            }
-// 	        },
-	        
-//	This is never called - Is it worth exposing this?
-// 	        resetDefaultHeaders : function() {
-// 	            this.defaultHeaders = null;
-// 	        },
-	
-	        abort : function(o, callback, isTimeout) {
-		        var me = this,
-		        	tId = o.tId,
-		        	isAbort = false;
-		        
-	            if (me.isCallInProgress(o)) {
-	                o.conn.abort();
-	                clearInterval(me.poll[tId]);
-	               	me.poll[tId] = null;
-	                if (isTimeout) {
-	                    me.timeout[tId] = null;
-	                }
-					
-	                handleTransactionResponse(o, callback, (isAbort = true), isTimeout);                
-	            }
-	            return isAbort;
-	        },
-	
-	        isCallInProgress : function(o) {
-	            // if there is a connection and readyState is not 0 or 4
-	            return o.conn && !{0:true,4:true}[o.conn.readyState];	        
-	        }
-	    };
-	    return pub;
-    }();	Ext.lib.Region = function(t, r, b, l) {
+    };
+    return pub;
+}();	Ext.lib.Region = function(t, r, b, l) {
 		var me = this;
         me.top = t;
         me[1] = t;
@@ -2808,7 +2848,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
     };
 
     Ext.lib.Point.prototype = new Ext.lib.Region();
-(function(){    
+(function(){
     var EXTLIB = Ext.lib,
         noNegatives = /width|height|opacity|padding/i,
         offsetAttribute = /^((width|height)|(top|left))$/,
@@ -2818,9 +2858,9 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             return typeof v !== 'undefined';
         },
         now = function(){
-            return new Date();    
+            return new Date();
         };
-        
+
     EXTLIB.Anim = {
         motion : function(el, args, duration, easing, cb, scope) {
             return this.run(el, args, duration, easing, cb, scope, Ext.lib.Motion);
@@ -2840,7 +2880,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             return anim;
         }
     };
-    
+
     EXTLIB.AnimBase = function(el, attributes, duration, method) {
         if (el) {
             this.init(el, attributes, duration, method);
@@ -2865,7 +2905,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         getAttr: function(attr) {
             var el = Ext.fly(this.el),
                 val = el.getStyle(attr),
-                a = offsetAttribute.exec(attr) || []
+                a = offsetAttribute.exec(attr) || [];
 
             if (val !== 'auto' && !offsetUnit.test(val)) {
                 return parseFloat(val);
@@ -2892,7 +2932,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         },
 
 
-        setRunAttr: function(attr) {            
+        setRunAttr: function(attr) {
             var me = this,
                 a = this.attributes[attr],
                 to = a.to,
@@ -2912,9 +2952,9 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             }else if(isset(by)) {
                 if (Ext.isArray(start)){
                     end = [];
-                    Ext.each(start, function(v, i){
-                        end[i] = v + by[i];
-                    });
+                    for(var i=0,len=start.length; i<len; i++) {
+                        end[i] = start[i] + by[i];
+                    }
                 }else{
                     end = start + by;
                 }
@@ -2932,7 +2972,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             var me = this,
                 actualFrames = 0,
                 mgr = EXTLIB.AnimMgr;
-                
+
             Ext.apply(me, {
                 isAnimated: false,
                 startTime: null,
@@ -2947,19 +2987,19 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                 animate: function(){
                     var me = this,
                         d = me.duration;
-                    
+
                     if(me.isAnimated){
                         return false;
                     }
 
                     me.curFrame = 0;
                     me.totalFrames = me.useSec ? Math.ceil(mgr.fps * d) : d;
-                    mgr.registerElement(me); 
+                    mgr.registerElement(me);
                 },
-                
+
                 stop: function(finish){
                     var me = this;
-                
+
                     if(finish){
                         me.curFrame = me.totalFrames;
                         me._onTween.fire();
@@ -2971,7 +3011,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             var onStart = function(){
                 var me = this,
                     attr;
-                
+
                 me.onStart.fire();
                 me.runAttrs = {};
                 for(attr in this.attributes){
@@ -3015,11 +3055,11 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             };
 
             me.onStart = new Ext.util.Event(me);
-            me.onTween = new Ext.util.Event(me);            
+            me.onTween = new Ext.util.Event(me);
             me.onComplete = new Ext.util.Event(me);
             (me._onStart = new Ext.util.Event(me)).addListener(onStart);
             (me._onTween = new Ext.util.Event(me)).addListener(onTween);
-            (me._onComplete = new Ext.util.Event(me)).addListener(onComplete); 
+            (me._onComplete = new Ext.util.Event(me)).addListener(onComplete);
         }
     };
 
@@ -3040,7 +3080,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                 tween._onStart.fire();
                 me.start();
             },
-            
+
             unRegister: function(tween, index){
                 tween._onComplete.fire();
                 index = index || getIndex(tween);
@@ -3052,13 +3092,13 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                     me.stop();
                 }
             },
-            
+
             start: function(){
                 if(thread === null){
                     thread = setInterval(me.run, me.delay);
                 }
             },
-            
+
             stop: function(tween){
                 if(!tween){
                     clearInterval(thread);
@@ -3075,10 +3115,11 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                     me.unRegister(tween);
                 }
             },
-            
+
             run: function(){
-                var tf;
-                Ext.each(queue, function(tween){
+                var tf, i, len, tween;
+                for(i = 0, len = queue.length; i<len; i++) {
+                    tween = queue[i];
                     if(tween && tween.isAnimated){
                         tf = tween.totalFrames;
                         if(tween.curFrame < tf || tf === null){
@@ -3091,21 +3132,19 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                             me.stop(tween);
                         }
                     }
-                }, me);
+                }
             }
         });
 
         var getIndex = function(anim) {
-            var out = -1;
-            Ext.each(queue, function(item, idx){
-                if(item == anim){
-                    out = idx;
-                    return false;
+            var i, len;
+            for(i = 0, len = queue.length; i<len; i++) {
+                if(queue[i] === anim) {
+                    return i;
                 }
-            });
-            return out;
+            }
+            return -1;
         };
-
 
         var correctFrame = function(tween) {
             var frames = tween.totalFrames,
@@ -3134,7 +3173,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         this.getPosition = function(points, t) {
             var n = points.length,
                 tmp = [],
-                c = 1 - t, 
+                c = 1 - t,
                 i,
                 j;
 
@@ -3188,7 +3227,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             setAttr: function(attr, val, unit){
                 var me = this,
                     setAttr = superclass.setAttr;
-                    
+
                 if (pointsRe.test(attr)) {
                     unit = unit || 'px';
                     setAttr.call(me, 'left', val[0], unit);
@@ -3197,25 +3236,25 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                     setAttr.call(me, attr, val, unit);
                 }
             },
-            
+
             getAttr: function(attr){
                 var me = this,
                     getAttr = superclass.getAttr;
-                    
+
                 return pointsRe.test(attr) ? [getAttr.call(me, 'left'), getAttr.call(me, 'top')] : getAttr.call(me, attr);
             },
-            
+
             doMethod: function(attr, start, end){
                 var me = this;
-                
+
                 return pointsRe.test(attr)
                         ? EXTLIB.Bezier.getPosition(me.runAttrs[attr], me.method(me.curFrame, 0, 100, me.totalFrames) / 100)
                         : superclass.doMethod.call(me, attr, start, end);
             },
-            
+
             setRunAttr: function(attr){
                 if(pointsRe.test(attr)){
-                    
+
                     var me = this,
                         el = this.el,
                         points = this.attributes.points,
@@ -3229,7 +3268,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                         end,
                         len,
                         ra;
-                  
+
 
                     if(control.length > 0 && !Ext.isArray(control[0])){
                         control = [control];
@@ -3280,20 +3319,20 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
     })();
 })();// Easing functions
 (function(){
-	// shortcuts to aid compression
-	var abs = Math.abs,
-	 	pi = Math.PI,
-	 	asin = Math.asin,
-	 	pow = Math.pow,
-	 	sin = Math.sin,
-		EXTLIB = Ext.lib;
-	 	
+    // shortcuts to aid compression
+    var abs = Math.abs,
+        pi = Math.PI,
+        asin = Math.asin,
+        pow = Math.pow,
+        sin = Math.sin,
+        EXTLIB = Ext.lib;
+
     Ext.apply(EXTLIB.Easing, {
-        
+
         easeBoth: function (t, b, c, d) {
-	        return ((t /= d / 2) < 1)  ?  c / 2 * t * t + b  :  -c / 2 * ((--t) * (t - 2) - 1) + b;               
+            return ((t /= d / 2) < 1)  ?  c / 2 * t * t + b  :  -c / 2 * ((--t) * (t - 2) - 1) + b;
         },
-        
+
         easeInStrong: function (t, b, c, d) {
             return c * (t /= d) * t * t * t + b;
         },
@@ -3307,62 +3346,62 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
         },
 
         elasticIn: function (t, b, c, d, a, p) {
-	        if (t == 0 || (t /= d) == 1) {
+            if (t == 0 || (t /= d) == 1) {
                 return t == 0 ? b : b + c;
-            }	            
-            p = p || (d * .3);	            
-
-			var s;
-			if (a >= abs(c)) {
-				s = p / (2 * pi) * asin(c / a);
-			} else {
-				a = c;
-				s = p / 4;
-			}
-	
-            return -(a * pow(2, 10 * (t -= 1)) * sin((t * d - s) * (2 * pi) / p)) + b;
-            	      
-        }, 	
-	
-		elasticOut: function (t, b, c, d, a, p) {
-	        if (t == 0 || (t /= d) == 1) {
-                return t == 0 ? b : b + c;
-            }	            
-            p = p || (d * .3);	            
-
-			var s;
-			if (a >= abs(c)) {
-				s = p / (2 * pi) * asin(c / a);
-			} else {
-				a = c;
-				s = p / 4;
-			}
-	
-            return a * pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p) + c + b;	 
-        }, 	
-	
-        elasticBoth: function (t, b, c, d, a, p) {
-            if (t == 0 || (t /= d / 2) == 2) {
-                return t == 0 ? b : b + c;
-            }		         	
-	            
-            p = p || (d * (.3 * 1.5)); 	            
+            }
+            p = p || (d * .3);
 
             var s;
             if (a >= abs(c)) {
-	            s = p / (2 * pi) * asin(c / a);
+                s = p / (2 * pi) * asin(c / a);
             } else {
-	            a = c;
+                a = c;
+                s = p / 4;
+            }
+
+            return -(a * pow(2, 10 * (t -= 1)) * sin((t * d - s) * (2 * pi) / p)) + b;
+
+        },
+
+        elasticOut: function (t, b, c, d, a, p) {
+            if (t == 0 || (t /= d) == 1) {
+                return t == 0 ? b : b + c;
+            }
+            p = p || (d * .3);
+
+            var s;
+            if (a >= abs(c)) {
+                s = p / (2 * pi) * asin(c / a);
+            } else {
+                a = c;
+                s = p / 4;
+            }
+
+            return a * pow(2, -10 * t) * sin((t * d - s) * (2 * pi) / p) + c + b;
+        },
+
+        elasticBoth: function (t, b, c, d, a, p) {
+            if (t == 0 || (t /= d / 2) == 2) {
+                return t == 0 ? b : b + c;
+            }
+
+            p = p || (d * (.3 * 1.5));
+
+            var s;
+            if (a >= abs(c)) {
+                s = p / (2 * pi) * asin(c / a);
+            } else {
+                a = c;
                 s = p / 4;
             }
 
             return t < 1 ?
-            	   	-.5 * (a * pow(2, 10 * (t -= 1)) * sin((t * d - s) * (2 * pi) / p)) + b :
+                    -.5 * (a * pow(2, 10 * (t -= 1)) * sin((t * d - s) * (2 * pi) / p)) + b :
                     a * pow(2, -10 * (t -= 1)) * sin((t * d - s) * (2 * pi) / p) * .5 + c + b;
         },
 
         backIn: function (t, b, c, d, s) {
-            s = s ||  1.70158; 	            
+            s = s ||  1.70158;
             return c * (t /= d) * t * ((s + 1) * t - s) + b;
         },
 
@@ -3376,11 +3415,11 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
 
 
         backBoth: function (t, b, c, d, s) {
-            s = s || 1.70158; 	            
+            s = s || 1.70158;
 
             return ((t /= d / 2 ) < 1) ?
-                    c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b : 	            
-            		c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+                    c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b :
+                    c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
         },
 
 
@@ -3403,19 +3442,19 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
 
         bounceBoth: function (t, b, c, d) {
             return (t < d / 2) ?
-                   EXTLIB.Easing.bounceIn(t * 2, 0, c, d) * .5 + b : 
-            	   EXTLIB.Easing.bounceOut(t * 2 - d, 0, c, d) * .5 + c * .5 + b;
+                    EXTLIB.Easing.bounceIn(t * 2, 0, c, d) * .5 + b :
+                    EXTLIB.Easing.bounceOut(t * 2 - d, 0, c, d) * .5 + c * .5 + b;
         }
     });
 })();
 
 (function() {
     var EXTLIB = Ext.lib;
-	// Color Animation
-	EXTLIB.Anim.color = function(el, args, duration, easing, cb, scope) {
-	    return EXTLIB.Anim.run(el, args, duration, easing, cb, scope, EXTLIB.ColorAnim);
-	}
-	
+    // Color Animation
+    EXTLIB.Anim.color = function(el, args, duration, easing, cb, scope) {
+        return EXTLIB.Anim.run(el, args, duration, easing, cb, scope, EXTLIB.ColorAnim);
+    }
+
     EXTLIB.ColorAnim = function(el, attributes, duration, method) {
         EXTLIB.ColorAnim.superclass.constructor.call(this, el, attributes, duration, method);
     };
@@ -3423,26 +3462,26 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
     Ext.extend(EXTLIB.ColorAnim, EXTLIB.AnimBase);
 
     var superclass = EXTLIB.ColorAnim.superclass,
-    	colorRE = /color$/i,
-    	transparentRE = /^transparent|rgba\(0, 0, 0, 0\)$/,
+        colorRE = /color$/i,
+        transparentRE = /^transparent|rgba\(0, 0, 0, 0\)$/,
         rgbRE = /^rgb\(([0-9]+)\s*,\s*([0-9]+)\s*,\s*([0-9]+)\)$/i,
         hexRE= /^#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})$/i,
         hex3RE = /^#?([0-9A-F]{1})([0-9A-F]{1})([0-9A-F]{1})$/i,
         isset = function(v){
             return typeof v !== 'undefined';
-        }
-         	
-   	// private	
-    function parseColor(s) {	
+        };
+
+    // private
+    function parseColor(s) {
         var pi = parseInt,
             base,
             out = null,
             c;
-        
-	    if (s.length == 3) {
+
+        if (s.length == 3) {
             return s;
         }
-        
+
         Ext.each([hexRE, rgbRE, hex3RE], function(re, idx){
             base = (idx % 2 == 0) ? 16 : 10;
             c = re.exec(s);
@@ -3452,13 +3491,13 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
             }
         });
         return out;
-    }	
+    }
 
     Ext.apply(EXTLIB.ColorAnim.prototype, {
         getAttr : function(attr) {
             var me = this,
                 el = me.el,
-                val;                
+                val;
             if(colorRE.test(attr)){
                 while(el && transparentRE.test(val = Ext.fly(el).getStyle(attr))){
                     el = el.parentNode;
@@ -3472,16 +3511,20 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
 
         doMethod : function(attr, start, end) {
             var me = this,
-            	val,
-            	floor = Math.floor;            
+                val,
+                floor = Math.floor,
+                i,
+                len,
+                v;
 
             if(colorRE.test(attr)){
                 val = [];
-             
-	            Ext.each(start, function(v, i) {
-                    val[i] = superclass.doMethod.call(me, attr, v, end[i]);
-                });
+                end = end || [];
 
+                for(i = 0, len = start.length; i < len; i++) {
+                    v = start[i];
+                    val[i] = superclass.doMethod.call(me, attr, v, end[i]);
+                }
                 val = 'rgb(' + floor(val[0]) + ',' + floor(val[1]) + ',' + floor(val[2]) + ')';
             }else{
                 val = superclass.doMethod.call(me, attr, start, end);
@@ -3495,7 +3538,7 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
                 to = a.to,
                 by = a.by,
                 ra;
-                
+
             superclass.setRunAttr.call(me, attr);
             ra = me.runAttrs[attr];
             if(colorRE.test(attr)){
@@ -3504,25 +3547,25 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
 
                 if(!isset(to) && isset(by)){
                     end = parseColor(by);
-                    Ext.each(start, function(item, i){
-                        end[i] = item + end[i];
-                    });
+                    for(var i=0,len=start.length; i<len; i++) {
+                        end[i] = start[i] + end[i];
+                    }
                 }
                 ra.start = start;
                 ra.end = end;
             }
         }
-	});
-})();	
+    });
+})();
 
-	
+
 (function() {
-	    // Scroll Animation	
+    // Scroll Animation
     var EXTLIB = Ext.lib;
-	EXTLIB.Anim.scroll = function(el, args, duration, easing, cb, scope) {	        
-	    return EXTLIB.Anim.run(el, args, duration, easing, cb, scope, EXTLIB.Scroll);
-	}
-	
+    EXTLIB.Anim.scroll = function(el, args, duration, easing, cb, scope) {
+        return EXTLIB.Anim.run(el, args, duration, easing, cb, scope, EXTLIB.Scroll);
+    };
+
     EXTLIB.Scroll = function(el, attributes, duration, method) {
         if(el){
             EXTLIB.Scroll.superclass.constructor.call(this, el, attributes, duration, method);
@@ -3532,15 +3575,15 @@ Ext.TaskMgr = new Ext.util.TaskRunner();(function(){
     Ext.extend(EXTLIB.Scroll, EXTLIB.ColorAnim);
 
     var superclass = EXTLIB.Scroll.superclass,
-    	SCROLL = 'scroll';
+        SCROLL = 'scroll';
 
     Ext.apply(EXTLIB.Scroll.prototype, {
 
         doMethod : function(attr, start, end) {
             var val,
-            	me = this,
-            	curFrame = me.curFrame,
-            	totalFrames = me.totalFrames;
+                me = this,
+                curFrame = me.curFrame,
+                totalFrames = me.totalFrames;
 
             if(attr == SCROLL){
                 val = [me.method(curFrame, start[0], end[0] - start[0], totalFrames),

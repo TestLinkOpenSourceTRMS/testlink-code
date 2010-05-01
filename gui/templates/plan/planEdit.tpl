@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.14 2009/05/17 16:19:02 franciscom Exp $
+$Id: planEdit.tpl,v 1.15 2010/05/01 19:39:55 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -58,7 +58,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 </head>
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$gui->main_descr|escape}</h1>

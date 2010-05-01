@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcMove.tpl,v 1.8 2010/01/03 16:59:31 franciscom Exp $
+$Id: tcMove.tpl,v 1.9 2010/05/01 19:34:52 franciscom Exp $
 Purpose: smarty template - move/copy test case
 
 rev: 20090401 - franciscom - BUGID 2316 - copy options
@@ -21,7 +21,7 @@ rev: 20090401 - franciscom - BUGID 2316 - copy options
 
 <form method="post" action="lib/testcases/tcEdit.php?testcase_id={$gui->testcase_id}">
   <p>
-  {if $gui->move_enabled }
+  {if $gui->move_enabled}
 	  {$labels.inst_move}<br />
   {/if}
   {$labels.inst_copy}<br />
@@ -49,7 +49,7 @@ rev: 20090401 - franciscom - BUGID 2316 - copy options
 	          value="bottom" {$gui->bottom_checked} />{$labels.as_last_testcase}
 
 		<div class="groupBtn">
-		  {if $gui->move_enabled }
+		  {if $gui->move_enabled}
 			  <input id="do_move" type="submit" name="do_move" value="{$labels.btn_mv}" />
 			{/if}
 			<input id="do_copy" type="submit" name="do_copy" value="{$labels.btn_cp}" />

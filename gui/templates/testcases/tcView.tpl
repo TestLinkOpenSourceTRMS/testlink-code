@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.35 2010/05/01 19:21:53 franciscom Exp $
+$Id: tcView.tpl,v 1.36 2010/05/01 19:34:52 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -164,8 +164,7 @@ function validateStepsReorder(formOID)
 		         args_tproject_name=$gui->tprojectName
 		         args_tsuite_name=$gui->parentTestSuiteName
 		         args_linked_versions=$gui->linked_versions[idx]
-		         args_has_testplans=$gui->has_testplans
-		         }
+		         args_has_testplans=$gui->has_testplans}
 		
 		
 		{assign var="bDownloadOnly" value=false}
@@ -181,14 +180,13 @@ function validateStepsReorder(formOID)
 		         attach_tableName="nodes_hierarchy"
 		         attach_attachmentInfos=$gui->attachments[$tcID]  
 		         attach_downloadOnly=$bDownloadOnly
-		         attach_loadOnCancelURL=$gui->loadOnCancelURL
-		         }
+		         attach_loadOnCancelURL=$gui->loadOnCancelURL}
 		         
 	{* Other Versions *}
     {if $gui->testcase_other_versions[idx] neq null}
         {assign var="vid" value=$gui->tc_current_version[idx][0].id}
-        {assign var="div_id" value=vers_$vid}
-        {assign var="memstatus_id" value=mem_$div_id}
+        {assign var="div_id" value="vers_$vid"}
+        {assign var="memstatus_id" value="mem_$div_id"}
   
         {include file="inc_show_hide_mgmt.tpl" 
                  show_hide_container_title=$labels.other_versions
@@ -201,14 +199,15 @@ function validateStepsReorder(formOID)
         
   	    {foreach item=my_testcase from=$gui->testcase_other_versions[idx]}
 
-            {assign var="version_num" value=$my_testcase.version}
-            {assign var="title" value="$labels.version}
+            {assign var="version_num" value="$my_testcase.version"}
+            {assign var="title" value="$labels.version"}
             {assign var="title" value="$title $version_num"}
             
-            {assign var="div_id" value=v_$vid}
             {assign var="sep" value="_"}
-            {assign var="div_id" value=$div_id$sep$version_num}
-            {assign var="memstatus_id" value=mem_$div_id}
+            {assign var="div_id" value="v_$vid"}
+            {assign var="div_id" value="$div_id$sep$version_num"}
+            AAZ{$div_id}
+            {assign var="memstatus_id" value="mem_$div_id"}
            
             {include file="inc_show_hide_mgmt.tpl" 
                      show_hide_container_title=$title
@@ -217,15 +216,6 @@ function validateStepsReorder(formOID)
                      show_hide_container_class='exec_additional_info'
                      show_hide_container_view_status_id=$memstatus_id}
   	          <div id="{$div_id}" class="workBack">
-  	          
-  	                   {*
-                         args_can_edit=$can_edit 
-                         args_can_delete_version=$can_delete_version
-           		           args_can_move_copy="no" 
-                         args_can_delete_testcase='no'
-                       
-           		         *}
-           		
 				      {include file="testcases/tcView_viewer.tpl" 
                        args_testcase=$my_testcase 
                        args_keywords_map=$gui->keywords_map[idx] 
@@ -241,8 +231,7 @@ function validateStepsReorder(formOID)
                        args_users=$gui->users
                        args_cf=$gui->cf[idx]
            		         args_linked_versions=null
-	         		         args_has_testplans=$gui->has_testplans
-                       }
+	         		         args_has_testplans=$gui->has_testplans}
   	         </div>
   	         <br />
   	         

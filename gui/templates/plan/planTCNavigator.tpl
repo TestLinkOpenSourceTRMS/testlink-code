@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.27 2010/04/29 14:56:25 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.28 2010/05/01 19:39:55 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -127,7 +127,7 @@ function goToUnassignPage(id)
 	{/if}
 ">
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$gui->additional_string|escape}</h1>

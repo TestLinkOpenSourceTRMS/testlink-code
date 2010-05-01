@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.7 2010/02/17 21:32:43 franciscom Exp $
+$Id: planMilestonesEdit.tpl,v 1.8 2010/05/01 19:39:55 franciscom Exp $
 
 Rev:
 *}
@@ -12,7 +12,7 @@ Rev:
                           th_name,th_date_format,th_perc_a_prio,th_perc_b_prio,th_perc_c_prio,
                           th_perc_testcases,th_delete,alt_delete_milestone'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}

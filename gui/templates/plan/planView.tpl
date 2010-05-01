@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.20 2009/06/03 19:51:45 schlundus Exp $ 
+$Id: planView.tpl,v 1.21 2010/05/01 19:39:55 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -13,7 +13,7 @@ Rev:
     20071006 - franciscom - added logic to use ext js confirm widget
      
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
@@ -30,8 +30,8 @@ Rev:
           btn_testplan_create,th_id,error_no_testprojects_present'}
 
 
-{lang_get s='warning_delete_testplan' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_delete_testplan' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 {include file="inc_head.tpl" openHead="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}

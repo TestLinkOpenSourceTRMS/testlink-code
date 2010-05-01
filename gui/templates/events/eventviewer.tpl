@@ -1,10 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.24 2009/10/07 06:13:32 franciscom Exp $
+$Id: eventviewer.tpl,v 1.25 2010/05/01 19:38:08 franciscom Exp $
 
 Event Viewer
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var='labels'
@@ -144,7 +144,7 @@ fieldset
 
 			<fieldset class="x-fieldset" style="float:left"><legend>{$labels.select_user}</legend>
         <select name="testers[]" size="5" multiple="multiple">
-        	{foreach from=$gui->testers item=userid key=row  }
+        	{foreach from=$gui->testers item=userid key=row}
 			      {if in_array((string)$row,$gui->selectedTesters) neq false}
         	    <option value="{$row}" selected="selected">{$gui->testers[$row]|escape}</option>
         	  {else}

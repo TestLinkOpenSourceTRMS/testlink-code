@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.68 2010/05/01 19:12:22 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.69 2010/05/01 19:34:52 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -49,10 +49,10 @@ rev:
 {assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id"}
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
-{assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
+{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
 
 {assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-{assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
+{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
 
 {assign var="url_args" value="tcAssign2Tplan.php?tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {assign var="hrefAddTc2Tplan"  value="$basehref$module$url_args"}

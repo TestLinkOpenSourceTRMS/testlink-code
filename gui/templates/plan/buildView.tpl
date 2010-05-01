@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.16 2009/05/09 15:11:27 franciscom Exp $
+$Id: buildView.tpl,v 1.17 2010/05/01 19:39:55 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
@@ -8,7 +8,7 @@ Rev:
     20090509 - franciscom - BUGID - display release_date
     20070921 - franciscom - BUGID  - added strip_tags|strip to notes
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}
@@ -18,8 +18,8 @@ Rev:
 {assign var="createAction" value="$managerURL?do_action=create"}
 
 
-{lang_get s='warning_delete_build' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_delete_build' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 {lang_get var="labels" 
           s='title_build_2,test_plan,th_title,th_description,th_active,

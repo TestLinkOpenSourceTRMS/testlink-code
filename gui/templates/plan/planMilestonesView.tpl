@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesView.tpl,v 1.9 2010/04/27 18:24:21 franciscom Exp $
+$Id: planMilestonesView.tpl,v 1.10 2010/05/01 19:39:55 franciscom Exp $
 
 Rev:
   20100427 - franciscom - BUGID 3402 - missing refactoring of test project options
@@ -11,7 +11,7 @@ Rev:
                          btn_new_milestone,start_date,
                          th_perc_testcases,th_delete,alt_delete_milestone,no_milestones'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {* Configure Actions *}

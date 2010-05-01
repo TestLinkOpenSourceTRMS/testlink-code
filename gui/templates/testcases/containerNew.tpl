@@ -1,11 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.7 2010/05/01 18:53:33 franciscom Exp $
+$Id: containerNew.tpl,v 1.8 2010/05/01 19:05:09 franciscom Exp $
 Purpose: smarty template - create containers
+
+20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+                        removed use of smarty.template to get current directory to include other
+                        templates. On 3.0 RC smarty.template do not contains current dir
 
 20070214 - franciscom -
 BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed.
-
 20061231 - franciscom - using parent_info
 20060804 - franciscom - changes to add option transfer
 *}
@@ -76,8 +79,7 @@ function validateForm(f)
       		<input type="hidden" name="add_testsuite" id="add_testsuite" />
 			<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}" />
 		</div>	
-		{assign var=this_template_dir value=$smarty.template|dirname}
-	  {include file="$this_template_dir/inc_testsuite_viewer_rw.tpl"}
+	  {include file="testcases/inc_testsuite_viewer_rw.tpl"}
 
    {* Custom fields *}
    {if $cf neq ""}

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.8 2010/05/01 18:53:33 franciscom Exp $
+$Id: containerEdit.tpl,v 1.9 2010/05/01 19:10:47 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
@@ -63,8 +63,7 @@ function validateForm(f)
 		<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript:history.back();"/>
 		</div>
 	 
-	 {assign var=this_template_dir value=$smarty.template|dirname}
-	 {include file="$this_template_dir/inc_testsuite_viewer_rw.tpl"}
+	 {include file="testcases/inc_testsuite_viewer_rw.tpl"}
 
    {* Custom fields *}
    {if $cf neq ""}

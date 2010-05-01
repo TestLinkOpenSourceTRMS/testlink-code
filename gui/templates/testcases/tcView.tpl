@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.34 2010/05/01 19:15:20 franciscom Exp $
+$Id: tcView.tpl,v 1.35 2010/05/01 19:21:53 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -106,7 +106,6 @@ function validateStepsReorder(formOID)
     {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
-{assign var=this_template_dir value=$smarty.template|dirname}
 {lang_get var='labels' 
           s='no_records_found,other_versions,version,title_test_case,match_count'}
 
@@ -118,7 +117,6 @@ function validateStepsReorder(formOID)
   {assign var="refresh_tree" value=false}
 {/if}
 
-{* {include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refresh_tree} *}
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 <div class="workBack">
 
@@ -146,7 +144,7 @@ function validateStepsReorder(formOID)
 	    {$gui->tc_current_version[idx][0].tc_external_id|escape}:{$gui->tc_current_version[idx][0].name|escape}</h2>
     {/if}
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
-		{include file="$this_template_dir/tcView_viewer.tpl" 
+		{include file="testcases/tcView_viewer.tpl" 
 		         args_testcase=$gui->tc_current_version[idx][0]
 		         args_keywords_map=$gui->keywords_map[idx] 
 		         args_reqs=$gui->arrReqs[idx] 
@@ -228,7 +226,7 @@ function validateStepsReorder(formOID)
                        
            		         *}
            		
-				      {include file="$this_template_dir/tcView_viewer.tpl" 
+				      {include file="testcases/tcView_viewer.tpl" 
                        args_testcase=$my_testcase 
                        args_keywords_map=$gui->keywords_map[idx] 
                        args_reqs=$gui->arrReqs[idx]

@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.11 2010/05/01 19:15:20 franciscom Exp $
+$Id: tcNew.tpl,v 1.12 2010/05/01 19:19:51 franciscom Exp $
 Purpose: smarty template - create new testcase
 
+20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
 20100103 - franciscom - refactoring to use $gui
 20091122 - franciscom - refactoring to use ext-js alert
 20070214 - franciscom -
@@ -99,9 +100,7 @@ function validateForm(f)
 			<input type="submit" id="do_create_button"  name="do_create_button" value="{$labels.btn_create}" />
 			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
 	</div>	
-
-  {assign var=this_template_dir value=$smarty.template|dirname}
-	{include file="$this_template_dir/tcEdit_New_viewer.tpl"}
+	{include file="testcases/tcEdit_New_viewer.tpl"}
 
 	<div class="groupBtn">
 	    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}

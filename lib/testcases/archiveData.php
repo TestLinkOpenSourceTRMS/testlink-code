@@ -1,24 +1,20 @@
 <?php
-/**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2 or later.
+/** 
+ * 	TestLink Open Source Project - http://testlink.sourceforge.net/
+ * 
+ * 	@version 	$Id: archiveData.php,v 1.69 2010/05/02 10:14:11 franciscom Exp $
+ * 	@author 	Martin Havlat
+ * 
+ * 	Allows you to show test suites, test cases.
+ * 	Normally launched from tree navigator.
+ *	Also called when search option on Navigation Bar is used
  *
- * @version $Id: archiveData.php,v 1.68 2010/03/15 22:23:04 franciscom Exp $
- * @author Martin Havlat
- *
- * Allows you to show test suites, test cases.
- * Normally launched from tree navigator.
- *
- * rev :
+ *	@internal revision
+ *	20100502 - franciscom - BUGID 3405: Navigation Bar - Test Case Search - Crash when search a nonexistent testcase	
  *  20100315 - franciscom - fixed refesh tree logic	
  *  20100223 - asimon - BUGID 3049
- *  20100124 - franciscom - pass platform info to testcase.show()
- *	20100103 - franciscom - changes on calls to show()
- *	20090329 - franciscom - added management of new call parameter tcversion_id
- *	20090326 - franciscom - solved bug related to forced READ ONLY when called as 
- *	           result of search on Navigator bar.
- *	20090228 - franciscom - this page is called when search option on Navigation Bar is used.
  */
+
 require_once('../../config.inc.php');
 require_once('common.php');
 require_once('testsuite.class.php');
@@ -98,6 +94,12 @@ switch($args->feature)
 		$get_path_info = false;
 		$item_mgr = new testcase($db);
 		$viewerArgs['refresh_tree'] = 'no';
+
+	    $gui->platforms = null;
+        $gui->tableColspan = 5;
+		$gui->loadOnCancelURL = '';
+		$gui->attachments = null;
+		$gui->direct_link = null;
     	
    		// has been called from a test case search
 		if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)
@@ -105,28 +107,22 @@ switch($args->feature)
 			$viewerArgs['show_title'] = 'no';
 			$viewerArgs['display_testproject'] = 1;
 			$viewerArgs['display_parent_testsuite'] = 1;
-
-			// need to get internal Id from External ID
 			$args->id = $item_mgr->getInternalID($args->targetTestCase);
+            $get_path_info = ($args->id > 0);
+		}
 
-            if($args->id > 0)
-            {
-                $get_path_info = true;
-                $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
-            }
-		}
-		
-		if($get_path_info || $args->show_path)
+		if( $args->id > 0 )
 		{
-		    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
-		}
+			if( $get_path_info || $args->show_path )
+			{
+			    $path_info = $item_mgr->tree_manager->get_full_path_verbose($args->id);
+			}
 			
-	    $platform_mgr = new tlPlatform($db,$args->tproject_id);
-	    $gui->platforms = $platform_mgr->getAllAsMap();
-        $gui->tableColspan = 5;
-		$gui->loadOnCancelURL = '';
-		$gui->attachments[$args->id] = ($args->id > 0) ? getAttachmentInfosFrom($item_mgr,$args->id): null;
-		$gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
+		  	$platform_mgr = new tlPlatform($db,$args->tproject_id);
+	    	$gui->platforms = $platform_mgr->getAllAsMap();
+      		$gui->attachments[$args->id] = getAttachmentInfosFrom($item_mgr,$args->id);
+			$gui->direct_link = $item_mgr->buildDirectWebLink($_SESSION['basehref'],$args->id);
+		}
 	    $gui->id = $args->id;
 		$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,$args->tcversion_id,
 		                $viewerArgs,$path_info,$args->show_mode);

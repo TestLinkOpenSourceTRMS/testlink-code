@@ -9,7 +9,7 @@
  * @author 		franciscom
  * @author 		2002 - 2004 Mantis Team (the code is based on mantis BT project code)
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: email_api.php,v 1.11 2009/07/10 21:21:44 havlat Exp $
+ * @version    	CVS: $Id: email_api.php,v 1.12 2010/05/02 17:11:36 franciscom Exp $
  * @link 		http://www.teamst.org/
  *
  */
@@ -42,18 +42,17 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 {
 
 	global $g_phpMailer_smtp;
-
 	$op = new stdClass();
 	$op->status_ok = true;
  	$op->msg = 'ok';
 
 	// Check fatal Error
-	if ( is_blank( config_get( 'smtp_host' ) ) )
+	$smtp_host = config_get( 'smtp_host' );
+	if( is_blank($smtp_host) )
 	{
 		$op->status_ok=false;
 		$op->msg=lang_get('stmp_host_unconfigured');
-
-		return ($op);
+		return $op;
 	}
 
 	$t_recipient = trim( $p_recipient );
@@ -69,10 +68,10 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 
 	$mail->PluginDir = PHPMAILER_PATH;
-  // 20090201 - franciscom
-  // Need to get strings file for php mailer
-  // To avoid problems I choose ENglish
-  $mail->SetLanguage( 'en', PHPMAILER_PATH . 'language' . DIRECTORY_SEPARATOR );
+  	// 20090201 - franciscom
+  	// Need to get strings file for php mailer
+  	// To avoid problems I choose ENglish
+  	$mail->SetLanguage( 'en', PHPMAILER_PATH . 'language' . DIRECTORY_SEPARATOR );
 
 	# Select the method to send mail
 	switch ( config_get( 'phpMailer_method' ) ) {
@@ -100,36 +99,25 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 				}
 				break;
 	}
-
-
-
 	$mail->IsHTML($htmlFormat);    # set email format to plain text
 	$mail->WordWrap = 80;
 	$mail->Priority = config_get( 'mail_priority' );   # Urgent = 1, Not Urgent = 5, Disable = 0
 
 	$mail->CharSet = config_get( 'charset');
-	$mail->Host     = config_get( 'smtp_host' );
-
-
-  $mail->From     = config_get( 'from_email' );
+	$mail->Host = config_get( 'smtp_host' );
+  	$mail->From = config_get( 'from_email' );
 	if ( !is_blank( $p_from ) )
 	{
 	  $mail->From     = $p_from;
 	}
-
-
 	$mail->Sender   = config_get( 'return_path_email' );
 	$mail->FromName = '';
-
-
 
 	if ( !is_blank( config_get( 'smtp_username' ) ) ) {     # Use SMTP Authentication
 		$mail->SMTPAuth = true;
 		$mail->Username = config_get( 'smtp_username' );
 		$mail->Password = config_get( 'smtp_password' );
 	}
-
-
 
 	$t_debug_to = '';
 	# add to the Recipient list
@@ -141,8 +129,8 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 		}
 	}
 
-  // 20051106 - fm
-  $t_cc_list = split(',', $p_cc);
+  	// 20051106 - fm
+  	$t_cc_list = split(',', $p_cc);
 	while(list(, $t_cc) = each($t_cc_list)) {
 		if ( !is_blank( $t_cc ) ) {
 				$mail->AddCC( $t_cc, '' );
@@ -151,20 +139,18 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 	$mail->Subject = $t_subject;
 	$mail->Body    = make_lf_crlf( "\n".$t_message );
-
-
 	if ( !$mail->Send() ) {
 
 		if ( $p_exit_on_error )  {
 		  PRINT "PROBLEMS SENDING MAIL TO: $p_recipient<br />";
 		  PRINT 'Mailer Error: '. $mail->ErrorInfo.'<br />';
-			exit;
+		  exit;
 		}
 		else
 		{
-		  $op->status_ok=false;
-      $op->msg = $mail->ErrorInfo;
-    	return ($op);
+		  	$op->status_ok = false;
+      		$op->msg = $mail->ErrorInfo;
+    		return $op;
 		}
 	}
 
@@ -176,8 +162,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 		$g_phpMailer_smtp = $mail->smtp;
 	}
 
-
-  return ($op);
+	return $op;
 }
 
 

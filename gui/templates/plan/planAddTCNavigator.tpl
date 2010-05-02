@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.21 2010/04/29 14:56:26 asimon83 Exp $
+$Id: planAddTCNavigator.tpl,v 1.22 2010/05/02 09:13:38 franciscom Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
@@ -57,7 +57,7 @@ Revisions:
 	</script>
 	{/literal}
 
-    {if $gui->ajaxTree->loader == '' }
+    {if $gui->ajaxTree->loader == ''}
         {literal}
         <script type="text/javascript">
         treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.45 2010/02/27 19:35:12 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.46 2010/05/02 09:13:38 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -61,7 +61,6 @@ Ext.onReady(function(){
   {foreach from=$info.testcases key=tcidx item=tcversionInfo}
    {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
 	   tTip({$tcidx},{$tcversionLinked});
-   {/literal}
   {/foreach}  
 {/foreach}
 {literal}
@@ -79,7 +78,7 @@ Ext.onReady(function(){
 	  	{include file="inc_help.tpl" helptopic="hlp_planAddTC" show_help_icon=true}
 	  	</h1>
 
-	    {if $gui->has_tc }
+	    {if $gui->has_tc}
 	  	  {include file="inc_update.tpl" result=$sqlResult}
         
 	  	  <div class="groupBtn">
@@ -118,7 +117,7 @@ Ext.onReady(function(){
 
     </div> <!-- header-wrap -->
 
-{if $gui->has_tc }
+{if $gui->has_tc}
   <div class="workBack">
   	{if $gui->keywords_filter != ''}
   		<div style="margin-left: 20px; font-size: smaller;">
@@ -135,7 +134,7 @@ Ext.onReady(function(){
   	{foreach from=$gui->items item=ts}
   		{assign var="item_number" value=$item_number+1}
   		{assign var="ts_id" value=$ts.testsuite.id}
-  		{assign var="div_id" value=div_$ts_id}
+  		{assign var="div_id" value="div_$ts_id"}
   	  {strip}
   	  
   	  {* Title and clickable images to control toogle *}
@@ -166,7 +165,7 @@ Ext.onReady(function(){
         <input type="hidden" name="rm_value_{$ts_id}"  id="rm_value_{$ts_id}"  value="0" />
               
        {* ------------------------------------------------------------------------- *}      
-       {if ($gui->full_control && $ts.testcase_qty gt 0) || $ts.linked_testcase_qty gt 0 }
+       {if ($gui->full_control && $ts.testcase_qty gt 0) || $ts.linked_testcase_qty gt 0}
           <table cellspacing="0" border="0" style="font-size:small;" width="100%">
             <tr style="background-color:blue;font-weight:bold;color:white">
   			     <td width="5" align="center">
@@ -190,7 +189,7 @@ Ext.onReady(function(){
              
              
              
-             {if $ts.linked_testcase_qty gt 0 }
+             {if $ts.linked_testcase_qty gt 0}
   				      <td>&nbsp;</td>
   				      <td>
   				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/disconnect.png" 
@@ -222,7 +221,7 @@ Ext.onReady(function(){
               {if $is_active || $linked_version_id != 0}  
      				    {if $gui->full_control || $linked_version_id != 0}
      					    {assign var="drawPlatformChecks" value=0}
-                  {if $gui->usePlatforms }
+                  {if $gui->usePlatforms}
                     {* Feature id is indexed by platform id then 0 => has no platform assigned *}
                     {if !isset($tcase.feature_id[0])}
                       {assign var="drawPlatformChecks" value=1}
@@ -233,9 +232,9 @@ Ext.onReady(function(){
       			    	  <td width="20">
                     {* ----------------------------------------------------------------------------------------------------- *} 
                     {* Draw check box left to test case name - the old way when platforms feature does not exist *}
-      			        {if !$gui->usePlatforms  || $drawPlatformChecks == 0 }
+      			        {if !$gui->usePlatforms  || $drawPlatformChecks == 0}
       				        {if $gui->full_control}
-  	      				        {if $is_active == 0 || $linked_version_id != 0 }
+  	      				        {if $is_active == 0 || $linked_version_id != 0}
   	      				           &nbsp;&nbsp;
   	      				        {else}
   	      				           <input type="checkbox" name="{$add_cb}[{$tcID}][0]" id="{$add_cb}{$tcID}[0]" value="{$tcID}" /> 
@@ -284,7 +283,7 @@ Ext.onReady(function(){
             			  <td>{assign var="show_remove_check" value=0}
             			  	{if $linked_version_id}
             			  		{assign var="show_remove_check" value=1}
-         				        {if $tcase.executed[0] == 'yes' }
+         				        {if $tcase.executed[0] == 'yes'}
          				          	{assign var="show_remove_check" value=$gui->can_remove_executed_testcases}
             			  	  {/if}      
                       {/if} 
@@ -318,7 +317,7 @@ Ext.onReady(function(){
               {* === Draw Platform related information === *}
               {if $gui->usePlatforms && $drawPlatformChecks}
                 {foreach from=$gui->platforms item=platform}
-                  <tr {if isset($tcase.feature_id[$platform.id]) }	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if} >
+                  <tr {if isset($tcase.feature_id[$platform.id])}	style="{$smarty.const.TL_STYLE_FOR_ADDED_TC}" {/if} >
                   	<td>
       				       {if $gui->full_control}
   	      		        {if $is_active == 0 || isset($tcase.feature_id[$platform.id])}

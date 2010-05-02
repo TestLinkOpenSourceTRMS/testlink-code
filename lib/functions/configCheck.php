@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.51 2009/10/05 08:47:11 franciscom Exp $
+ * @version    	CVS: $Id: configCheck.php,v 1.52 2010/05/02 14:30:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
@@ -780,7 +780,9 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
 		if(file_exists($checked_file)) 
 		{
   			if (is_writable($checked_file))
+  			{
   				$out .= "<td><span class='tab-success'>OK (writable)</span></td></tr>\n"; 
+  			}
   			else
   			{
  				if ($isCritical)
@@ -790,14 +792,18 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
 					$errCounter += 1;
  				}
  				else
+ 				{
  					$out .= "<td><span class='tab-warning'>Not writable! Please fix the file " .
  							$checked_file . " permissions.</span></td></tr>"; 
+ 				}			
   			}
   		} 
 		else 
 		{
   			if (is_writable($checked_path))
+  			{
   				$out .= "<td><span class='tab-success'>OK</span></td></tr>\n"; 
+  			}
   			else
   			{
  				if ($isCritical)
@@ -807,8 +813,10 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
 					$errCounter += 1;
  				}
  				else
+ 				{
  					$out .= "<td><span class='tab-warning'>Directory is not writable! Please fix " .
  							$checked_path . " permissions.</span></td></tr>"; 
+ 				}			
   			}
 		}
 	}
@@ -817,7 +825,9 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
 		if(file_exists($checked_file)) 
 		{
   			if (!is_writable($checked_file))
+  			{
   				$out .= "<td><span class='tab-success'>OK (read only)</span></td></tr>\n"; 
+  			}
   			else
   			{
  				$out .= "<td><span class='tab-warning'>It's recommended to have read only permission for security reason.</span></td></tr>"; 
@@ -831,7 +841,9 @@ function check_file_permissions(&$errCounter, $inst_type, $checked_filename, $is
 				$errCounter += 1;
  			}
 			else
+			{
 				$out .= "<td><span class='tab-warning'>The file is not on place.</span></td></tr>"; 
+			}	
 		}
 	}
 
@@ -989,7 +1001,8 @@ function reportCheckingPermissions(&$errCounter,$installationType='none')
 	{
 		echo check_file_permissions($errCounter,$installationType,'config_db.inc.php', $blockingCheck);
 	}
-	echo check_file_permissions($errCounter,$installationType,'custom_config.inc.php');
+	// 20100502 - this file is not needed => IMHO we do not need to check existence
+	// echo check_file_permissions($errCounter,$installationType,'custom_config.inc.php');
 	echo '</table>';
 }
 

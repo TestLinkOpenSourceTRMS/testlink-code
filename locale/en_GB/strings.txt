@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.611 2010/05/02 16:21:08 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.612 2010/05/02 16:54:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2484,6 +2484,8 @@ $TLS_error_user_not_deleted = "The user couldn't be deleted!";
 $TLS_error_user_not_disabled = "The user couldn't be disabled!";
 $TLS_error_user_login_length_error = "The login was either too short or too long!";
 $TLS_invalid_smtp_hostname = 'SMTP Hostname seems to be invalid'; 
+$TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Password Reset can not be done. Reason: SMTP Hostname seems to be invalid'; 
+$TLS_password_cannot_be_reseted_reason = 'Password Reset can not be done. Reason: %s '; 
 
 
 // ----- lib/usermanagement/rolesedit.php -----

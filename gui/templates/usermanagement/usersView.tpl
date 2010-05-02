@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.22 2010/05/01 20:18:50 franciscom Exp $
+$Id: usersView.tpl,v 1.23 2010/05/02 15:26:59 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -35,7 +35,6 @@ function toggleRowByClass(oid,className,displayValue)
     {
       if( displayValue == undefined )
       {
-        // if( trTags[idx].style.display == 'none' ) 
         if( cbox.checked )
         {
           trTags[idx].style.display = 'none';
@@ -82,7 +81,6 @@ function toggleRowByClass(oid,className,displayValue)
 		<input type="hidden" id="user_order_by" name="user_order_by" value="{$user_order_by}" />
 
 	  {include file="inc_update.tpl" result=$result item="user" action="$action" user_feedback=$user_feedback}
-
     {$labels.hide_inactive_users}
     <input name="hide_inactive_users" id="hide_inactive_users" type="checkbox" {$checked_hide_inactive_users} 
            value="on" onclick="toggleRowByClass('hide_inactive_users','inactive_user')">
@@ -117,35 +115,32 @@ function toggleRowByClass(oid,className,displayValue)
 				<th style="width:50px;">{$labels.disable}</th>
 			</tr>
 
-			{section name=row loop=$users start=0}
-				{assign var="user" value="{$users[row]}"}
-				{assign var="userLocale" value=$user->locale}
-				{assign var="r_n" value=$user->globalRole->name}
-				{assign var="r_d" value=$user->globalRole->getDisplayName()}
-				{assign var="userID" value=$user->dbID}
-        {if $user->isActive eq 1}
+      {foreach from=$users item=userObj}
+ 			  {assign var="r_n" value=$userObj->globalRole->name}
+				{assign var="r_d" value=$userObj->globalRole->getDisplayName()}
+        {if $userObj->isActive eq 1}
           {assign var="user_row_class" value=''}
         {else}
           {assign var="user_row_class" value='class="inactive_user"'}
         {/if}
 				<tr {$user_row_class} {if $role_colour[$r_n] neq ''} style="background-color: {$role_colour[$r_n]};" {/if}>
-				<td><a href="{$editUserAction}{$user->dbID}">
-				    {$user->login|escape}
+				<td><a href="{$editUserAction}{$userObj->dbID}">
+				    {$userObj->login|escape}
 			      {if $gsmarty_gui->show_icon_edit}
 				      <img title="{$labels.alt_edit_user}"
 				           alt="{$labels.alt_edit_user}" src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
 				    {/if}
 				    </a>
 				</td>
-				<td>{$user->firstName|escape}</td>
-				<td>{$user->lastName|escape}</td>
-				<td>{$user->emailAddress|escape}</td>
+				<td>{$userObj->firstName|escape}</td>
+				<td>{$userObj->lastName|escape}</td>
+				<td>{$userObj->emailAddress|escape}</td>
 				<td>{$r_d|escape}</td>
 				<td>
-				 {$optLocale[$userLocale]|escape}
+				 {$optLocale[$userObj->locale]|escape}
 				</td>
 				<td align="center">
-					{if $user->isActive eq 1}
+					{if $userObj->isActive eq 1}
 				  		<img style="border:none" title="{$labels.alt_active_user}"
   				                             alt="{$labels.alt_active_user}"  src="{$checked_img}"/>
   			  {else}
@@ -156,12 +151,12 @@ function toggleRowByClass(oid,className,displayValue)
 				  <img style="border:none;cursor: pointer;"
                alt="{$labels.alt_disable_user}"
 					     title="{$labels.alt_disable_user}"
-					     onclick="delete_confirmation({$user->dbID},'{$user->login|escape:'javascript'|escape}',
+					     onclick="delete_confirmation({$userObj->dbID},'{$userObj->login|escape:'javascript'|escape}',
 					                                  '{$del_msgbox_title}','{$warning_msg}');"
 				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
 				</td>
 			</tr>
-			{/section}
+			{/foreach}
 		</table>
 		</form>
 	</div>

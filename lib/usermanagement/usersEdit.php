@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersEdit.php,v 1.37 2010/05/02 16:32:29 franciscom Exp $
+ * @version    	CVS: $Id: usersEdit.php,v 1.38 2010/05/02 16:43:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -205,7 +205,16 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 	$op->user_feedback = '';
 	
 	// Try to validate mail configuration
-	$validator = new Zend_Validate_Hostname();
+	//
+	// From Zend Documentation
+	// You may find you also want to match IP addresses, Local hostnames, or a combination of all allowed types. 
+	// This can be done by passing a parameter to Zend_Validate_Hostname when you instantiate it. 
+	// The paramter should be an integer which determines what types of hostnames are allowed. 
+	// You are encouraged to use the Zend_Validate_Hostname constants to do this.
+    // The Zend_Validate_Hostname constants are: ALLOW_DNS to allow only DNS hostnames, ALLOW_IP to allow IP addresses, 
+    // ALLOW_LOCAL to allow local network names, and ALLOW_ALL to allow all three types. 
+	// 
+	$validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
 	$smtp_host = config_get( 'smtp_host' );
 	if( $validator->isValid($smtp_host) )
 	{
@@ -218,6 +227,11 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 	}
 	else
 	{
+		
+		foreach ($validator->getMessages() as $message) {
+        echo "$message\n";
+    	}
+		
 		$op->status = tl::ERROR;
 		$op->user_feedback = lang_get('password_cannot_be_reseted_invalid_smtp_hostname');
 	}

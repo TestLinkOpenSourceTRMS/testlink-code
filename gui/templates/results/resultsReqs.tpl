@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.17 2010/03/11 20:49:06 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.18 2010/05/02 09:38:10 franciscom Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -33,13 +33,13 @@ rev:
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
 
-{if $gui->reqSpecSet == '' }
+{if $gui->reqSpecSet == ''}
 <br />
   <div class="user_feedback">{$labels.no_srs_defined}</div>
 {/if}
 
 
-{if $gui->reqSpecSet != '' }
+{if $gui->reqSpecSet != ''}
   <form method="get">
   <table class="invisible">
     <tr>

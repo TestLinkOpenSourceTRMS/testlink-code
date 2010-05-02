@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_report.tpl,v 1.14 2010/02/18 08:48:21 amkhullar Exp $
+$Id: resultsMoreBuilds_report.tpl,v 1.15 2010/05/02 09:38:10 franciscom Exp $
 
 rev :
      20100218 - amitkhullar - BUGID 2541
@@ -28,8 +28,8 @@ progress();
 </script>
 </head>
 <body>
-{assign var=depth value=0}
-<h1 class="title"> {$labels.query_metrics_report}</h1>
+{assign var="depth" value="0"}
+<h1 class="title">{$labels.query_metrics_report}</h1>
 {include file="inc_result_tproject_tplan.tpl"
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}
 
@@ -84,7 +84,7 @@ progress();
 				&nbsp;
 			</td>
 			<td>{$gui->search_notes_string|escape}</td>
-			{if ($gui->display->latest_results == 0) }
+			{if ($gui->display->latest_results == 0)}
 			<td>{$labels.results_latest}</td>
 			{else}
 			<td>{$labels.results_all}</td>
@@ -166,7 +166,7 @@ progress();
 			<h2>{$suiteNameText}</h2>
 			<table class="simple" style="color:blue; width: 100%; text-align:center; margin-left: 0px;" border="0">
 				<tr>
-				  {foreach  key=status item=figure  from=$gui->mapOfSuiteSummary[$currentSuiteId] }
+				  {foreach  key=status item=figure  from=$gui->mapOfSuiteSummary[$currentSuiteId]}
               {if $status == 'total'} 
                   <th>{$labels.th_total_cases}</th>
               {else}
@@ -175,7 +175,7 @@ progress();
           {/foreach}
 				</tr>
 				<tr>
-				  {foreach  key=status item=figure  from=$gui->mapOfSuiteSummary[$currentSuiteId] }
+				  {foreach  key=status item=figure  from=$gui->mapOfSuiteSummary[$currentSuiteId]}
 					    <td>{$figure}</td>
           {/foreach}
           {* 
@@ -223,7 +223,7 @@ progress();
 			    		{foreach key=executionInstance item=array from=$gui->suiteList[$suiteId]}
 			    			{assign var=inst value=$gui->suiteList[$suiteId][$executionInstance]}
 
-			    			{if $gui->displayResults[$inst.status] }
+			    			{if $gui->displayResults[$inst.status]}
 			    			<tr style="background-color:{cycle values='#eeeeee,#d0d0d0'}">
 								  {if $inst.status == $gui->resultsCfg.status_code.not_run}
 								  	<td>{$inst.testcasePrefix|escape}{$inst.external_id}:&nbsp;{$inst.name|escape}</td>

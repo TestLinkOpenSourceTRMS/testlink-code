@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.12 2010/03/09 09:45:02 asimon83 Exp $
+$Id: resultsByStatus.tpl,v 1.13 2010/05/02 09:38:10 franciscom Exp $
 Purpose: show Test Results and Metrics
 
 rev:
@@ -37,7 +37,7 @@ rev:
 	<th nowrap>{$sortHintIcon}{$labels.th_run_by}</th>
 	<th nowrap>{$sortHintIcon}{$labels.th_date}</th>
 	<th nowrap>{$sortHintIcon}{$labels.summary}</th>
-	{if $gui->bugInterfaceOn }
+	{if $gui->bugInterfaceOn}
 	<th nowrap>{$sortHintIcon}{$labels.th_bugs}</th>
 	{/if}
 	{else}
@@ -59,7 +59,7 @@ rev:
 {/foreach}
 <br />
 
-{if $gui->bugInterfaceOn }
+{if $gui->bugInterfaceOn}
   <h2 class="simple">{$labels.th_bugs_not_linked}{$gui->without_bugs_counter}</h2>
 {/if}
 <p class="italic">{$labels.info_test_results}</p>

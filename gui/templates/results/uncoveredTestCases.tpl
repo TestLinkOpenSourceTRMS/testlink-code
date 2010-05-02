@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: uncoveredTestCases.tpl,v 1.3 2009/09/05 18:19:07 schlundus Exp $
+$Id: uncoveredTestCases.tpl,v 1.4 2010/05/02 09:38:10 franciscom Exp $
 
 Purpose: For a test project, list test cases that has no requirement assigned
 
@@ -28,12 +28,12 @@ rev: 20081109 - franciscom - BUGID 512
 {/if}
 
 {if $doit}
-    {if $gui->has_tc }
+    {if $gui->has_tc}
     {include file="inc_result_tproject_tplan.tpl" arg_tproject_name=$gui->tproject_name arg_tplan_name=''}	
     	{foreach from=$gui->items item=ts}
     		<div style="margin:0px 0px 0px {$ts.level}0px;">
         	<h3 class="testlink" style="padding:0px; margin:0px">{$ts.testsuite.name|escape}</h3> 
-         {if $ts.testcase_qty gt 0 }
+         {if $ts.testcase_qty gt 0}
             <table border="0" cellspacing="0" style="font-size:small;" width="100%">
             {foreach from=$ts.testcases item=tcase}
                 {assign var='tcID' value=$tcase.id}

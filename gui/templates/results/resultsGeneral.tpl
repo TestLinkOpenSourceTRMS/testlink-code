@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.18 2010/02/17 21:32:44 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.19 2010/05/02 09:38:10 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -11,15 +11,10 @@ Revisions:
          title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites,
          title_gen_test_rep,title_report_tc_priorities,title_report_milestones,
          title_metrics_x_build,title_res_by_platform,th_platform,important_notice,
-         report_tcase_platorm_relationship'
-}
+         report_tcase_platorm_relationship'}
 
-
-{assign var=this_template_dir value=$smarty.template|dirname}
 {include file="inc_head.tpl"}
-
 <body>
-
 <h1 class="title">{$labels.title_gen_test_rep}</h1>
 
 <div class="workBack">
@@ -71,7 +66,7 @@ Revisions:
   	{* ----- results by test suites -------------------------------------- *}
 
   	{* by TestSuite *}
-  	{include file="$this_template_dir/inc_results_show_table.tpl"
+  	{include file="results/inc_results_show_table.tpl"
            args_title=$labels.title_res_by_top_level_suites
            args_first_column_header=$labels.trep_comp
            args_first_column_key='tsuite_name'
@@ -81,7 +76,7 @@ Revisions:
 
   
   	{* by ASSIGNED Tester that is not the same that EFFECTIVE TESTER *}
-  	{include file="$this_template_dir/inc_results_show_table.tpl"
+  	{include file="results/inc_results_show_table.tpl"
            args_title=$labels.title_res_by_owner
            args_first_column_header=$labels.trep_owner
            args_first_column_key='name'
@@ -90,7 +85,7 @@ Revisions:
            args_column_data=$gui->statistics->assigned_testers}
 
     {if $gui->showPlatforms}
-      {include file="$this_template_dir/inc_results_show_table.tpl"
+      {include file="results/inc_results_show_table.tpl"
              args_title=$labels.title_res_by_platform
              args_first_column_header=$labels.th_platform
              args_first_column_key='name'
@@ -99,7 +94,7 @@ Revisions:
              args_column_data=$gui->statistics->platform}
     {/if}
     {if $session['testprojectOptions']->testPriorityEnabled}
-      {include file="$this_template_dir/inc_results_show_table.tpl"
+      {include file="results/inc_results_show_table.tpl"
              args_title=$labels.title_report_tc_priorities
              args_first_column_header=$labels.priority
              args_first_column_key='name'
@@ -112,7 +107,7 @@ Revisions:
      Warning: args_first_column_key='keyword_name' is related to name used 
               on method that generate statistics->keywords map.
   	*}
-  	{include file="$this_template_dir/inc_results_show_table.tpl"
+  	{include file="results/inc_results_show_table.tpl"
            args_title=$labels.title_res_by_kw
            args_first_column_header=$labels.trep_kw
            args_first_column_key='name'

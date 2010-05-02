@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.9 2010/04/10 17:24:06 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.10 2010/05/02 09:38:10 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20100410 - franciscom - BUGID 3370
@@ -70,7 +70,7 @@ function pre_submit()
 
 <div style="margin:3px; padding: 15px 0px" >
 {* Build href menu *}
-{if $gui->do_report.status_ok }
+{if $gui->do_report.status_ok}
   {foreach from=$gui->menuItems item=menu}
     <span><img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}" 

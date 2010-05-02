@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsImport.tpl,v 1.6 2010/02/14 18:13:09 franciscom Exp $
+$Id: resultsImport.tpl,v 1.7 2010/05/02 09:38:10 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 *}
 {include file="inc_head.tpl"}
@@ -53,7 +53,7 @@ Purpose: smarty template - manage import of test cases and test suites
 	{include file="inc_refreshTree.tpl"}
 {/if}
 
-{if $gui->doImport }
+{if $gui->doImport}
 	{include file="inc_refreshTree.tpl"}
 {/if}
 

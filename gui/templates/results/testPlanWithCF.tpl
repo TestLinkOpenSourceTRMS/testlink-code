@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testPlanWithCF.tpl,v 1.2 2009/04/21 05:58:36 amkhullar Exp $
+$Id: testPlanWithCF.tpl,v 1.3 2010/05/02 09:38:10 franciscom Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
@@ -23,7 +23,7 @@ rev:
 
 
 {if $gui->warning_msg == ''}
-    {if $gui->resultSet }
+    {if $gui->resultSet}
         <table class="simple">
 	          <tr>
 	          <th> {$labels.test_case}</th>
@@ -33,7 +33,7 @@ rev:
 	          {/foreach}
 	          </tr>
             
-	          {foreach from=$gui->resultSet item=arrData }
+	          {foreach from=$gui->resultSet item=arrData}
 	            <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">  
 	            <td>	<a href="lib/testcases/archiveData.php?edit=testcase&id={$arrData.tcase_id}">
 	          	{$gui->tcasePrefix}{$arrData.tc_external_id|escape}:{$arrData.tcase_name|escape}</a>

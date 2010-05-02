@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.13 2009/03/27 11:10:05 amkhullar Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.14 2010/05/02 09:38:10 franciscom Exp $
 @author Francisco Mancardi
 
 rev :
@@ -12,16 +12,14 @@ rev :
      20070901 - franciscom - use config file and smarty date and time controls
 
 *}
-{lang_get var="labels
+{lang_get var="labels"
 			s='enter_start_time,enter_end_time,date,hour,Yes,submit_query,
 			   select_builds_header,select_components_header,report_display_options,
 			   display_suite_summaries,display_test_cases,display_query_params,
 			   display_totals,display_results_tc,results_latest,results_all,
 			   search_in_notes,executor,No,query_metrics_report'}
-			   
 
-
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl"}
@@ -34,25 +32,25 @@ rev :
 
 {* ------------------------------------------------------------------------------- *}
 {* Calculate combo size *}
-{if $gui->builds->qty > #BUILDS_COMBO_NUM_ITEMS# }
-  {assign var="build_qty" value={#BUILDS_COMBO_NUM_ITEMS#} }
+{if $gui->builds->qty > #BUILDS_COMBO_NUM_ITEMS#}
+  {assign var="build_qty" value={#BUILDS_COMBO_NUM_ITEMS#}}
 {else}
-  {assign var="build_qty" value=$gui->builds->qty }
+  {assign var="build_qty" value=$gui->builds->qty}
 {/if}
 
-{if $gui->testsuites->qty > #TSUITES_COMBO_NUM_ITEMS# }
-  {assign var="testsuite_qty" value=#TSUITES_COMBO_NUM_ITEMS# }
+{if $gui->testsuites->qty > #TSUITES_COMBO_NUM_ITEMS#}
+  {assign var="testsuite_qty" value=#TSUITES_COMBO_NUM_ITEMS#}
 {else}
-  {assign var="testsuite_qty" value=$gui->testsuites->qty }
+  {assign var="testsuite_qty" value=$gui->testsuites->qty}
 {/if}
 
 {assign var="keyword_qty" value=1}
 {* 
 franciscom - may be in the future - 20090107
-{if $gui->keywords->qty > #KEYWORDS_COMBO_NUM_ITEMS# }
-  {assign var="keyword_qty" value=#KEYWORDS_COMBO_NUM_ITEMS# }
+{if $gui->keywords->qty > #KEYWORDS_COMBO_NUM_ITEMS#}
+  {assign var="keyword_qty" value=#KEYWORDS_COMBO_NUM_ITEMS#}
 {else}
-  {assign var="keyword_qty" value=$gui->keywords->qty }
+  {assign var="keyword_qty" value=$gui->keywords->qty}
 {/if}
 *}
 

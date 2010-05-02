@@ -8,35 +8,35 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installIntro.php,v 1.1 2009/11/10 16:10:20 havlat Exp $
+ * @version    	CVS: $Id: installIntro.php,v 1.2 2010/05/02 14:30:13 franciscom Exp $
  *
  * @internal Revisions:
- * 	None.
+ * 	20100502 - franciscom - BUGID 3411
  */
 session_start();
 
 $inst_phase = 'license';
-$inst_type = $_SESSION['installationType'];
+$inst_type = isset($_SESSION['installationType']) ? $_SESSION['installationType'] : 'new';
 $_SESSION['title'] = "TestLink {$_SESSION['testlink_version']} ";
 
 if (isset($_GET['type']))
 {
 	$_SESSION['installation_type'] = $_GET['type'];
-	if ($_SESSION['installation_type'] == 'new')
+	
+	switch($_SESSION['installation_type'])
 	{
-		$_SESSION['title'] .= " - New installation"; 
-		$_SESSION['isNew'] .= TRUE; 
-	}
-	elseif ($_SESSION['installation_type'] == 'upgrade_1.8_to_1.9')
-	{
-		$_SESSION['title'] .= " - Upgrade"; 
-		$_SESSION['isNew'] .= FALSE; 
-	}
-	else
-	{
-		$_SESSION['title'] .= " - Upgrade"; 
-		$_SESSION['isNew'] .= FALSE; 
-	}
+		case 'new':
+			$_SESSION['title'] .= " - New installation"; 
+			$_SESSION['isNew'] = TRUE; 
+		break;
+		
+		case 'upgrade_1.8_to_1.9':
+		default:
+			$_SESSION['title'] .= " - Upgrade"; 
+			$_SESSION['isNew'] = FALSE; 
+		break;
+	
+	} 
 }
 else
 {

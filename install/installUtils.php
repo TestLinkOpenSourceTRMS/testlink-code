@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: installUtils.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/01/28 09:43:22 $ by $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/05/02 14:30:13 $ by $Author: franciscom $
  * 
  * Functions for installation process
  *
@@ -711,43 +711,44 @@ return ($op);
 */
 function _postgres_assign_grants(&$db,$db_host,$db_name,$login,$passwd)
 {
-$op->status_ok=true;  
-$op->msg = 'ok - grant assignment';     
-
-/*
-if( $op->status_ok )
-{
-    $sql=" REVOKE ALL ON SCHEMA public FROM public ";
-    if (!@$dbhandler->exec_query($sql)) 
-    {
-        $op->status_ok=false;  
-        $op->msg = "ko - " . $dbhandler->error_msg();
-    }
-}
-*/
-
-if( $op->status_ok )
-{
-    $sql = 'ALTER DATABASE "' . $db->prepare_string($db_name) . '" OWNER TO ' . 
-                        '"' . $db->prepare_string($login) . '"';
-    if (!@$db->exec_query($sql)) 
-    {
-        $op->status_ok=false;  
-        $op->msg = "ko - " . $db->error_msg();
-    }
-}
-
-if( $op->status_ok )
-{
-    $sql = 'ALTER SCHEMA public OWNER TO ' .  '"' . $db->prepare_string($login) . '"';
-    if (!@$db->exec_query($sql)) 
-    {
-        $op->status_ok=false;  
-        $op->msg = "ko - " . $db->error_msg();
-    }
-}
-
-return ($op); 
+	$op = new stdclass();
+	$op->status_ok=true;  
+	$op->msg = 'ok - grant assignment';     
+	
+	/*
+	if( $op->status_ok )
+	{
+	    $sql=" REVOKE ALL ON SCHEMA public FROM public ";
+	    if (!@$dbhandler->exec_query($sql)) 
+	    {
+	        $op->status_ok=false;  
+	        $op->msg = "ko - " . $dbhandler->error_msg();
+	    }
+	}
+	*/
+	
+	if( $op->status_ok )
+	{
+	    $sql = 'ALTER DATABASE "' . $db->prepare_string($db_name) . '" OWNER TO ' . 
+	                        '"' . $db->prepare_string($login) . '"';
+	    if (!@$db->exec_query($sql)) 
+	    {
+	        $op->status_ok=false;  
+	        $op->msg = "ko - " . $db->error_msg();
+	    }
+	}
+	
+	if( $op->status_ok )
+	{
+	    $sql = 'ALTER SCHEMA public OWNER TO ' .  '"' . $db->prepare_string($login) . '"';
+	    if (!@$db->exec_query($sql)) 
+	    {
+	        $op->status_ok=false;  
+	        $op->msg = "ko - " . $db->error_msg();
+	    }
+	}
+	
+	return ($op); 
 }
 
 
@@ -1031,7 +1032,4 @@ echo ' <br><br><span class="headers">YOUR ATTENTION PLEASE:</span><br>To have a 
        <li>copy from config.inc.php, [SMTP] Section into custom_config.inc.php.</li>
        <li>complete correct data regarding email addresses and mail server.</li></ul><p>';
 }  /* Function ends */
-
-
-
 ?>

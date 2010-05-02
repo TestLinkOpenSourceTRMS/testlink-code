@@ -10,7 +10,7 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.57 2010/02/03 17:52:02 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.58 2010/05/02 14:30:13 franciscom Exp $
  *
  * @internal Revisions:
  *	20100110 - franciscom - added drop_tables();
@@ -65,6 +65,7 @@ $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 define('LEN_PWD_TL_1_0_4',15);
 define('ADD_DIR',1);
 
+$migration_process = '';
 $sql_create_schema = array();
 $sql_default_data = array();
 $sql_update_schema = array();

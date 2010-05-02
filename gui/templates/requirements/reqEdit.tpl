@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.25 2010/03/24 12:46:36 asimon83 Exp $
+$Id: reqEdit.tpl,v 1.26 2010/05/02 09:00:59 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20100502 - franciscom - BUGID 3413: removed debug info
 20100319 - asimon - BUGID 1748 - added logic to add and remove requirement relations
 20091231 - franciscom - added logic to display and check expected coverage
                         attribute based on req type, with configuration
@@ -155,7 +156,7 @@ function configure_attr(oid_type,cfg)
 </head>
 
 <body>
-<h1 class="title">{$gui->main_descr|escape}xx
+<h1 class="title">{$gui->main_descr|escape}
 	{if $gui->action_descr != ''}
 		{$tlCfg->gui_title_separator_2}{$gui->action_descr|escape}
 	{/if}

@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersEdit.php,v 1.38 2010/05/02 16:43:25 franciscom Exp $
+ * @version    	CVS: $Id: usersEdit.php,v 1.39 2010/05/02 16:54:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -224,14 +224,13 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 			logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
 			$op->user_feedback = lang_get('password_reseted');
 		}
+		else
+		{
+			$op->user_feedback = sprintf(lang_get('password_cannot_be_reseted_reason'),$op->user_feedback);
+		}
 	}
 	else
 	{
-		
-		foreach ($validator->getMessages() as $message) {
-        echo "$message\n";
-    	}
-		
 		$op->status = tl::ERROR;
 		$op->user_feedback = lang_get('password_cannot_be_reseted_invalid_smtp_hostname');
 	}

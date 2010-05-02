@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.269 2010/04/17 15:42:06 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.270 2010/05/02 10:41:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100502 - franciscom - show() fixed error due to non existent variable $info
  * 20100417 - franciscom - new method - filter_tcversions()
  *						   get_last_active_version() - changes on output data 
  * 20100411 - franciscom - BUGID 3387 - changes in show()
@@ -647,6 +648,7 @@ class testcase extends tlObjectWithAttachments
 	    $gui->dialogName = '';
 	    $gui->platforms = null;
 		$gui->tableColspan = 5; // sorry magic related to table to display steps
+		$gui->opt_requirements = false;
 	
 		$gui_cfg = config_get('gui');
 		$the_tpl = config_get('tpl');
@@ -731,7 +733,8 @@ class testcase extends tlObjectWithAttachments
 	        $path2root = $this->tree_manager->get_path($a_id[0]);
 	        $tproject_id = $path2root[0]['parent_id'];
 	        $info = $this->tproject_mgr->get_by_id($tproject_id);
-
+			$gui->opt_requirements = $info['opt']->requirementsEnabled;
+			
 			$platformMgr = new tlPlatform($this->db,$tproject_id);
 	        $gui->platforms = $platformMgr->getAllAsMap();
 	        
@@ -842,7 +845,6 @@ class testcase extends tlObjectWithAttachments
 		$gui->testcase_other_versions = $tc_other_versions;
 		$gui->arrReqs = $arrReqs;
 		$gui->view_req_rights =  has_rights($this->db,"mgt_view_req");
-		$gui->opt_requirements = $info['opt']->requirementsEnabled;
 		$gui->keywords_map = $keywords_map;
 		$smarty->assign('gui',$gui);
 		$smarty->display($template_dir . $my_template);

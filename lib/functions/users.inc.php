@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.106 2010/04/27 19:54:49 franciscom Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.107 2010/05/02 16:56:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
  * 
+ *	20100502 - franciscom - resetPassword() - fixed bad comparison to set $errorMsg
  *	20100427 - franciscom - BUGID 3396 
  *	20091215 - eloff - read active testplan from cookie into session
  *	20090817 - franciscom - getUsersForHtmlOptions() - implementation changes
@@ -225,13 +226,12 @@ function resetPassword(&$db,$userID,&$errorMsg)
 		{
 			$newPassword = tlUser::generatePassword(8,4); 
 			$result = $user->setPassword($newPassword);
-
 			if ($result >= tl::OK)
 			{
 				// BUGID 3396
 				$msgBody = lang_get('your_password_is') . "\n\n" . $newPassword . "\n\n" . lang_get('contact_admin');
-				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,
-		                               lang_get('mail_passwd_subject'), $msgBody);
+				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,lang_get('mail_passwd_subject'), 
+									   $msgBody);
 				if ($mail_op->status_ok)
 				{
 					$result = $user->writePasswordToDB($db); // BUGID 3396
@@ -244,7 +244,7 @@ function resetPassword(&$db,$userID,&$errorMsg)
 			}
 		}
 	}
-	$errorMsg = ($errorMsg != "") ? getUserErrorMessage($result) : $errorMsg;
+	$errorMsg = ($errorMsg != "") ? $errorMsg : getUserErrorMessage($result) ;
 	return $result;
 }
 

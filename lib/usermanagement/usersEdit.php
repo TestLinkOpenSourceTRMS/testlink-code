@@ -1,19 +1,25 @@
 <?php
 /**
-* TestLink Open Source Project - http://testlink.sourceforge.net/
-* This script is distributed under the GNU General Public License 2 or later.
-*
-* Filename $RCSfile: usersEdit.php,v $
-*
-* @version $Revision: 1.36 $
-* @modified $Date: 2010/03/26 21:39:26 $ $Author: franciscom $
-*
-* Allows editing a user
-*/
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * Allows editing a user
+ *
+ * @package 	TestLink
+ * @copyright 	2005-2010, TestLink community
+ * @version    	CVS: $Id: usersEdit.php,v 1.37 2010/05/02 16:32:29 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internal Revisions:
+ *	20100502 - franciscom - BUGID 3417
+ *
+ */
 require_once('../../config.inc.php');
 require_once('testproject.class.php');
 require_once('users.inc.php');
 require_once('email_api.php');
+require_once('Zend/Validate/Hostname.php');
+
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -78,6 +84,11 @@ $smarty->assign('optRights',$roles);
 $smarty->assign('userData', $user);
 renderGui($smarty,$args,$templateCfg);
 
+
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$iParams = array(
@@ -182,17 +193,34 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
     return $op;
 }
 
+/**
+ * 
+ *
+ * @internal revisions
+ *	20100502 - franciscom - BUGID 3417
+ */
 function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 {
 	$op = new stdClass();
 	$op->user_feedback = '';
-	$op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
-	if ($op->status >= tl::OK)
+	
+	// Try to validate mail configuration
+	$validator = new Zend_Validate_Hostname();
+	$smtp_host = config_get( 'smtp_host' );
+	if( $validator->isValid($smtp_host) )
 	{
-		logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
-		$op->user_feedback = lang_get('password_reseted');
+		$op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
+		if ($op->status >= tl::OK)
+		{
+			logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
+			$op->user_feedback = lang_get('password_reseted');
+		}
 	}
-
+	else
+	{
+		$op->status = tl::ERROR;
+		$op->user_feedback = lang_get('password_cannot_be_reseted_invalid_smtp_hostname');
+	}
 	return $op;
 }
 

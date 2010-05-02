@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: bugAdd.tpl,v 1.7 2010/01/21 22:06:17 franciscom Exp $ *}
+{* $Id: bugAdd.tpl,v 1.8 2010/05/02 09:06:48 franciscom Exp $ *}
 {* Purpose: smarty template - the template for the attachment upload dialog 
 
 rev :
@@ -7,7 +7,7 @@ rev :
 *}
 {include file="inc_head.tpl"}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <body onunload="dialog_onUnload(bug_dialog)" onload="dialog_onLoad(bug_dialog)">

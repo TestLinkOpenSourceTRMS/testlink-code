@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.51 2010/01/29 20:50:01 franciscom Exp $
+$Id: execSetResults.tpl,v 1.52 2010/05/02 09:06:49 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20090901 - franciscom - preconditions
@@ -49,7 +49,7 @@ Rev:
 
 
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
@@ -196,9 +196,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               multiple_show_hide('{$tsd_div_id_list}','{$tsd_hidden_id_list}',
                                  '{$tsd_val_for_hidden_list}');
               {if $round_enabled}Nifty('div.exec_additional_info');{/if}
-              {if #ROUND_TC_SPEC# }Nifty('div.exec_test_spec');{/if}
-              {if #ROUND_EXEC_HISTORY# }Nifty('div.exec_history');{/if}
-              {if #ROUND_TC_TITLE# }Nifty('div.exec_tc_title');{/if}">
+              {if #ROUND_TC_SPEC#}Nifty('div.exec_test_spec');{/if}
+              {if #ROUND_EXEC_HISTORY#}Nifty('div.exec_history');{/if}
+              {if #ROUND_TC_TITLE#}Nifty('div.exec_tc_title');{/if}">
 
 <h1 class="title">
 	{$labels.title_t_r_on_build} {$gui->build_name|escape}
@@ -303,7 +303,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {assign var="draw_submit_button" value=true}
 
 
-        {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op }
+        {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
             {lang_get s='bulk_tc_status_management' var='container_title'}
             {assign var="div_id" value='bulk_controls'}
             {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
@@ -326,7 +326,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {/if}
     	{/if}
 
-      {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op) }
+      {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
           <hr />
           <div class="groupBtn">
     	    	  <input type="button" name="print" id="print" value="{$labels.btn_print}"
@@ -339,7 +339,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     	    	         onclick="javascript: openImportResult(import_xml_results);" />
           
               {* 20081125 - franciscom - BUGID 1902*}
-		          {if $tlCfg->exec_cfg->enable_test_automation }
+		          {if $tlCfg->exec_cfg->enable_test_automation}
 		          <input type="submit" id="execute_cases" name="execute_cases"
 		                 value="{$labels.execute_and_save_results}"/>
 		          {/if}
@@ -350,7 +350,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       <hr />
 	{/if}
 
-  {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op }
+  {if $cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op}
       {* this message will be displate dby inc_exec_controls.tpl 
       <div class="messages" style="align:center;">
       {$labels.exec_not_run_result_note}

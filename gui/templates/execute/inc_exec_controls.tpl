@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.10 2009/12/07 20:12:18 franciscom Exp $
+$Id: inc_exec_controls.tpl,v 1.11 2010/05/02 09:06:49 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -8,7 +8,7 @@ Rev: 20080503 - franciscom - use of tlCfg
 
 *}	
       {assign var="ResultsStatusCode" value=$tlCfg->results.status_code}
-      {if $args_save_type == 'bulk' }
+      {if $args_save_type == 'bulk'}
         {assign var="radio_id_prefix" value="bulk_status"}
       {else}
         {assign var="radio_id_prefix" value="status"}

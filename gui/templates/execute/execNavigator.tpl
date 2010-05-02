@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.43 2010/04/29 14:56:26 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.44 2010/05/02 09:06:48 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -104,8 +104,8 @@ rev :
 	{/if}
 ">
 	
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
-{assign var="build_number" value=$gui->optBuild.selected }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
+{assign var="build_number" value=$gui->optBuild.selected}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.test_plan}{$tlCfg->gui_title_separator_1} {$gui->tPlanName|escape}

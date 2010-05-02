@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.18 2010/04/26 13:09:54 mx-julian Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.19 2010/05/02 09:06:49 franciscom Exp $
 Purpose: 
 Author: franciscom
 
@@ -72,7 +72,7 @@ Rev:
 			        	 attach_attachmentInfos=$gui->tSuiteAttachments[$tc_exec.tsuite_id]
 			        	 attach_inheritStyle=1
 			        	 attach_tableClassName="none"
-				         attach_tableStyles="background-color:#ffffcc;width:100%" }
+				         attach_tableStyles="background-color:#ffffcc;width:100%"}
 	    {/if}
 	    <br />
     </div>
@@ -130,7 +130,7 @@ Rev:
   				  {$users[$abs_last_exec.tester_id]->getDisplayName()|escape}
   				{else}
   				  {assign var="deletedTester" value=$abs_last_exec.tester_id}
-            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester }
+            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester}
             {$deletedUserString}
   				{/if}  
      			{$title_sep_type3}
@@ -164,7 +164,7 @@ Rev:
 				  <th style="text-align:left">{$labels.build}</th>
 				{/if}
 				{if $gui->has_platforms && 
-				    ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms) }
+				    ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms)}
 				  <th style="text-align:left">{$labels.platform}</th>
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
@@ -213,18 +213,18 @@ Rev:
   				{/if}
 
 				  {if $gui->has_platforms && 
-				      ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms) }
+				      ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms)}
   				  <td>
 					  {$tc_old_exec.platform_name}
   				  </td>
   				{/if}
 
   				<td>
-  				{if isset($users[$tc_old_exec.tester_id]) }
+  				{if isset($users[$tc_old_exec.tester_id])}
   				  {$users[$tc_old_exec.tester_id]->getDisplayName()|escape}
   				{else}
   				  {assign var="deletedTester" value=$tc_old_exec.tester_id}
-            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester }
+            {assign var="deletedUserString" value=$labels.deleted_user|replace:"%s":$deletedTester}
             {$deletedUserString}
   				{/if}  
   				</td>
@@ -244,7 +244,7 @@ Rev:
 		   *}
           {if ($attachment_model->show_upload_column && !$att_download_only && $tc_old_exec.build_is_open 
                && $gsmarty_attachments->enabled) || ($attachment_model->show_upload_column && $gui->history_on == 1 
-               && $tc_old_exec.build_is_open && $gsmarty_attachments->enabled) }
+               && $tc_old_exec.build_is_open && $gsmarty_attachments->enabled)}
       			  <td align="center"><a href="javascript:openFileUploadWindow({$tc_old_exec.execution_id},'executions')">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/upload_16.png" title="{$labels.alt_attachment_mgmt}"
       			         alt="{$labels.alt_attachment_mgmt}"

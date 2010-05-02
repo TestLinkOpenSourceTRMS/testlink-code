@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.14 2010/01/06 18:34:10 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.15 2010/05/02 09:06:49 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -16,7 +16,7 @@ Rev:
 	  {assign var="testcase_id" value=$args_tc_exec.testcase_id}
     {assign var="tcversion_id" value=$args_tc_exec.id}
     
-    {if isset($args_req_details) }
+    {if isset($args_req_details)}
 	  <div class="exec_test_spec">
 		  <table class="test_exec"  >
 		  <tr>
@@ -80,7 +80,7 @@ Rev:
 		<th width="25">{$args_labels.execution_type_short_descr}</th>
   	</tr>
   	{if $args_tc_exec.steps != ''}
- 	    {foreach from=$args_tc_exec.steps item=step_info }
+ 	    {foreach from=$args_tc_exec.steps item=step_info}
     	<tr>
 		  <td style="text-align:righ;">{$step_info.step_number}</td>
 		  <td>{$step_info.actions}</td>

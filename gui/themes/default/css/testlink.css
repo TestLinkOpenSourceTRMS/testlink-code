@@ -1,9 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.28 2010/04/09 10:42:57 erikeloff Exp $
+$Id: testlink.css,v 1.29 2010/05/03 16:59:38 franciscom Exp $
 
 Purpose: Default TestLink CSS
 
+20100503 - franciscom - BUGID 3419 - add classes (*_text) to be used to change text color according to status
 20100409 - eloff - add styles for help headings to show structure better
 20100225 - eloff - BUGID 3217 - Ext removes bullets from all lists, re-add bullets to our lists
 20080517 - franciscom - auto width in simple table creates an ugly effect
@@ -553,7 +554,7 @@ span.light_unknown {
 	background: 		#DDFFFF; /* cyan; */
 }
 
-/* ***** render test result status ************************* */
+/* ***** render test result status (coloring background) ************************* */
 .passed {
 	color: 			white;
 	background:		#006400; /* darkgreen */
@@ -584,6 +585,36 @@ span.light_unknown {
 	background:		#00FFFF; /* cyan; */
 }
 
+/* ***** render test result status (coloring text) ************************* */
+.passed_text {
+	color:    #006400; /* darkgreen */
+  font-weight: bold;
+}
+
+.failed_text {
+	color:		#B22222; /* firebrick (red) */
+  font-weight: bold;
+}
+
+.blocked_text {
+	color:		#00008B; /* darkblue */
+  font-weight: bold;
+}
+
+.not_run_text {
+	color:    black;
+  font-weight: bold;
+}
+
+.not_available_text {
+	color:    black;
+  font-weight: bold;
+}
+
+.unknown_text {
+	color: 			#00FFFF; /* cyan; */
+  font-weight: bold;
+}
 
 
 /* ***** MISC ************************************************************************ */

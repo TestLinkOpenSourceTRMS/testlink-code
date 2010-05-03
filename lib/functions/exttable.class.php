@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.5 2010/04/23 19:42:21 franciscom Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.6 2010/05/03 16:59:39 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100503 - franciscom - BUGID 3419 In "Test result matrix", tests statuses or not colorized
  *	20100423 - franciscom - refactoring to allow more flexibility
  *	20090909 - franciscom - changed to allow multiple tables
  *	new method renderCommonGlobals()
@@ -82,7 +83,17 @@ class tlExtTable extends tlTable
 				} 
 				else if (is_array($val)) 
 				{
-					$row_string .= "\"{$val[0]}\",";
+					// BUGID 3419
+					if( is_string($val[0]) )
+					{
+						$row_string .= "'" . $val[0] . "',";
+					}
+					else
+					{
+						// 20100503 - franciscom
+						// Do not understand why need to use " as part of value
+						$row_string .= "\"{$val[0]}\",";
+					}
 				} 
 				else 
 				{

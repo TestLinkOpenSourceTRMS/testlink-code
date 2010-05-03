@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.53 2010/05/03 11:52:49 mx-julian Exp $ 
+* $Id: resultsTC.php,v 1.54 2010/05/03 17:15:45 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100503 - franciscom - BUGID 3419: In "Test result matrix", tests statuses or not colorized
 * 20100502 - Julian - BUGID 3418
 * 20100424 - franciscom - BUGID 3356	 
 * 20091223 - eloff - added HTML tables for reports where JS is unavailable
@@ -32,7 +33,7 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 
 $gui = new stdClass();
-$gui->map_label_css = null;
+$gui->map_status_css = null;
 $gui->title = lang_get('title_test_report_all_builds');
 $gui->printDate = '';
 $gui->matrixCfg  = config_get('resultMatrixReport');
@@ -83,7 +84,7 @@ foreach($map_tc_status_verbose_code as $code => $verbose)
   {
     $label = $map_tc_status_verbose_label[$verbose];
     $map_tc_status_code_langet[$code] = lang_get($label);
-    $gui->map_label_css[$map_tc_status_code_langet[$code]] = $resultsCfg['code_status'][$code];
+    $gui->map_status_css[$code] = $resultsCfg['code_status'][$code] . '_text';
   }
 }
 $not_run_label=lang_get($resultsCfg['status_label']['not_run']);
@@ -160,6 +161,9 @@ if ($lastResultMap != null)
 					$resultsForBuild = $not_run_label;
 					$lastStatus = $resultsCfg['status_code']['not_run'];
 					
+					// BUGID 3419
+					$cssClass = $gui->map_status_css[$lastStatus]; 
+					
 					// iterate over executions for this suite, look for 
 					// entries that match current:
 					// test case id,build id ,platform id
@@ -171,20 +175,25 @@ if ($lastResultMap != null)
 						    ($execution_array['build_id'] == $buildId) &&
 						    ($execution_array['platform_id'] == $platformId))
 						{
+							$cssClass = $gui->map_status_css[$execution_array['status']]; 
 							$resultsForBuild = $map_tc_status_code_langet[$execution_array['status']];	
 							$resultsForBuild .= sprintf($versionTag,$execution_array['version']);
+							$resultsForBuild = '<span class="' . $cssClass . '">' . $resultsForBuild . '</span>';
+
 							$lastStatus = $execution_array['status'];
 						}
 					}
 					if( $resultsForBuild == $not_run_label )
 					{
+						$cssClass = $gui->map_status_css[$resultsCfg['status_code']['not_run']]; 
 						$resultsForBuild .= sprintf($versionTag,$linkedTCVersion);
+						$resultsForBuild = '<span class="' . $cssClass . '">' . $resultsForBuild . '</span>';
 					}
 					
-					$buildExecStatus[$idx] = array($resultsForBuild);
+					$buildExecStatus[$idx] = array($resultsForBuild,$cssClass);
 					if ($lastStatus != $resultsCfg['status_code']['not_run'])
 					{
-						$lastBuildRun = array($resultsForBuild);
+						$lastBuildRun = array($resultsForBuild,$cssClass);
 					}
 					//next($gui->buildInfoSet);
 				} // end for loop
@@ -211,7 +220,6 @@ foreach($gui->matrixSet as $platformID => $matrixData)
 {
 	$gui->tableSet[$platformID] =  buildMatrix($gui->buildInfoSet, $matrixData, $args->format);
 }
-
 
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);
@@ -256,7 +264,7 @@ function buildMatrix($buildSet, $dataSet, $format)
 	$columns = array(array('title' => lang_get('title_test_suite_name'), 'width' => 100),
 		             array('title' => lang_get('title_test_case_title'), 'width' => 350));
 	
-	//BUGID 3418: check if test priority is enabled
+	// BUGID 3418: check if test priority is enabled
 	if($_SESSION['testprojectOptions']->testPriorityEnabled) 
 	{
 		$columns[] = array('title' => lang_get('priority'), 'type' => 'priority');
@@ -266,10 +274,12 @@ function buildMatrix($buildSet, $dataSet, $format)
 	{
 		$columns[] = array('title' => $build['name'], 'type' => 'status', 'width' => 100);
 	}
+	
 	if ($format == FORMAT_HTML) 
 	{
 		$matrix = new tlExtTable($columns, $dataSet);
-		//BUGID 3418: check if test priority is enabled
+
+		// BUGID 3418: check if test priority is enabled
 		if($_SESSION['testprojectOptions']->testPriorityEnabled) 
 		{
 			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));

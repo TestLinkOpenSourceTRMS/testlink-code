@@ -1,8 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.52 2010/05/02 09:06:49 franciscom Exp $
+$Id: execSetResults.tpl,v 1.53 2010/05/03 18:29:36 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+
+  20100503 - franciscom - BUGID 3260: Import XML Results is not working with Internet Explorer
+                          reason: passing string without string separator to  openImportResult()
+
   20090901 - franciscom - preconditions
   20090815 - franciscom - platform feature
   20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
@@ -336,7 +340,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     	    	         value="{lang_get s=$gui->history_status_btn_name}" />
     	    	  <input type="button" id="pop_up_import_button" name="import_xml_button"
     	    	         value="{$labels.import_xml_results}"
-    	    	         onclick="javascript: openImportResult(import_xml_results);" />
+    	    	         onclick="javascript: openImportResult('import_xml_results');" />
           
               {* 20081125 - franciscom - BUGID 1902*}
 		          {if $tlCfg->exec_cfg->enable_test_automation}

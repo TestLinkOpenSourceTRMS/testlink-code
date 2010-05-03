@@ -2458,9 +2458,7 @@ $TLS_error_user_not_updated = "Der Benutzer konnte nicht aktualisiert werden!";
 $TLS_error_user_not_deleted = "Der Benutzer konnte nicht gelöscht werden!";
 $TLS_error_user_not_disabled = "Der Benutzer konnte nicht deaktiviert werden!";
 $TLS_error_user_login_length_error = "Der Login war entweder zu kurz oder zu lang!";
-$TLS_invalid_smtp_hostname = 'SMTP Hostname scheint ungültig zu sein'; 
-$TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Passwort kann nicht zurückgesetzt werden. Grund: SMTP Hostname scheint ungültig zu sein'; 
-$TLS_password_cannot_be_reseted_reason = 'Passwort kann nicht zurückgesetzt werden. Grund: %s '; 
+
 
 
 // ----- lib/usermanagement/rolesedit.php -----

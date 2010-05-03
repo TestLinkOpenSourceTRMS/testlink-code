@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.54 2010/05/03 17:15:45 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.55 2010/05/03 18:03:56 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -190,6 +190,14 @@ if ($lastResultMap != null)
 						$resultsForBuild = '<span class="' . $cssClass . '">' . $resultsForBuild . '</span>';
 					}
 					
+					// CRITIC - $buildExecStatus
+					// methods on classes: 
+					//                    exttable.class.php
+					//                    tlHTMLTable.class.php
+					// Depends on structure of elements present on $buildExecStatus.
+					// Right now element[0] is used a value to be displayed.
+					// If you plan to change this, give a careful look to these classes
+					//
 					$buildExecStatus[$idx] = array($resultsForBuild,$cssClass);
 					if ($lastStatus != $resultsCfg['status_code']['not_run'])
 					{

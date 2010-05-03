@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: tlHTMLTable.class.php,v 1.1 2009/12/23 13:42:41 erikeloff Exp $
+ * @version CVS: $Id: tlHTMLTable.class.php,v 1.2 2010/05/03 18:03:56 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlHTMLTable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100503 - franciscom - BUGID 3418 - changed in renderStatus(), due to changes on data structure
  *  20091223 - eloff - created class
  *
  **/
@@ -81,11 +82,13 @@ class tlHTMLTable extends tlTable
 		return $s;
 	}
 
+	// BUGID 3418
 	public function renderStatus($value)
 	{
-		$status = $this->code_status[$value[0]];
-		$color = $this->status_color[$status];
-		return "<span style=\"color: #{$color}\">{$value[1]}</span>";
+		// $status = $this->code_status[$value[0]];
+		// $color = $this->status_color[$status];
+		// return "<span style=\"color: #{$color}\">{$value[1]}</span>";
+		return $value[0];
 	}
 
 	public function renderPriority($prio)

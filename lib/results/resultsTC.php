@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.52 2010/04/24 15:54:22 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.53 2010/05/03 11:52:49 mx-julian Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100502 - Julian - BUGID 3418
 * 20100424 - franciscom - BUGID 3356	 
 * 20091223 - eloff - added HTML tables for reports where JS is unavailable
 * 20091221 - eloff - fixed bug when iterating over results
@@ -253,8 +254,13 @@ function checkRights(&$db,&$user)
 function buildMatrix($buildSet, $dataSet, $format)
 {
 	$columns = array(array('title' => lang_get('title_test_suite_name'), 'width' => 100),
-		             array('title' => lang_get('title_test_case_title'), 'width' => 350),
-		             array('title' => lang_get('priority'), 'type' => 'priority'));
+		             array('title' => lang_get('title_test_case_title'), 'width' => 350));
+	
+	//BUGID 3418: check if test priority is enabled
+	if($_SESSION['testprojectOptions']->testPriorityEnabled) 
+	{
+		$columns[] = array('title' => lang_get('priority'), 'type' => 'priority');
+	}
 	
 	foreach ($buildSet as $build) 
 	{
@@ -263,7 +269,11 @@ function buildMatrix($buildSet, $dataSet, $format)
 	if ($format == FORMAT_HTML) 
 	{
 		$matrix = new tlExtTable($columns, $dataSet);
-		$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));
+		//BUGID 3418: check if test priority is enabled
+		if($_SESSION['testprojectOptions']->testPriorityEnabled) 
+		{
+			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));
+		}
 	} 
 	else 
 	{

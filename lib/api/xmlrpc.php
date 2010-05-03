@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2010/04/15 10:12:21 $ by $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2010/05/03 10:27:32 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -86,12 +86,6 @@ require_once("api.const.inc.php");
 require_once(dirname(__FILE__) . "/../../config.inc.php");
 require_once(dirname(__FILE__) . "/../functions/common.php");
 require_once("APIErrors.php");
-
-// Can we use autoload ?
-//require_once(dirname(__FILE__) . "/../functions/testproject.class.php");
-//require_once(dirname(__FILE__) . "/../functions/testcase.class.php");
-//require_once(dirname(__FILE__) . "/../functions/testsuite.class.php");
-//require_once(dirname(__FILE__) . "/../functions/user.class.php");
 
 /**
  * The entry class for serving XML-RPC Requests
@@ -377,6 +371,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * 
 	 * This is the only method that should really be used directly to authenticate
 	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */
@@ -408,13 +404,14 @@ class TestlinkXMLRPCServer extends IXR_Server
     }
     
     
-    /*
-     function: userHasRight
-
-     args :
-    
-     returns: 
-    */
+	/**
+	 * checks if a user has requested right on test project, test plan pair.
+	 * 
+	 * @param string $roleQuestion  on of the right defined in rights table
+	 *
+	 * @return boolean
+	 * @access private
+	 */
     protected function userHasRight($roleQuestion)
     {
       	$status_ok = true;
@@ -482,7 +479,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * Helper method to see if the tcid provided is valid 
 	 * 
 	 * This is the only method that should be called directly to check the tcid
-	 * 	
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */    
@@ -510,7 +509,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * Helper method to see if the tplanid provided is valid
 	 * 
 	 * This is the only method that should be called directly to check the tplanid
-	 * 	
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */    
@@ -558,7 +559,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * Helper method to see if the TestProjectID provided is valid
 	 * 
 	 * This is the only method that should be called directly to check the TestProjectID
-	 * 	
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */    
@@ -588,7 +591,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * Helper method to see if the TestSuiteID provided is valid
 	 * 
 	 * This is the only method that should be called directly to check the TestSuiteID
-	 * 	
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */    
@@ -713,8 +718,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * Helper method to see if a param is present
 	 * 
 	 * @param string $pname parameter name 
+	 * @param string $messagePrefix used to be prepended to error message
 	 * @param boolean $setError default false
-	 *                if true add predefined error code to $this->error[]
+	 *                true: add predefined error code to $this->error[]
 	 *
 	 * @return boolean
 	 * @access private
@@ -949,6 +955,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * Helper method to see if the tcid provided is valid 
 	 * 	
 	 * @param struct $tcaseid	 
+	 * @param string $messagePrefix used to be prepended to error message
+	 * @param boolean $setError default false
+	 *                true: add predefined error code to $this->error[]
 	 * @return boolean
 	 * @access private
 	 */
@@ -1021,6 +1030,8 @@ class TestlinkXMLRPCServer extends IXR_Server
     /**
 	 * Helper method to See if the tcid and tplanid are valid together 
 	 * 
+	 * @param map $platformInfo key: platform ID
+	 * @param string $messagePrefix used to be prepended to error message
 	 * @return boolean
 	 * @access private
 	 */            
@@ -1062,6 +1073,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	/**
 	 * Run all the necessary checks to see if the createBuild request is valid
 	 *  
+	 * @param string $messagePrefix used to be prepended to error message
 	 * @return boolean
 	 * @access private
 	 */
@@ -1094,7 +1106,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	
 	/**
 	 * Run a set of functions 
-	 *  
+	 * @param array $checkFunctions set of function to be runned
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */
@@ -1160,6 +1174,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 
     /**
      * _getLatestBuildForTestPlan
+	 *
+	 * @param struct $args
      *
      */
     private function _getLatestBuildForTestPlan($args)
@@ -2033,6 +2049,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * 	
 	 * If everything OK, test case internal ID is setted.
 	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */    
@@ -2162,21 +2180,6 @@ class TestlinkXMLRPCServer extends IXR_Server
         	$keywordSet = explode(",",$keywordList);
         }
 		
-    // public function get_linked_tcversions($id,
-    // $tcase_id=null ,
-    // $keyword_id=0 ,  --> can be an array!!!!
-    // $executed=null ,
-    // $assigned_to=null ,
-    // $exec_status=null ,
-    // $build_id=0 ,
-    // $cf_hash = null ,
-    // $include_unassigned=false ,
-    // $urgencyImportance = null ,
-    // $tsuites_id=null ,
-    // $exec_type=null ,
-    // $details='simple')
-    //  
-       
         $options = array('executed_only' => $opt[self::$executedParamName], 'details' => 'full');
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
 			             'keyword_id' => $opt[self::$keywordIDParamName],
@@ -2185,25 +2188,17 @@ class TestlinkXMLRPCServer extends IXR_Server
 			             'build_id' => $opt[self::$buildIDParamName],
 			             'exec_type' => $opt[self::$executionTypeParamName]);
 		
-		
-		// $recordset=$this->tplanMgr->get_linked_tcversions($tplanid,                                      
-		//                                                   $opt[self::$testCaseIDParamName],
-        //                                             	  $keywordSet,
-		//                                             	  $opt[self::$executedParamName],
-        //                                             	  $opt[self::$assignedToParamName],
-        //                                             	  $opt[self::$executeStatusParamName],
-	 	//                                             	  $opt[self::$buildIDParamName],
-	 	//                                             	  null,false,null,null,
-	 	//                                             	  $opt[self::$executionTypeParamName],'full');
-	 	
 		$recordset=$this->tplanMgr->get_linked_tcversions($tplanid,$filters,$options);
 		return $recordset;
 	 }
 
 
 	/**
-	 * Run all the necessary checks to see if ...
-	 *  
+	 * Run all the necessary checks to see if a GetTestCasesForTestPlanRequest()
+	 * can be accepted.
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */
@@ -2319,14 +2314,17 @@ class TestlinkXMLRPCServer extends IXR_Server
 		} 
   }
   
-  /**
-	 * Run all the necessary checks to see if ...
+  	/**
+	 * Run all the necessary checks to see if GetTestCaseCustomFieldDesignValueRequest()
+	 * can be accepted.
 	 *  
      * - Custom Field exists ?
      * - Can be used on a test case ?
      * - Custom Field scope includes 'design' ?
      * - is linked to testproject that owns test case ?
-     * 
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
 	 * @return boolean
 	 * @access private
 	 */
@@ -2435,6 +2433,9 @@ class TestlinkXMLRPCServer extends IXR_Server
   	/**
 	 * getValidKeywordSetByName()
 	 *  
+	 * @param int $tproject_id
+ 	 * @param $keywords array of keywords names
+	 *
 	 * @return string that represent a list of keyword id (comma is character separator)
 	 *
 	 * @access private
@@ -2496,9 +2497,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 		return $keywordSet;
  	}
  	
-  /**
+  	/**
 	 * getValidKeywordSetById()
 	 *  
+	 * @param int $tproject_id
+ 	 * @param $keywords array of keywords ID
+	 *
 	 * @return string that represent a list of keyword id (comma is character separator)
 	 *
 	 * @access private
@@ -2509,8 +2513,14 @@ class TestlinkXMLRPCServer extends IXR_Server
     }
 
 
-  // 20090126 - franciscom
-  // check version > 0 - contribution 
+  	/**
+	 * checks if test case version number is a valid.
+	 * Checks is is positive intenger
+	 *  
+	 * @return boolean
+	 *
+	 * @access private
+	 */
   protected function checkTestCaseVersionNumber()
   {
         $status=true;
@@ -2693,13 +2703,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 }	
 
   
-   /*
-    function: 
-
-    args:
-    
-    returns: 
-   */
+	 /**
+	  * get set of test suites AT TOP LEVEL of tree on a Test Project
+	  *
+	  * @param args['testprojectid']
+	  *	
+	  * @return array
+	  *
+	  */
    public function getFirstLevelTestSuitesForTestProject($args)
    {
         $msg_prefix="(" .__FUNCTION__ . ") - ";
@@ -2724,20 +2735,20 @@ class TestlinkXMLRPCServer extends IXR_Server
    }
    
 
-   /*
-    function: assignRequirements
-              we can assign multiple requirements.
-              Requirements can belong to different Requirement Spec
-             
-	  @param struct $args
-	  @param string $args["devKey"]
-	  @param int $args["testcaseexternalid"]
-	  @param int $args["testprojectid"] 
-      @param string $args["requirements"] 
-                  array(array('req_spec' => 1,'requirements' => array(2,4)),
-                        array('req_spec' => 3,'requirements' => array(22,42))
-    returns: 
-   */
+   /**
+    *  Assign Requirements to a test case 
+    *  we can assign multiple requirements.
+    *  Requirements can belong to different Requirement Spec
+    *         
+	*  @param struct $args
+	*  @param string $args["devKey"]
+	*  @param int $args["testcaseexternalid"]
+	*  @param int $args["testprojectid"] 
+    *  @param string $args["requirements"] 
+    *                array(array('req_spec' => 1,'requirements' => array(2,4)),
+    *                array('req_spec' => 3,'requirements' => array(22,42))
+    *
+    */
    public function assignRequirements($args)
    {
         $operation=__FUNCTION__;
@@ -2792,15 +2803,16 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
 
 
-  /*
-    function: checkTestCaseAncestry
-              check if a test case belongs to test project
-
-    args:
-    
-    returns: 
-
-  */
+  /**
+   * checks if a test case belongs to test project
+   *
+   * @param string $messagePrefix used to be prepended to error message
+   * 
+   * @return map with following keys
+   *             boolean map['status_ok']
+   *             string map['error_msg']
+   *             int map['error_code']
+   */
   protected function checkTestCaseAncestry($messagePrefix='')
   {
       $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
@@ -2823,16 +2835,16 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 
   /*
-    function: checkReqSpecQuality
-              checks:
-              Requirements Specification is present on system
-              Requirements Specification belongs to test project
-
-    args:
-    
-    returns: 
-
-  */
+   *  checks Quality of requirements spec
+   *  checks done on 
+   *  Requirements Specification is present on system
+   *  Requirements Specification belongs to test project
+   * 
+   * @return map with following keys
+   *             boolean map['status_ok']
+   *             string map['error_msg']
+   *             int map['error_code']
+   */
   protected function checkReqSpecQuality()
   {
       $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
@@ -2949,8 +2961,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 
 /**
- * 
+ *  get bugs linked to an execution ID
+ * @param  int $execution_id	 
  *
+ * @return map indexed by bug_id
  */
 private function _getBugsForExecutionId($execution_id)
 {
@@ -3131,7 +3145,8 @@ public function getTestCaseAttachments($args)
 	/**
 	 * test suite name provided is valid 
 	 * 
-	 * 	
+	 * @param string $messagePrefix used to be prepended to error message
+     *
 	 * @return boolean
 	 * @access private
 	 */        
@@ -3466,25 +3481,6 @@ public function getTestCase($args)
         $cfieldMgr=$this->tprojectMgr->cfield_mgr;        
         $cfieldsMap = $cfieldMgr->get_linked_cfields_at_execution($tprojectID, 1,'testcase',
                                                                   null,null,null,'name');
-        // 
-        // // 
-		// // id, name, label, type,
-		// // possible_values, default_value
-		// // valid_regexp,
-		// // length_min, length_max,
-		// // show_on_design, enable_on_design,
-		// // show_on_execution, enable_on_execution,
-		// // show_on_testplan_design, enable_on_testplan_design
-		// // display_order, location 	1
-		// // value 	asasa
-		// // node_id        
-        // 
-        // // $cfield[$key]=array("type_id"  => $value['type'],
-        // //                    "cf_value" => '');
-        // 
-        // 
-        // // $this->tcVersionID;
-        // // new dBug($cfieldsMap);
         $status_ok = !(is_null($rs) || is_null($cfieldSet) || count($cfieldSet) == 0);		
         $cfield4write = null;
         if( $status_ok && !is_null($cfieldsMap) )
@@ -3582,6 +3578,11 @@ public function getTestCase($args)
 	 * 	
 	 * If everything OK, platform id is setted.
 	 *
+	 * @param int $tplanID Test Plan ID
+	 * @param map $platformInfo key: platform ID
+	 * @param string $messagePrefix used to be prepended to error message
+	 *
+	 *
 	 * @return boolean
 	 * @access private
 	 */    
@@ -3663,9 +3664,26 @@ public function getTestCase($args)
 
 
 
+   /**
+     * update result of LASTE execution
+     *
+     * @param
+     * @param struct $args
+     * @param string $args["devKey"]
+     * @param int $args["testplanid"]
+     * @param int $args["platformid"]
+     * @param int $args["buildid"]
+     * @param int $args["testcaseid"] internal ID
+     * @param string $args["status"]
+     * @param string $args["notes"]
+     *
+     * @return mixed $resultInfo
+     * 
+     * @access private
+     */
+
 	private function _updateResult()
 	{
-		
 		$platform_id = 0;
 		$exec_id = 0;
 		$build_id = $this->args[self::$buildIDParamName];

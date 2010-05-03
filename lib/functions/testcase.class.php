@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.270 2010/05/02 10:41:57 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.271 2010/05/03 09:47:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100503 - franciscom - create_tcase_only() - BUGID 3374
  * 20100502 - franciscom - show() fixed error due to non existent variable $info
  * 20100417 - franciscom - new method - filter_tcversions()
  *						   get_last_active_version() - changes on output data 
@@ -302,6 +303,7 @@ class testcase extends tlObjectWithAttachments
 		     $ret['new_name']
 		     
 	rev: 
+		20100503 - franciscom - BUGID 3374
 		20100409 - franciscom - improved check on name len.
 								BUGID 3367: Error after trying to copy a test case that 
 								the name is in the size limit.
@@ -394,8 +396,13 @@ class testcase extends tlObjectWithAttachments
 				        
 				    case 'create_new_version':
 				        $doCreate=false;
-	                    $ret['id'] = key($myrow);            
-		                $ret['external_id']=$myrow[$ret['id']]['tc_external_id'];
+				        
+				        // If we found more that one with same name and same parent,
+				        // will take the first one.
+				        // BUGID 3374
+				        $xx = current($itemSet);
+	                    $ret['id'] = $xx['id'];            
+		                $ret['external_id']=$xx['tc_external_id'];
 				        $ret['status_ok'] = 1;
 						$ret['new_name'] = $name;
 		            	$ret['version_number'] = -1;

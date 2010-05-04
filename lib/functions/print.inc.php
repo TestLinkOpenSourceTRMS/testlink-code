@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.98 2010/04/08 15:11:33 asimon83 Exp $
+ * @version $Id: print.inc.php,v 1.99 2010/05/04 19:56:10 franciscom Exp $
  * @uses printDocument.php
  *
  *
@@ -449,14 +449,18 @@ function renderReqSpecTreeForPrinting(&$db, &$node, &$printingOptions,
  */
 function renderHTMLHeader($title,$base_href)
 {
+	// BUGID 3424
+	$themeDir = config_get('theme_dir');
 	$docCfg = config_get('document_generator');
-    $docCfg->css_template;
+    $cssFile = $base_href . $themeDir . $docCfg->css_template;
 
 	$output = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>\n";
 	$output .= "<html>\n<head>\n";
 	$output .= '<meta http-equiv="Content-Type" content="text/html; charset=' . config_get('charset') . '">';
 	$output .= '<title>' . htmlspecialchars($title). "</title>\n";
-	$output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $docCfg->css_template ."\" />\n";
+	// $output .= '<link type="text/css" rel="stylesheet" href="'. $base_href . $docCfg->css_template ."\" />\n";
+	$output .= '<link type="text/css" rel="stylesheet" href="'. $cssFile ."\" />\n";
+	
 	// way to add CSS directly to the exported file (not used - test required)
     // $docCss = file_get_contents(TL_ABS_PATH . $docCfg->css_template);
     // $output .= '<style type="text/css" media="all">'."\n<!--\n".$docCss."\n-->\n</style>\n";

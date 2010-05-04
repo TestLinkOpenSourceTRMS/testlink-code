@@ -18,10 +18,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.294 2010/03/28 17:42:52 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.295 2010/05/04 19:55:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100504 - franciscom - BUGID 3424 Custom CSS path is being overwritten by config.inc.php value 
  *  20100311 - asimon - BUGID 1748 - $tlCfg->req_cfg->relations
  *	20100313 - franciscom - BUGID 0003275
  *  20100112 - asimon - BUGID 2976 - $tlCfg->req_cfg->search 
@@ -546,7 +547,10 @@ $tlCfg->document_generator->company_copyright = '2009 &copy; TestLink Community'
 $tlCfg->document_generator->confidential_msg = '';
 
 /** CSS used in printed html documents */
-$tlCfg->document_generator->css_template = $tlCfg->theme_dir . 'css/tl_documents.css';
+
+// BUGID 3424
+// $tlCfg->document_generator->css_template = $tlCfg->theme_dir . 'css/tl_documents.css';
+$tlCfg->document_generator->css_template = 'css/tl_documents.css';
 
 /** Misc settings */
 $tlCfg->document_generator->tc_version_enabled = FALSE;
@@ -839,7 +843,10 @@ $g_attachments->action_on_save_empty_title = 'none';
 $g_attachments->action_on_display_empty_title = 'show_icon';
 
 // martin: @TODO use an image file only
-$g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
+
+// BUGID 3424  - need to be moved AFTER include of custom_config
+//
+// $g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 $g_attachments->access_string = "[*]";
 
 // Set display order of uploaded files - BUGID 1086
@@ -1098,6 +1105,12 @@ clearstatcache();
 if ( file_exists( TL_ABS_PATH . 'custom_config.inc.php' ) ) 
 {
   require_once( TL_ABS_PATH . 'custom_config.inc.php' ); 
+}
+
+// BUGID 3424
+if( !isset($g_attachments->access_icon) )
+{
+	$g_attachments->access_icon = '<img src="' . $tlCfg->theme_dir . 'images/new_f2_16.png" style="border:none" />';
 }
 
 // BUGID 2914

@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.106 2010/04/29 14:56:23 asimon83 Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.107 2010/05/04 08:23:28 asimon83 Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -197,7 +197,8 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 	
 	// BUGID 3301 - added isset() checks in if statements for undefined errors in log 
 	// because of undefined index warning in event log
-	if (isset($_SESSION['platformID']) && $args->optPlatformSelected != $_SESSION['platformID'])
+	// BUGID 3350 - inverted logic, working correctly now
+	if (!isset($_SESSION['platformID']) || $args->optPlatformSelected != $_SESSION['platformID'])
 	{
 		$_SESSION['platformID'] = $args->optPlatformSelected;
 	}
@@ -238,7 +239,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     }
     else
     {	
-    	$args->do_refresh = ($cfgObj->spec_cfg->automatic_tree_refresh > 0) ? "yes": "no";
+    	$args->do_refresh = ($cfgObj->spec->automatic_tree_refresh > 0) ? "yes": "no";
     }
 	$_SESSION['tcspec_refresh_on_action'] = $args->do_refresh;
 	
@@ -316,6 +317,7 @@ function getCfg()
     $cfg->gui = config_get('gui');
     $cfg->exec = config_get('exec_cfg');
     $cfg->results = config_get('results');
+    $cfg->spec = config_get('spec_cfg');
     
     return $cfg;
 }

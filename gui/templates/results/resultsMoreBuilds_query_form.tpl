@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds_query_form.tpl,v 1.14 2010/05/02 09:38:10 franciscom Exp $
+$Id: resultsMoreBuilds_query_form.tpl,v 1.15 2010/05/04 11:11:16 amkhullar Exp $
 @author Francisco Mancardi
 
 rev :
@@ -33,7 +33,7 @@ rev :
 {* ------------------------------------------------------------------------------- *}
 {* Calculate combo size *}
 {if $gui->builds->qty > #BUILDS_COMBO_NUM_ITEMS#}
-  {assign var="build_qty" value={#BUILDS_COMBO_NUM_ITEMS#}}
+  {assign var="build_qty" value=#BUILDS_COMBO_NUM_ITEMS#}
 {else}
   {assign var="build_qty" value=$gui->builds->qty}
 {/if}

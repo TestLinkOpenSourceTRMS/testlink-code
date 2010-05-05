@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.179 2010/05/05 05:54:11 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.180 2010/05/05 20:25:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100505 - franciscom - BUGID 3434 - get_keywords_map() - refactoring trying to improve performance
  *	20100505 - franciscom - BUGID 3430 - copy_milestones() - need to check if start date is NOT NULL
  *	20100425 - franciscom - BUGID 2463 - changes in getStatusTotalsByAssignedTesterPlatform()
  * 	20100417 - franciscom - get_linked_tcversions() added importance on output data
@@ -1181,7 +1182,8 @@ class testplan extends tlObjectWithAttachments
 
 	/**
 	 * 
-	 *
+	 * @internal revisions
+	 * 20100505 - franciscom - BUGID 3434
 	 */
 	function get_keywords_map($id,$order_by_clause='')
 	{
@@ -1190,17 +1192,30 @@ class testplan extends tlObjectWithAttachments
 		
 		// keywords are associated to testcase id, then first
 		// we need to get the list of testcases linked to the testplan
-		$linked_items = $this->get_linked_tcversions($id);
+		// 
+		// 20100505 - according to user report (BUGID 3434) seems that 
+		// $linked_items = $this->get_linked_tcversions($id);
+		// has performance problems.
+		// Then make a choice do simple query here.
+		//
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
+			   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
+			   " WHERE TPTCV.testplan_id = {$id} ";
+			   
+		$linked_items = $this->db->fetchColumnsIntoMap($sql,'parent_id');			     
+		
 		if( !is_null($linked_items) )
 		{
 			$tc_id_list = implode(",",array_keys($linked_items));
 			
-			$sql = "SELECT DISTINCT keyword_id,keywords.keyword
-				FROM {$this->tables['testcase_keywords']} testcase_keywords,
-				{$this->tables['keywords']} keywords
-				WHERE keyword_id = keywords.id
-				AND testcase_id IN ( {$tc_id_list} )
-				{$order_by_clause}";
+			$sql = " /* $debugMsg */ " .
+				   " SELECT DISTINCT TCKW.keyword_id,KW.keyword " .
+				   " FROM {$this->tables['testcase_keywords']} TCKW, " .
+				   " {$this->tables['keywords']} KW " .
+				   " WHERE TCKW.keyword_id = KW.id " .
+				   " AND TCKW.testcase_id IN ( {$tc_id_list} ) " .
+				   " {$order_by_clause} ";
 			$map_keywords = $this->db->fetchColumnsIntoMap($sql,'keyword_id','keyword');
 		}
 		return ($map_keywords);

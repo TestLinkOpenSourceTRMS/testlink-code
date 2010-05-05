@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.178 2010/04/25 17:42:35 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.179 2010/05/05 05:54:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100505 - franciscom - BUGID 3430 - copy_milestones() - need to check if start date is NOT NULL
  *	20100425 - franciscom - BUGID 2463 - changes in getStatusTotalsByAssignedTesterPlatform()
  * 	20100417 - franciscom - get_linked_tcversions() added importance on output data
  *                          BUGID 3356: Failed Test Cases" report is not updated when a test case 
@@ -1506,11 +1507,20 @@ class testplan extends tlObjectWithAttachments
 		{
 			foreach($rs as $mstone)
 			{
-				$sql="INSERT INTO {$this->tables['milestones']} (name,a,b,c,target_date,start_date,testplan_id) " .
-					 "VALUES ('" . $this->db->prepare_string($mstone['name']) ."'," .
-					 $mstone['high_percentage'] . "," . $mstone['medium_percentage'] . "," . 
-					 $mstone['low_percentage'] . ",'" . $mstone['target_date'] . "','" . $mstone['start_date'] .
-					 "',{$new_tplan_id})";
+				// BUGID 3430 - need to check if start date is NOT NULL
+				$add2fields = '';
+				$add2values = '';
+				$use_start_date = strlen(trim($mstone['start_date'])) > 0;
+				if( $use_start_date )
+				{
+					$add2fields = 'start_date,';
+					$add2values = "'" . $mstone['start_date'] . "',";
+				}
+
+				$sql = "INSERT INTO {$this->tables['milestones']} (name,a,b,c,target_date,{$add2fields} testplan_id)";				
+                $sql .= " VALUES ('" . $this->db->prepare_string($mstone['name']) ."'," .
+					    $mstone['high_percentage'] . "," . $mstone['medium_percentage'] . "," . 
+					    $mstone['low_percentage'] . ",'" . $mstone['target_date'] . "', {$add2values}{$new_tplan_id})";
 				$this->db->exec_query($sql);
 			}
 		}

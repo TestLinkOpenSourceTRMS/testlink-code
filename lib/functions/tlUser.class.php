@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.8 2010/04/27 19:54:49 franciscom Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.9 2010/05/05 20:59:41 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -507,9 +507,6 @@ class tlUser extends tlDBObject
 			return self::E_PWDEMPTY;
 		}
 		$this->password = $this->encryptPassword($pwd);
-		
-		new dBug($this->password);
-		
 		return tl::OK;
 	}
 	

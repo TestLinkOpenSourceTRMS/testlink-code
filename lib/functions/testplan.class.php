@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.180 2010/05/05 20:25:45 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.181 2010/05/06 18:27:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -1203,7 +1203,7 @@ class testplan extends tlObjectWithAttachments
 			   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
 			   " WHERE TPTCV.testplan_id = {$id} ";
 			   
-		$linked_items = $this->db->fetchColumnsIntoMap($sql,'parent_id');			     
+		$linked_items = $this->db->fetchRowsIntoMap($sql,'parent_id');			     
 		
 		if( !is_null($linked_items) )
 		{

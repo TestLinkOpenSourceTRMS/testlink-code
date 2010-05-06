@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.41 2010/01/31 18:32:00 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.42 2010/05/06 20:29:31 franciscom Exp $
  *
  * Author: franciscom
  *
@@ -225,8 +225,9 @@ function processTestSuite(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tca
 function doUpdateAllToLatest(&$dbObj,$argsObj,&$tplanMgr)
 {
   $qty=0;
-  $linkedItems=$tplanMgr->get_linked_tcversions($argsObj->tplan_id);
-  
+  // 
+  // $linkedItems=$tplanMgr->get_linked_tcversions($argsObj->tplan_id);
+  $linkedItems = $tplanMgr->get_linked_items_id($argsObj->tplan_id);
   if( is_null($linkedItems) )
   {
      return lang_get('no_testcase_available');  

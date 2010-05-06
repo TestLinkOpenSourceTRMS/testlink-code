@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * @version $Id: newest_tcversions.php,v 1.14 2009/08/08 14:11:50 franciscom Exp $ 
+ * @version $Id: newest_tcversions.php,v 1.15 2010/05/06 20:30:26 franciscom Exp $ 
  * 
  *
  * rev :
@@ -36,7 +36,8 @@ $gui->tplan_name = $tplan_info['name'];
 $gui->tplan_id=$args->tplan_id;
 $gui->tproject_name = $args->tproject_name;
 
-$linked_tcases = $tplan_mgr->get_linked_tcversions($args->tplan_id);
+// $linked_tcases = $tplan_mgr->get_linked_tcversions($args->tplan_id);
+$linked_tcases = $tplan_mgr->get_linked_items_id($args->tplan_id);
 $qty_linked = count($linked_tcases);
 $gui->testcases = $tplan_mgr->get_linked_and_newest_tcversions($args->tplan_id);
 

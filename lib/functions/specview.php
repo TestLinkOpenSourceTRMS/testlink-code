@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.59 2010/04/17 15:43:35 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.60 2010/05/06 19:28:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -182,7 +182,7 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	                       'add_custom_fields' => 0);
 
 	// BUGID 2797 - filter by test case execution type
-	$my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null);
+	$my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 'importance' => null);
 	foreach( $my as $key => $settings)
 	{
 		if( !is_null($$key) && is_array($$key) )

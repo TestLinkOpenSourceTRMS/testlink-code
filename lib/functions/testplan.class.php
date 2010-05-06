@@ -9,11 +9,14 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.181 2010/05/06 18:27:44 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.182 2010/05/06 20:31:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *
+ *	20100506 - franciscom - new method - get_linked_items_id(), that has perfomance advantages
+ *							over get_linked_tcversions() when only info needed is test case id.
  *
  *	20100505 - franciscom - BUGID 3434 - get_keywords_map() - refactoring trying to improve performance
  *	20100505 - franciscom - BUGID 3430 - copy_milestones() - need to check if start date is NOT NULL
@@ -1235,7 +1238,7 @@ class testplan extends tlObjectWithAttachments
 		
 		// keywords are associated to testcase id, then first
 		// we need to get the list of testcases linked to the testplan
-		$linked_items = $this->get_linked_tcversions($id);
+		$linked_items = $this->get_linked_items_id($id);
 		if( !is_null($linked_items) )
 		{
 			$keyword_filter= '' ;
@@ -2495,7 +2498,10 @@ class testplan extends tlObjectWithAttachments
 			if( is_null($tcase_set) )
 			{
 				// we will compute time for ALL linked test cases
-				$linked_testcases=$this->get_linked_tcversions($id);  
+				// $linked_testcases=$this->get_linked_tcversions($id);  
+				// Test done due to BUGID 3434 has shown that:
+				// get_linked_items_id($id) has better performance than get_linked_tcversions($id);
+				$linked_testcases=$this->get_linked_items_id($id);  
 				if( ($status_ok=!is_null($linked_testcases)) )
 				{
 					$tcase_ids=array_keys($linked_testcases);
@@ -4030,6 +4036,21 @@ class milestone_mgr extends tlObject
 			 " ORDER BY M.target_date,M.name";
 		$rs=$this->db->get_recordset($sql);
 		return $rs;
+	}
+
+
+	/*
+	
+	*/
+	function get_linked_items_id($tplan_id)
+	{
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
+			   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
+			   " WHERE TPTCV.testplan_id = {$id} ";
+			   
+		$linked_items = $this->db->fetchRowsIntoMap($sql,'parent_id');			     
+		return $linked_items;
 	}
 
 } // end class milestone_mgr

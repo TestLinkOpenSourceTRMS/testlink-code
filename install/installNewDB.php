@@ -10,9 +10,10 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.58 2010/05/02 14:30:13 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.59 2010/05/07 06:47:18 mx-julian Exp $
  *
  * @internal Revisions:
+ *  20100507 - Julian - changed time_limit for execution to umlimited
  *	20100110 - franciscom - added drop_tables();
  * 	20091109 - havlatm - general layout, header, logic update
  * 	20091003 - franciscom - migration from 1.8.x (DB 1.2) to 1.9 Beta 1 (DB 1.3)
@@ -59,7 +60,8 @@ foreach($_POST as $key => $val) {
 	$_SESSION[$key] = $val;
 }
 
-set_time_limit(180);
+//assure that no timeout happens for large data
+set_time_limit(0);
 $tl_and_version = "TestLink {$_SESSION['testlink_version']} ";
 
 define('LEN_PWD_TL_1_0_4',15);

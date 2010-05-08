@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.140 2010/05/01 14:27:09 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.141 2010/05/08 17:58:50 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -590,10 +590,13 @@ $tlCfg->urgency['code_label'] = array(
  */
 /** Review status: design phase; data are not available for review or using */ 
 define('TL_REVIEW_STATUS_DRAFT', 	1);
+
 /** Review status: data was reviewed and are available for using */
 define('TL_REVIEW_STATUS_FINAL', 	2);
+
 /** Review status: data wait for review */ 
 define('TL_REVIEW_STATUS_REVIEW', 	3);
+
 /** Review status: data are not applicable for using (not listed in reports and lists) */ 
 define('TL_REVIEW_STATUS_OBSOLETE', 4); 
 define('TL_REVIEW_STATUS_FUTURE', 	5); 
@@ -619,8 +622,8 @@ define('TL_REQ_STATUS_VALID', 		'V');
 define('TL_REQ_STATUS_NOT_TESTABLE','N');
 
 // key: status; value: text label
-$g_req_status = array(TL_REQ_STATUS_VALID => 'review_status_valid', 
-					  TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable');
+$tlCfg->req_cfg->status_labels = array(TL_REQ_STATUS_VALID => 'review_status_valid', 
+					                   TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable');
 
 /** 
  * Types of requirements (with respect to standards)

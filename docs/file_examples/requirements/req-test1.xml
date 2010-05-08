@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Req Spec LEVEL 1 - 001"  doc_id="REQ-SPEC-L1-001" >
+<node_order><![CDATA[0]]></node_order>
+<scope><![CDATA[Req. Spec LEVEL 1 - 001]]> 
+</scope>	<requirement>
+		<docid><![CDATA[RQ-001]]></docid>
+		<title><![CDATA[Requirement 001]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+/** requirement.txt  Fill in:<br /> Title<br /> Scope<br /> Author name<br />  **/
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-002]]></docid>
+		<title><![CDATA[Requirement 002]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+REQ 002
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-003]]></docid>
+		<title><![CDATA[Requirement 002]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+REQ 002
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[4]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+</req_spec></requirement-specification>

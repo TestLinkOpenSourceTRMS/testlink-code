@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+  <testcase external_id="BETA3-13" >
+    <!-- if not present logged user  will be used -->
+    <tester>u0113</tester>      <!-- tester LOGIN Name -->
+    <!-- if not present now() will be used -->
+    <timestamp>2008-09-08 14:00:00</timestamp>  
+    <result>p</result>
+    <notes>functionality works great </notes>
+  </testcase>
+  
+  <testcase external_id="BETA3-13" >   <!-- ANOTHER EXE for SAME test case -->
+    <result>f</result>
+    <notes>functionality works great KIMI</notes>
+  </testcase>
+  
+  <testcase id="1256" >    <!-- Using INTERNAL ID -->
+    <result>f</result>
+    <notes>Using INTERNAL ID as link </notes>
+  </testcase>
+</results>

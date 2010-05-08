@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="ONLY MANUAL TEST CASES" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[/** Testauite:<br /> Fill in:<br />  <table border="0"> <tbody><tr><td>Title</td><td>Scope</td></tr> <tr><td>Author name</td></tr> </tbody></table> <br />   **/ ]]> 
+</details>
+<testcase internalid="1654" name="MANUAL ONE">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<summary><![CDATA[Manual Test Case (at least VERSION 1)]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="1656" name="MANUAL TWO">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<summary><![CDATA[Manual Test Case 2 (at least VERSION 1)]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="1658" name="MANUAL THREE">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<summary><![CDATA[Manual Test Case 3 (at least VERSION 1)]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite><testsuite name="ONLY AUTOMATED TEST CASES" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[/** Testauite:<br /> Fill in:<br />  <table border="0"> <tbody><tr><td>Title</td><td>Scope</td></tr> <tr><td>Author name</td></tr> </tbody></table> <br />   **/ ]]> 
+</details>
+<testcase internalid="1661" name="AUTO TEST CASE UNO">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[4]]></externalid>
+	<summary><![CDATA[summary]]></summary>
+	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<execution_type><![CDATA[2]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="1663" name="AUTO TEST CASE DOS">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[5]]></externalid>
+	<summary><![CDATA[summary]]></summary>
+	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<execution_type><![CDATA[2]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="1665" name="AUTO TEST CASE TRES">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[6]]></externalid>
+	<summary><![CDATA[summary]]></summary>
+	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<execution_type><![CDATA[2]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite><testsuite name="MIXED TEST CASES" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[/** Testauite:<br /> Fill in:<br />  <table border="0"> <tbody><tr><td>Title</td><td>Scope</td></tr> <tr><td>Author name</td></tr> </tbody></table> <br />   **/ ]]> 
+</details>
+<testcase internalid="1668" name="TC MANUAL 100">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[7]]></externalid>
+	<summary><![CDATA[summary]]></summary>
+	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="1670" name="TC AUTO 200">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[8]]></externalid>
+	<summary><![CDATA[summary]]></summary>
+	<preconditions><![CDATA[CUCHI CUH]]></preconditions>
+	<execution_type><![CDATA[2]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite></testsuite>

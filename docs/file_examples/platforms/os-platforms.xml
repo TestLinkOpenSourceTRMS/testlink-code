@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<platforms>
+	<platform>
+		<name><![CDATA[MAC OS]]></name>
+		<testproject_id><![CDATA[738]]></testproject_id>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Solaris 10]]></name>
+		<testproject_id><![CDATA[738]]></testproject_id>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Solaris 8]]></name>
+		<testproject_id><![CDATA[738]]></testproject_id>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Solaris 9]]></name>
+		<testproject_id><![CDATA[738]]></testproject_id>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Windows 2008]]></name>
+		<testproject_id><![CDATA[738]]></testproject_id>
+		<notes><![CDATA[]]></notes>
+	</platform>
+	<platform>
+		<name><![CDATA[Windows 7]]></name>
+		<testproject_id><![CDATA[738]]></testproject_id>
+		<notes><![CDATA[]]></notes>
+	</platform>
+</platforms>

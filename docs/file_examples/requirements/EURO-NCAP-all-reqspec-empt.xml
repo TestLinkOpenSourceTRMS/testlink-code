@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Frontal impact"  doc_id="ENCAP-001" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[0]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<span>Frontal impact test is based on that developed by European  Enhanced Vehicle-safety Committee as basis for legislation, but impact  speed has been increased by 8 km/h.<br /> <br /> Frontal impact takes place at 64kph (40mph), car strikes deformable  barrier that is offset. </span>]]> 
+</scope></req_spec><req_spec title="Car to Car Side impact"  doc_id="ENCAP-002" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<span><p>The second most important crash configuration is car to car  side impact. Euro NCAP simulates this type of crash by having a mobile  deformable barrier (MDB) impact the driver&rsquo;s door at 50 km/h. The injury  protection is assessed by a side impact test dummy, in the driver&rsquo;s  seat..&nbsp;</p> <div>&nbsp;</div></span>]]> 
+</scope></req_spec><req_spec title="Pole Side Impact"  doc_id="ENCAP-003" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[2]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<span>Accident patterns vary from country to country within Europe, but  approximately a quarter of all serious-to-fatal injuries happen in side  impact collisions. Many of these injuries occur when one car runs into  the side of another&nbsp;or into a fixed narrow object such as a tree or  pole.</span>]]> 
+</scope></req_spec><req_spec title="Child protection"  doc_id="ENCAP-004" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[3]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<span>Euro NCAP has encouraged manufacturers to take responsibility for  protecting children and to provide suitable facilities for the fitment  of child restraints. Many child restraint users fail to attach the child  restraint securely to the car and this compromises the protection  afforded to the children. Euro NCAP has encouraged improved designs and  the fitment of ISOFIX mounts and child restraints. ISOFIX provides a  much more secure method of attaching the child restraint to the car,  provided that additional provision is made to prevent rotation of the  child restraint, due to seat cushion compression and rebound. As a  consequence, Euro NCAP has seen improved designs, where the child is  less likely to strike the car&rsquo;s interior, whilst at the same time  experiencing reduced forces from the restraint system. <p>In the frontal and side impact barrier tests, dummies representing 1&frac12;  and 3 year old children are placed in the rear of the car in the type  of child restraint, recommended by the car manufacturer. The score  depends on the child seat dynamic performance in front and side impact  tests but also on the fitting instructions for the child restraints,  airbag warning labels, and the car&rsquo;s ability to accommodate the child  restraints safely.<br /> <br /> Euro NCAP released a separate star rating for child protection valid  from November 2003 to January 2009. The child protection rating is for a  combination of a car with specific child seats that have been  recommended by the car manufacturer. The combination could earn up to  five stars for child protection. As of 2009, the child score has become  integral part of the overall rating scheme, however the technical  assessment has remained the same.</p></span>]]> 
+</scope></req_spec><req_spec title="Pedestrian protection"  doc_id="ENCAP-005" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[4]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<span>A series of tests are carried out to replicate accidents involving  child and adult pedestrians where impacts occur at 40kph (25mph).  Impact sites are then assessed and rated fair, weak and poor. As with  other tests, these are based on European Enhanced Vehicle-safety  Committee guidelines</span>]]> 
+</scope></req_spec><req_spec title="Whiplash"  doc_id="ENCAP-006" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[5]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<p id="ctl00_ctl00_pagecontent_innercontent_ctrl6_pText"><span><p>Whiplash,  caused by or related to a sudden distortion of the spine, can lead to  long painful and debilitating symptoms over many years. Although  Whiplash is not uncommon in frontal and side impact accidents, it most  frequently occurs in low speed, rear end collisions. Whiplash injuries  are difficult to diagnose, difficult to treat and are estimated to cost  the European society up to 10 billion Euro annually. The high frequency  of whiplash injury, the personal suffering and the cost to European  society have motivated Euro NCAP to integrate a rear impact test into  its crash test programme.</p> <p>While the mechanisms by which the injuries are caused are not fully  understood, it is known that seat and head restraint design can  influence the risk of injury. The test procedure applied by Euro NCAP  therefore promotes the best practice in seat design, in particular good  head restraint geometry, its ease of use as far as adjustment, the  locking of the head restraint and the overall seat integrity.</p> <p>The Whiplash score is based on both the geometrical aspects of the  (driver/passenger) seat, the size and shape of the head restraint and  its proximity to the occupant, as well as the seat and head restraint  dynamic performance during an actual crash test. This dynamic  performance is assessed using a seat mounted on a sled test, subjected  to low, moderate and higher test severities representing a range of  crash forces believed to cause injury. The whiplash score is included in  the Adult Protection score as of January 2009.<br />&nbsp; </p></span></p>]]> 
+</scope></req_spec><req_spec title="ESC"  doc_id="ENCAP-007" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[6]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<p id="ctl00_ctl00_pagecontent_innercontent_ctrl6_pText"><span><p>Car  manufacturers and their suppliers perform many hundreds of tests when  developing the electronic stability control (ESC) systems for their  vehicles. They try to ensure that the system will work in every possible  circumstance: different speeds and road conditions, and different  manoeuvres and driver response.</p> <p>Euro NCAP does not have the resources to replicate all of the  manufacturer&rsquo;s development tests to see how well a system performs.  However, there is currently no single test, or simple combination of  tests, that can allow conclusions to be drawn about the safety which an  ESC system is likely to provide in real life. Similarly, analyses of  real-life accident cannot differentiate between the safety offered by  different types of systems; they can only tell that cars equipped with  ESC are involved in fewer accidents, and less serious ones, than cars  without.</p> <p>Euro NCAP and its members are continuing to work on possible test  methods. Ensuring repeatable, comparable results is of primary  importance if we are to offer consumers information on the relative  safety offered by different systems. Until a method is found to ensure  that level of repeatability, Euro NCAP is rewarding the fitment of ESC,  rather than its technical performance.</p> <p>Since 2008, Euro NCAP has been trying to promote broad fitment of ESC  by all vehicle manufacturers. Unfortunately, fitment varies greatly  between different European countries and between different vehicle  categories. To drive greater levels of fitment, Euro NCAP now gives  three points to a car if ESC is fitted as standard across the model  range, or if it is an option on every variant and the manufacturer also  expects to sell at least 85 percent of cars with the system as standard  equipment. The minimum percentage will increase to 90 in 2010 and to 95  percent in 2011. By 2012, Euro NCAP will assess and reward only  equipment which is fitted as standard across the whole of the model  range.<br />&nbsp; </p></span></p>]]> 
+</scope></req_spec><req_spec title="Seat belt reminders"  doc_id="ENCAP-008" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[7]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<p id="ctl00_ctl00_pagecontent_innercontent_ctrl6_pText"><span><p>The  seatbelt remains the single-most effective item of safety equipment in  any car. It is the most fundamental part of any restraint system and  manufacturers are continuing to develop new and better seatbelt systems  to provide ever greater protection. However, many people continue to  drive without wearing their seatbelts, and such people are vastly  over-represented in statistics of severe and fatal injuries.</p> <p>Many of those who do not routinely wear their seatbelts would do so  if prompted by a signal. Research shows that occupants are much more  likely to wear their belts in cars equipped with a seatbelt reminder  (SBR) than in those without. Euro NCAP rewards any effort made to ensure  that seatbelts are worn.</p> <p>Euro NCAP assesses manufacturers&rsquo; SBR systems to ensure that they are  robust and that they provide clear, unambiguous information to the  occupants about the status of their seatbelts. Trained inspectors  perform a multitude of tests on each system: the car is driven on a test  track and the belts are buckled and unbuckled; the loudness, and  duration of the audible signal is assessed; the position and clarity of  any visual warning is checked to ensure that it is visible to occupants  of different sizes. The assessment tries to recreate every possible  scenario where an occupant might be vulnerable by being unbelted, and  checks to see if the system responds appropriately. One point is  available for each of the driver, passenger and rear seats for those  systems that pass the assessment. <br />&nbsp; </p></span></p>]]> 
+</scope></req_spec><req_spec title="Speed limitation devices"  doc_id="ENCAP-009" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[8]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<p id="ctl00_ctl00_pagecontent_innercontent_ctrl6_pText"><span><p>Excessive  speed is a factor in the causation and severity of many road accidents.  Speed limits are intended to keep traffic speeds below the maximum that  is appropriate for a given environment, ensuring the safety of  motorists and other road users. Properly chosen, these speed limits  should facilitate efficient traffic flow and promote safe driving  conditions.</p> <p>Greater adherence to speed limits would avert many accidents and  mitigate the effects of those that occur and Euro NCAP rewards systems  that help drivers to control their speed. Currently, Euro NCAP rewards  only systems which are voluntarily set by the driver. In the future,  systems may become available which automatically detect the speed limit  at any point in the road network and limit a car&rsquo;s maximum speed  appropriately.</p> <p>Euro NCAP currently rewards two types of system: those which can be  set by the driver and which actively prevent the car from exceeding that  maximum; and those which simply warn the driver when the car&rsquo;s speed is  above the set maximum. The functionality of the system is considered to  make sure that the system can be set and unset easily and without undue  distraction to the driver; the clarity of the signals given to the  driver are assessed to make sure that there is no confusion about the  current set maximum and to ensure that a suitable warning is given if  the system is unable to limit the speed to that maximum. For active  systems, a check is made to ensure the system is able to limit the speed  of a car to the maximum set by the driver. At each of three speeds, the  accuracy with which the set maximum can be maintained is determined.</p> <p>A maximum of one point is available to active systems which meet Euro  NCAP&rsquo;s requirements. Warning-only systems can get a maximum of 0.5  points.<br />&nbsp; </p></span></p>]]> 
+</scope></req_spec></requirement-specification>

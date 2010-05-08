@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Intrepid-Class Production Vehicle"  doc_id="RS-STREK-001" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[0]]></node_order>
+
+<total_req><![CDATA[10]]></total_req>
+<scope><![CDATA[<p>Req Specification</p><p>Star Trek Fleet </p><p>Comprising:</p><p><span style="border-collapse: separate; color: #000000; font-family: 'Times New Roman'; font-style: normal; font-variant: normal; font-weight: normal; letter-spacing: normal; line-height: normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; font-size: medium" class="Apple-style-span"><span style="color: #bfbfbf; font-family: verdana,arial,helvetica,sans-serif; font-size: 13px" class="Apple-style-span">&nbsp;Deck Layout&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Deck One Details&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Intrepid Class - Introduction&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Command Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Tactical Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Computer Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Propulsion Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Utilities and Auxiliary Systems&nbsp; &nbsp;<br />&nbsp;Science and Remote Sensing Systems<br />&nbsp;Crew Support Systems&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Auxiliary Spacecraft Systems&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Flight Operations&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;<br />&nbsp;Emergency Operations&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><br />&nbsp;</p> 
+]]> 
+</scope><req_spec title="Deck Layout"  doc_id="RS-STREK-001-02" >
+<type><![CDATA[2]]></type>
+
+<node_order><![CDATA[0]]></node_order>
+
+<total_req><![CDATA[1]]></total_req>
+<scope><![CDATA[ 
+]]> 
+</scope>	<requirement>
+		<docid><![CDATA[RQ-ST-DKL-100]]></docid>
+		<title><![CDATA[Deck Capacity]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+
+
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[4]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+</req_spec><req_spec title="Deck One Details"  doc_id="RS-STREK-001-03" >
+<type><![CDATA[3]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[3]]></total_req>
+<scope><![CDATA[ 
+]]> 
+</scope>	<requirement>
+		<docid><![CDATA[RQ-ST-DKON-99]]></docid>
+		<title><![CDATA[Radiation Shields]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+
+
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+	</requirement>
+</req_spec></req_spec><req_spec title="Nove Waverider"  doc_id="RS-STREK-002" >
+<type><![CDATA[6]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[10]]></total_req>
+<scope><![CDATA[<p>Req Specification</p><p>Star Trek Fleet </p><p>Comprising:</p> 
+]]> 
+</scope><req_spec title="Defense Systems"  doc_id="RS-STREK-002-01" >
+<type><![CDATA[2]]></type>
+
+<node_order><![CDATA[0]]></node_order>
+
+<total_req><![CDATA[1]]></total_req>
+<scope><![CDATA[ 
+]]> 
+</scope>	<requirement>
+		<docid><![CDATA[RQ-ST-DS-001]]></docid>
+		<title><![CDATA[Neutron Shield]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+
+Neutron Shield capacity
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+	</requirement>
+</req_spec><req_spec title="Propulsion System"  doc_id="RS-STREK-002-10" >
+<type><![CDATA[3]]></type>
+
+<node_order><![CDATA[1]]></node_order>
+
+<total_req><![CDATA[2]]></total_req>
+<scope><![CDATA[ 
+]]> 
+</scope>	<requirement>
+		<docid><![CDATA[RQ-ST-PROP-X7]]></docid>
+		<title><![CDATA[Warp Reactor]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+
+
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-ST-PROP-X8]]></docid>
+		<title><![CDATA[Normal Cruising Speed]]></title>
+		<node_order><![CDATA[1]]></node_order>
+		<description><![CDATA[
+
+
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[6]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-ST-PROP-X9]]></docid>
+		<title><![CDATA[Max Cruising Speed]]></title>
+		<node_order><![CDATA[1]]></node_order>
+		<description><![CDATA[
+
+
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[6]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+</req_spec></req_spec><req_spec title="Klingon Startships"  doc_id="RS-STKLINGON-SSHIPS" >
+<type><![CDATA[5]]></type>
+
+<node_order><![CDATA[2]]></node_order>
+
+<total_req><![CDATA[1]]></total_req>
+<scope><![CDATA[]]> 
+</scope><req_spec title="Startship Raptor-class"  doc_id="RS-KL-RAPTOR" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[0]]></node_order>
+
+<total_req><![CDATA[1]]></total_req>
+<scope><![CDATA[]]> 
+</scope>	<requirement>
+		<docid><![CDATA[RQ-KL-RPT-002-X1]]></docid>
+		<title><![CDATA[Raptor Gamma Ray Shield]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RQ-KL-RPT-002-XZ]]></docid>
+		<title><![CDATA[Raptor Iridium Shield]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[2]]></expected_coverage>
+	</requirement>
+</req_spec></req_spec></requirement-specification>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Check Options" >
+<node_order><![CDATA[0]]></node_order>
+<details><![CDATA[Check all options available 
+]]> 
+</details></testsuite><testsuite name="Inventory" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[ 
+]]> 
+</details>
+<testcase internalid="698" name="checkInventory*">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[4]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[Run CoffeeMaker]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[Enter: Menu option 5, &quot;Check inventory&quot;<br />           Return to main menu.]]></actions>
+	<expectedresults><![CDATA[Coffee: 15
+Milk: 15
+Sugar: 15
+Chocolate: 15 ]]></expectedresults>
+</step>
+</steps>
+</testcase>
+
+<testcase internalid="701" name="addInventory9">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[5]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[Run CoffeeMaker]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[Enter: Menu option 4, &quot;Add inventory&quot;<br />     Coffee: 5<br />     Milk: 3<br />     Sugar: 7<br />     Chocolate:a<br />     Return to main menu.]]></actions>
+	<expectedresults><![CDATA[Please input an integer. ]]></expectedresults>
+</step>
+</steps>
+</testcase>
+
+<testcase internalid="709" name="addInventory8">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[7]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[Run CoffeeMaker]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[Enter: Menu option 4, &quot;Add inventory&quot;<br />     Coffee: 5<br />     Milk: 3<br />     Sugar: a <br />     Return to main menu.]]></actions>
+	<expectedresults><![CDATA[Please input an integer. ]]></expectedresults>
+</step>
+</steps>
+</testcase>
+</testsuite><testsuite name="Recipes" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[Recipe Management 
+]]> 
+</details></testsuite><testsuite name="Purchase" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[Purchase beverage]]> 
+</details>
+<testcase internalid="683" name="purchaseBeverage1*">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<summary><![CDATA[Precondition: addRecipe1 has successfully run
+ ]]></summary>
+	<preconditions><![CDATA[Test Case addRecipe1 has successfully run]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[ Enter: Menu option 6, &quot;Make coffee &quot;]]></actions>
+	<expectedresults><![CDATA[]]></expectedresults>
+</step>
+
+<step>
+	<step_number><![CDATA[2]]></step_number>
+	<actions><![CDATA[ Select: Coffee <br />           Amount: 60<br />           Return to main menu. <br /> ]]></actions>
+	<expectedresults><![CDATA[]]></expectedresults>
+</step>
+
+<step>
+	<step_number><![CDATA[3]]></step_number>
+	<actions><![CDATA[ Enter: Menu option 5, &quot;Check inventory &quot;<br /> Return to main menu.          &nbsp; ]]></actions>
+	<expectedresults><![CDATA[]]></expectedresults>
+</step>
+</steps>
+</testcase>
+
+<testcase internalid="688" name="purchaseBeverage2">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[Test Case addRecipe1 has successfully run]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[ Enter: Menu option 3, &quot;Make coffee &quot; ]]></actions>
+	<expectedresults><![CDATA[Your change is 40 ]]></expectedresults>
+</step>
+
+<step>
+	<step_number><![CDATA[2]]></step_number>
+	<actions><![CDATA[Enter: Menu option 3, &quot;Make coffee &quot;<br /> Select: Coffee]]></actions>
+	<expectedresults><![CDATA[Coffee: 15]]></expectedresults>
+</step>
+
+<step>
+	<step_number><![CDATA[3]]></step_number>
+	<actions><![CDATA[Amount: 40 <br />           Return to main menu.]]></actions>
+	<expectedresults><![CDATA[Milk: 15]]></expectedresults>
+</step>
+
+<step>
+	<step_number><![CDATA[4]]></step_number>
+	<actions><![CDATA[Enter: Menu option 5, &quot;Check inventory &quot;<br />            Return to main menu.]]></actions>
+	<expectedresults><![CDATA[Sugar: 15
+Chocolate: 15 ]]></expectedresults>
+</step>
+</steps>
+</testcase>
+
+<testcase internalid="694" name="purcahseBeverage3">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[Run CoffeeMaker]]></preconditions>
+	<executiontype><![CDATA[1]]></executiontype>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[Enter: Menu option 1, &quot;Add a recipe.&quot;<br />           Name: Coffee<br />           Price: 50<br />           Coffee: 16<br />           Milk: 1<br />           Sugar: 1<br />           Chocolate: 0<br />           Return to main menu.]]></actions>
+	<expectedresults><![CDATA[]]></expectedresults>
+</step>
+
+<step>
+	<step_number><![CDATA[2]]></step_number>
+	<actions><![CDATA[Enter: Menu option 6, &quot;Make coffee&quot;<br />           Price: 50<br />           Return to main menu.]]></actions>
+	<expectedresults><![CDATA[Your change is 50]]></expectedresults>
+</step>
+</steps>
+</testcase>
+</testsuite></testsuite>

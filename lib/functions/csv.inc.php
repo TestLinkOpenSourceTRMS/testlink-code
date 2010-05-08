@@ -1,16 +1,21 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * This script is distributed under the GNU General Public License 2 or later. 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * functions related to csv export
+ * functions related to import/export using CSV format
  *
- * @package 	TestLink
- * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: csv.inc.php,v 1.5 2009/06/25 19:37:53 havlat Exp $
- * @link 		http://www.teamst.org/
- *
+ * @package TestLink
+ * @author TestLink Community
+ * @copyright 2009, TestLink community 
+ * @version CVS: $Id $
+ * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
+ * @link http://www.teamst.org
  * @TODO havlatm: move both functions to appropriate object
+ * 
+ * @internal revisions
+ *	20100508 - franciscom - BUGID 3447 - importCSVData() 
+ *
  **/
  
 /** @uses keywors.class.php, requirements.inc.php */ 
@@ -49,27 +54,45 @@ function exportDataToCSV($data,$sourceKeys,$destKeys,$bWithHeader = 0,$delimiter
 //                     if the number is not verified the line is discarded silently.
 //
 /** @uses requirements.inc.php */ 
-function importCSVData($fileName,$destKeys,$delimiter = ';',$num_fields=0,
-                       $bWithHeader = false,$bSkipHeader = true)
+// function importCSVData($fileName,$destKeys,$delimiter = ';',$num_fields=0,
+//                        $bWithHeader = false,$bSkipHeader = true)
+// 
+// 
+function importCSVData($fileName,$fieldMappings, $options = null)
 {
-  
+	$my['options'] = array( 'delimiter' => ';', 'fieldQty' => 0, 'processHeader' => false);
+    $my['options'] = array_merge($my['options'], (array)$options);
+
 	$handle = fopen ($fileName,"r"); 
-	$retData = null;
-	$check_syntax=$num_fields > 0;
-	$do_import=1;
+	$check_syntax = $my['options']['fieldQty'] > 0;
+	$do_import = 1;
+	
+	// array where each element is a map.
+	$returnMap = null;
 	
 	if ($handle)
 	{
-		$i = 0;
-		$idx = $destKeys;
-		while($data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $delimiter))
+		$idx = 0;
+		$isHeaderLine = true;
+		$keyMappings = $fieldMappings;
+		
+		while( $data = fgetcsv($handle, TL_IMPORT_ROW_MAX, $my['options']['delimiter']) )
 		{ 
-			if (!$i)
+			// ignore line that start with comment char, leading blanks are ignored
+			$firstChunk = trim($data[0]);
+			$positionCheck = strpos($firstChunk,'#');
+			$processLine = ($positionCheck === false || $positionCheck != 0);
+            
+			if( $processLine )
 			{
-				if ($bWithHeader && !$bSkipHeader)
+				if( $isHeaderLine && $my['options']['processHeader'] )
 				{
-					$idx = null;
-					foreach($destKeys as $k => $targetKey)
+					// Get format information from first line, and rebuild with this 
+					// information the keyMappings, using fieldMappings
+					//
+					$isHeaderLine = false;
+					$keyMappings = null;
+					foreach($fieldMapping as $k => $targetKey)
 					{
 						if (is_int($k))
 						{
@@ -82,30 +105,28 @@ function importCSVData($fileName,$destKeys,$delimiter = ';',$num_fields=0,
 							$dest = $targetKey;
 						}
 						$t = array_search($needle, $data);	
-						$idx[$t] = $dest;
+						$keyMappings[$t] = $dest;
 					}
-					$i++;
-					continue;
 				}
+	        	else
+	        	{
+					if( $check_syntax)
+					{
+					  $do_import = (count($data) == $my['options']['fieldQty'] );
+					}
+					
+					if( $do_import )
+					{ 
+						foreach($keyMappings as $fieldPos => $fieldKey)
+						{ 
+							$returnMap[$idx][$fieldKey] = $data[$fieldPos];
+						} 
+						$idx++;
+					}
+	        	}
 			}
-	
-	    // ---------------------------------------------		
-	    if( $check_syntax)
-	    {
-	      $do_import=(count($data)==$num_fields );
-	    }
-      if( $do_import )
-      { 
-			  foreach($idx as $c => $key)
-			  { 
-				  $retData[$i][$idx[$c]] = $data[$c];
-			  } 
-			  $i++;
-			}
-			// ---------------------------------------------
-		}
+		} // end while
 	}
-	return $retData;
+	return $returnMap;
 }
-
 ?>

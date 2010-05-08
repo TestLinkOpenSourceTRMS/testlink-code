@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.97 2010/04/08 15:11:33 asimon83 Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.98 2010/05/08 15:39:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100508 - franciscom - BUGID 3447: CVS Import - add new column type 
  * 20100301 - asimon - modified req_link_replace()
  * 20091202 - franciscom - added contribution req_link_replace()
  * 20090815 - franciscom - get_last_execution() call changes
@@ -141,9 +142,8 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 		$docID = trim_and_limit($data['req_doc_id'],$field_size->req_docid);
 		$title = trim_and_limit($data['title'],$field_size->req_title);
 		$scope = $data['description'];
-
-		new dBug($data);
-		
+		$type = $data['type'];
+	
 		if (($emptyScope == 'on') && empty($scope))
 		{
 			// skip rows with empty scope
@@ -171,17 +171,20 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 						$status['msg'] = lang_get('req_import_result_overwritten');
 					}
 				}
-				elseif ($conflictSolution == 'skip') {
+				elseif ($conflictSolution == 'skip') 
+				{
 					// no work
 					$status['msg'] = lang_get('req_import_result_skipped');
 				}
 
-			} else {
+			} 
+			else 
+			{
 				// no conflict - just add requirement
-				$status = $req_mgr->create($idSRS,$docID, $title, $scope,  $userID,
-				                           TL_REQ_STATUS_VALID, TL_REQ_STATUS_NOT_TESTABLE);
+				$status = $req_mgr->create($idSRS,$docID, $title, $scope,  $userID, TL_REQ_STATUS_VALID, $type);
 			}
-			$arrImport[] = array($docID,$title, $status['msg']);
+			// $arrImport[] = array($docID,$title, $status['msg']);
+			$arrImport[] = array('req_doc_id' => $docID, 'title' => $title, 'import_status' => $status['msg']);
 		}
 	}
 
@@ -194,6 +197,10 @@ algorithm changes, now is the docid the attribute that must be unique
 */
 function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID)
 {
+	$req_type_label_id = config_get('req_cfg')->type_labels;
+	$cache_type_label = null;
+
+	$unknown_code = lang_get('unknown_code');
 	$reqMgr = new requirement_mgr($dbHandler);
 	$arrImport = null;
 	if( ($loop2do=count($arrImportSource)) )
@@ -239,7 +246,22 @@ function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID
             	$msgID = 'import_req_exists_here';
             }
             
-			$arrImport[] = array($req['req_doc_id'],trim($req['title']),$req['description'], $labels[$msgID]);
+            // 20100508 - franciscom
+			// $arrImport[] = array($req['req_doc_id'],trim($req['title']),$req['description'], $labels[$msgID]);
+			if( isset($req_type_label_id[$req['type']]) )
+			{
+				if( !isset($cache_type_label[$req['type']]) )
+				{
+					$cache_type_label[$req['type']] = lang_get($req_type_label_id[$req['type']]);
+				}
+				$verbose_type = $cache_type_label[$req['type']];
+			}
+			else
+			{
+				$verbose_type = sprintf($unknown_code,$req['type']);
+			}
+			$arrImport[] = array('req_doc_id' => $req['req_doc_id'], 'title' => trim($req['title']),
+			                     'scope' => $req['description'], 'type' => $verbose_type, 'check_status' => $labels[$msgID]);
 		}
 	}
 
@@ -271,10 +293,9 @@ function getReqDocIDs(&$db,$srs_id)
  * load imported data from file and parse it to array
  * @return array_of_array each inner array include fields title and scope (and more)
  */
-function loadImportedReq($CSVfile, $importType)
+function loadImportedReq($fileName, $importType)
 {
 	$data = null;
-	$fileName = $CSVfile;
 	switch($importType)
 	{
 		case 'csv':
@@ -308,17 +329,16 @@ function loadImportedReq($CSVfile, $importType)
 function importReqDataFromCSV($fileName)
 {
   	$field_size=config_get('field_size');
-  	$delimiter=',';
   	
   	// CSV line format
-	$destKeys = array("req_doc_id","title","description");
+	$fieldMappings = array("req_doc_id","title","description","type");
+	$options = array('delimiter' => ',' , 'fieldQty' => count($fieldMappings));
+	$reqData = importCSVData($fileName,$fieldMappings,$options);
 
-  	// lenght will be adjusted to these values
-  	$field_length = array("req_doc_id" => $field_size->req_docid, "title" => $field_size->req_title);
-
-	$reqData = importCSVData($fileName,$destKeys,$delimiter,count($destKeys));
-	if ($reqData)
+	if($reqData)
 	{
+  		// lenght will be adjusted to these values
+  		$field_length = array("req_doc_id" => $field_size->req_docid, "title" => $field_size->req_title);
 		foreach($reqData as $key => $value)
 		{
 	     	foreach($field_length as $fkey => $len)
@@ -336,15 +356,12 @@ function importReqDataFromCSV($fileName)
  */
 function importReqDataFromCSVDoors($fileName)
 {
-
-	$destKeys = array("Object Identifier" => "title","Object Text" => "description",
-					  "Created By","Created On","Last Modified By","Last Modified On");
-
-	$delimiter = ',';
-  	$withHeader = true;
-  	$dontSkipHeader = false;
-
-	$reqData = importCSVData($fileName,$destKeys,$delimiter,0,$withHeader,$dontSkipHeader);
+	// Some keys are strings, other numeric
+	$fieldMappings = array("Object Identifier" => "title","Object Text" => "description",
+					       "Created By","Created On","Last Modified By","Last Modified On");
+	
+	$options = array('delimiter' => ',', 'fieldQty' => count($fieldMappings), 'processHeader' => true);
+	$reqData = importCSVData($fileName,$fieldMappings,$options);
 
 	return $reqData;
 }

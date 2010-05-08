@@ -1,6 +1,6 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.15 2010/04/03 08:49:40 franciscom Exp $
+$Id: reqImport.tpl,v 1.16 2010/05/08 15:39:40 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -14,10 +14,8 @@ Revision:
 * ----------------------------------------------------------------- *}
 {lang_get var="labels" 
           s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
-             th_id,th_test_case,version,execution_order,
-             no_testcase_available,btn_save_custom_fields,
-             has_been_executed,inactive_testcase,btn_save_exec_order,
-             executed_can_not_be_removed,title_req_import,
+             th_id,th_test_case,version,scope,check_status,type,
+             btn_save_custom_fields,title_req_import,
              check_req_file_structure,req_msg_norequirement,
              req_import_option_skip,req_import_option_overwrite,
              title_req_import_check_input,req_import_check_note,
@@ -106,15 +104,17 @@ Revision:
   	    		<th>{$labels.req_doc_id}</th>
   	    		<th>{$labels.title}</th>
   	    		<th>{$labels.scope}</th>
-  	    		<th>{$labels.status}</th>
+  	    		<th>{$labels.type}</th>
+  	    		<th>{$labels.check_status}</th>
   	    	</tr>
   	      {if $gui->items != ''}
  	          {foreach from=$gui->items key=idx item=import_feedback}
   	    	  <tr>
-  	    	  	<td>{$import_feedback[0]|escape}</td>
-  	    	  	<td>{$import_feedback[1]|escape}</td>
-  	    	  	<td>{$import_feedback[2]|strip_tags|strip|truncate:#SCOPE_TRUNCATE#}</td>
-  	    	  	<td>{$import_feedback[3]|escape}</td>
+  	    	  	<td>{$import_feedback.req_doc_id|escape}</td>
+  	    	  	<td>{$import_feedback.title|escape}</td>
+  	    	  	<td>{$import_feedback.scope|strip_tags|strip|truncate:#SCOPE_TRUNCATE#}</td>
+  	    	  	<td>{$import_feedback.type}</td>
+  	    	  	<td>{$import_feedback.check_status|escape}</td>
   	    	  </tr>
   	    	  {/foreach}
   	      {else}
@@ -142,9 +142,9 @@ Revision:
   	{if $gui->items != ''}
  	    {foreach from=$gui->items key=idx item=import_feedback}
   	  <tr>
-  	  	<td>{$import_feedback[0]|escape}</td>
-  	  	<td>{$import_feedback[1]|escape}</td>
-  	  	<td>{$import_feedback[2]|escape}</td>
+  	    <td>{$import_feedback.req_doc_id|escape}</td>
+  	    <td>{$import_feedback.title|escape}</td>
+  	    <td>{$import_feedback.import_status|escape}</td>
   	  </tr>
   	  {/foreach}
   	{else}

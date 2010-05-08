@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2010/03/22 22:05:18 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2010/05/08 15:36:29 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import requirements to a specification. 
@@ -95,8 +95,6 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 	    // if achecked_req is null => user has not selected any requirement, anyway we are going to create reqspec tree
 	    $filter['requirements'] = $argsObj->achecked_req;
 	    $retval->items = array();
-	    
-	    new dBug($xml);
         foreach($xml->req_spec as $xkm)
     	{
     		$dummy = $reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,$argsObj->user_id);
@@ -229,6 +227,7 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr)
 	$gui->scope = $argsObj->scope;
 	$gui->req_spec = null;
 	$gui->req_spec_id = $argsObj->req_spec_id;
+
 	
     switch($gui->scope)
     {
@@ -251,7 +250,6 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr)
     	break;
     }
 
-	new dBug($gui->importTypes);
 	
     $gui->importType = $argsObj->importType;
     $gui->fileName = TL_TEMP_PATH . "importReq-" . session_id() . ".tmp";
@@ -309,8 +307,6 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 			        if( strcasecmp($argsObj->importType,'XML') == 0 )
 			        {
     	                $retval->file_check['status_ok']=!(($xml=simplexml_load_file($fileName)) === FALSE);
-    	       
-    	       			new dBug($xml);
     	                if($retval->file_check['status_ok'])
     	                { 
     	                	
@@ -338,7 +334,6 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
         						        $retval->items[]=$xml_req;
         						    }    
         						}    
-        						new dBug($retval->items);
     	                	}
 	                    }
 	                    else

@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2009/11/30 21:19:03 $ by $Author: havlat $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2010/05/08 17:39:27 $ by $Author: franciscom $
  *
- * rev: 20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
+ * rev: 
+ *		20100508 - franciscom - BUGID 3445: Ability to delete events from selected class from event logs 
+ *		20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
  *      20081029 - franciscom - added 'clear' action to delete all events and transactions
  *                              present on database.
 **/
@@ -25,8 +27,22 @@ $filters = getFilters();
 switch($args->doAction)
 {
     case 'clear':
-	    $g_tlLogger->deleteEventsFor();
-	    logAuditEvent(TLS("audit_events_deleted",$args->currentUser->login),"DELETE",null,"events");
+        // BUGID 3445: Ability to delete events from selected class from event logs 
+	    $g_tlLogger->deleteEventsFor($args->logLevel);
+	    if( is_null($args->logLevel) )
+	    {
+	    	logAuditEvent(TLS("audit_all_events_deleted",$args->currentUser->login),"DELETE",null,"events");
+	    }
+	    else
+	    {
+	    	$logLevelVerbose = null;
+			foreach( $args->logLevel as $code )
+			{
+				$logLevelVerbose[] = $gui->logLevels[$code];  
+	    	}
+	    	$logLevelVerbose = implode(',',$logLevelVerbose);
+	    	logAuditEvent(TLS("audit_events_with_level_deleted",$args->currentUser->login,$logLevelVerbose),"DELETE",null,"events");
+	    }
 	    break;
     
     case 'filter':
@@ -36,20 +52,12 @@ switch($args->doAction)
 }
 
 $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
-									$args->object_type ? $args->object_type : null,null,500,$filters->startTime,
-									$filters->endTime,$filters->users);
+										 $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
+										 $filters->endTime,$filters->users);
 
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
-// $smarty->assign('events',$events);
-// $smarty->assign('users',$users);
-// $smarty->assign('logLevels',$logLevels);
-// $smarty->assign('object_id',$args->object_id);
-// $smarty->assign('object_type',$args->object_type);
-// $smarty->assign('selectedLogLevels',$args->logLevel ? array_values($args->logLevel) : array());
-//$smarty->assign('startDate',$args->startDate);
-//$smarty->assign('endDate',$args->endDate);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**

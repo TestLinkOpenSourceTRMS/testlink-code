@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearchForm.php,v 1.1 2010/01/12 20:03:19 franciscom Exp $
+ * @version    	CVS: $Id: reqSpecSearchForm.php,v 1.2 2010/05/08 18:01:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search formular for requiremnt specifications.
@@ -44,7 +44,7 @@ $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 
 $reqCfg = config_get('req_cfg');
 $gui->types = init_labels($reqCfg->type_labels);
-$gui->reqStatus = init_labels(config_get('req_status'));
+$gui->reqStatus = init_labels($reqCfg->status_labels);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

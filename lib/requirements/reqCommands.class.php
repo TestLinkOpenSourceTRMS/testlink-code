@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2010/03/24 12:46:35 $ by $Author: asimon83 $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/05/08 17:56:57 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -36,12 +36,12 @@ class reqCommands
 	    $this->reqSpecMgr = new requirement_spec_mgr($db);
 	    $this->reqMgr = new requirement_mgr($db);
 	    
-	    $this->reqStatusDomain = init_labels(config_get('req_status'));
-	    $this->reqTypeDomain = init_labels(config_get('req_cfg')->type_labels);
-	    $this->reqRelationTypeDescr = init_labels(config_get('req_cfg')->rel_type_description);
-
+	    $reqCfg = config_get('req_cfg');
+	    $this->reqStatusDomain = init_labels($reqCfg->status_labels);
+	    $this->reqTypeDomain = init_labels($reqCfg->type_labels);
+	    $this->reqRelationTypeDescr = init_labels($reqCfg->rel_type_description);
 	    
-	    $type_ec = config_get('req_cfg')->type_expected_coverage;
+	    $type_ec = $reqCfg->->type_expected_coverage;
 	    $this->attrCfg = array();
 	    $this->attrCfg['expected_coverage'] = array();
 	    foreach($this->reqTypeDomain as $type_code => $dummy)

@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSearchForm.php,v 1.2 2010/03/24 12:46:35 asimon83 Exp $
+ * @version    	CVS: $Id: reqSearchForm.php,v 1.3 2010/05/08 17:59:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search formular for requirements.
@@ -51,7 +51,7 @@ $gui->types = init_labels($reqCfg->type_labels);
 $coverageManagement = $reqCfg->expected_coverage_management;
 $gui->filter_by['expected_coverage'] = !is_null($coverageManagement);
 
-$gui->reqStatus = init_labels(config_get('req_status'));
+$gui->reqStatus = init_labels($reqCfg->status_labels);
 
 //BUGID 1748
 $gui->filter_by['relation_type'] = $reqCfg->relations->enable;

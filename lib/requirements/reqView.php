@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2010/03/24 12:46:34 $ by $Author: asimon83 $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2010/05/08 18:00:10 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -106,7 +106,7 @@ function initialize_gui(&$dbHandler,$argsObj)
    	$gui->attachments[$gui->req_id] = getAttachmentInfosFrom($req_mgr,$gui->req_id);
     
     $gui->attachmentTableName = $req_mgr->getAttachmentTableName();
-    $gui->reqStatus = init_labels(config_get('req_status'));
+    $gui->reqStatus = init_labels($gui->req_cfg->status_labels));
     $gui->reqTypeDomain = init_labels($gui->req_cfg->type_labels);
 
     // added req relations for BUGID 1748

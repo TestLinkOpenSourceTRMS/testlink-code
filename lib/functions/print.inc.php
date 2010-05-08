@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.99 2010/05/04 19:56:10 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.100 2010/05/08 17:58:33 franciscom Exp $
  * @uses printDocument.php
  *
  *
@@ -122,7 +122,7 @@ function renderRequirementNodeForPrinting(&$db,$node, &$printingOptions, $tocPre
 		                'custom_field' => 'custom_field', 'relation_project' => 'relation_project',
 		                'related_tcs' => 'related_tcs');
 		$labels = init_labels($labels);
-		$reqStatusLabels = init_labels(config_get('req_status'));
+		$reqStatusLabels = init_labels($req_cfg->status_labels);
 	    $reqTypeLabels = init_labels($req_cfg->type_labels);
 		$title_separator = config_get('gui_title_separator_1');
 		$req_mgr = new requirement_mgr($db);

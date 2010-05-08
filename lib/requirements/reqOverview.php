@@ -8,12 +8,13 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.9 2010/03/25 11:18:11 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.10 2010/05/08 17:57:21 franciscom Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
+ * 20100508 - franciscom - use of $req_cfg->status_labels
  * 20100325 - asimon - added html comments with padded numbers/strings for easier and
  *                     corrent sorting to columns title/version/coverage/relations
  * 20100323 - asimon - show columns for relations and coverage only if these features are enabled.
@@ -50,8 +51,8 @@ $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 if(count($gui->reqIDs)) {
 	
 	// get type and status labels
-	$type_labels = init_labels(config_get('req_cfg')->type_labels);
-	$status_labels = init_labels(config_get('req_status'));
+	$type_labels = init_labels($req_cfg->type_labels);
+	$status_labels = init_labels($req_cfg->status_labels);
 	
 	$gui->cfields = $cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement',
                                                                  null, 'name');

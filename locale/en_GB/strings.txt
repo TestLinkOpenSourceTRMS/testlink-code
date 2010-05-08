@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.612 2010/05/02 16:54:08 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.613 2010/05/08 15:20:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -113,6 +113,7 @@ $TLS_due_since = "Test Case Assigned Since(days)";
 $TLS_parent_child='is Parent or is Child';
 $TLS_blocks_depends = 'Blocks or Depends';
 $TLS_related_to='is related to';
+$TLS_unknown_code='unknown code: %s';
 
 
 $TLS_total = "Total";
@@ -642,6 +643,7 @@ $TLS_title_choose_local_file = "Choose a Local File to Upload";
 $TLS_title_req_import = "Import requirements";
 $TLS_title_req_import_check_input = "Check import data";
 $TLS_title_req_spec_import = "Import Req. Spec.";
+$TLS_check_status = "Check Status";
 
 
 

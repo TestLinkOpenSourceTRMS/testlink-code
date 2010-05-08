@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Frontal impact" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Car to Car Side impact" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Pole Side Impact" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Child protection" >
+<node_order><![CDATA[4]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Pedestrian protection" >
+<node_order><![CDATA[5]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Whiplash" >
+<node_order><![CDATA[6]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="ESC" >
+<node_order><![CDATA[7]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Seat belt reminders" >
+<node_order><![CDATA[8]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="Speed limitation devices" >
+<node_order><![CDATA[9]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite>

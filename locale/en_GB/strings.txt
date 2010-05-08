@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.614 2010/05/08 15:44:36 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.615 2010/05/08 17:38:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2745,7 +2745,8 @@ $TLS_audit_tc_removed_from_testplan = "Test Case '{%1}' version {%2} was removed
 
 $TLS_audit_missing_localization = "String '{%1}' is not localized for '{%2}'";
 
-$TLS_audit_events_deleted = "User '{%1}' deleted all events";
+$TLS_audit_all_events_deleted = "User '{%1}' deleted all events";
+$TLS_audit_events_with_level_deleted = "User '{%1}' deleted events with level: {%2}";
 
 
 // ----- eventviewer.php -----
@@ -2776,6 +2777,7 @@ $TLS_btn_clear_all_events = "Clear All Events";
 $TLS_btn_clear_events = "Clear Events";
 $TLS_th_event_description = "Description";
 $TLS_select_user = "User (Default All)";
+$TLS_clear_tip = "Delete events with log level(s) selected, or all if no level selected";
 
 
 // ----- int_mantis.php -----

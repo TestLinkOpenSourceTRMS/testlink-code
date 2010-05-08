@@ -1,3 +1,9 @@
 # new format
+# column 1: Requirement DOC ID
+# column 2: Title
+# column 3: Scope
+# column 4: Type -> see file cfg/const.inc.php TL_REQ_TYPE_*
+#
 ENG-0001,Terrestrial Propulsor,,1
 ENG-0002,Main Deflector,"<p>Main deflector bla, bla, bla.</p>",2
+ENG-0002,Main Deflector 3,,67

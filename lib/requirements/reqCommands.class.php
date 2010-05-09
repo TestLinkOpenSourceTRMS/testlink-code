@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/05/08 17:56:57 $ by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/05/09 07:38:12 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -41,7 +41,7 @@ class reqCommands
 	    $this->reqTypeDomain = init_labels($reqCfg->type_labels);
 	    $this->reqRelationTypeDescr = init_labels($reqCfg->rel_type_description);
 	    
-	    $type_ec = $reqCfg->->type_expected_coverage;
+	    $type_ec = $reqCfg->type_expected_coverage;
 	    $this->attrCfg = array();
 	    $this->attrCfg['expected_coverage'] = array();
 	    foreach($this->reqTypeDomain as $type_code => $dummy)

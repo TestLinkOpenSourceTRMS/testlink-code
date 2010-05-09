@@ -4,11 +4,11 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/05/08 15:36:29 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2010/05/09 07:38:12 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
- * Import requirements to a specification. 
+ * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  * 
  * 20100321 - franciscom - work on import child requirements XML format - not finished
@@ -71,6 +71,7 @@ switch($args->scope)
 	break;
 }
 
+new dBug($gui->items);
 $smarty = new TLSmarty;
 
 $smarty->assign('gui',$gui);
@@ -335,6 +336,8 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
         						    }    
         						}    
     	                	}
+    	                	new dBug($retval->items);
+    	                	die();
 	                    }
 	                    else
 	                    {

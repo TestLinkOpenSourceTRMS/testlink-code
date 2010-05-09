@@ -3,7 +3,10 @@
 # column 2: Title
 # column 3: Scope
 # column 4: Type -> see file cfg/const.inc.php TL_REQ_TYPE_*
+# column 5: Status -> see file cfg/const.inc.php TL_REQ_STATUS_*
+# column 6: expected_coverage
+# column 7: order -> inside the set of req been imported
 #
-ENG-0001,Terrestrial Propulsor,,1
-ENG-0002,Main Deflector,"<p>Main deflector bla, bla, bla.</p>",2
-ENG-0002,Main Deflector 3,,67
+ENG-0001,Terrestrial Propulsor,,1,V,3,2
+ENG-0002,Main Deflector,"<p>Main deflector bla, bla, bla.</p>",2,V,1,4
+ENG-0004,Main Deflector 3,,67,V,1,1

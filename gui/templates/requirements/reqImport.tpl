@@ -1,6 +1,6 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.16 2010/05/08 15:39:40 franciscom Exp $
+$Id: reqImport.tpl,v 1.17 2010/05/09 09:09:32 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -15,8 +15,8 @@ Revision:
 {lang_get var="labels" 
           s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
              th_id,th_test_case,version,scope,check_status,type,
-             btn_save_custom_fields,title_req_import,
-             check_req_file_structure,req_msg_norequirement,
+             btn_save_custom_fields,title_req_import,expected_coverage,
+             check_req_file_structure,req_msg_norequirement,status,
              req_import_option_skip,req_import_option_overwrite,
              title_req_import_check_input,req_import_check_note,
              req_import_dont_empty,btn_import,btn_cancel,Result,
@@ -105,6 +105,8 @@ Revision:
   	    		<th>{$labels.title}</th>
   	    		<th>{$labels.scope}</th>
   	    		<th>{$labels.type}</th>
+  	    		<th>{$labels.status}</th>
+  	    		<th>{$labels.expected_coverage}</th>
   	    		<th>{$labels.check_status}</th>
   	    	</tr>
   	      {if $gui->items != ''}
@@ -113,7 +115,9 @@ Revision:
   	    	  	<td>{$import_feedback.req_doc_id|escape}</td>
   	    	  	<td>{$import_feedback.title|escape}</td>
   	    	  	<td>{$import_feedback.scope|strip_tags|strip|truncate:#SCOPE_TRUNCATE#}</td>
-  	    	  	<td>{$import_feedback.type}</td>
+  	    	  	<td>{$import_feedback.type|escape}</td>
+  	    	  	<td>{$import_feedback.status|escape}</td>
+  	    	  	<td align="right">{$import_feedback.expected_coverage}</td>
   	    	  	<td>{$import_feedback.check_status|escape}</td>
   	    	  </tr>
   	    	  {/foreach}
@@ -130,8 +134,9 @@ Revision:
 
   {/if}
   
+  {* Here we display the result of insert/update on DB *}
   {if $gui->importResult != '' && $gui->file_check.status_ok }
-  	<p class="info">{$importResult}</p>
+  	<p class="info">{$gui->importResult}</p>
 
   	<table class="simple">
   	<tr>

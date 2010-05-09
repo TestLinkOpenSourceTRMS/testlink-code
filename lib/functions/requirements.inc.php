@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.98 2010/05/08 15:39:22 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.99 2010/05/09 07:45:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -137,12 +137,17 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 	define('SKIP_CONTROLS',1);
 	$field_size = config_get('field_size');
 
+	new dBug($arrImportSource);
+	
 	foreach ($arrImportSource as $data)
 	{
 		$docID = trim_and_limit($data['req_doc_id'],$field_size->req_docid);
 		$title = trim_and_limit($data['title'],$field_size->req_title);
 		$scope = $data['description'];
 		$type = $data['type'];
+		$status = $data['status'];
+		$expected_coverage = $data['expected_coverage'];
+		$node_order = $data['order'];
 	
 		if (($emptyScope == 'on') && empty($scope))
 		{
@@ -181,7 +186,8 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 			else 
 			{
 				// no conflict - just add requirement
-				$status = $req_mgr->create($idSRS,$docID, $title, $scope,  $userID, TL_REQ_STATUS_VALID, $type);
+				$status = $req_mgr->create($idSRS,$docID,$title,$scope,$userID,$status,$type,
+				                           $expected_coverage,$node_order);
 			}
 			// $arrImport[] = array($docID,$title, $status['msg']);
 			$arrImport[] = array('req_doc_id' => $docID, 'title' => $title, 'import_status' => $status['msg']);
@@ -197,24 +203,23 @@ algorithm changes, now is the docid the attribute that must be unique
 */
 function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID)
 {
-	$req_type_label_id = config_get('req_cfg')->type_labels;
-	$cache_type_label = null;
-
+	$reqCfg = config_get('req_cfg');
+	$labels = array('type' => $reqCfg->type_labels, 'status' => $reqCfg->status_labels);
+	$verbose = array('type' => null, 'status' => null);
+	$cache = array('type' => null, 'status' => null);
+	$cacheKeys = array_keys($cache);
+	
 	$unknown_code = lang_get('unknown_code');
 	$reqMgr = new requirement_mgr($dbHandler);
 	$arrImport = null;
 	if( ($loop2do=count($arrImportSource)) )
 	{
-		$labels = array('ok' => '', 'import_req_conflicts_other_branch' => '',
-						'import_req_exists_here' => '');
-
-		foreach($labels as $key => $dummy)
-		{
-			$labels[$key] = lang_get($key);
-		}
-		
-		
 		$getOptions = array('output' => 'minimun');
+		$messages = array('ok' => '', 'import_req_conflicts_other_branch' => '','import_req_exists_here' => '');
+		foreach($messages as $key => $dummy)
+		{
+			$messages[$key] = lang_get($key);
+		}
 	    				
 		for($idx=0 ; $idx < $loop2do; $idx++)
 		{
@@ -247,24 +252,29 @@ function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID
             }
             
             // 20100508 - franciscom
-			// $arrImport[] = array($req['req_doc_id'],trim($req['title']),$req['description'], $labels[$msgID]);
-			if( isset($req_type_label_id[$req['type']]) )
+			foreach($cacheKeys as $attr)
 			{
-				if( !isset($cache_type_label[$req['type']]) )
+				if( isset($labels[$attr][$req[$attr]]) )
 				{
-					$cache_type_label[$req['type']] = lang_get($req_type_label_id[$req['type']]);
+					if( !isset($cache[$attr][$req[$attr]]) )
+					{
+						$cache[$attr][$req[$attr]] = lang_get($labels[$attr][$req[$attr]]);
+					}
+					$verbose[$attr] = $cache[$attr][$req[$attr]];
 				}
-				$verbose_type = $cache_type_label[$req['type']];
+				else
+				{
+					$verbose[$attr] = sprintf($unknown_code,$req[$attr]);
+				}
 			}
-			else
-			{
-				$verbose_type = sprintf($unknown_code,$req['type']);
-			}
+			
 			$arrImport[] = array('req_doc_id' => $req['req_doc_id'], 'title' => trim($req['title']),
-			                     'scope' => $req['description'], 'type' => $verbose_type, 'check_status' => $labels[$msgID]);
+			                     'scope' => $req['description'], 'type' => $verbose['type'], 
+			                     'status' => $verbose['status'], 'expected_coverage' => $req['expected_coverage'],
+			                     'node_order' => $req['order'], 'check_status' => $messages[$msgID]);
 		}
 	}
-
+	new dBug($arrImport);
 	return $arrImport;
 }
 
@@ -331,7 +341,7 @@ function importReqDataFromCSV($fileName)
   	$field_size=config_get('field_size');
   	
   	// CSV line format
-	$fieldMappings = array("req_doc_id","title","description","type");
+	$fieldMappings = array("req_doc_id","title","description","type","status","expected_coverage","order");
 	$options = array('delimiter' => ',' , 'fieldQty' => count($fieldMappings));
 	$reqData = importCSVData($fileName,$fieldMappings,$options);
 

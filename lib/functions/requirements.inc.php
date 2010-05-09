@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.100 2010/05/09 08:27:52 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.101 2010/05/09 09:17:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -130,8 +130,8 @@ function exportReqDataToXML($reqData)
  *
  *
  **/
-function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
-                             $conflictSolution, $emptyScope, $idSRS, $userID)
+function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,$conflictSolution, 
+							 $emptyScope, $idSRS, $tprojectID, $userID)
 {
 	$req_mgr = new requirement_mgr($db);
 	define('SKIP_CONTROLS',1);
@@ -165,11 +165,10 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 				$status['msg'] = 'Error';
 				if ($conflictSolution == 'overwrite')
 				{
-					$item = current($req_mgr->getByDocID($docID));
+					$item = current($req_mgr->getByDocID($docID,$tprojectID));
 					$last_version = $req_mgr->get_last_version_info($item['id']);
 					$status = $req_mgr->update($item['id'],$last_version['id'],$docID,$title,$scope,$userID,
-							                   $status,$type,$expected_coverage,SKIP_CONTROLS);
-
+							                   $status,$type,$expected_coverage,$node_order,SKIP_CONTROLS);
 
 					if ($status == 'ok') 
 					{
@@ -640,7 +639,7 @@ function doReqImport(&$dbHandler,$tprojectID,$userID,$reqSpecID,$fileName,$impor
 		if ($doImport)
 		{
 			$arrImport = executeImportedReqs($dbHandler,$arrImportSource, $map_cur_reqdoc_id,
-		                                     $conflictSolution, $emptyScope, $reqSpecID, $userID);
+		                                     $conflictSolution, $emptyScope, $reqSpecID, $tprojectID, $userID);
 		}
 		else
 		{

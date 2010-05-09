@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.80 $
- * @modified $Date: 2010/05/09 08:27:52 $ by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2010/05/09 09:17:59 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20100509 - franciscom - update() interface changes.
  *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select here from reqView.php
  *                                   as it is now used from multiple files.
  *  20100323 - asimon - BUGID 1748 - added count_relations()
@@ -361,7 +362,7 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
   */
 
 function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $type,
-                $expected_coverage,$node_order=null,$skip_controls=0)
+                $expected_coverage,$node_order=null,$tproject_id=null,$skip_controls=0)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
@@ -375,7 +376,9 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     $rs=$this->get_by_id($id,$version_id);
     $req = $rs[0];
     $srs_id=$req['srs_id'];
-	$tproject_id = $this->tree_mgr->getTreeRoot($srs_id);
+    
+    // try to avoid function calls when data is available on caller
+	$tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id): $tproject_id;
 
     /* contribution by asimon83/mx-julian */
 	if (config_get('internal_links')->enable ) 

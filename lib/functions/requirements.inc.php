@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.101 2010/05/09 09:17:59 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.102 2010/05/09 09:26:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -133,11 +133,11 @@ function exportReqDataToXML($reqData)
 function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,$conflictSolution, 
 							 $emptyScope, $idSRS, $tprojectID, $userID)
 {
-	$req_mgr = new requirement_mgr($db);
 	define('SKIP_CONTROLS',1);
-	$field_size = config_get('field_size');
 
-	new dBug($arrImportSource);
+	$req_mgr = new requirement_mgr($db);
+	$import_status = null;
+	$field_size = config_get('field_size');
 	
 	foreach ($arrImportSource as $data)
 	{
@@ -152,47 +152,43 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,$conflict
 		if (($emptyScope == 'on') && empty($scope))
 		{
 			// skip rows with empty scope
-			$status = lang_get('req_import_result_skipped');
+			$import_status = lang_get('req_import_result_skipped');
 		}
 		else
 		{
 			$crash = $map_cur_reqdoc_id && array_search($docID, $map_cur_reqdoc_id);
-			// echo "\$crash: $crash";
 			if($crash)
 			{
 				// process conflict according to choosen solution
 				tLog('Conflict found. solution: ' . $conflictSolution);
-				$status['msg'] = 'Error';
+				$import_status['msg'] = 'Error';
 				if ($conflictSolution == 'overwrite')
 				{
 					$item = current($req_mgr->getByDocID($docID,$tprojectID));
 					$last_version = $req_mgr->get_last_version_info($item['id']);
-					$status = $req_mgr->update($item['id'],$last_version['id'],$docID,$title,$scope,$userID,
-							                   $status,$type,$expected_coverage,$node_order,SKIP_CONTROLS);
+					$op_status = $req_mgr->update($item['id'],$last_version['id'],$docID,$title,$scope,$userID,
+							                      $status,$type,$expected_coverage,$node_order,SKIP_CONTROLS);
 
-					if ($status == 'ok') 
+					if ($op_status == 'ok') 
 					{
-						$status['msg'] = lang_get('req_import_result_overwritten');
+						$import_status['msg'] = lang_get('req_import_result_overwritten');
 					}
 				}
 				elseif ($conflictSolution == 'skip') 
 				{
 					// no work
-					$status['msg'] = lang_get('req_import_result_skipped');
+					$import_status['msg'] = lang_get('req_import_result_skipped');
 				}
-
 			} 
 			else 
 			{
 				// no conflict - just add requirement
-				$status = $req_mgr->create($idSRS,$docID,$title,$scope,$userID,$status,$type,
-				                           $expected_coverage,$node_order);
+				$import_status = $req_mgr->create($idSRS,$docID,$title,$scope,$userID,$status,$type,
+				                                  $expected_coverage,$node_order);
 			}
-			// $arrImport[] = array($docID,$title, $status['msg']);
-			$arrImport[] = array('req_doc_id' => $docID, 'title' => $title, 'import_status' => $status['msg']);
+			$arrImport[] = array('req_doc_id' => $docID, 'title' => $title, 'import_status' => $import_status['msg']);
 		}
 	}
-
 	return $arrImport;
 }
 
@@ -273,7 +269,6 @@ function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID
 			                     'node_order' => $req['order'], 'check_status' => $messages[$msgID]);
 		}
 	}
-	new dBug($arrImport);
 	return $arrImport;
 }
 

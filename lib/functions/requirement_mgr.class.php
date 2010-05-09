@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.79 $
- * @modified $Date: 2010/03/24 12:46:36 $ by $Author: asimon83 $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2010/05/09 08:27:52 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -599,22 +599,7 @@ function get_coverage($id)
   	if($ret['status_ok'])
   	{
   		$ret['msg'] = 'ok';
-
-  		// if($req_cfg->reqdoc_id->is_system_wide)
-  		// {
-  		// 	// req doc id MUST BE unique inside the whole DB
-        // 	$my_srs_id = null;
-  		// }
   		$rs = $this->getByDocID($reqdoc_id,$tproject_id);
-        // new dBug($rs);
-        // $checks = array();
-        // $checks['!is_null(rs)'] = !is_null($rs);
-        // $checks['is_null(id)'] = is_null($id);
-        // $checks['!isset(rs[$id]'] = !isset($rs[$id]);
-        // 
-        // new dBug($checks);
-        
-        
  		if(!is_null($rs) && (is_null($id) || !isset($rs[$id])))
   		{
   			$ret['msg'] = sprintf(lang_get("warning_duplicate_reqdoc_id"),$reqdoc_id);
@@ -1390,16 +1375,6 @@ function html_table_of_custom_field_values($id)
 	    	break;
 	    }
   		
-		// $sql = " /* $debugMsg */ " . 
-		// 	   " SELECT REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
-		//        " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
-		//        " FROM {$this->object_table} REQ " .
-		//        " /* Get Req info from NH */ " .
-		//        " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
-		//        " JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
-		//        " JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
-		//        " WHERE REQ.req_doc_id {$check_criteria} ";
-
 		$sql = " /* $debugMsg */ SELECT ";
 		switch($my['options']['output'])
 		{

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.99 2010/05/09 07:45:48 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.100 2010/05/09 08:27:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -165,11 +165,11 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,
 				$status['msg'] = 'Error';
 				if ($conflictSolution == 'overwrite')
 				{
-					$row_curr_data = getReqByReqdocId($db,$docID);
-					$req_id = key($row_curr_data);
-					$status = $req_mgr->update($req_id,$docID,$title,$scope,$userID,
-							                   $row_curr_data[$req_id]['status'],
-							                   $row_curr_data[$req_id]['type'],SKIP_CONTROLS);
+					$item = current($req_mgr->getByDocID($docID));
+					$last_version = $req_mgr->get_last_version_info($item['id']);
+					$status = $req_mgr->update($item['id'],$last_version['id'],$docID,$title,$scope,$userID,
+							                   $status,$type,$expected_coverage,SKIP_CONTROLS);
+
 
 					if ($status == 'ok') 
 					{
@@ -843,16 +843,6 @@ function getLastExecutions(&$db,$tcaseSet,$tplanId)
     	unset($tcase_mgr); 
 	}
 	return $execMap;
-}
-
-
-// 20061009 - franciscom
-function getReqByReqdocId(&$db,$reqdoc_id)
-{
-	$sql = " SELECT * FROM requirements " .
-	       " WHERE req_doc_id='" . $db->prepare_string($reqdoc_id) . "'";
-
-	return($db->fetchRowsIntoMap($sql,'id'));
 }
 
 

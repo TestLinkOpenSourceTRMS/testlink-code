@@ -7,6 +7,7 @@
 # column 6: expected_coverage
 # column 7: order -> inside the set of req been imported
 #
-ENG-0001,Terrestrial Propulsor,,1,V,3,2
-ENG-0002,Main Deflector,"<p>Main deflector bla, bla, bla.</p>",2,V,1,4
-ENG-0004,Main Deflector 3,,6,V,1,1
+# DOCID , TITLE, SCOPE, TYPE, STATUS, EXPCOV, ORDER
+TENG-0001,Terrestrial Propulsor,Scope For Terrestrial,1,V,3,2
+TENG-0002,Main Deflector,"<p>Main deflector bla, bla, bla.</p>",2,V,1,4
+TENG-0004,Main Deflector 3,,6,V,1,1

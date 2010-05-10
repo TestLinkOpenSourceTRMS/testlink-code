@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2010/05/09 07:38:12 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2010/05/10 06:07:50 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
@@ -337,7 +337,6 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
         						}    
     	                	}
     	                	new dBug($retval->items);
-    	                	die();
 	                    }
 	                    else
 	                    {

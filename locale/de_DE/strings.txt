@@ -22,12 +22,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.133 2010/05/03 11:25:09 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.134 2010/05/10 14:25:10 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * 
- * 20100423 - Julian - Scripted update according en_GB string file (version: 1.606)
+ * 20100510 - Julian - Manual update according to en_GB string file (version: 1.615)
+ * 20100423 - Julian - Scripted update according to en_GB string file (version: 1.606)
  * ---------------------------------------------------------------------------------- */
 
 //Define character set of this file (UTF-8 is common value)
@@ -116,6 +116,7 @@ $TLS_due_since = "Testfall zugewiesen seit (Tage)";
 $TLS_parent_child='ist Vater oder ist Kind';
 $TLS_blocks_depends = 'blockiert oder hängt ab von';
 $TLS_related_to='ist verwandt mit';
+$TLS_unknown_code='unbekannter Code: %s';
 
 
 $TLS_total = "Gesamt";
@@ -641,6 +642,7 @@ $TLS_title_choose_local_file = "Wählen Sie eine Datei zum Importieren";
 $TLS_title_req_import = "Anforderungen importieren";
 $TLS_title_req_import_check_input = "Überprüfe Import-Daten";
 $TLS_title_req_spec_import = "Req. Spec. importieren";
+$TLS_check_status = "Überprüfe Status";
 
 
 
@@ -2718,7 +2720,8 @@ $TLS_audit_tc_removed_from_testplan = "Testfall '{%1}' Version {%2} wurde aus de
 
 $TLS_audit_missing_localization = "Der String '{%1}' ist für die Sprache '{%2}' nicht lokalisiert";
 
-$TLS_audit_events_deleted = "Der Benutzer '{%1}' hat alle Ereignisse gelöscht";
+$TLS_audit_all_events_deleted = "Der Benutzer '{%1}' hat alle Ereignisse gelöscht";
+$TLS_audit_events_with_level_deleted = "Der Benutzer '{%1}' hat Ereignisse mit Log Level {%2} gelöscht";
 
 
 // ----- eventviewer.php -----
@@ -2745,9 +2748,11 @@ $TLS_title_eventinfo = "Ereignisinformation";
 $TLS_title_eventdetails = "Ereignisdetails";
 $TLS_th_user = "Benutzer";
 $TLS_show_event_history = "Zeige die Ereignishistorie an";
-$TLS_btn_clear_events = "Alle Ereignisse löschen";
+$TLS_btn_clear_all_events = "Alle Ereignisse löschen";
+$TLS_btn_clear_events = "Ereignisse löschen";
 $TLS_th_event_description = "Beschreibung";
-$TLS_select_user = "User (Default All)";
+$TLS_select_user = "Benutzer (Default: Alle)";
+$TLS_clear_tip = "Events des/der gewählten Log Levels löschen oder löschen aller Events, falls kein Level gewählt wurde";
 
 
 // ----- int_mantis.php -----

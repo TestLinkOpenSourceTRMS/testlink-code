@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2010/05/10 06:07:50 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2010/05/11 18:36:26 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
@@ -32,13 +32,11 @@ $req_spec_mgr = new requirement_spec_mgr($db);
 
 $args = init_args();
 $gui = initializeGui($db,$args,$_SESSION,$req_spec_mgr);
-$gui->importResult = null;
-$gui->items = null;
 
 switch($args->doAction)
 {
     case 'uploadFile':
-        $dummy = doUploadFile($db,$gui->fileName,$args,$req_spec_mgr);
+        $dummy = doUploadFile($db,$gui->fileName,$gui->scope,$args,$req_spec_mgr);
 
         $gui->items = $dummy->items;
         $gui->items_qty = is_null($gui->items) ? 0 : count($gui->items);
@@ -71,7 +69,6 @@ switch($args->scope)
 	break;
 }
 
-new dBug($gui->items);
 $smarty = new TLSmarty;
 
 $smarty->assign('gui',$gui);
@@ -96,10 +93,29 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 	    // if achecked_req is null => user has not selected any requirement, anyway we are going to create reqspec tree
 	    $filter['requirements'] = $argsObj->achecked_req;
 	    $retval->items = array();
-        foreach($xml->req_spec as $xkm)
+
+    	$isReqSpec = property_exists($xml,'req_spec');
+		if($isReqSpec)
+		{
+        	foreach($xml->req_spec as $xkm)
+    		{
+    			$dummy = $reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,$argsObj->user_id);
+    			$retval->items = array_merge($retval->items,$dummy);
+    		}
+    	}   
+    	else
     	{
-    		$dummy = $reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,$argsObj->user_id);
-    		$retval->items = array_merge($retval->items,$dummy);
+    		$selectedKeys = array_keys($argsObj->achecked_req[0]);
+    		if( count($selectedKeys) > 0 )
+    		{
+   	    		$reqMgr = new requirement_mgr($dbHandler);
+    			$retval->items = null;
+        		foreach($selectedKeys as $kdx)
+        		{
+        			$retval->items[] = $reqMgr->createFromXML($xml->requirement[$kdx],$argsObj->tproject_id,
+        			                                          $argsObj->req_spec_id,$argsObj->user_id);
+        		}
+        	}
     	}
 	}
 	else
@@ -128,6 +144,7 @@ function init_args()
 {
     $args = new stdClass();
     $request = strings_stripSlashes($_REQUEST);
+   
     $args->req_spec_id = isset($request['req_spec_id']) ? $request['req_spec_id'] : null;
     $args->importType = isset($request['importType']) ? $request['importType'] : null;
     $args->emptyScope = isset($request['noEmpty']) ? $request['noEmpty'] : null;
@@ -223,6 +240,7 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr)
     $gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
     $gui->items=null;
 	$gui->try_upload = $argsObj->bUpload;
+	$gui->importResult = null;
 
     $gui->doAction=$argsObj->doAction;
 	$gui->scope = $argsObj->scope;
@@ -289,7 +307,7 @@ function checkRights(&$db,&$user)
  * doUploadFile
  *
  */
-function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
+function doUploadFile(&$dbHandler,$fileName,$importScope,&$argsObj,&$reqSpecMgr)
 {
     $retval=new stdClass();
     $retval->items=null;
@@ -313,10 +331,31 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     	                	
     	                	$retval->items = array();
     	                	
+    	                	// New simple check on file contents
+    	                	$isReqSpec = property_exists($xml,'req_spec');
+    	                	
+    	                	$fileFormatOK = ($isReqSpec && $importScope != 'items') ||
+    	                					(!$isReqSpec && $importScope == 'items');  
+    	                	
+    	                	// if($isReqSpec)
+    	                	// 
+    	                	// switch($importScope)
+    	                	// {
+    	                	// 	case 'branch':
+    	                	// 	case 'tree':
+    	                	// 		$fileFormatOK = property_exists($xml,'req_spec');
+    	                	// 	break;
+    	                	// 	
+    	                	// 	case 'items':
+    	                	// 	
+    	                	// 	break;
+    	                	// 
+    	                	// }
+    	                	
     	                	// we can have two types of files:
     	                	// 1. req. specs + requirements
     	                	// 2. just requirements
-    	                	if( property_exists($xml,'req_spec') )
+    	                	if( $isReqSpec )
     	                	{ 
     	                		foreach($xml->req_spec as $xkm)
     	                		{
@@ -326,17 +365,24 @@ function doUploadFile(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     	                	else
     	                	{
    	                		    $reqMgr = new requirement_mgr($dbHandler);
-    	                		$loop2do=count($xml->requirement);
+    	                		$loop2do = count($xml->requirement);
+    	                		$items = null;
         						for($zdx=0; $zdx <= $loop2do; $zdx++)
         						{
         						    $xml_req=$reqMgr->xmlToMapRequirement($xml->requirement[$zdx]);
         						    if(!is_null($xml_req))
         						    { 
-        						        $retval->items[]=$xml_req;
+        						        $items[]=$xml_req;
         						    }    
         						}    
+								if($loop2do > 0)
+								{
+        						    // IMPORTANT NOTICE
+        						    // this keys must be same that returned by $reqSpecMgr->xmlToMapReqSpec
+        						    // because are used at GUI to draw
+     						        $retval->items[]=array('requirements' => $items, 'req_spec' => null, 'level' => 0);
+								}
     	                	}
-    	                	new dBug($retval->items);
 	                    }
 	                    else
 	                    {

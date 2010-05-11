@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.102 2010/05/09 09:26:04 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.103 2010/05/11 18:36:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -166,10 +166,9 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,$conflict
 				{
 					$item = current($req_mgr->getByDocID($docID,$tprojectID));
 					$last_version = $req_mgr->get_last_version_info($item['id']);
-					$op_status = $req_mgr->update($item['id'],$last_version['id'],$docID,$title,$scope,$userID,
-							                      $status,$type,$expected_coverage,$node_order,SKIP_CONTROLS);
-
-					if ($op_status == 'ok') 
+					$op = $req_mgr->update($item['id'],$last_version['id'],$docID,$title,$scope,$userID,
+						                   $status,$type,$expected_coverage,$node_order,SKIP_CONTROLS);
+					if( $op['status_ok']) 
 					{
 						$import_status['msg'] = lang_get('req_import_result_overwritten');
 					}
@@ -186,15 +185,14 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,$conflict
 				$import_status = $req_mgr->create($idSRS,$docID,$title,$scope,$userID,$status,$type,
 				                                  $expected_coverage,$node_order);
 			}
-			$arrImport[] = array('req_doc_id' => $docID, 'title' => $title, 'import_status' => $import_status['msg']);
+			$arrImport[] = array('doc_id' => $docID, 'title' => $title, 'import_status' => $import_status['msg']);
 		}
 	}
 	return $arrImport;
 }
 
 /*
-20061014 - franciscom -
-algorithm changes, now is the docid the attribute that must be unique
+ On version 1.9 is NOT USED when importing from XML format
 */
 function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID)
 {
@@ -246,7 +244,6 @@ function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID
             	$msgID = 'import_req_exists_here';
             }
             
-            // 20100508 - franciscom
 			foreach($cacheKeys as $attr)
 			{
 				if( isset($labels[$attr][$req[$attr]]) )

@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2010/05/09 09:17:59 $ by $Author: franciscom $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2010/05/11 18:36:26 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20100511 - franciscom - createFromXML() new method
  *	20100509 - franciscom - update() interface changes.
  *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select here from reqView.php
  *                                   as it is now used from multiple files.
@@ -1141,6 +1142,77 @@ function xmlToMapRequirement($xml_item)
 	}
 	return $dummy;
 }
+
+
+/**
+ * createFromXML
+ *
+ */
+function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
+{
+	$user_feedback = null;
+	$req = $this->xmlToMapRequirement($xml);
+
+    $copy_req = null;
+	$getOptions = array('output' => 'minimun');
+    $has_filters = !is_null($filters);
+	$my['options'] = array( 'actionOnDuplicate' => "update");
+	$my['options'] = array_merge($my['options'], (array)$options);
+
+	$labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '');
+	foreach($labels as $key => $dummy)
+	{
+		$labels[$key] = lang_get($key);
+	}
+
+    // Check:
+    // If item with SAME DOCID exists inside container
+	// If there is a hit
+	//	   We will follow user option: update,create new version
+	//
+	// If do not exist check must be repeated, but on WHOLE test project
+	// 	If there is a hit -> we can not create
+	//		else => create
+	// 
+	$getOptions = array('output' => 'minimun');
+	$msgID = 'import_req_skipped';
+	$check_in_reqspec = $this->getByDocID($req['docid'],$tproject_id,$parent_id,$getOptions);
+	if(is_null($check_in_reqspec))
+	{
+		$check_in_tproject = $this->getByDocID($req['docid'],$tproject_id,null,$getOptions);
+		if(is_null($check_in_tproject))
+		{
+			$this->create($parent_id,$req['docid'],$req['title'],$req['description'],
+		    		         $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+		    		         $req['node_order']);
+			$msgID = 'import_req_created';
+		}             		 
+        else
+        {
+			// Can not have req with same req doc id on another branch => BLOCK
+			// What to do if is Frozen ??? -> now ignore and update anyway
+			$msgID = 'import_req_skipped';
+
+        }               		 
+	}
+    else
+    {
+		// Need to get Last Version no matter active or not.
+		// What to do if is Frozen ??? -> now ignore and update anyway
+		$reqID = key($check_in_reqspec);
+		$last_version = $this->get_last_version_info($reqID);
+		$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
+								$author_id,$req['status'],$req['type'],$req['expected_coverage'],
+								$req['node_order']);
+		$msgID = 'import_req_updated';
+    }               		 
+    $user_feedback = array('doc_id' => $req['docid'],'title' => $req['title'], 
+    				 	   'import_status' => sprintf($labels[$msgID],$req['docid']));
+	
+	
+	return $user_feedback;
+}
+
 
 
 

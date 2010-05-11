@@ -1,6 +1,6 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.17 2010/05/09 09:09:32 franciscom Exp $
+$Id: reqImport.tpl,v 1.18 2010/05/11 18:36:25 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
@@ -14,7 +14,7 @@ Revision:
 * ----------------------------------------------------------------- *}
 {lang_get var="labels" 
           s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
-             th_id,th_test_case,version,scope,check_status,type,
+             th_id,th_test_case,version,scope,check_status,type,doc_id_short,
              btn_save_custom_fields,title_req_import,expected_coverage,
              check_req_file_structure,req_msg_norequirement,status,
              req_import_option_skip,req_import_option_overwrite,
@@ -61,6 +61,7 @@ Revision:
   {elseif $gui->doAction == 'uploadFile'}
 
     {if !is_null($gui->items)}
+    
       {if $gui->importType == 'XML'}
   	    <form method='post' action='{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}'>
  		    <input type='hidden' value="{$gui->importType}" name='importType' />
@@ -72,6 +73,11 @@ Revision:
   	    			onclick="javascript: location.href='{$req_spec_view_url}';" />
   	    	</div>
   	    </form>
+  	    
+        {if $gui->scope == 'branch' || $gui->scope == 'tree'}
+  	    {else}
+  	    {/if}
+  	    
   	  {/if}
   	  
       {if $gui->importType != 'XML'}
@@ -140,14 +146,14 @@ Revision:
 
   	<table class="simple">
   	<tr>
-  		<th>{$labels.req_doc_id}</th>
+  		<th>{$labels.doc_id_short}</th>
   		<th>{$labels.title}</th>
   		<th style="width: 20%;">{$labels.Result}</th>
   	</tr>
   	{if $gui->items != ''}
  	    {foreach from=$gui->items key=idx item=import_feedback}
   	  <tr>
-  	    <td>{$import_feedback.req_doc_id|escape}</td>
+  	    <td>{$import_feedback.doc_id|escape}</td>
   	    <td>{$import_feedback.title|escape}</td>
   	    <td>{$import_feedback.import_status|escape}</td>
   	  </tr>

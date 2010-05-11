@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.81 $
- * @modified $Date: 2010/03/22 22:06:21 $ by $Author: franciscom $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2010/05/11 18:36:26 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1394,7 +1394,8 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
         if( $skip_level > 0 && $depth >= $skip_level)
         {
         	$msgID = 'import_req_spec_ancestor_skipped';
-        	$user_feedback[] = array($rspec['doc_id'],$rspec['title'],sprintf($labels[$msgID],$rspec['doc_id']));
+        	$user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
+        							 'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
         	continue;
         }
         
@@ -1417,17 +1418,12 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 		$result['status_ok'] = 0;
    		$msgID = 'import_req_spec_skipped';
 		
- 		new dBug($rspec);
- 		new dBug($check_in_container);
      	if(is_null($check_in_container))
 		{
 			$check_in_tproject = $this->getByDocID($rspec['doc_id'],$tproject_id,null,$getOptions);
- 			new dBug($check_in_tproject);
-			
 			if(is_null($check_in_tproject))
 			{
         		$msgID = 'import_req_spec_created';
-				new dBug($msgID);
         		$result = $this->create($tproject_id,$container_id[$depth],$rspec['doc_id'],$rspec['title'],
             		                    $rspec['scope'],$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
         	}
@@ -1435,15 +1431,13 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
         else
         {
         	$msgID = 'import_req_spec_updated';
-		    new dBug($msgID);
 		    $reqSpecID = key($check_in_container);
 			$result = $this->update($reqSpecID,$rspec['doc_id'],$rspec['title'],$rspec['scope'],
 									$rspec['total_req'],$author_id,$rspec['type'],$req_spec_order);
        		$result['id'] = $reqSpecID;
         }
-        $user_feedback[] = array($rspec['doc_id'],$rspec['title'],sprintf($labels[$msgID],$rspec['doc_id']));
-		new dBug($user_feedback);
-		        
+        $user_feedback[] = array('doc_id' => $rspec['doc_id'],'title' => $rspec['title'],
+                                 'import_status' => sprintf($labels[$msgID],$rspec['doc_id']));
         if($result['status_ok'])
         {
         	$skip_level = -1;
@@ -1471,13 +1465,9 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
                     // 20100321 - we do not manage yet user option
 					$msgID = 'import_req_skipped';
 					$check_in_reqspec = $req_mgr->getByDocID($req['docid'],$tproject_id,$reqSpecID,$getOptions);
-
-					new dBug($req);
-					new dBug($check_in_reqspec,array('label' => 'check_in_reqspec'));
-					
      				if(is_null($check_in_reqspec))
 					{
-						$check_in_tproject = $this->getByDocID($req['docid'],$tproject_id,null,$getOptions);
+						$check_in_tproject = $req_mgr->getByDocID($req['docid'],$tproject_id,null,$getOptions);
 						if(is_null($check_in_tproject))
 						{
                     		$req_mgr->create($result['id'],$req['docid'],$req['title'],$req['description'],
@@ -1501,7 +1491,8 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 			     		$msgID = 'import_req_updated';
                     }               		 
                 } 
-        		$user_feedback[] = array($req['docid'],$req['title'], sprintf($labels[$msgID],$req['docid']));
+        		$user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
+        								 'import_status' => sprintf($labels[$msgID],$req['docid']));
             }  // if($create_req)   
         } // if($result['status_ok'])
     }    

@@ -1,14 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.5 2010/03/21 17:57:08 franciscom Exp $
+$Id: inc_req_import_viewer.tpl,v 1.6 2010/05/11 18:36:25 franciscom Exp $
 
 
 rev :
 
 *}
 {lang_get var="labels" s='btn_do,check_uncheck_all_checkboxes,th_id,
-                          btn_update_selected_tc,doc_id_short,
-                          scope,warning,check_uncheck_children_checkboxes,
+                          doc_id_short,scope,warning,check_uncheck_children_checkboxes,
                           title,version,assigned_to,assign_to,note_keyword_filter, priority'}
 
 <script type="text/javascript">
@@ -29,7 +28,7 @@ function check_action_precondition(container_id,action)
 {/literal}
 
 {* prefix for checkbox name ADD*}   
-{assign var="add_cb" value="achecked_tc"}
+{assign var="add_cb" value="achecked_req"}
 
   {* --------------------------------------------------------------------------------------------------------------- *}
 	<h1 class="title">{$gui->main_descr|escape}</h1>
@@ -40,14 +39,15 @@ function check_action_precondition(container_id,action)
 	    {assign var="div_id" value=div_$idx}
 	    {if $div_id != '' }
 	      <div id="{$div_id}" style="margin-left:{$rspec.level}0px; border:1;">
-        <br />
         {* check/uncheck on ALL contained Containers is implemented with this clickable image *}
-	      <h3 class="testlink"><img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
-			                            onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$div_id}");'
-                                  title="{$labels.check_uncheck_children_checkboxes}" />
-        {$rspec.req_spec.doc_id|escape}::{$rspec.req_spec.title|escape}
-	      </h3>
-
+        {if $rspec.req_spec !=''}
+          <br />
+	        <h3 class="testlink"><img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			                              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$div_id}");'
+                                    title="{$labels.check_uncheck_children_checkboxes}" />
+          {$rspec.req_spec.doc_id|escape}::{$rspec.req_spec.title|escape}
+	        </h3>
+        {/if}
         {* used as memory for the check/uncheck all checkbox javascript logic *}
         <input type="hidden" name="add_value_{$div_id}"  id="add_value_{$div_id}"  value="0" />
 

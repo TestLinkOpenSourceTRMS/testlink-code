@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.89 $
- * @modified $Date: 2010/05/13 18:38:52 $ by $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2010/05/13 19:32:29 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -2567,7 +2567,7 @@ class TestlinkXMLRPCServer extends IXR_Server
             if( !($status = is_int($version)) )
             {
             	// BUGID 3456
-            	$msg = sprintf(PARAMETER_NOT_INT_STR,self::$versionNumberParamName);
+            	$msg = sprintf(PARAMETER_NOT_INT_STR,self::$versionNumberParamName,$version);
             	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
             }
             else 

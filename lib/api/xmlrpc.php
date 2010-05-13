@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2010/05/13 18:35:12 $ by $Author: franciscom $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2010/05/13 18:38:52 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -23,7 +23,7 @@
  *
  * rev : 
  *	20100513 - franciscom - fixed missing properties error on userHasRight()
- *							BUGID 3455 - 
+ *							BUGID 3455 - BUGID 3456
  *							BUGID 3458
  *	20100415 - franciscom - BUGID 3385 - contribution - getTestPlanPlatforms() (refactored)
  *	20100328 - franciscom - BUGID 2645 - contribution - getTestSuitesForTestSuite()
@@ -2563,17 +2563,19 @@ class TestlinkXMLRPCServer extends IXR_Server
         }
         else
         {
-            $version=$this->args[self::$versionNumberParamName];
-            if( !($status=is_int($version)) )
+            $version = $this->args[self::$versionNumberParamName];
+            if( !($status = is_int($version)) )
             {
-            	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, PARAMETER_NOT_INT_STR);
+            	// BUGID 3456
+            	$msg = sprintf(PARAMETER_NOT_INT_STR,self::$versionNumberParamName);
+            	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
             }
             else 
             {
                 if( !($status = ($version > 0)) )
                 {
-                    $this->errors[] = new IXR_Error(VERSION_NOT_VALID, 
-                                                    sprintf(VERSION_NOT_VALID_STR,$version));  
+            		$msg = sprintf(VERSION_NOT_VALID_STR,$version);
+                    $this->errors[] = new IXR_Error(VERSION_NOT_VALID,$msg);
                 }
             }
         }

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2010/05/03 10:27:32 $ by $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2010/05/13 18:35:12 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,9 @@
  * 
  *
  * rev : 
+ *	20100513 - franciscom - fixed missing properties error on userHasRight()
+ *							BUGID 3455 - 
+ *							BUGID 3458
  *	20100415 - franciscom - BUGID 3385 - contribution - getTestPlanPlatforms() (refactored)
  *	20100328 - franciscom - BUGID 2645 - contribution - getTestSuitesForTestSuite()
  *	20100308 - franciscom - BUGID 3243 - checkPlatformIdentity()
@@ -144,8 +147,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	private $devKey = null;
 
 	/** The version of a test case that is being used */
-	// This value is setted in following method:
-	//   
+	/** This value is setted in following method:     */
+	/** _checkTCIDAndTPIDValid()                      */
 	private $tcVersionID = null;
 	
 	
@@ -415,7 +418,10 @@ class TestlinkXMLRPCServer extends IXR_Server
     protected function userHasRight($roleQuestion)
     {
       	$status_ok = true;
-    	if(!$this->user->hasRight($this->dbObj,$roleQuestion,$this->tprojectid, $this->tplanid))
+      	$tprojectid = $this->args[self::$testProjectIDParamName];
+		$tplanid = isset($this->args[self::$testPlanIDParamName]) ? $this->args[self::$testPlanIDParamName] : null;
+
+    	if(!$this->user->hasRight($this->dbObj,$roleQuestion,$tprojectid, $tplanid))
     	{
     		$status_ok = false;
     		$this->errors[] = new IXR_Error(INSUFFICIENT_RIGHTS, INSUFFICIENT_RIGHTS_STR);
@@ -465,14 +471,16 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    {
 		        if( !($status=$this->_isStatusValid($this->args[self::$statusParamName])))
 		        {
-		        	$this->errors[] = new IXR_Error(INVALID_STATUS, INVALID_STATUS_STR);
+		        	// BUGID 3455
+		        	$msg = sprintf(INVALID_STATUS_STR,$this->args[self::$statusParamName]);
+		        	$this->errors[] = new IXR_Error(INVALID_STATUS, $msg);
 		        }    	
-        }
-        else
-        {
-            $this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
-        }
-        return $status;
+        	}
+        	else
+        	{
+        	    $this->errors[] = new IXR_Error(NO_STATUS, NO_STATUS_STR);
+        	}
+        	return $status;
     }       
     
 	/**
@@ -1766,9 +1774,39 @@ class TestlinkXMLRPCServer extends IXR_Server
   }
 	 
 	 /**
-    * createTestCase
-    *
-    */
+      * createTestCase
+  	  * @param struct $args
+  	  * @param string $args["devKey"]
+  	  * @param string $args["testcasename"]
+  	  * @param int    $args["testsuiteid"]: test case parent test suite id
+  	  * @param int    $args["testprojectid"]: test case parent test suite id
+  	  *
+  	  * @param string $args["authorlogin"]: to set test case author
+  	  * @param string $args["summary"]
+  	  * @param string $args["steps"]
+  	  *
+  	  * @param string $args["preconditions"] - optional
+      * @param string $args["importance"] - optional - see const.inc.php for domain
+      * @param string $args["execution"] - optional - see ... for domain
+      * @param string $args["order'] - optional
+      * @param string $args["internalid"] - optional - do not use
+      * @param string $args["checkduplicatedname"] - optional
+      * @param string $args["actiononduplicatedname"] - optional
+      *
+  	  * @return mixed $resultInfo
+      * @return string $resultInfo['operation'] - verbose operation
+      * @return boolean $resultInfo['status'] - verbose operation
+      * @return int $resultInfo['id'] - test case internal ID (Database ID)
+      * @return mixed $resultInfo['additionalInfo'] 
+      * @return int $resultInfo['additionalInfo']['id'] same as $resultInfo['id']
+      * @return int $resultInfo['additionalInfo']['external_id'] without prefix
+      * @return int $resultInfo['additionalInfo']['status_ok'] 1/0
+      * @return string $resultInfo['additionalInfo']['msg'] - for debug 
+      * @return string $resultInfo['additionalInfo']['new_name'] only present if new name generation was needed
+      * @return int $resultInfo['additionalInfo']['version_number']
+      * @return boolean $resultInfo['additionalInfo']['has_duplicate'] - for debug 
+      * @return string $resultInfo['message'] operation message
+      */
 	 public function createTestCase($args)
 	 {
 	    $operation=__FUNCTION__;
@@ -1783,8 +1821,8 @@ class TestlinkXMLRPCServer extends IXR_Server
         {
              $keys2check = array(self::$authorLoginParamName,
                                  self::$summaryParamName,
-                                 self::$stepsParamName,
-                                 self::$expectedResultsParamName);
+                                 self::$stepsParamName);
+                                 // self::$expectedResultsParamName);
         
                 foreach($keys2check as $key)
                 {
@@ -1831,21 +1869,17 @@ class TestlinkXMLRPCServer extends IXR_Server
              
         if( $status_ok )
         {
-        	// Multiple Test Case Steps Feature - Need WORK
-            // $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
-            //                                    $this->args[self::$testCaseNameParamName],
-            //                                    $this->args[self::$summaryParamName],
-            //                                    $opt[self::$preconditionsParamName],
-            //                                    $this->args[self::$stepsParamName],
-            //                                    $this->args[self::$expectedResultsParamName],
-            //                                    $author_id,$keywordSet,
-            //                                    $opt[self::$orderParamName],
-            //                                    $opt[self::$internalIDParamName],
-            //                                    $opt[self::$checkDuplicatedNameParamName],                        
-            //                                    $opt[self::$actionOnDuplicatedNameParamName],
-            //                                    $opt[self::$executionTypeParamName],
-            //                                    $opt[self::$importanceParamName]);
-               
+            // 	function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
+	        //        $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
+            //        $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
+            //        $importance=2,$options=null)
+            //
+            // $options = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
+	        //                     'action_on_duplicate_name' => 'generate_new');
+
+            $options = array( 'check_duplicate_name' => $opt[self::$checkDuplicatedNameParamName],
+	                          'action_on_duplicate_name' => $opt[self::$actionOnDuplicatedNameParamName]);
+   
             $op_result=$this->tcaseMgr->create($this->args[self::$testSuiteIDParamName],
                                                $this->args[self::$testCaseNameParamName],
                                                $this->args[self::$summaryParamName],
@@ -1854,15 +1888,13 @@ class TestlinkXMLRPCServer extends IXR_Server
                                                $author_id,$keywordSet,
                                                $opt[self::$orderParamName],
                                                $opt[self::$internalIDParamName],
-                                               $opt[self::$checkDuplicatedNameParamName],                        
-                                               $opt[self::$actionOnDuplicatedNameParamName],
                                                $opt[self::$executionTypeParamName],
-                                               $opt[self::$importanceParamName]);
-               
+                                               $opt[self::$importanceParamName],
+                                               $options);
             
             $resultInfo=array();
    		    $resultInfo[] = array("operation" => $operation, "status" => true, 
-		                          "id" => $op_result['external_id'], 
+		                          "id" => $op_result['id'], 
 		                          "additionalInfo" => $op_result,
 		                          "message" => GENERAL_SUCCESS_STR);
         } 

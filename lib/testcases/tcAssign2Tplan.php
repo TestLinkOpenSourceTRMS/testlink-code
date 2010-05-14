@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		Amit Khullar - amkhullar@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcAssign2Tplan.php,v 1.6 2010/03/01 20:43:29 franciscom Exp $
+ * @version    	CVS: $Id: tcAssign2Tplan.php,v 1.7 2010/05/14 19:36:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100514 - franciscom - BUGID 3189
  *	20100124 - franciscom - BUGID 3064 - add logic to manage ONLY ACTIVE test plans
  **/
 
@@ -31,7 +32,9 @@ $args = init_args();
 $gui = initializeGui($args);
 $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);  
-$tcase_all_info = $tcase_mgr->get_by_id($args->tcase_id);
+
+$options['output'] = 'essential';
+$tcase_all_info = $tcase_mgr->get_by_id($args->tcase_id,testcase::ALL_VERSIONS,null,$options);
 
 if( !is_null($tcase_all_info) )
 {
@@ -48,7 +51,10 @@ if( !is_null($tcase_all_info) )
     } 
 }
 
-$link_info = $tcase_mgr->get_linked_versions($args->tcase_id,'NOT_EXECUTED');
+// 20100514 - franciscom
+// Why I'm filter on NOT_EXECUTED ??? -> this causes BUGID 3189
+// $link_info = $tcase_mgr->get_linked_versions($args->tcase_id,'NOT_EXECUTED');
+$link_info = $tcase_mgr->get_linked_versions($args->tcase_id);
 
 // 20100124 - work only on ACTIVE TEST PLANS => array('plan_status' => 1)
 if( !is_null($tplanSet = $tproject_mgr->get_all_testplans($args->tproject_id,array('plan_status' => 1))) )

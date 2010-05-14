@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.272 2010/05/14 18:30:18 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.273 2010/05/14 19:30:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100514 - franciscom - get_by_id() interface changes and improvements
  * 20100503 - franciscom - create_tcase_only() - BUGID 3374
  * 20100502 - franciscom - show() fixed error due to non existent variable $info
  * 20100417 - franciscom - new method - filter_tcversions()
@@ -1733,23 +1734,35 @@ class testcase extends tlObjectWithAttachments
 	                       can be an array.
 	                       Useful to retrieve only a subset of versions.
 	                       null => means use version_number argument
+
+			 [filters]:		
+	         			[active_status]: default 'ALL', range: 'ALL','ACTIVE','INACTIVE'
+	         			                 has effect for the following version_id values:
+	         			                 self::ALL_VERSIONS,TC_LAST_VERSION, version_id is NOT an array
+	         			
+	         			[open_status]: default 'ALL'
+	         			               currently not used.
+	         			               
+	         			[version_number]: default 1, version number displayed at User Interface               
 	
-	         [active_status]: default 'ALL', range: 'ALL','ACTIVE','INACTIVE'
-	                          has effect for the following version_id values:
-	                          self::ALL_VERSIONS,TC_LAST_VERSION, version_id is NOT an array
+			 [options]:		
+	         			[output]: default 'full'
+	         					  domain 'full','essential'        
 	
-	         [open_status]: default 'ALL'
-	                        currently not used.
-	                        
-	         [version_number]: default 1, version number displayed at User Interface               
-	
-	  returns: array when every element has following keys:
+	  returns: array 
 	
 	
 	*/
-	function get_by_id($id,$version_id = self::ALL_VERSIONS, 
-	                   $active_status='ALL',$open_status='ALL',$version_number=1)
+
+	function get_by_id($id,$version_id = self::ALL_VERSIONS, $filters = null, $options=null)
 	{
+
+	    $my['filters'] = array( 'active_status' => 'ALL', 'open_status' => 'ALL', 'version_number' => 1);
+	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+	    $my['options'] = array( 'output' => 'full', 'access_key' => 'tcversion_id');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+
 		$tcid_list = null;
 		$where_clause = '';
 		$active_filter = '';
@@ -1757,56 +1770,67 @@ class testcase extends tlObjectWithAttachments
 		if(is_array($id))
 		{
 			$tcid_list = implode(",",$id);
-			$where_clause = " WHERE NHA.parent_id IN ({$tcid_list}) ";
+			$where_clause = " WHERE NHTCV.parent_id IN ({$tcid_list}) ";
 		}
 		else
 		{
-			$where_clause = " WHERE NHA.parent_id = {$id} ";
+			$where_clause = " WHERE NHTCV.parent_id = {$id} ";
 		}
 	
 		if( ($version_id_is_array=is_array($version_id)) )
 		{
 		    $versionid_list = implode(",",$version_id);
-		    $where_clause .= " AND tcversions.id IN ({$versionid_list}) ";
+		    $where_clause .= " AND TCV.id IN ({$versionid_list}) ";
 		}
 		else
 		{
 		    // 20090521 - franciscom - search by human version number
 		    if( is_null($version_id) )
 		    {
-		        $where_clause .= " AND tcversions.version = {$version_number} ";
+		        $where_clause .= " AND TCV.version = {$my['filters']['version_number']} ";
 		    }
 		    else 
 		    {
 			    if($version_id != self::ALL_VERSIONS && $version_id != self::LATEST_VERSION)
 			    {
-			    	$where_clause .= " AND tcversions.id = {$version_id} ";
+			    	$where_clause .= " AND TCV.id = {$version_id} ";
 			    }
 	        }
 	        
-			$active_status = strtoupper($active_status);
+			$active_status = strtoupper($my['filters']['active_status']);
 		  	if($active_status != 'ALL')
 		  	{
-		    	$active_filter =' AND tcversions.active=' . ($active_status=='ACTIVE' ? 1 : 0) . ' ';
+		    	$active_filter =' AND TCV.active=' . ($active_status=='ACTIVE' ? 1 : 0) . ' ';
 	    	}
 		}
 	
-		$sql = "SELECT U.login AS updater_login,users.login as author_login,
-			     NHB.name,NHB.node_order,NHA.parent_id AS testcase_id, tcversions.*,
-			     users.first AS author_first_name,
-			     users.last AS author_last_name,
-			     U.first AS updater_first_name,
-			     U.last  AS updater_last_name
-	         FROM {$this->tables['nodes_hierarchy']} NHA
-	         JOIN {$this->tables['nodes_hierarchy']} NHB ON NHA.parent_id = NHB.id
-	         JOIN {$this->tables['tcversions']} tcversions ON NHA.id = tcversions.id
-	         LEFT OUTER JOIN {$this->tables['users']} users ON tcversions.author_id = users.id
-	         LEFT OUTER JOIN {$this->tables['users']} U ON tcversions.updater_id = U.id
-	         $where_clause
-	         $active_filter
-	         ORDER BY tcversions.version DESC";
-	
-	
+		switch($my['options']['output'])
+		{
+			case 'full':
+				$sql = "SELECT UA.login AS updater_login,UB.login AS author_login,
+			     		NHTC.name,NHTC.node_order,NHTCV.parent_id AS testcase_id, TCV.*,
+			     		UB.first AS author_first_name,UB.last AS author_last_name,
+			     		UA.first AS updater_first_name,UA.last AS updater_last_name
+	         			FROM {$this->tables['nodes_hierarchy']} NHTCV
+	         			JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id
+	         			JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id
+	         			LEFT OUTER JOIN {$this->tables['users']} UB ON TCV.author_id = UB.id
+	         			LEFT OUTER JOIN {$this->tables['users']} UA ON TCV.updater_id = UA.id
+	         			$where_clause $active_filter
+	         			ORDER BY TCV.version DESC";
+	         	break;
+	         	
+			case 'essential':
+				$sql = " SELECT NHTC.name,NHTC.node_order,NHTCV.parent_id AS testcase_id, " . 
+				       " TCV.version, TCV.id, TCV.tc_external_id " .
+	         		   " FROM {$this->tables['nodes_hierarchy']} NHTCV " . 
+	         		   " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id " .
+	         		   " JOIN {$this->tables['tcversions']} TCV ON NHTCV.id = TCV.id " .
+	         		   " {$where_clause} {$active_filter} " .
+	         		   " ORDER BY TCV.version DESC";
+	         	break;
+		}
+		
 	    // Control improvements
 		if( !$version_id_is_array && $version_id == self::LATEST_VERSION)
 		{
@@ -1833,7 +1857,7 @@ class testcase extends tlObjectWithAttachments
 	    }
 	
 	    // Multiple Test Case Steps
-	    if( !is_null($recordset) )
+	    if( !is_null($recordset) && $my['options']['output'] == 'full')
 	    {
 	  		$key2loop = array_keys($recordset);
 	  		foreach( $key2loop as $accessKey)

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.271 2010/05/03 09:47:09 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.272 2010/05/14 18:30:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1604,10 +1604,13 @@ class testcase extends tlObjectWithAttachments
 	    
 	    // Need to get all steps
 	    $stepsSet = $this->get_steps($from_tcversion_id);
-	    foreach($stepsSet as $key => $step)
-	    {
-        	$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
-        	                         $step['expected_results'],$step['execution_type']);			
+		if( !is_null($stepsSet) && count($stepsSet) > 0)
+		{
+	    	foreach($stepsSet as $key => $step)
+	    	{
+        		$op = $this->create_step($to_tcversion_id,$step['step_number'],$step['actions'],
+        		                         $step['expected_results'],$step['execution_type']);			
+	    	}
 	    }
 	}
 	

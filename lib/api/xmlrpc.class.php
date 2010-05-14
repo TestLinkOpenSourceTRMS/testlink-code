@@ -5,12 +5,12 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2010/05/14 19:50:22 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/05/14 20:01:32 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
- * The Testlink API makes it possible to interact with Testlink  
+ * Testlink API makes it possible to interact with Testlink  
  * using external applications and services. This makes it possible to report test results 
  * directly from automation frameworks as well as other features.
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20100514 - franciscom - BUGID 3454 - Contribution refactor class to be able to be extended to create other server.
  *	20100513 - franciscom - fixed missing properties error on userHasRight()
  *							BUGID 3455 - BUGID 3456
  *							BUGID 3458

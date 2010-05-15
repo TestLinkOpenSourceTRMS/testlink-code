@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.55 2010/05/03 18:03:56 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.56 2010/05/15 11:13:05 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -52,7 +52,9 @@ $gui->tproject_name = $tproject_info['name'];
 $testCaseCfg = config_get('testcase_cfg');
 $testCasePrefix = $tproject_info['prefix'] . $testCaseCfg->glue_character;;
 
-// 20100112 - franciscom
+$mailCfg = buildMailCfg($gui);
+
+
 $getOpt = array('outputFormat' => 'map');
 $gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 
@@ -229,9 +231,10 @@ foreach($gui->matrixSet as $platformID => $matrixData)
 	$gui->tableSet[$platformID] =  buildMatrix($gui->buildInfoSet, $matrixData, $args->format);
 }
 
+new dBug($gui);
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);
-displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format, $mailCfg);
 
 
 /**
@@ -300,4 +303,19 @@ function buildMatrix($buildSet, $dataSet, $format)
 	return $matrix;
 }
 
+
+/**
+ * 
+ *
+ */
+function buildMailCfg(&$guiObj)
+{
+	$labels = array('testplan' => lang_get('testplan'), 'testproject' => lang_get('testproject'));
+	$cfg = new stdClass();
+	$cfg->cc = ''; 
+	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name . 
+	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
+	                 
+	return $cfg;
+}
 ?>

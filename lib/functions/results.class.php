@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.157 2010/05/15 06:53:26 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.158 2010/05/15 13:21:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -723,7 +723,7 @@ class results extends tlObjectWithDB
 	 */
 	public function getTotalsForPlan()
 	{
-		return $this->totalbsForPlan;
+		return $this->totalsForPlan;
 	}
 
 	/**

@@ -6,13 +6,14 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.156 2010/04/24 15:54:33 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.157 2010/05/15 06:53:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
  * @internal Revisions:
  * 
+ * 20100515 - franciscom -  BUGID 3438
  * 20090804 - franciscom - added contributed code getPriority()
  * 20090618 - franciscom - BUGID 0002621 
  * 20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
@@ -48,6 +49,12 @@ require_once('treeMenu.inc.php');
 require_once('users.inc.php');
 require_once('exec.inc.php'); // used for bug string lookup
 
+// BUGID 3438
+if (config_get('interface_bugs') != 'NO')
+{
+  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
+               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+}
 /**
  * This class is encapsulates most functionality necessary to query the database
  * for results to publish in reports.  It returns data structures to the gui layer in a

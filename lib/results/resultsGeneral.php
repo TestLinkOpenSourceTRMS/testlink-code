@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.64 $
- * @modified $Date: 2010/02/17 21:32:44 $ by $Author: franciscom $
+ * @version $Revision: 1.65 $
+ * @modified $Date: 2010/05/15 11:51:35 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
@@ -55,7 +55,9 @@ $gui->statistics->keywords = null;
 $gui->statistics->testers = null;
 $gui->statistics->milestones = null;
 $gui->tplan_name = $tplan_info['name'];
+$gui->tproject_name = $tproject_info['name'];
 
+$mailCfg = buildMailCfg($gui);
 
 $getOpt = array('outputFormat' => 'map');
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
@@ -253,7 +255,7 @@ $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
 $smarty->assign('buildColDefinition', $colDefinition);
 $smarty->assign('buildResults',$results);
-displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format,$mailCfg);
 
 
 
@@ -304,5 +306,20 @@ function get_percentage($total, $parameter)
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_metrics');
+}
+
+/**
+ * 
+ *
+ */
+function buildMailCfg(&$guiObj)
+{
+	$labels = array('testplan' => lang_get('testplan'), 'testproject' => lang_get('testproject'));
+	$cfg = new stdClass();
+	$cfg->cc = ''; 
+	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name . 
+	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
+	                 
+	return $cfg;
 }
 ?>

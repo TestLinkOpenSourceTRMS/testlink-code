@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.76 2010/04/25 10:32:18 franciscom Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.77 2010/05/15 11:51:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -47,6 +47,7 @@ $tcase_mgr = new testcase($db);
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
+
 $getOpt = array('outputFormat' => 'map');
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 if( is_null($gui->platformSet) )
@@ -58,8 +59,11 @@ $deleted_user_label = lang_get('deleted_user');
 
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
-
 $testCaseCfg = config_get('testcase_cfg');
+
+$mailCfg = buildMailCfg($gui);
+
+
 $arrOwners = getUsersForHtmlOptions($db);
 
 $fl=$tproject_mgr->tree_manager->get_children($args->tproject_id,
@@ -192,7 +196,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui );
-displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format,$mailCfg);
 
 /**
 * Function returns number of Test Cases in the Test Plan
@@ -265,5 +269,21 @@ function initializeGui($statusCode,&$argsObj)
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_metrics');
+}
+
+
+/**
+ * 
+ *
+ */
+function buildMailCfg(&$guiObj)
+{
+	$labels = array('testplan' => lang_get('testplan'), 'testproject' => lang_get('testproject'));
+	$cfg = new stdClass();
+	$cfg->cc = ''; 
+	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name . 
+	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
+	                 
+	return $cfg;
 }
 ?>

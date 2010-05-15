@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.71 2010/05/15 13:05:33 franciscom Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.72 2010/05/15 13:10:46 franciscom Exp $
  *
  * @internal Revisions:
  *	20091027 - franciscom - BUGID 2500
@@ -30,6 +30,7 @@ $templateCfg = templateConfiguration();
 
 $args = init_args();
 $gui = initializeGui($db,$args);
+$mailCfg = buildMailCfg($gui);
 
 $smarty = new TLSmarty();
 
@@ -37,7 +38,7 @@ $smarty->assign('gui', $gui);
 $smarty->assign('report_type', $args->report_type);
 
 new dBug($templateCfg);
-displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->report_type);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->report_type,$mailCfg);
 
 
 /**
@@ -80,13 +81,15 @@ function initializeGui(&$dbHandler,&$argsObj)
 {
     $reports_cfg = config_get('reportsCfg');
     
-    $gui = new stdClass();  
+    $gui = new stdClass();
     $tplan_mgr = new testplan($dbHandler);
     $tproject_mgr = new testproject($dbHandler);
  
-    // 20100112 - franciscom
     $getOpt = array('outputFormat' => 'map');
     $gui->platformSet = $tplan_mgr->getPlatforms($argsObj->tplan_id,$getOpt);
+
+
+    $gui->title = lang_get('query_metrics_report');
 
     $gui->showPlatforms=true;
 	if( is_null($gui->platformSet) )
@@ -137,6 +140,7 @@ function initializeGui(&$dbHandler,&$argsObj)
     // statusForClass is used for results.class.php
     // lastStatus is used to be displayed 
     $statusForClass = 'a';
+    
     // amitkhullar - added this parameter to get the latest results. 
 	$latest_resultset = $argsObj->display->latest_results;
 	
@@ -264,5 +268,20 @@ function init_args()
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_metrics');
+}
+
+/**
+ * 
+ *
+ */
+function buildMailCfg(&$guiObj)
+{
+	$labels = array('testplan' => lang_get('testplan'), 'testproject' => lang_get('testproject'));
+	$cfg = new stdClass();
+	$cfg->cc = ''; 
+	$cfg->subject = $guiObj->title . ' : ' . $labels['testproject'] . ' : ' . $guiObj->tproject_name . 
+	                ' : ' . $labels['testplan'] . ' : ' . $guiObj->tplan_name;
+	                 
+	return $cfg;
 }
 ?>

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds_buildReport.php,v 1.72 2010/01/12 18:27:49 franciscom Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.70 2010/05/15 12:35:58 franciscom Exp $
  *
  * @internal Revisions:
  *	20091027 - franciscom - BUGID 2500

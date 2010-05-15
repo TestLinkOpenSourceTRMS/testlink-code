@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.19 2010/05/02 09:38:10 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.20 2010/05/15 13:26:26 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
 *}
@@ -9,13 +9,13 @@ Revisions:
        	 th_overall_priority, th_progress, th_expected, th_overall, th_milestone,
        	 th_tc_priority_high, th_tc_priority_medium, th_tc_priority_low,
          title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites,
-         title_gen_test_rep,title_report_tc_priorities,title_report_milestones,
+         title_report_tc_priorities,title_report_milestones,
          title_metrics_x_build,title_res_by_platform,th_platform,important_notice,
          report_tcase_platorm_relationship'}
 
 {include file="inc_head.tpl"}
 <body>
-<h1 class="title">{$labels.title_gen_test_rep}</h1>
+<h1 class="title">{$gui->title}</h1>
 
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl" 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.65 $
- * @modified $Date: 2010/05/15 11:51:35 $ by $Author: franciscom $
+ * @version $Revision: 1.66 $
+ * @modified $Date: 2010/05/15 13:23:38 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
@@ -43,6 +43,7 @@ $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 $arrDataSuite = array();
 
 $gui = new stdClass();
+$gui->title = lang_get('title_gen_test_rep');
 $gui->do_report = array();
 $gui->showPlatforms=true;
 $gui->colDefinition = array();
@@ -69,8 +70,7 @@ if( is_null($gui->platformSet) )
 
 $metricsMgr = new tlTestPlanMetrics($db);
 
-$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
-                  ALL_TEST_SUITES,ALL_BUILDS);
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
 // ----------------------------------------------------------------------------
 $topLevelSuites = $re->getTopLevelSuites();
 

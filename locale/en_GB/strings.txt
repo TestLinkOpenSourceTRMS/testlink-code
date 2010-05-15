@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.618 2010/05/15 11:08:00 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.619 2010/05/15 11:10:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2389,6 +2389,7 @@ $TLS_error_sendreport_no_email_credentials = "Email for this user is not specifi
 		                                         "please edit email credentials in 'Personal' tab";
 
 $TLS_mail_sent_to = 'mail sent to %s';
+$TLS_send_mail_ko = 'Warning: Problems sending mail - details: ';
 
 // ----- lib/testcases/archive.inc.php -----
 

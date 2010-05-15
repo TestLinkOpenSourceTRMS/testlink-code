@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.70 2010/05/15 12:35:58 franciscom Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.71 2010/05/15 13:05:33 franciscom Exp $
  *
  * @internal Revisions:
  *	20091027 - franciscom - BUGID 2500
@@ -36,7 +36,8 @@ $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->assign('report_type', $args->report_type);
 
-displayReport($templateCfg->template_dir . 'resultsMoreBuilds_report.tpl', $smarty, $args->report_type);
+new dBug($templateCfg);
+displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->report_type);
 
 
 /**

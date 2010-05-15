@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/05/15 12:37:56 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/05/15 13:02:13 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
@@ -96,7 +96,7 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 );
 $tlCfg->reports_list['results_custom_query'] = array( 
 	'title' => 'link_report_metrics_more_builds',
-	'url' => 'lib/results/resultsMoreBuildsGui.php',
+	'url' => 'lib/results/resultsMoreBuildsGUI.php',
 	'enabled' => 'all',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
 );

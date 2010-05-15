@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuildsGUI.php,v 1.1 2010/05/15 12:31:44 franciscom Exp $
+* $Id: resultsMoreBuildsGUI.php,v 1.2 2010/05/15 13:05:33 franciscom Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -24,6 +24,7 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args);
 
+new dBug($templateCfg);
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);

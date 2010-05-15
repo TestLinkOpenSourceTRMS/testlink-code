@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuildsGUI.tpl,v 1.1 2010/05/15 12:31:30 franciscom Exp $
+$Id: resultsMoreBuildsGUI.tpl,v 1.2 2010/05/15 13:05:22 franciscom Exp $
 @author Francisco Mancardi
 
 rev :
@@ -55,12 +55,7 @@ franciscom - may be in the future - 20090107
 *}
 
 {* ------------------------------------------------------------------------------- *}
-
-
-
-<form action="lib/results/resultsMoreBuilds_buildReport.php?report_type={$gui->report_type}" 
-      method="post">
-
+<form action="lib/results/resultsMoreBuilds.php?report_type={$gui->report_type}" method="post">
   <input type="hidden" id="tplan_id" name="tplan_id" value="{$gui->tplan_id}" />
   <div>
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">

@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: tlHTMLTable.class.php,v 1.2 2010/05/03 18:03:56 franciscom Exp $
+ * @version CVS: $Id: tlHTMLTable.class.php,v 1.3 2010/05/15 13:29:06 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlHTMLTable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -65,14 +65,19 @@ class tlHTMLTable extends tlTable
 			$s .= "<th>{$title}</th>";
 		}
 		$s .= '</tr>';
-		foreach ($this->data as $rowData) {
+		foreach ($this->data as $rowData) 
+		{
 			$s .= '<tr>';
-			foreach ($rowData as $colIndex => $value) {
-				if ($this->columns[$colIndex]['type'] == 'priority') {
-					$value = $this->renderPriority($value);
-				}
-				if ($this->columns[$colIndex]['type'] == 'status') {
-					$value = $this->renderStatus($value);
+			foreach ($rowData as $colIndex => $value) 
+			{
+				if( isset($this->columns[$colIndex]['type']) )
+				{
+					if ($this->columns[$colIndex]['type'] == 'priority') {
+						$value = $this->renderPriority($value);
+					}
+					if ($this->columns[$colIndex]['type'] == 'status') {
+						$value = $this->renderStatus($value);
+					}
 				}
 				$s .= "<td>{$value}</td>";
 			}

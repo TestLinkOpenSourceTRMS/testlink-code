@@ -4,39 +4,62 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2010/05/15 11:10:48 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2010/05/15 11:13:46 $ by $Author: franciscom $
  * @author	Kevin Levy
  * 
  * Revision:
  * 	20090213 - havlatm - added flushHttpHeader function instead of particular headers
  * 						support for OpenOffice
- * 	20080928 - franciscom - minor refactoring
- * 	20071207 - havlatm - added MSWord, magic numbers -> use global const.
  */
-
-require_once('info.inc.php'); // has the sendMail() method
+require_once('email_api.php');
 require_once('../../cfg/reports.cfg.php');
 
-function generateHtmlEmail($template_file, &$smarty, $buildName = null)
+/**
+ * 
+ *
+ */
+function generateHtmlEmail(&$smarty, $template_file, $mailCfg)
 {
+	// same objet that is returned by email_send
+	$op = new stdClass();
+	$op->status_ok = true;
+	$op->msg = 'ok';
+	
 	$html_report = $smarty->fetch($template_file);
-	$emailIsHtml = true;
- 	$send_cc_to_myself = false;
-	$subjectOfMail =  $_SESSION['testplanName'] . ": " . $template_file . " " . $buildName;
-  
-	$emailFrom = $_SESSION['currentUser']->emailAddress;
-	$emailTo = $emailFrom;
-	if ($emailTo == "")
-  		$message = lang_get("error_sendreport_no_email_credentials");
+	
+	if( ! property_exists($mailCfg,'from') )
+	{
+		$mailCfg->from = $_SESSION['currentUser']->emailAddress;
+	}
+	if( ! property_exists($mailCfg,'to') )
+	{
+		$mailCfg->to = $mailCfg->from;
+	}
+	
+	if($mailCfg->to == "")
+	{
+		$op->status_ok = false;
+  		$op->msg = lang_get("error_sendreport_no_email_credentials");
+  	}
   	else
-  		$message = sendMail($emailFrom, $emailTo, $subjectOfMail, $html_report, $send_cc_to_myself, $emailIsHtml);
+  	{
+		$op = email_send( $mailCfg->from, $mailCfg->to, $mailCfg->subject, $html_report, $mailCfg->cc, false,true);
 
-	return	$message;
+		if($op->status_ok)
+		{
+			$op->msg = sprintf(lang_get('mail_sent_to'), $mailCfg->to);
+		}
+    }
+	return $op;
 }
 
 
-function displayReport($template_file, &$smarty, $doc_format, $buildName = null)
+/**
+ * 
+ *
+ */
+function displayReport($template_file, &$smarty, $doc_format, $mailCfg = null)
 {
 
 	switch($doc_format)
@@ -51,11 +74,14 @@ function displayReport($template_file, &$smarty, $doc_format, $buildName = null)
     		break;  
 
 	    case FORMAT_MAIL_HTML:
-		  	$message = generateHtmlEmail($smarty, $template_file,  $buildName);
-		  		
+		  	$op = generateHtmlEmail($smarty, $template_file,  $mailCfg);
+		  	
+		  	new dBug($op);
+		  	
+		  	$message = $op->status_ok ? '' : lang_get('send_mail_ko');	
 			$smarty = new TLSmarty();
-			$smarty->assign('message', $message);
-			$smarty->assign('title', $_SESSION['testplanName']);
+			$smarty->assign('message', $message . ' ' . $op->msg);
+			$smarty->assign('title', $mailCfg->subject);
 		  	$template_file = "emailSent.tpl";
       		break;
 	} 

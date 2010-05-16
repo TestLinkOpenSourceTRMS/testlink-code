@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.8 2010/05/16 11:44:02 franciscom Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.9 2010/05/16 13:46:17 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
@@ -16,7 +16,7 @@
  * @todo		ability to reserve machine for an user per dates
  *
  * @internal revisions
- * 20100516 - franciscom - readDB(),getAll()- interface changes
+ * 20100516 - franciscom - readDB(),getAll() - interface changes
  **/
 
 /** parenthal classes */
@@ -267,9 +267,9 @@ class tlInventory extends tlObjectWithDB
 	}
 
 	/** 
-	 * Deletes a server from the database
+	 * Deletes item from inventory on db
 	 *  
-	 * @param resource &$db [ref] database connection
+	 * @param int $itemID
 	 * @return integer returns tl::OK on success, tl:ERROR else
 	 */
 	public function deleteInventory($itemID)

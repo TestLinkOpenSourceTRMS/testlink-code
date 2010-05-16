@@ -1,0 +1,1 @@
+File present in this folder, can be used as test data for doing manual testing of TestLink Features

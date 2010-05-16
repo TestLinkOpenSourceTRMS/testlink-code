@@ -8,13 +8,15 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.7 2010/02/22 09:52:13 havlat Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.8 2010/05/16 11:44:02 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
  * 
  * @todo		ability to reserve machine for an user per dates
  *
+ * @internal revisions
+ * 20100516 - franciscom - readDB(),getAll()- interface changes
  **/
 
 /** parenthal classes */
@@ -55,19 +57,18 @@ class tlInventory extends tlObjectWithDB
 	const E_NAMELENGTH = -2;
 	const E_IPALREADYEXISTS = -4;
 	const E_DBERROR = -8;
-	//const E_WRONGFORMAT = -16;
 	
 	
 	/**
 	 * Class constructor
 	 * 
-	 * @param integer $inputTestProjectID the current Test Project identifier
-	 * @param integer $db the database connection identifier
+	 * @param integer $testProjectID test Project identifier
+	 * @param integer $dbHandler the database connection handler
 	 */
-	function __construct($inputTestProjectID, &$dbID = null)
+	function __construct($testProjectID, &$dbHandler = null)
 	{
-		parent::__construct($dbID);
-		$this->testProjectID = $inputTestProjectID;
+		parent::__construct($dbHandler);
+		$this->testProjectID = $testProjectID;
 	}
 	
 	/**
@@ -116,14 +117,30 @@ class tlInventory extends tlObjectWithDB
 
 
 	/** 
-	 * Returns a query which can be used to read one or multiple items from a db
+	 * returns inventory data
 	 * 
 	 * @param mixed $ids integer or array of integer - ID of inventory items
 	 */
-	protected function readDB($ids = null)
+	protected function readDB($ids = null, $options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$query = "/* $debugMsg */ SELECT * FROM {$this->tables['inventory']} " .
+
+	    $my['options'] = array('detailLevel' => null, 'accessField' => null);
+	    $my['options'] = array_merge($my['options'], (array)$options);
+
+		$doUnserialize = true;
+		switch($my['options']['detailLevel'])
+		{
+			case 'minimun':
+				$fields2get = ' id ';
+				$doUnserialize = false;
+			break;
+			
+			default:
+				$fields2get = ' * ';
+			break;
+		} 
+		$query = "/* $debugMsg */ SELECT {$fields2get} FROM {$this->tables['inventory']} " .
 				 " WHERE  testproject_id={$this->testProjectID}";
 		
 		$clauses = null;
@@ -143,8 +160,18 @@ class tlInventory extends tlObjectWithDB
 			$query .= " AND " . implode(" AND ",$clauses);
 		}
 		
-		$recordset = $this->db->get_recordset($query);
-		if(!is_null($recordset))
+		
+		if( is_null($my['options']['accessKey']) )
+		{
+			$recordset = $this->db->get_recordset($query);
+		}
+		else
+		{
+			$recordset = $this->db->fetchRowsIntoMap($query,$my['options']['accessKey']);
+		}
+		
+		
+		if(!is_null($recordset) && $doUnserialize)
 		{
 			// unserialize text parameters
 			foreach ($recordset as $key => $item)
@@ -301,11 +328,18 @@ class tlInventory extends tlObjectWithDB
 	/**
 	 * Get all inventory data for the project
 	 * 
+	 * @param string $options:
+	 *				 detailLevel - optional - indicates data you want to have
+	 *				 			 null -> all columns
+	 *               			minimun -> just the id, useful when you need to delete all inventories
+	 *									   for a test project
+	 *				 accessKey: field name, it's value will be used as accessKey
+	 *
 	 * @return array 
 	 */
-	public function getAll()
+	public function getAll($options=null)
 	{
-		$data = self::readDB(); 
+		$data = self::readDB(null,$options); 
 		return $data;
 	}
 

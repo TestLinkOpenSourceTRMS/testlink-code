@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Test Project with:
+- some test suites without test cases
+- some test cases without steps/expected result
+20100516 - franciscom
+-->
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testsuite name="TS1" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details>
+<testcase internalid="2213" name="TC1 - no steps">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="2215" name="TC2 - no steps">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="2217" name="TC3 - no steps">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testsuite name="TS1.1 - no test cases" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite><testsuite name="TS2 - no test cases" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="TS3 - no test cases" >
+<node_order><![CDATA[3]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite><testsuite name="TS4 - no test cases" >
+<node_order><![CDATA[4]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS4.1 - no test cases" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS4.1.1 - no test cases" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="TS4.1.1.1 - no test cases" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite></testsuite><testsuite name="TS4.2 - no test cases" >
+<node_order><![CDATA[2]]></node_order>
+<details><![CDATA[]]> 
+</details></testsuite></testsuite></testsuite>

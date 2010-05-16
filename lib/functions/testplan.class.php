@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.182 2010/05/06 20:31:25 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.183 2010/05/16 18:48:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
  *	20100506 - franciscom - new method - get_linked_items_id(), that has perfomance advantages
  *							over get_linked_tcversions() when only info needed is test case id.
  *
@@ -1676,22 +1677,29 @@ class testplan extends tlObjectWithAttachments
 		$main_sql=array();
 		
 		$this->deleteUserRoles($id);
+		$getFeaturesSQL = " SELECT id FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id} "; 
 		$the_sql[]="DELETE FROM {$this->tables['milestones']} WHERE testplan_id={$id}";
 		
 		// CF used on testplan_design are linked by testplan_tcversions.id
 		$the_sql[]="DELETE FROM {$this->tables['cfield_testplan_design_values']} WHERE link_id ".
-			       "IN (SELECT id FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id})";
+			       "IN ({$getFeaturesSQL})";
+
+		// BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
+		$the_sql[]="DELETE FROM {$this->tables['user_assignments']} WHERE feature_id ".
+			       "IN ({$getFeaturesSQL})";
 		
-		// missing delete - 20100201
+		$the_sql[]="DELETE FROM {$this->tables['risk_assignments']} WHERE testplan_id={$id}";
 		$the_sql[]="DELETE FROM {$this->tables['testplan_platforms']} WHERE testplan_id={$id}";
 
 		$the_sql[]="DELETE FROM {$this->tables['testplan_tcversions']} WHERE testplan_id={$id}";
 		$the_sql[]="DELETE FROM {$this->tables['builds']} WHERE testplan_id={$id}";
 		$the_sql[]="DELETE FROM {$this->tables['cfield_execution_values']} WHERE testplan_id={$id}";
+		$the_sql[]="DELETE FROM {$this->tables['user_testplan_roles']} WHERE testplan_id={$id}";
+		
 		
 		// When deleting from executions, we need to clean related tables
 		$the_sql[]="DELETE FROM {$this->tables['execution_bugs']} WHERE execution_id ".
-			"IN (SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id})";
+				   "IN (SELECT id FROM {$this->tables['executions']} WHERE testplan_id={$id})";
 		$the_sql[]="DELETE FROM {$this->tables['executions']} WHERE testplan_id={$id}";
 		
 		

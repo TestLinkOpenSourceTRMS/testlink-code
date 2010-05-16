@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.273 2010/05/14 19:30:06 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.274 2010/05/16 18:48:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
  * 20100514 - franciscom - get_by_id() interface changes and improvements
  * 20100503 - franciscom - create_tcase_only() - BUGID 3374
  * 20100502 - franciscom - show() fixed error due to non existent variable $info
@@ -271,9 +272,6 @@ class testcase extends tlObjectWithAttachments
 				$ret['version_number']=$version_number;
 			}
 			// Multiple Test Case Steps Feature
-			// $op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
-			//                               $preconditions,$steps,$expected_results,$author_id,
-			//                               $execution_type,$importance);
 			$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
 			                              $preconditions,$steps,$author_id,$execution_type,$importance);
 			
@@ -1073,7 +1071,6 @@ class testcase extends tlObjectWithAttachments
 	  		}
 			$this->_execution_delete($id,$version_id,$children);
 			$this->_blind_delete($id,$version_id,$children);
-
 	  	}
 
 	
@@ -1222,52 +1219,64 @@ class testcase extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $sql = array();
 
+		$destroyTC = false;
+	    $item_id = $version_id;
+		$tcversion_list = $version_id;
 	    if( $version_id == self::ALL_VERSIONS)
 	    {
-		    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
-		    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
-	
-		    $tcversion_list=implode(',',$children['tcversion']);
-		    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testplan_tcversions']}  " .
-		           " WHERE tcversion_id IN ({$tcversion_list})";
-	
-		    // Multiple Test Case Steps Feature
-		    if( !is_null($children['step']) )
-		    {
-		    	$step_list=trim(implode(',',$children['step']));
-	        	if( strlen($step_list) > 0 )
-	        	{ 
-	        		$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
-		    		       " WHERE id IN ({$step_list})";
-	        	}
-	        }
-	        $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
-		           " WHERE id IN ({$tcversion_list})";
-	
-	        $this->deleteAttachments($id);
-	        $this->cfield_mgr->remove_all_design_values_from_node($id);
-	
+	    	$destroyTC = true;
 	        $item_id = $id;
+		    $tcversion_list=implode(',',$children['tcversion']);
 	    }
-	    else
-	    {
-			$sql[] = "/* $debugMsg */ DELETE FROM {$this->tables['testplan_tcversions']} " .
-			         " WHERE tcversion_id = {$version_id}";
-			         
-			// Multiple Test Case Steps Feature
-			$step_list=implode(',',$children['step']);
-			$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
-			       " WHERE id IN ({$step_list})";
-			           
-	        $sql[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcversions']} WHERE id = {$version_id}";
+
+		// BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
+		$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['user_assignments']} UA " .
+			   " WHERE UA.feature_id in (" .
+			   " SELECT id FROM {$this->tables['testplan_tcversions']}  " .
+		       " WHERE tcversion_id IN ({$tcversion_list}))";
+		
+		$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testplan_tcversions']}  " .
+		       " WHERE tcversion_id IN ({$tcversion_list})";
 	
-	    	$item_id = $version_id;
+		// Multiple Test Case Steps Feature
+		if( !is_null($children['step']) && count($children['step']) > 0)
+		{
+			$step_list=trim(implode(',',$children['step']));
+	    	if( strlen($step_list) > 0 )
+	    	{ 
+	    		$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']}  " .
+				       " WHERE id IN ({$step_list})";
+	    	}
 	    }
-	
+	    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['tcversions']}  " .
+		       " WHERE id IN ({$tcversion_list})";
+
 	    foreach ($sql as $the_stm)
 	    {
-			  $result = $this->db->exec_query($the_stm);
+			$result = $this->db->exec_query($the_stm);
 	    }
+    
+	    if($destroyTC)
+	    {
+			// Remove data that is related to Test Case => must be deleted when there is no more trace
+			// of test case => when all version are deleted
+		    $sql = null;
+		    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['testcase_keywords']} WHERE testcase_id = {$id}";
+		    $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['req_coverage']}  WHERE testcase_id = {$id}";
+
+	    	foreach ($sql as $the_stm)
+	    	{
+				  $result = $this->db->exec_query($the_stm);
+	    	}
+
+	        $this->deleteAttachments($id);
+	        $this->cfield_mgr->remove_all_design_values_from_node($id);
+	    
+	    }
+	    
+	    // Attention:
+	    // After addition of test case steps feature, a test case version can be root of
+	    // a subtree that contains the steps.
 	    $this->tree_manager->delete_subtree($item_id);
 	}
 	
@@ -1285,9 +1294,7 @@ class testcase extends tlObjectWithAttachments
 
 		if( $version_id	== self::ALL_VERSIONS )
 		{
-			
 			$tcversion_list=implode(',',$children['tcversion']);
-			// $step_list=implode(',',$children['step']);
 			
 			$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['execution_bugs']} " .
 		  		   " WHERE execution_id IN (SELECT id FROM {$this->tables['executions']} " .
@@ -1298,9 +1305,6 @@ class testcase extends tlObjectWithAttachments
 
 	      	$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['executions']}  " .
 	      		   " WHERE tcversion_id IN ({$tcversion_list})";
-	      	
-	      	// $sql[]="/* $debugMsg */ DELETE FROM {$this->tables['steps']}  " .
-	      	// 	   " WHERE tcversion_id IN ({$step_list})";
 	
 	    }
 	    else

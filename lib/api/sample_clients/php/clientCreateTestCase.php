@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientCreateTestCase.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2009/11/29 16:25:31 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/05/16 08:47:35 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -16,22 +16,21 @@ require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
+$tcCounter = 1;
 $method='createTestCase';
-$unitTestDescription="Test - {$method}";
+$unitTestDescription="Test #{$tcCounter}- {$method}";
+$tcCounter++;
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testprojectid"]=19;
-$args["testsuiteid"]=33;
+$args["testprojectid"]=620;
+$args["testsuiteid"]=621;
 $args["testcasename"]='File System Check';
 $args["summary"]='Test Case created via API';
-$args["steps"]="These are the steps";
-$args["expectedresults"]="All OK";
+$args["preconditions"]='Test Link API Up & Running';
+$args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expected_results' => 'green light');
 $args["authorlogin"]='admin';
-// $args["authorlogin"]='admin';
 $args["checkduplicatedname"]=1;
-// $args["keywordid"]='1,2,3';
-// $args["keywords"]='ALFA,BETA,ZETA';
 
 
 $debug=true;
@@ -40,19 +39,18 @@ $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
 
+
 // ----------------------------------------------------------------------------------------------------
 $method='createTestCase';
-$unitTestDescription="Test - {$method}";
+$unitTestDescription="Test #{$tcCounter}- {$method}";
+$tcCounter++;
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testprojectid"]=11260;
-$args["testsuiteid"]=11465;
+$args["testprojectid"]=620;
+$args["testsuiteid"]=621;
 $args["testcasename"]='Network Interface Card (NIC) driver update';
 $args["summary"]='Test Case created via API';
-$args["steps"]="These are the steps";
-$args["expectedresults"]="All OK";
-$args["authorlogin"]='admin';
 $args["authorlogin"]='admin';
 $args["checkduplicatedname"]=1;
 $args["keywordid"]='1,2,3,4';
@@ -65,15 +63,18 @@ $client->debug=$debug;
 runTest($client,$method,$args);
 
 // ----------------------------------------------------------------------------------------------------
+$method='createTestCase';
+$unitTestDescription="Test #{$tcCounter}- {$method}";
+$tcCounter++;
+
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testprojectid"]=1;
-$args["testsuiteid"]=11;
+$args["testprojectid"]=620;
+$args["testsuiteid"]=621;
 $args["testcasename"]='Volume Manager Increase size';
 $args["summary"]='Test Case created via API - Volume Manager Increase size';
-$args["steps"]="These are the steps for Volume Manager Increase size";
-$args["expectedresults"]="All OK";
-$args["authorlogin"]='admin';
+$args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expected_results' => 'green light');
+$args["steps"][]=array('step_number' => 2, 'actions' => 'Connect to Server', 'expected_results' => 'beep twice');
 $args["authorlogin"]='admin';
 $args["checkduplicatedname"]=1;
 
@@ -84,14 +85,16 @@ $client->debug=$debug;
 runTest($client,$method,$args);
 
 // ----------------------------------------------------------------------------------------------------
+$method='createTestCase';
+$unitTestDescription="Test #{$tcCounter}- {$method}";
+$tcCounter++;
+
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testprojectid"]=1;
-$args["testsuiteid"]=11;
+$args["testprojectid"]=620;
+$args["testsuiteid"]=621;
 $args["testcasename"]='Volume Manager Increase size';
 $args["summary"]='Want to test Action On Duplicate with value create_new_version FOR Volume Manager Increase size';
-$args["expectedresults"]="All OK";
-$args["authorlogin"]='admin';
 $args["authorlogin"]='admin';
 $args["checkduplicatedname"]=1;
 $args["actiononduplicatedname"]="create_new_version";

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.165 2010/03/11 08:04:36 asimon83 Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.166 2010/05/16 13:46:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100516 - franciscom - BUGID 3464 - delete()
  * 20100310 - asimon - BUGID 3227 - refactored get_all_requirement_ids() and count_all_requirements()
  *                                  to not be recursive and pascal-like anymore
  *                                  and to use new method on tree class
@@ -1576,6 +1577,29 @@ function setPublicStatus($id,$status)
 		$error = '';
 		$reqspec_mgr = new requirement_spec_mgr($this->db);
 		
+
+        //		
+		// Notes on delete related to Foreing Keys
+		// All link tables has to be deleted first
+		//
+		// req_relations
+		// 
+		// testplan_tcversions
+		// testplan_platforms
+		// object_keywords
+        // user_assignments
+		// builds
+		// milestones
+		//
+		// testplans
+        // keywords		
+		// platforms 
+		// attachtments
+		// testcases
+		// testsuites
+		// inventory
+		//
+		// testproject
 		$this->deleteKeywords($id);
 		$this->deleteAttachments($id);
 		
@@ -1599,7 +1623,6 @@ function setPublicStatus($id,$status)
 			}
 		}
 
-		// 20100201 - 
 		$platform_mgr = new tlPlatform($this->db,$id);
 		$platform_mgr->deleteByTestProject($id);
 		
@@ -1607,6 +1630,19 @@ function setPublicStatus($id,$status)
 		                 " SET default_testproject_id = NULL " .
 			             " WHERE default_testproject_id = {$id}",
 			             'info_resetting_default_project_fails');
+
+
+		// BUGID 3464
+		$inventory_mgr = new tlInventory($id,$this->db);
+		$invOpt = array('detailLevel' => 'minimun', 'accessKey' => 'id');
+		$inventorySet = $inventory_mgr->getAll($invOpt);
+		if( !is_null($inventorySet) )
+		{
+			foreach($inventorySet as $key => $dummy)
+			{
+				$inventory_mgr->deleteInventory($key);
+			}		
+		}
 		
 		foreach ($a_sql as $oneSQL)
 		{

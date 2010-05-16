@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.9 2010/01/03 14:10:20 franciscom Exp $
+$Id: tcDelete.tpl,v 1.10 2010/05/16 19:33:28 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev :
@@ -38,13 +38,15 @@ rev :
 				<th>{$labels.th_linked_to_tplan}</th>
 				<th>{$labels.th_executed}</th>
 				</tr>
-			{foreach key=testcase_version_id item=on_tplan_status from=$gui->exec_status_quo}
-				{foreach key=tplan_id item=status from=$on_tplan_status}
-				<tr>
-					<td align="right">{$status.version}</td>
-					<td align="right">{$status.tplan_name|escape}</td>
-					<td align="center">{if $status.executed neq ""}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png" />{/if}</td>
-					</tr>
+			{foreach from=$gui->exec_status_quo key=testcase_version_id item=on_tplan_status}
+				{foreach from=$on_tplan_status key=tplan_id item=status_on_platform}
+					{foreach from=$status_on_platform key=platform_id item=status}
+				    <tr>
+					    <td align="right">{$status.version}</td>
+					    <td align="right">{$status.tplan_name|escape}</td>
+					    <td align="center">{if $status.executed neq ""}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png" />{/if}</td>
+					  </tr>
+				  {/foreach}
 				{/foreach}
 			{/foreach}
 	    </table>

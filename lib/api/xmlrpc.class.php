@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2010/05/14 20:01:32 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2010/05/16 08:47:52 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -1821,19 +1821,16 @@ class TestlinkXMLRPCServer extends IXR_Server
 
         if( $status_ok )
         {
-             $keys2check = array(self::$authorLoginParamName,
-                                 self::$summaryParamName,
-                                 self::$stepsParamName);
-                                 // self::$expectedResultsParamName);
-        
-                foreach($keys2check as $key)
-                {
-                    if(!$this->_isParamPresent($key))
-                    {
-                        $msg = $msg_prefix . sprintf(MISSING_REQUIRED_PARAMETER_STR,$key);
-                        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
-                    }   
-                }
+      		$keys2check = array(self::$authorLoginParamName,self::$summaryParamName, self::$stepsParamName);
+      		foreach($keys2check as $key)
+      		{
+      		    if(!$this->_isParamPresent($key))
+      		    {
+      				$status_ok = false;
+      		        $msg = $msg_prefix . sprintf(MISSING_REQUIRED_PARAMETER_STR,$key);
+      		        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+      		    }   
+      		}
         }                        
 
         if( $status_ok )

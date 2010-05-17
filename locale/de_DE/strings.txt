@@ -22,10 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.135 2010/05/13 19:26:20 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.136 2010/05/17 07:08:23 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100517 - Julian - Manual update according to en_GB string file (version: 1.619)
  * 20100510 - Julian - Manual update according to en_GB string file (version: 1.615)
  * 20100423 - Julian - Scripted update according to en_GB string file (version: 1.606)
  * ---------------------------------------------------------------------------------- */
@@ -41,7 +42,7 @@ $TLS_undefined = "undefiniert";
 $TLS_active = "Aktiv";
 $TLS_actions = "Aktionen";
 $TLS_asc = "aufsteigend";
-$TLS_any = "alle";
+$TLS_any = "beliebig";
 $TLS_author = "Autor";
 $TLS_automated = "Automatisch";
 $TLS_automatic = "Automatisch";
@@ -78,7 +79,7 @@ $TLS_months	= "Monate";
 $TLS_name = "Name";
 $TLS_needed = "Benötigt";
 $TLS_not_aplicable = "N/A";
-$TLS_nobody = "Niemand";
+$TLS_nobody = "niemand";
 $TLS_not_imported = "Nicht importiert";
 $TLS_none = "Keine";
 $TLS_ok = "OK";
@@ -174,7 +175,7 @@ $TLS_btn_reorder_steps = "Schritte neu ordnen";
 
 // Status (used wide)
 $TLS_test_status_all = "Alle";
-$TLS_test_status_any = "Alle";
+$TLS_test_status_any = "beliebig";
 $TLS_test_status_not_run = "nicht getestet";
 $TLS_test_status_blocked = "Blockiert";
 $TLS_test_status_failed = "Fehlgeschlagen";
@@ -588,7 +589,7 @@ $TLS_filter_result_any_build = "beliebiges Build";
 $TLS_filter_result_specific_build = "spezifisches Build";
 $TLS_filter_result_latest_execution = "letzte Ausführung";
 $TLS_filter_result_current_build = "auszuführendes Build";
-$TLS_filter_somebody = "Jemand";
+$TLS_filter_somebody = "jemand";
 $TLS_exec_build = "Auszuführendes Build";
 $TLS_filter_result_all_prev_builds = "Ergebnis ALLER vorangegangener Builds";
 $TLS_filter_result_any_prev_build = "Ergebnis eines beliebigen vorangegangenen Builds";
@@ -1184,8 +1185,8 @@ $TLS_check_uncheck_all_checkboxes_for_add = "alle an-/abwählen (zum Hinuzufügen)
 $TLS_check_uncheck_all_checkboxes_for_rm = "alle an-/abwählen (zum Entfernen)";
 $TLS_executed_can_not_be_removed = "Bereits ausgeführte Testfälle können nicht entfernt werden";
 $TLS_execution_order = "Ausführungsreihenfolge";
-$TLS_select_all_to_add = "Alle TestFälle zum Hinzufügen aus- oder abwählen";
-$TLS_select_all_to_remove = "Alle TestFälle zum Entfernen aus- oder abwählen";
+$TLS_select_all_to_add = "Alle Testfälle zum Hinzufügen aus- oder abwählen";
+$TLS_select_all_to_remove = "Alle Testfälle zum Entfernen aus- oder abwählen";
 $TLS_tester_assignment_on_add="Benutzer beim Hinzufügen zuweisen";
 
 $TLS_has_been_executed = "wurde ausgeführt";
@@ -1528,7 +1529,7 @@ $TLS_html_format = "HTML";
 $TLS_results_latest = "Nur letzte Ergebnisse";
 $TLS_results_all = "Alle Ergebnisse";
 $TLS_display_results_tc = "Ergebnisse";
-$TLS_last_status_any = "Alle";
+$TLS_last_status_any = "beliebig";
 $TLS_last_status_blocked = $TLS_test_status_blocked;
 $TLS_last_status_failed = $TLS_test_status_failed;
 $TLS_last_status_not_run = $TLS_test_status_not_run;
@@ -2364,7 +2365,8 @@ $TLS_warning_create_build_first = "Sie müssen erst mind. einen Build erstellen o
 // ----- lib/results/displayMgr.php -----
 $TLS_error_sendreport_no_email_credentials = "Für diesen Benutzer ist keine Email Adresse hinterlegt, bitte ergänzen Sie diese in der Benutzerverwaltung.";
 
-
+$TLS_mail_sent_to = 'E-Mail wurde an %s gesendet';
+$TLS_send_mail_ko = 'Warnung: Probleme beim versenden der E-Mail - Details: ';
 
 // ----- lib/testcases/archive.inc.php -----
 
@@ -2589,7 +2591,7 @@ $TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
 $TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
 
 $TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number does not exist for test case";
-$TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
+$TLS_API_PARAMETER_NOT_INT = "Parameter (%s) must be an integer (current value: %s).";
 
 $TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
 $TLS_API_TCASE_TPROJECT_KO="Test Case (%s:%s) does not belong to Test Project (name=%s / id=%s)";

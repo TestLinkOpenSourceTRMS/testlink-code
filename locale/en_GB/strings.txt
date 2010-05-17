@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.619 2010/05/15 11:10:24 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.620 2010/05/17 09:33:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -2524,7 +2524,7 @@ $TLS_btn_export_all_reqspec = "Export All Requirement Specifications";
 
 // ----- lib/requirements/reqOverview.php -----
 $TLS_caption_req_overview = "Requirement Overview";
-$TLS_no_linked_req_cf = 'There are no Requirements defined in this Test Project.';
+$TLS_no_linked_req = 'There are no Requirements defined in this Test Project.';
 $TLS_th_coverage = 'Coverage';
 $TLS_all_versions_displayed = 'All versions of each requirement are shown.';
 $TLS_latest_version_displayed = 'Only the latest version of each requirement is shown.';

@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.10 2010/05/08 17:57:21 franciscom Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.11 2010/05/17 09:33:51 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -40,7 +40,7 @@ $args = init_args($tproject_mgr);
 $gui = init_gui($args);
 
 $glue_char = config_get('gui_title_separator_1');
-$msg_key = 'no_linked_req_cf';
+$msg_key = 'no_linked_req';
 $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
 $coverage_enabled = $req_cfg->relations->enable;

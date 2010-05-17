@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.136 2010/05/17 07:08:23 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.137 2010/05/17 09:33:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -57,11 +57,8 @@ $TLS_description	= "Beschreibung";
 $TLS_delete_confirm_question = "Sind Sie sicher, dass Sie löschen möchten";
 $TLS_doc_id = "Dokument-ID";
 $TLS_doc_id_short = "Doc ID";
-$TLS_destination_top = "Destination position top"; #todo
-$TLS_destination_bottom = "Destination position bottom"; #todo
-$TLS_export = "Export";
-$TLS_destination_bottom = "Destination position bottom"; #todo
-$TLS_export = "Export";
+$TLS_destination_top = "Destination position top"; //todo
+$TLS_destination_bottom = "Destination position bottom"; //todo
 $TLS_error = "Fehler";
 $TLS_export = "Export";
 $TLS_file_type = "Dateiformat";
@@ -185,8 +182,7 @@ $TLS_test_status_unknown = "Unbekannt";
 
 $TLS_review_status_valid = "Gültig";
 $TLS_review_status_draft = 'Entwurf';
-$TLS_review_status_future	= 'Future'; #todo
-$TLS_review_status_obsolete = 'Veraltet';
+$TLS_review_status_future	= 'Future'; //todo
 $TLS_review_status_obsolete = 'Veraltet';
 $TLS_review_status_todo = 'zu erledigen';
 
@@ -1261,7 +1257,7 @@ $TLS_testplan_copy_priorities = "Prioritäten kopieren";
 $TLS_testplan_copy_milestones = "Meilensteine kopieren";
 $TLS_testplan_copy_user_roles = "Rollen kopieren";
 $TLS_testplan_copy_platforms_links = "Plattformverknüpfungen kopieren";
-$TLS_testplan_copy_assigned_to = "Copy Assigned To"; #todo
+$TLS_testplan_copy_assigned_to = "Copy Assigned To"; //todo
 
 
 
@@ -1515,8 +1511,7 @@ $TLS_th_tc_priority_low = "Niedrige Priorität";
 $TLS_th_progress = "Testfortschritt [%]";
 $TLS_th_goal = "Auführungsziel[%]";
 $TLS_th_overall_priority = "Gesamt Testpriorität";
-$TLS_th_overall_platform = "Overall test platform"; #todo
-$TLS_title_res_by_platform = "Ergebnisse nach Plattform";
+$TLS_th_overall_platform = "Overall test platform"; //todo
 $TLS_title_res_by_platform = "Ergebnisse nach Plattform";
 $TLS_th_expected = "Erwartet";
 $TLS_th_overall = "Gesamt";
@@ -1672,8 +1667,7 @@ $TLS_user_bulk_assignment = "Diesem Benutzer mehrere Testfälle zuweisen";
 $TLS_mail_subject_testcase_assigned = 'Test Link - Testfallzuweisung - Testplan';
 $TLS_mail_subject_testcase_assignment_removed = 'Test Link - Testfallzuweisung entfernt - Testplan';
 $TLS_mail_testcase_assigned= "Die folgenden Testfälle wurden Ihnen zugewiesen %s von %s <br><br>";
-$TLS_mail_testcase_assignment_removed = "%s - Die folgenden Testfälle sind Ihnen nicht mehr zugewiesen von %s <br /><br />"; #todo
-$TLS_send_mail_to_tester = "E-Mail Benachrichtigung an Tester senden";
+$TLS_mail_testcase_assignment_removed = "%s - Die folgenden Testfälle sind Ihnen nicht mehr zugewiesen von %s <br /><br />"; //todo
 $TLS_send_mail_to_tester = "E-Mail Benachrichtigung an Tester senden";
 
 
@@ -1719,8 +1713,8 @@ $TLS_th_roles_testplan = "Testplan Rolle";
 $TLS_th_roles_testproject = "Testprojekt Rolle";
 $TLS_title_assign_roles = "Rollen zuweisen";
 $TLS_set_roles_to = "Rollen setzen";
-$TLS_testproject_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Projects"; #todo
-$TLS_testplan_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Plans"; #todo
+$TLS_testproject_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Projects"; //todo
+$TLS_testplan_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Plans"; //todo
 
 
 // ----- gui/templates/usersedit.tpl -----
@@ -2182,12 +2176,12 @@ $TLS_opt_show_tc_keys = "Stichwörter anzeigen";
 $TLS_opt_show_cfields	= "Benutzerdefinierte Felder der Testfälle";
 $TLS_opt_show_passfail = "Testergebnis anzeigen";
 $TLS_opt_show_metrics = "Metriken";
-$TLS_opt_req_spec_scope = "Scope der Anforderungsspezifikationen"; #todo scope
+$TLS_opt_req_spec_scope = "Scope der Anforderungsspezifikationen"; //todo scope
 $TLS_opt_req_spec_author = "Autor der Anforderungsspezifikationen";
-$TLS_opt_req_spec_overwritten_count_reqs = "Gesamtanzahl Anf. der Anforderungsspezifikationen"; #todo 
+$TLS_opt_req_spec_overwritten_count_reqs = "Gesamtanzahl Anf. der Anforderungsspezifikationen"; //todo 
 $TLS_opt_req_spec_type = "Typ der Anforderungsspezifikationen";
 $TLS_opt_req_spec_cf = "Benutzerdefinierte Felder der Anforderungsspezifikationen";
-$TLS_opt_req_scope = "Scope der Anforderungen"; #todo scope
+$TLS_opt_req_scope = "Scope der Anforderungen"; //todo scope
 $TLS_opt_req_author = "Autor der Anforderungen";
 $TLS_opt_req_status = "Status der Anforderungen";
 $TLS_opt_req_type = "Typ der Anforderungen";
@@ -2500,7 +2494,7 @@ $TLS_btn_export_all_reqspec = "Alle Anforderungsspezifikationen exportieren";
 
 // ----- lib/requirements/reqOverview.php -----
 $TLS_caption_req_overview = "Anforderungsübersicht";
-$TLS_no_linked_req_cf = 'Es wurden keine Anforderungen in diesem Projekt definiert.';
+$TLS_no_linked_req = 'Es wurden keine Anforderungen in diesem Projekt definiert.';
 $TLS_th_coverage = 'Abdeckung';
 $TLS_all_versions_displayed = 'Alle Versionen der Anforderungen werden angezeigt.';
 $TLS_latest_version_displayed = 'Nur die letzte Version der Anforderungen wird angezeigt.';

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.141 2010/05/08 17:58:50 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.142 2010/05/17 19:39:38 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -29,8 +29,13 @@ if (!defined('TL_ABS_PATH'))
     define('TL_ABS_PATH', str_replace('cfg','',dirname(__FILE__)));
 
 /** Setting up the global include path for testlink */
+ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . '.' . PATH_SEPARATOR . 
+		TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR);
+
+// BUGID 3432
 ini_set('include_path',ini_get('include_path') . PATH_SEPARATOR . 
-        '.' . PATH_SEPARATOR . TL_ABS_PATH . 'lib' . DIRECTORY_SEPARATOR . 'functions' . DIRECTORY_SEPARATOR);
+        TL_ABS_PATH . 'third_party' . DIRECTORY_SEPARATOR);
+
 
 /** Localization directory base */
 define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');

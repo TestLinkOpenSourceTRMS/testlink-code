@@ -22,14 +22,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.137 2010/05/17 09:33:51 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.138 2010/05/18 11:44:24 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * 20100517 - Julian - Manual update according to en_GB string file (version: 1.619)
- * 20100510 - Julian - Manual update according to en_GB string file (version: 1.615)
- * 20100423 - Julian - Scripted update according to en_GB string file (version: 1.606)
- * ---------------------------------------------------------------------------------- */
+ * 20100518 - Julian - Scripted update according to en_GB string file (version: 1.620)
+ *
+ **/
 
 //Define character set of this file (UTF-8 is common value)
 //Julian: Umlauts only shown correctly if the following line is commented
@@ -1258,7 +1257,6 @@ $TLS_testplan_copy_milestones = "Meilensteine kopieren";
 $TLS_testplan_copy_user_roles = "Rollen kopieren";
 $TLS_testplan_copy_platforms_links = "Plattformverknüpfungen kopieren";
 $TLS_testplan_copy_assigned_to = "Copy Assigned To"; //todo
-
 
 
 // ----- gui/templates/planNew.tpl -----

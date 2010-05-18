@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.99 2010/04/12 11:48:07 asimon83 Exp $
+// $Id: testlink_library.js,v 1.100 2010/05/18 19:27:05 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100518 - franciscom - BUGID 3471 - spaces on window.open() name parameter
 // 20100301 - asimon - added openLinkedReqWindow() and openLinkedReqSpecWindow()
 // 20100223 - asimon - added PL() for BUGID 3049
 // 20100216 - asimon - added triggerBuildChooser() and triggerAssignedBox() for BUGID 2455, BUGID 3026
@@ -769,7 +770,7 @@ function openLinkedReqSpecWindow(reqspec_id, anchor)
 	feature_url += "?req_spec_id=" + reqspec_id + anchor;
 
 	windowCfg="width=800,height=400,resizable=yes,scrollbars=yes,dependent=yes";
-	window.open(fRoot+feature_url,"Requirement Specification",windowCfg);
+	window.open(fRoot+feature_url,"RequirementSpecification",windowCfg);
 }
 
 

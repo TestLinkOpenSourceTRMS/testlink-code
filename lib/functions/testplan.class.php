@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.184 2010/05/18 17:08:57 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.185 2010/05/18 18:20:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100518 - franciscom - BUGID 3473
  *	20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
  *	20100506 - franciscom - new method - get_linked_items_id(), that has perfomance advantages
  *							over get_linked_tcversions() when only info needed is test case id.
@@ -548,7 +549,7 @@ class testplan extends tlObjectWithAttachments
 	/*
 	
 	*/
-	function get_linked_items_id($tplan_id)
+	function get_linked_items_id($id)
 	{
 		$sql = " /* $debugMsg */ ". 
 			   " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
@@ -3316,8 +3317,6 @@ class testplan extends tlObjectWithAttachments
 				}
             } 
         }
-
-		new dBug($user_platform);	    
         return $user_platform;
     }
 
@@ -3542,8 +3541,6 @@ class testplan extends tlObjectWithAttachments
 		$user_platform = null;
 		$options = array('output' => 'mapOfMap');
     	$execResults = $this->get_linked_tcversions($id,$filters,$options);
-    	
-    	new dBug($execResults);
     	
 	    if( !is_null($execResults) )
 	    {

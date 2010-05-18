@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <results>
-  <testplan id="123" />
-  <build id="12" />
-  <platform id="444" />
+  <testplan id="2644" />
+  <build id="13" />
+  <platform id="22" />
 
-  <testcase external_id="POL-1" >
+  <testcase external_id="BB-1" >
     <!-- if not present logged user  will be used -->
     <!-- tester LOGIN Name -->
     <tester>u0113</tester>  
@@ -15,13 +15,13 @@
   </testcase>
   
   <!-- ANOTHER EXE for SAME test case -->
-  <testcase external_id="POL-1" >
+  <testcase external_id="BB-1" >
     <result>f</result>
     <notes>functionality works great KIMI</notes>
   </testcase>
   
   <!-- Using INTERNAL ID -->
-  <testcase external_id="1256" >   
+  <testcase id="2627" >   
     <result>f</result>
     <notes>Using INTERNAL ID as link </notes>
     <bug_id>ISSUE-66</bug_id>

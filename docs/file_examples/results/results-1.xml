@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <results>
-  <testcase external_id="POL-1" >
+  <testcase external_id="BB-1" >
     <!-- if not present logged user  will be used -->
     <!-- tester LOGIN Name -->
     <tester>u0113</tester>  
@@ -12,14 +12,14 @@
   </testcase>
   
   <!-- ANOTHER EXE for SAME test case -->
-  <testcase external_id="POL-1" >
-    <result>f</result>
-    <notes>functionality works great KIMI</notes>
+  <testcase external_id="BB-1" >
+    <result>p</result>
+    <notes>NUNIN functionality works great KIMI</notes>
   </testcase>
   
   <!-- Using INTERNAL ID -->
-  <testcase external_id="1256" >   
-    <result>f</result>
+  <testcase id="2646" >   
+    <result>b</result>
     <notes>Using INTERNAL ID as link </notes>
     <bug_id>ISSUE-660</bug_id>
     <bug_id>ISSUE-664</bug_id>

@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.2 2010/05/01 18:47:12 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.3 2010/05/18 05:07:21 amkhullar Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -390,7 +390,7 @@
 			<tr>
 	    		<td>{$labels.testsuite}</td>
 	    		<td>
-	    			<select name="tsuites_to_show" style="width:100%">
+	    			<select name="tsuites_to_show" style="width:auto">
 	    				{html_options options=$tsuitesCombo selected=$tsuiteChoice}
 	    			</select>
 	    		</td>

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.52 2010/05/02 14:30:49 franciscom Exp $
+ * @version    	CVS: $Id: configCheck.php,v 1.53 2010/05/18 05:08:24 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
@@ -337,7 +337,9 @@ function checkForBTSConnection()
 	global $g_bugInterface;
 	$status_ok = true;
 	if($g_bugInterface && !$g_bugInterface->connect())
+	{	
 		$status_ok = false;
+	}
 	return $status_ok; 
 }
 

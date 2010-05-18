@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventinfo.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2009/08/14 20:58:03 $ by $Author: schlundus $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/05/18 05:07:52 $ by $Author: amkhullar $
 **/
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -24,10 +24,14 @@ if ($args->id)
 	{
 		$user = new tlUser($event->userID);
 		if ($user->readFromDB($db) < tl::OK)
+		{
 			$user = null;
+		}
 	}
 	else
+	{
 		$event = null;
+	}
 }
 
 $smarty = new TLSmarty();

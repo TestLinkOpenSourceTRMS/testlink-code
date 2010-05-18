@@ -6,14 +6,15 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.158 2010/05/15 13:21:03 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.159 2010/05/18 18:38:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
  * @internal Revisions:
  * 
- * 20100515 - franciscom -  BUGID 3438
+ * 20100518 - franciscom - BUGID 3474: Link to test case in Query Metrics Report is broken if using platforms
+ * 20100515 - franciscom - BUGID 3438
  * 20090804 - franciscom - added contributed code getPriority()
  * 20090618 - franciscom - BUGID 0002621 
  * 20090414 - amitkhullar - BUGID: 2374-Show Assigned User in the Not Run Test Cases Report 
@@ -1211,6 +1212,7 @@ class results extends tlObjectWithDB
 	 *
 	 * @internal Revisions:
 	 * 
+	 *  20100518 - franciscom - BUGID 3474: Link to test case in Query Metrics Report is broken if using platforms
 	 *	20090302 - amitkhullar - added a parameter $all_results to get latest results (0) only otherwise 
 	 * 				all results are displayed in reports (1). 
 	 *	20080928 - franciscom - seems that adding a control to avoid call to buildBugString()
@@ -1373,12 +1375,16 @@ class results extends tlObjectWithDB
 								
 								$dummy = null;
 								$infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
-									$exec_row['execution_ts']);
+									                                                   $exec_row['execution_ts']);
 								//-amitkhullar - BugID:2267
 								$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
+								
+								// 20100518 - franciscom - BUGID 3474: Link to test case in Query Metrics Report is broken if using platforms
+								$prefixLink .= '&platform_id=' . $exec_row['platform_id'];
 								$infoToSave['execute_link'] = $prefixLink . "&id={$testcaseID}&version_id=" . $info['tcversion_id'] . 
-									"&tplan_id=" . $this->testPlanID . '">' .  
-									$suffixLink . $info['external_id'] . ":&nbsp;<b>" .  htmlspecialchars($info['name']). "</b></a>";
+															  "&tplan_id=" . $this->testPlanID . '">' .  
+									                          $suffixLink . $info['external_id'] . ":&nbsp;<b>" .  
+									                          htmlspecialchars($info['name']). "</b></a>";
 								
 								array_push($currentSuite, $infoToSave);
 							} // end foreach

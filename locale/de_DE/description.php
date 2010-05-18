@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.3 2010/05/18 06:34:43 mx-julian Exp $
+ * @version    	CVS: $Id: description.php,v 1.4 2010/05/18 13:45:56 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -27,7 +27,7 @@
 
 
 // printFilter.html
-$TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
+$TLS_hlp_generateDocOptions = "<h2>Optionen für das zu generierende Dokument</h2>
 
 <p>This table allows the user to filter test cases before they are viewed. If
 selected (checked) the data will be shown. In order to change the data

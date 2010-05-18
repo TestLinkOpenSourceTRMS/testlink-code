@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.9 2010/05/18 06:34:43 mx-julian Exp $
+ * @version    	CVS: $Id: texts.php,v 1.10 2010/05/18 13:45:56 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -27,9 +27,10 @@
 
 
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['error']	= "Application error";
-$TLS_htmltext['error'] 		= "<p>Unexpected error happens. Please check event viewer or " .
-		"logs for details.</p><p>You are welcome to report the problem. Please visit our " .
+$TLS_htmltext_title['error']	= "Anwendungsfehler";
+$TLS_htmltext['error'] 		= "<p>Es ist ein unerwarteter Fehler aufgetreten. Bitte " .
+		"überprüfen Sie den Event Viewer oder Log-Daten für weitere Details." .
+		"</p><p>You are welcome to report the problem. Please visit our " .
 		"<a href='http://www.teamst.org'>website</a>.</p>";
 
 

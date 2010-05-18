@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.183 2010/05/16 18:48:27 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.184 2010/05/18 17:08:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -544,6 +544,21 @@ class testplan extends tlObjectWithAttachments
 		}
 	}
 	
+
+	/*
+	
+	*/
+	function get_linked_items_id($tplan_id)
+	{
+		$sql = " /* $debugMsg */ ". 
+			   " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
+			   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
+			   " WHERE TPTCV.testplan_id = {$id} ";
+			   
+		$linked_items = $this->db->fetchRowsIntoMap($sql,'parent_id');			     
+		return $linked_items;
+	}
+
 
 	/*
   	function: get_linked_tcversions
@@ -4046,20 +4061,6 @@ class milestone_mgr extends tlObject
 		return $rs;
 	}
 
-
-	/*
-	
-	*/
-	function get_linked_items_id($tplan_id)
-	{
-		$sql = " /* $debugMsg */ ". 
-			   " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
-			   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
-			   " WHERE TPTCV.testplan_id = {$id} ";
-			   
-		$linked_items = $this->db->fetchRowsIntoMap($sql,'parent_id');			     
-		return $linked_items;
-	}
 
 } // end class milestone_mgr
 ?>

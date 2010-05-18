@@ -3,14 +3,6 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/04/26 09:43:29 $ by $Author: asimon83 $
- * @author Martin Havlat and reviewers from TestLink Community
- *
- * --------------------------------------------------------------------------------------
- *
- * Scope:
  * German (de_DE) texts for help/instruction pages. Strings for dynamic pages
  * are stored in strings.txt pages.
  *
@@ -22,7 +14,15 @@
  *
  *
  * Revisions history is not stored for the file
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat, Julian Krien
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: texts.php,v 1.9 2010/05/18 06:34:43 mx-julian Exp $
+ * @link 		http://www.teamst.org/index.php
  *
+ * @internal Revisions:
+ * 20100517 - Julian - update of header according to en_GB texts.php
  **/
 
 

@@ -1,29 +1,29 @@
 <?php
-/** -------------------------------------------------------------------------------------
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+/** 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2010/04/26 09:43:27 $ $Author: asimon83 $
- * @author Martin Havlat
+ * Localization: German (de_DE) descriptions
  *
- * LOCALIZATION:
- * === German (de_DE) strings ===
- *
- * @ABSTRACT
+ * 
  * The file contains global variables with html text. These variables are used as 
  * HELP or DESCRIPTION. To avoid override of other globals we are using "Test Link String" 
  * prefix '$TLS_hlp_' or '$TLS_txt_'. This must be a reserved prefix.
  * 
- * Contributors:
+ * Contributors howto:
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
  *
- * No revision is stored for the the file - see CVS history
- * The initial data are based on help files stored in gui/help/<lang>/ directory. 
- * This directory is obsolete now. It serves as source for localization contributors only. 
+ * 
+ * @package 	TestLink
+ * @author 		Martin Havlat, Julian Krien
+ * @copyright 	2003-2009, TestLink community 
+ * @version    	CVS: $Id: description.php,v 1.3 2010/05/18 06:34:43 mx-julian Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * ----------------------------------------------------------------------------------- */
+ * @internal Revisions:
+ * 20100517 - Julian - update of header according to en_GB description.php
+ **/
 
 
 // printFilter.html

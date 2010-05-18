@@ -1,7 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsImport.tpl,v 1.7 2010/05/02 09:38:10 franciscom Exp $
+$Id: resultsImport.tpl,v 1.8 2010/05/18 20:28:09 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
+
+20100518 - franciscom - BUGID 3470 - contribution twelve
 *}
 {include file="inc_head.tpl"}
 {lang_get var='labels' 
@@ -41,6 +43,7 @@ Purpose: smarty template - manage import of test cases and test suites
 	
 	<div class="groupBtn">
 		<input type="hidden" name="build" value="{$gui->buildID}" />
+    <input type="hidden" name="platform" value="{$gui->platformID}" /> {* BUGID 3470 *}
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			onclick="javascript: location.href=fRoot+'lib/results/resultsImport.php';" />

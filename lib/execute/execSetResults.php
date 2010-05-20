@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.153 $
- * @modified $Date: 2010/04/29 14:56:23 $ $Author: asimon83 $
+ * @version $Revision: 1.154 $
+ * @modified $Date: 2010/05/20 19:47:39 $ $Author: franciscom $
  *
  * rev:
+ *	20100520 - franciscom - BUGID 3478  Testcase ID not updated when using save and move next
  *  20100428 - asimon - BUGID 3301 and related, added logic to refresh tree after tc execution
  *  20100313 - franciscom - BUGID 3276
  *  20100204 - asimon - BUGID 2455 & 3026, little changes for filtering
@@ -165,7 +166,9 @@ if(!is_null($linked_tcversions))
 	$_SESSION['s_lastAttachmentInfos'] = null;
     if($args->level == 'testcase')
     {
-        list($tcase_id,$tcversion_id) = processTestCase($gui,$args,$cfg,$linked_tcversions,
+    	// Warning!!! - $gui is passed by reference to be updated inside function
+    	$tcase = null;
+        list($tcase_id,$tcversion_id) = processTestCase($tcase,$gui,$args,$cfg,$linked_tcversions,
                                                         $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
     else
@@ -174,7 +177,7 @@ if(!is_null($linked_tcversions))
                                                          $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
-    $gui->map_last_exec=getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
+    $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     
     // --------------------------------------------------------------------------------------------
     // Results to DB
@@ -193,6 +196,8 @@ if(!is_null($linked_tcversions))
 			{
 				$tcase_id = $nextItem['tcase_id'];
 				$tcversion_id = $nextItem['tcversion_id'];
+				// BUGID 3478
+         		processTestCase($nextItem,$gui,$args,$cfg,$linked_tcversions,$tree_mgr,$tcase_mgr,$attachmentRepository);
 			}
 			
         }
@@ -348,8 +353,7 @@ function init_args($cfgObj)
 	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
   
 	$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 'save_results' => 0, 
-	                  'save_and_next' => 0,
-	                  'filter_status' => null,'filter_assigned_to' => null);
+	                  'save_and_next' => 0,'filter_status' => null,'filter_assigned_to' => null);
 
 	foreach($key2loop as $key => $value)
 	{
@@ -424,6 +428,8 @@ function init_args($cfgObj)
     {
         case 'testcase':
         $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
+        
+        new dBug($args->tc_versions);
         
         // some problems with $_GET that has impact on logic 'Save and Go to next test case';
         if( !is_null($args->tc_versions) )
@@ -1137,7 +1143,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
   	20080811 - franciscom - BUGID 1650 (REQ)
   
 */
-function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
+function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
                          &$treeMgr,&$tcaseMgr,&$docRepository)
 {     
 
@@ -1148,23 +1154,25 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
     $guiObj->design_time_cfields='';
   	$guiObj->testplan_design_time_cfields='';
   	
-  	$tcase_id = $argsObj->id;
-  	$items_to_exec[$argsObj->id] = $linked_tcversions[$argsObj->id][0]['tcversion_id'];    
+  	$tcase_id = isset($tcase['tcase_id']) ? $tcase['tcase_id'] : $argsObj->id;
+
+  	$items_to_exec[$tcase_id] = $linked_tcversions[$tcase_id][0]['tcversion_id'];    
+  	// $tcversion_id = $linked_tcversions[$tcase_id][0]['tcversion_id'];
+  	$tcversion_id = isset($tcase['tcversion_id']) ? $tcase['tcversion_id'] : $items_to_exec[$tcase_id];
   	
-  	$tcversion_id = $linked_tcversions[$argsObj->id][0]['tcversion_id'];
-  	$link_id = $linked_tcversions[$argsObj->id][0]['feature_id'];
-  	$guiObj->tcAttachments[$argsObj->id] = getAttachmentInfos($docRepository,$argsObj->id,'nodes_hierarchy',1);
+  	$link_id = $linked_tcversions[$tcase_id][0]['feature_id'];
+  	$guiObj->tcAttachments[$tcase_id] = getAttachmentInfos($docRepository,$tcase_id,'nodes_hierarchy',1);
 
 	foreach($locationFilters as $locationKey => $filterValue)
 	{
 		// 20090718 - franciscom
 		$finalFilters=$cf_filters+$filterValue;
-    	$guiObj->design_time_cfields[$argsObj->id][$locationKey] = 
-  		         $tcaseMgr->html_table_of_custom_field_values($argsObj->id,'design',$finalFilters,
+    	$guiObj->design_time_cfields[$tcase_id][$locationKey] = 
+  		         $tcaseMgr->html_table_of_custom_field_values($tcase_id,'design',$finalFilters,
   		                                                      null,null,$argsObj->tproject_id);
     	
     	// 20090718 - franciscom - TO BE refactored
-    	$guiObj->testplan_design_time_cfields[$argsObj->id] = 
+    	$guiObj->testplan_design_time_cfields[$tcase_id] = 
   		         $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
   		                                                      null,null,$argsObj->tproject_id,null,$link_id);
     	
@@ -1174,8 +1182,8 @@ function processTestCase(&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
     // BUGID 856: Guest user can execute test case
   	if($guiObj->grants->execute)
   	{
-  	   $guiObj->execution_time_cfields[$argsObj->id] = 
-  	            $tcaseMgr->html_table_of_custom_field_inputs($argsObj->id,null,'execution',"_{$argsObj->id}",null,
+  	   $guiObj->execution_time_cfields[$tcase_id] = 
+  	            $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$argsObj->id}",null,
   	                                                         null,$argsObj->tproject_id);
   	}
   	// 20070405 - BUGID 766

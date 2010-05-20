@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2010/04/08 15:11:32 $ by $Author: asimon83 $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2010/05/20 21:06:19 $ by $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -32,17 +32,21 @@ $gui = initializeGui($db,$args);
 $arrCheckboxes = init_checkboxes($args);
 
 $workPath = 'lib/results/printDocument.php';
-
-$bAddTestPlanID = false;
-if($args->doc_type == 'testplan') {
-	$bAddTestPlanID = true;
-} else if ($args->doc_type == 'testreport')	{
-	$bAddTestPlanID = true;
+switch($args->doc_type)
+{
+	case 'testplan':
+	case 'testreport':
+	$addTestPlanID = true;
+	break;
+	
+	default
+	$addTestPlanID = false;
+	break;
 }
 
 $getArguments = "&type=" . $args->doc_type; 
 
-if ($bAddTestPlanID) {
+if ($addTestPlanID) {
 	$getArguments .= '&docTestPlanId=' . $args->tplan_id;
 }
 
@@ -51,8 +55,6 @@ $tree = null;
 switch($args->doc_type) 
 {
     case 'testspec':
-	break;
-	    
 	case 'reqspec':
 	break;
 
@@ -124,8 +126,7 @@ function init_args()
 	$args = new stdClass();
 	$iParams = array("tplan_id" => array(tlInputParameter::INT_N),
 			         "format" => array(tlInputParameter::INT_N,999),
-					 "type" => array(tlInputParameter::STRING_N,0,100),
-	);	
+					 "type" => array(tlInputParameter::STRING_N,0,100));	
 		
 	R_PARAMS($iParams,$args);
 	

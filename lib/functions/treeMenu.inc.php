@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.124 2010/05/20 17:24:39 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.125 2010/05/20 21:13:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -395,9 +395,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	
 	if($node_type == 'testcase')
 	{
-		// $viewType = is_null($tplan_tcases) ? 'testSpecTree' : 'executionTree';
 		$viewType = $my['options']['viewType'];
-		
 		if ($enabledFiltersOn['keywords'])
 		{
 			if (!isset($tck_map[$node['id']]))
@@ -616,8 +614,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		}
 
         // node must be dstroyed if empty had we have using filtering conditions
-		// if( ($enabledFiltersOn['keywords'] || $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'] ||
-		// 	 !is_null($tplan_tcases)) && !$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
 		if( ($filtersApplied || !is_null($tplan_tcases)) && 
 			!$tcase_counters['testcase_count'] && ($node_type != 'testproject'))
 		{
@@ -631,7 +627,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		
         // If is an EMPTY Test suite and we have added filtering conditions,
         // We will destroy it.
-		// if ($enabledFiltersOn['executionType'] || $enabledFiltersOn['keywords'] || !is_null($tplan_tcases) )
 		if ($filtersApplied || !is_null($tplan_tcases) )
 		{
 			$node = null;

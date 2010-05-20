@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2010/05/11 18:36:26 $ by $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2010/05/20 20:26:56 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20100520 - franciscom - BUGID 2169 - customFieldValuesAsXML() new method_exists
  *	20100511 - franciscom - createFromXML() new method
  *	20100509 - franciscom - update() interface changes.
  *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select here from reqView.php
@@ -1078,6 +1079,9 @@ function set_order($map_id_order)
  */
 function exportReqToXML($id,$tproject_id=null)
 {            
+	// BUGID 2169
+	$cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
+
  	$rootElem = "{{XMLCODE}}";
 	$elemTpl = "\t" .   "<requirement>" .
 	           "\n\t\t" . "<docid><![CDATA[||DOCID||]]></docid>" .
@@ -1087,6 +1091,7 @@ function exportReqToXML($id,$tproject_id=null)
 			   "\n\t\t" . "<status><![CDATA[||STATUS||]]></status>" .
 			   "\n\t\t" . "<type><![CDATA[||TYPE||]]></type>" .
 			   "\n\t\t" . "<expected_coverage><![CDATA[||EXPECTED_COVERAGE||]]></expected_coverage>" .			   
+			   "\n\t\t" . $cfXML . 
 			   "\n\t" . "</requirement>" . "\n";
 					   
 	$info = array (	"||DOCID||" => "req_doc_id",
@@ -1100,7 +1105,9 @@ function exportReqToXML($id,$tproject_id=null)
 	
 	$req = $this->get_by_id($id,requirement_mgr::LATEST_VERSION);
 	$reqData[] = $req[0]; 
-	$xmlStr=exportDataToXML($reqData,$rootElem,$elemTpl,$info,true);						    
+	
+	
+	$xmlStr = exportDataToXML($reqData,$rootElem,$elemTpl,$info,true);						    
 	return $xmlStr;
 }
 
@@ -1409,6 +1416,30 @@ function html_table_of_custom_field_values($id)
     $this->cfield_mgr->design_values_to_db($hash,$node_id,$cf_map,$hash_type);
   }
 
+
+ /**
+  * customFieldValuesAsXML
+  *
+  * @param $id: requirement spec id
+  * @param $tproject_id: test project id
+  *
+  *
+  */
+ function customFieldValuesAsXML($id,$tproject_id)
+ {
+    $xml = null;
+    $cfMap=$this->get_linked_cfields($id,$tproject_id);
+	if( !is_null($cfMap) && count($cfMap) > 0 )
+	{
+        $xml = $this->cfield_mgr->exportValueAsXML($cfMap);
+    }
+    return $xml;
+ }
+
+
+
+
+
   /*
    function: getByDocID
    get req information using document ID as access key.
@@ -1488,7 +1519,7 @@ function html_table_of_custom_field_values($id)
 	/**
 	 * Copy a requirement to a new requirement specification
 	 * requirement DOC ID will be changed because must be unique inside
-	 * MASTER CONATAINER (test project)
+	 * MASTER CONTAINER (test project)
 	 * 
 	 * @param integer $id: requirement ID
 	 * @param integer $parent_id: target req spec id (where we want to copy)

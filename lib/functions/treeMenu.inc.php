@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.125 2010/05/20 21:13:55 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.126 2010/05/20 21:30:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -323,6 +323,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
                      $tplan_tcases = null,$filters=null, $options=null)
 {
+	
 	static $hash_id_descr;
 	static $status_descr_code;
 	static $status_code_descr;
@@ -334,7 +335,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
     static $filterOnTCVersionAttribute;
     static $filtersApplied;
 
-    
+    $tpNode = null;
 	if (!$tables)
 	{
   	    $debugMsg = 'Class: ' . __CLASS__ . ' - ' . 'Method: ' . __FUNCTION__ . ' - ';
@@ -392,7 +393,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	
 	$node_type = isset($node['node_type_id']) ? $hash_id_descr[$node['node_type_id']] : null;
 	$tcase_counters['testcase_count']=0;
-	
 	if($node_type == 'testcase')
 	{
 		$viewType = $my['options']['viewType'];
@@ -560,7 +560,6 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		{
 			$tcase_counters[$key]=0;
 		}
-		
 		if(isset($tpNode['exec_status']) )
 		{
 			$tc_status_code = $tpNode['exec_status'];
@@ -777,7 +776,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		if(is_null($tc_id) || $tc_id >= 0)
 		{
 			$doFilterByKeyword = (!is_null($keyword_id) && $keyword_id > 0);
-		    // echo "DEBUG - \$doFilterByKeyword:" . ($doFilterByKeyword ? 'ON' : 'OFF') . "<br>";
 			if($doFilterByKeyword)
 			{
 				$tck_map = $tproject_mgr->get_keywords_tcases($tproject_id,$keyword_id,$keywordsFilterType);
@@ -926,8 +924,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	if( !is_null($menustring) )
 	{  
-		// echo 'Remove null';
-		
 		// Change key ('childNodes')  to the one required by Ext JS tree.
 		$menustring = str_ireplace('childNodes', 'children', json_encode($test_spec['childNodes']));   
 		

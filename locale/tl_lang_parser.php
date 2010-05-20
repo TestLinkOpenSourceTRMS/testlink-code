@@ -4,8 +4,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * command line script: update localization files according the current english
- * file - add a new variables.
+ * command line script: update localization files strings.txt, texts.php and
+ * description.php according to the current english file by adding new variables
  * 
  * Usage: 
  * 	1. correct the first line to point php binary
@@ -13,14 +13,16 @@
  *  3. Linux: Allow execute - #chmod u+x tl_lang_parser.php
  *  4. Run the file with to-be-updated file as argument
  * 		#tl_lang_parser.php /home/havlatm/www/tl_head/locale/cs_CZ/strings.txt
+ *     if you run from default location (locale) use e.g.:
+ *      #tl_lang_parser.php de_DE/strings.txt
  * 
  *  Note: to have report about parsing redirect script to file; for example
- * 		#tl_lang_parser.php strings.txt > report.txt
+ * 		#tl_lang_parser.php strings.txt > report.txt (RECOMMENDED)
  * 
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: tl_lang_parser.php,v 1.1 2010/05/20 19:15:16 mx-julian Exp $
+ * @version    	CVS: $Id: tl_lang_parser.php,v 1.2 2010/05/20 19:42:20 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -31,9 +33,11 @@
 
 /** Set path to your en_GB english file */
 $file_eng = 'en_GB/strings.txt';
+//$file_eng = 'en_GB/texts.php';
+//$file_eng = 'en_GB/description.php';
 
 /** Set true if you would like to have original file with 'bck' extension */
-$do_backup_file = TRUE;
+$do_backup_file = FALSE;
 
 
 
@@ -87,7 +91,7 @@ echo "File to update lines = ".($lines_old_count+1)."\n";
 // find end of english header:
 for( $i = 0; $i < $lines_eng_count; $i++ )
 {
-    if (preg_match('/\$Id: tl_lang_parser.php,v 1.1 2010/05/20 19:15:16 mx-julian Exp $lines_eng[$i], $eng_revision) )
+    if (preg_match('/\$Id.+(\d+\.\d+)\s.*/', $lines_eng[$i], $eng_revision) )
     {
         $revision_comment = $eng_revision[1];
         echo "Master file revision: ".$revision_comment."\n";

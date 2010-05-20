@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/04/08 15:11:32 $ by $Author: asimon83 $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/05/20 21:31:04 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ *	20100520 - franciscom - BUGID 3451 - In the "Test reports and Metrics" -> "Test report" the "Last Result" is always "Not Run"
  *  20100326 - asimon - BUGID 3067 - refactored to include requirement document printing
  *	20090906 - franciscom - added platform contribution
  *	20090922 - amkhullar - added a check box to enable/disable display of TC custom fields.
@@ -62,11 +63,10 @@ $tproject = new testproject($db);
 $tree_manager = &$tproject->tree_manager;
 $hash_descr_id = $tree_manager->get_available_node_types();
 $hash_id_descr = array_flip($hash_descr_id);
-$decoding_hash = array('node_id_descr' => $hash_id_descr,
-                     'status_descr_code' =>  $status_descr_code,
-                     'status_code_descr' =>  $status_code_descr);
+$decoding_hash = array('node_id_descr' => $hash_id_descr,'status_descr_code' =>  $status_descr_code,
+                       'status_code_descr' =>  $status_code_descr);
 
-//can not be null
+// can not be null
 $order_cfg = array("type" =>'spec_order'); // 20090309 - BUGID 2205
 switch ($doc_info->type)
 {
@@ -178,19 +178,12 @@ switch ($doc_info->type)
             // 20100112 - franciscom
             $getOpt = array('outputFormat' => 'map', 'addIfNull' => true);
             $platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);   
-            
-            // $platforms = $tplan_mgr->getPlatforms($args->tplan_id,'map');
-            // if( is_null($platforms))
-            // {
-            // 	// needed for algorithm
-            // 	$platforms[0]='';
-            // }		
-			
 			$tcase_filter = null;
 			$execid_filter = null;
 			$executed_qty = 0;
 			$treeForPlatform = array();
-         
+
+
 			switch($doc_info->content_range)
 			{
 				case 'testproject':
@@ -215,7 +208,11 @@ switch ($doc_info->type)
 
     	   	    	  $dummy = null;
                       $pnFilters = null;
+                      // BUGID 3451 - In the "Test reports and Metrics" -> "Test report" the "Last Result" is always "Not Run"
+                      // I'm sorry - added whilw refactoring preparNode()
+                      // viewType is critic
                       $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
+		                                  'viewType' => 'executionTree',
 		                                  'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
     	   	    	  prepareNode($db,$tree,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
     	   	    	 

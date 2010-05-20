@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.187 2010/05/20 19:45:52 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.188 2010/05/20 19:46:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3472,9 +3472,6 @@ class testplan extends tlObjectWithAttachments
 				" WHERE TPTCVMAIN.testplan_id = {$id} AND TPTCVMAIN.tcversion_id = {$tcversion_id} " .
 				" AND TPTCVMAIN.platform_id = {$platform_id} " .
 				" ORDER BY node_order,testcase_name ";
-
-  		echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
 		$siblings = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 		return $siblings;
 	}

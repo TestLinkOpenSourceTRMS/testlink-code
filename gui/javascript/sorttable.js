@@ -13,6 +13,8 @@
   Thanks to many, many people for contributions and suggestions.
   Licenced as X11: http://www.kryogenix.org/code/browser/licence.html
   This basically means: do what you want with it.
+
+  20100519 - franciscom - BUGID 2905 - https problems
 */
 
  
@@ -343,9 +345,11 @@ if (document.addEventListener) {
 }
 
 /* for Internet Explorer */
+/* 20100519 - BUGID 2905 */
 /*@cc_on @*/
 /*@if (@_win32)
-    document.write("<script id=__ie_onload defer src=javascript:void(0)><\/script>");
+    var dummy = (location.protocol == "https:") ? "//:" : "javascript:void(0)";
+    document.write("<script id=__ie_onload defer src=" + dummy + "><\/script>");
     var script = document.getElementById("__ie_onload");
     script.onreadystatechange = function() {
         if (this.readyState == "complete") {

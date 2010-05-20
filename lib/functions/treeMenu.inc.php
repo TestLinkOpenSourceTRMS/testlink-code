@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.122 2010/04/29 14:56:24 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.123 2010/05/20 17:24:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -790,8 +790,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
-			
-			$opt = array('include_unassigned' => $filters->include_unassigned);
+			// 20100520 - franciscom
+			$opt = array('include_unassigned' => $filters->include_unassigned, 'steps_info' => false);
 
 			// 20100417 - BUGID 3380 - execution type
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
@@ -802,6 +802,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                    'exec_type' => $filters->exec_type);
 			
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
+			
+			new dBug($tplan_tcases);
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'AND')
 			{
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);

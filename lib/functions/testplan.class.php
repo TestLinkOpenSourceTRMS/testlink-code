@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.185 2010/05/18 18:20:36 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.186 2010/05/20 17:24:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100520 - franciscom - new option on get_linked_tcversions()
  *	20100518 - franciscom - BUGID 3473
  *	20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
  *	20100506 - franciscom - new method - get_linked_items_id(), that has perfomance advantages
@@ -636,6 +637,9 @@ class testplan extends tlObjectWithAttachments
          	           default 'simple'
          	           'full': add summary, steps and expected_results, and test suite name
          	           'summary': add summary 
+		 	[steps_info]: controls if step info has to be added on output    
+         	           default true
+		 	    
 		 	    
 	  returns: changes according options['output'] (see above)
 
@@ -645,6 +649,8 @@ class testplan extends tlObjectWithAttachments
                            - tcversion_id if has executions.
 
 	rev :
+		 20100520 - franciscom - added option steps_info, to try to solve perfomance problems
+		 						 allowing caller to ask for NO INFO ABOUT STEPS	
 		 20100417 - franciscom - added importance on output data
 		 		  				 BUGID 3356: "Failed Test Cases" report is not updated when a test case 
 		 		  				 			  has been changed from "Failed" to "Passed"		 
@@ -671,7 +677,7 @@ class testplan extends tlObjectWithAttachments
                                'platform_id' => null, 'exec_type' => null);
                                
         $my['options'] = array('only_executed' => false, 'include_unassigned' => false,
-                               'output' => 'map', 'details' => 'simple', 
+                               'output' => 'map', 'details' => 'simple', 'steps_info' => true, 
                                'execution_details' => null, 'last_execution' => false);
 
  		// Cast to array to handle $options = null
@@ -984,7 +990,8 @@ class testplan extends tlObjectWithAttachments
 		}
 		
         // Multiple Test Case Steps Feature
-        if( !is_null($recordset) )
+        // added after Julian mail regarding perf problems building exec tree
+        if( !is_null($recordset) && $my['options']['steps_info'])
         {
 		    $itemSet = array_keys($recordset);
 			switch($my['options']['output'])

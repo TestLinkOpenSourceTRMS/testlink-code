@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2010/05/20 21:06:19 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2010/05/20 21:06:49 $ by $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -39,7 +39,7 @@ switch($args->doc_type)
 	$addTestPlanID = true;
 	break;
 	
-	default
+	default:
 	$addTestPlanID = false;
 	break;
 }

@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.186 2010/05/20 17:24:34 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.187 2010/05/20 19:45:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20100520 - franciscom - getTestCaseSiblings() join bug
  *	20100520 - franciscom - new option on get_linked_tcversions()
  *	20100518 - franciscom - BUGID 3473
  *	20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
@@ -3451,24 +3452,29 @@ class testplan extends tlObjectWithAttachments
 	/**
 	 * getTestCaseSiblings()
 	 *
+	 * @internal revisions
+	 * 20100520 - franciscom - missed platform_id piece on join
 	 */
 	function getTestCaseSiblings($id,$tcversion_id,$platform_id)
 	{
 		$sql = 	" SELECT NHTSET.name as testcase_name,NHTSET.id AS testcase_id , NHTCVSET.id AS tcversion_id," .
         		" NHTC.parent_id AS testsuite_id, " .
-        		// " TPTCVMAIN.tcversion_id AS target_tcversion_id, " .
-        		// " NHTCV.parent_id  " .
         		" TPTCVX.id AS feature_id, TPTCVX.node_order " .
 				" from {$this->tables['testplan_tcversions']} TPTCVMAIN " .
 				" JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TPTCVMAIN.tcversion_id " . 
 				" JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " . 
 				" JOIN {$this->tables['nodes_hierarchy']} NHTSET ON NHTSET.parent_id = NHTC.parent_id " .
 				" JOIN {$this->tables['nodes_hierarchy']} NHTCVSET ON NHTCVSET.parent_id = NHTSET.id " .
-				" JOIN {$this->tables['testplan_tcversions']} TPTCVX ON TPTCVX.tcversion_id = NHTCVSET.id " .
+				" JOIN {$this->tables['testplan_tcversions']} TPTCVX " . 
+				" ON TPTCVX.tcversion_id = NHTCVSET.id " .
 				" AND TPTCVX.testplan_id = TPTCVMAIN.testplan_id " .
+				" AND TPTCVX.platform_id = TPTCVMAIN.platform_id " .
 				" WHERE TPTCVMAIN.testplan_id = {$id} AND TPTCVMAIN.tcversion_id = {$tcversion_id} " .
 				" AND TPTCVMAIN.platform_id = {$platform_id} " .
 				" ORDER BY node_order,testcase_name ";
+
+  		echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
 		$siblings = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
 		return $siblings;
 	}
@@ -3482,6 +3488,8 @@ class testplan extends tlObjectWithAttachments
 	{
 		$sibling = null;
     	$brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id);
+		new dBug($brothers_and_sisters);
+		
     	$tcversionSet = array_keys($brothers_and_sisters);
     	$elemQty = count($tcversionSet);
     	$dummy = array_flip($tcversionSet);

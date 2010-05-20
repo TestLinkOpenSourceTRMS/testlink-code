@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.11 2010/05/20 07:56:24 mx-julian Exp $
+ * @version    	CVS: $Id: texts.php,v 1.12 2010/05/20 12:39:12 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -30,42 +30,41 @@
 $TLS_htmltext_title['error']	= "Anwendungsfehler";
 $TLS_htmltext['error'] 		= "<p>Es ist ein unerwarteter Fehler aufgetreten. Bitte " .
 		"überprüfen Sie den Event Viewer und/oder Log-Dateien für weitere Details." .
-		"</p><p>You are welcome to report the problem. Please visit our " .
-		"<a href='http://www.teamst.org'>website</a>.</p>";
+		"</p><p>Sie können das Problem gerne melden. Besuchen Sie hierzu bitte unsere " .
+		"<a href='http://www.teamst.org'>Webseite</a>.</p>";
 
 
 
 $TLS_htmltext_title['assignReqs']	= "Zuweisung von Anforderungen zu Testfällen";
-$TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
-<p>Users can set relations between requirements and test cases. A test designer could
-define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
-requirements and vice versa. Such traceability matrix helps to investigate test coverage
-of requirements and find out which ones successfully failed during a testing. This
-analyse serves as confirmation that all defined expectations are met.</p>
+$TLS_htmltext['assignReqs'] 		= "<h2>Zweck:</h2>
+<p>Benutzer können eine Beziehung zwischen Anforderungen und Testfällen herstellen. 
+Ein Testfall kann keinem, einen oder mehreren Anforderungen zugewiesen oder umgekehrt.
+Diese Zuweisungen erlauben es später eine Aussage darüber zu treffen, welche
+Anforderungen abhängig von den Testergebnissen erfolgreich umgesetzt wurden.</p>
 
-<h2>Getting Started:</h2>
+<h2>Anweisung:</h2>
 <ol>
-	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements
-	Specifications is shown at the top of the workarea.</li>
-	<li>Choose a Requirements Specification Document if more once defined. 
-	TestLink automatically reloads the page.</li>
-	<li>A middle block of workarea lists all requirements (from choosen Specification), which
-	are connected with the test case. Bottom block 'Available Requirements' lists all
-	requirements which have not relation
-	to the current test case. A designer could mark requirements which are covered by this
-	test case and then click the button 'Assign'. These new assigned test case are shown in
-	the middle block 'Assigned Requirements'.</li>
+	<li>Wählen Sie einen Testfall im Baum auf der linken Seite. Auf der rechten Seite
+	erscheinen dann verfügbaren Anforderungen, denen Sie den Testfall zuweisen können.</li>
+	<li>Wählen Sie die gewünschte Anforderungsspezifikation aus der Liste \"Anforderungen
+	definieren\". Anschließend wird die Seite neu geladen.</li>
+	<li>Es werden nun alle Anforderungen der Anforderungsspezifikation angezeigt.
+	In dem Block \"Zugewiesene Anforderungen\" sehen Sie die Anforderungen, die dem Testfall
+	bereits zugewiesen wurden. Im Block \"Verfügbare\" Anforderungen sehen Sie die
+	Anforderungen, die dem Testfall noch nicht zugewiesen wurden. Wählen Sie die
+	Anforderungen, für die Sie eine Testfallzuweisung hinzufügen bzw. entfernen möchten und
+	klicken Sie anschließend den entsprechenden Button.</li>
 </ol>";
 
 
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['editTc']	= "Testfälle bearbeiten";
-$TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to view " .
-		"and edit all of the existing <i>Test Suites</i> and <i>Test Cases</i>. " .
-		"Test Cases are versioned and all of the previous versions are available and can be " .
-		"viewed and managed here.</p>
+$TLS_htmltext['editTc'] 		= "<p>Die <i>Testspezifikation</i> ermöglicht das " .
+		"Anzeigen und Editieren aller vorhandenen Test Suiten und Testfälle. Testfälle sind " .
+		"versioniert. Alle früheren Versionen sind noch für die Einsicht und Verwaltung " .
+		"verfügbar.</p>
 		
-<h2>Getting Started:</h2>
+<h2>Anweisung:</h2>
 <ol>
 	<li>Select your <i>Test Project</i> in the navigation tree (the root node). <i>Please note: " .
 	"You can always change the active Test Project by selecting a different one from the " .
@@ -97,54 +96,73 @@ $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to vi
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['searchTc']	= "Testfälle suchen";
-$TLS_htmltext['searchTc'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext['searchTc'] 		= "<h2>Zweck:</h2>
 
-<p>Navigation according to keywords and/or searched strings. The search is not
-case sensitive. Result include just test cases from actual Test Project.</p>
+<p>Suche von Testfällen anhand frei definierbaren Parametern.</p>
 
-<h2>To search:</h2>
+<h2>Anweisung:</h2>
 
 <ol>
-	<li>Write searched string to an appropriate box. Left blank unused fields in form.</li>
-	<li>Choose required keyword or left value 'Not applied'.</li>
-	<li>Click the Search button.</li>
-	<li>All fulfilled test cases are shown. You can modify Test Cases via 'Title' link.</li>
-</ol>";
+	<li>Suchbegriff in die entsprechenden Felder der Suchmaske eingeben.</li>
+	<li>Stichwörter/Benutzerdefinierte Felder/... wählen.</li>
+	<li>Suchen Button klicken.</li>
+	<li>Testfälle, die den Suchkriterien entsprechen werden angezeigt. Über den Link des
+	Testfalltitels können Sie den Testfall einsehen und editieren.</li>
+</ol>
+
+<h2>Hinweis:</h2>
+
+<p>- Es werden nur Testfälle innerhalb des aktuellen Testprojekts durchsucht.<br>
+- Die Suche ist unabhängig von \"Groß- und Kleinschreibung\".<br>
+- Leere Felder der Suchmaske werden nicht berücksichtigt.</p>";
 
 /* contribution by asimon for 2976 */
 // requirements search
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['searchReq']	= "Anforderungen suchen";
-$TLS_htmltext['searchReq'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext['searchReq'] 		= "<h2>Zweck:</h2>
 
-<p>Navigation according to keywords and/or searched strings. The search is not
-case sensitive. Result includes just requirements from actual Test Project.</p>
+<p>Suche von Anforderungen anhand frei definierbaren Parametern.</p>
 
-<h2>To search:</h2>
+<h2>Anweisung:</h2>
 
 <ol>
-	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
-	<li>Choose required keyword or leave value 'Not applied'.</li>
-	<li>Click the 'Find' button.</li>
-	<li>All fulfilling requirements are shown. You can modify requirements via 'Title' link.</li>
-</ol>";
+	<li>Suchbegriff in die entsprechenden Felder der Suchmaske eingeben.</li>
+	<li>Status/Typ/Beziehungstyp/Benutzerdefinierte Felder/... wählen.</li>
+	<li>Suchen Button klicken.</li>
+	<li>Anforderungen, die den Suchkriterien entsprechen werden angezeigt. Über den Link des
+	Anforderungstitels können Sie die Anforderung einsehen und editieren.</li>
+</ol>
+
+<h2>Hinweis:</h2>
+
+<p>- Es werden nur Anforderungen innerhalb des aktuellen Testprojekts durchsucht.<br>
+- Die Suche ist unabhängig von \"Groß- und Kleinschreibung\".<br>
+- Leere Felder der Suchmaske werden nicht berücksichtigt.</p>";
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['searchReqSpec']	= "Anforderungsspezifikationen suchen";
-$TLS_htmltext['searchReqSpec'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext['searchReqSpec'] 		= "<h2>Zweck:</h2>
 
-<p>Navigation according to keywords and/or searched strings. The search is not
-case sensitive. Result includes just requirement specifications from actual Test Project.</p>
+<p>Suche von Anforderungenspezifikationen anhand frei definierbaren Parametern.</p>
 
-<h2>To search:</h2>
+<h2>Anweisung:</h2>
 
 <ol>
-	<li>Write searched string to an appropriate box. Leave unused fields in form blank.</li>
-	<li>Choose required keyword or leave value 'Not applied'.</li>
-	<li>Click the 'Find' button.</li>
-	<li>All fulfilling requirements are shown. You can modify requirement specifications via 'Title' link.</li>
-</ol>";
+	<li>Suchbegriff in die entsprechenden Felder der Suchmaske eingeben.</li>
+	<li>Typ/Benutzerdefinierte Felder/... wählen.</li>
+	<li>Suchen Button klicken.</li>
+	<li>Anforderungsspezifikationen, die den Suchkriterien entsprechen werden angezeigt.
+	Über den Link des Anforderungsspezifikationstitels können Sie die Anforderungsspezifikationen
+	einsehen und editieren.</li>
+</ol>
+
+<h2>Hinweis:</h2>
+
+<p>- Es werden nur Anforderungsspezifikationen innerhalb des aktuellen Testprojekts durchsucht.<br>
+- Die Suche ist unabhängig von \"Groß- und Kleinschreibung\".<br>
+- Leere Felder der Suchmaske werden nicht berücksichtigt.</p>";
 /* end contribution */
 
 
@@ -256,13 +274,13 @@ Modified Test Cases' functionality BEFORE making keyword assignments.</p>";
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['executeTest']	= "Testfälle ausführen";
-$TLS_htmltext['executeTest'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext['executeTest'] 		= "<h2>Zweck:</h2>
 
 <p>Allows user to execute Test cases. User can assign Test result
 to Test Case for a Build. See help for more information about filters and settings " .
 		"(click on the question mark icon).</p>
 
-<h2>Get started:</h2>
+<h2>Anweisung:</h2>
 
 <ol>
 	<li>User must have defined a Build for the Test Plan.</li>
@@ -408,23 +426,25 @@ This report is only available if a Bug Tracking System is connected.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTC']	= "Add / Remove Test cases to Test Plan"; // testSetAdd
-$TLS_htmltext['planAddTC'] 			= "<h2>Purpose:</h2>
-<p>Allows user (with lead level permissions) to add or remove test cases into a Test plan.</p>
+$TLS_htmltext_title['planAddTC']	= "Testfälle hinzufügen / entfernen"; // testSetAdd
+$TLS_htmltext['planAddTC'] 			= "<h2>Zweck:</h2>
+<p>Nutzer mit entsprechenden Rechten können dem Testplan Testfälle hinzufügen oder Testfälle
+aus dem Testplan entfernen.</p>
 
-<h2>To add or remove Test cases:</h2>
+<h2>Anweisung:</h2>
 <ol>
-	<li>Click on a test suite to see all of its test suites and all of its test cases.</li>
-	<li>When you are done click the 'Add / Remove Test Cases' button to add or remove the test cases.
-		Note: Is not possible to add the same test case multiple times.</li>
+	<li>Wählen Sie eine Test Suite im Baum auf der linken Seite um alle in der Test Suite 
+	enthaltenen Teställe angezeigt zu bekommen.</li>
+	<li>Wählen sie alle Testfälle, die sie hinzufügen bzw. entfernen wollen und klicken Sie
+	auf den \"Hinzufügen / Entfernen der ausgewählten Testfälle\" Button</li>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['tc_exec_assignment']	= "Testfälle an Benutzer zuweisen";
-$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
+$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Zweck</h2>
 <p>This page allows test leaders to assign users to particular tests within the Test Plan.</p>
 
-<h2>Get Started</h2>
+<h2>Anweisung:</h2>
 <ol>
 	<li>Choose a Test case or Test Suite to test.</li>
 	<li>Select a planned tester.</li>
@@ -441,13 +461,13 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['planUpdateTC']	= "Verlinkte Testfälle aktualisieren";
-$TLS_htmltext['planUpdateTC'] 		= "<h2>Purpose</h2>
+$TLS_htmltext['planUpdateTC'] 		= "<h2>Zweck</h2>
 <p>This page allows updating a Test case to a newer (different) version if a Test
 Specification is changed. It often happens that some functionality is clarified during testing." .
 		" User modifies Test Specification, but changes needs to propagate to Test Plan too. Otherwise Test" .
 		" plan holds original version to be sure, that results refer to the correct text of a Test case.</p>
 
-<h2>Get Started</h2>
+<h2>Anweisung:</h2>
 <ol>
 	<li>Choose a Test case or Test Suite to test.</li>
 	<li>Choose a new version from the combo-box menu for a particular Test case.</li>
@@ -458,14 +478,14 @@ Specification is changed. It often happens that some functionality is clarified 
 
 // ------------------------------------------------------------------------------------------
 $TLS_htmltext_title['test_urgency']	= "Dringlichkeit der Tests bestimmen";
-$TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
+$TLS_htmltext['test_urgency'] 		= "<h2>Zweck</h2>
 <p>TestLink allows setting the urgency of a Test Suite to affect the	 testing Priority of test cases. 
 		Test priority depends on both Importance of Test cases and Urgency defined in 
 		the Test Plan. Test leader should specify a set of test cases that could be tested
 		at first. It helps to ensure that testing will cover the most important tests
 		also under time pressure.</p>
 
-<h2>Get Started</h2>
+<h2>Anweisung:</h2>
 <ol>
 	<li>Choose a Test Suite to set urgency of a product/component feature in navigator
 	on the left side of window.</li>

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.141 2010/05/20 07:56:23 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.142 2010/05/20 12:39:12 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1168,7 +1168,7 @@ $TLS_added_on_date = "Hinzugefügt am";
 $TLS_info_added_on_date = "Datum, an dem der Testfall dem Testplan hinzugefügt wurde";
 
 $TLS_add_remove_selected_tc_hint = "Operation wird auf ALLE Testsuites angewendet";
-$TLS_btn_add_remove_selected_tc = "Hinzufügen / Entfernen der ausgewählte Testfälle";
+$TLS_btn_add_remove_selected_tc = "Hinzufügen / Entfernen der ausgewählten Testfälle";
 $TLS_btn_add_selected_tc = "Ausgewählte Testfälle hinzufügen";
 $TLS_btn_save_exec_order = "Reihenfolge speichern";
 $TLS_btn_save_custom_fields = "Benutzerdefinierte Felder speichern";

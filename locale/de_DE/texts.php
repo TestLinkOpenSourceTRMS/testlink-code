@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.10 2010/05/18 13:45:56 mx-julian Exp $
+ * @version    	CVS: $Id: texts.php,v 1.11 2010/05/20 07:56:24 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -29,13 +29,13 @@
 // --------------------------------------------------------------------------------------
 $TLS_htmltext_title['error']	= "Anwendungsfehler";
 $TLS_htmltext['error'] 		= "<p>Es ist ein unerwarteter Fehler aufgetreten. Bitte " .
-		"überprüfen Sie den Event Viewer oder Log-Daten für weitere Details." .
+		"überprüfen Sie den Event Viewer und/oder Log-Dateien für weitere Details." .
 		"</p><p>You are welcome to report the problem. Please visit our " .
 		"<a href='http://www.teamst.org'>website</a>.</p>";
 
 
 
-$TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
+$TLS_htmltext_title['assignReqs']	= "Zuweisung von Anforderungen zu Testfällen";
 $TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
 <p>Users can set relations between requirements and test cases. A test designer could
 define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
@@ -59,7 +59,7 @@ analyse serves as confirmation that all defined expectations are met.</p>
 
 
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['editTc']	= "Test Specification";
+$TLS_htmltext_title['editTc']	= "Testfälle bearbeiten";
 $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to view " .
 		"and edit all of the existing <i>Test Suites</i> and <i>Test Cases</i>. " .
 		"Test Cases are versioned and all of the previous versions are available and can be " .
@@ -96,7 +96,7 @@ $TLS_htmltext['editTc'] 		= "<p>The <i>Test Specification</i> allows users to vi
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchTc']	= "Test Case Search Page";
+$TLS_htmltext_title['searchTc']	= "Testfälle suchen";
 $TLS_htmltext['searchTc'] 		= "<h2>Purpose:</h2>
 
 <p>Navigation according to keywords and/or searched strings. The search is not
@@ -114,7 +114,7 @@ case sensitive. Result include just test cases from actual Test Project.</p>
 /* contribution by asimon for 2976 */
 // requirements search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReq']	= "Requirement Search Page";
+$TLS_htmltext_title['searchReq']	= "Anforderungen suchen";
 $TLS_htmltext['searchReq'] 		= "<h2>Purpose:</h2>
 
 <p>Navigation according to keywords and/or searched strings. The search is not
@@ -131,7 +131,7 @@ case sensitive. Result includes just requirements from actual Test Project.</p>
 
 // requirement specification search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchReqSpec']	= "Requirement Specification Search Page";
+$TLS_htmltext_title['searchReqSpec']	= "Anforderungsspezifikationen suchen";
 $TLS_htmltext['searchReqSpec'] 		= "<h2>Purpose:</h2>
 
 <p>Navigation according to keywords and/or searched strings. The search is not
@@ -149,7 +149,7 @@ case sensitive. Result includes just requirement specifications from actual Test
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printTestSpec']	= "Print Test Specification"; //printTC.html
+$TLS_htmltext_title['printTestSpec']	= "Testspezifikation erstellen"; //printTC.html
 $TLS_htmltext['printTestSpec'] 			= "<h2>Purpose:</h2>
 <p>From here you can print a single test case, all the test cases within a test suite,
 or all the test cases in a test project or plan.</p>
@@ -171,7 +171,7 @@ See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['reqSpecMgmt']	= "Requirements Specification Design"; //printTC.html
+$TLS_htmltext_title['reqSpecMgmt']	= "Anforderungen definieren"; //printTC.html
 $TLS_htmltext['reqSpecMgmt'] 			= "<p>You can manage Requirement Specification documents.</p>
 
 <h2>Requirements Specification</h2>
@@ -204,7 +204,7 @@ with name defined in configuration <i>(default is: \$tlCfg->req_cfg->default_tes
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printReqSpec'] = "Print Requirement Specification"; //printReq
+$TLS_htmltext_title['printReqSpec'] = "Anforderungsspezifikation erstellen"; //printReq
 $TLS_htmltext['printReqSpec'] = "<h2>Purpose:</h2>
 <p>From here you can print a single requirement, all the requirements within a requirement specification,
 or all the requirements in a test project.</p>
@@ -226,7 +226,7 @@ See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['keywordsAssign']	= "Keyword Assignment";
+$TLS_htmltext_title['keywordsAssign']	= "Stichwörter zuweisen";
 $TLS_htmltext['keywordsAssign'] 			= "<h2>Purpose:</h2>
 <p>The Keyword Assignment page is the place where users can batch
 assign keywords to the existing Test Suite or Test Case</p>
@@ -255,7 +255,7 @@ Modified Test Cases' functionality BEFORE making keyword assignments.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['executeTest']	= "Test Case Execution";
+$TLS_htmltext_title['executeTest']	= "Testfälle ausführen";
 $TLS_htmltext['executeTest'] 		= "<h2>Purpose:</h2>
 
 <p>Allows user to execute Test cases. User can assign Test result
@@ -278,7 +278,7 @@ to Test Case for a Build. See help for more information about filters and settin
 if you would like to create/trace a problem report directly from the GUI.</i></p>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['showMetrics']	= "Description of Test Reports and Metrics";
+$TLS_htmltext_title['showMetrics']	= "Testberichte und Metriken";
 $TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
 		"(defined in top of navigator). This Test Plan could differ from the
 current Test Plan for execution. You can also select a Report format:</p>
@@ -420,7 +420,7 @@ $TLS_htmltext['planAddTC'] 			= "<h2>Purpose:</h2>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['tc_exec_assignment']	= "Assign Testers to test execution";
+$TLS_htmltext_title['tc_exec_assignment']	= "Testfälle an Benutzer zuweisen";
 $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
 <p>This page allows test leaders to assign users to particular tests within the Test Plan.</p>
 
@@ -440,7 +440,7 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planUpdateTC']	= "Update Test Cases in the Test Plan";
+$TLS_htmltext_title['planUpdateTC']	= "Verlinkte Testfälle aktualisieren";
 $TLS_htmltext['planUpdateTC'] 		= "<h2>Purpose</h2>
 <p>This page allows updating a Test case to a newer (different) version if a Test
 Specification is changed. It often happens that some functionality is clarified during testing." .
@@ -457,7 +457,7 @@ Specification is changed. It often happens that some functionality is clarified 
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
+$TLS_htmltext_title['test_urgency']	= "Dringlichkeit der Tests bestimmen";
 $TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
 <p>TestLink allows setting the urgency of a Test Suite to affect the	 testing Priority of test cases. 
 		Test priority depends on both Importance of Test cases and Urgency defined in 

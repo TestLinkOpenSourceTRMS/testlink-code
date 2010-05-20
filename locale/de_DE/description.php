@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.4 2010/05/18 13:45:56 mx-julian Exp $
+ * @version    	CVS: $Id: description.php,v 1.5 2010/05/20 07:56:24 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -237,10 +237,10 @@ with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
 ";
 
-$TLS_hlp_req_coverage_table = "<h3>Coverage:</h3>
-A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
-to test it completely. 8 of those have already been created and linked to this Requirement, which 
-makes a coverage of 40 percent.
+$TLS_hlp_req_coverage_table = "<h3>Abdeckung:</h3>
+Ein Wert von z.B. \"40% (8/20)\" bedeutet, dass 20 Testfälle erstellt werden müssen um die Anforderung
+komplett durch Testfälle abzudecken. 8 dieser Testfälle wurden bereits erstellt und der Anforderung
+zugewiesen, was einer Abdeckung von 40% entspricht.
 ";
 
 

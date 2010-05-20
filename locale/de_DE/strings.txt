@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.140 2010/05/18 13:45:55 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.141 2010/05/20 07:56:23 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1795,7 +1795,7 @@ $TLS_href_keywords_assign = "Stichwörter zuweisen";
 $TLS_href_keywords_manage = "Stichwörter verwalten";
 $TLS_href_keywords_view = "Stichwörter anzeigen";
 $TLS_href_print_tc = "Testspezifikation erstellen";
-$TLS_href_print_req = "Anforderungspezifikation erstellen";
+$TLS_href_print_req = "Anforderungsspezifikation erstellen";
 $TLS_href_req_assign = "Anforderungen zuweisen";
 $TLS_href_req_spec = "Anforderungen definieren";
 $TLS_href_req_overview = "Anforderungsübersicht";
@@ -1835,7 +1835,7 @@ $TLS_href_build_new = "Builds verwalten";
 $TLS_href_execute_test = "Test ausführen";
 $TLS_href_metrics_dashboard = "Metriken-Übersicht";
 $TLS_href_newest_tcversions = "Zeige neuste Versionen der Testfälle";
-$TLS_href_plan_assign_urgency = "Dringlichkeit der Tests setzen";
+$TLS_href_plan_assign_urgency = "Dringlichkeit der Tests bestimmen";
 $TLS_href_plan_management = "Testpläne verwalten";
 $TLS_href_plan_mstones = "Meilensteine verwalten";
 $TLS_href_rep_and_metrics = "Test Ergebnis";
@@ -2149,16 +2149,17 @@ $TLS_platform_default_suffix = "Standard Plattform %s";
 $TLS_platform_default_notes = "Plattform wurde automatisch für Testplan %s erzeugt";
 
 // ----- lib/platforms/platformsAssign.php -----
-$TLS_unknown_platform="Kritische Warnung<br>" .
-		              " In diesem Testplan existieren Testfallversionen ohne zugewiesene Plattform <br>" .
+$TLS_unknown_platform="<b>Kritische Warnung</b><br>" .
+		              " In diesem Testplan existieren Testfallfälle, die noch keiner Plattform zugeordnet" .
+		              " wurden.<br>" .
 					  " Das könnte bedeuten, dass Sie bereits mit dem Testplan gearbeitet haben " .
 					  " bevor Sie ihm Plattformen zugewiesen haben.<br>" .
 					  " Nachdem Sie einem Testplan Plattformen zugewiesen haben, MÜSSEN Sie " .
 					  " auf der Seite 'Testfälle hinzufügen / entfernen' allen verknüpften Testfällen " .
-					  " die entsprechende Plattform zuweisen<br>".
-					  " Um Ihre Arbeit zu erleichtern können Sie einem Testplan ohne Plattformen EINE " .
-					  " Plattform zuweisen. Alle verknüpften Testfälle werden mit dieser Plattform " .
-					  " aktualisiert werden ";
+					  " die entsprechende Plattform zuweisen.<br>".
+					  " Um Ihre Arbeit zu <b>erleichtern</b> können Sie einem Testplan ohne Plattformen zuerst" .
+					  " nur EINE Plattform zuweisen. Alle verknüpften Testfälle werden mit dieser Plattform " .
+					  " aktualisiert.";
 
 // ----- lib/results/printDocOptions.php -----
 $TLS_opt_show_hdrNumbering = "Nummerierung der Überschriften";

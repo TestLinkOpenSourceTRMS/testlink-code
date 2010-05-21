@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.154 $
- * @modified $Date: 2010/05/20 19:47:39 $ $Author: franciscom $
+ * @version $Revision: 1.155 $
+ * @modified $Date: 2010/05/21 07:44:58 $ $Author: franciscom $
  *
  * rev:
  *	20100520 - franciscom - BUGID 3478  Testcase ID not updated when using save and move next
@@ -1183,7 +1183,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   	if($guiObj->grants->execute)
   	{
   	   $guiObj->execution_time_cfields[$tcase_id] = 
-  	            $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$argsObj->id}",null,
+  	            $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
   	                                                         null,$argsObj->tproject_id);
   	}
   	// 20070405 - BUGID 766

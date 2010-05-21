@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.274 2010/05/16 18:48:26 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.275 2010/05/21 18:31:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100521 - franciscom - BUGID 3481 - copy_tcversion() - preconditions are not copied
  * 20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
  * 20100514 - franciscom - get_by_id() interface changes and improvements
  * 20100503 - franciscom - create_tcase_only() - BUGID 3374
@@ -1589,7 +1590,9 @@ class testcase extends tlObjectWithAttachments
 	
 	  returns:
 	
-	  rev: 20080119 - franciscom - tc_external_id management
+	  rev: 
+	  		20100521 - franciscom - BUGID 3481 - preconditions are not copied
+	  		20080119 - franciscom - tc_external_id management
 	
 	*/
 	function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
@@ -1598,11 +1601,12 @@ class testcase extends tlObjectWithAttachments
 	    $now = $this->db->db_now();
 	    $sql="/* $debugMsg */ " . 
 	         " INSERT INTO {$this->tables['tcversions']} " . 
-	         " (id,version,tc_external_id,author_id,creation_ts,summary,importance,execution_type) " .
+	         " (id,version,tc_external_id,author_id,creation_ts,summary, " . 
+	         "  importance,execution_type,preconditions) " .
 	         " SELECT {$to_tcversion_id} AS id, {$as_version_number} AS version, " .
 	         "        tc_external_id, " .
 	         "        {$user_id} AS author_id, {$now} AS creation_ts," .
-	         "        summary,importance,execution_type " .
+	         "        summary,importance,execution_type, preconditions" .
 	         " FROM {$this->tables['tcversions']} " .
 	         " WHERE id={$from_tcversion_id} ";
 		$result = $this->db->exec_query($sql);	

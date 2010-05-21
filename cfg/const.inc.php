@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.143 2010/05/17 19:49:28 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.144 2010/05/21 13:21:45 asimon83 Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -853,16 +853,24 @@ $tlCfg->guiTopMenu[1] = array(
 		'condition'=>'',
 		'shortcut'=>'h',
 		'target'=>'_parent'
-); 
+);
 $tlCfg->guiTopMenu[2] = array(
+		'label' => 'title_requirements',
+		'url' => 'lib/general/frmWorkArea.php?feature=reqSpecMgmt',
+		'right' => 'mgt_view_req',
+		'condition'=>'',
+		'shortcut'=>'r',
+		'target'=>'mainframe'
+); 
+$tlCfg->guiTopMenu[3] = array(
 		'label' => 'title_specification',
 		'url' => 'lib/general/frmWorkArea.php?feature=editTc',
 		'right' => 'mgt_view_tc',
 		'condition'=>'',
-		'shortcut'=>'s',
+		'shortcut'=>'t',
 		'target'=>'mainframe'
 ); 
-$tlCfg->guiTopMenu[3] = array(
+$tlCfg->guiTopMenu[4] = array(
 		'label' => 'title_execute',
 		'url' => 'lib/general/frmWorkArea.php?feature=executeTest',
 		'right' => 'testplan_execute',
@@ -870,7 +878,7 @@ $tlCfg->guiTopMenu[3] = array(
 		'shortcut'=>'e',
 		'target'=>'mainframe'
 ); 
-$tlCfg->guiTopMenu[4] = array(
+$tlCfg->guiTopMenu[5] = array(
 		'label' => 'title_results',
 		'url' => 'lib/general/frmWorkArea.php?feature=showMetrics',
 		'right' => 'testplan_metrics',
@@ -878,7 +886,7 @@ $tlCfg->guiTopMenu[4] = array(
 		'shortcut'=>'r',
 		'target'=>'mainframe'
 ); 
-$tlCfg->guiTopMenu[5] = array(
+$tlCfg->guiTopMenu[6] = array(
 		'label' => 'title_admin',
 		'url' => 'lib/usermanagement/usersView.php',
 		'right' => 'mgt_users',
@@ -886,7 +894,7 @@ $tlCfg->guiTopMenu[5] = array(
 		'shortcut'=>'u',
 		'target'=>'mainframe'
 ); 
-$tlCfg->guiTopMenu[6] = array(
+$tlCfg->guiTopMenu[7] = array(
 		'label' => 'title_events',
 		'url' => 'lib/events/eventviewer.php',
 		'right' => 'events_mgt',

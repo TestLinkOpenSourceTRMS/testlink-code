@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.620 2010/05/17 09:33:51 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.621 2010/05/21 13:21:45 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1160,7 +1160,7 @@ $TLS_title_admin = "Administrate";
 $TLS_title_events = "Events";
 $TLS_title_execute = "Execute";
 $TLS_title_results = "Results";
-$TLS_title_specification = "Specification";
+$TLS_title_specification = "Test Specification";
 $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 
@@ -1808,23 +1808,23 @@ $TLS_href_assign_user_roles = "Assign user roles";
 $TLS_href_browse_tc = "Browse Test Cases";
 $TLS_href_cfields_management = "Define custom fields";
 $TLS_href_cfields_tproject_assign = "Assign custom fields";
-$TLS_href_edit_tc = "Edit Test Cases";
+$TLS_href_edit_tc = "Test Specification";
 $TLS_href_inventory = "Inventory";
 $TLS_href_inventory_management = 'Inventory management';
 $TLS_href_keywords_assign = "Assign Keywords";
 $TLS_href_keywords_manage = "Keyword Management";
 $TLS_href_keywords_view = "View Keywords";
 $TLS_href_print_tc = "Generate Test Specification document";
-$TLS_href_print_req = "Generate Requirement Specification document";
+$TLS_href_print_req = "Generate Requirement Specification Document";
 $TLS_href_req_assign = "Assign Requirements";
-$TLS_href_req_spec = "Requirement Specification document";
+$TLS_href_req_spec = "Requirement Specification";
 $TLS_href_req_overview = "Requirement Overview";
 $TLS_href_roles_management = "Role Management";
 $TLS_href_search_tc = "Search Test Cases";
 $TLS_href_tproject_management = "Test Project Management";
 $TLS_href_user_management = "User Management";
 $TLS_href_admin_modules = "System Configuration";
-$TLS_title_requirements = "Requirements";
+$TLS_title_requirements = "Requirement Specification";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_product_mgmt = "Test Project";
 $TLS_href_plan_define_priority = "Test Plan priority";

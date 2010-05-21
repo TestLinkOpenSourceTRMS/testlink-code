@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.26 2010/05/01 18:17:23 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.27 2010/05/21 13:21:45 asimon83 Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :         
@@ -275,12 +275,7 @@
   		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
           <a href="{$gui->launcher}?feature=searchTc">{$labels.href_search_tc}</a>
       {/if}    
-  		 {if $gui->grants.modify_tc eq "yes"}
-  	        <br />
-  		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
-          	<a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
-  		 {/if}
-
+  		
 	  {* --- keywords management ---  *}
 	  {if $gui->grants.keywords_view == "yes"}
 	    {if $gui->grants.keywords_edit == "yes"}
@@ -289,6 +284,14 @@
         	<a href="{$gui->launcher}?feature=keywordsAssign">{$labels.href_keywords_assign}</a>
 		  {/if}
 	  {/if}
+  		
+  	 {if $gui->grants.modify_tc eq "yes"}
+          <br />
+  		  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+          <a href="{$gui->launcher}?feature=printTestSpec">{$labels.href_print_tc}</a>
+  	 {/if}
+
+	  
     </div>
   {/if}
 

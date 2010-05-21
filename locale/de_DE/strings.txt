@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.142 2010/05/20 12:39:12 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.143 2010/05/21 12:57:40 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1143,17 +1143,17 @@ $TLS_keywords = "Stichworte";
 
 // ----- gui/templates/navBar.tpl -----
 $TLS_access_doc = "Dokumentation";
-$TLS_home = "Projekt";
+$TLS_home = "Projektverwaltung";
 $TLS_link_logout = "Abmelden";
 $TLS_product = "Testprojekt";
 $TLS_product_role = "Testprojekt Rolle";
 $TLS_search_testcase = "Suchen";
 $TLS_title_edit_personal_data = "Meine Einstellungen ändern";
-$TLS_title_admin = "Administration";
+$TLS_title_admin = "Benutzerverwaltung";
 $TLS_title_events = "Ereignisse";
-$TLS_title_execute = "Ausführen";
-$TLS_title_results = "Ergebnisse";
-$TLS_title_specification = "Definition";
+$TLS_title_execute = "Testausführung";
+$TLS_title_results = "Testergebnisse";
+$TLS_title_specification = "Testfallbearbeitung";
 $TLS_session_inactivity_timeout_at = "Timeout der Sitzung in";
 
 
@@ -1801,7 +1801,7 @@ $TLS_href_req_spec = "Anforderungen definieren";
 $TLS_href_req_overview = "Anforderungsübersicht";
 $TLS_href_roles_management = "Rollen verwalten";
 $TLS_href_search_tc = "Testfälle suchen";
-$TLS_href_tproject_management = "Projektverwaltung";
+$TLS_href_tproject_management = "Projekte verwalten";
 $TLS_href_user_management = "Benutzer verwalten";
 $TLS_href_admin_modules = "Systemkonfiguration";
 $TLS_title_requirements = "Anforderungen";

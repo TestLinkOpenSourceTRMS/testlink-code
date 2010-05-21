@@ -4,11 +4,13 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/05/16 19:33:21 $  by $Author: franciscom $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/05/21 12:56:45 $  by $Author: mx-julian $
  * testcases commands
  *
  * rev:
+ *  20100403 - Julian - BUGID 3441 - Removed Call-time pass-by-reference on function call
+ *  					editStep() in function doUpdateStep()
  *	20100403 - franciscom - BUGID 3359 - doCopyStep 	
  *	20100327 - franciscom - improvements in goback logic 	
  *	20100326 - franciscom - BUGID 3326: Editing a test step: execution type always "Manual"
@@ -577,7 +579,8 @@ class testcaseCommands
 		
 		// 20100403
 		// Want to remain on same screen till user choose to cancel => go away
-		$guiObj = $this->editStep(&$argsObj,$request);  
+		// BUGID 3441
+		$guiObj = $this->editStep($argsObj,$request);  
 		return $guiObj;
 	}
 

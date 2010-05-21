@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/05/20 21:31:04 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/05/21 21:42:47 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -68,6 +68,7 @@ $decoding_hash = array('node_id_descr' => $hash_id_descr,'status_descr_code' => 
 
 // can not be null
 $order_cfg = array("type" =>'spec_order'); // 20090309 - BUGID 2205
+$pnOptionsAdd = null;
 switch ($doc_info->type)
 {
 	case DOC_TEST_SPEC: 
@@ -81,6 +82,12 @@ switch ($doc_info->type)
 	
 	case DOC_TEST_REPORT: 
 		$doc_info->type_name = lang_get('test_report');
+		
+		// needed to filter spec by test plan
+		$order_cfg = array("type" =>'exec_order',"tplan_id" => $args->tplan_id);
+		
+		// BUGID 3451
+		$pnOptionsAdd = array('viewType' => 'executionTree');
 		break;
 		
 	case DOC_REQ_SPEC:
@@ -208,11 +215,7 @@ switch ($doc_info->type)
 
     	   	    	  $dummy = null;
                       $pnFilters = null;
-                      // BUGID 3451 - In the "Test reports and Metrics" -> "Test report" the "Last Result" is always "Not Run"
-                      // I'm sorry - added whilw refactoring preparNode()
-                      // viewType is critic
                       $pnOptions =  array('hideTestCases' => 0, 'showTestCaseID' => 1,
-		                                  'viewType' => 'executionTree',
 		                                  'getExternalTestCaseID' => 0, 'ignoreInactiveTestCases' => 0);
     	   	    	  prepareNode($db,$tree,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);
     	   	    	 
@@ -266,14 +269,14 @@ switch ($doc_info->type)
 				$executed_qty=0;
     	 		if ($tp_tcs)
     	 		{
-    	 		foreach($tp_tcs as $tcase_id => $info)
-			    {
-	    	         if( $info['exec_status'] != $status_descr_code['not_run'] )
-	        	     {  
-	            	     $execid_filter[] = $info['exec_id'];
-	                	 $executed_qty++;
-		             }    
-		         }    
+    	 			foreach($tp_tcs as $tcase_id => $info)
+			    	{
+	    	         	if( $info['exec_status'] != $status_descr_code['not_run'] )
+	        	     	{  
+	            	 	    $execid_filter[] = $info['exec_id'];
+	                		 $executed_qty++;
+		             	}    
+		         	}    
     			}
 
 				$timeEstimatedDuration = $tplan_mgr->get_estimated_execution_time($args->tplan_id,$tcase_filter);

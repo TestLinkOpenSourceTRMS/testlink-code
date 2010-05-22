@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.36 2010/05/01 19:34:52 franciscom Exp $
+$Id: tcView.tpl,v 1.37 2010/05/22 08:20:43 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -14,8 +14,7 @@ rev:
 
 {config_load file="input_dimensions.conf"}
 {lang_get var='labels' 
-          s='no_records_found,other_versions,show_hide_reorder,
-             version,title_test_case,match_count'}
+          s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count'}
 
 {* Configure Actions *}
 {assign var="deleteStepAction" value="lib/testcases/tcEdit.php?doAction=doDeleteStep&step_id="}
@@ -106,10 +105,6 @@ function validateStepsReorder(formOID)
     {assign var="my_style" value="background:#059; color:white; margin:0px 0px 4px 0px;padding:3px;"}
 {/if}
 
-{lang_get var='labels' 
-          s='no_records_found,other_versions,version,title_test_case,match_count'}
-
-{* 20090418 - franciscom *}
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
@@ -197,16 +192,15 @@ function validateStepsReorder(formOID)
                
         <div id="vers_{$vid}" class="workBack">
         
-  	    {foreach item=my_testcase from=$gui->testcase_other_versions[idx]}
+  	    {foreach from=$gui->testcase_other_versions[idx] item=my_testcase}
 
-            {assign var="version_num" value="$my_testcase.version"}
-            {assign var="title" value="$labels.version"}
+            {assign var="version_num" value=$my_testcase.version}
+            {assign var="title" value=$labels.version}
             {assign var="title" value="$title $version_num"}
             
             {assign var="sep" value="_"}
             {assign var="div_id" value="v_$vid"}
             {assign var="div_id" value="$div_id$sep$version_num"}
-            AAZ{$div_id}
             {assign var="memstatus_id" value="mem_$div_id"}
            
             {include file="inc_show_hide_mgmt.tpl" 

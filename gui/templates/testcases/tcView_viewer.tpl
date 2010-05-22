@@ -1,9 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.69 2010/05/01 19:34:52 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.70 2010/05/22 09:33:04 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100522 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+                            rename labels => tcView_viewer_labels to avoid overwrite of labels
+                            defined on template tcView.tpl (includes this template)
+                            
     20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
     20100417 - franciscom - BUGID 3376: Remove link in test case action name
     20100415 - franciscom - move compare version feature out of edit control, because seems OK
@@ -22,7 +26,7 @@ rev:
                             to test plans. 
     20090215 - franciscom - BUGID - show info about links to test plans
 *}
-{lang_get var="labels"
+{lang_get var="tcView_viewer_labels"
           s="requirement_spec,Requirements,tcversion_is_inactive_msg,
              btn_edit,btn_delete,btn_mv_cp,btn_del_this_version,btn_new_version,
              btn_export,btn_execute_automatic_testcase,version,testplan_usage,
@@ -73,12 +77,12 @@ rev:
 
 {if $args_show_title == "yes"}
     {if $args_tproject_name != ''}
-     <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
+     <h2>{$tcView_viewer_labels.testproject} {$args_tproject_name|escape} </h2>
     {/if}
     {if $args_tsuite_name != ''}
-     <h2>{$labels.testsuite} {$args_tsuite_name|escape} </h2>
+     <h2>{$tcView_viewer_labels.testsuite} {$args_tsuite_name|escape} </h2>
     {/if}
-	  <h2>{$labels.title_test_case} {$args_testcase.name|escape} </h2>
+	  <h2>{$tcView_viewer_labels.title_test_case} {$args_testcase.name|escape} </h2>
 {/if}
 {assign var="warning_edit_msg" value=""}
 
@@ -114,30 +118,30 @@ rev:
 	  {assign var="go_newline" value=""}
 	  {if $edit_enabled}
 	 	    <input type="submit" name="edit_tc" 
-	 	           onclick="doAction.value='edit';{$gui->submitCode}" value="{$labels.btn_edit}" />
+	 	           onclick="doAction.value='edit';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_edit}" />
 	  {/if}
 	
 	  {* Double condition because for test case versions WE DO NOT DISPLAY this
 	     button, using $args_can_delete_testcase='no'
 	  *}
 		{if $args_can_do->delete_testcase == "yes" &&  $args_can_delete_testcase == "yes"}
-			<input type="submit" name="delete_tc" value="{$labels.btn_delete}" />
+			<input type="submit" name="delete_tc" value="{$tcView_viewer_labels.btn_delete}" />
 	  {/if}
 	
 	  {* Double condition because for test case versions WE DO NOT DISPLAY this
 	     button, using $args_can_move_copy='no'
 	  *}
 	  {if $args_can_do->copy == "yes" && $args_can_move_copy == "yes"}
-	   		<input type="submit" name="move_copy_tc"   value="{$labels.btn_mv_cp}" />
+	   		<input type="submit" name="move_copy_tc"   value="{$tcView_viewer_labels.btn_mv_cp}" />
 	     	{assign var="go_newline" value="<br />"}
 	  {/if}
 	
 	 	{if $args_can_do->delete_version == "yes" && $args_can_delete_version == "yes"}
-			 <input type="submit" name="delete_tc_version" value="{$labels.btn_del_this_version}" />
+			 <input type="submit" name="delete_tc_version" value="{$tcView_viewer_labels.btn_del_this_version}" />
 	  {/if}
 
 	 	{if $args_can_do->create_new_version == "yes"}
-  		<input type="submit" name="do_create_new_version"   value="{$labels.btn_new_version}" />
+  		<input type="submit" name="do_create_new_version"   value="{$tcView_viewer_labels.btn_new_version}" />
 	  {/if}
 
 	
@@ -159,7 +163,7 @@ rev:
   {* 20090306 - franciscom*}
   {if $args_can_do->add2tplan == "yes" && $args_has_testplans}
   <input type="button" id="addTc2Tplan_{$args_testcase.id}"  name="addTc2Tplan_{$args_testcase.id}" 
-         value="{$labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
+         value="{$tcView_viewer_labels.btn_add_to_testplans}" onclick="location='{$hrefAddTc2Tplan}'" />
 
   {/if}
 	</form>
@@ -169,10 +173,10 @@ rev:
 	<form id="tcexport" name="tcexport" method="post" action="{$exportTestCaseAction}" >
 		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
 		<input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$labels.btn_export}" />
+		<input type="submit" name="export_tc" style="margin-left: 3px;" value="{$tcView_viewer_labels.btn_export}" />
 		{* 20071102 - franciscom *}
 		{*
-		<input type="button" name="tstButton" value="{$labels.btn_execute_automatic_testcase}"
+		<input type="button" name="tstButton" value="{$tcView_viewer_labels.btn_execute_automatic_testcase}"
 		       onclick="javascript: startExecution({$args_testcase.testcase_id},'testcase');" />
 		*}
 	</form>
@@ -187,7 +191,7 @@ rev:
 	{if $args_testcase.version > 1}
 	  <form id="version_compare" name="version_compare" method="post" action="lib/testcases/tcCompareVersions.php">
 	  		<input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-	  		<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
+	  		<input type="submit" name="compare_versions" value="{$tcView_viewer_labels.btn_compare_versions}" />
 	  </form>
 	{/if}
 	</span>
@@ -197,7 +201,7 @@ rev:
 
 {* --------------------------------------------------------------------------------------- *}
   {if $args_testcase.active eq 0}
-    <br /><div class="messages" align="center">{$labels.tcversion_is_inactive_msg}</div>
+    <br /><div class="messages" align="center">{$tcView_viewer_labels.tcversion_is_inactive_msg}</div>
   {/if}
  	{if $warning_edit_msg neq ""}
  	    <br /><div class="messages" align="center">{$warning_edit_msg}</div>
@@ -215,7 +219,7 @@ rev:
 
   {if $args_show_version == "yes"}
 	  <tr>
-	  	<td class="bold" colspan="{$tableColspan}">{$labels.version}
+	  	<td class="bold" colspan="{$tableColspan}">{$tcView_viewer_labels.version}
 	  	{$args_testcase.version|escape}
 	  	</td>
 	  </tr>
@@ -223,16 +227,16 @@ rev:
 
 	<tr class="time_stamp_creation">
   		<td colspan="{$tableColspan}">
-      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts}&nbsp;
-      		{$labels.by}&nbsp;{$author_userinfo->getDisplayName()|escape}
+      		{$tcView_viewer_labels.title_created}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts}&nbsp;
+      		{$tcView_viewer_labels.by}&nbsp;{$author_userinfo->getDisplayName()|escape}
   		</td>
   </tr>
 
  {if $args_testcase.updater_last_name != "" || $args_testcase.updater_first_name != ""}
 	<tr class="time_stamp_creation">
   		<td colspan="{$tableColspan}">
-    		{$labels.title_last_mod}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
-		  	&nbsp;{$labels.by}&nbsp;{$updater_userinfo->getDisplayName()|escape}
+    		{$tcView_viewer_labels.title_last_mod}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
+		  	&nbsp;{$tcView_viewer_labels.by}&nbsp;{$updater_userinfo->getDisplayName()|escape}
     	</td>
   </tr>
  {/if}
@@ -240,14 +244,14 @@ rev:
 
 
 	<tr>
-		<td class="bold" colspan="{$tableColspan}">{$labels.summary}</td>
+		<td class="bold" colspan="{$tableColspan}">{$tcView_viewer_labels.summary}</td>
 	</tr>
 	<tr>
 		<td colspan="{$tableColspan}">{$args_testcase.summary}</td>
 	</tr>
 
 	<tr>
-		<td class="bold" colspan="{$tableColspan}">{$labels.preconditions}</td>
+		<td class="bold" colspan="{$tableColspan}">{$tcView_viewer_labels.preconditions}</td>
 	</tr>
 	<tr>
 		<td colspan="{$tableColspan}">{$args_testcase.preconditions}</td>
@@ -264,8 +268,8 @@ rev:
 
 {* OLD STYLE *}
 {*	<tr>                                               *}
-{*		<th width="50%">{$labels.steps}</th>             *}
-{*		<th width="50%">{$labels.expected_results}</th>  *}
+{*		<th width="50%">{$tcView_viewer_labels.steps}</th>             *}
+{*		<th width="50%">{$tcView_viewer_labels.expected_results}</th>  *}
 {*	</tr>                                              *}
 {*	<tr>                                               *}
 {*		<td>{$args_testcase.steps}</td>                  *}
@@ -276,13 +280,13 @@ rev:
 	<tr>
 		<th width="{$tableColspan}">
     {if $edit_enabled && $args_testcase.steps != ''}
-		<img src="{$tlImages.reorder}" align="left" title="{$labels.show_hide_reorder}" 
+		<img src="{$tlImages.reorder}" align="left" title="{$tcView_viewer_labels.show_hide_reorder}" 
 		    onclick="showHideByClass('span','order_info');event.stopPropagation();">
     {/if}
-		{$labels.step_number}</th>
-		<th>{$labels.step_actions}</th>
-		<th>{$labels.expected_results}</th>
-		<th width="25">{$labels.execution_type_short_descr}</th>
+		{$tcView_viewer_labels.step_number}</th>
+		<th>{$tcView_viewer_labels.step_actions}</th>
+		<th>{$tcView_viewer_labels.expected_results}</th>
+		<th width="25">{$tcView_viewer_labels.execution_type_short_descr}</th>
     {if $edit_enabled}
 		  <th>&nbsp;</th>
     {/if}
@@ -306,7 +310,7 @@ rev:
     {if $edit_enabled}
 		<td class="clickable_icon">
        <img style="border:none;cursor: pointer;" 
-            title="{$labels.delete_step}"  alt="{$labels.delete_step}" 
+            title="{$tcView_viewer_labels.delete_step}"  alt="{$tcView_viewer_labels.delete_step}" 
  					  onclick="delete_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
  					                               '{$del_msgbox_title}','{$warning_msg}');"
   				  src="{$delete_img}"/>
@@ -324,12 +328,12 @@ rev:
   <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
   {if $edit_enabled}
   <input type="submit" name="create_step" 
-  	 	   onclick="doAction.value='createStep';{$gui->submitCode}" value="{$labels.btn_create_step}" />
+  	 	   onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" />
 
   <span class="order_info" style='display:none'>
   <input type="submit" name="renumber_step" 
   	 	   onclick="doAction.value='doReorderSteps';{$gui->submitCode}validateStepsReorder('stepsControls');" 
-  	 	   value="{$labels.btn_reorder_steps}" />
+  	 	   value="{$tcView_viewer_labels.btn_reorder_steps}" />
   </span>
   {/if}
 </div>
@@ -337,14 +341,14 @@ rev:
 
 {if $session['testprojectOptions']->automationEnabled}
   <div {$addInfoDivStyle}>
-		<span class="labelHolder">{$labels.execution_type} {$smarty.const.TITLE_SEP}</span>
+		<span class="labelHolder">{$tcView_viewer_labels.execution_type} {$smarty.const.TITLE_SEP}</span>
 		{$gui->execution_types[$args_testcase.execution_type]}
 	</div>
 {/if}
 
 {if $session['testprojectOptions']->testPriorityEnabled}
    <div {$addInfoDivStyle}>
-		<span class="labelHolder">{$labels.test_importance} {$smarty.const.TITLE_SEP}</span>
+		<span class="labelHolder">{$tcView_viewer_labels.test_importance} {$smarty.const.TITLE_SEP}</span>
 		{$gsmarty_option_importance[$args_testcase.importance]}
 	</div>
 {/if}
@@ -359,14 +363,14 @@ rev:
 	<div {$addInfoDivStyle}>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
 			    <tr>
-			     	<td width="35%" style="vertical-align:top;"><a href={$gsmarty_href_keywordsView}>{$labels.keywords}</a>: &nbsp;
+			     	<td width="35%" style="vertical-align:top;"><a href={$gsmarty_href_keywordsView}>{$tcView_viewer_labels.keywords}</a>: &nbsp;
 					</td>
 				 	<td style="vertical-align:top;">
 				 	  	{foreach item=keyword_item from=$args_keywords_map}
 						    {$keyword_item.keyword|escape}
 						    <br />
 	      				{foreachelse}
-    	  					{$labels.none}
+    	  					{$tcView_viewer_labels.none}
 						{/foreach}
 					</td>
 				</tr>
@@ -377,8 +381,8 @@ rev:
 	<div {$addInfoDivStyle}>
 		<table cellpadding="0" cellspacing="0" style="font-size:100%;">
      			  <tr>
-       			  <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
-      				target="mainframe" class="bold">{$labels.Requirements}</a>
+       			  <td colspan="{$tableColspan}" style="vertical-align:text-top;"><span><a title="{$tcView_viewer_labels.requirement_spec}" href="{$hrefReqSpecMgmt}"
+      				target="mainframe" class="bold">{$tcView_viewer_labels.Requirements}</a>
       				: &nbsp;</span>
       			  </td>
       			  <td>
@@ -387,7 +391,7 @@ rev:
       					style="cursor:  pointer;  color: #059; ">[{$args_reqs[item].req_spec_title|escape}]&nbsp;{$args_reqs[item].req_doc_id|escape}:{$args_reqs[item].title|escape}</span>
       					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}
-      					{$labels.none}
+      					{$tcView_viewer_labels.none}
       				{/section}
       			  </td>
     		    </tr>
@@ -399,11 +403,11 @@ rev:
   {* Test Case version Test Plan Assignment *}
   <br />
 	<div {$addInfoDivStyle}>
-	  <span class="bold"> {$labels.testplan_usage} </span>
+	  <span class="bold"> {$tcView_viewer_labels.testplan_usage} </span>
 		<table class="simple sortable">
-    <th>{$labels.version}</th>
-    <th>{$sortHintIcon}{$labels.test_plan}</th>
-    <th>{$sortHintIcon}{$labels.platform}</th>
+    <th>{$tcView_viewer_labels.version}</th>
+    <th>{$sortHintIcon}{$tcView_viewer_labels.test_plan}</th>
+    <th>{$sortHintIcon}{$tcView_viewer_labels.platform}</th>
     {foreach from=$args_linked_versions item=link2tplan_platform}
       {foreach from=$link2tplan_platform item=link2platform key=tplan_id}
         {foreach from=$link2platform item=version_info}

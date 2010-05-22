@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: exec.inc.php,v 1.56 2010/02/17 15:57:27 asimon83 Exp $
+ * @version    	CVS: $Id: exec.inc.php,v 1.57 2010/05/22 07:36:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100522 - franciscom - BUGID 3440 - get_bugs_for_exec() - added is_object() check 
  * 20090815 - franciscom - write_execution() - interface changes 
  * 20081231 - franciscom - write_execution() changes to manage bulks exec notes
  * 20080528 - franciscom - BUGID 1504 - changes in write_execution
@@ -207,7 +208,9 @@ function get_bugs_for_exec(&$db,&$bug_interface,$execution_id)
 		"AND   executions.build_id=builds.id " .
 		"ORDER BY builds.name,bug_id";
 	$map = $db->get_recordset($sql);
-	if( !is_null($map) )
+	
+	// BUGID 3440 - added is_object() check
+	if( !is_null($map) && is_object($bug_interface))
 	{  	
 		foreach($map as $elem)
 		{

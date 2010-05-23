@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.107 2010/05/04 08:23:28 asimon83 Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.108 2010/05/23 16:49:32 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -629,9 +629,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     // count of active builds that are shown and can be filtered
     $gui->filterBuildCount = count($gui->optFilterBuild['items']);
     
-    $gui->keywordsFilterType = new stdClass();
-    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
-    $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+    $gui->keywordsFilterTypes = new stdClass();
+    $gui->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    $gui->keywordsFilterTypes->selected=$argsObj->keywordsFilterType;
     $gui->keywordsFilterItemQty = 0;
 
     $gui->keywordID = $argsObj->keyword_id; 

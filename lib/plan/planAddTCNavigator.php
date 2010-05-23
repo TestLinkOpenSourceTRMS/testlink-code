@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.54 2010/04/29 14:56:24 asimon83 Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.55 2010/05/23 16:47:42 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -119,9 +119,7 @@ function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
         $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
     }
 
-    new dBug($gui->keywordsMap);
-	new dBug($gui->keywordsFilterItemQty);
-	
+
     // filter using user roles
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
     $gui->mapTPlans = array();
@@ -157,9 +155,9 @@ function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
     $gui->args .= '&importance=' . $argsObj->importance;
 
 
-    $gui->keywordsFilterType = new stdClass();
-    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
-    $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;
+    $gui->keywordsFilterTypes = new stdClass();
+    $gui->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    $gui->keywordsFilterTypes->selected=$argsObj->keywordsFilterType;
 
     // BUGID 3301
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);

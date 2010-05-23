@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.50 2010/05/23 16:09:32 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.51 2010/05/23 16:52:59 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -273,9 +273,9 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exe
     $gui->tsuiteChoice = $args->tsuites_to_show;
     
     // 20090118 - franciscom    
-    $gui->keywordsFilterType = new stdClass();
-    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
-    $gui->keywordsFilterType->selected = $args->keywordsFilterType;
+    $gui->keywordsFilterTypes = new stdClass();
+    $gui->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    $gui->keywordsFilterTypes->selected = $args->keywordsFilterType;
     $gui->keywordsFilterItemQty = 0;
     $gui->keywordID = $args->keyword_id; 
     $gui->keywordsMap = $tprojectMgr->get_keywords_map($args->tproject_id); 

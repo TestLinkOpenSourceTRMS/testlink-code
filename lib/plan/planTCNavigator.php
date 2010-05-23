@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planTCNavigator.php,v 1.42 2010/04/29 14:56:24 asimon83 Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.43 2010/05/23 16:48:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -253,9 +253,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
     $gui->buildCount = count($gui->optFilterBuild['items']);
     $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr, $gui->strOptionAny);
     
-    $gui->keywordsFilterType=new stdClass();                                 
-    $gui->keywordsFilterType->options = array('OR' => 'Or' , 'AND' =>'And'); 
-    $gui->keywordsFilterType->selected=$argsObj->keywordsFilterType;         
+    $gui->keywordsFilterTypes=new stdClass();                                 
+    $gui->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    $gui->keywordsFilterTypes->selected=$argsObj->keywordsFilterType;         
 
     // filter using user roles
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);

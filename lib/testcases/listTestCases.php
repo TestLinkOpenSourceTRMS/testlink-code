@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.48 2010/04/29 14:56:26 asimon83 Exp $
+* 	@version 	$Id: listTestCases.php,v 1.49 2010/05/23 16:05:46 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -52,7 +52,7 @@ else
 // Here lazy loading tree configuration is done
 $gui = initializeGui($db,$args,$tproject_mgr,$treeDragDropEnabled[$args->feature], $exec_cfield_mgr);
 
-$draw_filter = $spec_cfg->show_tsuite_filter;
+// seems useless - $draw_filter = $spec_cfg->show_tsuite_filter;
 $exclude_branches = null;
 $tsuites_combo = null;
 if($spec_cfg->show_tsuite_filter)
@@ -60,7 +60,7 @@ if($spec_cfg->show_tsuite_filter)
 	$mappy = tsuite_filter_mgmt($db,$tproject_mgr,$args->tproject_id,$args->tsuites_to_show);
 	$exclude_branches = $mappy['exclude_branches'];
 	$tsuites_combo = $mappy['html_options'];
-	$draw_filter = $mappy['draw_filter'];
+	// seems useless - $draw_filter = $mappy['draw_filter'];
 }
 
 $filters = array();
@@ -107,7 +107,7 @@ if($applyFilter)
 }
 
 $gui->treeHeader = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
-$gui->draw_filter = $draw_filter;
+// seems useless - $gui->draw_filter = $draw_filter;
 $gui->tsuitesCombo = $tsuites_combo;
 $gui->tcSpecRefreshOnAction = $args->do_refresh;
 

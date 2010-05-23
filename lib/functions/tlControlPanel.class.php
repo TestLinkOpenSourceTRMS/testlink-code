@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.3 2010/05/23 17:19:13 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.4 2010/05/23 17:41:38 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -116,8 +116,8 @@ class tlControlPanel extends tlObjectWithDB
 
 
         $this->filters->keywords = array();
-        $this->filters->keywords['items'] = $initValues['keywords'];
-        $this->filters->keywords['selected'] = $userChoice->xxx;
+        $this->filters->keywords['items'] = isset($initValues['keywords']) ? $initValues['keywords'] : array();
+        $this->filters->keywords['selected'] = $userChoice->xxx;  // NEED WORK
     	if(!is_null($this->filters->keywords['items']))
     	{
     	    $this->filters->keywords['items'] = array(0 => $gui->strOptionAny) + $this->filters->keywords['items'];

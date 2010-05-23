@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.49 2010/05/23 16:05:46 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.50 2010/05/23 16:09:32 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -136,7 +136,9 @@ function tsuite_filter_mgmt(&$db,&$tprojectMgr,$tproject_id,$tsuites_to_show)
 		foreach($fl_tsuites as $tsuite_id => $name)
      	{
 			if($tsuite_id != $tsuites_to_show)
+			{
         		$ret['exclude_branches'][$tsuite_id] = 'exclude_me';
+        	}	
      	}  
   	} 
   

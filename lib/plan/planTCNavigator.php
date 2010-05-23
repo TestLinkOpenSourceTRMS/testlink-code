@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planTCNavigator.php,v 1.43 2010/05/23 16:48:39 franciscom Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.44 2010/05/23 17:22:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -216,6 +216,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
 	$platformMgr = new tlPlatform($dbHandler, $argsObj->tproject_id);
 
     $gui = new stdClass();
+    
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
     

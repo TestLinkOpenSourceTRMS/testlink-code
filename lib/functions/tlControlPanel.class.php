@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.1 2010/05/23 15:16:15 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.2 2010/05/23 16:42:23 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -30,7 +30,8 @@ class tlControlPanel extends tlObjectWithDB
 	public $settings;
 
 	public $advancedFilterMode;
-	public $display;
+	public $displaySetting;
+	public $displayFilter;
 
 	/**
 	 * @param $dbHandler database object
@@ -39,7 +40,7 @@ class tlControlPanel extends tlObjectWithDB
      * DO NOT USE this kind of code is not accepted have this kind of global coupling
      * for lazy users
 	 */
-	public function __construct(&$dbHandler,$userChoice)
+	public function __construct(&$dbHandler,$userChoice,$initValues)
 	{
 		parent::__construct($dbHandler);
 
@@ -55,21 +56,41 @@ class tlControlPanel extends tlObjectWithDB
     	$this->strOption['somebody'] = $gui_open . lang_get('filter_somebody') . $gui_close;
 
 	
-		$this->filters = array();
 		$this->setting = array();
 		$this->display = array();
-		$itemsKeys = array('testPlans','builds','platforms','execStatus','execTypes','execStatusOnBuildMethods');
+		$itemsKeys = array('testPlans','builds','platforms');
 		foreach($itemsKeys as $key)
 		{
-			$this->itemSet[$key]['items'] = array();
-			$this->itemSet[$key]['selected'] = 0;
-			$this->display[$key] = 0;
+			$this->settings[$key]['items'] = array();
+			$this->settings[$key]['selected'] = 0;
+			$this->displaySetting[$key] = 0;
 		}
+		
+		$this->settings['refreshTreeOnActionChecked'] = '';
+		if( $userChoice->refreshTreeOnAction == 'yes' )
+		{
+			$this->settings['refreshTreeOnActionChecked'] = ' checked ';
+		}
+			
+		
+		
+		$this->filters = array();
 		$this->itemSet['execStatus']['size'] = 0;
 
+		$itemsKeys = array('testPlans','builds','platforms','testSuites','execStatus','execTypes','execStatusOnBuildMethods');
+		foreach($itemsKeys as $key)
+		{
+			$this->filters[$key]['items'] = array();
+			$this->filters[$key]['selected'] = 0;
+			$this->displayFilter[$key] = 0;
+		}
+		
+		$this->filters['testSuites']['selected'] = $userChoice->panelFiltersTestSuite;
 
-		$key = 'advancedFilterMode'
-		$p2check = 'filterPanel' . $key;
+
+		// Miscelaneous
+		$key = 'advancedFilterMode';
+		$p2check = 'panelFilters' . $key;
 		$this->$key = property_exists($userChoice,$p2check) ? $userChoice->$p2check : 0;
 
 
@@ -85,6 +106,22 @@ class tlControlPanel extends tlObjectWithDB
     	}
 
 
+		// Filters
+		$this->filters->keywordsFilterTypes = new stdClass();
+    	$this->filters->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    	$this->filters->keywordsFilterTypes->selected = $userChoice->panelFiltersKeywordsFilterType;
+    	$this->filters->keywordsFilterTypes->size = 0;
+    	$this->filters->keywordsFilterTypes->displayStyle = '';
+
+
+        $this->filters->keywords = array();
+        $this->filters->keywords['items'] = $initValues['keywords'];
+        $this->filters->keywords['selected'] = $userChoice->xxx;
+    	if(!is_null($this->filters->keywords['items']))
+    	{
+    	    $this->filters->keywords['items'] = array(0 => $gui->strOptionAny) + $this->filters->keywords['items'];
+    		$this->filters->keywords['size'] = min(count($this->filters->keywords['items']),3);
+    	}
 
 		return $this;
 	}

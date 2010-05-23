@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.126 2010/05/20 21:30:49 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.127 2010/05/23 16:42:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -1628,7 +1628,7 @@ function buildKeywordsFilter($keywordsId,&$guiObj)
         {
             $keywordsFilter = new stdClass();
             $keywordsFilter->items = $keywordsId;
-            $keywordsFilter->type = isset($guiObj->keywordsFilterType) ? $guiObj->keywordsFilterType->selected: 'OR';
+            $keywordsFilter->type = isset($guiObj->keywordsFilterTypes) ? $guiObj->keywordsFilterTypes->selected: 'OR';
         }
     }
     

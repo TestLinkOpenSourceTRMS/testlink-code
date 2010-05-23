@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.57 2010/05/23 18:39:16 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.58 2010/05/23 19:44:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -122,20 +122,15 @@ function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
     $initValues['keywords'] = $gui->keywordsMap;
     $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
 
-    
-
-
     // filter using user roles
-    $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
-    $gui->mapTPlans = array();
-    foreach($tplans as $key => $value)
-    {
-    	$gui->mapTPlans[$value['id']] = $value['name'];
-    }
+	$opt = array('output' => 'combo');
+    $gui->controlPanel->settings['testPlans']['items'] = 
+    	$_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id,null,$opt);
 
+	$gui->controlPanel->filters['testPlans']['items'] = $gui->controlPanel->settings['testPlans']['items'];
+
+    $gui->mapTPlans = $gui->controlPanel->settings['testPlans']['items'];
     $gui->tPlanID = $argsObj->tplan_id;
-
-	// 20100417 
     $gui->importance = $argsObj->importance; 
 
 	// 20100410    

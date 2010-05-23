@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.7 2010/05/23 18:35:23 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.8 2010/05/23 19:44:23 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -78,8 +78,6 @@ class tlControlPanel extends tlObjectWithDB
 		
 		
 		$this->filters = array();
-		$this->itemSet['execStatus']['size'] = 0;
-
 		$itemsKeys = array('testPlans','builds','platforms','testSuites','execStatus','execTypes','execStatusOnBuildMethods');
 		foreach($itemsKeys as $key)
 		{
@@ -112,24 +110,23 @@ class tlControlPanel extends tlObjectWithDB
 
 
 		// Filters
-		$this->filters = new stdClass();
-		$this->filters->keywordsFilterTypes = new stdClass();
-    	$this->filters->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
+		$this->filters['keywordsFilterTypes'] = new stdClass();
+    	$this->filters['keywordsFilterTypes']->options = array('OR' => 'Or' , 'AND' =>'And'); 
     	
     	$key = 'panelFiltersKeywordsFilterType';
-    	$this->filters->keywordsFilterTypes->selected = property_exists($userChoice,$key) ? $userChoice->$key : 0;
-    	$this->filters->keywordsFilterTypes->size = 0;
-    	$this->filters->keywordsFilterTypes->displayStyle = '';
+    	$this->filters['keywordsFilterTypes']->selected = property_exists($userChoice,$key) ? $userChoice->$key : 0;
+    	$this->filters['keywordsFilterTypes']->size = 0;
+    	$this->filters['keywordsFilterTypes']->displayStyle = '';
 
 
-        $this->filters->keywords = array();
-        $this->filters->keywords['items'] = isset($initValues['keywords']) ? $initValues['keywords'] : array();
+        $this->filters['keywords'] = array();
+        $this->filters['keywords']['items'] = isset($initValues['keywords']) ? $initValues['keywords'] : array();
     	$key = 'panelFiltersKeywordsFilterType';
-        $this->filters->keywords['selected'] = property_exists($userChoice,$key) ? $userChoice->$key : 0;
-    	if(!is_null($this->filters->keywords['items']))
+        $this->filters['keywords']['selected'] = property_exists($userChoice,$key) ? $userChoice->$key : 0;
+    	if(!is_null($this->filters['keywords']['items']))
     	{
-    	    $this->filters->keywords['items'] = array(0 => $this->strOption['any']) + $this->filters->keywords['items'];
-    		$this->filters->keywords['size'] = min(count($this->filters->keywords['items']),3);
+    	    $this->filters['keywords']['items'] = array(0 => $this->strOption['any']) + $this->filters['keywords']['items'];
+    		$this->filters['keywords']['size'] = min(count($this->filters['keywords']['items']),3);
     	}
 
 		return $this;

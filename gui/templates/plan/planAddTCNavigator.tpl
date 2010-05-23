@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.22 2010/05/02 09:13:38 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.23 2010/05/23 10:19:44 franciscom Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
@@ -109,9 +109,7 @@ function pre_submit()
 <div style="margin: 3px;">
 
 {* BUGID 3301 *}
-{include file='testcases/inc_tc_filter_panel.tpl'
-         showSettings='yes'
-         showFilters='yes'}
+{include file='testcases/inc_tc_filter_panel.tpl' showSettings='yes' showFilters='yes'}
 
 <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 

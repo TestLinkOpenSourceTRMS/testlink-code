@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.21 2010/05/23 10:16:07 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.22 2010/05/23 14:20:25 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -101,8 +101,7 @@ rev:
 <h1 class="title">{$gui->treeHeader}</h1>
 
 {* BUGID 3301: include file for filter panel *}
-{include file='testcases/inc_tc_filter_panel.tpl' showSettings='yes' showFilters='yes'}
-
+{include file='testcases/inc_tc_filter_panel.tpl' showSettings='yes' showFilters='yes' executionMode ='no'}
 <div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 </body>

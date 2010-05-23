@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.28 2010/05/01 19:39:55 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.29 2010/05/23 14:21:18 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -133,9 +133,7 @@ function goToUnassignPage(id)
 <h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$gui->additional_string|escape}</h1>
 
 {* BUGID 3301: include file for filter panel *}
-{include file='testcases/inc_tc_filter_panel.tpl'
-         showSettings='yes'
-         showFilters='yes'}
+{include file='testcases/inc_tc_filter_panel.tpl' showSettings='yes' showFilters='yes' executionMode ='no'}
 
 <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 

@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.2 2010/05/23 16:42:23 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.3 2010/05/23 17:19:13 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -25,13 +25,13 @@
 class tlControlPanel extends tlObjectWithDB
 {
 	public $strOption;
-	public $itemSet;
 	public $filters;
 	public $settings;
 
 	public $advancedFilterMode;
 	public $displaySetting;
 	public $displayFilter;
+	public $controls;
 
 	/**
 	 * @param $dbHandler database object
@@ -48,8 +48,9 @@ class tlControlPanel extends tlObjectWithDB
     	$gui_open = config_get('gui_separator_open');
     	$gui_close = config_get('gui_separator_close');
 
-		$settings = array('tcSpecRefreshOnAction' => true);
-    	
+		$this->drawTCUnassignButton = false;
+		$this->drawBulkUpdateButton = false;
+		
 		$this->strOption = array();
 		$this->strOption['any'] = $gui_open . lang_get('any') . $gui_close;
     	$this->strOption['none'] = $gui_open . lang_get('nobody') . $gui_close;

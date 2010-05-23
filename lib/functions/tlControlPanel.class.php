@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.4 2010/05/23 17:41:38 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.5 2010/05/23 17:50:19 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -50,6 +50,7 @@ class tlControlPanel extends tlObjectWithDB
 
 		$this->drawTCUnassignButton = false;
 		$this->drawBulkUpdateButton = false;
+		$this->chooseFilterModeEnabled = false;
 		
 		$this->strOption = array();
 		$this->strOption['any'] = $gui_open . lang_get('any') . $gui_close;

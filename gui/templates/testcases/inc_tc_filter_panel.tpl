@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.6 2010/05/23 17:46:21 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.7 2010/05/23 17:52:04 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -120,12 +120,6 @@
 	{assign var="buildCount" value=$gui->buildCount}
 {else}
 	{assign var="buildCount" value=0}
-{/if}
-
-{if isset($gui->chooseFilterModeEnabled)}
-	{assign var="chooseFilterModeEnabled" value=$gui->chooseFilterModeEnabled}
-{else}
-	{assign var="chooseFilterModeEnabled" value=""}
 {/if}
 
 {if isset($gui->execType)}
@@ -518,7 +512,7 @@
 				<input type="submit" value="{$labels.btn_apply_filter}" 
 				       id="doUpdateTree" name="doUpdateTree" style="font-size: 90%;" />
 	
-				{if $chooseFilterModeEnabled}
+				{if $gui->controlPanel->chooseFilterModeEnabled}
 				<input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
 				     value="{$toggleFilterModeLabel}"  
 				     onclick="toggleInput('advancedFilterMode');"

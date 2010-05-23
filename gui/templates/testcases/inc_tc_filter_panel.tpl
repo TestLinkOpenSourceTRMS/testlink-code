@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.3 2010/05/18 05:07:21 amkhullar Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.4 2010/05/23 14:17:55 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -30,12 +30,6 @@
    It is more code, but doing this here in one place at the top keeps the 
    template code below simple, clean and readable. *}
 
-{* this activates some special settings only used for execution *}
-{if isset($executionMode) && $executionMode == 'yes'}
-	{assign var="execMode" value=1}
-{else}
-	{assign var="execMode" value=0}
-{/if}
 
 
 {if isset($gui->keywordsFilterItemQty)}
@@ -375,7 +369,7 @@
 	
 		<table class="smallGrey" style="width:98%;">
 			
-	    {if $mapTPlans != '' && !$execMode} {* only if not executing *}
+	    {if $mapTPlans != '' && $executionMode == 'no'}
 			<tr>
 				<td>{$labels.test_plan}</td>
 				<td>
@@ -412,7 +406,7 @@
 			</tr>
 		{/if}
 		
-			{if $optPlatform && $optPlatform.items != '' && !$execMode} {* only if not executing *}
+			{if $optPlatform && $optPlatform.items != '' && $executionMode == 'no'}
 			  <tr>
 			  	<th>{$labels.platform}</th>
 			  	<td><select name="platform_id">

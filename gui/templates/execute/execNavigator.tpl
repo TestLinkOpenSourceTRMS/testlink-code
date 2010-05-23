@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.44 2010/05/02 09:06:48 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.45 2010/05/23 14:19:13 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -115,9 +115,7 @@ rev :
 
 {* BUGID 3301: include file for filter panel *}
 {include file='testcases/inc_tc_filter_panel.tpl'
-         showSettings='yes'
-         showFilters='yes'
-         executionMode='yes'}
+         showSettings='yes' showFilters='yes' executionMode='yes'}
 
 
 

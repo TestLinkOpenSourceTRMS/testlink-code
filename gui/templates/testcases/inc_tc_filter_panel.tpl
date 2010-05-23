@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.4 2010/05/23 14:17:55 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.5 2010/05/23 16:54:47 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -80,8 +80,8 @@
 	{assign var="tPlanID" value=0}
 {/if}
 
-{if isset($gui->keywordsFilterType)}
-	{assign var="keywordsFilterType" value=$gui->keywordsFilterType}
+{if isset($gui->keywordsFilterTypes)}
+	{assign var="keywordsFilterType" value=$gui->keywordsFilterTypes}
 {else}
 	{assign var="keywordsFilterType" value=""}
 {/if}
@@ -368,7 +368,6 @@
 		<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$advancedFilterMode}" />
 	
 		<table class="smallGrey" style="width:98%;">
-			
 	    {if $mapTPlans != '' && $executionMode == 'no'}
 			<tr>
 				<td>{$labels.test_plan}</td>

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planTCNavigator.php,v 1.45 2010/05/23 17:32:55 franciscom Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.46 2010/05/23 17:51:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -243,7 +243,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
     $gui->keywordID=$argsObj->keyword_id; 
    	$gui->toggleFilterModeLabel='';
     $gui->advancedFilterMode=0;
-    $gui->chooseFilterModeEnabled=0;
+    
+    // $gui->chooseFilterModeEnabled=0;
 	
     // We only want to use in the filter, keywords present in the test cases that are
     // linked to test plan, and NOT all keywords defined for test project
@@ -275,7 +276,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
 	$gui->testers=null;
    	$gui->title = lang_get('title_test_plan_navigator');
     $gui->src_workframe=$argsObj->src_workframe;
-    $gui->drawBulkUpdateButton=false;
+    // $gui->drawBulkUpdateButton=false;
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
     
@@ -291,14 +292,14 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
     {
       case 'planUpdateTC':
     	    $gui->menuUrl = "lib/plan/planUpdateTC.php";
-    	    $gui->drawBulkUpdateButton=true;
-    	    $gui->drawTCUnassignButton=false;
+    	    $gui->controlPanel->drawBulkUpdateButton=true;
+    	    // $gui->drawTCUnassignButton=false;
     	break;
     
       case 'test_urgency':
     	    $gui->menuUrl = "lib/plan/planUrgency.php";
-    	    $gui->drawBulkUpdateButton=false;
-    	    $gui->drawTCUnassignButton=false;
+    	    // $gui->drawBulkUpdateButton=false;
+    	    // $gui->drawTCUnassignButton=false;
 	    break;
     
       case 'tc_exec_assignment':
@@ -323,9 +324,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
               $label='btn_advanced_filters';
               $gui->assigneeFilterItemQty=1;
           }
-          $gui->chooseFilterModeEnabled=1;  
+          // $gui->controlPanel->chooseFilterModeEnabled=1;  
           $gui->toggleFilterModeLabel=lang_get($label);
-          $gui->drawTCUnassignButton=true;
+          $gui->controlPanel->drawTCUnassignButton=true;
     	break;
     }
 

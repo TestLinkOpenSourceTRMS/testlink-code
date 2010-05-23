@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.58 2010/05/23 19:44:50 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.59 2010/05/23 20:08:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -119,9 +119,13 @@ function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
         $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
     }
 
+    $gui->execType = $argsObj->exec_type; 
+    
     $initValues['keywords'] = $gui->keywordsMap;
+    $initValues['execTypes'] = 'init';  // initialisation will be done on tlControlPanel()
     $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
-
+	$gui->execTypeMap = $gui->controlPanel->filters['execTypes']['items'];
+	
     // filter using user roles
 	$opt = array('output' => 'combo');
     $gui->controlPanel->settings['testPlans']['items'] = 
@@ -134,10 +138,6 @@ function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
     $gui->importance = $argsObj->importance; 
 
 	// 20100410    
-    $tcaseMgr = new testcase($dbHandler);
-    $gui->execType = $argsObj->exec_type; 
-    $gui->execTypeMap = $tcaseMgr->get_execution_types(); 
-    $gui->execTypeMap = array(0 => $gui->strOptionAny) + $gui->execTypeMap;
 
     $gui->menuUrl = 'lib/plan/planAddTC.php';
     $gui->args = '&tplan_id=' . $gui->tPlanID;

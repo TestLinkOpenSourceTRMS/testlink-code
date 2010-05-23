@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.8 2010/05/23 19:44:23 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.9 2010/05/23 20:09:33 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -128,6 +128,26 @@ class tlControlPanel extends tlObjectWithDB
     	    $this->filters['keywords']['items'] = array(0 => $this->strOption['any']) + $this->filters['keywords']['items'];
     		$this->filters['keywords']['size'] = min(count($this->filters['keywords']['items']),3);
     	}
+
+		$key = 'execTypes';
+        $this->filters[$key]['items'] = array();
+        if( isset($initValues[$key]) )
+        {
+        	if( !is_array($initValues[$key]) )
+        	{
+        		$tcaseMgr = new testcase($dbHandler);
+        		$initValues[$key] = $tcaseMgr->get_execution_types(); 		
+        		unset($tcaseMgr);
+        	}
+        }
+        $this->filters[$key]['items'] = isset($initValues[$key]) ? $initValues[$key] : null;
+    	$prop = 'panelFiltersExecType';
+        $this->filters[$key]['selected'] = property_exists($userChoice,$prop) ? $userChoice->$prop : 0;
+    	if(!is_null($this->filters[$key]['items']))
+    	{
+    	    $this->filters[$key]['items'] = array(0 => $this->strOption['any']) + $this->filters[$key]['items'];
+    	}
+
 
 		return $this;
 	}

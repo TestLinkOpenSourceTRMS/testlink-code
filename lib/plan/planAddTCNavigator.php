@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.56 2010/05/23 17:36:06 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.57 2010/05/23 18:39:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -205,7 +205,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$exec_cfield_mgr)
 		// 
 	   	$dummy = explode('?',$argsObj->called_url);
 	   
-	   	$qs = explode('&',$dummy[1]);
+	    
+	   	$qs = isset($dummy[1]) ? explode('&',$dummy[1]) : array(0 => '');
 	   	if($qs[0] == 'edit=testsuite')
 	   	{
 			    $guiObj->src_workframe = $dummy[0] . "?" . $qs[0] . "&" . $guiObj->args;

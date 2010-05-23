@@ -9,10 +9,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planTCNavigator.php,v 1.44 2010/05/23 17:22:12 franciscom Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.45 2010/05/23 17:32:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ *	20100523 - franciscom - refactoring use of tlControlPanel.class.php
+ *
  *  20100428 - asimon - BUGID 3301 and related issues - changed name or case 
  *                      of some variables used in new common template,
  *                      added filtering by custom fields
@@ -223,9 +225,12 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
     $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
     $gui->strOptionNone = $gui_open . lang_get('nobody') . $gui_close;
 
-    // WHY IS NEEDED ?
     // to get all assigned testcases, no matter to whom they are assigned
     $gui->strOptionSomebody = $gui_open . lang_get('filter_somebody') . $gui_close;
+
+    $initValues['keywords'] = array(0 => $gui->strOptionAny) + (array)$tplanMgr->get_keywords_map($argsObj->tplan_id);
+    $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
+
 
     // BUGID 3301
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
@@ -242,7 +247,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
 	
     // We only want to use in the filter, keywords present in the test cases that are
     // linked to test plan, and NOT all keywords defined for test project
-    $gui->keywordsMap = array(0 => $gui->strOptionAny) + (array)$tplanMgr->get_keywords_map($argsObj->tplan_id);
+    $gui->keywordsMap = $initValues['keywords'];
     if( !is_null($gui->keywordsMap) )
     {
         $gui->keywordsFilterItemQty=min(count($gui->keywordsMap),3);

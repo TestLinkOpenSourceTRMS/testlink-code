@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.55 2010/05/23 16:47:42 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.56 2010/05/23 17:36:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -14,7 +14,7 @@
  *	Test specification. Keywords should be used for filter.
  *
  * @internal Revisions:
- *
+ * 20100523 - franciscom - refactoring use of tlControlPanel.class.php
  * 20100428 - asimon - BUGID 3301 and related issues - changed name or case 
  *                     of some variables used in new common template,
  *                     added custom field filtering logic
@@ -109,7 +109,7 @@ function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
     $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
     $gui->do_reload = 0;
     $gui->src_workframe = null;
-    
+
     $gui->keywordsFilterItemQty = 0;
     $gui->keywordID = $argsObj->keyword_id; 
     $gui->keywordsMap = $tprojectMgr->get_keywords_map($argsObj->tproject_id); 
@@ -118,6 +118,11 @@ function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
         $gui->keywordsMap = array( 0 => $gui->strOptionAny) + $gui->keywordsMap;
         $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
     }
+
+    $initValues['keywords'] = $gui->keywordsMap;
+    $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
+
+    
 
 
     // filter using user roles

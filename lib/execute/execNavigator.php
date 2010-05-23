@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.108 2010/05/23 16:49:32 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.109 2010/05/23 17:41:27 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100523 - franciscom - refactoring use of tlControlPanel.class.php
  * 20100428 - asimon - BUGID 3301 and related issues - changed name or case 
  *                     of some variables used in new common template
  * 20100417 - franciscom - BUGID 3380 execution type filter
@@ -586,6 +587,21 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->menuUrl = 'lib/execute/execSetResults.php';
     $gui->src_workframe = null;    
     $gui->getArguments = null;
+
+
+    $gui->keywordID = $argsObj->keyword_id; 
+    $gui->keywordsMap = $tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
+    $gui->keywordsFilterItemQty = 0;
+    if(!is_null($gui->keywordsMap))
+    {
+        $gui->keywordsMap = array( 0 => $gui->strOptionAny) + $gui->keywordsMap;
+        $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
+    }
+
+    $initValues['keywords'] = $gui->keywordsMap;
+    $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
+
+
     
     $gui->treeColored = $argsObj->treeColored;
     
@@ -632,15 +648,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->keywordsFilterTypes = new stdClass();
     $gui->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
     $gui->keywordsFilterTypes->selected=$argsObj->keywordsFilterType;
-    $gui->keywordsFilterItemQty = 0;
 
-    $gui->keywordID = $argsObj->keyword_id; 
-    $gui->keywordsMap = $tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
-    if(!is_null($gui->keywordsMap))
-    {
-        $gui->keywordsMap = array( 0 => $gui->strOptionAny) + $gui->keywordsMap;
-        $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
-    }
     
     // 20090517 - francisco.mancardi@gruppotesi.com
     // Assigned to combo must contain ALSO inactive users

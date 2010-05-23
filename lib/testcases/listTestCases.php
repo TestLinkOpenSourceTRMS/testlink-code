@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.51 2010/05/23 16:52:59 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.52 2010/05/23 17:38:16 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -228,6 +228,15 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exe
     $gui->tree = null;
     $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
 
+    $tcaseMgr = new testcase($dbHandler);
+    $initValues = array();
+    $initValues['keywords'] = $tprojectMgr->get_keywords_map($args->tproject_id); 
+    $initValues['execTypes'] = $tcaseMgr->get_execution_types(); 
+	unset($tcaseMgr);
+	
+    $gui->controlPanel = new tlControlPanel($dbHandler,$args,$initValues);
+
+
     $tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id);
     
     $gui->ajaxTree = new stdClass();
@@ -287,9 +296,9 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exe
 
 
     // 20091210 - franciscom    
-    $tcaseMgr = new testcase($dbHandler);
+    // $tcaseMgr = new testcase($dbHandler);
     $gui->execType = $args->exec_type; 
-    $gui->execTypeMap = $tcaseMgr->get_execution_types(); 
+    $gui->execTypeMap = $initValues['execTypes'];
     $gui->execTypeMap = array(0 => $gui->strOptionAny) + $gui->execTypeMap;
     
     // BUGID 3301

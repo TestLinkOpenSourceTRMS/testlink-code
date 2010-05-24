@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.110 2010/05/24 18:09:23 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.111 2010/05/24 18:20:51 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -126,8 +126,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
     $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
     
-    
-    $args->doUpdateTree = isset($_REQUEST['submitOptions']) ? 1 : 0;
+    $args->doUpdateTree = isset($_REQUEST['doUpdateTree']) ? 1 : 0;
     
     // 20081220 - franciscom
     // Now can be multivalued

@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.12 2010/05/24 20:21:54 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.13 2010/05/24 20:22:34 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -31,25 +31,17 @@
 {assign var="strOptionSomebody" value=$gui->controlPanel->strOption.somebody}
 {assign var="strOptionNone" value=$gui->controlPanel->strOption.none}
 
+{if $panelFilters.keywords.size == 0}
+    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
+{else}
+	{assign var="keywordsFilterDisplayStyle" value=""}
+{/if}
 
 {* Assigning/initializing of all used variables is done here.
    I did not use foreach or some construct like that here because this should be more performant.
    It is more code, but doing this here in one place at the top keeps the 
    template code below simple, clean and readable. *}
 
-
-
-{if isset($gui->keywordsFilterItemQty)}
-	{assign var="keywordsFilterItemQty" value=$gui->keywordsFilterItemQty}
-{else}
-	{assign var="keywordsFilterItemQty" value=0}
-{/if}
-
-{if $panelFilters.keywords.size == 0}
-    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
-{else}
-	{assign var="keywordsFilterDisplayStyle" value=""}
-{/if}
 
 {if isset($gui->assigneeFilterItemQty)}
     {assign var="assigneeFilterItemQty" value=$gui->assigneeFilterItemQty}

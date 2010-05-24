@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.8 2010/05/24 18:43:07 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.9 2010/05/24 18:53:57 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -24,6 +24,8 @@
                         execution_type, do_auto_update, testsuite, 
                         btn_bulk_update_to_latest_version, priority'} 
 
+
+{assign var="panelFilters" value=$gui->controlPanel->filters}
 
 {* Assigning/initializing of all used variables is done here.
    I did not use foreach or some construct like that here because this should be more performant.
@@ -127,18 +129,6 @@
 	{assign var="tcSpecRefreshOnAction" value=$gui->tcSpecRefreshOnAction}
 {else}
 	{assign var="tcSpecRefreshOnAction" value=0}
-{/if}
-
-{if isset($gui->tsuitesCombo)}
-	{assign var="tsuitesCombo" value=$gui->tsuitesCombo}
-{else}
-	{assign var="tsuitesCombo" value=0}
-{/if}
-
-{if isset($gui->tsuiteChoice)}
-	{assign var="tsuiteChoice" value=$gui->tsuiteChoice}
-{else}
-	{assign var="tsuiteChoice" value=0}
 {/if}
 
 {if isset($gui->optFilterBuild)}
@@ -351,16 +341,17 @@
 			</tr>
 		{/if}
 			
-		{if $tsuitesCombo}
-			<tr>
+    {if $panelFilters.testSuites.items != ''}
+    		<tr>
 	    		<td>{$labels.testsuite}</td>
 	    		<td>
-	    			<select name="tsuites_to_show" style="width:auto">
-	    				{html_options options=$tsuitesCombo selected=$tsuiteChoice}
+	    			<select name="panelFiltersTestSuite" style="width:auto">
+	    				{html_options options=$panelFilters.testSuites.items 
+	    				              selected=$panelFilters.testSuites.selected}
 	    			</select>
 	    		</td>
 	    	</tr>
-    	{/if}
+    {/if}
 			
 		{if $keywordsMap}
 			<tr style="{$keywordsFilterDisplayStyle}">

@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.53 2010/05/24 18:43:07 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.54 2010/05/24 18:53:57 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -54,12 +54,11 @@ $gui = initializeGui($db,$args,$tproject_mgr,$treeDragDropEnabled[$args->feature
 
 // seems useless - $draw_filter = $spec_cfg->show_tsuite_filter;
 $exclude_branches = null;
-$tsuites_combo = null;
 if($spec_cfg->show_tsuite_filter)
 {
-	$mappy = tsuite_filter_mgmt($db,$tproject_mgr,$args->tproject_id,$args->tsuites_to_show);
+	$mappy = tsuite_filter_mgmt($db,$tproject_mgr,$args->tproject_id,$args->panelFiltersTestSuite);
 	$exclude_branches = $mappy['exclude_branches'];
-	$tsuites_combo = $mappy['html_options'];
+	$gui->controlPanel->filters['testSuites']['items'] = $mappy['html_options'];
 	// seems useless - $draw_filter = $mappy['draw_filter'];
 }
 
@@ -78,13 +77,6 @@ if($applyFilter)
 	// Bye, Bye Lazy tree:
 	// we need to use statically generated because user have choosen to apply a filter
 	//
-	
-	
-    // $treeMenu = generateTestSpecTree($db,$args->tproject_id, $args->tproject_name,
-    //                                  $workPath,NOT_FOR_PRINTING,
-    //                                  SHOW_TESTCASES,DO_ON_TESTCASE_CLICK,
-    //                                  NO_ADDITIONAL_ARGS, $keywordsFilter,
-    //                                  DO_NOT_FILTER_INACTIVE_TESTCASES,$exclude_branches);
 
 	$options = array('forPrinting' => NOT_FOR_PRINTING, 'hideTestCases' => SHOW_TESTCASES,
 	                 'getArguments' => NO_ADDITIONAL_ARGS, 
@@ -108,7 +100,7 @@ if($applyFilter)
 
 $gui->treeHeader = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
 // seems useless - $gui->draw_filter = $draw_filter;
-$gui->tsuitesCombo = $tsuites_combo;
+// $gui->tsuitesCombo = $tsuites_combo;
 $gui->tcSpecRefreshOnAction = $args->do_refresh;
 
 $smarty = new TLSmarty();
@@ -161,7 +153,7 @@ function init_args($spec_cfg)
 	$iParams = array("feature" => array(tlInputParameter::STRING_N,0,50),
 			         "keyword_id" => array(tlInputParameter::ARRAY_INT),
 			         "keywordsFilterType" => array(tlInputParameter::STRING_N,0,5),
-			         "tsuites_to_show" => array(tlInputParameter::INT_N),
+			         "panelFiltersTestSuite" => array(tlInputParameter::INT_N),
 					 "tcspec_refresh_on_action" => array(tlInputParameter::INT_N),
 					 "hidden_tcspec_refresh_on_action" => array(tlInputParameter::INT_N),
 					 "panelFiltersExecType" => array(tlInputParameter::INT_N));
@@ -240,7 +232,7 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exe
     $gui->ajaxTree->loader = $args->basehref . 'lib/ajax/gettprojectnodes.php?' .
                              "root_node={$args->tproject_id}&" .
                              "tcprefix=" . urlencode($tcasePrefix. $tcaseCfg->glue_character) . "&" .
-                             "filter_node={$args->tsuites_to_show}";
+                             "filter_node={$args->panelFiltersTestSuite}";
 
     $gui->ajaxTree->root_node = new stdClass();
     $gui->ajaxTree->root_node->href = "javascript:EP({$args->tproject_id})";
@@ -275,8 +267,6 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exe
     // I'appologize for using MAGIC constant
     $gui->ajaxTree->root_node->testlink_node_type='testproject';
 
-    
-    $gui->tsuiteChoice = $args->tsuites_to_show;
     
     // 20090118 - franciscom    
     $gui->keywordsFilterTypes = new stdClass();

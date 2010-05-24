@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.10 2010/05/24 18:43:07 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.11 2010/05/24 18:53:57 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -95,7 +95,7 @@ class tlControlPanel extends tlObjectWithDB
 		
 
 		$key = 'testSuites';
-		$p2check = 'panelFilters' . $key;
+		$p2check = 'panelFiltersTestSuite';
 		$this->filters[$key]['selected'] = property_exists($userChoice,$p2check) ? $userChoice->$p2check : 0;
 
 		// Miscelaneous

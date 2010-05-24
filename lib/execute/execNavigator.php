@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.109 2010/05/23 17:41:27 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.110 2010/05/24 18:09:23 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -116,7 +116,9 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 		}
 	}
 
-    $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
+	// 20100524 - can not find where is used
+    // $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
+    
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
     $args->advancedFilterMode = isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
     
@@ -600,10 +602,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
 
     $initValues['keywords'] = $gui->keywordsMap;
     $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
-
-
     
-    $gui->treeColored = $argsObj->treeColored;
+    // Seems not be used
+    // $gui->treeColored = $argsObj->treeColored;
     
     // 20100417 - franciscom
     // BUGID 3380

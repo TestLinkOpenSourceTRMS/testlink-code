@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.114 2010/05/24 20:16:32 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.115 2010/05/24 20:44:26 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -296,8 +296,8 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
     	  $settings .= '&filter_assigned_to='. serialize($argsObj->filter_assigned_to);
     }   
        
-    if( !is_null($argsObj->optResultSelected) && 
-        !in_array($cfgObj->results['status_code']['all'],$argsObj->optResultSelected) )
+    if( !is_null($argsObj->panelFiltersExecStatus) && 
+        !in_array($cfgObj->results['status_code']['all'],$argsObj->panelFiltersExecStatus) )
     {
         $settings .= '&filter_status='. serialize($argsObj->panelFiltersExecStatus);
     }
@@ -522,12 +522,12 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     }
     
     $filters->filter_status = null;
-    if( !is_null($argsObj->optResultSelected) )
+    if( !is_null($argsObj->panelFiltersExecStatus) )
     {
-        if( !in_array($cfgObj->results['status_code']['all'], $argsObj->optResultSelected) )
+        if( !in_array($cfgObj->results['status_code']['all'], $argsObj->panelFiltersExecStatus) )
         {
             // in this way we have code as key
-            $dummy = array_flip($argsObj->optResultSelected);
+            $dummy = array_flip($argsObj->panelFiltersExecStatus);
             foreach( $dummy as $status_code => $value)
             {
                 $dummy[$status_code] = $status_code;  
@@ -613,7 +613,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     $gui->tPlanID = $argsObj->tplan_id;
     $gui->tPlanName = $argsObj->tplan_name;
     
-    $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->includeUnassigned = $argsObj->include_unassigned;
     $gui->urgencyImportance = $argsObj->urgencyImportance;
     $gui->urgencyImportanceSelectable = TRUE; // TODO should this depend on project settings?

@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.10 2010/05/24 20:02:54 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.11 2010/05/24 20:16:32 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -451,16 +451,17 @@
 		
 		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
 	
-		{if $optResult}
+		{if $panelFilters.execStatus.items != ''}
 	   		<tr>
 				<th>{$labels.filter_result}</th>
 				<td>
 				  {if $gui->controlPanel->advancedFilterMode}
-				  	<select name="filter_status[]" multiple="multiple" size={$statusFilterItemQty}>
+				  	<select name="panelFiltersExecStatus[]" multiple="multiple" size={$statusFilterItemQty}>
 				  {else}
-				  	<select name="filter_status">
+				  	<select name="panelFiltersExecStatus">
 				  {/if}
-				  	{html_options options=$optResult selected=$optResultSelected}
+				  	{html_options options=$panelFilters.execStatus.items 
+				  	              selected=$panelFilters.execStatus.selected}
 				  	</select>
 				</td>
 			</tr>

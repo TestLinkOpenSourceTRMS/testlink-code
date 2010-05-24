@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.113 2010/05/24 20:08:55 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.114 2010/05/24 20:16:32 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -101,9 +101,10 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     
     if($args->tplan_id != $_SESSION['testplanID']) {
     	//testplan was changed, so we reset the filters, they were chosen for another testplan
-    	$keys2delete = array('tcase_id', 'targetTestCase', 'panelFiltersKeyword', 'filter_status','keywordsFilterType',
-    						'filter_method', 'filter_assigned_to', 'build_id', 'urgencyImportance',
-    						'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
+    	$keys2delete = array('tcase_id', 'targetTestCase', 'panelFiltersKeyword', 
+    						 'panelFiltersExecStatus','keywordsFilterType',
+    						 'filter_method', 'filter_assigned_to', 'build_id', 'urgencyImportance',
+    						 'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
     	foreach ($keys2delete as $key) {
     		unset($_REQUEST[$key]);
     	}
@@ -133,20 +134,20 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     
     // 20081220 - franciscom
     // Now can be multivalued
-    $args->optResultSelected = isset($_REQUEST['filter_status']) ? (array)$_REQUEST['filter_status'] : null;
-    if( !is_null($args->optResultSelected) )
+    $key = 'panelFiltersExecStatus';
+    $args->$key = isset($_REQUEST[$key]) ? (array)$_REQUEST[$key] : null;
+    if( !is_null($args->$key) )
     {
-        if( in_array($cfgObj->results['status_code']['all'], $args->optResultSelected) )
+        if( in_array($cfgObj->results['status_code']['all'], $args->$key) )
         {
-            $args->optResultSelected = array($cfgObj->results['status_code']['all']);
+            $args->$key = array($cfgObj->results['status_code']['all']);
         }
-        else if( !$args->panelFiltersAdvancedFilterMode && count($args->optResultSelected) > 0)
+        else if( !$args->panelFiltersAdvancedFilterMode && count($args->$key) > 0)
         {
             // Because user has switched to simple mode we will get ONLY first status
-            $args->optResultSelected=array($args->optResultSelected[0]);
+            $args->$key=array($args->$key[0]);
         }
     }
-    $args->filter_status = $args->optResultSelected;
 	
     // BUGID 2455
 	$filter_cfg = config_get('execution_filter_methods');
@@ -298,7 +299,7 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
     if( !is_null($argsObj->optResultSelected) && 
         !in_array($cfgObj->results['status_code']['all'],$argsObj->optResultSelected) )
     {
-        $settings .= '&filter_status='. serialize($argsObj->optResultSelected);
+        $settings .= '&filter_status='. serialize($argsObj->panelFiltersExecStatus);
     }
 
     if ($customFieldSelected)

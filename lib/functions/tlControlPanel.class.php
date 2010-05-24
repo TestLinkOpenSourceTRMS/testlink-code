@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.13 2010/05/24 20:22:52 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.14 2010/05/24 20:37:37 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -180,6 +180,10 @@ class tlControlPanel extends tlObjectWithDB
     	    $this->filters[$key]['items'] = array(0 => $this->strOption['any']) + $this->filters[$key]['items'];
     	}
 
+
+        $cfg_results = config_get('results');
+   	 	$this->filters['execStatus']['items'] = createResultsMenu();
+    	$this->filters['execStatus']['items'][$cfg_results['status_code']['all']] = $this->strOption['any'];
 
 		return $this;
 	}

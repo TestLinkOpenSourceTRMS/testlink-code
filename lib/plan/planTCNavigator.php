@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planTCNavigator.php,v 1.46 2010/05/23 17:51:12 franciscom Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.47 2010/05/24 20:37:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -116,7 +116,7 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     
 		if($args->tplan_id != $_SESSION['testplanID']) {
 	    	//testplan was changed, so we reset the filters, they were chosen for another testplan
-	    	$keys2delete = array('keyword_id', 'filter_status', 'keywordsFilterType',
+	    	$keys2delete = array('panelFiltersKeyword', 'panelFilterExecStatus', 'keywordsFilterType',
 	    	                    'filter_method', 'filter_assigned_to', 'urgencyImportance',
 	    	                    'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
 	    	foreach ($keys2delete as $key) {
@@ -133,11 +133,13 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     }
     
     // Array because is a multiselect input
-    $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+    $key = 'panelFiltersKeyword';
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 0;
     $args->keywordsFilterType=isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
     $args->help_topic = isset($_REQUEST['help_topic']) ? $_REQUEST['help_topic'] : $args->feature;
 
-    $args->advancedFilterMode=isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
+	$key = 'panelFilterAdvancedFilterMode';
+    $args->$key=isset($_REQUEST[$key]) ? $_REQUEST[$key] : 0;
 
     if(isset($_REQUEST['doUpdateTree']) || isset($_REQUEST['called_by_me']))
     {
@@ -150,21 +152,21 @@ function init_args(&$dbHandler,&$cfgObj,&$tplanMgr, &$tprojectMgr)
     }
 
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
-    $args->optResultSelected = isset($_REQUEST['filter_status']) ?
-			                   (array)$_REQUEST['filter_status'] : array($cfgObj->results['status_code']['all']);
-    if( !is_null($args->optResultSelected) )
+    
+    $key = 'panelFiltersExecStatus';
+    $args->$key = isset($_REQUEST[$key]) ? (array)$_REQUEST[$key] : array($cfgObj->results['status_code']['all']);
+    if( !is_null($args->$key) )
     {
-        if( in_array($cfgObj->results['status_code']['all'], $args->optResultSelected) )
+        if( in_array($cfgObj->results['status_code']['all'], $args->$key) )
         {
-            $args->optResultSelected = array($cfgObj->results['status_code']['all']);
+            $args->$key = array($cfgObj->results['status_code']['all']);
         }
-        else if( !$args->advancedFilterMode && count($args->optResultSelected) > 0)
+        else if( !$args->advancedFilterMode && count($args->$key) > 0)
         {
             // Because user has switched to simple mode we will get ONLY first status
-            $args->optResultSelected=array($args->optResultSelected[0]);
+            $args->$key = array($args->$key[0]);
         }
     }
-    $args->filter_status = $args->optResultSelected;
 	
     $filter_cfg = config_get('execution_assignment_filter_methods');
     $args->filter_method_selected = isset($_REQUEST['filter_method']) ?
@@ -228,9 +230,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
     // to get all assigned testcases, no matter to whom they are assigned
     $gui->strOptionSomebody = $gui_open . lang_get('filter_somebody') . $gui_close;
 
-    $initValues['keywords'] = array(0 => $gui->strOptionAny) + (array)$tplanMgr->get_keywords_map($argsObj->tplan_id);
+    $initValues['keywords'] = "testplan,{$argsObj->tplan_id}";
     $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
-
 
     // BUGID 3301
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
@@ -239,23 +240,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
     $gui->filterAssignedTo=$argsObj->filter_assigned_to;
     $gui->includeUnassigned = $argsObj->include_unassigned;
     
-    $gui->keywordsFilterItemQty=0;
-    $gui->keywordID=$argsObj->keyword_id; 
    	$gui->toggleFilterModeLabel='';
-    $gui->advancedFilterMode=0;
-    
-    // $gui->chooseFilterModeEnabled=0;
 	
-    // We only want to use in the filter, keywords present in the test cases that are
-    // linked to test plan, and NOT all keywords defined for test project
-    $gui->keywordsMap = $initValues['keywords'];
-    if( !is_null($gui->keywordsMap) )
-    {
-        $gui->keywordsFilterItemQty=min(count($gui->keywordsMap),3);
-    }
 
     // BUGID 2455
-    $gui->optResultSelected = $argsObj->optResultSelected;
     $gui->optFilterBuild = initFilterBuildInfo($dbHandler,$argsObj,$tplanMgr);
     $gui->buildCount = count($gui->optFilterBuild['items']);
     $gui->optPlatform = initPlatformInfo($dbHandler,$argsObj,$platformMgr, $gui->strOptionAny);
@@ -280,9 +268,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
     
-    $gui->optResult=createResultsMenu();
-    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->strOptionAny;
-
 	$filter_cfg = config_get('execution_assignment_filter_methods');
     $gui->filterMethods = createExecutionAssignmentFilterMethodMenu();
     $gui->filterMethodSpecificBuild = $filter_cfg['status_code']['specific_build'];
@@ -293,13 +278,10 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
       case 'planUpdateTC':
     	    $gui->menuUrl = "lib/plan/planUpdateTC.php";
     	    $gui->controlPanel->drawBulkUpdateButton=true;
-    	    // $gui->drawTCUnassignButton=false;
     	break;
     
       case 'test_urgency':
     	    $gui->menuUrl = "lib/plan/planUrgency.php";
-    	    // $gui->drawBulkUpdateButton=false;
-    	    // $gui->drawTCUnassignButton=false;
 	    break;
     
       case 'tc_exec_assignment':
@@ -307,14 +289,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
     	    $gui->menuUrl = "lib/plan/tc_exec_assignment.php";
     	    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
     	                                             null,
-     	                                             array(TL_USER_ANYBODY => $gui->strOptionAny,
-	                                                       TL_USER_NOBODY => $gui->strOptionNone,
-	                                                       TL_USER_SOMEBODY => $gui->strOptionSomebody) );
+     	                                             array(TL_USER_ANYBODY => $gui->controlPanel->strOption['any'],
+	                                                       TL_USER_NOBODY => $gui->controlPanel->strOption['none'],
+	                                                       TL_USER_SOMEBODY => $gui->controlPanel->strOption['somebody']) );
           
     	    
     	    
-    	    $gui->advancedFilterMode=$argsObj->advancedFilterMode;
-          if( $gui->advancedFilterMode )
+          if( $gui->panelFiltersAdvancedFilterMode )
           {
               $label = 'btn_simple_filters';
               $gui->assigneeFilterItemQty=4; // as good as any other number
@@ -324,16 +305,15 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr, &$exec_cfield_
               $label='btn_advanced_filters';
               $gui->assigneeFilterItemQty=1;
           }
-          // $gui->controlPanel->chooseFilterModeEnabled=1;  
           $gui->toggleFilterModeLabel=lang_get($label);
           $gui->controlPanel->drawTCUnassignButton=true;
     	break;
     }
 
     $gui->additional_string = '';
+
     // BUGID 3301
 	$gui->tree = buildTree($dbHandler,$gui,$argsObj,$cfgObj, $exec_cfield_mgr);
-
     return $gui;
 }
 
@@ -363,8 +343,8 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj, &$exec_cfield_mgr)
     $filters = new stdClass();
     $additionalInfo = new stdClass();
 
-    $filters->keyword = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
-    $filters->keyword_id = $argsObj->keyword_id;
+    $filters->keyword = buildKeywordsFilter($argsObj->panelFiltersKeyword,$guiObj);
+    $filters->keyword_id = $argsObj->panelFiltersKeyword;
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
     $filters->platform_id = null;
     if($argsObj->optPlatformSelected != null) 
@@ -382,12 +362,12 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj, &$exec_cfield_mgr)
     $filters->method = $argsObj->filter_method_selected;
     
     $filters->filter_status = null;
-    if( !is_null($argsObj->optResultSelected) )
+    if( !is_null($argsObj->panelFiltersExecStatus) )
     {
-        if( !in_array($cfgObj->results['status_code']['all'], $guiObj->optResultSelected) )
+        if( !in_array($cfgObj->results['status_code']['all'], $guiObj->panelFiltersExecStatus) )
         {
             // want to have code as key
-            $dummy = array_flip($argsObj->optResultSelected);
+            $dummy = array_flip($argsObj->panelFiltersExecStatus);
             foreach( $dummy as $status_code => $value)
             {
                 $dummy[$status_code] = $status_code;  
@@ -397,7 +377,6 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj, &$exec_cfield_mgr)
     }
     
     $filters->hide_testcases = false;
-    //$filters->show_testsuite_contents = $cfgObj->exec->show_testsuite_contents;
        	
     // Set of filters Off
     $filters->build_id = 0;
@@ -475,14 +454,14 @@ function initializeGetArguments($argsObj,$filtersObj)
     $kl='';
     $settings = '&include_unassigned=' . $filtersObj->include_unassigned;
 	
-    if(is_array($argsObj->keyword_id) && !in_array(0, $argsObj->keyword_id))
+    if(is_array($argsObj->panelFiltersKeyword) && !in_array(0, $argsObj->panelFiltersKeyword))
     {
-       $kl=implode(',',$argsObj->keyword_id);
+       $kl=implode(',',$argsObj->panelFiltersKeyword);
        $settings .= '&keyword_id=' . $kl;
     }
-    else if(!is_array($argsObj->keyword_id) && $argsObj->keyword_id > 0)
+    else if(!is_array($argsObj->panelFiltersKeyword) && $argsObj->panelFiltersKeyword > 0)
     {
-    	  $settings .= '&keyword_id='.$argsObj->keyword_id;
+    	  $settings .= '&keyword_id='.$argsObj->panelFiltersKeyword;
     }
     $settings .= '&keywordsFilterType='.$argsObj->keywordsFilterType;
     

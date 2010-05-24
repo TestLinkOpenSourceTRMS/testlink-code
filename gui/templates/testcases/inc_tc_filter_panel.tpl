@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.11 2010/05/24 20:16:32 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.12 2010/05/24 20:21:54 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -26,6 +26,11 @@
 
 
 {assign var="panelFilters" value=$gui->controlPanel->filters}
+
+{assign var="strOptionAny" value=$gui->controlPanel->strOption.any}
+{assign var="strOptionSomebody" value=$gui->controlPanel->strOption.somebody}
+{assign var="strOptionNone" value=$gui->controlPanel->strOption.none}
+
 
 {* Assigning/initializing of all used variables is done here.
    I did not use foreach or some construct like that here because this should be more performant.
@@ -179,23 +184,6 @@
 	{assign var="filterAssignedTo" value=0}
 {/if}
 
-{if isset($gui->strOptionAny)}
-	{assign var="strOptionAny" value=$gui->strOptionAny}
-{else}
-	{assign var="strOptionAny" value=0}
-{/if}
-
-{if isset($gui->strOptionSomebody)}
-	{assign var="strOptionSomebody" value=$gui->strOptionSomebody}
-{else}
-	{assign var="strOptionSomebody" value=0}
-{/if}
-
-{if isset($gui->strOptionNone)}
-	{assign var="strOptionNone" value=$gui->strOptionNone}
-{else}
-	{assign var="strOptionNone" value=0}
-{/if}
 
 {if isset($gui->assigned_to_user)}
 	{assign var="assignedToUser" value=$gui->assigned_to_user}

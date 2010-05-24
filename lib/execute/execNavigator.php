@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.112 2010/05/24 18:43:07 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.113 2010/05/24 20:08:55 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -101,7 +101,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     
     if($args->tplan_id != $_SESSION['testplanID']) {
     	//testplan was changed, so we reset the filters, they were chosen for another testplan
-    	$keys2delete = array('tcase_id', 'targetTestCase', 'keyword_id', 'filter_status','keywordsFilterType',
+    	$keys2delete = array('tcase_id', 'targetTestCase', 'panelFiltersKeyword', 'filter_status','keywordsFilterType',
     						'filter_method', 'filter_assigned_to', 'build_id', 'urgencyImportance',
     						'filter_build_id', 'platform_id', 'include_unassigned', 'colored');
     	foreach ($keys2delete as $key) {
@@ -125,7 +125,8 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 0;
     
     // Attention: Is an array because is a multiselect 
-    $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
+    $key = 'panelFiltersKeyword';
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 0;
     $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
     
     $args->doUpdateTree = isset($_REQUEST['doUpdateTree']) ? 1 : 0;
@@ -267,14 +268,14 @@ function initializeGetArguments($argsObj,$cfgObj,$customFieldSelected)
                 '&platform_id=' . $argsObj->optPlatformSelected .
   	            '&include_unassigned=' . $argsObj->include_unassigned;
 
-    if(is_array($argsObj->keyword_id) && !in_array(0, $argsObj->keyword_id))
+    if(is_array($argsObj->panelFiltersKeyword) && !in_array(0, $argsObj->panelFiltersKeyword))
     {
-       $kl = implode(',',$argsObj->keyword_id);
+       $kl = implode(',',$argsObj->panelFiltersKeyword);
        $settings .= '&keyword_id=' . $kl;
     }
-    else if(!is_array($argsObj->keyword_id) && $argsObj->keyword_id > 0)
+    else if(!is_array($argsObj->panelFiltersKeyword) && $argsObj->panelFiltersKeyword > 0)
     {
-    	  $settings .= '&keyword_id='.$argsObj->keyword_id;
+    	  $settings .= '&keyword_id='.$argsObj->panelFiltersKeyword;
     }
     $settings .= '&keywordsFilterType='.$argsObj->keywordsFilterType;
     
@@ -485,7 +486,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $filters = new stdClass();
     $additionalInfo = new stdClass();
     
-    $filters->keyword = buildKeywordsFilter($argsObj->keyword_id,$guiObj);
+    $filters->keyword = buildKeywordsFilter($argsObj->panelFiltersKeyword,$guiObj);
     $filters->keywordsFilterType = $argsObj->keywordsFilterType;
     $filters->include_unassigned = $guiObj->includeUnassigned;
     
@@ -577,33 +578,18 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanMgr,&$platformMgr)
 {
     $gui = new stdClass();
-    $gui_open = config_get('gui_separator_open');
-    $gui_close = config_get('gui_separator_close');
     
     //BUGID 3301
     $gui->tcSpecRefreshOnAction = $argsObj->do_refresh;
     
-    $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
-    $gui->strOptionNone = $gui_open . lang_get('nobody') . $gui_close;
-    $gui->strOptionSomebody = $gui_open . lang_get('filter_somebody') . $gui_close;
-        
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
     $gui->menuUrl = 'lib/execute/execSetResults.php';
     $gui->src_workframe = null;    
     $gui->getArguments = null;
 
 
-    $gui->keywordID = $argsObj->keyword_id; 
-    $gui->keywordsMap = $tplanMgr->get_keywords_map($argsObj->tplan_id,' order by keyword ');
-    $gui->keywordsFilterItemQty = 0;
-    if(!is_null($gui->keywordsMap))
-    {
-        $gui->keywordsMap = array( 0 => $gui->strOptionAny) + $gui->keywordsMap;
-        $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
-    }
-
 	// new code
-    $initValues['keywords'] = $gui->keywordsMap;
+    $initValues['keywords'] = "testplan,{$argsObj->tplan_id}";
     $initValues['execTypes'] = 'init';
     $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
     
@@ -641,25 +627,20 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     // count of active builds that are shown and can be filtered
     $gui->filterBuildCount = count($gui->optFilterBuild['items']);
     
-    $gui->keywordsFilterTypes = new stdClass();
-    $gui->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
-    $gui->keywordsFilterTypes->selected=$argsObj->keywordsFilterType;
-
-    
     // 20090517 - francisco.mancardi@gruppotesi.com
     // Assigned to combo must contain ALSO inactive users
     $users = tlUser::getAll($dbHandler,null,"id",null);
     
 	// BUGID 3301: $gui->users --> $gui->testers
     $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
-	                                       $users,array(TL_USER_ANYBODY => $gui->strOptionAny,
-	                                       TL_USER_NOBODY => $gui->strOptionNone,
-	                                       TL_USER_SOMEBODY => $gui->strOptionSomebody),'any' );
+	                                       $users,array(TL_USER_ANYBODY => $gui->controlPanel->strOption['any'],
+	                                       TL_USER_NOBODY => $gui->controlPanel->strOption['none'],
+	                                       TL_USER_SOMEBODY => $gui->controlPanel->strOption['somebody']),'any' );
 
     $gui->tcase_id=intval($argsObj->tcase_id) > 0 ? $argsObj->tcase_id : '';
     
     $gui->optResult=createResultsMenu();
-    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->strOptionAny;
+    $gui->optResult[$cfgObj->results['status_code']['all']] = $gui->controlPanel->strOption['any'];
 
     // BUGID 2455, BUGID 3026
 	$filter_cfg = config_get('execution_filter_methods');
@@ -669,7 +650,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
 	$gui->filterMethodCurrentBuild = $filter_cfg['status_code']['current_build'];
 
     // $gui->advancedFilterMode=$argsObj->advancedFilterMode;
-    if($gui->advancedFilterMode)
+    if($gui->controlPanel->advancedFilterMode)
     {
         $label = 'btn_simple_filters';
         $qty = 4; // Standard: not run,passed,failed,blocked

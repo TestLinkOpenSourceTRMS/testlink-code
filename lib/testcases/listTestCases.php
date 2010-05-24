@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.54 2010/05/24 18:53:57 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.55 2010/05/24 20:08:55 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -213,21 +213,16 @@ function init_args($spec_cfg)
 function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exec_cfield_mgr)
 {
     $tcaseCfg = config_get('testcase_cfg');
-    $gui_open = config_get('gui_separator_open');
-    $gui_close = config_get('gui_separator_close');
-        
-    $gui = new stdClass();
-    $gui->tree = null;
-    $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
+    $tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id);
 
+    $gui = new stdClass();
     $initValues = array();
-    $initValues['keywords'] = $tprojectMgr->get_keywords_map($args->tproject_id); 
+    $initValues['keywords'] = "testproject,{$args->tproject_id}"; 
     $initValues['execTypes'] = 'init'; 
     $gui->controlPanel = new tlControlPanel($dbHandler,$args,$initValues);
 
-
-    $tcasePrefix = $tprojectMgr->getTestCasePrefix($args->tproject_id);
     
+    $gui->tree = null;
     $gui->ajaxTree = new stdClass();
     $gui->ajaxTree->loader = $args->basehref . 'lib/ajax/gettprojectnodes.php?' .
                              "root_node={$args->tproject_id}&" .
@@ -269,17 +264,19 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exe
 
     
     // 20090118 - franciscom    
-    $gui->keywordsFilterTypes = new stdClass();
-    $gui->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
-    $gui->keywordsFilterTypes->selected = $args->keywordsFilterType;
-    $gui->keywordsFilterItemQty = 0;
-    $gui->keywordID = $args->keyword_id; 
-    $gui->keywordsMap = $tprojectMgr->get_keywords_map($args->tproject_id); 
-    if(!is_null($gui->keywordsMap))
-    {
-        $gui->keywordsMap = array(0 => $gui->strOptionAny) + $gui->keywordsMap;
-    	$gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
-    }
+    // $gui->keywordsFilterTypes = new stdClass();
+    // $gui->keywordsFilterTypes->options = array('OR' => 'Or' , 'AND' =>'And'); 
+    // $gui->keywordsFilterTypes->selected = $args->keywordsFilterType;
+
+
+    // $gui->keywordsFilterItemQty = 0;
+    // $gui->keywordID = $args->keyword_id; 
+    // $gui->keywordsMap = $tprojectMgr->get_keywords_map($args->tproject_id); 
+    // if(!is_null($gui->keywordsMap))
+    // {
+    //     $gui->keywordsMap = array(0 => $gui->strOptionAny) + $gui->keywordsMap;
+    // 	$gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
+    // }
     
     // BUGID 3301
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);

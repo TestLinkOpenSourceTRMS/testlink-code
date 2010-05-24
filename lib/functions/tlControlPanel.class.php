@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.11 2010/05/24 18:53:57 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.12 2010/05/24 20:08:55 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -55,7 +55,6 @@ class tlControlPanel extends tlObjectWithDB
 		
 		$key = 'treeColored';
 		$p2check = 'treeColored';
-		$this->treeColored = $userChoice->treeColored;
 		$this->$key = property_exists($userChoice,$p2check) ? $userChoice->$p2check : null;
 		
 		
@@ -126,15 +125,40 @@ class tlControlPanel extends tlObjectWithDB
     	$this->filters['keywordsFilterTypes']->displayStyle = '';
 
 
-        $this->filters['keywords'] = array();
+
+		$key = 'keywords';
+        $this->filters[$key]['items'] = array();
+        if( isset($initValues[$key]) )
+        {
+        	if( !is_array($initValues[$key]) )
+        	{
+        		$dummy = explode(',',$initValues[$key]);
+        		new dBug($dummy);
+        		switch($dummy[0])
+        		{
+        			case 'testproject':
+        				$objMgr = new $dummy[0]($dbHandler);
+        				$initValues[$key] = $objMgr->get_keywords_map($dummy[1]);
+        			break;
+
+        			case 'testplan':
+        				$objMgr = new $dummy[0]($dbHandler);
+        				$initValues[$key] = $objMgr->get_keywords_map($dummy[1],' order by keyword ');
+        			break;
+        				
+        			unset($objMgr);
+        		}
+        	}
+        }
         $this->filters['keywords']['items'] = isset($initValues['keywords']) ? $initValues['keywords'] : array();
-    	$key = 'panelFiltersKeywordsFilterType';
-        $this->filters['keywords']['selected'] = property_exists($userChoice,$key) ? $userChoice->$key : 0;
-    	if(!is_null($this->filters['keywords']['items']))
+    	$pkey = 'panelFiltersKeyword';
+        $this->filters['keywords']['selected'] = property_exists($userChoice,$pkey) ? $userChoice->$pkey : 0;
+    	if(!is_null($this->filters['keywords']['items']) && count($this->filters['keywords']['items']) > 0)
     	{
     	    $this->filters['keywords']['items'] = array(0 => $this->strOption['any']) + $this->filters['keywords']['items'];
     		$this->filters['keywords']['size'] = min(count($this->filters['keywords']['items']),3);
     	}
+
 
 		$key = 'execTypes';
         $this->filters[$key]['items'] = array();

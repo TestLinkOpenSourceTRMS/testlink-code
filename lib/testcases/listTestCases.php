@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: listTestCases.php,v 1.52 2010/05/23 17:38:16 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.53 2010/05/24 18:43:07 franciscom Exp $
 * 	@author 	Martin Havlat
 * 
 * 	Generates tree menu with test specification. 
@@ -65,7 +65,7 @@ if($spec_cfg->show_tsuite_filter)
 
 $filters = array();
 $filters['keywords'] = buildKeywordsFilter($args->keyword_id,$gui);
-$filters['executionType'] = buildExecTypeFilter($args->exec_type,$gui);
+$filters['executionType'] = buildExecTypeFilter($args->panelFiltersExecType,$gui);
 
 // BUGID 3301
 $filters['cf_hash'] = $exec_cfield_mgr->get_set_values();
@@ -164,7 +164,7 @@ function init_args($spec_cfg)
 			         "tsuites_to_show" => array(tlInputParameter::INT_N),
 					 "tcspec_refresh_on_action" => array(tlInputParameter::INT_N),
 					 "hidden_tcspec_refresh_on_action" => array(tlInputParameter::INT_N),
-					 "exec_type" => array(tlInputParameter::INT_N));
+					 "panelFiltersExecType" => array(tlInputParameter::INT_N));
 					 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
@@ -228,12 +228,9 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exe
     $gui->tree = null;
     $gui->strOptionAny = $gui_open . lang_get('any') . $gui_close;
 
-    $tcaseMgr = new testcase($dbHandler);
     $initValues = array();
     $initValues['keywords'] = $tprojectMgr->get_keywords_map($args->tproject_id); 
-    $initValues['execTypes'] = $tcaseMgr->get_execution_types(); 
-	unset($tcaseMgr);
-	
+    $initValues['execTypes'] = 'init'; 
     $gui->controlPanel = new tlControlPanel($dbHandler,$args,$initValues);
 
 
@@ -293,13 +290,6 @@ function initializeGui($dbHandler,$args,&$tprojectMgr,$treeDragDropEnabled, $exe
         $gui->keywordsMap = array(0 => $gui->strOptionAny) + $gui->keywordsMap;
     	$gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
     }
-
-
-    // 20091210 - franciscom    
-    // $tcaseMgr = new testcase($dbHandler);
-    $gui->execType = $args->exec_type; 
-    $gui->execTypeMap = $initValues['execTypes'];
-    $gui->execTypeMap = array(0 => $gui->strOptionAny) + $gui->execTypeMap;
     
     // BUGID 3301
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);

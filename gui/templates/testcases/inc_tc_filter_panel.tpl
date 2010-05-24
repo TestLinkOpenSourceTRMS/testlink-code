@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.7 2010/05/23 17:52:04 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.8 2010/05/24 18:43:07 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -86,11 +86,6 @@
 	{assign var="keywordsFilterType" value=""}
 {/if}
 
-{if isset($gui->advancedFilterMode)}
-	{assign var="advancedFilterMode" value=$gui->advancedFilterMode}
-{else}
-	{assign var="advancedFilterMode" value=0}
-{/if}
 
 {if isset($gui->toggleFilterModeLabel)}
 	{assign var="toggleFilterModeLabel" value=$gui->toggleFilterModeLabel}
@@ -126,12 +121,6 @@
 	{assign var="execType" value=$gui->execType}
 {else}
 	{assign var="execType" value=0}
-{/if}
-
-{if isset($gui->execTypeMap)}
-	{assign var="execTypeMap" value=$gui->execTypeMap}
-{else}
-	{assign var="execTypeMap" value=0}
 {/if}
 
 {if isset($gui->tcSpecRefreshOnAction)}
@@ -347,7 +336,8 @@
 
 		<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
 		<input type="hidden" id="called_url" name="called_url" value="" />
-		<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$advancedFilterMode}" />
+		<input type='hidden' id="panelFiltersAdvancedFilterMode"  name="panelFiltersAdvancedFilterMode"  
+		       value="{$gui->controlPanel->advancedFilterMode}" />
 	
 		<table class="smallGrey" style="width:98%;">
 	    {if $mapTPlans != '' && $executionMode == 'no'}
@@ -409,12 +399,13 @@
 				</tr>
 			{/if}
 			
-			{if $session['testprojectOptions']->automationEnabled && $execTypeMap}
+			{if $session['testprojectOptions']->automationEnabled && $gui->controlPanel->filters.execTypes.items != ''}
 				<tr>
 					<td>{$labels.execution_type}</td>
 		  			<td>
-				    <select name="exec_type">
-	    	  	  {html_options options=$execTypeMap selected=$execType}
+				    <select name="panelFiltersExecType">
+	    	  	  {html_options options=$gui->controlPanel->filters.execTypes.items 
+	    	  	                selected=$gui->controlPanel->filters.execTypes.selected}
 		    	  </select>
 					</td>	
 				</tr>
@@ -428,7 +419,7 @@
 				{if $disableFilterAssignedTo && $assignedToUser}
 					{$assignedToUser}
 				{else}
-					  {if $advancedFilterMode}
+					  {if $gui->controlPanel->advancedFilterMode}
 					  <select name="filter_assigned_to[]" id="filter_assigned_to" 
 					  		multiple="multiple" size={$assigneeFilterItemQty}
 					  		{html_options options=$testers selected=$filterAssignedTo}
@@ -472,7 +463,7 @@
 	   		<tr>
 				<th>{$labels.filter_result}</th>
 				<td>
-				  {if $advancedFilterMode}
+				  {if $gui->controlPanel->advancedFilterMode}
 				  	<select name="filter_status[]" multiple="multiple" size={$statusFilterItemQty}>
 				  {else}
 				  	<select name="filter_status">
@@ -515,7 +506,7 @@
 				{if $gui->controlPanel->chooseFilterModeEnabled}
 				<input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
 				     value="{$toggleFilterModeLabel}"  
-				     onclick="toggleInput('advancedFilterMode');"
+				     onclick="toggleInput('panelFiltersAdvancedFilterMode');"
 				     style="font-size: 90%;"  />
 	      		{/if}
 			</div>

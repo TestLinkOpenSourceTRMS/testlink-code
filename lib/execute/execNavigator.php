@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.111 2010/05/24 18:20:51 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.112 2010/05/24 18:43:07 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -120,7 +120,9 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
     // $args->treeColored = (isset($_REQUEST['colored']) && ($_REQUEST['colored'] == 'result')) ? 'selected="selected"' : null;
     
     $args->tcase_id = isset($_REQUEST['tcase_id']) ? intval($_REQUEST['tcase_id']) : null;
-    $args->advancedFilterMode = isset($_REQUEST['advancedFilterMode']) ? $_REQUEST['advancedFilterMode'] : 0;
+    
+    $key = 'panelFiltersAdvancedFilterMode';
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 0;
     
     // Attention: Is an array because is a multiselect 
     $args->keyword_id = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : 0;
@@ -137,7 +139,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
         {
             $args->optResultSelected = array($cfgObj->results['status_code']['all']);
         }
-        else if( !$args->advancedFilterMode && count($args->optResultSelected) > 0)
+        else if( !$args->panelFiltersAdvancedFilterMode && count($args->optResultSelected) > 0)
         {
             // Because user has switched to simple mode we will get ONLY first status
             $args->optResultSelected=array($args->optResultSelected[0]);
@@ -174,7 +176,7 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
         {
             $args->filter_assigned_to = array(TL_USER_NOBODY);    
         } 
-        else if(!$args->advancedFilterMode && count($args->filter_assigned_to) > 0)
+        else if(!$args->panelFiltersAdvancedFilterMode && count($args->filter_assigned_to) > 0)
         {
             // Because user has switched to simple mode we will get ONLY first status
             $args->filter_assigned_to=array($args->filter_assigned_to[0]);
@@ -219,7 +221,8 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 	$args->include_unassigned = isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
 
 	// BUGID 3380
-    $args->exec_type = isset($_REQUEST['exec_type']) ? intval($_REQUEST['exec_type']) : 0;
+	$key = 'panelFiltersExecType';
+    $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : 0;
 
     // BUGID 3301 - refresh on action logic borrowed from listTestCases.php
     $args->tcspec_refresh_on_action = isset($_REQUEST['tcspec_refresh_on_action']) ? 
@@ -491,7 +494,7 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
     $filters->filter_build_id = $argsObj->optFilterBuildSelected;
 
 	// BUGID 3380
-    $filters->exec_type = $argsObj->exec_type > 0 ? $argsObj->exec_type : null;
+    $filters->exec_type = $argsObj->panelFiltersExecType > 0 ? $argsObj->panelFiltersExecType : null;
 
    
     // BUGID 2455
@@ -599,20 +602,13 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
         $gui->keywordsFilterItemQty = min(count($gui->keywordsMap),3);
     }
 
+	// new code
     $initValues['keywords'] = $gui->keywordsMap;
+    $initValues['execTypes'] = 'init';
     $gui->controlPanel = new tlControlPanel($dbHandler,$argsObj,$initValues);
     
     // Seems not be used
     // $gui->treeColored = $argsObj->treeColored;
-    
-    // 20100417 - franciscom
-    // BUGID 3380
-    $tcaseMgr = new testcase($dbHandler);
-    $gui->execType = $argsObj->exec_type; 
-    $gui->execTypeMap = $tcaseMgr->get_execution_types(); 
-    $gui->execTypeMap = array(0 => $gui->strOptionAny) + $gui->execTypeMap;
-	unset($tcaseMgr);
-    
     
     $tplans = $_SESSION['currentUser']->getAccessibleTestPlans($dbHandler,$argsObj->tproject_id);
     
@@ -653,6 +649,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
     // 20090517 - francisco.mancardi@gruppotesi.com
     // Assigned to combo must contain ALSO inactive users
     $users = tlUser::getAll($dbHandler,null,"id",null);
+    
 	// BUGID 3301: $gui->users --> $gui->testers
     $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,
 	                                       $users,array(TL_USER_ANYBODY => $gui->strOptionAny,
@@ -671,7 +668,7 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$exec_cfield_mgr,&$tplanM
 	$gui->filterMethodSpecificBuild = $filter_cfg['status_code']['specific_build'];
 	$gui->filterMethodCurrentBuild = $filter_cfg['status_code']['current_build'];
 
-    $gui->advancedFilterMode=$argsObj->advancedFilterMode;
+    // $gui->advancedFilterMode=$argsObj->advancedFilterMode;
     if($gui->advancedFilterMode)
     {
         $label = 'btn_simple_filters';

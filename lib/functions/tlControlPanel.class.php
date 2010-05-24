@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.9 2010/05/23 20:09:33 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.10 2010/05/24 18:43:07 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -28,6 +28,7 @@ class tlControlPanel extends tlObjectWithDB
 	public $filters;
 	public $settings;
 
+	public $treeColored;
 	public $advancedFilterMode;
 	public $displaySetting;
 	public $displayFilter;
@@ -51,6 +52,12 @@ class tlControlPanel extends tlObjectWithDB
 		$this->drawTCUnassignButton = false;
 		$this->drawBulkUpdateButton = false;
 		$this->chooseFilterModeEnabled = false;
+		
+		$key = 'treeColored';
+		$p2check = 'treeColored';
+		$this->treeColored = $userChoice->treeColored;
+		$this->$key = property_exists($userChoice,$p2check) ? $userChoice->$p2check : null;
+		
 		
 		$this->strOption = array();
 		$this->strOption['any'] = $gui_open . lang_get('any') . $gui_close;

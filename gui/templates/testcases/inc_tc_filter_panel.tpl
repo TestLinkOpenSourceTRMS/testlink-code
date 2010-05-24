@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.9 2010/05/24 18:53:57 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.10 2010/05/24 20:02:54 franciscom Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -40,7 +40,7 @@
 	{assign var="keywordsFilterItemQty" value=0}
 {/if}
 
-{if $keywordsFilterItemQty == 0}
+{if $panelFilters.keywords.size == 0}
     {assign var="keywordsFilterDisplayStyle" value="display:none;"}
 {else}
 	{assign var="keywordsFilterDisplayStyle" value=""}
@@ -353,17 +353,18 @@
 	    	</tr>
     {/if}
 			
-		{if $keywordsMap}
+		{if $panelFilters.keywords.items != ''}
 			<tr style="{$keywordsFilterDisplayStyle}">
 				<td>{$labels.keyword}</td>
-				<td><select name="keyword_id[]" title="{$labels.keywords_filter_help}"
-				            multiple="multiple" size={$keywordsFilterItemQty}>
-				    {html_options options=$keywordsMap selected=$keywordID}
+				<td><select name="panelFiltersKeyword[]" title="{$labels.keywords_filter_help}"
+				            multiple="multiple" size={$panelFilters.keywords.size}>
+				    {html_options options=$panelFilters.keywords.items 
+				                  selected=$panelFilters.keywords.selected}
 					</select>
 				
-	      {html_radios name='keywordsFilterType' 
-	                   options=$keywordsFilterType->options
-	                   selected=$keywordsFilterType->selected}
+	      {html_radios name='panelFiltersKeywordsFilterType' 
+	                   options=$panelFilters.keywordsFilterTypes->options
+	                   selected=$panelFilters.keywordsFilterTypes->selected}
 				</td>
 			</tr>
 		{/if}

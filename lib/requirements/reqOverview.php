@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.11 2010/05/17 09:33:51 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.12 2010/05/25 11:21:36 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -269,6 +269,6 @@ function init_gui(&$argsObj) {
  */
 function checkRights(&$db, &$user)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	return $user->hasRight($db,'mgt_view_req');
 }
 ?>

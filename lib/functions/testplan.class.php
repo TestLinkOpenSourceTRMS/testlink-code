@@ -9,12 +9,14 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.188 2010/05/20 19:46:21 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.189 2010/05/25 17:38:19 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20100525 - Julian - changed default for steps_info option on get_linked_tcversions() to false
+ *  					-> performance improvement because not all steps are loaded per default
  *	20100520 - franciscom - getTestCaseSiblings() join bug
  *	20100520 - franciscom - new option on get_linked_tcversions()
  *	20100518 - franciscom - BUGID 3473
@@ -678,7 +680,7 @@ class testplan extends tlObjectWithAttachments
                                'platform_id' => null, 'exec_type' => null);
                                
         $my['options'] = array('only_executed' => false, 'include_unassigned' => false,
-                               'output' => 'map', 'details' => 'simple', 'steps_info' => true, 
+                               'output' => 'map', 'details' => 'simple', 'steps_info' => false, 
                                'execution_details' => null, 'last_execution' => false);
 
  		// Cast to array to handle $options = null

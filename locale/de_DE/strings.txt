@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.143 2010/05/21 12:57:40 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.144 2010/05/25 08:52:24 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -607,7 +607,7 @@ $TLS_th_executed_vs_total = "Ausgeführte/Gesamt [%]";
 // ----- gui/templates/newest_tcversions.tpl -----
 $TLS_linked_version = "Verbundene Version";
 $TLS_newest_version = "Neueste verfügbare aktive Version";
-$TLS_title_newest_tcversions = "Neuste Versionen der verbundenen Testfälle";
+$TLS_title_newest_tcversions = "Neueste Versionen der verbundenen Testfälle";
 $TLS_no_newest_version_of_linked_tcversions = "Alle verknüpften Testfall-Versionen sind aktuell.";
 
 
@@ -1153,7 +1153,7 @@ $TLS_title_admin = "Benutzerverwaltung";
 $TLS_title_events = "Ereignisse";
 $TLS_title_execute = "Testausführung";
 $TLS_title_results = "Testergebnisse";
-$TLS_title_specification = "Testfallbearbeitung";
+$TLS_title_specification = "Testspezifikation";
 $TLS_session_inactivity_timeout_at = "Timeout der Sitzung in";
 
 
@@ -1788,24 +1788,24 @@ $TLS_href_assign_user_roles = "Benutzerrollen zuweisen";
 $TLS_href_browse_tc = "Testfälle auflisten";
 $TLS_href_cfields_management = "Benutzerdefinierte Felder verwalten";
 $TLS_href_cfields_tproject_assign = "Benutzerdefinierte Felder zuweisen";
-$TLS_href_edit_tc = "Testfälle bearbeiten";
+$TLS_href_edit_tc = "Testspezifikation";
 $TLS_href_inventory = "Inventar";
 $TLS_href_inventory_management = 'Inventar Verwaltung';
-$TLS_href_keywords_assign = "Stichwörter zuweisen";
+$TLS_href_keywords_assign = "Testfällen Stichwörter zuweisen";
 $TLS_href_keywords_manage = "Stichwörter verwalten";
 $TLS_href_keywords_view = "Stichwörter anzeigen";
-$TLS_href_print_tc = "Testspezifikation erstellen";
-$TLS_href_print_req = "Anforderungsspezifikation erstellen";
+$TLS_href_print_tc = "Dokument \"Testspezifikation\" erstellen";
+$TLS_href_print_req = "Dokument \"Anforderungsspezifikation\" erstellen";
 $TLS_href_req_assign = "Anforderungen zuweisen";
-$TLS_href_req_spec = "Anforderungen definieren";
+$TLS_href_req_spec = "Anforderungsspezifikation";
 $TLS_href_req_overview = "Anforderungsübersicht";
 $TLS_href_roles_management = "Rollen verwalten";
 $TLS_href_search_tc = "Testfälle suchen";
 $TLS_href_tproject_management = "Projekte verwalten";
 $TLS_href_user_management = "Benutzer verwalten";
 $TLS_href_admin_modules = "Systemkonfiguration";
-$TLS_title_requirements = "Anforderungen";
-$TLS_title_test_spec = "Testfall Definition";
+$TLS_title_requirements = "Anforderungsspezifikation";
+$TLS_title_test_spec = "Testspezifikation";
 $TLS_title_product_mgmt = "Testprojekte verwalten";
 $TLS_href_plan_define_priority = "Test Plan Priorität";
 $TLS_href_my_testcase_assignments = "Mir zugewiesene Testfälle";
@@ -1832,13 +1832,13 @@ $TLS_reqid = "AnforderungsID";
 // ----- gui/templates/mainPage_right.tpl -----
 $TLS_href_add_remove_test_cases = "Testfälle hinzufügen / entfernen";
 $TLS_href_build_new = "Builds verwalten";
-$TLS_href_execute_test = "Test ausführen";
-$TLS_href_metrics_dashboard = "Metriken-Übersicht";
-$TLS_href_newest_tcversions = "Zeige neuste Versionen der Testfälle";
+$TLS_href_execute_test = "Testausführung";
+$TLS_href_metrics_dashboard = "Übersichtsmetriken";
+$TLS_href_newest_tcversions = "Zeige neueste Versionen der Testfälle";
 $TLS_href_plan_assign_urgency = "Dringlichkeit der Tests bestimmen";
 $TLS_href_plan_management = "Testpläne verwalten";
 $TLS_href_plan_mstones = "Meilensteine verwalten";
-$TLS_href_rep_and_metrics = "Test Ergebnis";
+$TLS_href_rep_and_metrics = "Testergebnisse";
 $TLS_href_tc_exec_assignment = "Testfälle an Benutzer zuweisen";
 $TLS_href_update_tplan = "Verlinkte Testfälle aktualisieren";
 $TLS_href_platform_assign = "Hinzufügen/Entfernen von Plattformen";

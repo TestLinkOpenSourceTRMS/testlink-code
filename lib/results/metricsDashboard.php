@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2009/09/21 09:29:56 $ $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/05/25 11:54:38 $ $Author: mx-julian $
  *
  * @author franciscom
  *
@@ -134,6 +134,6 @@ function init_args()
 
 function checkRights(&$db,&$user)
 {
-	return $user->hasRight($db,'testplan_metrics');
+	return ($user->hasRight($db,'testplan_metrics') || $user->hasRight($db,'testplan_execute'));
 }
 ?>

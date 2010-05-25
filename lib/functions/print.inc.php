@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.100 2010/05/08 17:58:33 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.101 2010/05/25 14:05:46 mx-julian Exp $
  * @uses printDocument.php
  *
  *
@@ -819,7 +819,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 		{
 		    // add updater if available and differs from author
 			$updaterName = gendocGetUserName($db, $tcInfo['updater_id']);
-			$code .= '<br />' . $updaterName . ' (' . $labels['last_edit'] . ')';
+			$code .= '<br />' . $labels['last_edit'] . " " . $updaterName;
 		}
 		$code .= "</td></tr>\n";
   	}
@@ -1176,7 +1176,7 @@ function initRenderTestCaseCfg(&$tcaseMgr)
     $labelsKeys=array('last_exec_result', 'testnotes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
-                      'step_number', 'step_actions');
+                      'step_number', 'step_actions', 'last_edit');
     $labelsQty=count($labelsKeys);         
     for($idx=0; $idx < $labelsQty; $idx++)
     {

@@ -4,12 +4,14 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/05/25 11:54:38 $ $Author: mx-julian $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/05/25 12:06:07 $ $Author: mx-julian $
  *
  * @author franciscom
  *
  * @internal revisions
+ * 20100525 - Julian - added option 'step_info' => 0 to get_linked_tcversions call
+ * 					   to improve performance
  * 20090919 - franciscom - added platform info
  *
 **/
@@ -45,7 +47,7 @@ function getMetrics(&$db,$args)
 	{
     	$tplan_id = $value['id'];
     	$filters=null;
-    	$options = array('output' => 'mapOfMap');
+    	$options = array('output' => 'mapOfMap', 'steps_info' => 0);
     	$linked_tcversions[$tplan_id] = $tplan_mgr->get_linked_tcversions($tplan_id,$filters,$options);
         $platformSet=$tplan_mgr->getPlatforms($tplan_id);
         

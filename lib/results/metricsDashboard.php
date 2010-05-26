@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/05/25 12:06:07 $ $Author: mx-julian $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/05/26 08:32:56 $ $Author: mx-julian $
  *
  * @author franciscom
  *
  * @internal revisions
+ * 20100526 - Julian - fixed wrong access to platform array
  * 20100525 - Julian - added option 'step_info' => 0 to get_linked_tcversions call
  * 					   to improve performance
  * 20090919 - franciscom - added platform info
@@ -53,7 +54,8 @@ function getMetrics(&$db,$args)
         
         if( is_null($platformSet) )
         {
-        	$platformSet=array(0=>'');
+        	//Julian: replaced array(0=>'')
+        	$platformSet=array(0=>array('id'=> 0));
         }
         else
         {
@@ -63,14 +65,15 @@ function getMetrics(&$db,$args)
          
         foreach($platformSet as $platform_id => $platform_name) 
         {    
-			$metrics[$tplan_id][$platform_id]['tplan_name'] = $value['name'];
-			$metrics[$tplan_id][$platform_id]['platform_name'] = $platform_id == 0 ? '' : $platform_name;
-			$metrics[$tplan_id][$platform_id]['executed'] = 0;
-			$metrics[$tplan_id][$platform_id]['active'] = 0;
-			$metrics[$tplan_id][$platform_id]['total'] = 0;
-    		$metrics[$tplan_id][$platform_id]['executed_vs_active'] = -1;
-    		$metrics[$tplan_id][$platform_id]['executed_vs_total'] = -1;
-    		$metrics[$tplan_id][$platform_id]['active_vs_total'] = -1;
+			$metrics[$tplan_id][$platform_name['id']]['tplan_name'] = $value['name'];
+			$metrics[$tplan_id][$platform_name['id']]['platform_name'] = $platform_name['id'] == 0 ?
+			                                                             '' : $platform_name['name'];
+			$metrics[$tplan_id][$platform_name['id']]['executed'] = 0;
+			$metrics[$tplan_id][$platform_name['id']]['active'] = 0;
+			$metrics[$tplan_id][$platform_name['id']]['total'] = 0;
+    		$metrics[$tplan_id][$platform_name['id']]['executed_vs_active'] = -1;
+    		$metrics[$tplan_id][$platform_name['id']]['executed_vs_total'] = -1;
+    		$metrics[$tplan_id][$platform_name['id']]['active_vs_total'] = -1;
 		}
     }
 	// Get count of executed testcases

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.144 2010/05/25 08:52:24 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.145 2010/05/26 10:53:13 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1143,7 +1143,7 @@ $TLS_keywords = "Stichworte";
 
 // ----- gui/templates/navBar.tpl -----
 $TLS_access_doc = "Dokumentation";
-$TLS_home = "Projektverwaltung";
+$TLS_home = "Projekt";
 $TLS_link_logout = "Abmelden";
 $TLS_product = "Testprojekt";
 $TLS_product_role = "Testprojekt Rolle";

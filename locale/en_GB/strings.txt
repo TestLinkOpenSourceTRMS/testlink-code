@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.621 2010/05/21 13:21:45 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.622 2010/05/26 10:53:14 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -936,7 +936,7 @@ $TLS_th_rolename = "Role name";
 $TLS_th_system_rights = "System rights";
 $TLS_th_tp_rights = "Test Plan";
 $TLS_th_user_rights = "User";
-$TLS_title_user_mgmt = "User Administration";
+$TLS_title_user_mgmt = "User Management";
 $TLS_warning_empty_role_name = "Please give a name to Role";
 $TLS_warning_modify_role = "Really modify the role?";
 
@@ -1156,10 +1156,10 @@ $TLS_product = "Test Project";
 $TLS_product_role = "Test Project role ";
 $TLS_search_testcase = "Search";
 $TLS_title_edit_personal_data = "Personal";
-$TLS_title_admin = "Administrate";
+$TLS_title_admin = "User Management";
 $TLS_title_events = "Events";
-$TLS_title_execute = "Execute";
-$TLS_title_results = "Results";
+$TLS_title_execute = "Test Execution";
+$TLS_title_results = "Test Results";
 $TLS_title_specification = "Test Specification";
 $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 

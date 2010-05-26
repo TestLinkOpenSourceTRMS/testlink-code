@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.15 2010/05/24 20:45:42 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.16 2010/05/26 11:26:32 asimon83 Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -17,6 +17,12 @@
  *
  */
 
+// ***********************************************************************************************************
+// TODO asimon refactoring
+// IMPORTANT: following line is only a temporary, quick and dirty fix to prevent test spec tree from crashing.
+// This class will be completely removed/refactored by me, please do not change anything in here meanwhile.
+require_once('exec.inc.php');
+// ***********************************************************************************************************
 
 /**
  * 

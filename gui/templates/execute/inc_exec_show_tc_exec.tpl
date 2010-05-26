@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.19 2010/05/02 09:06:49 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.20 2010/05/26 11:36:55 mx-julian Exp $
 Purpose: 
 Author: franciscom
 
@@ -107,9 +107,9 @@ Rev:
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
   		{if $gui->history_on}
-  		    {$labels.execution_history} {$title_sep_type3}
+  		    {$labels.execution_history}
   		    {if !$cfg->exec_cfg->show_history_all_builds}
-  		      {$exec_build_title}
+  		       {$title_sep_type3} {$exec_build_title}
   		    {/if}
   		{else}
   			  {$labels.last_execution}

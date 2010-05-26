@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.7 2010/04/09 21:09:06 franciscom Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.8 2010/05/26 15:01:55 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100526 - Julian - BUGID 3490 - Search Test Cases based on requirements
  *	20100409 - franciscom - BUGID 3371 - Search Test Cases based on Test Importance
  *	20100326 - franciscom - BUGID 3334 - search fails if test case has 0 steps
  *  20100124 - franciscom - BUGID 3077 - search on preconditions
@@ -113,14 +114,15 @@ if ($args->tprojectID)
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
     }
-   
+
    	if($args->requirement_doc_id != "")
     {
     	$args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
      	$from['by_requirement_doc_id'] = " JOIN {$tables['requirements']} REQ " .
-     	                                 " ON AND REQ.id=RC.req_id " .
                                          " JOIN {$tables['req_coverage']} RC" .  
-                                         " ON RC.testcase_id = NH_TC.id ";
+                                         " ON RC.testcase_id = NH_TC.id ".
+     	                                 //BUGID 3490
+		                                 " AND REQ.id=RC.req_id ";
     	$filter['by_requirement_doc_id'] = " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' ";
     }   
 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.55 2010/05/27 20:41:53 franciscom Exp $
+$Id: execSetResults.tpl,v 1.56 2010/05/27 20:46:25 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
@@ -310,8 +310,6 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
             {lang_get s='bulk_tc_status_management' var='container_title'}
             {assign var="div_id" value='bulk_controls'}
             {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
-            
-            BULK
             {include file="inc_show_hide_mgmt.tpl"
                      show_hide_container_title=$container_title
                      show_hide_container_id=$div_id

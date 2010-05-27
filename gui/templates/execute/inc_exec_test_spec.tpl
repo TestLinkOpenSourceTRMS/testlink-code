@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.15 2010/05/02 09:06:49 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.16 2010/05/27 20:42:43 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -43,8 +43,6 @@ Rev:
 		 {/if}
      
     <div class="exec_test_spec">
-		{* <table class="simple"> *}
-		{* <table class="mainTable-x" width="100%"> *} 
 		<table class="simple" width="100%">
 		<tr>
 			<th colspan="{$tableColspan}" class="title">{$args_labels.test_exec_summary}</th>
@@ -91,7 +89,8 @@ Rev:
     {/if}
   	
 
-    {* ------------------------------------------------------------------------------- 
+    {* 
+    ------------------------------------------------------------------------------- 
       {if $args_cfg->exec_cfg->steps_results_layout == 'horizontal'}
 		    <tr>
 		    	<th width="50%">{$args_labels.test_exec_steps}</th>
@@ -120,7 +119,7 @@ Rev:
 
 		
     {* ------------------------------------------------------------------------------------- *}
-    {if $args_enable_custom_field and $args_tc_exec.active eq 1}
+    {if $args_enable_custom_field and $args_tc_exec.active == 1}
   	  {if isset($args_execution_time_cf[$testcase_id]) && $args_execution_time_cf[$testcase_id] != ''}
   	 		<tr>
   				<td colspan="{$tableColspan}">
@@ -137,7 +136,7 @@ Rev:
   	<tr>
 		  <td colspan="{$tableColspan}">
 		  {* 20090718 - franciscom - CF location management*}
-      {if $args_design_time_cf[$testcase_id].standard_location neq ''}
+      {if $args_design_time_cf[$testcase_id].standard_location != ''}
 					<div id="cfields_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
 					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id].standard_location}
 					</div>
@@ -145,10 +144,9 @@ Rev:
 			</td>
 		</tr>
  
-    {* 20090526 - franciscom *}
   	<tr>
 		  <td colspan="{$tableColspan}">
-      {if $args_testplan_design_time_cf[$testcase_id] neq ''}
+      {if $args_testplan_design_time_cf[$testcase_id] != ''}
 					<div id="cfields_testplan_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
 					style="background-color:#dddddd;">{$args_testplan_design_time_cf[$testcase_id]}
 					</div>

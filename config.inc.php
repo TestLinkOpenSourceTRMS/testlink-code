@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.296 2010/05/27 09:01:05 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.297 2010/05/27 09:11:38 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -659,9 +659,9 @@ $tlCfg->exec_cfg->steps_results_layout = 'horizontal';
 // LAST_USER_CHOICE: get status from cookie that holds last user choice.[STANDARD BEHAVIOUR]
 $tlCfg->exec_cfg->expand_collapse = new stdClass();
 $tlCfg->exec_cfg->expand_collapse->testplan_notes = LAST_USER_CHOICE;
+$tlCfg->exec_cfg->expand_collapse->platform_description = LAST_USER_CHOICE;
 $tlCfg->exec_cfg->expand_collapse->build_description = LAST_USER_CHOICE;
 $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE; 
-$tlCfg->exec_cfg->expand_collapse->platform_description = LAST_USER_CHOICE;
 
 
 // ----------------------------------------------------------------------------

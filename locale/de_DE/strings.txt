@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.145 2010/05/26 10:53:13 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.146 2010/05/27 09:11:36 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -899,7 +899,7 @@ $TLS_tc_title = "Testfall Titel";
 
 
 // ----- gui/templates/show_exec_notes.tpl -----
-$TLS_title_execution_notes = "Ausführung Notizen";
+$TLS_title_execution_notes = "Ausführungsnotizen";
 
 
 

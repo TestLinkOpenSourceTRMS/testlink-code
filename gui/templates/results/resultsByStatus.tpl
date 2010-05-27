@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.14 2010/05/27 08:10:21 mx-julian Exp $
+$Id: resultsByStatus.tpl,v 1.15 2010/05/27 08:15:31 mx-julian Exp $
 Purpose: show Test Results and Metrics
 
 rev:
@@ -12,7 +12,7 @@ rev:
 
 {lang_get var='labels' 
           s='th_test_suite,test_case,version,th_build,th_run_by,th_bugs_not_linked,
-          th_date,th_notes,th_bugs,info_test_results,summary,generated_by_TestLink_on,
+          th_date,title_execution_notes,th_bugs,info_test_results,summary,generated_by_TestLink_on,
           th_assigned_to,th_platform,platform'}
 
 {include file="inc_head.tpl"}
@@ -38,7 +38,7 @@ rev:
 	<th nowrap>{$sortHintIcon}{$labels.th_build}</th>
 	<th nowrap>{$sortHintIcon}{$labels.th_run_by}</th>
 	<th nowrap>{$sortHintIcon}{$labels.th_date}</th>
-	<th nowrap>{$sortHintIcon}{$labels.th_notes}</th>
+	<th nowrap>{$sortHintIcon}{$labels.title_execution_notes}</th>
 	{if $gui->bugInterfaceOn}
 	<th nowrap>{$sortHintIcon}{$labels.th_bugs}</th>
 	{/if}

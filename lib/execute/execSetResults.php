@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.156 $
- * @modified $Date: 2010/05/27 09:01:04 $ $Author: mx-julian $
+ * @version $Revision: 1.157 $
+ * @modified $Date: 2010/05/27 20:45:11 $ $Author: franciscom $
  *
  * rev:
+ *	20100527 - franciscom - BUGID 3479: Bulk Execution - Custom Fields Bulk Assignment
  *  20100527 - Julian - platform description is now shown/hidden according to setting on config
  *	20100520 - franciscom - BUGID 3478  Testcase ID not updated when using save and move next
  *  20100428 - asimon - BUGID 3301 and related, added logic to refresh tree after tc execution
@@ -430,9 +431,6 @@ function init_args($cfgObj)
     {
         case 'testcase':
         $args->tc_id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : null;
-        
-        new dBug($args->tc_versions);
-        
         // some problems with $_GET that has impact on logic 'Save and Go to next test case';
         if( !is_null($args->tc_versions) )
         {
@@ -1188,12 +1186,10 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
   	            $tcaseMgr->html_table_of_custom_field_inputs($tcase_id,null,'execution',"_{$tcase_id}",null,
   	                                                         null,$argsObj->tproject_id);
   	}
-  	// 20070405 - BUGID 766
     $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
 	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
 		                                                                   'nodes_hierarchy',true,1);
 		                                                                      
-
     return array($tcase_id,$tcversion_id);
 }
 
@@ -1307,8 +1303,6 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     
     $tsuite_mgr=new testsuite($dbHandler); 
     $tsuite_data = $tsuite_mgr->get_by_id($argsObj->id);
-    
-    // 20090808 - franciscom
     $opt = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
 
     // @TODO - 20090815 - franciscom
@@ -1334,9 +1328,9 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     // ---------------------------------------------------------------------------------
    
     // Get the path for every test case, grouping test cases that have same parent.
-    if( count($testSet->tcase_id) > 0 )
+    $testCaseQty = count($testSet->tcase_id);
+    if( $testCaseQty > 0 )
     {
-       	// 20090718 - franciscom 
 		$dummy = $tcaseMgr->cfield_mgr->getLocations();
 		$verboseLocationCode = array_flip($dummy['testcase']);
 		$filters=null;
@@ -1345,6 +1339,14 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
     		$filters[$key]['location']=$value;
     	}	     
 
+		$dummy_id = current($testSet->tcase_id);
+		$index = $testCaseQty == 1 ? $dummy_id : 0;  // 0 => BULK
+		$suffix = '_' . $index;
+		$execution_time_cfields = 
+				$tcaseMgr->html_table_of_custom_field_inputs($dummy_id,$argsObj->tproject_id,'execution',$suffix,
+	            	                               			 null,null,$argsObj->tproject_id);
+		
+		$guiObj->execution_time_cfields[$index] = $execution_time_cfields;
         foreach($testSet->tcase_id as $testcase_id)
         {
             $path_f = $treeMgr->get_path($testcase_id,null,'full');
@@ -1359,12 +1361,9 @@ function processTestSuite(&$dbHandler,&$guiObj,&$argsObj,$linked_tcversions,
                 	
 	            	foreach($locationFilters as $locationKey => $filterValue)
 	            	{
-	            		// 20090718 - franciscom
                         $finalFilters=$cf_filters+$filterValue;
             			$guiObj->design_time_cfields[$testcase_id][$locationKey] = 
             				$tcaseMgr->html_table_of_custom_field_values($testcase_id,'design',$finalFilters);
-                		
-                		// 20090526 - franciscom - typo bug
                 		$guiObj->testplan_design_time_cfields[$testcase_id] = 
   	            		        $tcaseMgr->html_table_of_custom_field_values($testcase_id,'testplan_design',$cf_filters,
   	            		                                                     null,null,$argsObj->tproject_id);

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.54 2010/05/06 19:26:07 franciscom Exp $
+$Id: execSetResults.tpl,v 1.55 2010/05/27 20:41:53 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
@@ -12,8 +12,7 @@ Rev:
   20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
                           due to access to test spec to edit it.
 
-  20090329 - franciscom - when using bulk mode, user can access test case spec
-                          opening a new window.
+  20090329 - franciscom - when using bulk mode, user can access test case spec opening a new window.
                           
   20090212 - amitkhullar - BUGID 2068
   20081231 - franciscom - new implementation of Bulk TC Status 
@@ -38,7 +37,7 @@ Rev:
           s='edit_notes,build_is_closed,test_cases_cannot_be_executed,test_exec_notes,test_exec_result,
              th_testsuite,details,warning_delete_execution,title_test_case,th_test_case_id,
              version,has_no_assignment,assigned_to,execution_history,exec_notes,step_actions,
-             execution_type_short_descr,expected_results,
+             execution_type_short_descr,expected_results,testcase_customfields,
              last_execution,exec_any_build,date_time_run,test_exec_by,build,exec_status,
              test_status_not_run,tc_not_tested_yet,last_execution,exec_current_build,
 	           attachment_mgmt,bug_mgmt,delete,closed_build,alt_notes,alt_attachment_mgmt,
@@ -257,7 +256,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
   <div id="{$div_id}" class="exec_additional_info">
     {$gui->testplan_notes}
-    {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
+    {if $gui->testplan_cfields != ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
   </div>
   {* -------------------------------------------------------------------------------- *}
 
@@ -312,6 +311,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
             {assign var="div_id" value='bulk_controls'}
             {assign var="memstatus_id" value=$bulk_controls_view_memory_id}
             
+            BULK
             {include file="inc_show_hide_mgmt.tpl"
                      show_hide_container_title=$container_title
                      show_hide_container_id=$div_id
@@ -325,6 +325,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
                        args_input_enable_mgmt=$input_enabled_disabled
                        args_tcversion_id='bulk'
                        args_webeditor=$gui->bulk_exec_notes_editor
+                       args_execution_time_cfields=$gui->execution_time_cfields
                        args_labels=$labels}
             </div>
         {/if}

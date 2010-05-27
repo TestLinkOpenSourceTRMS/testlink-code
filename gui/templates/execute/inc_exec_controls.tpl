@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.12 2010/05/27 20:41:24 franciscom Exp $
+$Id: inc_exec_controls.tpl,v 1.13 2010/05/27 20:49:40 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -59,8 +59,11 @@ Rev:
     		</tr>
         {if $args_save_type == 'bulk' && $args_execution_time_cfields != ''}
           <tr><td colspan="2">
+  					<div id="cfields_exec_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
+  						style="background-color:#dddddd;">
             {$args_labels.testcase_customfields}
             {$args_execution_time_cfields.0} {* 0 => bulk *}
+            </div> 
           </td></tr>
         {/if}
   		</table>

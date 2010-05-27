@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.155 $
- * @modified $Date: 2010/05/21 07:44:58 $ $Author: franciscom $
+ * @version $Revision: 1.156 $
+ * @modified $Date: 2010/05/27 09:01:04 $ $Author: mx-julian $
  *
  * rev:
+ *  20100527 - Julian - platform description is now shown/hidden according to setting on config
  *	20100520 - franciscom - BUGID 3478  Testcase ID not updated when using save and move next
  *  20100428 - asimon - BUGID 3301 and related, added logic to refresh tree after tc execution
  *  20100313 - franciscom - BUGID 3276
@@ -387,7 +388,8 @@ function init_args($cfgObj)
        
     // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
     //            see smarty_assign_tsuite_info() in this file.  
-    $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description');
+    $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
+                         'platform_notes_view_status' => 'platform_description');
        
 	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
 	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,

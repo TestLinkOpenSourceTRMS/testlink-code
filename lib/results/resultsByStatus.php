@@ -12,11 +12,13 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.77 2010/05/15 11:51:35 franciscom Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.78 2010/05/27 08:10:20 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  201005 - Julian - BUGID 3492 - show only test case summary for not run test cases
+ *                    else show exec notes
  *	20100425 - franciscom - BUGID 3356
  *	20100124 - eloff - use buildExternalIdString()
  *	20091016 - franciscom - work still is needed to display LINK to BUG
@@ -146,6 +148,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 		}			
 		else
 		{
+			// BUGID 3492
 			// BUGID 3356
 			// When test case has been runned, version must be get from executions.tcversion_number 
 			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
@@ -155,7 +158,8 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			                      'buildName' => htmlspecialchars($item['build_name']),
 			                      'testerName' => htmlspecialchars($testerName),
 			                      'localizedTS' => $item['execution_ts'],
-			                      'notes' => strip_tags($item['summary']),'bugString' => $bugString,
+			                      'notes' => strip_tags($item['execution_notes']),
+			                      'bugString' => $bugString,
 			                      'platformID' => $item['platform_id']);
 		}	      
 	}

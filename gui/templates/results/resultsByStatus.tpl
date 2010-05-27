@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.13 2010/05/02 09:38:10 franciscom Exp $
+$Id: resultsByStatus.tpl,v 1.14 2010/05/27 08:10:21 mx-julian Exp $
 Purpose: show Test Results and Metrics
 
 rev:
+	20100527 - BUGID 3492 - show only test case summary for not run test cases
+	                        else show exec notes
 	20100309 - asimon - added sort hint icon on some columns where it was missing before 
 	20091016 - franciscom - results showed in one table for all platform (if any)
 *}
@@ -36,7 +38,7 @@ rev:
 	<th nowrap>{$sortHintIcon}{$labels.th_build}</th>
 	<th nowrap>{$sortHintIcon}{$labels.th_run_by}</th>
 	<th nowrap>{$sortHintIcon}{$labels.th_date}</th>
-	<th nowrap>{$sortHintIcon}{$labels.summary}</th>
+	<th nowrap>{$sortHintIcon}{$labels.th_notes}</th>
 	{if $gui->bugInterfaceOn}
 	<th nowrap>{$sortHintIcon}{$labels.th_bugs}</th>
 	{/if}

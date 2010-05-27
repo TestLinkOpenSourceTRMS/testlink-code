@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.189 2010/05/25 17:38:19 mx-julian Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.190 2010/05/27 08:10:21 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *  20100527 - Julian - BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
  *  20100525 - Julian - changed default for steps_info option on get_linked_tcversions() to false
  *  					-> performance improvement because not all steps are loaded per default
  *	20100520 - franciscom - getTestCaseSiblings() join bug
@@ -863,6 +864,7 @@ class testplan extends tlObjectWithAttachments
 			$builds['join']=" LEFT OUTER JOIN {$this->tables['builds']} B ON B.id=E.build_id ";
 	    }
 		
+	    // BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
 		// 20100417 - added TCV.importance
 		// 20090719 - added SQL comment on query text to make debug simpler.
 		$sql = "/* $debugMsg */ " .
@@ -875,7 +877,7 @@ class testplan extends tlObjectWithAttachments
 			   " E.id AS exec_id, E.tcversion_number," .
 			   " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, {$more_exec_fields}" .
 			   " E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, " .
-			   " E.execution_ts, E.tester_id,".
+			   " E.execution_ts, E.tester_id, E.notes as execution_notes, ".
 			   " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
 			   " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ".
 			   " (urgency * importance) AS priority " .

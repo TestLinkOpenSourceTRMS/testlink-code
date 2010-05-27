@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.20 2010/05/26 11:36:55 mx-julian Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.21 2010/05/27 19:01:38 franciscom Exp $
 Purpose: 
 Author: franciscom
 
@@ -57,7 +57,7 @@ Rev:
 		  {$tsuite_info[$tc_id].details}
 		  </div>
 
-		  {if $ts_cf_smarty[$tc_id] neq ''}
+		  {if $ts_cf_smarty[$tc_id] != ''}
 		    <br />
 		    <div class="custom_field_container" style="border-color:black;width:95%;">
          {$ts_cf_smarty[$tc_id]}
@@ -89,7 +89,7 @@ Rev:
     {$labels.title_test_case}&nbsp;{$labels.th_test_case_id}{$gui->tcasePrefix|escape}{$cfg->testcase_cfg->glue_character}{$tc_exec.tc_external_id|escape} :: {$labels.version}: {$tc_exec.version}
 		<br />
 		    {$tc_exec.name|escape}<br />
-		    {if $tc_exec.assigned_user eq ''}
+		    {if $tc_exec.assigned_user == ''}
 		      {$labels.has_no_assignment}
 		    {else}
           {$labels.assigned_to}{$title_sep}{$tc_exec.assigned_user|escape}
@@ -107,9 +107,9 @@ Rev:
 		<div id="execution_history" class="exec_history">
   		<div class="exec_history_title">
   		{if $gui->history_on}
-  		    {$labels.execution_history}
+  		    {$labels.execution_history} {$title_sep_type3}
   		    {if !$cfg->exec_cfg->show_history_all_builds}
-  		       {$title_sep_type3} {$exec_build_title}
+  		      {$exec_build_title}
   		    {/if}
   		{else}
   			  {$labels.last_execution}

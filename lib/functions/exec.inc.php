@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: exec.inc.php,v 1.57 2010/05/22 07:36:34 franciscom Exp $
+ * @version    	CVS: $Id: exec.inc.php,v 1.58 2010/05/27 20:40:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100522 - franciscom - BUGID 3479 - Bulk Execution - Custom Fields Bulk Assignment (write_execution())
  * 20100522 - franciscom - BUGID 3440 - get_bugs_for_exec() - added is_object() check 
  * 20090815 - franciscom - write_execution() - interface changes 
  * 20081231 - franciscom - write_execution() changes to manage bulks exec notes
@@ -41,7 +42,7 @@ require_once('common.php');
  * 
  * @return array map of 'status_code' => localized string
  **/
-// 20070222 - franciscom - BUGID 645 
+// BUGID 645 
 function createResultsMenu()
 {
 	$resultsCfg = config_get('results');
@@ -71,8 +72,8 @@ function createResultsMenu()
  * 
  * @internal Revisions:
  * 
- * @todo havlatm: move to a new class testExecution & refactor
- * @todo franciscom - no need for new class can be added to testplan or testcase class
+ *
+ * 20100522 - BUGID 3479 - Bulk Execution - Custom Fields Bulk Assignment
  */
 function write_execution(&$db,&$exec_signature,&$exec_data,$map_last_exec)
 {
@@ -101,7 +102,6 @@ function write_execution(&$db,&$exec_signature,&$exec_data,$map_last_exec)
 		} 
 	}
 	
-	// is a bulk save?
 	if( isset($exec_data['do_bulk_save']) )
 	{
 		// create structure to use common algoritm
@@ -140,16 +140,17 @@ function write_execution(&$db,&$exec_signature,&$exec_data,$map_last_exec)
 			if( $has_custom_fields )
 			{
 				// test useful when doing bulk update, because some type of custom fields
-				// like checkbox can not exist on exec_data
+				// like checkbox can not exist on exec_data. => why ??
 				//
 				$hash_cf = null;
-				if( isset($map_nodeid_array_cfnames[$tcase_id]) )
+				$access_key = $is_bulk_save ? 0 : $tcase_id;
+				if( isset($map_nodeid_array_cfnames[$access_key]) )
 				{ 
-					foreach($map_nodeid_array_cfnames[$tcase_id] as $cf_v)
+					foreach($map_nodeid_array_cfnames[$access_key] as $cf_v)
 					{
 						$hash_cf[$cf_v]=$exec_data[$cf_v];
 					}  
-				}                                     
+				}                          
 				$cfield_mgr->execution_values_to_db($hash_cf,$tcversion_id, $execution_id, $exec_signature->tplan_id,$cf_map);
 			}                                     
 		}

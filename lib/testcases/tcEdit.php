@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.147 2010/04/03 14:41:13 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.148 2010/05/30 09:25:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -246,7 +246,8 @@ else if($args->do_create_new_version)
 	// used to implement go back ??
 	// 20090419 - BUGID - 
 	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
-	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id;
+	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
+	                        "&show_mode={$args->show_mode}";
 	
 	$testcase_version = !is_null($args->show_mode) ? $args->tcversion_id : testcase::ALL_VERSIONS;
 	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,$testcase_version, 
@@ -255,7 +256,8 @@ else if($args->do_create_new_version)
 else if($args->do_activate_this || $args->do_deactivate_this)
 {
 	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
-	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id;
+	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
+	                        "&show_mode={$args->show_mode}";
 
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
 	$viewer_args['action'] = $action_result;
@@ -551,9 +553,9 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 	$guiObj->parent_info = null;
 	$guiObj->user_feedback = '';
 	
-	$guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
-	                          '/lib/testcases/archiveData.php?edit=testcase&id=' . $argsObj->tcase_id;
-
+	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
+	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
+	                        "&show_mode={$args->show_mode}";
 	
 	if($argsObj->container_id > 0)
 	{

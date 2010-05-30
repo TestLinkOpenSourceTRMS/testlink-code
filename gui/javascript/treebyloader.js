@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.4 2009/12/08 18:07:47 franciscom Exp $
+$Id: treebyloader.js,v 1.5 2010/05/30 17:29:47 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -33,7 +33,7 @@ rev:
   
   returns: true -> movement can be made.
 
-  rev: 20091208 - franciscom - using new node attribute forbbiden_parent in logic
+  rev: 20091208 - franciscom - using new node attribute forbidden_parent in logic
 */
 function checkMovement(newparent,node,oldparentid,newparentid,nodeorder)
 {
@@ -44,7 +44,7 @@ function checkMovement(newparent,node,oldparentid,newparentid,nodeorder)
     {
         case 'requirement':
         case 'requirement_spec':
-            if( node.attributes.forbbiden_parent == newparent_node_type )
+            if( node.attributes.forbidden_parent == newparent_node_type )
             {                                                            
               status=false;                                              
             }                                                            

@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.12 2010/04/08 15:11:33 asimon83 Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.13 2010/05/30 17:29:47 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -20,7 +20,7 @@
 *
 *	@internal revision
 *	20100306 - franciscom - BUGID 0003003: EXTJS does not count # req's
-*	20091208 - franciscom - added management of new attribute 'forbbiden_parent'
+*	20091208 - franciscom - added management of new attribute 'forbidden_parent'
 *                           to manage req spec movement when child req spec management is ENABLED.  
 *	20091122 - franciscom - manage rep spec doc id
 *	20090502 - franciscom - BUGID 2309 - display requirement doc id
@@ -49,12 +49,12 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 {             
     $tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy','node_types','req_specs'));
 	$cfg = config_get('req_cfg');
-	$forbbiden_parent['testproject'] = 'none';
-	$forbbiden_parent['requirement'] = 'testproject';
-	$forbbiden_parent['requirement_spec'] = 'requirement_spec';
+	$forbidden_parent['testproject'] = 'none';
+	$forbidden_parent['requirement'] = 'testproject';
+	$forbidden_parent['requirement_spec'] = 'requirement_spec';
 	if($cfg->child_requirements_mgmt)
 	{
-		$forbbiden_parent['requirement_spec'] = 'none';
+		$forbidden_parent['requirement_spec'] = 'none';
 	} 
     
     switch($operation)
@@ -119,12 +119,12 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
  	        // public property 'attributes' of object of Class Ext.tree.TreeNode 
  	        // 
  	        $path['testlink_node_type']	= $row['node_type'];		                                 
-            $path['forbbiden_parent'] = 'none';
+            $path['forbidden_parent'] = 'none';
             switch($row['node_type'])
             {
                 case 'testproject':
 	                $path['href'] = "javascript:EP({$path['id']})";
-                    $path['forbbiden_parent'] = $forbbiden_parent[$row['node_type']];
+                    $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
 	                break;
 
                 case 'requirement_spec':
@@ -134,7 +134,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
 	                $path['text'] = htmlspecialchars($row['doc_id'] . "::") . $path['text'];
-                    $path['forbbiden_parent'] = $forbbiden_parent[$row['node_type']];
+                    $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
    	        		if(!is_null($req_list))
 	        		{
 	        			$item_qty = count($req_list);
@@ -149,7 +149,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	                $path['href'] = "javascript:" . $js_function[$row['node_type']]. "({$path['id']})";
 	                $path['text'] = htmlspecialchars($requirements[$row['id']]['doc_id'] . ":") . $path['text'];
 	                $path['leaf']	= true;
-                    $path['forbbiden_parent'] = $forbbiden_parent[$row['node_type']];
+                    $path['forbidden_parent'] = $forbidden_parent[$row['node_type']];
 	                break;
             }
 

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.73 2010/05/30 09:29:24 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.74 2010/05/30 09:42:05 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -50,9 +50,11 @@ rev:
 {assign var="module" value='lib/testcases/'}
 {assign var="tcase_id" value=$args_testcase.testcase_id}
 {assign var="tcversion_id" value=$args_testcase.id}
+{assign var="showMode" value=$gui->show_mode} 
 
 {* Used on several operations to implement goback *}
-{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id"}
+{* BUGID 3493 - added show_mode *}
+{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
 {assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}

@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.71 2010/05/30 09:07:25 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.72 2010/05/30 09:18:55 franciscom Exp $
 viewer for test case in test specification
 
 rev:
     20100530 - franciscom - new JS function launchEditStep()
+    20100529 - franciscom - BUGID 3493 - using escape:'url'
     20100522 - franciscom - BUGID 3410: Smarty 3.0 compatibility
                             rename labels => tcView_viewer_labels to avoid overwrite of labels
                             defined on template tcView.tpl (includes this template)
@@ -62,9 +63,14 @@ rev:
 {assign var="url_args" value="tcAssign2Tplan.php?tcase_id=$tcase_id&tcversion_id=$tcversion_id"}
 {assign var="hrefAddTc2Tplan"  value="$basehref$module$url_args"}
 
+
+{* BUGID 3493 *}
 {assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{assign var="url_args" value="$url_args&goback_url=$basehref$tcViewAction&step_id="}
+{assign var="goBackAction" value="$basehref$tcViewAction"}
+{assign var="goBackActionURLencoded" value=$goBackAction|escape:'url'}
+{assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&show_mode=$showMode&step_id="}
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}
+
 
 {assign var="tcExportAction" value="lib/testcases/tcExport.php?goback_url="}
 {assign var="exportTestCaseAction" value="$basehref$tcExportAction$basehref$tcViewAction"}
@@ -230,6 +236,7 @@ function launchEditStep(step_id)
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
   <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
   <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
+	<input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
 
 
 

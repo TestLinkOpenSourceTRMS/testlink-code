@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.22 2010/05/01 19:15:20 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.23 2010/05/30 09:20:31 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
+  20100529 - franciscom - BUGID 3493 - using escape:'url'
 	20100403 - franciscom - added create step button while editing existent step
 	                        BUGID 3359 - copy test case step
 	20100327 - franciscom - improvements on goback logic
@@ -23,11 +24,13 @@ rev:
 {assign var="tcversion_id" value=$gui->tcversion_id}
 
 {* Used on several operations to implement goback *}
-{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id"}
-{assign var="goBackAction" value="$basehref$tcViewAction"}
+{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
 
+{* BUGID 3493 *}
+{assign var="goBackAction" value="$basehref$tcViewAction"}
+{assign var="goBackActionURLencoded" value="$goBackAction|escape:'url'"}
 {assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}
-{assign var="url_args" value="$url_args&goback_url=$basehref$tcViewAction&step_id="}
+{assign var="url_args" value="$url_args&goback_url=$goBackActionURLencoded&step_id="}
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}
 
 {lang_get var="labels"

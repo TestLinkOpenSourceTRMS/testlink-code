@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.38 2010/05/30 09:49:07 franciscom Exp $
+$Id: tcView.tpl,v 1.39 2010/05/30 10:16:38 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -17,7 +17,9 @@ rev:
           s='no_records_found,other_versions,show_hide_reorder,version,title_test_case,match_count'}
 
 {* Configure Actions *}
-{assign var="deleteStepAction" value="lib/testcases/tcEdit.php?doAction=doDeleteStep&step_id="}
+{* BUGID 3493 *}
+{assign var="showMode" value=$gui->show_mode}
+{assign var="deleteStepAction" value="lib/testcases/tcEdit.php?show_mode=$showMode&doAction=doDeleteStep&step_id="}
 
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>

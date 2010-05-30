@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/05/30 09:26:45 $  by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/05/30 09:55:25 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -356,9 +356,6 @@ class testcaseCommands
  		$my_ret = $this->tcaseMgr->check_link_and_exec_status($argsObj->tcase_id);
  		$guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id);
 		                  
-		new dBug($my_ret);                  
-		new dBug($guiObj);
-  		
   		// Need to be analysed seem wrong
   		// switch($my_ret)
 		// {
@@ -383,8 +380,6 @@ class testcaseCommands
 		$guiObj->refresh_tree = "yes";
  		$guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
     
-    	new dBug($guiObj);
-    	
     	$templateCfg = templateConfiguration('tcDelete');
   		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;

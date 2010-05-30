@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.148 2010/05/30 09:25:18 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.149 2010/05/30 09:55:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -553,9 +553,9 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 	$guiObj->parent_info = null;
 	$guiObj->user_feedback = '';
 	
-	$gui->loadOnCancelURL = $_SESSION['basehref'] . 
-	                        '/lib/testcases/archiveData.php?edit=testcase&id=' . $args->tcase_id .
-	                        "&show_mode={$args->show_mode}";
+	$guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
+	                           "/lib/testcases/archiveData.php?edit=testcase&id=" . $argsObj->tcase_id .
+	                           "&show_mode={$argsObj->show_mode}";
 	
 	if($argsObj->container_id > 0)
 	{

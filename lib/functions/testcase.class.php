@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.275 2010/05/21 18:31:11 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.276 2010/05/30 09:59:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -3410,7 +3410,7 @@ class testcase extends tlObjectWithAttachments
 	    {
 	        case 'editOnExec':
 	            $viewerActions->edit='yes';
-	            $viewerActions->create_new_version='yes';    
+	            // 20100530 - franciscom - $viewerActions->create_new_version='yes';    
 	        break;
 	
 	        case 'editDisabled':

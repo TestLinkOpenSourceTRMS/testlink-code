@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.74 2010/05/30 09:42:05 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.75 2010/05/30 10:03:10 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -74,8 +74,8 @@ rev:
 {assign var="hrefEditStep"  value="$basehref$module$url_args"}
 
 
-{assign var="tcExportAction" value="lib/testcases/tcExport.php?goback_url="}
-{assign var="exportTestCaseAction" value="$basehref$tcExportAction$basehref$tcViewAction"}
+{assign var="tcExportAction" value="lib/testcases/tcExport.php?goback_url=$goBackActionURLencoded&show_mode=$showMode"}
+{assign var="exportTestCaseAction" value="$basehref$tcExportAction"}
 
 
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}

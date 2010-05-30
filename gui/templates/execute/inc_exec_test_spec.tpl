@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.16 2010/05/27 20:42:43 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.17 2010/05/30 10:08:05 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
@@ -83,7 +83,7 @@ Rev:
 		  <td style="text-align:righ;">{$step_info.step_number}</td>
 		  <td>{$step_info.actions}</td>
 		  <td>{$step_info.expected_results}</td>
-		  <td>{$execution_types[$step_info.execution_type]}</td>
+		  <td>{$args_execution_types[$step_info.execution_type]}</td>
 	    </tr>
  	    {/foreach}
     {/if}

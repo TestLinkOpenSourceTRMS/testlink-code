@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.70 2010/05/22 09:33:04 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.71 2010/05/30 09:07:25 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100530 - franciscom - new JS function launchEditStep()
     20100522 - franciscom - BUGID 3410: Smarty 3.0 compatibility
                             rename labels => tcView_viewer_labels to avoid overwrite of labels
                             defined on template tcView.tpl (includes this template)
@@ -207,8 +208,32 @@ rev:
  	    <br /><div class="messages" align="center">{$warning_edit_msg}</div>
  	{/if}
 
+{literal}
+<script type="text/javascript">
+/**
+ * used instead of window.open().
+ *
+ */
+function launchEditStep(step_id)
+{
+  document.getElementById('stepsControls_step_id').value=step_id;
+  document.getElementById('stepsControls_doAction').value='editStep';
+  document.getElementById('stepsControls').submit();
+}
+</script>
+{/literal}
+
 <form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
-<input type="hidden" name="goback_url" value="{$basehref}{$tcViewAction}" />
+  <input type="hidden" name="goback_url" value="{$basehref}{$tcViewAction}" />
+  <input type="hidden" id="stepsControls_doAction" name="doAction" value="" />
+  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
+  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
+  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
+  <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
+
+
+
+
 <table class="simple">
   {if $args_show_title == "yes"}
 	<tr>
@@ -266,16 +291,6 @@ rev:
 	</tr>
 	{/if}
 
-{* OLD STYLE *}
-{*	<tr>                                               *}
-{*		<th width="50%">{$tcView_viewer_labels.steps}</th>             *}
-{*		<th width="50%">{$tcView_viewer_labels.expected_results}</th>  *}
-{*	</tr>                                              *}
-{*	<tr>                                               *}
-{*		<td>{$args_testcase.steps}</td>                  *}
-{*		<td>{$args_testcase.expected_results}</td>       *}
-{*	</tr>                                              *}
-	
 	{if $args_testcase.steps != ''}
 	<tr>
 		<th width="{$tableColspan}">
@@ -303,9 +318,9 @@ rev:
 			     size="{#STEP_NUMBER_SIZE#}" 	maxlength="{#STEP_NUMBER_MAXLEN#}"
   	{include file="error_icon.tpl" field="step_number"}
 		</span>{$step_info.step_number}</td>
-		<td {if $edit_enabled} style="cursor:pointer;" onclick="window.open('{$hrefEditStep}{$step_info.id}','_self')" {/if}>{$step_info.actions}</td>
-		<td {if $edit_enabled} style="cursor:pointer;" onclick="window.open('{$hrefEditStep}{$step_info.id}','_self')" {/if}>{$step_info.expected_results}</td>
-		<td {if $edit_enabled} style="cursor:pointer;" onclick="window.open('{$hrefEditStep}{$step_info.id}','_self')" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
+		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})"{/if}>{$step_info.actions}</td>
+		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$step_info.expected_results}</td>
+		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
 
     {if $edit_enabled}
 		<td class="clickable_icon">
@@ -322,17 +337,13 @@ rev:
 </table>
 
 <div {$addInfoDivStyle}>
-  <input type="hidden" name="doAction" value="" />
-  <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
-  <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
-  <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
   {if $edit_enabled}
   <input type="submit" name="create_step" 
   	 	   onclick="doAction.value='createStep';{$gui->submitCode}" value="{$tcView_viewer_labels.btn_create_step}" />
 
   <span class="order_info" style='display:none'>
   <input type="submit" name="renumber_step" 
-  	 	   onclick="doAction.value='doReorderSteps';{$gui->submitCode}validateStepsReorder('stepsControls');" 
+  	 	   onclick="doAction.value='doReorderSteps';{$gui->submitCode};validateStepsReorder('stepsControls');" 
   	 	   value="{$tcView_viewer_labels.btn_reorder_steps}" />
   </span>
   {/if}

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.23 2010/05/30 09:20:31 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.24 2010/05/30 09:49:07 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -24,9 +24,10 @@ rev:
 {assign var="tcversion_id" value=$gui->tcversion_id}
 
 {* Used on several operations to implement goback *}
-{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
+{* BUGID 3493 - added show_mode*}
+{assign var="showMode" value=$gui->show_mode} 
 
-{* BUGID 3493 *}
+{assign var="tcViewAction" value="lib/testcases/archiveData.php?tcase_id=$tcase_id&show_mode=$showMode"}
 {assign var="goBackAction" value="$basehref$tcViewAction"}
 {assign var="goBackActionURLencoded" value="$goBackAction|escape:'url'"}
 {assign var="url_args" value="tcEdit.php?doAction=editStep&testcase_id=$tcase_id&tcversion_id=$tcversion_id"}

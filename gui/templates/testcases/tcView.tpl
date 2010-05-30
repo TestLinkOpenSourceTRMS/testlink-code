@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.37 2010/05/22 08:20:43 franciscom Exp $
+$Id: tcView.tpl,v 1.38 2010/05/30 09:49:07 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -22,6 +22,7 @@ rev:
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 {include file="inc_del_onclick.tpl"}
+
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */

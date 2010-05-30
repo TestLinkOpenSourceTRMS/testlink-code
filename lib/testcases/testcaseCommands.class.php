@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/05/21 12:56:45 $  by $Author: mx-julian $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/05/30 09:26:45 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -70,15 +70,22 @@ class testcaseCommands
 
         $obj->tcase_id = property_exists($argsObj,'tcase_id') ? $argsObj->tcase_id : -1;
 
-		// need to check where is used
-        $obj->loadOnCancelURL = "archiveData.php?edit=testcase&id=%s&version_id=%s";
-        $obj->goback_url = '';
-        if( property_exists($argsObj,'goback_url') )
+		// BUGID 3493
+        $p2check = 'goback_url';
+        $obj->$p2check = '';
+        if( property_exists($argsObj,$p2check) )
         {
-        	$obj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : ''; 
+        	$obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : ''; 
         }
         
-        
+        $p2check = 'show_mode';
+        if( property_exists($argsObj,$p2check) )
+        {
+        	$obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : 'show'; 
+        }
+
+		// need to check where is used
+        $obj->loadOnCancelURL = "archiveData.php?edit=testcase&show_mode={$obj->show_mode}&id=%s&version_id=%s";
 		return $obj;
 	}
 	 
@@ -596,7 +603,8 @@ class testcaseCommands
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$guiObj->main_descr = lang_get('test_case');
 		$this->tcaseMgr->set_step_number($argsObj->step_set);
-		$guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&edit=testcase&id={$argsObj->tcase_id}";
+		$guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
+						  "edit=testcase&id={$argsObj->tcase_id}&show_mode={$guiObj->show_mode}";
 		return $guiObj;
 	}
 
@@ -615,7 +623,9 @@ class testcaseCommands
 		$tcversion_id = $step_node['parent_id'];
 		$tcase_id = $tcversion_node['parent_id'];
 		
-		$guiObj->template="archiveData.php?version_id={$tcversion_id}&edit=testcase&id={$tcase_id}";
+		$guiObj->template="archiveData.php?version_id={$tcversion_id}&" . 
+						  "edit=testcase&id={$tcase_id}&show_mode={$guiObj->show_mode}";
+
 		$guiObj->user_feedback = '';
         $op = $this->tcaseMgr->delete_step_by_id($argsObj->step_id);
 		return $guiObj;

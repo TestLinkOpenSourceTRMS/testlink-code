@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.72 2010/05/30 09:18:55 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.73 2010/05/30 09:29:24 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -230,16 +230,13 @@ function launchEditStep(step_id)
 {/literal}
 
 <form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
-  <input type="hidden" name="goback_url" value="{$basehref}{$tcViewAction}" />
+  <input type="hidden" name="goback_url" value="{$goBackAction}" />
   <input type="hidden" id="stepsControls_doAction" name="doAction" value="" />
   <input type="hidden" name="testcase_id" value="{$args_testcase.testcase_id}" />
   <input type="hidden" name="tcversion_id" value="{$args_testcase.id}" />
   <input type="hidden" name="has_been_executed" value="{$has_been_executed}" />
   <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
 	<input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
-
-
-
 
 <table class="simple">
   {if $args_show_title == "yes"}

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: testcaseCommands.class.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/05/30 09:55:25 $  by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2010/05/30 10:24:46 $  by $Author: franciscom $
  * testcases commands
  *
  * rev:
@@ -610,7 +610,8 @@ class testcaseCommands
      */
 	function doDeleteStep(&$argsObj,$request)
 	{
-		$guiObj=new stdClass();
+		$guiObj = $this->initGuiBean($argsObj); // BUGID 3493
+
 		$viewer_args=array();
 		$guiObj->refresh_tree="no";
 		$step_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->step_id);

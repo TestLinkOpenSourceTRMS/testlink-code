@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.18 2010/04/08 15:11:33 asimon83 Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.19 2010/05/30 17:36:38 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -18,7 +18,13 @@
 *   - Assign keywords to test cases
 *   - Assign requirements to test cases
 *
-*   rev: 20081213 - franciscom - BUGID 1928 - contribution
+* 	EXT-JS - Important:
+* 	Custom keys can be added, and will be access on EXT-JS code using
+* 	public property 'attributes' of object of Class Ext.tree.TreeNode 
+* 	
+*
+*   rev: 20100530 - franciscom - added custom node attribute: tlNodeType
+*		 20081213 - franciscom - BUGID 1928 - contribution
 *        20080820 - franciscom - added operation argument
 *                                values: 'manage','print'
 *                                used to change Javascript functions to call on item click.
@@ -118,6 +124,9 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 	        $path['position'] = $row['node_order'];                                                   
           	$path['leaf'] = false;
  	        $path['cls'] = 'folder';
+
+			// customs key will be accessed using node.attributes.[key name]
+	        $path['tlNodeType'] = $row['node_type'];
 	       
 	        $tcase_qty = null;
 	        switch($row['node_type'])

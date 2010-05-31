@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.48 2010/03/13 10:07:04 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.49 2010/05/31 18:41:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -250,7 +250,7 @@ function doCreate($argsObj,&$tprojectMgr)
 	{
 	  	$options = prepareOptions($argsObj);
 	  	    
-		$new_id = $tprojectMgr->projectCreate($argsObj->tprojectName, $argsObj->color,
+		$new_id = $tprojectMgr->create($argsObj->tprojectName, $argsObj->color,
 					$options, $argsObj->notes, $argsObj->active, $argsObj->tcasePrefix,
 					$argsObj->is_public);
 									                 

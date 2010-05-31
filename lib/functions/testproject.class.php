@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.166 2010/05/16 13:46:04 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.167 2010/05/31 18:41:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -129,7 +129,7 @@ class testproject extends tlObjectWithAttachments
  * @TODO havlatm: described return parameter differs from reality
  * @TODO havlatm: parameter $options should be 
  */
-function projectCreate($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
+function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_public=1)
 {
 	// Create Node and get the id
 	$root_node_id = $this->tree_manager->new_root_node($name);

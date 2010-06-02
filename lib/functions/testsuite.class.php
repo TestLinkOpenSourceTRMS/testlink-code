@@ -6,10 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.95 2010/03/28 16:07:49 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.96 2010/06/02 13:23:36 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20100602 - franciscom - BUGID 3498 - get_by_name() - missing JOIN
  * 20100328 - franciscom - get_by_id() interface and return set changes
  *						   get_children() - new method - contribution - BUGID 2645
  * 20100315 - amitkhullar - Added options for CFields for Export.
@@ -331,13 +333,16 @@ class testsuite extends tlObjectWithAttachments
 	           details
 	           name: testsuite name
 	
+	  @internal Revisions
+	  20100602 - BUGID 3498	
 	*/
 	function get_by_name($name)
 	{
-		$sql = " SELECT testsuites.*, nodes_hierarchy.name " .
-			   " FROM {$this->tables['testsuites']} testsuites, " .
-			   " {$this->tables['nodes_hierarchy']} nodes_hierarchy " .
-			   " WHERE nodes_hierarchy.name = '" . $this->db->prepare_string($name) . "'";
+		$sql = " SELECT TS.*, NH.name, NH.parent_id " .
+			   " FROM {$this->tables['testsuites']} TS " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NH " .
+			   " ON NH.id = TS.id " .
+			   " WHERE NH.name = '" . $this->db->prepare_string($name) . "'";
 		
 		$recordset = $this->db->get_recordset($sql);
 		return $recordset;

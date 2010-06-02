@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.16 2010/05/26 11:26:32 asimon83 Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.17 2010/06/02 09:11:55 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters
@@ -141,7 +141,6 @@ class tlControlPanel extends tlObjectWithDB
         	if( !is_array($initValues[$key]) )
         	{
         		$dummy = explode(',',$initValues[$key]);
-        		new dBug($dummy);
         		switch($dummy[0])
         		{
         			case 'testproject':

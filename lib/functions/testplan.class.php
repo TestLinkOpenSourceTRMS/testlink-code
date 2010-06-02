@@ -9,12 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.190 2010/05/27 08:10:21 mx-julian Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.191 2010/06/02 14:06:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *
+ *	20100602 - franciscom - copy_as() - force Platforms Link copy when user choose Test Case Copy
  *  20100527 - Julian - BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
  *  20100525 - Julian - changed default for steps_info option on get_linked_tcversions() to false
  *  					-> performance improvement because not all steps are loaded per default
@@ -1330,9 +1330,11 @@ class testplan extends tlObjectWithAttachments
 
 				   copy_assigned_to:
 				   tcversion_type: 
-				                  null -> use same version present on source testplan
+				                  null/'current' -> use same version present on source testplan
                                   'lastest' -> for every testcase linked to source testplan
                                                use lastest available version
+                                               
+       [mappings]: need to be documented                                        
   	returns: N/A
 	*/
 	function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null,$user_id=null,
@@ -1377,9 +1379,16 @@ class testplan extends tlObjectWithAttachments
 		}
 		
 		
+		// Important Notice:
+		// Since the addition of Platforms, test case versions are linked to Test Plan AND Platforms
+		// this means, that not matter user choice, we will force Platforms COPY.
+		// This is a lazy approach, instead of complex one that requires understand what Platforms
+		// have been used on SOURCE Test Plan.
+		//
 		// copy test cases is an special copy
 		if( $my['options']['items2copy']['copy_tcases'] )
 		{
+			$my['options']['items2copy']['copy_platforms_links'] = 1;
 			$this->copy_linked_tcversions($id,$new_tplan_id,$user_id,$my['options'],$mappings);
 		}
 		
@@ -1439,14 +1448,13 @@ class testplan extends tlObjectWithAttachments
                                       use lastest available version
         	[copy_assigned_to]: 1 -> copy execution assignments without role control                              
 
+		[$mappings] useful when this method is called due to a Test Project COPY AS (yes PROJECT no PLAN)
+					
   	returns:
   
  	 Note: test urgency is set to default in the new Test plan (not copied)
 	*/
-	// private function copy_linked_tcversions($id,$new_tplan_id,$tcversion_type=null,
-	//                                         $copy_assigned_to=0,$user_id=-1)
-	private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1,
-	                                        $options=null,$mappings=null)
+	private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null)
 	
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1512,6 +1520,9 @@ class testplan extends tlObjectWithAttachments
 					   " (testplan_id,tcversion_id,platform_id,node_order,urgency) " .
 					   " VALUES({$new_tplan_id},{$tcversion_id},{$platform_id}," .
 					   " {$elem['node_order']},{$elem['urgency']})";
+					   
+ 				 echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+	   
 				$this->db->exec_query($sql);
 				$new_feature_id = $this->db->insert_id($this->tables['testplan_tcversions']);
 				

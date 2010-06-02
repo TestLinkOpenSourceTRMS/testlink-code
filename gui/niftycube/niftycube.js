@@ -16,6 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+/*
+  Using fix for IE 8 provided by : Written by Ken Kinder on October 26, 2009
+  http://kenkinder.com/2009/10/26/how-to-fix-niftycube-ie-8-width-problem/
+*/
 var niftyOk=(document.getElementById && document.createElement && Array.prototype.push);
 var niftyCss=false;
 
@@ -155,10 +159,21 @@ function CreateEl(x){
 return(document.createElement(x));
 }
 
+/**
+ * fixed by Ken Kinder on October 26, 2009
+ * http://kenkinder.com/2009/10/26/how-to-fix-niftycube-ie-8-width-problem/
+ *
+ */
 function FixIE(el){
 if(el.currentStyle!=null && el.currentStyle.hasLayout!=null && el.currentStyle.hasLayout==false)
-    el.style.display="inline-block";
+
+    var ver = getIeVersion();
+    if (ver < 8) {
+        el.style.display="inline-block";
+    }
 }
+
+
 
 function SameHeight(selector,maxh){
 var i,v=selector.split(","),t,j,els=[],gap;
@@ -295,4 +310,21 @@ for(i=0;i<3;i++){
     if(r[i].length==1) r[i]="0"+r[i];
     }
 return("#"+r[0]+r[1]+r[2]);
+}
+
+/**
+ * new function by:  Ken Kinder on October 26, 2009
+ * http://kenkinder.com/2009/10/26/how-to-fix-niftycube-ie-8-width-problem/
+ *
+ */
+function getIeVersion() {
+    var rv = -1;
+    if (navigator.appName == 'Microsoft Internet Explorer') {
+        var ua = navigator.userAgent;
+        var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+        if (re.exec(ua) != null) {
+            rv = parseFloat(RegExp.$1);
+        }
+    }
+    return rv;
 }

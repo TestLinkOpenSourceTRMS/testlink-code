@@ -13,6 +13,7 @@
  
  
  
+ 
 ]]> 
 </details><testsuite name="set execution result" >
 <node_order><![CDATA[1]]></node_order>
@@ -23,9 +24,10 @@
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2213" name="set exec result - test plan WITHOUT PLATFORMS">
+<testcase internalid="3006" name="set exec result - test plan WITHOUT PLATFORMS">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[1]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -35,7 +37,7 @@
 
 </testcase>
 
-<testcase internalid="2215" name="set exec result - test plan WITH WRONG PLATFORM NAME">
+<testcase internalid="3008" name="set exec result - test plan WITH WRONG PLATFORM NAME">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[2]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -45,7 +47,7 @@
 
 </testcase>
 
-<testcase internalid="2217" name="set exec result - test plan WITH WRONG PLATFORM ID">
+<testcase internalid="3010" name="set exec result - test plan WITH WRONG PLATFORM ID">
 	<node_order><![CDATA[102]]></node_order>
 	<externalid><![CDATA[3]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -65,9 +67,10 @@
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2220" name="Create Build - &quot;easy&quot; - NO RELEASE DATE">
+<testcase internalid="3013" name="Create Build - &quot;easy&quot; - NO RELEASE DATE">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[4]]></externalid>
 	<summary><![CDATA[fill in data with values that do not generate error/conflicts]]></summary>
@@ -77,7 +80,7 @@
 
 </testcase>
 
-<testcase internalid="2222" name="Create Build - &quot;easy&quot; - WITH RELEASE DATE">
+<testcase internalid="3015" name="Create Build - &quot;easy&quot; - WITH RELEASE DATE">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[5]]></externalid>
 	<summary><![CDATA[fill in data with values that do not generate error/conflicts]]></summary>
@@ -97,9 +100,10 @@
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2225" name="EXPORT - Go back management">
+<testcase internalid="3018" name="EXPORT - Go back management">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[6]]></externalid>
 	<summary><![CDATA[create a custom field, then click export, then click cancel]]></summary>
@@ -109,7 +113,7 @@
 
 </testcase>
 
-<testcase internalid="2227" name="IMPORT - Go back management">
+<testcase internalid="3020" name="IMPORT - Go back management">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[7]]></externalid>
 	<summary><![CDATA[create a custom field, then click export, then click cancel]]></summary>
@@ -129,10 +133,12 @@
  
  
  
+ 
 ]]> 
 </details></testsuite><testsuite name="GUI" >
 <node_order><![CDATA[4]]></node_order>
 <details><![CDATA[ 
+ 
  
  
 ]]> 
@@ -141,9 +147,10 @@
 <details><![CDATA[Check that configuration controlled by&nbsp;input_dimensions.conf 
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2232" name="Test Project name in NAVBAR">
+<testcase internalid="3025" name="Test Project name in NAVBAR">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[8]]></externalid>
 	<summary><![CDATA[controlled by:
@@ -157,7 +164,7 @@ TESTPROJECT_TRUNCATE_SIZE=50
 
 </testcase>
 
-<testcase internalid="2234" name="Test Plan name">
+<testcase internalid="3027" name="Test Plan name">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[9]]></externalid>
 	<summary><![CDATA[[mainPage]
@@ -179,10 +186,12 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details><testsuite name="Upgrade/MIgration" >
 <node_order><![CDATA[1]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -203,9 +212,10 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2239" name="DBMS - MySQL">
+<testcase internalid="3032" name="DBMS - MySQL">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[10]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -215,7 +225,7 @@ TESTPLAN_TRUNCATE_SIZE=45
 
 </testcase>
 
-<testcase internalid="2241" name="DBMS - Postgres">
+<testcase internalid="3034" name="DBMS - Postgres">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[11]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -227,6 +237,7 @@ TESTPLAN_TRUNCATE_SIZE=45
 </testsuite></testsuite><testsuite name="Keyword Management" >
 <node_order><![CDATA[6]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -247,9 +258,10 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2245" name="Login with wrong user/password">
+<testcase internalid="3038" name="Login with wrong user/password">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[12]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -261,6 +273,7 @@ TESTPLAN_TRUNCATE_SIZE=45
 </testsuite><testsuite name="Manage your personal data" >
 <node_order><![CDATA[8]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -281,10 +294,12 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details></testsuite><testsuite name="Milestones Management" >
 <node_order><![CDATA[10]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -305,9 +320,10 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2251" name="Display any document">
+<testcase internalid="3044" name="Display any document">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[13]]></externalid>
 	<summary><![CDATA[Choose a document and display it]]></summary>
@@ -319,6 +335,7 @@ TESTPLAN_TRUNCATE_SIZE=45
 </testsuite><testsuite name="Platforms Management" >
 <node_order><![CDATA[12]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -339,9 +356,10 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2255" name="Create Platform with Existent NAME">
+<testcase internalid="3048" name="Create Platform with Existent NAME">
 	<node_order><![CDATA[1]]></node_order>
 	<externalid><![CDATA[14]]></externalid>
 	<summary><![CDATA[Create Platform that have same NAME that existent ONE on this test project =&gt; Conflict]]></summary>
@@ -351,7 +369,7 @@ TESTPLAN_TRUNCATE_SIZE=45
 
 </testcase>
 
-<testcase internalid="2257" name="Create Platform without Conflicts">
+<testcase internalid="3050" name="Create Platform without Conflicts">
 	<node_order><![CDATA[2]]></node_order>
 	<externalid><![CDATA[15]]></externalid>
 	<summary><![CDATA[Create Platform without Conflicts]]></summary>
@@ -371,9 +389,10 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2260" name="Add ONE platform to ZERO Platform Test plan">
+<testcase internalid="3053" name="Add ONE platform to ZERO Platform Test plan">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[16]]></externalid>
 	<summary><![CDATA[Check effects of adding ONE platform to a test plan that HAS NO Platforms, after test plan has been populated with test cases, and some test cases has been executed.]]></summary>
@@ -383,7 +402,7 @@ TESTPLAN_TRUNCATE_SIZE=45
 
 </testcase>
 
-<testcase internalid="2262" name="Save Platform Assignament WITH RIGHT PANEL EMPTY">
+<testcase internalid="3055" name="Save Platform Assignament WITH RIGHT PANEL EMPTY">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[17]]></externalid>
 	<summary><![CDATA[Verify that saving platform assignment with RIGHT PANEL empty does not create problems]]></summary>
@@ -395,6 +414,7 @@ TESTPLAN_TRUNCATE_SIZE=45
 </testsuite></testsuite><testsuite name="Requirements Feature" >
 <node_order><![CDATA[13]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -415,6 +435,7 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details></testsuite><testsuite name="Requirements (Leaves)" >
 <node_order><![CDATA[2]]></node_order>
@@ -427,13 +448,15 @@ TESTPLAN_TRUNCATE_SIZE=45
  
  
  
+ 
 ]]> 
 </details><testsuite name="Manual Management" >
 <node_order><![CDATA[0]]></node_order>
 <details><![CDATA[ 
+ 
 ]]> 
 </details>
-<testcase internalid="2268" name="Create Req - &quot;easy&quot;">
+<testcase internalid="3061" name="Create Req - &quot;easy&quot;">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[18]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -443,7 +466,7 @@ TESTPLAN_TRUNCATE_SIZE=45
 
 </testcase>
 
-<testcase internalid="2270" name="Create NEW VERSION - Source Version 1">
+<testcase internalid="3063" name="Create NEW VERSION - Source Version 1">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[19]]></externalid>
 	<summary><![CDATA[Create Req
@@ -454,7 +477,7 @@ Choose version 1 and create new version]]></summary>
 
 </testcase>
 
-<testcase internalid="2272" name="Create NEW VERSION - Source Version &lt;&gt; 1">
+<testcase internalid="3065" name="Create NEW VERSION - Source Version &lt;&gt; 1">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[20]]></externalid>
 	<summary><![CDATA[<p>Create a Req.</p><p>Create several versions 1,2,3, making content of every version different</p><p>Choose version 2 =&gt; create a new version&nbsp;</p><p>&nbsp;</p>]]></summary>
@@ -466,13 +489,15 @@ Choose version 1 and create new version]]></summary>
 </testsuite><testsuite name="Import" >
 <node_order><![CDATA[1]]></node_order>
 <details><![CDATA[ 
+ 
 ]]> 
 </details><testsuite name="CSV Format" >
 <node_order><![CDATA[103]]></node_order>
 <details><![CDATA[ 
+ 
 ]]> 
 </details>
-<testcase internalid="2276" name="CSV Import - No conflict">
+<testcase internalid="3069" name="CSV Import - No conflict">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[21]]></externalid>
 	<summary><![CDATA[Import a CVS that has a contain that assure no conflict will be generated by import.
@@ -485,7 +510,7 @@ Leave combo "Set conflict solution" with it's default value
 
 </testcase>
 
-<testcase internalid="2278" name="CVS Import - CONFLICT - UPDATE">
+<testcase internalid="3071" name="CVS Import - CONFLICT - UPDATE">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[22]]></externalid>
 	<summary><![CDATA[Re-Import a CVS file, in this way you will create a conflict.
@@ -498,7 +523,7 @@ combo "Set conflict solution" => UPDATE
 
 </testcase>
 
-<testcase internalid="2280" name="CVS Import - CONFLICT - SKIP">
+<testcase internalid="3073" name="CVS Import - CONFLICT - SKIP">
 	<node_order><![CDATA[102]]></node_order>
 	<externalid><![CDATA[23]]></externalid>
 	<summary><![CDATA[Re-Import a CVS file, in this way you will create a conflict.
@@ -516,9 +541,10 @@ combo "Set conflict solution" => SKIP
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2283" name="Create Self Relation - KO">
+<testcase internalid="3076" name="Create Self Relation - KO">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[24]]></externalid>
 	<summary><![CDATA[Creating a relation from REQ A to REQ A is not allowed => message must be displayed to user]]></summary>
@@ -528,7 +554,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2285" name="Create Relation easy 1 when 0 relations exists">
+<testcase internalid="3078" name="Create Relation easy 1 when 0 relations exists">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[25]]></externalid>
 	<summary><![CDATA[easy means create a relation that will not have problems, for a REQ that has no relation defined]]></summary>
@@ -538,7 +564,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2287" name="Create Relation easy 2 when relations exists ">
+<testcase internalid="3080" name="Create Relation easy 2 when relations exists ">
 	<node_order><![CDATA[102]]></node_order>
 	<externalid><![CDATA[26]]></externalid>
 	<summary><![CDATA[easy means create a relation that will not have problems, for a REQ that has relations defined]]></summary>
@@ -550,6 +576,7 @@ combo "Set conflict solution" => SKIP
 </testsuite></testsuite><testsuite name="Role Management" >
 <node_order><![CDATA[14]]></node_order>
 <details><![CDATA[/** Testauite:<br /> Fill in:<br />  <table border="0"> <tbody><tr><td>Title</td><td>Scope</td></tr> <tr><td>Author name</td></tr> </tbody></table> <br />   **/ 
+ 
  
  
  
@@ -570,10 +597,12 @@ combo "Set conflict solution" => SKIP
  
  
  
+ 
 ]]> 
 </details></testsuite><testsuite name="Search Test Cases - Simple from TOP MENU BAR" >
 <node_order><![CDATA[16]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -594,10 +623,12 @@ combo "Set conflict solution" => SKIP
  
  
  
+ 
 ]]> 
 </details></testsuite><testsuite name="Search Requiment Specification" >
 <node_order><![CDATA[18]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -618,10 +649,12 @@ combo "Set conflict solution" => SKIP
  
  
  
+ 
 ]]> 
 </details></testsuite><testsuite name="Test Cases assigned to me" >
 <node_order><![CDATA[20]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -635,14 +668,16 @@ combo "Set conflict solution" => SKIP
 <node_order><![CDATA[21]]></node_order>
 <details><![CDATA[ 
  
+ 
 ]]> 
 </details><testsuite name="Execution Filters" >
 <node_order><![CDATA[1]]></node_order>
 <details><![CDATA[ 
  
+ 
 ]]> 
 </details>
-<testcase internalid="2298" name="Filter by Execution Type - ANY">
+<testcase internalid="3091" name="Filter by Execution Type - ANY">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[27]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -652,7 +687,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2300" name="Filter by Execution Type - MANUAL">
+<testcase internalid="3093" name="Filter by Execution Type - MANUAL">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[28]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -662,7 +697,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2302" name="Filter by Execution Type - AUTOMATED">
+<testcase internalid="3095" name="Filter by Execution Type - AUTOMATED">
 	<node_order><![CDATA[102]]></node_order>
 	<externalid><![CDATA[29]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -674,6 +709,7 @@ combo "Set conflict solution" => SKIP
 </testsuite></testsuite><testsuite name="Test Inventory Management" >
 <node_order><![CDATA[22]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -691,12 +727,33 @@ combo "Set conflict solution" => SKIP
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2306" name="Create Test Plan - No conflict">
+<testcase internalid="3099" name="Create Test Plan - No conflict">
 	<node_order><![CDATA[100]]></node_order>
 	<externalid><![CDATA[30]]></externalid>
 	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="3199" name="Create Test Plan - AS COPY - NO OPTIONS">
+	<node_order><![CDATA[101]]></node_order>
+	<externalid><![CDATA[70]]></externalid>
+	<summary><![CDATA[<p>Create a test plan using the create from feature</p><p>all checkbox of elements to copy UNCKECHED&nbsp;</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="3201" name="Create Test Plan - AS COPY - ALL OPTIONS CHECKED">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[71]]></externalid>
+	<summary><![CDATA[<p>Create a test plan using the create from feature</p><p>all checkboxs CHECKED</p>]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
 	<importance><![CDATA[2]]></importance>
@@ -713,9 +770,10 @@ combo "Set conflict solution" => SKIP
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2309" name="Create FIRST Test Project - TEMPLATE OFF">
+<testcase internalid="3102" name="Create FIRST Test Project - TEMPLATE OFF">
 	<node_order><![CDATA[0]]></node_order>
 	<externalid><![CDATA[31]]></externalid>
 	<summary><![CDATA[After a FRESH Install, create the first test project]]></summary>
@@ -725,7 +783,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2311" name="Create FIRST Test Project - TEMPLATE ON">
+<testcase internalid="3104" name="Create FIRST Test Project - TEMPLATE ON">
 	<node_order><![CDATA[1]]></node_order>
 	<externalid><![CDATA[32]]></externalid>
 	<summary><![CDATA[After a FRESH Install, create the first test project]]></summary>
@@ -735,7 +793,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2313" name="Create Test Project - No conflict">
+<testcase internalid="3106" name="Create Test Project - No conflict">
 	<node_order><![CDATA[2]]></node_order>
 	<externalid><![CDATA[33]]></externalid>
 	<summary><![CDATA[Create a Test project with all required information, without creating any conflict (use a test project name not present on system, use a PREFIX not present on system)]]></summary>
@@ -745,7 +803,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2315" name="Rename Test Project - NO NAME CONFLICT">
+<testcase internalid="3108" name="Rename Test Project - NO NAME CONFLICT">
 	<node_order><![CDATA[3]]></node_order>
 	<externalid><![CDATA[34]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -755,7 +813,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2317" name="Set Test Project INACTIVE">
+<testcase internalid="3110" name="Set Test Project INACTIVE">
 	<node_order><![CDATA[5]]></node_order>
 	<externalid><![CDATA[35]]></externalid>
 	<summary><![CDATA[<p>Choose an ACTIVE test project</p><p>Set INACTIVE</p><p>Choose again same test project</p><p>Set ACTIVE&nbsp;</p>]]></summary>
@@ -765,7 +823,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2319" name="Delete EMPTY  Test Project">
+<testcase internalid="3112" name="Delete EMPTY  Test Project">
 	<node_order><![CDATA[7]]></node_order>
 	<externalid><![CDATA[36]]></externalid>
 	<summary><![CDATA[Delete a test projects that has NOTHING INSIDE]]></summary>
@@ -775,7 +833,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2321" name="Delete Test Project WITHOUT PLATFORMS">
+<testcase internalid="3114" name="Delete Test Project WITHOUT PLATFORMS">
 	<node_order><![CDATA[8]]></node_order>
 	<externalid><![CDATA[37]]></externalid>
 	<summary><![CDATA[Delete a test projects that has NO PLATFORMS DEFINED]]></summary>
@@ -785,7 +843,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2323" name="Delete Test Project WITH PLATFORMS  NOT ASSIGNED">
+<testcase internalid="3116" name="Delete Test Project WITH PLATFORMS  NOT ASSIGNED">
 	<node_order><![CDATA[9]]></node_order>
 	<externalid><![CDATA[38]]></externalid>
 	<summary><![CDATA[Delete a test projects that has PLATFORMS DEFINED, BUT NOT ASSIGNED TO ANY TEST PLANS]]></summary>
@@ -795,7 +853,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2325" name="Delete Test Project  WORST CASE ">
+<testcase internalid="3118" name="Delete Test Project  WORST CASE ">
 	<node_order><![CDATA[10]]></node_order>
 	<externalid><![CDATA[39]]></externalid>
 	<summary><![CDATA[<p>Delete a test projects that has:</p><p>Custom fields, Keywords</p><p>platform defined an assigned to test plans</p><p>Test cases with custom fields</p><p>&nbsp;</p>]]></summary>
@@ -805,9 +863,9 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2404" name=" Delete Test Project with N Empty Test Suites">
+<testcase internalid="3120" name=" Delete Test Project with N Empty Test Suites">
 	<node_order><![CDATA[11]]></node_order>
-	<externalid><![CDATA[69]]></externalid>
+	<externalid><![CDATA[40]]></externalid>
 	<summary><![CDATA[<p>Create a Test Project that has many test suites, but all are empty.</p><p>Test Project has:</p><p>&nbsp;</p><p>. no platforms</p><p>. no keywords</p><p>. no custom fields </p><p>. no requirements</p><p>. no inventory items</p><p>. no test plans</p><p>. no builds</p><p>. no milestones </p>]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -817,6 +875,7 @@ combo "Set conflict solution" => SKIP
 </testsuite><testsuite name="Test Reports and Metrics" >
 <node_order><![CDATA[25]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -837,10 +896,12 @@ combo "Set conflict solution" => SKIP
  
  
  
+ 
 ]]> 
 </details></testsuite></testsuite><testsuite name="Test Specification" >
 <node_order><![CDATA[26]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -861,20 +922,11 @@ combo "Set conflict solution" => SKIP
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2331" name="Create Test Suite 'Easy'">
+<testcase internalid="3126" name="Create Test Suite 'Easy'">
 	<node_order><![CDATA[100]]></node_order>
-	<externalid><![CDATA[40]]></externalid>
-	<summary><![CDATA[]]></summary>
-	<preconditions><![CDATA[]]></preconditions>
-	<execution_type><![CDATA[1]]></execution_type>
-	<importance><![CDATA[2]]></importance>
-
-</testcase>
-
-<testcase internalid="2333" name="Delete EMPTY Test Suite">
-	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[41]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
@@ -883,7 +935,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2335" name="Delete NOT EMPTY Test Suite ">
+<testcase internalid="3128" name="Delete EMPTY Test Suite">
 	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[42]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -893,19 +945,9 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2337" name="Copy EMPTY Test Suite Simple">
-	<node_order><![CDATA[102]]></node_order>
+<testcase internalid="3130" name="Delete NOT EMPTY Test Suite ">
+	<node_order><![CDATA[101]]></node_order>
 	<externalid><![CDATA[43]]></externalid>
-	<summary><![CDATA[<p>Simple Means:&nbsp;</p><p>No keywords assigned</p><p>No Custom Fields &nbsp;</p>]]></summary>
-	<preconditions><![CDATA[]]></preconditions>
-	<execution_type><![CDATA[1]]></execution_type>
-	<importance><![CDATA[2]]></importance>
-
-</testcase>
-
-<testcase internalid="2339" name="Copy NOT EMPTY Test Suite ">
-	<node_order><![CDATA[102]]></node_order>
-	<externalid><![CDATA[44]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -913,8 +955,18 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2341" name="Move EMPTY Test Suite via DRAG &amp; DROP">
-	<node_order><![CDATA[103]]></node_order>
+<testcase internalid="3132" name="Copy EMPTY Test Suite Simple">
+	<node_order><![CDATA[102]]></node_order>
+	<externalid><![CDATA[44]]></externalid>
+	<summary><![CDATA[<p>Simple Means:&nbsp;</p><p>No keywords assigned</p><p>No Custom Fields &nbsp;</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="3134" name="Copy NOT EMPTY Test Suite ">
+	<node_order><![CDATA[102]]></node_order>
 	<externalid><![CDATA[45]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
@@ -923,7 +975,7 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2343" name="Move NOT EMPTY Test Suite via DRAG &amp; DROP">
+<testcase internalid="3136" name="Move EMPTY Test Suite via DRAG &amp; DROP">
 	<node_order><![CDATA[103]]></node_order>
 	<externalid><![CDATA[46]]></externalid>
 	<summary><![CDATA[]]></summary>
@@ -933,9 +985,19 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2345" name="Rename Test Suite 'Easy'">
-	<node_order><![CDATA[104]]></node_order>
+<testcase internalid="3138" name="Move NOT EMPTY Test Suite via DRAG &amp; DROP">
+	<node_order><![CDATA[103]]></node_order>
 	<externalid><![CDATA[47]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="3140" name="Rename Test Suite 'Easy'">
+	<node_order><![CDATA[104]]></node_order>
+	<externalid><![CDATA[48]]></externalid>
 	<summary><![CDATA[easy means NO NAME CONFLICT]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -943,9 +1005,9 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2347" name="Copy EMPTY Test Suite + KEYWORDS">
+<testcase internalid="3142" name="Copy EMPTY Test Suite + KEYWORDS">
 	<node_order><![CDATA[105]]></node_order>
-	<externalid><![CDATA[48]]></externalid>
+	<externalid><![CDATA[49]]></externalid>
 	<summary><![CDATA[<p>Test suite has to have&nbsp;keywords assigned.</p><p>No Custom Fields &nbsp;</p>]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -953,9 +1015,9 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2349" name="Copy EMPTY Test Suite + CUSTOM FIELDS">
+<testcase internalid="3144" name="Copy EMPTY Test Suite + CUSTOM FIELDS">
 	<node_order><![CDATA[106]]></node_order>
-	<externalid><![CDATA[49]]></externalid>
+	<externalid><![CDATA[50]]></externalid>
 	<summary><![CDATA[<p>Test suite has to have&nbsp;Custom Fields&nbsp;</p><p>NO keywords assigned.</p><p>&nbsp;</p>]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -963,9 +1025,9 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2351" name="Copy EMPTY Test Suite + KEYWORDS + CUSTOM FIELDS ">
+<testcase internalid="3146" name="Copy EMPTY Test Suite + KEYWORDS + CUSTOM FIELDS ">
 	<node_order><![CDATA[107]]></node_order>
-	<externalid><![CDATA[50]]></externalid>
+	<externalid><![CDATA[51]]></externalid>
 	<summary><![CDATA[<p>Test suite has to have&nbsp;keywords and&nbsp;Custom Fields &nbsp;assigned</p><p>&nbsp;</p>]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -973,9 +1035,9 @@ combo "Set conflict solution" => SKIP
 
 </testcase>
 
-<testcase internalid="2353" name="Export Test Suite XML simple">
+<testcase internalid="3148" name="Export Test Suite XML simple">
 	<node_order><![CDATA[108]]></node_order>
-	<externalid><![CDATA[51]]></externalid>
+	<externalid><![CDATA[52]]></externalid>
 	<summary><![CDATA[simple means
 Test Suite contains ONLY test cases
 Test Suite has NO keyword assigned
@@ -988,9 +1050,9 @@ Test Cases has NO Custom Fields]]></summary>
 
 </testcase>
 
-<testcase internalid="2355" name="Export Test Suite XML with keywords">
+<testcase internalid="3150" name="Export Test Suite XML with keywords">
 	<node_order><![CDATA[109]]></node_order>
-	<externalid><![CDATA[52]]></externalid>
+	<externalid><![CDATA[53]]></externalid>
 	<summary><![CDATA[simple means
 Test Suite contains ONLY test cases
 Test Suite has keywords assigned
@@ -1013,11 +1075,12 @@ Test Cases has NO Custom Fields]]></summary>
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2358" name="Delete Test Case that has NO STEPS">
+<testcase internalid="3153" name="Delete Test Case that has NO STEPS">
 	<node_order><![CDATA[0]]></node_order>
-	<externalid><![CDATA[53]]></externalid>
+	<externalid><![CDATA[54]]></externalid>
 	<summary><![CDATA[Create a test case
 DO NOT ADD STEPS
 Delete]]></summary>
@@ -1027,18 +1090,8 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="2360" name="Edit Test Case - Template DISABLED">
+<testcase internalid="3155" name="Edit Test Case - Template DISABLED">
 	<node_order><![CDATA[1]]></node_order>
-	<externalid><![CDATA[54]]></externalid>
-	<summary><![CDATA[]]></summary>
-	<preconditions><![CDATA[]]></preconditions>
-	<execution_type><![CDATA[1]]></execution_type>
-	<importance><![CDATA[2]]></importance>
-
-</testcase>
-
-<testcase internalid="2362" name="Edit Test Case - Template ENABLED">
-	<node_order><![CDATA[2]]></node_order>
 	<externalid><![CDATA[55]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
@@ -1047,8 +1100,8 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="2364" name="Copy Test Case - Dest: Same Test Suite TOP">
-	<node_order><![CDATA[3]]></node_order>
+<testcase internalid="3157" name="Edit Test Case - Template ENABLED">
+	<node_order><![CDATA[2]]></node_order>
 	<externalid><![CDATA[56]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
@@ -1057,29 +1110,9 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="2366" name="Copy Test Case - Dest: Same Test Suite BOTTOM ">
+<testcase internalid="3159" name="Copy Test Case - Dest: Same Test Suite TOP">
 	<node_order><![CDATA[3]]></node_order>
 	<externalid><![CDATA[57]]></externalid>
-	<summary><![CDATA[<p>Copy Keywords: NO</p><p>Copy Requirements: NO&nbsp;</p>]]></summary>
-	<preconditions><![CDATA[]]></preconditions>
-	<execution_type><![CDATA[1]]></execution_type>
-	<importance><![CDATA[2]]></importance>
-
-</testcase>
-
-<testcase internalid="2368" name="Create Test Case Step - easy">
-	<node_order><![CDATA[4]]></node_order>
-	<externalid><![CDATA[58]]></externalid>
-	<summary><![CDATA[easy means without generation errors or conflicts]]></summary>
-	<preconditions><![CDATA[]]></preconditions>
-	<execution_type><![CDATA[1]]></execution_type>
-	<importance><![CDATA[2]]></importance>
-
-</testcase>
-
-<testcase internalid="2370" name="Create Test Step with conflict - SAME STEP Number">
-	<node_order><![CDATA[5]]></node_order>
-	<externalid><![CDATA[59]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -1087,8 +1120,28 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="2372" name="Create Test Step with invalid step number -&gt; 0">
-	<node_order><![CDATA[6]]></node_order>
+<testcase internalid="3161" name="Copy Test Case - Dest: Same Test Suite BOTTOM ">
+	<node_order><![CDATA[3]]></node_order>
+	<externalid><![CDATA[58]]></externalid>
+	<summary><![CDATA[<p>Copy Keywords: NO</p><p>Copy Requirements: NO&nbsp;</p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="3163" name="Create Test Case Step - easy">
+	<node_order><![CDATA[4]]></node_order>
+	<externalid><![CDATA[59]]></externalid>
+	<summary><![CDATA[easy means without generation errors or conflicts]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="3165" name="Create Test Step with conflict - SAME STEP Number">
+	<node_order><![CDATA[5]]></node_order>
 	<externalid><![CDATA[60]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
@@ -1097,8 +1150,8 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="2374" name="Reorder Test Case Steps - easy">
-	<node_order><![CDATA[7]]></node_order>
+<testcase internalid="3167" name="Create Test Step with invalid step number -&gt; 0">
+	<node_order><![CDATA[6]]></node_order>
 	<externalid><![CDATA[61]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
@@ -1107,9 +1160,19 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="2376" name="Delete Test Case Step">
-	<node_order><![CDATA[8]]></node_order>
+<testcase internalid="3169" name="Reorder Test Case Steps - easy">
+	<node_order><![CDATA[7]]></node_order>
 	<externalid><![CDATA[62]]></externalid>
+	<summary><![CDATA[]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="3171" name="Delete Test Case Step">
+	<node_order><![CDATA[8]]></node_order>
+	<externalid><![CDATA[63]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -1124,10 +1187,12 @@ Delete]]></summary>
  
  
  
+ 
 ]]> 
 </details><testsuite name="Test suite operations" >
 <node_order><![CDATA[1]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -1142,11 +1207,12 @@ Delete]]></summary>
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2381" name="Checkbox CHECKED [2] ">
+<testcase internalid="3176" name="Checkbox CHECKED [2] ">
 	<node_order><![CDATA[0]]></node_order>
-	<externalid><![CDATA[63]]></externalid>
+	<externalid><![CDATA[64]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -1154,9 +1220,9 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="2383" name="Checkbox CHECKED [3] ">
+<testcase internalid="3178" name="Checkbox CHECKED [3] ">
 	<node_order><![CDATA[1]]></node_order>
-	<externalid><![CDATA[64]]></externalid>
+	<externalid><![CDATA[65]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -1171,10 +1237,12 @@ Delete]]></summary>
  
  
  
+ 
 ]]> 
 </details></testsuite></testsuite><testsuite name="Test CASE operations" >
 <node_order><![CDATA[2]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -1192,11 +1260,12 @@ Delete]]></summary>
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2388" name="Request Update of SINGLE Test Case">
+<testcase internalid="3183" name="Request Update of SINGLE Test Case">
 	<node_order><![CDATA[100]]></node_order>
-	<externalid><![CDATA[65]]></externalid>
+	<externalid><![CDATA[66]]></externalid>
 	<summary><![CDATA[1. Create some testcases with multiple versions and add to a testplan 2. Click Link &quot;Update Linked Test Case Versions&quot; 3. Expand Tree to Testcase level 4. Select single Testcase]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -1204,9 +1273,9 @@ Delete]]></summary>
 
 </testcase>
 
-<testcase internalid="2390" name="Request Update for a Test Suite">
+<testcase internalid="3185" name="Request Update for a Test Suite">
 	<node_order><![CDATA[101]]></node_order>
-	<externalid><![CDATA[66]]></externalid>
+	<externalid><![CDATA[67]]></externalid>
 	<summary><![CDATA[]]></summary>
 	<preconditions><![CDATA[]]></preconditions>
 	<execution_type><![CDATA[1]]></execution_type>
@@ -1216,6 +1285,7 @@ Delete]]></summary>
 </testsuite><testsuite name="User Management" >
 <node_order><![CDATA[28]]></node_order>
 <details><![CDATA[ 
+ 
  
  
  
@@ -1236,11 +1306,12 @@ Delete]]></summary>
  
  
  
+ 
 ]]> 
 </details>
-<testcase internalid="2394" name="Assignment of execution to user (with platforms)">
+<testcase internalid="3189" name="Assignment of execution to user (with platforms)">
 	<node_order><![CDATA[0]]></node_order>
-	<externalid><![CDATA[67]]></externalid>
+	<externalid><![CDATA[68]]></externalid>
 	<summary><![CDATA[<p>Test execute assignment to user</p>]]></summary>
 	<preconditions><![CDATA[<p>Test plan with a least one test case.</p>
 
@@ -1270,9 +1341,9 @@ Delete]]></summary>
 </steps>
 </testcase>
 
-<testcase internalid="2399" name="Assignment of execution to user [2] ">
+<testcase internalid="3194" name="Assignment of execution to user [2] ">
 	<node_order><![CDATA[1]]></node_order>
-	<externalid><![CDATA[68]]></externalid>
+	<externalid><![CDATA[69]]></externalid>
 	<summary><![CDATA[<p>Test execute assignment to user</p>]]></summary>
 	<preconditions><![CDATA[<p>Test plan with a least one test case.</p>
 

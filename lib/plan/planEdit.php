@@ -1,22 +1,22 @@
 <?php
-/**
+/** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * This script is distributed under the GNU General Public License 2
+ * This script is distributed under the GNU General Public License 2 or later. 
  *
- * Filename $RCSfile: planEdit.php,v $
+ * Manages test plans
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/11/21 18:28:44 $ by $Author: franciscom $
+ * @package 	TestLink
+ * @author 		
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: planEdit.php,v 1.54 2010/06/02 13:51:08 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
  *
- * Purpose:  ability to edit and delete test plans
- *-------------------------------------------------------------------------
- * @internal revision
- *  20091121 - franciscom - BUGID - contribution
- *	20090807 - franciscom - added platforms feature
- *  20090513 - franciscom - manage is_public
- *  20080827 - franciscom - BUGID 1692
  *
- */
+ * @internal Revisions:
+ * 20100602 - franciscom - BUGID 3485: "Create from existing Test Plan" always copies builds
+ *
+ **/
+
 require_once('../../config.inc.php');
 require_once("common.php");
 require_once("web_editor.php");
@@ -165,11 +165,11 @@ switch($args->do_action)
                 
 				if($args->copy)
 				{
-					
-					$tplan_mgr->copy_as($args->source_tplanid, $new_tplan_id,
-					                    $args->testplan_name,$args->tproject_id,
-					                    $args->copy_options,$args->tcversion_type,
-					                    $args->copy_assigned_to,$args->user_id);
+					// BUGID 3485: "Create from existing Test Plan" always copies builds
+					$options = array('items2copy' => $args->copy_options,'copy_assigned_to' => $args->copy_assigned_to,
+									 'tcversion_type' => $args->tcversion_type);
+					$tplan_mgr->copy_as($args->source_tplanid, $new_tplan_id,$args->testplan_name,
+										$args->tproject_id,$args->user_id,$options);
 				}
 			}
 		}

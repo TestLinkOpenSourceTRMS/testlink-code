@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.127 2010/05/23 16:42:23 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.128 2010/06/02 08:08:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *
+ *  20100602 - franciscom - extjs_renderExecTreeNodeOnOpen() - added 'tlNodeType' 	
  *  20100428 - asimon - BUGID 3301 and related: 
  *                      added filtering by custom fields to generateTestSpecTree(),
  *                      added importance setting in prepareNode() because of 
@@ -647,7 +648,7 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
 	$menustring='';
 	$node_type = $hash_id_descr[$node['node_type_id']];
 	extjs_renderTestSpecTreeNodeOnOpen($node,$node_type,$tc_action_enabled,$bForPrinting,
-		$showTestCaseID,$testCasePrefix);
+		                               $showTestCaseID,$testCasePrefix);
 	
 	
 	if (isset($node['childNodes']) && $node['childNodes'])
@@ -1182,13 +1183,15 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	}
 	
 	// $doIt=true;
+	// custom Property that will be accessed by EXT-JS using node.attributes
+   	$node['tlNodeType'] = $node_type;
 	switch($node_type)
 	{
 		case 'testproject':
 			$create_counters=1;
 			$pfn = $bForPrinting ? 'TPLAN_PTP' : 'SP';
 			$label =  $name . " (" . $testcase_count . ")";
-			break;
+		break;
 			
 		case 'testsuite':
 			$create_counters=1;
@@ -1201,33 +1204,31 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 			{
 				$pfn = $showTestSuiteContents ? 'STS' : null; 
 			}
-			break;
+		break;
 			
 		case 'testcase':
-		    	// $doIt=true;
-		    	//echo 'RE-TC<br>';
-				$node['leaf'] = true;
-				$buildLinkTo = $tc_action_enabled;
-				if (!$buildLinkTo)
-				{
-					$pfn = null;
-				}
-				
-				//echo "DEBUG - Test Case rendering: \$node['id']:{$node['id']}<br>";
-				$status_code = $tcase_node[$node['id']]['exec_status'];
-				$status_descr = $status_code_descr[$status_code];
-				$status_text = lang_get($status_verbose[$status_descr]);
-				$css_class = $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
-				$label = "<span {$css_class} " . '  title="' . $status_text .	'" alt="' . $status_text . '">';
-				
-				if($showTestCaseID)
-				{
-					$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
-				} 
-				$label .= "{$name}</span>";
-				
-				$versionID = $node['tcversion_id'];
-			break;
+			$node['leaf'] = true;
+			$buildLinkTo = $tc_action_enabled;
+			if (!$buildLinkTo)
+			{
+				$pfn = null;
+			}
+			
+			//echo "DEBUG - Test Case rendering: \$node['id']:{$node['id']}<br>";
+			$status_code = $tcase_node[$node['id']]['exec_status'];
+			$status_descr = $status_code_descr[$status_code];
+			$status_text = lang_get($status_verbose[$status_descr]);
+			$css_class = $testcaseColouring ? (" class=\"light_{$status_descr}\" ") : '';   
+			$label = "<span {$css_class} " . '  title="' . $status_text .	'" alt="' . $status_text . '">';
+			
+			if($showTestCaseID)
+			{
+				$label .= "<b>".htmlspecialchars($testCasePrefix.$node['external_id'])."</b>:";
+			} 
+			$label .= "{$name}</span>";
+			
+			$versionID = $node['tcversion_id'];
+		break;
 	}
 	
 	if($create_counters)

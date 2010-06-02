@@ -759,6 +759,26 @@ combo "Set conflict solution" => SKIP
 	<importance><![CDATA[2]]></importance>
 
 </testcase>
+
+<testcase internalid="3206" name="Create Test Plan - AS COPY - OPTIONS BUILD/PLATFORMS">
+	<node_order><![CDATA[103]]></node_order>
+	<externalid><![CDATA[72]]></externalid>
+	<summary><![CDATA[<p>Create a test plan using the create from feature</p><p><span style="font-family: 'Trebuchet MS', Verdana, Arial, sans-serif; font-size: small; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertical-spacing: 2px" class="Apple-style-span"><table border="0" style="text-align: left"><tbody><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Test Cases</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Builds</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">YES</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Priorities</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Milestones</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy User Roles</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Platforms Links</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">YES</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Assigned To</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr></tbody></table></span></p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="3208" name="Create Test Plan - AS COPY - OPTIONS A">
+	<node_order><![CDATA[104]]></node_order>
+	<externalid><![CDATA[73]]></externalid>
+	<summary><![CDATA[<p>Create a test plan using the create from feature</p><p><span style="font-family: 'Trebuchet MS', Verdana, Arial, sans-serif; font-size: small; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertical-spacing: 2px" class="Apple-style-span"><table border="0" style="text-align: left"><tbody><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Test Cases</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">YES</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Builds</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">YES</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Priorities</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Milestones</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy User Roles</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Platforms Links</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">YES</td></tr><tr><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">Copy Assigned To</td><td align="left" style="vertical-align: top; padding: 3px; margin: 0px">&nbsp;</td></tr></tbody></table></span></p>]]></summary>
+	<preconditions><![CDATA[]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
 </testsuite><testsuite name="Test Project Management" >
 <node_order><![CDATA[24]]></node_order>
 <details><![CDATA[<p>All test project management feature.</p><p>Remember to test with and without platforms&nbsp;</p> 

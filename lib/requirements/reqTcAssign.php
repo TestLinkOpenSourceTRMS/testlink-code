@@ -3,17 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2010/04/09 17:24:21 $  $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2010/06/02 08:23:33 $  $Author: franciscom $
  * 
  * @author Martin Havlat
  *
- * 20100408 - franciscom - BUGID 3361 FatalError after trying to assign requirements to an empty test suite
+ * 20100602 - franciscom - BUGID 3495 - Requirements Bulk Assignment crash. (typo error)
+ * 20100408 - franciscom - BUGID 3361 - FatalError after trying to assign requirements to an empty test suite
  * 20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature
- * 20080512 - franciscom - new input argument to control display/hide of close button
- * 20070617 - franciscom - refactoring
- * 20070124 - franciscom
- * use show_help.php to apply css configuration to help pages
  *
 **/
 require_once("../../config.inc.php");
@@ -37,9 +34,6 @@ $bulkCounter = 0;
 $bulkDone = false;
 $bulkMsg = null;
 $pfn = null;
-
-new dBug($args);
-
 switch($args->doAction)
 {
     case 'assign':
@@ -51,11 +45,10 @@ switch($args->doAction)
 	    break;  
 
     case 'bulkassign':
-    	// BUGID 3361
-    	// need to check if we have test cases to work on
-       	$tsuite_mgr = new testsuite($dbHandler);
+    	// BUGID 3361 - need to check if we have test cases to work on
+       	// BUGID 3495 - Requirements Bulk Assignment crash. (typo error) (dbHandler -> db)
+       	$tsuite_mgr = new testsuite($db);
         $tcase_set = $tsuite_mgr->get_testcases_deep($args->id,'only_id');
-
 		$bulkCounter = 0;
       	$bulkDone = true;
       	$args->edit = 'testsuite';
@@ -211,6 +204,7 @@ function doBulkAssignment(&$dbHandler,&$argsObj,$targetTestCaseSet = null)
     	if( is_null($tcase_set) )
     	{
         	$tsuite_mgr = new testsuite($dbHandler);
+        	echo 'DEBUG BEFORE';
         	$tcase_set = $tsuite_mgr->get_testcases_deep($argsObj->id,'only_id');
    		}
    		if( !is_null($tcase_set) && count($tcase_set) )

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testsuite.class.test.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/03/28 16:07:59 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/06/02 11:14:55 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand
@@ -23,6 +23,13 @@ testlinkInitPage($db);
 echo "<pre> testsuite - constructor - testsuite(&\$db)";echo "</pre>";
 $tsuite_mgr=new testsuite($db);
 new dBug($tsuite_mgr);
+
+$tsuite_name = 'Build Management';
+echo "<pre> testsuite - get_by_name(\$name)";echo "</pre>";
+echo "<pre>             get_by_name($tsuite_name)";echo "</pre>";
+$tsuite_info = $tsuite_mgr->get_by_name($tsuite_name);
+new dBug($tsuite_info);
+die();
 
 $tsuite_id=689;
 echo "<pre> testsuite - get_children(\$id)";echo "</pre>";

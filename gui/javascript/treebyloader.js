@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.5 2010/05/30 17:29:47 franciscom Exp $
+$Id: treebyloader.js,v 1.6 2010/06/03 20:44:23 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -16,9 +16,17 @@ This code has been used in following TL features
 - Test Plan Design (test case assignment/link to test plan)
 
 
+Context Menu logic adapted from:
+http://remotetree.extjs.eu/
+Ext.ux.tree.RemoteTreePanel by Saki - ver.: 1.0
+
+
 Author: franciscom - 20080525
 
 rev:
+    20100603 - franciscom - added context menu logic to solve partially 
+               BUGID 2408: Relation between internal testcaseid,testplanid,...
+               
     20080831 - franciscom - added beforemovenode() logic
     
     Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
@@ -94,10 +102,13 @@ function writeNodePositionToDB(newparent,nodeid,oldparentid,newparentid,nodeorde
 }
 
 /* Improvement - cookie name prefix */
+/* 20100602 */
 function TreePanelState(mytree,cookiePrefix) 
 {
     this.mytree = mytree;
     this.cookiePrefix = cookiePrefix;
+    this.contextMenu = new Ext.menu.Menu({id: 'mainContext'});
+    this.clickedNode = null;
 }
 
 TreePanelState.prototype.init = function() 
@@ -176,14 +187,73 @@ TreePanelState.prototype.restoreState = function(defaultPath)
         }
     }
 }
-Ext.BLANK_IMAGE_URL = fRoot+extjsLocation+'/images/default/s.gif';
 
+TreePanelState.prototype.menuShow = function(node,eventObj) 
+{
+  // node.select();
+  // this.clickedNode = node;
+	// var alignEl = node.getUI().getEl();
+	// var xy = this.contextMenu.getEl().getAlignToXY(alignEl, 'tl-tl', [0, 18]);
+
+  this.clickedNode = node;
+  switch(node.attributes.tlNodeType)
+  {
+    case 'testsuite':
+      this.contextMenu.show(node.ui.getEl());           
+	    //this.contextMenu.showAt([eventObj.getXY()[0], xy[1]]);
+	    //eventObj.stopEvent();
+    break;
+
+    case 'testcase':
+      this.contextMenu.show(node.ui.getEl());           
+	    //this.contextMenu.showAt([eventObj.getXY()[0], xy[1]]);
+	    //eventObj.stopEvent();
+    break;
+  }
+
+}
+
+
+
+   
+function displayAPI(item,eventObject,treeObj)
+{
+  alert('this' + this);
+  // dumpProps(this);
+  alert(treeObj.clickedNode);
+  alert(treeObj.clickedNode.id);
+  alert('displayAPI');
+  alert(item.text);
+
+}
+
+   
+   
+function dumpProps(obj, parent) {
+   // Go through all the properties of the passed-in object
+   for (var i in obj) {
+      // if a parent (2nd parameter) was passed in, then use that to
+      // build the message. Message includes i (the object's property name)
+      // then the object's property value on a new line
+      if (parent) { var msg = parent + "." + i + "\n" + obj[i]; } else { var msg = i + "\n" + obj[i]; }
+      // Display the message. If the user clicks "OK", then continue. If they
+      // click "CANCEL" then quit this level of recursion
+      if (!confirm(msg)) { return; }
+      // If this property (i) is an object, then recursively process the object
+      if (typeof obj[i] == "object") {
+         if (parent) { dumpProps(obj[i], parent + "." + i); } else { dumpProps(obj[i], i); }
+      }
+   }
+}
+// 
+   
+   
+Ext.BLANK_IMAGE_URL = fRoot+extjsLocation+'/images/default/s.gif';
 Ext.onReady(function(){
 
     // to manage drag & drop
     var oldPosition = null;
     var oldNextSibling = null;
-
 
     // shorthand
     var Tree = Ext.tree;
@@ -193,6 +263,7 @@ Ext.onReady(function(){
         useArrows:true,
         autoScroll:true,
         animate:true,
+        contextMenu:true,  // is really needed ?
         enableDD:treeCfg.enableDD,
         containerScroll: true, 
         loader: new Tree.TreeLoader({
@@ -212,10 +283,44 @@ Ext.onReady(function(){
     
     tree.setRootNode(root);
     tree.render();
+
     var treeState = new TreePanelState(tree,treeCfg.cookiePrefix);                     
-    treeState.init();                                             
     
+    // from http://www.extjs.com/learn/Tutorial:Ext_Menu_Widget#More_Handy_Stuff
+    // If you need to call a javaScript function with a parameter use the createDelegate  to pass the parameters
+    // Example:
+    //
+    // var ratesMenu = new Ext.menu.Menu({});
+    // ratesMenu.add({text:'FCL Rates',tooltip:'FCL',handler:display_report.createDelegate(this, ['fclrates'])});
+    // ratesMenu.add({text:'LCL Rates',handler:display_report.createDelegate(this, ['lclrates'])});
+    //  
+    // function display_report(report) {
+    //     alert(report);
+    // }
+    // treeState.contextMenu.add(new Ext.menu.TextItem({id:'title', text: ''}));
+    //
+    // Hint from: Ext.ux.tree.RemoteTreePanel by Saki - ver.: 1.0
+    treeState.contextMenu.add(new Ext.menu.TextItem({id:'static', text: '', 
+                                                     style:'font-weight:bold;margin:0px 4px 0px 27px;line-height:18px'}));
+    treeState.contextMenu.add(new Ext.menu.TextItem({id:'api', text: '', 
+                                                     style:'margin:0px 4px 0px 27px;line-height:18px'}));
+
+    treeState.contextMenu.add(new Ext.menu.TextItem({id:'dummy', text: ''}));
+
+    // treeState.contextMenu.add(new Ext.menu.Item({id:'api', text: 'API', handler: displayAPI.createDelegate(this,treeState,true)}));
+    
+    // var treeState = new TreePanelState(tree,treeCfg.cookiePrefix,nodeMenu);                     
+    
+    
+    
+    treeState.init();                                             
+
+        
     // initialize event handlers                                  
+    // tree.on('contextmenu', treeState.menuShow, treeState);                                                   
+    tree.on({contextmenu:{scope:treeState, fn:treeState.menuShow, stopEvent:true}});
+
+
     // Needed to manage save/restore tree state
     tree.on('expandnode', treeState.onExpand, treeState);             
     tree.on('collapsenode', treeState.onCollapse, treeState);         
@@ -246,6 +351,31 @@ Ext.onReady(function(){
     
     // restore last state from tree or to the root node as default
     treeState.restoreState(tree.root.getPath());                  
+    
+    //
+    // Thanks to :
+    // http://remotetree.extjs.eu/
+    // Ext.ux.tree.RemoteTreePanel by Saki - ver.: 1.0
+    //    
+    treeState.contextMenu.on({
+				hide:{scope:treeState, fn:function() {
+					treeState.clickedNode = null;
+				}}
+				,show:{scope:treeState, fn:function() {
+					var node = treeState.clickedNode;
+					var text = node.text;
+					var len = text.length;
+					var xx = this.contextMenu.items.get('static');
+					xx.el.update(text.substr(0,len-'( )'.length));
+					
+					xx = this.contextMenu.items.get('api');
+					xx.el.update('API ID:' + node.id);
+					treeState.contextMenu.el.shadow.hide();
+					treeState.contextMenu.el.shadow.show(this.contextMenu.el);
+				}}
+			});
+
+    
     
     //root.expand();
     

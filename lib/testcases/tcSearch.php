@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.8 2010/05/26 15:01:55 mx-julian Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.9 2010/06/05 12:20:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -118,11 +118,10 @@ if ($args->tprojectID)
    	if($args->requirement_doc_id != "")
     {
     	$args->requirement_doc_id = $db->prepare_string($args->requirement_doc_id);
-     	$from['by_requirement_doc_id'] = " JOIN {$tables['requirements']} REQ " .
-                                         " JOIN {$tables['req_coverage']} RC" .  
-                                         " ON RC.testcase_id = NH_TC.id ".
-     	                                 //BUGID 3490
-		                                 " AND REQ.id=RC.req_id ";
+     	$from['by_requirement_doc_id'] = " JOIN {$tables['req_coverage']} RC" .  
+                                         " ON RC.testcase_id = NH_TC.id " .
+     									 " JOIN {$tables['requirements']} REQ " .
+		                                 " ON REQ.id=RC.req_id " ;
     	$filter['by_requirement_doc_id'] = " AND REQ.req_doc_id like '%{$args->requirement_doc_id}%' ";
     }   
 
@@ -151,6 +150,8 @@ if ($args->tprojectID)
     {
         $sqlPart2 .= implode("",$filter);
     }
+
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sqlFields . $sqlPart2 . "</b><br>";
     
     // Count results
     $sql = $sqlCount . $sqlPart2;

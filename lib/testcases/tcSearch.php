@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.9 2010/06/05 12:20:35 franciscom Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.10 2010/06/05 12:21:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -150,9 +150,7 @@ if ($args->tprojectID)
     {
         $sqlPart2 .= implode("",$filter);
     }
-
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sqlFields . $sqlPart2 . "</b><br>";
-    
+  
     // Count results
     $sql = $sqlCount . $sqlPart2;
     $gui->row_qty = $db->fetchOneValue($sql); 

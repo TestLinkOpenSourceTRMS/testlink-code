@@ -1,14 +1,19 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * Filename $RCSfile: testcaseCommands.class.php,v $
- *
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/05/30 10:24:46 $  by $Author: franciscom $
  * testcases commands
  *
- * rev:
+ * @package 	TestLink
+ * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.43 2010/06/05 09:43:34 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ *
+ *	@internal revisions
+ *	20100605 - franciscom - BUGID 3377 	
  *  20100403 - Julian - BUGID 3441 - Removed Call-time pass-by-reference on function call
  *  					editStep() in function doUpdateStep()
  *	20100403 - franciscom - BUGID 3359 - doCopyStep 	
@@ -20,8 +25,8 @@
  *	20090831 - franciscom - preconditions 
  *	BUGID 2364 - changes in show() calls
  *  BUGID - doAdd2testplan() - added user id, con call to link_tcversions()
- *
-**/
+ **/
+
 class testcaseCommands
 {
 	private $db;
@@ -59,6 +64,7 @@ class testcaseCommands
 	    $obj->execution_types = $this->execution_types;
 		$obj->grants = $this->grants;
     	$obj->initWebEditorFromTemplate = false;
+    	$obj->cleanUpWebEditor = false;
 		$obj->main_descr = '';
 		$obj->name = '';
     	$obj->refresh_tree="no";
@@ -169,6 +175,7 @@ class testcaseCommands
 		   	$guiObj->user_feedback = sprintf(lang_get('tc_created'),$argsObj->name);
 		   	$guiObj->sqlResult = 'ok';
 		   	$guiObj->initWebEditorFromTemplate = true;
+		   	$guiObj->cleanUpWebEditor = true;
 			$opt_list = '';
 		}
 		elseif(isset($tcase['msg']))
@@ -496,6 +503,7 @@ class testcaseCommands
 		{
 			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
 		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+		    $guiObj->cleanUpWebEditor = true;
 		}	
 
 		$guiObj->action = __FUNCTION__;

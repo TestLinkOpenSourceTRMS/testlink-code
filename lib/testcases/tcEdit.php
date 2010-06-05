@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.149 2010/05/30 09:55:25 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.150 2010/06/05 09:43:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100605 - franciscom - BUGID 3377 	
  *	20100403 - franciscom - BUGID 3359: Copy Test Case Step
  *  20100124 - franciscom - fixed bug on copy test cases - do not obey to top or bottom user choice
  *  20100106 - franciscom - Multiple Test Case Steps Feature
@@ -77,7 +78,7 @@ switch($args->doAction)
 {
     case "doUpdate":
     case "doAdd2testplan":
-        $op=$commandMgr->$pfn($args,$_REQUEST);
+        $op = $commandMgr->$pfn($args,$_REQUEST);
     break;
 	
 	case "edit":  
@@ -97,7 +98,7 @@ switch($args->doAction)
     case "doUpdateStep":
     case "doDeleteStep":
     case "doReorderSteps":
-        $op=$commandMgr->$pfn($args,$_REQUEST);
+        $op = $commandMgr->$pfn($args,$_REQUEST);
         $doRender = true;
     break;
 
@@ -105,7 +106,6 @@ switch($args->doAction)
 
 if( $doRender )
 {
-	// renderGui($args,$gui,$op,$templateCfg,$cfg->webEditorCfg);
 	renderGui($args,$gui,$op,$templateCfg,$cfg);
 	exit();
 }
@@ -282,7 +282,7 @@ if ($show_newTC_form)
   	    $cols = $oWebEditor->cfg[$key]['cols'];
   	    if( $init_inputs)
   	    {
-  	      $of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');
+  	      	$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');
   	    }
   	    else
   	    {
@@ -596,7 +596,12 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
                              'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
                              'doDeleteStep' => '', 'doReorderSteps' => '');
 
-	$initWebEditorFromTemplate = property_exists($opObj,'initWebEditorFromTemplate') ? $opObj->initWebEditorFromTemplate : false;                             
+	
+	$key2work = 'initWebEditorFromTemplate';
+	$initWebEditorFromTemplate = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
+  	$key2work = 'cleanUpWebEditor';
+	$cleanUpWebEditor = property_exists($opObj,$key2work) ? $opObj->$key2work : false;                             
+
     $oWebEditor = createWebEditors($argsObj->basehref,$cfgObj->webEditorCfg); 
 	foreach ($oWebEditor->cfg as $key => $value)
   	{
@@ -608,6 +613,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
     	    case "edit":
     	    case "delete":
     	    case "editStep":
+  				$initWebEditorFromTemplate = false;
+  				$of->Value = $argsObj->$key;
+  			break;
+
     	    case "doCreate":
     	    case "doDelete":
     	    case "doCreateStep":
@@ -624,11 +633,14 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
   		}
         $guiObj->operation = $actionOperation[$argsObj->doAction];
 	
-  		if(	$initWebEditorFromTemplate)
+  		if(	$initWebEditorFromTemplate )
   		{
 			$of->Value = getItemTemplateContents('testcase_template', $of->InstanceName, '');	
-		}	
-		// $guiObj->webEditor[$key] = $of->CreateHTML($rows,$cols);
+		}
+		else if( $cleanUpWebEditor )
+		{
+			$of->Value = '';
+		}
 		$smartyObj->assign($key, $of->CreateHTML($rows,$cols));
 	}
       

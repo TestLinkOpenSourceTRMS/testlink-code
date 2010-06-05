@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.45 2010/05/23 14:19:13 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.46 2010/06/05 07:30:17 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -34,10 +34,7 @@ rev :
 
 {* ===================================================================== *}
 {include file="inc_head.tpl" openHead="yes"}
-{if $smarty.const.USE_EXT_JS_LIBRARY}
-    {include file="inc_ext_js.tpl" bResetEXTCss=1}
-{/if}
-          
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
 
 {* includes Ext.ux.CollapsiblePanel *}
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
@@ -75,7 +72,7 @@ rev :
 	treeCfg.children={$gui->ajaxTree->children};
 </script>
 
-<script type="text/javascript" src='gui/javascript/execTree.js'></script>
+<script type="text/javascript" src='gui/javascript/execTreeWithMenu.js'></script>
 
 
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>

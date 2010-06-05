@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.2 2010/03/26 11:41:40 amkhullar Exp $
+$Id: tcAssignedToUser.tpl,v 1.3 2010/06/05 07:30:17 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 rev: 
 20100326 - amitkhullar - BUGID 3345
@@ -10,9 +10,7 @@ rev:
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-{if $smarty.const.USE_EXT_JS_LIBRARY}
-  {include file="inc_ext_js.tpl" css_only=1}
-{/if}
+{include file="inc_ext_js.tpl" css_only=1}
 
 </head>
 

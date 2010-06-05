@@ -5,10 +5,7 @@ Purpose: show results for requirement specification search.
 
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-
-{if $smarty.const.USE_EXT_JS_LIBRARY}
-  {include file="inc_ext_js.tpl" css_only=1}
-{/if}
+{include file="inc_ext_js.tpl" css_only=1}
 
 </head>
 

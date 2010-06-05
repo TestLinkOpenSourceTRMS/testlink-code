@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.297 2010/05/27 09:11:38 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.298 2010/06/05 07:30:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -80,7 +80,6 @@
  *
  *  20071104 - franciscom - $g_exec_cfg->enable_test_automation
  *                          $g_gui->tprojects_combo_order_by (BUGID 498)
- *  20071006 - franciscom - $g_use_ext_js_library
  *  20070930 - franciscom - BUGID 1086 - configure order by in attachment
  *  20070910 - franciscom - removed MAIN_PAGE_METRICS_ENABLED
  *  20070505 - franciscom - following mantis bug tracking style, if file
@@ -496,12 +495,6 @@ $tlCfg->treemenu_show_testcase_id = TRUE;
 
 // ----------------------------------------------------------------------------
 /* [GUI: Javascript libraries] */
-
-/** 
- * ENABLED -> use EXT JS library; DISABLED - simple html 
- * @TODO havlatm: I guess it should be removed
- **/
-$g_use_ext_js_library = ENABLED;
 
 // May be in future another table sort engine will be better
 // kryogenix.org -> Stuart Langridge sortTable
@@ -1213,7 +1206,6 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
  */
 define('TL_IMPORT_ROW_MAX', $tlCfg->import_max_row); 
 define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
-define('USE_EXT_JS_LIBRARY', $g_use_ext_js_library);
 define('TL_TPL_CHARSET', $tlCfg->charset);
 define('TITLE_SEP',$tlCfg->gui_title_separator_1);
 define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);

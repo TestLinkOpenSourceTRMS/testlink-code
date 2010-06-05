@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.39 2010/05/30 10:16:38 franciscom Exp $
+$Id: tcView.tpl,v 1.40 2010/06/05 07:30:17 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -31,10 +31,7 @@ rev:
 var del_action=fRoot+'{$deleteStepAction}';
 </script>
 
-
-{if $smarty.const.USE_EXT_JS_LIBRARY}
-  {include file="inc_ext_js.tpl" css_only=1}
-{/if}
+{include file="inc_ext_js.tpl" css_only=1}
 
 {* need by refresh on upload logic used when this template is called while executing *}
 {if $gui->bodyOnLoad != ''}

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.76 2010/06/02 10:08:14 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.77 2010/06/05 07:30:17 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -297,12 +297,14 @@ function launchEditStep(step_id)
 	</tr>
 	{/if}
 
+{*  onclick="showHideByClass('span','order_info');event.stopPropagation();"> *}
+
 	{if $args_testcase.steps != ''}
 	<tr>
 		<th width="{$tableColspan}">
     {if $edit_enabled && $args_testcase.steps != ''}
 		<img src="{$tlImages.reorder}" align="left" title="{$tcView_viewer_labels.show_hide_reorder}" 
-		    onclick="showHideByClass('span','order_info');event.stopPropagation();">
+		    onclick="showHideByClass('span','order_info');">
     {/if}
 		{$tcView_viewer_labels.step_number}</th>
 		<th>{$tcView_viewer_labels.step_actions}</th>

@@ -4,113 +4,187 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2009/02/14 09:42:01 $ $Author: schlundus $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/06/05 07:09:21 $ $Author: franciscom $
+ *
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/06/05 07:09:21 $ $Author: franciscom $
  *
  * @author Vadim Ivanchenko
  *
  *
  * Scripted update according en_GB string file (version: 1.395) 
+ * Scripted update according en_GB string file (version: ) 
+ * Scripted update according en_GB string file (version: ) 
  * ---------------------------------------------------------------------------------- */
+
+// Define character set of this file (UTF-8 is common value) 
 $TLS_STRINGFILE_CHARSET = "UTF-8";
 
 
 // ----- General terms (used wide) ----------------------------
+$TLS_type_not_configured = "системное сообщение: тип не настроен";
+$TLS_undefined = "undefined";
 $TLS_active = "Активна";
-$TLS_asc = "ascending";
-$TLS_any 			= "any";
-$TLS_assigned 		= "assigned";
-$TLS_automated 		= "Automated";
-$TLS_automatic 		= "Automatic";
-$TLS_check_uncheck_all = "Toggle all";
-$TLS_unassigned = "unassigned";
-$TLS_desc = "descending";
-$TLS_description	= "Description";
-$TLS_delete_confirm_question = "Are your sure you want to delete?";
-$TLS_file_type		= 'File type';
+$TLS_actions = "Действия";
+$TLS_asc = "по возрастанию";
+$TLS_any 			= "любой";
+$TLS_author = "Автор";
+$TLS_automated 		= "Автоматизированный";
+$TLS_automatic 		= "Автоматический";
+$TLS_availability = "Доступность";
+$TLS_build = "Версия (сборка)";
+$TLS_check_uncheck_all = "Включить все";
+$TLS_check_uncheck_all_for_remove = "check/uncheck all for remove";
+$TLS_confirm = "Подтвердить";
+$TLS_days	= "дней";
+$TLS_desc = "по убыванию";
+$TLS_description	= "Описание";
+$TLS_delete_confirm_question = "Уверены, что хотите удалить?";
+$TLS_doc_id = "ID документа";
+$TLS_destination_top = "Destination position top";
+$TLS_destination_bottom = "Destination position bottom";
+$TLS_error = "Ошибка";
+$TLS_export = "Экспорт";
+$TLS_file_type		= 'Тип файла';
+$TLS_filter_mode_and = 'Внимание: поля фильтра работают в режиме И (AND)';
 $TLS_help = "Помощь";
-$TLS_high 			= "High";
-$TLS_hour 			= "Hour";
-$TLS_importance		= "Importance";
-$TLS_low 			= "Low";
-$TLS_manual 		= "Manual";
-$TLS_medium 		= "Medium";
+$TLS_hour 			= "Час";
+$TLS_importance		= "Важность";
+$TLS_imported 		= "Импортировано";
+$TLS_important_notice = "Важное замечание";
+$TLS_keyword = "Отбор по ключевому слову";
+$TLS_mandatory = "Обязательные поля";
+$TLS_manual 		= "Ручной";
 $TLS_Milestone = "Этап тестирования";
+$TLS_months	= "months";
 $TLS_name = "Название";
+$TLS_needed = "Needed";
 $TLS_not_aplicable 	= "N/A";
+$TLS_nobody 		= "Никто";
+$TLS_not_imported 	= "Не импортировано";
 $TLS_none = "нет";
-$TLS_priority		= "Priority";
-$TLS_project		= "Project";
-$TLS_requirement 	= "Requirement";
+$TLS_ok = "OK";
+$TLS_priority		= "Приоритет";
+$TLS_project		= "Проект";
+$TLS_public = "Public";
+$TLS_requirement 	= "Требование";
+$TLS_req_short = "Req.";
 $TLS_reqs = "Требования";
 $TLS_req_spec = "Группа требований";
 $TLS_req_spec_short = "Req. Spec.";
-$TLS_SRS = "SRS";
+$TLS_requirements_spec = "Requirements Spec.";
+$TLS_req_specification = "Req. Specification";
+$TLS_srs = "SRS";
 $TLS_Role = "Уровень доступа";
-$TLS_sort_table_by_column = "Click to change sort order";
+$TLS_sort_table_by_column = "Нажмите, что поменять порядок сортировки";
 $TLS_scope = "Обзор";
 $TLS_status = "Статус";
-$TLS_Keyword = "Ключевые слова";
 $TLS_test_case = "Тест";
 $TLS_testcase = $TLS_test_case;
-$TLS_testcaseversion = 'Test Case Version';
+$TLS_testcaseversion = 'Версия теста';
+$TLS_tester = "Тестировщик";
 $TLS_test_plan = "Тест-план";
 $TLS_testplan = $TLS_test_plan;
 $TLS_testproject = "Программный продукт";
-$TLS_test_report 	= "Test Report";
+$TLS_test_report 	= "Отчет о тестировании";
 $TLS_test_suite = "Группа тестов";
 $TLS_testsuite_created = "Группа тестов создана";
+$TLS_type = "Тип";
 $TLS_title = "Название";
-$TLS_urgency 		= "Urgency";
-$TLS_not_imported 	= "Not imported";
-$TLS_imported 		= "Imported";
-$TLS_nobody 		= "Nobody";
+$TLS_title_admin = "Администрирование";
+$TLS_warning = "Внимание!!";
+$TLS_max_size_file_msg = "Максимальный разрешенный размер файлов:  %s KB";
 
+
+$TLS_total = "Всего";
+$TLS_Unknown = "Неизвестно";
+$TLS_urgency 		= "Срочность";
+$TLS_weeks = "недели";
+$TLS_container = "контейнер";
+$TLS_platform = "Платформа";
 
 // Actions (used wide) 
-$TLS_add 			= "add";
+$TLS_add 			= "добавить";
+$TLS_assigned 		= "назначенный";
 $TLS_create = "создано";
-$TLS_remove 		= "remove";
-$TLS_th_delete = "Удалить?";
-
+$TLS_copy = "копировать";
+$TLS_delete = "Удаление";
+$TLS_executed	= "завершено";
+$TLS_move	= "Переместить";
+$TLS_remove 		= "удалить";
+$TLS_unassigned = "неназначенный";
 
 // Buttons (used wide)
-$TLS_btn_apply 		= "Apply";
+$TLS_btn_apply 		= "Применить";
 $TLS_btn_add = "Добавить";
+$TLS_btn_add_to_testplans = "Добавить в тест-план";
 $TLS_btn_assign = "Установить связь";
 $TLS_btn_cancel = "Отменить";
+$TLS_btn_check = "Пометить";
 $TLS_btn_close = "Закрыть";
 $TLS_btn_cp = "Копировать";
 $TLS_btn_create = "Создать";
+$TLS_btn_create_step = "Создать шаг";
 $TLS_btn_delete = "Удалить";
 $TLS_btn_edit = "Редактировать";
 $TLS_btn_export = "Экспортировать";
 $TLS_btn_find = "Искать";
-$TLS_btn_goback 	= "Go back";
+$TLS_btn_goback 	= "Назад";
+$TLS_btn_generate_doc = "Сгенерировать документ";
 $TLS_btn_import = "Импортировать";
-$TLS_btn_high 		= "High";
-$TLS_btn_low 		= "Low";
-$TLS_btn_medium 	= "Medium";
 $TLS_btn_move = "Переместить";
 $TLS_btn_no = "Нет";
 $TLS_btn_ok = "Ok";
+$TLS_btn_print = "Печать";
 $TLS_btn_save = "Сохранить";
 $TLS_btn_unassign = "Удалить связь";
+$TLS_btn_uncheck = "Снять пометки";
 $TLS_btn_update = "Изменить";
 $TLS_btn_upd = "Изменить";
-$TLS_btn_advanced_filters = "Advanced Filters";
-$TLS_btn_simple_filters = "Simple Filters"; 
-
+$TLS_btn_upload = "Загрузить";
+$TLS_btn_advanced_filters = "Расширенные фильтры";
+$TLS_btn_simple_filters = "Простые фильтры"; 
+$TLS_btn_reorder_steps = "Переупорядочить шаги";
 
 // Status (used wide)
-$TLS_test_status_all 		= "All";
-$TLS_test_status_any 		= "Any";
+$TLS_test_status_all 		= "Все";
+$TLS_test_status_any 		= "Любой";
 $TLS_test_status_not_run = "Не запускался";
 $TLS_test_status_blocked = "Блокирован";
 $TLS_test_status_failed = "Провален";
 $TLS_test_status_passed = "Пройден";
-$TLS_test_status_not_available = "Not Available";
-$TLS_test_status_unknown 	= "Unknown";
+$TLS_test_status_not_available = "Не доступно";
+$TLS_test_status_unknown 	= "Не известно";
+
+$TLS_review_status_valid = "Valid";
+$TLS_review_status_draft = 'Draft';
+$TLS_review_status_future	= 'Future';
+$TLS_review_status_obsolete = 'Obsolete';
+$TLS_review_status_todo = 'To do';
+
+$TLS_req_type_info = "Informational";
+$TLS_req_type_feature = 'Feature';
+$TLS_req_type_use_case = 'Use Case';
+$TLS_req_type_interface = 'Interface';
+$TLS_req_type_non_functional = 'Non functional';
+$TLS_req_type_constrain = 'Constrain';
+
+$TLS_req_spec_type_info = "Informational";
+$TLS_req_spec_type_feature = 'Feature';
+$TLS_req_spec_type_use_case = 'Use Case';
+$TLS_req_spec_type_interface = 'Interface';
+$TLS_req_spec_type_non_functional = 'Non functional';
+$TLS_req_spec_type_constrain = 'Constrain';
+
+
+$TLS_exec_not_run_result_note = "Important Notice: Once a Result is updated from 'Not Run' to another value, " .
+                                "you cannot set it back to 'Not Run'. <br />You can still set the Result to any other value.";
+
+$TLS_req_status_not_testable = "Не тестируемы";
+
+$TLS_reserved_system_role_1 = 'резервная системная роль 1';
+$TLS_reserved_system_role_2 = 'резервная системная роль 2';
 
 
 // ----- unsorted (TODO move) -------------------------------------
@@ -119,33 +193,60 @@ $TLS_search_type_like = "Search on this value will be done on LIKE mode";
 $TLS_exec_assign_no_testcase = "Please select at least one Test Case.";
 $TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
 $TLS_no_testcases_available = "No Test Cases or no destination Test Suites available!";
-$TLS_warning_must_be_number = "Value must be a number";
+$TLS_warning_must_be_number = "значение должно быть числом";
+$TLS_select_at_least_one_req = "ожалуйста, укажите требование!";
 
-$TLS_estimated_time_hours = "Estimated time for executing %s test cases (hours):";
-$TLS_estimated_time_min = "Estimated time for executing %s test cases (min):";
-$TLS_real_time_hours = "Time used for executing %s test cases (hours):";
-$TLS_real_time_min = "Time used for executing %s test cases (min):";
+
+$TLS_estimated_time_hours = "Оценочное время для исполнения %s тестов (ч):";
+$TLS_estimated_time_min = "Оценочное время для исполнения %s тестов (мин):";
+$TLS_real_time_hours = "Время для исполнения %s тестов (ч):";
+$TLS_real_time_min = "Время для исполнения %s тестов (мин):";
 
 $TLS_th_active = "Активна";
 $TLS_th_name = "Название";
 $TLS_th_notes = "Описание";
 $TLS_th_testcase 	= $TLS_test_case; // obsolete
+$TLS_th_delete = "Удалить?";
 $TLS_th_requirement_feature = "Requirement Feature";
 
-$TLS_import_file_type = "Import file type";
-$TLS_max_file_size_is = "Max. file size ";
-$TLS_supported_file_formats = "Supported file formats";
-$TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
-                                 " Please contact your administrator.";
+$TLS_import_file_type = "Тип импортируемого файла";
+$TLS_max_file_size_is = "Макс. размер файла ";
+$TLS_supported_file_formats = "Поддерживаемые типы файлов";
+$TLS_no_permissions_for_action = "У вас нет прав на данное действие!" .
+                                 " Обратитесь к администратору.";
+
+$TLS_name_already_exists = "Имя:%s уже существует";
+$TLS_created_with_new_name = "Создание с именем:%s, потому что имя:%s уже существует";
+
+
+$TLS_click_to_open='Нажмите, чтобы открыть';
+$TLS_testplan_usage="Использование тест-плана";
+
+$TLS_add_tcversion_to_plans = "Добавить версию теста в тест-план";
+$TLS_please_select_one_testplan = "Укажите как минимум один тест-план.";
+
+$TLS_deleted_user = "[deleted user - id=%s]";
+$TLS_tag_for_inactive_users = "*";
+
+$TLS_design = "Test Spec Design";
+$TLS_execution = "Test Execution";
+$TLS_testplan_design = "Test Plan Design";
+$TLS_enable_on = "Enable on";
+$TLS_closed_on_date="Closed on ";
+
 
 // ----- JAVASCRIPT -----
 // Used on javascript logic to validate Custom Field values
 $TLS_warning_numeric_cf = "Custom Field %s accepts only numeric values";
 $TLS_warning_float_cf = "Custom Field %s accepts only numeric or float values";
 $TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
+$TLS_warning_text_area_cf = "Custom Field %s accepts only 255 characters";
+$TLS_warning_countreq_numeric = "The count of REQs must be numeric!";
+$TLS_warn_session_timeout = "Your TestLink session expired.";
+$TLS_warn_demo = "We are sorry. This feature is disabled for Demo.";
 
 
-// Installation/Migration
+// Installation/Migration (TODO remove - migration is English only)
 $TLS_start_warning = '---- Warning ----';
 $TLS_testlink_warning = 'TestLink Warning';
 $TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
@@ -161,13 +262,15 @@ $TLS_empty_first_name = " Напишите свое настоящее имя!";
 $TLS_empty_last_name = "Напишите свою настоящую фамилию!";
 $TLS_fatal_page_title = "TestLink ::: Критическая ошибка. Спасайте ваши данные";
 $TLS_invalid_user_name = "Некорретное имя пользователя. Пожалуйста, введите другое имя.";
-$TLS_no_good_email_address = "Email address format seems no good";
+$TLS_no_good_email_address = "Формат почтового адреса не подходит";
 $TLS_passwd_dont_match = "Вы ввели разные пароли, попробуйте еще раз.";
 $TLS_user_cant_be_created_because = "Ваша учетная запись не может быть создана, потому что : ";
 $TLS_user_name_exists = "Пользователь с таким именем уже существует, выберете другое имя";
 $TLS_valid_user_name_format = "Имя пользователя должно содержать только буквы, цифры, пробел, тире и подчеркивание";
 $TLS_warning_empty_pwd = "Ваш пароль не может быть пустым!";
 $TLS_your_info_please = "Введите подробные данные о себе";
+$TLS_new_account = "TestLink - Создано новый аккаунт";
+
 
 
 // ----- archiveData.php -----
@@ -178,25 +281,57 @@ $TLS_low_priority = "Low";
 $TLS_high_importance = "High";
 $TLS_medium_importance = "Medium";
 $TLS_low_importance = "Low";
-$TLS_high_risk = "High";
-$TLS_medium_risk = "Medium";
-$TLS_low_risk = "Low";
-$TLS_test_importance = "Test importance";
-$TLS_testcases_assigned_to_user='Test Project: %s - Test Cases Assigned to User: %s';
-$TLS_assigned_on='Assigment date';
+$TLS_urgency_high 		= "High";
+$TLS_urgency_medium 	= "Medium";
+$TLS_urgency_low 		= "Low";
+$TLS_test_importance = "Важность теста";
+$TLS_testcases_assigned_to_user = 'Тест-проект: %s - Тесты, назначенные на пользователя: %s';
+$TLS_assigned_on = 'Assigment date';
 
 
 // ----- index.php -----
 $TLS_main_page_title = "TestLink ::: Главная страница";
-$TLS_config_check_warnings = "There are security warnings for your consideration. " .
-                             "See details on file: %s. " .
-                             "To disable any reference to these checkings, set \$tlCfg->config_check_warning_mode = SILENT;";
+$TLS_config_check_warnings = "Имеются предупреждения по настройкам безопасности. " .
+                             "Детали смотрите в файле: %s. " .
+                             "Чтобы отключить упоминание данной проверки, установите \$tlCfg->config_check_warning_mode = SILENT;";
+
+// ----- lib/inventory/inventoryView.php & tpl -----
+$TLS_inventory_title = 'Inventory';
+$TLS_inventory_create_title = 'Define a device data';
+$TLS_inventory_empty = 'No device defined.';
+$TLS_inventory_name = 'Host name';
+$TLS_inventory_ipaddress = 'IP Address';
+$TLS_inventory_notes = 'Notes';
+$TLS_inventory_purpose = 'Purpose';
+$TLS_inventory_hw = 'Hardware';
+$TLS_inventory_delete = 'Delete';
+$TLS_inventory_owner = 'Owner';
+$TLS_inventory_alt_delete = 'Delete the selected the device data';
+$TLS_inventory_alt_edit = 'Edit the selected the device data';
+$TLS_inventory_dlg_delete_txt = 'Are you sure to delete the device?';
+$TLS_inventory_dlg_select_txt = 'Select a row at first.';
+$TLS_inventory_msg_no_rights = 'You have not appropriate rights to modify inventory.';
+$TLS_inventory_msg_no_action = 'Invalid input data - no action was requested.';
+
+// ----- lib/functions/inventory.class.php -----
+$TLS_audit_inventory_created = 'A new device {%1} was created - Test Project {%2}.';
+$TLS_audit_inventory_deleted = 'The device {%1} was deleted - Test Project {%2}.';
+$TLS_inventory_create_success = 'A new device %s was created successfully.';
+$TLS_inventory_create_fails = 'Failed: A new device %s was not created.';
+$TLS_inventory_update_success = 'The device %s was updated successfully.';
+$TLS_inventory_update_fails = 'Failed: The device %s was not updated.';
+$TLS_inventory_delete_success = 'The device %s was deleted successfully.';
+$TLS_inventory_delete_fails = 'Failed: The device %s was not deleted.';
+$TLS_inventory_name_exists = 'The device %s already exists in the project.';
+$TLS_inventory_name_empty = 'The device cannot have empty name.';
+$TLS_inventory_ip_exists = 'The device IP address %s already exists in the project.';
+$TLS_inventory_no_device = 'Failed: No device found for this data:';
 
 
 // ----- keywordsimport.php -----
 $TLS_please_choose_keywords_file = "Выберите файл для загрузки";
-$TLS_keywords_file = "Keywords file";
-$TLS_wrong_keywords_file = "Wrong Keyword file (wrong format)";
+$TLS_keywords_file = "Файл ключевых слов";
+$TLS_wrong_keywords_file = "Неверный файл ключевых слов (неверный формат)";
 
 
 // ----- lostPassword.php -----
@@ -217,49 +352,59 @@ $TLS_login_msg_session_exists1 = "Ваш логин еще действител�
 $TLS_login_msg_session_exists2 = " и возобновите сессию.";
 $TLS_logout_link = "Выход";
 $TLS_passwd_lost = "Ваш пароль был выслан на указанный Вами при регистрации email ";
-$TLS_password_reseted = "New password has been sent via mail";
+$TLS_password_reseted = "Новый пароль отослан по mail";
 $TLS_please_login = "Входите, пожалуйста ...";
 $TLS_session_expired = "Время Вашей последней сессии истекло! Пожалуйста, войдите заново.";
 $TLS_your_first_login = "Добро пожаловать в TestLink! Сейчас у Вас гостевой доступ. Введите логин и пароль, указаные при регистрации...";
 
 
 // ----- newest_tcversions.php -----
-$TLS_no_linked_tcversions = "no linked Test Case versions";
+$TLS_no_linked_tcversions = "нет присоединенных версий тестов";
+$TLS_testplan_seems_empty = "Тест-план, похоже, пустой - Нечего делать";
+
 // resultsGeneral.php
-$TLS_report_tspec_has_no_tsuites = "There are no Test Suites defined for Test Project, <br />".
-                                 "then no execution data can exist => no report can be created";
+$TLS_report_tspec_has_no_tsuites = "Для тест-проекта не заданы тестовые случаи, <br />".
+                                 "поэтому не может существовать данных по исполнению => отчеты не могут быть созданы";
+
+$TLS_report_tcase_platorm_relationship = "Platforms has been defined for this test plan.<br />" .
+                                         "Use of platforms has impact on metrics, because <br />" .
+                                         "a test case that must be executed in N platforms " .
+                                         "is considered as N test cases on metrics.<br />" .
+                                         "Example: if user U1 has been assigned execution of Test Case TC1 <br />" .
+                                         "on platform X and Y, then user U1 has TWO test cases to execute NOT ONE ";  
 
 // ----- resultsNavigator.php -----
-$TLS_title_nav_results = "Reports and Metrics";
-$TLS_report_tplan_has_no_build = "Test Plan has no build defined, <br />".
-                               "then no execution data can exist => no report can be created";
-$TLS_report_tplan_has_no_tcases = "Test Plan has no Test Cases linked, <br />".
-                                "then no execution data can exist => no report can be created";
+$TLS_title_nav_results = "Отчеты и метрики";
+$TLS_report_tplan_has_no_build = "Для тест-планы не заданы версии сборок, <br />".
+                               "поэтому не может существовать данных по исполнению => отчеты не могут быть созданы";
+$TLS_report_tplan_has_no_tcases = "Тест-план не имеет связанных тестовых случаев, <br />".
+                                "поэтому не может существовать данных по исполнению => отчеты не могут быть созданы";
 
 // ----- tcEdit.php -----
-$TLS_tc_copied = "Test Case %s was succesfully copied to <br> Test Suite %s";
-$TLS_tc_created = "Test Case %s was succesfully created";
-$TLS_tc_deleted = "Test Case %s was succesfully deleted";
-$TLS_tc_updated = "Test Case %s was succesfully updated";
-$TLS_tc_new_version = "Test Case Version %d was succesfully created";
-$TLS_tc_updated = "Test Case %s was succesfully updated";
-$TLS_tc_update_failed = "Update of Test Case %s failed!";
-$TLS_tc_version_deleted = "Test Case %s version %d was succesfully deleted";
-$TLS_assign_requirements = "Assign Requirements";
+$TLS_copy_keyword_assignments = "Копировать назначение ключевых слов";
+$TLS_copy_requirement_assignments = "Копировать назначение требований";
+$TLS_tc_copied = "Тест %s успешно копирован в <br> набор тестов %s";
+$TLS_tc_created = "Тест %s успешно создан";
+$TLS_tc_deleted = "Тест %s успешно удален";
+$TLS_tc_new_version = "Версия теста %d успешно создана";
+$TLS_tc_updated = "Тест %s успешно обновлен";
+$TLS_tc_update_failed = "Обновление теста %s не удалось!";
+$TLS_tc_version_deleted = "Тест %s версии %d успешно удален";
+$TLS_assign_requirements = "Назначить требования";
 
 
 // ----- tcexecute.php -----
-$TLS_check_test_automation_server = "Please Check Server Settings";
-$TLS_result_after_exec = "Results after execution: ";
-$TLS_service_not_supported = "This service is not supported";
-$TLS_tcexec_notes = "Notes:";
-$TLS_tcexec_result = "Result:";
-$TLS_tcexec_results_for = "Result for:";
+$TLS_check_test_automation_server = "Проверьте настройки сервера";
+$TLS_result_after_exec = "Результаты выполнения: ";
+$TLS_service_not_supported = "Данный сервис не поддерживается";
+$TLS_tcexec_notes = "Примечания:";
+$TLS_tcexec_result = "Результат:";
+$TLS_tcexec_results_for = "Результат для:";
 
 
 // ----- gui/templates/attachment404.tpl -----
 $TLS_error_attachment_not_found = "Ошибка: прикрепленный файл не найден!";
-$TLS_title_downloading_attachment = "Downloading attachment";
+$TLS_title_downloading_attachment = "Загрузка приложения";
 
 
 // ----- gui/templates/attachmentdelete.tpl -----
@@ -272,10 +417,12 @@ $TLS_title_delete_attachment = "Удаление прикрепленных фа
 // ----- gui/templates/containerDelete.tpl -----
 $TLS_btn_yes_del_comp = "Да, удалить группу!";
 $TLS_container_title_testsuite = $TLS_test_suite;
-$TLS_linked_but_not_executed = "Linked to one or more Test Plan, but not executed";
-$TLS_question_del = "Вы действительно хотите удалить";
-$TLS_th_link_exec_status = "Link and execution status";
-
+$TLS_linked_but_not_executed = "Привязан к одному или более тест-плану, но не выполнен";
+$TLS_question_del_testsuite = "Действительно удалить набор тестов?";
+$TLS_th_link_exec_status = "Состояние связей и выполнения";
+$TLS_testsuite_successfully_deleted = "Набор тестов успешно удален";
+$TLS_no_links = "Нет зависимых данных.";
+$TLS_linked_and_executed = "Тест добавлен в тест-план и имеет результаты.";
 
 
 // ----- gui/templates/containerNew.tpl -----
@@ -294,17 +441,17 @@ $TLS_link_bts_create_bug = "Ввести информацию об обнару�
 $TLS_title_bug_add = "Добавить баг";
 
 
-// gui/templates/bug_delete.tpl
+// ----- gui/templates/bug_delete.tpl -----
 $TLS_title_delete_bug = "Удалить баг";
 
 
 
-// gui/templates/containerMove.tpl
+// ----- gui/templates/containerMove.tpl -----
 $TLS_as_first_testsuite = "Destination position top";
 $TLS_as_last_testsuite = "Destination position bottom";
 $TLS_choose_target = "Выберите цель";
-$TLS_cont_copy_first = "Copy";
-$TLS_cont_copy_second = "to Any";
+$TLS_cont_copy_first = "Копировать";
+$TLS_cont_copy_second = "любому";
 $TLS_cont_move_first = "Переместить этот";
 $TLS_cont_move_second = "в другой";
 $TLS_copy_keywords = "Копировать ключевые слова";
@@ -312,15 +459,19 @@ $TLS_defined_exclam = "определено!";
 $TLS_include_nested = "Включая вложенные данные (только копирование).";
 $TLS_sorry_further = "К сожалению, дальше хода нет";
 $TLS_title_move_cp = "Перемещение/Копирование";
-$TLS_title_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_title_move_cp_testcases = "Переместить/копировать тесты";
 
-
-// gui/templates/reqCreate.tpl
+// ----- gui/templates/reqCreate.tpl -----
 $TLS_req_create = "Создать новое требование";
 $TLS_req_doc_id = "Идентификатор требования (DOC-ID)";
-$TLS_warning_empty_req_title = "Requirement title cannot be empty!";
+$TLS_warning_empty_req_title = "Название требования не может быть пустым!";
 $TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
-$TLS_create_testcase_from_req = "Create Test Cases from Requirements";
+$TLS_create_testcase_from_req = "Создать тест из требования";
+
+// ----- gui/templates/reqCopy.tpl -----
+$TLS_copy_one_req = "Копировать требование";
+$TLS_copy_several_reqs = "Копировать требования";
+$TLS_copy_testcase_assignments = "Copy Test Case Assignments";
 
 
 // gui/templates/containerOrder.tpl
@@ -334,38 +485,40 @@ $TLS_node_type_dbtable_testsuites = $TLS_test_suite;
 $TLS_node_type_dbtable_testcases = $TLS_testcase;
 
 
-
-// gui/templates/containerView.tpl
-$TLS_alt_del_testsuite = "Delete this Test Suite with all children (Test Suites and Test Cases)";
-$TLS_alt_edit_testsuite = "Modify this Test Suite data and title";
-$TLS_alt_move_cp_testsuite = "Move or copy this Test Suite to another Test Project";
-$TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
-$TLS_btn_del_testsuite = "Delete Test Suite";
-$TLS_btn_edit_testsuite = "Edit";
+// ----- gui/templates/containerView.tpl -----
+$TLS_alt_del_testsuite = "Удалить данный набор тестов со всеми потомками (Test Suites и Test Cases)";
+$TLS_alt_edit_testsuite = "Изменить данные и название данного набора тестов";
+$TLS_alt_move_cp_testsuite = "Переместить или Скопировать данный набор тестов в другой тест-проект";
+$TLS_alt_move_cp_testcases = "Переместить/Скопировать тесты";
+$TLS_btn_del_testsuite = "Удалить набор тестов";
+$TLS_btn_del_testsuites_bulk = "Delete Test Suites Bulk";
+$TLS_btn_edit_testsuite = "Редактировать";
 $TLS_btn_execute_automatic_testcases = "Execute All Automatic Test Cases";
 $TLS_btn_export_all_testsuites = "Экспортировать все тесты";
 $TLS_btn_export_tc = "Экспорт тестов";
 $TLS_btn_export_testsuite = "Экспорт группы тестов";
 $TLS_btn_import_tc = "Импорт тестов";
 $TLS_btn_import_testsuite = "Импорт группы тестов";
-$TLS_btn_move_cp_testsuite = "Move/Copy";
-$TLS_btn_move_cp_testcases = "Move/Copy Test Cases";
-$TLS_btn_new_testsuite = "New child Test Suite";
-$TLS_btn_new_tc = "Создать тестовый пример";
-$TLS_btn_reorder = "Reorder children";
+$TLS_btn_move_cp_testsuite = "Переместить/Скопировать";
+$TLS_btn_move_cp_testcases = "Переместить/Скопировать тесты";
+$TLS_btn_new_testsuite = "Новый дочерний набор тестов";
+$TLS_btn_new_tc = "Создать тест";
+$TLS_btn_reorder = "Упорядочить потомков";
 $TLS_container_title_testproject = $TLS_testproject;
+$TLS_container_title_testplan = $TLS_testplan;
 $TLS_edit_testproject_basic_data = "Редактировать информацию о продукте";
 $TLS_th_product_name = "Название продукта";
+$TLS_th_testplan_name = "Имя тест-плана";
 
 
-// gui/templates/cfields/cfieldsEdit.tpl
+// ----- gui/templates/cfields/cfieldsEdit.tpl -----
+$TLS_assigned_to_testprojects = "Assigned to Test Projects";
 $TLS_available_on = "Available for";
 $TLS_custom_field = "Дополнительные поля";
 $TLS_enable_on_design = "Enable on <br>test specification";
 $TLS_enable_on_exec = "Enable on <br>test execution";
 $TLS_enable_on_testplan_design = "Enable on <br />test plan design";
 $TLS_label = "Label";
-$TLS_name = "Название";
 $TLS_popup_delete_custom_field = "Are you sure you want to delete the custom field?";
 $TLS_possible_values = "Possible values";
 $TLS_show_on_design = "Display on <br>test specification";
@@ -381,8 +534,12 @@ $TLS_warning_is_in_use = "You can neither delete, either change type <br /> " .
                          "because a value has been assigned to this custom field <br />" .
                          "by user on an test specification or execution ";
 
+$TLS_warning_no_type_change = "You can NOT change custom field type <br /> " .
+                              "because a value has been assigned to this custom field <br />" .
+                              "by user on an test specification or execution ";
 
-// gui/templates/inc_update.tpl
+
+// ----- gui/templates/inc_update.tpl -----
 $TLS_info_failed_db_upd = "Обновление базы данных было неудачным!";
 $TLS_info_failed_db_upd_details = "Обновление базы данных было неудачным! - подробности:";
 $TLS_invalid_query = "Неудачный запрос - ";
@@ -390,47 +547,58 @@ $TLS_warning = "Внимание!!";
 $TLS_was_success = " были успешно";
 
 
-// gui/templates/execNavigator.tpl
+// ----- gui/templates/execNavigator.tpl -----
 $TLS_TestPlan = "Тест-план";
 $TLS_btn_apply_filter = "Применить фильтр";
 $TLS_btn_update_menu = "Обновить дерево";
 $TLS_caption_nav_filter_settings = "Параметры выборки";
+$TLS_caption_nav_filters = "Фильтры";
+$TLS_caption_nav_settings = "Настройки";
 $TLS_current_build = "Текущая версия";
 $TLS_filter_owner = "Отбор по владельцу";
 $TLS_filter_result = "Отбор по результатам прогона";
+$TLS_filter_on = "на";
 $TLS_filter_tcID = "Отбор по номеру теста";
-$TLS_include_unassigned_testcases = " - include unassigned Test Cases";
-$TLS_keyword = "Отбор по ключевому слову";
+$TLS_include_unassigned_testcases = " - включая неназначенные тесты";
 $TLS_test_status_all_status = "Все";
-$TLS_filter_result_all_prev_builds = "Result on ALL Previous Builds";
+$TLS_filter_result_all_builds = "ВСЕ сборки";
+$TLS_filter_result_any_build = "ЛЮБАЯ сборка";
+$TLS_filter_result_specific_build = "особая сборка";
+$TLS_filter_result_latest_execution = "последнее выполнение";
+$TLS_filter_result_current_build = "Сборка, выбранная для исполнения";
+$TLS_filter_somebody = "Некто";
+$TLS_exec_build = "Сборка для выполнения";
+$TLS_filter_result_all_prev_builds = "Результат по ЛЮБЫМ предыдущим сборкам";
+$TLS_filter_result_any_prev_build = "ЛЮБАЯ предыдущая сборка";
 
 
-// gui/templates/mainPage.tpl
+// ----- gui/templates/mainPage.tpl -----
 $TLS_th_my_perc_completed = "План выполнен на [%]";
 $TLS_th_perc_completed = "План выполнен на [%]";
 $TLS_title_your_tp_metrics = "Показатели выполнения тест-плана";
+$TLS_error_no_testprojects_present = "There are currently no testproject defined!";
 
 
-// gui/templates/metrics_dashbord.tpl
-$TLS_th_total_tc = "Test Case number";
-$TLS_th_active_tc = "Active Test Cases";
-$TLS_th_executed_tc = "Executed Test Cases";
-$TLS_th_executed_vs_active = "Executed/Active [%]";
-$TLS_th_executed_vs_total = "Executed/Total [%]";
+// ----- gui/templates/metrics_dashbord.tpl -----
+$TLS_th_total_tc = "Номер теста";
+$TLS_th_active_tc = "Активные тесты";
+$TLS_th_executed_tc = "Выполненные тесты";
+$TLS_th_executed_vs_active = "Выполнен/Активный [%]";
+$TLS_th_executed_vs_total = "Выполнен/Всего [%]";
 
 
-// gui/templates/newest_tcversions.tpl
+// ----- gui/templates/newest_tcversions.tpl -----
 $TLS_linked_version = "Linked version";
 $TLS_newest_version = "Newest available active version";
 $TLS_title_newest_tcversions = "Newest versions of linked Test Cases";
 $TLS_no_newest_version_of_linked_tcversions = "All linked Test Case Versions are current";
 
 
-// gui/templates/emailSent.tpl
+// ----- gui/templates/emailSent.tpl -----
 $TLS_send_test_report = "- Послан отчет по тестированию";
 
 
-// gui/templates/reqImport.tpl
+// ----- gui/templates/reqImport.tpl -----
 $TLS_Result = "Результат";
 $TLS_btn_back2srs = "Назад к Спецификации требований";
 $TLS_btn_upload_file = "Загрузить файл";
@@ -466,7 +634,6 @@ $TLS_warning_delete_attachment = "Удалить этот файл?";
 
 
 // gui/templates/resultsNavigator.tpl
-$TLS_btn_print = "Печать";
 $TLS_note_email_sent_t = "note: email format sent to user's email";
 $TLS_send_results = "Отослать отчет ";
 $TLS_send_to = "To:";
@@ -519,15 +686,22 @@ $TLS_coverage = "Покрытие";
 $TLS_popup_delete_req = "Вы уверены, что хотите удалить требование?";
 $TLS_req_edit = "Редактировать требование";
 $TLS_req_msg_notestcase = "Нет привязанных тестов";
-$TLS_requirement_spec = "Requirement Specification";
+$TLS_requirement_spec = "Спецификация требований";
 $TLS_test_case_id = "ID";
 $TLS_title_created = "Создан";
 $TLS_title_last_mod = "Изменен";
+$TLS_expected_coverage = "Number of test cases needed";
+$TLS_warning_expected_coverage = $TLS_expected_coverage . " must be a number ";
+$TLS_warning_expected_coverage_range = $TLS_expected_coverage . " must be > 0 ";
+
+$TLS_current_coverage = "Connected";
+$TLS_coverage_number = "Create";
+$TLS_testsuite_title_addition = "automatically generated from req. spec.";
+$TLS_testcase_title_addition = "automatically generated from requirement";
 
 
 
 // gui/templates/buildEdit.tpl
-$TLS_active = "Активна";
 $TLS_enter_build = "Номер версии";
 $TLS_enter_build_notes = "Описание";
 //$TLS_msg_build = "Notes: Each build is related to the active Test Plan. " .
@@ -536,9 +710,11 @@ $TLS_open = "Открыта";
 $TLS_title_build_2 = "Редактирование версии продукта";
 $TLS_title_build_create = "Создание новой версии продукта";
 $TLS_title_build_update = "Изменение версии продукта";
-$TLS_title_build_edit = "Edit Build";
+$TLS_title_build_edit = "Редактировать сборку";
 $TLS_warning_empty_build_name = "Введите номер версии (сборки)!";
-$TLS_copy_to_all_tplans = "Copy to all Test Plans";
+$TLS_copy_to_all_tplans = "Копировать во все Test Plans";
+$TLS_release_date = "Release date";
+$TLS_closure_date = "Close on";
 
 
 
@@ -565,26 +741,28 @@ $TLS_comp_scope = "Обзор";
 // gui/templates/reqSpecView.tpl
 $TLS_btn_analyse = "Анализировать";
 $TLS_btn_check_all = "Выбрать все";
+$TLS_btn_copy_requirements = "Copy Requirements";
+$TLS_btn_copy_req_spec = "Copy";
 $TLS_btn_delete_spec = "Удалить";
 $TLS_btn_edit_spec = "Редактировать описание группы";
 $TLS_btn_export_reqs = "Экспорт требований";
 $TLS_btn_req_create = "Создать новое требование";
 $TLS_btn_spec_list = "Список групп требований";
 $TLS_btn_uncheck_all = "Ничего не выбирать";
-$TLS_cant_delete_req_nothing_sel = "Please select a requirement!";
+$TLS_cant_delete_req_nothing_sel = "Пожалуйста, укажите требование!";
 $TLS_popup_sure_delete = "Вы уверены, что хотите удалить спецификацию данного требования?";
 $TLS_req_select_create_tc = "Создать тест";
 $TLS_req_select_delete = "Удаление требований";
 $TLS_req_title_list = "Список требований";
 $TLS_req_total = "Всего требований";
-$TLS_req_reorder = "Reorder requirements";
-$TLS_select_at_least_one_req = "Please select a requirement!";
+$TLS_req_reorder = "Упорядочить требования";
+$TLS_select_at_least_one_req = "ожалуйста, укажите требование!";
 $TLS_warning_delete_requirements = "Вы уверены, что хотите удалить выбранные требования?";
-$TLS_warning_delete_req_spec = "You are going to delete: %s <br /><br /> Are you sure?";
-$TLS_title_change_req_order = "Change requirements order";
+$TLS_warning_delete_req_spec = "Вы собираетесь удалить: %s <br /><br /> Уверены?";
+$TLS_title_change_req_order = "Изменить порядок требований";
+$TLS_req_spec_copy_done = "A copy of Req. Spec (DOCID:%s - %s) has been done (DOCID:%s)";
 
-
-// gui/templates/inc_copyrightnotice.tpl
+// ----- gui/templates/inc_copyrightnotice.tpl -----
 $TLS_gnu_gpl = "страницу лицензии GNU GPL";
 $TLS_lic_home = "страницу проекта Testlink";
 $TLS_lic_product = "Перейти на";
@@ -592,15 +770,14 @@ $TLS_licensed_under = "Перейти на";
 
 
 
-// gui/templates/containerEdit.tpl
+// ----- gui/templates/containerEdit.tpl -----
 $TLS_btn_update_testsuite = "Изменить данные о группе тестов";
 $TLS_title_edit_level = "Редактирование";
 
 
 
-// gui/templates/reqSpecAnalyse.tpl
+// ----- gui/templates/reqSpecAnalyse.tpl -----
 $TLS_edit = "Редактировать";
-$TLS_none = "нет";
 $TLS_req = "Требование";
 $TLS_req_spec_change = "Выбрать требования группы ";
 $TLS_req_title_analyse = "Анализировать спецификации требований ";
@@ -608,21 +785,25 @@ $TLS_req_title_covered = "Покрытые требования ";
 $TLS_req_title_in_tl = "Requirements within TestLink";
 $TLS_req_title_nottestable = "Нетестируемые требования";
 $TLS_req_title_uncovered = "Непокрытые требования";
-$TLS_req_title_not_in_tl = "Uncovered or not-testable requirements";
+$TLS_req_title_not_in_tl = "Непокрытые или нетестируемые требования";
 $TLS_req_total_count = "Общее количество требований";
-$TLS_testcases = "Тестовые примеры";
 
 
 
-// gui/templates/reqSpecCreate.tpl
+// ----- gui/templates/reqSpecCreate.tpl -----
 $TLS_action_create_srs = "Создание группы требований";
 
 
 
-// gui/templates/inc_reqView.tpl
-$TLS_Author = "Автор";
+// ----- gui/templates/inc_reqView.tpl -----
 $TLS_last_edit = "Последний раз отредактировано ";
-$TLS_warning_delete_requirement = "You are going to delete: %s <br /><br /> Are you sure?";
+$TLS_warning_delete_requirement = "Вы собираетесь удалить: %s <br /><br /> Уверены?";
+$TLS_btn_freeze_this_version = "Freeze this version";
+$TLS_warning_freeze_requirement = "You are going to freeze: %s <br /><br /> Are you sure?";
+$TLS_freeze = "Freeze";
+$TLS_can_not_edit_req = "You can not edit this version because it has been frozen.";
+$TLS_req_version_frozen = "Requirement version has been frozen.";
+$TLS_freeze_req = "Freeze Requirement";
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -637,19 +818,14 @@ $TLS_trep_total = "Всего";
 
 
 
-// gui/templates/inc_res_by_keyw.tpl
+// ----- gui/templates/inc_res_by_keyw.tpl -----
 $TLS_title_res_by_kw = "Результаты прогона по ключевым словам";
 $TLS_trep_kw = "Ключевое слово";
 
-
-
-// gui/templates/inc_res_by_owner.tpl
 $TLS_title_res_by_owner = "Результаты прогона по владельцам тестов";
 $TLS_trep_owner = "Ответственный";
-$TLS_title_res_by_tester = "Results by Tester";
-$TLS_trep_tester = "Tester";
-
-
+$TLS_title_res_by_tester = "Результаты по тестировщику";
+$TLS_trep_tester = "Тестировщик";
 
 // gui/templates/inc_res_by_prio.tpl
 $TLS_tit_end_date = "Дата окончания";
@@ -672,11 +848,11 @@ $TLS_trep_ts = "Набор тестов";
 // gui/templates/reqSpecEdit.tpl
 $TLS_req_total_description = "Use this parameter to overwrite real count of requirements within the document." .
                              " '0' means unused.";
+$TLS_copy_req_spec = "Copy Req. Spec.";
 
 
 
 // gui/templates/inc_show_bug_table.tpl
-$TLS_build = "Версия (сборка)";
 $TLS_caption_bugtable = "Обнаруженные баги";
 $TLS_delete_bug = "Удалить баг";
 $TLS_del_bug_warning_msg = "Удалить этот баг?";
@@ -690,25 +866,26 @@ $TLS_req_list_docs = "Группы требований";
 
 
 
-// gui/templates/tcEdit_New_viewer.tpl
+// ----- gui/templates/tcEdit_New_viewer.tpl -----
 $TLS_alt_add_tc_name = "Добавить название теста. Это поле обязательно для заполнения";
 $TLS_expected_results = "Ожидаемая реакция";
+$TLS_preconditions = "Условия";
 $TLS_steps = "Шаги";
 $TLS_summary = "Описание теста: цель, сценарий и исходное состояние программы";
 $TLS_tc_title = "Название теста";
 
 
 
-// gui/templates/show_exec_notes.tpl
+// ----- gui/templates/show_exec_notes.tpl -----
 $TLS_title_execution_notes = "Замечания по прогону";
 
 
 
-// gui/templates/rolesedit.tpl
+// ----- gui/templates/rolesedit.tpl -----
 $TLS_btn_create_role = "Создать";
 $TLS_btn_edit_role = "Изменить";
 $TLS_caption_define_role = "Изменить уровень доступа";
-$TLS_caption_possible_affected_users = "Possibly affected users";
+$TLS_caption_possible_affected_users = "Вероятно затрагиваемые пользователи";
 $TLS_enter_role_notes = "Описание";
 $TLS_menu_assign_product_roles = "Доступ к продукту";
 $TLS_menu_assign_testplan_roles = "Доступ к тест-плану";
@@ -716,26 +893,27 @@ $TLS_menu_define_roles = "Права доступа";
 $TLS_menu_mod_user = "Изменить данные пользователей";
 $TLS_menu_new_user = "Новый пользователь";
 $TLS_menu_edit_user = "Редактирование пользователя";
-$TLS_menu_edit_role = "Edit Role";
+$TLS_menu_edit_role = "Редактировать роль";
 $TLS_menu_view_users = "Все пользователи";
 $TLS_menu_view_roles = "Уровни доступа";
 $TLS_th_cf_rights = "Доступ к доп. полям";
 $TLS_th_kw_rights = "Доступ к ключевым словам";
 $TLS_th_mgttc_rights = "Доступ к тестам";
+$TLS_th_platform_rights = $TLS_platform;
 $TLS_th_product_rights = "Доступ к продукту";
 $TLS_th_req_rights = "Доступ к требованиям";
 $TLS_th_rights = "Права доступа";
 $TLS_th_rolename = "Название уровня доступа";
-$TLS_th_system_rights = "System rights";
+$TLS_th_system_rights = "Системные права";
 $TLS_th_tp_rights = "Доступ к тест-планам";
 $TLS_th_user_rights = "Доступ к персоналу";
 $TLS_title_user_mgmt = "Персонал";
-$TLS_warning_empty_role_name = "Please give a name to Role";
+$TLS_warning_empty_role_name = "Укажите имя роли";
 $TLS_warning_modify_role = "Изменить уровни доступа?";
 
 
 
-// gui/templates/tcSearchForm.tpl
+// ----- gui/templates/tcSearchForm.tpl -----
 $TLS_caption_search_form = "Искать тесты";
 $TLS_custom_field_value ="Custom Field Value";
 $TLS_not_applied = "Не применимо";
@@ -746,15 +924,15 @@ $TLS_title_search_tcs = "Поиск";
 $TLS_requirement_document_id = "Req. Doc. ID";
 
 
-// gui/templates/testcases/searchData.tpl
-$TLS_too_wide_search_criteria = "Too many results. Please, set a more specific criteria for the search.";
+// ----- gui/templates/testcases/searchData.tpl -----
+$TLS_too_wide_search_criteria = "Слишком много результатов. Укажите более точные критерии поиска.";
 
 
-// gui/templates/infoWindow.tpl
+// ----- gui/templates/infoWindow.tpl -----
 
 
 
-// gui/templates/tcDelete.tpl
+// ----- gui/templates/tcDelete.tpl -----
 $TLS_btn_yes_iw2del = "Да, удалить тест!";
 $TLS_question_del_tc = "И вправду удалить тест?";
 $TLS_th_executed = "Выполнено";
@@ -763,48 +941,54 @@ $TLS_th_version = "Версия";
 
 
 
-// gui/templates/tcNew.tpl
+// ----- gui/templates/tcNew.tpl -----
 $TLS_title_new_tc = "Создать тест";
 $TLS_warning_empty_tc_title = "Пожалуйста, введите заголовок теста";
 
 
 
-// gui/templates/tcImport.tpl
+// ----- gui/templates/tcImport.tpl -----
 $TLS_title_imp_tc_data = "Импорт теста";
 $TLS_view_file_format_doc = "(View file formats documentation)";
 
 
 
-// gui/templates/keywordsimport.tpl
+// ----- gui/templates/keywordsimport.tpl -----
 $TLS_title_keyword_import_to = "Import keywords to";
 $TLS_title_keyword_import = "Import keywords";
 
 
 
-// gui/templates/keywordsExport.tpl
+// ----- gui/templates/keywordsExport.tpl -----
 $TLS_export_keywords="Export keywords";
 $TLS_title_req_import_to = "Импортировать требования в группу требований:";
 
 
 
-// gui/templates/cfields_tproject_assign.tpl
+// ----- gui/templates/cfields_tproject_assign.tpl -----
 $TLS_btn_cfields_active_mgmt = "Изменить текущий статус";
-$TLS_btn_cfields_display_order = "Save display order";
+$TLS_btn_cfields_display_order = "Сохранить параметры отображения";
+$TLS_btn_cfields_display_attr = "Save display order and location";
 $TLS_cfields_active = "Active";
 $TLS_cfields_tproject_assign = "Assign custom fields";
-$TLS_display_order = "Display order";
+$TLS_display_order = "Порядок отображения";
 $TLS_title_assigned_cfields = "Assigned custom fields";
 $TLS_title_available_cfields = "Available custom fields";
+$TLS_location = "Location";
+$TLS_standard_location = "standard";
+$TLS_before_steps_results = "Before steps";
 
 
 
-// gui/templates/usersview.tpl
+
+
+// ----- gui/templates/usersview.tpl -----
 $TLS_No = "Нет";
 $TLS_Yes = "Да";
-$TLS_alt_delete_user = "Really delete the selected user?";
-$TLS_alt_edit_user = "Edit user";
-$TLS_order_by_login = "Order by login";
-$TLS_order_by_role_descr = "Order by role description";
+$TLS_alt_delete_user = "Действительно удалить выделенного пользователя?";
+$TLS_alt_edit_user = "Редактировать пользователя";
+$TLS_order_by_login = "Отсортировать по логину";
+$TLS_order_by_role_descr = "Отсортировать по описанию роли";
 $TLS_th_email = "Email";
 $TLS_th_first_name = "Имя";
 $TLS_th_last_name = "Фамилия";
@@ -813,12 +997,13 @@ $TLS_th_login = "Логин";
 $TLS_th_role = "Уровень доступа";
 $TLS_th_api = "API Key";
 //$TLS_api_gen_key_action = "generate";
-$TLS_warning_delete_user = "Really delete the selected user?";
-$TLS_order_by_login_dir = "Order by login";
-$TLS_order_by_role_dir = "Order by role";
-$TLS_alt_active_user = "Active user";
+$TLS_warning_delete_user = "Действительно удалить выделенного пользователя?";
+$TLS_order_by_login_dir = "Отсортировать по логину";
+$TLS_order_by_role_dir = "Отсортировать по роли";
+$TLS_alt_active_user = "Активный пользователь";
 
-// gui/templates/login.tpl
+
+// ----- gui/templates/login.tpl -----
 $TLS_btn_login = "Войти";
 $TLS_login_name = "Логин:";
 $TLS_lost_password_q = "Забыли пароль?";
@@ -827,7 +1012,7 @@ $TLS_password = "Пароль:";
 
 
 
-// gui/templates/loginFirst.tpl
+// ----- gui/templates/loginFirst.tpl -----
 $TLS_btn_add_user_data = "Добавить данные пользователя";
 $TLS_e_mail = "E-mail адрес (используется в случае утери пароля):";
 $TLS_first_name = "Имя:";
@@ -838,42 +1023,42 @@ $TLS_password_mgmt_is_external = "Password management is external";
 $TLS_user_login_valid_regex = "The Login Name contains invalid characters!";
 
 
-// gui/templates/tcMove.tpl
+// ----- gui/templates/tcMove.tpl -----
 $TLS_as_first_testcase = "Destination position top";
 $TLS_as_last_testcase = "Destination position bottom";
-
 $TLS_btn_mv = "Переместить";
-$TLS_choose_container = "Choose Test Suite";
-$TLS_inst_copy = "Copy Test Case to any Test Suite.";
+$TLS_choose_container = "Выберите Test Suite";
+$TLS_inst_copy = "Копировать Test Case в другой Test Suite.";
 $TLS_inst_move = "Переместить данный тест в другую группу";
-$TLS_inst_copy_move_warning = "Important: You can only choose Test Suites belonging to this Test Project.";
+$TLS_inst_copy_move_warning = "Важно: вы можете выбирать только Test Suites, принадлежащие к данному Test Project.";
 $TLS_title_mv_cp_tc = "Переместить/Скопировать тест";
 
 
 
-// gui/templates/loginLost.tpl
+// ----- gui/templates/loginLost.tpl -----
 $TLS_btn_send = "Выслать мне новый пароль";
 $TLS_password_reset = "Reset password";
 
 
 
-// gui/templates/tcView.tpl
+// ----- gui/templates/tcView.tpl -----
 $TLS_no_records_found = "Ваш поиск оказался безрезультатным!";
 $TLS_other_versions = 'Other versions';
 $TLS_match_count = "Number of matches";
 
-// gui/templates/execSetResults.tpl
+// ----- gui/templates/execSetResults.tpl -----
 $TLS_alt_attachment_mgmt = "Загрузить файл";
 $TLS_alt_notes = "замечания";
-$TLS_assigned_to = "Assigned to";
+$TLS_assigned_to = "Назначено";
 $TLS_attachment_mgmt = "Загрузить файл";
 $TLS_btn_history_off = "Показать результаты последнего прогона";
-$TLS_btn_history_off_any_build = "Show only last execution (any Build)";
+$TLS_btn_history_off_any_build = "Показать только последний прогон (любая сборка)";
 $TLS_btn_history_on = "Показать результаты всех прогонов";
 $TLS_btn_save_all_tests_results = "Сохранить результаты всех прогонов";
 $TLS_btn_save_tc_exec_results = "Сохранить результаты прогона";
+$TLS_btn_save_exec_and_movetonext = "Сохранить и перейти к следующему";
 $TLS_bug_mgmt = "Добавить баг";
-$TLS_build_is_closed = "Build is closed";
+$TLS_build_is_closed = "Сборка закрыта";
 $TLS_builds_notes = "Описание текущей версии продукта";
 $TLS_bulk_tc_status_management = "Групповая обработка результатов прогона";
 $TLS_closed_build = "close build. no operation can be done";
@@ -881,25 +1066,26 @@ $TLS_date_time_run = "Дата";
 $TLS_details = "Описание группы тестов";
 $TLS_edit_notes = "edit notes";
 $TLS_execute_and_save_results ="Execute and Save Results";
-$TLS_exec_any_build = "(any build)";
-$TLS_exec_current_build = "(current build)";
+$TLS_exec_any_build = "(любая сборка)";
+$TLS_exec_current_build = "(данная сборка)";
 $TLS_exec_notes = "Замечания";
 $TLS_exec_status = "Статус";
 $TLS_execution_history = "История прогонов";
-$TLS_execution_type_manual = "Manual";
-$TLS_execution_type_auto = "Automated";
-$TLS_has_no_assignment = "No tester assigned";
+$TLS_execution_type_manual = "Вручную";
+$TLS_execution_type_auto = "Автоматически";
+$TLS_has_no_assignment = "Не назначен тестироващик";
 $TLS_img_title_bug_mgmt = "Добавить баг (открывается новое окно)";
-$TLS_img_title_delete_execution = "Delete execution";
+$TLS_img_title_delete_execution = "Удалить прогон";
 $TLS_import_xml_results = "Import XML Results";
 $TLS_just_last_execution_for_this_build = "Последний прогон для данного билда";
-$TLS_last_execution = "Last execution";
+$TLS_last_execution = "Последний прогон";
 $TLS_no_data_available = "Нет доступных данных";
 $TLS_only_test_cases_assigned_to = "Only Test Cases assigned to";
 $TLS_or_unassigned_test_cases = " Or without tester assignment";
-$TLS_run_mode = "Run mode";
+$TLS_run_mode = "Режим запуска";
 $TLS_set_all_tc_to = "Установить всем тестам статус: ";
-$TLS_show_hide = "Show / hide";
+$TLS_show_hide = "Показать / Скрыть";
+$TLS_show_hide_reorder = "Show / Hide reorder ";
 $TLS_tc_not_tested_yet = "Еще не тестировано";
 $TLS_test_cases_cannot_be_executed = "Test cases can not be executed";
 $TLS_testcase_version_is_inactive_on_exec = "This version is inactive => Can not be executed";
@@ -920,23 +1106,25 @@ $TLS_title_test_case = "Тестовый пример";
 $TLS_version = "Версия";
 $TLS_warning_delete_execution = "You are going to delete execution<br /><br /> Are you sure?";;
 $TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
+$TLS_edit_execution = "edit execution";
+$TLS_platform_description = "Platform description";
 
 
-// gui/templates/inc_testsuite_viewer_ro.tpl
+// ----- gui/templates/inc_testsuite_viewer_ro.tpl -----
 $TLS_keywords = "Ключевые слова";
 
 
 
-// gui/templates/navBar.tpl
-$TLS_access_doc = "documentation";
+// ----- gui/templates/navBar.tpl -----
+$TLS_access_doc = "документация";
 $TLS_home = "Домой";
 $TLS_link_logout = "Выход";
-$TLS_navbar_user_management = "Users";
 $TLS_product = "Продукт";
 $TLS_product_role = "Уровень доступа к продукту";
 $TLS_search_testcase = "Искать";
 $TLS_title_edit_personal_data = "Мои данные";
-$TLS_title_events = "Events";
+$TLS_title_admin = "Администрирование";
+$TLS_title_events = "События";
 $TLS_title_execute = "Прогон";
 $TLS_title_results = "Отчеты";
 $TLS_title_specification = "Тесты";
@@ -944,55 +1132,62 @@ $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 
 
-// gui/templates/inc_testsuite_viewer_rw.tpl
+// ----- gui/templates/inc_testsuite_viewer_rw.tpl -----
 
 
 
-// gui/templates/planAddTC_m1.tpl
-$TLS_add_tc = "Add";
+// ----- gui/templates/planAddTC_m1.tpl -----
+$TLS_add_tc = "Добавить";
+$TLS_added_on_date = "Added on date";
+$TLS_info_added_on_date = "Date when Test case was added to test plan";
+
 $TLS_add_remove_selected_tc_hint = "Операция будет применена ко всем тестам, показанным на этой странице";
 $TLS_btn_add_remove_selected_tc = "Добавить/Удалить выбранные тесты";
 $TLS_btn_add_selected_tc = "Добавить выбранные тесты";
-$TLS_btn_check = "Пометить";
-$TLS_btn_save_exec_order = "Save order";
+$TLS_btn_save_exec_order = "Сохранить порядок";
 $TLS_btn_save_custom_fields ="Save custom fields";
-$TLS_btn_uncheck = "Снять пометки";
+$TLS_btn_save_platform ="Сохранить платформы";
 $TLS_check_uncheck_tc = "";
-$TLS_check_uncheck_all_checkboxes = "check/uncheck all";
-$TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
-$TLS_check_uncheck_all_checkboxes_for_rm = "check/uncheck all (for remove)";
+$TLS_check_uncheck_all_checkboxes = "выделить/снять выделение со всего";
+$TLS_check_uncheck_all_checkboxes_for_add = "выделить/снять выделение со всего (для добавления)";
+$TLS_check_uncheck_all_checkboxes_for_rm = "выделить/снять выделение со всего (для удаления)";
 $TLS_executed_can_not_be_removed = "Executed test cases can not be removed.";
-$TLS_execution_order = "Execution order";
+$TLS_execution_order = "Порядок выполнения";
+$TLS_select_all_to_add = "Select/deselect all Test Cases to add";
+$TLS_select_all_to_remove = "Select/deselect all Test Cases to remove";
+$TLS_tester_assignment_on_add="Assign to user on add";
 
 $TLS_has_been_executed = "есть результаты прогона";
 $TLS_inactive_testcase = "неактивен";
 $TLS_no_testcase_available = "Нет доступных тестов";
 $TLS_note_keyword_filter = "Тесты отобраны по ключевому слову";
 $TLS_remove_tc = "Удалить";
-$TLS_show_tcase_spec = "Show Test Case specification";
+$TLS_show_tcase_spec = "Показать спецификацию теста";
 $TLS_th_test_case = "Тестовый пример";
 $TLS_title_add_remove_test_to_plan = "Добавление тестов план / Удаление тестов из плана";
 $TLS_title_add_test_to_plan = "Добавить тесты в план";
 $TLS_warning_add_remove_selected_tc = "Внимание! Вы уверены, что хотите удалить выбраные тесты из плана?";
 
 
-// gui/templates/planAddTCNavigator.tpl
+// ----- gui/templates/planAddTCNavigator.tpl -----
 $TLS_title_navigator = "Навигатор";
 $TLS_keywords_filter_help = "You can use OR/AND filtering";
 
 
-// gui/templates/planTCNavigator.tpl
+// ----- gui/templates/planTCNavigator.tpl -----
 $TLS_btn_update_all_testcases_to_latest_version = "Update all Test Cases to latest version";
+$TLS_btn_bulk_update_to_latest_version = "Bulk Update to latest version";
+$TLS_caption_nav_filters = "Фильтры";
 
 
-// gui/templates/planPriority.tpl
+// ----- gui/templates/planPriority.tpl -----
 $TLS_btn_upd_prio = "Изменить";
 $TLS_title_priority = "Установление приоритетов";
-$TLS_tr_th_importance = "Importance";
+$TLS_tr_th_importance = "Важность";
 $TLS_tr_th_prio_cba = "Приоритет (C/B/A)";
 $TLS_tr_th_risk = "Важность / Риск";
 
-// gui/templates/planUpdateTC.tpl
+// ----- gui/templates/planUpdateTC.tpl -----
 $TLS_btn_update_testplan_tcversions = "Update Test Plan";
 $TLS_update_to_version = "Update to version";
 $TLS_update_all_testcase_versions = "Update ALL Linked Test Case Versions";
@@ -1000,10 +1195,9 @@ $TLS_update_testcase_versions = "Update Linked Test Case Versions";
 $TLS_no_testcase_checked = "There are no checked Test Cases. Nothing will be done";
 $TLS_tplan_updated = "Test Plan was updated";
 $TLS_update2latest = "<p>The whole set of Test Cases linked to Test Plan will updated to latest version.</p>";
+$TLS_noupdateneeded="All Test Cases are already updated to latest version";
 
-
-
-// gui/templates/planEdit.tpl
+// ----- gui/templates/planEdit.tpl -----
 $TLS_btn_testplan_create = "Создать";
 $TLS_cancel = "Отменить";
 $TLS_opt_no = "Нет";
@@ -1018,32 +1212,35 @@ $TLS_testplan_title_tp_management = "Редактировать тест-пла�
 $TLS_testplan_txt_notes = "Test plan should be clearly defined task(s) with a timeframe and a content. It could contain a testing activity for a new version of product (include hot fixes) or also just simple change request for one customer.<br />Description field serves for links to Project plan and related documentation, List of features to be tested, risks, etc.<br />You can create a new Test Plan from an existing one. The next items are copied: Builds, Test Cases, Priorities, Milestones and user roles.<br />A Test plan could be deactiveted; i.e. no editing and no results change is allowed. Such Test Plan is visible only via 'Reporting' and this page.";
 $TLS_warning_empty_tp_name = "Вам необходимо выбрать название тест-плана!";
 
-$TLS_testplan_copy_tcases = "Copy Test Cases";
-$TLS_testplan_copy_tcases_latest = "Latest available version";
+$TLS_testplan_copy_tcases = "Копировать тесты";
+$TLS_testplan_copy_tcases_latest = "Последняя доступная версия";
 $TLS_testplan_copy_tcases_current = "Current linked version";
-$TLS_testplan_copy_builds = "Copy Builds";
-$TLS_testplan_copy_priorities = "Copy Priorities";
-$TLS_testplan_copy_milestones = "Copy Milestones";
-$TLS_testplan_copy_user_roles = "Copy User Roles";
+$TLS_testplan_copy_builds = "Копировать сборки";
+$TLS_testplan_copy_priorities = "Копировать приоритеты";
+$TLS_testplan_copy_milestones = "Копировать этапы";
+$TLS_testplan_copy_user_roles = "Копировать роли пользователей";
+$TLS_testplan_copy_platforms_links = "Copy Platforms Links";
+$TLS_testplan_copy_assigned_to = "Copy Assigned To";
 
 
-// gui/templates/planNew.tpl
-$TLS_testplan_btn_edit = "Update";
-$TLS_testplan_btn_new = "Create";
-$TLS_testplan_menu_create = "Create";
-$TLS_testplan_menu_edit = "Edit";
+// ----- gui/templates/planNew.tpl -----
+$TLS_testplan_btn_edit = "Обновить";
+$TLS_testplan_btn_new = "Создать";
+$TLS_testplan_menu_create = "Создать";
+$TLS_testplan_menu_edit = "Редактировать";
 $TLS_testplan_menu_list = "List";
 
 
 
-// gui/templates/planMilestones*.tpl
-$TLS_alt_delete_milestone = "Delete the milestone?";
-$TLS_btn_edit_milestone = "Edit";
+// ----- gui/templates/planMilestones*.tpl -----
+$TLS_alt_delete_milestone = "Удалить этап?";
+$TLS_btn_edit_milestone = "Редактировать";
 $TLS_btn_new_milestone = "Создать";
 $TLS_info_milestones_date = "Этап выполнения плана тестирования не должен заканчиваться в прошлом";
+$TLS_info_milestones_start_date='';
 $TLS_no_milestones = "Для данного плана этапов не существует!";
-$TLS_popup_delete_milestones = "Are you sure you want to delete milestone %NAME% ?";
-$TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
+$TLS_popup_delete_milestones = "Вы уверены, что хотате удалить этап %NAME% ?";
+$TLS_warning_delete_milestone = "Вы собираетесь удалить: %s <br /> <br /> Уверены?";
 $TLS_warning_empty_milestone_name = "Вам необходимо выбрать название этапа Тест-плана!";
 
 
@@ -1055,37 +1252,44 @@ $TLS_th_perc_testcases = "Completed tests [0-100%]";
 $TLS_title_existing_milestones = "Актуальные этапы выполнения плана тестирования";
 $TLS_title_milestones = "Этап выполнения тест-плана: ";
 $TLS_title_new_milestone = "Этап выполнения плана тестирования";
-$TLS_title_edit_milestone = "Edit Milestone";
-$TLS_delete_milestone = "Delete milestone";
-$TLS_milestone_deleted = "Milestone %s was successfully deleted";
-$TLS_create_milestone = "Create Milestone";
-$TLS_edit_milestone = "Edit Milestone %s";
+$TLS_title_edit_milestone = "Редактировать этап";
+$TLS_delete_milestone = "Удалить этап";
+$TLS_milestone_deleted = "Этап %s успешно удален";
+$TLS_create_milestone = "Создать этап";
+$TLS_edit_milestone = "Редактировать этап %s";
 $TLS_warning_empty_low_priority_tcases = "Value can not be empty";
 $TLS_warning_empty_medium_priority_tcases = "Value can not be empty";
 $TLS_warning_empty_high_priority_tcases = "Value can not be empty";
 $TLS_milestone_created = "Milestone Created";
+$TLS_start_date = 'Start Date';
 
 
-
-// gui/templates/projectEdit.tpl
-$TLS_btn_activate = "Активировать";
-$TLS_btn_del = "Удалить";
-$TLS_btn_edit_del = "Редактировать/Удалить";
-$TLS_btn_inactivate = "Сделать неактивным";
+// ----- gui/templates/projectEdit.tpl -----
 $TLS_caption_edit_tproject = "Edit %s";
 $TLS_caption_new_tproject = "Create new Test Project";
-$TLS_color = "Выбрать цвет фона";
-$TLS_enable_requirements = "Использовать требования к продукту";
-$TLS_enable_priority = "Priority Management";
-$TLS_enable_automation = "Test Automation";
+$TLS_create_from_existent_tproject = 'Create from existing Test Project?';
+$TLS_testproject_color = 'Background color';
+$TLS_testproject_enable_automation = 'Enable Test Automation (API keys)';
+$TLS_testproject_enable_inventory = 'Enable Inventory';
+$TLS_testproject_enable_priority = 'Enable Testing Priority';
+$TLS_testproject_enable_requirements = 'Enable Requirements feature';
 $TLS_info_failed_loc_prod = "Продукт не может быть локализован";
-$TLS_notes = "Описание продукта";
-$TLS_testproject_alt_delete = "Delete Test Project";
-$TLS_testproject_alt_active = "Active";
+$TLS_testproject_description = 'Project description';
+$TLS_testproject_features = 'Enhanced features';
+$TLS_testproject_alt_color = 'Click Here to Pick up the Project background color';
+$TLS_testproject_alt_active = "Активный";
 $TLS_testproject_alt_requirement_feature = "Requirements enabled";
 $TLS_testproject_alt_edit = "Edit Test Project";
 $TLS_testproject_txt_empty_list = "There are no Test Projects defined!";
+$TLS_testproject_prefix = 'Prefix (used for Test case ID)';
+$TLS_warning_empty_tcase_prefix = "Test Case ID prefix cannot be empty!";
+$TLS_warning_empty_tproject_name = "Название программного продукта не может быть пустым!";
 
+
+// ----- gui/templates/projectView.tpl -----
+$TLS_title_testproject_management = "Test Project Management";
+$TLS_tcase_id_prefix = "Test Case ID prefix";
+$TLS_testproject_alt_delete = "Удалить Test Project";
 // Warning!!! - if JS string you must use \\n to get \n
 $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test Project related " .
                             "data (including test results, plans, etc.). " .
@@ -1093,14 +1297,8 @@ $TLS_popup_product_delete = "Warning! This action deletes irrevocable all Test P
                             "Recommendation: Execute a dump of database at first.\\n" .
                             "Are you sure to delete the Test Project?"; 
 
-$TLS_tcase_id_prefix = "Test Case ID prefix";
-$TLS_warning_empty_tcase_prefix = "Test Case ID prefix cannot be empty!";
-$TLS_warning_empty_tproject_name = "Название программного продукта не может быть пустым!";
 
-// gui/templates/projectView.tpl
-$TLS_title_testproject_management = "Test Project Management";
-
-// gui/templates/reqAssign.tpl
+// ----- gui/templates/reqAssign.tpl -----
 $TLS_please_select_a_req = "Выберите требование ";
 $TLS_req_msg_norequirement66 = "Нет требований";
 $TLS_req_title_assign = "Установить связь между требованиями и тестом:";
@@ -1110,13 +1308,15 @@ $TLS_warning_req_tc_assignment_impossible = "You <b>can't do</b> the assignment 
 
 
 
-// gui/templates/tcEdit.tpl
+// ----- gui/templates/tcEdit.tpl -----
 $TLS_title_edit_tc = "Редактирование теста";
+$TLS_warning_editing_executed_step = "Warning! This Test Case Step has been executed.";
 $TLS_warning_editing_executed_tc = "Внимание! Тест данной версии имеет результат прогона в одном из тест-планов";
+$TLS_warning_unsaved = "You will lose any unsaved changes!";
 
 
 
-// gui/templates/planOwner.tpl
+// ----- gui/templates/planOwner.tpl -----
 $TLS_assign_ownership = "Важность / Риск / Принадлежность";
 $TLS_def_prio_rules = "Правила установления приоритетов";
 $TLS_opt_label_none = "отсутствует";
@@ -1128,11 +1328,10 @@ $TLS_title_plan_ownership = "Установление параметров дл�
 
 
 
-// gui/templates/tcView_viewer.tpl
+// ----- gui/templates/tcView_viewer.tpl -----
 $TLS_activate_this_tcversion = "Активировать данную версию";
 $TLS_Requirements = "Требования";
 $TLS_btn_del_this_version = "Удалить данную версию";
-$TLS_btn_edit = "Редактировать";
 $TLS_btn_execute_automatic_testcase = "Execute automatic test case";
 $TLS_btn_mv_cp = "Переместить/Скопировать";
 $TLS_btn_new_version = "Создать новую версию теста";
@@ -1140,17 +1339,18 @@ $TLS_can_not_edit_tc = "Редактирование запрещено, т.к. 
 Создайте новую версию или удалите результат прогона.";
 $TLS_deactivate_this_tcversion = "Сделать эту версию неактивной";
 $TLS_execution_type = 'Execution type';
+$TLS_execution_type_short_descr = 'Execution';
 $TLS_tcversion_is_inactive_msg = "Эта версия теста НЕАКТИВНА. Тест этой версии нельзя включить в план тестирования";
 
 
 
-// gui/templates/planRemoveTC_m1.tpl
+// ----- gui/templates/planRemoveTC_m1.tpl -----
 $TLS_btn_remove_selected_tc = "Удалить выбранные тесты";
 $TLS_remove_ok = "Удаление успешно завершено";
 $TLS_title_remove_test_from_plan = "Удаление тестов из плана";
 
 
-// gui/templates/keywordsAssign.tpl
+// ----- gui/templates/keywordsAssign.tpl -----
 $TLS_keyword_assignment_empty_tsuite = "В выбранной группе нет тестов, присвоение ключевых слов невозможно.";
 $TLS_menu_assign_kw_to_tc = "Задать";
 $TLS_menu_manage_keywords = "Редактировать";
@@ -1158,14 +1358,14 @@ $TLS_title_keywords = "Ключевые слова";
 
 
 
-// gui/templates/planTestersNavigator.tpl
+// ----- gui/templates/planTestersNavigator.tpl -----
 $TLS_label_list_of = "Список";
 $TLS_opt_test_plans = "Планы тестирования";
 $TLS_opt_users = "Пользователи";
 
 
 
-// gui/templates/planUpdateTC.tpl
+// ----- gui/templates/planUpdateTC.tpl -----
 $TLS_btn_upd_ck_tc = "Обновить выбранные тесты";
 $TLS_info_all_tc_uptodate = "В данном плане все тесты последней версии";
 $TLS_th_category = "Категория";
@@ -1180,7 +1380,7 @@ $TLS_title_upd_mod_tc = "Обновление откорректированны
 
 
 
-// gui/templates/keywordsView.tpl
+// ----- gui/templates/keywordsView.tpl -----
 $TLS_alt_delete_keyword = "Удалить ключевое слово?";
 $TLS_btn_create_keyword = "Создать ключевое слово";
 $TLS_btn_edit_keyword = ",Редактировать";
@@ -1193,24 +1393,52 @@ $TLS_warning_enter_at_least2 = " символа.";
 $TLS_warning_enter_less1 = "Введите не более ";
 $TLS_warning_enter_less2 = " символов.";
 
+// ----- gui/templates/platformsView.tpl -----
+$TLS_alt_delete_platform = "Delete platform?";
+$TLS_btn_create_platform = "Create platform";
+$TLS_btn_edit_platform = "Edit";
+$TLS_th_platform = "Platform";
+$TLS_menu_manage_platforms = "Platform Management";
+$TLS_warning_delete_platform = "You are going to delete: %s <br /> This will remove <b>ALL</b> execution data in all testplans<br />You cannot undo this operation<br/>Are you sure?";
+$TLS_warning_cannot_delete_platform = "<b>%s</b> is being used!<br/>You cannot remove it now. You must first remove it from the testplans using it";
+$TLS_warning_enter_at_least1 = "Введите не менее ";
+$TLS_warning_enter_at_least2 = " символа.";
+$TLS_warning_enter_less1 = "Введите не более ";
+$TLS_warning_enter_less2 = " символов.";
+$TLS_export_platforms = "Export platforms";
+$TLS_import_platforms = "Import platforms";
+$TLS_platform_updated = "Platform %s Updated";
+$TLS_platform_imported = "Platform %s Imported";
 
 
-// gui/templates/reqexport.tpl
-$TLS_title_req_export = "Export requirements";
+// ----- gui/templates/platformsAssign.tpl -----
+$TLS_platform_assignment_no_testplan = "Не выделен тест-план.";
+$TLS_menu_assign_platform_to_testplan = "Назначить для тест-плана";
+$TLS_title_platforms = "Платформы";
+$TLS_available_platforms = "Доступные платформы";
+$TLS_assigned_platforms = "Назначенные платформы";
+$TLS_add_remove_platforms = "Добавить/Удалить платформы к тест-плану: %s";
+$TLS_platform_linked_count = " (Используется в %s тестах)";
+$TLS_platform_unlink_warning_title = "Используемые платформы";
+$TLS_platform_unlink_warning_message = "The selected platform(s) are being used.<br/>If you continue <b/>all execution data will be lost</b>.<br/>Are you sure you want to remove the selected platform(s)?";
+
+// ----- gui/templates/reqexport.tpl -----
+$TLS_title_req_export = "Экспортировать требования";
+$TLS_all_reqspecs_in_tproject = "All Requirement Specs in Test Project";
 
 
 
-// gui/templates/resultsAllBuilds.tpl
+// ----- gui/templates/resultsAllBuilds.tpl -----
 $TLS_th_build = "Версия (сборка)";
 $TLS_th_tc_total = "Всего тестов";
 $TLS_title_met_of_build = "Показатели выполнения плана тестирования версии (сборки): ";
 
 
 
-// gui/templates/resultsBugs.tpl
-$TLS_bugs_open = "Open";
-$TLS_bugs_resolved = "Resolved";
-$TLS_bugs_total = "total";
+// ----- gui/templates/resultsBugs.tpl -----
+$TLS_bugs_open = "Открыто";
+$TLS_bugs_resolved = "Решено";
+$TLS_bugs_total = "всего";
 $TLS_date = "Дата:";
 $TLS_printed_by = "Отпечатано:";
 $TLS_tcs_with_bugs = "Test Cases with bugs";
@@ -1221,15 +1449,16 @@ $TLS_title_test_suite_name = "Название группы тестов";
 
 
 
-// gui/templates/resultsByStatus.tpl
+// ----- gui/templates/resultsByStatus.tpl -----
 $TLS_info_test_results = "Показаны результаты только последнего прогона тестов на последней версии (сборке) продукта.";
 $TLS_th_bugs = "Обнаруженные баги";
 $TLS_th_date = "Дата";
 $TLS_th_run_by = "Запускался пользователем";
+$TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
+$TLS_th_assigned_to = "Assigned To";
 
 
-
-// gui/templates/resultsGeneral.tpl
+// ----- gui/templates/resultsGeneral.tpl -----
 $TLS_title_gen_test_rep = "Показатели выполнения плана тестирования (по всем версиям): ";
 $TLS_title_report_tc_priorities = "Test results according to test priorities";
 $TLS_title_report_milestones = "Status of Milestones";
@@ -1242,14 +1471,19 @@ $TLS_th_tc_priority_low = "Low priority";
 $TLS_th_progress = "Test progress [%]";
 $TLS_th_goal = "Execution goal [%]";
 $TLS_th_overall_priority = "Overall test priority";
+$TLS_th_overall_platform = "Overall test platform";
+$TLS_title_res_by_platform = "Results by Platform";
 $TLS_th_expected = "Expected";
 $TLS_th_overall = "Overall";
 
 
 
-// gui/templates/resultsMoreBuilds_query_form.tpl
+// ----- gui/templates/resultsMoreBuilds_query_form.tpl -----
 $TLS_excel_format = "MS Excel";
 $TLS_html_format = "HTML";
+$TLS_results_latest = "Latest Results Only";
+$TLS_results_all = "All Results";
+$TLS_display_results_tc = "Result Set";
 $TLS_last_status_any = "Любой";
 $TLS_last_status_blocked = "Блокирован";
 $TLS_last_status_failed = "Провален";
@@ -1269,11 +1503,12 @@ $TLS_enter_end_time = "End Time";
 $TLS_year = "year";
 $TLS_month = "month";
 $TLS_day = "day";
-$TLS_hour = "hour";
+$TLS_hour 			= "Hour";
 $TLS_search_in_notes = "search for string in notes";
 $TLS_executor = "executed by";
 
-// gui/templates/resultsMoreBuilds_report.tpl
+
+// ----- gui/templates/resultsMoreBuilds_report.tpl -----
 $TLS_caption_show_collapse = "Show / Collapse";
 $TLS_caption_user_selected_query_parameters = "Query Parameters";
 $TLS_not_yet_executed = "Not yet executed";
@@ -1302,7 +1537,7 @@ $TLS_display_totals = "Display Totals";
 $TLS_display_test_cases = "Test Cases";
 $TLS_report_display_options = "Report display options";
 
-// gui/templates/resultsReqs.tpl
+// ----- gui/templates/resultsReqs.tpl -----
 $TLS_no_srs_defined = "No Requirements Specification available for this Test Project";
 $TLS_req_without_tcase = "Requirements Not Covered by Test Cases";
 
@@ -1320,7 +1555,7 @@ $TLS_title_test_plan = "План тестирования";
 
 
 
-// gui/templates/resultsSend.tpl
+// ----- gui/templates/resultsSend.tpl -----
 $TLS_btn_send_report = "послать отчет";
 $TLS_check_send_to_me = "Послать копию себе";
 $TLS_mail_body = "Содержание:";
@@ -1333,37 +1568,43 @@ $TLS_tp_status_for_build = "Состояние тест-плана по теку
 
 
 
-// gui/templates/resultsTC.tpl
+// ----- gui/templates/resultsTC.tpl -----
 $TLS_generated_by_TestLink_on = "Generated by TestLink on ";
 
-// gui/templates/resultsImport.tpl
+// ----- gui/templates/resultsImport.tpl -----
 $TLS_results_import_format = "XML File Must be in the following format: ";
 $TLS_title_results_import_to = "Import results";
+$TLS_wrong_results_import_format = "Wrong xml Results file (see documentation)";
 
-// gui/templates/plan/setUrgency.tpl
+// ----- gui/templates/plan/setUrgency.tpl -----
 $TLS_title_plan_urgency = "Test urgency for the Test suite";
 $TLS_th_urgency = "Urgency";
-$TLS_label_set_urgency = "Set test urgency: ";
+$TLS_label_set_urgency_ts = "Set all Test suite urgency: ";
+$TLS_btn_set_urgency_tc = "Set urgency for individual testcases";
 $TLS_urgency_description = "Urgency value affects priority of test cases for execution and reporting. " .
                            "Medium test urgency is default value.";
 $TLS_feedback_urgency_fail = "Test urgency update fails! See event log for details.";
 $TLS_feedback_urgency_ok = "Test urgency was modified.";
-
 $TLS_testsuite_is_empty = 'Test suite has no test cases. Nothing can be done';
 
-// gui/templates/tcPrintNavigator.tpl
-$TLS_caption_print_opt = "Опции печати";
+
+// ----- gui/templates/printDocOptions.tpl -----
+$TLS_doc_opt_title = 'Document options';
+$TLS_doc_opt_guide = 'Modify options for required structure of document. ' .
+                     '<br />Select the top line in tree menu for all or a required ' .
+                     'suite to generate a document content.';
 $TLS_tr_td_show_as = "Формат вывода";
+$TLS_check_uncheck_all_options = "check / uncheck all";
 
 
 
-// gui/templates/tcReorder.tpl
+// ----- gui/templates/tcReorder.tpl -----
 $TLS_no_tc_to_reorder = "Нет тестовых примеров!";
 $TLS_title_change_tc_order = "Изменение последовательности расположения тестов в данной категории";
 $TLS_drag_and_drop_to_reorder = "Drag and drop items to reorder them";
 
 
-// gui/templates/tcTree.tpl
+// ----- gui/templates/tcTree.tpl -----
 $TLS_button_refresh = "Обновить окно";
 $TLS_button_update_tree = "Обновить дерево";
 $TLS_do_auto_update = "Автоматически обновлять дерево тестов";
@@ -1371,7 +1612,7 @@ $TLS_no_tc_spec_av = "Нет доступных тестовых примеро�
 
 
 
-// gui/templates/tc_exec_assignment.tpl
+// ----- gui/templates/tc_exec_assignment.tpl -----
 $TLS_assign_to = "Assign to";
 $TLS_btn_do = "Выполнить";
 $TLS_btn_update_selected_tc = "Изменить выбранные тесты";
@@ -1382,45 +1623,45 @@ $TLS_user = "Пользователь";
 $TLS_user_bulk_assignment = "Назначить помеченные тесты пользователю:";
 
 
-// tc_exec_assignment.php
-$TLS_mail_subject_testcase_assigned='Test Link - Test Case Assignment - Test Plan';
-$TLS_mail_subject_testcase_assignment_removed='Test Link - Test Case Assignment REMOVED - Test Plan';
+// ----- tc_exec_assignment.php -----
+$TLS_mail_subject_testcase_assigned = 'Test Link - Test Case Assignment - Test Plan';
+$TLS_mail_subject_testcase_assignment_removed = 'Test Link - Test Case Assignment REMOVED - Test Plan';
 $TLS_mail_testcase_assigned= "Following Test Cases has been assigned to you %s by %s <br><br>";
-$TLS_mail_testcase_assignment_removed="%s - Your following Test Cases assigments AS BEEN REMOVED  by %s <br><br>";
-$TLS_send_mail_to_tester="Send mail notification to tester";
+$TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments AS BEEN REMOVED  by %s <br /><br />";
+$TLS_send_mail_to_tester = "Send mail notification to tester";
 
 
-// gui/templates/testSetNavigator.tpl
+// ----- gui/templates/testSetNavigator.tpl -----
 
 
 
-// gui/templates/userInfo.tpl
+// ----- gui/templates/userInfo.tpl -----
 $TLS_btn_change_passwd = "Изменить пароль";
 $TLS_btn_upd_user_data = "Изменить";
-$TLS_btn_apikey_generate = "Generate a new key";
+$TLS_btn_apikey_generate = "Создать новый ключ";
 $TLS_th_new_passwd = "Новый пароль";
 $TLS_th_new_passwd_again = "Подтвердите новый пароль";
 $TLS_th_old_passwd = "Старый пароль";
 $TLS_title_account_settings = "Параметры учетной записи";
-$TLS_title_personal_data = "Personal data";
-$TLS_title_personal_passwd = "Personal password";
+$TLS_title_personal_data = "Личные данные";
+$TLS_title_personal_passwd = "Личный пароль";
 $TLS_title_api_interface = "API interface";
 $TLS_warning_different_pwd = "Пожалуйста, введите еще раз новый пароль. Введенные значение были различны.";
 $TLS_warning_empty_pwd = "Ваш пароль не может быть пустым!";
 $TLS_your_password_is_external = "Your password is external";
 $TLS_user_api_key = "Personal API access key";
 $TLS_audit_login_history = "Login history";
-$TLS_audit_last_succesful_logins = "Last successful logins";
-$TLS_audit_last_failed_logins = "Last failed logins";
+$TLS_audit_last_succesful_logins = "Последние успешный входы";
+$TLS_audit_last_failed_logins = "Последние неудачные входы";
 $TLS_result_password_changed = "Your password was changed succesfully";
 $TLS_result_apikey_create_ok = "New API key was generated";
-$TLS_result_user_changed = "Personal data changed";
+$TLS_result_user_changed = "Личные данные изменены";
 $TLS_empty_old_passwd = "Empty Old Password. Please enter your Old Password";
 $TLS_never_logged = "Never logged";
 
 
 
-// gui/templates/usersassign.tpl
+// ----- gui/templates/usersassign.tpl -----
 $TLS_TestProject = "";
 $TLS_User = "Пользователь";
 $TLS_btn_change = "Изменить";
@@ -1428,14 +1669,16 @@ $TLS_caption_assign_testplan_user_roles = "Назначение прав дос�
 $TLS_caption_assign_testproject_user_roles = "Назначение прав доступа пользователей к продукту";
 $TLS_menu_assign_testproject_roles = "Доступ к продукту";
 $TLS_th_roles = "Уровни доступа";
-$TLS_th_roles_testplan = "Test Plan Role";
-$TLS_th_roles_testproject = "Test Project Role";
+$TLS_th_roles_testplan = "Роль в тест-плане";
+$TLS_th_roles_testproject = "Роль в тест-проекте";
 $TLS_title_assign_roles = "Назначить уровни доступа";
+$TLS_set_roles_to = "Установить роли";
+$TLS_testproject_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Projects";
+$TLS_testplan_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Plans";
 
 
-
-// gui/templates/usersedit.tpl
-$TLS_button_reset_password = "Reset password";
+// ----- gui/templates/usersedit.tpl -----
+$TLS_button_reset_password = "Сбросить пароль";
 $TLS_caption_user_details = "Данные пользователя";
 $TLS_th_password = "Пароль";
 $TLS_warning_empty_first_name = "Ввведите имя";
@@ -1443,37 +1686,39 @@ $TLS_warning_empty_last_name = "Введите фамилию";
 $TLS_warning_empty_login = "Введите логин";
 
 
-// gui/templates/attachmentupload.tpl
-$TLS_attachment_upload_ok = "File uploaded";
+// ----- gui/templates/attachmentupload.tpl -----
+$TLS_attachment_upload_ok = "Файл загружен";
 $TLS_enter_attachment_title = "Введите заголовок для прилагаемого файла";
 $TLS_import_was_ok = "Импорт данных успешно завершен";
 $TLS_max_size_cvs_file = "Максимальный размер файла: ";
+$TLS_max_size_file_upload = "Макс. размер файла";
 $TLS_title_upload_attachment = "Загрузить файл";
 $TLS_error_file_size_larger_than_maximum_size_check_php_ini = "The size of the file is larger than the configured maximum value in your php.ini!";
 $TLS_error_file_size_larger_than_maximum_size = "The size of the file is larger than the configured maximum value of TestLink!";
-$TLS_error_file_upload = "The file couldn't be uploaded!";
+$TLS_error_file_upload = "Файл не может быть загружен!";
 
-// gui/templates/rolesview.tpl
+
+// ----- gui/templates/rolesview.tpl -----
 $TLS_N_A = "Недоступно";
 $TLS_alt_delete_role = "Удалить уровень доступа";
 $TLS_alt_edit_role = "Редактировать";
 $TLS_btn_confirm_delete = "удалить";
-$TLS_delete_role = "Delete role";
+$TLS_delete_role = "Удалить роль";
 $TLS_no_roles = "Нет данных";
-$TLS_th_role_description = "Description";
+$TLS_th_role_description = "Описание";
 $TLS_title_roles = "Уровни доступа";
 $TLS_warning_delete_role = "You are going to delete: %s <br /><br /> Are you sure?";
 $TLS_warning_users_will_be_reset = "The affected users will be resetted to guest role!";
 
 
 
-// gui/templates/tcexport.tpl
+// ----- gui/templates/tcexport.tpl -----
 $TLS_export_filename = "Export filename";
 $TLS_export_with_keywords = "Экспортировать тесты вместе с ключевыми словами";
 $TLS_warning_empty_filename = "Please give a file name";
 
 
-// gui/templates/buildView.tpl
+// ----- gui/templates/buildView.tpl -----
 $TLS_alt_active_build = "Активная версия продукта";
 $TLS_alt_edit_build = "Редактировать версию";
 $TLS_alt_open_build = "Открытая версия";
@@ -1490,13 +1735,12 @@ $TLS_builds_description = "A build is identified by its title. Each build is rel
                           "Active / Inactive &ndash; defines whether the build can be used. " .
                           "Inactive builds are not listed on the execution and reports pages.<br />" .
                           "Open / Closed &ndash; Only for open builds, test results can be modified.";
-
 $TLS_build_copy_help = "If you check option: " . "<b>[{$TLS_copy_to_all_tplans}]</b>&nbsp;" .
                      "&nbsp;,Build name will be searched on every Test Plan of this Test Project " .
                      "and if name does not exist, build will be created.";
 
 
-// gui/templates/planView.tpl
+// ----- gui/templates/planView.tpl -----
 $TLS_testplan_alt_delete_tp = "Удалить план тестирования?";
 $TLS_testplan_alt_edit_tp = "Редактировать тест-план";
 $TLS_testplan_msg_delete_confirm = "Вы уверены, что хотите удалить тест-план полностью? Вы можете использовать функцию деактивации плана.";
@@ -1513,6 +1757,8 @@ $TLS_href_browse_tc = "Просмотреть тесты";
 $TLS_href_cfields_management = "Редактировать поля";
 $TLS_href_cfields_tproject_assign = "Привязать поля";
 $TLS_href_edit_tc = "Редактировать тесты";
+$TLS_href_inventory = "Inventory";
+$TLS_href_inventory_management = 'Inventory management';
 $TLS_href_keywords_assign = "Задать ключевое слово для теста";
 $TLS_href_keywords_manage = "Редактировать ключевые слова";
 $TLS_href_keywords_view = "Просмотреть ключевые слова";
@@ -1521,30 +1767,47 @@ $TLS_href_req_assign = "Покрыть требования тестами";
 $TLS_href_req_spec = "Редактировать требования";
 $TLS_href_roles_management = "Редактировать уровни доступа";
 $TLS_href_search_tc = "Искать тесты";
-$TLS_href_tproject_management = "Test Project Management";
+$TLS_href_tproject_management = "Управление тест-проектом";
 $TLS_href_user_management = "Редактировать данные пользователей";
-$TLS_href_admin_modules = "System Configuration";
+$TLS_href_admin_modules = "Системная конфигурация";
 $TLS_title_requirements = "Требования";
 $TLS_title_test_spec = "Описание тестов";
 $TLS_title_product_mgmt = "Программный продукт";
-$TLS_href_plan_define_priority = "Define priority rules";
-$TLS_href_my_testcase_assignments="Test Cases assigned to me";
+$TLS_href_plan_define_priority = "Определить правила приоритетов";
+$TLS_href_my_testcase_assignments="Тесты, назначенные мне";
+$TLS_href_platform_management = "Управление платформами";
+
+
+// ----- contribution by asimon for req/reqspec search BUGID 2976 -----
+$TLS_href_search_req = "Search Requirements";
+$TLS_href_search_req_spec = "Search Requirement Specifiations";
+$TLS_caption_search_form_req = "Search Requirements";
+$TLS_caption_search_form_req_spec = "Search Requirement Specifications";
+$TLS_title_search_req = "Search";
+$TLS_requirement_document_id = "Req. Doc. ID";
+$TLS_req_spec_document_id = "Req. Spec. Doc. ID";
+$TLS_reqversion = "Version";
+$TLS_title_search_req_spec = "Search";
+$TLS_requirements = "Requirements";
+$TLS_req_specs = "Req. Specs";
+$TLS_req_expected_coverage = "Expected no. of testcases";
+$TLS_reqid = "Requirement ID";
 
 
 // ----- gui/templates/mainPage_right.tpl -----
-$TLS_filter_tp_by_product = "Показывать планы тестирования выбранного продукта";
-$TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
+$TLS_href_add_remove_test_cases = "Добавить/удалить тесты";
 $TLS_href_build_new = "Редактировать версию (сборку)";
 $TLS_href_execute_test = "Прогнать тесты";
-$TLS_href_metrics_dashboard = "Metrics dashboard";
-$TLS_href_newest_tcversions = "Show Test Cases newest versions";
+$TLS_href_metrics_dashboard = "Панель метрик";
+$TLS_href_newest_tcversions = "Показать новейшие версии тестов";
 $TLS_href_plan_assign_urgency = "Set urgent tests";
 $TLS_href_plan_management = "Редактировать тест-план";
 $TLS_href_plan_mstones = "Редактировать / Удалить Этап тестирования";
 $TLS_href_rep_and_metrics = "Просмотреть отчеты по прогону";
 $TLS_href_tc_exec_assignment = "Назначить ответственного за прогон";
 $TLS_href_update_tplan = "Update Linked Test Case Versions";
-
+$TLS_href_platform_assign = "Добавить/удалить платформу";
+$TLS_current_test_plan = "Текущий тест-план";
 $TLS_href_upd_mod_tc = "Обновить измененные тесты";
 $TLS_msg_no_rights_for_tp = "- недоступен (Вы не имеете прав работать ни с одним из тест-планов)";
 $TLS_testplan_role = "Уровень доступа к плану";
@@ -1554,19 +1817,19 @@ $TLS_title_test_plan_mgmt = "Планы тестирования";
 
 
 
-// lib/execute/bug_add.php
+// ----- lib/execute/bug_add.php -----
 $TLS_bug_added = "Баг добавлен";
 $TLS_error_bug_does_not_exist_on_bts = "Bug ID does not exist on BTS!";
 $TLS_error_wrong_BugID_format = "Неверный формат данных!";
 
 
 
-// lib/execute/bug_delete.php
+// ----- lib/execute/bug_delete.php -----
 $TLS_bugdeleting_was_ok = "Баг был успешно удален!";
 
 
 
-// lib/functions/doAuthorize.php
+// ----- lib/functions/doAuthorize.php -----
 $TLS_error_ldap_auth_failed = "LDAP authentication failed";
 $TLS_error_ldap_bind_failed = "LDAP binding failed";
 $TLS_error_ldap_server_connect_failed = "Connecting to the LDAP server failed";
@@ -1575,33 +1838,33 @@ $TLS_error_ldap_user_not_found = "LDAP user notfound";
 
 
 
-// lib/functions/product.inc.php
+// ----- lib/functions/product.inc.php -----
 $TLS_info_product_delete_fails = "В процессе удаления продукта возникли ошибки";
 
 
-// lib/results/resultsImport.php
-$TLS_imp_result_ko='- result not imported';
-$TLS_invalid_execution_timestamp="Test Case %s - invalid execution timestamp %s " . $TLS_imp_result_ko;
-$TLS_invalid_tester="Test Case %s - tester with login %s can not be found " . $TLS_imp_result_ko;
+// ----- lib/results/resultsImport.php -----
+$TLS_imp_result_ko = '- results are not imported!';
+$TLS_invalid_execution_timestamp = "Test Case %s - invalid execution timestamp %s " . $TLS_imp_result_ko;
+$TLS_invalid_tester = "Test Case %s - tester with login %s can not be found " . $TLS_imp_result_ko;
 $TLS_import_results_tc_not_found= "test case %s not found in test plan - no data inserted for this case";
 $TLS_import_results_invalid_result= "test case %s had an invalid result - no data inserted for this case";
 $TLS_import_results_ok = "Test Case %s - version %s - Tester: %s - Result: %s - Execution Timestamp: %s - Imported!";
 $TLS_import_results_tc_exists = "test case %s is in the test plan, tcversion_id = %s ";
-$TLS_tcase_external_id_do_not_exists="Test Case with external id=%s, can not be found " . $TLS_imp_result_ko;
-$TLS_tcase_internal_id_do_not_exists="Test Case with internal id=%s, can not be found "  . $TLS_imp_result_ko;
-$TLS_tcase_id_is_not_number="Test Case internal id=%s is not a number " . $TLS_imp_result_ko;
+$TLS_tcase_external_id_do_not_exists = "Test Case with external id=%s, can not be found " . $TLS_imp_result_ko;
+$TLS_tcase_internal_id_do_not_exists = "Test Case with internal id=%s, can not be found "  . $TLS_imp_result_ko;
+$TLS_tcase_id_is_not_number = "Test Case internal id=%s is not a number " . $TLS_imp_result_ko;
 
 
 
-// lib/functions/results.inc.php
+// ----- lib/functions/results.inc.php -----
 $TLS_trep_failing = "Ошибка";
 $TLS_trep_passing = "Прохождение";
 $TLS_trep_status_for_build = "Состояние версии продукта";
 $TLS_trep_status_for_ts = "Состояние тест-плана";
-$TLS_unassigned = "unassigned";
+$TLS_unassigned = "неназначенный";
 
 
-// lib/functions/resultsMoreBuilds.inc.php
+// ----- lib/functions/resultsMoreBuilds.inc.php -----
 $TLS_bugs = "Обнаруженные баги (дефекты)";
 $TLS_builds_selected = "Версия(ии) продукта";
 $TLS_case_not_run_warning = "Тест не прогонялся";
@@ -1621,7 +1884,7 @@ $TLS_test_plan_name = "Тест-план";
 
 
 
-// lib/functions/roles.inc.php
+// ----- lib/functions/roles.inc.php -----
 $TLS_desc_cfield_management = "Custom field management";
 $TLS_desc_cfield_view = "Custom field view (read only access)";
 $TLS_desc_mgt_modify_key = "Keyword management";
@@ -1634,6 +1897,12 @@ $TLS_desc_mgt_view_req = "Requirement view (read only access)";
 $TLS_desc_mgt_view_tc = "Test Case view (read only access)";
 $TLS_desc_mgt_view_events = "Event viewer (read only access)";
 $TLS_desc_events_mgt = "Event management";
+$TLS_desc_platforms_view="Platform view (read only access)";
+$TLS_desc_platforms_management="Platform Management";
+$TLS_desc_project_inventory_view="Inventory view (read only access)";
+$TLS_desc_project_inventory_management="Inventory Management";
+
+
 $TLS_desc_role_management = "Редактировать уровни доступа";
 $TLS_desc_testplan_create_build = "Build create/edit";
 $TLS_desc_testplan_execute = "Test Plan execute";
@@ -1645,10 +1914,11 @@ $TLS_error_role_no_rights = "You cannot save roles without any rights!";
 $TLS_error_role_no_rolename = "You must enter a name for the role!";
 $TLS_inherited_role = "<inherited>";
 $TLS_mgt_testplan_create = "Test Plan create/edit";
+$TLS_inherited = "inherited";
+$TLS_no_rights = "no rights";
 
 
-
-// lib/functions/testproject.class.php
+// ----- lib/functions/testproject.class.php -----
 $TLS_error_creating_req_spec = "Ошибка при создании группы требований";
 $TLS_info_product_name_empty = "Оставлять имя пустым нельзя";
 $TLS_keyword_already_exists = "Ключевое слово с таким именем уже существует";
@@ -1657,45 +1927,47 @@ $TLS_warning_duplicate_req_title = "Tребование с таким назва
 
 
 
-// lib/functions/requirements.inc.php
+// ----- lib/functions/requirements.inc.php -----
 $TLS_conflict = "Конфликт";
 $TLS_error_deleting_req = "Ошибка при удалении требований";
 $TLS_error_inserting_req = "Ошибка при вставке требований";
 $TLS_error_updating_req = "Ошибка при изменении требований";
 $TLS_error_updating_reqspec = "Ошибка при изменении группы требований";
 $TLS_file_is_not_xml = "XML-файл содержит ошибки и не может быть использован";
-$TLS_ok = "OK";
 $TLS_req_import_format_description1 = " - тип CSV требует два поля в каждой строке: 'Название(title)','Описание (description)'";
 $TLS_req_import_format_description2 = " - CSV экспортируемый из программы DOORS требует строку заголовков";
 $TLS_req_import_format_docbook = " - DocBook XML format";
 $TLS_req_import_result_overwritten = "Данные были перезаписаны!";
 $TLS_req_import_result_skipped = "Данные были проигнорированы";
-$TLS_req_status_not_testable = "Не тестируемы";
-$TLS_req_status_valid = "Valid";
-$TLS_req_status_draft = 'Draft';
-$TLS_req_status_approved = 'Approved';
-$TLS_req_status_obsolete = 'Obsolete';
-$TLS_req_status_todo = 'To do';
-$TLS_req_status_changed = 'Modified';
-
-$TLS_the_format_req_xml_import = "Wrong XML Format for requirement import";
 $TLS_warning_duplicate_reqdoc_id = "Duplicate document id";
 
 
+//  ----- lib/functions/requirement_spec_mgr.class.php -----
+$TLS_warning_duplicated_req_spec_doc_id = "There's already a req. spec (title:%s) with this doc id (%s)";
+$TLS_warning_duplicated_req_spec_title = "There's already a req. spec (doc id:%s) with this title (%s)";
 
-// lib/functions/testsuite.class.php
+
+// ----- lib/functions/testcase.class.php -----
+$TLS_create_new_version="Created new version %s"; 
+$TLS_testcase_name_already_exists = "There's already a Test Case with this title!";
+$TLS_created_with_title = "Created with title (%s)";
+$TLS_the_format_tc_xml_import = "";
+
+
+// ----- lib/functions/testsuite.class.php -----
 $TLS_component_name_already_exists = "Группа с таким именем уже существует";
 $TLS_testsuite = "Группа тестов";
 
 
-
-// lib/functions/exec.inc.php
+// ----- lib/functions/exec.inc.php -----
 $TLS_test_results_submitted = "Результаты прогона теста сохранены";
 
 
+// ----- lib/functions/info.inc.php -----
+$TLS_email_sent_message = "Ваша почта отправлена";
 
-// lib/functions/print.inc.php
-$TLS_author = "Автор";
+
+// ----- lib/functions/print.inc.php -----
 $TLS_printed_by_TestLink_on = "Отпечатано в компании 'Вычислительные силы'";
 $TLS_title_toc = "Содержание";
 $TLS_passfail = "Pass / Fail";
@@ -1704,37 +1976,25 @@ $TLS_last_exec_result = "Last Result";
 $TLS_test_project_notes = "Test Project notes";
 
 
-// lib/functions/testcase.class.php
-$TLS_create_new_version="Created new version %s"; 
-$TLS_testcase_name_already_exists = "There's already a Test Case with this title!";
-$TLS_created_with_title = "Created with title (%s)";
-$TLS_the_format_tc_xml_import = "";
-
-
-// lib/functions/info.inc.php
-$TLS_email_sent_message = "Ваша почта отправлена";
-
-
-// lib/functions/users.inc.php
-$TLS_Unknown = "Неизвестно";
+// ----- lib/functions/users.inc.php -----
 $TLS_duplicate_login = "Пользователь с таким именем уже зарегистрирован!";
 $TLS_login_must_not_be_empty = "Имя для входа не должно быть пустым!";
 $TLS_wrong_old_password = "Старый пароль неправильный!";
 
 
 
-// lib/functions/email_api.php
+// ----- lib/functions/email_api.php -----
 $TLS_stmp_host_unconfigured = "SMTP сервер не сконфигурирован";
 
 
 
-// lib/functions/common.php
+// ----- lib/functions/common.php -----
 $TLS_test_automation_exec_ok = " Execution Successful!";
 $TLS_test_automation_server_conn_failure = " Could not connect to HTTP server.";
 $TLS_XMLRPC_error_number = "XML-RPC Fault number:- ";
 
 
-// lib/functions/configCheck.php
+// ----- lib/functions/configCheck.php -----
 $TLS_attachments_dir = "directory for attachments:";
 $TLS_bts_connection_problems = "Connection to your Bug Tracking System has failed:<br> 
                                 Please check your configuration.<br>
@@ -1752,46 +2012,50 @@ $TLS_sec_note_admin_default_pwd = "Вы должны будете изменит
 $TLS_sec_note_remove_install_dir = "Директория установки должна быть удалена!";
 $TLS_error_domxml_missing = "Domxml doesn't seem to be present. Importing XML stuff will not work!";
 $TLS_error_gd_missing = "GD PHP extension doesn't seem to be present. Charts will not work!";
+$TLS_error_gd_png_support_disabled = "PHP extension for GD library is available without PNG format support. 
+		Charts will not work. Configure PHP or install required libraries.";
 
-// lib/general/frmWorkArea.php
+
+// ----- lib/functions/cfield_mgr.class.php -----
+$TLS_text_counter_feedback = "You may enter up to %d characters. Left ";
+
+
+// ----- lib/general/frmWorkArea.php -----
 $TLS_create_a_build = "Create a new build";
 $TLS_no_build_warning_part1 = "Для данного плана не создано ни одной версии (сборки) продукта.";
 $TLS_no_build_warning_part2 = "Пожалуйста, создайте ее или обратитесь к администратору";
 
 
-
-// lib/general/myTPInfo.php
+// ----- lib/general/myTPInfo.php -----
 $TLS_no_testplans_available = "Нет доступных планов тестирования";
 
 
-
-// lib/general/tlsmarty.inc.php
+// ----- lib/general/tlsmarty.inc.php -----
 $TLS_show_hide_api_info = "Show / Hide API Info";
+$TLS_show_hide_direct_link = "Show / Hide direct link";
 
 
-// lib/keywords/keywords.inc.php
+// ----- lib/keywords/keywords.inc.php -----
 $TLS_empty_keyword_no = "Вы не можете сохранить пустое ключевое слово!";
 $TLS_keywords_char_not_allowed = "Ключевое слово не может содержать кавычки и запятые!";
 $TLS_tc_kw_update_fails1 = "Тестовые примеры";
 $TLS_tc_kw_update_fails2 = "не обновились";
 $TLS_the_format_keyword_csv_import = "keyword;notes";
-$TLS_the_format_keyword_xml_import = "&lt;keywords>&lt;keyword name=\"name\">Notes&lt;/keyword>&lt;/keywords>";
 
 
-
-// lib/keywords/keywordsView.php
+// ----- lib/keywords/keywordsView.php -----
 $TLS_kw_delete_fails = "Операция по удалению ключевого слова не удалась!";
 $TLS_kw_update_fails = "Обновление провести не удалось";
 
 
 
-// lib/keywords/keywordsAssign.php
+// ----- lib/keywords/keywordsAssign.php -----
 $TLS_assigned_kword = "Присоединенные ключевые слова";
 $TLS_available_kword = "Доступные ключевые слова";
 
 
 
-// lib/plan/buildNew.php
+// ----- lib/plan/buildNew.php -----
 $TLS_cannot_add_build = "Версия (сборка) не может быть добавлена!";
 $TLS_cannot_delete_build = "Версия (сборка) не может быть удалена!";
 $TLS_cannot_update_build = "Версия (сборка) не может быть обновлена!";
@@ -1799,7 +2063,7 @@ $TLS_warning_duplicate_build = "Версия (сборка) с таким иде
 
 
 
-// lib/plan/plan.inc.php
+// ----- lib/plan/plan.inc.php -----
 $TLS_warning_enter_valid_date = "Вы должны ввести корректное значение даты!";
 $TLS_warning_invalid_percentage_value = "Percentage values must range from 0 to 100%";
 $TLS_warning_milestone_date = "Этап тестирования не должен завершаться в прошлом!";
@@ -1807,7 +2071,7 @@ $TLS_warning_percentage_value_higher_than_100 = "All percentage values summed up
 
 
 
-// lib/plan/planMilestone*.php
+// ----- lib/plan/planMilestone*.php -----
 $TLS_milestone_delete_fails = "The milestone couldn't be deleted!";
 $TLS_warning_milestone_add_failed = "Этап не может быть добавлен!";
 $TLS_warning_milestone_update_failed = "The milestone couldn't be updated!";
@@ -1815,64 +2079,73 @@ $TLS_milestone_name_already_exists = "There's already a Milestone with this name
 
 
 
-// lib/plan/planOwner.php
-$TLS_opt_imp_high = "Высокий";
-$TLS_opt_imp_low = "Низкий";
-$TLS_opt_imp_medium = "Средний";
-
-
-
-// lib/plan/planTestersEdit.php
+// ----- lib/plan/planTestersEdit.php -----
 $TLS_title_assign_tp = "Назначить ответственным за выполнение нижеперечисленных планов тестирования пользователя: ";
 $TLS_title_assign_users = "Назначить нижеперечисленных пользователей ответственными за выполнение тест-плана: ";
 
 
-
-// lib/plan/planTestersNavigator.php
+// ----- lib/plan/planTestersNavigator.php -----
 $TLS_nav_test_plan = "Навигатор - Тест-планы ";
 $TLS_nav_users = "Навигатор - Пользователи";
 
 
-
-// lib/plan/planUpdateTC.php
+//  -----lib/plan/planUpdateTC.php -----
 $TLS_deleted = "удален";
 $TLS_different_versions = "Различные версии";
 $TLS_plan_update_no_tc_updated = "Нет тестов для обновления";
 $TLS_updated = "обновлен";
 $TLS_all_versions_where_latest = "Nothing to do - All Test Cases version are the newest available";
-
 $TLS_num_of_updated = "%d Test Cases has been updated";
 
 
-// lib/plan/testSetNavigator.php
+// ----- lib/plan/testSetNavigator.php -----
 $TLS_title_test_plan_navigator = "Навигатор: Выберите тесты для установки параметров";
 
-// lib/plan/testSetRemove.php
+
+// ----- lib/plan/testSetRemove.php -----
 $TLS_tcase_removed_from_tplan = "Тест удален из плана";
 $TLS_multiple_tcase_removed_from_tplan = "Тесты удалены из плана";
 
 
-// lib/plan/planEdit.php
+// ----- lib/plan/planEdit.php -----
 $TLS_testplan_created_ok = "План тестирования создан";
 $TLS_update_tp_failed1 = "Изменение тест-плана '";
 $TLS_update_tp_failed2 = "' не удалось";
 $TLS_warning_duplicate_tplan_name = "План тестирования с таким названием уже существует. Задайте другое название!";
 
+$TLS_platform_default_suffix = "Default Platform %s";
+$TLS_platform_default_notes = "Automatically created platform for Test Plan %s";
 
+// ----- lib/platforms/platformsAssign.php -----
+$TLS_unknown_platform="Warning/Critic<br>" .
+		                  " In this test plan exist test case versions without platform assignment. <br>" .
+						          " This means that probably you have worked on this test plan before " .
+						          " assigning platforms.<br>" .
+						          " After you have assigned platforms to this test plan you MUST NEED " .
+						          " to go to add/remove test cases feature to assign right platform " .
+						          " to your linked test cases<br>".
+						          " To ease your work if you assign now here ONE platform to a test plan " .
+						          " without platorms, all linked test cases will be updated with this platform ";
 
-// lib/print/selectData.php
-$TLS_opt_show_doc_header = "Показать заголовок документа";
+// ----- lib/results/printDocOptions.php -----
+$TLS_opt_show_toc = "Показать оглавление документа";
+$TLS_opt_show_suite_txt = "Описание набора тестов";
+$TLS_opt_show_tplan_txt = "Описание тест-плана";
 $TLS_opt_show_tc_body = "Показать содержание тестового примера";
 $TLS_opt_show_tc_summary = "Показать описание теста";
-$TLS_opt_show_toc = "Показать оглавление документа";
-$TLS_opt_show_tc_author = "Test Case Author";
-$TLS_opt_show_passfail = "Test results";
-$TLS_opt_show_tc_reqs = "TC related Requirements";
-$TLS_opt_show_tc_keys = "TC related Keywords";
+$TLS_opt_show_tc_author = "Автор теста";
+$TLS_opt_show_tc_reqs = "Требования к тесту";
+$TLS_opt_show_tc_keys = "Ключевые слова к тесту";
+$TLS_opt_show_cfields	= "Test Case Custom Fields";
+$TLS_opt_show_passfail = "Результат теста";
+$TLS_opt_show_metrics = "Метрики";
 $TLS_title_tc_print_navigator = "Навигатор - Печать спецификаций тестовых примеров";
 $TLS_title_tp_print_navigator = "Навигатор - Печать тест-плана";
+$TLS_testplan_report = "Отчет по тест-плану";
+$TLS_testspecification_report = "Отчет по спецификации теста";
 
-// lib/project/projectedit.php
+
+// ----- lib/project/projectedit.php -----
 $TLS_error_product_name_duplicate = "There's already Test Project named %s. <br>Please choose a different name";
 $TLS_error_tcase_prefix_exists = "Test Case ID prefix %s already exists";
 $TLS_info_no_more_prods = "Нет больше продуктов";
@@ -1889,8 +2162,7 @@ $TLS_test_project_updated = "Продукт %s был изменен";
 $TLS_test_project_update_failed = "Изменение данных о продукте %s было неудачным!";
 
 
-// lib/results/charts.php
-$TLS_maani_copyright = "flash technology provided by http://www.maani.us";
+// ----- lib/results/charts.php -----
 $TLS_graphical_reports = "Диаграммы результатов прогона";
 $TLS_overall_metrics = "Итоговые показатели";
 $TLS_results_by_keyword = "По ключевым словам";
@@ -1900,55 +2172,60 @@ $TLS_chart_report = "Report";
 $TLS_chart_assigned_testers = "Owners";
 $TLS_chart_keywords = "Keywords";
 $TLS_chart_testsuites = "Test Suites";
+$TLS_overall_metrics_for_platform = "Overall Metrics - Platform: ";
 
 
-// lib/req/reqImport.php
+// ----- lib/req/reqImport.php -----
 $TLS_file_is_not_ok_for_import_type = "File seems to be incompatible with the import type selected";
 $TLS_file_is_not_text = "File is not a text file. Cannot be used";
 $TLS_please_choose_req_file = "Выберите файл для загрузки";
 $TLS_req_import_finished = "Импорт данных завершен!";
+$TLS_tproject_import_requirements = '%s : Import Requirements';
+$TLS_reqspec_import_requirements = '%s : Import Requirements';
 
 
-
-// lib/req/reqSpecView.php
+// ----- lib/req/reqSpecView.php -----
 $TLS_cant_create_tc_from_req_nothing_sel = "Пожалуйста, выберите требование!";
 $TLS_req_created = "Requirement %s was successfully created";
 
 
 
-// lib/req/reqTcAssign.php
+// ----- lib/req/reqTcAssign.php -----
 $TLS_req_msg_noselect = "Ничего не выбрано";
 $TLS_req_msg_notupdated_coverage = "Покрытие не было обновлено для требований: ";
 $TLS_bulk_req_assign_msg = 'This operation will assign selected requirements to (maximun number of) %s test cases' .
                          '<br>belonging to test suites present on selected branch.';
 $TLS_bulk_assigment_done = '%s assignments has been done';
 $TLS_req_title_bulk_assign = 'Requirements Bulk Assignment';
-$TLS_req_title_available = 'Available Requirements';
+$TLS_req_title_available = 'Доступные требования';
 $TLS_no_req_spec_available = "No Requirements Specification available for this Test Project";
 
 
-// lib/results/resultsBugs.php
+// ----- lib/results/resultsBugs.php -----
 $TLS_title_test_report_all_builds = "Отчет о прогоне тестов по всем версиям (сборкам) продукта";
 
 
 
-// lib/results/resultsAllBuilds.php
+// ----- lib/results/resultsAllBuilds.php -----
 $TLS_title_metrics_x_build = " - Суммарный результат прогона по версиям (сборкам)";
 
 
 
-// lib/results/resultsByStatus.php
+// ----- lib/results/resultsByStatus.php -----
 $TLS_list_of_blocked = "Список блокированных тестов";
 $TLS_list_of_failed = "Список проваленных тестов";
 $TLS_list_of_not_run = "Список незапускавшихся тестов";
 
 
+// ----- lib/results/testPlanWithCF----
+$TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
+$TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 
-// lib/results/resultsTC.php
+// ----- lib/results/resultsTC.php -----
+$TLS_result_on_last_build = '[Last Build]';
 
 
-
-// lib/results/resultsNavigator.php
+// ----- cfg/reports.cfg.php -----
 $TLS_link_charts = "Диаграммы";
 $TLS_link_report_blocked_tcs = "Блокированные тесты";
 $TLS_link_report_failed = "Проваленные тесты";
@@ -1958,31 +2235,49 @@ $TLS_link_report_metrics_more_builds = "Запрос по параметрам";
 $TLS_link_report_not_run = "Незапускавшиеся тесты";
 $TLS_link_report_overall_build = "Суммарный результат прогона по версиям";
 $TLS_link_report_reqs_coverage = "Отчет о выполнении требований";
+$TLS_link_report_tcases_without_tester = "Тесты, для которых не назначены тестировщики";
 $TLS_link_report_test = "Отчет о прогоне тестов";
+$TLS_link_report_test_plan = "Отчет по тест-плану";
+$TLS_link_report_test_report = "Отчет по тестам";
 $TLS_link_report_total_bugs = "Отчет об обнаруженных багах";
-$TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
-$TLS_link_report_tcases_without_tester = "Test Cases without Tester Assignment";
+$TLS_link_report_uncovered_testcases = "Тесты, для которых не назначены требования";
+$TLS_link_report_tcases_with_cf = "Test Cases with Custom Fields info";
+$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
+$TLS_link_report_free_testcases_on_testproject = "Test Cases not assigned to Any Test Plan";
 
-// lib/results/resultsSend.php
+
+$TLS_no_linked_tc_cf='There are no Test Cases with Custom Field information';
+
+$TLS_format_html = 'HTML';
+$TLS_format_odt = 'OpenOffice Writer';
+$TLS_format_ods = 'OpenOffice Calc';
+$TLS_format_xls = 'MS Excel';
+$TLS_format_msword = 'MS Word';
+$TLS_format_pdf = 'PDF';
+$TLS_format_mail_html = 'Email (HTML)';
+
+
+// ----- lib/results/resultsSend.php -----
 $TLS_send_to_empty_email_warning = "К сожалению email не может быть послан в пустое место. Введите адрес корреспондента.";
 $TLS_warning_create_build_first = "Сначала вы должны создать версию (номер сборки) продукта или импортировать данные You must create builds or import data at first.";
 
-// lib/results/displayMgr.php
-$TLS_error_sendreport_no_email_credentials = "Email for this user is not specified, please edit email credentials in 'Personal' tab";
+
+// ----- lib/results/displayMgr.php -----
+$TLS_error_sendreport_no_email_credentials = "Email для данного пользователя не указан, отредактируйте почтоый адрес на персональной страничке";
 
 
 
-// lib/testcases/archive.inc.php
+// ----- lib/testcases/archive.inc.php -----
 
 
 
-// lib/testcases/listTestCases.php
+// ----- lib/testcases/listTestCases.php -----
 
 
 
-// lib/testcases/tcImport.php
-$TLS_action_on_duplicated_name = "Action for duplicated names";
-$TLS_already_exists_updated = "Already exists, data of LAST version has been updated.";
+// ----- lib/testcases/tcImport.php -----
+$TLS_action_on_duplicated_name = "Действия для повторящихся имен";
+$TLS_already_exists_updated = "Уже существует, данные ПОСЛЕДНЕЙ версии были обновлены.";
 $TLS_please_choose_file_to_import = "Выберите файл для импорта";
 $TLS_title_tc_import_to = "Импорт тестов";
 $TLS_title_tsuite_import_to = "Импорт групп тестов";
@@ -1992,14 +2287,24 @@ $TLS_cf_value_not_imported_missing_cf_on_testproject = "Value of Custom Field '%
                                                      "because there is no Custom Field with this name " .
                                                      "and Available for %s on this Test Project"; 
 
+$TLS_req_not_in_req_spec_on_tcimport = "Requirement DOCID=%s can not be linked to testcase," .
+		                                   "because is not direct child of Req. Spec: %s";
+
+$TLS_req_spec_ko_on_tcimport = "Req. Spec=%s do not exists, requirements can not be " .
+		                           "linked to testcase";
 
 $TLS_update_last_testcase_version='Update data on Latest version';
 $TLS_create_new_testcase_version='Create a new version';
 $TLS_generate_new_testcase='Create a new test case with different title';
+$TLS_no_cf_defined_can_not_import="Custom Field values are present on import file ".
+                                  "but can not be imported because there are no " .
+                                  "Custom Fields with Test Spec. Design Scope on this Test Project"; 
+$TLS_no_reqspec_defined_can_not_import="Requirements are present on import file ".
+                                       "but can not be imported because there are no " .
+                                       "Requirement Specification defined for this Test Project"; 
 
 
-
-// lib/testcases/tcexport.php
+// ----- lib/testcases/tcexport.php -----
 $TLS_no_testcases_to_export = "Не выбраны тесты для экспорта";
 $TLS_no_testsuites_to_export = "не выбраны группы тестов для экспорта";
 $TLS_title_tc_export = "Экспорт тестов";
@@ -2009,14 +2314,20 @@ $TLS_title_tsuite_export_all = "Экспорт всех групп тестов"
 
 
 
-// lib/testcases/containerEdit.php
+// ----- lib/testcases/containerEdit.php -----
 $TLS_delete = "Удаление";
 $TLS_delete_notice = "Внимание: Все связанные с этой группой данные будут удалены";
 $TLS_warning_empty_com_name = "Пожалуйста, дайте название группе тестов";
+$TLS_remove_assigned_testcases = "Unassign all assigned Test Cases for Test Plan";
+$TLS_btn_unassign_all_tcs = "Unassign all assigned Test Cases";
+$TLS_unassign_all_tcs_msgbox_title = "Remove all assigned Test Cases?";
+$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all Test Case assignments will be removed for Test Plan %s.";
+$TLS_unassigned_all_tcs_msg = "All assigned Test Cases have been unassigned for Test Plan %s.";
+$TLS_nothing_to_unassign_msg = "There are no Test Cases assigned to users for Test Plan %s.";
 
 
 
-// lib/testcases/tcEdit.php
+// ----- lib/testcases/tcEdit.php -----
 $TLS_current = "текущий";
 $TLS_delete_linked = "Links to test plans will be removed";
 $TLS_delete_linked_and_exec = "Links to test plans, and execution related information will be removed";
@@ -2025,11 +2336,11 @@ $TLS_title_del_tc = "Удаление теста";
 
 
 
-// lib/usermanagement/rolesview.php
+// ----- lib/usermanagement/rolesview.php -----
 $TLS_error_role_deletion = "Этот уровень доступа не может быть удален!";
 
 
-// lib/usermanagement/usersassign.php
+// ----- lib/usermanagement/usersassign.php -----
 $TLS_no_test_projects = "There are no Test Projects defined";
 $TLS_no_test_plans = "There are no Test Plans defined for this Test Project";
 $TLS_test_project_user_roles_updated = "Уровен доступа к продукту был успешно изменен";
@@ -2040,15 +2351,15 @@ $TLS_test_plan_user_roles_updated = "Уровен доступа к тест-п�
 $TLS_user_created = "User %s was successfully created";
 $TLS_user_deleted = "User %s was successfully deleted";
 $TLS_user_not_added = "Такой пользователь не может быть добавлен!";
-$TLS_error_user_not_updated = "The user couldn't be updated!";
-$TLS_error_user_not_deleted = "The user couldn't be deleted!";
+$TLS_error_user_not_updated = "Пользователель не может быть обновлен!";
+$TLS_error_user_not_deleted = "Пользователель не может быть удален!";
 $TLS_error_user_login_length_error = "The login was either too short or too long!";
 
 
 
 // ----- lib/usermanagement/rolesedit.php -----
-$TLS_error_role_creation = "The role couldn't be created!";
-$TLS_error_role_update = "The role couldn't be updated!";
+$TLS_error_role_creation = "Роль не может быть создана!";
+$TLS_error_role_update = "Роль не может быть удалена!";
 
 
 
@@ -2074,27 +2385,28 @@ $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associate
 // ----- lib/project/project_req_spec_mgmt.tpl -----
 $TLS_btn_new_req_spec = "New Requirement Specification";
 $TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
+$TLS_btn_export_all_reqspec = "Export All Requirement Specifications";
 
 
 // ----- reqSpecEdit.php -----
-$TLS_delete_req_spec = "Delete Requirement Specification";
+$TLS_delete_req_spec = "Удалить спецификацию требований";
 $TLS_req_spec_created = "Requirement Specification: %s was successfully created";
 $TLS_req_spec_deleted = "Requirement Specification: %s was successfully deleted";
-
 $TLS_title_req_spec = "Requirement Specifications";
 $TLS_warning_empty_req_spec_title = "Requirement Specification title cannot be empty!";
+$TLS_warning_empty_doc_id = "Document ID can not be empty";
 $TLS_create_req_spec = "Create Requirements Specification";
 $TLS_create_child_req_spec = "Create Child Req Specification";
-
 $TLS_edit_req_spec = "Edit Requirements Specification";
 
 
 // ----- reqEdit.php -----
-$TLS_create_req = "Create Requirement";
-$TLS_delete_req = "Delete Requirement";
-$TLS_edit_req = "Edit Requirement";
-$TLS_req_created = "Requirement: %s was successfully created";
+$TLS_create_req = "Создать требование";
+$TLS_delete_req = "Удалить требование";
+$TLS_edit_req = "Редактировать требование";
+$TLS_req_created = "Requirement %s was successfully created";
 $TLS_req_deleted = "Requirement: %s was successfully deleted";
+$TLS_req_version_deleted = "Req: %s-%s Version %s was successfully deleted";
 
 
 // ----- reqSpecReorder.tpl -----
@@ -2111,6 +2423,14 @@ $TLS_keyword_management = "Keyword management";
 $TLS_create_keyword = "Create keyword";
 $TLS_edit_keyword = "Edit keyword";
 $TLS_warning_empty_keyword = "Keyword must not be empty!";
+
+// ----- platformsEdit.php -----
+$TLS_platform_management = "Platform Management";
+$TLS_create_platform = "Create platform";
+$TLS_edit_platform = "Edit platform";
+$TLS_platform_name_already_exists = "Platform Name %s already Exists";
+$TLS_platform_update_failed = "Platform update failed";
+$TLS_warning_empty_platform = "Platform can not be empty!";
 
 // ----- api/TestlinkXMLRPCServerErrors.php -----
 $TLS_API_INVALID_AUTH = "Can not authenticate client: invalid developer key";
@@ -2132,7 +2452,7 @@ $TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";
 $TLS_API_INVALID_STATUS = "The status (status) provided is not valid!";
 $TLS_API_INVALID_TESTCASE_EXTERNAL_ID="Test Case External ID (%s) does not exist!";
 
-$TLS_API_TCID_NOT_INTEGER = "TCID must be an integer!";
+$TLS_API_TCASEID_NOT_INTEGER = "Test Case ID (testcaseid) must be an integer!";
 $TLS_API_TESTCASENAME_NOT_STRING = "testcasename must be a string!";
 $TLS_API_NO_BUILD_FOR_TPLANID = "No builds exist for the tpid provided! A build must be created to report results.";
 $TLS_API_BUILDID_NOGUESS = "Guessing is disabled so a buildid must be specified!";
@@ -2144,13 +2464,12 @@ $TLS_API_INVALID_TESTPROJECTID = "The Test Project ID (testprojectid) provided d
 $TLS_API_INVALID_TESTSUITEID = "The Test Suite ID (testsuiteid) provided does not exist!";
 $TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase exists with the name provided!";
 $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
-$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot find matching Custom Field. " .
-                                     "No Custom Field exists with the name provided!";
+$TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot Find Custom Field with name (%s) ";
 
 $TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
 $TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
 
-$TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number do not exist for test case";
+$TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number does not exist for test case";
 $TLS_API_PARAMETER_NOT_INT = "Parameter %s must be an integer.";
 
 $TLS_API_TPLAN_TPROJECT_KO="Test Plan (name=%s / id=%s) does not belong to Test Project (name=%s / id=%s)";
@@ -2169,13 +2488,40 @@ $TLS_API_REQ_REQSPEC_KO="Requirement(docid=%s/title=%s/id=%s) does not belong to
 $TLS_API_TPLAN_HAS_NO_BUILDS="There are no builds defined for Test Plan (name=%s/id=%s)";
 $TLS_API_VERSION_NOT_VALID="Version number %s is not valid.";
 
+$TLS_API_BAD_BUILD_FOR_TPLAN = "Build (id:%s), does not exist for Test Plan (name:%s/id:%s).";
+
+$TLS_API_CUSTOMFIELD_NOT_APP_FOR_NODE_TYPE="Custom Field (name:%s), can not be used on %s, but on %s";
+
+$TLS_API_NO_TESTSUITENAME="No testsuitename provided. A test suite name must be provided!";
+$TLS_API_TESTSUITENAME_NOT_STRING = "testsuitename must be a string!";
+$TLS_API_TESTSUITE_DONOTBELONGTO_TESTPROJECT="Test Suite (choosen as parent id) " .
+                                             "with id:%s do not belongs to Test Project(name=%s / id=%s)";
+
+$TLS_API_CUSTOMFIELD_HAS_NOT_DESIGN_SCOPE="Custom Field (name:%s), is not configured for Design Scope";
+$TLS_API_CUSTOMFIELD_NOT_ASSIGNED_TO_TESTPROJECT="Custom Field (name:%s), is not assigned to Test Project(name=%s / id=%s)";
+$TLS_API_TESTPROJECTNAME_DOESNOT_EXIST="Test Project (name:%s) does not exist.";
+$TLS_API_TESTPLANNAME_DOESNOT_EXIST="Test Plan (name:%s) does not exist on Test Project (name:%s).";
+$TLS_API_INVALID_PARENT_TESTSUITEID = "Test Suite ID (%s) provided as PARENT for Test Suite (name:%s) " .
+                                      "do not belongs to a Test Suite present on system!";
+
+$TLS_API_NO_TESTCASE_FOUND = "No Test Case found for search criteria.";
+$TLS_API_TESTPLANNAME_ALREADY_EXISTS="Test Plan (name:%s) Already EXITS on Test Project (name:%s).";
+
+$TLS_API_NODEID_IS_NOT_INTEGER = "Node id is not an positive interger value.";
+$TLS_API_NODEID_DOESNOT_EXIST="Node with id (%s) does not exist on system.";
+
+$TLS_API_CFG_DELETE_EXEC_DISABLED = "Configuration does not allow delete executions";
+
+$TLS_API_PLATFORM_NOT_LINKED_TO_TESTPLAN = "Platform (name=%s) is not linked to test plan (name:%s).";
+$TLS_API_TESTPLAN_HAS_NO_PLATFORMS = "Test plan (name:%s) has no platforms linked";
+
 
 // ----- audit log entries -----
-$TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
-$TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";
-$TLS_audit_role_saved = "Role '{%1}' was saved";
-$TLS_audit_role_created = "Role '{%1}' was created";
-$TLS_audit_role_deleted = "Role '{%1}' was deleted";
+$TLS_audit_login_succeeded = "Вход '{%1}' с '{%2}' успешно произведен";
+$TLS_audit_login_failed = "Вход '{%1}' с '{%2}'  не удался";
+$TLS_audit_role_saved = "Роль '{%1}' сохранения";
+$TLS_audit_role_created = "Роль '{%1}' создана";
+$TLS_audit_role_deleted = "Роль '{%1}' удалена";
 
 
 $TLS_audit_cfield_created = "Custom field '{%1}' was created";
@@ -2188,15 +2534,15 @@ $TLS_audit_cfield_activated = "Custom field '{%1}' was activated on Test Project
 $TLS_audit_cfield_deactivated = "Custom field '{%1}' was deactivated on Test Project '{%2}'";
 
 $TLS_audit_user_apikey_set = "API-Key for '{%1}' was generated";
-$TLS_audit_user_saved = "User '{%1}' was saved";
-$TLS_audit_user_pwd_saved = "Password of user '{%1}' was saved";
+$TLS_audit_user_saved = "Пользователь '{%1}' сохранен";
+$TLS_audit_user_pwd_saved = "Пароль пользователя '{%1}' сохранен";
 $TLS_audit_users_roles_added_testproject = "User '{%1}' was assigned the role '{%3}' to the Test Project '{%2}'";
 $TLS_audit_users_roles_added_testplan = "User '{%1}' was assigned the role '{%3}' to the Test Plan '{%2}'";
 $TLS_audit_all_user_roles_removed_testplan = "All user roles were unassigned from the Test Plan '{%1}'";
 $TLS_audit_all_user_roles_removed_testproject = "All user roles were unassigned from the Test Project with id '{%1}'";
 $TLS_audit_user_created = "User '{%1}' was created";
 $TLS_audit_user_deleted = "User '{%1}' was deleted";
-$TLS_audit_user_logout = "Logout of '{%1}'";
+$TLS_audit_user_logout = "Выход '{%1}'";
 $TLS_audit_users_self_signup = "User '{%1}' created by self-sign up";
 $TLS_audit_pwd_reset_requested = "Password reset requested for '{%1}'";
 $TLS_audit_user_role_changed = "User '{%1}' role changed old='{%2}' new='{%3}'";
@@ -2204,9 +2550,9 @@ $TLS_audit_user_active_status_changed = "User '{%1}' active status changed old='
 
 $TLS_audit_security_user_right_missing = "User '{%1}' has insufficient rights for '{%3}' action on '{%2}'! Exit forced!";
 
-$TLS_audit_testproject_created = $TLS_testproject . " '{%1}' was created";
-$TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' was saved";
-$TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' was deleted";
+$TLS_audit_testproject_created = $TLS_testproject . " '{%1}' создан";
+$TLS_audit_testproject_saved = $TLS_testproject . " '{%1}' сохранен";
+$TLS_audit_testproject_deleted = $TLS_testproject . " '{%1}' удален";
 
 $TLS_audit_keyword_created = "Keyword '{%1}' was created";
 $TLS_audit_keyword_saved = "Keyword '{%1}' was saved";
@@ -2231,6 +2577,9 @@ $TLS_audit_requirement_saved = "Requirement '{%1}' was saved";
 $TLS_audit_requirement_deleted = "Requirement '{%1}' was deleted";
 $TLS_audit_req_assigned_tc = "Requirement with title '{%1}' was assigned to the Test Case '{%2}'";
 $TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassigned from the Test Case '{%2}'";
+$TLS_audit_requirement_copy = "Req 'DOCID:{%1}' was created as a copy of Req 'DOCID:{%2}'";
+$TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%3} was deleted."; 
+$TLS_audit_req_version_frozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was frozen.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";
@@ -2277,6 +2626,7 @@ $TLS_th_user = "User";
 $TLS_show_event_history = "Show the event history";
 $TLS_btn_clear_events = "Clear All Events";
 $TLS_th_event_description = "Description";
+$TLS_select_user = "User (Default All)";
 
 
 // ----- int_mantis.php -----
@@ -2301,6 +2651,66 @@ $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 // ----- testCasesWithoutTester -----
 $TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
 $TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
+
+// ----- freeTestCases -----
+$TLS_report_free_testcases_on_testproject=$TLS_link_report_free_testcases_on_testproject;
+$TLS_all_testcases_has_testplan="All Test Cases has been assigned to a Test Plan";
+$TLS_all_testcases_are_free="No Test Case has been assigned to a Test Plan";
+
+// ----- timeCharts ----- 
+$TLS_interval_end_date 		= "Last Interval Date";
+$TLS_interval_header 		= "Interval Type";
+$TLS_interval_number 		= "Number of Intervals";
+$TLS_link_time_charts		= "Time Charts";
+$TLS_time_charts_metrics 	= "Time Charts Metrics";
+$TLS_time_charts_title 		= "Time Charts";
+
+// ----- linkto.php -----
+$TLS_testproject_not_found = "Testproject with prefix (%s) does not exist";
+$TLS_testproject_not_set = "Testproject key (tprojectPrefix) not found on _GET.";
+$TLS_item_not_set = "Item not set - what do we want to see? [item=tc|req|reqspec]";
+$TLS_id_not_set = "ID not set.";
+$TLS_testcase_not_found = "Testcase %s not found in test project (prefix:%s).";
+$TLS_req_spec_not_found = "Requirement specification %s not found in test project (prefix:%s).";
+$TLS_req_not_found = "Requirement %s not found in test project (prefix:%s).";
+$TLS_invalid_item = 'Invalid item (%s)';
+$TLS_btn_show_direct_link = "Show permanent link";
+
+// ----- testcase/req comparison -----
+$TLS_title_compare_versions_tc = "Testcase versions compare page";
+$TLS_title_compare_versions_req = "Requirement versions compare page";
+$TLS_btn_compare_versions = "Compare versions";
+$TLS_btn_compare_selected_versions = "Compare selected versions";
+$TLS_select_versions = "Select Versions to compare:";
+$TLS_version = "Версия";
+$TLS_compare = "Compare ";
+$TLS_modified = "Last modified ";
+$TLS_modified_by = "Last modified by ";
+$TLS_num_changes = "Number of changes in %s: %s.";
+$TLS_no_changes = "No changes in %s.";
+$TLS_context = "Context (number of lines):";
+$TLS_show_all = "show all";
+$TLS_version_short = "v";
+$TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%s) of testcase %s"; 
+$TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";
+$TLS_warning_context = "Context (lines) must be a number.";
+$TLS_warning_context_range = "Context is out of range (must be a positive number).";
+$TLS_warning_empty_context = "Context (lines) must not be empty.";
+$TLS_warning_selected_versions = "You have to select two versions from the list.";
+$TLS_warning_same_selected_versions = "You have to select two different versions from the list.";
+
+// ----- grab from not-systematic developers -----
+$TLS_step_actions = "Шаги";
+$TLS_step_details="Описание шагов";
+$TLS_step_number="#";
+$TLS_step_number_verbose = "Номер шага";
+$TLS_step_number_x_created = "Шаг номер: %s created";
+$TLS_edit_step_number_x = "Редактировать шаг номер: %s - тест: %s - версия: %s";
+$TLS_create_step = "Создать шаг - тест: %s - версия: %s";
+$TLS_delete_step = "Удалить шаг";
+$TLS_warning_delete_step = "<p>You are going to delete step number: %s </p><p>Are you sure?</p>";
+$TLS_warning_step_number = " Step number must be a number and > 0";
+$TLS_warning_step_number_already_exists = " Step number %s already exists";
 
 
 // ----- END ------------------------------------------------------------------

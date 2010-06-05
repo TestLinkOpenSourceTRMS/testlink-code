@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: test_automation.js,v 1.2 2009/05/18 20:22:09 schlundus Exp $ 
+// $Id: test_automation.js,v 1.3 2010/06/05 10:29:16 franciscom Exp $ 
 //
 // This library is automatically loaded with inc_header.tpl
 //
@@ -17,10 +17,9 @@
 
 */
 function openImportResult(windows_title) {
-	window.open(fRoot+"lib/results/resultsImport.php",
-	            windows_title,
-	            "menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
-	if (window.focus) {newwindow.focus()}
+	wref = window.open(fRoot+"lib/results/resultsImport.php",
+	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
+	wref.focus();
 }
 
 /**

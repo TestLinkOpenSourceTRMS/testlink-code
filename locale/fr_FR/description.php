@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/02 22:30:52 $ $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/06/05 06:55:28 $ $Author: franciscom $
  * @author Martin Havlat
  *
  * LOCALIZATION:
@@ -26,161 +26,161 @@
  * ----------------------------------------------------------------------------------- */
 
 // printFilter.html
-$TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
+$TLS_hlp_generateDocOptions = "<h2>Les options pour un document généré</h2>
 
-<p>This table allows the user to filter test cases before they are viewed. If
-selected (checked) the data will be shown. In order to change the data
-presented, check or uncheck, click on Filter, and select the desired data
-level from the tree.</p>
+<p>Cette table autorise l'utilisateur à filtrer les cas de test avant qu'ils soient affichés. Si
+elle est sélectionnée (cochée) les données seront affichées. Pour changer les données
+présentées, sélectionnées ou désélectionnées, cliquer sur Filtre, et sélectionner le niveau de données
+désiré à partir de l'arbre.</p>
 
-<p><b>Document Header:</b> Users can filter out Document Header information. 
-Document Header information includes: Introduction, Scope, References, 
-Test Methodology, and Test Limitations.</p>
+<p><b>En-tête du document:</b> Les utilisateurs peuvent éliminer par filtrage les informations de l'en-tête de document. 
+Les informations de l'en-tête de document incluent: Introduction, Périmètre, Références, 
+Méthodologie de Test, et Limitations des Tests.</p>
 
-<p><b>Test Case Body:</b> Users can filter out Test Case Body information. Test Case Body information
-includes: Summary, Steps, Expected Results, and Keywords.</p>
+<p><b>Corps du Cas de Test:</b> Les utilisateurs peuvent éliminer par filtrage les informations du Corps du Cas de Test. Les informations du Corps du Cas de Test
+incluent: Résumé, Etape, Résultats attendus, et Mots Clés.</p>
 
-<p><b>Test Case Summary:</b> Users can filter out Test Case Summary information from the Test Case Title,
-however, they cannot filter out Test Case Summary information from the Test
-Case Body. Test Case Summary has only been partially separated from Test Case
-Body in order to support viewing Titles with a brief Summary and the absence of
-Steps, Expected Results, and Keywords. If a user decides to view Test Case
-Body, Test Case Summary will always be included.</p>
+<p><b>Résumé du Cas de Test:</b> Les utilisateurs peuvent éliminer par filtrage les informations du résumé de Cas de Test du Titre du Cas de Test,
+cependant, ils ne peuvent éliminer par filtrage les informations du Résumé de Cas de Test du Corps du Cas
+de Test. Le Résumé du Cas de Test a été partiellement séparé du Corps de Cas
+de test seulement pour améliorer la présentation des Titres avec un bref Résumé et l'absence d'étape,
+Résultats attendus, et Mots Clés. Si un utilisateur décide d'afficher le corps du Cas de Test,
+le Résumé du Cas de Test sera toujours inclus.</p>
 
-<p><b>Table of Content:</b> TestLink inserts list of all titles with internal hypertext links if checked.</p>
+<p><b>Table du Contenu:</b> TestLink insère une liste de tous les titres avec un lien hypertext interne s'il est sélectionné.</p>
 
-<p><b>Output format:</b> There are two possibilities: HTML and MS Word. Browser calls MS word component 
-in second case.</p>";
+<p><b>Format de sortie:</b> Il y a deux possibilités: HTML et MS Word. Le navigateur appelle les composants MS Word 
+en second cas.</p>";
 
 // testPlan.html
-$TLS_hlp_testPlan = "<h2>Test Plan</h2>
+$TLS_hlp_testPlan = "<h2>Plan de Test</h2>
 
-<h3>General</h3>
-<p>A test plan is a systematic approach to testing a system such as software. You can organize testing activity with 
-particular builds of product in time and trace results.</p>
+<h3>Général</h3>
+<p>Un Plan de Test est une approche systématique afin de tester un système tel qu'un logiciel. Vous pouvez organiser les activités de test avec 
+des livraisons particulières du produit dans le temps et les traces des résultats.</p>
 
-<h3>Test Execution</h3>
-<p>This section is where users can execute test cases (write test results) and 
-print Test case suite of the Test Plan. This section is where users can track 
-the results of their test case execution.</p> 
+<h3>Exécution des Tests</h3>
+<p>Cette section est l'endroit où les utilisateurs peuvent exécuter les cas de tests (écrire les résultats de tests) et 
+publier la suite des cas de tests du plan de test. Cette section est l'endroit où les utilisateurs peuvent suivre 
+les résultats de l'exécution de leur cas de tests.</p> 
 
-<h2>Test Plan Management</h2>
-<p>This section, which is only lead accessible, allows users to administrate test plans. 
-Administering test plans involves creating/editing/deleting plans, 
-adding/editing/deleting/updating test cases in plans, creating builds as well as defining who can 
-see which plan.<br />
-Users with lead permissions may also set the priority/risk and ownership of 
-Test case suites (categories) and create testing milestones.</p> 
+<h2>Gestion du Plan de Test</h2>
+<p>Cette section, qui est seulement accessible pour le rôle principal, autorise les utilisateurs à administrer les plans de tests. 
+Administrer les plans de tests implique créer/éditer/supprimes des plans, 
+ajouter/éditer/supprimer/mettre à jour des cas de test dans les plans, créer des livraisons ainsi que définir qui peut 
+voir chaque plan.<br />
+Les utilisateurs avec les permissions principales peuvent aussi changer la priorité/risque et propriétés 
+des suites de cas de tests (catégories) et créer des jalons de test.</p> 
 
-<p>Note: It is possible that users may not see a dropdown containing any Test plans. 
-In this situation all links (except lead enabled ones) will be unlinked. If you 
-are in this situation you must contact a lead or admin to grant you the proper 
-project rights or create a Test Plan for you.</p>"; 
+<p>Note: Il est possible que les utilisateurs ne peuvent pas voir un menu déroulant contenant n'importe quel plan de test. 
+Dans cette situation tous les liens (exceptés les principaux activés) seront défaits. Si vous 
+êtes dans cette situation vous devez contacter un rôle principal ou un administrateur pour vous accorder les droits 
+requis sur le projet ou créer un plan de test pour vous.</p>"; 
 
 // custom_fields.html
-$TLS_hlp_customFields = "<h2>Custom Fields</h2>
-<p>Following are some facts about the implementation of custom fields:</p>
+$TLS_hlp_customFields = "<h2>Champs personnalisé</h2>
+<p>Voici des informations à propos de l'implémentation des champs personnalisés:</p>
 <ul>
-<li>Custom fields are defined system wide.</li>
-<li>Custom fields are linked to a type of element (Test Suite, Test Case)</li>
-<li>Custom fields can be linked to multiple Test Projects.</li>
-<li>The sequence of displaying custom fields can be different per Test Project.</li>
-<li>Custom fields can be turned inactive for an specific Test Project.</li>
-<li>Number of custom fields is not restricted.</li>
+<li>Les champs personnalisés sont définis pour une utilisation étendue.</li>
+<li>Les champs personnalisés sont liés à un type d'élément (Suite de test, Cas de test)</li>
+<li>Les champs personnalisés peuvent être liés à plusieurs projets de test.</li>
+<li>La séquence d'affichage des champs personnalisés peut être différente pour chaque projet.</li>
+<li>Les champs personnalisés peuvent être désactivés pour un projet spécifique.</li>
+<li>Le nombre de champ personnalisé n'est pas restreint.</li>
 </ul>
 
-<p>The definition of a custom field includes the following logical
-attributes:</p>
+<p>La définition d'un champ personnalisé inclut les attributs logiques
+suivants:</p>
 <ul>
-<li>Custom field name</li>
-<li>Caption variable name (eg: This is the value that is
-supplied to lang_get() API , or displayed as-is if not found in language file).</li>
-<li>Custom field type (string, numeric, float, enum, email)</li>
-<li>Enumeration possible values (eg: RED|YELLOW|BLUE), applicable to list, multiselection list 
-and combo types.<br />
-<i>Use the pipe ('|') character to
-separate possible values for an enumeration. One of the possible values
-can be an empty string.</i>
+<li>Nom du champ personnalisé</li>
+<li>Nom à légende variable (ex: c'est la valeur qui est passée
+à l'API lang_get(), ou affichée comme si non trouvée dans la langue du fichier).</li>
+<li>Type du champ personnalisé (string, numerique, float, enum, email)</li>
+<li>Valeurs possibles d'énumération (ex: RED|YELLOW|BLUE), applicable à une liste, à une liste multiselection 
+et des types de combo.<br />
+<i>Utiliser le caractère pipe ('|') pour
+séparer les valeurs possibles dans une énumération. L'une des valeurs possibles
+peut être une chaîne vide.</i>
 </li>
-<li>Default value: NOT IMPLEMENTED YET</li>
-<li>Minimum/maximum length for the custom field value (use 0 to disable). (NOT IMPLEMENTED YET)</li>
-<li>Regular expression to use for validating user input
-(use <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
-syntax). <b>(NOT IMPLEMENTED YET)</b></li>
-<li>All custom fields are currently saved to a field of type VARCHAR(255) in the database.</li>
-<li>Display on test specification.</li>
-<li>Enable on test specification. User can change the value during Test Case Specification Design</li>
-<li>Display on test execution.</li>
-<li>Enable on test execution. User can change the value during Test Case execution</li>
-<li>Display on test plan design.</li>
-<li>Enable on test plan design. User can change the value during Test Plan design (add test cases to test plan)</li>
-<li>Available for. User choose to what kind of item the field belows.</li>
+<li>Valeur par défaut: PAS ENCORE IMPLEMENTE</li>
+<li>Longueur minimum/maximum pour la valeur du champ personnalisé (utiliser 0 pour désactiver). (PAS ENCORE IMPLEMENTE)</li>
+<li>L'expression régulière utilisée pour valider les données d'entrées de l'utilisateur
+(utiliser <a href=\"http://au.php.net/manual/en/function.ereg.php\">ereg()</a>
+comme syntaxe). <b>(PAS ENCORE IMPLEMENTE)</b></li>
+<li>Tous les champs personnalisés sont actuellement sauvegardés dans un champ de type VARCHAR(255) dans la base de données.</li>
+<li>Affichés dans la spécification de test.</li>
+<li>Activés dans la spécification de test. L'utilisateur peut changer la valeur pendant la conception de la spécification du cas de test</li>
+<li>Affichés dans l'exécution de test.</li>
+<li>Activés dans l'exécution de test. L'utilisateur peut changer la valeur pendant l'exécution du cas de test</li>
+<li>Affiché dans la conception du plan de test.</li>
+<li>Activés dans la conception du plan de test. L'utilisateur peut changer la valeur pendant la conception du plan de test (ajouter des cas de test au plan de test)</li>
+<li>Disponibles pour. L'utilisateur choisi quel genre d'objet est sous le champ.</li>
 </ul>
 ";
 
 // execMain.html
-$TLS_hlp_executeMain = "<h2>Executing Test Cases</h2>
-<p>Allows users to 'execute' test cases. Execution itself is merely
-assigning a test case a result (pass,fail,blocked) against a selected build.</p>
-<p>Access to a bug tracking system could be configured. User can directly add a new bugs
-and browse exesting ones then.</p>";
+$TLS_hlp_executeMain = "<h2>Exécution des cas de test</h2>
+<p>Autorise les utilisateurs à 'exécuter' les cas de test. L'exécution elle-même est seulement
+assignée au résultat d'un cas de test (réussi, échoué, bloqué) pour une livraison sélectionnée.</p>
+<p>L'accès à un système de détection des anomalies peut être configuré. L'utilisateur peut directement ajouter une nouvelle anomalie
+et parcourir celles existantes.</p>";
 
 //bug_add.html
-$TLS_hlp_btsIntegration = "<h2>Add Bugs to Test Case</h2>
-<p><i>(only if it is configured)</i>
-TestLink has a very simple integration with Bug Tracking Systems (BTS),
-not being able either send a bug creationg request to BTS, neither get back the bug id.
-The integration is done using links to pages on BTS, that calls the following features:
+$TLS_hlp_btsIntegration = "<h2>Ajouter une anomalie à un cas de test</h2>
+<p><i>(seulement si c'est configuré)</i>
+TestLink a une intégration très simple avec Bug Tracking Systems (BTS),
+d'un côté il n'est pas capable d'envoyer une requête de création d'une anomalie à BTS, ni de récupérer l'id de l'anomalie.
+L'intégration est faîte en utilisant les liens vers les pages de BTS, ce qui appelle les caractéristiques suivantes:
 <ul>
-	<li>Insert new bug.</li>
-	<li>Display existent bug info. </li>
+	<li>Insérer une nouvelle anomalie.</li>
+	<li>Afficher les informations des anomalie existantes. </li>
 </ul>
 </p>  
 
-<h3>Process to add a bug</h3>
+<h3>Processus pour ajouter une anomalie</h3>
 <p>
    <ul>
-   <li>Step 1: use the link to open BTS to insert a new bug. </li>
-   <li>Step 2: write down the BUGID assigned by BTS.</li>
-   <li>Step 3: write BUGID on the input field.</li>
-   <li>Step 4: use add bug button.</li>
+   <li>Etape 1: utiliser le lien pour ouvrir BTS et insérer une nouvelle anomalie. </li>
+   <li>Etape 2: consigner l'id de l'anomalie assignée par BTS.</li>
+   <li>Etape 3: écrire l'id dans le champ d'entrée.</li>
+   <li>Etape 4: utiliser le bouton d'ajout d'anomalie.</li>
    </ul>  
 
-After closing the add bug page, you will see relevant bug data on the execute page.
+Après avoir fermé la page d'ajout d'anomalie, vous pourrez voir les données utiles de l'anomalie sur la page d'exécution.
 </p>";
 
 // execFilter.html
-$TLS_hlp_executeFilter = "<h2>Setup Filter and Build for test execution</h2>
+$TLS_hlp_executeFilter = "<h2>Paramétrage de filtre et de release pour l'exécution des tests</h2>
 
-<p>The left pane consists from navigator through test cases assigned to the current " .
-"Test plan and table with settings and filter. These filters allows the user " .
-"to refine offered set of test cases before they are executed." .
-"Setup your filter, press the \"Apply\" button and select appropriate Test Case " .
-"from tree menu.</p>
+<p>Le panneau gauche consiste à naviguer parmi les cas de tests assignés au plan de test " .
+"courant et présenté avec des cadres et des filtres. Ces filtres autorisent l'utilisateur " .
+"à peaufiner l'ensemble des cas de test avant qu'ils soient exécutés." .
+"Installez votre filtre, cliquez sur le bouton \"Appliquer\" et sélectionnez la cas de test approprié " .
+"à partir de l'arborescence.</p>
 
-<h3>Build</h3>
-<p>Users must choose a build that will be connected with a test result. " .
-"Builds are the basic component for the current Test Plan. Each test case " .
-"may be run more times per build. However the last results is count only. 
-<br />Builds can be created by leads using the Create New Build page.</p>
+<h3>Livraison</h3>
+<p>Les utilisateurs doivent choisir une livraison qui sera liée avec un résultat de test. " .
+"Les livraisons sont les composants de base pour le plan de test courant. Chaque cas de test " .
+"peut être exécuté plusieurs fois par livraison. Seul le dernier résultat compte. 
+<br />Les livraisons peuvent être créées par le rôle principal en utilisant la page de création d'une nouvelle livraison.</p>
 
-<h3>Test Case ID filter</h3>
-<p>Users can filter test cases by unique identifier. This ID is created automatically 
-during create time. Empty box means that the filter doesn't apply.</p> 
+<h3>Filtre par ID de cas de test</h3>
+<p>Les utilisateurs peuvent filtrer les cas de test par un identifieur unique. Cette ID est créée automatiquement 
+pendant la phase de création. Un cadre blanc signifie que le filtre n'a pas été appliqué.</p> 
 
-<h3>Priority filter</h3>
-<p>Users can filter test cases by test priority. Each test case importance is combined" .
-"with test urgency within the current Test plan. For example 'HIGH' priority test case " .
-"is shown if importance or urgency is HIGH and second attribute is at least MEDIUM level.</p> 
+<h3>Filtre par priorité</h3>
+<p>Les utilisateurs peuvent filtrer les cas de test par leur priorité. L'importance de chaque cas de test est combinée" .
+"avec l'urgence du test à l'intérieur du plan de test courant. Par exemple les cas de test de 'HAUTE' priorité " .
+"sont affichés si l'importance ou l'urgence est HAUTE et le second attribut est au moins au niveau MOYEN.</p> 
 
-<h2>Result filter</h2>
-<p>Users can filter test cases by results. Results are what happened to that test 
-case during a particular build. Test cases can pass, fail, be blocked, or not be run." .
-"This filter is disabled by default.</p>
+<h2>Filtre par résultat</h2>
+<p>Les utilisateurs peuvent filtrer les cas de test par résultats. Les résultats sont ce qui est arrivé à ce cas 
+de test pendant une livraison particulière. Un cas de test peut être réussi, échoué, bloqué, ou non exécuté." .
+"Ce filtre est désactivé par défaut.</p>
 
-<h3>User filter</h3>
-<p>Users can filter test cases by their assignee. The check-box allows to include also " .
-"\"unassigned\" tests into the resulted set in addtion.</p>";
+<h3>Filtre par utilisateur</h3>
+<p>Les utilisateurs peuvent filtrer les cas de test par ceux leur étant assigné. La check-box autorise à inclure seulement " .
+"les tests \"non-assigné\" à l'ensemble des résultats en plus.</p>";
 /*
 <h2>Most Current Result</h2>
 <p>By default or if the 'most current' checkbox is unchecked, the tree will be sorted 
@@ -199,52 +199,52 @@ build 2, it will be colored green.</p>
 
 
 // newest_tcversions.html
-$TLS_hlp_planTcModified = "<h2>Newest versions of linked Test Cases</h2>
-<p>The whole set of Test Cases linked to Test Plan is analyzed, and a list of Test Cases
-which have a newest version is displayed (against the current set of the Test Plan).
+$TLS_hlp_planTcModified = "<h2>Nouvelles versions des cas de test liés</h2>
+<p>L'ensemble des cas de tests liés au plan de test est analysé, et une liste de cas de tests
+qui ont une nouvelle version est affichée (contre l'ensemble du plan de test courant).
 </p>";
 
 
 // requirementsCoverage.html
-$TLS_hlp_requirementsCoverage = "<h3>Requirements Coverage</h3>
+$TLS_hlp_requirementsCoverage = "<h3>Couverture des exigences</h3>
 <br />
-<p>This feature allows to map a coverage of user or system requirements by
-test cases. Navigate via link \"Requirement Specification\" in main screen.</p>
+<p>Cette fonctionnalité autorise à élaborer une couverture d'exigences de l'utilisateur ou du système par
+des cas de test. La navigation se fait par le lien \"Spécification d'exigences\" sur l'écran principal.</p>
 
-<h3>Requirements Specification</h3>
-<p>Requirements are grouped by 'Requirements Specification' document which is related to 
-Test Project.<br /> TestLink doesn't support versions for both Requirements Specification  
-and Requirements itself. So, version of document should be added after 
-a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p> 
+<h3>Spécification des exigences</h3>
+<p>Les exigences sont regroupées par document 'Spécification d'exigences' qui est relié au 
+projet.<br /> TestLink ne surpporte pas les versions pour la Spécification des exigences et les exigences 
+elles-mêmes en même temps. Alors, la version du document doit être ajoutée après 
+le <b>Titre</b> d'une spécification.
+Un utilisateur peut ajouter une simple description ou une note au champ <b>Portée</b>.</p> 
 
-<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for 
-evaluation Req. coverage in case that not all requirements are added (imported) in. 
-The value <b>0</b> means that current count of requirements is used for metrics.</p> 
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test 
-coverage is 25% (if all these added requirements will be tested).</i></p>
+<p><b><a name='total_count'>Ecraser le total des exigences</a></b> sert pour 
+évaluer la couverture des exigences dans le cas où toutes les exigences n'ont pas été ajoutées (importées). 
+La valeur <b>0</b> signifie que le total actuel d'exigences est utilisé pour les métriques.</p> 
+<p><i>Ex: SRS inclut 200 exigences mais seulement 50 sont ajoutées dans TestLink. La couverture 
+de test est de 25% (si toutes ces exigences ajoutées seront testées).</i></p>
 
-<h3><a name=\"req\">Requirements</a></h3>
-<p>Click on title of a created Requirements Specification. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be \"Normal\" or \"Not testable\". Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and 
-wrong designed requirements.</p> 
+<h3><a name=\"req\">Exigences</a></h3>
+<p>Cliquez sur le titre pour créer une spécification d'exigences. Vous pouvez créer, éditer, supprimer
+ou importer des exigences pour ce document. Chaque exigence a un titre, une portée et un statut.
+Le statut peut être \"Normal\" ou \"Non testable\". Les exigences non testables ne sont pas comptées
+dans les métriques. Ce paramètre peut être utilisé pour à la fois des fonctionnalités non implémentées et 
+des exigences mal conçues.</p> 
 
-<p>You can create new test cases for requirements by using multi action with checked 
-requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_testsuite_name = 
-\"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
+<p>Vous pouvez créer de nouveaux cas de tests pour une exigence en utilisant l'action multiple avec l'exigence 
+sélectionnée dans l'écran des spécifications. Ces cas de tests sont créés dans la suite de tests
+avec le nom défini dans la configuration <i>(par défaut: &#36;tlCfg->req_cfg->default_testsuite_name = 
+\"Suite de test créée par exigence - Auto\";)</i>. Le titre et la portée sont copiés sur ce cas de test.</p>
 ";
 
 
 // planAddTC_m1.tpl
-$TLS_hlp_planAddTC = "<h2>Regarding 'Save Custom Fields'</h2>
-If you have defined and assigned to Test Project,<br /> 
-Custom Fields with:<br />
- 'Display on test plan design=true' and <br />
- 'Enable on test plan design=true'<br />
-you will see these in this page ONLY for Test Cases linked to Test Plan.
+$TLS_hlp_planAddTC = "<h2>Concernant 'Sauvegarde des champs personnalisés'</h2>
+Si vous avez défini et assigné au projet,<br /> 
+des champs personnalisés avec:<br />
+ 'Afficher conception de plan de test = vrai' et <br />
+ 'Activer conception de plan de test = vrai'<br />
+vous les verrez sur cette page SEULEMENT pour les cas de test liés au plan de test.
 ";
 
 // xxx.html

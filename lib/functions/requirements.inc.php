@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.104 2010/06/06 19:53:35 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.105 2010/06/06 20:24:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -429,11 +429,14 @@ define("DOCBOOK_TABLE_ENTRY", "entry");
  */
 function getDocBookTableAsHtmlString($docTable,$parseCfg)
 {
+	// echo __FUNCTION__ . '<br>';;
 	$resultTable = "";
 	foreach ($docTable->children() as $tgroup)
 	{
+		// echo $tgroup->getName() . '<br>';
 		if ($tgroup->getName() != $parseCfg->table_group)
 		{
+			// echo 'WILL CONTINUE<br>';
 			continue;
     	}
     
@@ -443,34 +446,45 @@ function getDocBookTableAsHtmlString($docTable,$parseCfg)
 			// get table head
 			$tbodyName = $tbody->getName() ;
 			$doIt = false;
+			// echo '$tbodyName' . $tbodyName . '<br>';
+			
 			if( $tbodyName == $parseCfg->table_head)
 			{
 				$cellTag = array('open' => '<th>', 'close' => '</th>');
 				$doIt = true;
 			}
 			else if( $tbodyName == $parseCfg->table_body)
-			{
+			{                                           
 				$cellTag = array('open' => '<td>', 'close' => '</td>');
 				$doIt = true;
 			}
 
-			foreach ($tbody->children() as $row)
+			if( $doIt )
 			{
-				if ($row->getName() == $parseCfg->table_row)
+				// echo '<b>NIKE</b><br>';
+				foreach ($tbody->children() as $row)
 				{
-					$table_row = "<tr>";
-					foreach ($row->children() as $entry)
+					// echo 'working on child:' . $row->getName() . '<br>';
+					
+					if( $row->getName() == $parseCfg->table_row )
 					{
-						 
-						if ( ($ename = $entry->getName()) == $parseCfg->table_entry)
+						// echo 'working on row' . '<br>';
+						
+						$table_row = "<tr>";
+						foreach ($row->children() as $entry)
 						{
-							$table_row .= $cellTag['open'] . $entry->$ename . $cellTag['close'];
-						}	
+							if ( ($ename = $entry->getName()) == $parseCfg->table_entry)
+							{
+								// echo 'MY ENAME:' . $ename . '<br>';
+								
+								$table_row .= $cellTag['open'] . (string)$entry->$ename . $cellTag['close'];
+							}	
+          				}
+            	    	
+						$table_row .= "</tr>";
+						$table .= $table_row;
           			}
-                	
-					$table_row .= "</tr>";
-					$table .= $table_row;
-          		}
+				}
 			}
 		}
 
@@ -520,14 +534,15 @@ function importReqDataFromDocBook($fileName)
 	$simpleXMLObj = simplexml_load_file($fileName);
 	$num_elem = count($simpleXMLObj->sect1);
 	
-	new dBug($num_elem);
+	// new dBug($num_elem);
 
 	$idx=0;	
 	foreach($simpleXMLObj->sect1 as $xmlReq)
 	{
 		// get all child elements of this requirement
-		$title = (string)$xmlReq->title;
-		echo $title; 
+		// $title = (string)$xmlReq->title;
+		// echo $title . '<br>'; 
+		$title = "";
 		$description = "";
 		$children = $xmlReq->children();
 		foreach ($children as $child)
@@ -535,9 +550,12 @@ function importReqDataFromDocBook($fileName)
 			$nodeName = $child->getName();
 			// echo 'node name:' . $nodeName .'<br>';
 
-			if ($nodeName == $docbokkCfg->title )
+			if ($nodeName == $docbookCfg->title )
 			{
-				continue;
+				// echo 'INSIDE::' . $nodeName . '<br>';
+				$title = (string)$child;
+				// echo '$title:' . $title .'<br>';
+				
 			}	
 			else if ($nodeName == $docbookCfg->ordered_list)
 			{
@@ -568,15 +586,16 @@ function importReqDataFromDocBook($fileName)
 			}
 			else if ($nodeName == $docbookCfg->table)
 			{
+				// echo 'INSIDE: ' . $nodeName . '<br>';
 				$description .= getDocBookTableAsHtmlString($child,$docbookCfg);
 			}
 			else if ($nodeName == $docbookCfg->paragraph)
 			{
-				$description .= "<p>" . (string)$child->$nodeName . "</p>";
+				$description .= "<p>" . (string)$child . "</p>";
 			}
 			else
 			{
-				$description .= "<p>" . (string)$child->$nodeName . "</p>";
+				$description .= "<p>" . (string)$child . "</p>";
 			}
 
 

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.105 2010/06/06 20:24:05 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.106 2010/06/06 20:34:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -475,9 +475,25 @@ function getDocBookTableAsHtmlString($docTable,$parseCfg)
 						{
 							if ( ($ename = $entry->getName()) == $parseCfg->table_entry)
 							{
-								// echo 'MY ENAME:' . $ename . '<br>';
+								echo 'MY ENAME:' . $ename . '<br>';
 								
-								$table_row .= $cellTag['open'] . (string)$entry->$ename . $cellTag['close'];
+								//$table_row .= $cellTag['open'] . (string)$entry . $cellTag['close'];
+								if( $entry->count() == 0 )
+								{
+									$table_row .= $cellTag['open'] . (string)$entry . $cellTag['close'];
+								}
+								else
+								{
+									$table_row .= $cellTag['open'];
+									foreach($parseCfg->table_entry_children as $ck)
+									{
+										if( property_exists($entry,$ck) )
+										{
+											$table_row .= (string)$entry->$ck;
+										}
+									}	
+									$table_row .= $cellTag['close'];
+								}
 							}	
           				}
             	    	
@@ -488,7 +504,7 @@ function getDocBookTableAsHtmlString($docTable,$parseCfg)
 			}
 		}
 
-		$resultTable .= "<table>" . $table . "</table>";
+		$resultTable .= "<table border=\"1\">" . $table . "</table>";
 	}
 
 	return $resultTable;
@@ -514,6 +530,7 @@ function importReqDataFromDocBook($fileName)
 	$docbookCfg->table_row="row";
 	$docbookCfg->table_entry="entry";
 	$docbookCfg->list_item_children = array('para','title');
+	$docbookCfg->table_entry_children = array('para');
 
 
 	// $dom = domxml_open_file($fileName);

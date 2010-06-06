@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article
+  PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<article lang=""><sect1><title>REQ Frontal impact test </title> 
+   <para>Frontal impact test is based on that developed by European Enhanced Vehicle-safety Committee as basis for legislation, but impact speed has been increased by 8 km/h.</para>
+   <para/>
+   <informaltable frame="all">
+      <tgroup cols="2"><tbody><row>
+            <entry>
+               <para>Frontal impact takes place at 64kph (40mph)</para>
+            </entry>
+            <entry>
+               <para/>
+            </entry>
+         </row>
+         <row>
+            <entry>
+               <para>car strikes deformable barrier that is offset. </para>
+            </entry>
+            <entry>
+               <para/>
+            </entry>
+         </row></tbody></tgroup>
+   </informaltable>
+   <para/>
+   <para/>
+   <para>Each car tested is subjected to an offset impact into an immovable block fitted with a deformable aluminium honeycomb face. This impact is intended to represent the most frequent type of road crash, resulting in serious or fatal injury. It simulates one car having a frontal impact with another car of similar mass. As most frontal crashes involve only part of the car’s front, the test is offset to replicate a half width impact between the cars. In the test, this is replicated by having 40 percent of the car impact the barrier. The barrier face is deformable to represent the deformable nature of the cars. This test is a severe test of the car’s ability to survive the impact without suffering passenger compartment intrusion.</para>
+   <para>Contact between the occupant and intruding parts of the passenger compartment is the main cause of serious and fatal injuries, for restrained adult car occupants. The test speed of 64 km/h represents a car to car collision with each car travelling at around 55 km/h. The difference in speed is due to the energy absorbed by the deformable face. Accident research has shown that this impact speed covers a significant proportion of serious and fatal accidents. By preventing intrusion, the chances of the occupant impacting the car’s interior is minimised with space remaining for the restraint system to operate effectively.</para>
+   <para>Steering wheel mounted airbags form an important part of the driver’s restraint system. Euro NCAP has encouraged designs where the driver’s head is given stable support from the airbag and where the head does not “bottom it out.” For a restrained occupant, the deceleration forces, generated in the crash, are transmitted to the occupant through the restraint system. Euro NCAP has encouraged the adoption of seat belt pretentioners, load limiters and dual stage airbags, to help attenuate the forces transmitted to the occupant. It has also helped to avoid situations where the chest is directly loaded by the steering wheel.</para>
+   <para>In most cars, the restraint system is unable to prevent the knees of the front seat occupants from impacting the facia. Euro NCAP has encouraged the removal of hazardous structures from the areas that the knees can impact. High forces on the knee can cause injury to the knee itself and can be transmitted up the thigh to the hip joint and pelvis. These load bearing parts of the skeleton are susceptible to severe, long term, disabling injuries.</para>
+   <para>With current car designs, there is no possibility of preventing contact between the occupants’ feet and the footwell. In order to minimise injuries, Euro NCAP has encouraged intrusion reduction of the footwell and greater control of foot pedals displacement.</para></sect1><sect1><title>REQ Car To Car Sice impact</title>
+   <para>The second most important crash configuration is car to car side impact. </para>
+   <orderedlist>
+      <listitem>
+         <para>Euro NCAP simulates this type of crash by having a mobile deformable barrier (MDB) impact the driver’s door at 50 km/h. </para>
+      </listitem>
+      <listitem>
+         <para>The injury protection is assessed by a side impact test dummy, in the driver’s seat.. </para>
+      </listitem>
+   </orderedlist>
+   <para/>
+   <orderedlist>
+      <listitem>
+         <para>Although it is difficult to judge the level of protection provided from the extent of intrusion, </para>
+      </listitem>
+      <listitem>
+         <para>control of how the car side intrudes is important. </para>
+      </listitem>
+      <listitem>
+         <para>Through the programme, Euro NCAP has seen large improvements in side impact performance. </para>
+      </listitem>
+      <listitem>
+         <para>The provision of side impact airbags has helped. It is now normal for the cars tested by Euro NCAP to be fitted with side impact airbags.</para>
+      </listitem>
+   </orderedlist></sect1></article>

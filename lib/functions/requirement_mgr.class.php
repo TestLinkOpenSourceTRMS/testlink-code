@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.83 $
- * @modified $Date: 2010/05/20 20:26:56 $ by $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2010/06/06 19:53:35 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -331,7 +331,7 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 
 			$version_number = 1;
 			$op = $this->create_version($result['id'],$version_number,$scope,$user_id,
-			                            $status,$type,$expected_coverage);
+			                            $status,$type,intval($expected_coverage));
 			$result['msg'] = $op['status_ok'] ? $result['msg'] : $op['msg'];
 		}	
 	}

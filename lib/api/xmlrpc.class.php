@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2010/05/16 08:47:52 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/06/08 17:19:42 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20100608 - franciscom - reportTCResult() writes always tcversion_number=1
  *	20100514 - franciscom - BUGID 3454 - Contribution refactor class to be able to be extended to create other server.
  *	20100513 - franciscom - fixed missing properties error on userHasRight()
  *							BUGID 3455 - BUGID 3456
@@ -151,6 +152,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	/** This value is setted in following method:     */
 	/** _checkTCIDAndTPIDValid()                      */
 	protected $tcVersionID = null;
+	protected $versionNumber = null;
 	
 	
 	/**#@+
@@ -1053,9 +1055,19 @@ class TestlinkXMLRPCServer extends IXR_Server
         
     	$info = $this->tcaseMgr->get_linked_versions($tcase_id,"ALL","ALL",$tplan_id,$platform_id);
         $status_ok = !is_null($info);
+		// $this->errors[]=$info;
+		
+		        
         if( $status_ok )
         {
             $this->tcVersionID = key($info);
+            $dummy = current($info);
+        	$plat = is_null($platform_id) ? 0 : $platform_id; 
+            $this->versionNumber = $dummy[$tplan_id][$plat]['version'];
+            
+            // $this->errors[] = $this->tcVersionID;
+            // $this->errors[] = $this->versionNumber;
+        	// $status_ok = false;    
         }
         else
         {
@@ -1289,6 +1301,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$status = $this->args[self::$statusParamName];
 		$testplan_id =	$this->args[self::$testPlanIDParamName];
 		$tcversion_id =	$this->tcVersionID;
+		$version_number =	$this->versionNumber;
+
 		$db_now=$this->dbObj->db_now();
 		$platform_id = 0;
 		
@@ -1316,10 +1330,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 		$query = "INSERT INTO {$this->tables['executions']} " .
 		         " (build_id, tester_id, execution_ts, status, testplan_id, tcversion_id, " .
-		         " platform_id, " .
+		         " platform_id, tcversion_number," .
 		         " execution_type {$notes_field} ) " .
 				 " VALUES({$build_id},{$tester_id},{$db_now},'{$status}',{$testplan_id}," .
-				 " {$tcversion_id},{$platform_id}, {$execution_type} {$notes_value})";
+				 " {$tcversion_id},{$platform_id}, {$version_number},{$execution_type} {$notes_value})";
 
 		$this->dbObj->exec_query($query);
 		return $this->dbObj->insert_id($this->tables['executions']);		

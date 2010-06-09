@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.10 2010/06/05 12:21:50 franciscom Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.11 2010/06/09 21:08:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
  *  20100526 - Julian - BUGID 3490 - Search Test Cases based on requirements
  *	20100409 - franciscom - BUGID 3371 - Search Test Cases based on Test Importance
  *	20100326 - franciscom - BUGID 3334 - search fails if test case has 0 steps
@@ -31,9 +32,12 @@ $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
-$gui = initializeGui();
-$map = null;
 $args = init_args();
+
+$gui = initializeGui($args);
+$map = null;
+
+new dBug($args);
 
 if ($args->tprojectID)
 {
@@ -46,6 +50,26 @@ if ($args->tprojectID)
 
     $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
     $filter = null;
+    
+    // if Both dates exists check From >= To
+    if( !is_null($args->creation_date_from) &&  !is_null($args->creation_date_to) )
+    {
+    	$date_from = date_create_from_format('Y-n-j', $args->creation_date_from);
+    	$date_to = date_create_from_format('Y-n-j', $args->creation_date_to);
+    }
+    
+    if( !is_null($args->creation_date_from) )
+    {
+    	$db_date = $db->db->DBdate($args->creation_date_from);
+        $filter['by_creation_date_from'] = " AND TCV.creation_ts >= {$db_date} ";
+	}
+
+    if( !is_null($args->creation_date_to) )
+    {
+    	$db_date = $db->db->DBdate($args->creation_date_to);
+        $filter['by_creation_date_to'] = " AND TCV.creation_ts <= {$db_date} ";
+	}
+    
     
     if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
     {
@@ -208,14 +232,45 @@ function init_args()
 					 "targetTestCase" => array(tlInputParameter::STRING_N,0,30),
 					 "preconditions" => array(tlInputParameter::STRING_N,0,50),
 					 "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
-					 "importance" => array(tlInputParameter::INT_N)
-					 );	
+					 "importance" => array(tlInputParameter::INT_N),
+					 "creation_date_from_Day" => array(tlInputParameter::INT_N),
+					 "creation_date_from_Month" => array(tlInputParameter::INT_N),
+					 "creation_date_from_Year" => array(tlInputParameter::INT_N),
+					 "creation_date_to_Day" => array(tlInputParameter::INT_N),
+					 "creation_date_to_Month" => array(tlInputParameter::INT_N),
+					 "creation_date_to_Year" => array(tlInputParameter::INT_N) );	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
 
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
+
+	// special situation: dates
+	$date_vars = array('target_date_Year','target_date_Month','target_date_Day');
+  	$start_date_vars = array('start_date_Year','start_date_Month','start_date_Day');
+
+	$date_vars_prefix = array('creation_date_from','creation_date_to');
+	$date_pieces = array('_Year','_Month','_Day');
+	$create_date = array('creation_date_from' => true,'creation_date_to' => true);
+	
+	foreach($date_vars_prefix as $target)
+  	{
+  		$xx = array();
+  		$args->$target = null;
+  		foreach($date_pieces as $pk)
+  		{
+  			$accessKey = $target . $pk;
+  	    	$create_date[$target] = $create_date[$target] && !is_null($args->$accessKey) && trim($args->$accessKey) != '' && 
+  	    							intval($args->$accessKey) > 0;
+  	    	$xx[] = $args->$accessKey;
+  		}
+  		if($create_date[$target])
+  		{
+  			$args->$target = implode('-',$xx);
+  		}
+  	}
 
     return $args;
 }
@@ -225,7 +280,7 @@ function init_args()
  * 
  *
  */
-function initializeGui()
+function initializeGui(&$argsObj)
 {
 	$gui = new stdClass();
 
@@ -241,6 +296,9 @@ function initializeGui()
 	$gui->show_match_count = false;
 	$gui->tc_current_version = null;
 	$gui->row_qty = 0;
+	$gui->create_date_from = $argsObj->create_date_from;
+	$gui->create_date_to = $argsObj->create_date_to;
+	
     return $gui;
 }
 

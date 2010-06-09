@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.12 2010/06/09 21:13:38 franciscom Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.13 2010/06/09 21:17:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -36,8 +36,6 @@ $args = init_args();
 
 $gui = initializeGui($args);
 $map = null;
-
-new dBug($args);
 
 if ($args->tprojectID)
 {

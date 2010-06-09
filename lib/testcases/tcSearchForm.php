@@ -1,9 +1,18 @@
 <?php
-/* TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: tcSearchForm.php,v 1.3 2010/04/09 21:09:54 franciscom Exp $
- * Purpose:  This page presents the search results. 
+/**
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
  *
- * rev: 
+ * Form to set test cases search criteria
+ *
+ * @package 	TestLink
+ * @author 		TestLink community
+ * @copyright 	2007-2009, TestLink community 
+ * @version    	CVS: $Id: tcSearchForm.php,v 1.4 2010/06/09 21:16:45 franciscom Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ *	@internal revisions
+ *	20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
  *	20100409 - franciscom - BUGID 3371 Search Test Cases based on Test Importance
  *	20090228 - franciscom - improvement on management of test case prefix
  *
@@ -18,6 +27,7 @@ $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
 $args = init_args();
+
 $gui = new stdClass();
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . config_get('testcase_cfg')->glue_character;
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
@@ -29,7 +39,6 @@ $gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args-
                                                                           $no_filters,'testcase');
 
 $gui->keywords = $tproject_mgr->getKeywords($args->tprojectID);
-// $reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tprojectID,testproject::GET_NOT_EMPTY_REQSPEC);
 $reqSpecSet = $tproject_mgr->genComboReqSpec($args->tprojectID);
 
 $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
@@ -39,6 +48,9 @@ $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
                                 LOW => lang_get('low_importance'));
 
+
+$gui->creation_date_from = null;
+$gui->creation_date_to = null;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

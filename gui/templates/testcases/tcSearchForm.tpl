@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.14 2010/05/01 19:15:20 franciscom Exp $
+$Id: tcSearchForm.tpl,v 1.15 2010/06/09 21:09:00 franciscom Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
+  20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
   20100409 - franciscom - BUGID 3371 Search Test Cases based on Test Importance
   20100124 - franciscom - BUGID 3077 - search on preconditions
   20090228 - franciscom - pre-fill test case id with testcase prefix
@@ -15,6 +16,7 @@ rev :
           s='title_search_tcs,caption_search_form,th_tcid,th_tcversion,
              th_title,summary,steps,expected_results,keyword,custom_field,
              search_type_like,preconditions,filter_mode_and,test_importance,
+             creation_date_from,creation_date_to,
              custom_field_value,btn_find,requirement_document_id'}
 
 
@@ -62,6 +64,35 @@ rev :
 			<td>{$labels.expected_results}</td>
 			<td><input type="text" name="expected_results" 
 			           size="{#RESULTS_SIZE#}" maxlength="{#RESULTS_MAXLEN#}" /></td>
+		</tr>
+
+		<tr>
+			<td>{$labels.creation_date_from}</td>
+			<td>
+          {assign var="selected_creation_date_from" value="0000-00-00"}
+          {if $gui->creation_date_from != '' }
+              {assign var="selected_creation_date_from" value=$gui->creation_date_from}
+          {/if}
+			    {html_select_date prefix="creation_date_from_"  time=$selected_creation_date_from
+                               month_format='%m' end_year="+1"
+                               day_value_format="%02d"
+                               all_empty=' '
+                               field_order=$gsmarty_html_select_date_field_order}
+		  </td>
+		</tr>
+		<tr>
+			<td>{$labels.creation_date_to}</td>
+			<td>
+          {assign var="selected_creation_date_to" value="0000-00-00"}
+          {if $gui->creation_date_to != '' }
+              {assign var="selected_creation_date_to" value=$gui->creation_date_to}
+          {/if}
+			    {html_select_date prefix="creation_date_to_"  time=$selected_creation_date_to
+                               month_format='%m' end_year="+1"
+                               day_value_format="%02d"
+                               all_empty=' '
+                               field_order=$gsmarty_html_select_date_field_order}
+		  </td>
 		</tr>
 		
     {if $session['testprojectOptions']->testPriorityEnabled}

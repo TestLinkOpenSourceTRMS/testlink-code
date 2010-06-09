@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.11 2010/06/09 21:08:21 franciscom Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.12 2010/06/09 21:13:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -272,6 +272,7 @@ function init_args()
   		}
   	}
 
+	new dBug($args);
     return $args;
 }
 
@@ -296,8 +297,8 @@ function initializeGui(&$argsObj)
 	$gui->show_match_count = false;
 	$gui->tc_current_version = null;
 	$gui->row_qty = 0;
-	$gui->create_date_from = $argsObj->create_date_from;
-	$gui->create_date_to = $argsObj->create_date_to;
+	$gui->creation_date_from = $argsObj->creation_date_from;
+	$gui->creation_date_to = $argsObj->creation_date_to;
 	
     return $gui;
 }

@@ -1,6 +1,7 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execTreeWithMenu.js,v 1.2 2010/05/30 14:17:20 franciscom Exp $
+$Id: execTreeWithMenu.js,v 1.3 2010/06/10 21:26:20 franciscom Exp $
+
 
 Created using EXT JS examples.
 This code has following features:
@@ -29,15 +30,11 @@ rev:
                             
                             
 */
-
-/* new */
-function TreePanelState(mytree,cookiePrefix,contextMenu) 
+function TreePanelState(mytree,cookiePrefix) 
 {
     this.mytree = mytree;
     this.cookiePrefix = cookiePrefix;
-    this.contextMenu = contextMenu;
 }
-
 
 TreePanelState.prototype.init = function() 
 {
@@ -118,20 +115,6 @@ TreePanelState.prototype.restoreState = function(defaultPath)
         }
     }
 }
-
-// -------------------------------------------------------------------
-TreePanelState.prototype.menuShow = function(node) 
-{
-  alert( "menuShow\n" + node.ui.getEl() );
-  alert(node.getPath());
-  this.contextMenu.clickedNode = node;
-  this.contextMenu.show(node.ui.getEl());                
-}
-
-
-// -------------------------------------------------------------------
-
-
 Ext.BLANK_IMAGE_URL = fRoot+extjsLocation+'/images/default/s.gif';
 
 Ext.onReady(function(){
@@ -139,11 +122,6 @@ Ext.onReady(function(){
     // to manage drag & drop
     var oldPosition = null;
     var oldNextSibling = null;
-    var menuC = new Ext.menu.Menu({id: 'mainContext'});
-    menuC.add( new Ext.menu.Item({text: 'export to XML', handler: testSuite2XML}),
-               new Ext.menu.Item({text: 'MXMIDDLE'}),
-               new Ext.menu.Item({text: 'MXMain'}) );
- 
     
     var json_tree = treeCfg.children;
 
@@ -186,9 +164,6 @@ Ext.onReady(function(){
     tree.on('expandnode', treeState.onExpand, treeState);             
     tree.on('collapsenode', treeState.onCollapse, treeState);         
     // 
-    // 20100530 - franciscom
-    tree.on('contextmenu', treeState.menuShow, treeState);                                                   
-
                                                                 
     // restore last state from tree or to the root node as default
     treeState.restoreState(tree.root.getPath());                  

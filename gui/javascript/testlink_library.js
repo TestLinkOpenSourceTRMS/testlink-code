@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.100 2010/05/18 19:27:05 franciscom Exp $
+// $Id: testlink_library.js,v 1.101 2010/06/11 19:50:36 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -172,7 +172,9 @@ function ST(id,version)
 */
 function STS(id)
 {
-	var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args;
+  var _FUNCTION_NAME_='STS';
+	var action_url = fRoot+'/'+menuUrl+"?level=testsuite&id="+id+args+additionalArgs;
+	// alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
 }
 
@@ -207,7 +209,7 @@ function EP(id)
 	// get checkboxes status
 	var pParams = tree_getPrintPreferences();
 	var action_url = fRoot+menuUrl+"?print_scope=test_specification" + "&edit=testproject" +
-	                 "&level=testproject&id="+id+args+"&"+pParams;
+	                 "&level=testproject&id="+id+args+additionalArgs+"&"+pParams;
 
 	//alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
@@ -241,7 +243,7 @@ function ETS(id)
 	var _FUNCTION_NAME_="ETS";
 	var pParams = tree_getPrintPreferences();
 	var action_url=fRoot+menuUrl+"?print_scope=test_specification" +
-	               "&edit=testsuite&level=testsuite&id="+id+args+"&"+pParams;
+	               "&edit=testsuite&level=testsuite&id="+id+args+additionalArgs+"&"+pParams;
 
 	// alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
@@ -272,14 +274,14 @@ function ET(id,v)
 function TPROJECT_PTS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testsuite&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testsuite&id="+id+args+additionalArgs+"&"+pParams;
 }
 
 /* Generate doc: all Test Specification */
 function TPROJECT_PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?type=testspec&level=testproject&id="+id+args+additionalArgs+"&"+pParams;
 }
 
 /* Generate doc: a selected Test Tase from Test Specification */
@@ -293,7 +295,7 @@ function TPROJECT_PTC(id)
 function TPROJECT_PTP_RS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=testproject&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=testproject&id="+id+args+additionalArgs+"&"+pParams;
 }
 
 
@@ -301,7 +303,7 @@ function TPROJECT_PTP_RS(id)
 function TPROJECT_PRS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=reqspec&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?type=reqspec&level=reqspec&id="+id+args+additionalArgs+"&"+pParams;
 }
 
 
@@ -317,7 +319,7 @@ function TPROJECT_PRS(id)
 function TPLAN_PTS(id)
 {
 	var pParams = tree_getPrintPreferences();
-	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+"&"+pParams;
+	parent.workframe.location = fRoot+menuUrl+"?level=testsuite&id="+id+args+additionalArgs+"&"+pParams;
 }
 
 /*
@@ -327,7 +329,7 @@ function TPLAN_PTS(id)
 function TPLAN_PTP(id)
 {
 	var pParams = tree_getPrintPreferences();
-	var my_location = fRoot+menuUrl+"?level=testproject&id="+id+args+"&"+pParams;
+	var my_location = fRoot+menuUrl+"?level=testproject&id="+id+args+additionalArgs+"&"+pParams;
 	parent.workframe.location =my_location;
 }
 
@@ -787,7 +789,7 @@ function TPROJECT_REQ_SPEC_MGMT(id)
 {
 	var _FUNCTION_NAME_="TPROJECT_REQ_SPEC_MGMT";
 	var pParams = tree_getPrintPreferences();
-	var action_url = fRoot+"lib/project/project_req_spec_mgmt.php"+"?id="+id+args+"&"+pParams;
+	var action_url = fRoot+"lib/project/project_req_spec_mgmt.php"+"?id="+id+args+additionalArgs+"&"+pParams;
 
   //alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
@@ -808,7 +810,7 @@ function REQ_SPEC_MGMT(id)
 {
 	var _FUNCTION_NAME_="REQ_SPEC_MGMT";
 	var pParams = tree_getPrintPreferences();
-  var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+"&"+pParams;
+  var action_url = fRoot+req_spec_manager_url+"?item=req_spec&req_spec_id="+id+args+additionalArgs+"&"+pParams;
   
   // alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;
@@ -827,7 +829,7 @@ function REQ_MGMT(id)
 {
 	var _FUNCTION_NAME_="REQ_MGMT";
 	var pParams = tree_getPrintPreferences();
-	var action_url = fRoot+req_manager_url+"?item=requirement&requirement_id="+id+args+"&"+pParams;
+	var action_url = fRoot+req_manager_url+"?item=requirement&requirement_id="+id+args+additionalArgs+"&"+pParams;
 
   //alert(_FUNCTION_NAME_ + " " +action_url);
 	parent.workframe.location = action_url;

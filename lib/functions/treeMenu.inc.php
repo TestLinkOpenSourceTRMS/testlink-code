@@ -8,12 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.129 2010/06/11 18:15:50 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.130 2010/06/11 18:19:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *	20100611 - franciscom - renderExecTreeNode() interface changes
+ *	20100611 - franciscom - renderExecTreeNode(), renderTreeNode() interface changes
  *  20100602 - franciscom - extjs_renderExecTreeNodeOnOpen() - added 'tlNodeType' 	
  *  20100428 - asimon - BUGID 3301 and related: 
  *                      added filtering by custom fields to generateTestSpecTree(),
@@ -92,9 +92,13 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	$my = array();
 	
 	// 20100412 - franciscom
-	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0,'getArguments' => '', 
+	// $my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0,'getArguments' => '', 
+	//                        'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
+	//                        'exclude_branches' => null, 'viewType' => 'testSpecTree');
+	$my['options'] = array('forPrinting' => 0, 'hideTestCases' => 0, 
 	                       'tc_action_enabled' => 1, 'ignore_inactive_testcases' => 0, 
 	                       'exclude_branches' => null, 'viewType' => 'testSpecTree');
+
 
 	// 20100412 - franciscom
 	// testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
@@ -192,7 +196,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		{
 			$test_spec[$key]=$testcase_counters[$key];
 		}
-		$menustring = renderTreeNode(1,$test_spec,$my['options']['getArguments'],$hash_id_descr,
+		$menustring = renderTreeNode(1,$test_spec,$hash_id_descr,
 			                         $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
 			                         $my['options']['forPrinting'],$showTestCaseID);
 	}
@@ -636,8 +640,11 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 /**
  * Create the string representation suitable to create a graphic visualization
  * of a node, for the type of menu selected.
+ *
+ * @internal Revisions
+ * 20100611 - franciscom - removed useless $getArguments
  */
-function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
+function renderTreeNode($level,&$node,$hash_id_descr,
                         $tc_action_enabled,$linkto,$testCasePrefix,
                         $bForPrinting=0,$showTestCaseID)
 {
@@ -660,9 +667,9 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
 			{
 				continue;
 			}
-			$menustring .= renderTreeNode($level+1,$node['childNodes'][$idx],$getArguments,$hash_id_descr,
-				$tc_action_enabled,$linkto,$testCasePrefix,
-				$bForPrinting,$showTestCaseID);
+			$menustring .= renderTreeNode($level+1,$node['childNodes'][$idx],$hash_id_descr,
+				                          $tc_action_enabled,$linkto,$testCasePrefix,
+				                          $bForPrinting,$showTestCaseID);
 		}
 	}
 	

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.191 2010/06/02 14:06:54 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.192 2010/06/11 06:02:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -127,6 +127,9 @@ class testplan extends tlObjectWithAttachments
 
 	/** message to show on GUI */
 	var $user_feedback_message = '';
+
+	var $node_types_descr_id;
+	var $node_types_id_descr;
 	
 	/**
 	 * testplan class constructor
@@ -137,6 +140,8 @@ class testplan extends tlObjectWithAttachments
 	{
 	    $this->db = &$db;
 	    $this->tree_manager = New tree($this->db);
+		$this->node_types_descr_id=$this->tree_manager->get_available_node_types();
+		$this->node_types_id_descr=array_flip($this->node_types_descr_id);
       
 	    $this->assignment_mgr = new assignment_mgr($this->db);
 	    $this->assignment_types = $this->assignment_mgr->get_available_types();
@@ -1860,28 +1865,28 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 		// BUGID 0002776
-		$sql = "SELECT nhgrandparent.name, nhgrandparent.id " . 
-			"FROM {$this->tables['testplan_tcversions']}  tptcv, {$this->tables['nodes_hierarchy']}  nh, " .
-			" {$this->tables['nodes_hierarchy']} nhparent, {$this->tables['nodes_hierarchy']} nhgrandparent " . 
-			"WHERE tptcv.tcversion_id = nh.id " .
-			"AND nh.parent_id = nhparent.id " .
-			"AND nhparent.parent_id = nhgrandparent.id " .
-			"AND tptcv.testplan_id = " . $id . " " .
-			"GROUP BY nhgrandparent.name,nhgrandparent.id " .
-			"ORDER BY nhgrandparent.name" ;
+		$sql = " SELECT NHTSUITE.name, NHTSUITE.id, NHTSUITE.parent_id" . 
+			   " FROM {$this->tables['testplan_tcversions']}  TPTCV, {$this->tables['nodes_hierarchy']}  NHTCV, " .
+			   " {$this->tables['nodes_hierarchy']} NHTCASE, {$this->tables['nodes_hierarchy']} NHTSUITE " . 
+			   " WHERE TPTCV.tcversion_id = NHTCV.id " .
+			   " AND NHTCV.parent_id = NHTCASE.id " .
+			   " AND NHTCASE.parent_id = NHTSUITE.id " .
+			   " AND TPTCV.testplan_id = " . $id . " " .
+			   " GROUP BY NHTSUITE.name,NHTSUITE.id,NHTSUITE.parent_id " .
+			   " ORDER BY NHTSUITE.name" ;
 		
 		$recordset = $this->db->get_recordset($sql);
 		
-		//Now the recordset contains testsuites that have child test cases... 
-		//However there could potentially be testsuites that only have grandchildren/greatgrandchildren
-		//this will iterate through found test suites and check for 
+		// Now the recordset contains testsuites that have child test cases.
+		// However there could potentially be testsuites that only have grandchildren/greatgrandchildren
+		// this will iterate through found test suites and check for 
 		$superset = $recordset;
 		foreach($recordset as $value)
 		{
 			$superset = array_merge($superset, $this->get_parenttestsuites($value['id']));
 		}    
 		
-		//At this point there may be duplicates
+		// At this point there may be duplicates
 		$dup_track = array();
 		foreach($superset as $value)
 		{
@@ -1892,7 +1897,7 @@ class testplan extends tlObjectWithAttachments
 			}        
 		}    
 		
-		//Needs to be alphabetical based upon name attribute 
+		// Needs to be alphabetical based upon name attribute 
 		usort($finalset, array("testplan", "compare_name"));
 		return $finalset;
 	}
@@ -1932,17 +1937,17 @@ class testplan extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 	    $sql = "SELECT name, id, parent_id " .
-		    "FROM {$this->tables['nodes_hierarchy']}  nh " .
-		    "WHERE nh.node_type_id <> 1 " .
-		    "AND nh.id = " . $id;
+		       "FROM {$this->tables['nodes_hierarchy']}  NH " .
+		       "WHERE NH.node_type_id <> {$this->node_types_descr_id['testproject']} " .
+		       "AND NH.id = " . $id;
 		    
 	    $recordset = $this->db->get_recordset($sql);
-	    
 	    $myarray = array();
 	    if (count($recordset) > 0)
 	    {        
-		    //Don't want parentid in final result so just adding in attributes we want.
-		    $myarray = array(array('name'=>$recordset[0]['name'], 'id'=>$recordset[0]['id']));
+		    // 20100611 - franciscom
+		    // $myarray = array(array('name'=>$recordset[0]['name'], 'id'=>$recordset[0]['id']));
+		    $myarray = array($recordset[0]);
 		    $myarray = array_merge($myarray, $this->get_parenttestsuites($recordset[0]['parent_id'])); 
 	    }
 	    
@@ -3500,8 +3505,6 @@ class testplan extends tlObjectWithAttachments
 	{
 		$sibling = null;
     	$brothers_and_sisters = $this->getTestCaseSiblings($id,$tcversion_id,$platform_id);
-		new dBug($brothers_and_sisters);
-		
     	$tcversionSet = array_keys($brothers_and_sisters);
     	$elemQty = count($tcversionSet);
     	$dummy = array_flip($tcversionSet);

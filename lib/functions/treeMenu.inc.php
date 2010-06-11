@@ -8,12 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.128 2010/06/02 08:08:40 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.129 2010/06/11 18:15:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *
+ *	20100611 - franciscom - renderExecTreeNode() interface changes
  *  20100602 - franciscom - extjs_renderExecTreeNodeOnOpen() - added 'tlNodeType' 	
  *  20100428 - asimon - BUGID 3301 and related: 
  *                      added filtering by custom fields to generateTestSpecTree(),
@@ -44,10 +44,6 @@
  *                          added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
  *
  */
-
-/** @TODO add purpose */ 
-require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
-
 
 /**
 *	strip potential newlines and other unwanted chars from strings
@@ -679,6 +675,8 @@ function renderTreeNode($level,&$node,$getArguments,$hash_id_descr,
  * - Execution of Test Cases
  * - Remove Test cases from test plan
  * 
+ * CRITIC:
+ *        getArguments   
  * @internal Revisions:
  * operation: string that can take the following values:
  *            - testcase_execution
@@ -891,10 +889,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// $assignedTo = $include_unassigned ? 0 : $assignedTo;
 		$assignedTo = $filters->include_unassigned ? null : $assignedTo;
 		
-		// $bForPrinting = $bHideTCs;
-		
 		$pnFilters = array('assignedTo' => $assignedTo);
-		//$pnFilters = array('assignedTo' => $assignedTo, 'status' => $status);
 		
 		// 20100412 - franciscom
 		$pnOptions = array('hideTestCases' => $bHideTCs, 'viewType' => 'executionTree');
@@ -907,8 +902,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		}
 		
 		$keys = implode(array_keys($tplan_tcases), ",");
+		
 		$getArguments .= "&show_only_tcs=" . $keys;
-		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,$getArguments,
+		
+		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
 			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
 			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
         
@@ -952,9 +949,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  * @return datatype description
  * 
  * @internal Revisions:
+ *	20100611 - franciscom - removed useless $getArguments
  *	20071229 - franciscom -added $useCounters,$useColors
  */
-function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_descr,
+function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
                             $tc_action_enabled,$linkto,$bHideTCs,$useCounters,$useColors,
                             $showTestCaseID,$testCasePrefix,$showTestSuiteContents)
 {
@@ -983,7 +981,7 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$getArguments,$hash_id_de
 				continue;
 			}
 			$menustring .= renderExecTreeNode($level+1,$node['childNodes'][$idx],$tcase_node,
-			                                  $getArguments,$hash_id_descr,
+			                                  $hash_id_descr,
 			                                  $tc_action_enabled,$linkto,$bHideTCs,
 			                                  $useCounters,$useColors,$showTestCaseID,
 			                                  $testCasePrefix,$showTestSuiteContents);

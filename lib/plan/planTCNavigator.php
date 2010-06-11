@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planTCNavigator.php,v 1.47 2010/05/24 20:37:12 franciscom Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.48 2010/06/11 19:00:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -48,6 +48,7 @@ $smarty->assign('gui',$gui);
 // because there is global coupling on template logic
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args',$gui->args);
+$smarty->assign('additionalArgs',$gui->additionalArgs);
 $smarty->assign('treeHeader', $gui->title);
 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -419,10 +420,13 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj, &$cfgObj, &$exec_cfield_mgr)
     $additionalInfo->useColours=COLOR_BY_TC_STATUS_OFF;
     
     $guiObj->args = initializeGetArguments($argsObj,$filters);
-    $treeMenu = generateExecTree($dbHandler,$guiObj->menuUrl,
-                                 $argsObj->tproject_id,$argsObj->tproject_name,
-                                 $argsObj->tplan_id,$argsObj->tplan_name,
-                                 $guiObj->args,$filters,$additionalInfo);
+    $guiObj->additionalArgs = '';
+    list($treeMenu, $guiObj->additionalArgs) = generateExecTree($dbHandler,$guiObj->menuUrl,
+                                                                $argsObj->tproject_id,$argsObj->tproject_name,
+                                                                $argsObj->tplan_id,$argsObj->tplan_name,
+                                                                $filters,$additionalInfo);
+    
+    // $guiObj->args .= $add2guiObjArgs;
     
    	$guiObj->ajaxTree = new stdClass();
     $guiObj->ajaxTree->loader = '';

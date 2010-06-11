@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.19 2010/02/07 20:57:44 havlat Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.20 2010/06/11 19:00:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -124,6 +124,7 @@ class TLSmarty extends Smarty
         $this->assign('SP_html_help_file',null);
         $this->assign('menuUrl',null);
         $this->assign('args',null);
+        $this->assign('additionalArgs',null);
         $this->assign('pageTitle',null);
         
         $this->assign('css_only',null);

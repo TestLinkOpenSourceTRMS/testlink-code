@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2010/05/20 21:06:49 $ by $Author: franciscom $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/06/11 19:00:50 $ by $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -52,6 +52,7 @@ if ($addTestPlanID) {
 
 // generate tree
 $tree = null;
+$additionalArgs = '';
 switch($args->doc_type) 
 {
     case 'testspec':
@@ -86,9 +87,8 @@ switch($args->doc_type)
   	  	$additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
   	  	$additionalInfo->useColours = COLOR_BY_TC_STATUS_OFF;
         
-		$treeContents = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
-				                         $args->tplan_id,$testplan_name,$getArguments,
-				                         $filters,$additionalInfo);
+        list($treeContents, $additionalArgs) = generateExecTree($db,$workPath,$args->tproject_id,$args->tproject_name,
+				                                                $args->tplan_id,$testplan_name,$filters,$additionalInfo);
         
       	$tree = $treeContents->menustring;
       	$gui->ajaxTree = new stdClass();
@@ -114,6 +114,8 @@ $smarty->assign('docTestPlanId', $args->tplan_id);
 $smarty->assign('tree', $tree);
 $smarty->assign('menuUrl', $workPath);
 $smarty->assign('args', $getArguments);
+$smarty->assign('additionalArgs',$additionalArgs);
+
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

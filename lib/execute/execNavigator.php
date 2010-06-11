@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.115 2010/05/24 20:44:26 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.116 2010/06/11 19:00:50 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -71,6 +71,7 @@ $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->assign('menuUrl',$gui->menuUrl);
 $smarty->assign('args',$gui->args);
+$smarty->assign('additionalArgs',$gui->additionalArgs);
 
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -558,13 +559,14 @@ function buildTree(&$dbHandler,&$guiObj,&$argsObj,&$cfgObj,&$exec_cfield_mgr)
 	     $guiObj->src_workframe = $_SESSION['basehref']. $guiObj->menuUrl . 
 	                              "?level=testproject&id={$argsObj->tproject_id}" . $guiObj->args;
     }
-       
-    $treeMenu = generateExecTree($dbHandler,$guiObj->menuUrl,
-                                 $argsObj->tproject_id,$argsObj->tproject_name,
-                                 $argsObj->tplan_id,$argsObj->tplan_name,
-                                 $guiObj->args,$filters,$additionalInfo);
+      require_once ("../../third_party/dBug/dBug.php");
 
-    // $xx = json_decode($treeMenu->menustring);
+    $guiObj->additionalArgs = '';   
+    list($treeMenu, $guiObj->additionalArgs) = generateExecTree($dbHandler,$guiObj->menuUrl,
+                                                                $argsObj->tproject_id,$argsObj->tproject_name,
+                                                                $argsObj->tplan_id,$argsObj->tplan_name,
+                                                                $filters,$additionalInfo);
+
  	return $treeMenu;
 }
 

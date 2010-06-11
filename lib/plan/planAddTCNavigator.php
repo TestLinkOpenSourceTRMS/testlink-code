@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.59 2010/05/23 20:08:50 franciscom Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.60 2010/06/11 19:00:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan. 
@@ -47,6 +47,8 @@ $smarty->assign('gui', $gui);
 // IMPORTANT: A javascript variable 'args' will be initialized with this value
 // using inc_head.tpl template.
 $smarty->assign('args', $gui->args);
+$smarty->assign('additionalArgs',$gui->additionalArgs);
+
 $smarty->assign('menuUrl', $gui->menuUrl);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
@@ -161,7 +163,7 @@ function initializeGui(&$dbHandler,&$argsObj, &$exec_cfield_mgr)
 
     // BUGID 3301
     $gui->design_time_cfields = $exec_cfield_mgr->html_table_of_custom_field_inputs(30);
-    
+    $gui->additionalArgs = '';
     return $gui;
 }
 

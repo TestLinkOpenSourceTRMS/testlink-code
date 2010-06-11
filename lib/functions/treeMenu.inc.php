@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.130 2010/06/11 18:19:54 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.131 2010/06/11 20:20:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *	20100611 - franciscom - renderExecTreeNode(), renderTreeNode() interface changes
+ *							generateExecTree() - interface changes and output changes
  *  20100602 - franciscom - extjs_renderExecTreeNodeOnOpen() - added 'tlNodeType' 	
  *  20100428 - asimon - BUGID 3301 and related: 
  *                      added filtering by custom fields to generateTestSpecTree(),
@@ -44,6 +45,7 @@
  *                          added extjs_renderTestSpecTreeNodeOnOpen(), to allow filtering 
  *
  */
+require_once(dirname(__FILE__)."/../../third_party/dBug/dBug.php");
 
 /**
 *	strip potential newlines and other unwanted chars from strings
@@ -682,8 +684,6 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * - Execution of Test Cases
  * - Remove Test cases from test plan
  * 
- * CRITIC:
- *        getArguments   
  * @internal Revisions:
  * operation: string that can take the following values:
  *            - testcase_execution
@@ -697,7 +697,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  *	20070204 - franciscom - changed $bForPrinting -> $bHideTCs
  */
 function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
-                          $tplan_name,&$getArguments,$filters,$additionalInfo) 
+                          $tplan_name,$filters,$additionalInfo) 
 {
 	$treeMenu = new stdClass(); 
 	$treeMenu->rootnode = null;
@@ -910,7 +910,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		
 		$keys = implode(array_keys($tplan_tcases), ",");
 		
-		$getArguments .= "&show_only_tcs=" . $keys;
+		// $getArguments .= "&show_only_tcs=" . $keys;
 		
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
 			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
@@ -940,7 +940,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	
 	$treeMenu->menustring = $menustring;  
 	
-	return $treeMenu;
+	return array($treeMenu,"&show_only_tcs=" . $keys);
 }
 
 

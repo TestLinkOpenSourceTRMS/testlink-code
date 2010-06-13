@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.28 2010/03/09 05:41:30 franciscom Exp $
+ * $Id: APIErrors.php,v 1.29 2010/06/13 08:58:51 franciscom Exp $
  */
 
 /** 
@@ -155,6 +155,9 @@ define('BUILDID_NOGUESS_STR', lang_get('API_BUILDID_NOGUESS',null,1));
 
 define('BUILDNAME_ALREADY_EXISTS', 4030);
 define('BUILDNAME_ALREADY_EXISTS_STR', lang_get('API_BUILDNAME_ALREADY_EXISTS',null,1));
+
+define('BUILDNAME_DOES_NOT_EXIST', 4040);
+define('BUILDNAME_DOES_NOT_EXIST_STR', lang_get('API_BUILDNAME_DOES_NOT_EXIST',null,1));
 
 
 

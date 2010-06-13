@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/06/08 17:19:42 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2010/06/13 09:09:39 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *  20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
  *	20100608 - franciscom - reportTCResult() writes always tcversion_number=1
  *	20100514 - franciscom - BUGID 3454 - Contribution refactor class to be able to be extended to create other server.
  *	20100513 - franciscom - fixed missing properties error on userHasRight()
@@ -655,6 +656,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * 	
 	 * @return boolean
 	 * @access protected
+	 *
+	 * @internal revision
+	 * 20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
 	 */    
     protected function checkBuildID($msg_prefix)
     {
@@ -679,12 +683,19 @@ class TestlinkXMLRPCServer extends IXR_Server
         	    $try_again=true;
 				if($this->_isBuildNamePresent())
 				{
-        	        $buildInfo=$this->tplanMgr->get_build_by_name($tplan_id,
-        	                                                      trim($this->args[self::$buildNameParamName])); 
-        	        if( !is_null($buildInfo) )
+       	            $try_again=false;
+       	            $bname = trim($this->args[self::$buildNameParamName]);
+        	        $buildInfo=$this->tplanMgr->get_build_by_name($tplan_id,$bname); 
+	   				
+        	        if( is_null($buildInfo) )
         	        {
+            			$msg = $msg_prefix . sprintf(BUILDNAME_DOES_NOT_EXIST_STR,$bname);
+            			$this->errors[] = new IXR_Error(BUILDNAME_DOES_NOT_EXIST,$msg);
+       	            	$status=false;
+        	        }
+        	        else
+        	        {	
         	            $this->args[self::$buildIDParamName]=$buildInfo['id'];
-        	            $try_again=false;
         	        }
 				}
 			}

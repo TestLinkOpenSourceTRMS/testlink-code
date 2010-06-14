@@ -1,17 +1,29 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_js.tpl,v 1.7 2009/07/30 17:22:25 franciscom Exp $
+$Id: inc_ext_js.tpl,v 1.8 2010/06/14 17:14:10 erikeloff Exp $
 Purpose: include files for:
          Ext JS Library - Copyright(c) 2006-2007, Ext JS, LLC.
          licensing@extjs.com - http://www.extjs.com/license
 
 
 rev :
+     20100614 - eloff - BUGID 3523 - prevent loading ext-js more than once
      20090730 - francisco.mancardi@gruppotesi.com
      refactored to use ext-js 3.0
      
      20071008 - franciscom - include prototype.js support
 *}
+
+{php}
+// prevent this file from being included more than once per page load
+global $ext_already_included;
+if (!isset($ext_already_included) || $ext_already_included != "yes") {
+	$ext_already_included = "yes";
+}
+else {
+	return;
+}
+{/php}
 
 {assign var="$css_only" value="$css_only|default:0"}
 {assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}

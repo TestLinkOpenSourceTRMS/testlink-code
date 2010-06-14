@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.194 2010/06/14 16:52:42 erikeloff Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.195 2010/06/14 17:27:31 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20100614 - eloff - refactor getStatusTotalsByPriority() to same style as the other getStatusTotals...()
  *	20100610 - eloff - BUGID 3515 - getStatusTotals() now takes platforms into account
  *	20100602 - franciscom - copy_as() - force Platforms Link copy when user choose Test Case Copy
  *  20100527 - Julian - BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
@@ -3147,6 +3148,7 @@ class testplan extends tlObjectWithAttachments
 	 *	                      ....)
 	 *
 	 * @internal revision
+	 * 20100614 - eloff - refactor to same style as the other getStatusTotals...()
 	 * 20100206 - eloff - BUGID 3060
 	 */
 	public function getStatusTotalsByPriority($tplan_id)
@@ -3170,37 +3172,21 @@ class testplan extends tlObjectWithAttachments
 				$totals[$prioCode]['details'][$status_verbose]['qty']=0;
 			}
 		}
-
-		// First step - get not run
-		$filters=null;
-		$options=array();
-		$notRunResults = $this->getNotExecutedLinkedTCVersionsDetailed($tplan_id,$filters,$options);
-
-		foreach ($notRunResults as $result)
-		{
-			$prio_level = $this->urgencyImportanceToPriorityLevel($result['priority']);
-			$totals[$prio_level]['total_tc']++;
-			$totals[$prio_level]['details']['not_run']['qty']++;
-		}
-
-		// Second step - get other results
 		$filters = null;
-		$options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true);
+		$options=array('output' => 'mapOfMap');
 		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
-		foreach ($execResults as $result)
-		{
-			$prio_level = $this->urgencyImportanceToPriorityLevel($result['priority']);
-			$key=$code_verbose[$result['exec_status']];
-			$totals[$prio_level]['total_tc']++;
 
-			if (!isset($totals[$prio_level]['details'][$key]['qty']))
+		foreach($execResults as $testcases)
+		{
+			foreach($testcases as $testcase)
 			{
-				$totals[$prio_level]['details'][$key]['qty']=0;
+				$prio_level = $this->urgencyImportanceToPriorityLevel($testcase['priority']);
+				$totals[$prio_level]['total_tc']++;
+				$totals[$prio_level]['details'][$code_verbose[$testcase['exec_status']]]['qty']++;
 			}
-			$totals[$prio_level]['details'][$key]['qty']++;
 		}
 		return $totals;
-    }
+	}
 
     /**
      * get last execution status analised by keyword, used to build reports.

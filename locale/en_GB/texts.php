@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.25 2010/04/08 15:11:33 asimon83 Exp $
+ * @version    	CVS: $Id: texts.php,v 1.26 2010/06/14 16:56:45 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -271,7 +271,7 @@ to Test Case for a Build. See help for more information about filters and settin
 	<li>Fill out the test case result and any applicable notes or bugs.</li>
 	<li>Save results.</li>
 </ol>
-<p><i>Note: TestLink must be configurated to collaborate with your Bug tracker 
+<p><i>Note: TestLink must be configured to collaborate with your Bug tracker 
 if you would like to create/trace a problem report directly from the GUI.</i></p>";
 
 // ------------------------------------------------------------------------------------------

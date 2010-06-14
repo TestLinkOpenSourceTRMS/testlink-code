@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: getExecNotes.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/03/12 08:07:49 $ by $Author: asimon83 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/06/14 17:06:27 $ by $Author: erikeloff $
  *
  *
  * rev:	
@@ -21,7 +21,7 @@ require_once("web_editor.php");
 require_once('exec.inc.php');
 
 $webeditorCfg = getWebEditorCfg('execution');
-require_once(require_web_editor($webEditorCfg['type']));
+require_once(require_web_editor($webeditorCfg['type']));
 
 
 testlinkInitPage($db);

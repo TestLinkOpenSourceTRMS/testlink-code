@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_feedback.tpl,v 1.1 2008/06/26 21:44:53 havlat Exp $
+$Id: inc_feedback.tpl,v 1.2 2010/06/14 17:05:36 erikeloff Exp $
 
 Purpose: show feedback after an operation (for example SQL request)
 Note: this is replacement for inc_update.tpl (simplified)
@@ -17,7 +17,7 @@ INPUT:
  --------------------------------------------------------------------------- *}
 
 {if $user_feedback.message neq ''}
-    {if $user_feedback.type == ERROR}
+    {if $user_feedback.type === ERROR}
 		{assign var="divClass" value="error"}
   	{else}
 		{assign var="divClass" value="user_feedback"}

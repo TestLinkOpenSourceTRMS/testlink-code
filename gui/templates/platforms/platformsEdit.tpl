@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.6 2009/11/19 20:05:39 schlundus Exp $
+$Id: platformsEdit.tpl,v 1.7 2010/06/14 17:05:36 erikeloff Exp $
 Purpose: smarty template - View all platforms
 
 rev:
@@ -41,12 +41,14 @@ function validateForm(f)
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-<h1 class="title">{$gui->main_descr|escape}</h1>
+<h1 class="title">{$gui->action_descr|escape}</h1>
+
+{include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 
 {if $gui->canManage ne ""}
   <div class="workBack">
   
-  <div class="action_descr">{$gui->action_descr|escape}
+  <div>
 	{if $gui->mgt_view_events eq "yes" && $gui->platformID > 0}
 			<img style="margin-left:5px;" class="clickable" 
 			     src="{$smarty.const.TL_THEME_IMG_DIR}/question.gif" 
@@ -55,7 +57,6 @@ function validateForm(f)
 	{/if}
   
   </div><br />
-  {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
   	<form id="addPlatform" name="addPlatform" method="post" action="{$platform_edit_url}"
  		      onsubmit="javascript:return validateForm(this);">

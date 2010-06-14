@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/06/14 16:58:56 $ by $Author: erikeloff $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/06/14 17:05:36 $ by $Author: erikeloff $
  *
  * allows users to manage platforms. 
  *
@@ -56,12 +56,13 @@ if($op->status == 1)
 	$default_template = $op->template;
 	if ($op->user_feedback)
 	{
-		$gui->user_feedback = $op->user_feedback;
+		$gui->user_feedback['message'] = $op->user_feedback;
 	}
 }
 else
 {
-	$gui->user_feedback = getErrorMessage($op->status, $args->name);
+	$gui->user_feedback['message'] = getErrorMessage($op->status, $args->name);
+	$gui->user_feedback['type'] = ERROR;
 }
 $gui->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
 
@@ -120,7 +121,6 @@ function create(&$args,&$gui)
 	$ret->status = 1;
 	$gui->submit_button_label = lang_get('btn_save');
 	$gui->submit_button_action = 'do_create';
-    $gui->main_descr = lang_get('platform_management');
 	$gui->action_descr = lang_get('create_platform');
 	
 	return $ret;
@@ -277,7 +277,7 @@ function init_gui(&$db,&$args)
 	$gui = new stdClass();
 	$gui->canManage = $args->currentUser->hasRight($db,"platform_management");
     $gui->mgt_view_events = $args->currentUser->hasRight($db,"mgt_view_events");
-	$gui->user_feedback = '';
+	$gui->user_feedback = array('type' => INFO, 'message' => '');
     $gui->name = $args->name;
     $gui->notes = $args->notes;
     $gui->platformID = $args->platform_id;

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.193 2010/06/14 16:51:02 erikeloff Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.194 2010/06/14 16:52:42 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3086,87 +3086,55 @@ class testplan extends tlObjectWithAttachments
 
     /**
      *
-	 * @param id: test plan id
-	 * @return map: 
+	 * @param tplan_id: test plan id
+	 * @return map:
 	 *
 	 *	'type' => 'platform'
 	 *	'total_tc => ZZ
 	 *	'details' => array ( 'passed' => array( 'qty' => X)
-	 *	                     'failed' => array( 'qty' => Y) 	
-	 *	                     'blocked' => array( 'qty' => U) 	 	
+	 *	                     'failed' => array( 'qty' => Y)
+	 *	                     'blocked' => array( 'qty' => U)
 	 *                       ....)
 	 *
 	 * @internal revision
+	 * 20100610 - eloff - BUGID 3515 - rewrite inspired by getStatusTotals()
 	 * 20100201 - franciscom - BUGID 3121
 	 */
-	public function getStatusTotalsByPlatform($id)
+	public function getStatusTotalsByPlatform($tplan_id)
 	{
-		$id = is_null($id) ? 2 : $id;
 		$code_verbose = $this->getStatusForReports();
-        $platformSet = $this->getPlatforms($id,array('outputFormat' => 'map'));
-        $totals = null;
-        $platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
-        
-        foreach($platformIDSet as $platformID)
-        {
-        	$totals[$platformID]=array('type' => 'platform', 
-        	                           'name' => $platformSet[$platformID],
-        	                           'total_tc' => 0, 
-        	                           'details' => null);
+
+		$filters=null;
+		$options=array('output' => 'mapOfMap');
+		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
+
+		$code_verbose = $this->getStatusForReports();
+		$platformSet = $this->getPlatforms($tplan_id, array('outputFormat' => 'map'));
+		$totals = null;
+		$platformIDSet = is_null($platformSet) ? array(0) : array_keys($platformSet);
+
+		foreach($platformIDSet as $platformID)
+		{
+			$totals[$platformID]=array(
+				'type' => 'platform',
+				'name' => $platformSet[$platformID],
+				'total_tc' => 0,
+				'details' => array());
 			foreach($code_verbose as $status_code => $status_verbose)
 			{
-				$totals[$platformID]['details'][$status_verbose]['qty']=0;
+				$totals[$platformID]['details'][$status_verbose]['qty'] = 0;
 			}
-        }
-        // new dBug($totals);
-        
-		// First step - get not run
-		$filters=null;
-        $options=array('group_by_platform_tcversion' => true);
-        $notRunResults = $this->getNotExecutedLinkedTCVersionsDetailed($id,$filters,$options);
-        
-        // new dBug($notRunResults);
-        
-        
-        $loop2do = count($notRunResults);
-        for($idx=0; $idx < $loop2do ; $idx++)
-        {
-        	$totals[$notRunResults[$idx]['platform_id']]['total_tc']++;
-        	$totals[$notRunResults[$idx]['platform_id']]['details']['not_run']['qty']++;
-        }
-
-        // 20100214 - franciscom
-        // I've found this situation
-        // 1. start test plan WITHOUT platforms
-        // 2. run only a couple of tests
-        // 3. create platforms
-        // 4. assign platforms
-        //
-        // In this situation we will have a problem with ALL NOT RUNNED TEST CASES
-        // because not run do not get platform ID from executions file
-        // NEED TO BE FIXED
-        //
-
-        // new dBug($totals);
-                	
-		// Second step - get other results
-		$filters = null;
-	    $options=array('output' => 'array' , 'last_execution' => true, 'only_executed' => true);
-	    $execResults = $this->get_linked_tcversions($id,$filters,$options);
-        $loop2do = count($execResults);
-        for($idx=0; $idx < $loop2do ; $idx++)
-        {
-        	$key=$code_verbose[$execResults[$idx]['exec_status']];
-        	$totals[$execResults[$idx]['platform_id']]['total_tc']++;
-        	
-        	if( !isset($totals[$execResults[$idx]['platform_id']]['details'][$key]['qty']) )
-        	{
-        		$totals[$execResults[$idx]['platform_id']]['details'][$key]['qty']=0;
-        	}
-        	$totals[$execResults[$idx]['platform_id']]['details'][$key]['qty']++;
-        }
-        return $totals;
-    }
+		}
+		foreach($execResults as $key => $testcases)
+		{
+			foreach($testcases as $platform_id => $testcase)
+			{
+				$totals[$platform_id]['total_tc']++;
+				$totals[$platform_id]['details'][$code_verbose[$testcase['exec_status']]]['qty']++;
+			}
+		}
+		return $totals;
+	}
 
 	/**
 	 * @param int $tplan_id test plan id

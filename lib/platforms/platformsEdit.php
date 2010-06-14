@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/02/02 20:23:04 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/06/14 16:58:56 $ by $Author: erikeloff $
  *
  * allows users to manage platforms. 
  *
@@ -54,6 +54,10 @@ switch ($action)
 if($op->status == 1)
 {
 	$default_template = $op->template;
+	if ($op->user_feedback)
+	{
+		$gui->user_feedback = $op->user_feedback;
+	}
 }
 else
 {
@@ -178,6 +182,7 @@ function do_create(&$args,&$gui,&$platform_mgr)
 	$ret->template = 'platformsView.tpl';
 	$op = $platform_mgr->create($args->name,$args->notes);
 	$ret->status = $op['status']; 
+	$ret->user_feedback = sprintf(lang_get('platform_created'), $args->name);
 	
 	return $ret;
 }
@@ -208,6 +213,7 @@ function do_update(&$args,&$gui,&$platform_mgr)
 	$ret = new stdClass();
 	$ret->template = 'platformsView.tpl';
 	$ret->status = $platform_mgr->update($args->platform_id,$args->name,$args->notes);
+	$ret->user_feedback = sprintf(lang_get('platform_updated'), $args->name);
 
 	return $ret;
 }
@@ -233,6 +239,7 @@ function do_delete(&$args,&$gui,&$platform_mgr)
 	$ret->template = 'platformsView.tpl';
 	// This also removes all exec data on this platform
 	$ret->status = $platform_mgr->delete($args->platform_id,true);
+	$ret->user_feedback = sprintf(lang_get('platform_deleted'), $args->name);
 
 	return $ret;
 }

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.625 2010/06/13 08:58:40 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.626 2010/06/14 16:58:56 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions: Not listed - check repository history
@@ -1454,8 +1454,10 @@ $TLS_warning_enter_less1 = "Please enter less than";
 $TLS_warning_enter_less2 = " chars.";
 $TLS_export_platforms = "Export platforms";
 $TLS_import_platforms = "Import platforms";
-$TLS_platform_updated = "Platform %s Updated";
-$TLS_platform_imported = "Platform %s Imported";
+$TLS_platform_created = "Platform %s created";
+$TLS_platform_updated = "Platform %s updated";
+$TLS_platform_deleted = "Platform %s deleted";
+$TLS_platform_imported = "Platform %s imported";
 
 
 // ----- gui/templates/platformsAssign.tpl -----

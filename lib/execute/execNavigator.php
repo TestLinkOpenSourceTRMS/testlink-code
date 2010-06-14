@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: execNavigator.php,v 1.116 2010/06/11 19:00:50 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.117 2010/06/14 16:48:43 erikeloff Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100609 - eloff - Prevent selection of invalid platform
  * 20100523 - franciscom - refactoring use of tlControlPanel.class.php
  * 20100428 - asimon - BUGID 3301 and related issues - changed name or case 
  *                     of some variables used in new common template
@@ -200,6 +201,13 @@ function init_args(&$dbHandler,$cfgObj, &$tprojectMgr, &$tplanMgr)
 	if (is_null($args->optPlatformSelected) && isset($_SESSION['platformID']))
 	{
 		$args->optPlatformSelected = intval($_SESSION['platformID']);
+	}
+	// Prevent selection of invalid platform
+	$platforms = $tplanMgr->getPlatforms($args->tplan_id,
+										 array('outputFormat' => 'map'));
+	if (!array_key_exists($args->optPlatformSelected, $platforms))
+	{
+		$args->optPlatformSelected = null;
 	}
 	
 	// BUGID 3301 - added isset() checks in if statements for undefined errors in log 

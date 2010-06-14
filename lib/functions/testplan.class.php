@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.192 2010/06/11 06:02:16 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.193 2010/06/14 16:51:02 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20100610 - eloff - BUGID 3515 - getStatusTotals() now takes platforms into account
  *	20100602 - franciscom - copy_as() - force Platforms Link copy when user choose Test Case Copy
  *  20100527 - Julian - BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
  *  20100525 - Julian - changed default for steps_info option on get_linked_tcversions() to false
@@ -3033,29 +3034,35 @@ class testplan extends tlObjectWithAttachments
 
     /**
      *
-	 * @param id: test plan id
+	 * @param tplan_id: test plan id
 	 * @return map: 
+	 *
+	 * @internal revisions
+	 * 20100610 - eloff - BUGID 3515 - take platforms into account
  	 */
-	public function getStatusTotals($id)
+	public function getStatusTotals($tplan_id)
 	{
 		$code_verbose = $this->getStatusForReports();
 	
 		$filters=null;
-		$options=array('output' => 'map');
-    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
+		$options=array('output' => 'mapOfMap');
+		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
 	
 		$totals = array('total' => 0,'not_run' => 0);
 		foreach($code_verbose as $status_code => $status_verbose)
 		{
 			$totals[$status_verbose]=0;
 		}
-		foreach($execResults as $key => $elem)
+		foreach($execResults as $key => $testcases)
 		{
-			$totals['total']++;
-			$totals[$code_verbose[$elem['exec_status']]]++;			
+			foreach($testcases as $testcase)
+			{
+				$totals['total']++;
+				$totals[$code_verbose[$testcase['exec_status']]]++;
+			}
 		}
-        return $totals;
-    }
+		return $totals;
+	}
 
 
     /**

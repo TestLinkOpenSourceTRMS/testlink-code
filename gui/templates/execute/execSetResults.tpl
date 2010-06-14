@@ -1,12 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.57 2010/05/30 17:10:04 franciscom Exp $
+$Id: execSetResults.tpl,v 1.58 2010/06/14 17:08:45 erikeloff Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
+  20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
   20100503 - franciscom - BUGID 3260: Import XML Results is not working with Internet Explorer
                           reason: passing string without string separator to  openImportResult()
-
   20090901 - franciscom - preconditions
   20090815 - franciscom - platform feature
   20090418 - franciscom - BUGID 2364 - added logic to refresh tree, 
@@ -73,6 +73,7 @@ var import_xml_results="{$labels.import_xml_results}";
 
 <script language="JavaScript" type="text/javascript">
 {literal}
+
 function load_notes(panel,exec_id)
 {
   // 20100129 - BUGID 3113 - franciscom   -  solved ONLY for  $webeditorType == 'none'
@@ -179,7 +180,19 @@ function checkSubmitForStatus($statusCode)
 {/literal}
 
 
+{* Initialize note panels. The array panel_init_functions is filled with init
+functions from inc_exec_show_tc_exec.tpl and executed from onReady below *}
+<script>
+{literal}
+panel_init_functions = new Array();
+Ext.onReady(function() {
+	for(var i=0;i<panel_init_functions.length;i++) {
+		panel_init_functions[i]();
+	}
+});
+{/literal}
 
+</script>
 
 
 </head>

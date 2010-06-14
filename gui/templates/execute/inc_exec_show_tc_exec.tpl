@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.21 2010/05/27 19:01:38 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.22 2010/06/14 17:08:45 erikeloff Exp $
 Purpose: 
 Author: franciscom
 
 Rev:  
+	20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
 	20100426 - Julian - BUGID 2454 - minor changes to properly show executions if exec
 						history was configured
 						
@@ -292,20 +293,25 @@ Rev:
   			</tr>
  			  {if $tc_old_exec.execution_notes neq ""}
   			<script>
+		{*  BUGID 3522
+		Initialize panel if notes exists. There might be multiple note panels
+		visible at the same time, so we need to collect those init functions in
+		an array and execute them from Ext.onReady(). See execSetResults.tpl *}
         {literal}
-        Ext.onReady(function(){
-		    var p = new Ext.Panel({
-        title: {/literal}'{$labels.exec_notes}'{literal},
-        collapsible:true,
-        collapsed: true,
-        baseCls: 'x-tl-panel',
-        renderTo: {/literal}'exec_notes_container_{$tc_old_exec.execution_id}'{literal},
-        width:'100%',
-        html:''
-        });
+        var panel_init = function(){
+            var p = new Ext.Panel({
+            title: {/literal}'{$labels.exec_notes}'{literal},
+            collapsible:true,
+            collapsed: true,
+            baseCls: 'x-tl-panel',
+            renderTo: {/literal}'exec_notes_container_{$tc_old_exec.execution_id}'{literal},
+            width:'100%',
+            html:''
+            });
 
-        p.on({'expand' : function(){load_notes(this,{/literal}{$tc_old_exec.execution_id}{literal});}});
-        });
+            p.on({'expand' : function(){load_notes(this,{/literal}{$tc_old_exec.execution_id}{literal});}});
+        };
+        panel_init_functions.push(panel_init);
         {/literal}
 
   			</script>

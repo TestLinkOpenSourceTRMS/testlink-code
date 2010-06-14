@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.23 2010/05/02 17:22:55 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.24 2010/06/14 17:29:13 erikeloff Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -70,7 +70,7 @@ function check_action_precondition(container_id,action)
 	      <div id="{$div_id}" style="margin-left:{$ts.level}0px; border:1;">
         <br />
         {* check/uncheck on ALL contained test suites is implemented with this clickable image *}
-	      <h3 class="testlink"><img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+	      <h3 class="testlink"><img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			                            onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$ts_id}");'
                                   title="{$labels.check_uncheck_children_checkboxes}" />
         {$ts.testsuite.name|escape}
@@ -100,7 +100,7 @@ function check_action_precondition(container_id,action)
 			      {* Heading *}
 			      <tr style="background-color:#059; font-weight:bold; color:white">
 			      	<td width="5" align="center">
-			          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+			          <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />
 			      	</td>

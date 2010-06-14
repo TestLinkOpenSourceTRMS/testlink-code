@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.46 2010/05/02 09:13:38 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.47 2010/06/14 17:29:13 erikeloff Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -141,7 +141,7 @@ Ext.onReady(function(){
   		<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
         <h2 class="testlink">{$ts.testsuite.name|escape}</h2> 
         {if $item_number == 1}
-        	<span style="margin: 0 30px;" id="box_add_all"
+        	<span class="clickable" style="margin: 0 30px;" id="box_add_all"
         			onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');">
              {if $gui->full_control}
             		<img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
@@ -150,7 +150,7 @@ Ext.onReady(function(){
               	{$labels.select_all_to_add}
               {/if}
         	</span>
-        	<span style="margin: 0 30px;" id="box_remove_all"
+        	<span class="clickable" style="margin: 0 30px;" id="box_remove_all"
         			onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');">
              <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
                  alt="{$labels.check_uncheck_all_checkboxes_for_rm}" 
@@ -170,7 +170,7 @@ Ext.onReady(function(){
             <tr style="background-color:blue;font-weight:bold;color:white">
   			     <td width="5" align="center">
                 {if $gui->full_control}
-  			          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+  			          <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
   			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}","add_value_{$ts_id}");'
                        title="{$labels.check_uncheck_all_checkboxes}" />
       			    {else}
@@ -192,7 +192,7 @@ Ext.onReady(function(){
              {if $ts.linked_testcase_qty gt 0}
   				      <td>&nbsp;</td>
   				      <td>
-  				      <img src="{$smarty.const.TL_THEME_IMG_DIR}/disconnect.png" 
+  				      <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/disconnect.png" 
                      onclick='cs_all_checkbox_in_div("{$div_id}","{$rm_cb}","rm_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_for_remove}" />
   				      </td>

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.195 2010/06/14 17:27:31 erikeloff Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.196 2010/06/14 17:28:37 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3072,18 +3072,18 @@ class testplan extends tlObjectWithAttachments
  	 */
 	public function getStatusForReports()
 	{
-    	// This will be used to create dynamically counters if user add new status
+		// This will be used to create dynamically counters if user add new status
 		$resultsCfg = config_get('results');
-    	foreach( $resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
-    	{
-        	$code_verbose[$resultsCfg['status_code'][$tc_status_verbose]] = $tc_status_verbose;
-    	}
-    	if( !isset($resultsCfg['status_label_for_exec_ui']['not_run']) )
-    	{
-        	$code_verbose[$resultsCfg['status_code']['not_run']] = 'not_run';  
-    	}
-    	return $code_verbose;
-   }
+		foreach( $resultsCfg['status_label_for_exec_ui'] as $tc_status_verbose => $label)
+		{
+			$code_verbose[$resultsCfg['status_code'][$tc_status_verbose]] = $tc_status_verbose;
+		}
+		if( !isset($resultsCfg['status_label_for_exec_ui']['not_run']) )
+		{
+			$code_verbose[$resultsCfg['status_code']['not_run']] = 'not_run';
+		}
+		return $code_verbose;
+	}
 
     /**
      *
@@ -3188,56 +3188,56 @@ class testplan extends tlObjectWithAttachments
 		return $totals;
 	}
 
-    /**
-     * get last execution status analised by keyword, used to build reports.
-     * 
-	 * @param id: test plan id
+	/**
+	 * get last execution status analised by keyword, used to build reports.
+	 *
+	 * @param tplan_id: test plan id
 	 * @return map: key: keyword id
 	 *              value: map with following structure
 	 *
-	 *             
+	 *
  	 */
-	public function getStatusTotalsByKeyword($id)
+	public function getStatusTotalsByKeyword($tplan_id)
 	{
 		$code_verbose = $this->getStatusForReports();
 		$totals = null;
 		$filters=null;
 		$options=array('output' => 'map');
-    	$execResults = $this->get_linked_tcversions($id,$filters,$options);
-	 
-	    if( !is_null($execResults) )
-	    {
-	    	$tcaseSet = array_keys($execResults);
-            $kw=$this->tcase_mgr->getKeywords($tcaseSet,null,'keyword_id',' ORDER BY keyword ASC ');
-            if( !is_null($kw) )
-            {
-            	$keywordSet = array_keys($kw);
-            	foreach($keywordSet as $keywordID)
-            	{
-            		$totals[$keywordID]['type'] = 'keyword';                                                                     
-            		$totals[$keywordID]['name']=$kw[$keywordID][0]['keyword'];
-            		$totals[$keywordID]['notes']=$kw[$keywordID][0]['notes'];
-            		$totals[$keywordID]['total_tc'] = 0;                                                                     
+		$execResults = $this->get_linked_tcversions($tplan_id,$filters,$options);
+
+		if( !is_null($execResults) )
+		{
+			$tcaseSet = array_keys($execResults);
+			$kw=$this->tcase_mgr->getKeywords($tcaseSet,null,'keyword_id',' ORDER BY keyword ASC ');
+			if( !is_null($kw) )
+			{
+				$keywordSet = array_keys($kw);
+				foreach($keywordSet as $keywordID)
+				{
+					$totals[$keywordID]['type'] = 'keyword';
+					$totals[$keywordID]['name']=$kw[$keywordID][0]['keyword'];
+					$totals[$keywordID]['notes']=$kw[$keywordID][0]['notes'];
+					$totals[$keywordID]['total_tc'] = 0;
 					foreach($code_verbose as $status_code => $status_verbose)
 					{
 						$totals[$keywordID]['details'][$status_verbose]['qty']=0;
 					}
-            	} 
-            	
-            	foreach($keywordSet as $keywordID)
-            	{
-            		foreach($kw[$keywordID] as $kw_tcase)
-            		{
-            			$status = $execResults[$kw_tcase['testcase_id']]['exec_status'];
-            			$totals[$keywordID]['total_tc']++;
-            			$totals[$keywordID]['details'][$code_verbose[$status]]['qty']++;
-            		}
-            	}
-            }
-	    }
-	    
-        return $totals;
-    }
+				}
+
+				foreach($keywordSet as $keywordID)
+				{
+					foreach($kw[$keywordID] as $kw_tcase)
+					{
+						$status = $execResults[$kw_tcase['testcase_id']]['exec_status'];
+						$totals[$keywordID]['total_tc']++;
+						$totals[$keywordID]['details'][$code_verbose[$status]]['qty']++;
+					}
+				}
+			}
+		}
+
+		return $totals;
+	}
 
     /**
      * 

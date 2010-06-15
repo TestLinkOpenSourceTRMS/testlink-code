@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.148 2010/06/14 14:02:20 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.149 2010/06/15 07:12:30 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * 20100518 - Julian - Scripted update according to en_GB string file (version: 1.625)
+ * Last Update according to en_GB string file version 1.627
  *
  **/
 
@@ -1445,7 +1445,9 @@ $TLS_warning_enter_less1 = "Bitte geben Sie weniger als";
 $TLS_warning_enter_less2 = " Zeichen ein.";
 $TLS_export_platforms = "Plattformen exportieren";
 $TLS_import_platforms = "Plattformen importieren";
+$TLS_platform_created = "Platform %s erstellt";
 $TLS_platform_updated = "Plattform %s aktualisiert";
+$TLS_platform_deleted = "Platform %s gelöscht";
 $TLS_platform_imported = "Plattform %s importiert";
 
 

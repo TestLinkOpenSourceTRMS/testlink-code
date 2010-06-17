@@ -13,11 +13,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.189 2010/03/10 20:48:07 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.190 2010/06/17 06:49:45 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
+ *	20100616 - eloff - config_get: log warning when requested option does not exist
  * 	20100310 - franciscom - changes to make code compatible with smarty 3
  * 	20100207 - havlatm - cleanup
  * 	20100124 - eloff - added $redirect parameter to checkSessionValid()
@@ -541,15 +542,23 @@ function config_get($config_id)
 
 	if(!$t_found)
 	{
- 		$my = "g_" . $config_id;
-        if (isset($GLOBALS[$my]))
-	    	$t_value = $GLOBALS[$my];
-	    else 
-	    {
+		$my = "g_" . $config_id;
+		if (isset($GLOBALS[$my]))
+		{
+			$t_value = $GLOBALS[$my];
+		}
+		else
+		{
 			$cfg = $GLOBALS['tlCfg'];
 			if (property_exists($cfg,$config_id))
+			{
 				$t_value = $cfg->$config_id;
-	    }
+			}
+			else
+			{
+				tLog('config option not available: ' . $config_id, 'WARNING');
+			}
+		}
 	}
 	tlog('config_get global var with key ['.$config_id.'] is ' . $t_value);
 	return $t_value;

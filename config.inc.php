@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.298 2010/06/05 07:30:16 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.299 2010/06/17 06:52:50 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20100527 - Julian - added $tlCfg->exec_cfg->expand_collapse->platform_description
+ *  20100616 - eloff - BUGID 3255 - Cleaned up bts configuration
+ *  20100527 - Julian - added $tlCfg->exec_cfg->expand_collapse->platform_description
  *  20100504 - franciscom - BUGID 3424 Custom CSS path is being overwritten by config.inc.php value 
  *  20100311 - asimon - BUGID 1748 - $tlCfg->req_cfg->relations
  *	20100313 - franciscom - BUGID 0003275
@@ -242,6 +243,10 @@ $g_removeEventsOlderThan = 30;
 /** 
  * TestLink collaborates with bug tracking systems to check if displayed bugs resolved, 
  * verified, and closed reports. 
+ *
+ * Note: Use this option to check if a bug interface is enabled, if so every
+ * page using bug tracking MUST include int_bugtracking.php to make the
+ * connection. The variable bugInterfaceOn is only set when a connection is made
  *
  * @var string $g_interface_bugs = [
  * 'NO'        : no bug tracking system integration (DEFAULT)

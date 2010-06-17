@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/03/16 08:33:21 $ $Author: amkhullar $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/06/17 06:52:51 $ $Author: erikeloff $
  *
  * @author Andreas Morsing
  *
@@ -19,6 +19,7 @@
  *
  *
  * rev:
+ *	20100616 - eloff - Show error message if bts config is broken
  *	20100311 - Julian - BUGID 3256, BUGID 3098
  *						function checkBugID_existence() has to return true
  *						in this parent class to be able to add bugs if
@@ -36,7 +37,8 @@
 require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 
 // Add new bugtracking interfaces here
-// If user configures an interface not declared here, nothing happens => no error
+// If user configures an interface not declared here, pages trying to use bts
+// will give error message
 $btslist = array('BUGZILLA','MANTIS','JIRA', 'JIRASOAP', 'TRACKPLUS',
 		    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ');
 
@@ -380,5 +382,10 @@ if (isset($bts[$bts_type]))
 	// 	$msg = sprintf(lang_get('BTS_integration_failure'),$g_interface_bugs);
 	// 	logWarningEvent($msg,"PHP");
 	// }
+}
+else if ($bts_type != 'NO') {
+    $errorMsg = sprintf(lang_get('BTS_integration_failure'),$bts_type);
+    tLog($errorMsg, 'ERROR');
+    die($errorMsg);
 }
 ?>

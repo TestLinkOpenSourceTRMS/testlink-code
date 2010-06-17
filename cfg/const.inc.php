@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.144 2010/05/21 13:21:45 asimon83 Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.145 2010/06/17 06:52:51 erikeloff Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -906,14 +906,6 @@ $tlCfg->guiTopMenu[7] = array(
 
 /**  @TODO havlatm: remove const; in addition the text should refer to Install manual */  
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
-                                                       
-/** 
- * Bug tracking objects (do not change)
- * @TODO havlatm: move to appropriate file - not configuration
- **/
-$g_bugInterfaceOn = false;
-$g_bugInterface = null;
-
 
 // ----- END ----------------------------------------------------------------------------
 ?>

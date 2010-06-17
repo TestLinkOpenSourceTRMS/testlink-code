@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.59 2010/06/17 06:54:11 erikeloff Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.60 2010/06/17 18:07:15 amkhullar Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -31,7 +31,7 @@ $gui->do_report = array('status_ok' => 1, 'msg' => '');
 $gui->tplan_id = $args->tplan_id;
 $gui->checked_show_inactive_tplans = $args->checked_show_inactive_tplans;
 
-$btsEnabled = config_get('interface_bugsa') != 'NO';
+$btsEnabled = config_get('interface_bugs') != 'NO';
 
 $tplan_mgr = new testplan($db);
 $reports_mgr = new tlReports($db, $gui->tplan_id);

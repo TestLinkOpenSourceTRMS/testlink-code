@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/06/13 09:09:39 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/06/17 07:01:27 $ by $Author: erikeloff $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -23,6 +23,7 @@
  *
  * rev : 
  *  20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
+ *	20100610 - eloff - added getTotalsForTestPlan() method
  *	20100608 - franciscom - reportTCResult() writes always tcversion_number=1
  *	20100514 - franciscom - BUGID 3454 - Contribution refactor class to be able to be extended to create other server.
  *	20100513 - franciscom - fixed missing properties error on userHasRight()
@@ -274,6 +275,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.getTestPlanByName' => 'this:getTestPlanByName',
 	                            'tl.getProjectTestPlans' => 'this:getProjectTestPlans',
 								'tl.getTestPlanPlatforms' => 'this:getTestPlanPlatforms',
+	                            'tl.getTotalsForTestPlan' => 'this:getTotalsForTestPlan',
 	                            'tl.getBuildsForTestPlan' => 'this:getBuildsForTestPlan',
 	                            'tl.getLatestBuildForTestPlan' => 'this:getLatestBuildForTestPlan',	
                                 'tl.getLastExecutionResult' => 'this:getLastExecutionResult',
@@ -3899,6 +3901,44 @@ public function getTestCase($args)
 	    return $status_ok ? $items : $this->errors;
     }   
 
+	/**
+	 * Gets the summarized results grouped by platform.
+	 * @see testplan:getStatusTotalsByPlatform()
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["tplanid"] test plan id
+	 *
+	 * @return map where every element has:
+	 *
+	 *	'type' => 'platform'
+	 *	'total_tc => ZZ
+	 *	'details' => array ( 'passed' => array( 'qty' => X)
+	 *	                     'failed' => array( 'qty' => Y)
+	 *	                     'blocked' => array( 'qty' => U)
+	 *                       ....)
+	 *
+	 * @access public
+	 */
+	public function getTotalsForTestPlan($args)
+	{
+		$operation=__FUNCTION__;
+		$msg_prefix="({$operation}) - ";
+
+		$this->_setArgs($args);
+		$status_ok=true;
+
+		// Checks are done in order
+		$checkFunctions = array('authenticate','checkTestPlanID');
+		$status_ok=$this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");
+
+		if( $status_ok )
+		{
+			$total = $this->tplanMgr->getStatusTotalsByPlatform($this->args[self::$testPlanIDParamName]);
+		}
+
+		return $status_ok ? $total : $this->errors;
+	}
 
 
 

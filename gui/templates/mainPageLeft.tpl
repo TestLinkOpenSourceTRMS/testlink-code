@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.27 2010/05/21 13:21:45 asimon83 Exp $     
+ $Id: mainPageLeft.tpl,v 1.28 2010/06/17 06:59:05 erikeloff Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :         
@@ -36,7 +36,7 @@
 {assign var="display_left_block_5" value=true}
 {if $gui->testprojectID && 
 	    ($gui->grants.project_edit == "yes" || $gui->grants.tproject_user_role_assignment == "yes" ||
-       $gui->cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
+       $gui->grants.cfield_management == "yes" || $gui->grants.keywords_view == "yes")}
     {assign var="display_left_block_1" value=true}
 
     <script  type="text/javascript">

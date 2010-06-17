@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.53 2010/05/18 05:08:24 amkhullar Exp $
+ * @version    	CVS: $Id: configCheck.php,v 1.54 2010/06/17 18:31:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *
  * @internal Revisions:
  * 	
+ *  20100617 - franciscom - domxml is not needed anymore
  *  20090713 - franciscom - tested is_writable() on windows with PHP 5.
  *                          minor refactoring
  *  20090416 - havlatm - checking: database, GD lib and browser support
@@ -155,10 +156,10 @@ function checkLibGd()
 // * rev: 20081122 - franciscom - added gd2 check
 function checkForExtensions(&$msg)
 {
-	if (!function_exists('domxml_open_file'))
-	{
-		$msg[] = lang_get("error_domxml_missing");
-	}
+	// if (!function_exists('domxml_open_file'))
+	// {
+	// 	$msg[] = lang_get("error_domxml_missing");
+	// }
 	
 	// without this pChart do not work
 	if( !extension_loaded('gd') )

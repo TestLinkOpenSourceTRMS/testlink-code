@@ -4,11 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2010/01/25 17:35:25 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2010/06/17 06:56:14 $ by $Author: erikeloff $
  * @author kevinlevy
  * 
  * rev :
+ *	20100616 - eloff - refactor out results class
  *	20100124 - eloff - BUGID 3012 - don't show internal id in report
  *	20080413 - franciscom - refactoring + BUGID 1477 
  *	20070827 - franciscom - BUGID 994
@@ -16,9 +17,14 @@
 
 
 require('../../config.inc.php');
-require_once('results.class.php');
 require_once("lang_api.php");
 require_once('displayMgr.php');
+require_once('exec.inc.php'); // used for bug string lookup
+if (config_get('interface_bugs') != 'NO')
+{
+  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
+               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+}
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -33,65 +39,39 @@ $tproject_mgr = new testproject($db);
 
 $tplan_info = $tplan_mgr->get_by_id($args->tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
-$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
-$arrBuilds = $tplan_mgr->get_builds($args->tplan_id); 
-$executionsMap = $re->getSuiteList();
 
-// lastResultMap provides list of all test cases in plan - data set includes title and suite names
-$lastResultMap = $re->getMapOfLastResult();
-$indexOfArrData = 0;
+$filters = array();
+$options = array('output' => 'array', 'only_executed' => true, 'details' => 'full');
+$results = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
 
-// be sure to check if last result map is null or not before accessing
-if ($lastResultMap) {
-	while($suiteId = key($lastResultMap)) {
-		$currentSuiteInfo = $lastResultMap[$suiteId];
-		$timestampInfo = null;
-		$bugInfo = null;
-		while ($testCaseId = key($currentSuiteInfo)){
-			// initialize bugInfo
-			// $allTimeStamps = array();
-			// initialize list of bugs associated with this testCaseId
-			$allBugLinks = array();
-			$currentTestCaseInfo = $currentSuiteInfo[$testCaseId];
-			$suiteName = $currentTestCaseInfo['suiteName'];
-			$name = $currentTestCaseInfo['name'];		
-			$suiteExecutions = $executionsMap[$suiteId];
-			$tcaseName = buildExternalIdString($tproject_info['prefix'], $currentTestCaseInfo['external_id']) . ":" . $name;
-			$rowArray = array($suiteName, $tcaseName);
-			for ($i = 0; $i < sizeOf($suiteExecutions); $i++) {
-				$currentExecution = $suiteExecutions[$i];
-				if ($currentExecution['testcaseID'] == $testCaseId) {
-					$executions_id = $currentExecution['executions_id'];
-					// initialize bug associated with an execution
-					$bugLink = null;
-					if ($executions_id) {
-						$bugLink = buildBugString($db, $executions_id, $openBugs, $resolvedBugs);
-					}
-					if ($bugLink) {
-						if (!in_array($bugLink, $allBugLinks)) {
-							array_push($allBugLinks, $bugLink);
-							//array_push($allTimeStamps, $currentTimeStamp);
-						}
-					}
-				}
-			}		
-			//array_push($rowArray, $timestampInfo);
-			$allBugLinksString = implode("", $allBugLinks);
-			//$allTimeStampsString = implode("<BR>", $allTimeStamps);
-			array_push($rowArray, $allBugLinksString);
-			
-			// KL - 20070610
-			$onlyShowTCsWithBugs = true;
-			if (($allBugLinksString) && ($onlyShowTCsWithBugs)) {
-				$arrData[$indexOfArrData] = $rowArray;
-				$indexOfArrData++;
+$testcase_bugs = array();
+foreach ($results as $execution) {
+	$tc_id = $execution['tc_id'];
+	$mine[] = $execution['exec_id'];
+	$exec_id = $execution['exec_id'];
+	$bug_urls = buildBugString($db, $exec_id, $openBugs, $resolvedBugs);
+	if ($bug_urls)
+	{
+		// First bug found for this tc
+		if (!isset($testcase_bugs[$tc_id])) {
+			$suiteName = $execution['tsuite_name'];
+			$tc_name = buildExternalIdString($tproject_info['prefix'], $execution['external_id']) . ":" . $execution['name'];
+			$testcase_bugs[$tc_id] = array($suiteName, $tc_name, array());
+		}
+		foreach ($bug_urls as $url)
+		{
+			if (!in_array($url, $testcase_bugs[$tc_id][2]))
+			{
+				$testcase_bugs[$tc_id][2][] = $url;
 			}
-				
-			next($currentSuiteInfo);		
-		}  // end while
-		next($lastResultMap);
-	} // end while
-} // end if
+		}
+	}
+}
+foreach ($testcase_bugs as &$row)
+{
+	$row[2] = implode("<br/>", $row[2]);
+}
+$arrData = array_values($testcase_bugs);
 
 $totalOpenBugs = count($openBugs);
 $totalResolvedBugs = count($resolvedBugs);
@@ -105,21 +85,15 @@ $smarty->assign('tproject_name', $tproject_info['name']);
 $smarty->assign('tplan_name', $tplan_info['name'] );
 $smarty->assign('title', lang_get('link_report_total_bugs'));
 $smarty->assign('arrData', $arrData);
-$smarty->assign('arrBuilds', $arrBuilds);
 $smarty->assign('totalOpenBugs', $totalOpenBugs);
 $smarty->assign('totalResolvedBugs', $totalResolvedBugs);
 $smarty->assign('totalBugs', $totalBugs);
 $smarty->assign('totalCasesWithBugs', $totalCasesWithBugs);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ * Register the bug for counting.
+ */
 function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray)
 {
 	$linkString = $bugInfo['link_to_bts'];
@@ -127,56 +101,42 @@ function registerBug($bugID, $bugInfo, &$openBugsArray, &$resolvedBugsArray)
 	$position2 = strpos($linkString,"</del>");
 	if ((!$position) && (!$position2))
 	{
-		$bugArray = $openBugsArray;
+		if (!in_array($bugID, $openBugsArray))
+			$openBugsArray[] = $bugID;
 	}
-	else
+	else if (!in_array($bugID, $resolvedBugsArray))
 	{
-		$bugArray = $resolvedBugsArray;
+		$resolvedBugsArray[] = $bugID;
    	} 
-   	tallyBug($bugID, $bugArray);
-}
-
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
-function tallyBug($bugID, &$array) 
-{
-	if (!in_array($bugID, $array)) {
-		array_push($array, $bugID);
-	}
 }
 
 
-/*
-  function: 
-
-  args :
-  
-  returns: 
-
-*/
+/**
+ * Get links to bugs related to execution.
+ * @param $db
+ * @param $execID execution id
+ * @param $openBugsArray array to count open bugs
+ * @param $resolvedBugsArray array to count resolved bugs
+ *
+ * @return array List of links to related bugs
+ */
 function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 {
-	$bugString = null;
-  	$bugInterface = config_get('bugInterface');
-  	if ($bugInterface)
-  	{
-  		$bugs = get_bugs_for_exec($db,$bugInterface,$execID);
+	$bugUrls = array();
+	$bugInterface = config_get('bugInterface');
+	if ($bugInterface)
+	{
+		$bugs = get_bugs_for_exec($db,$bugInterface,$execID);
 		if ($bugs)
 		{
 			foreach($bugs as $bugID => $bugInfo)
 			{
-			  registerBug($bugID, $bugInfo, $openBugsArray, $resolvedBugsArray);
-				$bugString .= $bugInfo['link_to_bts']."<br />";
+				registerBug($bugID, $bugInfo, $openBugsArray, $resolvedBugsArray);
+				$bugUrls[] = $bugInfo['link_to_bts'];
 			}
 		}
-  	}
-	return $bugString;
+	}
+	return $bugUrls;
 }
 
 

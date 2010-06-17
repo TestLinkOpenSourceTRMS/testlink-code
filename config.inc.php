@@ -18,10 +18,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.299 2010/06/17 06:52:50 erikeloff Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.300 2010/06/17 18:29:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20100617 - franciscom - $tlCfg->req_cfg->importDocBook - new configuration for importing req in docbook format
  *  20100616 - eloff - BUGID 3255 - Cleaned up bts configuration
  *  20100527 - Julian - added $tlCfg->exec_cfg->expand_collapse->platform_description
  *  20100504 - franciscom - BUGID 3424 Custom CSS path is being overwritten by config.inc.php value 
@@ -980,6 +981,23 @@ $tlCfg->req_cfg->relations->interproject_linking = FALSE;
 // Requirement/testcase diff
 // default value of lines to show before and after each difference
 $tlCfg->diffEngine->context = 5;
+
+
+// Configuration for Requirement Import using DOCBOOK format
+$tlCfg->req_cfg->importDocBook = new stdClass();
+$tlCfg->req_cfg->importDocBook->requirement= "sect3";
+$tlCfg->req_cfg->importDocBook->title= "title";
+$tlCfg->req_cfg->importDocBook->paragraph= "para";
+$tlCfg->req_cfg->importDocBook->ordered_list="orderedlist";
+$tlCfg->req_cfg->importDocBook->list_item="listitem";
+$tlCfg->req_cfg->importDocBook->table="informaltable";
+$tlCfg->req_cfg->importDocBook->table_group="tgroup";
+$tlCfg->req_cfg->importDocBook->table_head="thead";
+$tlCfg->req_cfg->importDocBook->table_body="tbody";
+$tlCfg->req_cfg->importDocBook->table_row="row";
+$tlCfg->req_cfg->importDocBook->table_entry="entry";
+$tlCfg->req_cfg->importDocBook->list_item_children = array('para','title');
+$tlCfg->req_cfg->importDocBook->table_entry_children = array('para');
 
 
 // ----------------------------------------------------------------------------

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.106 2010/06/06 20:34:25 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.107 2010/06/17 18:29:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -367,57 +367,6 @@ function importReqDataFromCSVDoors($fileName)
 	return $reqData;
 }
 
-/*
-20061015 - franciscom - added trim_and_limit
-
-*/
-function importReqDataFromXML($fileName)
-{
-	// NEED TO BE REFACTORED TO:
-	// 1. support Nested Req Spec
-	// 2. use only simpleXML functions
-	//
-	// $dom = domxml_open_file($fileName);
-	// $xmlReqs = null;
-	// $xmlData = null;
-  	// $field_size = config_get('field_size');
-    // 
-	// if ($dom)
-	// 	$xmlReqs = $dom->get_elements_by_tagname("requirement");
-    // 
-	// $num_elem = sizeof($xmlReqs);
-    // 
-	// for($i = 0;$i < $num_elem ;$i++)
-	// {
-	// 	$xmlReq = $xmlReqs[$i];
-	// 	if ($xmlReq->node_type() != XML_ELEMENT_NODE)
-	// 		continue;
-	// 	$xmlData[$i]['req_doc_id'] = trim_and_limit(getNodeContent($xmlReq,"docid"),$field_size->req_docid);
-	// 	$xmlData[$i]['title'] = trim_and_limit(getNodeContent($xmlReq,"title"),$field_size->req_title);
-	// 	$xmlData[$i]['description'] = getNodeContent($xmlReq,"description");
-	// }
-    // 
-	// return $xmlData;
-}
-
-
-// 20081103 - sisajr
-/** Constants used for parsing DocBook XML files */
-define("DOCBOOK_REQUIREMENT", "sect3");
-define("DOCBOOK_TITLE", "title");
-define("DOCBOOK_PARAGRAPH", "para");
-define("DOCBOOK_ORDERED_LIST", "orderedlist");
-define("DOCBOOK_LIST_ITEM", "listitem");
-define("DOCBOOK_TABLE", "informaltable");
-define("DOCBOOK_TABLE_GROUP", "tgroup");
-define("DOCBOOK_TABLE_HEAD", "thead");
-define("DOCBOOK_TABLE_BODY", "tbody");
-define("DOCBOOK_TABLE_ROW", "row");
-define("DOCBOOK_TABLE_ENTRY", "entry");
-
-
-
-
 /**
  * Parses one 'informaltable' XML entry and produces HTML table as string.
  *
@@ -429,14 +378,11 @@ define("DOCBOOK_TABLE_ENTRY", "entry");
  */
 function getDocBookTableAsHtmlString($docTable,$parseCfg)
 {
-	// echo __FUNCTION__ . '<br>';;
 	$resultTable = "";
 	foreach ($docTable->children() as $tgroup)
 	{
-		// echo $tgroup->getName() . '<br>';
 		if ($tgroup->getName() != $parseCfg->table_group)
 		{
-			// echo 'WILL CONTINUE<br>';
 			continue;
     	}
     
@@ -446,8 +392,6 @@ function getDocBookTableAsHtmlString($docTable,$parseCfg)
 			// get table head
 			$tbodyName = $tbody->getName() ;
 			$doIt = false;
-			// echo '$tbodyName' . $tbodyName . '<br>';
-			
 			if( $tbodyName == $parseCfg->table_head)
 			{
 				$cellTag = array('open' => '<th>', 'close' => '</th>');
@@ -461,23 +405,15 @@ function getDocBookTableAsHtmlString($docTable,$parseCfg)
 
 			if( $doIt )
 			{
-				// echo '<b>NIKE</b><br>';
 				foreach ($tbody->children() as $row)
 				{
-					// echo 'working on child:' . $row->getName() . '<br>';
-					
 					if( $row->getName() == $parseCfg->table_row )
 					{
-						// echo 'working on row' . '<br>';
-						
 						$table_row = "<tr>";
 						foreach ($row->children() as $entry)
 						{
 							if ( ($ename = $entry->getName()) == $parseCfg->table_entry)
 							{
-								echo 'MY ENAME:' . $ename . '<br>';
-								
-								//$table_row .= $cellTag['open'] . (string)$entry . $cellTag['close'];
 								if( $entry->count() == 0 )
 								{
 									$table_row .= $cellTag['open'] . (string)$entry . $cellTag['close'];
@@ -517,41 +453,28 @@ function getDocBookTableAsHtmlString($docTable,$parseCfg)
  */
 function importReqDataFromDocBook($fileName)
 {
-	$docbookCfg = new stdClass();
-	$docbookCfg->requirement= "sect3";
-	$docbookCfg->title= "title";
-	$docbookCfg->paragraph= "para";
-	$docbookCfg->ordered_list="orderedlist";
-	$docbookCfg->list_item="listitem";
-	$docbookCfg->table="informaltable";
-	$docbookCfg->table_group="tgroup";
-	$docbookCfg->table_head="thead";
-	$docbookCfg->table_body="tbody";
-	$docbookCfg->table_row="row";
-	$docbookCfg->table_entry="entry";
-	$docbookCfg->list_item_children = array('para','title');
-	$docbookCfg->table_entry_children = array('para');
+	$req_cfg = config_get('req_cfg');
+	$docbookCfg = $req_cfg->importDocBook;
+	// $docbookCfg->requirement= "sect3";
+	// $docbookCfg->title= "title";
+	// $docbookCfg->paragraph= "para";
+	// $docbookCfg->ordered_list="orderedlist";
+	// $docbookCfg->list_item="listitem";
+	// $docbookCfg->table="informaltable";
+	// $docbookCfg->table_group="tgroup";
+	// $docbookCfg->table_head="thead";
+	// $docbookCfg->table_body="tbody";
+	// $docbookCfg->table_row="row";
+	// $docbookCfg->table_entry="entry";
+	// $docbookCfg->list_item_children = array('para','title');
+	// $docbookCfg->table_entry_children = array('para');
 
-
-	// $dom = domxml_open_file($fileName);
 	$xmlReqs = null;
 	$xmlData = null;
   	$field_size=config_get('field_size');  
-
-	// get all Requirement elements in the document
-	// if ($dom)
-	// {
-	// 	$xmlReqs = $dom->get_elements_by_tagname(DOCBOOK_REQUIREMENT);
-	// }
-	
-	$dom = new DOMDocument; 
-	$dom->load($fileName);
-	new dBug($num_elem);
 	
 	$simpleXMLObj = simplexml_load_file($fileName);
 	$num_elem = count($simpleXMLObj->sect1);
-	
-	// new dBug($num_elem);
 
 	$idx=0;	
 	foreach($simpleXMLObj->sect1 as $xmlReq)
@@ -934,11 +857,11 @@ function check_syntax_xml($fileName)
   $ret['msg']='ok';
 
   //@ -> shhhh!!!! silence please
-  if (!$dom = @domxml_open_file($fileName))
-  {
-    $ret['status_ok']=0;
-    $ret['msg']=lang_get('file_is_not_xml');
-  }
+  // if (!$dom = @domxml_open_file($fileName))
+  // {
+  //   $ret['status_ok']=0;
+  //   $ret['msg']=lang_get('file_is_not_xml');
+  // }
   return($ret);
 }
 

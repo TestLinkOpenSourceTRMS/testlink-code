@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/06/18 18:47:45 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/06/18 19:52:35 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -541,7 +541,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     	{
     	    $msg = $messagePrefix . NO_TPLANID_STR;
     		$this->errors[] = new IXR_Error(NO_TPLANID, $msg);
-    		$status=false;
+    		$status = false;
     	}
     	else
     	{    		
@@ -553,22 +553,19 @@ class TestlinkXMLRPCServer extends IXR_Server
         	{
         	      $msg = $messagePrefix . sprintf(INVALID_TPLANID_STR,$tplanid);
         		  $this->errors[] = new IXR_Error(INVALID_TPLANID, $msg);
-        		  $status=false;        		
+        		  $status = false;        		
         	}
-		     // tplanid exists and its valid
         	else
         	{
-        		  // try to guess the buildid if it isn't already set
-		    	    if(!$this->_isBuildIDPresent())
-		    	    {
-		     	      // can only set the build id for the test plan if guessing is enabled
-    				      if(true == $this->checkGuess())
-    				      {
-    				      	$status = $this->_setBuildID2Latest();
-    				      }
-		    	    }
-		    	    else
-		    	      $status=true;
+		     	// tplanid exists and its valid
+        		// Do we need to try to guess build id ?
+				if( $this->checkGuess() && 
+					(!$this->_isBuildIDPresent() &&  
+				     !$this->_isParamPresent(self::$buildNameParamName,$messagePrefix)))
+				{
+					$status = $this->_setBuildID2Latest();
+				}
+				  
         	}    		    		    	
     	}
         return $status;
@@ -943,8 +940,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
     protected function _isGuessPresent()
     {
-      $status=isset($this->args[self::$guessParamName]) ? true : false;
-		  return $status;
+		$status=isset($this->args[self::$guessParamName]) ? true : false;
+		return $status;
     }
     
     /**
@@ -1902,14 +1899,6 @@ class TestlinkXMLRPCServer extends IXR_Server
              
         if( $status_ok )
         {
-            // 	function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
-	        //        $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
-            //        $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,
-            //        $importance=2,$options=null)
-            //
-            // $options = array( 'check_duplicate_name' => self::DONT_CHECK_DUPLICATE_NAME, 
-	        //                     'action_on_duplicate_name' => 'generate_new');
-
             $options = array( 'check_duplicate_name' => $opt[self::$checkDuplicatedNameParamName],
 	                          'action_on_duplicate_name' => $opt[self::$actionOnDuplicatedNameParamName]);
    

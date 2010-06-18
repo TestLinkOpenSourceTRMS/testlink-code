@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2010/06/17 07:01:27 $ by $Author: erikeloff $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/06/18 18:41:28 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20100618 - franciscom - contribution refactores doesUserExist()
  *  20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
  *	20100610 - eloff - added getTotalsForTestPlan() method
  *	20100608 - franciscom - reportTCResult() writes always tcversion_number=1
@@ -215,6 +216,7 @@ class TestlinkXMLRPCServer extends IXR_Server
     public static $platformIDParamName = "platformid";
 	public static $overwriteParamName = "overwrite";
 	public static $testCasePathNameParamName = "testcasepathname";
+    public static $userParamName = "user";
 
 
 	// public static $executionRunTypeParamName		= "executionruntype";
@@ -291,6 +293,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 'tl.getFullPath' => 'this:getFullPath',
                                 'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
                                 'tl.deleteExecution' => 'this:deleteExecution',
+                                'tl.doesUserExist' => 'this:doesUserExist',
 			                    'tl.about' => 'this:about',
 			                    'tl.setTestMode' => 'this:setTestMode',
                     			// ping is an alias for sayHello
@@ -1863,8 +1866,11 @@ class TestlinkXMLRPCServer extends IXR_Server
         if( $status_ok )
         {
             $author_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$authorLoginParamName]);		    	
-            $status_ok = !is_null($author_id);
-     	    $this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg_prefix . NO_USER_BY_THIS_LOGIN_STR);				
+            if( !($status_ok = !is_null($author_id)) )
+            {
+            	$msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,$this->args[self::$authorLoginParamName]);
+     	    	$this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);				
+     	    }
         }
 
         if( $status_ok )
@@ -3924,7 +3930,8 @@ public function getTestCase($args)
 	{
 		$operation=__FUNCTION__;
 		$msg_prefix="({$operation}) - ";
-
+		$total = null;
+		
 		$this->_setArgs($args);
 		$status_ok=true;
 
@@ -3938,6 +3945,32 @@ public function getTestCase($args)
 		}
 
 		return $status_ok ? $total : $this->errors;
+	}
+
+
+
+	/**
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 * @param int $args["user"] user name
+	 *
+	 * @return boolean
+	 *
+	 * @access public
+	 */
+	public function doesUserExist($args)
+	{
+		$operation=__FUNCTION__;
+ 	    $msg_prefix="({$operation}) - ";
+	    $this->_setArgs($args);
+            
+		$user_id = tlUser::doesUserExist($this->dbObj,$this->args[self::$userParamName]);		    	
+		if( !($status_ok = !is_null($user_id)) )
+		{
+			$msg = $msg_prefix . sprintf(NO_USER_BY_THIS_LOGIN_STR,$this->args[self::$userParamName]);
+			$this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);	
+		}
+		return $status_ok ? $status_ok : $this->errors;
 	}
 
 

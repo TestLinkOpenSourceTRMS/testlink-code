@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/06/18 18:41:28 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/06/18 18:47:45 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,7 +22,7 @@
  * 
  *
  * rev : 
- *	20100618 - franciscom - contribution refactores doesUserExist()
+ *	20100618 - franciscom - contribution refactored doesUserExist(), checkDevKey()
  *  20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
  *	20100610 - eloff - added getTotalsForTestPlan() method
  *	20100608 - franciscom - reportTCResult() writes always tcversion_number=1
@@ -294,6 +294,7 @@ class TestlinkXMLRPCServer extends IXR_Server
                                 'tl.getTestSuiteByID' => 'this:getTestSuiteByID',
                                 'tl.deleteExecution' => 'this:deleteExecution',
                                 'tl.doesUserExist' => 'this:doesUserExist',
+                                'tl.checkDevKey' => 'this:checkDevKey',
 			                    'tl.about' => 'this:about',
 			                    'tl.setTestMode' => 'this:setTestMode',
                     			// ping is an alias for sayHello
@@ -3954,7 +3955,7 @@ public function getTestCase($args)
 	 * @param string $args["devKey"]
 	 * @param int $args["user"] user name
 	 *
-	 * @return boolean
+	 * @return true if everything OK, otherwise error structure
 	 *
 	 * @access public
 	 */
@@ -3971,6 +3972,27 @@ public function getTestCase($args)
 			$this->errors[] = new IXR_Error(NO_USER_BY_THIS_LOGIN, $msg);	
 		}
 		return $status_ok ? $status_ok : $this->errors;
+	}
+
+
+	/**
+	 * check if Developer Key exists.
+	 *
+	 * @param struct $args
+	 * @param string $args["devKey"]
+	 *
+	 * @return true if everything OK, otherwise error structure
+	 *
+	 * @access public
+	 */
+	public function checkDevKey($args)
+	{
+	    $operation=__FUNCTION__;
+		$msg_prefix="({$operation}) - ";
+		$this->_setArgs($args);
+	    $checkFunctions = array('authenticate');
+	    $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);
+	    return $status_ok ? $status_ok : $this->errors;        
 	}
 
 

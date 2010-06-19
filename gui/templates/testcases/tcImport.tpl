@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.11 2010/05/01 19:15:20 franciscom Exp $
+$Id: tcImport.tpl,v 1.12 2010/06/19 17:13:37 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev: 20091122 - franciscom - refacotirng to use alert_message()
@@ -65,7 +65,7 @@ rev: 20091122 - franciscom - refacotirng to use alert_message()
 		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
 		<input type="hidden" name="bIntoProject" value="{$bIntoProject}" />
 		<input type="hidden" name="containerID" value="{$containerID}" />
-		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitKB}" /> {* restrict file size *}
+		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			                   onclick="javascript:history.back();" />

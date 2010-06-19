@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.33 2010/02/12 08:47:12 erikeloff Exp $
+$Id: inc_head.tpl,v 1.34 2010/06/19 15:08:52 franciscom Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :
@@ -61,6 +61,7 @@ rev :
 	var fRoot = '{$basehref}';
 	var menuUrl = '{$menuUrl}';
 	var args  = '{$args}';
+	var additionalArgs  = '{$additionalArgs}';
 	
 	// To solve problem diplaying help
 	var SP_html_help_file  = '{$SP_html_help_file}';

@@ -18,10 +18,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.300 2010/06/17 18:29:06 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.301 2010/06/19 14:52:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20100619 - franciscom -  define always $g_bugInterfaceOn = false,$g_bugInterface = null;
  *	20100617 - franciscom - $tlCfg->req_cfg->importDocBook - new configuration for importing req in docbook format
  *  20100616 - eloff - BUGID 3255 - Cleaned up bts configuration
  *  20100527 - Julian - added $tlCfg->exec_cfg->expand_collapse->platform_description
@@ -263,6 +264,11 @@ $g_removeEventsOlderThan = 30;
  * ]
  */
 $g_interface_bugs = 'NO';
+
+// do not change this
+$g_bugInterfaceOn = false;
+$g_bugInterface = null;
+
 
 // ----------------------------------------------------------------------------
 /* [SMTP] */

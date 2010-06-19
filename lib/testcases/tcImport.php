@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.71 $
- * @modified $Date: 2010/04/09 19:41:47 $ by $Author: franciscom $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2010/06/19 15:52:32 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20100619 - franciscom - added file size control 
  *	20100409 - franciscom - added import importance and execution_type
  *	20100317 - franciscom - BUGID 3236 - work in progress
  *	20100214 - franciscom - refactoring to use only simpleXML functions
@@ -35,6 +36,8 @@ require_once('../../third_party/phpexcel/reader.php');
 testlinkInitPage($db);
 
 $gui = new stdClass();
+$gui->importLimitBytes = config_get('import_file_max_size_bytes');
+$gui->importLimitKB = ($gui->importLimitBytes / 1024);
 
 $templateCfg = templateConfiguration();
 $pcheck_fn=null;
@@ -83,8 +86,22 @@ if ($args->do_upload)
   
 	// check the uploaded file
 	$source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
+	
 	tLog('Uploaded file: '.$source);
+	$doIt = false;
+	$file_check = null;
 	if (($source != 'none') && ($source != ''))
+	{ 
+		// ATTENTION:
+		// MAX_FILE_SIZE hidden input is defined on form, but anyway we do not get error at least using
+		// Firefox and Chrome.
+		if( !($doIt = $_FILES['uploadedFile']['size'] <= $gui->importLimitBytes) )
+		{
+			$file_check['status_ok'] = 0;
+			$file_check['msg'] = sprintf(lang_get('file_size_exceeded'),$_FILES['uploadedFile']['size'],$gui->importLimitBytes);
+		}
+	}
+	if($doIt)
 	{ 
 		$file_check['status_ok'] = 1;
 		if (move_uploaded_file($source, $dest))
@@ -115,16 +132,12 @@ if ($args->do_upload)
 			$opt['importIntoProject'] = $args->bIntoProject;
 			$opt['duplicateLogic'] = array('hitCriteria' => $args->hit_criteria,
 			                               'actionOnHit' => $args->action_on_duplicated_name);
-			
-			
-			// $resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,
-			// 						 $args->userID,$args->useRecursion,
-			// 					     ,$args->action_on_duplicated_name);
 			$resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,$args->userID,$opt);
 		}
 	}
-	else
+	else if(is_null($file_check))
 	{
+		
 		tLog('Missing upload file','WARNING');
 		$file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
 		$args->importType = null;
@@ -152,7 +165,6 @@ else
 
 $gui->testprojectName = $_SESSION['testprojectName'];
 $gui->importTypes = $obj_mgr->get_import_file_types();
-$gui->importLimitKB=(config_get('import_file_max_size_bytes') / 1024);
                           
 $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
 

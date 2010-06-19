@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.190 2010/06/17 06:49:45 erikeloff Exp $
+ * @version    	CVS: $Id: common.php,v 1.191 2010/06/19 14:56:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
@@ -533,34 +533,35 @@ function set_dt_formats()
  * @return mixed the configuration parameter(s)
  * 
  * @internal Revisions
- *	20080326 - franciscom - removed eval
  */
 function config_get($config_id)
 {
 	$t_value = '';  
 	$t_found = false;  
-
+	$logInfo = array('msg' => "config option not available: {$config_id}", 'level' => 'WARNING');
 	if(!$t_found)
 	{
 		$my = "g_" . $config_id;
-		if (isset($GLOBALS[$my]))
+		if( ($t_found = isset($GLOBALS[$my])) )
 		{
 			$t_value = $GLOBALS[$my];
 		}
 		else
 		{
 			$cfg = $GLOBALS['tlCfg'];
-			if (property_exists($cfg,$config_id))
+			if( ($t_found = property_exists($cfg,$config_id)) )
 			{
 				$t_value = $cfg->$config_id;
 			}
-			else
-			{
-				tLog('config option not available: ' . $config_id, 'WARNING');
-			}
+		}
+		
+		if( $t_found )
+		{
+			$logInfo = array('msg' => "config option: {$config_id} is {$t_value}", 'level' => 'INFO');
 		}
 	}
-	tlog('config_get global var with key ['.$config_id.'] is ' . $t_value);
+	
+	tLog($logInfo['msg'],$logInfo['level']);
 	return $t_value;
 }
 

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: exec.inc.php,v 1.58 2010/05/27 20:40:14 franciscom Exp $
+ * @version    	CVS: $Id: exec.inc.php,v 1.59 2010/06/19 14:56:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -79,7 +79,7 @@ function write_execution(&$db,&$exec_signature,&$exec_data,$map_last_exec)
 {
 	$executions_table = DB_TABLE_PREFIX . 'executions';
 	$resultsCfg = config_get('results');
-	$bugInterfaceOn = config_get('bugInterfaceOn');
+	// $bugInterfaceOn = config_get('bugInterfaceOn');
 	$db_now = $db->db_now();
 	$cfield_mgr = New cfield_mgr($db);
 	$cf_prefix = $cfield_mgr->get_name_prefix();

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.20 2010/06/11 19:00:50 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.21 2010/06/19 14:56:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -77,8 +77,6 @@ class TLSmarty extends Smarty
     function TLSmarty()
     {
         global $tlCfg;
-        // global $g_bugInterfaceOn;
-        // global $g_interface_bugs;
         global $g_locales_html_select_date_field_order;
         global $g_locales_date_format;
         global $g_locales_timestamp_format;
@@ -166,8 +164,6 @@ class TLSmarty extends Smarty
         $this->assign('pageCharset',$tlCfg->charset);
         $this->assign('tlVersion',TL_VERSION);
         
-        // $this->assign('g_bugInterfaceOn', $g_bugInterfaceOn);
-        // $this->assign('gsmarty_interface_bugs',$g_interface_bugs);
         $this->assign('gsmarty_bugInterfaceOn',config_get('bugInterfaceOn'));
         $this->assign('gsmarty_interface_bugs',config_get('interface_bugs'));
         $this->assign('testproject_coloring',null);

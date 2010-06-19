@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugAdd.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2009/12/25 18:53:04 $ by $Author: franciscom $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/06/19 14:32:45 $ by $Author: franciscom $
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -82,11 +82,11 @@ function init_args()
  */
 function checkRights(&$db,&$user)
 {
-	global $g_bugInterfaceOn;
-	
-	if (!$g_bugInterfaceOn)
-		return false;
-		
-	return $user->hasRight($db,"testplan_execute");
+	$hasRights = false;	
+	if( config_get('bugInterfaceOn') )
+	{
+		$hasRights = $user->hasRight($db,"testplan_execute");
+	}
+	return $hasRights;
 }
 ?>

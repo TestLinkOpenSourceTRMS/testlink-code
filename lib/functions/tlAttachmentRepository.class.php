@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.3 2009/12/28 08:53:37 franciscom Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.4 2010/06/19 17:19:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
@@ -81,7 +81,6 @@ class tlAttachmentRepository extends tlObjectWithDB
      */
     public static function getType()
     {
-    	//@TODO schlundus, type should came from configuration class
     	return config_get('repositoryType');
     }
 	/**
@@ -91,7 +90,6 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 */
 	public static function getCompression()
     {
-    	//@TODO schlundus, type should came from configuration class
     	return config_get('repositoryCompressionType');
     }
     /**
@@ -101,7 +99,6 @@ class tlAttachmentRepository extends tlObjectWithDB
      */
     public static function getPathToRepository()
     {
-    	//@TODO schlundus, path should came from configuration class
     	return config_get('repositoryPath');
     }
     

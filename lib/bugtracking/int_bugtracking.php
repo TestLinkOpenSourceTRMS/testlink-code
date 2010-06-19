@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/06/17 06:52:51 $ $Author: erikeloff $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2010/06/19 14:39:16 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -376,12 +376,6 @@ if (isset($bts[$bts_type]))
 	
 	// Important: connect() do log if something fails
 	$g_bugInterfaceOn = ($g_bugInterface && $g_bugInterface->isConnected());
-	// if(!$g_bugInterfaceOn)
-	// {
-	// 	// Log to event viewer
-	// 	$msg = sprintf(lang_get('BTS_integration_failure'),$g_interface_bugs);
-	// 	logWarningEvent($msg,"PHP");
-	// }
 }
 else if ($bts_type != 'NO') {
     $errorMsg = sprintf(lang_get('BTS_integration_failure'),$bts_type);

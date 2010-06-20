@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.26 2010/05/01 19:45:41 franciscom Exp $
+$Id: usersEdit.tpl,v 1.27 2010/06/20 11:06:41 franciscom Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -101,10 +101,8 @@ function validateForm(f,check_password)
 }
 </script>
 {/literal}
-
-
-{assign var="ext_version" value="-2.0"}
-<link rel="stylesheet" type="text/css" href="{$basehref}third_party/ext{$ext_version}/css/ext-all.css" />
+{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+<link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 </head>
 
 <body>

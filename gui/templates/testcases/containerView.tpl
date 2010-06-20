@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.29 2010/05/01 19:08:03 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.30 2010/06/20 11:06:41 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -41,8 +41,8 @@ rev :
 {assign var="tsuiteExportAction" value="$basehref$tcExportAction&amp;useRecursion=1"}
 
 {include file="inc_head.tpl" openHead="yes"}
-{assign var="ext_version" value="-2.0"}
-<link rel="stylesheet" type="text/css" href="{$basehref}third_party/ext{$ext_version}/css/ext-all.css" />
+{assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
+<link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 {include file="inc_del_onclick.tpl" openHead="yes"}
 
 <script type="text/javascript">

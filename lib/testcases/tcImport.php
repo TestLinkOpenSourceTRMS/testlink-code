@@ -4,12 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.72 $
- * @modified $Date: 2010/06/19 15:52:32 $ by $Author: franciscom $
+ * @version $Revision: 1.73 $
+ * @modified $Date: 2010/06/20 19:52:55 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20100620 - franciscom - Trying to reduce memory problems using statics on 
+ *							saveImportedTCData() after issue 3521
  *	20100619 - franciscom - added file size control 
  *	20100409 - franciscom - added import importance and execution_type
  *	20100317 - franciscom - BUGID 3236 - work in progress
@@ -73,7 +75,8 @@ $container_name = '';
 if($args->container_id)
 {
 	$tree_mgr = new tree($db);
-	$node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);    
+	$node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
+	unset($tree_mgr);    
 	$container_name = $node_info['name'];
 	if($args->container_id == $args->tproject_id)
 	{
@@ -188,9 +191,6 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   args :
   returns: 
 */
-// function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,
-//                                    $userID,$useRecursion,$importIntoProject = 0,
-//                                    $duplicateLogic=null)
 function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID,$options=null)
 {
 	tLog('importTestCaseDataFromXML called for file: '. $fileName);
@@ -254,29 +254,60 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
       
       configure create to rename test case if exists 
 */
-//function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
-//                            $userID,$kwMap,$actionOnDuplicatedName='generate_new')
-
 function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
                             $userID,$kwMap,$duplicatedLogic = array('hitCriteria' => 'name', 'actionOnHit' => null))
 {
+	static $messages;
+	static $fieldSizeCfg;
+	static $feedbackMsg;
+	static 	$tcase_mgr;
+	static 	$tproject_mgr;
+	static 	$req_spec_mgr;
+	static 	$req_mgr;
+	
 	if (!$tcData)
 	{
 		return;
 	}
-	$tprojectHas=array('customFields' => false, 'reqSpec' => false);
+	
+	$tprojectHas = array('customFields' => false, 'reqSpec' => false);
   	$hasCustomFieldsInfo=false;
   	$hasRequirements=false;
-  	$cf_warning_msg=lang_get('no_cf_defined_can_not_import');
-  	$reqspec_warning_msg=lang_get('no_reqspec_defined_can_not_import');
-  
+  	
+	if(is_null($messages))
+	{
+		$feedbackMsg = array();
+  		$messages = array();
+		$fieldSizeCfg = config_get('field_size');
+
+		$tcase_mgr = new testcase($db);
+		$tproject_mgr = new testproject($db);
+		$req_spec_mgr = new requirement_spec_mgr($db);
+		$req_mgr = new requirement_mgr($db);
+
+  		
+  		$messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
+  		$messages['reqspec_warning'] = lang_get('no_reqspec_defined_can_not_import');
+		$messages['already_exists_updated'] = lang_get('already_exists_updated');
+  		$messages['original_name'] = lang_get('original_name');
+  		$messages['testcase_name_too_long'] = lang_get('testcase_name_too_long');
+	    $messages['start_warning'] = lang_get('start_warning');
+	    $messages['end_warning'] = lang_get('end_warning');
+	    $messages['testlink_warning'] = lang_get('testlink_warning');
+
+	    $messages['start_feedback'] = $messages['start_warning'] . "\n" . 
+	    							  $messages['testlink_warning'] . "\n";
+  		
+  		
+  		
+  		$feedbackMsg['cfield']=lang_get('cf_value_not_imported_missing_cf_on_testproject');
+  		$feedbackMsg['tcase'] = lang_get('testcase');
+  		$feedbackMsg['req'] = lang_get('req_not_in_req_spec_on_tcimport');
+  		$feedbackMsg['req_spec'] = lang_get('req_spec_ko_on_tcimport');
+
+    }
   
 	$resultMap = array();
-	$fieldSizeCfg=config_get('field_size');
-  	$feedbackMsg['cfield']=lang_get('cf_value_not_imported_missing_cf_on_testproject');
-  	$feedbackMsg['tcase'] = lang_get('testcase');
-  	$feedbackMsg['req'] = lang_get('req_not_in_req_spec_on_tcimport');
-  	$feedbackMsg['req_spec'] = lang_get('req_spec_ko_on_tcimport');
 
   
 	// because name can be changed automatically during item creation
@@ -288,22 +319,18 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	$tc_qty = sizeof($tcData);
 	if($tc_qty)
 	{
-		$tcase_mgr = new testcase($db);
-		$tproject_mgr = new testproject($db);
-		$req_spec_mgr = new requirement_spec_mgr($db);
-		$req_mgr = new requirement_mgr($db);
 	
 	    // Get CF with scope design time and allowed for test cases linked to this test project
 	    // $customFields=$tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name');
 	    // function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
         //                                       $node_type=null,$node_id=null,$access_key='id')
         // 
-        $linkedCustomFields=$tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
+        $linkedCustomFields = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
         $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
                        
         // BUGID - 20090205 - franciscom
-		$reqSpecSet=$tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title'),'title');
-		$tprojectHas['reqSpec']=(!is_null($reqSpecSet) && count($reqSpecSet) > 0);
+		$reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title'),'title');
+		$tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 	}
 	
 	for($idx = 0; $idx <$tc_qty ; $idx++)
@@ -323,9 +350,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		if($name_len > $fieldSizeCfg->testcase_name)
 		{
 		    // Will put original name inside summary
-		    $xx=lang_get('start_warning'). "\n" . lang_get('testlink_warning') . "\n";
-		    $xx .=sprintf(lang_get('testcase_name_too_long'),$name_len, $fieldSizeCfg->testcase_name) . "\n";
-		    $xx .= lang_get('original_name'). "\n" . $name. "\n" . lang_get('end_warning'). "\n";
+		    $xx = $messages['start_feedback'];
+		    $xx .= sprintf($messages['testcase_name_too_long'],$name_len, $fieldSizeCfg->testcase_name) . "\n";
+		    $xx .= $messages['original_name'] . "\n" . $name. "\n" . $messages['end_warning'] . "\n";
 		    $summary = nl2br($xx) . $summary;
 		    $name = tlSubStr($name, 0, $safeSizeCfg->testcase_name);      
 		}
@@ -369,13 +396,13 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		 	        case 1:
 		 	        	$doCreate=false;
 		 	        	$tcase_id = key($info); 
-         	        	$last_version=$tcase_mgr->get_last_version_info($tcase_id);
-         	        	$tcversion_id=$last_version['id'];
+         	        	$last_version = $tcase_mgr->get_last_version_info($tcase_id);
+         	        	$tcversion_id = $last_version['id'];
          	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
          	        	                          $preconditions,$steps,$userID,$kwIDs,
          	        	                          $node_order,$exec_type,$importance);
          	        	                          
-         	        	$resultMap[] = array($name,lang_get('already_exists_updated'));
+         	        	$resultMap[] = array($name,$messages['already_exists_updated']);
 	     	        break;
 		 	        
 		 	        case 0:
@@ -409,12 +436,12 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		// If Check fails => give message to user.
 		// Else Import CF data
 		// 	
-		$hasCustomFieldsInfo=(isset($tc['customfields']) && !is_null($tc['customfields']));
+		$hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
 		if($hasCustomFieldsInfo)
 		{
 		    if($tprojectHas['customFields'])
 		    {                         
-		        $msg=processCustomFields($tcase_mgr,$name,$ret['id'],$tc['customfields'],$linkedCustomFields,$feedbackMsg);
+		        $msg = processCustomFields($tcase_mgr,$name,$ret['id'],$tc['customfields'],$linkedCustomFields,$feedbackMsg);
 		        if( !is_null($msg) )
 		        {
 		            $resultMap = array_merge($resultMap,$msg);
@@ -422,9 +449,9 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		    }
 		    else
 		    {
-            // Can not import Custom Fields Values, give feedback
-            $msg[]=array($name,$cf_warning_msg);
-            $resultMap = array_merge($resultMap,$msg);		      
+            	// Can not import Custom Fields Values, give feedback
+            	$msg[]=array($name,$messages['cf_warning']);
+            	$resultMap = array_merge($resultMap,$msg);		      
 		    }
 		}
 		
@@ -439,7 +466,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		{
   	        if( $tprojectHas['reqSpec'] )
             {
-		        $msg=processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],$reqSpecSet,$feedbackMsg);
+		        $msg = processRequirements($db,$req_mgr,$name,$ret['id'],$tc['requirements'],$reqSpecSet,$feedbackMsg);
 		        if( !is_null($msg) )
 		        {
 		            $resultMap = array_merge($resultMap,$msg);
@@ -447,8 +474,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		    }
 		    else
 		    {
-            $msg[]=array($name,$reqspec_warning_msg);
-            $resultMap = array_merge($resultMap,$msg);		      
+            	$msg[]=array($name,$messages['reqspec_warning']);
+            	$resultMap = array_merge($resultMap,$msg);		      
 		    }
 		}
 		
@@ -945,6 +972,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 {
 	static $tsuiteXML;
 	static $tsuiteMgr;
+	static $myself;
 	static $callCounter = 0;
 	$resultMap = array();
     
@@ -957,6 +985,8 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 		$tsuiteXML['attributes'] = array('string' => array("name"));
 		
 		$tsuiteMgr = new testsuite($dbHandler);
+		
+		$myself = __FUNCTION__;
 	}
 	
 	if($xml->getName() == 'testsuite')
@@ -971,6 +1001,9 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 		{
 			$ret = $tsuiteMgr->create($parentID,$tsuite['name'],$tsuite['details'],$tsuite['node_order']);
 			$tsuiteID = $ret['id'];
+			unset($tsuite);
+			unset($dummy);
+			
 			if (!$tsuiteID)
 			{
 				return null;
@@ -993,10 +1026,10 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 				    // getTestCaseSetFromSimpleXMLObj() first argument must be an array
 					$tcData = getTestCaseSetFromSimpleXMLObj(array($target));
 					$resultMap = array_merge($resultMap,saveImportedTCData($dbHandler,$tcData,$tproject_id,$tsuiteID,$userID,$kwMap));
+					unset($tcData);
 				break;
 
 				case 'testsuite':
-					$myself = __FUNCTION__;
 					$resultMap = array_merge($resultMap,$myself($dbHandler,$target,$tsuiteID,$tproject_id,$userID,$kwMap));
 				break;
 

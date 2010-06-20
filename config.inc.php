@@ -18,11 +18,12 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.301 2010/06/19 14:52:49 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.302 2010/06/20 09:59:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *	20100619 - franciscom -  define always $g_bugInterfaceOn = false,$g_bugInterface = null;
+ *	20100620 - franciscom - fix strict messages after usign PHPDesigner.
+ *	20100619 - franciscom - define always $g_bugInterfaceOn = false,$g_bugInterface = null;
  *	20100617 - franciscom - $tlCfg->req_cfg->importDocBook - new configuration for importing req in docbook format
  *  20100616 - eloff - BUGID 3255 - Cleaned up bts configuration
  *  20100527 - Julian - added $tlCfg->exec_cfg->expand_collapse->platform_description
@@ -107,6 +108,9 @@ $tlCfg = new stdClass();
 $tlCfg->api = new stdClass();
 $tlCfg->document_generator = new stdClass();
 $tlCfg->exec_cfg = new stdClass();
+$tlCfg->exec_cfg->view_mode = new stdClass();
+$tlCfg->exec_cfg->exec_mode = new stdClass();
+
 $tlCfg->gui = new stdClass();
 $tlCfg->gui->custom_fields = new stdClass();
 $tlCfg->testcase_cfg = new stdClass();

@@ -18,7 +18,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: config.inc.php,v 1.302 2010/06/20 09:59:07 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.303 2010/06/20 10:12:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -119,6 +119,7 @@ $tlCfg->validation_cfg = new stdClass();
 $tlCfg->custom_fields = new stdClass();
 $tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->diffEngine = new stdClass();
+
 
 /** @uses database access definition (generated automatically by TL installer) */ 
 @include_once('config_db.inc.php');
@@ -675,6 +676,7 @@ $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
+$g_spec_cfg = new stdClass();
 
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
@@ -809,6 +811,7 @@ $tlCfg->role_template->notes->value = '';
 /* [ATTACHMENTS] */
 
 /** Attachment feature availability */
+$g_attachments = new stdClass();
 $g_attachments->enabled = TRUE;
 
 /** the type of the repository can be database or filesystem

@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: bugAdd.tpl,v 1.8 2010/05/02 09:06:48 franciscom Exp $ *}
+{* $Id: bugAdd.tpl,v 1.9 2010/06/21 10:05:42 franciscom Exp $ *}
 {* Purpose: smarty template - the template for the attachment upload dialog 
 
 rev :
@@ -22,7 +22,7 @@ rev :
 	<form action="lib/execute/bugAdd.php" method="post">
 	  	<p>
 			<a style="font-weight:normal" target="_blank" href="{$bts_url}">
-			{lang_get s='link_bts_create_bug'}({$gsmarty_interface_bugs|lower|capitalize})</a>
+			{lang_get s='link_bts_create_bug'}({$gui->interface_bugs|lower|capitalize})</a>
 		</p>	
 	  	<p class="label">{$gsmarty_interface_bugs|lower|capitalize} {lang_get s='bug_id'}
   	 		<input type="text" id="bug_id" name="bug_id" size="{#BUGID_SIZE#}" maxlength="{$bugIDMaxLength}"/>

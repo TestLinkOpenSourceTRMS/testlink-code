@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.149 2010/06/15 07:12:30 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.150 2010/06/21 06:57:19 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.627
+ * Last Update according to en_GB string file version 1.629
  *
  **/
 
@@ -114,6 +114,7 @@ $TLS_blocks_depends = 'blockiert oder hängt ab von';
 $TLS_related_to='ist verwandt mit';
 $TLS_unknown_code='unbekannter Code: %s';
 
+$TLS_file_size_exceeded = 'Dateigröße (%s) > zugelassene Größe (%s)';
 
 $TLS_total = "Gesamt";
 $TLS_Unknown = "Unbekannt";
@@ -2584,7 +2585,7 @@ $TLS_API_NO_TESTCASE_BY_THIS_NAME = "Cannot find matching test case. No testcase
 $TLS_API_NOT_YET_IMPLEMENTED = "This functionality has not been implemented yet!";
 $TLS_API_NO_CUSTOMFIELD_BY_THIS_NAME="Cannot Find Custom Field with name (%s) ";
 
-$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided.";
+$TLS_API_NO_USER_BY_THIS_LOGIN = "Cannot Find User Login provided (%s).";
 $TLS_API_MISSING_REQUIRED_PARAMETER = "Parameter %s is required, but has not been provided";
 
 $TLS_API_INVALID_TESTCASE_VERSION_NUMBER="The required version number does not exist for test case";

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.73 $
- * @modified $Date: 2010/06/20 19:52:55 $ by $Author: franciscom $
+ * @version $Revision: 1.74 $
+ * @modified $Date: 2010/06/22 05:51:02 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
@@ -260,17 +260,22 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	static $messages;
 	static $fieldSizeCfg;
 	static $feedbackMsg;
-	static 	$tcase_mgr;
-	static 	$tproject_mgr;
-	static 	$req_spec_mgr;
-	static 	$req_mgr;
+	static $tcase_mgr;
+	static $tproject_mgr;
+	static $req_spec_mgr;
+	static $req_mgr;
+	static $safeSizeCfg;
+	static $linkedCustomFields;
+	static $tprojectHas;
+	static $reqSpecSet;
+	static $getVersionOpt;
 	
 	if (!$tcData)
 	{
 		return;
 	}
 	
-	$tprojectHas = array('customFields' => false, 'reqSpec' => false);
+	// $tprojectHas = array('customFields' => false, 'reqSpec' => false);
   	$hasCustomFieldsInfo=false;
   	$hasRequirements=false;
   	
@@ -305,21 +310,14 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
   		$feedbackMsg['req'] = lang_get('req_not_in_req_spec_on_tcimport');
   		$feedbackMsg['req_spec'] = lang_get('req_spec_ko_on_tcimport');
 
-    }
-  
-	$resultMap = array();
 
-  
-	// because name can be changed automatically during item creation
-	// to avoid name conflict adding a suffix automatically generated,
-	// is better to use a max size < max allowed size 
-	$safeSizeCfg = new stdClass();
-	$safeSizeCfg->testcase_name=($fieldSizeCfg->testcase_name) * 0.8;
-	
-	$tc_qty = sizeof($tcData);
-	if($tc_qty)
-	{
-	
+		// because name can be changed automatically during item creation
+		// to avoid name conflict adding a suffix automatically generated,
+		// is better to use a max size < max allowed size 
+		$safeSizeCfg = new stdClass();
+		$safeSizeCfg->testcase_name=($fieldSizeCfg->testcase_name) * 0.8;
+
+
 	    // Get CF with scope design time and allowed for test cases linked to this test project
 	    // $customFields=$tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name');
 	    // function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
@@ -327,12 +325,16 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         // 
         $linkedCustomFields = $tcase_mgr->cfield_mgr->get_linked_cfields_at_design($tproject_id,1,null,'testcase',null,'name');
         $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
-                       
+
         // BUGID - 20090205 - franciscom
 		$reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title'),'title');
 		$tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
-	}
-	
+
+		$getVersionOpt = array('output' => 'minimun');
+    }
+  
+	$resultMap = array();
+	$tc_qty = sizeof($tcData);
 	for($idx = 0; $idx <$tc_qty ; $idx++)
 	{
 		$tc = $tcData[$idx];
@@ -396,7 +398,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		 	        case 1:
 		 	        	$doCreate=false;
 		 	        	$tcase_id = key($info); 
-         	        	$last_version = $tcase_mgr->get_last_version_info($tcase_id);
+         	        	$last_version = $tcase_mgr->get_last_version_info($tcase_id,$getVersionOpt);
          	        	$tcversion_id = $last_version['id'];
          	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
          	        	                          $preconditions,$steps,$userID,$kwIDs,
@@ -1025,6 +1027,7 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 				case 'testcase':
 				    // getTestCaseSetFromSimpleXMLObj() first argument must be an array
 					$tcData = getTestCaseSetFromSimpleXMLObj(array($target));
+					// TEST 
 					$resultMap = array_merge($resultMap,saveImportedTCData($dbHandler,$tcData,$tproject_id,$tsuiteID,$userID,$kwMap));
 					unset($tcData);
 				break;

@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.23 2010/06/23 07:06:51 erikeloff Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.24 2010/06/23 07:09:26 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
  * @internal Revisions:
  *
+ *	20100621 - eloff - added guard_header_smarty() function
  * 	20100121 - franciscom - added show_help_icon to remove error on event viewer
  * 	20090304 - franciscom - removed some MAGIC NUMBERS 
  * 	20081027 - havlatm - moved to include Smarty library
@@ -67,6 +68,33 @@ function translate_tc_status_smarty($params, &$smarty)
 	}
 }
 
+/**
+ * This function should be used to prevent certain templates to only
+ * get included once per page load. For example javascript includes, such
+ * as ext-js.
+ *
+ * Usage (in template):
+ * <code>
+ * {if guard_header_smarty(__FILE__)}
+ *     template code
+ *     <script src="big-library.js type="text/javascript"></script>
+ * {/if}
+ * </code>
+ */
+function guard_header_smarty($file)
+{
+	static $guarded = array();
+
+	if (!isset($guarded[$file]))
+	{
+		$guarded[$file] = true;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 /**
  * TestLink wrapper for external Smarty class

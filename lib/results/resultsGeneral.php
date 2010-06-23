@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.66 $
- * @modified $Date: 2010/05/15 13:23:38 $ by $Author: franciscom $
+ * @version $Revision: 1.67 $
+ * @modified $Date: 2010/06/23 07:13:09 $ by $Author: erikeloff $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
  *
  * Revisions:
+ *  20100621 - eloff - BUGID 3542 - fixed typo
  *  20100206 - eloff - BUGID 3060 - Show verbose priority statistics like other tables.
  *  20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns
  *                                         with test case exec results
@@ -46,7 +47,6 @@ $gui = new stdClass();
 $gui->title = lang_get('title_gen_test_rep');
 $gui->do_report = array();
 $gui->showPlatforms=true;
-$gui->colDefinition = array();
 $gui->columnsDefinition = new stdClass();
 $gui->columnsDefinition->keywords = null;
 $gui->columnsDefinition->testers = null;
@@ -202,7 +202,7 @@ else // do report
     // new dBug($results);    
     
 
-	$colDefiniton = null;
+	$colDefinition = null;
 	$results = null;
 	if($gui->do_report['status_ok'])
 	{

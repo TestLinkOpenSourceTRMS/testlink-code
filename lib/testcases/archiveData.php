@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.69 2010/05/02 10:14:11 franciscom Exp $
+ * 	@version 	$Id: archiveData.php,v 1.70 2010/06/23 07:06:51 erikeloff Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -10,6 +10,7 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
+ *	20100621 - eloff - BUGID 3241 - Implement vertical layout
  *	20100502 - franciscom - BUGID 3405: Navigation Bar - Test Case Search - Crash when search a nonexistent testcase	
  *  20100315 - franciscom - fixed refesh tree logic	
  *  20100223 - asimon - BUGID 3049
@@ -100,6 +101,7 @@ switch($args->feature)
 		$gui->loadOnCancelURL = '';
 		$gui->attachments = null;
 		$gui->direct_link = null;
+		$gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
     	
    		// has been called from a test case search
 		if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)

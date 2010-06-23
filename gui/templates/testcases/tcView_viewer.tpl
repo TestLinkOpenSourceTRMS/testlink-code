@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.77 2010/06/05 07:30:17 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.78 2010/06/23 07:06:51 erikeloff Exp $
 viewer for test case in test specification
 
 rev:
+    20100621 - eloff - BUGID 3241 - Implement vertical layout
+    20100615 - eloff - hide automation column if not enabled
     20100530 - franciscom - new JS function launchEditStep()
     20100529 - franciscom - BUGID 3493 - using escape:'url'
     20100522 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -300,47 +302,10 @@ function launchEditStep(step_id)
 {*  onclick="showHideByClass('span','order_info');event.stopPropagation();"> *}
 
 	{if $args_testcase.steps != ''}
-	<tr>
-		<th width="{$tableColspan}">
-    {if $edit_enabled && $args_testcase.steps != ''}
-		<img src="{$tlImages.reorder}" align="left" title="{$tcView_viewer_labels.show_hide_reorder}" 
-		    onclick="showHideByClass('span','order_info');">
-    {/if}
-		{$tcView_viewer_labels.step_number}</th>
-		<th>{$tcView_viewer_labels.step_actions}</th>
-		<th>{$tcView_viewer_labels.expected_results}</th>
-		<th width="25">{$tcView_viewer_labels.execution_type_short_descr}</th>
-    {if $edit_enabled}
-		  <th>&nbsp;</th>
-    {/if}
-	</tr>
-  {/if}
-	{if $args_testcase.steps != ''}
-	{* BUGID 3376 *}
- 	{foreach from=$args_testcase.steps item=step_info}
-	<tr>
-		<td style="text-align:left;">
-		<span class="order_info" style='display:none'>
-		<input type="text" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
-		       value="{$step_info.step_number}" 
-			     size="{#STEP_NUMBER_SIZE#}" 	maxlength="{#STEP_NUMBER_MAXLEN#}">
-  	{include file="error_icon.tpl" field="step_number"}
-		</span>{$step_info.step_number}</td>
-		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})"{/if}>{$step_info.actions}</td>
-		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$step_info.expected_results}</td>
-		<td {if $edit_enabled} style="cursor:pointer;" onclick="launchEditStep({$step_info.id})" {/if}>{$gui->execution_types[$step_info.execution_type]}</td>
-
-    {if $edit_enabled}
-		<td class="clickable_icon">
-       <img style="border:none;cursor: pointer;" 
-            title="{$tcView_viewer_labels.delete_step}"  alt="{$tcView_viewer_labels.delete_step}" 
- 					  onclick="delete_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
- 					                               '{$del_msgbox_title}','{$warning_msg}');"
-  				  src="{$delete_img}"/>
-  	</td>
-  	{/if}
-	</tr>
-  {/foreach}	
+	{include file="inc_steps.tpl"
+	         layout=$gui->steps_results_layout
+	         edit_enabled=$edit_enabled
+	         steps=$args_testcase.steps}
 	{/if}
 </table>
 
@@ -445,4 +410,4 @@ function launchEditStep(step_id)
     {/foreach}
 	  </table>
 	</div>
-{/if}	
+{/if}

@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.17 2010/05/30 10:08:05 franciscom Exp $
+$Id: inc_exec_test_spec.tpl,v 1.18 2010/06/23 07:06:51 erikeloff Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
+    20100621 - eloff - BUGID 3241 - Implement vertical layout
     20100105 - franciscom - Test Case Steps
     20090901 - franciscom - preconditions + exec_cfg->steps_results_layout
     20090718 - franciscom - added design time custom field location management
@@ -71,53 +72,13 @@ Rev:
 		</tr>
 		{/if}
 
-   	<tr>
-		<th width="5">{$args_labels.step_number}</th>
-		<th>{$args_labels.step_actions}</th>
-		<th>{$args_labels.expected_results}</th>
-		<th width="25">{$args_labels.execution_type_short_descr}</th>
-  	</tr>
-  	{if $args_tc_exec.steps != ''}
- 	    {foreach from=$args_tc_exec.steps item=step_info}
-    	<tr>
-		  <td style="text-align:righ;">{$step_info.step_number}</td>
-		  <td>{$step_info.actions}</td>
-		  <td>{$step_info.expected_results}</td>
-		  <td>{$args_execution_types[$step_info.execution_type]}</td>
-	    </tr>
- 	    {/foreach}
-    {/if}
-  	
+	{if $args_tc_exec.steps != ''}
+		{include file="inc_steps.tpl"
+		         layout=$args_cfg->exec_cfg->steps_results_layout
+		         edit_enabled=false
+		         steps=$args_tc_exec.steps}
+	{/if}
 
-    {* 
-    ------------------------------------------------------------------------------- 
-      {if $args_cfg->exec_cfg->steps_results_layout == 'horizontal'}
-		    <tr>
-		    	<th width="50%">{$args_labels.test_exec_steps}</th>
-		    	<th width="50%">{$args_labels.test_exec_expected_r}</th>
-		    </tr>
-		    <tr>
-		    	<td style="vertical-align:top;">{$args_tc_exec.steps}</td>
-		    	<td style="vertical-align:top;">{$args_tc_exec.expected_results}</td>
-		    </tr>
-		  {else}
-		    <tr>
-		    	<th width="100%">{$args_labels.test_exec_steps}</th>
-		    </tr>
-		    <tr>
-		    	<td style="vertical-align:top;">{$args_tc_exec.steps}</td>
-		    </tr>
-		    <tr>
-		    	<th width="50%">{$args_labels.test_exec_expected_r}</th>
-		    </tr>
-		    <tr>
-		    	<td style="vertical-align:top;">{$args_tc_exec.expected_results}</td>
-		    </tr>
-		  {/if}
-		 ------------------------------------------------------------------------------- 
-    *}
-
-		
     {* ------------------------------------------------------------------------------------- *}
     {if $args_enable_custom_field and $args_tc_exec.active == 1}
   	  {if isset($args_execution_time_cf[$testcase_id]) && $args_execution_time_cf[$testcase_id] != ''}

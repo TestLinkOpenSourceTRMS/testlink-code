@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.22 2010/06/21 10:09:25 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.23 2010/06/23 07:06:51 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -232,13 +232,13 @@ class TLSmarty extends Smarty
         $this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
         
         $msg = lang_get('show_hide_api_info');
-        $toggle_api_info_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
+        $toggle_api_info_img="<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
         " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
         " src=\"{$api_info_img}\" align=\"left\" />";
         $this->assign("toggle_api_info_img",$toggle_api_info_img);
 
         $msg = lang_get('show_hide_direct_link');
-        $toggle_direct_link_img="<img title=\"{$msg}\" alt=\"{$msg}\" " .
+        $toggle_direct_link_img="<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
         " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
         " src=\"{$direct_link_img}\" align=\"left\" />";
         $this->assign("toggle_direct_link_img",$toggle_direct_link_img);

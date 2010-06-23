@@ -8,16 +8,17 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.150 2010/06/05 09:43:34 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.151 2010/06/23 07:06:51 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
- *	20100605 - franciscom - BUGID 3377 	
+ *	20100621 - eloff - BUGID 3241 - Implement vertical layout
+ *	20100605 - franciscom - BUGID 3377
  *	20100403 - franciscom - BUGID 3359: Copy Test Case Step
- *  20100124 - franciscom - fixed bug on copy test cases - do not obey to top or bottom user choice
- *  20100106 - franciscom - Multiple Test Case Steps Feature
- *  20100104 - franciscom - fixed bug on create new version, now is created
+ *	20100124 - franciscom - fixed bug on copy test cases - do not obey to top or bottom user choice
+ *	20100106 - franciscom - Multiple Test Case Steps Feature
+ *	20100104 - franciscom - fixed bug on create new version, now is created
  *                          from selected version and NOT FROM LATEST
  *	20100103 - franciscom - refactoring to use command class
  *	20090831 - franciscom - preconditions
@@ -552,6 +553,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
     $guiObj->attachments = null;
 	$guiObj->parent_info = null;
 	$guiObj->user_feedback = '';
+	$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
 	
 	$guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
 	                           "/lib/testcases/archiveData.php?edit=testcase&id=" . $argsObj->tcase_id .

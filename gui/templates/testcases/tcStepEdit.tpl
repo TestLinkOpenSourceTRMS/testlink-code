@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.24 2010/05/30 09:49:07 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.25 2010/06/23 07:06:51 erikeloff Exp $ 
 Purpose: create/edit test case step
 
 rev:
+	20100621 - eloff - BUGID 3241 - Implement vertical layout
   20100529 - franciscom - BUGID 3493 - using escape:'url'
 	20100403 - franciscom - added create step button while editing existent step
 	                        BUGID 3359 - copy test case step
@@ -36,7 +37,7 @@ rev:
 
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
-             expected_results,step_details,step_number_verbose,btn_cancel,btn_create_step,
+             expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,
              btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
@@ -145,13 +146,14 @@ DEBUG: $gui->action: {$gui->action} <br>
 	</div>	
 
   <table class="simple" style="width:99%;">
+	{if $gui->steps_results_layout == "horizontal"}
   	<tr>
   		<th width="{$gui->tableColspan}">{$labels.step_number}</th>
   		{* Julian: added width to show columns step details and expected
   		 * results at approximately same size (step details get 45%
   		 * expected results get the rest)
   		 *}
-  		<th width="45%">{$labels.step_details}</th>
+		<th width="45%">{$labels.actions}</th>
   		<th>{$labels.expected_results}</th>
       {if $session['testprojectOptions']->automationEnabled}
   		  <th width="25">{$labels.execution_type_short_descr}</th>
@@ -182,6 +184,49 @@ DEBUG: $gui->action: {$gui->action} <br>
       {/if}
   	  </tr>
     {/foreach}
+  {/if}
+  {else} {* Vertical layout *}
+	{foreach from=$gui->tcaseSteps item=step_info}
+	<tr>
+		<th width="20">{$args_labels.step_number} {$step_info.step_number}</th>
+		<th>{$labels.step_actions}</th>
+		{if $session['testprojectOptions']->automationEnabled}
+		{if $step_info.step_number == $gui->step_number}
+		<th width="200">{$labels.execution_type_short_descr}:
+			<select name="exec_type" onchange="content_modified = true">
+				{html_options options=$gui->execution_types selected=$gui->step_exec_type}
+	        </select>
+		</th>
+		{else}
+			<th>{$labels.execution_type_short_descr}:
+				{$gui->execution_types[$step_info.execution_type]}</th>
+		{/if}
+		{else}
+		<th>&nbsp;</th>
+		{/if} {* automation *}
+		{if $edit_enabled}
+		<th>&nbsp;</th>
+		{/if}
+	</tr>
+	<tr>
+		{if $step_info.step_number == $gui->step_number}
+		<td colspan="3">{$steps}</td>
+		{else}
+		<td colspan="3"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+		{/if}
+	</tr>
+	<tr>
+		<th style="background: transparent; border: none"></th>
+		<th colspan="2">{$labels.expected_results}</th>
+	</tr>
+	<tr>
+		{if $step_info.step_number == $gui->step_number}
+		<td colspan="3">{$expected_results}</td>
+		{else}
+		<td colspan="3" style="padding: 0.5em 0.5em 2em 0.5em"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
+		{/if}
+	</tr>
+	{/foreach}
   {/if}
   {if $gui->action == 'createStep' || $gui->action == 'doCreateStep'}
   	<tr>

@@ -1,10 +1,10 @@
 <?php
 /** -------------------------------------------------------------------------------------
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/02/02 22:30:52 $ $Author: havlat $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/06/23 13:13:31 $ $Author: mx-julian $
  * @author Martin Havlat
  *
  * LOCALIZATION:

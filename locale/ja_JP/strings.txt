@@ -1,11 +1,11 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: strings.txt,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/04/27 19:52:35 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/06/23 13:13:32 $ by $Author: mx-julian $
  *
  * @copyright Copyright (c) 2003-9, TestLink community
  * @author Francisco Mancardi, Andreas Morsing, Martin Havlat
@@ -58,7 +58,7 @@
  * Yasuhiko Okada,       Yoichi Kunihiro,      Yoshihiro Yoshimura,
  * Yukiko Kajino
  *
- * @modified $Date: 2010/04/27 19:52:35 $ $Author: franciscom $
+ * @modified $Date: 2010/06/23 13:13:32 $ $Author: mx-julian $
  *-------------------------------------------------------------------
 **/
 

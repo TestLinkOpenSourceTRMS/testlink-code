@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * English (en_GB) texts for help/instruction pages. Strings for dynamic pages
@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Kirsi Mäkinen, Jan-Erik Finlander, Juho Kauppi, Heikki Alonen, Jari Ahonen, Otto Moilanen
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.1 2009/06/17 21:19:23 havlat Exp $
+ * @version    	CVS: $Id: texts.php,v 1.2 2010/06/23 13:13:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/

@@ -1,6 +1,6 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Finnish (fi_FI) (Finnish localization up to 90%)
@@ -23,7 +23,7 @@
  * @author 		Kirsi Mäkinen, Jan-Erik Finlander, Juho Kauppi
  * @author 		Heikki Alonen, Jari Ahonen, Otto Moilanen
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.2 2010/04/27 19:52:35 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.3 2010/06/23 13:13:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * 

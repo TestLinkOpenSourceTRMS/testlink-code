@@ -2,7 +2,7 @@
 
 /**
 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
 
  * This script is distributed under the GNU General Public License 2 or later. 
 
@@ -10,9 +10,9 @@
 
  * Filename $RCSfile: strings.txt,v $
 
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
 
- * @modified $Date: 2010/04/27 19:52:35 $ by $Author: franciscom $
+ * @modified $Date: 2010/06/23 13:13:31 $ by $Author: mx-julian $
 
  *
 
@@ -27,7 +27,8 @@
  * Scripted update according en_GB string file (version: 1.399) 
  * ---------------------------------------------------------------------------------- */
 
-
+// Define character set of this file (UTF-8 is common value)
+$TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active 		= "Active";

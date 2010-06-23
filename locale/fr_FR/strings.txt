@@ -1,12 +1,12 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @package 	TestLink
  * @author GrdScarabe, Thomas Courbon, Alexandre Da Costa, brice.grichy
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.23 2010/06/05 06:55:28 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.24 2010/06/23 13:13:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * French translation
@@ -21,7 +21,8 @@
  * Scripted update according en_GB string file (version: 1.399) 
  * ---------------------------------------------------------------------------------- */
 
-
+// Define character set of this file (UTF-8 is common value)
+$TLS_STRINGFILE_CHARSET = "UTF-8";
 
 // ----- General terms (used wide) ----------------------------
 $TLS_active 		= "Active";

@@ -1,14 +1,14 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/06/05 07:09:21 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/06/23 13:13:28 $ $Author: mx-julian $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/06/05 07:09:21 $ $Author: franciscom $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/06/23 13:13:28 $ $Author: mx-julian $
  *
  * @author Vadim Ivanchenko
  *

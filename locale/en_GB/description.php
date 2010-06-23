@@ -1,6 +1,6 @@
 <?php
 /** 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
  * Localization: English (en_GB) texts - default development localization (World-wide English)
@@ -20,7 +20,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.12 2010/04/09 10:42:04 erikeloff Exp $
+ * @version    	CVS: $Id: description.php,v 1.13 2010/06/23 13:13:31 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:

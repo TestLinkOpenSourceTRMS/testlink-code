@@ -3,7 +3,7 @@
  * ♔ TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
  * 
- * Localization: German (de_DE) descriptions
+ * Localization: English (en_GB) texts - default development localization (World-wide English)
  *
  * 
  * The file contains global variables with html text. These variables are used as 
@@ -14,20 +14,22 @@
  * Add your localization to TestLink tracker as attachment to update the next release
  * for your language.
  *
+ * No revision is stored for the the file - see CVS history
+ * 
  * 
  * @package 	TestLink
- * @author 		Martin Havlat, Julian Krien
+ * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.6 2010/06/23 13:13:32 mx-julian Exp $
+ * @version    	CVS: $Id: description.php,v 1.1 2010/06/23 13:13:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20100517 - Julian - update of header according to en_GB description.php
+ * 20100409 - eloff - BUGID 3050 - Update execution help text
  **/
 
 
 // printFilter.html
-$TLS_hlp_generateDocOptions = "<h2>Optionen für das zu generierende Dokument</h2>
+$TLS_hlp_generateDocOptions = "<h2>Options for a generated document</h2>
 
 <p>This table allows the user to filter test cases before they are viewed. If
 selected (checked) the data will be shown. In order to change the data
@@ -237,10 +239,10 @@ with name defined in configuration <i>(default is: &#36;tlCfg->req_cfg->default_
 \"Test suite created by Requirement - Auto\";)</i>. Title and Scope are copied to these Test cases.</p>
 ";
 
-$TLS_hlp_req_coverage_table = "<h3>Abdeckung:</h3>
-Ein Wert von z.B. \"40% (8/20)\" bedeutet, dass 20 Testfälle erstellt werden müssen um die Anforderung
-komplett durch Testfälle abzudecken. 8 dieser Testfälle wurden bereits erstellt und der Anforderung
-zugewiesen, was einer Abdeckung von 40% entspricht.
+$TLS_hlp_req_coverage_table = "<h3>Coverage:</h3>
+A value of e.g. \"40% (8/20)\" means that 20 Test Cases have to be created for this Requirement 
+to test it completely. 8 of those have already been created and linked to this Requirement, which 
+makes a coverage of 40 percent.
 ";
 
 

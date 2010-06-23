@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.22 2010/06/14 17:08:45 erikeloff Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.23 2010/06/23 07:11:39 erikeloff Exp $
 Purpose: 
 Author: franciscom
 
 Rev:  
+	20100617 - eloff - Row coloring in execution history should include notes and cf in same color
 	20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
 	20100426 - Julian - BUGID 2454 - minor changes to properly show executions if exec
 						history was configured
@@ -166,6 +167,7 @@ Rev:
 				{/if}
 				{if $gui->has_platforms && 
 				    ($gui->history_on == 0 || $cfg->exec_cfg->show_history_all_platforms)}
+					{assign var="my_colspan" value=$my_colspan+1}
 				  <th style="text-align:left">{$labels.platform}</th>
 				{/if}
 				<th style="text-align:left">{$labels.test_exec_by}</th>
@@ -196,7 +198,8 @@ Rev:
 			{* ----------------------------------------------------------------------------------- *}
 			{foreach item=tc_old_exec from=$gui->other_execs.$tcversion_id}
   	     {assign var="tc_status_code" value=$tc_old_exec.status}
-   			<tr style="border-top:1px solid black; background-color:{cycle values='#eeeeee,#d0d0d0'}">
+			{cycle values='#eeeeee,#d0d0d0' assign="bg_color"}
+			<tr style="border-top:1px solid black; background-color: {$bg_color}">
   			  <td>
           {* Check also that Build is Open *}
   			  {if $gui->grants->edit_exec_notes && $tc_old_exec.build_is_open}
@@ -315,7 +318,7 @@ Rev:
         {/literal}
 
   			</script>
-  			<tr>
+			<tr style="background-color: {$bg_color}">
   			 <td colspan="{$my_colspan}" id="exec_notes_container_{$tc_old_exec.execution_id}"
   			     style="padding:5px 5px 5px 5px;">
   			 </td>
@@ -323,7 +326,7 @@ Rev:
  			  {/if}
 
   			{* 20070105 - Custom field values  *}
-  			<tr>
+			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
   				{assign var="execID" value=$tc_old_exec.execution_id}
   				{assign var="cf_value_info" value=$gui->other_exec_cfields[$execID]}
@@ -334,7 +337,7 @@ Rev:
 
 
   			{* Attachments *}
-  			<tr>
+			<tr style="background-color: {$bg_color}">
   			<td colspan="{$my_colspan}">
   				{assign var="execID" value=$tc_old_exec.execution_id}
 
@@ -354,7 +357,7 @@ Rev:
 
         {* Execution Bugs (if any) *}
         {if $gui->bugs[$execID] neq ""}
-   		<tr>
+		<tr style="background-color: {$bg_color}">
    			<td colspan="{$my_colspan}">
    				{include file="inc_show_bug_table.tpl"
    			         bugs_map=$gui->bugs[$execID]

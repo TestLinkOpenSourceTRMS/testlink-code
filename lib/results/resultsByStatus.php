@@ -12,13 +12,14 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.79 2010/06/24 17:25:52 asimon83 Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.80 2010/06/24 19:40:24 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *  201005 - Julian - BUGID 3492 - show only test case summary for not run test cases
- *                    else show exec notes
+ *	20100617 - eloff - BUGID 3255 - fix bug links if available
+ *	201005 - Julian - BUGID 3492 - show only test case summary for not run test cases
+ *	                  else show exec notes
  *	20100425 - franciscom - BUGID 3356
  *	20100124 - eloff - use buildExternalIdString()
  *	20091016 - franciscom - work still is needed to display LINK to BUG
@@ -34,6 +35,12 @@ require('../../config.inc.php');
 require_once('common.php');
 require_once('displayMgr.php');
 require_once('users.inc.php');
+require_once('exec.inc.php'); // used for bug string lookup
+if (config_get('interface_bugs') != 'NO')
+{
+  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
+               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+}
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -57,6 +64,10 @@ if( is_null($gui->platformSet) )
 	$gui->platformSet = array('');
 }
 $gui->bugInterfaceOn = config_get('bugInterfaceOn');
+$bugInterface = null;
+if ($gui->bugInterfaceOn) {
+	$bugInterface = config_get('bugInterface');
+}
 $deleted_user_label = lang_get('deleted_user');
 
 $gui->tplan_name = $tplan_info['name'];
@@ -99,7 +110,6 @@ else
 
 if( !is_null($myRBB) and count($myRBB) > 0 )
 {
-	$bugString='';
     $pathCache=null;
     $topCache=null;
     $levelCache=null;
@@ -107,6 +117,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 	foreach($myRBB as $item)
 	{
 	    $suiteName='';
+		$bugString='';
 	    if( $item[$user_key] == 0 )
 	    {
 	    	$testerName = '';
@@ -151,6 +162,12 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			// BUGID 3492
 			// BUGID 3356
 			// When test case has been runned, version must be get from executions.tcversion_number 
+			if ($gui->bugInterfaceOn) {
+				$bugs = get_bugs_for_exec($db, $bugInterface, $item['exec_id']);
+				foreach ($bugs as $bug) {
+					$bugString .= $bug['link_to_bts'] . '<br/>';
+				}
+			}
 			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
 							array('suiteName' => $verbosePath, 'testTitle' => htmlspecialchars($tcaseName),
 			                      'testVersion' => $item['tcversion_number'], 

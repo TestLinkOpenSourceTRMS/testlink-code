@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.2 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    CVS: $Id: tlFilterControl.class.php,v 1.3 2010/06/24 22:13:08 franciscom Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
@@ -222,10 +222,11 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		$this->init_args();
 
 		// set filter mode to advanced or simple
-		$this->advanced_filter_mode = false;
-		if ($this->filter_mode_choice_enabled && $this->args->advanced_filter_mode) {
-			$this->advanced_filter_mode = true;
-		}
+		// $this->advanced_filter_mode = false;
+		// if ($this->filter_mode_choice_enabled && $this->args->advanced_filter_mode) {
+		// 	$this->advanced_filter_mode = true;
+		// }
+		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled && $this->args->advanced_filter_mode);
 		
 		// init button labels
     	if ($this->advanced_filter_mode) {

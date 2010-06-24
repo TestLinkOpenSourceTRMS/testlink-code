@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.27 2010/06/20 11:06:41 franciscom Exp $
+$Id: usersEdit.tpl,v 1.28 2010/06/24 17:25:56 asimon83 Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments

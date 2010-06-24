@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tc_filter_panel.tpl,v 1.13 2010/05/24 20:22:34 franciscom Exp $
+ * $Id: inc_tc_filter_panel.tpl,v 1.14 2010/06/24 17:25:53 asimon83 Exp $
  * 
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -25,277 +25,102 @@
                         btn_bulk_update_to_latest_version, priority'} 
 
 
-{assign var="panelFilters" value=$gui->controlPanel->filters}
-
-{assign var="strOptionAny" value=$gui->controlPanel->strOption.any}
-{assign var="strOptionSomebody" value=$gui->controlPanel->strOption.somebody}
-{assign var="strOptionNone" value=$gui->controlPanel->strOption.none}
-
-{if $panelFilters.keywords.size == 0}
-    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
-{else}
-	{assign var="keywordsFilterDisplayStyle" value=""}
-{/if}
-
-{* Assigning/initializing of all used variables is done here.
-   I did not use foreach or some construct like that here because this should be more performant.
-   It is more code, but doing this here in one place at the top keeps the 
-   template code below simple, clean and readable. *}
-
-
-{if isset($gui->assigneeFilterItemQty)}
-    {assign var="assigneeFilterItemQty" value=$gui->assigneeFilterItemQty}
-{else}
-	{assign var="assigneeFilterItemQty" value=0}
-{/if}
-
-{if isset($gui->statusFilterItemQty)}
-    {assign var="statusFilterItemQty" value=$gui->statusFilterItemQty}
-{else}
-	{assign var="statusFilterItemQty" value=0}
-{/if}
-
-{if isset($gui->keywordsMap)}
-    {assign var="keywordsMap" value=$gui->keywordsMap}
-{else}
-	{assign var="keywordsMap" value=0}
-{/if}
-
-{if isset($gui->optBuild)}
-    {assign var="optBuild" value=$gui->optBuild}
-{else}
-	{assign var="optBuild" value=0}
-{/if}
-
-{if isset($gui->keywordID)}
-    {assign var="keywordID" value=$gui->keywordID}
-{else}
-	{assign var="keywordID" value=0}
-{/if}
-
-{if isset($gui->tPlanID)}
-    {assign var="tPlanID" value=$gui->tPlanID}
-{else}
-	{assign var="tPlanID" value=0}
-{/if}
-
-{if isset($gui->keywordsFilterTypes)}
-	{assign var="keywordsFilterType" value=$gui->keywordsFilterTypes}
-{else}
-	{assign var="keywordsFilterType" value=""}
-{/if}
-
-
-{if isset($gui->toggleFilterModeLabel)}
-	{assign var="toggleFilterModeLabel" value=$gui->toggleFilterModeLabel}
-{else}
-	{assign var="toggleFilterModeLabel" value=""}
-{/if}
-
-{if isset($gui->mapTPlans)}
-	{assign var="mapTPlans" value=$gui->mapTPlans}
-{else}
-	{assign var="mapTPlans" value=""}
-{/if}
-
-{if isset($gui->optPlatform)}
-	{assign var="optPlatform" value=$gui->optPlatform}
-{else}
-	{assign var="optPlatform" value=""}
-{/if}
-
-{if isset($gui->testers)}
-	{assign var="testers" value=$gui->testers}
-{else}
-	{assign var="testers" value=""}
-{/if}
-
-{if isset($gui->buildCount)}
-	{assign var="buildCount" value=$gui->buildCount}
-{else}
-	{assign var="buildCount" value=0}
-{/if}
-
-{if isset($gui->execType)}
-	{assign var="execType" value=$gui->execType}
-{else}
-	{assign var="execType" value=0}
-{/if}
-
-{if isset($gui->tcSpecRefreshOnAction)}
-	{assign var="tcSpecRefreshOnAction" value=$gui->tcSpecRefreshOnAction}
-{else}
-	{assign var="tcSpecRefreshOnAction" value=0}
-{/if}
-
-{if isset($gui->optFilterBuild)}
-	{assign var="optFilterBuild" value=$gui->optFilterBuild}
-{else}
-	{assign var="optFilterBuild" value=0}
-{/if}
-
-{if isset($gui->optFilterMethodSelected)}
-	{assign var="optFilterMethodSelected" value=$gui->optFilterMethodSelected}
-{else}
-	{assign var="optFilterMethodSelected" value=0}
-{/if}
-
-{if isset($gui->filterMethods)}
-	{assign var="filterMethods" value=$gui->filterMethods}
-{else}
-	{assign var="filterMethods" value=0}
-{/if}
-
-{if isset($gui->filterMethodSpecificBuild)}
-	{assign var="filterMethodSpecificBuild" value=$gui->filterMethodSpecificBuild}
-{else}
-	{assign var="filterMethodSpecificBuild" value=0}
-{/if}
-
-{if isset($gui->optResult)}
-	{assign var="optResult" value=$gui->optResult}
-{else}
-	{assign var="optResult" value=0}
-{/if}
-
-{if isset($gui->optResultSelected)}
-	{assign var="optResultSelected" value=$gui->optResultSelected}
-{else}
-	{assign var="optResultSelected" value=0}
-{/if}
-
-{if isset($gui->includeUnassigned)}
-	{assign var="includeUnassigned" value=$gui->includeUnassigned}
-{else}
-	{assign var="includeUnassigned" value=0}
-{/if}
-
-{if isset($gui->filterAssignedTo)}
-	{assign var="filterAssignedTo" value=$gui->filterAssignedTo}
-{else}
-	{assign var="filterAssignedTo" value=0}
-{/if}
-
-
-{if isset($gui->assigned_to_user)}
-	{assign var="assignedToUser" value=$gui->assigned_to_user}
-{else}
-	{assign var="assignedToUser" value=0}
-{/if}
-
-{if isset($gui->disable_filter_assigned_to)}
-	{assign var="disableFilterAssignedTo" value=$gui->disable_filter_assigned_to}
-{else}
-	{assign var="disableFilterAssignedTo" value=0}
-{/if}
-
-{if isset($gui->urgencyImportanceSelectable)}
-	{assign var="urgencyImportanceSelectable" value=$gui->urgencyImportanceSelectable}
-{else}
-	{assign var="urgencyImportanceSelectable" value=0}
-{/if}
-
-{if isset($gui->urgencyImportance)}
-	{assign var="urgencyImportance" value=$gui->urgencyImportance}
-{else}
-	{assign var="urgencyImportance" value=0}
-{/if}
-
-{if isset($gui->design_time_cfields)}
-	{assign var="designTimeCFields" value=$gui->design_time_cfields}
-{else}
-	{assign var="designTimeCFields" value=""}
-{/if}
-
-{if isset($gui->feature)}
-	{assign var="feature" value=$gui->feature}
-{else}
-	{assign var="feature" value=0}
-{/if}
-
-
+{assign var="showFilters" value=false}
+{assign var="showSettings" value=false}
 
 
 <form method="get" id="tc_filter_panel_form">
 
-{if $gui->controlPanel->drawTCUnassignButton}
+{if isset($gui->drawTCUnassignButton)}
 	<input type="button" name="unassign_all_tcs" value="{$labels.btn_unassign_all_tcs}" 
-		onclick="javascript:PL({$tPlanID});" />
+		onclick="javascript:PL({$gui->tPlanID});" />
+{/if}
+
+{if isset($gui->drawBulkUpdateButton)}
+    <input type="button" value="{$labels.btn_bulk_update_to_latest_version}" 
+           name="doBulkUpdateToLatest" 
+           onclick="update2latest({$gui->tPlanID})" />
 {/if}
 
 {* hidden feature input (mainly for testcase edit when refreshing frame) *}
-{if $feature}
-<input type="hidden" id="feature" name="feature" value="{$feature}" />
+{if isset($gui->feature)}
+<input type="hidden" id="feature" name="feature" value="{$gui->feature}" />
 {/if}
 
 {include file="inc_help.tpl" helptopic="hlp_executeFilter" show_help_icon=false}
+	
+{* 
+ * Settings are not configurable by the user. 
+ * They depend on the mode that is defined when including this template.
+ * @TODO will be replaced by logic in filterPanel classes
+ *}
 
-{if $showSettings == 'yes'}
-	
-	<div id="settings_panel">
-		<div class="x-panel-header x-unselectable">
-			{$labels.caption_nav_settings}
-		</div>
-	
-		<div id="tplan_settings" class="x-panel-body exec_additional_info" "style="padding-top: 3px;">
-			<input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
-			
-			<table class="smallGrey" style="width:98%;">
-			
-			{if $mapTPlans}
-				<tr>
-					<th>{$labels.test_plan}</th>
-					<td>
-						<select name="tplan_id" onchange="this.form.submit()">
-						{html_options options=$mapTPlans selected=$tPlanID}
-						</select>
-					</td>
-				</tr>
-			{/if}
-	
-			{if $optPlatform && $optPlatform.items != ''}
-				<tr>
-					<th>{$labels.platform}</th>
-					<td>
-						<select name="platform_id" onchange="this.form.submit()">
-						{html_options options=$optPlatform.items selected=$optPlatform.selected}
-						</select>
-					</td>
-				</tr>
-			{/if}
-			
-			{if $optBuild && $optBuild.items != ''}
-				<tr>
-					<th>{$labels.exec_build}</th>
-					<td>
-						<select name="build_id" onchange="this.form.submit()">
-						{html_options options=$optBuild.items selected=$optBuild.selected}
-						</select>
-					</td>
-				</tr>
-			{/if}
-			
+<div id="settings_panel">
+	<div class="x-panel-header x-unselectable">
+		{$labels.caption_nav_settings}
+	</div>
+
+	<div id="tplan_settings" class="x-panel-body exec_additional_info" "style="padding-top: 3px;">
+		<input type='hidden' id="tpn_view_settings"  name="tpn_view_status"  value="0" />
+		
+		<table class="smallGrey" style="width:98%;">
+		
+		{if $mode == 'plan_mode' || $mode == 'plan_add_mode' || $mode == 'exec_mode'}
+			<tr>
+				<th>{$labels.test_plan}</th>
+				<td>
+					<select name="tplan_id" onchange="this.form.submit()">
+					{html_options options=$gui->mapTPlans selected=$gui->tPlanID}
+					</select>
+				</td>
+			</tr>
+		{/if}
+
+		{if $mode == 'exec_mode' || $mode == 'plan_mode'}
+			<tr>
+				<th>{$labels.platform}</th>
+				<td>
+					<select name="platform_id" onchange="this.form.submit()">
+					{html_options options=$gui->optPlatform.items selected=$gui->optPlatform.selected}
+					</select>
+				</td>
+			</tr>
+		{/if}
+		
+		{if $mode == 'exec_mode'}
+			<tr>
+				<th>{$labels.exec_build}</th>
+				<td>
+					<select name="build_id" onchange="this.form.submit()">
+					{html_options options=$gui->optBuild.items selected=$gui->optBuild.selected}
+					</select>
+				</td>
+			</tr>
+		{/if}
+		
+		{if $mode == 'exec_mode' || $mode == 'edit_mode'}
 			<tr>
 	   			<td>{$labels.do_auto_update}</td>
 	  			<td>
-	  			   <input type="hidden" id="hidden_tcspec_refresh_on_action"   
-	  			           name="hidden_tcspec_refresh_on_action" />
+	  			   <input type="hidden" id="hidden_setting_refresh_tree_on_action"   
+	  			           name="hidden_setting_refresh_tree_on_action" />
 	  			
 	  			   <input type="checkbox" 
-	  			           id="cbtcspec_refresh_on_action"   name="tcspec_refresh_on_action"
+	  			           id="cbsetting_refresh_tree_on_action"   name="setting_refresh_tree_on_action"
 	  			           value="1"
-	  			           {if $tcSpecRefreshOnAction eq "yes"} checked {/if}
+	  			           {if isset($gui->tcSpecRefreshOnAction) 
+	  			           	&& $gui->tcSpecRefreshOnAction == "yes"} checked {/if}
 	  			           style="font-size: 90%;" onclick="this.form.submit()"/>
 	  			</td>
 	  		</tr>
-			
-			</table>
-		</div> {* tplan_settings *}
-	</div> {* settings_panel *}
-	
-{/if} {* show settings *}
+		{/if}
+		
+		</table>
+	</div> {* tplan_settings *}
+</div> {* settings_panel *}
 
-{if $showFilters == 'yes'}
+
+{if $gui->filter_config->show_filters}
 	
 	<div id="filter_panel">
 		<div class="x-panel-header x-unselectable">
@@ -306,142 +131,132 @@
 
 		<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
 		<input type="hidden" id="called_url" name="called_url" value="" />
-		<input type='hidden' id="panelFiltersAdvancedFilterMode"  name="panelFiltersAdvancedFilterMode"  
-		       value="{$gui->controlPanel->advancedFilterMode}" />
-	
-		<table class="smallGrey" style="width:98%;">
-	    {if $mapTPlans != '' && $executionMode == 'no'}
-			<tr>
-				<td>{$labels.test_plan}</td>
-				<td>
-					<select name="tplan_id" onchange="this.form.submit()">
-				    {html_options options=$mapTPlans selected=$tPlanID}
-					</select>
-				</td>
-			</tr>
+		{* this hidden input is only needed when advanced filter mode is provided *}
+		{if isset($gui->advancedFilterMode)}
+		<input type='hidden' id="advancedFilterMode"  name="advancedFilterMode"  value="{$gui->advancedFilterMode}" />
 		{/if}
-			
-    {if $panelFilters.testSuites.items != ''}
-    		<tr>
+		<table class="smallGrey" style="width:98%;">
+				
+		{if isset($gui->filter_config->filter_toplevel_testsuite) 
+		    && $gui->filter_config->filter_toplevel_testsuite}
+			<tr>
 	    		<td>{$labels.testsuite}</td>
 	    		<td>
-	    			<select name="panelFiltersTestSuite" style="width:auto">
-	    				{html_options options=$panelFilters.testSuites.items 
-	    				              selected=$panelFilters.testSuites.selected}
+	    			<select name="tsuites_to_show" style="width:auto">
+	    				{html_options options=$gui->tsuitesCombo selected=$gui->tsuiteChoice}
 	    			</select>
 	    		</td>
 	    	</tr>
-    {/if}
+    	{/if}
 			
-		{if $panelFilters.keywords.items != ''}
+		{if isset($gui->filter_config->filter_keywords)
+			&& $gui->filter_config->filter_keywords}
+			{if !isset($keywordsFilterDisplayStyle)}
+				{assign name=keywordsFilterDisplayStyle value=''}
+			{/if}
 			<tr style="{$keywordsFilterDisplayStyle}">
 				<td>{$labels.keyword}</td>
-				<td><select name="panelFiltersKeyword[]" title="{$labels.keywords_filter_help}"
-				            multiple="multiple" size={$panelFilters.keywords.size}>
-				    {html_options options=$panelFilters.keywords.items 
-				                  selected=$panelFilters.keywords.selected}
+				<td><select name="keyword_id[]" title="{$labels.keywords_filter_help}"
+				            multiple="multiple" size={$gui->keywordsFilterItemQty}>
+				    {html_options options=$gui->keywordsMap selected=$gui->keywordID}
 					</select>
 				
-	      {html_radios name='panelFiltersKeywordsFilterType' 
-	                   options=$panelFilters.keywordsFilterTypes->options
-	                   selected=$panelFilters.keywordsFilterTypes->selected}
+			{html_radios name='keywordsFilterType' 
+	                   options=$gui->keywordsFilterType->options
+	                   selected=$gui->keywordsFilterType->selected}
 				</td>
 			</tr>
 		{/if}
 		
-			{if $optPlatform && $optPlatform.items != '' && $executionMode == 'no'}
-			  <tr>
-			  	<th>{$labels.platform}</th>
-			  	<td><select name="platform_id">
-			  		{html_options options=$optPlatform.items selected=$optPlatform.selected}
-			  		</select>
-			  	</td>
-			  </tr>
-			{/if}
-			
-			{if $urgencyImportanceSelectable}
-				<tr>
-					<th width="75">{$labels.priority}</th>
-					<td>
-						<select name="urgencyImportance">
-						<option value="">{$strOptionAny}</option>
-						{html_options options=$gsmarty_option_importance selected=$urgencyImportance}
-						</select>
-					</td>
-				</tr>
-			{/if}
-			
-			{if $session['testprojectOptions']->automationEnabled && $gui->controlPanel->filters.execTypes.items != ''}
-				<tr>
-					<td>{$labels.execution_type}</td>
-		  			<td>
-				    <select name="panelFiltersExecType">
-	    	  	  {html_options options=$gui->controlPanel->filters.execTypes.items 
-	    	  	                selected=$gui->controlPanel->filters.execTypes.selected}
-		    	  </select>
-					</td>	
-				</tr>
-			{/if}
-			
-			{if $testers}
+		{if isset($gui->filter_config->filter_priority)
+			&& $gui->filter_config->filter_priority
+			&& $gui->urgencyImportanceSelectable} {* TODO: prüfen, wo die Variable herkommt und ob sie von anderen Einstellungen abhängt oder einfach hier entfernt werden kann*}
 			<tr>
-				<td>{$labels.filter_owner}</td>
+				<th width="75">{$labels.priority}</th>
 				<td>
-				
-				{if $disableFilterAssignedTo && $assignedToUser}
-					{$assignedToUser}
-				{else}
-					  {if $gui->controlPanel->advancedFilterMode}
-					  <select name="filter_assigned_to[]" id="filter_assigned_to" 
-					  		multiple="multiple" size={$assigneeFilterItemQty}
-					  		{html_options options=$testers selected=$filterAssignedTo}
-						</select>						
-					  {else}
-						<select name="filter_assigned_to" id="filter_assigned_to"
-							onchange="javascript: triggerAssignedBox('filter_assigned_to',
-											'include_unassigned',
-											'{$strOptionAny}', '{$strOptionNone}',
-											'{$strOptionSomebody}');">
-							{html_options options=$testers selected=$filterAssignedTo}
-						</select>
-						
-						<br/>		
-						<input type="checkbox" id="include_unassigned" name="include_unassigned"
-			  		           value="1" {if $includeUnassigned} checked="checked" {/if} />
-						{$labels.include_unassigned_testcases}
-						{/if}
-				{/if}
-				
-	 			</td>
+					<select name="urgencyImportance">
+					<option value="">{$gui->strOptionAny}</option>
+					{html_options options=$gsmarty_option_importance selected=$gui->urgencyImportance}
+					</select>
+				</td>
 			</tr>
-	    	{/if}
+		{/if}
+		
+		{if isset($gui->filter_config->filter_execution_type)
+			&& $gui->filter_config->filter_execution_type
+			&& $session['testprojectOptions']->automationEnabled}
+			<tr>
+				<td>{$labels.execution_type}</td>
+	  			<td>
+			    <select name="exec_type">
+    	  	  {html_options options=$gui->execTypeMap selected=$gui->execType}
+	    	  </select>
+				</td>	
+			</tr>
+		{/if}
+		
+		{if isset($gui->filter_config->filter_assigned_user) 
+			&& $gui->filter_config->filter_assigned_user}
+		<tr>
+			<td>{$labels.filter_owner}</td>
+			<td>
+			
+			{if $gui->disable_filter_assigned_to && $gui->assignedToUser}
+				{$gui->assignedToUser}
+			{else}
+				  {if $gui->advancedFilterMode}
+				  <select name="filter_assigned_to[]" id="filter_assigned_to" 
+				  		multiple="multiple" size={$gui->assigneeFilterItemQty}
+				  		{html_options options=$gui->testers selected=$gui->filterAssignedTo}
+					</select>						
+				  {else}
+					<select name="filter_assigned_to" id="filter_assigned_to"
+						onchange="javascript: triggerAssignedBox('filter_assigned_to',
+										'include_unassigned',
+										'{$gui->strOptionAny}', '{$gui->strOptionNone}',
+										'{$gui->strOptionSomebody}');">
+						{html_options options=$gui->testers selected=$gui->filterAssignedTo}
+					</select>
+					
+					<br/>		
+					<input type="checkbox" id="include_unassigned" name="include_unassigned"
+		  		           value="1" {if $gui->includeUnassigned} checked="checked" {/if} />
+					{$labels.include_unassigned_testcases}
+					{/if}
+			{/if}
+			
+ 			</td>
+		</tr>
+    	{/if}
 	
-	
-	{* custom fields are placed here *}
-	
-	{if $designTimeCFields}
-		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
-		{$designTimeCFields}
-	{/if}
-	
-	
+		
+		{* custom fields are placed here *}
+		
+		{if isset($gui->filter_config->filter_custom_fields)
+			&& $gui->filter_config->filter_custom_fields 
+			&& isset($gui->design_time_cfields)}
+			<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
+			{$gui->design_time_cfields}
+		{/if}
+		
 	
 	{* result filtering parts *}
-	{if $buildCount neq 0}
+	{if isset($gui->filter_config->filter_result)
+		&& $gui->filter_config->filter_result
+		&& $gui->buildCount != 0}
 		
 		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
 	
-		{if $panelFilters.execStatus.items != ''}
+		{if $gui->optResult}
 	   		<tr>
 				<th>{$labels.filter_result}</th>
 				<td>
-				  {if $gui->controlPanel->advancedFilterMode}
-				  	<select name="panelFiltersExecStatus[]" multiple="multiple" size={$statusFilterItemQty}>
+				  {if $gui->advancedFilterMode}
+				  	<select name="filter_status[]" multiple="multiple" size={$gui->statusFilterItemQty}>
 				  {else}
-				  	<select name="panelFiltersExecStatus">
+				  	<select name="filter_status">
 				  {/if}
-				  	{html_options options=$panelFilters.execStatus.items 
-				  	              selected=$panelFilters.execStatus.selected}
+				  	{html_options options=$gui->optResult selected=$gui->optResultSelected}
 				  	</select>
 				</td>
 			</tr>
@@ -453,8 +268,8 @@
 				  	<select name="filter_method" id="filter_method"
 				  		      onchange="javascript: triggerBuildChooser('deactivatable',
 				  		                                                'filter_method',
-						                                                {$filterMethodSpecificBuild});">
-					  	{html_options options=$filterMethods selected=$optFilterMethodSelected}
+						                                                {$gui->filterMethodSpecificBuild});">
+					  	{html_options options=$gui->filterMethods selected=$gui->optFilterMethodSelected}
 				  	</select>
 				</td>
 			</tr>
@@ -462,7 +277,7 @@
 			<tr id="deactivatable">
 				<th>{$labels.build}</th>
 				<td><select id="filter_build_id" name="filter_build_id">
-					{html_options options=$optFilterBuild.items selected=$optFilterBuild.selected}
+					{html_options options=$gui->optFilterBuild.items selected=$gui->optFilterBuild.selected}
 					</select>
 				</td>
 			</tr>
@@ -476,19 +291,13 @@
 				<input type="submit" value="{$labels.btn_apply_filter}" 
 				       id="doUpdateTree" name="doUpdateTree" style="font-size: 90%;" />
 	
-				{if $gui->controlPanel->chooseFilterModeEnabled}
+				{if isset($gui->chooseFilterModeEnabled)}
 				<input type="submit" id="toggleFilterMode"  name="toggleFilterMode" 
-				     value="{$toggleFilterModeLabel}"  
-				     onclick="toggleInput('panelFiltersAdvancedFilterMode');"
+				     value="{$gui->toggleFilterModeLabel}"  
+				     onclick="toggleInput('advancedFilterMode');"
 				     style="font-size: 90%;"  />
 	      		{/if}
 			</div>
-	
-		{if $gui->controlPanel->drawBulkUpdateButton}
-	    	<input type="button" value="{$labels.btn_bulk_update_to_latest_version}" 
-	    	       name="doBulkUpdateToLatest" 
-	    	       onclick="update2latest({$tPlanID})" />
-		{/if}
 	
 	</form>
 	

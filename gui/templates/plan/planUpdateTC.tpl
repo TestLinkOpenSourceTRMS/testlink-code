@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.12 2010/01/23 09:31:05 franciscom Exp $
+$Id: planUpdateTC.tpl,v 1.13 2010/06/24 17:25:52 asimon83 Exp $
 
 Author: franciscom
 
@@ -259,7 +259,8 @@ function validateForm(f)
  because tree is test plan tree.
 *}
 {if $gui->refreshTree}
-   {include file="inc_refreshTree.tpl"}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
 {/if}
 
 </body>

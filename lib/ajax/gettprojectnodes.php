@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.19 2010/05/30 17:36:38 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.20 2010/06/24 17:25:53 asimon83 Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   

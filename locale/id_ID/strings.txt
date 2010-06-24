@@ -10,9 +10,9 @@
 
  * Filename $RCSfile: strings.txt,v $
 
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
 
- * @modified $Date: 2010/06/23 13:13:31 $ by $Author: mx-julian $
+ * @modified $Date: 2010/06/24 17:25:57 $ by $Author: asimon83 $
 
  *
 

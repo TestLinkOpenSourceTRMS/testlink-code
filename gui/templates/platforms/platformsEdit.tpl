@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.7 2010/06/14 17:05:36 erikeloff Exp $
+$Id: platformsEdit.tpl,v 1.8 2010/06/24 17:25:56 asimon83 Exp $
 Purpose: smarty template - View all platforms
 
 rev:

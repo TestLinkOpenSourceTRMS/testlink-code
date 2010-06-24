@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.40 2010/06/05 07:30:17 franciscom Exp $
+$Id: tcView.tpl,v 1.41 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -24,7 +24,6 @@ rev:
 {include file="inc_head.tpl" openHead='yes'}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 {include file="inc_del_onclick.tpl"}
-
 
 <script type="text/javascript">
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
@@ -254,8 +253,9 @@ function validateStepsReorder(formOID)
 
 </div>
 {* 20100315 - franciscom *}
-{if $gui->refresh_tree == "yes"}
-	{include file="inc_refreshTree.tpl"}
+{if $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
 {/if}
 </body>
 </html>

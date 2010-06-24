@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.4 2010/06/19 17:19:14 franciscom Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.5 2010/06/24 17:25:53 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal

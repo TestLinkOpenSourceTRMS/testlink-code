@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.191 2010/06/19 14:56:19 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.192 2010/06/24 17:25:53 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *

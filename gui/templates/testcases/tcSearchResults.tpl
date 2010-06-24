@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcSearchResults.tpl,v 1.2 2010/06/05 07:30:17 franciscom Exp $
+$Id: tcSearchResults.tpl,v 1.3 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 rev: 20080322 - franciscom - php errors clean up
 *}

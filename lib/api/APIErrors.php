@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.29 2010/06/13 08:58:51 franciscom Exp $
+ * $Id: APIErrors.php,v 1.30 2010/06/24 17:25:56 asimon83 Exp $
  */
 
 /** 

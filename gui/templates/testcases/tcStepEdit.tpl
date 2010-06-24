@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.25 2010/06/23 07:06:51 erikeloff Exp $ 
+$Id: tcStepEdit.tpl,v 1.26 2010/06/24 17:25:53 asimon83 Exp $ 
 Purpose: create/edit test case step
 
 rev:

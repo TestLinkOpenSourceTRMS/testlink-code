@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugDelete.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/06/19 14:34:02 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/06/24 17:25:57 $ by $Author: asimon83 $
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');

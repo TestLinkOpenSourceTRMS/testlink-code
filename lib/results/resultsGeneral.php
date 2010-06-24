@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.67 $
- * @modified $Date: 2010/06/23 07:13:09 $ by $Author: erikeloff $
+ * @version $Revision: 1.68 $
+ * @modified $Date: 2010/06/24 17:25:52 $ by $Author: asimon83 $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.

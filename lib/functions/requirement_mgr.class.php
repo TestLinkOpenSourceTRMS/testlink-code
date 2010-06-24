@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2010/06/06 19:53:35 $ by $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.

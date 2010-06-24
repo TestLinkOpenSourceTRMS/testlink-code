@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: index.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2010/05/26 07:31:00 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 

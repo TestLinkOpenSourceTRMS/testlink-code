@@ -1,13 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.12 2010/05/01 19:19:51 franciscom Exp $
+$Id: tcNew.tpl,v 1.13 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: smarty template - create new testcase
 
 20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
 20100103 - franciscom - refactoring to use $gui
 20091122 - franciscom - refactoring to use ext-js alert
 20070214 - franciscom -
-BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed.
+BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
  ----------------------------------------------------------------- *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -95,7 +95,7 @@ function validateForm(f)
 
 
 	<div class="groupBtn">
-	    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
+	    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 			<input type="hidden" id="do_create"  name="do_create" value="do_create" />
 			<input type="submit" id="do_create_button"  name="do_create_button" value="{$labels.btn_create}" />
 			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
@@ -103,7 +103,7 @@ function validateForm(f)
 	{include file="testcases/tcEdit_New_viewer.tpl"}
 
 	<div class="groupBtn">
-	    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
+	    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 			<input type="hidden" id="do_create_2"  name="do_create" value="do_create" />
 			<input type="submit" id="do_create_button_2"  name="do_create_button" value="{$labels.btn_create}" />
 			<input type="button" name="go_back" value="{$labels.cancel}" onclick="javascript: history.back();"/>
@@ -113,8 +113,8 @@ function validateForm(f)
 </div>
 
 {if $gui->sqlResult eq 'ok'}
-	{if ($smarty.session.tcspec_refresh_on_action eq "yes")}
-		{include file="inc_refreshTree.tpl"}
+	{if ($smarty.session.setting_refresh_tree_on_action)}
+		{include file="inc_refreshTreeWithFilters.tpl"}
 	{/if}
 {/if}
 

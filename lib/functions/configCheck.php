@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: configCheck.php,v 1.54 2010/06/17 18:31:38 franciscom Exp $
+ * @version    	CVS: $Id: configCheck.php,v 1.55 2010/06/24 17:25:53 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @see			sysinfo.php
  *

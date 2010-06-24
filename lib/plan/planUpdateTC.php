@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.42 2010/05/06 20:29:31 franciscom Exp $
+ * @version $Id: planUpdateTC.php,v 1.43 2010/06/24 17:25:53 asimon83 Exp $
  *
  * Author: franciscom
  *
@@ -116,11 +116,11 @@ function init_args(&$tplanMgr)
     $args->newVersionSet = isset($_REQUEST['new_tcversion_for_tcid']) ? $_REQUEST['new_tcversion_for_tcid'] : null;
     $args->version_id = isset($_REQUEST['version_id']) ? $_REQUEST['version_id'] : 0;
 
+    // BUGID 3516
     // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
-    $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
-    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
-
+//    $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
+//    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
+//    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
     
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
     if($args->tplan_id == 0)
@@ -136,6 +136,31 @@ function init_args(&$tplanMgr)
     $args->tproject_id = $_SESSION['testprojectID'];
     $args->tproject_name = $_SESSION['testprojectName'];
 
+    
+    // BUGID 3516
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	$session_data = $_SESSION[tlTestCaseFilterControl::PLAN_MODE][$form_token];
+	
+	$args->keyword_id = 0;
+	$fk = tlTestCaseFilterControl::FILTER_KEYWORDS_FILTER_TYPE;
+	if (isset($session_data[$fk])) {
+		$args->keyword_id = $session_data[$fk];
+		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+			$args->keyword_id = $args->keyword_id[0];
+		}
+	}
+	
+	$args->keywordsFilterType = null;
+	$ft = tlTestCaseFilterControl::FILTER_KEYWORDS_FILTER_TYPE;
+	if (isset($session_data[$ft])) {
+		$args->keywordsFilterType = $session_data[$ft];
+	}
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
+                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
+	
+    
+    
     return $args;
 }
 

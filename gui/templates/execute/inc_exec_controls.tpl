@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.13 2010/05/27 20:49:40 franciscom Exp $
+$Id: inc_exec_controls.tpl,v 1.14 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 

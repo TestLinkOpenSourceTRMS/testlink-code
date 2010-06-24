@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.8 2010/05/01 19:05:09 franciscom Exp $
+$Id: containerNew.tpl,v 1.9 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: smarty template - create containers
 
 20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -8,7 +8,7 @@ Purpose: smarty template - create containers
                         templates. On 3.0 RC smarty.template do not contains current dir
 
 20070214 - franciscom -
-BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed.
+BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿½ pressed.
 20061231 - franciscom - using parent_info
 20060804 - franciscom - changes to add option transfer
 *}
@@ -65,7 +65,7 @@ function validateForm(f)
 {include file="inc_update.tpl" result=$sqlResult 
                                user_feedback=$user_feedback
                                item=$level action="add" name=$name
-                               refresh=$smarty.session.tcspec_refresh_on_action}
+                               refresh=$smarty.session.setting_refresh_tree_on_action}
 
 
 <form method="post" action="lib/testcases/containerEdit.php?containerID={$containerID}"
@@ -75,7 +75,7 @@ function validateForm(f)
 
 	<div style="font-weight: bold;">
 		<div style="float: right;">
-		  {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
+		  {* BUGID 628: Name edit ï¿½ Invalid action parameter/other behaviours if ï¿½Enterï¿½ pressed. *}
       		<input type="hidden" name="add_testsuite" id="add_testsuite" />
 			<input type="submit" name="add_testsuite_button" value="{$labels.btn_create_testsuite}" />
 		</div>	

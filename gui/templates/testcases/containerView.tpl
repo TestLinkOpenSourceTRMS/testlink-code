@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.30 2010/06/20 11:06:41 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.31 2010/06/24 17:25:53 asimon83 Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -71,7 +71,7 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 <div class="workBack">
 
 {include file="inc_update.tpl" result=$gui->sqlResult item=$gui->level
-         name=$gui->moddedItem.name refresh=$smarty.session.tcspec_refresh_on_action}
+         name=$gui->moddedItem.name refresh=$smarty.session.setting_refresh_tree_on_action}
 
 {assign var="bDownloadOnly" value=true}
 {assign var="drawReorderButton" value=true}
@@ -266,7 +266,8 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 
 </div>
 {if $gui->refreshTree}
-   {include file="inc_refreshTree.tpl"}
+   	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
 {/if}
 </body>
 </html>

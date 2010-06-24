@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_js.tpl,v 1.10 2010/06/23 07:09:26 erikeloff Exp $
+$Id: inc_ext_js.tpl,v 1.11 2010/06/24 17:25:52 asimon83 Exp $
 Purpose: include files for:
          Ext JS Library - Copyright(c) 2006-2007, Ext JS, LLC.
          licensing@extjs.com - http://www.extjs.com/license

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *  
  * @filesource $RCSfile: reqTcAssign.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/06/02 08:23:33 $  $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2010/06/24 17:25:55 $  $Author: asimon83 $
  * 
  * @author Martin Havlat
  *

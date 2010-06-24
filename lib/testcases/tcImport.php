@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.74 $
- * @modified $Date: 2010/06/22 05:51:02 $ by $Author: franciscom $
+ * @version $Revision: 1.75 $
+ * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
  * 
  * Scope: control test specification import
  * 

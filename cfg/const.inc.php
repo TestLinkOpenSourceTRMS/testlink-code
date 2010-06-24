@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.145 2010/06/17 06:52:51 erikeloff Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.146 2010/06/24 17:25:57 asimon83 Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -143,7 +143,7 @@ define('GET_CLOSED_BUILD', 0);
 
 define('AUTOMATIC_ID', 0);
 define('NO_FILTER_SHOW_ON_EXEC', null);
-define('DONT_REFRESH', 'no');
+define('DONT_REFRESH', 0);
 define('DEFAULT_TC_ORDER', 0);
 
 // bug_interface->buildViewBugLink()

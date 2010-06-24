@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.12 2010/06/19 17:13:37 franciscom Exp $
+$Id: tcImport.tpl,v 1.13 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev: 20091122 - franciscom - refacotirng to use alert_message()

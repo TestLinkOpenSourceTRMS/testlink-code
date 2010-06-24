@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/05/26 08:32:56 $ $Author: mx-julian $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/06/24 17:25:52 $ $Author: asimon83 $
  *
  * @author franciscom
  *

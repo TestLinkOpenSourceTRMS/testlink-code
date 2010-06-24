@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/06/23 13:13:31 $ $Author: mx-julian $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/06/24 17:25:53 $ $Author: asimon83 $
  *
  * @author jorgesf@jsf.jazztel.es
  *

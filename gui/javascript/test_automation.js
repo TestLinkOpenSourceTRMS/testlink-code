@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: test_automation.js,v 1.3 2010/06/05 10:29:16 franciscom Exp $ 
+// $Id: test_automation.js,v 1.4 2010/06/24 17:25:57 asimon83 Exp $ 
 //
 // This library is automatically loaded with inc_header.tpl
 //

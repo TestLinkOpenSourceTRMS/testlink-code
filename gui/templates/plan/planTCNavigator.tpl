@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.29 2010/05/23 14:21:18 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.30 2010/06/24 17:25:52 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -105,35 +105,30 @@ function goToUnassignPage(id)
 {/literal}
 </script>
 
-</head>
 
-<body onload="javascript:
-	{* BUGID 3379, BUGID 3301 (added additional if statement) *}
-	{if $gui->buildCount > 1}
-	triggerBuildChooser('deactivatable',
-						'filter_method',
-						{$gui->filterMethodSpecificBuild});
-	{/if}
-	{if isset($gui->testers) && $gui->advancedFilterMode == 0}
-	triggerAssignedBox('filter_assigned_to',
-						'include_unassigned',
-						'{$gui->strOptionAny}',
-						'{$gui->strOptionNone}',
-						'{$gui->strOptionSomebody}');
-	{/if}
-	{if $gui->buildCount eq 1}
-	disableUnneededFilters('filter_method',
-							{$gui->filterMethodSpecificBuild});
-	{/if}
-">
+{* BUGID 3301 - js include file for simpler code, filter refactoring/redesign *}
+{include file='inc_filter_panel_js.tpl'}
 
+{* 
+ * !!!!! IMPORTANT !!!!!
+ * Above included file closes <head> tag and opens <body>, so this is not done here.
+ *}
+
+	
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.title_navigator} {$labels.TestPlan} {$gui->additional_string|escape}</h1>
 
+{*
+{assign var="keywordsFilterDisplayStyle" value=""}
+{if $gui->keywordsFilterItemQty == 0}
+    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
+{/if}
+*}
+
 {* BUGID 3301: include file for filter panel *}
-{include file='testcases/inc_tc_filter_panel.tpl' showSettings='yes' showFilters='yes' executionMode ='no'}
+{include file='inc_filter_panel.tpl'}
 
 <div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
 

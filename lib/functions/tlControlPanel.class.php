@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Francisco Mancardi
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlControlPanel.class.php,v 1.17 2010/06/02 09:11:55 franciscom Exp $
+ * @version     CVS: $Id: tlControlPanel.class.php,v 1.18 2010/06/24 17:25:53 asimon83 Exp $
  * @link        http://www.teamst.org/index.php
  *
  * Give common logic to be used at GUI level to manage common set of settings and filters

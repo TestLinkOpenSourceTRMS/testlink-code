@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * Filename $RCSfile: description.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2010/06/23 13:13:28 $ by $Author: mx-julian $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/06/24 17:25:52 $ by $Author: asimon83 $
  * @author Martin Havlat
  * @author Pavel Kalian
  *

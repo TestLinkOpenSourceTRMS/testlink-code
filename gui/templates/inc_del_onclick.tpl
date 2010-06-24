@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_del_onclick.tpl,v 1.12 2010/06/05 07:30:17 franciscom Exp $
+$Id: inc_del_onclick.tpl,v 1.13 2010/06/24 17:25:52 asimon83 Exp $
 Purpose: include files for:
 
 rev :

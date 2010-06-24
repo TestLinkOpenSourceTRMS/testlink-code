@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.28 2010/06/17 06:59:05 erikeloff Exp $     
+ $Id: mainPageLeft.tpl,v 1.29 2010/06/24 17:25:52 asimon83 Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :         

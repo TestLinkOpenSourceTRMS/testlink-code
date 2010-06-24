@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.78 2010/06/23 07:06:51 erikeloff Exp $
+$Id: tcView_viewer.tpl,v 1.79 2010/06/24 17:25:53 asimon83 Exp $
 viewer for test case in test specification
 
 rev:

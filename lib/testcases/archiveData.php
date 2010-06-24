@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.70 2010/06/23 07:06:51 erikeloff Exp $
+ * 	@version 	$Id: archiveData.php,v 1.71 2010/06/24 17:25:53 asimon83 Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -148,11 +148,18 @@ function init_args(&$viewerCfg)
 			         "targetTestCase" => array(tlInputParameter::STRING_N,0,24),
 			         "show_path" => array(tlInputParameter::INT_N),
 			         "show_mode" => array(tlInputParameter::STRING_N,0,50),
-			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16),
-	 				 "tcspec_refresh_on_action" => array(tlInputParameter::STRING_N,0,1));
+			         "tcasePrefix" => array(tlInputParameter::STRING_N,0,16));
+	 				 //"setting_refresh_tree_on_action" => array(tlInputParameter::STRING_N,0,1));
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
+	    
+    // BUGID 3516
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	$session_data = $_SESSION[tlTestCaseFilterControl::EDIT_MODE][$form_token];
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
+                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
 	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     //@TODO schlundus, rename Parameter from edit to feature
@@ -174,7 +181,7 @@ function init_args(&$viewerCfg)
    	switch($args->feature)
     {
 		case 'testsuite':
-        	$_SESSION['tcspec_refresh_on_action'] = ($args->tcspec_refresh_on_action == 'y') ? "yes" : "no";
+        	$_SESSION['setting_refresh_tree_on_action'] = ($args->refreshTree) ? 1 : 0;
         	break;
      
         case 'testcase':
@@ -184,15 +191,15 @@ function init_args(&$viewerCfg)
 			$viewerCfg['disable_edit'] = 0;
 
 			// need to understand if using this logic is ok
-			// Why I'm ignoring $args->tcspec_refresh_on_action ?
+			// Why I'm ignoring $args->setting_refresh_tree_on_action ?
 			// Seems here I have to set refresh always to NO!!!
 			//
 			// $viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh ? "yes" : "no";
-			// if(isset($_SESSION['tcspec_refresh_on_action']))
+			// if(isset($_SESSION['setting_refresh_tree_on_action']))
 			// {
-			// 	$viewerCfg['refresh_tree'] = $_SESSION['tcspec_refresh_on_action'];
+			// 	$viewerCfg['refresh_tree'] = $_SESSION['setting_refresh_tree_on_action'];
             // }
-            $viewerCfg['refresh_tree'] = 'no';
+            $viewerCfg['refreshTree'] = 0;
 			break;
     }
     $cfg = config_get('testcase_cfg');

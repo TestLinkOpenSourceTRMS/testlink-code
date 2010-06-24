@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.15 2010/05/27 08:15:31 mx-julian Exp $
+$Id: resultsByStatus.tpl,v 1.16 2010/06/24 17:25:57 asimon83 Exp $
 Purpose: show Test Results and Metrics
 
 rev:

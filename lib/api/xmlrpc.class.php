@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/06/18 19:52:35 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/06/24 17:25:56 $ by $Author: asimon83 $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 

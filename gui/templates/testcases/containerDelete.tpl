@@ -1,6 +1,6 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.5 2009/06/08 21:21:40 schlundus Exp $ 
+	$Id: containerDelete.tpl,v 1.6 2010/06/24 17:25:53 asimon83 Exp $ 
 	Purpose: smarty template - delete containers in test specification
 
 rev : 
@@ -13,7 +13,7 @@ rev :
 <h1 class="title">{$page_title}{$smarty.const.TITLE_SEP}{$objectName|escape}</h1> 
 
 {include file="inc_update.tpl" result=$sqlResult item=$level action='delete' 
-         refresh=$smarty.session.tcspec_refresh_on_action}
+         refresh=$smarty.session.setting_refresh_tree_on_action}
 
 <div class="workBack">
 
@@ -50,7 +50,8 @@ rev :
 {/if}
 
 {if $refreshTree}
-   {include file="inc_refreshTree.tpl"}
+   	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
 {/if}
 
 </div>

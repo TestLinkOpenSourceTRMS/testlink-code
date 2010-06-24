@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.60 2010/06/17 18:07:15 amkhullar Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.61 2010/06/24 17:25:52 asimon83 Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.

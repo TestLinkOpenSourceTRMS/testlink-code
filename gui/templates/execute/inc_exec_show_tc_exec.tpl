@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.23 2010/06/23 07:11:39 erikeloff Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.24 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: 
 Author: franciscom
 

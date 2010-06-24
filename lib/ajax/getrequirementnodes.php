@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.13 2010/05/30 17:29:47 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.14 2010/06/24 17:25:53 asimon83 Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   

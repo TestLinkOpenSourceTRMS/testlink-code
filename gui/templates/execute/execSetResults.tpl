@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.58 2010/06/14 17:08:45 erikeloff Exp $
+$Id: execSetResults.tpl,v 1.59 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
@@ -269,7 +269,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
   <div id="{$div_id}" class="exec_additional_info">
     {$gui->testplan_notes}
-    {if $gui->testplan_cfields != ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
+    {if $gui->testplan_cfields neq ''} <div id="cfields_testplan" class="custom_field_container">{$gui->testplan_cfields}</div>{/if}
   </div>
   {* -------------------------------------------------------------------------------- *}
 
@@ -416,7 +416,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
 
     {* 20090419 - BUGID 2364 - franciscom*}
     {if isset($gui->refreshTree) && $gui->refreshTree}
-	    {include file="inc_refreshTree.tpl"}
+	    {include file="inc_refreshTreeWithFilters.tpl"}
+	    {*include file="inc_refreshTree.tpl"*}
     {/if}
   {/if}
   

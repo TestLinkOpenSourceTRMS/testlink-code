@@ -21,7 +21,7 @@
  * @author 		Kirsi Mäkinen, Jan-Erik Finlander, Juho Kauppi
  * @author 		Heikki Alonen, Jari Ahonen, Otto Moilanen
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.2 2010/06/23 13:13:29 mx-julian Exp $
+ * @version    	CVS: $Id: description.php,v 1.3 2010/06/24 17:25:55 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/

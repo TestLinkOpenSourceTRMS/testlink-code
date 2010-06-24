@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: testsuite.class.test.php,v $
  *
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/06/02 11:14:55 $ by $Author: franciscom $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/06/24 17:25:56 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * With this page you can launch a set of available methods, to understand

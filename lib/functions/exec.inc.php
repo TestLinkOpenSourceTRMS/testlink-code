@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: exec.inc.php,v 1.59 2010/06/19 14:56:19 franciscom Exp $
+ * @version    	CVS: $Id: exec.inc.php,v 1.60 2010/06/24 17:25:53 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:

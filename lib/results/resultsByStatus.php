@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.78 2010/05/27 08:10:20 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.79 2010/06/24 17:25:52 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *

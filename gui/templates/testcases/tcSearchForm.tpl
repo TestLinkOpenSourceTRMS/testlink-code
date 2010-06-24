@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.15 2010/06/09 21:09:00 franciscom Exp $
+$Id: tcSearchForm.tpl,v 1.16 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :

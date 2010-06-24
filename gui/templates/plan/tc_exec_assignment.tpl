@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.24 2010/06/14 17:29:13 erikeloff Exp $
+$Id: tc_exec_assignment.tpl,v 1.25 2010/06/24 17:25:52 asimon83 Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :

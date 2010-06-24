@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.111 $
- * @modified $Date: 2010/03/14 17:31:48 $ by $Author: franciscom $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  *	@internal revisions
@@ -352,18 +352,29 @@ function init_args($optionTransferCfg)
     	$args->containerID = $args->tprojectID;
     }
 
-	// BUGID 
-	// Get user choice for refresh tree after each operation
-	if(isset($_SESSION['tcspec_refresh_on_action']))
-	{
-		$args->refreshTree = $_SESSION['tcspec_refresh_on_action'] == 'yes' ? 1 : 0;
-    }
-    else
-    {
-    	// use default from config.inc.php
-    	$spec_cfg = config_get('spec_cfg');
-    	$args->refreshTree = $spec_cfg->automatic_tree_refresh ? 1 : 0;
-    }
+//	// BUGID 
+//	// Get user choice for refresh tree after each operation
+//	if(isset($_SESSION['setting_refresh_tree_on_action']))
+//	{
+//		$args->refreshTree = $_SESSION['setting_refresh_tree_on_action'] == 'yes' ? 1 : 0;
+//    }
+//    else
+//    {
+//    	// use default from config.inc.php
+//    	$spec_cfg = config_get('spec_cfg');
+//    	$args->refreshTree = $spec_cfg->automatic_tree_refresh ? 1 : 0;
+//    }
+
+    // BUGID 3516
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	$session_data = $_SESSION[tlTestCaseFilterControl::EDIT_MODE][$form_token];
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
+                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
+	
+    
+    
+    
     return $args;
 }
 

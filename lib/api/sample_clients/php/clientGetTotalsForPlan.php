@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetTotalsForPlan.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2010/06/17 07:03:48 $ by $Author: erikeloff $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 

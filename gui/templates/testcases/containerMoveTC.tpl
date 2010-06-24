@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMoveTC.tpl,v 1.6 2010/03/14 15:54:41 franciscom Exp $
+$Id: containerMoveTC.tpl,v 1.7 2010/06/24 17:25:53 asimon83 Exp $
 Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
@@ -128,7 +128,8 @@ function check_action_precondition(container_id,action,msg)
 </div>
 {* 20100314 - franciscom *}
 {if $refreshTree}
-   {include file="inc_refreshTree.tpl"}
+   	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
 {/if}
 </body>
 </html>

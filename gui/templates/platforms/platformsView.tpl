@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.10 2010/06/14 17:05:36 erikeloff Exp $
+$Id: platformsView.tpl,v 1.11 2010/06/24 17:25:56 asimon83 Exp $
 Purpose: smarty template - View all platforms
 
 20100119 - Eloff      - added ability to show/hide platform id for API

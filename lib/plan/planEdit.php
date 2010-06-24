@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planEdit.php,v 1.54 2010/06/02 13:51:08 franciscom Exp $
+ * @version    	CVS: $Id: planEdit.php,v 1.55 2010/06/24 17:25:53 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.3 2010/06/05 07:30:17 franciscom Exp $
+$Id: tcAssignedToUser.tpl,v 1.4 2010/06/24 17:25:53 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 rev: 
 20100326 - amitkhullar - BUGID 3345

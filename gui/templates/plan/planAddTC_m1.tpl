@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.47 2010/06/14 17:29:13 erikeloff Exp $
+$Id: planAddTC_m1.tpl,v 1.48 2010/06/24 17:25:52 asimon83 Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -379,7 +379,8 @@ Ext.onReady(function(){
  because tree is test plan tree.
 *}
 {if $gui->refreshTree}
-   {include file="inc_refreshTree.tpl"}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+	{*include file="inc_refreshTree.tpl"*}
 {/if}
 
 </body>

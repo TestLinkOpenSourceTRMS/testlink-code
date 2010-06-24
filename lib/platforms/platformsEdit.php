@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/06/14 17:05:36 $ by $Author: erikeloff $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/06/24 17:25:57 $ by $Author: asimon83 $
  *
  * allows users to manage platforms. 
  *

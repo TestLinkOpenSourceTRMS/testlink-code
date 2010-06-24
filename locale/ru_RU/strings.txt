@@ -4,11 +4,11 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/06/23 13:13:28 $ $Author: mx-julian $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/06/24 17:25:53 $ $Author: asimon83 $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/06/23 13:13:28 $ $Author: mx-julian $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/06/24 17:25:53 $ $Author: asimon83 $
  *
  * @author Vadim Ivanchenko
  *

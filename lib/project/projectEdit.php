@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.49 2010/05/31 18:41:55 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.50 2010/06/24 17:25:57 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan

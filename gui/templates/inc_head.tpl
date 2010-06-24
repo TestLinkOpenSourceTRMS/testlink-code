@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.34 2010/06/19 15:08:52 franciscom Exp $
+$Id: inc_head.tpl,v 1.35 2010/06/24 17:25:52 asimon83 Exp $
 Purpose: smarty template - HTML Common Header
 
 rev :

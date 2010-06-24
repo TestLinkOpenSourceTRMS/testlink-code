@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.157 $
- * @modified $Date: 2010/05/27 20:45:11 $ $Author: franciscom $
+ * @version $Revision: 1.158 $
+ * @modified $Date: 2010/06/24 17:25:57 $ $Author: asimon83 $
  *
  * rev:
+ *  20100624 - asimon - refactoring for new filters
  *	20100527 - franciscom - BUGID 3479: Bulk Execution - Custom Fields Bulk Assignment
  *  20100527 - Julian - platform description is now shown/hidden according to setting on config
  *	20100520 - franciscom - BUGID 3478  Testcase ID not updated when using save and move next
@@ -344,6 +345,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args($cfgObj)
 {
+	// BUGID 3516
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	$session_data = $_SESSION['execution_mode'][$form_token];
+	
     $args = new stdClass();
  	$_REQUEST = strings_stripSlashes($_REQUEST);
 
@@ -354,9 +359,15 @@ function init_args($cfgObj)
 	// can be a list, will arrive via form POST
 	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
   
+	// BUGID 3516
+	$args->filter_status = isset($session_data['filter_result_result']) ? 
+	                       $session_data['filter_result_result']: null;
+	$args->filter_assigned_to = isset($session_data['filter_assigned_user']) ? 
+	                            $session_data['filter_assigned_user'] : null;
+	//$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 'save_results' => 0, 
+	//                  'save_and_next' => 0,'filter_status' => null,'filter_assigned_to' => null);
 	$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 'save_results' => 0, 
-	                  'save_and_next' => 0,'filter_status' => null,'filter_assigned_to' => null);
-
+	                  'save_and_next' => 0);
 	foreach($key2loop as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
@@ -371,15 +382,16 @@ function init_args($cfgObj)
     {
         $args->filter_status = unserialize($args->filter_status);
     }
-    
-    if(trim($args->filter_assigned_to) == "")
-    {
-        $args->filter_assigned_to = null;  
-    }
-    else
-    {
-        $args->filter_assigned_to = unserialize($args->filter_assigned_to);
-    }
+
+    // trim and unserialize not needed anymore, now is already array in session
+//    if(trim($args->filter_assigned_to) == "")
+//    {
+//        $args->filter_assigned_to = null;
+//    }
+//    else
+//    {
+//        $args->filter_assigned_to = unserialize($args->filter_assigned_to);
+//    }
 
  	$args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
     $cookiePrefix = 'TL_execSetResults_';
@@ -389,8 +401,7 @@ function init_args($cfgObj)
        
     // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
     //            see smarty_assign_tsuite_info() in this file.  
-    $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
-                         'platform_notes_view_status' => 'platform_description');
+    $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description');
        
 	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
 	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
@@ -427,6 +438,12 @@ function init_args($cfgObj)
 		}
 	}
 
+	// 3516
+	$args->build_id = isset($session_data['setting_build']) ? 
+	                  intval($session_data['setting_build']) : null;
+	$args->platform_id = isset($session_data['setting_platform']) ? 
+	                  intval($session_data['setting_platform']) : null;
+	
     switch($args->level)
     {
         case 'testcase':
@@ -448,52 +465,75 @@ function init_args($cfgObj)
     }
 
 
-
-    if( isset($_REQUEST['keyword_id']) )
-    {
-       // can be a list
-       $args->keyword_id=explode(',',$_REQUEST['keyword_id']);
-       if( count($args->keyword_id) == 1)
-       {
-           $args->keyword_id=$args->keyword_id[0]; 
-       }
-    }
-    else
-    {
-        $args->keyword_id=0;  
-    }
-
-    // Checkbox
-    $args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+	// BUGID 3516
+//    if( isset($_REQUEST['keyword_id']) )
+//    {
+//       // can be a list
+//       $args->keyword_id=explode(',',$_REQUEST['keyword_id']);
+//       if( count($args->keyword_id) == 1)
+//       {
+//           $args->keyword_id=$args->keyword_id[0]; 
+//       }
+//    }
+//    else
+//    {
+//        $args->keyword_id=0;  
+//    }
+	$args->keyword_id = 0;
+	$fk = tlTestCaseFilterControl::FILTER_KEYWORDS;
+	if (isset($session_data[$fk])) {
+		$args->keyword_id = $session_data[$fk];
+		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+			$args->keyword_id = $args->keyword_id[0];
+		}
+	}
+	
+	$args->keywordsFilterType = null;
+	$ft = tlTestCaseFilterControl::FILTER_KEYWORDS_FILTER_TYPE;
+	if (isset($session_data[$ft])) {
+		$args->keywordsFilterType = $session_data[$ft];
+	}
     
+    // Checkbox
+    //$args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
+    $args->include_unassigned = isset($session_data['filter_assigned_user_include_unassigned']) 
+                                && $session_data['filter_assigned_user_include_unassigned'] != 0 ? 1 : 0;
+	
+	
     // 20090419 - franciscom - BUGID
     // BUGID 3301 and related - asimon - changed refresh tree logic 
     // to adapt behavior of other forms (like tc edit)
     // additionally modified to only refresh on saving of test results, not on every click
-    if(isset($_SESSION['tcspec_refresh_on_action']))
-	{
-		$args->refreshTree = $_SESSION['tcspec_refresh_on_action'] == 'yes' ? 1 : 0;
-    }
-    else
-    {
-    	// use default from config
-    	$args->refreshTree = $cfgObj->spec_cfg->automatic_tree_refresh ? 1 : 0;
-    }
-    // if nothing has been executed (no status sent), don't refresh tree, ignore settings
-    if (is_null($args->status)) {
-    	$args->refreshTree = 0; 
-    }
-    
-    $args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
+//    if(isset($_SESSION['setting_refresh_tree_on_action']))
+//	{
+//		$args->refreshTree = $_SESSION['setting_refresh_tree_on_action'] == 'yes' ? 1 : 0;
+//    }
+//    else
+//    {
+//    	// use default from config
+//    	$args->refreshTree = $cfgObj->spec_cfg->automatic_tree_refresh ? 1 : 0;
+//    }
+//    // if nothing has been executed (no status sent), don't refresh tree, ignore settings
+//    if (is_null($args->status)) {
+//    	$args->refreshTree = 0; 
+//    }
+    $args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
+                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
+	
+	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	
 	//BUGID 2267
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->user = $_SESSION['currentUser'];
     $args->user_id = $args->user->dbID;
 
+    // BUGID 3516
    	// BUGID 2455,BUGID 3026
-	if (isset($_REQUEST['show_only_tcs']) && isset($_REQUEST['show_only_tcs']) != '') {
-		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
+//	if (isset($_REQUEST['show_only_tcs']) && isset($_REQUEST['show_only_tcs']) != '') {
+//		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
+//	}
+	if (isset($session_data['testcases_to_show'])) {
+		$args->testcases_to_show = $session_data['testcases_to_show'];
 	}
 
 	return $args;
@@ -1057,7 +1097,11 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui->bc_view_status=$argsObj->bc_view_status;
     $gui->platform_notes_view_status=$argsObj->platform_notes_view_status;
 
-    $gui->refreshTree=$argsObj->refreshTree;
+    $gui->refreshTree = $argsObj->refreshTree;
+    if (!$argsObj->status || $argsObj->status == $cfgObj->tc_status['not_run']) {
+    	$gui->refreshTree = 0;
+    }
+    
     $gui->map_last_exec_any_build=null;
     $gui->map_last_exec=null;
 
@@ -1175,7 +1219,6 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
     	$guiObj->testplan_design_time_cfields[$tcase_id] = 
   		         $tcaseMgr->html_table_of_custom_field_values($tcversion_id,'testplan_design',$cf_filters,
   		                                                      null,null,$argsObj->tproject_id,null,$link_id);
-    	
 
     }
 
@@ -1189,6 +1232,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
     $tc_info=$treeMgr->get_node_hierarchy_info($tcase_id);
 	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
 		                                                                   'nodes_hierarchy',true,1);
+
 		                                                                      
     return array($tcase_id,$tcversion_id);
 }

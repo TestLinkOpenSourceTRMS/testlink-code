@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.6 2010/06/03 20:44:23 franciscom Exp $
+$Id: treebyloader.js,v 1.7 2010/06/24 17:25:57 asimon83 Exp $
 
 Created using EXT JS examples.
 This code has following features:

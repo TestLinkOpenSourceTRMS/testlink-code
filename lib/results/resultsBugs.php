@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2010/06/17 06:56:14 $ by $Author: erikeloff $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/06/24 17:25:52 $ by $Author: asimon83 $
  * @author kevinlevy
  * 
  * rev :

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_steps.tpl,v 1.1 2010/06/23 07:06:50 erikeloff Exp $
+$Id: inc_steps.tpl,v 1.2 2010/06/24 17:25:52 asimon83 Exp $
 Purpose: Show the steps for a testcase in vertical or horizontal layout
          Included from files tcView_viewer.tpl and inc_exec_test_spec.tpl
 Author : eloff, 2010

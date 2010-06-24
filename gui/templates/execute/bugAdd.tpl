@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: bugAdd.tpl,v 1.9 2010/06/21 10:05:42 franciscom Exp $ *}
+{* $Id: bugAdd.tpl,v 1.10 2010/06/24 17:25:53 asimon83 Exp $ *}
 {* Purpose: smarty template - the template for the attachment upload dialog 
 
 rev :

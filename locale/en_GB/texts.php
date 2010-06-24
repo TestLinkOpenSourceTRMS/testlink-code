@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.27 2010/06/23 13:13:31 mx-julian Exp $
+ * @version    	CVS: $Id: texts.php,v 1.28 2010/06/24 17:25:56 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/

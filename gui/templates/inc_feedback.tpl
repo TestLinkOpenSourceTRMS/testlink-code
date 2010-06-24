@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_feedback.tpl,v 1.2 2010/06/14 17:05:36 erikeloff Exp $
+$Id: inc_feedback.tpl,v 1.3 2010/06/24 17:25:52 asimon83 Exp $
 
 Purpose: show feedback after an operation (for example SQL request)
 Note: this is replacement for inc_update.tpl (simplified)

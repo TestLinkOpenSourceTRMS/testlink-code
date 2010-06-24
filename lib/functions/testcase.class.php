@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.276 2010/05/30 09:59:00 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.277 2010/06/24 17:25:53 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -691,7 +691,7 @@ class testcase extends tlObjectWithAttachments
 	
 	    $viewer_defaults=array('title' => lang_get('title_test_case'),'show_title' => 'no',
 	                           'action' => '', 'msg_result' => '','user_feedback' => '',
-	                           'refresh_tree' => 'yes', 'disable_edit' => 0,
+	                           'refreshTree' => 1, 'disable_edit' => 0,
 	                           'display_testproject' => 0,'display_parent_testsuite' => 0,
 	                           'hilite_testcase_name' => 0,'show_match_count' => 0);
 	
@@ -841,7 +841,7 @@ class testcase extends tlObjectWithAttachments
 		$passeduserarray = array_keys($userid_array);
 
 		$gui->cf = $cf_smarty;
-		$gui->refresh_tree = $viewer_defaults['refresh_tree'];
+		$gui->refreshTree = $viewer_defaults['refreshTree'];
 		$gui->sqlResult = $viewer_defaults['msg_result'];
 		$gui->action = $viewer_defaults['action'];
 		$gui->user_feedback = $viewer_defaults['user_feedback'];

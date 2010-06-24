@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.151 2010/06/23 07:06:51 erikeloff Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.152 2010/06/24 17:25:53 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -144,7 +144,7 @@ if($args->delete_tc_version)
 	$gui->tcversion_id = $args->tcversion_id;
 	$gui->delete_message = $msg;
 	$gui->exec_status_quo = $sq;
-	$gui->refresh_tree = "no";
+	$gui->refreshTree = 0;
 
     $smarty->assign('gui',$gui);
     $templateCfg = templateConfiguration('tcDelete');
@@ -185,7 +185,7 @@ else if($args->do_move)
   	$tree_mgr->change_child_order($args->new_container_id,$args->tcase_id,
                                   $args->target_position,$cfg->exclude_node_types);
 
-    $gui->refreshTree = $args->do_refresh;
+    $gui->refreshTree = $args->refreshTree;
 	$tsuite_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->old_container_id);
 }
 else if($args->do_copy)
@@ -217,9 +217,9 @@ else if($args->do_copy)
 		    $user_feedback = sprintf(lang_get('tc_copied'),$tc_info[0]['name'],$path);
     }
 
-	$gui->refreshTree = $args->do_refresh;
+	$gui->refreshTree = $args->refreshTree;
 	$viewer_args['action'] = $action_result;
-	$viewer_args['refresh_tree']=$args->do_refresh?"yes":"no";
+	$viewer_args['refreshTree']=$args->refreshTree? 1 : 0;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
 	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,
@@ -240,7 +240,7 @@ else if($args->do_create_new_version)
 	}
 
 	$viewer_args['action'] = $action_result;
-	$viewer_args['refresh_tree'] = DONT_REFRESH;
+	$viewer_args['refreshTree'] = DONT_REFRESH;
 	$viewer_args['msg_result'] = $msg;
 	$viewer_args['user_feedback'] = $user_feedback;
 	
@@ -262,7 +262,7 @@ else if($args->do_activate_this || $args->do_deactivate_this)
 
 	$tcase_mgr->update_active_status($args->tcase_id, $args->tcversion_id, $active_status);
 	$viewer_args['action'] = $action_result;
-	$viewer_args['refresh_tree']=DONT_REFRESH;
+	$viewer_args['refreshTree']=DONT_REFRESH;
 
 	$tcase_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->tcase_id,
 	                 testcase::ALL_VERSIONS,$viewer_args,null, $args->show_mode);
@@ -411,11 +411,19 @@ function init_args($spec_cfg,$otName)
     // from session
     $args->testproject_id = $_SESSION['testprojectID'];
     $args->user_id = $_SESSION['userID'];
-    $args->do_refresh = $spec_cfg->automatic_tree_refresh;
-    if(isset($_SESSION['tcspec_refresh_on_action']))
-    {
-    	$args->do_refresh=$_SESSION['tcspec_refresh_on_action'] == "yes" ? 1 : 0 ;
-    }
+//    $args->refreshTree = $spec_cfg->automatic_tree_refresh;
+//    if(isset($_SESSION['setting_refresh_tree_on_action']))
+//    {
+//    	$args->refreshTree=$_SESSION['setting_refresh_tree_on_action'] == "yes" ? 1 : 0 ;
+//    }
+    // BUGID 3516
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	$session_data = $_SESSION[tlTestCaseFilterControl::PLAN_ADD_MODE][$form_token];
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
+                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
+	
+    
     
 	$args->opt_requirements = null;
 	if( isset($_SESSION['testprojectOptions']) )

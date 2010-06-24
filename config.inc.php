@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.304 2010/06/24 17:25:57 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.305 2010/06/24 21:12:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -108,6 +108,9 @@
 $tlCfg = new stdClass();
 $tlCfg->api = new stdClass();
 $tlCfg->document_generator = new stdClass();
+
+$tlCfg->spec_cfg = new stdClass();
+
 $tlCfg->exec_cfg = new stdClass();
 $tlCfg->exec_cfg->view_mode = new stdClass();
 $tlCfg->exec_cfg->exec_mode = new stdClass();
@@ -683,21 +686,26 @@ $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
-$g_spec_cfg = new stdClass();
+// $g_spec_cfg = new stdClass();
 
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
-$g_spec_cfg->steps_results_layout = 'vertical';
+// $g_spec_cfg->steps_results_layout = 'vertical';
+$tlCfg->spec_cfg->steps_results_layout = 'vertical';
+
 
 // ENABLED -> User will see a test suite filter while creating test specification
 // DISABLED -> no filter available
-$g_spec_cfg->show_tsuite_filter = ENABLED;
+// $g_spec_cfg->show_tsuite_filter = ENABLED;
+$tlCfg->spec_cfg->show_tsuite_filter = ENABLED;
 
 // ENABLED -> every time user do some operation on test specification
 //            tree is updated on screen.
 // DISABLED -> tree will not be updated, user can update it manually.
 // Anyway on user interface user will be able to change this choice
-$g_spec_cfg->automatic_tree_refresh = ENABLED;
+// $g_spec_cfg->automatic_tree_refresh = ENABLED;
+$tlCfg->spec_cfg->automatic_tree_refresh = ENABLED;
+
 
 // ENABLED -> user can edit executed tc versions
 // DISABLED -> editing of executed tc versions is blocked.  [STANDARD BEHAVIOUR]

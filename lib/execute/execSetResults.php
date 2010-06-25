@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.159 $
- * @modified $Date: 2010/06/25 12:57:33 $ $Author: asimon83 $
+ * @version $Revision: 1.160 $
+ * @modified $Date: 2010/06/25 14:48:07 $ $Author: asimon83 $
  *
  * rev:
  *  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface to exec_additional_info()
@@ -353,13 +353,17 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 */
 function init_args($cfgObj)
 {
-	// BUGID 3516
-	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	$session_data = $_SESSION['execution_mode'][$form_token];
+	$args = new stdClass();
+	$_REQUEST = strings_stripSlashes($_REQUEST);
 	
-    $args = new stdClass();
- 	$_REQUEST = strings_stripSlashes($_REQUEST);
-
+    // BUGID 3516
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	
+	$mode = tlTestCaseFilterControl::EXECUTION_MODE;
+	
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
+	                ? $_SESSION[$mode][$form_token] : null;
+	
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
 	$args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
 	$args->cf_selected = isset($_REQUEST['cfields']) ? unserialize($_REQUEST['cfields']) : null;
@@ -526,7 +530,7 @@ function init_args($cfgObj)
 //    	$args->refreshTree = 0; 
 //    }
     $args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
-                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
+                         ? $session_data['setting_refresh_tree_on_action'] : 0;
 	
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	

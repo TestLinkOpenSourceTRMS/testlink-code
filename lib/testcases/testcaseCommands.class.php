@@ -8,11 +8,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.44 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.45 2010/06/25 14:48:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100625 - asimon - refactoring for new filter features,
+ *                      replaced refresh_tree and do_refresh by refreshTree,
+ *                      also replaced refreshTree values yes and no by 1 and 0 to avoid problems
  *	20100605 - franciscom - BUGID 3377 	
  *  20100403 - Julian - BUGID 3441 - Removed Call-time pass-by-reference on function call
  *  					editStep() in function doUpdateStep()
@@ -67,7 +70,7 @@ class testcaseCommands
     	$obj->cleanUpWebEditor = false;
 		$obj->main_descr = '';
 		$obj->name = '';
-    	$obj->refresh_tree="no";
+    	$obj->refreshTree=0;
 	    $obj->sqlResult = '';
    		$obj->step_id = -1;
    		$obj->step_set = '';
@@ -248,7 +251,7 @@ class testcaseCommands
         $viewer_args=array();
 
     	$guiObj = $this->initGuiBean($argsObj);
-   	    $guiObj->refresh_tree=$argsObj->do_refresh ? "yes" : "no";
+   	    $guiObj->refreshTree=$argsObj->refreshTree ? 1 : 0;
         $guiObj->has_been_executed = $argsObj->has_been_executed;
 
 		  // to get the name before the user operation
@@ -261,7 +264,7 @@ class testcaseCommands
 
         if($ret['status_ok'])
 		{
-		    $guiObj->refresh_tree='yes';
+		    $guiObj->refreshTree=1;
 		    $guiObj->user_feedback = '';
   			$ENABLED = 1;
 	  		$NO_FILTERS = null;
@@ -274,11 +277,11 @@ class testcaseCommands
 		}
 		else
 		{
-		    $guiObj->refresh_tree='no';
+		    $guiObj->refreshTree=0;
 		    $guiObj->user_feedback = $ret['msg'];
 		}
 	
-	    $viewer_args['refresh_tree'] = $guiObj->refresh_tree;
+	    $viewer_args['refreshTree'] = $guiObj->refreshTree;
  	    $viewer_args['user_feedback'] = $guiObj->user_feedback;
       
 	    $this->tcaseMgr->show($smartyObj,$guiObj, $this->templateCfg->template_dir,
@@ -301,7 +304,7 @@ class testcaseCommands
       	$viewer_args=array();
       	$tplan_mgr = new testplan($this->db);
       	
-   	  	$guiObj->refresh_tree=$argsObj->do_refresh?"yes":"no";
+   	  	$guiObj->refreshTree = $argsObj->refreshTree? 1 : 0;
       	$item2link = null;
       	// $request['add2tplanid']
       	// main key: testplan id
@@ -384,7 +387,7 @@ class testcaseCommands
 		$guiObj->testcase_name =  $tcinfo[0]['name'];
 		$guiObj->testcase_id = $argsObj->tcase_id;
 		$guiObj->tcversion_id = testcase::ALL_VERSIONS;
-		$guiObj->refresh_tree = "yes";
+		$guiObj->refreshTree = 1;
  		$guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
     
     	$templateCfg = templateConfiguration('tcDelete');
@@ -425,13 +428,13 @@ class testcaseCommands
   		// if tree is not refreshed and user click on deleted test case he/she
   		// will get a SQL error
   		// $refresh_tree = $cfg->spec->automatic_tree_refresh ? "yes" : "no";
-  		$guiObj->refresh_tree = "yes";
+  		$guiObj->refreshTree = 1;
  
   		// When deleting JUST one version, there is no need to refresh tree
 		if($argsObj->tcversion_id != testcase::ALL_VERSIONS)
 		{
 			  $guiObj->main_descr .= " " . lang_get('version') . " " . $tcinfo[0]['version'];
-			  $guiObj->refresh_tree = "no";
+			  $guiObj->refreshTree = 0;
 		  	  $guiObj->user_feedback = sprintf(lang_get('tc_version_deleted'),$tcinfo[0]['name'],$tcinfo[0]['version']);
 		}
 
@@ -621,7 +624,7 @@ class testcaseCommands
 		$guiObj = $this->initGuiBean($argsObj); // BUGID 3493
 
 		$viewer_args=array();
-		$guiObj->refresh_tree="no";
+		$guiObj->refreshTree = 0;
 		$step_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->step_id);
 		$tcversion_node = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($step_node['parent_id']);
 		$tcversion_id = $step_node['parent_id'];

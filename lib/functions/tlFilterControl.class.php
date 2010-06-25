@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.3 2010/06/24 22:13:08 franciscom Exp $
+ * @version    CVS: $Id: tlFilterControl.class.php,v 1.4 2010/06/25 14:48:06 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
@@ -297,8 +297,7 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		$params[self::SETTING_REFRESH_TREE_ON_ACTION] =
 			array("POST", self::SETTING_REFRESH_TREE_ON_ACTION, tlInputParameter::CB_BOOL);
 		$params['hidden_' . self::SETTING_REFRESH_TREE_ON_ACTION] =
-			array("POST", 'hidden_' . self::SETTING_REFRESH_TREE_ON_ACTION,
-			      tlInputParameter::INT_N);
+			array("POST", 'hidden_' . self::SETTING_REFRESH_TREE_ON_ACTION, tlInputParameter::INT_N);
 
 		I_PARAMS($params, $this->args);
 

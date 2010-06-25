@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.71 2010/06/24 17:25:53 asimon83 Exp $
+ * 	@version 	$Id: archiveData.php,v 1.72 2010/06/25 14:48:07 asimon83 Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -10,6 +10,7 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
+ *  20160625 - asimon - refactoring for new filter features and BUGID 3516
  *	20100621 - eloff - BUGID 3241 - Implement vertical layout
  *	20100502 - franciscom - BUGID 3405: Navigation Bar - Test Case Search - Crash when search a nonexistent testcase	
  *  20100315 - franciscom - fixed refesh tree logic	
@@ -153,13 +154,17 @@ function init_args(&$viewerCfg)
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);
-	    
-    // BUGID 3516
-	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	$session_data = $_SESSION[tlTestCaseFilterControl::EDIT_MODE][$form_token];
 	
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
-                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
+	// BUGID 3516
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	
+	$mode = tlTestCaseFilterControl::EDIT_MODE;
+	
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
+	                ? $_SESSION[$mode][$form_token] : null;
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
+                         $session_data['setting_refresh_tree_on_action'] : 0;
 	
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     //@TODO schlundus, rename Parameter from edit to feature

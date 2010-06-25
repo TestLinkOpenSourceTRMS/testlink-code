@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.152 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.153 2010/06/25 14:48:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100625 - asimon - refactoring for filter feature
  *	20100621 - eloff - BUGID 3241 - Implement vertical layout
  *	20100605 - franciscom - BUGID 3377
  *	20100403 - franciscom - BUGID 3359: Copy Test Case Step
@@ -416,14 +417,17 @@ function init_args($spec_cfg,$otName)
 //    {
 //    	$args->refreshTree=$_SESSION['setting_refresh_tree_on_action'] == "yes" ? 1 : 0 ;
 //    }
+
     // BUGID 3516
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	$session_data = $_SESSION[tlTestCaseFilterControl::PLAN_ADD_MODE][$form_token];
 	
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
-                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
+	$mode = tlTestCaseFilterControl::PLAN_ADD_MODE;
 	
-    
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
+	                ? $_SESSION[$mode][$form_token] : null;
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
+                         $session_data['setting_refresh_tree_on_action'] : 0;
     
 	$args->opt_requirements = null;
 	if( isset($_SESSION['testprojectOptions']) )

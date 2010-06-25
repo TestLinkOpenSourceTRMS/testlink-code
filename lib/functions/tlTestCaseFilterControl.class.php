@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.3 2010/06/25 08:32:39 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.4 2010/06/25 14:48:06 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -250,7 +250,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	private $all_settings = array(self::SETTING_TESTPLAN => array("POST", tlInputParameter::INT_N),
 	                              self::SETTING_BUILD => array("POST", tlInputParameter::INT_N),
 	                              self::SETTING_PLATFORM => array("POST", tlInputParameter::INT_N),
-	                              self::SETTING_REFRESH_TREE_ON_ACTION => array("POST", tlInputParameter::INT_N));
+	                              self::SETTING_REFRESH_TREE_ON_ACTION => array("POST", tlInputParameter::CB_BOOL));
 
 	/**
 	 * This array is used to map the modes to their available settings.
@@ -352,6 +352,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * settings and filters get modified according to that user input.
 	 */
 	protected function init_args() {
+		
 		// some common user input is already read in parent class
 		parent::init_args();
 
@@ -369,7 +370,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 		I_PARAMS($params, $this->args);
 
-		$type = 'filter_keywords_filter_type';
+		$type = self::FILTER_KEYWORDS_FILTER_TYPE;
 		$this->args->{$type} = (isset($_REQUEST[$type])) ? trim($_REQUEST[$type]) : self::STR_OR;
 
 		$extra_keys = array(self::FILTER_RESULT_RESULT,
@@ -385,6 +386,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			
 		// got session token sent by form or do we have to generate a new one?
 		$sent_token = null;
+		$this->args->form_token = null;
 		if (isset($_REQUEST['form_token'])) {
 			// token got sent
 			$sent_token = $_REQUEST['form_token'];
@@ -392,6 +394,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		if (!is_null($sent_token) && isset($_SESSION[$this->mode][$sent_token])) {
 			// sent token is valid
 			$this->form_token = $sent_token;
+			$this->args->form_token = $sent_token;
 		} else {
 			$this->generate_form_token();
 		}
@@ -904,29 +907,21 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// look where we can find the setting - POST, SESSION, config?
 		if (isset($this->args->{$key})) {
 			$value = $this->args->{$key};
+		} else if (isset($this->args->form_token)) {
+			// value not sent by POST but form sent - checkbox got disabled!
+			$value = 0;
 		} else if (isset($this->args->{$hidden_key})) {
 			$value = $this->args->{$hidden_key};
 		} else if (isset($_SESSION[$key])) {
 			$value = $_SESSION[$key];
 		} else {
 			$spec_cfg = config_get('spec_cfg');
-			$value = ($spec_cfg->automatic_tree_refresh > 0) ? true : false;
+			$value = ($spec_cfg->automatic_tree_refresh > 0) ? 1 : 0;
 		}
-
-		// look where we can find the setting - POST, SESSION, config?
-		if ((isset($this->args->{$key}) && $this->args->{$key} == 1) 
-		|| (isset($this->args->{$hidden_key}) && $this->args->{$hidden_key} == 1)
-		|| (isset($_SESSION[$key]) && $_SESSION[$key] == 1))	{
-			$value = 1;
-		}
-
-		$spec_cfg = config_get('spec_cfg');
-		$value = ($spec_cfg->automatic_tree_refresh > 0) ? true : false;
-		
 		
 		$this->settings[$key][self::STR_SELECTED] = $value;
 		$this->settings[$key][$hidden_key] = $value;
-		$_SESSION[$key] = $value;
+		$_SESSION[$key] = $value;		
 	} // end of method
 
 	private function init_setting_build() {

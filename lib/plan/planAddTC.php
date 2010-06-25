@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.98 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.99 2010/06/25 14:48:07 asimon83 Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100625 - asimon - BUGID 3516 - refactoring for new filter features
  * 20100417 - BUGDID 2498 - filter by test case importance
  * 20100411 - BUGID 2797 - filter by test case execution type	
  * 20100225 - eloff - BUGID 3205 - Don't show "save platforms" when platforms aren't used
@@ -319,8 +320,15 @@ function init_args()
 
 	// BUGID 3516
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	$session_data = $_SESSION[tlTestCaseFilterControl::PLAN_ADD_MODE][$form_token];
 	
+	$mode = tlTestCaseFilterControl::PLAN_ADD_MODE;
+	
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
+	                ? $_SESSION[$mode][$form_token] : null;
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
+                         $session_data['setting_refresh_tree_on_action'] : 0;    
+    
 	$args->executionType = isset($session_data['filter_execution_type']) ? 
 	                       $session_data['filter_execution_type'] : 0;
 	
@@ -342,9 +350,6 @@ function init_args()
 	if (isset($session_data[$ft])) {
 		$args->keywordsFilterType = $session_data[$ft];
 	}
-	
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
-                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
 	
 	return $args;
 }

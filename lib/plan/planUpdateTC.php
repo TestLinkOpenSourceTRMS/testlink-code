@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.43 2010/06/24 17:25:53 asimon83 Exp $
+ * @version $Id: planUpdateTC.php,v 1.44 2010/06/25 14:48:07 asimon83 Exp $
  *
  * Author: franciscom
  *
@@ -10,6 +10,7 @@
  * Test Case Execution assignments will be auto(magically) updated.
  *
  * 	@internal revisions:
+ *  20100625 - asimon - refactoring for new filter features
  *	20100131 - franciscom - BUGID 3008/3109	
  *	20100123 - franciscom - BUGID 2652 + missing refactoring for table prefix doUpdate()
  *	20091212 - franciscom - added contribution by asimon83 (refactored) - BUGID 2652
@@ -136,12 +137,18 @@ function init_args(&$tplanMgr)
     $args->tproject_id = $_SESSION['testprojectID'];
     $args->tproject_name = $_SESSION['testprojectName'];
 
-    
     // BUGID 3516
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	$session_data = $_SESSION[tlTestCaseFilterControl::PLAN_MODE][$form_token];
 	
-	$args->keyword_id = 0;
+	$mode = tlTestCaseFilterControl::PLAN_MODE;
+	
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
+	                ? $_SESSION[$mode][$form_token] : null;
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
+                         $session_data['setting_refresh_tree_on_action'] : 0;
+    
+    $args->keyword_id = 0;
 	$fk = tlTestCaseFilterControl::FILTER_KEYWORDS_FILTER_TYPE;
 	if (isset($session_data[$fk])) {
 		$args->keyword_id = $session_data[$fk];
@@ -156,11 +163,6 @@ function init_args(&$tplanMgr)
 		$args->keywordsFilterType = $session_data[$ft];
 	}
 	
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
-                         && $session_data['setting_refresh_tree_on_action'] != 0 ? 1 : 0;
-	
-    
-    
     return $args;
 }
 

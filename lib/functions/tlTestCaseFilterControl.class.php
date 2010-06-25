@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.2 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.3 2010/06/25 08:32:39 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -506,32 +506,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			}
 		}
 
-		// add the important settings (testplan, platform, build) to active filter array
-		if ($this->settings[self::SETTING_PLATFORM]) {
-			$this->active_filters[self::SETTING_PLATFORM] =
-				$this->settings[self::SETTING_PLATFORM][self::STR_SELECTED];
-		} else {
-			$this->active_filters[self::SETTING_PLATFORM] = null;
+		// add the important settings to active filter array
+		foreach ($this->all_settings as $name => $info) {
+			if ($this->settings[$name]) {
+				$this->active_filters[$name] = $this->settings[$name][self::STR_SELECTED];
+			} else {
+				$this->active_filters[$name] = null;
+			}
 		}
-		if ($this->settings[self::SETTING_TESTPLAN]) {
-			$this->active_filters[self::SETTING_TESTPLAN] =
-				$this->settings[self::SETTING_TESTPLAN][self::STR_SELECTED];
-		} else {
-			$this->active_filters[self::SETTING_TESTPLAN] = null;
-		}
-		if ($this->settings[self::SETTING_BUILD]) {
-			$this->active_filters[self::SETTING_BUILD] =
-				$this->settings[self::SETTING_BUILD][self::STR_SELECTED];
-		} else {
-			$this->active_filters[self::SETTING_BUILD] = null;
-		}
-		if ($this->settings[self::SETTING_REFRESH_TREE_ON_ACTION]) {
-			$this->active_filters[self::SETTING_REFRESH_TREE_ON_ACTION] =
-				$this->settings[self::SETTING_REFRESH_TREE_ON_ACTION][self::STR_SELECTED];
-		} else {
-			$this->active_filters[self::SETTING_REFRESH_TREE_ON_ACTION] = false;
-		}
-		
+				
 		// if at least one filter item is left to display, switch panel on
 		if ($at_least_one_active) {
 			$this->display_filters = true;

@@ -4,10 +4,14 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.158 $
- * @modified $Date: 2010/06/24 17:25:57 $ $Author: asimon83 $
+ * @version $Revision: 1.159 $
+ * @modified $Date: 2010/06/25 12:57:33 $ $Author: asimon83 $
  *
  * rev:
+ *  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface to exec_additional_info()
+ *                      to avoid warnings in event log,
+ *                      fixed a little bug in platform id initializing in init_args()
+ *                      (now number 0 instead of value null)
  *  20100624 - asimon - refactoring for new filters
  *	20100527 - franciscom - BUGID 3479: Bulk Execution - Custom Fields Bulk Assignment
  *  20100527 - Julian - platform description is now shown/hidden according to setting on config
@@ -253,7 +257,9 @@ if(!is_null($linked_tcversions))
 		      	}    	
 			  }
     	
-    	  $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,$args->tplan_id,$args->tproject_id);
+		  // asimon - added $g_bugInterfaceOn, $g_bugInterface
+    	  $other_info=exec_additional_info($db,$attachmentRepository,$tcase_mgr,$gui->other_execs,
+    	  $args->tplan_id,$args->tproject_id, $g_bugInterfaceOn, $g_bugInterface);
     	  $gui->attachments=$other_info['attachment'];
     	  $gui->bugs=$other_info['bugs'];
     	  $gui->other_exec_cfields=$other_info['cfexec_values'];
@@ -341,6 +347,8 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
   
   rev:
+	20100625 - asimon - fixed a little bug in platform id initializing when no platform is used
+	                    (now number 0 instead of value null)
 	20090913 - franciscom - fixed bug on filter_status initialization
 */
 function init_args($cfgObj)
@@ -442,7 +450,7 @@ function init_args($cfgObj)
 	$args->build_id = isset($session_data['setting_build']) ? 
 	                  intval($session_data['setting_build']) : null;
 	$args->platform_id = isset($session_data['setting_platform']) ? 
-	                  intval($session_data['setting_platform']) : null;
+	                  intval($session_data['setting_platform']) : 0;
 	
     switch($args->level)
     {
@@ -711,11 +719,16 @@ function smarty_assign_tsuite_info(&$smarty,&$request_hash, &$db,&$tree_mgr,$tca
   
   returns: 
 
+@internal revisions:
+  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface 
+                      to get rid of warning in event log
+
 */
-function exec_additional_info(&$db,$attachmentRepository,&$tcase_mgr,$other_execs,$tplan_id,$tproject_id)
+function exec_additional_info(&$db, $attachmentRepository, &$tcase_mgr, $other_execs, 
+                              $tplan_id, $tproject_id, $bugInterfaceOn, $bugInterface)
 {
-  $bugInterfaceOn = config_get('bugInterfaceOn');
-  $bugInterface = config_get('bugInterface');
+//  $bugInterfaceOn = config_get('bugInterfaceOn');
+//  $bugInterface = config_get('bugInterface');
   $attachmentInfos = null;
   $bugs = null;
   $cfexec_values = null;

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.153 2010/06/25 07:23:48 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.154 2010/06/25 08:09:24 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1124,6 +1124,7 @@ $TLS_show_hide_reorder = "Zeigen / Verstecken Neuordnen ";
 $TLS_tc_not_tested_yet = "Test nicht durchgeführt";
 $TLS_test_cases_cannot_be_executed = "Testfälle können nicht ausgeführt werden";
 $TLS_testcase_version_is_inactive_on_exec = "Diese Version ist inaktiv => kann nicht ausgeführt werden";
+$TLS_testcase_customfields = "Benutzerdefinierte Felder für Testfälle";
 $TLS_test_exec_by = "durch";
 $TLS_test_exec_expected_r = "Erwartete Ergebnisse";
 $TLS_test_exec_last_run_date = "Aktuellster Lauf:";

@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.47 2010/06/24 17:25:53 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.48 2010/06/25 11:57:00 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20100625 - asimon - removed old ext js constant
   20100610 - asimon - BUGID 3301 - new included template inc_filter_panel.tpl
   20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
                       them with new included template inc_tc_filter_panel.tpl
@@ -29,11 +30,8 @@ rev :
              include_unassigned_testcases,priority,caption_nav_filters,caption_nav_settings"}       
 
 {* ===================================================================== *}
+
 {include file="inc_head.tpl" openHead="yes"}
-{if $smarty.const.USE_EXT_JS_LIBRARY}
-    {include file="inc_ext_js.tpl" bResetEXTCss=1}
-{/if}
-          
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
 {* includes Ext.ux.CollapsiblePanel *}

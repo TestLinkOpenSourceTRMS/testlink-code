@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.152 2010/06/24 17:25:57 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.153 2010/06/25 07:23:48 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.629
+ * Last Update according to en_GB string file version 1.631
  *
  **/
 
@@ -565,11 +565,11 @@ $TLS_warning = "Warnung!!";
 $TLS_was_success = " wurde erfolgreich ";
 
 
-// ----- gui/templates/execNavigator.tpl -----
-$TLS_TestPlan = $TLS_testplan;
+// ----- gui/templates/inc_filter_panel.tpl -----
+$TLS_logical_and = "Und";
+$TLS_logical_or = "Oder";
 $TLS_btn_apply_filter = $TLS_btn_apply;
-$TLS_btn_update_menu = "Aktualisieren";
-$TLS_caption_nav_filter_settings = "Filter & Einstellungen";
+$TLS_btn_reset_filters = "Filter zurücksetzen";
 $TLS_caption_nav_filters = "Filter";
 $TLS_caption_nav_settings = "Einstellungen";
 $TLS_current_build = "Aktueller Build";
@@ -578,7 +578,6 @@ $TLS_filter_result = "Ergebnis";
 $TLS_filter_on = "für";
 $TLS_filter_tcID = "Testfall ID";
 $TLS_include_unassigned_testcases = " - inklusive nicht zugewiesener Testfälle ";
-$TLS_test_status_all_status = $TLS_test_status_all;
 $TLS_filter_result_all_builds = "alle Builds";
 $TLS_filter_result_any_build = "beliebiges Build";
 $TLS_filter_result_specific_build = "spezifisches Build";
@@ -588,6 +587,13 @@ $TLS_filter_somebody = "jemand";
 $TLS_exec_build = "Auszuführendes Build";
 $TLS_filter_result_all_prev_builds = "Ergebnis ALLER vorangegangener Builds";
 $TLS_filter_result_any_prev_build = "Ergebnis eines beliebigen vorangegangenen Builds";
+
+
+// ----- gui/templates/execNavigator.tpl -----
+$TLS_TestPlan = $TLS_testplan;
+$TLS_btn_update_menu = "Menü aktualisieren";
+$TLS_caption_nav_filter_settings = "Filter & Einstellungen";
+$TLS_test_status_all_status = $TLS_test_status_all;
 
 
 // ----- gui/templates/mainPage.tpl -----

@@ -18,10 +18,12 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.305 2010/06/24 21:12:59 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.306 2010/06/25 07:57:50 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100625 - asimon - added $tlCfg->tree_filter_cfg for configuration of available filters on JS tree
+ *                      and $tlCfg->exec_cfg->testcases_colouring_by_selected_build for BUGID 3450
  *  20100504 - franciscom - BUGID 3424 Custom CSS path is being overwritten by config.inc.php value
  *	20100620 - franciscom - fix strict messages after usign PHPDesigner.
  *	20100619 - franciscom - define always $g_bugInterfaceOn = false,$g_bugInterface = null;
@@ -1288,7 +1290,7 @@ $tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
 
 // --------------------------------------------------------------------------------------
 /** Converted and derived variables (Users should not modify this section) */
-define('REFRESH_SPEC_TREE',$g_spec_cfg->automatic_tree_refresh ? 'yes' : 'no');
+define('REFRESH_SPEC_TREE',$tlCfg->spec_cfg->automatic_tree_refresh ? 1 : 0);
 define('TL_SORT_TABLE_ENGINE',$g_sort_table_engine);
 define("TL_REPOSITORY_MAXFILESIZE", 1024*1024*$tlCfg->repository_max_filesize);
 

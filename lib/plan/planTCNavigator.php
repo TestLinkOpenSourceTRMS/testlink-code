@@ -9,10 +9,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community
- * @version    	CVS: $Id: planTCNavigator.php,v 1.49 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.50 2010/06/28 16:19:36 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100628 - asimon - removal of constants from filter control class
+ *  20160625 - asimon - refactoring for new filter features
+ *  20100624 - asimon - CVS merge (experimental branch to HEAD)
  *  20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
  *  20100428 - asimon - BUGID 3301 and related issues - changed name or case
  *                      of some variables used in new common template,
@@ -31,7 +34,7 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
-$control = new tlTestCaseFilterControl($db, tlTestCaseFilterControl::PLAN_MODE);
+$control = new tlTestCaseFilterControl($db, 'plan_mode');
 $gui = initializeGui($db, $control);
 $control->build_tree_menu($gui);
 

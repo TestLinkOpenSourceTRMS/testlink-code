@@ -3,12 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.113 $
- * @modified $Date: 2010/06/25 14:48:07 $ by $Author: asimon83 $
+ * @version $Revision: 1.114 $
+ * @modified $Date: 2010/06/28 16:19:37 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  *	@internal revisions
- *  20100625 - asimon - refactoring for new filter feature and BUGID 3516
+ *  20100628 - asimon - removal of constants from filter control class
+ *  20100625 - asimon - refactoring for new filter features and BUGID 3516
+ *  20100624 - asimon - CVS merge (experimental branch to HEAD)
  *  20100314 - franciscom - added logic to refresh tree when copying N test cases 	
  * 						    added logic to get user choice regarding refresh tree from SESSION.
  *  20100223 - asimon - added removeTestcaseAssignments() for BUGID 3049
@@ -367,9 +369,11 @@ function init_args($optionTransferCfg)
 //    }
 
     // BUGID 3516
+	// For more information about the data accessed in session here, see the comment
+	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	
-	$mode = tlTestCaseFilterControl::EDIT_MODE;
+	$mode = 'edit_mode';
 	
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;

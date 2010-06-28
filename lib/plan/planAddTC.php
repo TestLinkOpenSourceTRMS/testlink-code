@@ -7,18 +7,19 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.99 2010/06/25 14:48:07 asimon83 Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.100 2010/06/28 16:19:37 asimon83 Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * 20100625 - asimon - BUGID 3516 - refactoring for new filter features
+ * 20100628 - asimon - removal of constants from filter control class
+ * 20100625 - asimon - refactoring for new filter features and BUGID 3516
+ * 20100624 - asimon - CVS merge (experimental branch to HEAD)
  * 20100417 - BUGDID 2498 - filter by test case importance
- * 20100411 - BUGID 2797 - filter by test case execution type	
+ * 20100411 - BUGID 2797 - filter by test case execution type
  * 20100225 - eloff - BUGID 3205 - Don't show "save platforms" when platforms aren't used
  * 20100129 - franciscom - moved here from template, logic to initialize:
- *                         drawSavePlatformsButton,drawSaveCFieldsButton        
- *                         
+ *                         drawSavePlatformsButton,drawSaveCFieldsButton
  * 20090922 - franciscom - add contribution - bulk tester assignment while adding test cases
  *
  **/
@@ -319,9 +320,11 @@ function init_args()
 //	$args->importance = ($args->importance > 0) ? $args->importance : null;
 
 	// BUGID 3516
+	// For more information about the data accessed in session here, see the comment
+	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	
-	$mode = tlTestCaseFilterControl::PLAN_ADD_MODE;
+	$mode = 'plan_add_mode';
 	
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;
@@ -337,7 +340,7 @@ function init_args()
 	$args->importance = ($args->importance > 0) ? $args->importance : null;
 	
 	$args->keyword_id = 0;
-	$fk = tlTestCaseFilterControl::FILTER_KEYWORDS_FILTER_TYPE;
+	$fk = 'filter_keywords';
 	if (isset($session_data[$fk])) {
 		$args->keyword_id = $session_data[$fk];
 		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
@@ -346,7 +349,7 @@ function init_args()
 	}
 	
 	$args->keywordsFilterType = null;
-	$ft = tlTestCaseFilterControl::FILTER_KEYWORDS_FILTER_TYPE;
+	$ft = 'filter_keywords_filter_type';
 	if (isset($session_data[$ft])) {
 		$args->keywordsFilterType = $session_data[$ft];
 	}
@@ -416,7 +419,7 @@ function doReorder(&$argsObj,&$tplanMgr)
     
     if(!is_null($mapo))
     {
-        $tplanMgr->setExecutionOrder($argsObj->tplan_id,$mapo);  
+        $tplanMgr->setExecutionOrder($argsObj->tplan_id,$mapo);
     }
     
 }

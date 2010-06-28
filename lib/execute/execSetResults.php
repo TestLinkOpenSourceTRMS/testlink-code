@@ -4,14 +4,16 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.160 $
- * @modified $Date: 2010/06/25 14:48:07 $ $Author: asimon83 $
+ * @version $Revision: 1.161 $
+ * @modified $Date: 2010/06/28 16:19:37 $ $Author: asimon83 $
  *
  * rev:
+ *  20100628 - asimon - removal of constants from filter control class
  *  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface to exec_additional_info()
  *                      to avoid warnings in event log,
  *                      fixed a little bug in platform id initializing in init_args()
  *                      (now number 0 instead of value null)
+ *  20100624 - asimon - CVS merge (experimental branch to HEAD)
  *  20100624 - asimon - refactoring for new filters
  *	20100527 - franciscom - BUGID 3479: Bulk Execution - Custom Fields Bulk Assignment
  *  20100527 - Julian - platform description is now shown/hidden according to setting on config
@@ -296,10 +298,11 @@ if ($userid_array)
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
 
 // BUGID 2455, BUGID 3026
+// BUGID 3516
 // remove testcases which shall not be displayed because they were filtered out
-if (isset($args->tcids_to_show) && $args->level == 'testsuite') {
+if (isset($args->testcases_to_show) && $args->level == 'testsuite') {
 	foreach($gui->map_last_exec as $key => $tc) {
-		if (!in_array($tc['testcase_id'], $args->tcids_to_show)) {
+		if (!in_array($tc['testcase_id'], $args->testcases_to_show)) {
 			//unset, tc shall not be displayed
 			unset($gui->map_last_exec[$key]);
 		}
@@ -359,7 +362,7 @@ function init_args($cfgObj)
     // BUGID 3516
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	
-	$mode = tlTestCaseFilterControl::EXECUTION_MODE;
+	$mode = 'execution_mode';
 	
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;
@@ -492,7 +495,7 @@ function init_args($cfgObj)
 //        $args->keyword_id=0;  
 //    }
 	$args->keyword_id = 0;
-	$fk = tlTestCaseFilterControl::FILTER_KEYWORDS;
+	$fk = 'filter_keywords';
 	if (isset($session_data[$fk])) {
 		$args->keyword_id = $session_data[$fk];
 		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
@@ -501,7 +504,7 @@ function init_args($cfgObj)
 	}
 	
 	$args->keywordsFilterType = null;
-	$ft = tlTestCaseFilterControl::FILTER_KEYWORDS_FILTER_TYPE;
+	$ft = 'filter_keywords_filter_type';
 	if (isset($session_data[$ft])) {
 		$args->keywordsFilterType = $session_data[$ft];
 	}
@@ -547,7 +550,7 @@ function init_args($cfgObj)
 	if (isset($session_data['testcases_to_show'])) {
 		$args->testcases_to_show = $session_data['testcases_to_show'];
 	}
-
+	
 	return $args;
 }
 

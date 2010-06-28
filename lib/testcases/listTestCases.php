@@ -2,13 +2,16 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 *
-* 	@version 	$Id: listTestCases.php,v 1.56 2010/06/24 17:25:53 asimon83 Exp $
+* 	@version 	$Id: listTestCases.php,v 1.57 2010/06/28 16:19:37 asimon83 Exp $
 * 	@author 	Martin Havlat
 *
 * 	Generates tree menu with test specification.
 *   It builds the javascript tree that allows the user to choose testsuite or testcase.
 *
 *	@internal revision
+*
+*   20100628 - asimon - removal of constants from filter control class
+*   20100624 - asimon - CVS merge (experimental branch to HEAD)
 *   20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
 *   20100517 - asimon - BUGID 3301 and related - huge refactoring for first implementation
 *                       of filter panel class hierarchy to simplify/standardize
@@ -28,7 +31,7 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 // new class for filter controlling/handling
-$control = new tlTestCaseFilterControl($db, tlTestCaseFilterControl::EDIT_MODE);
+$control = new tlTestCaseFilterControl($db, 'edit_mode');
 
 $gui = initializeGui($db, $control);
 $control->build_tree_menu($gui);

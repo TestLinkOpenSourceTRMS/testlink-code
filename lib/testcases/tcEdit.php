@@ -8,12 +8,14 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.153 2010/06/25 14:48:07 asimon83 Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.154 2010/06/28 16:19:37 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
- *  20100625 - asimon - refactoring for filter feature
+ *  20100628 - asimon - removal of constants from filter control class
+ *  20100625 - asimon - refactoring of filter feature
+ *  20100624 - asimon - CVS merge (experimental branch to HEAD)
  *	20100621 - eloff - BUGID 3241 - Implement vertical layout
  *	20100605 - franciscom - BUGID 3377
  *	20100403 - franciscom - BUGID 3359: Copy Test Case Step
@@ -419,9 +421,11 @@ function init_args($spec_cfg,$otName)
 //    }
 
     // BUGID 3516
+	// For more information about the data accessed in session here, see the comment
+	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	
-	$mode = tlTestCaseFilterControl::PLAN_ADD_MODE;
+	$mode = 'plan_add_mode';
 	
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;

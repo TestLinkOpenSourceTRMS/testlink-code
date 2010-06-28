@@ -7,11 +7,13 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community
- * @version    	CVS: $Id: execNavigator.php,v 1.118 2010/06/24 17:25:57 asimon83 Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.119 2010/06/28 16:19:38 asimon83 Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100628 - asimon - removal of constants from filter control class
+ * 20100624 - asimon - CVS merge (experimental branch to HEAD)
  * 20100622 - asimon - huge refactoring for new filter design,
  *                     removed as much logic from here as possible
  * 20100609 - eloff - Prevent selection of invalid platform
@@ -47,7 +49,7 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
-$control = new tlTestCaseFilterControl($db, tlTestCaseFilterControl::EXECUTION_MODE);
+$control = new tlTestCaseFilterControl($db, 'execution_mode');
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
 

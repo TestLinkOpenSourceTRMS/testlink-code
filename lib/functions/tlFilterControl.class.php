@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.4 2010/06/25 14:48:06 asimon83 Exp $
+ * @version    CVS: $Id: tlFilterControl.class.php,v 1.5 2010/06/28 16:19:37 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
@@ -19,8 +19,11 @@
  *
  * @internal Revisions:
  *
- * 20100610 - asimon - first implementation of filter panel class hierarchy
- *                     to simplify/generalize filter panel handling for test cases and requirements
+ * 20100628 - asimon - removal of constants
+ * 20100624 - asimon - CVS merge (experimental branch to HEAD)
+ * 20100503 - asimon - start of implementation of filter panel class hierarchy
+ *                     to simplify/generalize filter panel handling
+ *                     for test cases and requirements
  */
 
 /**
@@ -32,33 +35,10 @@
  *
  * @author Andreas Simon
  * @package TestLink
+ * @uses testproject
  */
 abstract class tlFilterControl extends tlObjectWithDB {
 
-	/**
-	 * The string used for identifying the element in an array which holds the selectable items.
-	 * @var string
-	 */
-	const STR_ITEMS = 'items';
-
-	/**
-	 * The string which identifies the part of an array in which the (by user) selected element is saved.
-	 * @var string
-	 */
-	const STR_SELECTED = 'selected';
-
-	/**
-	 * String constant for logical "or".
-	 * @var string
-	 */
-	const STR_OR = 'Or';
-
-	/**
-	 * String constant for logical "and".
-	 * @var string
-	 */
-	const STR_AND = 'And';
-	
 	/**
 	 * Label (and name) for the button to enable simple filter mode. 
 	 * @var string
@@ -89,12 +69,6 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 */
 	const CF_INPUT_SIZE = 32;
 	
-	/**
-	 * class constant for the setting tree refresh on action
-	 * @var string
-	 */
-	const SETTING_REFRESH_TREE_ON_ACTION = 'setting_refresh_tree_on_action';
-
 	/**
 	 * defines, wether the button to unassign all test cases from test plan shall be drawn on template
 	 * @var bool
@@ -244,10 +218,14 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		$this->init_filters();
 	} // end of method
 
+	/**
+	 * Destructor: deletes all member object which have to be deleted after use.
+	 * 
+	 */
 	public function __destruct() {
 		// delete member objects
 		unset($this->testproject_mgr);
-	}
+	} // end of method
 	
 	/**
 	 * Reads the configuration from the configuration file, which is not dependent on type of objects in tree.
@@ -294,10 +272,10 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		
 		$params = array();
 
-		$params[self::SETTING_REFRESH_TREE_ON_ACTION] =
-			array("POST", self::SETTING_REFRESH_TREE_ON_ACTION, tlInputParameter::CB_BOOL);
-		$params['hidden_' . self::SETTING_REFRESH_TREE_ON_ACTION] =
-			array("POST", 'hidden_' . self::SETTING_REFRESH_TREE_ON_ACTION, tlInputParameter::INT_N);
+		$params['setting_refresh_tree_on_action'] =
+			array("POST", 'setting_refresh_tree_on_action', tlInputParameter::CB_BOOL);
+		$params['hidden_setting_refresh_tree_on_action'] =
+			array("POST", 'hidden_setting_refresh_tree_on_action', tlInputParameter::INT_N);
 
 		I_PARAMS($params, $this->args);
 

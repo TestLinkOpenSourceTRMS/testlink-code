@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: planAddTCNavigator.php,v 1.61 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: planAddTCNavigator.php,v 1.62 2010/06/28 16:19:37 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * 	Navigator for feature: add Test Cases to a Test Case Suite in Test Plan.
@@ -15,6 +15,9 @@
  *
  * @internal Revisions:
  *
+ * 20100628 - asimon - removal of constants from filter control class
+ * 20100625 - asimon - refactoring for new filter features and BUGID 3516
+ * 20100624 - asimon - CVS merge (experimental branch to HEAD)
  * 20100622 - asimon - huge refactorization for new tlTestCaseFilterControl class
  * 20100428 - asimon - BUGID 3301 and related issues - changed name or case
  *                     of some variables used in new common template,
@@ -35,7 +38,7 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
-$control = new tlTestCaseFilterControl($db, tlTestCaseFilterControl::PLAN_ADD_MODE);
+$control = new tlTestCaseFilterControl($db, 'plan_add_mode');
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
 

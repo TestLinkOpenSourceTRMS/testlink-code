@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.52 2010/03/26 11:41:59 amkhullar Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.53 2010/06/28 16:19:36 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
@@ -170,7 +170,8 @@ switch($args->level)
 		
 	case 'testsuite':
 		// BUGID 3026
-		$tcaseFilter = (isset($args->tcids_to_show)) ? $args->tcids_to_show : null;
+		// BUGID 3516
+		$tcaseFilter = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
 		
 		$out = keywordFilteredSpecView($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr, $tcaseFilter);
 				
@@ -216,30 +217,72 @@ function init_args()
 	  $args->tproject_name = $_SESSION['testprojectName'];
       
 	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+//	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
+//	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
+//	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => null);
 	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
 	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
-	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => null);
+	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
+	  
 	  foreach($key2loop as $key => $value)
 	  {
 	  	$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
 	  }
     
     // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
-    $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
-    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
-    
-    if( !is_null($args->filter_assigned_to) )
-    {
-        $args->filter_assigned_to = (array)$args->filter_assigned_to;  
-    }
+//    $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
+//    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
+//    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
+//    
+//    if( !is_null($args->filter_assigned_to) )
+//    {
+//        $args->filter_assigned_to = (array)$args->filter_assigned_to;  
+//    }
     
  	// BUGID 2455, BUGID 3026
-	if (isset($_REQUEST['show_only_tcs']) && isset($_REQUEST['show_only_tcs']) != '') 
-	{
-		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
+//	if (isset($_REQUEST['show_only_tcs']) && isset($_REQUEST['show_only_tcs']) != '') 
+//	{
+//		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
+//	}
+	
+	// BUGID 3516
+	
+	// For more information about the data accessed in session here, see the comment
+	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	
+	$mode = 'plan_mode';
+	
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
+	                ? $_SESSION[$mode][$form_token] : null;
+	
+	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
+                         $session_data['setting_refresh_tree_on_action'] : 0;
+    
+    $args->keyword_id = 0;
+	$fk = 'filter_keywords';
+	if (isset($session_data[$fk])) {
+		$args->keyword_id = $session_data[$fk];
+		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
+			$args->keyword_id = $args->keyword_id[0];
+		}
 	}
-	  return $args;
+	
+	$args->keywordsFilterType = null;
+	$ft = 'filter_keywords_filter_type';
+	if (isset($session_data[$ft])) {
+		$args->keywordsFilterType = $session_data[$ft];
+	}
+	
+	$args->filter_assigned_to = isset($session_data['filter_assigned_user']) ? 
+	                            $session_data['filter_assigned_user'] : null;
+	
+	$args->testcases_to_show = null;
+	if (isset($session_data['testcases_to_show'])) {
+		$args->testcases_to_show = $session_data['testcases_to_show'];
+	}
+	
+	return $args;
 }
 
 /*

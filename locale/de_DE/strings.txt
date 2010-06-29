@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.154 2010/06/25 08:09:24 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.155 2010/06/29 07:43:00 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -188,9 +188,10 @@ $TLS_review_status_todo = 'zu erledigen';
 $TLS_req_type_info = "Informationell";
 $TLS_req_type_feature = 'Feature';
 $TLS_req_type_use_case = 'Use Case';
-$TLS_req_type_interface = 'Interface';
+$TLS_req_type_interface = 'User Interface';
 $TLS_req_type_non_functional = 'nicht funktional';
 $TLS_req_type_constrain = 'Einschränkung';
+$TLS_req_type_system_function = 'Systemfunktion';
 
 $TLS_req_spec_type_section = "Sektion";
 $TLS_req_spec_type_user_req_spec = "User Requirement Specification";

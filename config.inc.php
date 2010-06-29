@@ -18,13 +18,12 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.306 2010/06/25 07:57:50 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.307 2010/06/29 11:44:19 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *  20100625 - asimon - added $tlCfg->tree_filter_cfg for configuration of available filters on JS tree
  *                      and $tlCfg->exec_cfg->testcases_colouring_by_selected_build for BUGID 3450
- *  20100504 - franciscom - BUGID 3424 Custom CSS path is being overwritten by config.inc.php value
  *	20100620 - franciscom - fix strict messages after usign PHPDesigner.
  *	20100619 - franciscom - define always $g_bugInterfaceOn = false,$g_bugInterface = null;
  *	20100617 - franciscom - $tlCfg->req_cfg->importDocBook - new configuration for importing req in docbook format

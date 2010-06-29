@@ -8,12 +8,15 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.12 2010/05/25 11:21:36 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.13 2010/06/29 11:44:20 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
+ * 
+ * 20100629 - asimon - added display of is_open/frozen attribute,
+ *                     solved problem with broken ext js table by linebreaks in textarea-cfields
  * 20100508 - franciscom - use of $req_cfg->status_labels
  * 20100325 - asimon - added html comments with padded numbers/strings for easier and
  *                     corrent sorting to columns title/version/coverage/relations
@@ -43,6 +46,7 @@ $glue_char = config_get('gui_title_separator_1');
 $msg_key = 'no_linked_req';
 $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
+
 $coverage_enabled = $req_cfg->relations->enable;
 $relations_enabled = $req_cfg->expected_coverage_management;
 
@@ -53,6 +57,9 @@ if(count($gui->reqIDs)) {
 	// get type and status labels
 	$type_labels = init_labels($req_cfg->type_labels);
 	$status_labels = init_labels($req_cfg->status_labels);
+	
+	$no = lang_get('No');
+	$yes = lang_get('Yes');
 	
 	$gui->cfields = $cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement',
                                                                  null, 'name');
@@ -122,22 +129,27 @@ if(count($gui->reqIDs)) {
 	    	 * 1. path
 	    	 * 2. title
 	    	 * 3. version
-	    	 * 4. coverage (if enabled)
-	    	 * 5. type
-	    	 * 6. status
-	    	 * 7. relations (if enabled)
-	    	 * 8. all custom fields in order of $fields
+	    	 * 4. frozen (is_open attribute)
+	    	 * 5. coverage (if enabled)
+	    	 * 6. type
+	    	 * 7. status
+	    	 * 8. relations (if enabled)
+	    	 * 9. all custom fields in order of $fields
 	    	 */
 	    	
 	    	$result[] = $path;
+	    	
 	    	$result[] = $linked_title;
-
+	    	
 	    	// version number
 	    	$version_num = $version['version'];
 	    	$padded_version_num = sprintf("%010d", $version_num);
 	    	$version_str = "<!-- $padded_version_num -->$version_num";
 			$result[] = $version_str;
 	    	
+			// is it frozen?
+			$result[] = ($version['is_open']) ? $no : $yes;
+			
 			// coverage
 			if ($coverage_enabled) {
 		    	$expected = $version['expected_coverage'];
@@ -159,7 +171,8 @@ if(count($gui->reqIDs)) {
 			
 			// get custom field values for this req
 			foreach ($fields as $cf) {
-	    		$result[] = htmlentities($cf['value'], ENT_QUOTES, $charset);
+				//$result[] = htmlentities($cf['value'], ENT_QUOTES, $charset);
+	    		$result[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $charset));
 	    	}
 	    	
 	    	$rows[] = $result;
@@ -181,16 +194,18 @@ if(count($gui->reqIDs)) {
     	 * 1. path
     	 * 2. title
     	 * 3. version
-    	 * 4. coverage (if enabled)
-    	 * 5. type
-    	 * 6. status
-    	 * 7. relations (if enabled)
-    	 * 8. then all custom fields in order of $fields
+    	 * 4. frozen
+    	 * 5. coverage (if enabled)
+    	 * 6. type
+    	 * 7. status
+    	 * 8. relations (if enabled)
+    	 * 9. then all custom fields in order of $fields
     	 */
         $columns = array();
         $columns[] = array('title' => lang_get('req_spec_short'), 'width' => 200);
         $columns[] = array('title' => lang_get('title'), 'width' => 150);
         $columns[] = array('title' => lang_get('version'), 'width' => 50);
+        $columns[] = array('title' => lang_get('frozen'), 'width' => 50);
         
         if ($coverage_enabled) {
 	    	$columns[] = lang_get('th_coverage');

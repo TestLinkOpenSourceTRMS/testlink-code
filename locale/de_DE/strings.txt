@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.155 2010/06/29 07:43:00 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.156 2010/06/29 11:14:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -84,7 +84,7 @@ $TLS_public = "Öffentlich";
 $TLS_requirement = "Anforderung";
 $TLS_req_short = "Anf.";
 $TLS_reqs = "Anforderungen";
-$TLS_req_spec = "Anforderungen definieren";
+$TLS_req_spec = "Anforderungsspezifikation";
 $TLS_req_spec_short = "Anf. Spez.";
 $TLS_requirements_spec = "Anforderungsspez.";
 $TLS_req_specification = "Anf. Spezifikation";

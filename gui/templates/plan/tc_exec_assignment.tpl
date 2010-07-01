@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.25 2010/06/24 17:25:52 asimon83 Exp $
+$Id: tc_exec_assignment.tpl,v 1.26 2010/07/01 11:59:30 mx-julian Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -157,7 +157,7 @@ function check_action_precondition(container_id,action)
             	    	<td align="center">
             	    	{if isset($tcase.user_id[$platform_id])}
             	    	  {assign var="userID" value=$tcase.user_id[$platform_id]} 
-                      userID::{$userID}
+                      {*userID::{$userID}*}
             	    		{$gui->users[$userID]|escape}
             	    		{if $gui->users[$userID] != '' && $gui->testers[$userID] == ''}{$labels.can_not_execute}{/if}
             	    	{/if}

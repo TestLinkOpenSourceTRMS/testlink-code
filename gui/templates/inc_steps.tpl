@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_steps.tpl,v 1.2 2010/06/24 17:25:52 asimon83 Exp $
+$Id: inc_steps.tpl,v 1.3 2010/07/01 14:21:57 mx-julian Exp $
 Purpose: Show the steps for a testcase in vertical or horizontal layout
          Included from files tcView_viewer.tpl and inc_exec_test_spec.tpl
 Author : eloff, 2010
@@ -98,7 +98,8 @@ Author : eloff, 2010
 		{/if}
 	</tr>
 	<tr>
-		<td colspan="3" {if $edit_enabled} style="cursor:pointer;"
+		<td>&nbsp;</td>
+		<td colspan="2" {if $edit_enabled} style="cursor:pointer;"
 		    onclick="launchEditStep({$step_info.id})"{/if}
 		    style="padding: 0.5em">{$step_info.actions}</td>
 		{if $edit_enabled}
@@ -119,7 +120,8 @@ Author : eloff, 2010
 	</tr>
 	<tr {if $edit_enabled} style="cursor:pointer;"
 	    onclick="launchEditStep({$step_info.id})"{/if}>
-		<td colspan="3" style="padding: 0.5em 0.5em 2em 0.5em">{$step_info.expected_results}</td>
+	    <td>&nbsp;</td>
+		<td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em">{$step_info.expected_results}</td>
 	</tr>
 	{/foreach}
 {/if}

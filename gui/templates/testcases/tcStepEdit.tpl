@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.26 2010/06/24 17:25:53 asimon83 Exp $ 
+$Id: tcStepEdit.tpl,v 1.27 2010/07/01 14:21:54 mx-julian Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -209,10 +209,11 @@ DEBUG: $gui->action: {$gui->action} <br>
 		{/if}
 	</tr>
 	<tr>
+		<td>&nbsp;</td>
 		{if $step_info.step_number == $gui->step_number}
-		<td colspan="3">{$steps}</td>
+		<td colspan="2">{$steps}</td>
 		{else}
-		<td colspan="3"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
+		<td colspan="2"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.actions}</a></td>
 		{/if}
 	</tr>
 	<tr>
@@ -220,10 +221,11 @@ DEBUG: $gui->action: {$gui->action} <br>
 		<th colspan="2">{$labels.expected_results}</th>
 	</tr>
 	<tr>
+		<td>&nbsp;</td>
 		{if $step_info.step_number == $gui->step_number}
-		<td colspan="3">{$expected_results}</td>
+		<td colspan="2">{$expected_results}</td>
 		{else}
-		<td colspan="3" style="padding: 0.5em 0.5em 2em 0.5em"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
+		<td colspan="2" style="padding: 0.5em 0.5em 2em 0.5em"><a href="{$hrefEditStep}{$step_info.id}">{$step_info.expected_results}</a></td>
 		{/if}
 	</tr>
 	{/foreach}

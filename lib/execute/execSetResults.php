@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.161 $
- * @modified $Date: 2010/06/28 16:19:37 $ $Author: asimon83 $
+ * @version $Revision: 1.162 $
+ * @modified $Date: 2010/07/01 13:35:31 $ $Author: mx-julian $
  *
  * rev:
  *  20100628 - asimon - removal of constants from filter control class
@@ -416,8 +416,9 @@ function init_args($cfgObj)
        
     // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
     //            see smarty_assign_tsuite_info() in this file.  
-    $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description');
-       
+    $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
+                         'platform_notes_view_status' => 'platform_description');
+    
 	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
 	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
 	   	              'platform_notes_view_status' => 0,'platform_id' => 0);

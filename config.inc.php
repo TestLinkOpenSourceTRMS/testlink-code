@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.308 2010/07/01 12:34:14 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.309 2010/07/01 13:50:20 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -692,7 +692,7 @@ $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
 // $g_spec_cfg->steps_results_layout = 'vertical';
-$tlCfg->spec_cfg->steps_results_layout = 'vertical';
+$tlCfg->spec_cfg->steps_results_layout = 'horizontal';
 
 
 // ENABLED -> User will see a test suite filter while creating test specification

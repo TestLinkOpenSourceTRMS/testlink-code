@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.307 2010/06/29 11:44:19 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.308 2010/07/01 12:34:14 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -621,7 +621,7 @@ $tlCfg->exec_cfg->enable_tree_testcases_colouring = ENABLED;
 // ENABLED -> test cases will be coloured according to execution status on build selected for execution
 // DISABLED -> test cases will be coloured according status on latest execution regardless of selected build
 // see http://mantis.testlink.org/view.php?id=3450 for more details 
-$tlCfg->exec_cfg->testcases_colouring_by_selected_build = DISABLED;
+$tlCfg->exec_cfg->testcases_colouring_by_selected_build = ENABLED;
 
 // ENABLED -> test case counters will be coloured according to test case status
 $tlCfg->exec_cfg->enable_tree_counters_colouring = ENABLED;

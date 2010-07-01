@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.5 2010/06/28 16:19:37 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.6 2010/07/01 16:43:19 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -16,6 +16,7 @@
  *
  * @internal Revisions:
  *
+ * 20100701 - asimon - 3414 - additional work in init_filter_custom_fields()
  * 20100628 - asimon - removal of constants
  * 20100624 - asimon - CVS merge (experimental branch to HEAD)
  * 20100503 - asimon - start of implementation of filter panel class hierarchy
@@ -1238,13 +1239,16 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 	private function init_filter_custom_fields() {
+		
 		$key = 'filter_custom_fields';
 		if (!$this->exec_cf_mgr) {
 			$this->exec_cf_mgr = new exec_cfield_mgr($this->db, $this->args->testproject_id);
 		}
 
+		$field_names = $this->exec_cf_mgr->field_names();
 		$menu = $this->exec_cf_mgr->html_table_of_custom_field_inputs(self::CF_INPUT_SIZE);
 		$selection = $this->exec_cf_mgr->get_set_values();
+		
 		if ($this->args->reset_filters) {
 			// handle filter reset button
 			$selection = null;
@@ -1253,25 +1257,68 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 		
 		if (isset($selection) && is_array($selection) && count($selection)) {
+			
 			// BUGID 3414:
 			// Insert values chosen by user into html select menu by regex.
-			// The $menu string contains lines of which each looks like this:
+			// The $menu string contains lines of which each looks like this, e.g.:
 			// <tr><td class="labelHolder">cflabel</td><td><input type="text" name="custom_field_0_1" 
 			// id="custom_field_0_1" size="32"  maxlength="255" value=""></input></td></tr>
+			
 			// For each sent value, search the value="" part there and
-			// then insert the real value into the empty "".
-			$field_names = $this->exec_cf_mgr->field_names();
+			// then insert the real value into the empty "". Depending on type, of course.
+			
+			// TODO this stuff could maybe fit better into cfield_mgr class?
+			
 			// no magic number: 1 because of course only one replacement per value shall be done
 			$limit = 1;
+	
 			foreach ($selection as $cf_id => $value) {
+				
 				$cf_html_name = $field_names[$cf_id]['cf_name'];
-				$pattern = '/(.*name="' . $cf_html_name . '".*value=")(".*)/';
-				// 1 and 2 stand for the first and second pair of braces in above statement
-				$replacement = '${1}' . $value . '${2}';
-				$menu = preg_replace($pattern, $replacement, $menu, $limit);
-			}
+				
+				switch($field_names[$cf_id]['verbose_type']){
+	
+					case 'list':
+						// for single selection list, only one value has to be marked with "checked"
+						$pattern = '/(.*name="' . $cf_html_name . '".*value="' . $value . '")(.*)/';
+						// the numbers: 1 is the part before value, 2 after
+						$replacement = '${1} selected ${2}';
+						$menu = preg_replace($pattern, $replacement, $menu, $limit);
+					break;
+
+					case 'checkbox':
+					case 'multiselection list':
+						// this is similar to single selection list, but a bit more complicated
+						// and needs an additional loop because the selection can have multiple values
+						var_dump($value_arr = explode('|', $value));
+						foreach ($value_arr as $single_value) {
+							echo "single value: $single_value<br/>";
+							$pattern = '/(.*id="' . $cf_html_name . '".*value="' . $single_value . '")(.*)/';
+							// the numbers: 1 is the part before value, 2 after
+							$replacement = '${1} selected ${2}';
+							$menu = preg_replace($pattern, $replacement, $menu, $limit);
+						}
+					break;
+					
+					
+					case 'numeric':
+					case 'float':
+					case 'email':
+					case 'string':
+						// for these types, replacement is simple, only replace value=""
+						$pattern = '/(.*name="' . $cf_html_name . '".*value=")(".*)/';
+						// 1 and 2 stand for the first and second pair of braces in above line
+						$replacement = '${1}' . $value . '${2}';
+						$menu = preg_replace($pattern, $replacement, $menu, $limit);
+					break;
+					
+					default:
+					break;
+				} // end of switch
+
+			} // end of foreach
 		}
-		
+
 		$this->filters[$key] = array('items' => $menu, 'selected' => $selection);
 		$this->active_filters[$key] = $selection;
 	} // end of method

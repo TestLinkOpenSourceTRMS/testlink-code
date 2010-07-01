@@ -7,11 +7,13 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.78 2010/02/18 06:55:42 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.79 2010/07/01 16:43:19 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *                   
+ * 
+ * 20100701 - asimon - BUGID 3414: removed a single space character in string_custom_field_input() 
+ *                     because of an error that was caused by it 
  * 20100218 - franciscom - string_custom_field_input() changes on checkbox management
  * 20100204 - franciscom - getByLinkID() - new method
  * 20090823 - franciscom - added logic to remove 255 size limit
@@ -639,7 +641,11 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         	{
         	   $t_multiple=' ';
         	   $t_list_size = intval($size) > 0 ? $size :1;
-        	   $t_name_suffix=' ';
+        	   // 20100701 - asimon - removed single space in next line, 
+        	   // it was causing errors in field names on HTML because it somehow gets replaced
+        	   // by an underscore somwhere and then the field name doesn't match anymore
+        	   //$t_name_suffix=' ';
+        	   $t_name_suffix=''; 
         	}
         	else
         	{

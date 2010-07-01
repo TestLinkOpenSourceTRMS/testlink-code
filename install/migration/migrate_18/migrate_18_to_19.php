@@ -11,10 +11,11 @@
  * - Update IDs on ....
  * - Update project options
  *  
- * $Id: migrate_18_to_19.php,v 1.7 2010/03/05 10:57:13 asimon83 Exp $
+ * $Id: migrate_18_to_19.php,v 1.8 2010/07/01 08:52:10 mx-julian Exp $
  * Author: franciscom
  * 
  * @internal rev:
+ *  20100701 - Julian - requirement type set to "1"
  * 	20100215 - havlatm - test project options
  *  20100119 - franciscom - migrate_req_specs() - drop title
  *	20100118 - franciscom - fixed bug on migrate_req_specs()
@@ -69,11 +70,12 @@ function migrate_requirements(&$dbHandler,$tableSet)
         $dbHandler->exec_query($sql);
         
         // STEP 2 - Create nodes for req_versions on nodes_hierarchy table
+        // Set requirement type to '1' as it was set to 'V' on 1.8 but has never been used
 	    foreach($reqSet as $dummy => $req_info)
 	    {
 	    	$item_id = $tree_mgr->new_node($req_info['id'],$node_types_descr_id['requirement_version']);
 	    	$sql = " UPDATE {$tableSet['req_versions']} " .
-	    	       " SET id = {$item_id} WHERE id={$req_info['id']}";
+	    	       " SET id = {$item_id}, type = 1 WHERE id={$req_info['id']}";
             $dbHandler->exec_query($sql);
 	    }
 

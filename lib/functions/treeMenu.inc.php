@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.133 2010/06/28 16:19:37 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.134 2010/07/01 11:10:02 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20100701 - asimon - added some additional isset() checks to avoid warnings
  *  20100628 - asimon - removal of constants from filter control class
  *  20160625 - asimon - refactoring for new filter features and BUGID 3516
  *  20100624 - asimon - CVS merge (experimental branch to HEAD)
@@ -801,18 +802,25 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	}
 	
 	$tc_id = isset($filters->tc_id) ? $filters->tc_id : null; 
-	$build_id = $filters->{'filter_result_build'};
-	$bHideTCs = $filters->hide_testcases;
-	$assignedTo = $filters->{'filter_assigned_user'}; 
-	$status = $filters->{'filter_result_result'};
-	$cf_hash = $filters->{'filter_custom_fields'};
-	$show_testsuite_contents = $filters->show_testsuite_contents;
-	$urgencyImportance = isset($filters->{'filter_priority'}) ?
-	                     $filters->{'filter_priority'} : null;
+	$build_id = isset($filters->filter_result_build) ? $filters->filter_result_build : null;
+	$bHideTCs = isset($filters->hide_testcases) ? $filters->hide_testcases : false;
+	$assignedTo = isset($filters->filter_assigned_user) ? $filters->filter_assigned_user : null; 
+	$include_unassigned = isset($filters->filter_assigned_user_include_unassigned) ?
+	                      $filters->filter_assigned_user_include_unassigned : false;
+	$setting_platform = isset($filters->setting_platform) ? $filters->setting_platform : null;
+	$execution_type = isset($filters->filter_execution_type) ? $filters->filter_execution_type : null;
+	$status = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
+	$cf_hash = isset($filters->filter_custom_fields) ? $filters->filter_custom_fields : null;
+	$show_testsuite_contents = isset($filters->show_testsuite_contents) ? 
+	                           $filters->show_testsuite_contents : true;
+	$urgencyImportance = isset($filters->filter_priority) ?
+	                     $filters->filter_priority : null;
 	
-	$useCounters=$additionalInfo->useCounters;
-	$useColors=$additionalInfo->useColours;
-	$colorBySelectedBuild = $additionalInfo->testcases_colouring_by_selected_build;
+	$useCounters=isset($additionalInfo->useCounters) ? $additionalInfo->useCounters : null;
+	$useColors=isset($additionalInfo->useColours) ? $additionalInfo->useColours : null;
+	$colorBySelectedBuild = isset($additionalInfo->testcases_colouring_by_selected_build) ? 
+	                        $additionalInfo->testcases_colouring_by_selected_build : null;
+
 	$tplan_mgr = new testplan($db);
 	$tproject_mgr = new testproject($db);
 	$tcase_mgr = new testcase($db);
@@ -875,17 +883,16 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
 			// 20100520 - franciscom
-			$opt = array('include_unassigned' => 
-			             $filters->{'filter_assigned_user_include_unassigned'}, 
+			$opt = array('include_unassigned' => $include_unassigned, 
 			             'steps_info' => false);
 
 			// 20100417 - BUGID 3380 - execution type
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,
                                    'assigned_to' => $assignedTo,
                                    'cf_hash' =>  $cf_hash,
-                                   'platform_id' => $filters->{'setting_platform'},
+                                   'platform_id' => $setting_platform,
                                    'urgencyImportance' => $urgencyImportance,
-                                   'exec_type' => $filters->{'filter_execution_type'});
+                                   'exec_type' => $execution_type);
 			
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
 			
@@ -1024,7 +1031,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// Then to avoid changes to prepareNode() due to include_unassigned,
 		// seems enough to set assignedTo to 0, if include_unassigned==true
 		// $assignedTo = $include_unassigned ? 0 : $assignedTo;
-		$assignedTo = $filters->{'filter_assigned_user_include_unassigned'} ? 
+		$assignedTo = $include_unassigned ? 
 		              null : $assignedTo;
 		
 		$pnFilters = array('assignedTo' => $assignedTo);

@@ -3,178 +3,488 @@
    TestLink  Change-log
 *******************************************************************************
 
-TestLink - 1.9 (DEV)
-====================
+==================================================================================
+TestLink - 1.9 Beta 5 
+==================================================================================
+- 0003180: [New Feature] In Add/Remove test cases to test plan, allow filtering on custom fields (asimon) - resolved.
+- 0003154: [New Feature] Additional search function (asimon) - resolved.
+- 0002815: [Test Execute] Setting filter in "Test Execute" fails to build tree using EXTJS (asimon) - resolved.
+- 0003514: [asimon_thesis] Testplan and platform select boxes appear twice under testcase assignment (asimon) - resolved.
+- 0003513: [asimon_thesis] Execute navigation tree can be empty under certain circumstances (asimon) - resolved.
+- 0003386: [Test Execute] Wrong test case status when selecting a new build (asimon) - resolved.
+- 0001588: [New Feature] Execution filter extension (asimon) - resolved.
+- 0002144: [Test Execute] choice "update tree after each change" while executing tests (asimon) - resolved.
+- 0002365: [Test Execute] Add filter capabilities of only showing test cases that have not been run on any builds (asimon) - resolved.
+- 0003302: [asimon_thesis] Filtering by custom fields should be available on: - Assign Test Case execution (asimon) - resolved.
+- 0003303: [asimon_thesis] Filtering by custom fields should be available on: Add / Remove Test Cases (asimon) - resolved.
+- 0003301: [asimon_thesis] Test Cases filtering on Custom Field Values on Set Urgent Test Page (asimon) - resolved.
+- 0002845: [TL API] buildname option in reportTCResult will never be used (fman) - resolved.
+- 0003540: [TL API] API - new methods() - doesUserExist(), checkDevKey() (fman) - resolved.
+- 0003538: [Export/Import] Import of testsuite without requirement (fman) - resolved.
+- 0003533: [Reports] Reports and metrics \ Requirement based report gives error (fman) - resolved.
+- 0003228: [User Interface General] Improvement of Platform Management GUI (Eloff) - resolved.
+- 0003523: [Test Execute] Bad performance in execute history (Eloff) - resolved.
+- 0003522: [User Interface General] Only first note visible (Eloff) - resolved.
+- 0003472: [Reports] Charts do not work with platforms (fman) - resolved.
+- 0001627: [Reports] Search Test Case by Date of Creation (fman) - resolved.
+- 0002908: [Test Execute] Cancel button in Import XML Results does not work (fman) - resolved.
+- 0002932: [General] The page goes blank after uploading a file (fman) - resolved.
+- 0003152: [Third party components] Editor keeps previous content after creating another testcase (fman) - resolved.
+- 0003174: [Test Specification] Double creation of steps after exit of step editor (fman) - resolved.
+- 0003175: [Test Specification] Text not cleared when adding new step on testcase (fman) - resolved.
+- 0003377: [Test Specification] Test Case actions aren't removed when created (fman) - resolved.
+- 0001668: [New Feature] Step test cases (Using tables in the Steps function and not using the expected results field) (fman) - resolved.
+- 0003381: [Localization] update for Russian localization (fman) - resolved.
+- 0002408: [TL API] Relation between internal testcaseid,testplanid,projectid,buildid and web based ids in testlink (fman) - resolved.
+- 0001777: [Test Execute] TestLink refreshes the execution frame so you have to scroll manually to the next test case (fman) - resolved.
+- 0002341: [Requirement Management] Assign Requirements In TC Unable to open in IE (fman) - resolved.
+- 0003018: [Requirement Management] Request to add "Import" and "Export Requirement Specifications" function to requirement specifications (fman) - resolved.
+- 0003499: [User Interface General] Internet Explorer 8 (IE8) - Round corners problems (fman) - resolved.
+- 0003479: [Custom fields] Bulk Execution - Custom Fields Bulk Assignment (Missing custom fields on testsuite level) (fman) - resolved.
+- 0003318: [User Interface General] Renaming of Features on Main Page (Julian) - resolved.
+- 0003408: [Test Execute] Search by custom field is always showing SQL Exception on UI when custom field contains # character (fman) - resolved.
+- 0003407: [Requirement Management] Beta 4 Snapshot - Edit Requirements not working (fman) - resolved.
+- 0003481: [Test Specification] Preconditions are lost when versioning testcases (fman) - resolved.
+- 0003478: [Test Execute] Testcase ID not updated when using save and move next (fman) - resolved.
+- 0002519: [TL API] getTestCasesForTestPlan should return also testcase external ID (fman) - resolved.
+- 0002169: [Requirement Management] Export of requirements doesn't save Custom Fields (fman) - resolved.
+- 0001871: [Requirement Management] import/export exigence (fman) - resolved.
+- 0003232: [Requirement Management] EXPORT / IMPORT XML - use for Requirements same pattern used for test cases (fman) - resolved.
+- 0003276: [Test Execute] Test case execute don't display due to bad Bug Tracking System Integration config (fman) - resolved.
+- 0001479: [Test Specification] The setting "automatic_tree_refresh=1" is not retained (fman) - resolved.
+- 0003022: [Requirement Management] Option to import and export ALL req spec on a test project (fman) - resolved.
+- 0003424: [User Interface General] Custom CSS path is being overwritten by config.inc.php value (fix included) (fman) - resolved.
+- 0003115: [New Feature] Make the TestlinkXMLRPCServer class extensible (fman) - resolved.
+- 0003164: [Requirement Management] Requirements XML Import does not work (fman) - resolved.
+- 0003365: [Export/Import] Import Results - Platform ID is not written (fman) - resolved.
+- 0003449: [TL API] addTestCaseToTestPlan() always fails (fman) - resolved.
+- 0002905: [User Interface General] Testlink 1.8.4 over SSL gives Mixed content warnings in IE (fman) - resolved.
+- 0003189: [Test Plan (builds, milestones, test assign)] Exception while updating test case versions in test plan (fman) - resolved.
+- 0003471: [General] window.open calls fail when name contains spaces (fman) - resolved.
+- 0003470: [Export/Import] XML import of test results with platforms fails (fman) - resolved.
+- 0003475: [Export/Import] Import results - XML - possibility to get platform ID and/or BUILD ID from file (fman) - resolved.
+- 0003432: [Users and Rights] user edit/creation not possible because of include path error in usersEdit.php (fman) - resolved.
+- 0003309: [Requirement Management] Requirements Export not working (fman) - resolved.
+- 0003434: [Test Execute] Performance problems when calling function get_keyword_map() to populate keywords filter (fman) - resolved.
+- 0003429: [Inventory / Platforms] Platforms view - broken image when platform can not be deleted (Julian) - resolved.
+- 0003356: [Reports] "Failed Test Cases" report is not updated when a test case has been changed from "Failed" to "Passed" (fman) - resolved.
+- 0003350: [New Feature] [Ergonomy] In execute view, platform selection should be saved and we shoould be able to mask filters independently (asimon) - resolved.
+- 0003374: [Test Specification] Many debug information are showed when a test case are imported (fman) - resolved.
+- 0003260: [Test Execute] Import XML Results is not working with Internet Explorer (fman) - resolved.
+- 0003405: [Test Specification] Navigation Bar - Test Case Search - Crash when search a nonexistent testcase (fman) - resolved.
+- 0003413: [Requirement Management] Two "x" appears in Requirement Specification title (fman) - closed.
+- 0003409: [Third party components] EXT-JS upgrade to 3.2.0 (fman) - closed.
+- 0003417: [Users and Rights] Bad message when reset user password is not possible due to mail config problems (fman) - closed.
+- 0003411: [Installer] Notice appears in first intallation (fman) - closed.
+- 0003430: [Test Project Management] Copy test project crashed if milestone defined WITHOUT start date (fman) - closed.
+- 0003418: [Reports] Results in test result matrix shifted (Julian) - closed.
+- 0003419: [Test Execute] In "Test result matrix", tests statuses or not colorized (fman) - closed.
+- 0003442: [Requirement Management] Import Requirements from XML show empty lines in Import Requirements table (fman) - closed.
+- 0003460: [Reports] In "Query metrics" report bug description is not displayed (fman) - closed.
+- 0003455: [TL API] Missing status string for INVALID_STATUS error. (fman) - closed.
+- 0003438: [Reports] Query Metrics -> Does not display bugs (fman) - closed.
+- 0003428: [Test Plan (builds, milestones, test assign)] Add capabiliy to copy test plan from previous project (fman) - closed.
+- 0003446: [Requirement Management] Import CHILD requirements XML - show empty screen (fman) - closed.
+- 0003445: [Event viewer] Ability to delete events from selected class from event logs (fman) - closed.
+- 0003458: [TL API] createTestCase() crashed due to SQL error (fman) - closed.
+- 0003465: [Test Project Management] Delete Test Project - User Execution Assignment is not deleted (fman) - closed.
+- 0003464: [Test Project Management] Delete Test Project crash when inventory exist - Postrgres SQL (fman) - closed.
+- 0003461: [Reports] Test Result Matrix report is not sent by email (fman) - closed.
+- 0003457: [TL API] createTestcase returns an external id which isn't the external id (fman) - closed.
+- 0003456: [TL API] Missing version parameter for PARAMETER_NOT_INT error. (fman) - closed.
+- 0003454: [TL API] Extending the TestlinkXMLRPCServer class (fman) - closed.
+- 0003447: [Requirement Management] CVS Import child requirements - support same data than XML format (fman) - closed.
+- 0003480: [Test Specification] Assign Test Case to Test Plan from test spec screen allow link DIFFERENT tc versions to test plan (fman) - closed.
+- 0003474: [Reports] Link to test case in Query Metrics Report is broken if using platforms (fman) - closed.
+- 0003473: [Test Specification] Show Test Cases newest versions -> fatal error (fman) - closed.
+- 0003436: [Users and Rights] Role Mgmt - add "Inventory Mgmt" to any user fails (fman) - closed.
+- 0003466: [Test Execute] Test Execution frame not displayed (fman) - closed.
+- 0003491: [Test Specification] reorder steps dose not work on internet explorer (fman) - closed.
+- 0003485: [Test Plan (builds, milestones, test assign)] "Create from existing Test Plan" always copies builds, even though you uncheck the related check box "Copy Builds" (fman) - closed.
+- 0003495: [Requirement Management] Requirements Bulk Assignment crash. (fman) - closed.
+- 0003498: [Database General] get_by_name method of testsuite class is missing a clause in it's query string (fman) - closed.
+- 0003440: [Reports] Can not generate Results->Test Report (fman) - closed.
+- 0003506: [Test Specification] Test Case search by REQ DOC ID - crashes (fman) - closed.
+- 0003509: [Installer] Domxml doesn't seem to be present. Importing XML stuff will not work! (fman) - closed.
+- 0003435: [Test Project Management] Create Project - Copying Project Data Fails When Requirements Mgmt is enabled (fman) - closed.
+- 0003490: [Test Specification] Can not search a test case after Req.Doc ID (Julian) - closed.
+- 0003448: [Reports] Test Report generates all results as "Not Run" (fman) - closed.
+- 0003511: [TL API] reportTCResult does not update tcversion (fman) - closed.
+- 0003536: [Custom fields] During execution, Custom fields are not shown after 'Save and move to next' functionality (fman) - closed.
+- 0003542: [Reports] Type in code of resultsGeneral.php (Eloff) - closed.
+- 0003255: [Integration with Other Systems] Bugtracker Integration on result pages (Eloff) - closed.
+- 0003486: [asimon_thesis] In the execute page, tree doesn't update when you change "Test Plan" in the "Setting" panel (asimon) - closed.
+- 0003502: [asimon_thesis] The filter "Apply" operation would lost "feature" arguments, (asimon) - closed.
+- 0003414: [asimon_thesis] Filter by Custom Fields do not retain value after apply (asimon) - closed.
+- 0003545: [Localization] Localization files not UTF-8 encoded (Julian) - closed.
+- 0003492: [Reports] Reports->failed/not run/blocked test cases display: the column "summary" should be "notes" as before (Julian) - closed.
+- 0002177: [Localization] Different code pages in different elements of GUI (Julian) - closed.
+- 0002888: [Database Postgres] Execute Tests: ERROR ON exec_query() by filtering of priority - closed.
+- 0001607: [Reports] XML import/export doesn't contain custom fields (fman) - closed.
+- 0001439: [Test Plan (builds, milestones, test assign)] Show Test Cases newest versions : Linked version" = 2 "Newest available active" version = 1 ? (fman) - closed.
+- 0002906: [Users and Rights] It´s not possible to delete user (fman) - closed.
+- 0003213: [Internal issue] Obsolete configuration (fman) - closed.
+- 0003360: [Localization] Translation in brazilian portuguese (pt-br) (fman) - closed.
+- 0003214: [Localization] French translation is complete (fman) - closed.
+[120 issues]
 
-- 0002996: [Requirement Management] Improvment to "Create Test Cases from Requirements" Feature (asimon) - resolved.
-- 0002652: [Test Plan (builds, milestones, test assign)] Update all Testcases to latest Version should show all latest Versions (Julian) - resolved.
-- 0001858: [Test Specification] Number of test cases is not shown when searching for test cases by keywords or text (schlundus) - resolved.
-- 0002530: [Test Plan (builds, milestones, test assign)] Cannot set urgency for individual test cases within a test suite (mhavlat) - resolved.
-- 0002938: [New Feature] Save execution and next in test case execution (fman) - resolved.
-- 0001598: [Test Specification] Test case thrown out upon creation, login dialog appeared (Eloff) - resolved.
-- 0002482: [User Interface General] After time-out period all text that you have entered to new test case, after re-Log In disappear (Eloff) - resolved.
-- 0003088: [User Interface General] When session times out in background, let the user renew session without risking losing data (Eloff) - resolved.
-- 0003079: [Reports, Metrics, Export and Print] Testing Notes does no formatting of the text entered (mhavlat) - resolved.
-- 0003090: [Test Specification] Delete test case is not working on CVS HEAD (fman) - resolved.
-- 0002791: [Custom fields] Maxsize of Custom field design value is always varchar(255) no matter what type it is defined to. (fman) - resolved.
-- 0003077: [Test Specification] Preconditions missing on Search Test Cases (fman) - resolved.
-- 0003064: [General] Assign test case to test plan right after test case has been edited should not display inactive test plans (fman) - resolved.
-- 0003086: [Test Specification] After execution of testcase, a new version should be created before editing test steps (fman) - resolved.
-- 0003082: [Installer] Reinstall on same DB fails (fman) - resolved.
-- 0003084: [Test Plan (builds, milestones, test assign)] When using platforms after assign tests, layout display columns not aligned (Eloff) - resolved.
-- 0003019: [Requirement Management] Requirement Versioning (fman) - resolved.
-- 0002976: [Requirement Management] Requirement / Requirement Specification Search (Julian) - resolved.
-- 0002276: [Custom fields] Feature to Update/Edit Custom Field Values for an execution (fman) - resolved.
-- 0003063: [Custom fields] Behaviour of dropdownlists by creating/editing Custom Fields (fman) - resolved.
-- 0002343: [Custom fields] CF_ESTIMATED_EXEC_TIME does not get displaid (fman) - resolved.
-- 0003048: [Test Project Management] Home missing when first time project is created (fman) - resolved.
-- 0003061: [Test Specification] Can't add test case to test plan from specification page (fman) - resolved.
-- 0003034: [Documentation (Install, User Manual, help)] Set urgent tests page does not reflect original urgency (mhavlat) - resolved.
-- 0002663: [Database General] Show stack trace on SQL error to easier find the bad code (fman) - resolved.
-- 0003016: [New Feature] Comparison of testcases (and requirement) versions (asimon) - resolved.
-- 0003040: [Test Specification] $args(object) is created upon creating a new test case and also creating a new version (fman) - resolved.
-- 0003042: [Test Specification] Two radio buttons appear in compare Versioning. (fman) - resolved.
-- 0003041: [Test Specification] Editing test case is not possible (fman) - resolved.
-- 0003043: [Users and Rights] User Info -> API Interface -> Generate a new key does not work (fman) - resolved.
-- 0002036: [User Interface General] GUI: Check exiting window with modified content (Eloff) - resolved.
-- 0002800: [User Interface General] Test Executions Filter pane is closed (Eloff) - resolved.
-- 0003000: [Requirement Management] Type Field for Requirements and Requirement Specifications (fman) - resolved.
-- 0003023: [Requirement Management] Configure management at User Interface level of expected coverage based on req, type (fman) - resolved.
-- 0003021: [General] Testcase search function returns empty if testproject prefix contains "glue character", eg: '-' (Eloff) - resolved.
-- 0003020: [Test Project Management] When trying to edit notes on e test project, the editor is always empty (fman) - resolved.
-- 0002916: [Test Specification] Spelling/Grammatical corrections to Getting Started Area (mhavlat) - resolved.
-- 0003015: [Localization] Contribution:The total translations of TestLink into Chinese (mhavlat) - resolved.
-- 0002603: [Documentation (Install, User Manual, help)] Code description must be phpDoc compliant (mhavlat) - resolved.
-- 0002999: [User Interface General] Direct Link to Testlink items from outside Testlink (asimon) - resolved.
-- 0000342: [New Feature] Save session configuration (Eloff) - resolved.
-- 0002998: [New Feature] Contribution: API - added getTestSuiteByID(), reportTCResult(), now accepts custom fields as an optional parameter (fman) - resolved.
-- 0002870: [Test Specification] Search according to execution type (fman) - resolved.
-- 0003002: [Localization] The word 'Design' is misspelled (fman) - resolved.
-- 0002702: [Requirement Management] It can not move an existed Requirement Specifications to another (fman) - resolved.
-- 0002469: [Test Execute] CFG-Parameters to show notes/details on test-execution (Julian) - resolved.
-- 0002995: [Requirement Management] TL 1.9 - create testcases from requirement - missing value for preconditions (fman) - resolved.
-- 0002621: [Database General] Table prefix is not used by all scripts (fman) - resolved.
-- 0002950: [TL API] TL API functions only seem to work with PHP client and not any other clients (fman) - resolved.
-- 0002992: [Internal issue] deprecated php function and warnings (fman) - resolved.
-- 0002023: [Reports, Metrics, Export and Print] Filter "executed by" in Query Metrics (fman) - resolved.
-- 0002977: [Requirement Management] Internal Links for Requirements and Requirement Specifications (Julian) - resolved.
-- 0002940: [Reports, Metrics, Export and Print] Query Parameters of query metrex doesn't work (fman) - resolved.
-- 0002792: [User Interface General] Usuability when deleting/unlinking platform (Eloff) - resolved.
-- 0002896: [Custom fields] Undefined index:-in .../testlink/lib/functions/cfield_mgr.class.php - line 641 (fman) - resolved.
-- 0001617: [New Feature] XML import/export of test-cases with custom field (fman) - resolved.
-- 0002949: [TL API] update test case result (fman) - resolved.
-- 0002554: [New Feature] Usefull colors in usersAssign section (fman) - resolved.
-- 0002605: [New Feature] Test Case modification during test execution (fman) - resolved.
-- 0002974: [TL API] getTestCaseIDByName method doesn't seem to support hierarchy of testsuites ... (fman) - resolved.
-- 0002964: [New Feature] Template for User Role (Julian) - resolved.
-- 0002968: [New Feature] Template for Execution (Julian) - resolved.
-- 0002970: [New Feature] Template for Testcases (fman) - resolved.
-- 0002962: [New Feature] Template for Test Plans (Julian) - resolved.
-- 0002965: [New Feature] Template for Requirements (Julian) - resolved.
-- 0002966: [New Feature] Template for Requirement Specifications (Julian) - resolved.
-- 0002961: [New Feature] Template for Test Projects (Julian) - resolved.
-- 0002963: [New Feature] Template for Builds (Julian) - resolved.
-- 0002957: [Custom fields] "Characters left"-function does not work for custom field textarea (fman) - resolved.
-- 0002937: [New Feature] add/remove test case hover over test case tooltip replacement with summary (fman) - resolved.
-- 0002662: [Database General] SQL error in execute view (Eloff) - resolved.
-- 0002500: [Reports, Metrics, Export and Print] query Metrics with 'assigned to' and 'show execution of status' set, the result is not what is expected (fman) - resolved.
-- 0002917: [Charts] Pie Chart for platforms feature (fman) - resolved.
-- 0002892: [Test Execute] I can't see the results of old builds (fman) - resolved.
-- 0002872: [Localization] en_us missing some strings (fman) - resolved.
-- 0002898: [New Feature] Activate ldap tls authentication (fman) - resolved.
-- 0002895: [User Interface General] testsuite description is not visible in execute TAB (fman) - resolved.
-- 0002894: [General] Better user defined template configuration (fman) - resolved.
-- 0002893: [Test Plan (builds, milestones, test assign)] Platforms feature - Export/import on XML (fman) - resolved.
-- 0002862: [Event viewer] Option to see the event viewer results for a specific user (amitkhullar) - resolved.
-- 0002861: [Users and Rights] Send mail to administrators when a new account is created (fman) - resolved.
-- 0002851: [Test Plan (builds, milestones, test assign)] Contribution - Set Assign To on Add to Test Case(s) page (fman) - resolved.
-- 0002850: [Test Execute] Contribution - Improve UI for bulk update of Test Execution (fman) - resolved.
-- 0002847: [Test Plan (builds, milestones, test assign)] Contribution - Copy Tester Assignment when creating test plan from existent one (fman) - resolved.
-- 0002825: [0 - Undefined] CVS HEAD 20090831 - maxlife* variables (mhavlat) - resolved.
-- 0002722: [Reports, Metrics, Export and Print] no option to sort the execution results in Result Reports (fman) - resolved.
-- 0000846: [Reports, Metrics, Export and Print] Contribution - New fields to the reports (fman) - resolved.
-- 0001170: [Custom fields] Change the order of display of custom fields on the screen implementing tests (fman) - resolved.
-- 0002246: [Test Plan (builds, milestones, test assign)] Custom field duplicated in the test case report and it is not underlined (fman) - resolved.
-- 0002427: [Custom fields] Custom fields shown two times (fman) - resolved.
-- 0002468: [TL API] method reportTCResult() reset the test case's result. (fman) - resolved.
-- 0002796: [New Feature] contribution: add start_time to configuration (same as start_date_offset) to resultsMoreBuilds.php (fman) - resolved.
-- 0002067: [User Interface General] Impossible to resize the navigation tree window. (schlundus) - resolved.
-- 0001662: [Third party software components] Ext Js - Update to 2.2 (fman) - resolved.
-- 0002581: [Test Specification] Number of Characterts at Custom Field not updated (fman) - resolved.
-- 0002606: [General] file "custom_config.inc.php" should NOT be in distro (mhavlat) - resolved.
-- 0002425: [Custom fields] Custom fields not displayed on expected places (fman) - resolved.
-- 0002778: [Custom fields] custom fields are filled with blanks (fman) - resolved.
-- 0002300: [General] Failed opening required 'Users.class.php' (fman) - resolved.
-- 0002254: [Test Execute] [Execute Tests] Issues when trying to execute tests just shows the circular icon and nothing happens (fman) - resolved.
-- 0001137: [New Feature] Instaler: Add automatically database table name prefix (fman) - resolved.
-- 0002704: [Test Execute] Test Suite Details are not viewable in "Execute Mode" (fman) - resolved.
-- 0002501: [Reports, Metrics, Export and Print] Requirements Report enhancement to include doc_id (schlundus) - resolved.
-- 0002083: [General] eregXXX calls should be avoided (schlundus) - resolved.
- - 0001953: [General] Deprecated: Function ereg_replace() is deprecated in D:\tl_dev\testlink\lib\functions\lang_api.php on line 171 (fman) - resolved.
-- 0002818: [Test Plan (builds, milestones, test assign)] Test Plan Drop-down does not resize to fit name correctly. (schlundus) - resolved.
-- 0002668: [Reports, Metrics, Export and Print] Upgrade of result matrix (Eloff) - resolved.
-- 0002759: [Localization] Get the following error when sending e-mails - String 'charset' is not localized for 'en_GB' (schlundus) - resolved.
-- 0002807: [User Interface General] Keyword-Deletion-Confirmation Dialog doesn't show the keyword name (schlundus) - resolved.
-- 0002786: [User Interface General] Missing baseCls: 'x-tl-panel' property in main page menu boxes ? (schlundus) - resolved.
-- 0002799: [User Interface General] Invalid URL will be displayed on logout after session expires (schlundus) - resolved.
-- 0002801: [Users and Rights] reset password email appends 'If' to the password in the email so it fails for the user (schlundus) - resolved.
-- 0002612: [Internal issue] Add debug footer with certain performance counters (schlundus) - resolved.
-- 0002661: [Reports, Metrics, Export and Print] Show priorities in result matrix (Eloff) - resolved.
-- 0002452: [User Interface General] Delete confirmation dlg when deleting executionbugs is not consistent with other delete confirmation dialog (no ext.js) used (schlundus) - resolved.
-- 0002767: [Localization] Duplicate testsuite name error message issue (fman) - resolved.
-- 0002758: [TL API] make getTestCasesForTestPlan() accept keywords also by name (fman) - resolved.
-- 0002521: [Requirement Management] Test case coverage under the requirement container is static, i.e not href (fman) - resolved.
-- 0002492: [TL API] TestLink API 'reportTCResult' should allow custom field results to be imported (fman) - resolved.
-- 0002625: [User Interface General] Contribution: Modifications on custom field (display order modified) (fman) - resolved.
-- 0002726: [Test Execute] [DEV] History of all executions have broken SQL (fman) - resolved.
-- 0001155: [Database General] builds table should have a date or timestamp field (fman) - resolved.
-- 0002728: [Internal issue] get_full_path_verbose crush when one of the items does not exist (fman) - resolved.
-- 0002544: [Custom fields] Extra space when creating custom fields (fman) - resolved.
-- 0002660: [Test Plan (builds, milestones, test assign)] Show priority in assign view (mhavlat) - resolved.
-- 0002614: [Database MySQL] [TL1.9] Schema Changes: DB 1.3 (mhavlat) - resolved.
-- 0002608: [Documentation (Install, User Manual, help)] DocBook documentation for inputparameter* (schlundus) - resolved.
-- 0002653: [Localization] Variable assigned the same value twice (schlundus) - resolved.
-- 0002583: [Users and Rights] Lost password feature : not very user-friendly password is sent (mhavlat) - resolved.
-- 0002610: [Database MySQL] Performance issue in Report "Test Cases not assigned to Any Test Plan" due to inperformant SQL query (schlundus) - resolved.
-- 0002598: [TL API] New methid - createTestPlan() (fman) - resolved.
-- 0002543: [General] Prefilling the Test Case ID search box seems not as useful. as seems (schlundus) - resolved.
-- 0002174: [Localization] Hardcoded strings in GUI, that cannot be localized or removed (schlundus) - resolved.
-- 0002198: [User Interface General] Test Suite was successfully Delete! (schlundus) - resolved.
-- 0002578: [Reports, Metrics, Export and Print] Insert blank space between test cases in HTML Test Specification Document (mhavlat) - resolved.
-- 0002518: [TL API] New function: getTestCaseByExtId() (fman) - resolved.
-- 0001907: [Third party software components] Tree management component - Leave only EXT-JS (schlundus) - resolved.
-- 0002499: [New Feature] Integration with BTS - JIRA using SOAP-XML (amitkhullar) - resolved.
-- 0002494: [Test Plan (builds, milestones, test assign)] Manage Build release date (fman) - resolved.
-- 0002417: [Users and Rights] Project admin should be able to assign users to own project (fman) - resolved.
-- 0001009: [Users and Rights] After assigning testproject-role "admin" to user it cannot assign testproject-roles to other users (fman) - resolved.
-- 0002441: [TL API] new methods - getTestProjectByName(), getTestPlanByName() (fman) - resolved.
-- 0002442: [Users and Rights] Add Bulk Assignment on Assign Test Project Roles and Assign Test Plan Roles (fman) - resolved.
-- 0002378: [Test Specification] Add to test plan does not have option to 'Add test plan' if plan does not exist (fman) - resolved.
-- 0002359: [Custom fields] When editing Custom Fields, display test projects where custom field has been assigned (fman) - resolved.
-- 0002369: [Test Plan (builds, milestones, test assign)] Add new fields to testplan_tcversions table in order to understand when tcversion was added to test plan (fman) - resolved.
-- 0002309: [Requirement Management] Requirement ID missing (fman) - resolved.
-- 0002363: [Reports, Metrics, Export and Print] Report - display test cases not added to at least one testplan (fman) - resolved.
-- 0001983: [TL API] Patch files for TestLink 1.8(RC2) XML-RPC (fman) - resolved.
-- 0002422: [Test Specification] Checkbox to select all Test Cases while moving/copying between Test Suites (fman) - resolved.
-- 0002414: [Custom fields] Add online check to control that qty of characters on TEXT AREA CF can be written to DB (fman) - resolved.
-- 0000192: [New Feature] User should be able to edit the test case while executing it (fman) - resolved.
-- 0000497: [New Feature] It should be possible to design and execute test cases simultaneously (fman) - resolved.
-- 0002364: [Test Execute] Ability to edit a test case during execution (fman) - resolved.
-- 0002158: [TL API] getTestCaseCustomFieldDesignValue returns no value (fman) - resolved.
-- 0002247: [Test Execute] Add additional option for show test cases within test suite (fman) - resolved.
-- 0002289: [Event viewer] WARNING: String 'import_results' is not localized for 'en_GB' (fman) - resolved.
-- 0002255: [Test Plan (builds, milestones, test assign)] default execution order is not logically when adding test cases to a test plan (fman) - resolved.
-- 0002156: [Reports, Metrics, Export and Print] Query Metrics Report shows all results for each test case (amitkhullar) - resolved.
-- 0002207: [Reports, Metrics, Export and Print] Display linked bugs in Test Report for failed test cases. (amitkhullar) - resolved.
-- 0001880: [User Interface General] Delete confirmation dialog of attachemnts is not consistent with most other delete confirmation dialog (no ext.js) used (schlundus) - resolved.
-- 0002206: [Reports, Metrics, Export and Print] Option to enable / disable printing of Custom Fields in Test Report (amitkhullar) - resolved.
-- 0000797: [Reports, Metrics, Export and Print] Custom fields in Results (amitkhullar) - resolved.
-- 0002232: [TL API] An API Call to create Test Suites (fman) - resolved.
-- 0003004: [Third party software components] Trees using EXTJS - window size is fixed format (mhavlat) - closed.
+TestLink - 1.9 Beta 4 (Released 2010-04-04) [ View Issues ] 
+===========================================
+
+Released 20100501
+
+- 0003355: [User Interface General] A user can not be deleted from the list (fman) - resolved.
+- 0001752: [New Feature] Comments field for requirements and test cases is expected - using Custom fields not possible due to lenght limits (fman) - resolved.
+- 0003507: [Users and Rights] User locale cannot be set with option "Personal" (fman) - resolved.
+- 0002754: [User Interface General] Space is not working in view mode. - Formatting Style not maintained (fman) - resolved.
+- 0001413: [Requirement Management] Double instances of requirements on import (fman) - resolved.
+- 0003484: [TL API] tl.addTestCaseToTestPlan not working. no errors was shown. But Testcases not in assigned testplan after adding. (fman) - resolved.
+- 0003059: [Test Specification] Test case is displayed in Specification without applying font formating (fman) - resolved.
+- 0003058: [Test Execute] Test case execution page is not properly formatted (fman) - resolved.
+- 0003057: [Integration with Other Systems] Can't add bug id on test case execution (for Bugzilla) (fman) - resolved.
+- 0003415: [Users and Rights] Not possible reset user password (fman) - closed.
+- 0002741: [Test Execute] Failed to Assigan Project User Roles - closed.
+- 0001205: [Test Specification] Import with existing TC update (fman) - closed.
+- 0001914: [New Feature] Maybe a work around for problem when loading a full suite. (fman) - closed.
+- 0002035: [Custom fields] multiselection list with more than 254 characters (fman) - closed.
+- 0001433: [Requirement Management] Implement requirements versioning and baseline (fman) - closed.
+- 0001249: [User Interface General] When searching test-case --> result does not show the test-suite where the test-case is in (fman) - closed.
+- 0000673: [Test Specification] Test case order when imported from file. (fman) - closed.
+- 0001187: [Custom fields] Export custom fields also - as an option (fman) - closed.
+- 0003143: [Test Specification] TestCase copy crash TestLink. (fman) - closed.
+- 0002407: [General] Error when viewing test case specification (fman) - closed.
+- 0003137: [Requirement Management] Change of Requirement Specification Types (asimon) - closed.
+- 0001794: [Test Plan (builds, milestones, test assign)] The Test Plan assign page doesn't return correct results when Assigned to Parameter is used. - closed.
+- 0003225: [Test Specification] Step-by-step TC: All steps must be visible during "Edit a step" action. (fman) - closed.
+- 0003402: [Test Plan (builds, milestones, test assign)] List of Milestone don't show all data (fman) - closed.
+- 0003248: [Test Plan (builds, milestones, test assign)] Date field is not appropriate for build (fman) - closed.
+- 0003003: [Requirement Management] EXTJS does not count # req's (fman) - closed.
+- 0003249: [Users and Rights] Role Assignment Option replicated in Edit Admin Role View (fman) - closed.
+- 0003243: [TL API] Unable to use reportTCResult due to an error in platform management (fman) - closed.
+- 0003235: [Reports] Printing Out Test Report Shows empty Column Headers for "Steps" and "Step Actions" (fman) - closed.
+- 0003253: [Test Specification] Missing Parameter in func get_step_numbers in testcase.class.php line 4116 (fman) - closed.
+- 0002454: [Test Execute] Execution history formatting problems when showing results for all builds (Julian) - closed.
+- 0003239: [Reports] Weird order on "Test Cases with Custom Fields info" (asimon) - closed.
+- 0003256: [Integration with Other Systems] Bugtracker Integration: Adding Bug fails due to missing function in child classes (Julian) - closed.
+- 0003267: [Reports] Requirements based Report - number alignment (fman) - closed.
+- 0003098: [Integration with Other Systems] Not possible to add bug in Jira using bug mangement system from Testlink. (Julian) - closed.
+- 0003254: [Requirement Management] requirement_mgr->get_by_id(): parameter LATEST_VERSION doesn't have any effect (fman) - closed.
+- 0003272: [Users and Rights] Large URL header when large number of users in User Role Assignments (Eloff) - closed.
+- 0003275: [General] Steps and Expected Results not displayed in Firefox 3.6, when editing (fman) - closed.
+- 0003271: [Users and Rights] Filter out the inactive users for assign roles on test projects and test plans (Eloff) - closed.
+- 0003281: [Test Specification] Checkbox to Export Test Cases with/without Custom Field info (amitkhullar) - closed.
+- 0003315: [Requirement Management] import of existing requirements failed (fman) - closed.
+- 0003287: [Integration with Other Systems] JIRASOAP - Bug ID does not exists (amitkhullar) - closed.
+- 0003312: [Requirement Management] Audit msg for Req. Freeze display internal ID as version instead of version number (asimon) - closed.
+- 0003227: [Requirement Management] New Feature Requirement Overview (asimon) - closed.
+- 0003307: [Requirement Management] Disable Expected requirement coverage (asimon) - closed.
+- 0003316: [Test Specification] requirements not visible in Testcase view by edit testspecification (asimon) - closed.
+- 0003321: [Requirement Management] In results area, Php error when Requirements based Report chosen (amitkhullar) - closed.
+- 0003345: [General] Display Test Case aging time period or Assigned and Due Since (days) (amitkhullar) - closed.
+- 0003346: [Test Plan (builds, milestones, test assign)] The Database doesnt update the value of date when a TC is reassigned to some one else (amitkhullar) - closed.
+- 0001748: [Requirement Management] Requirement Management need to be improved with requirement relations between requirements (asimon) - closed.
+- 0003324: [Users and Rights] Error while deleting user (fman) - closed.
+- 0003337: [Test Specification] New feature (add test case steps) enhancement due to user friendly. (fman) - closed.
+- 0002645: [TL API] New method GetTestsuitesforTestsuite (fman) - closed.
+- 0003334: [General] Search Test Cases returns no results (fman) - closed.
+- 0003359: [Test Specification] Copy Test Case Step (fman) - closed.
+- 0003066: [Internal issue] Upgrade ADODB to 5.10 (fman) - closed.
+- 0003329: [Test Plan (builds, milestones, test assign)] "Test Plan usage" in "Specification" test case view does not show all affected test plans (Eloff) - closed.
+- 0003331: [Export/Import] Adding bugID report through Import XML result (fman) - closed.
+- 0003363: [New Feature] Contribution: Add 'and' keyword filtering capability in Execution tab (Julian) - closed.
+- 0003067: [Requirement Management] Generation of Requirement Specification Document (asimon) - closed.
+- 0003108: [Requirement Management] Generate Document must print tree like TC (asimon) - closed.
+- 0003326: [Test Specification] Editing a test step: execution type always "Manual" (fman) - closed.
+- 0002434: [Reports] Problem with printing Requirement Specification for a child node (asimon) - closed.
+- 0003361: [Requirement Management] FatalError after trying to assign requirements to an empty test suite (fman) - closed.
+- 0003364: [Export/Import] Contribution: Be able to export execution_type (fman) - closed.
+- 0003236: [Test Specification] Creating new testcase version based on internal id instead of name (fman) - closed.
+- 0003295: [Custom fields] Assigning "datetime" Custom Field to Test Case produces Error (fman) - closed.
+- 0003370: [Reports] TestPlan Combobox in Report page with many deactivated TestPlans is not easy to handle (fman) - closed.
+- 0002795: [Export/Import] Execution_type could not be imported (fman) - closed.
+- 0002797: [Test Plan (builds, milestones, test assign)] When ADD/REMOVE test cases to test plan, test cases could not be filtered by execution type (fman) - closed.
+- 0003367: [Test Specification] Error after trying to copy a test case that the name is in the size limit. (fman) - closed.
+- 0003371: [Test Specification] Search Test Cases based on Test Importance (fman) - closed.
+- 0003387: [Users and Rights] User with role tester can delete test cases (fman) - closed.
+- 0003385: [TL API] New Function: getTestPlanPlatforms (fman) - closed.
+- 0003380: [Test Execute] Test Case Execution - Filtered by execution type (fman) - closed.
+- 0003378: [Requirement Management] Type of requirement are no translated (fman) - closed.
+- 0003252: [Test Specification] On Pressing Cancel the Create Test Case Step doesnt go away (fman) - closed.
+- 0002376: [Users and Rights] Does not displaying test cases if user of that test cases is deleted (fman) - closed.
+- 0002498: [Test Plan (builds, milestones, test assign)] Add test case to test plan - Filter Test Cases based on Test Importance (fman) - closed.
+- 0003379: [Test Plan (builds, milestones, test assign)] Assign Test Case Execution - Filter regarding on build may be can be removed (Julian) - closed.
+- 0003376: [Test Specification] Remove link in test case action name (fman) - closed.
+- 0002990: [Reports] Test Results Fatal error: Call to a member function buildViewBugLink() in lib/functions/exec.inc.php on line 223 (fman) - closed.
+- 0003399: [Export/Import] Test importance not well imported (fman) - closed.
+- 0003398: [Installer] Got php notice error when try to install the 1.9b3 version;while install/migration/index.php is OK (Julian) - closed.
+- 0003069: [Reports] Report "Failed Test Cases" not work (fman) - closed.
+- 0003025: [Localization] German (de_DE) strings.txt - Scripted update according en_GB string file (version: 1.606) (Julian) - closed.
+- 0003391: [Test Specification] Search by Custom fields always give no results (fman) - closed.
+- 0003396: [Users and Rights] Reset Password sends email with xml tags, password doesn't work (fman) - closed.
+[88 issues]
+
+TestLink - 1.9 Beta 3 (Released 2010-03-03) [ View Issues ] 
+===========================================
+- 0003126: [Test Project Management] Request the ability to copy test project and data associate to it (fman) - closed.
+- 0003104: [Requirement Management] Analyse req.spec produces fatal error (fman) - closed.
+- 0003008: [Test Plan (builds, milestones, test assign)] TL 1.9 (DEV) - Update Linked Test Case Version not working for single Test Case (fman) - closed.
+- 0003109: [Test Plan (builds, milestones, test assign)] Update TC versions, click on TC causes Crash (fman) - closed.
+- 0003118: [General] Help files are not getting opened when selected in the dropdown (fman) - closed.
+- 0003121: [Reports] Adding Platform to test plan after the execution completed, reports are not shown appropriate (fman) - closed.
+- 0003099: [Custom fields] The Custom Fields on Test Execution page are not displayed when I set these fields in Test Plan Design (fman) - closed.
+- 0003123: [Reports] General Test Plan Metrics - order of columns with test case exec results (fman) - closed.
+- 0002753: [Test Plan (builds, milestones, test assign)] Error while editing an existing test plan (fman) - closed.
+- 0002572: [Requirement Management] Test Case creation from the Requirement documents causes sql error (fman) - closed.
+- 0003001: [User Interface General] Unable to generate API keys in HEAD (fman) - closed.
+- 0002451: [Internal issue] Update smarty component (fman) - closed.
+- 0002189: [Requirement Management] Copy requirements (fman) - closed.
+- 0002047: [Custom fields] Custom fields are shown strangely during "add to test plan" and "execute" process (fman) - closed.
+- 0002163: [Test Specification] Create test case with same title, after submit, all data lost (fman) - closed.
+- 0003095: [TL API] getTestCasesForTestSuite return values (fman) - closed.
+- 0002757: [TL API] API method "updateTestCase" not available (fman) - closed.
+- 0003125: [Users and Rights] If the User(in a role) is not having rights to view/mgmt of platform no message to tell user (fman) - closed.
+- 0002642: [Reports] Platforms feature (fman) - closed.
+- 0003139: [Test Specification] Test Suite Copy - Custom Fields copy (fman) - closed.
+- 0003133: [Installer] MySQL migration from 1.8 to 1.9 fails on Linux (fman) - closed.
+- 0003130: [Test Specification] TestSuite: Edit - rename Test Suite Name causes PHP Fatal Error (fman) - closed.
+- 0003129: [User Interface General] After login failure blank page is displayed (fman) - closed.
+- 0003140: [TL API] Access to an unitialized object "$testCaseMgr" in the function _checkTCIDAndTPIDValid in the file /lib/api/xmlrpc.php (fman) - closed.
+- 0003060: [Reports] Empty Priority test progress in General Test Plan Matrix report (Eloff) - closed.
+- 0002887: [Documentation (Install, User Manual, help)] The installation page link to the readme file is broken (mhavlat) - closed.
+- 0003147: [Test Project Management] Delete test project with requirements defined crashed with memory exhausted (fman) - closed.
+- 0003150: [Test Plan (builds, milestones, test assign)] "Bulk user assignment" on "Assign testcase execution" doesn't work anymore (fman) - closed.
+- 0003089: [Requirement Management] Req versions new attribute is_open (asimon) - closed.
+- 0002167: [Requirement Management] Tree management of req-s does not apply to export/import, print, create test case, etc. (fman) - closed.
+- 0003103: [User Interface General] after time out message, user can still continue (Eloff) - closed.
+- 0003165: [Test Execute] Refactor resultsImport.php to use simpleXML functions (fman) - closed.
+- 0003158: [Reports] "Array" instead of platform name (fman) - closed.
+- 0003157: [Test Plan (builds, milestones, test assign)] It's not possible to reassign a testcase when a user is already assigned (Eloff) - closed.
+- 0002541: [Reports] Empty Rows printed if Query results is run with specific criteria (amitkhullar) - closed.
+- 0003160: [Reports] Query Metrics -> Information shifted and volumn missing (Eloff) - closed.
+- 0003166: [Users and Rights] Platform rights are not defined (mhavlat) - closed.
+- 0003173: [Custom fields] The Custom Fields on Test Execution page are not displayed when I set these fields in Test Plan Design (fman) - closed.
+- 0003202: [General] inventory id rights refactored to follow defacto standard (fman) - closed.
+- 0003187: [Inventory / Platforms] Edit infrastructure CLEAN HOST and save => operation never ends (mhavlat) - closed.
+- 0003197: [Inventory / Platforms] Inventory values are not displayed after saving (mhavlat) - closed.
+- 0003186: [Inventory / Platforms] feedback message when deleting can have name of deleted host (mhavlat) - closed.
+- 0003162: [Custom fields] custom field of type checkbox cannot be unchecked, if checked before (fman) - closed.
+- 0003183: [Inventory / Platforms] Create infrastructure with existent HOST NAME results in progress bar never ending (mhavlat) - closed.
+- 0003199: [Inventory / Platforms] Add MAXLENGTH on HOST and IP fields (mhavlat) - closed.
+- 0003201: [Inventory / Platforms] Missing error/warning message (some jx error) (mhavlat) - closed.
+- 0003203: [Test Specification] Testcase export XML - keyword element generated when keywords does not exist (fman) - closed.
+- 0003161: [Reports] Charts - Charts missing? (fman) - closed.
+- 0002886: [Documentation (Install, User Manual, help)] readme missing config_db.inc.php (mhavlat) - closed.
+- 0002697: [Requirement Management] Can not export Test Requirement Specification (fman) - closed.
+- 0003223: [Test Project Management] Delete Project causes crash (fman) - closed.
+- 0002999: [User Interface General] Direct Link to Testlink items from outside Testlink (asimon) - closed.
+- 0003159: [Reports] Query Metrics -> platform name missing (Eloff) - closed.
+- 0003205: [Test Plan (builds, milestones, test assign)] Save platform when add/remove test cases and NO Platform defined (Eloff) - closed.
+- 0003217: [General] Bulleted list or a Numbered list in the FCK or TinyMCE editor isn't visable when viewing the saved Test Case (Eloff) - closed.
+- 0003229: [Reports] Platforms export content (fman) - closed.
+- 0003231: [General] Session timeout throwing 404 error (Eloff) - closed.
+- 0003233: [Test Specification] After test suite edit, display of Test suite do not have upload button enabled for attachment (fman) - closed.
+- 0003215: [Reports] viewing the metrics for a set of executed test cases reports the platform as "Array" (fman) - closed.
+- 0002175: [Localization] The Test Case was generated from the assigned requirement. - cannot be localized (asimon) - closed.
+- 0002251: [Requirement Management] exporting of requirements does not include order of requirement (fman) - closed.
+- 0001927: [Test Plan (builds, milestones, test assign)] filter on keyword - Filter tree when add/remove testcases - KO (fman) - closed.
+- 0003226: [Test Plan (builds, milestones, test assign)] Test Case execution Assignment - Assignment of single test case not possible (fman) - closed.
+- 0003049: [Test Plan (builds, milestones, test assign)] Remove test case execution assignments for complete testplan (asimon) - closed.
+- 0002299: [Keywords] keyword filter in the Test-Specification Navigator didn't work (fman) - closed.
+- 0002707: [Test Plan (builds, milestones, test assign)] After closing a SW-Built, I cannot see the notes-window (fman) - closed.
+- 0003011: [Test Specification] priority is not copied when copying testcases (fman) - closed.
+- 0003181: [Test Specification] From test case specification, after adding the test case to test a plan with platforms, platforms are not displayed (fman) - closed.
+- 0001854: [General] Including a | (pipe) in the summary of the test case does not give an error (fman) - closed.
+- 0002977: [Requirement Management] Internal Links for Requirements and Requirement Specifications (asimon) - closed.
+- 0003026: [Test Execute] "Filter & Settings" do not effect the "Test case execution" frame (asimon) - closed.
+- 0002455: [Test Execute] Improvement of execution and test case execution assignment filters (asimon) - closed.
+- 0003171: [Test Specification] Error when importing test suite linked to requirements. (fman) - closed.
+- 0003393: [Test Project Management] Erro ao clicar/abrir no link Test Project Management (fman) - closed.
+- 0003211: [Installer] upgrading from 1.8 database to 1.9 fails with Failed opening required '.\migration\migrate_18...' - closed.
+[75 issues]
+
+TestLink - 1.9 Beta 1 (Released 2010-01-06) [ View Issues ] 
+===========================================
+- 0003244: [Integration with Other Systems] can't support php5.3 (fman) - closed.
+- 0003389: [New Feature] Ned to add the "Pre-condition" as a default field for test cases (fman) - closed.
+[2 issues]
+
+TestLink - 1.9 Beta 2 (Released 2009-12-02) [ View Issues ] 
+===========================================
+
+The next major release is target version for the most wanted new features.
+
+- 0002893: [Test Plan (builds, milestones, test assign)] Platforms feature - Export/import on XML (fman) - closed.
+- 0002158: [TL API] getTestCaseCustomFieldDesignValue returns no value (fman) - closed.
+- 0002232: [TL API] An API Call to create Test Suites (fman) - closed.
+- 0002206: [Reports] Option to enable / disable printing of Custom Fields in Test Report (amitkhullar) - closed.
+- 0000797: [Reports] Custom fields in Results (amitkhullar) - closed.
+- 0002207: [Reports] Display linked bugs in Test Report for failed test cases. (amitkhullar) - closed.
+- 0001880: [User Interface General] Delete confirmation dialog of attachemnts is not consistent with most other delete confirmation dialog (no ext.js) used (schlundus) - closed.
+- 0002255: [Test Plan (builds, milestones, test assign)] default execution order is not logically when adding test cases to a test plan (fman) - closed.
+- 0002247: [Test Execute] Add additional option for show test cases within test suite (fman) - closed.
+- 0002289: [Event viewer] WARNING:	String 'import_results' is not localized for 'en_GB' (fman) - closed.
+- 0002156: [Reports] Query Metrics Report shows all results for each test case (amitkhullar) - closed.
+- 0002364: [Test Execute] Ability to edit a test case during execution (fman) - closed.
+- 0000497: [New Feature] It should be possible to design and execute test cases simultaneously (fman) - closed.
+- 0000192: [New Feature] User should be able to edit the test case while executing it (fman) - closed.
+- 0002414: [Custom fields] Add online check to control that qty of characters on TEXT AREA CF can be written to DB (fman) - closed.
+- 0002422: [Test Specification] Checkbox to select all Test Cases while moving/copying between Test Suites (fman) - closed.
+- 0001983: [TL API] Patch files for TestLink 1.8(RC2) XML-RPC (fman) - closed.
+- 0002363: [Reports] Report - display test cases not added to at least one testplan (fman) - closed.
+- 0002369: [Test Plan (builds, milestones, test assign)] Add new fields to testplan_tcversions table in order to understand when tcversion was added to test plan (fman) - closed.
+- 0002359: [Custom fields] When editing Custom Fields, display test projects where custom field has been assigned (fman) - closed.
+- 0002309: [Requirement Management] Requirement ID missing (fman) - closed.
+- 0002442: [Users and Rights] Add Bulk Assignment on Assign Test Project Roles and Assign Test Plan Roles (fman) - closed.
+- 0002378: [Test Specification] Add to test plan does not have option to 'Add test plan' if plan does not exist (fman) - closed.
+- 0002441: [TL API] new methods - getTestProjectByName(), getTestPlanByName() (fman) - closed.
+- 0001009: [Users and Rights] After assigning testproject-role "admin" to user it cannot assign testproject-roles to other users (fman) - closed.
+- 0002417: [Users and Rights] Project admin should be able to assign users to own project (fman) - closed.
+- 0002494: [Test Plan (builds, milestones, test assign)] Manage Build release date (fman) - closed.
+- 0002499: [New Feature] Integration with BTS - JIRA using SOAP-XML (amitkhullar) - closed.
+- 0001907: [Third party components] Tree management component - Leave only EXT-JS (schlundus) - closed.
+- 0002578: [Reports] Insert blank space between test cases in HTML Test Specification Document (mhavlat) - closed.
+- 0002518: [TL API] New function: getTestCaseByExtId() (fman) - closed.
+- 0002198: [User Interface General] Test Suite was successfully Delete! (schlundus) - closed.
+- 0002174: [Localization] Hardcoded strings in GUI, that cannot be localized or removed (schlundus) - closed.
+- 0002610: [Database MySQL] Performance issue in Report "Test Cases not assigned to Any Test Plan" due to inperformant SQL query (schlundus) - closed.
+- 0002543: [General] Prefilling the Test Case ID search box seems not as useful. as seems (schlundus) - closed.
+- 0002583: [Users and Rights] Lost password feature : not very user-friendly password is sent (mhavlat) - closed.
+- 0002598: [TL API] New methid - createTestPlan() (fman) - closed.
+- 0002653: [Localization] Variable assigned the same value twice (schlundus) - closed.
+- 0002608: [Documentation (Install, User Manual, help)] DocBook documentation for inputparameter* (schlundus) - closed.
+- 0002660: [Test Plan (builds, milestones, test assign)] Show priority in assign view (mhavlat) - closed.
+- 0002614: [Database MySQL] [TL1.9] Schema Changes: DB 1.3 (mhavlat) - closed.
+- 0002728: [Internal issue] get_full_path_verbose crush when one of the items does not exist (fman) - closed.
+- 0002544: [Custom fields] Extra space when creating custom fields (fman) - closed.
+- 0001155: [Database General] builds table should have a date or timestamp field (fman) - closed.
+- 0002726: [Test Execute] [DEV] History of all executions have broken SQL (fman) - closed.
+- 0002625: [User Interface General] Contribution: Modifications on custom field (display order modified) (fman) - closed.
+- 0002492: [TL API] TestLink API 'reportTCResult' should allow custom field results to be imported (fman) - closed.
+- 0002758: [TL API] make getTestCasesForTestPlan() accept keywords also by name (fman) - closed.
+- 0002521: [Requirement Management] Test case coverage under the requirement container is static, i.e not href (fman) - closed.
+- 0002767: [Localization] Duplicate testsuite name error message issue (fman) - closed.
+- 0002799: [User Interface General] Invalid URL will be displayed on logout after session expires (schlundus) - closed.
+- 0002801: [Users and Rights] reset password email appends 'If' to the password in the email so it fails for the user (schlundus) - closed.
+- 0002452: [User Interface General] Delete confirmation dlg when deleting executionbugs is not consistent with other delete confirmation dialog (no ext.js) used (schlundus) - closed.
+- 0002612: [Internal issue] Add debug footer with certain performance counters (schlundus) - closed.
+- 0002661: [Reports] Show priorities in result matrix (Eloff) - closed.
+- 0002786: [User Interface General] Missing baseCls: 'x-tl-panel' property in main page menu boxes ? (schlundus) - closed.
+- 0002759: [Localization] Get the following error when sending e-mails - String 'charset' is not localized for 'en_GB' (schlundus) - closed.
+- 0002807: [User Interface General] Keyword-Deletion-Confirmation Dialog doesn't show the keyword name (schlundus) - closed.
+- 0002668: [Reports] Upgrade of result matrix (Eloff) - closed.
+- 0002083: [General] eregXXX calls should be avoided (schlundus) - closed.
+ - 0001953: [General] Deprecated: Function ereg_replace() is deprecated in D:\tl_dev\testlink\lib\functions\lang_api.php on line 171 (fman) - closed.
+- 0002501: [Reports] Requirements Report enhancement to include doc_id (schlundus) - closed.
+- 0002818: [Test Plan (builds, milestones, test assign)] Test Plan Drop-down does not resize to fit name correctly. (schlundus) - closed.
+- 0001137: [New Feature] Instaler: Add automatically database table name prefix (fman) - closed.
+- 0002704: [Test Execute] Test Suite Details are not viewable in "Execute Mode" (fman) - closed.
+- 0002254: [Test Execute] [Execute Tests] Issues when trying to execute tests just shows the circular icon and nothing happens (fman) - closed.
+- 0002300: [General] Failed opening required 'Users.class.php' (fman) - closed.
+- 0002778: [Custom fields] custom fields are filled with blanks (fman) - closed.
+- 0002606: [General] file "custom_config.inc.php" should NOT be in distro (mhavlat) - closed.
+- 0002425: [Custom fields] Custom fields not displayed on expected places (fman) - closed.
+- 0002581: [Test Specification] Number of Characterts at Custom Field not updated (fman) - closed.
+- 0002067: [User Interface General] Impossible to resize the navigation tree window. (schlundus) - closed.
+- 0002468: [TL API] method reportTCResult() reset the test case's result. (fman) - closed.
+- 0001662: [Third party components] Ext Js - Update to 2.2 (fman) - closed.
+- 0002796: [New Feature] contribution: add start_time to configuration (same as start_date_offset) to resultsMoreBuilds.php (fman) - closed.
+- 0002246: [Test Plan (builds, milestones, test assign)] Custom field duplicated in the test case report and it is not underlined (fman) - closed.
+- 0002427: [Custom fields] Custom fields shown two times (fman) - closed.
+- 0001170: [Custom fields] Change the order of display of custom fields on the screen implementing tests (fman) - closed.
+- 0000846: [Reports] Contribution - New fields to the reports (fman) - closed.
+- 0002847: [Test Plan (builds, milestones, test assign)] Contribution - Copy Tester Assignment when creating test plan from existent one (fman) - closed.
+- 0002722: [Reports] no option to sort the execution results in Result Reports (fman) - closed.
+- 0002825: [0 - Undefined] CVS HEAD 20090831 - maxlife* variables (mhavlat) - closed.
+- 0002851: [Test Plan (builds, milestones, test assign)] Contribution - Set Assign To on Add to Test Case(s) page (fman) - closed.
+- 0002850: [Test Execute] Contribution - Improve UI for bulk update of Test Execution (fman) - closed.
+- 0002862: [Event viewer] Option to see the event viewer results for a specific user (amitkhullar) - closed.
+- 0002861: [Users and Rights] Send mail to administrators when a new account is created (fman) - closed.
+- 0002894: [General] Better user defined template configuration (fman) - closed.
+- 0002895: [User Interface General] testsuite description is not visible in execute TAB (fman) - closed.
+- 0002872: [Localization] en_us missing some strings (fman) - closed.
+- 0002892: [Test Execute] I can't see the results of old builds (fman) - closed.
+- 0002898: [New Feature] Activate ldap tls authentication (fman) - closed.
+- 0002917: [Charts] Pie Chart for platforms feature (fman) - closed.
+- 0002662: [Database General] SQL error in execute view (Eloff) - closed.
+- 0002500: [Reports] query Metrics with 'assigned to' and 'show execution of status' set, the result is not what is expected (fman) - closed.
+- 0002937: [New Feature] add/remove test case hover over test case tooltip replacement with summary (fman) - closed.
+- 0002957: [Custom fields] "Characters left"-function does not work for custom field textarea (fman) - closed.
+- 0002963: [New Feature] Template for Builds (Julian) - closed.
+- 0002961: [New Feature] Template for Test Projects (Julian) - closed.
+- 0002966: [New Feature] Template for Requirement Specifications (Julian) - closed.
+- 0002965: [New Feature] Template for Requirements (Julian) - closed.
+- 0002968: [New Feature] Template for Execution (Julian) - closed.
+- 0002970: [New Feature] Template for Testcases (fman) - closed.
+- 0002962: [New Feature] Template for Test Plans (Julian) - closed.
+- 0002964: [New Feature] Template for User Role (Julian) - closed.
+- 0002974: [TL API] getTestCaseIDByName method doesn't seem to support hierarchy of testsuites ... (fman) - closed.
+- 0002949: [TL API] update test case result (fman) - closed.
+- 0002554: [New Feature] Usefull colors in usersAssign section (fman) - closed.
+- 0002605: [New Feature] Test Case modification during test execution (fman) - closed.
+- 0002896: [Custom fields] Undefined index:-in .../testlink/lib/functions/cfield_mgr.class.php - line 641 (fman) - closed.
+- 0001617: [New Feature] XML import/export of test-cases with custom field (fman) - closed.
+- 0002792: [User Interface General] Usuability when deleting/unlinking platform (Eloff) - closed.
+- 0002940: [Reports] Query Parameters of query metrex doesn't work (fman) - closed.
+- 0002023: [Reports] Filter "executed by" in Query Metrics (fman) - closed.
+- 0002992: [Internal issue] deprecated php function and warnings (fman) - closed.
+- 0002950: [TL API] TL API functions only seem to work with PHP client and not any other clients (fman) - closed.
+- 0002995: [Requirement Management] TL 1.9 - create testcases from requirement - missing value for preconditions (fman) - closed.
+- 0002621: [Database General] Table prefix is not used by all scripts (fman) - closed.
+- 0002702: [Requirement Management] It can not move an existed Requirement Specifications to another (fman) - closed.
+- 0002469: [Test Execute] CFG-Parameters to show notes/details on test-execution (Julian) - closed.
+- 0002870: [Test Specification] Search according to execution type (fman) - closed.
+- 0002998: [New Feature] Contribution: API - added getTestSuiteByID(), reportTCResult(), now accepts custom fields as an optional parameter (fman) - closed.
+- 0003002: [Localization] The word 'Design' is misspelled (fman) - closed.
+- 0002603: [Documentation (Install, User Manual, help)] Code description must be phpDoc compliant (mhavlat) - closed.
+- 0000342: [New Feature] Save session configuration (Eloff) - closed.
+- 0003023: [Requirement Management] Configure management at User Interface level of expected coverage based on req, type (fman) - closed.
+- 0002916: [Test Specification] Spelling/Grammatical corrections to Getting Started Area (mhavlat) - closed.
+- 0003015: [Localization] Contribution:The total translations of TestLink into Chinese (mhavlat) - closed.
+- 0003021: [General] Testcase search function returns empty if testproject prefix contains "glue character", eg: '-' (Eloff) - closed.
+- 0003020: [Test Project Management] When trying to edit notes on e test project, the editor is always empty (fman) - closed.
+- 0003000: [Requirement Management] Type Field for Requirements and Requirement Specifications (fman) - closed.
+- 0002800: [User Interface General] Test Executions Filter pane is closed (Eloff) - closed.
+- 0002036: [User Interface General] GUI: Check exiting window with modified content (Eloff) - closed.
+- 0003043: [Users and Rights] User Info -> API Interface -> Generate a new key does not work (fman) - closed.
+- 0003042: [Test Specification] Two radio buttons appear in compare Versioning. (fman) - closed.
+- 0003040: [Test Specification] $args(object) is created upon creating a new test case and also creating a new version (fman) - closed.
+- 0003016: [New Feature] Comparison of testcases (and requirement) versions (asimon) - closed.
+- 0003041: [Test Specification] Editing test case is not possible (fman) - closed.
+- 0002663: [Database General] Show stack trace on SQL error to easier find the bad code (fman) - closed.
+- 0003034: [Documentation (Install, User Manual, help)] Set urgent tests page does not reflect original urgency (mhavlat) - closed.
+- 0003048: [Test Project Management] Home missing when first time project is created (fman) - closed.
+- 0003061: [Test Specification] Can't add test case to test plan from specification page (fman) - closed.
+- 0002343: [Custom fields] CF_ESTIMATED_EXEC_TIME does not get displaid (fman) - closed.
+- 0002276: [Custom fields] Feature to Update/Edit Custom Field Values for an execution (fman) - closed.
+- 0003063: [Custom fields] Behaviour of dropdownlists by creating/editing Custom Fields (fman) - closed.
+- 0002976: [Requirement Management] Requirement / Requirement Specification Search (Julian) - closed.
+- 0003019: [Requirement Management] Requirement Versioning (fman) - closed.
+- 0003082: [Installer] Reinstall on same DB fails (fman) - closed.
+- 0003084: [Test Plan (builds, milestones, test assign)] When using platforms after assign tests, layout display columns not aligned (Eloff) - closed.
+- 0003064: [General] Assign test case to test plan right after test case has been edited should not display inactive test plans (fman) - closed.
+- 0003077: [Test Specification] Preconditions missing on Search Test Cases (fman) - closed.
+- 0003086: [Test Specification] After execution of testcase, a new version should be created before editing test steps (fman) - closed.
+- 0003079: [Reports] Testing Notes does no formatting of the text entered (mhavlat) - closed.
+- 0003090: [Test Specification] Delete test case is not working on CVS HEAD (fman) - closed.
+- 0002791: [Custom fields] Maxsize of Custom field design value is always varchar(255) no matter what type it is defined to. (fman) - closed.
+- 0003088: [User Interface General] When session times out in background, let the user renew session without risking losing data (Eloff) - closed.
+- 0002482: [User Interface General] After time-out period all text that you have entered to new test case, after re-Log In disappear (Eloff) - closed.
+- 0001598: [Test Specification] Test case thrown out upon creation, login dialog appeared (Eloff) - closed.
+- 0002938: [New Feature] Save execution and next in test case execution (fman) - closed.
+- 0001858: [Test Specification] Number of test cases is not shown when searching for test cases by keywords or text (schlundus) - closed.
+- 0002530: [Test Plan (builds, milestones, test assign)] Cannot set urgency for individual test cases within a test suite (mhavlat) - closed.
+- 0002652: [Test Plan (builds, milestones, test assign)] Update all Testcases to latest Version should show all latest Versions (Julian) - closed.
+- 0002996: [Requirement Management] Improvment to "Create Test Cases from Requirements" Feature (asimon) - closed.
+- 0003068: [Test Execute] "Save and move to next" button on Executions page selects previous case (fman) - closed.
+- 0003111: [User Interface General] Popup window of Requirement from TC execution has no scroll down (fman) - closed.
+- 0002922: [General] Changes lost if TestLink idle for a while (Eloff) - closed.
+- 0002692: [Test Execute] Not possible to find TCs based on last result (e.g. cannot find failed TCs that need re-run) (fman) - closed.
+- 0003004: [Third party components] Trees using EXTJS - window size is fixed format (mhavlat) - closed.
 - 0003071: [Test Specification] Creating new test case and editing exsiting test case fails. - closed.
 - 0000043: [New Feature] [SF 1241176 ] Unable to open up test case in new window anymore - closed.
 - 0002834: [Database MySQL] [Tl1.9 (Dev)] - ERROR ON exec_query() - database.class.php 1054 - Unknown column 'tcversions.preconditions' in 'field list' - closed.
-
+- 0002615: [Test Execute] ????? (schlundus) - closed.
+[171 issues]
 
 TestLink - 1.8.5 (bug fixing)
 =============================

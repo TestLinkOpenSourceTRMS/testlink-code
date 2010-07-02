@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.7 2010/07/02 13:05:52 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.8 2010/07/02 15:31:03 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -16,7 +16,8 @@
  *
  * @internal Revisions:
  *
- * 20100701 - asimon - 3414 - additional work in init_filter_custom_fields()
+ * 20100702 - asimon - fixed error in init_setting_testplan()
+ * 20100701 - asimon - BUGID 3414 - additional work in init_filter_custom_fields()
  * 20100628 - asimon - removal of constants
  * 20100624 - asimon - CVS merge (experimental branch to HEAD)
  * 20100503 - asimon - start of implementation of filter panel class hierarchy

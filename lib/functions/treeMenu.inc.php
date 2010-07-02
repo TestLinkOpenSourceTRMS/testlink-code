@@ -8,11 +8,15 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.134 2010/07/01 11:10:02 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.135 2010/07/02 15:31:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20100702 - asimon - fixed custom field filtering problem caused by 
+ *                      wrong array indexes and little logic errors
+ *  20100701 - asimon - replaced is_null in renderTreeNode() by !isset 
+ *                      because of warnings in event log
  *  20100701 - asimon - added some additional isset() checks to avoid warnings
  *  20100628 - asimon - removal of constants from filter control class
  *  20160625 - asimon - refactoring for new filter features and BUGID 3516
@@ -96,7 +100,7 @@ function filterString($str)
  
 function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters=null,$options=null)
 {
-    $tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
+	$tables = tlObjectWithDB::getDBTables(array('tcversions','nodes_hierarchy'));
 
 	$my = array();
 	
@@ -210,6 +214,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	    // BUGID 3301 - added filtering by custom field values
 	    if (isset($my['filters']['filter_custom_fields']) 
 	    && isset($test_spec['childNodes'])) {
+	    	
 	    	$test_spec['childNodes'] = filter_by_cf_values($test_spec['childNodes'], 
 			                           $my['filters']['filter_custom_fields'], 
 			                           $db, $tsuite_node_type, $tcase_node_type);
@@ -222,11 +227,12 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		
 		$testcase_counters = prepareNode($db,$test_spec,$decoding_hash,$map_node_tccount,$tck_map,
 			                             $tplan_tcs,$pnFilters,$pnOptions);
-		
+
 		foreach($testcase_counters as $key => $value)
 		{
 			$test_spec[$key]=$testcase_counters[$key];
 		}
+		
 		$menustring = renderTreeNode(1,$test_spec,$hash_id_descr,
 			                         $my['options']['tc_action_enabled'],$linkto,$tcase_prefix,
 			                         $my['options']['forPrinting'],$showTestCaseID);
@@ -286,7 +292,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		$menustring = str_ireplace(array(':null',',null','null,','null'),array(':[]','','',''), $menustring); 
 	}
 	$treeMenu->menustring = $menustring; 
-	 
+	
 	return $treeMenu;
 }
 
@@ -403,14 +409,16 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	if(!$enabledFiltersOn)
 	{
 		// 3301 - added filtering by testcase name
+		// 20100702 - and custom fields
 		$enabledFiltersOn['testcase_name'] = 
 			isset($my['filters']['filter_testcase_name']);
 		$enabledFiltersOn['keywords'] = !is_null($tck_map);
 		$enabledFiltersOn['executionType'] = 
 			!is_null($my['filters']['filter_execution_type']);
 		$enabledFiltersOn['importance'] = !is_null($my['filters']['filter_priority']);
+		$enabledFiltersOn['custom_fields'] = isset($my['filters']['filter_custom_fields']);
 		$filterOnTCVersionAttribute = $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'];
-		
+					
 		$filtersApplied = false;
 		foreach($enabledFiltersOn as $filterValue)
 		{
@@ -419,8 +427,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		
 		$activeVersionClause = $filterOnTCVersionAttribute ? " AND TCV.active=1 " : '';
 	}
-	
-	
+		
 	$tcase_counters = array('testcase_count' => 0);
 	foreach($status_descr_code as $status_descr => $status_code)
 	{
@@ -429,6 +436,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	
 	$node_type = isset($node['node_type_id']) ? $hash_id_descr[$node['node_type_id']] : null;
 	$tcase_counters['testcase_count']=0;
+
 	if($node_type == 'testcase')
 	{
 		$viewType = $my['options']['viewType'];
@@ -662,15 +670,17 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		} 
 	}  // if($node_type == 'testcase')
 	
-	if (isset($node['childNodes']) && $node['childNodes'])
+	if (isset($node['childNodes']) && is_array($node['childNodes']))
 	{
 		// node has to be a Test Suite ?
 		$childNodes = &$node['childNodes'];
-		$childNodesQty = sizeof($childNodes);
+		$childNodesQty = count($childNodes);
+		
 		for($idx = 0;$idx < $childNodesQty ;$idx++)
 		{
 			$current = &$childNodes[$idx];
 			// I use set an element to null to filter out leaf menu items
+			
 			if(is_null($current))
 			{
 				continue;
@@ -713,7 +723,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			$node = null;
 		}	
 	}
-	
+
 	return $tcase_counters;
 }
 
@@ -744,7 +754,9 @@ function renderTreeNode($level,&$node,$hash_id_descr,
 		$nChildren = sizeof($node['childNodes']);
 		for($idx = 0;$idx < $nChildren;$idx++)
 		{
-			if(is_null($node['childNodes'][$idx]))
+			// asimon - replaced is_null by !isset because of warnings in event log
+			if(!isset($node['childNodes'][$idx]))
+			//if(is_null($node['childNodes'][$idx]))
 			{
 				continue;
 			}
@@ -1065,8 +1077,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		{
 			$test_spec[$key] = $testcase_counters[$key];
 		}
-
-		
+	
 		
 		// 3516
 		// can now be left in form of array, will not be sent by URL anymore
@@ -1135,7 +1146,6 @@ function renderExecTreeNode($level,&$node,&$tcase_node,$hash_id_descr,
 	
 	if( isset($tcase_node[$node['id']]) )
 	{
-		// echo "Removing: {$node['id']} <br>";
 		unset($tcase_node[$node['id']]);
 	}
 	if (isset($node['childNodes']) && $node['childNodes'])
@@ -1449,6 +1459,10 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
  * @param int $node_type_testcase ID of node type for testcase
  * 
  * @return array $tcase_tree filtered tree structure
+ * 
+ * @internal revisions:
+ * 
+ * 20100702 - did some changes to logic in here and added a fix for array indexes
  */
 function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite, $node_type_testcase) {
 	static $tables = null;
@@ -1459,24 +1473,39 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 		$debugMsg = 'Function: ' . __FUNCTION__;
 	}
 	
+	$node_deleted = false;
+	
 	// This code is in parts based on (NOT simply copy/pasted)
 	// some filter code used in testplan class.
 	// Implemented because we have a tree here, 
 	// not simple one-dimensional array of testcases like in tplan class.
 	
-	foreach ($tcase_tree as $key => &$node) {
+	foreach ($tcase_tree as $key => $node) {
 		
-		if ($node['node_type_id'] == $node_type_testsuite && !is_null($node['childNodes'])) {			
-			// node is suite and has childs, recurse one level deeper
+		if ($node['node_type_id'] == $node_type_testsuite) {
+
+			$delete_suite = false;
 			
-			$node['childNodes'] = filter_by_cf_values($node['childNodes'], $cf_hash, $db, 
-			                                          $node_type_testsuite, $node_type_testcase);
-			
-			// now remove testsuite node if it is empty after filtering
-			if (!count($node['childNodes'])) {
-				unset($tcase_tree[$key]);
+			if (isset($node['childNodes']) && is_array($node['childNodes'])) {
+				// node is a suite and has children, so recurse one level deeper			
+				$tcase_tree[$key]['childNodes'] = filter_by_cf_values($tcase_tree[$key]['childNodes'], 
+				                                                      $cf_hash, $db, 
+				                                                      $node_type_testsuite,
+				                                                      $node_type_testcase);
+				
+				// now remove testsuite node if it is empty after coming back from recursion
+				if (!count($tcase_tree[$key]['childNodes'])) {
+					$delete_suite = true;
+				}
+			} else {
+				// nothing in here, suite was already empty
+				$delete_suite = true;
 			}
 			
+			if ($delete_suite) {
+				unset($tcase_tree[$key]);
+				$node_deleted = true;
+			}			
 		} else if ($node['node_type_id'] == $node_type_testcase) {
 			// node is testcase, check if we need to delete it
 			
@@ -1509,8 +1538,8 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 					}
 				}
 
-				// jumping out of foreach here creates AND search
-				// removing this if would cause OR search --> first found value counts
+				// jumping out of foreach here creates an AND search
+				// removing this if would cause OR search --> the first found value counts
 				if (!$passed) {
 					break;
 				}
@@ -1519,10 +1548,20 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 			// now delete node if no match was found
 			if (!$passed) {
 				unset($tcase_tree[$key]);
+				$node_deleted = true;
 			}			
 		}
 	}
-
+	
+	// 20100702 - asimon
+	// if we deleted a note, the numeric indexes of this array do have missing numbers,
+	// which causes problems in later loop constructs in other functions that assume numeric keys
+	// in these arrays without missing numbers in between - crashes JS tree!
+	// -> so I have to fix the array indexes here starting from 0 without missing a key 
+	if ($node_deleted) {
+		$tcase_tree = array_values($tcase_tree);
+	}
+	
 	return $tcase_tree;
 }
 

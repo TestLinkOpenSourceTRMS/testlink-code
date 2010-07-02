@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.157 2010/06/29 11:44:20 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.158 2010/07/02 06:27:10 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -202,6 +202,10 @@ $TLS_exec_not_run_result_note = "Wichtiger Hinweis: Wurde ein Ergebnis einmal vo
                                 "kann dieser nicht mehr auf 'Not Run' gesetzt werden. <br />Das Ergebnis kann weiterhin zu jedem anderen Wert geändert werden.";
 
 $TLS_req_status_not_testable = "nicht testbar";
+$TLS_req_status_draft = "Entwurf";
+$TLS_req_status_review = "Review";
+$TLS_req_status_rework = "Überarbeitung";
+$TLS_req_status_finish = "Fertig";
 
 $TLS_reserved_system_role_1 = 'Vom System reservierte Rolle 1';
 $TLS_reserved_system_role_2 = 'Vom System reservierte Rolle 2';

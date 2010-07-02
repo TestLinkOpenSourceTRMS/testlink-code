@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.633 2010/06/29 11:44:19 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.634 2010/07/02 06:27:11 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -203,6 +203,10 @@ $TLS_exec_not_run_result_note = "Important Notice: Once a Result is updated from
                                 "you cannot set it back to 'Not Run'. <br />You can still set the Result to any other value.";
 
 $TLS_req_status_not_testable = "Not testable"; // defined for historical reason (should be replaced by $TLS_req_type_info)
+$TLS_req_status_draft = "Draft";
+$TLS_req_status_review = "Review";
+$TLS_req_status_rework = "Rework";
+$TLS_req_status_finish = "Finish";
 
 $TLS_reserved_system_role_1 = 'reserved system role 1';
 $TLS_reserved_system_role_2 = 'reserved system role 2';

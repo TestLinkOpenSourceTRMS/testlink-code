@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.6 2010/07/01 16:43:19 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.7 2010/07/02 13:05:52 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -973,12 +973,25 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->settings[$key]['selected'] = $info['id'];
 
 		// Now get all selectable testplans for the user to display.
-		// But don't take testplans into selection which have no (active/open) builds!
+		// For execution, don't take testplans into selection which have no (active/open) builds!
+		// For plan add mode, add every plan no matter if he has builds or not.
 		foreach ($testplans as $plan) {
-			$builds = $this->testplan_mgr->get_builds($plan['id'],
-			                                          testplan::GET_ACTIVE_BUILD,
-			                                          testplan::GET_OPEN_BUILD);
-			if (is_array($builds) && count($builds)) {
+			$add_plan = false;
+			
+			if ($this->mode == 'plan_add_mode') {
+				$add_plan = true;
+			}
+			
+			if (!$add_plan) {
+				$builds = $this->testplan_mgr->get_builds($plan['id'],
+				                                          testplan::GET_ACTIVE_BUILD,
+				                                          testplan::GET_OPEN_BUILD);
+				if (is_array($builds) && count($builds)) {
+					$add_plan = true;
+				}
+			}
+			
+			if ($add_plan) {
 				$this->settings[$key]['items'][$plan['id']] = $plan['name'];
 			}
 		}
@@ -1290,10 +1303,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					case 'multiselection list':
 						// this is similar to single selection list, but a bit more complicated
 						// and needs an additional loop because the selection can have multiple values
-						var_dump($value_arr = explode('|', $value));
+						$value_arr = explode('|', $value);
 						foreach ($value_arr as $single_value) {
-							echo "single value: $single_value<br/>";
-							$pattern = '/(.*id="' . $cf_html_name . '".*value="' . $single_value . '")(.*)/';
+							$pattern = '/(.*id="' . $cf_html_name . '".*value="' . 
+							           $single_value . '")(.*)/';
 							// the numbers: 1 is the part before value, 2 after
 							$replacement = '${1} selected ${2}';
 							$menu = preg_replace($pattern, $replacement, $menu, $limit);

@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/06/24 17:25:56 $ by $Author: asimon83 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/07/04 11:45:33 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ * 	20100704 - franciscom - BUGID 3565 - createTestPlan() typo and logic error
  *	20100618 - franciscom - contribution refactored doesUserExist(), checkDevKey()
  *  20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
  *	20100610 - eloff - added getTotalsForTestPlan() method
@@ -3404,24 +3405,28 @@ public function getTestCase($args)
 	 * @param string $args["public"], optional default value 1
      *	 
 	 * @return mixed $resultInfo
+	 * @internal revision
+	 *	20100704 - franciscom - BUGID 3565
 	 */
 	public function createTestPlan($args)
 	{
 	    $this->_setArgs($args);
-	    $status_ok=true;    
+	    $status_ok = false;    
         $msg_prefix="(" . __FUNCTION__ . ") - ";
 
     	if($this->authenticate() && $this->userHasRight("mgt_modify_product"))
     	{
             $keys2check = array(self::$testPlanNameParamName,
                                 self::$testProjectNameParamName);
+        
+        	$status_ok = true;
             foreach($keys2check as $key)
             {
                 $names[$key]=$this->_isParamPresent($key,$msg_prefix,self::SET_ERROR) ? trim($this->args[$key]) : '';
                 if($names[$key]=='')
                 {
                     $status_ok=false;    
-                    breack;
+                    break;
                 }
             }
         }

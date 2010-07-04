@@ -5,12 +5,13 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.10 2010/05/23 09:31:36 franciscom Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.11 2010/07/04 16:33:39 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *	
+ *	20100704 - franciscom - getAccessibleTestPlans() - BUGID 3526
  *	20100522 - franciscom - getAccessibleTestPlans() - added arguments options
  *	20100427 - franciscom - BUGID 3396 - writePasswordToDB() method
  *	20100326 - franciscom - setActive() method
@@ -825,18 +826,36 @@ class tlUser extends tlDBObject
 		$globalNoRights = ($this->globalRoleID == TL_ROLES_NO_RIGHTS);
 		$projectNoRights = 0;
 		$analyseGlobalRole = 1;
-		if( ($analyseGlobalRole = isset($this->tprojectRoles[$testprojectID]->dbID)) )
+		
+		// 20100704 - franciscom
+		// BUGID 3526
+		// 
+		// If user has a role for $testprojectID, then we DO NOT HAVE to check for globalRole
+		// if( ($analyseGlobalRole = isset($this->tprojectRoles[$testprojectID]->dbID)) )
+		// {
+		// 	$projectNoRights = ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
+		// }
+		// Looking to the code on 1.8.5, seems this has been introduced on some refactoring
+		if( isset($this->tprojectRoles[$testprojectID]->dbID) )
 		{
+			$analyseGlobalRole = 0;
 			$projectNoRights = ($this->tprojectRoles[$testprojectID]->dbID == TL_ROLES_NO_RIGHTS); 
 		}
 		
+		// User can have NO RIGHT on test project under analisys ($testprojectID), in this situation he/she 
+		// has to have a role at Test Plan level in order to access one or more test plans 
+		// that belong to $testprojectID.
+		//
+		// Other situation: he/she has been created with role without rights ($globalNoRights)
+		//
 	  	if( $projectNoRights || ($analyseGlobalRole && $globalNoRights))
 	  	{
 	  	  $sql .= "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
 	  	}	
 	  	else
 	  	{
-	  	  $sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
+	  		// in this situation, do we are hineriting role from testprojectID ?	
+	  	  	$sql .= "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
 	  	}
 			
 		$sql .= " ORDER BY name";

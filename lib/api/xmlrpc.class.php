@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/07/04 11:45:33 $ by $Author: franciscom $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/07/05 20:28:22 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20100705 - franciscom - BUGID  - getTestPlanPlatforms() typo error
  * 	20100704 - franciscom - BUGID 3565 - createTestPlan() typo and logic error
  *	20100618 - franciscom - contribution refactored doesUserExist(), checkDevKey()
  *  20100613 - franciscom - BUGID 2845: buildname option in reportTCResult will never be used
@@ -2612,44 +2613,45 @@ class TestlinkXMLRPCServer extends IXR_Server
 	  * @param args['testplanid']
 	  * @param args['testcaseexternalid']
 	  * @param args['version']
+	  * @param args['platformid'] - OPTIONAL Only if  test plan has no platforms
 	  * @param args['executionorder'] - OPTIONAL
 	  * @param args['urgency'] - OPTIONAL
 	  *
 	  */
-	 public function addTestCaseToTestPlan($args)
-	 {
-	    $operation=__FUNCTION__;
-	    $messagePrefix="({$operation}) - ";
-	    $this->_setArgs($args);
-	    $op_result=null;
-	    $additional_fields='';
-        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
-                                'checkTestCaseIdentity','checkTestPlanID');
-        
-        $status_ok=$this->_runChecks($checkFunctions,$messagePrefix) && $this->userHasRight("testplan_planning");       
-       
-        // Test Plan belongs to test project ?
-        if( $status_ok )
-        {
-           $tproject_id=$this->args[self::$testProjectIDParamName];
-           $tplan_id=$this->args[self::$testPlanIDParamName];
-           
-           $sql=" SELECT id FROM {$this->tables['testplans']}" .
-                " WHERE testproject_id={$tproject_id} AND id = {$tplan_id}";         
-            
-           $rs=$this->dbObj->get_recordset($sql);
-        
-           if( count($rs) != 1 )
-           {
-              $status_ok=false;
-              $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
-              $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
-              $msg = sprintf(TPLAN_TPROJECT_KO_STR,$tplan_info['name'],$tplan_id,
-                                                   $tproject_info['name'],$tproject_id);  
-              $this->errors[] = new IXR_Error(TPLAN_TPROJECT_KO,$msg_prefix . $msg); 
-           }
-                      
-        } 
+	public function addTestCaseToTestPlan($args)
+	{
+		$operation=__FUNCTION__;
+		$messagePrefix="({$operation}) - ";
+		$this->_setArgs($args);
+		$op_result=null;
+		$additional_fields='';
+		$checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseVersionNumber',
+		                        'checkTestCaseIdentity','checkTestPlanID');
+		
+		$status_ok=$this->_runChecks($checkFunctions,$messagePrefix) && $this->userHasRight("testplan_planning");       
+		
+		// Test Plan belongs to test project ?
+		if( $status_ok )
+		{
+		   $tproject_id=$this->args[self::$testProjectIDParamName];
+		   $tplan_id=$this->args[self::$testPlanIDParamName];
+		   
+		   $sql=" SELECT id FROM {$this->tables['testplans']}" .
+		        " WHERE testproject_id={$tproject_id} AND id = {$tplan_id}";         
+		    
+		   $rs=$this->dbObj->get_recordset($sql);
+		
+		   if( count($rs) != 1 )
+		   {
+		      $status_ok=false;
+		      $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
+		      $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
+		      $msg = sprintf(TPLAN_TPROJECT_KO_STR,$tplan_info['name'],$tplan_id,
+		                                           $tproject_info['name'],$tproject_id);  
+		      $this->errors[] = new IXR_Error(TPLAN_TPROJECT_KO,$msg_prefix . $msg); 
+		   }
+		              
+		} 
        
         // Test Case belongs to test project ?
         if( $status_ok )
@@ -2683,31 +2685,56 @@ class TestlinkXMLRPCServer extends IXR_Server
                    
         }     
 
-       if( $status_ok )
-       {
-           // Optional parameters
-           $additional_fields=null;
-           $additional_values=null;
-           $opt_fields=array(self::$urgencyParamName => 'urgency', self::$executionOrderParamName => 'node_order');
-           $opt_values=array(self::$urgencyParamName => null, self::$executionOrderParamName => 1);
-		       foreach($opt_fields as $key => $field_name)
-		       {
-		           if($this->_isParamPresent($key))
-		           {
-		                   $additional_values[]=$this->args[$key];
-		                   $additional_fields[]=$field_name;              
-		           }   
-		           else
-		           {
-                   if( !is_null($opt_values[$key]) )
-                   {
-		                   $additional_values[]=$opt_values[$key];
-		                   $additional_fields[]=$field_name;              
-		               }
-               }
-		       }
-       }
-       
+		if( $status_ok )
+		{
+		    // Optional parameters
+		    $additional_fields=null;
+		    $additional_values=null;
+		    $opt_fields=array(self::$urgencyParamName => 'urgency', self::$executionOrderParamName => 'node_order');
+		    $opt_values=array(self::$urgencyParamName => null, self::$executionOrderParamName => 1);
+			foreach($opt_fields as $key => $field_name)
+			{
+			    if($this->_isParamPresent($key))
+			    {
+			            $additional_values[]=$this->args[$key];
+			            $additional_fields[]=$field_name;              
+			    }   
+			    else
+			    {
+					if( !is_null($opt_values[$key]) )
+			     	{
+			            $additional_values[]=$opt_values[$key];
+			            $additional_fields[]=$field_name;              
+			        }
+			 	}
+			}
+		}
+
+		if( $status_ok )
+		{
+			// 20100705 - work in progress - BUGID 3564
+			// if test plan has platforms, platformid argument is MANDATORY
+        	// $opt = array('output' => 'mapAccessByID');
+        	// $platformSet = $this->tplanMgr->getPlatforms($tplan_id,$opt);  
+      		// $hasPlatforms = !is_null($platformSet);
+			// $hasPlatformIDArgs = $this->_isParamPresent(self::$platformIDParamName);
+			// 
+			// if( $hasPlatforms )
+			// {
+			// 	if( $hasPlatformIDArgs )
+			// 	{
+			// 	
+			// 	}
+			// 	else
+			// 	{
+            //   		$msg = sprintf(TCASE_VERSION_NUMBER_KO_STR,);  
+            //   		$this->errors[] = new IXR_Error(TCASE_VERSION_NUMBER_KO,$msg_prefix . $msg); 
+			// 		$status_ok = false;
+			// 	}
+			// }
+			
+			
+		}       
        if( $status_ok )
        {
           // Other versions must be unlinked, because we can only link ONE VERSION at a time
@@ -3891,8 +3918,6 @@ public function getTestCase($args)
         	// get test plan name is useful for error messages
 			$tplanInfo = $this->tplanMgr->get_by_id($tplanID);
         	$items = $this->tplanMgr->getPlatforms($tplanID);  
-      		$status_ok = !is_null($platformInfo);
-      		
             if(! ($status_ok = !is_null($items)) )
             {
    				$msg = sprintf($messagePrefix . TESTPLAN_HAS_NO_PLATFORMS_STR,$tplanInfo['name']);

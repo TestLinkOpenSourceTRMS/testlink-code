@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.30 2010/06/24 17:25:56 asimon83 Exp $
+ * $Id: APIErrors.php,v 1.31 2010/07/05 20:10:34 franciscom Exp $
  */
 
 /** 
@@ -96,6 +96,10 @@ define('NODEID_DOESNOT_EXIST_STR',lang_get('API_NODEID_DOESNOT_EXIST',null,1));
 define('CFG_DELETE_EXEC_DISABLED',232);
 define('CFG_DELETE_EXEC_DISABLED_STR',lang_get('API_CFG_DELETE_EXEC_DISABLED',null,1));
 
+define('NO_PLATFORMID', 233);
+define('NO_PLATFORMID_STR', lang_get('API_NO_PLATFORMID',null,1));
+
+
 
 /**
  * 2000 level - authentication errors
@@ -139,6 +143,7 @@ define('TESTPLAN_HAS_NO_PLATFORMS_STR',lang_get('API_TESTPLAN_HAS_NO_PLATFORMS',
 
 define('TCASEID_NOT_IN_TPLANID_FOR_PLATFORM', 3042);
 define('TCASEID_NOT_IN_TPLANID_FOR_PLATFORM_STR', lang_get('API_TCASEID_NOT_IN_TPLANID_FOR_PLATFORM',null,1));
+
 
 
 /**

@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/11/21 18:28:44 $ $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/07/06 18:28:12 $ $Author: franciscom $
  *
  * @internal revision
+ *	20100706 - franciscom - BUGID 3581 added better check on release date
  *	20091121 - franciscom - BUGID - contribution
  *  20090509 - franciscom - BUGID - release_date
  *  20080827 - franciscom - BUGID 1692
@@ -425,6 +426,8 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
 
   returns: -
 
+  @internal revision
+  20100706 - franciscom - BUGID 3581		
 */
 function crossChecks($argsObj,&$tplanMgr)
 {
@@ -437,6 +440,40 @@ function crossChecks($argsObj,&$tplanMgr)
 	    $op->user_feedback = lang_get("warning_duplicate_build") . TITLE_SEP_TYPE3 . $argsObj->build_name;
 	    $op->status_ok = 0;
 	}
+	
+	// check is date is valid
+	if( $op->status_ok )
+	{
+		$datestring = 'YYYY-MM-DD';
+		$ok_len = strlen($datestring);
+		$ok_pieces_qty = 3;
+		
+		$rdate = trim($argsObj->release_date);
+		$rdate_len = strlen($rdate) ;
+		if( $rdate_len != 0 && $rdate_len != $ok_len )
+		{
+	    	$op->status_ok = 0;
+		}
+	    else if ($rdate_len == $ok_len )
+	    {
+	    	// cut in pieces
+	    	$idx_year = 0;
+	    	$idx_month = 1;
+	    	$idx_day = 2;
+	    	$date_pieces = explode('-',$rdate);
+	    	if( count($date_pieces) == $ok_pieces_qty )
+	    	{
+	    		$status_ok = checkdate($date_pieces[$idx_month],$date_pieces[$idx_day],$date_pieces[$idx_year]);	
+	    		$op->status_ok = $status_ok ? 1 : 0;	
+	    	}
+	    }
+	    
+	    if( $op->status_ok == 0 )
+	    {
+	    	$op->user_feedback = lang_get("invalid_release_date");
+		}
+	}
+	
 	return $op;
 }
 

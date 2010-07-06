@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.158 2010/07/02 06:27:10 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.159 2010/07/06 07:15:59 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.631
+ * Last Update according to en_GB string file version 1.635
  *
  **/
 
@@ -2576,6 +2576,9 @@ $TLS_API_NO_TESTPROJECTID = "No testprojectid provided.";
 $TLS_API_NO_TESTSUITEID = "No testsuiteid provided.";
 $TLS_API_NO_TPID = "No testplan ID (testplanid) provided.";
 $TLS_API_NO_TCID = "No testcase ID (testcaseid) provided.";
+$TLS_API_NO_PLATFORMID = "No Platform ID (platformid) provided.";
+
+
 $TLS_API_INVALID_TCASEID= "The Test Case ID (testcaseid: %s) provided does not exist!";
 $TLS_API_INVALID_BUILDID = "The Build ID (buildid: %s) provided does not exist!";
 $TLS_API_INVALID_TPLANID = "The Test Plan ID (%s) provided does not exist!";

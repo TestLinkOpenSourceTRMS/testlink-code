@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.277 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.278 2010/07/06 16:54:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100706 - franciscom - BUGID 3573 - _blind_delete() with alias has problems with MySQL
  * 20100521 - franciscom - BUGID 3481 - copy_tcversion() - preconditions are not copied
  * 20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
  * 20100514 - franciscom - get_by_id() interface changes and improvements
@@ -1231,8 +1232,9 @@ class testcase extends tlObjectWithAttachments
 	    }
 
 		// BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
-		$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['user_assignments']} UA " .
-			   " WHERE UA.feature_id in (" .
+		// BUGID 3573: MySQL does not like ALIAS
+		$sql[]="/* $debugMsg */ DELETE FROM {$this->tables['user_assignments']} " .
+			   " WHERE feature_id in (" .
 			   " SELECT id FROM {$this->tables['testplan_tcversions']}  " .
 		       " WHERE tcversion_id IN ({$tcversion_list}))";
 		

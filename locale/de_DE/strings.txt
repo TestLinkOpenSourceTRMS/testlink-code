@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.160 2010/07/06 12:54:57 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.161 2010/07/07 08:12:25 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.635
+ * Last Update according to en_GB string file version 1.636
  *
  **/
 
@@ -2877,5 +2877,6 @@ $TLS_import_done = 'Import erledigt';
 $TLS_import_req_conflicts_other_branch = 'Dok ID steht in Konflikt mit Anforderung im anderem Zweig';
 $TLS_import_req_exists_here = 'Dok ID existiert';
 
+$TLS_invalid_release_date = 'Ungültiges Release Datum';
 // ----- END ------------------------------------------------------------------
 ?>

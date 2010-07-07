@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.101 2010/05/25 14:05:46 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.102 2010/07/07 10:49:22 mx-julian Exp $
  * @uses printDocument.php
  *
  *
@@ -222,11 +222,11 @@ function renderRequirementNodeForPrinting(&$db,$node, &$printingOptions, $tocPre
 	if ($printingOptions['req_cf']) {
 		$linked_cf = $req_mgr->get_linked_cfields($req['id']);
 		foreach ($linked_cf as $key => $cf) {
-			$cfname = $labels['custom_field'] . $title_separator . htmlspecialchars($cf['name']);
+			$cflabel = htmlspecialchars($cf['label']);
 			$value = htmlspecialchars($cf['value']);
 			
 			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
-			           $cfname . "</span></td>" .
+			           $cflabel . "</span></td>" .
 			           "<td>$value</td></tr>";
 		}
 	}
@@ -292,8 +292,9 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$printingOptions, $tocPrefi
  		
 	if ($printingOptions['toc'])
 	{
-	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;">' .
-				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $name" . "</a></p>\n";
+		$spacing = ($level == 2) ? "<br>" : "";
+	 	$printingOptions['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
+				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $name" . "</a></p></b>\n";
 		$output .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
 	}
 	
@@ -333,11 +334,11 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$printingOptions, $tocPrefi
 	if ($printingOptions['req_spec_cf']) {
 		$linked_cf = $req_spec_mgr->get_linked_cfields($spec['id']);
 		foreach ($linked_cf as $key => $cf) {
-			$cfname = $labels['custom_field'] . $title_separator . htmlspecialchars($cf['name']);
+			$cflabel = htmlspecialchars($cf['label']);
 			$value = htmlspecialchars($cf['value']);
 			
 			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
-			           $cfname . "</span></td>" .
+			           $cflabel . "</span></td>" .
 			           "<td>$value</td></tr>";
 		}
 	}
@@ -996,8 +997,9 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 
 	if ($printingOptions['toc'])
 	{
-	 	$printingOptions['tocCode'] .= '<p style="padding-left: '.(10*$level).'px;">' .
-				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $name . "</a></p>\n";
+		$spacing = ($level == 2) ? "<br>" : "";
+	 	$printingOptions['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
+				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $name . "</a></p></b>\n";
 		$code .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
 	}
 	$docHeadingLevel = $level - 1; //we would like to have html top heading H1 - H6

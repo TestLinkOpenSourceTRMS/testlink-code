@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.102 2010/07/07 10:49:22 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.103 2010/07/07 11:56:51 mx-julian Exp $
  * @uses printDocument.php
  *
  *
@@ -294,7 +294,7 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$printingOptions, $tocPrefi
 	{
 		$spacing = ($level == 2) ? "<br>" : "";
 	 	$printingOptions['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
-				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . "$tocPrefix. $name" . "</a></p></b>\n";
+				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></p></b>\n";
 		$output .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
 	}
 	
@@ -994,18 +994,22 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
 	$title_separator = config_get('gui_title_separator_1');
   	$cfields = array('design' => '');
     $cfieldFormatting=array('table_css_style' => 'class="cf"');
-
+    
+	$docHeadingNumbering = '';
+	if ($printingOptions['headerNumbering']) {
+		$docHeadingNumbering = "$tocPrefix. ";
+	}
+    
 	if ($printingOptions['toc'])
 	{
-		$spacing = ($level == 2) ? "<br>" : "";
+		$spacing = ($level == 2 && $tocPrefix != 1) ? "<br>" : "";
 	 	$printingOptions['tocCode'] .= $spacing.'<b><p style="padding-left: '.(10*$level).'px;">' .
-				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $name . "</a></p></b>\n";
+				'<a href="#' . prefixToHTMLID($tocPrefix) . '">' . $docHeadingNumbering . $name . "</a></p></b>\n";
 		$code .= "<a name='". prefixToHTMLID($tocPrefix) . "'></a>\n";
 	}
 	$docHeadingLevel = $level - 1; //we would like to have html top heading H1 - H6
 	$docHeadingLevel = ($docHeadingLevel > 6) ? 6 : $docHeadingLevel;
-	$docHeadingNumbering = $printingOptions['headerNumbering'] ? $tocPrefix : '';
- 	$code .= "<h{$docHeadingLevel} class='doclevel'>{$docHeadingNumbering} ". $labels['test_suite'] .
+ 	$code .= "<h{$docHeadingLevel} class='doclevel'>" . $docHeadingNumbering . $labels['test_suite'] .
  			$title_separator . $name . "</h{$docHeadingLevel}>\n";
 
 	// ----- get Test Suite text -----------------

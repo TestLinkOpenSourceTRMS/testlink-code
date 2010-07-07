@@ -1,9 +1,11 @@
 {* 
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: reqSearchForm.tpl,v 1.3 2010/07/07 08:46:24 mx-julian Exp $
 Purpose: show form for requirement search.
 
-revisions:
-20100323 - asimon - added searching for req relation types (BUGID 1748)
+rev:
+  20100707 - Julian - BUGID 3584: replaced cf names by cf labels
+  20100323 - asimon - added searching for req relation types (BUGID 1748)
 *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -90,7 +92,7 @@ revisions:
 		    	<td><select name="custom_field_id">
 		    			<option value="0">&nbsp;</option>
 		    			{foreach from=$gui->design_cf key=cf_id item=cf}
-		    				<option value="{$cf_id}">{$cf.name}</option>
+		    				<option value="{$cf_id}">{$cf.label|escape}</option>
 		    			{/foreach}
 		    		</select>
 		    	</td>

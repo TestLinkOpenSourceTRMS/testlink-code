@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.5 2010/07/08 17:46:26 franciscom Exp $
+$Id: tcAssignedToUser.tpl,v 1.6 2010/07/08 17:51:14 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 rev: 
 20100708 - franciscom - BUGID 3575
@@ -8,7 +8,7 @@ rev:
 20080322 - franciscom - php errors clean up
 *}
 
-{include file="inc_head.tpl" openHead='yes'}
+{include file="inc_head.tpl" openHead='yes' enableTableSorting="yes"}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
 {include file="inc_ext_js.tpl" css_only=1}
@@ -26,11 +26,11 @@ rev:
     {if $gui->resultSet}
         {foreach from=$gui->resultSet key=tplan_id item=tcaseSet}
            <h1 align="left">{$labels.testplan}:&nbsp;{$gui->tplanNames[$tplan_id].name|escape}</h1>
-            <table class="simple">
-            <th align="left">{$labels.testcase}</th>
-            <th>{$labels.platform}</th>
-            <th>{$labels.assigned_on}</th>
-            <th>{$labels.due_since}</th>
+            <table class="simple sortable">
+            <th align="left">{$sortHintIcon}{$labels.testcase}</th>
+            <th>{$sortHintIcon}{$labels.platform}</th>
+            <th>{$sortHintIcon}{$labels.assigned_on}</th>
+            <th>{$sortHintIcon}{$labels.due_since}</th>
             {foreach from=$tcaseSet item=tcase}
                 {assign var="tcase_id" value=$tcase.testcase_id}
                 {assign var="tcversion_id" value=$tcase.tcversion_id}

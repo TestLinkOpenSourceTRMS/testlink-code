@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.24 2010/06/24 17:25:53 asimon83 Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.25 2010/07/08 13:10:12 mx-julian Exp $
 Purpose: 
 Author: franciscom
 
-Rev:  
+Rev:
+	20100708 - Julian - BUGID 3587 - executions of closed builds cannot be deleted anymore
 	20100617 - eloff - Row coloring in execution history should include notes and cf in same color
 	20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
 	20100426 - Julian - BUGID 2454 - minor changes to properly show executions if exec
@@ -262,24 +263,30 @@ Rev:
 					</td>
 				{/if}
 			  {*END BUGID 2454*}
-  	      {/if}
+  	      	  {/if}
 
     			{if $gsmarty_bugInterfaceOn}
        		  	<td align="center"><a href="javascript:open_bug_add_window({$tc_old_exec.execution_id})">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/bug1.gif" title="{$labels.img_title_bug_mgmt}"
       			         style="border:none" /></a>
-              </td>
-          {/if}
+                </td>
+          		{/if}
 
-
-    			{if $gui->grants->delete_execution}
+				{*BUGID 3587*}
+    			{if $gui->grants->delete_execution && $tc_old_exec.build_is_open }
        		  	<td align="center">
              	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
              	                                       {$tc_old_exec.execution_id},'do_delete',1);">
       			    <img src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" title="{$labels.img_title_delete_execution}"
       			         style="border:none" /></a>
-              </td>
-          {/if}
+      			 </td>
+      			{else}
+      				{if $gui->grants->delete_execution}
+      					<td align="center">
+      						<img src="{$smarty.const.TL_THEME_IMG_DIR}/lock.png" title="{$labels.closed_build}">
+      					</td>
+      				{/if}
+          		{/if}
 
        		<td class="icon_cell" align="center">
        		  {if $tc_old_exec.execution_run_type == $smarty.const.TESTCASE_EXECUTION_TYPE_MANUAL}

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.278 2010/07/06 16:54:23 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.279 2010/07/08 17:47:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100708 - franciscom - BUGID 3575 -  get_assigned_to_user() add plaftorm in output set
  * 20100706 - franciscom - BUGID 3573 - _blind_delete() with alias has problems with MySQL
  * 20100521 - franciscom - BUGID 3481 - copy_tcversion() - preconditions are not copied
  * 20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
@@ -3195,28 +3196,30 @@ class testcase extends tlObjectWithAttachments
 	 *                         
 	 * @since 20090131 - franciscom
 	 *
+	 * @internal revision
+	 *	20100708 - franciscom - BUGID 3575 - add plaftorm in output set
 	 */
 	function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $filters=null;
 	    $has_options=!is_null($options);
 	    $access_key=array('testplan_id','testcase_id');
-	    
-	    
-	    $sql="SELECT testprojects.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
-	         "TCV.version,TCV.tc_external_id, NHB.id AS testcase_id, NHB.name, testprojects.prefix, " .
-	         "UA.creation_ts ,UA.deadline_ts " .
-	         "FROM {$this->tables['user_assignments']}  UA, {$this->tables['testplan_tcversions']}  TPTCV, " .
-	         "{$this->tables['tcversions']}  TCV, {$this->tables['nodes_hierarchy']} NHA," .
-	         " {$this->tables['nodes_hierarchy']} NHB, " .
-	         "{$this->tables['nodes_hierarchy']} NHC, {$this->tables['testprojects']} testprojects " .
-	         "WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
-	         "AND UA.user_id = {$user_id} " .
-	         "AND testprojects.id IN (" . implode(',', array($tproject_id)) .") " .
-	         "AND UA.feature_id=TPTCV.id AND TPTCV.tcversion_id=TCV.id  " .
-	         "AND NHC.id=TPTCV.testplan_id AND NHC.parent_id=testprojects.id " .
-	         "AND NHB.id=NHA.parent_id AND NHA.id=TCV.id " ;
-	         
+
+	    $sql="/* $debugMsg */ SELECT TPROJ.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
+	         " TCV.version,TCV.tc_external_id, NHTC.id AS testcase_id, NHTC.name, TPROJ.prefix, " .
+	         " UA.creation_ts ,UA.deadline_ts, COALESCE(PLAT.name,'') AS platform_name " .
+	         " FROM {$this->tables['user_assignments']} UA " . 
+	         " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
+	         " JOIN {$this->tables['tcversions']} TCV ON TCV.id=TPTCV.tcversion_id " .
+	         " JOIN {$this->tables['nodes_hierarchy']} NHTCV ON NHTCV.id = TCV.id " .
+	         " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
+	         " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON  NHTPLAN.id=TPTCV.testplan_id " .
+	         " JOIN {$this->tables['testprojects']} TPROJ ON  TPROJ.id = NHTPLAN.parent_id " .
+	         " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON  PLAT.id = TPTCV.platform_id " .
+	         " WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
+	         " AND UA.user_id = {$user_id} " .
+	         " AND TPROJ.id IN (" . implode(',', array($tproject_id)) .") " ;
 	         
 	    if( !is_null($tplan_id) )
 	    {

@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.4 2010/06/24 17:25:53 asimon83 Exp $
+$Id: tcAssignedToUser.tpl,v 1.5 2010/07/08 17:46:26 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 rev: 
+20100708 - franciscom - BUGID 3575
 20100326 - amitkhullar - BUGID 3345
 20080322 - franciscom - php errors clean up
 *}
@@ -16,7 +17,7 @@ rev:
 
 {assign var=this_template_dir value=$smarty.template|dirname}
 {lang_get var='labels' 
-          s='no_records_found,testplan,testcase,version,assigned_on,due_since'}
+          s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform'}
 
 <body>
 <h1 class="title">{$gui->pageTitle}</h1>
@@ -27,6 +28,7 @@ rev:
            <h1 align="left">{$labels.testplan}:&nbsp;{$gui->tplanNames[$tplan_id].name|escape}</h1>
             <table class="simple">
             <th align="left">{$labels.testcase}</th>
+            <th>{$labels.platform}</th>
             <th>{$labels.assigned_on}</th>
             <th>{$labels.due_since}</th>
             {foreach from=$tcaseSet item=tcase}
@@ -37,6 +39,9 @@ rev:
             	  <a href="lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}">
             	  {$tcase.tcase_full_path|escape}{$tcase.prefix|escape}
             	  {$gui->glueChar}{$tcase.tc_external_id|escape}:{$tcase.name|escape}&nbsp({$labels.version}:{$tcase.version})</a>
+                </td>
+                <td>
+                {$tcase.platform_name|escape}
                 </td>
                 <td >
             	  {localize_timestamp ts=$tcase.creation_ts}

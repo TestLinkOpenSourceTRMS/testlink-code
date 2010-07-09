@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.309 2010/07/01 13:50:20 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.310 2010/07/09 13:12:36 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -409,7 +409,7 @@ $tlCfg->gui->round_corners->tc_spec = ENABLED;
  * Display name definition (used to build a human readable display name for users)
  * Example of values:
  * 		'%first% %last%'          -> John Cook
- * 		'%last%, %first%'          -> John Cook
+ * 		'%last%, %first%'          -> Cook John
  * 		'%first% %last% %login%'    -> John Cook [ux555]
  **/
 $tlCfg->username_format = '%login%';

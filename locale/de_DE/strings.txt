@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.162 2010/07/08 13:26:27 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.163 2010/07/09 08:07:16 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1110,7 +1110,7 @@ $TLS_exec_any_build = "(unabhängig vom Build)";
 $TLS_exec_current_build = "(aktueller Build)";
 $TLS_exec_notes = "Notizen";
 $TLS_exec_status = $TLS_status;
-$TLS_execution_history = "Ausführungs Historie";
+$TLS_execution_history = "Ausführungs-Historie";
 $TLS_execution_type_manual = "Manuell";
 $TLS_execution_type_auto = "Automatisch";
 $TLS_has_no_assignment = "Kein Tester zugewiesen";

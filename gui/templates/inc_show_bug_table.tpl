@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_show_bug_table.tpl,v 1.9 2010/07/09 08:07:06 mx-julian Exp $
+$Id: inc_show_bug_table.tpl,v 1.10 2010/07/09 11:41:15 mx-julian Exp $
 
 rev :
       20100709 - Julian - show greyed delete icon if delete is not allowed
@@ -17,7 +17,7 @@ rev :
     {assign var="tableStyles"  value="font-size:12px"}
 {/if}
 {* -------------------------------------------------------------------------------------- *}
-<table class="simple" width="100%">
+<table class="simple" style="width:95%">
   <tr>
 	  <th style="text-align:left">{lang_get s='build'}</th>
 	  <th style="text-align:left">{lang_get s='caption_bugtable'}</th>

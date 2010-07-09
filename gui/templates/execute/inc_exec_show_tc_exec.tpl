@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.26 2010/07/09 08:07:05 mx-julian Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.27 2010/07/09 08:43:18 mx-julian Exp $
 Purpose: 
 Author: franciscom
 
@@ -206,10 +206,15 @@ Rev:
   			  <td>
           {* Check also that Build is Open *}
   			  {if $gui->grants->edit_exec_notes && $tc_old_exec.build_is_open}
-  		      <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" title="{$labels.edit_execution}"
-  		           onclick="javascript: openExecEditWindow({$tc_old_exec.execution_id},{$tc_old_exec.id},
-  		                                                   {$gui->tplan_id},{$gui->tproject_id});">
- 			    {/if}
+  		      <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit.png" style="vertical-align:middle" 
+  		           title="{$labels.edit_execution}" onclick="javascript: openExecEditWindow(
+  		           {$tc_old_exec.execution_id},{$tc_old_exec.id},{$gui->tplan_id},{$gui->tproject_id});">
+  		      {else}
+  		         {if $gui->grants->edit_exec_notes}
+  		            <img src="{$smarty.const.TL_THEME_IMG_DIR}/note_edit_greyed.png" 
+  		                 style="vertical-align:middle" title="{$labels.closed_build}">
+  		         {/if}
+ 			  {/if}
   			  {localize_timestamp ts=$tc_old_exec.execution_ts}
   			  </td>
 				  {if $gui->history_on == 0 || $cfg->exec_cfg->show_history_all_builds}

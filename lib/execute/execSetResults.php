@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.162 $
- * @modified $Date: 2010/07/01 13:35:31 $ $Author: mx-julian $
+ * @version $Revision: 1.163 $
+ * @modified $Date: 2010/07/09 09:00:20 $ $Author: asimon83 $
  *
  * rev:
+ *  20100709 - asimon - BUGID 3590, BUGID 3574: build_id set to 0 as default instead of null
  *  20100628 - asimon - removal of constants from filter control class
  *  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface to exec_additional_info()
  *                      to avoid warnings in event log,
@@ -419,10 +420,14 @@ function init_args($cfgObj)
     $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
                          'platform_notes_view_status' => 'platform_description');
     
-	$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
+    // BUGID 3516, 3590, 3574
+	//$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
+	//   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
+	//   	              'platform_notes_view_status' => 0,'platform_id' => 0);
+	$key2loop = array('id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
 	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
-	   	              'platform_notes_view_status' => 0,'platform_id' => 0);
-			
+	   	              'platform_notes_view_status' => 0);
+	
 	foreach($key4cookies as $key => $cfgKey)
 	{
 		$cookieKey = $cookiePrefix . $key;
@@ -454,11 +459,21 @@ function init_args($cfgObj)
 		}
 	}
 
-	// 3516
+	// BUGID 3516
+	// BUGID 3590, 3574
 	$args->build_id = isset($session_data['setting_build']) ? 
-	                  intval($session_data['setting_build']) : null;
+	                  intval($session_data['setting_build']) : 0;
+	if (!is_numeric($args->build_id)) {
+		$args->build_id = (isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id'])) ? 
+		                  $_REQUEST['build_id'] : 0;
+	}
+	
 	$args->platform_id = isset($session_data['setting_platform']) ? 
 	                  intval($session_data['setting_platform']) : 0;
+	if (!is_numeric($args->platform_id)) {
+		$args->platform_id = (isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id'])) ? 
+		                     $_REQUEST['platform_id'] : 0;
+	}
 	
     switch($args->level)
     {

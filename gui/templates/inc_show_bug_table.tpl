@@ -1,8 +1,9 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_show_bug_table.tpl,v 1.8 2009/08/11 19:48:51 schlundus Exp $
+$Id: inc_show_bug_table.tpl,v 1.9 2010/07/09 08:07:06 mx-julian Exp $
 
 rev :
+      20100709 - Julian - show greyed delete icon if delete is not allowed
       20070304 - franciscom - added single quotes on bug_id on deleteBug_onClick() call
                               message improvement
                               added title on delete image. 
@@ -20,9 +21,7 @@ rev :
   <tr>
 	  <th style="text-align:left">{lang_get s='build'}</th>
 	  <th style="text-align:left">{lang_get s='caption_bugtable'}</th>
-		{if $can_delete}
-	    	<th style="text-align:left">&nbsp;</th>
-		{/if}  
+	  <th style="text-align:left">&nbsp;</th>
   </tr>
   
  	{foreach from=$bugs_map key=bug_id item=bug_elem}
@@ -33,6 +32,10 @@ rev :
 		  <td class="clickable_icon">
 		  	<img class="clickable" onclick="delete_confirmation('{$exec_id}-{$bug_id|escape:'javascript'|escape}','{$bug_id|escape:'javascript'|escape}',
 			            '{lang_get s='delete_bug'}','{lang_get s='del_bug_warning_msg'} ({lang_get s='bug_id'} {$bug_id})',deleteBug);" style="border:none" title="{lang_get s='delete_bug'}" alt="{lang_get s='delete_bug'}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/></td>
+		{else}
+		  <td class="clickable_icon">
+		  	<img style="border:none" src="{$smarty.const.TL_THEME_IMG_DIR}/trash_greyed.png"/ title="{$labels.closed_build}">
+		  </td>
 		{/if}
 	</tr>
 	{/foreach}

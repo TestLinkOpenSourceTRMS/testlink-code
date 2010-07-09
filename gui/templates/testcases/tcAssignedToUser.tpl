@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.6 2010/07/08 17:51:14 franciscom Exp $
+$Id: tcAssignedToUser.tpl,v 1.7 2010/07/09 18:47:58 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 rev: 
 20100708 - franciscom - BUGID 3575
@@ -31,7 +31,8 @@ rev:
             <th>{$sortHintIcon}{$labels.platform}</th>
             <th>{$sortHintIcon}{$labels.assigned_on}</th>
             <th>{$sortHintIcon}{$labels.due_since}</th>
-            {foreach from=$tcaseSet item=tcase}
+            {foreach from=$tcaseSet item=tcasePlatform}
+              {foreach from=$tcasePlatform item=tcase}
                 {assign var="tcase_id" value=$tcase.testcase_id}
                 {assign var="tcversion_id" value=$tcase.tcversion_id}
                <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
@@ -50,6 +51,8 @@ rev:
                  {date_diff date1=$tcase.creation_ts date2=$smarty.now interval="days"}
                 </td>
             	  </tr>
+              {/foreach}
+
             {/foreach}
             </table>
             <br>

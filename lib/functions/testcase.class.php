@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.279 2010/07/08 17:47:41 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.280 2010/07/09 18:47:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -3240,8 +3240,7 @@ class testcase extends tlObjectWithAttachments
 	        }
 	    }
 	    
-	    $rs=$this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1]);
-	
+	    $rs=$this->db->fetchMapRowsIntoMap($sql,$access_key[0],$access_key[1],database::CUMULATIVE);
 	    if( $has_options && !is_null($rs))
 	    {
 	        if( isset($options->mode) )
@@ -3253,17 +3252,23 @@ class testcase extends tlObjectWithAttachments
 	                        (is_null($options->access_keys) || $options->access_keys='testplan_testcase') )
 	                    { 
 	                        $tcaseSet=null;
-	                        foreach($rs as $container)
-	                        {
-	                            foreach($container as $item)
-	                            {
+	                        $main_keys = array_keys($rs);
+	       					foreach($main_keys as $maccess_key)
+	       					{
+	       						$sec_keys = array_keys($rs[$maccess_key]);
+	       						foreach($sec_keys as $saccess_key)
+	       						{
+	       							// is enough I process first element
+	       							$item = $rs[$maccess_key][$saccess_key][0];
 	                                if(!isset($tcaseSet[$item['testcase_id']]))
 	                                {
 	                                    $tcaseSet[$item['testcase_id']]=$item['testcase_id'];  
 	                                }  
-	                            }    
-	                        }
+	       						}
+	       					}
+
 	                        $path_info = $this->tree_manager->get_full_path_verbose($tcaseSet);
+
 	                        // Remove test project piece and convert to string
 	                        $flat_path=null;
 	                        foreach($path_info as $tcase_id => $pieces)
@@ -3271,15 +3276,21 @@ class testcase extends tlObjectWithAttachments
 	                            unset($pieces[0]);
 	                            $flat_path[$tcase_id]=implode('/',$pieces) . '/';  
 	                        }
-	
-	                        $container_keys=array_keys($rs);
-	                        foreach($container_keys as $idx)
-	                        {
-	                            foreach($rs[$idx] as $jdx => $item)
-	                            {
-	                                $rs[$idx][$jdx]['tcase_full_path']=$flat_path[$item['testcase_id']];
-	                            }    
-	                        }
+	                        $main_keys = array_keys($rs);
+
+	       					foreach($main_keys as $idx)
+	       					{
+	       						$sec_keys = array_keys($rs[$idx]);
+	       						foreach($sec_keys as $jdx)
+	       						{
+									$third_keys = array_keys($rs[$idx][$jdx]);
+	       							foreach($third_keys as $tdx)
+	       							{
+	       								$fdx = $rs[$idx][$jdx][$tdx]['testcase_id'];
+	                                	$rs[$idx][$jdx][$tdx]['tcase_full_path']=$flat_path[$fdx];
+									}
+	       						}
+	       					}
 	                    }
 	                break;  
 	            }  

@@ -24,21 +24,27 @@
 # ------------------------------------------------------------------------------
 #
 #
-# @version $Revision: 1.1 $
-# @modified $Date: 2010/05/12 21:09:53 $ by $Author: franciscom $
+# @version $Revision: 1.2 $
+# @modified $Date: 2010/07/10 15:34:32 $ by $Author: franciscom $
 # @Author: Renato S de Araujo
 #
 # rev: 
 #
 #
 use RPC::XML::Client;
+my $server_url = 'http://localhost:8900/head-20100702/lib/api/xmlrpc.php';
+# my $server_url = 'http://localhost:8900/head-20100501/lib/api/xmlrpc.php';
+# my $server_url = 'http://localhost:8600/testlink-1.9.beta4/lib/api/xmlrpc.php';
+
 my $devkey='CLIENTSAMPLEDEVKEY';
+
 my $testplanid=425;
 my $buildname='8.0.28';
 my $notes='Created by API';
-# my $cli = RPC::XML::Client->new('http://localhost:8900/head-20100501/lib/api/xmlrpc.php');
-my $cli = RPC::XML::Client->new('http://localhost:8600/testlink-1.9.beta4/lib/api/xmlrpc.php');
 
+my $cli = RPC::XML::Client->new($server_url);
+print "\nTest Link XML-RPC API \n";
+print "Testing Server: $server_url \n";
 my $build=$cli->send_request('tl.createBuild',
                               {
                                devKey=>$devkey,
@@ -54,4 +60,3 @@ my $b  = $resp[0];
 foreach my $k (keys(%$b)){
     print "key \'$k\' has value  \'$b->{$k}\'\n";
 }
-

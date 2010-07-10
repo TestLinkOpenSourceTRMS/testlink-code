@@ -5,11 +5,11 @@
  *
  * Filename $RCSfile: util.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2010/03/28 16:29:20 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/07/10 15:04:33 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
- * rev: 
+ * rev: 20100710 - franciscom - runTest() now returns server response.
  */
 
 define('DBUG_ON',1);  // ADDED to enable ALWAYS dBug()
@@ -47,5 +47,6 @@ function runTest(&$client,$method,$args,$feedback_id=1)
     new dBug($response);
     echo "<br>";
     echo "<hr>";
+	return $response;
 }
 ?> 

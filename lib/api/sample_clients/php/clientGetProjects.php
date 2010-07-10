@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetProjects.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/05/01 20:36:56 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/07/10 15:18:04 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -30,5 +30,16 @@ echo $additionalInfo;
 
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
-runTest($client,$method,$args);
+$answer = runTest($client,$method,$args);
+new dBug($answer);
+
+$items_qty = count($answer);
+foreach($answer as $item)
+{
+	if( isset($item['name']) )
+	{
+		echo 'name:' . htmlentities($item['name']) . '<br>';	
+		echo 'name:' . htmlentities(utf8_decode($item['name'])) . '<br>';	
+	}
+}
 ?>

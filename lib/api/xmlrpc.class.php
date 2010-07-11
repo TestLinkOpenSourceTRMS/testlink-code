@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/07/11 17:08:02 $ by $Author: franciscom $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/07/11 17:28:15 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -23,6 +23,7 @@
  *
  * rev : 
  *	20100711 - franciscom - BUGID 3564 - addTestCaseToTestPlan()
+ *                          BUGID 2607 - UTF8 settings for MySQL
  *	20100705 - franciscom - BUGID  - getTestPlanPlatforms() typo error
  * 	20100704 - franciscom - BUGID 3565 - createTestPlan() typo and logic error
  *	20100618 - franciscom - contribution refactored doesUserExist(), checkDevKey()
@@ -370,17 +371,24 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * connect to the db and set up the db object 
 	 *
 	 * @access protected
+	 *
+	 * 20100711 - franciscom - BUGID 2607 - UTF8 settings for MySQL
 	 */		
 	protected function _connectToDB()
 	{
 		if(true == $this->testMode)
 		{
-			return $this->dbObj->connect(TEST_DSN, TEST_DB_HOST, TEST_DB_USER, TEST_DB_PASS, TEST_DB_NAME);
+		    $this->dbObj->connect(TEST_DSN, TEST_DB_HOST, TEST_DB_USER, TEST_DB_PASS, TEST_DB_NAME);
 		}
 		else
 		{
-			return $this->dbObj->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
-		}					
+		    $this->dbObj->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
+		}
+		if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
+		{
+		    $this->dbObj->exec_query("SET CHARACTER SET utf8");
+		    $this->dbObj->exec_query("SET collation_connection = 'utf8_general_ci'");
+		}
 	}
 
 	/**

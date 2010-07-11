@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/07/05 20:28:22 $ by $Author: franciscom $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/07/11 10:14:30 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -2635,6 +2635,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 		   $tproject_id=$this->args[self::$testProjectIDParamName];
 		   $tplan_id=$this->args[self::$testPlanIDParamName];
+		   $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
 		   
 		   $sql=" SELECT id FROM {$this->tables['testplans']}" .
 		        " WHERE testproject_id={$tproject_id} AND id = {$tplan_id}";         
@@ -2644,7 +2645,6 @@ class TestlinkXMLRPCServer extends IXR_Server
 		   if( count($rs) != 1 )
 		   {
 		      $status_ok=false;
-		      $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
 		      $tproject_info = $this->tprojectMgr->get_by_id($tproject_id);
 		      $msg = sprintf(TPLAN_TPROJECT_KO_STR,$tplan_info['name'],$tplan_id,
 		                                           $tproject_info['name'],$tproject_id);  
@@ -2714,26 +2714,24 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 			// 20100705 - work in progress - BUGID 3564
 			// if test plan has platforms, platformid argument is MANDATORY
-        	// $opt = array('output' => 'mapAccessByID');
-        	// $platformSet = $this->tplanMgr->getPlatforms($tplan_id,$opt);  
-      		// $hasPlatforms = !is_null($platformSet);
-			// $hasPlatformIDArgs = $this->_isParamPresent(self::$platformIDParamName);
-			// 
-			// if( $hasPlatforms )
-			// {
-			// 	if( $hasPlatformIDArgs )
-			// 	{
-			// 	
-			// 	}
-			// 	else
-			// 	{
-            //   		$msg = sprintf(TCASE_VERSION_NUMBER_KO_STR,);  
-            //   		$this->errors[] = new IXR_Error(TCASE_VERSION_NUMBER_KO,$msg_prefix . $msg); 
-			// 		$status_ok = false;
-			// 	}
-			// }
+        	$opt = array('output' => 'mapAccessByID');
+        	$platformSet = $this->tplanMgr->getPlatforms($tplan_id,$opt);  
+      		$hasPlatforms = !is_null($platformSet);
+			$hasPlatformIDArgs = $this->_isParamPresent(self::$platformIDParamName);
 			
-			
+			if( $hasPlatforms )
+			{
+				if( $hasPlatformIDArgs )
+				{
+				
+				}
+				else
+				{
+              		$msg = sprintf(MISSING_PLATFORMID_BUT_NEEDED_STR,$tplan_info['name'],$tplan_id);  
+              		$this->errors[] = new IXR_Error(MISSING_PLATFORMID_BUT_NEEDED,$msg_prefix . $msg); 
+					$status_ok = false;
+				}
+			}
 		}       
        if( $status_ok )
        {

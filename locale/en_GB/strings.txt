@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.637 2010/07/11 10:14:22 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.638 2010/07/11 17:04:01 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2689,6 +2689,15 @@ $TLS_API_TCASEID_NOT_IN_TPLANID_FOR_PLATFORM = "Test Case (name=%s/id=%s) is not
 
 $TLS_API_MISSING_PLATFORMID_BUT_NEEDED = 'Because Test Plan (name=%s/id=%s) has linked Platforms, operation requested ' .
                                          'needs platformid';
+
+$TLS_API_PLATFORM_ID_NOT_LINKED_TO_TESTPLAN = "Platform ID %s is not linked to test plan (name:%s).";
+
+$TLS_API_LINKED_FEATURE_ALREADY_EXISTS = "Test Case version is already linked to " .
+                                         "Test Plan (name=%s/id=%s) for Platform (name=%s/id=%s).";
+
+$TLS_API_OTHER_VERSION_IS_ALREADY_LINKED = " Test Case version number %s <> %s (requested version) , " .
+                                           " is already linked to Test Plan (name=%s/id=%s).";
+
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";
 $TLS_audit_login_failed = "Login for '{%1}' from '{%2}' failed";

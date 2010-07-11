@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.197 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.198 2010/07/11 17:06:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20100711 - franciscom - BUGID 3564 -> getPlatforms()
  *	20100614 - eloff - refactor getStatusTotalsByPriority() to same style as the other getStatusTotals...()
  *	20100610 - eloff - BUGID 3515 - getStatusTotals() now takes platforms into account
  *	20100602 - franciscom - copy_as() - force Platforms Link copy when user choose Test Case Copy
@@ -2865,15 +2866,34 @@ class testplan extends tlObjectWithAttachments
     /**
 	 * 
  	 *
- 	 * outputFormat: possible . 'array','map'
+ 	 * outputFormat: 
+ 	 *				'array',
+ 	 *				'map', 
+ 	 *				'mapAccessByID' => map access key: id
+	 *				'mapAccessByName' => map access key: name
+	 *
+	 * 20100711 - franciscom - BUGID 3564
  	 */
     function getPlatforms($id,$options=null)
     {
         $my['options'] = array('outputFormat' => 'array', 'addIfNull' => false);
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
-    	$method2call = ($my['options']['outputFormat']=='map') ? 'getLinkedToTestplanAsMap' : 'getLinkedToTestplan';
-    	$platforms = $this->platform_mgr->$method2call($id);
+    	// $method2call = ($my['options']['outputFormat']=='map') ? 'getLinkedToTestplanAsMap' : 'getLinkedToTestplan';
+    	// 
+    	// $platforms = $this->platform_mgr->$method2call($id);
+        switch($my['options']['outputFormat'])
+        {
+        	case 'map':
+        		$platforms = $this->platform_mgr->getLinkedToTestplanAsMap($id);
+        	break;
+        	
+        	default:
+        		$opt = array('outputFormat' => $my['options']['outputFormat']);
+        		$platforms = $this->platform_mgr->getLinkedToTestplan($id,$opt);
+        	break;
+        } 	
+    	
     	if( $my['options']['addIfNull'] && is_null($platforms) )
 		{
 			$platforms = array( 0 => '');

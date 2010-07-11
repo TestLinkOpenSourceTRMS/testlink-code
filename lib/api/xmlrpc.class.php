@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/07/11 17:28:15 $ by $Author: franciscom $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2010/07/11 17:48:47 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -24,6 +24,7 @@
  * rev : 
  *	20100711 - franciscom - BUGID 3564 - addTestCaseToTestPlan()
  *                          BUGID 2607 - UTF8 settings for MySQL
+ *							BUGID 3544: deleteExecution doesn't handle missing execution id - checkExecutionID()
  *	20100705 - franciscom - BUGID  - getTestPlanPlatforms() typo error
  * 	20100704 - franciscom - BUGID 3565 - createTestPlan() typo and logic error
  *	20100618 - franciscom - contribution refactored doesUserExist(), checkDevKey()
@@ -3699,7 +3700,7 @@ public function getTestCase($args)
 		$resultInfo[0]["status"] = false;
 		
         $checkFunctions = array('authenticate','checkExecutionID');       
-        $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
+        $status_ok = $this->_runChecks($checkFunctions,$msg_prefix);       
 	
 	    // Important userHasRight sets error object
 	    //
@@ -3734,11 +3735,30 @@ public function getTestCase($args)
 	 * @return boolean
 	 * @access protected
 	 */        
-    protected function checkExecutionID()
+    protected function checkExecutionID($messagePrefix='',$setError=false)
     {
         // need to be implemented - franciscom
-        $status=true;
-    	return $status;
+		$pname = self::$executionIDParamName;
+		$status_ok = $this->_isParamPresent($pname,$messagePrefix,$setError);
+		if(!$status_ok)
+		{		
+	        $msg = $messagePrefix . sprintf(MISSING_REQUIRED_PARAMETER_STR, $pname);
+	        $this->errors[] = new IXR_Error(MISSING_REQUIRED_PARAMETER, $msg);				      
+		}
+		else
+		{
+			$status_ok = is_int($this->args[$pname]) && $this->args[$pname] > 0;
+			if( !$status_ok )
+			{
+            	$msg = $messagePrefix . sprintf(PARAMETER_NOT_INT_STR,$pname,$this->args[$pname]);
+            	$this->errors[] = new IXR_Error(PARAMETER_NOT_INT, $msg);
+			}
+			else
+			{
+				
+			}
+		}
+		return $status_ok;
     }
 
 

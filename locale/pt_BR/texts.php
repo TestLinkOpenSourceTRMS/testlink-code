@@ -4,11 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: texts.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/06/24 17:25:56 $ by $Author: asimon83 $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2010/07/11 17:16:17 $ by $Author: franciscom $
  * @author Martin Havlat and reviewers from TestLink Community
  *
  * --------------------------------------------------------------------------------------
+ * IMPORTANT NOTICE REGARDING UTF-8
+ * An special/weird character has been added to this file in order to be recognized as UTF8
+ * by editors	
  *
  * Scope:
  * English (en_GB) texts for help/instruction pages. Strings for dynamic pages
@@ -25,375 +28,311 @@
  *
  * ------------------------------------------------------------------------------------ */
 
+$TLS_htmltext_title['assignReqs']	= "Atribuir Requisitos aos Casos de Teste";
+$TLS_htmltext['assignReqs'] 		= "<h2>Objetivo:</h2>
+<p>Usuários podem criar relacionamentos entre requisitos e casos de teste. Um arquiteto pode definir relacionamentos 0..n para 0..n. I.e. Um caso de teste pode ser atribuido para nenhum, um ou mais requisitos e vice versa. Assim a matriz de rastreabilidade ajuda a investigar a cobertura dos requisitos de teste e finalmente quais falharam durante os testes. Esta análise serve como entrada para o próximo planejamento de testes.</p>
 
-$TLS_htmltext_title['assignReqs']	= "Assign Requirements to Test Case";
-$TLS_htmltext['assignReqs'] 		= "<h2>Purpose:</h2>
-<p>Users can set relations between requirements and test cases. A designer could
-define relations 0..n to 0..n. I.e. One test case could be assigned to none, one or more
-test cases and vice versa. Such traceability matrix helps to investigate test coverage
-of requirements and find out which ones successfully failed during a testing. This
-analyse serves as input for the next planning.</p>
-
-<h2>Get Started:</h2>
+<h2>Iniciar:</h2>
 <ol>
-	<li>Choose an Test Case in tree at the left. The combo box with list of Requirements
-	Specifications is shown at the top of workarea.</li>
-	<li>Choose a Requirements Specification Document if more once defined. 
-	TestLink automatically reload the page.</li>
-	<li>A middle block of workarea lists all requirements (from choosen Specification), which
-	are connected with the test case. Bottom block 'Available Requirements' lists all
-	requirements which have not relation
-	to the current test case. A designer could mark requirements which are covered by this
-	test case and then click the button 'Assign'. These new assigned test case are shown in
-	the middle block 'Assigned Requirements'.</li>
+	<li>Escolha um Caso de Teste na árvore à esquerda. O combo box com a lista de Especificações de Requisitos é exibido no topo da área de trabalho.</li>
+	<li>Escolha um documento de Especificação se mais de um estiver definido. O Testlink recarregará a página automaticamente.
+	Um bloco ao centro da área de trabalho lista todos os requisitos (para a Especificação selecionada), que está conectada ao caso de teste. O bloco abaixo 'Requisitos Disponíveis' lista todos os requisitos que não estão relacionados ao caso de teste selecionado. Um arquiteto pode selecionar requisitos que são cobertos por este caso de teste e então clicar em 'Atribuir'. Este novo caso de teste atribuido será exibido no bloco central 'Requisitos Atribuidos'.</li>
 </ol>";
 
 
 // --------------------------------------------------------------------------------------
-$TLS_htmltext_title['editTc']	= "Test Specification";
-$TLS_htmltext['editTc'] 		= "<h2>Purpose:</h2>
-<h2>Purpose:</h2>
-<p>The <i>Test Specification</i> allows users to view and edit all of the existing " .
-		"<i>Test Suites</i> and <i>Test Cases</i>. Test Cases are versioned and all " .
-		"of the previous versions are available and can be viewed and managed here.</p>
+$TLS_htmltext_title['editTc']	= "Especificação de Testes";
+$TLS_htmltext['editTc'] 		= "<h2>Objetivo:</h2>
+<p>A <i>Especificação de Testes</i> permite aos usuários visualizarem e editar todas as <i>Suites de Teste</i> e <i>casos de teste</i> existentes. " . "Os Casos de Teste são versionados e todas as versões anteriores estão disponíveis e podem ser visualizadas e gerenciadas aqui.</p>
 
-<h2>Getting Started:</h2>
+<h2>Iniciar:</h2>
 <ol>
-	<li>Select your Test Project in the navigation tree (the root node). <i>Please note: " .
-	"You can always change the activate Test Project by selecting a different one from the " .
-	"drop-down list in the top-right corner.</i></li>
-	<li>Create a new Test Suite by clicking on <b>New Child Test Suite</b>. Test Suites can " .
-	"bring structure to your test documents according to your conventions (functional/non-functional " .
-	"tests, product components or features, change requests, etc.). The description of " .
-	"a Test Suite could hold the scope of the included test cases, default configuration, " .
-	"links to relevant documents, limitations and other useful information. In general, " .
-	"all annotations that are common to the Child Test Cases. Test Suites follow " .
-	"the &quot;folder&quot; metaphor, thus users can move and copy Test Suites within " .
-	"the Test project. Also, they can be imported or exported (including the contained Test cases).</li>
-	<li>Test suites are scalable folders. User can move or copy Test Suites within " .
-	"the Test project. Test suites could be imported or exported (include Test cases).
-	<li>Select your newly created Test Suite in the navigation tree and create " .
-	"a new Test Case by clicking on <b>Create Test Case</b>. A Test Case specifies " .
-	"a particular testing scenario, expected results and custom fields defined " .
-	"in the Test Project (refer to the user manual for more information). It is also possible " .
-	"to assign <b>keywords</b> for improved traceability.</li>
-	<li>Navigate via the tree view on the left side and edit data. Test cases stores own history.</li>
-	<li>Assign your created Test Specification to <span class=\"help\" onclick=
-	\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> when your Test cases are ready.</li>
+	<li>Selecione seu Projeto de Testes na árvore de navegação (o nó principal). <i>Observe: " .
+	"Você sempre poderá trocar o Projeto de Testes ativo selecionando um diferente da " .
+	"lista drop-down do canto superior esquerdo.</i></li>
+	<li>Crie uma nova Suite de Testes clicando em <b>Nova Suite de Testes</b>. As Suites de Testes podem " .
+	"trazer a estrutura da sua documentação de testes conforme suas convenções (testes funcionais/não-funcionais " .
+	", produtos, componentes or características, solicitãções de mudança, etc.). A descrição da " .
+	"Suite de Testes poderia conter o escopo dos casos de testes incluidos, configuração padrão, " .
+	"links para documentos relevantes, limitações e outras informações usuais. Em geral, " .
+	"todas anotações que são comuns às Suites de Testes. As Suites de Testes seguem " .
+	"a metáfora do &quot;diretório&quot;, assim os usuários podem mover e copiar Suites de Testes dentro " .
+	"do Projeto de Testes. Além disso, eles podem ser importados ou exportados (incluindo os Casos de Teste nele contidos).</li>
+	<li>Suites de Testes são pastas escaláveis. Os usuários podem mover ou copiar Suites de Testes dentre " .
+	"o Projeto de Testes. Suites de Testes podem ser importadas ou exportadas (incluindo os Casos de Teste).
+	<li>Selecione sua mais nova Suite de Testes criada na árvore de navegação e crie " .
+	"um novo Caso de Teste clicando em <b>Criar Caso(s) de Teste</b>. Um Caso de Teste especifica " .
+	"um cenário de testes particular, resultados esperados e campos personalizados definidos " .
+	"no Projeto de Testes (consulte o manual do usuário para maiores informações). Também é possivel " .
+	"atribuir <b>palavras-chave</b> para melhorar a rastreabilidade.</li>
+	<li>Navegue pela the tree view do lado esquerdo e edite os dados. Os Casos de Teste armazenam histórico próprio.</li>
+	<li>Atribua suas Especificações de Testes criadas ao <span class=\"help\" onclick=\"javascript:open_help_window('glosary','$locale');\">Test Plan</span> quando seus Casos de Testes estiverem prontos.</li>
 </ol>
 
-<p>With TestLink you organize test cases into test suites." .
-"Test suites can be nested within other test suites, enabling you to create hierarchies of test suites.
- You can then print this information together with the test cases.</p>";
+<p>Com o TestLink você organiza os Casos de Testes em Suites de Teste." .
+" Suites de Testes podem ser aninhadas em outras Suites de Testes, permitindo a você criar hierarquias de Suites de Testes.
+ Então você pode imprimir esta informação juntamente com o Caso de Teste.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['searchTc']	= "Test Case Search Page";
-$TLS_htmltext['searchTc'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['searchTc']	= "Página de Busca de Casos de Teste";
+$TLS_htmltext['searchTc'] 		= "<h2>Objetivo:</h2>
 
-<p>Navigation according to keywords and/or searched strings. The search is not
-case sensitive. Result include just test cases from actual Test Project.</p>
+<p>Navegue de acordo com palavras-chave e/ou strings buscadas. A busca não é case sensitive. Os resultados incluem apenas Casos de Teste do Projeto de Testes atual.</p>
 
-<h2>To search:</h2>
+<h2>Para Buscar:</h2>
 
 <ol>
-	<li>Write searched string to an appropriate box. Left blank unused fields in form.</li>
-	<li>Choose required keyword or left value 'Not applied'.</li>
-	<li>Click the Search button.</li>
-	<li>All fulfilled test cases are shown. You can modify test cases via 'Title' link.</li>
+	<li>Escreva a string buscada no campo apropriado. Deixe em branco campos sem uso no formulário.</li>
+	<li>Escolha palavras-chave exigidas ou deixe o valor do campo 'Not applied'.</li>
+	<li>Clique no botão Buscar.</li>
+	<li>Todos os Casos de Teste cobertos são exibidos. Você pode modificar os Casos de Teste via link 'Título'.</li>
 </ol>";
 
 
+/* contribution by asimon for 2976 */
+// requirements search
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['printTestSpec']	= "Print Test Specification"; //printTC.html
-$TLS_htmltext['printTestSpec'] 			= "<h2>Purpose:</h2>
-<p>From here you can print a single test case, all the test cases within a test suite,
-or all the test cases in a test project or plan.</p>
-<h2>Get Started:</h2>
+
+$TLS_htmltext_title['searchReq']        = "Página de Busca de Requisitos";
+$TLS_htmltext['searchReq']              = "<h2>Objetivo:</h2>
+
+<p>Navegue de acordo com as palavras-chave e/ou strings procuradas. A busca não é case sensitive. Os resultados incluem somente requisitos do projeto de teste atual.</p>
+
+<h2>Para buscar:</h2>
+
+<ol>
+        <li>Escreva a string de busca no campo apropriado. Deixe os campos não utilizados em branco.</li>
+	<li>Escolha a palavra-chave requerida ou deixe o valor em branco.</li>
+	<li>Clique no botão  'Buscar'.</li>
+	<li>Todos os requisitos cobertos pelos critérios de busca serão exibidos. Você pode modificar requisitos através do link 'Título'.</li>
+</ol>";
+
+// requirement specification search
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['searchReqSpec']    = "Página de Busca de Especificação de Requisitos";
+$TLS_htmltext['searchReqSpec']          = "<h2>Objetivo:</h2>
+
+<p>Navegue de acordo com as palavras-chave e/ou strings procuradas. A busca não é case sensitive. Os resultados incluem somente requisitos do projeto de teste atual.</p>
+
+<h2>Para buscar:</h2>
+<ol>
+	<li>Escreva a string de busca no campo apropriado. Deixe os campos não utilizados em branco.</li>
+	<li>Escolha a palavra-chave requerida ou deixe o valor em branco.</li>
+	<li>Clique no botão  'Buscar'.</li>
+	<li>Todos os requisitos cobertos pelos critérios de busca serão exibidos. Você pode modificar requisitos através do link 'Título'.</li>
+</ol>";
+/* end contribution */
+
+
+// ------------------------------------------------------------------------------------------
+$TLS_htmltext_title['printTestSpec']	= "Imprimir Especificação de Testes"; //printTC.html
+$TLS_htmltext['printTestSpec'] 			= "<h2>Objetivo:</h2>
+<p>A partir daqui você pode imprimir um único caso de teste, todos os casos de teste dentro de uma suite ou todos os casos de teste de um Projeto de Testes ou Plano de Testes.</p>
+<h2>Iniciar:</h2>
 <ol>
 <li>
-<p>Select the parts of the test cases you want to display, and then click on a test case, test suite, or the test project.
-A printable page will be displayed.</p>
+<p>Selecione os campos dos casos de teste que você deseja exibir, e então clique em um Caso de Teste, Suite de Testes, ou Projeto de Testes. Uma página pronta para impressão será exibida.</p>
 </li>
-<li><p>Use the \"Show As\" drop-box in the navigation pane to specify whether you want the information displayed as HTML or in a
-Microsoft Word document. See <span class=\"help\" onclick=\"javascript:open_help_window('printFilter',
-'{$locale}');\">help</span> for more information.</p>
+<li><p>Use a drop-box \"Show As\" no painel de navegação para especificar se você quer a informação exibida como HTML, como documento do Open Office Writer ou num documento do Microsoft Word. Veja <span class=\"help\" onclick=\"javascript:open_help_window('printFilter','{$locale}');\">help</span> para maiores informações.</p>
 </li>
-<li><p>Use your browser's print functionality to actually print the information.<br />
- <i>Note: Make sure to only print the right-hand frame.</i></p></li>
+<li><p>Use a funcionalidade de impressão do seu browser para imprimir a informação presente.<br />
+ <i>Nota: Certifique-se de imprimir somente o frame esquerdo.</i></p></li>
 </ol>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['reqSpecMgmt']	= "Requirements Specification Design"; //printTC.html
-$TLS_htmltext['reqSpecMgmt'] 			= "<p>You can manage Requirement Specification documents.</p>
+$TLS_htmltext_title['reqSpecMgmt']	= "Modelar Especificação Requisitos"; //printTC.html
+$TLS_htmltext['reqSpecMgmt'] 			= "<p>Você pode gerenciar documentos de Especificação de Requisitos.</p>
 
-<h2>Requirements Specification</h2>
+<h2>Especificação de Requisitos</h2>
 
-<p>Requirements are grouped by <b>Requirements Specification document</b>, which is related to
-Test Project.<br /> TestLink doesn't support (yet) versions for both Requirements Specification
-and Requirements itself. So, version of document should be added after
-a Specification <b>Title</b>.
-An user can add simple description or notes to <b>Scope</b> field.</p>
+<p>Requisitos estão agrupados por <b>documentos de Especificação de Requisitos </b>, os quais estão relacionados ao Projeto de Testes.<br /> O TestLink não suporta (ainda) versões para Especificação de Requisitos e Requisitos. Logo, a versão do documento deve ser inserida após o <b>Título</b> da Especificação.
+Um usuário pode inserir uma descrição simples ou notas no campo <b>Escopo</b>.</p>
 
-<p><b><a name='total_count'>Overwritten count of REQs</a></b> serves for
-evaluation Req. coverage in case that not all requirements are added to TestLink.
-The value <b>0</b> means that current count of requirements is used
-for metrics.</p>
-<p><i>E.g. SRS includes 200 requirements but only 50 are added in TestLink. Test
-coverage is 25% (if all these added requirements will be tested).</i></p>
+<p><b><a name='total_count'>Sobrescrever o contador de Requisitos</a></b> serve para avaliar a cobertura dos requisitos no caso de nem todos os requisitos estarem adicionados ao TestLink.
+O valor <b>0</b> significa que o contador de requisitos atual é utilizado para métricas.</p>
+<p><i>E.g. SRS inclui 200 requisitos, mas somente 50 são adicionados ao Plano de Testes. A cobertura de testes é de 25% (se todos estes requisitos forem testados).</i></p>
 
-<h2><a name='req'>Requirements</a></h2>
+<h2><a name='req'>Requisitos</a></h2>
 
-<p>Click on title of a created Requirements Specification, if none exists click on the project node to create one. You can create, edit, delete
-or import requirements for the document. Each requirement has title, scope and status.
-Status should be 'Normal' or 'Not testable'. Not testable requirements are not counted
-to metrics. This parameter should be used for both unimplemented features and
-wrong designed requirements.</p>
+<p>Clique no título da Especificação de Requisitos criada, e se nenhuma existir, clique no node do projeto para criar uma. Você pode criar, editar, excluir ou importar requisitos para o documento. Cada requisito tem um título, escopo e status.
+O status deve ser 'Válido' or 'Não testável'. Requisitos Não Testáveis não são contabilizados para métricas. Este parâmetro deve ser utilizado para características não implementadas e requisitos modelados incorretamente.</p>
 
-<p>You can create new test cases for requirements by using multi action with checked
-requirements within the specification screen. These Test Cases are created into Test Suite
-with name defined in configuration <i>(default is: \$tlCfg->req_cfg->default_testsuite_name =
-'Test suite created by Requirement - Auto';)</i>. Title and Scope are copied to these Test cases.</p>";
+<p>Você pode criar novos casos de teste para os requisitos utilizando multi ações para os requisitos ativos na tela de especificação de requisitos. Estes casos de testes são criados dentro da Suite de Testes com nome definido na configuração <i>(default is: \$tlCfg->req_cfg->default_testsuite_name = 'Test suite created by Requirement - Auto';)</i>. Título e Escopo são copiados destes Casos de Teste.</p>";
+
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['keywordsAssign']	= "Keyword Assignment";
-$TLS_htmltext['keywordsAssign'] 			= "<h2>Purpose:</h2>
-<p>The Keyword Assignment page is the place where users can batch
-assign keywords to the existing Test Suite or Test Case</p>
+$TLS_htmltext_title['keywordsAssign']	= "Atribuição de Palavras-chave";
+$TLS_htmltext['keywordsAssign'] 			= "<h2>Objetivo:</h2>
+<p>A página de Atribuição de Palavras-chave é o lugar onde os usuários podem atribuir em lotes Palavras-chave às suites de teste ou Casos de Teste.</p>
 
-<h2>To Assign Keywords:</h2>
+<h2>Para Atribuir Palavras-chave:</h2>
 <ol>
-	<li>Select a Test Suite, or Test Case on the tree view
-		on the left.</li>
-	<li>The top most box that shows up on the right hand side will
-		allow you to assign available keywords to every single test
-		case.</li>
-	<li>The selections below allow you to assign cases at a more
-		granular level.</li>
+	<li>Selecione uma Suite de Testes ou Caso de Teste na tree view à esquerda.</li>
+	<li>O box no topo da página que exibe informações do lado direito permitirá a você atribuir palavras-chave para os casos de teste individualmente.</li>
+	<li>A seleção abaixo permite a você atribuir Casos de Teste em um nivel mais granular.</li>
 </ol>
 
-<h2>Important Information Regarding Keyword Assignments in Test Plans:</h2>
-<p>Keyword assignments you make to the specification will only effect test cases
-in your Test plans if and only if the test plan contains the latest version of the Test case.
-Otherwise if a test plan contains older versions of a test case, assignments you make
-now WILL NOT appear in the test plan.
-</p>
-<p>TestLink uses this approach so that older versions of test cases in test plans are not effected
-by keyword assignments you make to the most recent version of the test case. If you want your
-test cases in your test plan to be updated, first verify they are up to date using the 'Update
-Modified Test Cases' functionality BEFORE making keyword assignments.</p>";
+<h2>Informação Importante quanto à Atribuição de Palavras-chave nos Planos de Teste:</h2>
+<p>Atribuir Palavras-chave à Suite de Testes afetará somente Casos de Teste no seu Plano de Testes somente se o Plano de Testes conter a última versão do Caso de Teste. Caso contrário, se o Plano de Testes conter versões mais antigas do Caso de Teste, as atribuições que você fez não aparecerão no Plano de Testes.</p>
+<p>O TestLink usa esta abordagem para que versões mais antigas dos Casos de Teste nos Planos de Teste não sejam afetadas pela atribuição de Palavras-chave que você fez nas versões mais recentes dos Casos de Teste. Se você deseja seus Casos de Teste no seu Plano de Teste sejam atualizados, primeiro verifique se eles estão atualizados utilizando a funcionalidade 'Atualizar Versão dos Casos de Teste' antes de fazer a atribuição das Palavras-chave.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['executeTest']	= "Test Case Execution";
-$TLS_htmltext['executeTest'] 		= "<h2>Purpose:</h2>
+$TLS_htmltext_title['executeTest']	= "Execução dos Casos de Teste";
+$TLS_htmltext['executeTest'] 		= "<h2>Objetivo:</h2>
 
-<p>Allows user to execute Test cases. User can assign Test result
-to Test Case for Build. See help for more information about filter and settings " .
-		"(click on the question mark icon).</p>
+<p>Permite aos usuários executar os Casos de Teste. O usuário pode atribuir resultados aos Casos de Teste nos Ciclo de Teste. Veja a ajuda para mais informações sobre filtros e configurações " .
+		"(clique no ícone interrogação).</p>
 
-<h2>Get started:</h2>
+<h2>Iniciar:</h2>
 
 <ol>
-	<li>User must have defined a Build for the Test Plan.</li>
-	<li>Select a Build from the drop down box and the \"Apply\" button in the navigation pane.</li>
-	<li>Click on a test case in the tree menu.</li>
-	<li>Fill out the test case result and any applicable notes or bugs.</li>
-	<li>Save results.</li>
+	<li>O usuário deve definir um Ciclo de Testes para o Plano de Testes.</li>
+	<li>Selecionar um Ciclo de Testes no menu drop down e clicar no botão \"Aplicar Filtro\" no painel de navegação.</li>
+	<li>Clique no Caso de Teste no menu em árvore.</li>
+	<li>Preencha o resultado do Caso de Teste, suas respectivas notas e/ou bugs.</li>
+	<li>Salve os resultados.</li>
 </ol>
-<p><i>Note: TestLink must be configurated to collaborate with your Bug tracker 
-if you would like to create/trace a problem report directly from the GUI.</i></p>";
+<p><i>Nota: O TestLink deve ser configurado para colaborar com seu Bug tracker se você quiser criar ou rastrear problemas reportados diretamente da GUI.</i></p>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['showMetrics']	= "Description of Test Reports and Metrics";
-$TLS_htmltext['showMetrics'] 		= "<p>Reports are related to a Test Plan " .
-		"(defined in top of navigator). This Test Plan could differs from the
-current Test Plan for execution. You can also select Report format:</p>
+$TLS_htmltext_title['showMetrics']	= "Descrição dos Relatórios de Teste e Métricas";
+$TLS_htmltext['showMetrics'] 		= "<p>Os relatórios estão relacionados a um Plano de Testes " .
+		"(definido no topo do navegador). Este Plano de Testes pode diferir do Plano de Testes corrente para execução. Você também pode selecionar formatos dos relatórios:</p>
 <ul>
-<li><b>Normal</b> - report is displayed in web page</li>
-<li><b>MS Excel</b> - report exported to Microsoft Excel</li>
-<li><b>HTML Email</b> - report is emailed to user's email address</li>
-<li><b>Charts</b> - report include graphs (flash technology)</li>
+<li><b>Normal</b> - relatório é exibido em uma página web</li>
+<li><b>MS Excel</b> - relatório exportado para o Microsoft Excel</li>
+<li><b>HTML Email</b> - relatório é encaminhado por e-mail para o endereço de e-mail do usuário</li>
+<li><b>Charts</b> - relatório inclui gráficos (tecnologia flash)</li>
 </ul>
 
-<p>The print button activate print of a report only (without navigation).</p>
-<p>There are several seperate reports to choose from, their purpose and function are explained below.</p>
+<p>O botão imprimir ativa impressão para um único relatório (sem navegação).</p><p>Existem vários relatórios separados a sua escolha. Seus propósitos e funções estão descritas abaixo.</p>
 
-<h3>General Test Plan Metrics</h3>
-<p>This page shows you only the most current status of a Test plan by test suite, owner, and keyword.
-The most 'current status' is determined by the most recent build test cases were executed on.  For
-instance, if a test case was executed over multiple builds, only the latest result is taken into account.</p>
+<h3>Métricas Gerais do Plano de Testes</h3>
+<p>Esta página exibe somente o último status de um Plano de Testes por Suite de Testes, Testador e palavras-chave.
+O 'último status' é determinado pelo ciclo mais recente onde os Casos de Teste foram executados. Por exemplo, se um Caso de Testes foi executado em diversos Ciclos de Teste, somente o último resultado é considerado.</p>
 
-<p>'Last Test Result' is a concept used in many reports, and is determined as follows:</p>
+<p> O 'último resultado' é um conceito utilizado em vários relatórios, e é determinado como a seguir:</p>
 <ul>
-<li>The order in which builds are added to a Test Plan determines which build is most recent. The results
-from the most recent build will take precendence over older builds. For example, if you mark a test as
-'fail' in build 1, and mark it as 'pass' in build 2, it's latest result will be 'pass'.</li>
-<li>If a test case is executed mulitple times on the same build, the most recent execution will take
-precedence.  For example, if build 3 is released to your team and tester 1 marks it as 'pass' at 2PM,
-and tester 2 marks it as 'fail' at 3PM - it will appear as 'fail'.</li>
-<li>Test cases listed as 'not run' against a build are not taken into account. For example, if you mark
-a case as 'pass' in build 1, and don't execute it in build 2, it's last result will be considered as
-'pass'.</li>
+<li>A ordem em cada Ciclo de Testes é adicionada ao Plano de Testes determina qual é o Ciclo de Testes mais recente. Os resultados do Ciclo de Testes mais recente prevalecerão sobre os Ciclos de Teste mais antigos. Por exemplo, se você marcar um teste com status 'Falhou' no Ciclo de Testes 1 e no Ciclo de Testes 2 como 'Passou', o último resultado será 'Passou'.</li>
+<li>Se um Caso de Teste é executado diversas vezes em um mesmo Ciclo de Testes, o resultado mais recente prevalecerá. Por exemplo, se o Ciclo de Testes 3 é liberado para a equipe de testes e o Testador 1 marcar 'Passou' as 14h, e o Testador 2 marcar 'Falhou' as 15h, isto aparecerá como 'Falhou'.</li>
+<li>Casos de Teste marcados como 'Não Executado' no último Ciclo de Testes não serão considerados. Por exemplo, se você marcar um Caso de Testes como 'Passou' no Ciclo de Testes 1 e não executar no Ciclo de Testes 2, o último resultado será considerado como 'Passou'.</li>
 </ul>
-<p>The following tables are displayed:</p>
+<p>As seguintes tabelas são exibidas:</p>
 <ul>
-	<li><b>Results by top level Test Suites</b>
-	Lists the results of each top level suite. Total cases, passed, failed, blocked, not run, and percent
-	completed are listed. A 'completed' test case is one that has been marked pass, fail, or block.
-	Results for top level suites include all children suites.</li>
-	<li><b>Results By Keyword</b>
-	Lists all keywords that are assigned to cases in the current test plan, and the results associated
-	with them.</li>
-	<li><b>Results by owner</b>
-	Lists each owner that has test cases assigned to them in the current test plan. Test cases which
-	are not assigned are tallied under the 'unassigned' heading.</li>
+	<li><b>Resultados por Suite de Testes de Nível Top</b>
+	Lista os resultados Top de cada Suite de Testes. Total de Casos de Teste, Passou, Falhou, Bloqueado, Não Executado e o percentual completado são listados. Um Caso de Teste 'completo' é aquele que foi marcado como Passou, Falhou ou Bloqueado.
+	Resultados por Suites de Teste de Nível Top incluem todas as suites de nível inferior.</li>
+	<li><b>Resultados por Palavra-chave</b>
+	Lista todas as palavras-chave que estão atribuidas aos Casos de Teste no Plano de Testes corrente, e os resultados associados e eles.</li>
+	<li><b>Resultados por Testador</b>
+	Lista cada Testador que tem Casos de Teste associados a ele no Plano de Testes corrente. Os Casos de Teste que não estão atribuidos são computados abaixo com a descrição 'desatribuir'.</li>
 </ul>
 
-<h3>The Overall Build Status</h3>
-<p>Lists the execution results for every build. For each build, the total test cases, total pass,
-% pass, total fail, % fail, blocked, % blocked, not run, %not run.  If a test case has been executed
-twice on the same build, the most recent execution will be taken into account.</p>
+<h3>Status Geral dos Ciclos de Teste</h3>
+<p>Lista os resultados de execução para cada Ciclo de Testes. Para cada Ciclo de Testes, o total de Casos de Teste, total com Passou, % Passou, total Falha, % Falha, Bloqueado, % Bloqueado, Não Executado e % Não Executado.  Se um Caso de Teste foi executado duas vezes no mesmo Ciclo de Testes, a execução mais recente será considerada.</p>
 
-<h3>Query Metrics</h3>
-<p>This report consists of a query form page, and a query results page which contains the queried data.
-Query Form Page presents with a query page with 4 controls. Each control is set to a default which
-maximizes the number of test cases and builds the query should be performed against. Altering the controls
-allows the user to filter the results and generate specific reports for specific owner, keyword, suite,
-and build combinations.</p>
+<h3>Métricas da Consulta</h3>
+<p>Este relatório consiste em uma página com o formulário de consulta e uma página com os resultados, a qual contém os dados da consulta.
+A página com o formulário de consulta apresenta 4 controles. Cada controle está definido com um valor padrão que maximiza o número de Casos de Teste e Ciclos de Teste que a consulta deve ser executada. Alterar os controles permite aos usuários filtrar os resultados e gerar relatório específicos para Testadores em específico, palavras-chave, Suites de Teste e combinação de Ciclos de Teste.</p>
 
 <ul>
-<li><b>keyword</b> 0->1 keywords can be selected. By default - no keyword is selected. If a keyword is not
-selected, then all test cases will be considered regardless of keyword assignments. Keywords are assigned
-in the test specification or Keyword Management pages.  Keywords assigned to test cases span all test plans,
-and span across all versions of a test case.  If you are interested in the results for a specific keyword
-you would alter this control.</li>
-<li><b>owner</b> 0->1 owners can be selected. By default - no owner is selected. If an owner is not selected,
-then all test cases will be considered regardless of owner assignment.  Currently there is no functionality
-to search for 'unassigned' test cases.  Ownership is assigned through the 'Assign Test Case execution' page,
-and is done on a per test plan basis.  If you are interested in the work done by a specific tester you would
-alter this control.</li>
-<li><b>top level suite</b> 0->n top level suites can be selected. By default - all suites are selected.
-Only suites that are selected will be queried for result metrics.  If you are only intested in the results
-for a specific suite you would alter this control.</li>
-<li><b>Builds</b> 1->n builds can be selected.  By default - all builds are selected.  Only executions
-performed on builds you select will be taken into account when producing metrics.  For example - if you
-wanted to see how many test cases were executed on the last 3 builds - you would alter this control.
-Keyword, owner, and top level suite selections will dictate the number of test cases from your test plan
-are used to computate per suite and per test plan metrics.  For example, if you select owner = 'Greg',
-Keyword='Priority 1', and all available test suites - only Priority 1 test cases assigned to Greg will be
-considered. The '# of Test Cases' totals you will see on the report will be influenced by these 3 controls.
-Build selections will influence if a case is considered 'pass', 'fail', 'blocked', or 'not run'.  Please
-refer to 'Last Test Result' rules as they appear above.</li>
+<li><b>Palavras-chave</b> 0->1 palavras-chave podem ser selecionadas. Por padrão, nenhuma palavra-chave é selecionada. Se uma palavra-chave não é selecionada, então todos os Casos de Teste serão considerados indiferentemente de atribuição de palavras-chave. Palavras-chave são atribuidas na especificação de testes ou na página Gerenciar Palavra-chave. Palavras-chave atribuidas aos Casos de Teste alcançam todos os Planos de Teste, e também todas as versões de um Caso de Teste. Se você está interessado nos resultados para uma palavra-chave específica, você deverá alterar este controle.</li>
+<li><b>Testador</b> 0->1 Testadores podem ser selecionados. Por padrão, nenhum uTestador é selecionado. Se um Testador não é selecionado, então todos os Casos de Teste serão considerados indiferentes de Testador atribuido. Atualmente não há funcionalidade para buscar por Casos de Teste não atribuidos. O Testador é atribuido através da página 'Atribuir Casos de Teste para Execução' e é feito com base no Plano de Testes. Se você está interessado em trabalhar com um Testador em específico, você deve alterar este controle.</li>
+<li><b>Suite de Testes de Nível Top</b> 0->n Suites de Teste de Nível Top podem ser selecionadas. Por padrão, todas as Suites de Teste são selecionadas. Apenas as Suites de Teste que são selecioadas serão consultadas para as métricas do resultado. Se você está somente interessado em resultados para uma Suite de Testes específica você precisa alterar este controle.</li>
+<li><b>Ciclos de Teste</b> 1->n Ciclos de Teste podem ser selecionados. Por padrão, todos os Ciclos de Teste são selecinados. Somente execuções realizadas no Ciclo de Testes que vcoê selecionou serão considerados quanto produzir métricas. Por exemplo, se você quiser ver quantos Casos de Teste foram executados nos últimos 3 Ciclos de Teste, você precisa alterar este controle. A seleção de Palavra-chave, Testador e Suite de Testes de Nível Top ditarão o número de Casos de Testes do seu Plano de Testes são usados para calcular métricas por Suite de Teste e Plano de Testes. Por exemplo, se você selecionar o Testador = 'Greg', palavra-chave = 'Prioridade 1', e todas as Suites de Teste disponíveis, somente Casos de Teste com Prioridade 1 atribuidos para Greg serão considerados. O '# de Casos de Teste' totais que você verá neste relatório serão influenciados por estes 3 controles.
+A seleção dos Ciclos de Testes influenciarão se o Caso de Teste é considerado 'Passou', 'Falhou', 'Bloqueado', ou 'Não Executado'.  Favor classificar com a regra 'Last Test Result' à medida em que elas aparecem acima.</li>
 </ul>
-<p>Press the 'submit' button to proceed with the query and display the output page.</p>
+<p>Pressione o botão 'Submeter Consulta' para prosseguir com a consulta e exibir a página com os resultados.</p>
 
-<p>Query Report Page will display: </p>
+<p>A página com o relatório consultado exibirá: </p>
 <ol>
-<li>the query parameters used to create report</li>
-<li>totals for the entire test plan</li>
-<li>a per suite breakdown of totals (sum / pass / fail / blocked / not run) and all executions performed
-on that suite.  If a test case has been executed more than once on multiple builds - all executions will be
-displayed that were recorded against the selected builds. However, the summary for that suite will only
-include the 'Last Test Result' for the selected builds.</li>
+<li>o parâmetro da consulta utilizado para criar o relatório</li>
+<li>totais para todo o Plano de Teste</li>
+<li>por um conjunto de particionamento dos totais (Soma / Passou / Falhou / Bloqueado / Não Executado) e todas execuções realizadas na Suite de Testes. Se um Caso de Teste foi executado mais de uma vez em múltiplos Ciclos de Teste, todas as execuções que foram gravadas serão exibidas nos Ciclos de Teste selecionados. No entanto, o resumo para esta Suite de Testes somente incluirá o último resultado para o Ciclo de Testes selecionado.</li>
 </ol>
 
-<h3>Blocked, Failed, and  Not Run Test Case Reports</h3>
-<p>These reports show all of the currently blocked, failing, or not run test cases.  'Last test Result'
-logic (which is described above under General Test Plan Metrics) is again employed to determine if
-a test case should be considered blocked, failed, or not run.  Blocked and failed test case reports will
-display the associated bugs if the user is using an integrated bug tracking system.</p>
+<h3>Relatórios de Casos de Teste Bloqueados, com Falha e Não Executados</h3>
+<p>Estes relatórios exibem todos os Casos de Teste Bloqueados, com Falha e Não Executados. A lógica do último resultado dos testes (que está descrita nas Métricas Gerais do Plano de Testes) é novamente empregada para determinar se um Caso de Teste deve ser considerado Bloquedo, com Falha ou Não Executado. Casos de Teste Bloqueados e com Falha exibirão os bugs associados se o usuário estiver utilizando um sistema de bug tracking.</p>
 
-<h3>Test Report</h3>
-<p>View status of every test case on every build. The most recent execution result will be used
-if a test case was executed multiple times on the same build. It is recommended to export this report
-to Excel format for easier browsing if a large data set is being used.</p>
+<h3>Relatório de Testes</h3>
+<p>Exibe o status de cada Caso de Teste em todos os Ciclos de Teste. O resultado da execução mais recente será utilizado se um Caso de Teste for executado múltiplas vezes em um mesmo Ciclo de Testes. É recomendado exportar este relatório para o formato do Excel para um fácil manuseio se um grande conjunto de dados estiver em utilização.</p>
 
-<h3>Charts - General Test Plan Metrics</h3>
-<p>'Last test Result' logic is used for all four charts that you will see. The graphs are animated to help
-the user visualize the metrics from the current test plan. The four charts provide are :</p>
-<ul><li>Pie chart of overall pass / fail / blocked / and not run test cases</li>
-<li>Bar chart of Results by Keyword</li>
-<li>Bar chart of Results By Owner</li>
-<li>Bar chart of Results By Top Level Suite</li>
+
+<h3>Gráficos - Métricas Gerais do Plano de Testes</h3>
+<p>A lógica do último resultado é utilizada para todos os gráficos que você verá. Os gráficos são animados para ajudar o usuário à visualizar as métricas do Plano de Testes atual. Os quatro gráficos fornecidos são:</p>
+<ul><li>Gráfico de pizza com todos os Casos de Teste com status Passou, com Falha, Bloqueados e Não Executados</li>
+<li>Gráfico de barras com os Resultados por palavra-chave</li>
+<li>Gráfico de barras com os Resultados por Testador</li>
+<li>Gráfico de barras com os Resultados por Suites Nível Top</li>
 </ul>
-<p>The bars in the bar charts are colored such that the user can identify the approximate number of
-pass, fail, blocked, and not run cases.</p>
-<p><i>This report page requires your browser have a flash plugin (by http://www.maani.us) to display
-results in a graphical format.</i></p>
+<p>As seções e barras dos gráficos são coloridos de modo que o usuário possa identificar o número aproximado de Casos de Teste com status Passou, Falhou, Bloqueados e Não Executados.</p>
+<p><i>Esta página de relatório requer que o seu browser tenha o plugin do flash (by http://www.maani.us) para exibir os resultados em formato gráfico.</i></p>
 
-<h3>Total Bugs For Each Test Case</h3>
-<p>This report shows each test case with all of the bugs filed against it for the entire project.
-This report is only available if a Bug Tracking System is connected.</p>";
+<h3>Bugs por Casos de Teste</h3>
+<p>Este relatório exibe cada Caso de Teste com todos os bugs abertos para ele em todo o projeto. Este relatório está disponível somente se um Bug Tracking está conectado.</p>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planAddTC']	= "Add / Remove Test cases to Test Plan"; // testSetAdd
-$TLS_htmltext['planAddTC'] 			= "<h2>Purpose:</h2>
-<p>Allows user (with lead level permissions) to add or remove test cases into a Test plan.</p>
+$TLS_htmltext_title['planAddTC']	= "Adicionar / Remover Casos de Teste do Plano de Testes"; // testSetAdd
+$TLS_htmltext['planAddTC'] 			= "<h2>Objetivo:</h2>
+<p>Permitir aos usuários (com perfil de Lider de Testes) a adicionar ou remover Casos de Teste ao Plano de Testes.</p>
 
-<h2>To add or remove Test cases:</h2>
+<h2>Para adicionar ou remover Casos de Teste:</h2>
 <ol>
-	<li>Click on a test suite to see all of its test suites and all of its test cases.</li>
-	<li>When you are done click the 'Add / Remove Test Cases' button to add or remove the test cases.
-		Note: Is not possible to add the same test case multiple times.</li>
+	<li>Clique na Suite de Testes para ver todas as suites de teste e todos os seus Casos de Teste.</li>
+	<li>Quando tiver terminado, clique no botão 'Adicionar / Remover Casos de Teste' para adicionar ou remover os Casos de Teste selecionados.
+		Nota: não é possível adicionar o mesmo Caso de Teste múltiplas vezes.</li>
 </ol>";
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['tc_exec_assignment']	= "Assign Testers to test execution";
-$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
-<p>This page allows test leaders to assign users to particular tests within the Test Plan.</p>
+$TLS_htmltext_title['tc_exec_assignment']	= "Atribuir Testadores à Execução de Testes";
+$TLS_htmltext['tc_exec_assignment'] 		= "<h2>Objetivo:</h2>
+<p>Esta página permite aos Líderes de Teste atribuir usuários a testes específicos dentro do Plano de Testes.</p>
 
-<h2>Get Started</h2>
+<h2>Iniciar:</h2>
 <ol>
-	<li>Choose a Test case or Test Suite to test.</li>
-	<li>Select a planned tester.</li>
-	<li>Press button to submit assignement.</li>
-	<li>Open execution page to verify assignment. You can set-up a filter for users.</li>
+	<li>Escolha o Caso de Teste ou Suite de Testes a ser testada.</li>
+	<li>Selecione o Testador conforme planejamento.</li>
+	<li>Pressione o botão 'Salvar' para aplicar atribuição.</li>
+	<li>Abra a página de execução para verificar atribuição. Você pode estabelecer um filtro por usuários.</li>
 </ol>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['planUpdateTC']	= "Update Test Cases in the Test Plan";
-$TLS_htmltext['planUpdateTC'] 		= "<h2>Purpose</h2>
-<p>This page allows update Test case to a newer (different) version in  the case that Test
-Specification is changed. It often happens that some functionality is clarified during testing." .
-		" User modifies Test Specification, but changes needs to propagate to Test Plan too. Otherwise Test" .
-		" plan holds original version to be sure, that results refer to the correct text of a Test case.</p>
+$TLS_htmltext_title['planUpdateTC']	= "Atualizar Casos de Teste no Plano de Testes";
+$TLS_htmltext['planUpdateTC'] 		= "<h2>Objetivo:</h2>
+<p>Esta página permite atualizar Casos de Teste para uma versão mais nova (diferente) da Especificação de Casos de Teste quando alterada. Isto frequentemente acontece quando uma funcionalidade é esclarecida durante os testes." .
+		" O usuário modifica a Especificação de Testes, mas as alterações precisam se propagar ao Plano de Testes também. De qualquer forma," .
+		" o Plano de Testes mantém as versões originais para garantir que os resultados se referem ao texto correto dos Casos de Teste.</p>
 
-<h2>Get Started</h2>
+<h2>Iniciar:</h2>
 <ol>
-	<li>Choose a Test case or Test Suite to test.</li>
-	<li>Choose a new version from bombo boxmenu for particular Test case.</li>
-	<li>Press button 'Update Test plan' to submit changes.</li>
-	<li>To verify: Open execution page to view text of the test case(s).</li>
+	<li>Escolha o Caso de Teste ou Suite de Testes a testar.</li>
+	<li>Escolha uma nova versão no combo box para um Caso de Testes Específico.</li>
+	<li>Pressione o botão  'Atualizar Plano de Testes' para aplicar alterações.</li>
+	<li>Para comprovar: abra a página de execução para verificar o texto do(s) Caso(s) de Teste.</li>
 </ol>";
 
 
 // ------------------------------------------------------------------------------------------
-$TLS_htmltext_title['test_urgency']	= "Specify tests with high or low urgency";
-$TLS_htmltext['test_urgency'] 		= "<h2>Purpose</h2>
-<p>TestLink allows set urgency of Test Suite to affect a testing Priority of test cases. 
-		Test priority depends on both Importance of Test cases and Urgency defined in 
-		the Test Plan. Test leader should specify a set of test cases that could be tested
-		at first. It helps to assure that testing will cover the most important tests
-		also under time pressure.</p>
+$TLS_htmltext_title['test_urgency']	= "Especificar testes com prioridade alta ou baixa";
+$TLS_htmltext['test_urgency'] 		= "<h2>Objetivo:</h2>
+<p>O TestLink permite definir a urgência das Suites de Teste para afetar a prioridade dos Casos de Teste. A priorização dos testes depende da importância do Caso de Teste e da urgência definida no Plano de Testes. O Lider de Testes deve especificar um conjunto de Casos de Teste que devem ser testados primeiro. Isso ajuda a assegurar que os testes cobrirão os testes mais importantes também sob a pressão do tempo.</p>
 
-<h2>Get Started</h2>
+<h2>Iniciar:</h2>
 <ol>
-	<li>Choose a Test Suite to set urgency of a product/component feature in navigator
-	on the left side of window.</li>
-	<li>Choose a urgency level (high, medium or low). Medium is default. You can
-	decrease priority for untouched parts of product and increase for components with
-	significant changes.</li>
-	<li>Press the button 'Save' to submit changes.</li>
-</ol>
-<p><i>For example, a Test case with a High importance in a Test suite with Low urgency " .
-		"will be Medium priority.</i>";
+	<li>Escolha uma Suite de Testes para definiar a urgência do produto/componente no navegador ao lado esquerdo da janela.</li>
+	<li>Escolha o nível de urgência (Alta, Média ou Baixa). O nível médio é o padrão. Você pode diminuir a prioridade para partes do produtos não alteradas e aumentar para componentes com mudanças significativas.</li>
+	<li>Pressione o botão 'Salvar' para aplicar as alterações.</ol>
+
+<p><i>Por exemplo, um Caso de Teste com prioridade Alta em uma Suite de Testes com urgência Baixa será de prioridade Média.</i>";
 
 
 // ------------------------------------------------------------------------------------------
+
 
 ?>

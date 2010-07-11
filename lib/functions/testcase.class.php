@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.280 2010/07/09 18:47:50 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.281 2010/07/11 18:05:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100711 - franciscom - BUGID 3575 -  get_assigned_to_user() added $filters as optional arg
  * 20100708 - franciscom - BUGID 3575 -  get_assigned_to_user() add plaftorm in output set
  * 20100706 - franciscom - BUGID 3573 - _blind_delete() with alias has problems with MySQL
  * 20100521 - franciscom - BUGID 3481 - copy_tcversion() - preconditions are not copied
@@ -3186,6 +3187,9 @@ class testcase extends tlObjectWithAttachments
 	 *                         possible values: 'testplan_testcase','testcase_testplan'
 	 *                         changes access key in result map of maps.
 	 *                         if not defined or null -> 'testplan_testcase' 
+	 *						   
+	 * @param object [filters] 'tplan_status' => 'active','inactive','all'
+	 *                     	
 	 *
 	 * @return map key: (test plan id or test case id depending on options->access_keys,
 	 *                   default is test plan).
@@ -3199,10 +3203,15 @@ class testcase extends tlObjectWithAttachments
 	 * @internal revision
 	 *	20100708 - franciscom - BUGID 3575 - add plaftorm in output set
 	 */
-	function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null)
+	function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null, $filters=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-	    $filters=null;
+	    
+   	    $my['filters'] = array( 'tplan_status' => 'all');
+	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
+	    $filters = null;
+	    
 	    $has_options=!is_null($options);
 	    $access_key=array('testplan_id','testcase_id');
 
@@ -3216,6 +3225,7 @@ class testcase extends tlObjectWithAttachments
 	         " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTC.id = NHTCV.parent_id " .
 	         " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON  NHTPLAN.id=TPTCV.testplan_id " .
 	         " JOIN {$this->tables['testprojects']} TPROJ ON  TPROJ.id = NHTPLAN.parent_id " .
+	         " JOIN {$this->tables['testplans']} TPLAN ON  TPLAN.id = TPTCV.testplan_id " .
 	         " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON  PLAT.id = TPTCV.platform_id " .
 	         " WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
 	         " AND UA.user_id = {$user_id} " .
@@ -3225,6 +3235,21 @@ class testcase extends tlObjectWithAttachments
 	    {
 	        $filters=" AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
 	    }     
+	    
+	    switch($my['filters']['tplan_status'])
+	    {
+	    	case 'all':
+	    	break;
+	    	
+	    	case 'active':
+	        	$filters .= " AND TPLAN.active = 1 ";
+	    	break;
+	    	
+	    	case 'inactive':
+	        	$filters .= " AND TPLAN.active = 0 ";
+	    	break
+	    }
+
 	    $sql .= $filters;
 	    
 	    if( $has_options && isset($options->access_keys) )

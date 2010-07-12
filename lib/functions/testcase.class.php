@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.281 2010/07/11 18:05:12 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.282 2010/07/12 11:00:15 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100712 - asimon - inserted missing semicolon after break in get_assigned_to_user()
  * 20100711 - franciscom - BUGID 3575 -  get_assigned_to_user() added $filters as optional arg
  * 20100708 - franciscom - BUGID 3575 -  get_assigned_to_user() add plaftorm in output set
  * 20100706 - franciscom - BUGID 3573 - _blind_delete() with alias has problems with MySQL
@@ -3201,6 +3202,7 @@ class testcase extends tlObjectWithAttachments
 	 * @since 20090131 - franciscom
 	 *
 	 * @internal revision
+	 *  20100712 - asimon - inserted missing semicolon
 	 *	20100708 - franciscom - BUGID 3575 - add plaftorm in output set
 	 */
 	function get_assigned_to_user($user_id,$tproject_id,$tplan_id=null,$options=null, $filters=null)
@@ -3247,7 +3249,7 @@ class testcase extends tlObjectWithAttachments
 	    	
 	    	case 'inactive':
 	        	$filters .= " AND TPLAN.active = 0 ";
-	    	break
+	    	break;
 	    }
 
 	    $sql .= $filters;

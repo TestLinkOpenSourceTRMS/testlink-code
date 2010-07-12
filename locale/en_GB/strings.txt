@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.638 2010/07/11 17:04:01 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.639 2010/07/12 17:14:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -62,6 +62,7 @@ $TLS_error = "Error";
 $TLS_export = "Export";
 $TLS_file_type = 'File type';
 $TLS_filter_mode_and = 'Attention: Filter fields works in AND mode';
+$TLS_goto_testspec = 'Open test case specification';
 $TLS_help = "Help";
 $TLS_hour = "Hour";
 $TLS_importance	= "Importance";
@@ -109,7 +110,7 @@ $TLS_title = "Title";
 $TLS_title_admin = "Administration";
 $TLS_warning = "Warning";
 $TLS_max_size_file_msg = "Max. allowed file size:  %s KB";
-$TLS_due_since = "Test Case Assigned Since(days)";
+$TLS_due_since = "Assigned Since (days)";
 $TLS_parent_child='is Parent or is Child';
 $TLS_blocks_depends = 'Blocks or Depends';
 $TLS_related_to='is related to';

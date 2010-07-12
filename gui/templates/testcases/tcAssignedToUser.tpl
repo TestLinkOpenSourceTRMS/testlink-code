@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.7 2010/07/09 18:47:58 franciscom Exp $
+$Id: tcAssignedToUser.tpl,v 1.8 2010/07/12 17:15:31 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 rev: 
 20100708 - franciscom - BUGID 3575
@@ -17,7 +17,7 @@ rev:
 
 {assign var=this_template_dir value=$smarty.template|dirname}
 {lang_get var='labels' 
-          s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform'}
+          s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform,goto_testspec'}
 
 <body>
 <h1 class="title">{$gui->pageTitle}</h1>
@@ -37,7 +37,7 @@ rev:
                 {assign var="tcversion_id" value=$tcase.tcversion_id}
                <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
                 <td>
-            	  <a href="lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}">
+            	  <a href="lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}" title="{$labels.goto_testspec}">
             	  {$tcase.tcase_full_path|escape}{$tcase.prefix|escape}
             	  {$gui->glueChar}{$tcase.tc_external_id|escape}:{$tcase.name|escape}&nbsp({$labels.version}:{$tcase.version})</a>
                 </td>

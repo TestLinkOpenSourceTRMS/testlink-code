@@ -1,7 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: fix_tplans.tpl,v 1.1 2007/12/02 17:03:00 franciscom Exp $
+$Id: fix_tplans.tpl,v 1.2 2010/07/13 07:36:46 asimon83 Exp $
 Purpose: assign test plans to a test project - bug 1021
+
+rev:
+  20100713 - asimon - added missing ">" on opening form tag
 *}
 
 {include file="inc_head.tpl" jsValidate="yes"}
@@ -12,7 +15,7 @@ Purpose: assign test plans to a test project - bug 1021
  
 <p>{lang_get s='list_inactive_tplans1'} <span style="color:red">{$count}</span> {lang_get s='list_inactive_tplans2'}</p>
 
-<form method="post" action="lib/project/fix_tplans.php"
+<form method="post" action="lib/project/fix_tplans.php">
 
 <table>
 <tr>

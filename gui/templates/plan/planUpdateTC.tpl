@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.13 2010/06/24 17:25:52 asimon83 Exp $
+$Id: planUpdateTC.tpl,v 1.14 2010/07/13 07:36:46 asimon83 Exp $
 
 Author: franciscom
 
@@ -8,6 +8,7 @@ Purpose: generate a list of Test Cases linked to Test Plan
          that have a newer available version.
          
 rev:
+	20100724 - asimon - added closing ">" for "<td class="clickable_icon">"
     20091212 - franciscom - BUGID 2652 - contribution refactored
     20080528 - franciscom - BUGID 1504 
 *}
@@ -208,7 +209,7 @@ function validateForm(f)
 	    <br/><table border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
 	      <tr class="testlink" style="background-color:blue;font-weight:bold;color:white">
 			    
-			    <td class="clickable_icon"
+			    <td class="clickable_icon">
              <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
 	                alt="{$labels.check_uncheck_all}" title="{$labels.check_uncheck_all}" 
                   onclick="cs_all_checkbox_in_div('updateTcForm','{$update_cb}','update_all_value');" />

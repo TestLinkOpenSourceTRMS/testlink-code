@@ -7,15 +7,36 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.8 2010/07/02 15:31:03 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.9 2010/07/13 07:36:46 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
  * This class extends tlFilterPanel for the specific use with test case tree.
  * It holds the logic to be used at GUI level to manage a common set of settings and filters for test cases.
+ * 
+ * This class is used from different navigator-frames (left frames with a test case tree in it)
+ * with different modes for different features.
+ * This is a little overview about its usage in TestLink:
+ * 
+ * - planTCNavigator.php/tpl use it in "plan_mode" for these features:
+ *    --> assign test case execution
+ *    --> update linked test case versions
+ *    --> set urgent tests
+ * 
+ * - execNavigator.php/tpl in "execution_mode" 
+ *    --> test execution
+ * 
+ * - planAddTCNavigator.php/tpl in "plan_add_mode"
+ *    --> add/remove test cases
+ * 
+ * - listTestCases.php/tcTree.tpl in "edit_mode"
+ *    --> edit test specification
+ *    --> assign keywords
+ *    --> assign requirements
  *
  * @internal Revisions:
  *
+ * 20100713 - asimon - fixed Drag&Drop error caused by init_filter_custom_fields()
  * 20100702 - asimon - fixed error in init_setting_testplan()
  * 20100701 - asimon - BUGID 3414 - additional work in init_filter_custom_fields()
  * 20100628 - asimon - removal of constants
@@ -272,7 +293,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	/**
 	 *
 	 * @param database $dbHandler
-	 * @param string $mode
+	 * @param string $mode can be edit_mode/execution_mode/plan_mode/plan_add_mode, depending on usage
 	 */
 	public function __construct(&$dbHandler, $mode = 'edit_mode') {
 
@@ -803,7 +824,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					$root_node->name = $this->args->testproject_name . " ($tcase_qty)";
 					$root_node->testlink_node_type='testproject';
 													
-					$cookie_prefix = 'tproject_' . $root_node->id . "_";					
+					$cookie_prefix = 'tproject_' . $root_node->id . "_";
 				}
 			break;
 			
@@ -932,6 +953,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$newest_build_id = $this->testplan_mgr->get_max_build_id($tp_id,
 		                                                         testplan::GET_ACTIVE_BUILD,
 		                                                         testplan::GET_OPEN_BUILD);
+		
 		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $newest_build_id;
 		$this->settings[$key]['selected'] = $this->args->{$key};
 
@@ -1263,7 +1285,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$menu = $this->exec_cf_mgr->html_table_of_custom_field_inputs(self::CF_INPUT_SIZE);
 		$selection = $this->exec_cf_mgr->get_set_values();
 		
-		if ($this->args->reset_filters) {
+		// asimon - 20100713
+		// Fixed drag&drop error caused by this function. It always set $this->do_filtering
+		// to true here because of the missing $selection in the following if condition.
+		// This caused lazy loading and DD to be disabled later.		
+		// see: http://www.teamst.org/forum/viewtopic.php?f=11&t=3354&sid=70498c57842247114cc7233d0f4e5c51
+		if (!$selection || $this->args->reset_filters) {
 			// handle filter reset button
 			$selection = null;
 		} else {

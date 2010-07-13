@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.24 2010/05/01 18:50:45 franciscom Exp $
+$Id: inc_attachments.tpl,v 1.25 2010/07/13 07:36:45 asimon83 Exp $
 Generic attachment management
 
 Input:
@@ -18,6 +18,7 @@ Input:
 Smarty global variables:
 $gsmarty_attachments
 
+20100713 - asimon - added missing ">" to opening "<a>"-tag (syntax error)
 20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20080701 - franciscom - removed "none" label when there are no attachments has no value.
 20080425 - franciscom -
@@ -71,7 +72,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 			{$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
 				{if !$attach_downloadOnly}
 				<a href="javascript:delete_confirmation({$info.id},'{$info.title|escape:'javascript'|escape}',
-					                                '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',deleteAttachment_onClick);"
+					                                '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',deleteAttachment_onClick);">
 					<img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
 				                         title="{lang_get s='alt_delete_attachment'}"
 				                         src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png" /></a>

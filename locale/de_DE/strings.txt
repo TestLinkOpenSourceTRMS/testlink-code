@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.163 2010/07/09 08:07:16 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.164 2010/07/14 06:15:01 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.636
+ * Last Update according to en_GB string file version 1.639
  *
  **/
 
@@ -61,6 +61,7 @@ $TLS_error = "Fehler";
 $TLS_export = "Export";
 $TLS_file_type = "Dateiformat";
 $TLS_filter_mode_and = 'Achtung: Filter Felder werden verUNDet';
+$TLS_goto_testspec = 'Testspezifikation öffnen';
 $TLS_help = "Hilfe";
 $TLS_hour = "Stunde";
 $TLS_importance		= "Wichtigkeit";
@@ -108,7 +109,7 @@ $TLS_title = "Titel";
 $TLS_title_admin = "Administration";
 $TLS_warning = "Warnung!!";
 $TLS_max_size_file_msg = "Max. Dateigröße:  %s KB";
-$TLS_due_since = "Testfall zugewiesen seit (Tage)";
+$TLS_due_since = "Zugewiesen seit (Tage)";
 $TLS_parent_child='ist Vater oder ist Kind';
 $TLS_blocks_depends = 'blockiert oder hängt ab von';
 $TLS_related_to='ist verwandt mit';
@@ -2653,6 +2654,17 @@ $TLS_API_TESTPLAN_HAS_NO_PLATFORMS = "Test plan (name:%s) has no platforms linke
 $TLS_API_TCASEID_NOT_IN_TPLANID_FOR_PLATFORM = "Test Case (name=%s/id=%s) is not associated with " .
                                                "Test Plan (name=%s/id=%s) for Platform (name=%s/id=%s).";
 
+
+$TLS_API_MISSING_PLATFORMID_BUT_NEEDED = 'Because Test Plan (name=%s/id=%s) has linked Platforms, operation requested ' .
+                                         'needs platformid';
+
+$TLS_API_PLATFORM_ID_NOT_LINKED_TO_TESTPLAN = "Platform ID %s is not linked to test plan (name:%s).";
+
+$TLS_API_LINKED_FEATURE_ALREADY_EXISTS = "Test Case version is already linked to " .
+                                         "Test Plan (name=%s/id=%s) for Platform (name=%s/id=%s).";
+
+$TLS_API_OTHER_VERSION_IS_ALREADY_LINKED = " Test Case version number %s <> %s (requested version) , " .
+                                           " is already linked to Test Plan (name=%s/id=%s).";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login für '{%1}' von '{%2}' erfolgreich";

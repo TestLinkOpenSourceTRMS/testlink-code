@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.282 2010/07/12 11:00:15 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.283 2010/07/14 14:21:21 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100714 - Julian - BUGID 3575 -  get_assigned_to_user() added priority in output set
  * 20100712 - asimon - inserted missing semicolon after break in get_assigned_to_user()
  * 20100711 - franciscom - BUGID 3575 -  get_assigned_to_user() added $filters as optional arg
  * 20100708 - franciscom - BUGID 3575 -  get_assigned_to_user() add plaftorm in output set
@@ -3219,7 +3220,8 @@ class testcase extends tlObjectWithAttachments
 
 	    $sql="/* $debugMsg */ SELECT TPROJ.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
 	         " TCV.version,TCV.tc_external_id, NHTC.id AS testcase_id, NHTC.name, TPROJ.prefix, " .
-	         " UA.creation_ts ,UA.deadline_ts, COALESCE(PLAT.name,'') AS platform_name " .
+	         " UA.creation_ts ,UA.deadline_ts, COALESCE(PLAT.name,'') AS platform_name, " .
+	         " (TPTCV.urgency * TCV.importance) AS priority " .
 	         " FROM {$this->tables['user_assignments']} UA " . 
 	         " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
 	         " JOIN {$this->tables['tcversions']} TCV ON TCV.id=TPTCV.tcversion_id " .

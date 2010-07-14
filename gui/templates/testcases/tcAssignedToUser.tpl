@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.9 2010/07/14 07:28:16 mx-julian Exp $
+$Id: tcAssignedToUser.tpl,v 1.10 2010/07/14 14:21:22 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
-rev: 
+rev:
+20100708 - Julian - BUGID 3591 - Column priority added
 20100708 - franciscom - BUGID 3575
 20100326 - amitkhullar - BUGID 3345
 20080322 - franciscom - php errors clean up
@@ -17,7 +18,8 @@ rev:
 
 {assign var=this_template_dir value=$smarty.template|dirname}
 {lang_get var='labels' 
-          s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform,goto_testspec'}
+          s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform,goto_testspec,priority,
+             high_priority,medium_priority,low_priority'}
 
 <body>
 <h1 class="title">{$gui->pageTitle}</h1>
@@ -29,6 +31,9 @@ rev:
             <table class="simple sortable">
             <th align="left">{$sortHintIcon}{$labels.testcase}</th>
             <th>{$sortHintIcon}{$labels.platform}</th>
+            {if $session['testprojectOptions']->testPriorityEnabled}
+            	<th>{$sortHintIcon}{$labels.priority}</th>
+            {/if}
             <th>{$sortHintIcon}{$labels.assigned_on}</th>
             <th>{$sortHintIcon}{$labels.due_since}</th>
             {foreach from=$tcaseSet item=tcasePlatform}
@@ -48,6 +53,17 @@ rev:
                 <td>
                 {$tcase.platform_name|escape}
                 </td>
+                {if $session['testprojectOptions']->testPriorityEnabled}
+                	<td>
+                	{if $tcase.priority >= $tlCfg->urgencyImportance->threshold.high}
+                		{$labels.high_priority}
+                		{elseif $tcase.priority <= $tlCfg->urgencyImportance->threshold.low}
+                				{$labels.low_priority}
+                		{else}
+                			{$labels.medium_priority}
+               		{/if}
+                </td>
+                {/if}
                 <td >
             	  {localize_timestamp ts=$tcase.creation_ts}
                 </td>

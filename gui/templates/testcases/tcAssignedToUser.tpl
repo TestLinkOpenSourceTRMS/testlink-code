@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.8 2010/07/12 17:15:31 franciscom Exp $
+$Id: tcAssignedToUser.tpl,v 1.9 2010/07/14 07:28:16 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 rev: 
 20100708 - franciscom - BUGID 3575
@@ -35,7 +35,11 @@ rev:
               {foreach from=$tcasePlatform item=tcase}
                 {assign var="tcase_id" value=$tcase.testcase_id}
                 {assign var="tcversion_id" value=$tcase.tcversion_id}
-               <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
+               {*
+               BUGID 3575: removed alternating coloring -> no same coloring of follow up lines after sorting
+               <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">  
+               *}    
+               <tr bgcolor="#eeeeee">   
                 <td>
             	  <a href="lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}" title="{$labels.goto_testspec}">
             	  {$tcase.tcase_full_path|escape}{$tcase.prefix|escape}

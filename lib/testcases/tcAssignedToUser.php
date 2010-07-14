@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/08/03 08:15:43 $  $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/07/14 07:28:16 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
 */
@@ -27,7 +27,9 @@ $gui->pageTitle=sprintf(lang_get('testcases_assigned_to_user'),$gui->tproject_na
 // Get all test cases assigned to user without filtering by execution status
 $options=new stdClass();
 $options->mode='full_path';
-$gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id,$args->tproject_id,testcase::ALL_TESTPLANS,$options);
+//BUGID 3575: show only assigned test cases for ACTIVE test plans
+$filter = array('tplan_status' => 'active');
+$gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id,$args->tproject_id,testcase::ALL_TESTPLANS,$options,$filter);
 
 if( !is_null($gui->resultSet) )
 {

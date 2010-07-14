@@ -13,11 +13,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.193 2010/07/09 08:03:01 havlat Exp $
+ * @version    	CVS: $Id: common.php,v 1.194 2010/07/14 14:40:33 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
+ *  20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
  *	20100616 - eloff - config_get: log warning when requested option does not exist
  * 	20100310 - franciscom - changes to make code compatible with smarty 3
  * 	20100207 - havlatm - cleanup
@@ -252,14 +253,14 @@ function doSessionStart()
  * @since 1.9
  *
  * @internal Revisions
+ *  20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
  *	20091119 - franciscom - removed global coupling 
- *
  */
 function initTopMenu(&$db)
 {
 	$_SESSION['testprojectTopMenu'] = '';
 	$guiTopMenu = config_get('guiTopMenu');
-    
+
 	// check if Project is available
 	if (isset($_SESSION['testprojectID']) && $_SESSION['testprojectID'] > 0)
 	{
@@ -267,9 +268,13 @@ function initTopMenu(&$db)
     	foreach ($guiTopMenu as $element)
 		{
 			// check if Test Plan is available
+			// BUGID 3601: check also if req mgmt is enabled
 			if ((!isset($element['condition'])) || ($element['condition'] == '') ||
 				(($element['condition'] == 'TestPlanAvailable') && 
-				  isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0))
+				  isset($_SESSION['testplanID']) && $_SESSION['testplanID'] > 0) ||
+				(($element['condition'] == 'ReqMgmtEnabled') && 
+				  isset($_SESSION['testprojectOptions']->requirementsEnabled) && 
+				    $_SESSION['testprojectOptions']->requirementsEnabled))
 			{
 				// (is_null($element['right']) => no right needed => display always
 				if (is_null($element['right']) || has_rights($db,$element['right']) == "yes")

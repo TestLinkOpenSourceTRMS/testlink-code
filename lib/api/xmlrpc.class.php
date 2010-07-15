@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/07/11 17:48:47 $ by $Author: franciscom $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/07/15 16:28:04 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20100715 - franciscom - BUGID 3604 - getTestCasesForTestPlan()
  *	20100711 - franciscom - BUGID 3564 - addTestCaseToTestPlan()
  *                          BUGID 2607 - UTF8 settings for MySQL
  *							BUGID 3544: deleteExecution doesn't handle missing execution id - checkExecutionID()
@@ -222,6 +223,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $overwriteParamName = "overwrite";
 	public static $testCasePathNameParamName = "testcasepathname";
     public static $userParamName = "user";
+    public static $getStepsInfoParamName = "getstepsinfo";
 
 
 	// public static $executionRunTypeParamName		= "executionruntype";
@@ -2200,6 +2202,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param int $args["$assignedto"] - optional
 	 * @param string $args["executestatus"] - optional
 	 * @param array $args["executiontype"] - optional
+	 * @param array $args["getstepinfo"] - optional - default false
 	 *
 	 * @return mixed $resultInfo
 	 */
@@ -2216,7 +2219,8 @@ class TestlinkXMLRPCServer extends IXR_Server
                    self::$executedParamName => null,
                    self::$assignedToParamName => null,
                    self::$executeStatusParamName => null,
-                   self::$executionTypeParamName => null);
+                   self::$executionTypeParamName => null,
+                   self::$getStepsInfoParamName => false);
          	
         $optMutualExclusive=array(self::$keywordIDParamName => null,
                                   self::$keywordNameParamName => null); 	
@@ -2246,7 +2250,11 @@ class TestlinkXMLRPCServer extends IXR_Server
         	$keywordSet = explode(",",$keywordList);
         }
 		
-        $options = array('executed_only' => $opt[self::$executedParamName], 'details' => 'full');
+		// BUGID 3604
+        $options = array('executed_only' => $opt[self::$executedParamName], 
+        				 'steps_info' => $opt[self::$getStepsInfoParamName],
+        				 'details' => 'full');
+        				 
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
 			             'keyword_id' => $opt[self::$keywordIDParamName],
 			             'assigned_to' => $opt[self::$assignedToParamName],

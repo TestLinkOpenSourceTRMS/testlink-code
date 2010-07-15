@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.97 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.98 2010/07/15 16:45:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1370,7 +1370,7 @@ class testsuite extends tlObjectWithAttachments
 	{
 	    $itemSet = null;
 	    $subtree = $this->tree_manager->get_children($id, array('testcase' => 'exclude_me'));
-	    if(!is_null($subtree))
+	    if(!is_null($subtree) && count($subtree) > 0)
 	    {
 			foreach( $subtree as $the_key => $elem)
 			{

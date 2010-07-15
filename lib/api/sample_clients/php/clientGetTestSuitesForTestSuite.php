@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetTestSuitesForTestSuite.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2010/03/28 16:29:51 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/07/15 16:45:23 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -32,7 +32,7 @@ echo $additionalInfo;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 
-runTest($client,$method,$args);
+$answer = runTest($client,$method,$args,$test_num);
 // ---------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ foreach($args as $key => $value)
 
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
-runTest($client,$method,$args);
+$answer = runTest($client,$method,$args,$test_num);
 // ---------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------
@@ -64,7 +64,7 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testsuiteid"]=123;
+$args["testsuiteid"]=193;
 
 $additionalInfo='<br>Test Suite HAS NO CHILDREN<br>';
 $debug=true;
@@ -78,8 +78,30 @@ foreach($args as $key => $value)
 
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
-runTest($client,$method,$args);
+$answer = runTest($client,$method,$args,$test_num);
 // ---------------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------------
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}";
+
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testsuiteid"]=44;
+
+$additionalInfo='';
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+echo 'arguments:<br>';
+foreach($args as $key => $value)
+{
+	echo $key . '=' . $value . '<br>';
+}
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+$answer = runTest($client,$method,$args,$test_num);
+// ---------------------------------------------------------------------------------
 
 ?>

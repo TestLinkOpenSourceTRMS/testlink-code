@@ -5,11 +5,12 @@
  *
  * Filename $RCSfile: clientGetTestCasesForTestPlan.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/08/03 08:15:43 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2010/07/15 16:27:25 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
+ *		20100715 - franciscom - new argument getstepinfo
  */
  
 require_once 'util.php';
@@ -22,7 +23,7 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testplanid"]=181;
+$args["testplanid"]=227;
 $args["executiontype"]=2;
 $additionalInfo='';
 
@@ -33,15 +34,15 @@ echo $additionalInfo;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 
-runTest($client,$method,$args);
+$answer = runTest($client,$method,$args,$test_num);
 // ---------------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------------
-$test_num=2;
+$test_num++;
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testplanid"]=446;
+$args["testplanid"]=227;
 $args["keywords"]='KU,UOL';
 $additionalInfo='Filter by Keyword name';
 
@@ -52,7 +53,50 @@ echo $additionalInfo;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 
-runTest($client,$method,$args);
+$answer = runTest($client,$method,$args,$test_num);
 // ---------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------
+$test_num++;
+
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testplanid"]=227;
+$args["getstepsinfo"]=false;
+
+$additionalInfo='get steps info: -> false';
+
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+$answer = runTest($client,$method,$args,$test_num);
+// ---------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------
+$test_num++;
+
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testplanid"]=227;
+$args["getstepsinfo"]=true;
+
+$additionalInfo='get steps info: -> true';
+
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+$answer = runTest($client,$method,$args,$test_num);
+// ---------------------------------------------------------------------------------
+
+
+
 
 ?>

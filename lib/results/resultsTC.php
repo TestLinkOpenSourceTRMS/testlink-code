@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.57 2010/07/16 19:45:35 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.58 2010/07/16 19:46:19 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -10,6 +10,7 @@
 *
 * @author 
 * 20100715 - eloff - use grouping on first column
+*                    Show only one table, group by platform is still possible
 * 20100503 - franciscom - BUGID 3419: In "Test result matrix", tests statuses or not colorized
 * 20100502 - Julian - BUGID 3418
 * 20100424 - franciscom - BUGID 3356	 
@@ -59,7 +60,7 @@ $mailCfg = buildMailCfg($gui);
 $getOpt = array('outputFormat' => 'map');
 $gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 
-$show_platforms = isset($gui->platforms[0]) ? false : true;
+$show_platforms = !is_null($gui->platforms);
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
 
 $gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id, 1); //MHT: active builds only
@@ -105,9 +106,16 @@ if ($gui->matrixCfg->buildColumns['latestBuildOnLeft'])
 
 // Every Test suite a row on matrix to display will be created
 // One matrix will be created for every platform that has testcases
-$cols = array_flip(array('tsuite', 'link', 'priority'));
+if ($show_platforms)
+{
+	$cols = array_flip(array('tsuite', 'link', 'platform', 'priority'));
+}
+else
+{
+	$cols = array_flip(array('tsuite', 'link', 'priority'));
+}
 
-$gui->matrixSet = array();
+$gui->matrix = array();
 if ($lastResultMap != null) 
 {
 	$versionTag = lang_get('tcversion_indicator');
@@ -135,6 +143,10 @@ if ($lastResultMap != null)
 				$rowArray = null;
 				$rowArray[$cols['tsuite']] = $suiteName;
 				$rowArray[$cols['link']] = $link;
+				if ($show_platforms)
+				{
+					$rowArray[$cols['platform']] = $gui->platforms[$platformId];
+				}
 				// $rowArray[$cols['tcversion']] = $testCaseVersion;
 
 			
@@ -220,17 +232,14 @@ if ($lastResultMap != null)
 			    	$buildExecStatus = array_reverse($buildExecStatus);
 			    }
 			    $rowArray = array_merge($rowArray, $buildExecStatus);
-			    $gui->matrixSet[$platformId][] = $rowArray;
+			    $gui->matrix[] = $rowArray;
   			    $indexOfArrData++;
         	}
         }	
     }
 } // end if
 
-foreach($gui->matrixSet as $platformID => $matrixData)
-{
-	$gui->tableSet[$platformID] =  buildMatrix($gui->buildInfoSet, $matrixData, $args->format);
-}
+$gui->tableSet[] =  buildMatrix($gui->buildInfoSet, $gui->matrix, $args->format, $show_platforms);
 
 new dBug($gui);
 $smarty = new TLSmarty;
@@ -271,10 +280,14 @@ function checkRights(&$db,&$user)
  * return tlExtTable
  *
  */
-function buildMatrix($buildSet, $dataSet, $format)
+function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
 {
 	$columns = array(array('title' => lang_get('title_test_suite_name'), 'width' => 100),
 		             array('title' => lang_get('title_test_case_title'), 'width' => 350));
+	if ($show_platforms)
+	{
+		$columns[] = array('title' => lang_get('platform'), 'width' => 150);
+	}
 	
 	// BUGID 3418: check if test priority is enabled
 	if($_SESSION['testprojectOptions']->testPriorityEnabled) 

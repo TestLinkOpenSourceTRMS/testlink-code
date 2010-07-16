@@ -6,14 +6,20 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: charts.php,v 1.29 2010/02/21 17:24:23 franciscom Exp $
+ * @version    	CVS: $Id: charts.php,v 1.30 2010/07/16 23:50:24 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100716 - eloff - BUGID 3562: include bug tracking if activated
  * 20100221 - franciscom - fixed call to getPlatforms()	
  */
 require_once('../../config.inc.php');
 require_once('common.php');
+if (config_get('interface_bugs') != 'NO')
+{
+  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
+               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+}
 testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 

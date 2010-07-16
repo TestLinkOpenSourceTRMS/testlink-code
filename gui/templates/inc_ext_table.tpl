@@ -1,13 +1,14 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.5 2010/07/16 19:47:12 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.6 2010/07/16 19:48:50 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
-rev :
+@internal Revisions:
+	 20100716 - Eloff - Add toolbar and make panel stateful
 	 20100716 - Eloff - Allow grouping on any column
 	 20100715 - Eloff - Add grouping on first column
 	 20090710 - Eloff - Added comment to explain magic numbers
-   20090709 - Eloff - Initial commit
+	 20090709 - Eloff - Initial commit
 *}
 
 
@@ -18,6 +19,8 @@ rev :
 
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
+{lang_get var="labels" s="expand_groups, collapse_groups, show_all_builds,
+	show_all_builds_tooltip"}
 {literal}
 <script type="text/javascript">
 /*
@@ -65,6 +68,7 @@ function priorityRenderer(val)
 
 Ext.onReady(function() {
 {/literal}
+	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value="table_$idx"}
 
@@ -77,7 +81,36 @@ Ext.onReady(function() {
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);
 		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
+			id: 'tl_results_tc_{$tableID}',
 			store: store['{$tableID}'],
+			tbar: [{ldelim}
+				text: '{$labels.expand_groups|escape:javascript}',
+				iconCls: 'x-group-by-icon',
+				handler: function () {ldelim}
+					grid['{$tableID}'].getView().expandAllGroups();
+				{rdelim},
+			{rdelim},
+			{ldelim}
+				text: '{$labels.collapse_groups|escape:javascript}',
+				iconCls: 'x-group-by-icon',
+				handler: function () {ldelim}
+					grid['{$tableID}'].getView().collapseAllGroups();
+				{rdelim},
+			{rdelim},
+			{ldelim}
+				text: '{$labels.show_all_builds|escape:javascript}',
+				tooltip: '{$labels.show_all_builds_tooltip|escape:javascript}',
+				tooltipType: 'title',
+				iconCls: 'x-cols-icon',
+				handler: function (button, state) {ldelim}
+					var cm = grid['{$tableID}'].getColumnModel();
+					for (var i=0;i<cm.getColumnCount();i++) {ldelim}
+						cm.setHidden(i, false);
+					{rdelim}
+				{rdelim},
+			{rdelim}],
+
+
 			view: new Ext.grid.GroupingView({ldelim}
 				forceFit: true
 				{rdelim}),

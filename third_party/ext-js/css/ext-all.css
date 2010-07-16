@@ -5922,11 +5922,11 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 }
 
 .x-group-by-icon {
-    background-image:url(../images/default/grid/group-by.gif);
+    background-image:url(../images/default/grid/group-by.gif) !important;
 }
 
 .x-cols-icon {
-    background-image:url(../images/default/grid/columns.gif);
+    background-image:url(../images/default/grid/columns.gif) !important;
 }
 
 .x-show-groups-icon {

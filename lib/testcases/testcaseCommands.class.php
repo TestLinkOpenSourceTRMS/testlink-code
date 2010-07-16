@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.45 2010/06/25 14:48:07 asimon83 Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.46 2010/07/16 23:10:06 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100716 - eloff - BUGID 3610 - fixes missing steps_results_layout in $gui
  *  20100625 - asimon - refactoring for new filter features,
  *                      replaced refresh_tree and do_refresh by refreshTree,
  *                      also replaced refreshTree values yes and no by 1 and 0 to avoid problems
@@ -253,6 +254,8 @@ class testcaseCommands
     	$guiObj = $this->initGuiBean($argsObj);
    	    $guiObj->refreshTree=$argsObj->refreshTree ? 1 : 0;
         $guiObj->has_been_executed = $argsObj->has_been_executed;
+		// BUGID 3610
+		$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
 
 		  // to get the name before the user operation
         $tc_old = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);

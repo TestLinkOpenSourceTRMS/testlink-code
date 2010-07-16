@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.56 2010/05/15 11:13:05 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.57 2010/07/16 19:45:35 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100715 - eloff - use grouping on first column
 * 20100503 - franciscom - BUGID 3419: In "Test result matrix", tests statuses or not colorized
 * 20100502 - Julian - BUGID 3418
 * 20100424 - franciscom - BUGID 3356	 
@@ -289,6 +290,7 @@ function buildMatrix($buildSet, $dataSet, $format)
 	if ($format == FORMAT_HTML) 
 	{
 		$matrix = new tlExtTable($columns, $dataSet);
+		$matrix->groupByFirstColumn = true;
 
 		// BUGID 3418: check if test priority is enabled
 		if($_SESSION['testprojectOptions']->testPriorityEnabled) 

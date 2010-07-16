@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.3 2010/05/02 09:46:57 franciscom Exp $
+$Id: inc_ext_table.tpl,v 1.4 2010/07/16 19:45:34 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 rev :
+	 20100715 - Eloff - Add grouping on first column
 	 20090710 - Eloff - Added comment to explain magic numbers
    20090709 - Eloff - Initial commit
 *}
@@ -62,20 +63,27 @@ function priorityRenderer(val)
 }
 
 Ext.onReady(function() {
-  {/literal}
+{/literal}
 	{foreach from=$gui->tableSet key=idx item=matrix}
-    {assign var=tableID value="table_$idx"}
-	   store['{$tableID}'] = {literal}new Ext.data.ArrayStore({fields: fields['{/literal}{$tableID}{literal}']});{/literal}
-     store['{$tableID}'].loadData(tableData['{$tableID}']);
-	  {literal}grid['{/literal}{$tableID}{literal}'] = new Ext.grid.GridPanel({{/literal}
-	  	store: store['{$tableID}'],
-	  	viewConfig: {ldelim}
-	  		forceFit: true
-	  	{rdelim},columns: columnData['{$tableID}']
-	  	{$matrix->getGridSettings()}{literal}
-	  });
-	  {/literal}
-  {/foreach}
+		{assign var=tableID value="table_$idx"}
+
+		store['{$tableID}'] = new Ext.data.GroupingStore({ldelim}
+			reader: new Ext.data.ArrayReader({ldelim}{rdelim},
+				fields['{$tableID}'])
+			{if $matrix->groupByFirstColumn}
+			,groupField: 'idx0'
+			{/if}
+			{rdelim});
+		store['{$tableID}'].loadData(tableData['{$tableID}']);
+		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
+			store: store['{$tableID}'],
+			view: new Ext.grid.GroupingView({ldelim}
+				forceFit: true
+				{rdelim}),
+				columns: columnData['{$tableID}']
+				{$matrix->getGridSettings()}
+			{rdelim});
+	{/foreach}
 
 	{foreach from=$gui->tableSet key=idx item=matrix}
     {assign var=tableID value="table_$idx"}

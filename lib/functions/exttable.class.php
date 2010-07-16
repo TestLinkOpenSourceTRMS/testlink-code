@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.7 2010/07/16 19:45:34 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.8 2010/07/16 19:47:12 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100716 - eloff - Allow grouping on any column
  *	20100715 - eloff - Add option for grouping on first column
  *	20100503 - franciscom - BUGID 3419 In "Test result matrix", tests statuses or not colorized
  *	20100423 - franciscom - refactoring to allow more flexibility
@@ -36,11 +37,11 @@ class tlExtTable extends tlTable
 	protected $customBehaviour = array();
 
 	/**
-	 * If true use grouping based on the value in first column. The rows with
+	 * If set to an integer value, use this column for grouping. The rows with
 	 * the same value will be placed in a collapsible group. The user can
-	 * choose to group on other columns, this is just the default.
+	 * choose to group on other columns, this is just the default column.
 	 */
-	public $groupByFirstColumn = false;
+	public $groupByColumn = false;
 
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.

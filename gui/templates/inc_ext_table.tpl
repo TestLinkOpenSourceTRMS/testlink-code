@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.4 2010/07/16 19:45:34 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.5 2010/07/16 19:47:12 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 rev :
+	 20100716 - Eloff - Allow grouping on any column
 	 20100715 - Eloff - Add grouping on first column
 	 20090710 - Eloff - Added comment to explain magic numbers
    20090709 - Eloff - Initial commit
@@ -70,8 +71,8 @@ Ext.onReady(function() {
 		store['{$tableID}'] = new Ext.data.GroupingStore({ldelim}
 			reader: new Ext.data.ArrayReader({ldelim}{rdelim},
 				fields['{$tableID}'])
-			{if $matrix->groupByFirstColumn}
-			,groupField: 'idx0'
+			{if is_int($matrix->groupByColumn)}
+			,groupField: 'idx{$matrix->groupByColumn}'
 			{/if}
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);

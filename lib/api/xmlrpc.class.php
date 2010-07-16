@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/07/15 16:28:04 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2010/07/16 18:35:22 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -3982,6 +3982,7 @@ public function getTestCase($args)
 	{
 	    $operation=__FUNCTION__;
 	    $msg_prefix="({$operation}) - ";
+	    $items = null;
 	
 	    $this->_setArgs($args);
 	    $status_ok = $this->_runChecks(array('authenticate','checkTestSuiteID'),$msg_prefix) && 

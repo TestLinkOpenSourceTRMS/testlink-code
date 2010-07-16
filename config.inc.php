@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.310 2010/07/09 13:12:36 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.311 2010/07/16 11:58:48 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -968,7 +968,12 @@ $tlCfg->internal_links =  new stdClass();
 // link to requirements: [req]req_doc_id[/req]
 // link to requirement specifications: [req_spec]req_spec_doc_id[/req_spec]
 //
-// FALSE: no links are automatically created.
+// The test project of the requirement / requirement specification and an anchor
+// to jump to can also be specified:
+// [req tproj=<tproj_prefix> anchor=<anchor_name>]req_doc_id[/req]
+// This syntax also works for requirement specifications.
+//
+// FALSE: no links are automatically created. 
 //
 $tlCfg->internal_links->enable =  TRUE;
 

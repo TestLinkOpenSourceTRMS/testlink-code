@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetTestSuitesForTestSuite.php,v $
  *
- * @version $Revision: 1.2 $
- * @modified $Date: 2010/07/15 16:45:23 $ by $Author: franciscom $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2010/07/19 10:13:56 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -87,7 +87,7 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testsuiteid"]=44;
+$args["testsuiteid"]=228;
 
 $additionalInfo='';
 $debug=true;

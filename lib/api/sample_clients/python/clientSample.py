@@ -1,6 +1,6 @@
 #! /usr/bin/python
 """
-Testlink API Sample Python Client implementation
+Testlink API Sample Python 2.x Client implementation
 """
 import xmlrpclib
 

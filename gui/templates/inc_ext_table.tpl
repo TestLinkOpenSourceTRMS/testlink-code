@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.7 2010/07/19 06:14:12 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.8 2010/07/19 10:11:12 franciscom Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -76,7 +76,7 @@ Ext.onReady(function() {
 		store['{$tableID}'] = new Ext.data.GroupingStore({ldelim}
 			reader: new Ext.data.ArrayReader({ldelim}{rdelim},
 				fields['{$tableID}'])
-			{if is_int($matrix->groupByColumn)}
+			{if $matrix->groupByColumn >= 0}
 			,groupField: 'idx{$matrix->groupByColumn}'
 			{/if}
 			{rdelim});

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/05/09 07:38:12 $ by $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/07/19 13:00:41 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
  * 
+ *	20100719 - franciscom - BUGID 3327 - manage duplicated DOC ID when creating, without loosing filled-in data
  * 	20100323 - asimon - BUGID 3312 - fixed audit log message when freezing a req version
  *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
  *                      BUGID 1748 - added doAddRelation() and doDeleteRelation() for req relations
@@ -206,8 +207,20 @@ class reqCommands
 			$this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
   			$obj->template = 'reqEdit.tpl';
   			$obj->req_id = $ret['id'];
+			$argsObj->scope = '';
 		}
-		$argsObj->scope = '';
+		else
+		{
+		    $obj->req_spec_id = $argsObj->req_spec_id;
+		    $obj->req_version_id = $argsObj->req_version_id;
+		    
+		    $obj->req = array();
+	    	$obj->req['expected_coverage'] = $argsObj->expected_coverage;
+		    $obj->req['title'] = $argsObj->title;
+		    $obj->req['status'] = $argsObj->reqStatus;
+		    $obj->req['type'] = $argsObj->reqType;
+		    $obj->req['req_doc_id'] = $argsObj->reqDocId;
+		}
 		return $obj;	
   }
 

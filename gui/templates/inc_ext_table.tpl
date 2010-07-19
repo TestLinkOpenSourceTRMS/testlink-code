@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.6 2010/07/16 19:48:50 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.7 2010/07/19 06:14:12 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100719 - Julian - Replaced lables for toolbar items with more general ones
 	 20100716 - Eloff - Add toolbar and make panel stateful
 	 20100716 - Eloff - Allow grouping on any column
 	 20100715 - Eloff - Add grouping on first column
@@ -19,8 +20,8 @@ Purpose: rendering of Ext Js table
 
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
-{lang_get var="labels" s="expand_groups, collapse_groups, show_all_builds,
-	show_all_builds_tooltip"}
+{lang_get var="labels" s="expand_groups, collapse_groups, show_all_columns,
+	show_all_columns_tooltip"}
 {literal}
 <script type="text/javascript">
 /*
@@ -98,8 +99,8 @@ Ext.onReady(function() {
 				{rdelim},
 			{rdelim},
 			{ldelim}
-				text: '{$labels.show_all_builds|escape:javascript}',
-				tooltip: '{$labels.show_all_builds_tooltip|escape:javascript}',
+				text: '{$labels.show_all_columns|escape:javascript}',
+				tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
 				tooltipType: 'title',
 				iconCls: 'x-cols-icon',
 				handler: function (button, state) {ldelim}

@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.75 $
- * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
+ * @version $Revision: 1.76 $
+ * @modified $Date: 2010/07/19 06:11:07 $ by $Author: amkhullar $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *  20100719 - amitkhullar - BUGID 3609 - fix for keyword import error
  *	20100620 - franciscom - Trying to reduce memory problems using statics on 
  *							saveImportedTCData() after issue 3521
  *	20100619 - franciscom - added file size control 
@@ -498,7 +499,7 @@ function buildKeywordList($kwMap,$keywords)
 	$loop2do = sizeof($keywords);
 	for($jdx = 0; $jdx <$loop2do ; $jdx++)
 	{
-		$items[] = $kwMap[$keywords[$jdx]['name']];
+		$items[] = $kwMap[trim($keywords[$jdx]['name'])]; 
 	}
 	return $items;
 }

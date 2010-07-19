@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.12 2010/05/02 09:51:54 franciscom Exp $ *}
+{* $Id: resultsTC.tpl,v 1.13 2010/07/19 18:53:57 erikeloff Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
-    20091223 - eloff      - readded support for HTML tables
+    20100719 - eloff - Update due to changes in tlExtTable
+    20091223 - eloff - readded support for HTML tables
     20070919 - franciscom - BUGID
     20051204 - mht - removed obsolete print button
 *}
@@ -13,7 +14,7 @@
 
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value="table_$idx"}
+  {assign var=tableID value=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -21,7 +22,7 @@
         {include file="inc_ext_table.tpl"}
     {/if}
   {/if}
-  {$matrix->renderHeadSection($tableID)}
+  {$matrix->renderHeadSection()}
 {/foreach}
 
 </head>
@@ -47,7 +48,7 @@
   {if $idx != 0}
   <h2>{$labels.platform}: {$gui->platforms[$idx]|escape}</h2>
   {/if}
-  {$matrix->renderBodySection($tableID)}
+  {$matrix->renderBodySection()}
 {/foreach}
 
 

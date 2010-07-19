@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.8 2010/07/19 10:11:12 franciscom Exp $
+$Id: inc_ext_table.tpl,v 1.9 2010/07/19 18:53:44 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100719 - Eloff - Update due to changes in tlExtTable
 	 20100719 - Julian - Replaced lables for toolbar items with more general ones
 	 20100716 - Eloff - Add toolbar and make panel stateful
 	 20100716 - Eloff - Allow grouping on any column
@@ -71,7 +72,7 @@ Ext.onReady(function() {
 {/literal}
 	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value="table_$idx"}
+		{assign var=tableID value=$matrix->tableID}
 
 		store['{$tableID}'] = new Ext.data.GroupingStore({ldelim}
 			reader: new Ext.data.ArrayReader({ldelim}{rdelim},
@@ -82,8 +83,9 @@ Ext.onReady(function() {
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);
 		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
-			id: 'tl_results_tc_{$tableID}',
+			id: '{$tableID}',
 			store: store['{$tableID}'],
+            {if $matrix->show_toolbar}
 			tbar: [{ldelim}
 				text: '{$labels.expand_groups|escape:javascript}',
 				iconCls: 'x-group-by-icon',
@@ -110,6 +112,7 @@ Ext.onReady(function() {
 					{rdelim}
 				{rdelim},
 			{rdelim}],
+            {/if} {* /show_toolbar *}
 
 
 			view: new Ext.grid.GroupingView({ldelim}
@@ -121,8 +124,8 @@ Ext.onReady(function() {
 	{/foreach}
 
 	{foreach from=$gui->tableSet key=idx item=matrix}
-    {assign var=tableID value="table_$idx"}
-	  grid['{$tableID}'].render('{$tableID}');
+    {assign var=tableID value=$matrix->tableID}
+	  grid['{$tableID}'].render('{$tableID}_target');
   {/foreach}
 
 });

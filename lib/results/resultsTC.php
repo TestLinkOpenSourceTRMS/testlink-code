@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.59 2010/07/16 19:47:12 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.60 2010/07/19 18:54:19 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100719 - eloff - Update due to changes in tlExtTable
 * 20100716 - eloff - group by platform column
 * 20100715 - eloff - use grouping on first column
 *                    Show only one table, group by platform is still possible
@@ -31,6 +32,10 @@ require_once('results.class.php');
 require_once('displayMgr.php');
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
+
+// Those defines are simply refering to the column number
+define('TABLE_GROUP_BY_TESTSUITE', 0);
+define('TABLE_GROUP_BY_PLATFORM', 2);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -303,8 +308,15 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
 	
 	if ($format == FORMAT_HTML) 
 	{
-		$matrix = new tlExtTable($columns, $dataSet);
-		$matrix->groupByColumn = 2;
+		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_tc');
+		if ($show_platforms)
+		{
+			$matrix->groupByColumn = TABLE_GROUP_BY_PLATFORM;
+		}
+		else
+		{
+			$matrix->groupByColumn = TABLE_GROUP_BY_TESTSUITE;
+		}
 
 		// BUGID 3418: check if test priority is enabled
 		if($_SESSION['testprojectOptions']->testPriorityEnabled) 
@@ -314,7 +326,7 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
 	} 
 	else 
 	{
-		$matrix = new tlHTMLTable($columns, $dataSet);
+		$matrix = new tlHTMLTable($columns, $dataSet, 'tl_table_results_tc');
 	}
 	return $matrix;
 }

@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: tlHTMLTable.class.php,v 1.3 2010/05/15 13:29:06 franciscom Exp $
+ * @version CVS: $Id: tlHTMLTable.class.php,v 1.4 2010/07/19 18:54:13 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlHTMLTable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100719 - eloff - Pass $tableID via constructor
  *  20100503 - franciscom - BUGID 3418 - changed in renderStatus(), due to changes on data structure
  *  20091223 - eloff - created class
  *
@@ -47,7 +48,7 @@ class tlHTMLTable extends tlTable
 	/**
 	 * Does nothing. All rendering is contained in renderBodySection()
 	 */
-	public function renderHeadSection($tableID)
+	public function renderHeadSection()
 	{
 		return '';
 	}
@@ -55,7 +56,7 @@ class tlHTMLTable extends tlTable
 	/**
 	 * Renders a HTML table with css class "simple" and given id
 	 */
-	public function renderBodySection($tableID)
+	public function renderBodySection()
 	{
 		$s = '<table class="simple" style="width: 100%; margin-left: 0px;">';
 		// Render columns

@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.16 2010/06/24 17:25:57 asimon83 Exp $
+$Id: resultsByStatus.tpl,v 1.17 2010/07/19 18:53:56 erikeloff Exp $
 Purpose: show Test Results and Metrics
 
 rev:
+	20100719 - Eloff - Implement extTable for this report
 	20100527 - BUGID 3492 - show only test case summary for not run test cases
 	                        else show exec notes
 	20100309 - asimon - added sort hint icon on some columns where it was missing before 
@@ -21,6 +22,13 @@ rev:
 <div class="workBack">
 {include file="inc_result_tproject_tplan.tpl"
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}
+
+{$gui->tableSet[0]->renderCommonGlobals()}
+{if $gui->tableSet[0] instanceof tlExtTable}
+	{include file="inc_ext_js.tpl" bResetEXTCss=1}
+	{include file="inc_ext_table.tpl"}
+{/if}
+{$gui->tableSet[0]->renderHeadSection()}
 
 {foreach key=platformID item=dataSet from=$gui->dataSetByPlatform}
 {if $platformID != 0}
@@ -59,6 +67,8 @@ rev:
 {/foreach}
 </table>
 {/foreach}
+
+{$gui->tableSet[0]->renderBodySection()}
 <br />
 
 {if $gui->bugInterfaceOn}

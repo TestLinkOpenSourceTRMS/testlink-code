@@ -10,7 +10,9 @@
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
- * 
+ *
+ * @internal Revision:
+ *  20100719 - eloff - Pass $tableID via constructor
  **/
 
 
@@ -26,6 +28,12 @@ abstract class tlTable
 	 *      an array with the column data as describled in $columns.
 	 */
 	protected $data;
+
+	/**
+	 * A unique id that is used to render the table and to remember state via
+	 * cookie (requires CookieProvider to be set in Ext.onReady);
+	 */
+	public $tableID = null;
 
 	/** @var The title header for the whole table. Default: null (no title) */
 	public $title = null;
@@ -51,10 +59,11 @@ abstract class tlTable
 	 *                    'type' => 'string',
 	 *                    'width => 150);
 	 */
-	public function __construct($columns, $data)
+	public function __construct($columns, $data, $tableID)
 	{
 		$this->columns = $columns;
 		$this->data = $data;
+		$this->tableID = $tableID;
 	}
 
 	/**
@@ -65,10 +74,10 @@ abstract class tlTable
 	/**
 	 * Outputs the code that should be in <head>
 	 */
-	public abstract function renderHeadSection($tableID);
+	public abstract function renderHeadSection();
 
 	/**
 	 * Outputs the code that should be in <body>
 	 */
-	public abstract function renderBodySection($tableID);
+	public abstract function renderBodySection();
 }

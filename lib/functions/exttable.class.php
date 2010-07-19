@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.9 2010/07/19 10:10:30 franciscom Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.10 2010/07/19 18:54:03 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100719 - eloff - Pass $tableID via constructor
  *	20100719 - franciscom - changing default value for $groupByColumn
  *	20100716 - eloff - Allow grouping on any column
  *	20100715 - eloff - Add option for grouping on first column
@@ -33,7 +34,7 @@ class tlExtTable extends tlTable
 	/**
 	 * Array of custom behaviour indexed by column type.
 	 * Behaviour means custom rendering and/or sorting available.
-	 * @see $addCustomBehaviour($type,$behaviour)
+	 * @see addCustomBehaviour($type,$behaviour)
 	 */
 	protected $customBehaviour = array();
 
@@ -44,6 +45,13 @@ class tlExtTable extends tlTable
 	 */
 	public $groupByColumn = -1;
 
+    /**
+     * If true shows a toolbar in the table header.
+     *
+     * @see inc_ext_table.tpl for the tools available.
+     */
+    public $show_toolbar = true;
+
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.
 	 * For use of column['type'] see $this->customTypes
@@ -51,9 +59,9 @@ class tlExtTable extends tlTable
 	 * @see tlTable::__construct($columns, $data)
 	 * @see addCustomBehaviour($type,$behaviour)
 	 */
-	public function __construct($columns, $data)
+	public function __construct($columns, $data, $tableID)
 	{
-		parent::__construct($columns, $data);
+		parent::__construct($columns, $data, $tableID);
 	}
 
 	/**
@@ -89,7 +97,7 @@ class tlExtTable extends tlTable
 				// Escape data
 				if (is_string($val)) 
 				{
-					$row_string .= "'" . $val . "',";
+					$row_string .= json_encode($val) . ',';
 				} 
 				else if (is_array($val)) 
 				{
@@ -229,12 +237,12 @@ class tlExtTable extends tlTable
 	 * Outputs all js that is needed to render the table. This inlcludes
 	 * rendering of "inc_ext_table.tpl"
 	 */
-	public function renderHeadSection($tableID)
+	public function renderHeadSection()
 	{
 		$s = '<script type="text/javascript">' . "\n\n";
-		$s .= "tableData['{$tableID}'] = " . $this->buildContent() . "\n\n";
-		$s .= "fields['{$tableID}'] = " . $this->buildFields() . "\n\n";
-		$s .= "columnData['{$tableID}'] = " . $this->buildColumns() . "\n\n";
+		$s .= "tableData['{$this->tableID}'] = " . $this->buildContent() . "\n\n";
+		$s .= "fields['{$this->tableID}'] = " . $this->buildFields() . "\n\n";
+		$s .= "columnData['{$this->tableID}'] = " . $this->buildColumns() . "\n\n";
 		$s .= '</script>' . "\n\n";
 		return $s;
 	}
@@ -286,9 +294,9 @@ class tlExtTable extends tlTable
 	/**
 	 * Outputs the div tag to hold the table.
 	 */
-	public function renderBodySection($tableID)
+	public function renderBodySection()
 	{
-		return '<div id="' . $tableID . '"></div>';
+		return '<div id="' . $this->tableID . '_target"></div>';
 	}
 
 

@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.80 2010/06/24 19:40:24 erikeloff Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.81 2010/07/19 18:54:19 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20100719 - Eloff - Implement extTable for this report
  *	20100617 - eloff - BUGID 3255 - fix bug links if available
  *	201005 - Julian - BUGID 3492 - show only test case summary for not run test cases
  *	                  else show exec notes
@@ -31,10 +32,16 @@
  *	20080602 - franciscom - changes due to BUGID 1504
  *	20070623 - franciscom - BUGID 911
 */
+
+// Those defines are simply refering to the column number
+define('TABLE_GROUP_BY_TESTSUITE', 0);
+define('TABLE_GROUP_BY_PLATFORM', 3);
+
 require('../../config.inc.php');
 require_once('common.php');
 require_once('displayMgr.php');
 require_once('users.inc.php');
+require_once('exttable.class.php');
 require_once('exec.inc.php'); // used for bug string lookup
 if (config_get('interface_bugs') != 'NO')
 {
@@ -59,6 +66,7 @@ $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 
 $getOpt = array('outputFormat' => 'map');
 $gui->platformSet = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
+$show_platforms = !is_null($gui->platformSet);
 if( is_null($gui->platformSet) )
 {
 	$gui->platformSet = array('');
@@ -215,6 +223,16 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
     }    	
 }    	
 
+new dBug($gui->dataSet);
+new dBug($gui->dataSetByPlatform);
+
+$gui->tableSet[] = buildMatrix($gui->dataSet, array(
+		'status_not_run' => ($args->type == $statusCode['not_run']),
+		'bugInterfaceOn' => $gui->bugInterfaceOn,
+		'format' => $args->format,
+		'show_platforms' => $show_platforms,
+	));
+
 $smarty = new TLSmarty();
 $smarty->assign('gui', $gui );
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format,$mailCfg);
@@ -307,4 +325,64 @@ function buildMailCfg(&$guiObj)
 	                 
 	return $cfg;
 }
-?>
+
+/**
+ * Builds ext-js rich table to display matrix results
+ *
+ * @param map dataSet: data to be displayed on matrix
+ *
+ * return tlExtTable
+ *
+ */
+function buildMatrix($dataSet, $options = array())
+{
+	$default_options = array(
+		'bugInterfaceOn' => false,
+		'show_platforms' => false,
+		'status_not_run' => false,
+		'format' => FORMAT_HTML,
+	);
+	$options = array_merge($default_options, $options);
+	$columns = array();
+	$columns[] = array('title' => lang_get('title_test_suite_name'), 'width' => 100);
+	$columns[] = array('title' => lang_get('title_test_case_title'), 'width' => 250);
+	$columns[] = array('title' => lang_get('version'), 'width' => 50);
+	if ($options['show_platforms'])
+	{
+		$columns[] = array('title' => lang_get('platform'));
+	}
+	if( $options['status_not_run'] )
+	{
+		$columns[] = array('title' => lang_get('assigned_to'));
+		$columns[] = array('title' => lang_get('summary'));
+	}
+	else
+	{
+		$columns[] = array('title' => lang_get('th_build'));
+		$columns[] = array('title' => lang_get('th_run_by'));
+		$columns[] = array('title' => lang_get('th_date'));
+		$columns[] = array('title' => lang_get('title_execution_notes'));
+		if ($options['bugInterfaceOn'])
+		{
+			$columns[] = array('title' => lang_get('th_bugs'));
+		}
+	}
+
+	if ($format == FORMAT_HTML)
+	{
+		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_by_status');
+		if ($options['show_platforms'])
+		{
+			$matrix->groupByColumn = TABLE_GROUP_BY_PLATFORM;
+		}
+		else
+		{
+			$matrix->groupByColumn = TABLE_GROUP_BY_TESTSUITE;
+		}
+	}
+	else
+	{
+		$matrix = new tlHTMLTable($columns, $dataSet, 'tl_table_results_by_status');
+	}
+	return $matrix;
+}

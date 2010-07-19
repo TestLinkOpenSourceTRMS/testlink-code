@@ -4,16 +4,19 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2009/06/10 19:36:00 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/07/19 21:32:44 $ by $Author: erikeloff $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
- * rev:
- * 		20090504 - amitkhullar - BUGID 2465
+ *
+ * @internal Revisions:
+ *	20100719 - eloff - Use tlExtTable
+ *	20090504 - amitkhullar - BUGID 2465
  */
 require_once("../../config.inc.php");
 require_once("common.php");
+require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $cfield_mgr = new cfield_mgr($db);
@@ -54,7 +57,6 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
     $gui->code_status = $resultsCfg['code_status'];
     $tproject_mgr = new testproject($db);
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
-    $gui->tcasePrefix .= $tcase_cfg->glue_character;
 
     // Get the custom fields linked/enabled on execution to a test project
     // This will be used on report to give name to header of columns that hold custom field value
@@ -104,6 +106,49 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
         $gui->pageTitle .= " - " . lang_get('match_count') . ":" . $gui->row_qty;
         $gui->resultSet=$result;
     }
+
+
+	// Create column headers
+	$columns = array(
+		lang_get('test_case'),
+		lang_get('build'),
+		lang_get('th_owner'),
+		lang_get('date'),
+		array('title' => lang_get('status'), 'type' => status));
+	foreach ($gui->cfields as $cfield)
+	{
+		$columns[] = $cfield['label'];
+	}
+
+	// Extract the relevant data and build a matrix
+	$matrixData = array();
+	foreach ($result as $arrData)
+	{
+		$rowData = array();
+		$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $arrData['tcase_id'] . '">' .
+			buildExternalIdString($gui->tcasePrefix, $arrData['tc_external_id']) .
+			' : ' . $arrData['tcase_name'] . '</a>';
+		$rowData[] = $arrData['build_name'];
+		$rowData[] = $arrData['tester'];
+
+		$dummy = null;
+		$rowData[] =
+			"<a href=\"lib/execute/execSetResults.php?level=testcase&build_id={$arrData['builds_id']}&id={$arrData['tcase_id']}&version_id={$arrData['tcversion_id']}&tplan_id={$gui->tplan_id}\">" .
+			localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $arrData['execution_ts']) .
+			'</a>';
+		// let the renderer localize status
+		$rowData[] = $arrData['exec_status'];
+
+		foreach ($arrData['cfields'] as $cf_value)
+		{
+			$rowData[] = $cf_value;
+		}
+
+		$matrixData[] = $rowData;
+	}
+	$table = new tlExtTable($columns, $matrixData, 'tl_table_results_cf');
+	$table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
+	$gui->tableSet = array($table);
 }
 
 $smarty = new TLSmarty();

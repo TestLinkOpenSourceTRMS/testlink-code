@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithCF.tpl,v 1.7 2010/05/02 09:38:10 franciscom Exp $
+$Id: testCasesWithCF.tpl,v 1.8 2010/07/19 21:32:42 erikeloff Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
 rev:  
+ 20100719 - eloff - Use tlExtTable
  20100303 - asimon - made table ext js sortable
  
 *}
@@ -14,6 +15,17 @@ rev:
              testproject_has_no_requirements,no_linked_tc_cf,generated_by_TestLink_on,
              test_case,build,th_owner,date,status'}
 {include file="inc_head.tpl" openHead="yes"}
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+  {assign var=tableID value=$matrix->tableID}
+  {if $smarty.foreach.initializer.first}
+    {$matrix->renderCommonGlobals()}
+    {if $matrix instanceof tlExtTable}
+        {include file="inc_ext_js.tpl" bResetEXTCss=1}
+        {include file="inc_ext_table.tpl"}
+    {/if}
+  {/if}
+  {$matrix->renderHeadSection()}
+{/foreach}
 </head>
 <body>
 <h1 class="title">{$gui->pageTitle|escape}</h1>
@@ -26,38 +38,7 @@ rev:
 
 {if $gui->warning_msg == ''}
     {if ($gui->resultSet)}
-        <table class="simple sortable">
-	          <tr>
-	          <th nowrap>{$sortHintIcon} {$labels.test_case}</th>
-	          <th nowrap>{$sortHintIcon} {$labels.build}</th>
-	          <th nowrap>{$sortHintIcon} {$labels.th_owner} </th>
-	          <th nowrap>{$sortHintIcon} {$labels.date} </th>
-	          <th nowrap>{$sortHintIcon} {$labels.status} </th>
-	          {foreach from=$gui->cfields item=cfield}
-	              <th nowrap>{$sortHintIcon} {$cfield.label|escape}</th>
-	          {/foreach}
-	          </tr>
-            
-	          {foreach from=$gui->resultSet item=arrData}
-	            <tr {*bgcolor="{cycle values="#eeeeee,#d0d0d0"}"*}>
-	            <td>	<a href="lib/testcases/archiveData.php?edit=testcase&id={$arrData.tcase_id}">
-	          	{$gui->tcasePrefix}{$arrData.tc_external_id|escape}:{$arrData.tcase_name|escape}</a>
-	            </td>
-	            <td>{$arrData.build_name|escape}</td>
-	            <td>{$arrData.tester|escape}</td>
-	            
-	            <td><a href="lib/execute/execSetResults.php?level=testcase&build_id={$arrData.builds_id}&id={$arrData.tcase_id}&version_id={$arrData.tcversion_id}&tplan_id={$gui->tplan_id}">
-	               {localize_timestamp ts=$arrData.execution_ts}
-                  </a>
-	            </td>
-	            <td class="{$gui->code_status[$arrData.exec_status]}" style="text-align:center;">{$gui->status_code_labels[$arrData.exec_status]|escape}</td>
-	          	{foreach from=$arrData.cfields item=cfield_value}
-	          		<td> {$cfield_value}</td>
-	          	{/foreach}	
-	            </tr>
-	          {/foreach}
-                 
-        </table>
+		{$matrix->renderBodySection()}
 
       {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
     {else}

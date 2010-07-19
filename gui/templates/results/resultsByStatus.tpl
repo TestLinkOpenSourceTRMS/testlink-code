@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.17 2010/07/19 18:53:56 erikeloff Exp $
+$Id: resultsByStatus.tpl,v 1.18 2010/07/19 18:57:17 erikeloff Exp $
 Purpose: show Test Results and Metrics
 
 rev:
@@ -29,44 +29,6 @@ rev:
 	{include file="inc_ext_table.tpl"}
 {/if}
 {$gui->tableSet[0]->renderHeadSection()}
-
-{foreach key=platformID item=dataSet from=$gui->dataSetByPlatform}
-{if $platformID != 0}
-<h2>{$labels.platform}:{$gui->platformSet[$platformID]|escape}</h2>
-{/if}
-<table class="simple sortable" style="width: 100%; text-align: left; margin-left: 0px;">
-<tr>
-	<th nowrap>{$sortHintIcon}{$labels.th_test_suite}</th>
-	<th nowrap>{$sortHintIcon}{$labels.test_case}</th>
-	<th nowrap>{$sortHintIcon}{$labels.version}</th>
-	{if $gui->type == $tlCfg->results.status_code.not_run} {* Add the Assigned To Column *}
-	<th nowrap>{$sortHintIcon}{$labels.th_assigned_to}</th>
-	{/if}
-	{if $gui->type != $tlCfg->results.status_code.not_run}
-	<th nowrap>{$sortHintIcon}{$labels.th_build}</th>
-	<th nowrap>{$sortHintIcon}{$labels.th_run_by}</th>
-	<th nowrap>{$sortHintIcon}{$labels.th_date}</th>
-	<th nowrap>{$sortHintIcon}{$labels.title_execution_notes}</th>
-	{if $gui->bugInterfaceOn}
-	<th nowrap>{$sortHintIcon}{$labels.th_bugs}</th>
-	{/if}
-	{else}
-	<th nowrap>{$sortHintIcon}{$labels.summary}</th>
-	{/if}
-</tr> 
-{foreach key=node_type item=row2show from=$dataSet}
-  <tr>
-  {foreach key=accessKey item=cell2show from=$row2show}
-   {if $accessKey != 'platformName'}
-    <td>
-    {$cell2show}
-    </td>
-   {/if} 
-  {/foreach}
-  </tr>
-{/foreach}
-</table>
-{/foreach}
 
 {$gui->tableSet[0]->renderBodySection()}
 <br />

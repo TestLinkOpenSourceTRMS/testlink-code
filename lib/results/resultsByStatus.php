@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.81 2010/07/19 18:54:19 erikeloff Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.82 2010/07/19 19:17:05 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -214,6 +214,10 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 				$gui->dataSet[$idx]=$elem[$level][$jdx];
 				unset($gui->dataSet[$idx]['level']);
 				unset($gui->dataSet[$idx]['platformID']);
+				if (!$show_platforms)
+				{
+					unset($gui->dataSet[$idx]['platformName']);
+				}
 		        
 		        $accessKey = $elem[$level][$jdx]['platformID'];
 		        $gui->dataSetByPlatform[$accessKey][]=$gui->dataSet[$idx];

@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.10 2010/07/14 14:21:22 mx-julian Exp $
+$Id: tcAssignedToUser.tpl,v 1.11 2010/07/22 16:32:07 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 rev:
+20100722 - asimon - BUGID 3406 - added columns for build ID and testsuite
 20100708 - Julian - BUGID 3591 - Column priority added
 20100708 - franciscom - BUGID 3575
 20100326 - amitkhullar - BUGID 3345
@@ -19,7 +20,7 @@ rev:
 {assign var=this_template_dir value=$smarty.template|dirname}
 {lang_get var='labels' 
           s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform,goto_testspec,priority,
-             high_priority,medium_priority,low_priority'}
+             high_priority,medium_priority,low_priority,build,testsuite'}
 
 <body>
 <h1 class="title">{$gui->pageTitle}</h1>
@@ -29,7 +30,9 @@ rev:
         {foreach from=$gui->resultSet key=tplan_id item=tcaseSet}
            <h1 align="left">{$labels.testplan}:&nbsp;{$gui->tplanNames[$tplan_id].name|escape}</h1>
             <table class="simple sortable">
+            <th align="left">{$sortHintIcon}{$labels.testsuite}</th>
             <th align="left">{$sortHintIcon}{$labels.testcase}</th>
+            <th>{$sortHintIcon}{$labels.build}</th>
             <th>{$sortHintIcon}{$labels.platform}</th>
             {if $session['testprojectOptions']->testPriorityEnabled}
             	<th>{$sortHintIcon}{$labels.priority}</th>
@@ -46,15 +49,21 @@ rev:
                *}    
                <tr bgcolor="#eeeeee">   
                 <td>
+                  {$tcase.tcase_full_path|escape}
+                </td>
+                <td>
             	  <a href="lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}" title="{$labels.goto_testspec}">
-            	  {$tcase.tcase_full_path|escape}{$tcase.prefix|escape}
-            	  {$gui->glueChar}{$tcase.tc_external_id|escape}:{$tcase.name|escape}&nbsp({$labels.version}:{$tcase.version})</a>
+            	  {$tcase.prefix|escape}{$gui->glueChar}{$tcase.tc_external_id|escape}:
+            	  {$tcase.name|escape}&nbsp({$labels.version}:{$tcase.version})</a>
+                </td>
+                <td>
+                {$tcase.build_name|escape}
                 </td>
                 <td>
                 {$tcase.platform_name|escape}
                 </td>
                 {if $session['testprojectOptions']->testPriorityEnabled}
-                	<td>
+                <td>
                 	{if $tcase.priority >= $tlCfg->urgencyImportance->threshold.high}
                 		{$labels.high_priority}
                 		{elseif $tcase.priority <= $tlCfg->urgencyImportance->threshold.low}

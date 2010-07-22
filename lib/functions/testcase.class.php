@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.283 2010/07/14 14:21:21 mx-julian Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.284 2010/07/22 16:32:00 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100722 - asimon - BUGID 3406 - modified statement to get build name in get_assigned_to_user()
  * 20100714 - Julian - BUGID 3575 -  get_assigned_to_user() added priority in output set
  * 20100712 - asimon - inserted missing semicolon after break in get_assigned_to_user()
  * 20100711 - franciscom - BUGID 3575 -  get_assigned_to_user() added $filters as optional arg
@@ -3203,6 +3204,7 @@ class testcase extends tlObjectWithAttachments
 	 * @since 20090131 - franciscom
 	 *
 	 * @internal revision
+	 *  20100722 - asimon - BUGID 3406 - modified statement to get build name
 	 *  20100712 - asimon - inserted missing semicolon
 	 *	20100708 - franciscom - BUGID 3575 - add plaftorm in output set
 	 */
@@ -3221,7 +3223,7 @@ class testcase extends tlObjectWithAttachments
 	    $sql="/* $debugMsg */ SELECT TPROJ.id as testproject_id,TPTCV.testplan_id,TPTCV.tcversion_id, " .
 	         " TCV.version,TCV.tc_external_id, NHTC.id AS testcase_id, NHTC.name, TPROJ.prefix, " .
 	         " UA.creation_ts ,UA.deadline_ts, COALESCE(PLAT.name,'') AS platform_name, " .
-	         " (TPTCV.urgency * TCV.importance) AS priority " .
+	         " (TPTCV.urgency * TCV.importance) AS priority, BUILDS.name as build_name " .
 	         " FROM {$this->tables['user_assignments']} UA " . 
 	         " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.id = UA.feature_id " .
 	         " JOIN {$this->tables['tcversions']} TCV ON TCV.id=TPTCV.tcversion_id " .
@@ -3230,6 +3232,7 @@ class testcase extends tlObjectWithAttachments
 	         " JOIN {$this->tables['nodes_hierarchy']} NHTPLAN ON  NHTPLAN.id=TPTCV.testplan_id " .
 	         " JOIN {$this->tables['testprojects']} TPROJ ON  TPROJ.id = NHTPLAN.parent_id " .
 	         " JOIN {$this->tables['testplans']} TPLAN ON  TPLAN.id = TPTCV.testplan_id " .
+	         " JOIN {$this->tables['builds']} BUILDS ON  BUILDS.id = UA.build_id " .
 	         " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON  PLAT.id = TPTCV.platform_id " .
 	         " WHERE UA.type={$this->assignment_types['testcase_execution']['id']} " .
 	         " AND UA.user_id = {$user_id} " .

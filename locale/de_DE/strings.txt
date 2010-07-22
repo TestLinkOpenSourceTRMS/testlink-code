@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.165 2010/07/19 06:14:11 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.166 2010/07/22 14:14:43 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -591,6 +591,7 @@ $TLS_filter_result_latest_execution = "letzte Ausführung";
 $TLS_filter_result_current_build = "auszuführendes Build";
 $TLS_filter_somebody = "jemand";
 $TLS_exec_build = "Auszuführendes Build";
+$TLS_assign_build = "Zuzuweisendes Build";
 $TLS_filter_result_all_prev_builds = "Ergebnis ALLER vorangegangener Builds";
 $TLS_filter_result_any_prev_build = "Ergebnis eines beliebigen vorangegangenen Builds";
 
@@ -748,6 +749,8 @@ $TLS_warning_empty_build_name = "Bitte geben Sie einen Namen für den Build ein!
 $TLS_copy_to_all_tplans = "In alle Testpläne kopieren";
 $TLS_release_date = "Release Datum";
 $TLS_closure_date = "Geschlossen am";
+$TLS_copy_tester_assignments = "Testfallzuweisungen kopieren";
+$TLS_assignment_source_build = "aus bestehendem Build";
 
 
 
@@ -1197,7 +1200,8 @@ $TLS_executed_can_not_be_removed = "Bereits ausgeführte Testfälle können nich
 $TLS_execution_order = "Ausführungsreihenfolge";
 $TLS_select_all_to_add = "Alle Testfälle zum Hinzufügen aus- oder abwählen";
 $TLS_select_all_to_remove = "Alle Testfälle zum Entfernen aus- oder abwählen";
-$TLS_tester_assignment_on_add="Benutzer beim Hinzufügen zuweisen";
+$TLS_tester_assignment_on_add = "Benutzer beim Hinzufügen zuweisen";
+$TLS_build_to_assign_on_add = "zu Build";
 
 $TLS_has_been_executed = "wurde ausgeführt";
 $TLS_inactive_testcase = "inaktiv";
@@ -1677,9 +1681,10 @@ $TLS_btn_do = "Ausführen";
 $TLS_btn_update_selected_tc = "Testfälle aktualisieren";
 $TLS_can_not_execute = "(Keine Durchführungsrechte)";
 $TLS_check_uncheck_children_checkboxes = "Testfallauswahl umkehren";
-$TLS_title_tc_exec_assignment = "Testfall Ausführung zuweisen";
+$TLS_title_tc_exec_assignment = "Testfall Ausführung zuweisen für den Build %s im Testplan %s";
 $TLS_user = "Benutzer";
 $TLS_user_bulk_assignment = "Diesem Benutzer mehrere Testfälle zuweisen";
+
 
 
 // ----- tc_exec_assignment.php -----
@@ -1688,6 +1693,22 @@ $TLS_mail_subject_testcase_assignment_removed = 'Test Link - Testfallzuweisung e
 $TLS_mail_testcase_assigned= "Die folgenden Testfälle wurden Ihnen zugewiesen %s von %s <br><br>";
 $TLS_mail_testcase_assignment_removed = "%s - Die folgenden Testfälle sind Ihnen nicht mehr zugewiesen von %s <br /><br />"; //todo
 $TLS_send_mail_to_tester = "E-Mail Benachrichtigung an Tester senden";
+
+
+
+// ----- gui/templates/tc_exec_unassign_all.tpl -----
+$TLS_btn_remove_all_tester_assignments = "Entferne alle Testerzuweisungen der gewählten Build";
+
+
+
+// ----- gui/templates/tc_exec_unassign_all.php -----
+$TLS_number_of_assignments_per_build = "%d Tester sind zu Testfällen für den Build  %s zugewiesen.";
+$TLS_unassign_all_tcs_warning_msg = "Bestätigen Sie das Entfernen aller Testerzuweisungen für den Build %s.";
+$TLS_unassign_all_tcs_msgbox_title = "Wirklich alle Testerzuweisungen entfernen?";
+$TLS_unassigned_all_tcs_msg = "Alle Testerzuweisungen für den Build %s wurden entfernt.";
+$TLS_no_testers_assigned_to_build  = "Es sind keine Tester zu Testfällen für den Build %s zugewiesen.";
+$TLS_remove_all_tester_assignments_title = "Alle Testerzuweisungen entfernen";
+
 
 
 // ----- gui/templates/testSetNavigator.tpl -----
@@ -2438,12 +2459,6 @@ $TLS_title_tsuite_export_all = "Alle Testsuiten exportieren";
 $TLS_delete = "Löschen";
 $TLS_delete_notice = "Warnung: Alle verknüpften Ergebnisse der Ausführung werden gelöscht!";
 $TLS_warning_empty_com_name = "Bitte einen Namen für diese Testsuite angeben!";
-$TLS_remove_assigned_testcases = "Entferne alle Testfallzuweisungen für den Testplan";
-$TLS_btn_unassign_all_tcs = "Entferne alle Testfallzuweisungen";
-$TLS_unassign_all_tcs_msgbox_title = "Alle Testfallzuweisungen entfernen?";
-$TLS_unassign_all_tcs_warning_msg = "Bestätigen Sie, dass alle Testfallzuweisungen fü den Testplan %s entfernt werden sollen.";
-$TLS_unassigned_all_tcs_msg = "Alle Testfallzuweisungen wurden für den Testplan %s aufgehoben.";
-$TLS_nothing_to_unassign_msg = "Es gibt keine Testfallzuweisungen für den Testplan %s.";
 
 
 

@@ -1,11 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.31 2010/06/24 17:25:53 asimon83 Exp $ *}
+{* $Id: containerView.tpl,v 1.32 2010/07/22 14:14:43 asimon83 Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
+  20010708 - asimon - BUGID 3406: removed buttons and labels for 3049 
   20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-	20100212 - asimon - BUGID 3049 - added removing of testplan assignment feature
+  20100212 - asimon - BUGID 3049 - added removing of testplan assignment feature
   20100102 - franciscom - refactoring to use $gui
   20080805 - franciscom - fixed undefined variable log warning.
                           BUGID 1661 - removed reorder button if tree component support drag & drop
@@ -26,8 +27,7 @@ rev :
 	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
 	           btn_del_testsuites_bulk,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
-	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc,
-	           btn_unassign_all_tcs, unassign_all_tcs_msgbox_title, th_testplan_name'}
+	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name'}
 
 {assign var="container_id" value=$gui->container_data.id}
 {assign var="tcImportAction"
@@ -43,8 +43,10 @@ rev :
 {include file="inc_head.tpl" openHead="yes"}
 {assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
+
 {include file="inc_del_onclick.tpl" openHead="yes"}
 
+{* removed for BUGID 3406
 <script type="text/javascript">
 {literal}
 
@@ -62,6 +64,7 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 
 {/literal}
 </script>
+*}
 
 </head>
 
@@ -140,12 +143,12 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 	         attach_downloadOnly=$bDownloadOnly}
 
 
-{* ----- TEST PLAN (for BUGID 3049) ----------------------------------------------- *}
+{* removed for BUGID 3406
+{* ----- TEST PLAN (for BUGID 3049) -----------------------------------------------
 {elseif $gui->level == 'testplan'}
 
 	{if $gui->draw_tc_unassign_button}
 		<form id="tc_unassign_from_tp" name="tc_unassign_from_tp" action="lib/testcases/containerEdit.php?tplan_id={$gui->tplan_id}" method="post">
-		{*<form id="tc_unassign_from_tp" name="tc_unassign_from_tp" action="lib/testcases/tcUnassignFromPlan.php?doAction=doUnassignFromPlan&tplan_id={$gui->tplan_id}" method="post">*}
 		<input type="hidden" name="doAction" value="doUnassignFromPlan" />
 		<input type="hidden" name="doUnassignFromPlan" value="doUnassignFromPlan" />
 		<input type="hidden" name="tplan_id" value="{$gui->tplan_id}" />
@@ -154,7 +157,7 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 			  	'{$labels.unassign_all_tcs_msgbox_title}', '{$gui->unassign_all_tcs_warning_msg}');"/>
 		</form>
 	{/if}
-	
+
 	{if $gui->result}
 	<div class="user_feedback">
 		<p>{$gui->result}</p>
@@ -192,6 +195,9 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 		</tr>
 
 	</table>
+
+*}
+
 
 {* ----- TEST SUITE ----------------------------------------------------- *}
 {elseif $gui->level == 'testsuite'}

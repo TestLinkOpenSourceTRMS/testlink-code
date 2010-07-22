@@ -1,8 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.20 2010/05/15 13:26:26 franciscom Exp $
+$Id: resultsGeneral.tpl,v 1.21 2010/07/22 14:14:46 asimon83 Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
+    20100722 - asimon - BUGID 3406, 1508 - overall build status,
+                        also replaced some unnecessary lang_get() calls by $labels-usage
 *}
 {lang_get var="labels"
      s='trep_kw,trep_owner,trep_comp,generated_by_TestLink_on, priority,
@@ -11,7 +13,8 @@ Revisions:
          title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites,
          title_report_tc_priorities,title_report_milestones,
          title_metrics_x_build,title_res_by_platform,th_platform,important_notice,
-         report_tcase_platorm_relationship'}
+         report_tcase_platorm_relationship, th_tc_total, th_completed, th_goal,
+         th_build, th_tc_assigned, th_perc_completed'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -34,13 +37,14 @@ Revisions:
 
 	<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
   	<tr>
-  		<th style="width: 10%;">{lang_get s='th_build'}</th>
-    	<th>{lang_get s='th_tc_total'}</th>
+  		<th style="width: 10%;">{$labels.th_build}</th>
+    	{* <th>{$labels.th_tc_total}</th> *}
+    	<th>{$labels.th_tc_assigned}</th>
       	{foreach item=the_column from=$buildColDefinition}
         	<th>{$the_column.qty}</th>
         	<th>{$the_column.percentage}</th>
     	{/foreach}
-    	<th>{lang_get s='th_perc_completed'}</th>
+    	<th>{$labels.th_perc_completed}</th>
   	</tr>
 
 	{foreach item=res from=$buildResults}
@@ -162,11 +166,11 @@ Revisions:
 
 		<table class="simple" style="width: 100%; text-align: center; margin-left: 0px;">
 		<tr>
-			<th>{lang_get s='th_milestone'}</th>
-			<th>{lang_get s='th_tc_total'}</th>
-			<th>{lang_get s='th_completed'}</th>
-			<th>{lang_get s='th_progress'}</th>
-			<th>{lang_get s='th_goal'}</th>
+			<th>{$labels.th_milestone}</th>
+			<th>{$labels.th_tc_total}</th>
+			<th>{$labels.th_completed}</th>
+			<th>{$labels.th_progress}</th>
+			<th>{$labels.th_goal}</th>
 		</tr>
 
  		{foreach item=res from=$gui->statistics->milestones}

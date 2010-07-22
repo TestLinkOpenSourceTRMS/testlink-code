@@ -9,9 +9,10 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.2 2010/01/24 15:22:07 franciscom Exp $
+ * @version    	CVS: $Id: installDbInput.php,v 1.3 2010/07/22 14:14:45 asimon83 Exp $
  *
  * @internal Revisions:
+ * 20100705 - asimon - added warning regarding user assignments migration
  * 20090603 - franciscom - added table prefix management
  * 
  **/
@@ -91,6 +92,14 @@ include 'installHead.inc';
 	<form action="installNewDB.php" method="post" name="myForm" onsubmit="return validate()">
 
 <?php if(!$_SESSION['isNew']){ ?>
+	
+	<div class="tlBox">
+	<h2>Warning! Migration of user assignments!</h2>
+	<p>TestLink version 1.9 uses a <b>new method of assigning users to test cases</b>. This assignment is now done on build level instead of only test plan level like it was in older versions. Because of this change, your <b>existing user assignments will be modified</b> during migration:<br/>
+	For every test plan, <b>all existing assignments of users to test cases will be deleted and re-assigned only to the newest found build in this test plan</b>.<br/>
+	You will of course have the chance to change these assignments manually in TestLink after migration. When you create a new build, existing assignments from a selected existing build can also be copied directly on creation of the new build.</p>
+	</div>
+	
 	<h2>Database Backup</h2>
 	<p>Warning! You have requested an Upgrade, this process will MODIFY your current
   	TestLink Database. <br/>

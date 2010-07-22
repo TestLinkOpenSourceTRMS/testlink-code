@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.53 2010/06/28 16:19:36 asimon83 Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.54 2010/07/22 14:14:43 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
+ * 20100721 - asimon - BUGID 3406 - testcase execution assignment per build
  * 20100326 - amitkhullar - BUGID 3346: Update the date on updating test case asssigments
  * 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
  * 20100225 - eloff - remove unnecessary call to platformVisibleForTestplan
@@ -87,6 +88,7 @@ if(!is_null($args->doAction))
 						    $features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
             	            $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];					    
             	            $features2[$op][$feature_id]['creation_ts'] = $db_now; //BUGID 3346
+            	            $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
 						}
 					} 
 					else
@@ -94,7 +96,8 @@ if(!is_null($args->doAction))
             	        $op='del';
 						$features2[$op][$feature_id]['tcase_id'] = $key_tc;
 						$features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
-            	        $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];					    
+            	        $features2[$op][$feature_id]['previous_user_id'] = $args->has_prev_assignment[$key_tc][$platform_id];
+            	        $features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406					    
 					}	
 				}
 				else if($args->tester_for_tcid[$key_tc][$platform_id] > 0)
@@ -107,39 +110,41 @@ if(!is_null($args->doAction))
 					$features2[$op][$feature_id]['assigner_id'] = $args->user_id;
 					$features2[$op][$feature_id]['tcase_id'] = $key_tc;
 					$features2[$op][$feature_id]['tcversion_id'] = $tcversion_id;
+					$features2[$op][$feature_id]['build_id'] = $args->build_id; // BUGID 3406
 				}
 			}
 			
 		}
 		
-    foreach($features2 as $key => $values)
-    {
-        if( count($features2[$key]) > 0 )
-        {
-            if( $key == 'del' )
-            {
-                $assignment_mgr->$method2call[$key](array_keys($values));
-            }
-            else
-            {
-           	    $assignment_mgr->$method2call[$key]($values);
-           	}
-           	$called[$key]=true;
-        }  
-    }
-			
+	    foreach($features2 as $key => $values)
+	    {
+	        if( count($features2[$key]) > 0 )
+	        {
+	            if( $key == 'del' )
+	            {
+	                $assignment_mgr->$method2call[$key](array_keys($values));
+	            }
+	            else
+	            {
+	           	    $assignment_mgr->$method2call[$key]($values);
+	           	}
+	           	$called[$key]=true;
+	        }  
+	    }
+				
 		if($args->send_mail)
 		{
 		    foreach($called as $ope => $ope_status)
 		    {
-            	if($ope_status)
-            	{
-                	send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
+	            if($ope_status)
+	            {
+	                send_mail_to_testers($db,$tcase_mgr,$gui,$args,$features2[$ope],$ope);     
 		        }
 		    }
-		}	// if($args->send_mail)
+		}	// if($args->send_mail)		
 	}  
 }
+
 
 switch($args->level)
 {
@@ -151,16 +156,25 @@ switch($args->level)
         $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
 		
 		// 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
-        $getFilters = array('tcase_id' => $args->id);		
-        $getOptions = array('output' => 'mapOfArray');
+        $getFilters = array('tcase_id' => $args->id);
+        
+        // 3406
+        //$getOptions = array('output' => 'mapOfArray');
+        $getOptions = array('output' => 'mapOfArray', 'user_assignments_per_build' => $args->build_id);
 		$linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$getFilters,$getOptions);
 
 		$filters = array('keywords' => $keywordsFilter->items );	
-		$opt = array('write_button_only_if_linked' => 1 );	
+		
+		// 3406
+		//$opt = array('write_button_only_if_linked' => 1);
+		$opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
 		
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 						        $linked_items,null,$filters,$opt);
 
+//		echo "\$linked_items:\n"; print_r($linked_items); // TODO remove
+//		echo "\$my_out:\n"; print_r($my_out); // TODO remove
+		
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.
 		$out = array();
@@ -173,7 +187,10 @@ switch($args->level)
 		// BUGID 3516
 		$tcaseFilter = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
 		
-		$out = keywordFilteredSpecView($db,$args,$keywordsFilter,$tplan_mgr,$tcase_mgr, $tcaseFilter);
+		// 3406
+		$opt = array('user_assignments_per_build' => $args->build_id);
+		$out = keywordFilteredSpecView($db, $args, $keywordsFilter, $tplan_mgr,
+		                               $tcase_mgr, $tcaseFilter, $opt);
 				
 		break;
 
@@ -216,7 +233,7 @@ function init_args()
 	  $args->tproject_id = $_SESSION['testprojectID'];
 	  $args->tproject_name = $_SESSION['testprojectName'];
       
-	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+//	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 //	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
 //	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
 //	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => null);
@@ -282,6 +299,13 @@ function init_args()
 		$args->testcases_to_show = $session_data['testcases_to_show'];
 	}
 	
+	// BUGID 3406
+	$args->build_id = isset($session_data['setting_build']) ? $session_data['setting_build'] : 0;
+	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
+	if ($args->tplan_id) {
+		$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
+	}
+		
 	return $args;
 }
 
@@ -319,12 +343,17 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	
 	    $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
 	    $gui->testPlanName = $tplan_info['name'];
-	    $gui->main_descr = lang_get('title_tc_exec_assignment') . $gui->testPlanName;
+	    
+	    // 3406
+	    $build_info = $tplanMgr->get_build_by_id($argsObj->tplan_id, $argsObj->build_id);
+	    $gui->buildName = $build_info['name'];
+	    $gui->main_descr = sprintf(lang_get('title_tc_exec_assignment'), 
+	                               $gui->buildName, $gui->testPlanName);
 	    
 	    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
 	   	$gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
 	   	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$gui->all_users);
-	  }
+	}
 
     return $gui;
 }

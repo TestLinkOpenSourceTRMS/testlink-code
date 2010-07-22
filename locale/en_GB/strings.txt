@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.641 2010/07/19 06:14:12 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.642 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -597,6 +597,7 @@ $TLS_filter_result_latest_execution = "latest execution";
 $TLS_filter_result_current_build = "Build chosen for execution";
 $TLS_filter_somebody = "Somebody";
 $TLS_exec_build = "Build to execute";
+$TLS_assign_build = "Build to assign";
 $TLS_filter_result_all_prev_builds = "ALL Previous Builds";
 $TLS_filter_result_any_prev_build = "ANY Previous Build";
 
@@ -754,7 +755,8 @@ $TLS_warning_empty_build_name = "Please enter a name for the Build!";
 $TLS_copy_to_all_tplans = "Copy to all Test Plans";
 $TLS_release_date = "Release date";
 $TLS_closure_date = "Close on";
-
+$TLS_copy_tester_assignments = "Copy tester assignments";
+$TLS_assignment_source_build = "From existing build";
 
 
 // gui/templates/inc_comp_viewer_ro.tpl
@@ -1205,7 +1207,8 @@ $TLS_executed_can_not_be_removed = "Executed test cases can not be removed.";
 $TLS_execution_order = "Execution order";
 $TLS_select_all_to_add = "Select/deselect all Test Cases to add";
 $TLS_select_all_to_remove = "Select/deselect all Test Cases to remove";
-$TLS_tester_assignment_on_add="Assign to user on add";
+$TLS_tester_assignment_on_add = "Assign to user on add";
+$TLS_build_to_assign_on_add = "on build";
 
 $TLS_has_been_executed = "has been executed";
 $TLS_inactive_testcase = "inactive";
@@ -1494,6 +1497,7 @@ $TLS_all_reqspecs_in_tproject = "All Req. Specs in Test Project";
 // ----- gui/templates/resultsAllBuilds.tpl -----
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "Total";
+$TLS_th_tc_assigned = "Assigned";
 $TLS_title_met_of_build = "Metrics of build";
 
 
@@ -1687,9 +1691,10 @@ $TLS_btn_do = "Do";
 $TLS_btn_update_selected_tc = "Save";
 $TLS_can_not_execute = " (No execution right)";
 $TLS_check_uncheck_children_checkboxes = "Toggle all test case selections (incluing children test suites)";
-$TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for test plan ";
+$TLS_title_tc_exec_assignment = "Assigning Test Case execution tasks for build %s in test plan %s";
 $TLS_user = "User";
 $TLS_user_bulk_assignment = "Bulk user assignment";
+
 
 
 // ----- tc_exec_assignment.php -----
@@ -1698,6 +1703,22 @@ $TLS_mail_subject_testcase_assignment_removed = 'Test Link - Test Case Assignmen
 $TLS_mail_testcase_assigned = "Following Test Cases has been assigned to you %s by %s <br /><br />";
 $TLS_mail_testcase_assignment_removed = "%s - Your following Test Cases assigments HAS BEEN REMOVED  by %s <br /><br />";
 $TLS_send_mail_to_tester = "Send mail notification to tester";
+
+
+
+// ----- gui/templates/tc_exec_unassign_all.tpl -----
+$TLS_btn_remove_all_tester_assignments = "Unassign all testers from selected Build";
+
+
+
+// ----- gui/templates/tc_exec_unassign_all.php -----
+$TLS_number_of_assignments_per_build = "There are %d testers assigned to Test Cases in the Build %s";
+$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all tester assignments will be removed from the Build %s.";
+$TLS_unassign_all_tcs_msgbox_title = "Really remove all tester assignments?";
+$TLS_unassigned_all_tcs_msg = "All tester assignments have been deleted from the Build %s.";
+$TLS_no_testers_assigned_to_build  = "There are no testers assigned to Test Cases in the Build %s.";
+$TLS_remove_all_tester_assignments_title = "Remove all tester assignments";
+
 
 
 // ----- gui/templates/testSetNavigator.tpl -----
@@ -2471,12 +2492,6 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 $TLS_delete = "Delete";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
 $TLS_warning_empty_com_name = "Please give a name to Test Suite";
-$TLS_remove_assigned_testcases = "Unassign all assigned Test Cases for Test Plan";
-$TLS_btn_unassign_all_tcs = "Unassign all assigned Test Cases";
-$TLS_unassign_all_tcs_msgbox_title = "Remove all assigned Test Cases?";
-$TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all Test Case assignments will be removed for Test Plan %s.";
-$TLS_unassigned_all_tcs_msg = "All assigned Test Cases have been unassigned for Test Plan %s.";
-$TLS_nothing_to_unassign_msg = "There are no Test Cases assigned to users for Test Plan %s.";
 
 
 

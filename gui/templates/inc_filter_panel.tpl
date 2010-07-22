@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.2 2010/06/24 17:25:52 asimon83 Exp $
+ * $Id: inc_filter_panel.tpl,v 1.3 2010/07/22 14:14:45 asimon83 Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,16 +12,18 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20100709 - asimon - BUGID 3406: changes to unassign button
  *  20100610 - asimon - first implementation of filter control class hierarchy
  *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *}
 
 {lang_get var=labels s='caption_nav_settings, caption_nav_filters, platform, test_plan,
-                        exec_build,build,filter_tcID,filter_on,filter_result,
+                        build,filter_tcID,filter_on,filter_result,
                         btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,
                         filter_owner,TestPlan,test_plan,caption_nav_filters,
-                        platform, include_unassigned_testcases, btn_unassign_all_tcs,
-                        execution_type, do_auto_update, testsuite, btn_reset_filters,
+                        platform, include_unassigned_testcases,
+                        btn_remove_all_tester_assignments, execution_type, 
+                        do_auto_update, testsuite, btn_reset_filters,
                         btn_bulk_update_to_latest_version, priority, tc_title'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
@@ -32,8 +34,11 @@
 <input type="hidden" name="form_token" value="{$control->form_token}">
 
 {if $control->draw_tc_unassign_button}
-	<input type="button" name="unassign_all_tcs" value="{$labels.btn_unassign_all_tcs}"
-		onclick="javascript:PL({$gui->tPlanID});" />
+	<input type="button" 
+	       name="removen_all_tester_assignments"
+	       value="{$labels.btn_remove_all_tester_assignments}"
+	       onclick="javascript:delete_testers_from_build({$control->settings.setting_build.selected});"
+	/>
 {/if}
 
 {if $control->draw_bulk_update_button}
@@ -91,7 +96,7 @@
 
 			{if $control->settings.setting_build}
 				<tr>
-					<th>{$labels.exec_build}</th>
+					<th>{$control->settings.setting_build.label}</th>
 					<td>
 						<select name="setting_build" onchange="this.form.submit()">
 						{html_options options=$control->settings.setting_build.items

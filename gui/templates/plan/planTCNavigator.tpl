@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.30 2010/06/24 17:25:52 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.31 2010/07/22 14:14:45 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
 
+    20100708 - aismon - BUGDI 3406 - removed functionality and labels from 3049
 	20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
 	                    them with new included template inc_tc_filter_panel.tpl
 	20100412 - asimon - BUGID 3379, changed displaying of some filters
@@ -20,8 +21,7 @@ Revisions :
           s='btn_update_menu,btn_apply_filter,keyword,keywords_filter_help,title_navigator,
              btn_bulk_update_to_latest_version,
              filter_owner,TestPlan,test_plan,caption_nav_filters,
-             build,filter_tcID,filter_on,filter_result,platform, include_unassigned_testcases,
-             btn_unassign_all_tcs'}
+             build,filter_tcID,filter_on,filter_result,platform, include_unassigned_testcases'}
 
     {include file="inc_head.tpl" openHead="yes"}
     {include file="inc_ext_js.tpl" bResetEXTCss=1}
@@ -65,7 +65,9 @@ Revisions :
 	    treeCfg.root_name = '{$gui->ajaxTree->root_node->name}';
 	    treeCfg.root_id = {$gui->ajaxTree->root_node->id};
 	    // BUGID 3049
-	    treeCfg.root_href = "javascript:PL({$gui->tPlanID})";
+	    // treeCfg.root_href = "javascript:PL({$gui->tPlanID})";
+	    // BUGID 3406
+	    treeCfg.root_href = '{$gui->ajaxTree->root_node->href}';
 	    treeCfg.children = {$gui->ajaxTree->children};
     </script>
     
@@ -91,16 +93,17 @@ function update2latest(id)
 	parent.workframe.location = action_url;
 }
 
-/**
- * open page to unassign all testcases in workframe
- *
- * @param id Testplan ID
- */
-function goToUnassignPage(id)
-{
-	var action_url = fRoot + 'lib/testcases/containerEdit.php?doAction=doUnassignFromPlan&tplan_id=' + id;
-	parent.workframe.location = action_url;
-}
+// BUGID 3406
+///**
+// * open page to unassign all testcases in workframe
+// *
+// * @param id Testplan ID
+// */
+//function goToUnassignPage(id)
+//{
+//	var action_url = fRoot + 'lib/testcases/containerEdit.php?doAction=doUnassignFromPlan&tplan_id=' + id;
+//	parent.workframe.location = action_url;
+//}
 
 {/literal}
 </script>

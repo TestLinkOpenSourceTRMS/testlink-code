@@ -1,10 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.15 2010/05/01 19:39:55 franciscom Exp $
+$Id: buildEdit.tpl,v 1.16 2010/07/22 14:14:45 asimon83 Exp $
 
 Purpose: smarty template - Add new build and show existing
 
 Rev :
+     20100707 - asimon - BUGID 3406: addition of items for copying user
+                         assignments from other builds
+      
      20090507 - franciscom - 
      
      20080217 - franciscom
@@ -14,7 +17,7 @@ Rev :
      user feedback using ext_js
     
      20070214 - franciscom 
-     BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. 
+     BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. 
 
 *}
 {assign var="managerURL" value="lib/plan/buildEdit.php"}
@@ -22,7 +25,8 @@ Rev :
 
 {lang_get var="labels"
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
-             open,builds_description,cancel,release_date,closure_date,closed_on_date"}          
+             open,builds_description,cancel,release_date,closure_date,closed_on_date,
+             copy_tester_assignments, assignment_source_build"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -105,12 +109,33 @@ function validateForm(f)
         </td>
 		</tr>
 
+	{* BUGID 3406 *}
+	{* show this only if we create a new build and there are other builds to copy from *}
+	{if !$build_id && $source_build.build_count}
+		<tr>
+			<th style="background:none;">{$labels.copy_tester_assignments}</th>
+			<td>
+				<input type="checkbox"  name="copy_tester_assignments" id="copy_tester_assignments"
+				       {if $copy_tester_assignments} checked {/if} 
+				       onclick="showOrHideElement('source_build_selection',!this.checked)"
+				/>
+				<span id="source_build_selection"
+				{if !$copy_tester_assignments} style="display:none;" {/if} >
+					{$labels.assignment_source_build}
+					<select name="source_build_id">
+					{html_options options=$source_build.items 
+					              selected=$source_build.selected}
+					</select>
+				</span>
+			</td>
+		</tr>
+    {/if}
     
 	</table>
 	<p>{$labels.builds_description}</p>
 	<div class="groupBtn">	
 
-    {* BUGID 628: Name edit – Invalid action parameter/other behaviours if “Enter” pressed. *}
+    {* BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed. *}
 		<input type="hidden" name="do_action" value="{$buttonCfg->name}" />
 		<input type="hidden" name="build_id" value="{$build_id}" />
 		

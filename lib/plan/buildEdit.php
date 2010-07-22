@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2010/07/06 18:28:12 $ $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2010/07/22 14:14:43 $ $Author: asimon83 $
  *
  * @internal revision
+ *  20100707 - asimon - BUGID 3406: copy user assignments from other builds
+ *                                  on creation of new builds
  *	20100706 - franciscom - BUGID 3581 added better check on release date
  *	20091121 - franciscom - BUGID - contribution
  *  20090509 - franciscom - BUGID - release_date
@@ -102,6 +104,8 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
  * @parameter hash session_hash the $_SESSION
  * @return    object with html values tranformed and other
  *                   generated variables.
+ * @internal revisions:
+ *   20100707 - asimon - BUGID 3406 - added source_build_id and copy_tester_assignments
 */
 function init_args($request_hash, $session_hash)
 {
@@ -114,13 +118,16 @@ function init_args($request_hash, $session_hash)
 		$args->$value = isset($request_hash[$value]) ? $request_hash[$value] : null;
 	}
 
-	$intval_keys = array('build_id' => 0);
+	// BUGID 3406 - added source_build_id
+	$intval_keys = array('build_id' => 0, 'source_build_id' => 0);
 	foreach($intval_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? intval($request_hash[$key]) : $value;
 	}
 
-	$bool_keys = array('is_active' => 0,'is_open' => 0, 'copy_to_all_tplans' => 0);
+	// BUGID 3406 - added copy_tester_assignments
+	$bool_keys = array('is_active' => 0, 'is_open' => 0, 'copy_to_all_tplans' => 0,
+	                   'copy_tester_assignments' => 0);
 	foreach($bool_keys as $key => $value)
 	{
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
@@ -286,6 +293,12 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
     	$smartyObj->assign('is_open', $argsObj->is_open);
     	$smartyObj->assign('notes', $owebeditor->CreateHTML());
     	$smartyObj->assign('enable_copy', $enable_copy);
+    	
+    	// BUGID 3406
+    	$html_menu = init_source_build_selector($tplanMgr, $argsObj);
+    	$smartyObj->assign('source_build', $html_menu);
+    	$smartyObj->assign('copy_tester_assignments', $argsObj->copy_tester_assignments);
+    	    	
   		$smartyObj->display($templateCfg->template_dir . $tpl);
     }
 
@@ -299,6 +312,9 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
 
   returns:
 
+  @internal revisions:
+    20100722 - asimon - BUGID 3406 - using assignment_mgr of tplan_mgr instead of new one
+    20100707 - asimon - BUGID 3406 - added assignment_mgr to copy assignments
 */
 function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 {
@@ -329,6 +345,11 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 		    }
 	        $buildMgr->setClosedOnDate($buildID,$targetDate);    
 			
+	        // BUGID 3406 - copy tester assignments from chosen source build
+	        if ($argsObj->copy_tester_assignments && $argsObj->source_build_id) {
+	        	$tplanMgr->assignment_mgr->copy_assignments($argsObj->source_build_id, $buildID, $argsObj->userID);
+	        }
+	        
 			$op->user_feedback = '';
 			$op->notes = '';
 			$op->template = null;
@@ -511,4 +532,30 @@ function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_create_build');
 }
+
+/**
+ * Initialize the HTML select box for selection of a source build when
+ * user wants to copy the user assignments on creation of a new build.
+ * 
+ * @author Andreas Simon
+ * @param testplan $testplan_mgr reference to testplan manager object
+ * @param object $argsObj reference to user input object
+ * @return array $html_menu array structure with all information needed for the menu
+ */
+function init_source_build_selector(&$testplan_mgr, &$argsObj) {
+
+	$html_menu = array('items' => null, 'selected' => null, 'build_count' => 0);
+
+	$html_menu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id);
+	$html_menu['build_count'] = count($html_menu['items']);
+	
+	// if no build has been chosen yet, select the newest build by default
+	$source_build_id = $argsObj->source_build_id;
+	if (!$source_build_id && $html_menu['build_count']) {
+		$source_build_id = key($html_menu['items']);
+	}
+	$html_menu['selected'] = $source_build_id;
+		
+	return $html_menu;
+} // end of method
 ?>

@@ -6,13 +6,16 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.159 2010/05/18 18:38:14 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.160 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
  * @internal Revisions:
  * 
+ * 20100721 - asimon - BUGID 3406, 1508: changed for user assignments per build:
+ *                                       results_overload(), tallyBuildResults(),
+ *                                       getTotalsForBuilds(), createTotalsForBuilds(),
  * 20100518 - franciscom - BUGID 3474: Link to test case in Query Metrics Report is broken if using platforms
  * 20100515 - franciscom - BUGID 3438
  * 20090804 - franciscom - added contributed code getPriority()
@@ -165,6 +168,11 @@ class results extends tlObjectWithDB
 	private $totalsForPlan = null;
 
 	/**
+	 * BUGID 3406, 1508: array similar to $totalsForPlan, but with counts for each build in it
+	 */
+	private $totalsForBuilds = null;
+	
+	/**
 	* map test case ids to array of keywords associated with test case
 	*/
 	private $keywordData = null;
@@ -224,7 +232,8 @@ class results extends tlObjectWithDB
 	 * @author kevinlevy
 	 *
 	 * @internal Revisions:
-	 * 	   20090327 - amitkhullar - added parameter $latest_results to get the latest results only.	
+	 *      20100720 - asimon - BUGID 3406, 1508: added logic to get result counts on build level
+	 * 	    20090327 - amitkhullar - added parameter $latest_results to get the latest results only.	
 	 *      20071013 - franciscom - changes to fix MSSQL problems
 	 *                 $startTime = "0000-00-00 00:00:00" -> null
   	 *                 $endTime = "9999-01-01 00:00:00" -> null
@@ -337,8 +346,13 @@ class results extends tlObjectWithDB
 
 			// must be done after totalsForPlan is performed because the total # of cases is needed
 			$arrBuilds = $tplan_mgr->get_builds($this->testPlanID);
+			
+			// 3406, 1508 - we need the totals per build here, not for the whole plan anymore
+			//$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
+			//                                                        $arrBuilds, $this->totalsForPlan);
+			$this->totalsForBuilds = $this->createTotalsForBuilds($arrBuilds);
 			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
-			                                                        $arrBuilds, $this->totalsForPlan);
+			                                                        $arrBuilds, $this->totalsForBuilds);
 		} // end if block
 	} // end results constructor
 
@@ -515,6 +529,9 @@ class results extends tlObjectWithDB
 	 *
 	 * @return array map
 	 * <code>Array ( [owner id] => Array ( total, passed, failed, blocked, not run))</code>
+	 * 
+	 * @internal revisions:
+	 *     20100721 - asimon - BUGID 3406, 1508
 	 */
 	private function tallyBuildResults($buildResults, $arrBuilds, $finalResults)
 	{                     
@@ -524,17 +541,34 @@ class results extends tlObjectWithDB
 		}
 		
 		// OK go ahead
-		$totalCases = $finalResults['total'];
+		
+		// 3406, 1508
+		//$totalCases = $finalResults['total'];
+		$na_string = lang_get('not_aplicable');
+		
 		$rValue = null;
 		foreach($arrBuilds as $buildId => $buildInfo)
 		{
 			$item_name='build_name';
 			$results = isset($buildResults[$buildId]) ? $buildResults[$buildId] : array();
+			
+			// 3406, 1508 - total cases is now an array with totals for each build ID
+			$totalCases = $finalResults[$buildId]['total'];
+			
 			$element=$this->tallyResults($results,$totalCases,$item_name);
 			if (!is_null ($element))
 			{
 				$element[$item_name]=$buildInfo['name'];
 				$rValue[$buildId] = $element;
+				
+				// 3406, 1508: here we need to insert the correct "not run" value now
+				// and the percentages need to be re-calculated after that of course
+				$not_run_count = $this->tplanMgr->assignment_mgr->get_not_run_tc_count_per_build($buildId);
+				$not_run_percentage = ($totalCases != 0) ? 
+				                      number_format($not_run_count / $totalCases * 100, 2) : $na_string;
+				$rValue[$buildId]['details']['not_run']['qty'] = $not_run_count;
+				$rValue[$buildId]['details']['not_run']['percentage'] = $not_run_percentage;
+				$rValue[$buildId]['percentage_completed'] = 100 - $not_run_percentage;
 			}
 		} // end  foreach
 		
@@ -728,6 +762,16 @@ class results extends tlObjectWithDB
 	}
 
 	/**
+	 * BUGID 3406, 1508
+	 * @author Andreas Simon
+	 * @return array
+	 */
+	public function getTotalsForBuild()
+	{
+		return $this->totalsForBuilds;
+	}
+	
+	/**
 	 * @return array single-dimension array with pattern level, suite name, suite id
 	 */
 	public function getFlatArray(){
@@ -747,6 +791,10 @@ class results extends tlObjectWithDB
 		}
 		
 		// OK go ahead
+		
+		// 3406
+		$na_string = lang_get('not_aplicable');
+		
 		$code_verbose=array_flip($this->tc_status_for_statistics);
 		$element = null;
 		foreach($this->tc_status_for_statistics as $status_verbose => $status_code)
@@ -776,7 +824,8 @@ class results extends tlObjectWithDB
 		
 		// not_run is an special status
 		$total['not_run'] = abs($totalCases - $dummy);
-		$percentage['not_run']=number_format((($total['not_run']) / $totalCases) * 100,2);
+		$percentage['not_run'] = ($totalCases != 0) ? 
+		                         number_format((($total['not_run']) / $totalCases) * 100,2) : $na_string;
 		
 		$percentCompleted = 0;
 		if ($totalCases != 0)
@@ -1025,7 +1074,7 @@ class results extends tlObjectWithDB
 			}
 		} // end if
 	} // end function
-
+	
 	/**
 	 *  tallies total cases, total pass/fail/blocked/not run for each suite
 	 *  it takes into account sub-suite tallies within that suite
@@ -1101,6 +1150,33 @@ class results extends tlObjectWithDB
 		return $counters;
 	} // end function
 
+	/**
+	 * For BUGID 3406, 1508: New function to get counts on build level instead of testplan level
+	 * 
+	 * @author Andreas Simon
+	 * @param array $arrBuilds Array with information about the builds for this testplan.
+	 * @return array $counters Array similar to $this->totalsForPlan, but with correct numbers per build 
+	 */
+	private function createTotalsForBuilds($arrBuilds) {
+		
+		$counters = array();
+		
+		// first get totals from plan, then replace "wrong" values
+		foreach ($arrBuilds as $build_id => $build_info) {
+			$counters[$build_id] = $this->totalsForPlan;
+			
+			// replace "total" value
+			$total = $this->tplanMgr->assignment_mgr->get_count_of_assignments_for_build_id($build_id);
+			$counters[$build_id]['total'] = $total;
+			
+			// replace "not run" value //TODO done in the wrong place here
+			$not_run = $this->tplanMgr->assignment_mgr->get_not_run_tc_count_per_build($build_id);
+			$counters[$build_id]['not_run'] = $not_run;
+		}
+		
+		return $counters;
+	} // end of method
+	
 	/**
 	 * @return array map with following keys:
 	 *		'total','not_run', other keys depends of status configured by user

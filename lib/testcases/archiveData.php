@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.73 2010/06/28 16:19:37 asimon83 Exp $
+ * 	@version 	$Id: archiveData.php,v 1.74 2010/07/22 14:14:43 asimon83 Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -10,6 +10,8 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
+ *  20100628 - asimon - BUGID 3406: removed old logic from BUGID 3049,
+ *                      functionality will be changed because of user assigments per build
  *  20100628 - asimon - removal of constants from filter control class
  *  20160625 - asimon - refactoring for new filter features and BUGID 3516
  *  20100624 - asimon - CVS merge (experimental branch to HEAD)
@@ -49,49 +51,50 @@ switch($args->feature)
         
 		break;
 
-	// BUGID 3049
-	case 'testplan': 
-		$tplan_mgr = new testplan($db);
-		$tproject_mgr = new testproject($db);
-		$gui->id = $args->id;
-		$gui->tplan_id = $args->id;
-		
-		$options = array('output' => 'array');
-		$linked_tcversions=$tplan_mgr->get_linked_tcversions($gui->tplan_id,null,$options);
-		
-		$tplan = $tplan_mgr->get_by_id($args->id);
-		$gui->tplan_name = $tplan['name'];
-		$gui->container_data['name'] = $tplan['name'];
-		$gui->tplan_description = $tplan['notes'];
-		$tproject = $tproject_mgr->get_by_id($tplan['testproject_id']);
-		$gui->tproject_name = $tproject['name'];
-		$gui->tproject_description = $tproject['notes'];
-				
-		foreach ($linked_tcversions as $tc_id => $tc) {
-			if (!isset($tc['user_id']) || !is_numeric($tc['user_id'])) {
-				unset($linked_tcversions[$tc_id]);
-			}
-		}
-		
-		if (count($linked_tcversions) != 0) {
-			// yes, we have testcases to unassign, draw the button
-			$gui->draw_tc_unassign_button = true;
-		} else {
-			// nothing to unassign --> no button, but a little message
-			$gui->draw_tc_unassign_button = false;
-			$gui->result = sprintf(lang_get('nothing_to_unassign_msg'), $gui->tplan_name);
-		}
-				
-		$gui->level = 'testplan';
-		$gui->mainTitle = lang_get('remove_assigned_testcases');
-		$gui->page_title = lang_get('testplan');
-		$gui->refreshTree = false;
-		$gui->unassign_all_tcs_warning_msg = sprintf(lang_get('unassign_all_tcs_warning_msg'), $gui->tplan_name);
-		
-		$smarty->assign('gui', $gui);
-		$smarty->display($templateCfg->template_dir . 'containerView.tpl');
-		
-		break;
+// BUGID 3406
+//	// BUGID 3049
+//	case 'testplan': 
+//		$tplan_mgr = new testplan($db);
+//		$tproject_mgr = new testproject($db);
+//		$gui->id = $args->id;
+//		$gui->tplan_id = $args->id;
+//		
+//		$options = array('output' => 'array');
+//		$linked_tcversions=$tplan_mgr->get_linked_tcversions($gui->tplan_id,null,$options);
+//		
+//		$tplan = $tplan_mgr->get_by_id($args->id);
+//		$gui->tplan_name = $tplan['name'];
+//		$gui->container_data['name'] = $tplan['name'];
+//		$gui->tplan_description = $tplan['notes'];
+//		$tproject = $tproject_mgr->get_by_id($tplan['testproject_id']);
+//		$gui->tproject_name = $tproject['name'];
+//		$gui->tproject_description = $tproject['notes'];
+//				
+//		foreach ($linked_tcversions as $tc_id => $tc) {
+//			if (!isset($tc['user_id']) || !is_numeric($tc['user_id'])) {
+//				unset($linked_tcversions[$tc_id]);
+//			}
+//		}
+//		
+//		if (count($linked_tcversions) != 0) {
+//			// yes, we have testcases to unassign, draw the button
+//			$gui->draw_tc_unassign_button = true;
+//		} else {
+//			// nothing to unassign --> no button, but a little message
+//			$gui->draw_tc_unassign_button = false;
+//			$gui->result = sprintf(lang_get('nothing_to_unassign_msg'), $gui->tplan_name);
+//		}
+//				
+//		$gui->level = 'testplan';
+//		$gui->mainTitle = lang_get('remove_assigned_testcases');
+//		$gui->page_title = lang_get('testplan');
+//		$gui->refreshTree = false;
+//		$gui->unassign_all_tcs_warning_msg = sprintf(lang_get('unassign_all_tcs_warning_msg'), $gui->tplan_name);
+//		
+//		$smarty->assign('gui', $gui);
+//		$smarty->display($templateCfg->template_dir . 'containerView.tpl');
+//		
+//		break;
 		
 	case 'testcase':
 		$path_info = null;

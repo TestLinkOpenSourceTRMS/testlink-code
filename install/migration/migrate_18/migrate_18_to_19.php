@@ -11,10 +11,12 @@
  * - Update IDs on ....
  * - Update project options
  *  
- * $Id: migrate_18_to_19.php,v 1.8 2010/07/01 08:52:10 mx-julian Exp $
+ * $Id: migrate_18_to_19.php,v 1.9 2010/07/22 14:14:43 asimon83 Exp $
  * Author: franciscom
  * 
  * @internal rev:
+ *  20100707 - asimon - req spec type set to "1" like done for requirements
+ *  20100705 - asimon - added migrate_user_assignments()
  *  20100701 - Julian - requirement type set to "1"
  * 	20100215 - havlatm - test project options
  *  20100119 - franciscom - migrate_req_specs() - drop title
@@ -34,6 +36,7 @@ function migrate_18_to_19(&$dbHandler,$tableSet)
     migrate_req_specs($dbHandler,$tableSet);
     migrate_testcases($dbHandler,$tableSet);
     migrate_project_options($dbHandler,$tableSet);
+    migrate_user_assignments($dbHandler, $tableSet);
 }
 
 
@@ -112,14 +115,15 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 	$sql = "SELECT * FROM {$tableSet['req_specs']}";
 	$rs = $dbHandler->get_recordset($sql);
 	
-	//
+	// generate req spec doc ID
+	// Set req spec type to '1' as it was set to n/N on 1.8 but has never been used
 	if( !is_null($rs) && count($rs) > 0)
 	{
 		$keyset = array_keys($rs);
 		foreach($keyset as $id)
 		{
 			$sql = " UPDATE {$tableSet['req_specs']} " .
-				" SET doc_id = '" . "RSPEC-DOCID-" . $rs[$id]['id'] . "'" .
+				" SET doc_id = '" . "RSPEC-DOCID-" . $rs[$id]['id'] . "', type = 1 " .
 				" WHERE id={$rs[$id]['id']} ";
 			$dbHandler->exec_query($sql);
 		}
@@ -304,5 +308,74 @@ function migrate_testcases(&$dbHandler,$tableSet)
                "DROP steps, DROP expected_results ";
         $dbHandler->exec_query($sql);
 	} 
+}
+
+
+/**
+ * Migrate the existing user assignments for all test plans and test projects.
+ * All test case execution assignments will be stored per build in TL 1.9.
+ * So all tester assignments for the test cases in each test plan will be updated 
+ * with the ID of the newest available build for that test plan.
+ * 
+ * @author Andreas Simon
+ * @param database $dbHandler
+ * @param array $tableSet
+ */
+function migrate_user_assignments(&$dbHandler, $tableSet) {
+	//$starttime = microtime(true);
+	$testplan_mgr = new testplan($dbHandler);
+	
+	// get assignment type for execution
+	$assignment_mgr = new assignment_mgr($dbHandler);
+	$assignment_types = $assignment_mgr->get_available_types();
+	$execution = $assignment_types['testcase_execution']['id'];
+	
+	// get table names
+	$ua = $tableSet['user_assignments'];
+	$tp_tcv = $tableSet['testplan_tcversions'];
+	
+	// get list of test plan IDs from the assigned test cases
+	$sql = " SELECT distinct T.testplan_id " .
+	       " FROM {$ua} UA, {$tp_tcv} T " .
+	       " WHERE UA.feature_id = T.id " .
+	       " AND (UA.type={$execution} OR UA.type IS NULL) ";
+	$testplans = $dbHandler->fetchColumnsIntoArray($sql, 'testplan_id');
+	
+	// Get the newest (max) build ID for each of these test plan IDs and store them.
+	// In $testplan_builds, we then have an array consisting of testplan_id => max_build_id
+	// If no build for a test plan is found, its assignments will not be changed (build_id=0).
+	$testplan_builds = array();
+	foreach ($testplans as $key => $tp_id) {
+		// first we try to get an active build
+		$max_build_id = $testplan_mgr->get_max_build_id($tp_id, testplan::GET_ACTIVE_BUILD);
+		// if there is no active build, we get the max id no matter if it is active or not
+		if ($max_build_id == 0) {
+			$max_build_id = $testplan_mgr->get_max_build_id($tp_id);
+		}
+		
+		if ($max_build_id > 0) {
+			$testplan_builds[$tp_id] = $max_build_id;
+		}
+	}	
+	
+	// now update all assignments for these test plans
+	foreach ($testplan_builds as $testplan_id => $build_id) {
+		$subquery = " SELECT id as feature_id FROM {$tp_tcv} " .
+		            " WHERE testplan_id = {$testplan_id} ";
+
+		$sql = " UPDATE {$ua} UA " .
+		       " SET UA.build_id = {$build_id} " .
+		       " WHERE UA.feature_id IN($subquery) " .
+		       " AND (UA.type={$execution} OR UA.type IS NULL) ";
+		
+		$dbHandler->exec_query($sql);
+	}
+	
+	// delete objects
+	unset($testplan_mgr);
+	
+	// check how long the function is running on huge databases...
+	//$endtime = microtime(true) - $starttime;
+	//echo "<br/>migrate_user_assignments() needed $endtime seconds to finish<br/>";
 }
 ?>

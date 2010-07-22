@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.135 2010/07/02 15:31:03 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.136 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -776,11 +776,8 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * - Remove Test cases from test plan
  * 
  * @internal Revisions:
- * operation: string that can take the following values:
- *            - testcase_execution
- *            - remove_testcase_from_testplan
- *            and changes how the URL's are build.
- *
+ *  20100719 - asimon - BUGID 3406 - user assignments per build:
+ *                                   filter assigned test cases by setting_build
  *	20080617 - franciscom - return type changed to use extjs tree component
  *	20080305 - franciscom - interface refactoring
  *	20080224 - franciscom - added include_unassigned
@@ -812,6 +809,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		$keyword_id = $filters->{'filter_keywords'};
 		$keywordsFilterType = $filters->{'filter_keywords_filter_type'};
 	}
+
+	// 3406 - user assignments per build
+	// can't use $build_id here because we need the build ID from settings panel
+	$build2filter_assignments = $filters->{'setting_build'} ? $filters->{'setting_build'} : 0;
+	
 	
 	$tc_id = isset($filters->tc_id) ? $filters->tc_id : null; 
 	$build_id = isset($filters->filter_result_build) ? $filters->filter_result_build : null;
@@ -895,8 +897,12 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
 			// 20100520 - franciscom
+			// 3406: user assignments per build
+//			$opt = array('include_unassigned' => $include_unassigned, 
+//			             'steps_info' => false);
 			$opt = array('include_unassigned' => $include_unassigned, 
-			             'steps_info' => false);
+			             'steps_info' => false,
+			             'user_assignments_per_build' => $build2filter_assignments);
 
 			// 20100417 - BUGID 3380 - execution type
 			$linkedFilters = array('tcase_id' => $tc_id, 'keyword_id' => $keyword_id,

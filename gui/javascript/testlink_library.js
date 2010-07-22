@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.102 2010/06/24 17:25:57 asimon83 Exp $
+// $Id: testlink_library.js,v 1.103 2010/07/22 14:14:46 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100708 - asimon - BUGID 3406 - removed PL()
 // 20100518 - franciscom - BUGID 3471 - spaces on window.open() name parameter
 // 20100301 - asimon - added openLinkedReqWindow() and openLinkedReqSpecWindow()
 // 20100223 - asimon - added PL() for BUGID 3049
@@ -215,17 +216,17 @@ function EP(id)
 	parent.workframe.location = action_url;
 }
 
-/*
-function: PL
-          printing of Test Plan for BUGID 3049
-args: id
-*/
-function PL(id)
-{
-	var _FUNCTION_NAME_="PL";
-	var action_url = fRoot + 'lib/testcases/archiveData.php?edit=testplan&level=testplan&id=' + id;
-	parent.workframe.location = action_url;
-}
+///*
+//function: PL
+//          printing of Test Plan for BUGID 3049
+//args: id
+//*/
+//function PL(id)
+//{
+//	var _FUNCTION_NAME_="PL";
+//	var action_url = fRoot + 'lib/testcases/archiveData.php?edit=testplan&level=testplan&id=' + id;
+//	parent.workframe.location = action_url;
+//}
 
 /*
   function: Edit Test Suite or launch print

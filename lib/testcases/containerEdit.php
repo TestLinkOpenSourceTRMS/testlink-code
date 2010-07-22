@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.114 $
- * @modified $Date: 2010/06/28 16:19:37 $ by $Author: asimon83 $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2010/07/22 14:14:43 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
- *	@internal revisions
+ * @internal revisions
+ *  20100722 - asimon - BUGID 3406, removal of changes for 3049
  *  20100628 - asimon - removal of constants from filter control class
  *  20100625 - asimon - refactoring for new filter features and BUGID 3516
  *  20100624 - asimon - CVS merge (experimental branch to HEAD)
@@ -29,14 +30,16 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
-require_once("specview.php"); //BUGID 3049
+// BUGID 3406
+// require_once("specview.php"); //BUGID 3049
 $editorCfg=getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
-$tplan_mgr = new testplan($db);
+// BUGID 3406
+// $tplan_mgr = new testplan($db);
 $tsuite_mgr = new testsuite($db);
 $tcase_mgr = new testcase($db);
 
@@ -61,12 +64,13 @@ $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'updateTCorder' => 'containerView.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl',
                 'do_copy_tcase_set' => 'containerMoveTC.tpl');   
-   
+
+// BUGID 3406 - removed 'doUnassignFromPlan' => 0
 $a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
 					'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
                     'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
                     'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
-                    'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0, 'doUnassignFromPlan' => 0);
+                    'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
@@ -207,10 +211,11 @@ switch($action)
     	moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
     	break;
 
-    // BUGID 3049
-    case 'doUnassignFromPlan':
-    	removeTestcaseAssignments($db, $args, $tplan_mgr, $smarty, $template_dir);
-    	break;
+// BUGID 3406
+//    // BUGID 3049
+//    case 'doUnassignFromPlan':
+//    	removeTestcaseAssignments($db, $args, $tplan_mgr, $smarty, $template_dir);
+//    	break;
     	
     default:
     	trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
@@ -343,8 +348,9 @@ function init_args($optionTransferCfg)
 
 
     // integer values
+    // BUGID 3406 - removed 'tplan_id' => 0
     $keys2loop=array('testsuiteID' => null, 'containerID' => null,
-                     'objectID' => null, 'copyKeywords' => 0, 'tplan_id' => 0);
+                     'objectID' => null, 'copyKeywords' => 0);
     foreach($keys2loop as $key => $value)
     {
        $args->$key = isset($_REQUEST[$key]) ? intval($_REQUEST[$key]) : $value;
@@ -884,59 +890,60 @@ function deleteTestSuitesBulk(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcas
 }
 
 
-/**
- * BUGID 3049
- * remove all testcase assignments from a testplan
- * 
- * @param resource $dbHandler database handle
- * @param stdClass $argsObj user input 
- * @param tlTestplan $tplan_mgr testplan
- * @param tlSmarty $smartyObj smarty object
- * @param string $tmpl_dir template  directory
- */
-function removeTestcaseAssignments(&$dbHandler, &$argsObj, &$tplan_mgr, &$smartyObj, $tmpl_dir) {
-	$gui = new stdClass();
-	$gui->tplan_id = $argsObj->tplan_id;
-	$tplan = $tplan_mgr->get_by_id($argsObj->tplan_id);
-	$gui->tplan_name = $tplan['name'];
-	$gui->container_data['name'] = $tplan['name'];
-	$gui->tplan_description = $tplan['notes'];
-	$gui->mainTitle = lang_get('remove_assigned_testcases');
-	$tproject_mgr = new testproject($dbHandler);
-	$tproject = $tproject_mgr->get_by_id($tplan['testproject_id']);
-	$gui->tproject_name = $tproject['name'];
-	$gui->tproject_description = $tproject['notes'];
-	$gui->draw_tc_unassign_button = false;
-	
-	$gui->level = 'testplan';
-	$gui->mainTitle = lang_get('remove_assigned_testcases');
-	$gui->page_title = lang_get('testplan');
-	$gui->refreshTree = false;
-
-	if($argsObj->doAction == 'doUnassignFromPlan') {
-		$options = array('output' => 'array');
-		$linked_tcversions=$tplan_mgr->get_linked_tcversions($gui->tplan_id,null,$options);
-			
-		$ids = array();
-		foreach ($linked_tcversions as $tc_id => $tc) {
-			if (isset($tc['user_id']) && is_numeric($tc['user_id'])) {
-				$ids[] = $tc['feature_id'];
-			}
-		}
-
-		if (count($ids)) {
-			$assignment_mgr = new assignment_mgr($dbHandler);
-			$assignment_mgr->delete_by_feature_id($ids);
-			$gui->result = sprintf(lang_get('unassigned_all_tcs_msg'), $gui->tplan_name);
-		} else {
-			//no items to unassign
-			$gui->result = sprintf(lang_get('nothing_to_unassign_msg'), $gui->tplan_name);
-		}
-
-		$smartyObj->assign('gui', $gui);
-		$smartyObj->display($tmpl_dir . 'containerView.tpl');
-	}
-
-}
+// removed for BUGID 3406
+///**
+// * BUGID 3049
+// * remove all testcase assignments from a testplan
+// * 
+// * @param resource $dbHandler database handle
+// * @param stdClass $argsObj user input 
+// * @param tlTestplan $tplan_mgr testplan
+// * @param tlSmarty $smartyObj smarty object
+// * @param string $tmpl_dir template  directory
+// */
+//function removeTestcaseAssignments(&$dbHandler, &$argsObj, &$tplan_mgr, &$smartyObj, $tmpl_dir) {
+//	$gui = new stdClass();
+//	$gui->tplan_id = $argsObj->tplan_id;
+//	$tplan = $tplan_mgr->get_by_id($argsObj->tplan_id);
+//	$gui->tplan_name = $tplan['name'];
+//	$gui->container_data['name'] = $tplan['name'];
+//	$gui->tplan_description = $tplan['notes'];
+//	$gui->mainTitle = lang_get('remove_assigned_testcases');
+//	$tproject_mgr = new testproject($dbHandler);
+//	$tproject = $tproject_mgr->get_by_id($tplan['testproject_id']);
+//	$gui->tproject_name = $tproject['name'];
+//	$gui->tproject_description = $tproject['notes'];
+//	$gui->draw_tc_unassign_button = false;
+//	
+//	$gui->level = 'testplan';
+//	$gui->mainTitle = lang_get('remove_assigned_testcases');
+//	$gui->page_title = lang_get('testplan');
+//	$gui->refreshTree = false;
+//
+//	if($argsObj->doAction == 'doUnassignFromPlan') {
+//		$options = array('output' => 'array');
+//		$linked_tcversions=$tplan_mgr->get_linked_tcversions($gui->tplan_id,null,$options);
+//			
+//		$ids = array();
+//		foreach ($linked_tcversions as $tc_id => $tc) {
+//			if (isset($tc['user_id']) && is_numeric($tc['user_id'])) {
+//				$ids[] = $tc['feature_id'];
+//			}
+//		}
+//
+//		if (count($ids)) {
+//			$assignment_mgr = new assignment_mgr($dbHandler);
+//			$assignment_mgr->delete_by_feature_id($ids);
+//			$gui->result = sprintf(lang_get('unassigned_all_tcs_msg'), $gui->tplan_name);
+//		} else {
+//			//no items to unassign
+//			$gui->result = sprintf(lang_get('nothing_to_unassign_msg'), $gui->tplan_name);
+//		}
+//
+//		$smartyObj->assign('gui', $gui);
+//		$smartyObj->display($tmpl_dir . 'containerView.tpl');
+//	}
+//
+//}
 
 ?>

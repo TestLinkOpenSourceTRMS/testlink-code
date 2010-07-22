@@ -9,10 +9,11 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community
- * @version    	CVS: $Id: planTCNavigator.php,v 1.50 2010/06/28 16:19:36 asimon83 Exp $
+ * @version    	CVS: $Id: planTCNavigator.php,v 1.51 2010/07/22 14:14:43 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100708 - asimon - BUGID 3406
  *  20100628 - asimon - removal of constants from filter control class
  *  20160625 - asimon - refactoring for new filter features
  *  20100624 - asimon - CVS merge (experimental branch to HEAD)
@@ -34,8 +35,9 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
+$assignment_mgr = new assignment_mgr($db); // BUGID 3406
 $control = new tlTestCaseFilterControl($db, 'plan_mode');
-$gui = initializeGui($db, $control);
+$gui = initializeGui($db, $control, $assignment_mgr);
 $control->build_tree_menu($gui);
 
 $smarty = new TLSmarty();
@@ -53,8 +55,11 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param unknown_type $dbHandler
  * @param unknown_type $control
  * @return stdClass
+ * 
+ * @internal revisions:
+ *   20100721 - asimon - BUGID 3406, added assignmentMgr
  */
-function initializeGui(&$dbHandler, &$control) {
+function initializeGui(&$dbHandler, &$control, &$assignmentMgr) {
 
 	$gui = new stdClass();
 	
@@ -62,6 +67,7 @@ function initializeGui(&$dbHandler, &$control) {
     $gui->tPlanID = $control->args->testplan_id;
 	$gui->title = lang_get('title_test_plan_navigator');
 	$gui->src_workframe = '';
+	$gui->additional_string = '';
 	
 	// configure target URLs and clickable buttons
 	switch($control->args->feature) {
@@ -76,7 +82,11 @@ function initializeGui(&$dbHandler, &$control) {
 
 		case 'tc_exec_assignment':
 			$gui->menuUrl = "lib/plan/tc_exec_assignment.php";
-			$control->draw_tc_unassign_button = true;
+			// BUGID 3406 - check for assignments before displaying the unassign button
+			$build_id = $control->settings['setting_build']['selected'];
+			if ($assignmentMgr->get_count_of_assignments_for_build_id($build_id)) {
+				$control->draw_tc_unassign_button = true;
+			}
 		break;
 	}
 	

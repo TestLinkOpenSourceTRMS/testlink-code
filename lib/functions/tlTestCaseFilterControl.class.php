@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.9 2010/07/13 07:36:46 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.10 2010/07/22 14:14:44 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -36,6 +36,7 @@
  *
  * @internal Revisions:
  *
+ * 20100716 - asimon - BUGID 3406 - changes on init_settings() and $mode_setting_mapping
  * 20100713 - asimon - fixed Drag&Drop error caused by init_filter_custom_fields()
  * 20100702 - asimon - fixed error in init_setting_testplan()
  * 20100701 - asimon - BUGID 3414 - additional work in init_filter_custom_fields()
@@ -277,6 +278,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                                'setting_platform',
 	                                                                'setting_refresh_tree_on_action'),
 	                                      'plan_mode' => array('setting_testplan',
+	                                                           // BUGID 3406
+	                                                           'setting_build',
 	                                                           'setting_refresh_tree_on_action'),
 	                                      'plan_add_mode' => array('setting_testplan',
 	                                                               'setting_refresh_tree_on_action'));
@@ -472,7 +475,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$this->settings[$name] = false;
 			}
 		}
-
+		
+		// special situation: the build setting is in plan mode only needed for one feature
+		// BUGID 3406
+		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') {
+			$this->settings['setting_build'] = false;
+		}
+		
 		// if at least one active setting is left to display, switch settings panel on
 		if ($at_least_one_active) {
 			$this->display_settings = true;
@@ -949,6 +958,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			                                                 testplan::GET_ACTIVE_BUILD,
 			                                                 testplan::GET_OPEN_BUILD);
 
+		// BUGID 3406 - depending on mode, we need different labels for this selector on GUI
+		$label = ($this->mode == 'plan_mode') ? 'assign_build' : 'exec_build';
+		$this->settings[$key]['label'] = lang_get($label);
+		
 		// if no build has been chosen by user, select newest build by default
 		$newest_build_id = $this->testplan_mgr->get_max_build_id($tp_id,
 		                                                         testplan::GET_ACTIVE_BUILD,

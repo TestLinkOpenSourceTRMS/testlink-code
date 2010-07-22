@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel_js.tpl,v 1.2 2010/06/24 17:25:52 asimon83 Exp $
+ * $Id: inc_filter_panel_js.tpl,v 1.3 2010/07/22 14:14:45 asimon83 Exp $
  *
  * This file is included by the *navigator templates.
  * It contains and handles the javascript functions which switch some filters on and off,
@@ -12,6 +12,7 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *   20100709 - asimon - BUGID 3406: new JS function for the unassign button
  *   20100610 - asimon - new include file for simplifying usage of filter related javascript functions
  *}
 
@@ -99,6 +100,21 @@
 			filter_method_combo.disabled = true;
 		}
 	{/literal}
+{/if}
+
+{* BUGID 3406 *}
+{if $control->draw_tc_unassign_button}
+{literal}
+/**
+ * Open the tc_exec_assignment page in workframe to delete
+ * all tester assignments for a build. 
+ */
+function delete_testers_from_build(id) {
+	var action_url = fRoot + 'lib/plan/tc_exec_unassign_all.php' + 
+	                 '?confirmed=no&build_id=' + id;
+	parent.workframe.location = action_url;
+}
+{/literal}
 {/if}
 
 </script>

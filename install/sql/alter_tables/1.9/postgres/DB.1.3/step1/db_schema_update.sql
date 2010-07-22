@@ -1,6 +1,6 @@
--- $Revision: 1.9 $
--- $Date: 2010/03/08 20:17:40 $
--- $Author: franciscom $
+-- $Revision: 1.10 $
+-- $Date: 2010/07/22 14:14:44 $
+-- $Author: asimon83 $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -50,6 +50,7 @@
 --
 --
 -- internal revision:
+--  20100705 - asimon - added new column build_id to user_assignments
 --  20100308 - franciscom - req_relations table added
 --
 --  20100113 - franciscom
@@ -134,6 +135,11 @@ CREATE TABLE /*prefix*/req_relations (
 
 
 -- Step 3 - simple structure updates
+
+-- user_assigments
+ALTER TABLE /*prefix*/user_assignments ADD COLUMN build_id BIGINT NULL DEFAULT NULL;
+COMMENT ON TABLE /*prefix*/user_assignments IS 'Updated to TL 1.9.0 - DB 1.3';
+
 -- builds
 ALTER TABLE /*prefix*/builds ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();

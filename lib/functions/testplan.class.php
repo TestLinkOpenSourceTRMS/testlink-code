@@ -9,11 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.198 2010/07/11 17:06:48 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.199 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100722 - asimon - added missing $debugMsg to get_linked_items()
+ *  20100721 - asimon - BUGID 3406: added user_assignments_per_build option to get_linked_tcversions()
  *	20100711 - franciscom - BUGID 3564 -> getPlatforms()
  *	20100614 - eloff - refactor getStatusTotalsByPriority() to same style as the other getStatusTotals...()
  *	20100610 - eloff - BUGID 3515 - getStatusTotals() now takes platforms into account
@@ -559,11 +561,14 @@ class testplan extends tlObjectWithAttachments
 	}
 	
 
-	/*
-	
-	*/
+	/**
+	 *
+	 * @internal revisions:
+	 *   20100722 - asimon - added missing $debugMsg
+	 */
 	function get_linked_items_id($id)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$sql = " /* $debugMsg */ ". 
 			   " SELECT DISTINCT parent_id FROM {$this->tables['nodes_hierarchy']} NHTC " .
 			   " JOIN {$this->tables['testplan_tcversions']} TPTCV ON TPTCV.tcversion_id = NHTC.id " .
@@ -651,6 +656,8 @@ class testplan extends tlObjectWithAttachments
          	           'summary': add summary 
 		 	[steps_info]: controls if step info has to be added on output    
          	           default true
+		 	[user_assignments_per_build]: contains a build ID, for which the
+		 	                              assigned user shall get loaded    
 		 	    
 		 	    
 	  returns: changes according options['output'] (see above)
@@ -661,6 +668,7 @@ class testplan extends tlObjectWithAttachments
                            - tcversion_id if has executions.
 
 	rev :
+		 20100721 - asimon - BUGID 3406: added user_assignments_per_build option
 		 20100520 - franciscom - added option steps_info, to try to solve perfomance problems
 		 						 allowing caller to ask for NO INFO ABOUT STEPS	
 		 20100417 - franciscom - added importance on output data
@@ -681,7 +689,6 @@ class testplan extends tlObjectWithAttachments
 		$executions = array('join' => '', 'filter' => '');
 		$platforms = array('join' => '', 'filter' => '');
 		
-
         $my['filters'] = array('tcase_id' => null, 'keyword_id' => 0,
                                'assigned_to' => null, 'exec_status' => null,
                                'build_id' => 0, 'cf_hash' => null,
@@ -698,10 +705,15 @@ class testplan extends tlObjectWithAttachments
 
 		// new dBug($my['filters']);
 		// new dBug($my['options']);
-        
+
 		$groupByPlatform=($my['options']['output']=='mapOfMap') ? ',platform_id' : '';
-        $groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
-        
+		$groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
+
+		// BUGID 3406: user assignments per build 
+		$ua_build = isset($my['options']['user_assignments_per_build']) ? 
+		            $my['options']['user_assignments_per_build'] : 0;
+		//$ua_build_sql = $ua_build && is_numeric($ua_build) ? " AND UA.build_id={$ua_build} " : "";
+		
         // @TODO - 20091004 - franciscom
         // Think that this subquery in not good when we add execution filter
 		// $last_exec_subquery = " AND E.id IN ( SELECT MAX(id) " .
@@ -847,6 +859,7 @@ class testplan extends tlObjectWithAttachments
 			                   " E.platform_id=T.platform_id AND " .
 			                   " E.testplan_id=T.testplan_id {$builds['filter']}) ";
 		// --------------------------------------------------------------
+		
 		$more_tcase_fields = '';
 		$join_for_parent = '';
 		$more_parent_fields = '';
@@ -872,6 +885,7 @@ class testplan extends tlObjectWithAttachments
 			$builds['join']=" LEFT OUTER JOIN {$this->tables['builds']} B ON B.id=E.build_id ";
 	    }
 		
+	    // BUGID 3406 - assignments per build
 	    // BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
 		// 20100417 - added TCV.importance
 		// 20090719 - added SQL comment on query text to make debug simpler.
@@ -886,6 +900,7 @@ class testplan extends tlObjectWithAttachments
 			   " E.tcversion_id AS executed, E.testplan_id AS exec_on_tplan, {$more_exec_fields}" .
 			   " E.execution_type AS execution_run_type, E.testplan_id AS exec_on_tplan, " .
 			   " E.execution_ts, E.tester_id, E.notes as execution_notes, ".
+		       " UA.build_id as assigned_build_id, " . // 3406
 			   " UA.user_id,UA.type,UA.status,UA.assigner_id,T.urgency, " .
 			   " COALESCE(E.status,'" . $status_not_run . "') AS exec_status, ".
 			   " (urgency * importance) AS priority " .
@@ -899,6 +914,7 @@ class testplan extends tlObjectWithAttachments
 			   " {$builds['join']} " .
 			   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = T.platform_id " .
 			   " LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = T.id " .
+			   " AND UA.build_id = {$ua_build} " . // 3406
 			   " WHERE T.testplan_id={$id} {$keywords['filter']} {$tc_id['filter']} {$platforms['filter']}" .
 			   " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) " . 
 			   $executions['filter'];
@@ -981,6 +997,7 @@ class testplan extends tlObjectWithAttachments
 			case 'mapOfMap':
 			// with this option we got just one record for each (testcase,platform)
 			// no matter how many executions has been done
+			
 			$recordset = $this->db->fetchMapRowsIntoMap($sql,'tc_id','platform_id');
 			break;
 			
@@ -3428,6 +3445,7 @@ class testplan extends tlObjectWithAttachments
 		{
 			return null;
 		}
+		$na_string = lang_get('not_aplicable');
 		$keySet = array_keys($results);
 		foreach($keySet as $keyID)
 		{
@@ -3443,6 +3461,13 @@ class testplan extends tlObjectWithAttachments
 				{
 					$target[$status_verbose]['percentage']=(($target[$status_verbose]['qty']) / $totalCases) * 100;
 					$target[$status_verbose]['percentage']=number_format($target[$status_verbose]['percentage'],2);
+				}
+			} else {
+				// 20100722 - asimon: if $target[$status_verbose]['percentage'] is not set,
+				// it causes warnings in the template later, so it has to be set here
+				// if $totalCases == 0 to avoid later undefined index warnings in the log
+				foreach($target as $status_verbose => $qty) {
+					$target[$status_verbose]['percentage'] = $na_string;
 				}
 			}
 		}
@@ -3791,6 +3816,9 @@ class build_mgr extends tlObject
 	 * 
 	 * @param integer $id
 	 * @return integer status code
+	 * 
+	 * @internal revisions:
+	 *  20100716 - asimon - BUGID 3406: delete user assignments with build
 	 */
 	function delete($id)
 	{
@@ -3800,6 +3828,11 @@ class build_mgr extends tlObject
 		$sql = " DELETE FROM {$this->tables['executions']}  " .
 			" WHERE build_id={$id}";
 		
+		$result=$this->db->exec_query($sql);
+		
+		// 3406 - delete user assignments with build
+		$sql = " DELETE FROM {$this->tables['user_assignments']}  " .
+			" WHERE build_id={$id}";		
 		$result=$this->db->exec_query($sql);
 		
 		$sql = " DELETE FROM {$this->tables['builds']} " .

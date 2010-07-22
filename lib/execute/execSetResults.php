@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.163 $
- * @modified $Date: 2010/07/09 09:00:20 $ $Author: asimon83 $
+ * @version $Revision: 1.164 $
+ * @modified $Date: 2010/07/22 14:14:45 $ $Author: asimon83 $
  *
  * rev:
  *  20100709 - asimon - BUGID 3590, BUGID 3574: build_id set to 0 as default instead of null
@@ -153,8 +153,14 @@ if($args->doExec == 1)
 //
 
 // 20081221 - franciscom                              
+// 3406
+//$options = array('only_executed' => true, 'output' => 'mapOfArray',
+//                 'include_unassigned' => $args->include_unassigned);
 $options = array('only_executed' => true, 'output' => 'mapOfArray',
-                 'include_unassigned' => $args->include_unassigned);
+                 'include_unassigned' => $args->include_unassigned,
+                 'user_assignments_per_build' => $args->build_id);
+
+
 if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->filter_status))
 {
     $options['only_executed'] = false;

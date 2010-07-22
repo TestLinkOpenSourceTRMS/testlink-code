@@ -7,11 +7,13 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.100 2010/06/28 16:19:37 asimon83 Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.101 2010/07/22 14:14:43 asimon83 Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100721 - asimon - BUGID 3406: assign users per build when adding testcases to plan,
+ *                                 added init_build_selector()
  * 20100628 - asimon - removal of constants from filter control class
  * 20100625 - asimon - refactoring for new filter features and BUGID 3516
  * 20100624 - asimon - CVS merge (experimental branch to HEAD)
@@ -40,6 +42,9 @@ $tcase_mgr = new testcase($db);
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
+
+// 3406
+$gui->build = init_build_selector($tplan_mgr, $args);
 
 $keywordsFilter = null;
 if(is_array($args->keyword_id))
@@ -115,6 +120,9 @@ switch($args->doAction)
 						$features2['add'][$feature_id]['tcversion_id'] = $tcversion_id;
 					    $features2['add'][$feature_id]['creation_ts'] = $db_now;
 					    $features2['add'][$feature_id]['platform_name'] = $platformSet[$platform_id];
+					    
+					    // 3406 
+					    $features2['add'][$feature_id]['build_id'] = $args->build_id;
 					}
             	}
 
@@ -353,6 +361,9 @@ function init_args()
 	if (isset($session_data[$ft])) {
 		$args->keywordsFilterType = $session_data[$ft];
 	}
+	
+	// 3406
+	$args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 	
 	return $args;
 }
@@ -768,4 +779,34 @@ function setAdditionalGuiData($guiObj)
 	$guiObj->actionTitle = lang_get($actionTitle);
 	$guiObj->buttonValue = lang_get($buttonValue);
 }
+
+/**
+ * Initialize the HTML select box for selection of a build to which
+ * user wants to assign testers which are added to testplan.
+ * 
+ * @author Andreas Simon
+ * @param testplan $testplan_mgr reference to testplan manager object
+ * @param object $argsObj reference to user input object
+ * @return array $html_menu array structure with all information needed for the menu
+ */
+function init_build_selector(&$testplan_mgr, &$argsObj) {
+
+	// init array
+	$html_menu = array('items' => null, 'selected' => null, 'count' => 0);
+
+	$html_menu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id,
+	                                                                 testplan::GET_ACTIVE_BUILD,
+	                                                                 testplan::GET_OPEN_BUILD);
+	$html_menu['count'] = count($html_menu['items']);
+	
+	// if no build has been chosen yet, select the newest build by default
+	$build_id = $argsObj->build_id;
+	if (!$build_id && $html_menu['count']) {
+		$keys = array_keys($html_menu['items']);
+		$build_id = end($keys);
+	}
+	$html_menu['selected'] = $build_id;
+	
+	return $html_menu;
+} // end of method
 ?>

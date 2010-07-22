@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2010/06/24 17:25:56 $ $Author: asimon83 $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2010/07/22 14:14:46 $ $Author: asimon83 $
  *
  * @author Francisco Mancardi
  *
@@ -597,6 +597,8 @@ $TLS_title_build_update = "Update Build";
 $TLS_title_build_edit = "Edit Build";
 $TLS_warning_empty_build_name = "Please enter a name for the Build!";
 $TLS_copy_to_all_tplans = "Copy to all Test Plans";
+$TLS_copy_tester_assignments = "Copy tester assignments";
+$TLS_assignment_source_build = "From existing build";
 
 
 

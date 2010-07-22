@@ -6,11 +6,15 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.60 2010/05/06 19:28:38 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.61 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20100721 - asimon - BUGID 3406 - added $options for new user assignments per build to 
+ *                                   gen_spec_view(), getFilteredLinkedVersions(), 
+ *                                   and keywordFilteredSpecView()
+ *  
  *	20100417 - franciscom - BUGID 2498  Add test case to test plan - Filter Test Cases based on Test Importance
  *  20100411 - franciscom - BUGID 2797 - filter by test case execution type
  *
@@ -155,6 +159,8 @@
  * 
  * @internal Revisions:
  * 
+ *  20100721 - asimon - BUGID 3406 - added user_assignments_per_build to options
+ *  
  *  20090808 - franciscom - changed interface to reduce number of arguments
  *
  *	20070707 - franciscom - BUGID 921 - problems with display order in execution screen
@@ -169,8 +175,8 @@
  * 	20090625 - Eloff - added priority output
  */
 
-function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$linked_items,
-                       $map_node_tccount,$filters=null, $options = null,$tproject_id = null)
+function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name, &$linked_items,
+                       $map_node_tccount, $filters=null, $options = null, $tproject_id = null)
 {
 
 	$out = array(); 
@@ -179,7 +185,8 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
 	$my = array();
 	$my['options'] = array('write_button_only_if_linked' => 0,
 	                       'prune_unlinked_tcversions' => 0,
-	                       'add_custom_fields' => 0);
+	                       'add_custom_fields' => 0)
+	               + (array)$options;
 
 	// BUGID 2797 - filter by test case execution type
 	$my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 'importance' => null);
@@ -335,10 +342,11 @@ function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$l
  *
  * @internal Revisions:
  *	
+ *  20100721 - asimon - BUGID 3046, added $options
  *	20080919 - franciscom - BUGID 2716
  *
  */
-function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
+function getFilteredLinkedVersions(&$argsObj, &$tplanMgr, &$tcaseMgr, $options = null)
 {
 	$doFilterByKeyword=(!is_null($argsObj->keyword_id) && $argsObj->keyword_id > 0) ? true : false;
 	
@@ -348,8 +356,8 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 	// BUGID 2797 - filter by test case execution type
 	// $filters = array('keyword_id' => $argsObj->keyword_id, 'exec_type' => $argsObj->executionType);
 	$filters = array('keyword_id' => $argsObj->keyword_id);
-	$options = array('output' => 'mapOfArray');
-	$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$options);
+	$options = array('output' => 'mapOfArray') + (array)$options;
+	$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
 	
 	// BUGID 2716
 	if( !is_null($tplan_tcases) && $doFilterByKeyword && $argsObj->keywordsFilterType == 'AND')
@@ -359,7 +367,7 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 		
 		$testCaseSet=array_keys($filteredSet);   
 	    $filters = array('tcase_id' => $testCaseSet);
-		$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters,$options);
+		$tplan_tcases = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
 	}
 	
 	return $tplan_tcases; 
@@ -369,12 +377,14 @@ function getFilteredLinkedVersions(&$argsObj,&$tplanMgr,&$tcaseMgr)
 /**
  * 
  * @internal revisions:
+ * 20100721 - asimon - BUGID 3406 - added $options for new user assignments per build
  * 20100218 - asimon - BUGID 3026 - added parameter $testcaseFilter to include functionality
  * 						previously used on tc_exec_assignment.php
  * 						to show only testcases present in filter argument
  *
  */
-function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tcaseMgr, $testcaseFilter = null)
+function keywordFilteredSpecView(&$dbHandler, &$argsObj, $keywordsFilter, &$tplanMgr, &$tcaseMgr, 
+                                 $testcaseFilter = null, $options = null)
 {
 	$tsuiteMgr = new testsuite($dbHandler); 
 	$tprojectMgr = new testproject($dbHandler); 
@@ -382,16 +392,24 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 	
 	$filterAssignedTo = property_exists($argsObj,'filter_assigned_to') ? $argsObj->filter_assigned_to : null;	
 	
+	// 3406
+//	$ua_build = !is_null($options) && isset($options['user_assignments_per_build']) ?
+//	$options['user_assignments_per_build'] : null;
+	
 	// @TODO - 20081019 
 	// Really understand differences between:
 	// $argsObj->keyword_id and $keywordsFilter
 
 	// BUGID 1041
 	$filters = array('keyword_id' => $argsObj->keyword_id, 'assigned_to' => $filterAssignedTo);
-	$tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id,$filters);
+	
+	// 20100715 - asimon - why the double writing to $tplan_linked_tcversions?
+	// will be overwritten again two lines below
+	// $tplan_linked_tcversions = $tplanMgr->get_linked_tcversions($argsObj->tplan_id, $filters, $options);
       
 	// This does filter on keywords ALWAYS in OR mode.
-	$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj,$tplanMgr,$tcaseMgr);
+	// 3406: added $options
+	$tplan_linked_tcversions = getFilteredLinkedVersions($argsObj, $tplanMgr, $tcaseMgr, $options);
 
 	// With this pieces we implement the AND type of keyword filter.
 	$testCaseSet = null;
@@ -408,17 +426,23 @@ function keywordFilteredSpecView(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMg
 	} else if (is_null($testCaseSet) && !is_null($testcaseFilter)) {
 		$testCaseSet = $testcaseFilter;
 	}
+	
 	// now get values as keys
-	$testCaseSet = array_combine($testCaseSet, $testCaseSet);
+	// 20100722 - asimon - additional check here because of warning from array_combine when $testCaseSet is null 
+	//$testCaseSet = array_combine($testCaseSet, $testCaseSet);
+	$testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
 	
 	// function gen_spec_view(&$db,$spec_view_type='testproject',$tobj_id,$id,$name,&$linked_items,
     //                    $map_node_tccount,$filters=null, $options = null,$tproject_id = null)
-    // 
-	$options = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
+    //
+    
+    // 3406 
+	$options = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1)
+	         + (array)$options;
 	$filters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet);
 	
-	$out = gen_spec_view($dbHandler,'testplan',$argsObj->tplan_id,$argsObj->id,$tsuite_data['name'],
-		                 $tplan_linked_tcversions,null,$filters,$options);
+	$out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
+		                 $tplan_linked_tcversions, null, $filters, $options);
 
 	return $out;
 }

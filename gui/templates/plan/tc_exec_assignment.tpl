@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.26 2010/07/01 11:59:30 mx-julian Exp $
+$Id: tc_exec_assignment.tpl,v 1.27 2010/07/22 14:14:45 asimon83 Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20100709 - asimon - BUGID 3406 - changed assignment logic to operate on build 
+                                      instead of testplan level
      20100209 - franciscom - minor code layout refactoring
      20100121 - eloff - BUGID 3078 - buttons always visible on top
      20090215 - franciscom - BUGID 2114
@@ -14,7 +16,8 @@ rev :
                           btn_update_selected_tc,show_tcase_spec,can_not_execute,
                           send_mail_to_tester,platform,no_testcase_available,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
-                          th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority'}
+                          th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority,
+                          '}
 
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_jsCheckboxes.tpl"}
@@ -34,8 +37,9 @@ function check_action_precondition(container_id,action)
 	}
 	return true;
 }
-</script>
+
 {/literal}
+</script>
 
 </head>
 {* prefix for checkbox name ADD*}   

@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.48 2010/06/24 17:25:52 asimon83 Exp $
+$Id: planAddTC_m1.tpl,v 1.49 2010/07/22 14:14:45 asimon83 Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20100721 - asimon - BUGID 3406: added build selector to assign users to chosen build 
+                                    on addition of testcases to testplan
     20100227 - franciscom - changed logic to hide diwv with buttons when test suite has not test cases
     20100225 - eloff - changes custom fields to span all 8 columns
     20100129 - franciscom - drawSavePlatformsButton logic moved to planAddTC.php
@@ -16,6 +18,7 @@ rev:
     20090117 - franciscom - BUGID 1970 - introduced while implementing BUGID 651
     20090103 - franciscom - BUGID 651 - $gui->can_remove_executed_testcases
 *}
+
 {lang_get var="labels" 
           s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
              select_all_to_add,select_all_to_remove,check_uncheck_all_for_remove,
@@ -24,7 +27,8 @@ rev:
              inactive_testcase,btn_save_exec_order,info_added_on_date,
              executed_can_not_be_removed,added_on_date,btn_save_platform,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
-             tester_assignment_on_add,check_uncheck_all_checkboxes_for_rm'}
+             tester_assignment_on_add,check_uncheck_all_checkboxes_for_rm,
+             build_to_assign_on_add'}
 
 {* prefix for checkbox named , ADD and ReMove *}   
 {assign var="add_cb" value="achecked_tc"} 
@@ -81,16 +85,32 @@ Ext.onReady(function(){
 	    {if $gui->has_tc}
 	  	  {include file="inc_update.tpl" result=$sqlResult}
         
-	  	  <div class="groupBtn">
-	  	  	{$labels.tester_assignment_on_add}
-	  	  	<select name="testerID"  id="testerID">
-	  	  		{html_options options=$gui->testers selected=$gui->testerID}
-	  	  	</select>
-	  	  	<span style="margin-left:20px;">
-	  	  	  <input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked}/>
-	  	  	  {$labels.send_mail_to_tester}
-	  	  	</span>
-	  	  </div>
+	  	  	
+		{* BUGID 3406 - user assignments per build --------------------------------------------- *}
+		{* show this only if a build exists to which we can assign users *}
+		{if $gui->build.count}
+		
+		<div class="groupBtn">
+				{$labels.tester_assignment_on_add}
+				<select name="testerID"
+				        id="testerID">
+					{html_options options=$gui->testers selected=$gui->testerID}
+				</select>
+				
+				{$labels.build_to_assign_on_add}
+				<select name="build_id">
+				{html_options options=$gui->build.items 
+				              selected=$gui->build.selected}
+				</select>
+		
+				<input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked}/>
+				{$labels.send_mail_to_tester}
+			
+		</div>
+
+		{/if} {* if $gui->build.count *}
+		{* ------------------------------------------------------------------------------------- *}
+		
 	  	  
 	  	  <div class="groupBtn">
 	  	  	<input type="hidden" name="doAction" id="doAction" value="default" />

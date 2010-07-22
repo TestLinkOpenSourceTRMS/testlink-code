@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.40 2010/01/24 15:17:15 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.41 2010/07/22 14:14:44 asimon83 Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -11,6 +11,7 @@
 -- 
 -- Rev :
 --
+--  20100705 - asimon - added column build_id to user_assignments
 --  20100123 - franciscom - is_open,active added to req_versions table
 --  20091220 - franciscom - doc_id increased to 64 and setted NOT NULL
 --  20091220 - franciscom - fields removed form req_spec and requirements 
@@ -228,9 +229,10 @@ CREATE TABLE /*prefix*/execution_bugs (
 
 CREATE TABLE /*prefix*/user_assignments (
 	[id] [int] IDENTITY(1,1) NOT NULL,
-	[type] [int] NOT NULL CONSTRAINT [/*prefix*/DF_user_assignments_type]  DEFAULT ((0)),
+	[type] [int] NOT NULL CONSTRAINT [/*prefix*/DF_user_assignments_type] DEFAULT ((0)),
 	[feature_id] [int] NOT NULL CONSTRAINT [/*prefix*/DF_user_assignments_feature_id]  DEFAULT ((0)),
 	[user_id] [int] NULL,
+	[build_id] [int] NULL,
 	[deadline_ts] [datetime] NULL,
 	[assigner_id] [int] NULL DEFAULT ((0)),
 	[creation_ts] [datetime] NOT NULL CONSTRAINT [/*prefix*/DF_user_assignments_creation_ts]  DEFAULT (getdate()),

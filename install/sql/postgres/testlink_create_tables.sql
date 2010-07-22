@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.61 2010/03/14 08:54:28 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.62 2010/07/22 14:14:46 asimon83 Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -24,6 +24,7 @@
 -- 
 --  Rev :
 -- 
+--  20100705 - asimon - added column build_id to user_assignments
 --  20100308 - franciscom - req_relations table added
 --  20100124 - franciscom - is_open,active added to req_versions table
 --  20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
@@ -622,6 +623,7 @@ CREATE TABLE /*prefix*/user_assignments(
   "type" BIGINT NOT NULL DEFAULT '0',
   "feature_id" BIGINT NOT NULL DEFAULT '0',
   "user_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
+  "build_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/builds (id),
   "deadline_ts" TIMESTAMP NOT NULL DEFAULT (now() + '10 days'::interval),
   "assigner_id" BIGINT NULL DEFAULT NULL REFERENCES  /*prefix*/users (id),
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),

@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.77 2010/03/14 08:54:28 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.78 2010/07/22 14:14:46 asimon83 Exp $
 #
 # SQL script - create all DB tables for MySQL
 # tables are in alphabetic order  
@@ -38,6 +38,7 @@
 # ---------------------------------------------------------------------------------------
 # Revisions:
 #
+# 20100705 - asimon - added new column build_id to user_assignments
 # 20100308 - Julian - req_relations table added
 # 20100124 - franciscom - is_open,active added to req_versions table
 # 20100113 - franciscom - doc_id increased to 64 and setted NOT NULL
@@ -565,6 +566,7 @@ CREATE TABLE /*prefix*/user_assignments (
   `type` int(10) unsigned NOT NULL default '1',
   `feature_id` int(10) unsigned NOT NULL default '0',
   `user_id` int(10) unsigned default '0',
+  `build_id` int(10) unsigned default '0',
   `deadline_ts` datetime NULL,
   `assigner_id`  int(10) unsigned default '0',
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

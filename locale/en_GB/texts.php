@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: texts.php,v 1.28 2010/06/24 17:25:56 asimon83 Exp $
+ * @version    	CVS: $Id: texts.php,v 1.29 2010/07/22 14:14:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  **/
@@ -427,13 +427,6 @@ $TLS_htmltext['tc_exec_assignment'] 		= "<h2>Purpose</h2>
 	<li>Select a planned tester.</li>
 	<li>Click the 'Save' button to submit assignment.</li>
 	<li>Open execution page to verify assignment. You can set-up a filter for users.</li>
-</ol>
-
-<h2>To unassign all Test cases:</h2>
-<ol>
-	<li>Click on the root node in the tree (the Test Project).</li>
-	<li>If there are assigned Test Cases, you will see a button to unassign all Test Cases. If you click it and confirm it,
-	all Test Cases will be unassigned.</li>
 </ol>";
 
 // ------------------------------------------------------------------------------------------

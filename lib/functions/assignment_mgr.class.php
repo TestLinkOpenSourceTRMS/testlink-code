@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.11 2010/07/22 16:31:59 asimon83 Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.12 2010/07/23 11:39:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions:
@@ -208,8 +208,12 @@ class assignment_mgr extends tlObjectWithDB
 		 *        TPTCV.testplan_id AS testplan_id, TPTCV.tcversion_id AS tcversion_id,
 		 *        TPTCV.platform_id AS platform_id, E.status AS status
 		 * FROM user_assignments UA
-		 * LEFT OUTER JOIN testplan_tcversions TPTCV ON UA.feature_id = TPTCV.id
-		 * LEFT OUTER JOIN executions E ON TPTCV.tcversion_id = E.tcversion_id AND UA.build_id = E.build_id
+		 * LEFT OUTER JOIN testplan_tcversions TPTCV 
+		 *     ON UA.feature_id = TPTCV.id
+		 * LEFT OUTER JOIN executions E 
+		 *     ON TPTCV.tcversion_id = E.tcversion_id 
+		 *     AND UA.build_id = E.build_id
+		 *     AND TPTCV.platform_id = E.platform_id
 		 * WHERE UA.type = 1 AND UA.build_id = 91
 		 * GROUP BY id
 		 * 
@@ -217,12 +221,16 @@ class assignment_mgr extends tlObjectWithDB
 		 * With the GROUP BY you get only one row per ID,
 		 * but the result does not have to be the last one, so
 		 * you can only rely on the count of "not run" here, not any other status.
-		 * So, to count only those which have not been run we use:
+		 * So, to count only those which have not been run we use a statement like:
 		 * 
 		 * SELECT COUNT(UA.id)
 		 * FROM user_assignments UA
-		 * LEFT OUTER JOIN testplan_tcversions TPTCV ON UA.feature_id = TPTCV.id
-		 * LEFT OUTER JOIN executions E ON TPTCV.tcversion_id = E.tcversion_id AND UA.build_id = E.build_id
+		 * LEFT OUTER JOIN testplan_tcversions TPTCV 
+		 *     ON UA.feature_id = TPTCV.id
+		 * LEFT OUTER JOIN executions E 
+		 *     ON TPTCV.tcversion_id = E.tcversion_id 
+		 *     AND UA.build_id = E.build_id
+		 *     AND TPTCV.platform_id = E.platform_id
 		 * WHERE UA.build_id = 91 AND E.status IS NULL AND UA.type = 1
 		 */
 		
@@ -231,7 +239,9 @@ class assignment_mgr extends tlObjectWithDB
 		       " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} TPTCV " .
 		       "     ON UA.feature_id = TPTCV.id " .
 		       " LEFT OUTER JOIN {$this->tables['executions']} E " .
-		       "     ON TPTCV.tcversion_id = E.tcversion_id AND UA.build_id = E.build_id " .
+		       "     ON TPTCV.tcversion_id = E.tcversion_id " .
+		       "     AND UA.build_id = E.build_id " .
+		       "     AND TPTCV.platform_id = E.platform_id " .
 		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} ";
 		
 		if (isset($build_id) && is_numeric($build_id)) {

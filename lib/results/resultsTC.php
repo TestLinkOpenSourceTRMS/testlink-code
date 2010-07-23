@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.60 2010/07/19 18:54:19 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.61 2010/07/23 14:11:10 asimon83 Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100723 - asimon - BUGID 3590: crash when clicking testcase link because of missing build id
 * 20100719 - eloff - Update due to changes in tlExtTable
 * 20100716 - eloff - group by platform column
 * 20100715 - eloff - use grouping on first column
@@ -76,6 +77,9 @@ if ($gui->buildInfoSet)
 	$buildQty = sizeOf($buildIDSet);
 }
 
+// BUGID 3590
+$last_build = end($buildIDSet);
+
 // Get Results on map with access key = test case's parent test suite id
 $executionsMap = $re->getSuiteList();
 
@@ -136,10 +140,13 @@ if ($lastResultMap != null)
 				$name = $tcase['name'];
 				$linkedTCVersion = $tcase['version'];
 				$external_id = $testCasePrefix . $tcase['external_id'];
-
+				
+				// BUGID 3590: crash when clicking testcase link
+				$buildId = $tcase['buildIdLastExecuted'] ? $tcase['buildIdLastExecuted'] : $last_build;
+				
 				$link = '<a href="' . $_SESSION['basehref'] . 'lib/execute/execSetResults.php?' .
 				        'level=testcase' .
-				        '&build_id=' . $tcase['buildIdLastExecuted'] .
+				        '&build_id=' . $buildId .
 				        '&id=' . $testCaseId .
 				        '&version_id=' . $tcase['tcversion_id'] .
 				        '&tplan_id=' . $args->tplan_id .

@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.166 2010/07/22 14:14:43 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.167 2010/07/23 08:23:25 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.640
+ * Last Update according to en_GB string file version 1.642
  *
  **/
 
@@ -1490,6 +1490,7 @@ $TLS_all_reqspecs_in_tproject = "Alle Req. Specs im Testprojekt";
 // ----- gui/templates/resultsAllBuilds.tpl -----
 $TLS_th_build = "Build";
 $TLS_th_tc_total = "Anzahl Testfälle";
+$TLS_th_tc_assigned = "Assigned";
 $TLS_title_met_of_build = "Build-Metriken";
 
 

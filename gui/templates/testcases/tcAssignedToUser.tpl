@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.11 2010/07/22 16:32:07 asimon83 Exp $
+$Id: tcAssignedToUser.tpl,v 1.12 2010/07/23 07:10:28 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 rev:
 20100722 - asimon - BUGID 3406 - added columns for build ID and testsuite
@@ -66,7 +66,7 @@ rev:
                 <td>
                 	{if $tcase.priority >= $tlCfg->urgencyImportance->threshold.high}
                 		{$labels.high_priority}
-                		{elseif $tcase.priority <= $tlCfg->urgencyImportance->threshold.low}
+                		{elseif $tcase.priority < $tlCfg->urgencyImportance->threshold.low}
                 				{$labels.low_priority}
                 		{else}
                 			{$labels.medium_priority}

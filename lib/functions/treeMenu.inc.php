@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.136 2010/07/22 14:14:44 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.137 2010/07/23 16:03:38 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -812,7 +812,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 
 	// 3406 - user assignments per build
 	// can't use $build_id here because we need the build ID from settings panel
-	$build2filter_assignments = $filters->{'setting_build'} ? $filters->{'setting_build'} : 0;
+	$build2filter_assignments = isset($filters->{'setting_build'}) ? $filters->{'setting_build'} : 0;
 	
 	
 	$tc_id = isset($filters->tc_id) ? $filters->tc_id : null; 

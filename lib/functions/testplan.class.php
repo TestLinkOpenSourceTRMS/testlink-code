@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.199 2010/07/22 14:14:44 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.200 2010/07/23 16:03:38 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100723 - asimon - commented out some old debug message in copy_linked_tcversions()
  *  20100722 - asimon - added missing $debugMsg to get_linked_items()
  *  20100721 - asimon - BUGID 3406: added user_assignments_per_build option to get_linked_tcversions()
  *	20100711 - franciscom - BUGID 3564 -> getPlatforms()
@@ -1546,7 +1547,7 @@ class testplan extends tlObjectWithAttachments
 					   " VALUES({$new_tplan_id},{$tcversion_id},{$platform_id}," .
 					   " {$elem['node_order']},{$elem['urgency']})";
 					   
- 				 echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+ 				 //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 	   
 				$this->db->exec_query($sql);
 				$new_feature_id = $this->db->insert_id($this->tables['testplan_tcversions']);
@@ -1560,6 +1561,7 @@ class testplan extends tlObjectWithAttachments
 					$features_map[$feature_id]['status']  = $this->assignment_status['open']['id'];
 					$features_map[$feature_id]['creation_ts'] = $now_ts;
 					$features_map[$feature_id]['assigner_id'] = $user_id;
+					
 					$this->assignment_mgr->assign($features_map);
 				}
 				

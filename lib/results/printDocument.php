@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/05/21 21:42:47 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2010/07/23 16:03:39 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -250,6 +250,9 @@ switch ($doc_info->type)
 						$dummy = null;
 						$pnFilters = null;
                         $pnOptions =  array('hideTestCases' => 0);
+						
+						// 3624
+                        $pnOptions = array_merge($pnOptions, $pnOptionsAdd);
 						
 						// prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
 						prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,$pnFilters,$pnOptions);

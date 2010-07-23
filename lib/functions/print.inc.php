@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.103 2010/07/07 11:56:51 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.104 2010/07/23 09:30:36 asimon83 Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20100723 - asimon - BUGID 3451 and related: solved by changes in renderTestCaseForPrinting()
  *  20100326 - asimon - started refactoring and moving of requirement printing functions from 
  *                      req classes to this file for generation of req spec document
  *                      like it is done for testcases (BUGID 3067)
@@ -687,6 +688,7 @@ function gendocGetUserName(&$db, $userId)
  * @param $integer db DB connection identifier 
  * @return string generated html code
  * @internal 
+ *      20100723 - asimon - BUGID 3451 and related finally solved
  *      20080819 - franciscom - removed mysql only code
  *      20071014 - franciscom - display test case version
  *      20070509 - franciscom - added Contribution
@@ -740,6 +742,15 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
     $external_id = $tcase_prefix . $tcInfo['tc_external_id'];
 	$name = htmlspecialchars($node['name']);
 
+	// ----- BUGID 3451 and related ---------------------------------------
+	// asimon: I finally found the real problem here:
+	// $versionID was used in the following "dirty" SQL statement, but was still set to "-1" 
+	//(the value to load all tc versions) instead of a real testcase version ID.
+	$versionID = $tcInfo['id'];
+	// This still does not change the fact that this marked SQL statement below
+	// should be removed and replaced by existing functions.
+	// ----- BUGID 3451 and related ---------------------------------------
+	
   	$cfields = array('specScope' => null, 'execScope' => null);
 
   	// get custom fields that has specification scope

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2010/06/24 17:25:52 $ by $Author: asimon83 $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/07/23 09:30:36 $ by $Author: asimon83 $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,6 +14,7 @@
  *		Test specification/ Test plan.
  *
  * rev :
+ *		20100723 - BUGID 3451 and related
  *  	20100326 - asimon - refactored to include requirement documents
  *                          added init_checkboxes()
  *		20090322 - amkhullar - added new option custom fields while printing Test plan/report
@@ -69,21 +70,40 @@ switch($args->doc_type)
 		$filters = new stdClass();
   	  	$additionalInfo = new stdClass();
         
-        // Set of filters Off
-		$filters->keyword_id = null;
-  	  	$filters->keywordsFilterType = null;
-  	  	$filters->tc_id = null;
-  	  	$filters->assignedTo = null;
-  	  	$filters->status = null;
-  	  	$filters->cf_hash = null;
-		$filters->platform_id = null;
+  	  	// ----- BUGID 3451 and related ---------------------------------------
+  	  	// Notice: these variables were wrong since the changes to filtering system,
+  	  	// but they did not cause the bug responsible for 3451.
+  	  	// See print.inc.php for the real solution!
+  	  	
+		// Set of filters Off
+//		$filters->keyword_id = null;
+//		$filters->keywordsFilterType = null;
+//		$filters->tc_id = null;
+//		$filters->assignedTo = null;
+//		$filters->status = null;
+//		$filters->cf_hash = null;
+//		$filters->platform_id = null;
+//
+//		$filters->build_id = $latestBuild;
+//		$filters->hide_testcases = HIDE_TESTCASES;
+//		$filters->include_unassigned = 1;
+//		$filters->show_testsuite_contents = 1;
+//		$filters->statusAllPrevBuilds = null;
 
-  	  	$filters->build_id = $latestBuild;
+  	  	$filters->filter_keywords = null;
+  	  	$filters->filter_keywords_filter_type = null;
+  	  	$filters->tc_id = null;
+  	  	$filters->filter_assigned_user = null;
+  	  	$filters->filter_result_result = null;
+  	  	$filters->filter_custom_fields = null;
+  	  	$filters->setting_platform = null;
+  	  	
+  	  	$filters->filter_result_build = $latestBuild;
   	  	$filters->hide_testcases = HIDE_TESTCASES;
-  	  	$filters->include_unassigned = 1;
-  	  	$filters->show_testsuite_contents = 1;
-  	  	$filters->statusAllPrevBuilds = null;
-        
+  	  	$filters->filter_assigned_user_include_unassigned = true;
+  	  	$filters->show_testsuite_contents = true;
+		// ----- BUGID 3451 and related ---------------------------------------
+  	  	
   	  	$additionalInfo->useCounters = CREATE_TC_STATUS_COUNTERS_OFF;
   	  	$additionalInfo->useColours = COLOR_BY_TC_STATUS_OFF;
         

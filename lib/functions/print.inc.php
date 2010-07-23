@@ -8,13 +8,16 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.104 2010/07/23 09:30:36 asimon83 Exp $
+ * @version $Id: print.inc.php,v 1.105 2010/07/23 19:05:51 asimon83 Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20100723 - asimon - BUGID 3459: added platform ID to renderTestCaseForPrinting(),
+ *                                  renderTestSpecTreeForPrinting() and
+ *                                  renderTestPlanForPrinting()
  *  20100723 - asimon - BUGID 3451 and related: solved by changes in renderTestCaseForPrinting()
  *  20100326 - asimon - started refactoring and moving of requirement printing functions from 
  *                      req classes to this file for generation of req spec document
@@ -557,13 +560,14 @@ function renderSimpleChapter($title, $content)
   returns:
 
   rev :
+       20100723 - asimon - BUGID 3459 - $added platform_id
        20070509 - franciscom - added $tplan_id in order to refactor and
                                add contribution BUGID
 */
 function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
                                        $tocPrefix,$tcCnt,$level,$user_id,
                                        $tplan_id = 0,$tcPrefix = null,
-                                       $tprojectID = 0)
+                                       $tprojectID = 0, $platform_id = 0)
 {
 	static $tree_mgr;
 	static $map_id_descr;
@@ -601,8 +605,9 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 		break;
 
 		case 'testcase':
-			  $code .= renderTestCaseForPrinting($db,$node,$printingOptions,
-			                                     $level,$tplan_id,$tcPrefix,$tprojectID);
+			// 3459 - added $platform_id
+			$code .= renderTestCaseForPrinting($db, $node, $printingOptions, $level,
+			                                   $tplan_id, $tcPrefix, $tprojectID, $platform_id);
 	    break;
 	}
 	
@@ -625,9 +630,10 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 			{
 			    $tsCnt++;
 			}
-			$code .= renderTestSpecTreeForPrinting($db,$current,$item_type,$printingOptions,
-			                                       $tocPrefix,$tsCnt,$level+1,$user_id,
-			                                       $tplan_id,$tcPrefix,$tprojectID);
+			// 3459 - added $platform_id
+			$code .= renderTestSpecTreeForPrinting($db, $current, $item_type, $printingOptions,
+			                                       $tocPrefix, $tsCnt, $level+1, $user_id,
+			                                       $tplan_id, $tcPrefix, $tprojectID, $platform_id);
 		}
 	}
 	
@@ -688,14 +694,15 @@ function gendocGetUserName(&$db, $userId)
  * @param $integer db DB connection identifier 
  * @return string generated html code
  * @internal 
+ *      20100724 - asimon - BUGID 3459 - added platform ID
  *      20100723 - asimon - BUGID 3451 and related finally solved
+ *      20090517 - havlatm - fixed execution layot; added tester name
  *      20080819 - franciscom - removed mysql only code
  *      20071014 - franciscom - display test case version
  *      20070509 - franciscom - added Contribution
- *      20090517 - havlatm - fixed execution layot; added tester name
  */
-function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
-                                   $tplan_id = 0,$prefix = null,$tprojectID = 0)
+function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tplan_id = 0,
+                                   $prefix = null, $tprojectID = 0, $platform_id = 0)
 {
     static $req_mgr;
 	static $tc_mgr;
@@ -785,6 +792,7 @@ function renderTestCaseForPrinting(&$db,&$node,&$printingOptions,$level,
 		        " WHERE E.build_id= B.id " . 
 		        " AND E.tcversion_id = {$versionID} " .
 		        " AND E.testplan_id = {$tplan_id} " .
+		        " AND E.platform_id = {$platform_id} " .
 		  		" ORDER BY execution_id DESC";
 		$exec_info = $db->get_recordset($sql,null,1);
 	}
@@ -1060,16 +1068,19 @@ function renderTestSuiteNodeForPrinting(&$db,&$node,&$printingOptions,$tocPrefix
   function: renderTestPlanForPrinting
   args:
   returns:
+  
+  @internal revisions:
+     20100723 - asimon - BUGID 3459: added $platform_id
 */
-function renderTestPlanForPrinting(&$db,&$node,$item_type,&$printingOptions,
-                                   $tocPrefix,$tcCnt,$level,$user_id,$tplan_id,$tprojectID)
+function renderTestPlanForPrinting(&$db, &$node, $item_type, &$printingOptions, $tocPrefix,
+                                   $tcCnt, $level, $user_id, $tplan_id, $tprojectID, $platform_id)
 
 {
 	$tProjectMgr = new testproject($db);
 	$tcPrefix = $tProjectMgr->getTestCasePrefix($tprojectID);
-	$code =  renderTestSpecTreeForPrinting($db,$node,$item_type,$printingOptions,
-                                           $tocPrefix,$tcCnt,$level,$user_id,
-                                           $tplan_id,$tcPrefix,$tprojectID);
+	$code =  renderTestSpecTreeForPrinting($db, $node, $item_type, $printingOptions,
+                                           $tocPrefix, $tcCnt, $level, $user_id,
+                                           $tplan_id, $tcPrefix, $tprojectID, $platform_id);
 	return $code;
 }
 

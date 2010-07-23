@@ -5,15 +5,18 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/07/23 16:03:39 $ by $Author: asimon83 $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2010/07/23 19:05:52 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
- *	20100520 - franciscom - BUGID 3451 - In the "Test reports and Metrics" -> "Test report" the "Last Result" is always "Not Run"
+ *  20100723 - asimon - BUGID 3459 - added platform ID to calls of 
+ *                                   renderTestPlanForPrinting() and renderTestSpecTreeForPrinting()
+ *	20100520 - franciscom - BUGID 3451 - In the "Test reports and Metrics" 
+ *                                       -> "Test report" the "Last Result" is always "Not Run"
  *  20100326 - asimon - BUGID 3067 - refactored to include requirement document printing
  *	20090906 - franciscom - added platform contribution
  *	20090922 - amkhullar - added a check box to enable/disable display of TC custom fields.
@@ -55,6 +58,7 @@ foreach($printingOptions as $opt => $val)
 	$printingOptions[$opt] = (isset($_REQUEST[$opt]) && ($_REQUEST[$opt] == 'y'));
 }					
 $printingOptions['docType'] = $doc_info->type;
+$printingOptions['tocCode'] = ''; // to avoid warning because of undefined index
 $resultsCfg = config_get('results');
 $status_descr_code = $resultsCfg['status_code'];
 $status_code_descr = array_flip($status_descr_code);
@@ -334,8 +338,9 @@ if ($treeForPlatform)
 				
 				case DOC_TEST_SPEC:
 					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
+					// 3459 - added platform ID
 					$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
-								$printingOptions, null, 0, 1, $args->user_id,0,null,$args->tproject_id);
+					            $printingOptions, null, 0, 1, $args->user_id,0,null,$args->tproject_id,$platform_id);
 				break;
 			
 				case DOC_TEST_PLAN:
@@ -351,9 +356,10 @@ if ($treeForPlatform)
 						$docText .= renderPlatformHeading($tocPrefix, $platform_id, $platforms[$platform_id], 
 						                                  $printingOptions);
 					}
+					// 3459 - added platform ID
 					$docText .= renderTestPlanForPrinting($db, $tree, $doc_info->content_range, 
-						                                  $printingOptions,$tocPrefix,0,1, $args->user_id,
-						                                  $args->tplan_id,$args->tproject_id);
+					                                      $printingOptions, $tocPrefix, 0, 1, $args->user_id,
+					                                      $args->tplan_id, $args->tproject_id, $platform_id);
 					if (($doc_info->type == DOC_TEST_REPORT) && ($printingOptions['metrics']))
 					{
 						$docText .= buildTestPlanMetrics($doc_data->statistics);

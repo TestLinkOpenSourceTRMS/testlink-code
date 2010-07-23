@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.137 2010/07/23 16:03:38 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.138 2010/07/23 19:05:51 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -412,10 +412,10 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		// 20100702 - and custom fields
 		$enabledFiltersOn['testcase_name'] = 
 			isset($my['filters']['filter_testcase_name']);
-		$enabledFiltersOn['keywords'] = !is_null($tck_map);
+		$enabledFiltersOn['keywords'] = isset($tck_map);
 		$enabledFiltersOn['executionType'] = 
-			!is_null($my['filters']['filter_execution_type']);
-		$enabledFiltersOn['importance'] = !is_null($my['filters']['filter_priority']);
+			isset($my['filters']['filter_execution_type']);
+		$enabledFiltersOn['importance'] = isset($my['filters']['filter_priority']);
 		$enabledFiltersOn['custom_fields'] = isset($my['filters']['filter_custom_fields']);
 		$filterOnTCVersionAttribute = $enabledFiltersOn['executionType'] || $enabledFiltersOn['importance'];
 					

@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.200 2010/07/23 16:03:38 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.201 2010/07/25 19:46:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100725 - asimon - BUGID 3497 and hopefully also 3530 fixed in unlink_tcversions()
  *  20100723 - asimon - commented out some old debug message in copy_linked_tcversions()
  *  20100722 - asimon - added missing $debugMsg to get_linked_items()
  *  20100721 - asimon - BUGID 3406: added user_assignments_per_build option to get_linked_tcversions()
@@ -1149,6 +1150,9 @@ class testplan extends tlObjectWithAttachments
 	 * 
 	 * @param integer $id   : test plan id
 	 * @param array $items: assoc array key=tc_id value=tcversion_id
+	 * 
+	 * @internal revisions:
+	 *    20100725 - asimon - BUGID 3497 and hopefully also 3530
 	 */
 	function unlink_tcversions($id,&$items)
 	{
@@ -1174,6 +1178,26 @@ class testplan extends tlObjectWithAttachments
 			}
 		}
 		$where_clause = implode(" OR ", $dummy);
+		
+		/*
+		 * asimon - BUGID 3497 and hopefully also 3530
+		 * A very litte error, missing braces in the $where_clause, was causing this bug. 
+		 * When one set of testcases is linked to two testplans, this statement should check 
+		 * that the combination of testplan_id, tcversion_id and platform_id was the same, 
+		 * but instead it checked for either testplan_id OR tcversion_id and platform_id.
+		 * So every linked testcase with fitting tcversion_id and platform_id without execution
+		 * was deleted, regardless of testplan_id.
+		 * Simply adding braces around the where clause solves this.
+		 * So innstead of: 
+		 * SELECT id AS link_id FROM testplan_tcversions  
+		 * WHERE testplan_id=12 AND (tcversion_id = 5 AND platform_id = 0) 
+		 * OR (tcversion_id = 7 AND platform_id = 0) 
+		 * OR (tcversion_id = 9 AND platform_id = 0) 
+		 * OR (tcversion_id = 11 AND platform_id = 0)
+		 * we need this:
+		 * SELECT ... WHERE testplan_id=12 AND (... OR ...)
+		 */ 
+		$where_clause = " ( {$where_clause} ) ";
 		
 		// First get the executions id if any exist
 		$sql=" SELECT id AS execution_id " .

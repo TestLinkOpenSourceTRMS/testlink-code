@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.54 2010/07/22 14:14:43 asimon83 Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.55 2010/07/26 19:00:56 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
@@ -171,9 +171,6 @@ switch($args->level)
 		
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 						        $linked_items,null,$filters,$opt);
-
-//		echo "\$linked_items:\n"; print_r($linked_items); // TODO remove
-//		echo "\$my_out:\n"; print_r($my_out); // TODO remove
 		
 		// index 0 contains data for the parent test suite of this test case, 
 		// other elements are not needed.

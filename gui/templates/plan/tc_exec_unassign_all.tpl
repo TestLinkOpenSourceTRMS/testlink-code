@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_unassign_all.tpl,v 1.2 2010/07/22 14:14:45 asimon83 Exp $
+$Id: tc_exec_unassign_all.tpl,v 1.3 2010/07/26 19:01:13 asimon83 Exp $
 Purpose: show a confirmation before unassigning all testers from the test cases in a build.
 
 rev :
@@ -65,6 +65,10 @@ function warn_remove_testers(msgbox_title, msgbox_content) {
 			                                                '{$gui->popup_message}');" />
 		</form>
 	</div> <!-- groupBtn -->
+{/if}
+
+{if $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
 {/if}
 
 </div> <!-- workback -->

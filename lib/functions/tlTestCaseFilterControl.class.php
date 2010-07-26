@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.10 2010/07/22 14:14:44 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.11 2010/07/26 19:01:13 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -953,27 +953,33 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 		$tp_id = $this->settings['setting_testplan']['selected'];
 
+		// when in plan mode (assigning execution), we want all builds,
+		// otherwise only those which are active and open
+		$active = ($this->mode == 'plan_mode') ? null : testplan::GET_ACTIVE_BUILD;
+		$open = ($this->mode == 'plan_mode') ? null : testplan::GET_ACTIVE_BUILD;
+		
 		$this->settings[$key]['items'] =
-			$this->testplan_mgr->get_builds_for_html_options($tp_id,
-			                                                 testplan::GET_ACTIVE_BUILD,
-			                                                 testplan::GET_OPEN_BUILD);
+			$this->testplan_mgr->get_builds_for_html_options($tp_id, $active, $open);
+
+		$tplan_build_ids = array_keys($this->settings[$key]['items']);
 
 		// BUGID 3406 - depending on mode, we need different labels for this selector on GUI
 		$label = ($this->mode == 'plan_mode') ? 'assign_build' : 'exec_build';
 		$this->settings[$key]['label'] = lang_get($label);
 		
 		// if no build has been chosen by user, select newest build by default
-		$newest_build_id = $this->testplan_mgr->get_max_build_id($tp_id,
-		                                                         testplan::GET_ACTIVE_BUILD,
-		                                                         testplan::GET_OPEN_BUILD);
+		$newest_build_id = $this->testplan_mgr->get_max_build_id($tp_id, $active, $open);
 		
 		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $newest_build_id;
-		$this->settings[$key]['selected'] = $this->args->{$key};
+		
+		// only take build ID into account if it really is a build from this testplan
+		$this->settings[$key]['selected'] = (in_array($this->args->{$key}, $tplan_build_ids)) ? 
+		                                    $this->args->{$key} : $newest_build_id;
 
 		// still no build selected? take first one from selection.
 		if (!$this->settings[$key]['selected']
 		&& sizeof($this->settings[$key]['items'])) {
-			$this->settings[$key]['selected'] = key($this->settings[$key]['items']);
+			$this->settings[$key]['selected'] = end($tplan_build_ids);
 		}
 	} // end of method
 
@@ -1395,6 +1401,15 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		       'execution_filter_methods' : 'execution_assignment_filter_methods';
 		$this->configuration->filter_methods = config_get($cfg);
 
+		// determin which filter method shall be selected by the JS function in template,
+		// when only one build is selectable by the user
+		$js_key_to_select = 0;
+		if ($this->mode == 'execution_mode') {
+			$js_key_to_select = $this->configuration->filter_methods['status_code']['current_build'];
+		} else if ($this->mode == 'plan_mode') {
+			$js_key_to_select = $this->configuration->filter_methods['status_code']['specific_build'];
+		}
+		
 		// values selected by user
 		$result_selection = $this->args->{$result_key};
 		$method_selection = $this->args->{$method_key};
@@ -1418,7 +1433,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->filters[$key] = array($result_key => array('items' => null,
 		                                                  'selected' => $result_selection),
 		                             $method_key => array('items' => array(),
-		                                                  'selected' => $method_selection),
+		                                                  'selected' => $method_selection,
+		                                                  'js_selection' => $js_key_to_select),
 		                             $build_key => array('items' => null,
 		                                                 'selected' => $build_selection));
 

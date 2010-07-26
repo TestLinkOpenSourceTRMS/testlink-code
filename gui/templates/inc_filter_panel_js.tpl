@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel_js.tpl,v 1.3 2010/07/22 14:14:45 asimon83 Exp $
+ * $Id: inc_filter_panel_js.tpl,v 1.4 2010/07/26 19:01:08 asimon83 Exp $
  *
  * This file is included by the *navigator templates.
  * It contains and handles the javascript functions which switch some filters on and off,
@@ -126,11 +126,11 @@ function delete_testers_from_build(id) {
 {if $control->filters.filter_result || $control->filters.filter_assigned_user}
 	<body onload="javascript:
 		{if $control->filters.filter_result}
+
 			{if $control->filters.filter_result.filter_result_build.items|@count == 1}
 				triggerFilterMethodSelector('filter_result_method',
-				                       {$control->configuration->filter_methods.status_code.current_build});
+					{$control->filters.filter_result.filter_result_method.js_selection});
 			{/if}
-			
 			triggerBuildChooser('filter_result_build_row',
 			                    'filter_result_method',
 			                    {$control->configuration->filter_methods.status_code.specific_build});

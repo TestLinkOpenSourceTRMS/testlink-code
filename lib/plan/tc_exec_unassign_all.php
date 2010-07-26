@@ -6,7 +6,7 @@
  * @package		TestLink
  * @author		Andreas Simon
  * @copyright	2005-2010, TestLink community 
- * @version		CVS: $Id: tc_exec_unassign_all.php,v 1.2 2010/07/22 14:14:43 asimon83 Exp $
+ * @version		CVS: $Id: tc_exec_unassign_all.php,v 1.3 2010/07/26 19:00:57 asimon83 Exp $
  * @link		http://www.teamst.org/index.php
  *
  * @internal revisions:
@@ -42,6 +42,7 @@ if ($assignment_count) {
 		// their deletion has been confirmed, so delete them
 		$assignment_mgr->delete_by_build_id($args->build_id);
 		$gui->message = sprintf(lang_get('unassigned_all_tcs_msg'), $build_name);
+		$gui->refreshTree = $args->refreshTree ? true : false;
 	} else {
 		// there are assignments, but their deletion has still to be confirmed
 		$gui->draw_tc_unassign_button = true;
@@ -74,7 +75,10 @@ function init_args() {
 	$args->user_id = $_SESSION['userID'];
 	$args->testproject_id = $_SESSION['testprojectID'];
 	$args->testproject_name = $_SESSION['testprojectName'];
-	                
+	
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
+	                     $_SESSION['setting_refresh_tree_on_action'] : false;
+	
 	return $args;
 }
 
@@ -88,6 +92,7 @@ function init_gui(&$dbHandler, &$argsObj) {
 	
 	$gui->build_id = $argsObj->build_id;
 	$gui->draw_tc_unassign_button = false;
+	$gui->refreshTree = false;
 	
 	$gui->title = lang_get('remove_all_tester_assignments_title');
 	$gui->message = "";

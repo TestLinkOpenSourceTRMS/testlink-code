@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.642 2010/07/22 14:14:44 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.643 2010/07/26 19:00:57 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1712,7 +1712,7 @@ $TLS_btn_remove_all_tester_assignments = "Unassign all testers from selected Bui
 
 
 // ----- gui/templates/tc_exec_unassign_all.php -----
-$TLS_number_of_assignments_per_build = "There are %d testers assigned to Test Cases in the Build %s";
+$TLS_number_of_assignments_per_build = "There are %d execution assignments for Build %s";
 $TLS_unassign_all_tcs_warning_msg = "If you click the Yes-Button, all tester assignments will be removed from the Build %s.";
 $TLS_unassign_all_tcs_msgbox_title = "Really remove all tester assignments?";
 $TLS_unassigned_all_tcs_msg = "All tester assignments have been deleted from the Build %s.";

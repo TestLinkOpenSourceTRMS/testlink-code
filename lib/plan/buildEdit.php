@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/07/22 14:14:43 $ $Author: asimon83 $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/07/26 19:00:57 $ $Author: asimon83 $
  *
  * @internal revision
+ *  20100726 - asimon - added number of existing assignments to source build selection
  *  20100707 - asimon - BUGID 3406: copy user assignments from other builds
  *                                  on creation of new builds
  *	20100706 - franciscom - BUGID 3581 added better check on release date
@@ -548,6 +549,12 @@ function init_source_build_selector(&$testplan_mgr, &$argsObj) {
 
 	$html_menu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id);
 	$html_menu['build_count'] = count($html_menu['items']);
+	
+	// display the number of existing execution assignments with each source build
+	foreach ($html_menu['items'] as $key => $name) {
+		$count = $testplan_mgr->assignment_mgr->get_count_of_assignments_for_build_id($key);
+		$html_menu['items'][$key] = $name . " (" . $count . ")"; 
+	}
 	
 	// if no build has been chosen yet, select the newest build by default
 	$source_build_id = $argsObj->source_build_id;

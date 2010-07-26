@@ -1,7 +1,7 @@
 <?php
 /**
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * @version $Id: planUpdateTC.php,v 1.45 2010/06/28 16:19:36 asimon83 Exp $
+ * @version $Id: planUpdateTC.php,v 1.46 2010/07/26 19:00:57 asimon83 Exp $
  *
  * Author: franciscom
  *
@@ -10,6 +10,9 @@
  * Test Case Execution assignments will be auto(magically) updated.
  *
  * 	@internal revisions:
+ *  20100726 - asimon - fixed bug in processTestPlan(): "All linked Test Case Versions are current" 
+ *                      was always displayed on bulk update of linked versions 
+ *                      even when there were newer versions
  *  20100628 - asimon - removal of constants from filter control class
  *  20160625 - asimon - refactoring for new filter features and BUGID 3516
  *  20100624 - asimon - CVS merge (experimental branch to HEAD)
@@ -125,17 +128,18 @@ function init_args(&$tplanMgr)
 //    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
 //    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
     
-    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-    if($args->tplan_id == 0)
-    {
-        $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
-        $args->tplan_name = $_SESSION['testplanName'];
-    }
-    else
-    {
-        $tpi = $tplanMgr->get_by_id($args->tplan_id);  
-        $args->tplan_name = $tpi['name'];
-    }
+//    $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
+//    if($args->tplan_id == 0)
+//    {
+//        $args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+//        $args->tplan_name = $_SESSION['testplanName'];
+//    }
+//    else
+//    {
+//        $tpi = $tplanMgr->get_by_id($args->tplan_id);  
+//        $args->tplan_name = $tpi['name'];
+//    }
+    
     $args->tproject_id = $_SESSION['testprojectID'];
     $args->tproject_name = $_SESSION['testprojectName'];
 
@@ -149,6 +153,15 @@ function init_args(&$tplanMgr)
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
 	                ? $_SESSION[$mode][$form_token] : null;
 	
+	$args->tplan_id = isset($session_data['setting_testplan']) ? $session_data['setting_testplan'] : 0;
+	if($args->tplan_id == 0) {
+		$args->tplan_id = isset($_SESSION['testplanID']) ? intval($_SESSION['testplanID']) : 0;
+		$args->tplan_name = $_SESSION['testplanName'];
+	} else {
+		$tpi = $tplanMgr->get_by_id($args->tplan_id);  
+		$args->tplan_name = $tpi['name'];
+	}
+
 	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
                          $session_data['setting_refresh_tree_on_action'] : 0;
     
@@ -338,6 +351,10 @@ function processTestCase(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr,&$tree
 /**
  * 
  *
+ * @internal revisions:
+ *  20100726 - asimon - fixed bug: "All linked Test Case Versions are current" 
+ *                      was always displayed on bulk update of linked versions 
+ *                      even when there were newer versions of linked TCs
  */
 function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
 {
@@ -349,8 +366,8 @@ function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
     {
         $testCaseSet = array_keys($linked_tcases);
     	$set2update['items'] = $tplanMgr->get_linked_and_newest_tcversions($argsObj->tplan_id,$testCaseSet);
-		
-		$set2update['msg'] = lang_get('no_newest_version_of_linked_tcversions');
+		// 20100726 - asimon
+		$set2update['msg'] = '';
 		if( !is_null($set2update['items']) && count($set2update['items']) > 0 )
 		{
 			$itemSet=array_keys($set2update['items']);
@@ -362,6 +379,9 @@ function processTestPlan(&$dbHandler,&$argsObj,$keywordsFilter,&$tplanMgr)
 				$path[]='';
 				$set2update['items'][$tcase_id]['path']=implode(' / ',$path);
 			}
+		} else {
+			// 20100726 - asimon
+			$set2update['msg'] = lang_get('no_newest_version_of_linked_tcversions');
 		}
     }
     return $set2update;

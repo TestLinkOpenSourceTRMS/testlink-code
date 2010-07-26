@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.61 2010/07/22 14:14:44 asimon83 Exp $
+ * @version    	CVS: $Id: specview.php,v 1.62 2010/07/26 19:01:15 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *  20100726 - asimon - BUGID 3628: in addLinkedVersionsInfo(), a missing [0] in condition 
+ *                                  caused missing priority
  *  20100721 - asimon - BUGID 3406 - added $options for new user assignments per build to 
  *                                   gen_spec_view(), getFilteredLinkedVersions(), 
  *                                   and keywordFilteredSpecView()
@@ -931,6 +933,8 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 /**
  * 
  *
+ * @internal revisions:
+ *  20100726 - asimon - BUGID 3628
  */
 function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 {
@@ -994,7 +998,9 @@ function addLinkedVersionsInfo($testCaseSet,$a_tsuite_idx,&$out,&$linked_items)
 					$exec_order= isset($linked_testcase[0]['execution_order'])? $linked_testcase[0]['execution_order']:0;
 					$outRef['execution_order'] = $exec_order;
 					// 20090625 - Eloff
-					if( isset($linked_testcase['priority']) )
+					// 20100726 - BUGID 3628 - asimon - missing [0] in condition 
+					// caused missing priority in GUI
+					if( isset($linked_testcase[0]['priority']) )
 					{
 						$outRef['priority'] = priority_to_level($linked_testcase[0]['priority']);
 					}

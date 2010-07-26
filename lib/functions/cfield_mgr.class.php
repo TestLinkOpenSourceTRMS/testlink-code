@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.79 2010/07/01 16:43:19 asimon83 Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.80 2010/07/26 04:47:33 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ * 20100726 - amitkhullar - BUGID 3555 - sort order while displaying custom fields.
  * 20100701 - asimon - BUGID 3414: removed a single space character in string_custom_field_input() 
  *                     because of an error that was caused by it 
  * 20100218 - franciscom - string_custom_field_input() changes on checkbox management
@@ -828,7 +829,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     }
     if( !is_null($cfield) )
     {
-      new dBug($cfield);
+      //new dBug($cfield);
       foreach($cfield as $field_id => $type_and_value)
       {
         $value = $type_and_value['cf_value'];
@@ -963,8 +964,12 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     {
       $sql .= " AND CFTP.active={$active} ";
     }
-    $sql .= " ORDER BY display_order, CF.name";
-
+    //$sql .= " ORDER BY display_order, CF.name";
+    // BUGID 3555
+   $sql .= " ORDER BY CF.enable_on_design desc, " .
+            "CF.enable_on_execution desc, " .
+                "CF.enable_on_testplan_design desc,".
+                "CFTP.display_order, CF.name";
     $map = $this->db->fetchRowsIntoMap($sql,'id');
     return($map);
   }

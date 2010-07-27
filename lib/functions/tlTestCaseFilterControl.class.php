@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.11 2010/07/26 19:01:13 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.12 2010/07/27 12:14:07 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -36,6 +36,7 @@
  *
  * @internal Revisions:
  *
+ * 20100727 - asimon - BUGID 3630 - syntax error in get_argument_string()
  * 20100716 - asimon - BUGID 3406 - changes on init_settings() and $mode_setting_mapping
  * 20100713 - asimon - fixed Drag&Drop error caused by init_filter_custom_fields()
  * 20100702 - asimon - fixed error in init_setting_testplan()
@@ -679,16 +680,16 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		if (!$string) {
 			$string = '';
 
-			// important: the token with which page in right frame can access data in session
+			// important: the token with which the page in right frame can access data in session
 			$string .= '&form_token=' . $this->form_token;
 			
 			if ($this->settings['setting_build']) {
-				$string .= '&' . 'setting_build' . '=' . 
+				$string .= '&setting_build=' . 
 				           $this->settings['setting_build']['selected'];
 			}
 			
 			if ($this->settings['setting_platform']) {
-				$string .= '&' . 'setting_platform' . '=' . 
+				$string .= '&setting_platform=' . 
 				           $this->settings['setting_platform']['selected'];
 			}
 			
@@ -699,29 +700,29 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$keyword_list = $this->active_filters['filter_keywords'];
 			}			
 			if ($keyword_list) {
-				$string .= '&' . 'filter_keywords' . '=' . $keyword_list . 
-				           '&' . 'filter_keywords_filter_type' . '=' . 
+				$string .= '&filter_keywords=' . $keyword_list . 
+				           '&filter_keywords_filter_type=' . 
 				           $this->active_filters['filter_keywords_filter_type'];
 			}
 			
 			if ($this->active_filters['filter_priority'] > 0) {
-				$string .= '&' . 'filter_priority' . '=' . $this->active_filters['filter_priority'];
+				$string .= '&filter_priority=' . $this->active_filters['filter_priority'];
 			}
 						
 			if ($this->active_filters['filter_assigned_user']) {
-				$string .= '&' . 'filter_assigned_user' . '='. 
+				// 3630
+				$unassigned = $this->active_filters['filter_assigned_user_include_unassigned'] ? '1' : '0';
+				$string .= '&filter_assigned_user='. 
 				           serialize($this->active_filters['filter_assigned_user']) .
-				           '&' . 'filter_assigned_user_include_unassigned' . '=' .
-				           $this->active_filters['filter_assigned_user_include_unassigned'] ?
-				           '1' : '0';
+				           '&filter_assigned_user_include_unassigned=' . $unassigned;
 			}
 			
 			if ($this->active_filters['filter_result_result']) {
-				$string .= '&' . 'filter_result_result' . '=' .
+				$string .= '&filter_result_result=' .
 				           serialize($this->active_filters['filter_result_result']) .
-				           '&' . 'filter_result_method' . '=' .
+				           '&filter_result_method=' .
 				           $this->active_filters['filter_result_method'] .
-				           '&' . 'filter_result_build' . '=' .
+				           '&filter_result_build=' .
 				           $this->active_filters['filter_result_build'];
 			}
 		}

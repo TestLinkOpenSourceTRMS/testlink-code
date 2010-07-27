@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.201 2010/07/25 19:46:44 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.202 2010/07/27 11:55:21 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100727 - asimon - BUGID 3629: modified statement in get_linked_tcversions()
  *  20100725 - asimon - BUGID 3497 and hopefully also 3530 fixed in unlink_tcversions()
  *  20100723 - asimon - commented out some old debug message in copy_linked_tcversions()
  *  20100722 - asimon - added missing $debugMsg to get_linked_items()
@@ -670,6 +671,7 @@ class testplan extends tlObjectWithAttachments
                            - tcversion_id if has executions.
 
 	rev :
+		 20100727 - asimon - BUGID 3629: modified statement
 		 20100721 - asimon - BUGID 3406: added user_assignments_per_build option
 		 20100520 - franciscom - added option steps_info, to try to solve perfomance problems
 		 						 allowing caller to ask for NO INFO ABOUT STEPS	
@@ -714,7 +716,8 @@ class testplan extends tlObjectWithAttachments
 		// BUGID 3406: user assignments per build 
 		$ua_build = isset($my['options']['user_assignments_per_build']) ? 
 		            $my['options']['user_assignments_per_build'] : 0;
-		//$ua_build_sql = $ua_build && is_numeric($ua_build) ? " AND UA.build_id={$ua_build} " : "";
+		// 3629
+		$ua_build_sql = $ua_build && is_numeric($ua_build) ? " AND UA.build_id={$ua_build} " : " ";
 		
         // @TODO - 20091004 - franciscom
         // Think that this subquery in not good when we add execution filter
@@ -916,7 +919,7 @@ class testplan extends tlObjectWithAttachments
 			   " {$builds['join']} " .
 			   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT ON PLAT.id = T.platform_id " .
 			   " LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON UA.feature_id = T.id " .
-			   " AND UA.build_id = {$ua_build} " . // 3406
+			   " {$ua_build_sql} " . // 3406
 			   " WHERE T.testplan_id={$id} {$keywords['filter']} {$tc_id['filter']} {$platforms['filter']}" .
 			   " AND (UA.type={$this->assignment_types['testcase_execution']['id']} OR UA.type IS NULL) " . 
 			   $executions['filter'];

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.643 2010/07/26 19:00:57 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.644 2010/07/31 18:49:47 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1527,6 +1527,15 @@ $TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
 $TLS_th_assigned_to = "Assigned To";
 
 
+
+// ----- gui/templates/resultsByTesterPerBuild.tpl -----
+$TLS_caption_results_by_tester_per_build = "Results by Tester per Build";
+$TLS_results_by_tester_per_build = "Results by Tester per Build";
+$TLS_progress = "Progress [%]";
+$TLS_executions_without_assignment = "Unassigned executions";
+
+
+
 // ----- gui/templates/resultsGeneral.tpl -----
 $TLS_title_gen_test_rep = "General Test Plan Metrics";
 $TLS_title_report_tc_priorities = "Test results according to test priorities";
@@ -2393,6 +2402,8 @@ $TLS_link_charts = "Charts";
 $TLS_link_report_blocked_tcs = "Blocked Test Cases";
 $TLS_link_report_failed = "Failed Test Cases";
 $TLS_link_report_general_tp_metrics = "General Test Plan Metrics";
+$TLS_link_report_by_tester_per_build = "Results by Tester per Build";
+$TLS_link_assigned_tc_overview = "Test Case Assignment Overview";
 $TLS_link_report_metrics_active_build = "Metrics of Active Build";
 $TLS_link_report_metrics_more_builds = "Query Metrics";
 $TLS_link_report_not_run = "Not run Test Cases";
@@ -2440,6 +2451,11 @@ $TLS_send_mail_ko = 'Warning: Problems sending mail - details: ';
 
 
 // ----- lib/testcases/listTestCases.php -----
+
+
+
+// ----- lib/testcases/tcAssignedToUser.php -----
+$TLS_assigned_tc_overview = "Test Project: %s - Test Case Assignment Overview for all Users";
 
 
 

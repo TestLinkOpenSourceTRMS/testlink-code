@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/07/16 18:35:22 $ by $Author: franciscom $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/07/31 18:49:50 $ by $Author: asimon83 $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *  20100731 - asimon - BUGID 3644 (additional fix for BUGID 2607)
  *	20100715 - franciscom - BUGID 3604 - getTestCasesForTestPlan()
  *	20100711 - franciscom - BUGID 3564 - addTestCaseToTestPlan()
  *                          BUGID 2607 - UTF8 settings for MySQL
@@ -375,7 +376,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *
 	 * @access protected
 	 *
-	 * 20100711 - franciscom - BUGID 2607 - UTF8 settings for MySQL
+	 * @internal revisions:
+	 *  20100731 - asimon - BUGID 3644 (additional fix for BUGID 2607)
+	 *  20100711 - franciscom - BUGID 2607 - UTF8 settings for MySQL
 	 */		
 	protected function _connectToDB()
 	{
@@ -387,6 +390,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 		{
 		    $this->dbObj->connect(DSN, DB_HOST, DB_USER, DB_PASS, DB_NAME);
 		}
+		// asimon - BUGID 3644 & 2607 - $charSet was undefined here
+		$charSet = config_get('charset');
 		if((DB_TYPE == 'mysql') && ($charSet == 'UTF-8'))
 		{
 		    $this->dbObj->exec_query("SET CHARACTER SET utf8");

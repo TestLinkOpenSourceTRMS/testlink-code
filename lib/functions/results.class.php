@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.160 2010/07/22 14:14:44 asimon83 Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.161 2010/07/31 18:49:48 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -1169,7 +1169,7 @@ class results extends tlObjectWithDB
 			$total = $this->tplanMgr->assignment_mgr->get_count_of_assignments_for_build_id($build_id);
 			$counters[$build_id]['total'] = $total;
 			
-			// replace "not run" value //TODO done in the wrong place here
+			// replace "not run" value
 			$not_run = $this->tplanMgr->assignment_mgr->get_not_run_tc_count_per_build($build_id);
 			$counters[$build_id]['not_run'] = $not_run;
 		}

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/05/15 13:02:13 $ by $Author: franciscom $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2010/07/31 18:49:49 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
  * Revision:
+ *  20100731 - asimon - added results by tester per build and assignment overview
  *  20090421 - amitkhullar- BUGID 2410 - Custom Field report for Test Plan
  *  20090414 - franciscom - BUGID 2363 - free test cases i.e. not assigned to a test plan.
  *  20081227 - franciscom - added tcases_without_tester
@@ -93,6 +94,18 @@ $tlCfg->reports_list['metrics_tp_general'] = array(
 	'url' => 'lib/results/resultsGeneral.php',
 	'enabled' => 'all',
 	'format' => 'format_html,format_ods,format_xls,format_mail_html'
+);
+$tlCfg->reports_list['results_by_tester_per_build'] = array( 
+	'title' => 'link_report_by_tester_per_build',
+	'url' => 'lib/results/resultsByTesterPerBuild.php',
+	'enabled' => 'all',
+	'format' => 'format_html'
+);
+$tlCfg->reports_list['assigned_tc_overview'] = array( 
+	'title' => 'link_assigned_tc_overview',
+	'url' => 'lib/testcases/tcAssignedToUser.php?show_all_users=1&show_inactive_and_closed=1',
+	'enabled' => 'all',
+	'format' => 'format_html'
 );
 $tlCfg->reports_list['results_custom_query'] = array( 
 	'title' => 'link_report_metrics_more_builds',

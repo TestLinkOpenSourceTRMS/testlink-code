@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.12 2010/07/23 07:10:28 mx-julian Exp $
+$Id: tcAssignedToUser.tpl,v 1.13 2010/07/31 18:49:49 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 rev:
+20100731 - asimon - replaced table (changed to ExtJS format) and included some more data
 20100722 - asimon - BUGID 3406 - added columns for build ID and testsuite
 20100708 - Julian - BUGID 3591 - Column priority added
 20100708 - franciscom - BUGID 3575
@@ -13,7 +14,16 @@ rev:
 {include file="inc_head.tpl" openHead='yes' enableTableSorting="yes"}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
-{include file="inc_ext_js.tpl" css_only=1}
+{include file="inc_ext_js.tpl"}
+
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+	{assign var=tableID value=table_$idx}
+	{if $smarty.foreach.initializer.first}
+		{$matrix->renderCommonGlobals()}
+		{include file="inc_ext_table.tpl"}
+	{/if}
+	{$matrix->renderHeadSection($tableID)}
+{/foreach}
 
 </head>
 
@@ -26,6 +36,23 @@ rev:
 <h1 class="title">{$gui->pageTitle}</h1>
 <div class="workBack">
 {if $gui->warning_msg == ''}
+
+	{if $gui->resultSet}
+
+		{foreach from=$gui->tableSet key=idx item=matrix}
+		
+		<h1 align="left">{$matrix->title}</h1>
+		
+		{assign var=tableID value=table_$idx}
+	   	{$matrix->renderBodySection($tableID)}
+		
+		<p>&nbsp</p>
+		
+		{/foreach}
+	
+
+
+	{* old table generation is not needed anymore - replaced by ExtJS table
     {if $gui->resultSet}
         {foreach from=$gui->resultSet key=tplan_id item=tcaseSet}
            <h1 align="left">{$labels.testplan}:&nbsp;{$gui->tplanNames[$tplan_id].name|escape}</h1>
@@ -46,7 +73,7 @@ rev:
                {*
                BUGID 3575: removed alternating coloring -> no same coloring of follow up lines after sorting
                <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">  
-               *}    
+               }    
                <tr bgcolor="#eeeeee">   
                 <td>
                   {$tcase.tcase_full_path|escape}
@@ -86,6 +113,7 @@ rev:
             </table>
             <br>
         {/foreach}
+        *}
     {else}
         	{$labels.no_records_found}
     {/if}

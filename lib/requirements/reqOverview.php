@@ -8,13 +8,15 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.13 2010/06/29 11:44:20 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.14 2010/07/31 18:49:49 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  * 
+ * 20100730 - asimon - added table ID (0) to constructor of ext table
+ *                     (required by changes to ext table class to avoid warnings in log)
  * 20100629 - asimon - added display of is_open/frozen attribute,
  *                     solved problem with broken ext js table by linebreaks in textarea-cfields
  * 20100508 - franciscom - use of $req_cfg->status_labels
@@ -223,7 +225,7 @@ if(count($gui->reqIDs)) {
 	    }
 
 	    // create table object, fill it with columns and row data and give it a title
-	    $matrix = new tlExtTable($columns, $rows);
+	    $matrix = new tlExtTable($columns, $rows, 0);
         $matrix->title = lang_get('requirements');
         $gui->tableSet= array($matrix);
     }

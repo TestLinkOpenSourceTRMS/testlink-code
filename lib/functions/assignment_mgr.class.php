@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.12 2010/07/23 11:39:03 asimon83 Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.13 2010/07/31 18:49:48 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions:
@@ -170,34 +170,39 @@ class assignment_mgr extends tlObjectWithDB
 	 * @param int $build_id ID of the build to check
 	 * @param int $count_all_types if true, all assignments will be counted, otherwise
 	 *                             only tester assignments
+	 * @param int $user_id if given, user ID for which the assignments per build shall be counted
 	 * @return int $count Number of assignments
 	 */
-	function get_count_of_assignments_for_build_id($build_id, $count_all_types = false) {
+	function get_count_of_assignments_for_build_id($build_id, $count_all_types = false, $user_id = 0) {
 		$count = 0;
 		
 		$types = $this->get_available_types();
 	    $tc_execution_type = $types['testcase_execution']['id'];
 		$type_sql = ($count_all_types) ? "" : " AND type = {$tc_execution_type} ";
 	    
+		$user_sql = ($user_id && is_numeric($user_id)) ? "AND user_id = {$user_id} " : "";
+		
 	    $sql = " SELECT COUNT(id) AS count FROM {$this->tables['user_assignments']} " .
-		       " WHERE build_id = {$build_id} {$type_sql} ";
+		       " WHERE build_id = {$build_id} {$user_sql} {$type_sql} ";
 	    
 	    $count = $this->db->fetchOneValue($sql);
 	    
 		return $count;
 	}
-		
+	
 	/**
 	 * Get assigned testcases
-	 * @param $build_id
-	 * @param $all_types
+	 * @param int $build_id
+	 * @param bool $all_types
+	 * @param int $user_id if set and != 0, counts only the assignments for the given user 
 	 */
-	function get_not_run_tc_count_per_build($build_id, $all_types = false) {
+	function get_not_run_tc_count_per_build($build_id, $all_types = false, $user_id = 0) {
 		$count = 0;
 		
 		$types = $this->get_available_types();
 	    $tc_execution_type = $types['testcase_execution']['id'];
 		$type_sql = ($all_types) ? "" : " AND UA.type = {$tc_execution_type} ";
+		$user_sql = ($user_id && is_numeric($user_id)) ? "AND UA.user_id = {$user_id} " : "";
 		
 		/*
 		 * Statement magic explanation:
@@ -242,7 +247,7 @@ class assignment_mgr extends tlObjectWithDB
 		       "     ON TPTCV.tcversion_id = E.tcversion_id " .
 		       "     AND UA.build_id = E.build_id " .
 		       "     AND TPTCV.platform_id = E.platform_id " .
-		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} ";
+		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
 		
 		if (isset($build_id) && is_numeric($build_id)) {
 			$count = $this->db->fetchOneValue($sql);

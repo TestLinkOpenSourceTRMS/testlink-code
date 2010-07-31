@@ -20,7 +20,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.14 2010/06/24 17:25:56 asimon83 Exp $
+ * @version    	CVS: $Id: description.php,v 1.15 2010/07/31 18:49:48 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -254,6 +254,14 @@ Custom Fields with:<br />
  'Enable on test plan design=true'<br />
 you will see these in this page ONLY for Test Cases linked to Test Plan.
 ";
+
+
+// resultsByTesterPerBuild.tpl
+$TLS_hlp_results_by_tester_per_build_table = "<h3>More information about testers:</h3>
+If you click on a tester name in this table, you will get a more detailed overview
+about all Test Cases assigned to that user and his testing progress.
+";
+
 
 // xxx.html
 //$TLS_hlp_xxx = "";

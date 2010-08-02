@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.19 2010/06/24 17:25:53 asimon83 Exp $
+$Id: inc_exec_test_spec.tpl,v 1.20 2010/08/02 08:57:56 amkhullar Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
+	20100802 - amitkhullar - Moved the Design time Custom Fields before Exec CF. 
     20100621 - eloff - BUGID 3241 - Implement vertical layout
     20100105 - franciscom - Test Case Steps
     20090901 - franciscom - preconditions + exec_cfg->steps_results_layout
@@ -78,7 +79,18 @@ Rev:
 		         edit_enabled=false
 		         steps=$args_tc_exec.steps}
 	{/if}
-
+  	<tr>
+		  <td colspan="{$tableColspan}">
+		  {* 20090718 - franciscom - CF location management*}
+      {if $args_design_time_cf[$testcase_id].standard_location != ''}
+					<div id="cfields_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
+					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id].standard_location}
+					</div>
+		  {/if} 
+			</td>
+		</tr>
+ 
+  	<tr>
     {* ------------------------------------------------------------------------------------- *}
     {if $args_enable_custom_field and $args_tc_exec.active == 1}
   	  {if isset($args_execution_time_cf[$testcase_id]) && $args_execution_time_cf[$testcase_id] != ''}
@@ -94,18 +106,7 @@ Rev:
     {* ------------------------------------------------------------------------------------- *}
     
     
-  	<tr>
-		  <td colspan="{$tableColspan}">
-		  {* 20090718 - franciscom - CF location management*}
-      {if $args_design_time_cf[$testcase_id].standard_location != ''}
-					<div id="cfields_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
-					style="background-color:#dddddd;">{$args_design_time_cf[$testcase_id].standard_location}
-					</div>
-		  {/if} 
-			</td>
-		</tr>
- 
-  	<tr>
+
 		  <td colspan="{$tableColspan}">
       {if $args_testplan_design_time_cf[$testcase_id] != ''}
 					<div id="cfields_testplan_design_time_tcversionid_{$tcversion_id}" class="custom_field_container" 

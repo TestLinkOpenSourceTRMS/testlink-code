@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/07/31 18:49:49 $  $Author: asimon83 $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/08/02 11:29:45 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100802 - asimon - BUGID 3647, filtering by build
  *  20100731 - asimon - heavy refactoring, modified to include more parameters and flexibility,
  *                      changed table to ExtJS format
  */
@@ -68,17 +69,23 @@ foreach($map_code_status as $code => $status) {
 $options=new stdClass();
 $options->mode='full_path';
 
-//BUGID 3575: show only assigned test cases for ACTIVE test plans
-$filter = array('tplan_status' => 'active');
-// but if opened by click on username from page "results by user per build", show all testplans
-if ($args->show_inactive_and_closed) {
-	$filter = null;
+$filters = array();
+
+// if opened by click on username from page "results by user per build", show all testplans
+if (!$args->show_inactive_and_closed) {
+	//BUGID 3575: show only assigned test cases for ACTIVE test plans
+	$filters['tplan_status'] = 'active';
+}
+
+// 3647
+if ($args->build_id) {
+	$filters['build_id'] = $args->build_id;
 }
 
 $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;
 
 $gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id, 
-                                                 $tplan_param, $options, $filter);
+                                                 $tplan_param, $options, $filters);
 
 if( !is_null($gui->resultSet) )
 {	
@@ -165,7 +172,6 @@ foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 			
 			$current_row[] = htmlspecialchars($tcase['creation_ts']) . 
 			                 " (" . get_date_diff($tcase['creation_ts']) . ")";
-			//$current_row[] = get_date_diff($tcase['creation_ts']);
 			
 			// add this row to the others
 			$rows[] = $current_row;

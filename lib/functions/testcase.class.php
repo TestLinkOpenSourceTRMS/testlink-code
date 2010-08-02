@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.285 2010/07/31 18:49:48 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.286 2010/08/02 11:29:46 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100802 - asimon - BUGID 3647 - filtering by build id in get_assigned_to_user() 
  * 20100731 - asimon - more modifications to get_assigned_to_user()
  * 20100722 - asimon - BUGID 3406 - modified statement to get build name in get_assigned_to_user()
  * 20100714 - Julian - BUGID 3575 -  get_assigned_to_user() added priority in output set
@@ -3205,6 +3206,7 @@ class testcase extends tlObjectWithAttachments
 	 * @since 20090131 - franciscom
 	 *
 	 * @internal revision
+	 *  20100802 - asimon - 3647
 	 *  20100731 - asimon - added option to load assignments for all users,
 	 *                      added user_id, build_id, platform_id to SELECT part of statement
 	 *  20100722 - asimon - BUGID 3406 - modified statement to get build name
@@ -3221,7 +3223,7 @@ class testcase extends tlObjectWithAttachments
 	    // to load assignments for all users OR one given user
 	    $user_sql = ($user_id != TL_USER_ANYBODY) ? " AND UA.user_id = {$user_id} " : "";
 	    
-	    $filters = null;
+	    $filters = "";
 	    
 	    $has_options=!is_null($options);
 	    $access_key=array('testplan_id','testcase_id');
@@ -3246,11 +3248,16 @@ class testcase extends tlObjectWithAttachments
 	         //" AND UA.user_id = {$user_id} " .
 	         " {$user_sql} " .
 	         " AND TPROJ.id IN (" . implode(',', array($tproject_id)) .") " ;
-	         
+	    
 	    if( !is_null($tplan_id) )
 	    {
-	        $filters=" AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
+	        $filters .= " AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
 	    }     
+	    
+		// 3647
+	    if (isset($my['filters']['build_id'])) {
+			$filters .= " AND UA.build_id = {$my['filters']['build_id']} ";
+		}
 	    
 	    switch($my['filters']['tplan_status'])
 	    {

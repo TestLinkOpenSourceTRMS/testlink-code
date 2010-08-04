@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.105 2010/07/23 19:05:51 asimon83 Exp $
+ * @version $Id: print.inc.php,v 1.106 2010/08/04 03:08:24 amkhullar Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20100803 - amitkhullar - Added condition check for null req. custom fields @line 230/346  
  *  20100723 - asimon - BUGID 3459: added platform ID to renderTestCaseForPrinting(),
  *                                  renderTestSpecTreeForPrinting() and
  *                                  renderTestPlanForPrinting()
@@ -223,15 +224,20 @@ function renderRequirementNodeForPrinting(&$db,$node, &$printingOptions, $tocPre
 		}
 	}
 	
-	if ($printingOptions['req_cf']) {
+	if ($printingOptions['req_cf']) 
+	{
 		$linked_cf = $req_mgr->get_linked_cfields($req['id']);
-		foreach ($linked_cf as $key => $cf) {
-			$cflabel = htmlspecialchars($cf['label']);
-			$value = htmlspecialchars($cf['value']);
-			
-			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
-			           $cflabel . "</span></td>" .
-			           "<td>$value</td></tr>";
+		if ($linked_cf)
+		{
+			foreach ($linked_cf as $key => $cf) 
+			{
+				$cflabel = htmlspecialchars($cf['label']);
+				$value = htmlspecialchars($cf['value']);
+				
+				$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
+				           $cflabel . "</span></td>" .
+				           "<td>$value</td></tr>";
+			}
 		}
 	}
 	
@@ -337,13 +343,15 @@ function renderReqSpecNodeForPrinting(&$db, &$node, &$printingOptions, $tocPrefi
 	
 	if ($printingOptions['req_spec_cf']) {
 		$linked_cf = $req_spec_mgr->get_linked_cfields($spec['id']);
-		foreach ($linked_cf as $key => $cf) {
-			$cflabel = htmlspecialchars($cf['label']);
-			$value = htmlspecialchars($cf['value']);
-			
-			$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
-			           $cflabel . "</span></td>" .
-			           "<td>$value</td></tr>";
+		if ($linked_cf){
+			foreach ($linked_cf as $key => $cf) {
+				$cflabel = htmlspecialchars($cf['label']);
+				$value = htmlspecialchars($cf['value']);
+				
+				$output .= "<tr><td width=\"$firstColWidth\"><span class=\"label\">" . 
+				           $cflabel . "</span></td>" .
+				           "<td>$value</td></tr>";
+			}
 		}
 	}
 	

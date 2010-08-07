@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.13 2010/08/07 15:12:39 franciscom Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.14 2010/08/07 22:43:12 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -294,6 +294,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 */
 	private $mode = 'edit_mode';
 
+	/**
+	 * The token that will be used to identify the relationship between left frame
+	 * (with navigator) and right frame (which displays execution of test case e.g.) in session.
+	 * @var string
+	 */
+	public $form_token = null;
+	
 	/**
 	 *
 	 * @param database $dbHandler
@@ -911,29 +918,26 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 		$key = 'setting_refresh_tree_on_action';
 		$hidden_key = 'hidden_setting_refresh_tree_on_action';
-		$value = 0;
+		$selection = 0;
 
 		$this->settings[$key] = array();
 		$this->settings[$key][$hidden_key] = false;
 
 		// look where we can find the setting - POST, SESSION, config?
 		if (isset($this->args->{$key})) {
-			$value = $this->args->{$key};
-		} else if (isset($this->args->form_token)) {
-			// value not sent by POST but form sent - checkbox got disabled!
-			$value = 0;
+			$selection = 1;
 		} else if (isset($this->args->{$hidden_key})) {
-			$value = $this->args->{$hidden_key};
+			$selection = 0;
 		} else if (isset($_SESSION[$key])) {
-			$value = $_SESSION[$key];
+			$selection = $_SESSION[$key];
 		} else {
 			$spec_cfg = config_get('spec_cfg');
-			$value = ($spec_cfg->automatic_tree_refresh > 0) ? 1 : 0;
+			$selection = ($spec_cfg->automatic_tree_refresh > 0) ? 1 : 0;
 		}
 		
-		$this->settings[$key]['selected'] = $value;
-		$this->settings[$key][$hidden_key] = $value;
-		$_SESSION[$key] = $value;		
+		$this->settings[$key]['selected'] = $selection;
+		$this->settings[$key][$hidden_key] = $selection;
+		$_SESSION[$key] = $selection;		
 	} // end of method
 
 	private function init_setting_build() {

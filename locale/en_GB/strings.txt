@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.644 2010/07/31 18:49:47 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.645 2010/08/07 22:43:11 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -600,6 +600,9 @@ $TLS_exec_build = "Build to execute";
 $TLS_assign_build = "Build to assign";
 $TLS_filter_result_all_prev_builds = "ALL Previous Builds";
 $TLS_filter_result_any_prev_build = "ANY Previous Build";
+$TLS_document_id = "Document ID";
+$TLS_req_type = "Requirement Type";
+$TLS_req_spec_type = "Req. Spec. Type";
 
 
 // ----- gui/templates/execNavigator.tpl -----

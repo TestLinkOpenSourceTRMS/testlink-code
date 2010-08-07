@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearchForm.php,v 1.2 2010/05/08 18:01:44 franciscom Exp $
+ * @version    	CVS: $Id: reqSpecSearchForm.php,v 1.3 2010/08/07 22:43:12 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search formular for requiremnt specifications.
  *
  * @internal Revisions:
+ * 20100806 - asimon - type displayed wrong selection: req types instead of req spec types
  */
 
 require_once("../../config.inc.php");
@@ -35,16 +36,14 @@ $no_filters = null;
 $gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tprojectID,$enabled,
                     $no_filters,'requirement_spec');
 
-$gui->keywords = $tproject_mgr->getKeywords($args->tprojectID);
 $reqSpecSet = $tproject_mgr->getOptionReqSpec($args->tprojectID,testproject::GET_NOT_EMPTY_REQSPEC);
 
 $gui->filter_by['design_scope_custom_fields'] = !is_null($gui->design_cf);
-$gui->filter_by['keyword'] = !is_null($gui->keywords);
 $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 
-$reqCfg = config_get('req_cfg');
-$gui->types = init_labels($reqCfg->type_labels);
-$gui->reqStatus = init_labels($reqCfg->status_labels);
+// 20100806 - asimon - type displayed wrong selection: req types instead of req spec types
+$reqSpecCfg = config_get('req_spec_cfg');
+$gui->types = init_labels($reqSpecCfg->type_labels);
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

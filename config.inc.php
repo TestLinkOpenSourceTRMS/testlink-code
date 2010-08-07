@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.311 2010/07/16 11:58:48 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.312 2010/08/07 22:43:12 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100808 - asimon - added requirement filtering options to $tlCfg->tree_filter_cfg
  *  20100625 - asimon - added $tlCfg->tree_filter_cfg for configuration of available filters on JS tree
  *                      and $tlCfg->exec_cfg->testcases_colouring_by_selected_build for BUGID 3450
  *	20100620 - franciscom - fix strict messages after usign PHPDesigner.
@@ -1118,9 +1119,22 @@ $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_execution_type = ENABL
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->advanced_filter_mode_choice = ENABLED;
 
-// The last part of this configuration section (for requirement documents)
-// will be added at a later time, but hopefully still before 1.9 release.
+$tlCfg->tree_filter_cfg->requirements->filter_doc_id = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->filter_title = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->filter_status = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->filter_type = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->filter_spec_type = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->filter_coverage = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->filter_relation = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->filter_tc_id = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->filter_custom_fields = ENABLED;
+$tlCfg->tree_filter_cfg->requirements->advanced_filter_mode_choice = ENABLED;
 
+// ENABLED -> Every time the user does some operation on requirement spec,
+//            the tree will be updated on screen. [DEFAULT]
+// DISABLED -> The tree will not be updated automatically, but  the user can update it manually.
+//             On graphical user interface any user will is able to change this setting.
+$tlCfg->tree_filter_cfg->requirements->automatic_tree_refresh = ENABLED;
 
 // ----------------------------------------------------------------------------
 /* [MISC FUNCTIONALITY] */

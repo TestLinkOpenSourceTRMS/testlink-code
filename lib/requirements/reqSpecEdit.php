@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2009/12/30 20:47:04 $ $Author: franciscom $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/08/07 22:43:12 $ $Author: asimon83 $
  *
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.
  *
  * rev: 
+ *  20100808 - aismon - added logic to refresh filtered tree on action
  *	20091202 - franciscom - fixed bug on webeditor value init.
  *	20091119 - franciscom - doc_id
  *	20080830 - franciscom - added code to manage unlimited depth tree
@@ -76,6 +77,10 @@ function init_args()
 	$args->basehref = $_SESSION['basehref'];
 	$args->reqParentID = is_null($args->reqParentID) ? $args->tproject_id : $args->reqParentID;
 
+	// asimon - 20100808 - added logic to refresh filtered tree on action
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
+	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+	
 	return $args;
 }
 
@@ -113,7 +118,18 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];  
 
-
+    // 20100808 - aismon - added logic to refresh filtered tree on action
+	switch($argsObj->doAction)
+    {
+        case "doCreate":
+	    case "doUpdate": 
+        case "doCopyRequirements":
+        case "doCopy":
+        case "doDelete":
+    		$guiObj->refreshTree = $argsObj->refreshTree;
+    	break;
+    }
+    
     switch($argsObj->doAction)
     {
         case "edit":

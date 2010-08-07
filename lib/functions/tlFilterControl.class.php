@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.5 2010/06/28 16:19:37 asimon83 Exp $
+ * @version    CVS: $Id: tlFilterControl.class.php,v 1.6 2010/08/07 22:43:12 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
@@ -19,6 +19,8 @@
  *
  * @internal Revisions:
  *
+ * 20100808 - asimon - little changes for first implementation of requirement filtering
+ * 20100803 - asimon - corrected error in parameter initializing in init_args()
  * 20100628 - asimon - removal of constants
  * 20100624 - asimon - CVS merge (experimental branch to HEAD)
  * 20100503 - asimon - start of implementation of filter panel class hierarchy
@@ -70,6 +72,12 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	const CF_INPUT_SIZE = 32;
 	
 	/**
+	 * Value of [ANY]-selection in advanced filter mode.
+	 * @var int
+	 */
+	const ANY = 0;
+	
+	/**
 	 * defines, wether the button to unassign all test cases from test plan shall be drawn on template
 	 * @var bool
 	 */
@@ -81,13 +89,6 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * @var bool
 	 */
 	public $draw_bulk_update_button = false;
-
-	/**
-	 * The token that will be used to identify the relationship between left frame
-	 * (with navigator) and right frame (which displays execution of test case e.g.) in session.
-	 * @var string
-	 */
-	public $form_token = null;
 	
 	/**
 	 * will hold the localized string options (any/none/somebody/...)
@@ -97,7 +98,7 @@ abstract class tlFilterControl extends tlObjectWithDB {
 
 	/**
 	 * holds the configuration that will be read from config file
-	 * @var array
+	 * @var stdClass
 	 */
 	public $configuration = null;
 
@@ -145,6 +146,18 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 */
 	public $display_filters = false;
 
+	/**
+	 * If set to true, settings panel for requirements will be displayed.
+	 * @var bool
+	 */
+	public $display_req_settings = false;
+	
+	/**
+	 * If set to true, filter panel for requirements will be displayed.
+	 * @var bool
+	 */
+	public $display_req_filters = false;
+	
 	/**
 	 * Is it allowed to choose advanced filter mode?
 	 * @var bool
@@ -196,11 +209,9 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		$this->init_args();
 
 		// set filter mode to advanced or simple
-		// $this->advanced_filter_mode = false;
-		// if ($this->filter_mode_choice_enabled && $this->args->advanced_filter_mode) {
-		// 	$this->advanced_filter_mode = true;
-		// }
-		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled && $this->args->advanced_filter_mode);
+		$this->advanced_filter_mode = ($this->filter_mode_choice_enabled 
+		                              && $this->args->advanced_filter_mode
+		                              && !$this->args->simple_filter_mode);
 		
 		// init button labels
     	if ($this->advanced_filter_mode) {
@@ -272,10 +283,13 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		
 		$params = array();
 
+		// 20100803 - asimon - corrected error in parameter initializing
 		$params['setting_refresh_tree_on_action'] =
-			array("POST", 'setting_refresh_tree_on_action', tlInputParameter::CB_BOOL);
+			//array("POST", 'setting_refresh_tree_on_action', tlInputParameter::CB_BOOL);
+			array("POST", tlInputParameter::CB_BOOL);
 		$params['hidden_setting_refresh_tree_on_action'] =
-			array("POST", 'hidden_setting_refresh_tree_on_action', tlInputParameter::INT_N);
+			//array("POST", 'hidden_setting_refresh_tree_on_action', tlInputParameter::INT_N);
+			array("POST", tlInputParameter::INT_N);
 
 		I_PARAMS($params, $this->args);
 
@@ -292,17 +306,6 @@ abstract class tlFilterControl extends tlObjectWithDB {
 		$this->args->advanced_filter_mode = 
 			isset($_REQUEST[self::ADVANCED_FILTER_BUTTON_LABEL]) ? true : false;	
 	} // end of method
-
-	/**
-	 * Generates a form token, which will be used to identify the relationship
-	 * between left navigator-frame with its settings and right frame.
-	 * This solves the problems that can otherwise arise if
-	 * a user uses the same feature simultaneously in multiple browser tabs.
-	 * See issue 3516 in Mantis for a little bit more information.
-	 * Abstract, since the check for already existing tokens can be
-	 * different for test cases and requirements.
-	 */
-	protected abstract function generate_form_token();
 	
 	/**
 	 * Initializes the class member array for settings 

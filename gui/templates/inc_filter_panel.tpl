@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.3 2010/07/22 14:14:45 asimon83 Exp $
+ * $Id: inc_filter_panel.tpl,v 1.4 2010/08/07 22:43:11 asimon83 Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,6 +12,7 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20100808 - asimon - additional fields for requirement filtering
  *  20100709 - asimon - BUGID 3406: changes to unassign button
  *  20100610 - asimon - first implementation of filter control class hierarchy
  *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -24,14 +25,19 @@
                         platform, include_unassigned_testcases,
                         btn_remove_all_tester_assignments, execution_type, 
                         do_auto_update, testsuite, btn_reset_filters,
-                        btn_bulk_update_to_latest_version, priority, tc_title'}
+                        btn_bulk_update_to_latest_version, priority, tc_title,
+                        custom_field, search_type_like,
+                        document_id, req_expected_coverage, title,
+                        status, req_type, req_spec_type, th_tcid, has_relation_type'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
 <form method="post" id="filter_panel_form" name="filter_panel_form">
 
 {* hidden input with token to manage transfer of data between left and right frame *}
+{if isset($control->form_token)}
 <input type="hidden" name="form_token" value="{$control->form_token}">
+{/if}
 
 {if $control->draw_tc_unassign_button}
 	<input type="button" 
@@ -125,7 +131,7 @@
 			{/if}
 
 			</table>
-		</div> {* tplan_settings *}
+		</div> {* settings *}
 	</div> {* settings_panel *}
 {/if} {* display settings *}
 
@@ -136,17 +142,7 @@
 			{$labels.caption_nav_filters}
 		</div>
 
-	<div id="filter_settings" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
-
-		{*<input type="hidden" id="called_by_me" name="called_by_me" value="1" />
-		<input type="hidden" id="called_url" name="called_url" value="" />*}
-		
-		{* this hidden input is only needed when advanced filter mode is provided *}
-		{if $control->advanced_filter_mode}
-		<input type='hidden' id="advancedFilterMode"
-		                     name="setting_advanced_filter_mode"
-		                     value="{$control->advanced_filter_mode}" />
-		{/if}
+	<div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
 		
 		<table class="smallGrey" style="width:98%;">
 
@@ -226,7 +222,7 @@
 				<select name="filter_assigned_user[]"
 				        id="filter_assigned_user"
 				        multiple="multiple"
-				        size="{$control->filter_item_quantity}"
+				        size="{$control->filter_item_quantity}" >
 				{html_options options=$control->filters.filter_assigned_user.items
 				              selected=$control->filters.filter_assigned_user.selected}
 				</select>
@@ -279,7 +275,7 @@
 				{if $control->advanced_filter_mode}
 				  	<select name="filter_result_result[]" 
 				  	        multiple="multiple"
-				  	        size={$control->filter_item_quantity}>
+				  	        size="{$control->filter_item_quantity}">
 				{else}
 				  	<select name="filter_result_result">
 				{/if}
@@ -329,22 +325,225 @@
 			       style="font-size: 90%;" />
 
 			{if $control->filter_mode_choice_enabled}
+			
 				{if $control->advanced_filter_mode}
-					<input type="hidden"
-					       name="btn_advanced_filters"
-					       value="1" />
+					<input type="hidden" name="btn_advanced_filters" value="1" />
 				{/if}
-				
+			
 				<input type="submit" id="toggleFilterMode"  name="{$control->filter_mode_button_name}"
 				     value="{$control->filter_mode_button_label}"
 				     style="font-size: 90%;"  />
       		{/if}
 		</div>
 
-	</div> {* filter_settings *}
+	</div> {* filters *}
 
 	</div> {* filter_panel *}
 
 {/if} {* show filters *}
+
+{* here the requirement part starts *}
+
+{if $control->display_req_settings}
+	<div id="settings_panel">
+		<div class="x-panel-header x-unselectable">
+			{$labels.caption_nav_settings}
+		</div>
+
+		<div id="settings" class="x-panel-body exec_additional_info" "style="padding-top: 3px;">
+			<input type='hidden' id="tpn_view_settings" name="tpn_view_status"  value="0" />
+
+			<table class="smallGrey" style="width:98%;">
+
+			{if $control->settings.setting_refresh_tree_on_action}
+				<tr>
+		   			<td>{$labels.do_auto_update}</td>
+		  			<td>
+		  			   <input type="hidden" 
+		  			          id="hidden_setting_refresh_tree_on_action"
+		  			          name="hidden_setting_refresh_tree_on_action" 
+		  			          value="{$control->settings.setting_refresh_tree_on_action.hidden_setting_refresh_tree_on_action}" />
+
+		  			   <input type="checkbox"
+		  			           id="cbsetting_refresh_tree_on_action"
+		  			           name="setting_refresh_tree_on_action"
+		  			           {if $control->settings.setting_refresh_tree_on_action.selected} checked {/if}
+		  			           style="font-size: 90%;" onclick="this.form.submit();" />
+		  			</td>
+		  		</tr>
+			{/if}
+
+			</table>
+		</div> {* settings *}
+	</div> {* settings_panel *}
+{/if} {* display req settings *}
+
+{if $control->display_req_filters}
+
+	<div id="filter_panel">
+	<div class="x-panel-header x-unselectable">
+		{$labels.caption_nav_filters}
+	</div>
+
+	<div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
+
+	<table class="smallGrey" style="width:98%;">
+
+	{if $control->filters.filter_doc_id}
+		<tr>
+			<td>{$labels.document_id}</td>
+			<td><input type="text" name="filter_doc_id"
+			                       size="{#REQ_DOCID_SIZE#}"
+			                       maxlength="{#REQ_DOCID_MAXLEN#}"
+			                       value="{$control->filters.filter_doc_id.selected}" />
+			</td>
+		</tr>
+	{/if}
+
+	{if $control->filters.filter_title}
+		<tr>
+			<td>{$labels.title}</td>
+			<td><input type="text" name="filter_title"
+			                       size="{#REQ_NAME_SIZE#}"
+			                       maxlength="{#REQ_NAME_MAXLEN#}"
+			                       value="{$control->filters.filter_title.selected}" />
+			</td>
+		</tr>
+	{/if}
+	
+	{if $control->filters.filter_status}
+		<tr>
+			<td>{$labels.status}</td>
+			<td>
+				{if $control->advanced_filter_mode}
+					<select id="filter_status" 
+					        name="filter_status[]"
+					        multiple="multiple"
+					        size="{$control->filter_item_quantity}" >
+				{else}
+					<select id="filter_status" name="filter_status">
+				{/if}
+					{html_options options=$control->filters.filter_status.items
+					              selected=$control->filters.filter_status.selected}
+					</select>
+			    
+			</td>
+		</tr>
+	{/if}
+	
+	{if $control->filters.filter_type}
+		<tr>
+			<td>{$labels.req_type}</td>
+			<td>
+				{if $control->advanced_filter_mode}
+					<select id="filter_type" 
+					        name="filter_type[]"
+					        multiple="multiple"
+					        size="{$control->filter_item_quantity}" >
+				{else}
+					<select id="filter_type" name="filter_type">
+				{/if}
+					{html_options options=$control->filters.filter_type.items
+					              selected=$control->filters.filter_type.selected}
+					</select>
+			</td>
+		</tr>
+	{/if}
+
+	{if $control->filters.filter_spec_type}
+		<tr>
+			<td>{$labels.req_spec_type}</td>
+			<td>
+				{if $control->advanced_filter_mode}
+					<select id="filter_spec_type" 
+					        name="filter_spec_type[]"
+					        multiple="multiple"
+					        size="{$control->filter_item_quantity}" >
+				{else}
+					<select id="filter_spec_type" name="filter_spec_type">
+				{/if}
+					{html_options options=$control->filters.filter_spec_type.items
+					              selected=$control->filters.filter_spec_type.selected}
+					</select>
+			</td>
+		</tr>
+	{/if}
+
+	{if $control->filters.filter_coverage}
+		<tr>
+			<td>{$labels.req_expected_coverage}</td>
+			<td><input type="text" name="filter_coverage"
+			                       size="{#COVERAGE_SIZE#}"
+			                       maxlength="{#COVERAGE_MAXLEN#}"
+			                       value="{$control->filters.filter_coverage.selected}" />
+			</td>
+		</tr>
+	{/if}
+	
+	{if $control->filters.filter_relation}
+		<tr>
+			<td>{$labels.has_relation_type}</td>
+			<td>
+				{if $control->advanced_filter_mode}
+					<select id="filter_relation" 
+					        name="filter_relation[]"
+					        multiple="multiple"
+					        size="{$control->filter_item_quantity}" >
+				{else}
+					<select id="filter_relation" name="filter_relation">
+				{/if}
+					{html_options options=$control->filters.filter_relation.items
+					              selected=$control->filters.filter_relation.selected}
+					</select>
+			</td>
+		</tr>
+	{/if}
+	
+	{if $control->filters.filter_tc_id}
+		<tr>
+			<td>{$labels.th_tcid}</td>
+			<td><input type="text" name="filter_tc_id"
+			                       size="{#TC_ID_SIZE#}"
+			                       maxlength="{#TC_ID_MAXLEN#}"
+			                       value="{$control->filters.filter_tc_id.selected}" />
+			</td>
+		</tr>
+	{/if}
+	
+	{if $control->filters.filter_custom_fields}
+		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
+		{$control->filters.filter_custom_fields.items}
+	{/if}
+	
+	</table>
+	
+	<div>
+		<input type="submit"
+		       value="{$labels.btn_apply_filter}"
+		       id="doUpdateTree"
+		       name="doUpdateTree"
+		       style="font-size: 90%;" />
+
+		<input type="submit"
+		       value="{$labels.btn_reset_filters}"
+		       id="doResetTree"
+		       name="btn_reset_filters"
+		       style="font-size: 90%;" />
+		
+		{if $control->filter_mode_choice_enabled}
+			
+			{if $control->advanced_filter_mode}
+				<input type="hidden" name="btn_advanced_filters" value="1" />
+			{/if}
+			
+			<input type="submit" id="toggleFilterMode"  name="{$control->filter_mode_button_name}"
+			     value="{$control->filter_mode_button_label}"
+			     style="font-size: 90%;"  />
+      	{/if}
+	</div>
+	
+	</div> {* filters *}
+	</div> {* filter_panel *}
+{/if} {* show requirement filters *}
 
 </form>

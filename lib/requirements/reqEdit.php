@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.50 $
- * @modified $Date: 2010/03/21 17:57:30 $ by $Author: franciscom $
+ * @version $Revision: 1.51 $
+ * @modified $Date: 2010/08/07 22:43:12 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *  20100808 - aismon - added logic to refresh filtered tree on action
  *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
  * 	                    BUGID 1748, requirement relations
  *  20100303 - asimon - bugfix, changed max length of req_doc_id in init_args() to 64 from 32
@@ -100,6 +101,10 @@ function init_args()
 		$args->expected_coverage = 0;
 	}
 	
+	// asimon - 20100808 - added logic to refresh filtered tree on action
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
+	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+	
 	return $args;
 }
 
@@ -141,6 +146,14 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 	$guiObj->scope = $owebEditor->CreateHTML();
     $guiObj->editorType = $editorCfg['type'];
       
+    // 20100808 - aismon - added logic to refresh filtered tree on action
+    switch($argsObj->doAction) {
+       	case "doDelete":
+       	case "doCreate":
+       		$guiObj->refreshTree = $argsObj->refreshTree;
+    	break;
+    }
+    
     switch($argsObj->doAction)
     {
         case "edit":

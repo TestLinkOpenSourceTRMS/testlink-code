@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.20 2010/01/21 22:06:18 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.21 2010/08/07 22:43:12 asimon83 Exp $
 Purpose: smarty template - create a new req document
 
-rev: 20091230 - franciscom - req spec type
+rev: 
+  20100808 - asimon - added logic to refresh filtered tree on changes
+  20091230 - franciscom - req spec type
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -126,6 +128,10 @@ rev: 20091230 - franciscom - req spec type
 <script type="text/javascript" defer="1">
    	document.forms[0].doc_id.focus()
 </script>
+
+{if isset($gui->refreshTree) && $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
 
 </body>
 </html>

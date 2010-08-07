@@ -8,11 +8,15 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.138 2010/07/23 19:05:51 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.139 2010/08/07 22:43:12 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20100808 - asimon - generate_reqspec_tree() implemented to generate statically filtered
+ *                      requirement specification tree, plus additional functions
+ *                      get_filtered_req_map(), prepare_reqspec_treenode(),
+ *                      render_reqspec_treenode()
  *  20100702 - asimon - fixed custom field filtering problem caused by 
  *                      wrong array indexes and little logic errors
  *  20100701 - asimon - replaced is_null in renderTreeNode() by !isset 
@@ -1900,4 +1904,412 @@ function buildImportanceFilter($importance)
     return $itemsFilter;
 }
 
+/**
+ * Generate the necessary data object for the filtered requirement specification tree.
+ * 
+ * @author Andreas Simon
+ * @param Database $db reference to database handler object
+ * @param testproject $testproject_mgr reference to testproject manager object
+ * @param int $testproject_id ID of the project for which the tree shall be generated
+ * @param string $testproject_name Name of the test project
+ * @param array $filters Filter settings which shall be applied to the tree, possible values are:
+ *                       'filter_doc_id',
+ *	                     'filter_title',
+ *	                     'filter_status',
+ *	                     'filter_type',
+ *	                     'filter_spec_type',
+ *	                      'filter_coverage',
+ *	                     'filter_relation',
+ *	                     'filter_tc_id',
+ *	                     'filter_custom_fields'
+ * @param array $options Further options which shall be applied on generating the tree
+ * @return stdClass $treeMenu object with which ExtJS can generate the graphical tree
+ */
+function generate_reqspec_tree(&$db, &$testproject_mgr, $testproject_id, $testproject_name, 
+                             $filters = null, $options = null) {
+
+	$tables = tlObjectWithDB::getDBTables(array('requirements', 'req_versions', 
+	                                            'req_specs', 'req_relations', 
+	                                            'req_coverage', 'nodes_hierarchy'));
+	
+	$tree_manager = &$testproject_mgr->tree_manager;
+	
+	$glue_char = config_get('testcase_cfg')->glue_character;
+	$tcase_prefix=$testproject_mgr->getTestCasePrefix($testproject_id) . $glue_char;
+	
+	$req_node_type = $tree_manager->node_descr_id['testcase'];
+	$req_spec_node_type = $tree_manager->node_descr_id['testsuite'];
+	
+	$map_nodetype_id = $tree_manager->get_available_node_types();
+	$map_id_nodetype = array_flip($map_nodetype_id);
+	
+	$my = array();
+	
+	$my['options'] = array('for_printing' => 0,
+	                       'exclude_branches' => null,
+	                       'recursive' => true,
+	                       'order_cfg' => array('type' => 'spec_order'));
+	
+	$my['filters'] = array('exclude_node_types' =>  array('testplan'=>'exclude me',
+	                                                      'testsuite'=>'exclude me',
+	                                                      'testcase'=>'exclude me'),
+	                       'exclude_children_of' => array('testcase'=>'exclude my children',
+	                                                      'requirement'=>'exclude my children',
+	                                                      'testsuite'=> 'exclude my children'),
+	                       'filter_doc_id' => null,
+	                       'filter_title' => null,
+	                       'filter_status' => null,
+	                       'filter_type' => null,
+	                       'filter_spec_type' => null,
+	                       'filter_coverage' => null,
+	                       'filter_relation' => null,
+	                       'filter_tc_id' => null,
+	                       'filter_custom_fields' => null);
+	
+	// merge with given parameters
+	$my['options'] = array_merge($my['options'], (array) $options);
+	$my['filters'] = array_merge($my['filters'], (array) $filters);
+	
+	$req_spec = $tree_manager->get_subtree($testproject_id, $my['filters'], $my['options']);
+	
+	$req_spec['name'] = $testproject_name;
+	$req_spec['id'] = $testproject_id;
+	$req_spec['node_type_id'] = $map_nodetype_id['testproject'];
+	
+	$filtered_map = get_filtered_req_map($db, $testproject_id, $testproject_mgr,
+	                                     $my['filters'], $my['options']);
+	
+	$level = 1;
+	$req_spec = prepare_reqspec_treenode($level, $req_spec, $filtered_map, $map_id_nodetype,
+	                                     $map_nodetype_id, $my['filters'], $my['options']);
+		
+	$menustring = null;
+	$treeMenu = new stdClass();
+	$treeMenu->rootnode = new stdClass();
+	$treeMenu->rootnode->name = $req_spec['name'];
+	$treeMenu->rootnode->id = $req_spec['id'];
+	$treeMenu->rootnode->leaf = isset($req_spec['leaf']) ? $req_spec['leaf'] : false;
+	$treeMenu->rootnode->text = $req_spec['name'];
+	$treeMenu->rootnode->position = $req_spec['position'];	    
+	$treeMenu->rootnode->href = $req_spec['href'];
+		
+	// replace key ('childNodes') to 'children'
+	if (isset($req_spec['childNodes']))
+	{
+		$menustring = str_ireplace('childNodes', 'children', 
+		                           json_encode($req_spec['childNodes'])); 
+	}
+
+	if (!is_null($menustring))
+	{
+		// delete null elements for Ext JS
+		$menustring = str_ireplace(array(':null',',null','null,','null'),
+		                           array(':[]','','',''),
+		                           $menustring); 
+	}
+	$treeMenu->menustring = $menustring; 
+	
+	return $treeMenu;
+}
+/**
+ * Generate a filtered map with all fitting requirements in it.
+ * 
+ * @author Andreas Simon
+ * @param Database $db reference to database handler object
+ * @param int $testproject_id ID of the project for which the tree shall be generated
+ * @param testproject $testproject_mgr reference to testproject manager object
+ * @param array $filters Filter settings which shall be applied to the tree
+ * @param array $options Further options which shall be applied on generating the tree
+ * @return array $filtered_map map with all fitting requirements
+ */
+function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters, $options) {
+	$filtered_map = null;
+	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy', 'requirements', 'req_specs',
+	                                            'req_relations', 'req_versions', 'req_coverage',
+	                                            'tcversions', 'cfield_design_values'));
+	
+	$sql = " SELECT R.id, R.req_doc_id, NH_R.name AS title, R.srs_id, " .
+	       "        RS.doc_id AS req_spec_doc_id, NH_RS.name AS req_spec_title, " .
+	       "        RV.version, RV.id AS version_id, NH_R.node_order, " .
+	       "        RV.expected_coverage, RV.status, RV.type, RV.active, RV.is_open " .
+	       " FROM {$tables['requirements']} R " .
+	       " JOIN {$tables['nodes_hierarchy']} NH_R ON NH_R.id = R.id " .
+	       " JOIN {$tables['nodes_hierarchy']} NH_RV ON NH_RV.parent_id = NH_R.id " .
+	       " JOIN {$tables['req_versions']} RV ON RV.id = NH_RV.id " .
+	       " JOIN {$tables['req_specs']} RS ON RS.id = R.srs_id " .
+	       " JOIN {$tables['nodes_hierarchy']} NH_RS ON NH_RS.id = RS.id ";
+
+	if (isset($filters['filter_relation'])) {
+		$sql .= " JOIN {$tables['req_relations']} RR " .
+		        " ON (RR.destination_id = R.id OR RR.source_id = R.id) ";
+	}	
+	
+	if (isset($filters['filter_tc_id'])) {
+		$tc_cfg = config_get('testcase_cfg');
+		$tc_prefix = $testproject_mgr->getTestCasePrefix($testproject_id);
+		$tc_prefix .= $tc_cfg->glue_character;
+		
+		$tc_ext_id = $db->prepare_int(str_replace($tc_prefix, '', $filters['filter_tc_id']));
+		
+		$sql .= " JOIN {$tables['req_coverage']} RC ON RC.req_id = R.id " .
+		        " JOIN {$tables['nodes_hierarchy']} NH_T ON NH_T.id = RC.testcase_id " .
+		        " JOIN {$tables['nodes_hierarchy']} NH_TV on NH_TV.parent_id = NH_T.id " .
+		        " JOIN {$tables['tcversions']} TV ON TV.id = NH_TV.id " .
+		        "                                    AND TV.tc_external_id = {$tc_ext_id} ";
+	}
+	
+	if (isset($filters['filter_custom_fields'])) {
+		$suffix = 1;
+		
+		foreach ($filters['filter_custom_fields'] as $cf_id => $cf_value) {
+			$sql .= " JOIN {$tables['cfield_design_values']} CF{$suffix} " .
+			        " ON CF{$suffix}.node_id = R.id ";
+			        " AND CF{$suffix}.field_id = {$cf_id} ";
+			
+			// single value or array?
+			if (is_array($cf_value)) {
+				$sql .= " AND ( ";
+				$count = 1;
+				foreach ($cf_value as $value) {
+					if ($count > 1) {
+						$sql .= " OR ";
+					}
+					$sql .= " CF{$suffix}.value LIKE '%{$value}%' ";
+					$count ++;
+				}
+				$sql .= " ) ";
+			} else {
+				$sql .= " AND CF{$suffix}.value LIKE '%{$cf_value}%' ";
+			}
+			
+			$suffix ++;
+		}
+	}
+	
+	$sql .= " WHERE RS.testproject_id = {$testproject_id} ";
+
+	if (isset($filters['filter_doc_id'])) {
+		$doc_id = $db->prepare_string($filters['filter_doc_id']);
+		$sql .= " AND R.req_doc_id LIKE '%{$doc_id}%' OR RS.doc_id LIKE '%{$doc_id}%' ";
+	}
+	
+	if (isset($filters['filter_title'])) {
+		$title = $db->prepare_string($filters['filter_title']);
+		$sql .= " AND NH_R.name LIKE '%{$title}%' ";
+	}
+	
+	if (isset($filters['filter_coverage'])) {
+		$coverage = $db->prepare_int($filters['filter_coverage']);
+		$sql .= " AND expected_coverage = {$coverage} ";
+	}
+	
+	if (isset($filters['filter_status'])) {
+		$statuses = (array) $filters['filter_status'];
+		foreach ($statuses as $key => $status) {
+			$statuses[$key] = "'" . $db->prepare_string($status) . "'";
+		}
+		$statuses = implode(",", $statuses);
+		$sql .= " AND RV.status IN ({$statuses}) ";
+	}
+	
+	if (isset($filters['filter_type'])) {
+		$types = (array) $filters['filter_type'];
+		foreach ($types as $key => $type) {
+			$types[$key] = $db->prepare_int($type);
+		}
+		$types = implode(",", $types);
+		$sql .= " AND RV.type IN ({$types}) ";
+	}
+	
+	if (isset($filters['filter_spec_type'])) {
+		$spec_types = (array) $filters['filter_spec_type'];
+		foreach ($spec_types as $key => $type) {
+			$spec_types[$key] = $db->prepare_int($type);
+		}
+		$spec_types = implode(",", $spec_types);
+		$sql .= " AND RS.type IN ({$spec_types}) ";
+	}
+	
+	if (isset($filters['filter_relation'])) {
+		$sql .= " AND ( ";
+		$count = 1;
+		
+		foreach ($filters['filter_relation'] as $key => $rel_filter) {
+			$relation_info = explode('_', $rel_filter);
+			$relation_type = $db->prepare_int($relation_info[0]);
+			$relation_side = isset($relation_info[1]) ? $relation_info[1] : null;
+			
+			if ($count == 1) {
+				$sql .= " ( ";
+			}
+			if ($count > 1) {
+				$sql .= " OR ( ";
+			}
+			
+			if ($relation_side == "destination") {
+				$sql .= " RR.destination_id = R.id ";
+			} else if ($relation_side == "source") {
+				$sql .= " RR.source_id = R.id ";
+			} else {
+				$sql .= " (RR.destination_id = R.id OR RR.source_id = R.id) ";
+			}
+			
+			$sql .= " AND RR.relation_type = {$relation_type} ) ";
+			
+			$count ++;
+		}
+		
+		$sql .= " ) ";
+	}
+	
+	$sql .= " ORDER BY RV.version DESC ";
+	
+	$filtered_map = $db->fetchRowsIntoMap($sql, 'id');
+	
+	return $filtered_map;
+}
+
+/**
+ * Prepares nodes for the filtered requirement tree.
+ * Filters out those nodes which are not in the given map and counts the remaining subnodes.
+ * @author Andreas Simn
+ * @param int $level gets increased by one for each sublevel in recursion
+ * @param array $node the tree structure to traverse
+ * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
+ * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
+ * @param array $map_nodetype_id array with node type descriptions as keys, node type IDs as values
+ * @param array $filters
+ * @param array $options
+ * @return array tree structure after filtering out unneeded nodes
+ */
+function prepare_reqspec_treenode($level, &$node, &$filtered_map, &$map_id_nodetype,
+                                  &$map_nodetype_id, &$filters, &$options) {
+	$child_req_count = 0;
+	
+	if (isset($node['childNodes']) && is_array($node['childNodes'])) {
+		// node has childs, must be a specification (or testproject)
+		foreach ($node['childNodes'] as $key => $childnode) {
+			$current_childnode = &$node['childNodes'][$key];
+			$current_childnode = prepare_reqspec_treenode($level + 1, $current_childnode, 
+			                                             $filtered_map, $map_id_nodetype,
+			                                             $map_nodetype_id,
+			                                             $filters, $options);
+			
+			// now count childnodes that have not been deleted and are requirements
+			if (!is_null($current_childnode)) {
+				switch ($current_childnode['node_type_id']) {
+					case $map_nodetype_id['requirement']:
+						$child_req_count ++;
+					break;
+					
+					case $map_nodetype_id['requirement_spec']:
+						$child_req_count += $current_childnode['child_req_count'];
+					break;
+				}
+			}
+		}
+	}
+	
+	$node_type = $map_id_nodetype[$node['node_type_id']];
+	
+	$delete_node = false;
+	
+	switch ($node_type) {
+		case 'testproject':			
+		break;
+		
+		case 'requirement_spec':
+			// add requirement count
+			$node['child_req_count'] = $child_req_count;
+			// delete empty specs
+			if (!$child_req_count) {
+				$delete_node = true;
+			}
+		break;
+		
+		case 'requirement':
+			// delete node from tree if it is not in $filtered_map
+			if (is_null($filtered_map) || !array_key_exists($node['id'], $filtered_map)) {
+				$delete_node = true;
+			}
+		break;
+	}
+	
+	if ($delete_node) {
+		unset($node);
+		$node = null;
+	} else {
+		$node = render_reqspec_treenode($node, $filtered_map, $map_id_nodetype);
+	}
+	
+	return $node;
+}
+
+/**
+ * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
+ * @author Andreas Simn
+ * @param array $node the object to prepare
+ * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
+ * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
+ * @return array tree object with all needed data for ExtJS tree
+ */
+function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
+	static $js_functions;
+	static $forbidden_parents;
+	
+	if (!$js_functions) {
+		$js_functions = array('testproject' => 'TPROJECT_REQ_SPEC_MGMT',
+		                      'requirement_spec' =>'REQ_SPEC_MGMT',
+		                      'requirement' => 'REQ_MGMT');
+		
+		$req_cfg = config_get('req_cfg');
+		$forbidden_parents['testproject'] = 'none';
+		$forbidden_parents['requirement'] = 'testproject';
+		$forbidden_parents['requirement_spec'] = 'requirement_spec';
+		if($req_cfg->child_requirements_mgmt)
+		{
+			$forbidden_parents['requirement_spec'] = 'none';
+		} 
+	}
+	
+	$node_type = $map_id_nodetype[$node['node_type_id']];
+	$node_id = $node['id'];
+	
+	$node['href'] = "javascript:{$js_functions[$node_type]}({$node_id});";
+	$node['text'] = htmlspecialchars($node['name']);
+	$node['leaf'] = false; // will be set to true later for requirement nodes
+	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
+	$node['cls'] = 'folder';
+	$node['testlink_node_type']	= $node_type;
+	$node['forbidden_parent'] = $forbidden_parents[$node_type];
+	
+	switch ($node_type) {
+		case 'testproject':
+			
+		break;
+		
+		case 'requirement_spec':
+			// get doc id from filtered array, it's already stored in there
+			$doc_id = '';
+			foreach($node['childNodes'] as $child) {
+				if (!is_null($child)) {
+					$child_id = $child['id'];
+					$doc_id = htmlspecialchars($filtered_map[$child_id]['req_spec_doc_id']);
+					break; // only need to get one child for this
+				}
+			}
+			
+			$count = $node['child_req_count'];
+			$node['text'] = "{$doc_id}:{$node['text']} ({$count})";
+		break;
+		
+		case 'requirement':
+			$node['leaf']	= true;
+			$doc_id = htmlspecialchars($filtered_map[$node_id]['req_doc_id']);
+			$node['text'] = "{$doc_id}:{$node['text']}";
+		break;
+	}
+	
+	return $node;       
+}
 ?>

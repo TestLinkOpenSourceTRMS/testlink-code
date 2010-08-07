@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.26 2010/05/02 09:00:59 franciscom Exp $
+$Id: reqEdit.tpl,v 1.27 2010/08/07 22:43:12 asimon83 Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20100808 - asimon - added logic to refresh filtered tree on changes
 20100502 - franciscom - BUGID 3413: removed debug info
 20100319 - asimon - BUGID 1748 - added logic to add and remove requirement relations
 20091231 - franciscom - added logic to display and check expected coverage
@@ -257,6 +258,10 @@ function configure_attr(oid_type,cfg)
 	</div>
 </form>
 </div>
+
+{if isset($gui->refreshTree) && $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
 
 </body>
 </html>

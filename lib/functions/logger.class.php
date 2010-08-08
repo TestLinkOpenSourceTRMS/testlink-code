@@ -12,22 +12,23 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2005-2009, TestLink community 
- * @version CVS: $Id: logger.class.php,v 1.47 2009/10/07 06:13:33 franciscom Exp $
+ * @version CVS: $Id: logger.class.php,v 1.48 2010/08/08 18:57:47 franciscom Exp $
  * @link http://www.teamst.org
  * @since 1.8
  * 
  * @internal Revisions:
  * 
- *      20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
- * 		20090603 - franciscom - adding table prefix management
- *      20080517 - franciscom - exclude mktime() logs 
- *      20080316 - franciscom - added getEnableLoggingStatus() methods
- *                              refactored access to enable logging status info.
- *                              refactored enable/disable logging
- *                              Added code to configure individual loggers using new config $g_loggerCfg
- *      20080315 - franciscom - discovered bug on tlTransaction->writeToDB thanks to POSTGRES
- *                              watchPHPErrors() - added new error to suppress
- *      20080216 - franciscom - limit length of entryPoint
+ *	20100808 - franciscom -  BUGID 3656 - crash on some DBMS due to Transactions instead of transactions
+ *	20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
+ *	20090603 - franciscom - adding table prefix management
+ *	20080517 - franciscom - exclude mktime() logs 
+ *	20080316 - franciscom - added getEnableLoggingStatus() methods
+ *	                        refactored access to enable logging status info.
+ *	                        refactored enable/disable logging
+ *	                        Added code to configure individual loggers using new config $g_loggerCfg
+ *	20080315 - franciscom - discovered bug on tlTransaction->writeToDB thanks to POSTGRES
+ *	                        watchPHPErrors() - added new error to suppress
+ *	20080216 - franciscom - limit length of entryPoint
  *
  **/
  
@@ -509,16 +510,21 @@ class tlEventManager extends tlObjectWithDB
 			$activityCodes = "('".implode("','",$activityCodes)."')";
 			$clauses[] = "activity IN {$activityCodes}";
 		}
+		
 		if (!is_null($startTime))
+		{
 			$clauses[] = "fired_at >= {$startTime}";
-     
-		if (!is_null($endTime))
-			$clauses[] = "fired_at <= {$endTime}";
+        }
 
+		if (!is_null($endTime))
+		{
+			$clauses[] = "fired_at <= {$endTime}";
+		}
+		
 	    if (!is_null($users))
 	    {
-	        $usersFilter = " JOIN Transactions T ON T.id = E.transaction_id";
-	        $usersFilter .= " AND T.user_id IN ({$users}) ";
+	    	// BUGID 3656
+	        $usersFilter = " JOIN transactions T ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
 	    }
 		$query = "SELECT E.id FROM {$this->tables['events']} E {$usersFilter}";
 	    if ($clauses)
@@ -542,7 +548,9 @@ class tlEventManager extends tlObjectWithDB
 			$clauses[] = "log_level IN ({$logLevels})";
 		}
 		if (!is_null($startTime))
+		{
 			$clauses[] = "fired_at < {$startTime}";
+		}
 			
 		$query = "DELETE FROM {$this->tables['events']} ";
 		if ($clauses)

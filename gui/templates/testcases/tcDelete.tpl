@@ -1,21 +1,22 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.10 2010/05/16 19:33:28 franciscom Exp $
+$Id: tcDelete.tpl,v 1.11 2010/08/08 18:37:42 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev :
-      20080701 - franciscom - Found bug related to javascript:history.go(-1)
-                              1. create a new tcversion
-                              2. click on delete
-                              3. click on no
-                              4. A new version is created due to re-post of old data
-                              
-                              Till a good solution is found -> cancel button removed
-      
-      20070502 - franciscom - solved problems on delete due to name of local variable
-                              equal to name of variable assigned on php page.
-
-      20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
+    20100808 - franciscom - typo error refresh_tree -> refreshTree
+    20080701 - franciscom - Found bug related to javascript:history.go(-1)
+                            1. create a new tcversion
+                            2. click on delete
+                            3. click on no
+                            4. A new version is created due to re-post of old data
+                            
+                            Till a good solution is found -> cancel button removed
+    
+    20070502 - franciscom - solved problems on delete due to name of local variable
+                            equal to name of variable assigned on php page.
+    
+    20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
 
 *}
 {lang_get var="labels"
@@ -28,7 +29,7 @@ rev :
 <div class="workBack">
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback 
          result=$gui->sqlResult action=$gui->action item="test case"
-         refresh=$gui->refresh_tree}
+         refresh=$gui->refreshTree}
 
 {if $gui->sqlResult == ''}
 	{if $gui->exec_status_quo != ''}

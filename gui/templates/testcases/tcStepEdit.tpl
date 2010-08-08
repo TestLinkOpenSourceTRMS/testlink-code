@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.27 2010/07/01 14:21:54 mx-julian Exp $ 
+$Id: tcStepEdit.tpl,v 1.28 2010/08/08 13:31:45 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -153,7 +153,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   		 * results at approximately same size (step details get 45%
   		 * expected results get the rest)
   		 *}
-		<th width="45%">{$labels.actions}</th>
+		<th width="45%">{$labels.step_actions}</th>
   		<th>{$labels.expected_results}</th>
       {if $session['testprojectOptions']->automationEnabled}
   		  <th width="25">{$labels.execution_type_short_descr}</th>

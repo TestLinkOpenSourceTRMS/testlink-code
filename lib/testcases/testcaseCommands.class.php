@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.46 2010/07/16 23:10:06 erikeloff Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.47 2010/08/08 10:42:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100808 - franciscom - initGuiBean() - added steps key to remove error display from event viewer
  *  20100716 - eloff - BUGID 3610 - fixes missing steps_results_layout in $gui
  *  20100625 - asimon - refactoring for new filter features,
  *                      replaced refresh_tree and do_refresh by refreshTree,
@@ -63,21 +64,23 @@ class testcaseCommands
 	    $obj = new stdClass();
 	    $obj->action = '';
 		$obj->attachments = null;
+    	$obj->cleanUpWebEditor = false;
 		$obj->containerID = '';
 		$obj->direct_link = null;
 	    $obj->execution_types = $this->execution_types;
+
 		$obj->grants = $this->grants;
+   		$obj->has_been_executed = false;
     	$obj->initWebEditorFromTemplate = false;
-    	$obj->cleanUpWebEditor = false;
+
 		$obj->main_descr = '';
 		$obj->name = '';
     	$obj->refreshTree=0;
 	    $obj->sqlResult = '';
    		$obj->step_id = -1;
    		$obj->step_set = '';
+   		$obj->steps = '';
     	$obj->tableColspan = 5;
-   		$obj->has_been_executed = false;
-
         $obj->tcase_id = property_exists($argsObj,'tcase_id') ? $argsObj->tcase_id : -1;
 
 		// BUGID 3493

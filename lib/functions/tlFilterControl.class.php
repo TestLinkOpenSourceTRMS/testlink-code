@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.6 2010/08/07 22:43:12 asimon83 Exp $
+ * @version    CVS: $Id: tlFilterControl.class.php,v 1.7 2010/08/09 19:06:36 franciscom Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
@@ -332,8 +332,7 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	protected abstract function get_active_filters();
 	
 	/**
-	 * Build the tree menu for generation of JavaScript tree of either
-	 * test cases or requirements.
+	 * Build the tree menu for generation of JavaScript tree of either test cases or requirements.
 	 * Depending on user selections in user interface, 
 	 * either a completely filtered tree will be build and returned,
 	 * or only the minimal necessary data to "lazy load" the objects in tree by later Ajax calls.

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.115 $
- * @modified $Date: 2010/07/22 14:14:43 $ by $Author: asimon83 $
+ * @version $Revision: 1.116 $
+ * @modified $Date: 2010/08/09 18:22:23 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
@@ -53,7 +53,6 @@ $opt_cfg->js_ot_name = 'ot';
 
 $args = init_args($opt_cfg);
 $gui_cfg = config_get('gui');
-// $spec_cfg = config_get('spec_cfg');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
 
@@ -153,10 +152,6 @@ switch($action)
     	$level = is_null($ret) ? $level : $ret;
     	break;
 
-    // case 'do_testsuite_reorder':
-    // 	doTestSuiteReorder($smarty,$template_dir,$tproject_mgr,$tsuite_mgr,$args);
-    // 	break;
-
     case 'do_move':
     	moveTestSuite($smarty,$template_dir,$tproject_mgr,$args);
     	break;
@@ -170,7 +165,6 @@ switch($action)
 	  	{
         	$msg = updateTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
     	}
-    	// 20100202 - franciscom -
 		$guiObj = new stdClass();
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
@@ -224,8 +218,6 @@ switch($action)
 
 if($the_tpl)
 {
-	// echo "DEBUG - \$action;$action<br>";	echo "DEBUG - \$the_tpl:$the_tpl<br>";	
-	// echo "DEBUG - \$refreshTree:$refreshTree<br>";
 	$smarty->assign('refreshTree',$refreshTree && $args->refreshTree);
 	$smarty->display($template_dir . $the_tpl);
 }
@@ -889,61 +881,5 @@ function deleteTestSuitesBulk(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcas
 {
 }
 
-
-// removed for BUGID 3406
-///**
-// * BUGID 3049
-// * remove all testcase assignments from a testplan
-// * 
-// * @param resource $dbHandler database handle
-// * @param stdClass $argsObj user input 
-// * @param tlTestplan $tplan_mgr testplan
-// * @param tlSmarty $smartyObj smarty object
-// * @param string $tmpl_dir template  directory
-// */
-//function removeTestcaseAssignments(&$dbHandler, &$argsObj, &$tplan_mgr, &$smartyObj, $tmpl_dir) {
-//	$gui = new stdClass();
-//	$gui->tplan_id = $argsObj->tplan_id;
-//	$tplan = $tplan_mgr->get_by_id($argsObj->tplan_id);
-//	$gui->tplan_name = $tplan['name'];
-//	$gui->container_data['name'] = $tplan['name'];
-//	$gui->tplan_description = $tplan['notes'];
-//	$gui->mainTitle = lang_get('remove_assigned_testcases');
-//	$tproject_mgr = new testproject($dbHandler);
-//	$tproject = $tproject_mgr->get_by_id($tplan['testproject_id']);
-//	$gui->tproject_name = $tproject['name'];
-//	$gui->tproject_description = $tproject['notes'];
-//	$gui->draw_tc_unassign_button = false;
-//	
-//	$gui->level = 'testplan';
-//	$gui->mainTitle = lang_get('remove_assigned_testcases');
-//	$gui->page_title = lang_get('testplan');
-//	$gui->refreshTree = false;
-//
-//	if($argsObj->doAction == 'doUnassignFromPlan') {
-//		$options = array('output' => 'array');
-//		$linked_tcversions=$tplan_mgr->get_linked_tcversions($gui->tplan_id,null,$options);
-//			
-//		$ids = array();
-//		foreach ($linked_tcversions as $tc_id => $tc) {
-//			if (isset($tc['user_id']) && is_numeric($tc['user_id'])) {
-//				$ids[] = $tc['feature_id'];
-//			}
-//		}
-//
-//		if (count($ids)) {
-//			$assignment_mgr = new assignment_mgr($dbHandler);
-//			$assignment_mgr->delete_by_feature_id($ids);
-//			$gui->result = sprintf(lang_get('unassigned_all_tcs_msg'), $gui->tplan_name);
-//		} else {
-//			//no items to unassign
-//			$gui->result = sprintf(lang_get('nothing_to_unassign_msg'), $gui->tplan_name);
-//		}
-//
-//		$smartyObj->assign('gui', $gui);
-//		$smartyObj->display($tmpl_dir . 'containerView.tpl');
-//	}
-//
-//}
 
 ?>

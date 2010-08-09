@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.4 2010/08/07 22:43:12 asimon83 Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.5 2010/08/09 10:58:29 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -445,21 +445,30 @@ class tlRequirementFilterControl extends tlFilterControl {
 		$enabled = 1;
 		$filters = null;
 		$no_warning = true;
+		
+		if (!$this->req_mgr) {
+			$this->req_mgr = new requirement_mgr($this->db);
+		}
+		
 		$cfields = $this->req_mgr->get_linked_cfields(null, $this->args->testproject_id);
 		$cf_prefix = $this->req_mgr->cfield_mgr->name_prefix;
 		$cf_html_code = "";
 		$selection = array();
 		
+		$this->filters[$key] = false;
+		$this->active_filters[$key] = null;
+
 		if (!is_null($cfields)) {
+			// display and compute only when custom fields are in use
 			foreach ($cfields as $cf_id => $cf) {
 				// has a value been selected?
 				$id = $cf['id'];
 				$type = $cf['type'];
 				$verbose_type = trim($this->req_mgr->cfield_mgr->custom_field_types[$type]);
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
-				
+
 				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
-								
+
 				if ($verbose_type == 'date') {
 					// if cf is a date field, convert the three given values to unixtime format
 					if (isset($_REQUEST[$cf_input_name . '_day'])
@@ -471,36 +480,36 @@ class tlRequirementFilterControl extends tlFilterControl {
 						$value = mktime(0, 0, 0, $month, $day, $year);
 					}
 				}
-				
+
 				$value2display = $value;
 				if (!is_null($value2display) && is_array($value2display)){
 					$value2display = implode("|", $value2display);
-				}				
+				}
 				$cf['value'] = $value2display;
-				
+
 				if ($value) {
 					$this->do_filtering = true;
 					$selection[$id] = $value;
 				}
-				
+
 				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'],
 				                                                   null, $no_warning));
-				
+
 				$cf_html_code .= '<tr><td>' . htmlspecialchars($label) . '</td><td>' .
 				                 $this->req_mgr->cfield_mgr->string_custom_field_input($cf) .
 				                 '</td></tr>';
-	    	}
-	    }
-		
-		if (!$selection || $this->args->reset_filters) {
-			$selection = null;
-			$this->do_filtering = false;
-		} else {
-			$this->do_filtering = true;
+			}
+
+			if (!$selection || $this->args->reset_filters) {
+				$selection = null;
+				$this->do_filtering = false;
+			} else {
+				$this->do_filtering = true;
+			}
+			
+			$this->filters[$key] = array('items' => $cf_html_code);
+			$this->active_filters[$key] = count($selection) ? $selection : null;
 		}
-	    
-		$this->filters[$key] = array('items' => $cf_html_code);
-		$this->active_filters[$key] = count($selection) ? $selection : null;
 	}
 } // end of class
 ?>

@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.312 2010/08/07 22:43:12 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.313 2010/08/09 10:58:29 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100809 - asimon - BUGID 3662 - disabled advanced filter mode choice for TC editing mode
  *  20100808 - asimon - added requirement filtering options to $tlCfg->tree_filter_cfg
  *  20100625 - asimon - added $tlCfg->tree_filter_cfg for configuration of available filters on JS tree
  *                      and $tlCfg->exec_cfg->testcases_colouring_by_selected_build for BUGID 3450
@@ -1100,7 +1101,8 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_toplevel_testsuite = ENABL
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_execution_type = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
-$tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = ENABLED;
+// filter mode choice disabled for this mode because there are no filters benefiting from it
+$tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;
 
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_toplevel_testsuite = ENABLED;

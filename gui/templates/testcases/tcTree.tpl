@@ -1,21 +1,18 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.24 2010/08/09 19:49:19 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.25 2010/08/09 19:52:52 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
-     20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
-                         them with new included template inc_tc_filter_panel.tpl,
-                         also added filtering by custom fields
-     20091210 - franciscom - exec type filter 
-     20080831 - franciscom - treeCfg
-                             manage testlink_node_type, useBeforeMoveNode
-     20080805 - franciscom - BUGID 1656
-     20080525 - franciscom - use only ext js tree type.
-                             no change to configure a different tree menu type 
-     20070217 - franciscom - added test suite filter
-                             changes to form method to allow automatic refresh
-                             without browser warning
+  20100809 - franciscom - BUGID 0003664 -  treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
+
+  20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
+                      them with new included template inc_tc_filter_panel.tpl,
+                      also added filtering by custom fields
+  20091210 - franciscom - exec type filter 
+  20080831 - franciscom - treeCfg
+                          manage testlink_node_type, useBeforeMoveNode
+  20080805 - franciscom - BUGID 1656
 *}
 {lang_get var="labels"
           s="caption_nav_filter_settings,testsuite,do_auto_update,keywords_filter_help,
@@ -68,6 +65,8 @@ rev:
         treeCfg.root_id={$gui->ajaxTree->root_node->id};
         treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
         treeCfg.children={$gui->ajaxTree->children};
+	      // BUGID 0003664
+	      treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
         </script>
         <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     

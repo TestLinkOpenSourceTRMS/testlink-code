@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.5 2010/08/09 10:58:29 asimon83 Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.6 2010/08/09 18:34:48 franciscom Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -116,14 +116,15 @@ class tlRequirementFilterControl extends tlFilterControl {
 	 * If no settings are active, the complete panel will be disabled and not be displayed.
 	 */
 	protected function init_settings() {
-		$at_least_one_active = false;
+		// $at_least_one_active = false;
 
 		foreach ($this->all_settings as $name => $info) {
 			$init_method = "init_$name";
 			if (method_exists($this, $init_method)) {
 				// is valid, configured, exists and therefore can be used, so initialize this setting
 				$this->$init_method();
-				$at_least_one_active = true;
+				// $at_least_one_active = true;
+				$this->display_req_settings = true;
 			} else {
 				// is not needed, simply deactivate it by setting it to false in main array
 				$this->settings[$name] = false;
@@ -139,10 +140,10 @@ class tlRequirementFilterControl extends tlFilterControl {
 			}
 		}
 		
-		// if at least one active setting is left to display, switch settings panel on
-		if ($at_least_one_active) {
-			$this->display_req_settings = true;
-		}
+		// // if at least one active setting is left to display, switch settings panel on
+		// if ($at_least_one_active) {
+		// 	$this->display_req_settings = true;
+		// }
 	} // end of method
 
 	/**
@@ -157,11 +158,11 @@ class tlRequirementFilterControl extends tlFilterControl {
 		// iterate through all filters and activate the needed ones
 		foreach ($this->all_filters as $name => $info) {
 			$init_method = "init_$name";
-			if (method_exists($this, $init_method)
-			&& $this->configuration->{$name} == ENABLED) {
+			if (method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED) {
 				// valid
 				$this->$init_method();
-				$at_least_one_active = true;
+				// $at_least_one_active = true;
+				$this->display_req_filters = true;
 			} else {
 				// is not needed, deactivate filter by setting it to false in main array
 				// and of course also in active filters array
@@ -171,9 +172,9 @@ class tlRequirementFilterControl extends tlFilterControl {
 		}
 				
 		// if at least one filter item is left to display, switch panel on
-		if ($at_least_one_active) {
-			$this->display_req_filters = true;
-		}
+		// if ($at_least_one_active) {
+		// 	$this->display_req_filters = true;
+		// }
 	} // end of method
 
 	/**
@@ -214,13 +215,12 @@ class tlRequirementFilterControl extends tlFilterControl {
 		// when we use filtering, the tree will be statically built,
 		// otherwise it will be lazy loaded
 		if ($this->do_filtering) {
-			$options = array('for_printing' => NOT_FOR_PRINTING,
-			                 'exclude_branches' => null);
+			$options = array('for_printing' => NOT_FOR_PRINTING,'exclude_branches' => null);
 		    
 			$tree_menu = generate_reqspec_tree($this->db, $this->testproject_mgr,
-			                                 $this->args->testproject_id,
-			                                 $this->args->testproject_name,
-			                                 $filters, $options);
+			                                   $this->args->testproject_id,
+			                                   $this->args->testproject_name,
+			                                   $filters, $options);
 			
 			$root_node = $tree_menu->rootnode;
 			$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
@@ -355,6 +355,8 @@ class tlRequirementFilterControl extends tlFilterControl {
 	private function init_filter_coverage() {
 		
 		$key = 'filter_coverage';
+		$this->filters[$key] = false;
+		$this->active_filters[$key] = null;
 		
 		// is coverage management enabled?
 		if ($this->configuration->req_cfg->expected_coverage_management) {
@@ -368,10 +370,7 @@ class tlRequirementFilterControl extends tlFilterControl {
 			
 			$this->filters[$key] = array('selected' => $selection);
 			$this->active_filters[$key] = $selection;
-		} else {
-			$this->filters[$key] = false;
-			$this->active_filters[$key] = null;
-		}		
+		}
 	} // end of method
 	
 	private function init_filter_relation() {

@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.23 2010/06/24 17:25:53 asimon83 Exp $ 
+   $Id: tcTree.tpl,v 1.24 2010/08/09 19:49:19 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -106,13 +106,6 @@ rev:
 
 
 <h1 class="title">{$gui->treeHeader}</h1>
-
-{*
-{assign var="keywordsFilterDisplayStyle" value=""}
-{if $gui->keywordsFilterItemQty == 0}
-    {assign var="keywordsFilterDisplayStyle" value="display:none;"}
-{/if}
-*}
 
 {* BUGID 3301: include file for filter panel *}
 {include file='inc_filter_panel.tpl'}

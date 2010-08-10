@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.55 2010/07/26 19:00:56 asimon83 Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.56 2010/08/10 21:55:39 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
@@ -321,6 +321,10 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $tcase_cfg = config_get('testcase_cfg');
     $gui = new stdClass();
     $gui->platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+    $gui->usePlatforms = $platform_mgr->platformsActiveForTestplan($argsObj->tplan_id);
+    $gui->bulk_platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+    $gui->bulk_platforms[0] = lang_get("all_platforms");
+    ksort($gui->bulk_platforms);
     
     $gui->send_mail = $argsObj->send_mail;
     $gui->send_mail_checked = "";

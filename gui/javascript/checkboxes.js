@@ -1,5 +1,5 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
-// $Id: checkboxes.js,v 1.11 2010/02/09 21:05:09 franciscom Exp $ 
+// $Id: checkboxes.js,v 1.12 2010/08/10 21:55:39 erikeloff Exp $ 
 //
 //
 // rev :
@@ -259,3 +259,28 @@ function cs_all_checkbox_in_div(div_id, cb_id_prefix,memory_id)
 	
 	memory.value = (memory.value == "1") ? "0" : "1";
 }
+
+/**
+ * This function changes state of all checkboxes inside div_id with regards to
+ * platform_id. platform_id is parsed from the name of the checkbox
+ * (prefix...[tc_id][platform_id]). Uses global object check_state for memory.
+ * If platform_id=0 is called all platforms will be checked/unchecked.
+ */
+var check_state = {};
+function cs_all_checkbox_in_div_with_platform(div_id, prefix, platform_id) {
+	var state = prefix + platform_id;
+	if (check_state[state] === undefined) {
+		check_state[state] = true;
+	}
+	// get all checkboxes with id starting with prefix inside div_id
+	Ext.get(div_id).select("input[type=checkbox][id^=" + prefix + "]")
+		.each(function (el, c, idx) {
+			// the regex matches the number inside the last brackets of the name
+			var check_platform_id = el.dom.name.match("([0-9]+)\]$")[1];
+			if (platform_id == 0 || check_platform_id == platform_id) {
+				el.dom.checked = check_state[state];
+			}
+		});
+	check_state[state] = !check_state[state];
+}
+

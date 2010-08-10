@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.27 2010/07/22 14:14:45 asimon83 Exp $
+$Id: tc_exec_assignment.tpl,v 1.28 2010/08/10 21:55:39 erikeloff Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -17,6 +17,7 @@ rev :
                           send_mail_to_tester,platform,no_testcase_available,
                           exec_assign_no_testcase,warning,check_uncheck_children_checkboxes,
                           th_test_case,version,assigned_to,assign_to,note_keyword_filter, priority,
+                          check_uncheck_all_tc
                           '}
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -53,12 +54,38 @@ function check_action_precondition(container_id,action)
 	<h1 class="title">{$gui->main_descr|escape}</h1>
   {if $gui->has_tc}
     {include file="inc_update.tpl" result=$sqlResult refresh="yes"}
-	  <div class="groupBtn">    
-	  	<input type='submit' name='doAction' value='{$labels.btn_update_selected_tc}' />
-	  	<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked} />
-	  	{$labels.send_mail_to_tester}
-	  	</span>
-	  </div>
+	<div class="groupBtn">
+		<div>
+			{$labels.check_uncheck_all_tc}
+			{if $gui->usePlatforms}
+			<select id="select_platform">
+				{html_options options=$gui->bulk_platforms}
+			</select>
+			{else}
+			<input type="hidden" id="select_platform" value="0">
+			{/if}
+			<button onclick="cs_all_checkbox_in_div_with_platform('tc_exec_assignment', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.btn_do}</button>
+		</div>
+		<div>
+			{$labels.user_bulk_assignment}
+			<select name="bulk_tester_div"  id="bulk_tester_div">
+				{html_options options=$gui->testers selected=0}
+			</select>
+			<input type='button' name='{$ts.testsuite.name|escape}_mua'
+				onclick='
+					if(check_action_precondition("tc_exec_assignment","default"))
+						set_combo_if_checkbox("tc_exec_assignment",
+								"tester_for_tcid_",
+								Ext.get("bulk_tester_div").getValue())'
+				value="{$labels.btn_do}" />
+		</div>
+		<div>
+			<input type='submit' name='doAction' value='{$labels.btn_update_selected_tc}' />
+			<span style="margin-left:20px;"><input type="checkbox" name="send_mail" id="send_mail" {$gui->send_mail_checked} />
+			{$labels.send_mail_to_tester}
+			</span>
+		</div>
+	</div>
   {else}
 	  <div class="workBack">{$labels.no_testcase_available}</div>
   {/if}
@@ -82,20 +109,6 @@ function check_action_precondition(container_id,action)
 
         {* used as memory for the check/uncheck all checkbox javascript logic *}
         <input type="hidden" name="add_value_{$ts_id}"  id="add_value_{$ts_id}"  value="0" />
-  		  {$labels.user_bulk_assignment}
-  		
-  		  {* Bulk Tester Object ID (BTOID)*}
-  		  {assign var=btoid value="bulk_tester_div_$ts_id"}
-  		
-  		  <select name="bulk_tester_div[{$ts_id}]"  id="{$btoid}">
-      	  {html_options options=$gui->testers selected=0}
-        </select>
-  		  <input type='button' name='{$ts.testsuite.name|escape}_mua' 
-               onclick='if(check_action_precondition("{$div_id}","default"))
-                           set_combo_if_checkbox("{$div_id}","tester_for_tcid_",
-                                                 document.getElementById("{$btoid}").value)' 
-               value="{$labels.btn_do}" />
-  		  <br />
 
     	  {if $ts.write_buttons eq 'yes'}
           {if $ts.testcase_qty gt 0}

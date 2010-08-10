@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.646 2010/08/10 14:10:10 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.647 2010/08/10 21:55:39 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -42,6 +42,7 @@ $TLS_active = "Active";
 $TLS_actions = "Actions";
 $TLS_asc = "Ascending";
 $TLS_any = "Any";
+$TLS_all = "All";
 $TLS_author	= "Author";
 $TLS_automated = "Automated";
 $TLS_automatic = "Automatic";
@@ -1193,6 +1194,8 @@ $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
 // ----- gui/templates/planAddTC_m1.tpl -----
 $TLS_add_tc = "Add";
+$TLS_adding_tc = "adding";
+$TLS_removal_tc = "removal";
 $TLS_added_on_date = "Added on date";
 $TLS_info_added_on_date = "Date when Test case was added to test plan";
 
@@ -1202,6 +1205,8 @@ $TLS_btn_add_selected_tc = "Add selected";
 $TLS_btn_save_exec_order = "Save order";
 $TLS_btn_save_custom_fields ="Save custom fields";
 $TLS_btn_save_platform ="Save platform";
+$TLS_check_uncheck_all_tc = "Check/uncheck all Test cases";
+$TLS_for = "for";
 $TLS_check_uncheck_tc = "All Test Cases in the Test Suite.";
 $TLS_check_uncheck_all_checkboxes = "check/uncheck all";
 $TLS_check_uncheck_all_checkboxes_for_add = "check/uncheck all (for add)";
@@ -1698,6 +1703,7 @@ $TLS_no_tc_spec_av = "No Test Specification available!";
 
 
 // ----- gui/templates/tc_exec_assignment.tpl -----
+$TLS_all_platforms = "All platforms";
 $TLS_assign_to = "Assign to";
 $TLS_btn_do = "Do";
 $TLS_btn_update_selected_tc = "Save";

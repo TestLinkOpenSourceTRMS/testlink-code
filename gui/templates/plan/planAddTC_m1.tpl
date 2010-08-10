@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.49 2010/07/22 14:14:45 asimon83 Exp $
+$Id: planAddTC_m1.tpl,v 1.50 2010/08/10 21:55:39 erikeloff Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
@@ -20,14 +20,13 @@ rev:
 *}
 
 {lang_get var="labels" 
-          s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
-             select_all_to_add,select_all_to_remove,check_uncheck_all_for_remove,
+          s='note_keyword_filter, check_uncheck_all_for_remove,
              th_id,th_test_case,version,execution_order,th_platform,
              no_testcase_available,btn_save_custom_fields,send_mail_to_tester,
              inactive_testcase,btn_save_exec_order,info_added_on_date,
              executed_can_not_be_removed,added_on_date,btn_save_platform,
-             check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
-             tester_assignment_on_add,check_uncheck_all_checkboxes_for_rm,
+             check_uncheck_all_checkboxes,removal_tc,show_tcase_spec,
+             tester_assignment_on_add,adding_tc,check_uncheck_all_tc,for,
              build_to_assign_on_add'}
 
 {* prefix for checkbox named , ADD and ReMove *}   
@@ -113,6 +112,21 @@ Ext.onReady(function(){
 		
 	  	  
 	  	  <div class="groupBtn">
+			<div style="float: left; margin-right: 2em">
+				{$labels.check_uncheck_all_tc}
+				{if $gui->usePlatforms}
+				<select id="select_platform">
+					{html_options options=$gui->bulk_platforms}
+				</select>
+				{else}
+				<input type="hidden" id="select_platform" value="0">
+				{/if}
+				{$labels.for}
+				{if $gui->full_control}
+				<button onclick="cs_all_checkbox_in_div_with_platform('addTcForm', '{$add_cb}', Ext.get('select_platform').getValue()); return false">{$labels.adding_tc}</button>
+				{/if}
+				<button onclick="cs_all_checkbox_in_div_with_platform('addTcForm', '{$rm_cb}', Ext.get('select_platform').getValue()); return false">{$labels.removal_tc}</button>
+			</div>
 	  	  	<input type="hidden" name="doAction" id="doAction" value="default" />
 	  	  	<input type="submit" name="doAddRemove" value="{$gui->buttonValue}"
 	  	  		     onclick="doAction.value=this.name" />
@@ -129,7 +143,6 @@ Ext.onReady(function(){
 	  	  			       onclick="doAction.value=this.name" />
 	  	  		{/if}
 	  	  	{/if}
-	  	  	</div>
 	  	  </div>
       {else}
 	    <div class="info">{$labels.no_testcase_available}</div>
@@ -138,16 +151,13 @@ Ext.onReady(function(){
     </div> <!-- header-wrap -->
 
 {if $gui->has_tc}
-  <div class="workBack">
+  <div class="workBack" id="workback">
   	{if $gui->keywords_filter != ''}
   		<div style="margin-left: 20px; font-size: smaller;">
   			<br />{$labels.note_keyword_filter}{$gui->keywords_filter|escape}</p>
   		</div>
   	{/if}
        
-  	<input type="hidden" name="add_all_value" id="add_all_value"  value="0" />
-  	<input type="hidden" name="rm_all_value" id="rm_all_value" value="0" />
-  
     {* ======================================== *}
     {* Loop over Test Suites to draw test cases *}
   	{assign var="item_number" value=0}
@@ -161,22 +171,6 @@ Ext.onReady(function(){
   		<div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
         <h2 class="testlink">{$ts.testsuite.name|escape}</h2> 
         {if $item_number == 1}
-        	<span class="clickable" style="margin: 0 30px;" id="box_add_all"
-        			onclick="cs_all_checkbox_in_div('addTcForm','{$add_cb}','add_all_value');">
-             {if $gui->full_control}
-            		<img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-                 		alt="{$labels.check_uncheck_all_checkboxes_for_add}" 
-                 		title="{$labels.check_uncheck_all_checkboxes_for_add}" />
-              	{$labels.select_all_to_add}
-              {/if}
-        	</span>
-        	<span class="clickable" style="margin: 0 30px;" id="box_remove_all"
-        			onclick="cs_all_checkbox_in_div('addTcForm','{$rm_cb}','rm_all_value');">
-             <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif" border="0" 
-                 alt="{$labels.check_uncheck_all_checkboxes_for_rm}" 
-                 title="{$labels.check_uncheck_all_checkboxes_for_rm}" />
-            	{$labels.select_all_to_remove}
-        	</span>
           <hr />
         {/if} {* $item_number == 1 *}
      

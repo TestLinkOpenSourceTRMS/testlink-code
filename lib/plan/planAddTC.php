@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.101 2010/07/22 14:14:43 asimon83 Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.102 2010/08/10 21:55:39 erikeloff Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -494,11 +494,17 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	$gui->usePlatforms = $platform_mgr->platformsActiveForTestplan($argsObj->tplan_id);
 	if($gui->usePlatforms)
 	{
+		// Create options for two different select boxes. $bulk_platforms
+		// has "All platforms" on top and "$platformsForHtmlOptions" has an
+		// empty item
 		$gui->platformsForHtmlOptions[0]='';
 		foreach($gui->platforms as $elem)
 		{
 			$gui->platformsForHtmlOptions[$elem['id']] =$elem['name'];
 		}
+		$gui->bulk_platforms = $platform_mgr->getLinkedToTestplanAsMap($argsObj->tplan_id);
+		$gui->bulk_platforms[0] = lang_get("all_platforms");
+		ksort($gui->bulk_platforms);
 	}
 
 	// 

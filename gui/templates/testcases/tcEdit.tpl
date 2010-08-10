@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.27 2010/05/01 19:19:51 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.28 2010/08/10 16:14:38 asimon83 Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
-  20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
+    20100810 - asimon - BUGID 3579: solved tree refreshing problems
+    20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
 	20100306 - eloff - BUGID 3062 - Check for duplicate name
 	20100124 - eloff - BUGID 3088 - Check valid session before submit
 	20100110 - eloff - BUGID 2036 - Check modified content before exit
@@ -144,6 +145,10 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 <script type="text/javascript" defer="1">
    	document.forms[0].testcase_name.focus();
 </script>
+
+{if isset($gui->refreshTree) && $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
 
 </div>
 </body>

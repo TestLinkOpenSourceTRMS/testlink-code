@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.154 2010/06/28 16:19:37 asimon83 Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.155 2010/08/10 16:14:38 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100810 - asimon - BUGID 3579: solved tree refreshing problems
  *  20100628 - asimon - removal of constants from filter control class
  *  20100625 - asimon - refactoring of filter feature
  *  20100624 - asimon - CVS merge (experimental branch to HEAD)
@@ -414,24 +415,10 @@ function init_args($spec_cfg,$otName)
     // from session
     $args->testproject_id = $_SESSION['testprojectID'];
     $args->user_id = $_SESSION['userID'];
-//    $args->refreshTree = $spec_cfg->automatic_tree_refresh;
-//    if(isset($_SESSION['setting_refresh_tree_on_action']))
-//    {
-//    	$args->refreshTree=$_SESSION['setting_refresh_tree_on_action'] == "yes" ? 1 : 0 ;
-//    }
 
-    // BUGID 3516
-	// For more information about the data accessed in session here, see the comment
-	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
-	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	
-	$mode = 'plan_add_mode';
-	
-	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
-	                ? $_SESSION[$mode][$form_token] : null;
-	
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
-                         $session_data['setting_refresh_tree_on_action'] : 0;
+    // 3579
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
+                         $_SESSION['setting_refresh_tree_on_action'] : 0;
     
 	$args->opt_requirements = null;
 	if( isset($_SESSION['testprojectOptions']) )
@@ -662,6 +649,14 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 		$smartyObj->assign($key, $of->CreateHTML($rows,$cols));
 	}
       
+	// manage tree refresh
+	// 3579
+    switch($argsObj->doAction) {
+       	case "doDelete":
+       		$guiObj->refreshTree = $argsObj->refreshTree;
+    	break;
+    }
+
     switch($argsObj->doAction)
     {
         case "edit":

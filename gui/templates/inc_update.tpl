@@ -1,7 +1,9 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_update.tpl,v 1.20 2008/03/04 07:30:40 franciscom Exp $
+$Id: inc_update.tpl,v 1.21 2010/08/10 16:14:38 asimon83 Exp $
 Purpose: show message after an SQL operation
+
+rev: 20100810 - asimon - BUGID 3579: solved tree refreshing problems
 *}
 {* 
   INPUT: $result (mandatory) = [ok, sql_error_description] 
@@ -73,10 +75,6 @@ Purpose: show message after an SQL operation
   {/if}
 {/if}  {* user_feedback*}
 
-{* 20070204 *}
-{if $result eq "ok"}
-  {* reload tree *}
-  {if $refresh == "yes"}
-		{include file="inc_refreshTree.tpl"}
-  {/if}
-{/if}  
+{if $result eq "ok" && isset($refresh) && $refresh}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}

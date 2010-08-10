@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.645 2010/08/07 22:43:11 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.646 2010/08/10 14:10:10 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -801,7 +801,7 @@ $TLS_popup_sure_delete = "Are you sure you want to delete the Requirement Specif
 $TLS_req_select_create_tc = "Create Test Cases";
 $TLS_req_select_delete = "Delete requirements";
 $TLS_req_title_list = "List of requirements";
-$TLS_req_total = "Overwritten count of REQs";
+$TLS_req_total = "Total count of requirements";
 $TLS_req_reorder = "Reorder requirements";
 $TLS_select_at_least_one_req = "Please select a requirement!";
 $TLS_warning_delete_requirements = "Are you sure to delete the selected requirements?";

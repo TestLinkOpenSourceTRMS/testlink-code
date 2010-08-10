@@ -1,10 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.39 2010/03/21 18:21:29 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.40 2010/08/10 14:10:11 asimon83 Exp $ *}
 {*
    Purpose: view a requirement specification
    Author: Martin Havlat
 
-   rev: 20100321 - franciscom - req_spec_import/export url
+   rev: 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+        20100321 - franciscom - req_spec_import/export url
         20071226 - franciscom - fieldset class added (thanks ext je team)
         20071106 - franciscom - added ext js library
         20070102 - franciscom - added javascript validation of checked requirements
@@ -100,7 +101,7 @@
 			</fieldset>
 		</td>
 	</tr>
-  {if $gui->req_spec.total_req != 0}
+  {if $gui->external_req_management && $gui->req_spec.total_req != 0}
   	<tr>
   		<td>{$labels.req_total}{$smarty.const.TITLE_SEP}{$gui->req_spec.total_req}</td>
    	</tr>

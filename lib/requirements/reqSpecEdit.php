@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/08/07 22:43:12 $ $Author: asimon83 $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/08/10 14:10:12 $ $Author: asimon83 $
  *
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.
  *
  * rev: 
+ *  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
  *  20100808 - aismon - added logic to refresh filtered tree on action
  *	20091202 - franciscom - fixed bug on webeditor value init.
  *	20091119 - franciscom - doc_id
@@ -26,6 +27,7 @@ require_once('requirements.inc.php');
 require_once("web_editor.php");
 $editorCfg = getWebEditorCfg('requirement_spec');
 require_once(require_web_editor($editorCfg['type']));
+$req_cfg = config_get('req_cfg');
 
 testlinkInitPage($db,false,false,"checkRights");
 
@@ -33,7 +35,7 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $commandMgr = new reqSpecCommands($db);
 
-$gui = initialize_gui($db,$commandMgr);
+$gui = initialize_gui($db,$commandMgr,$req_cfg);
 
 $auditContext = new stdClass();
 $auditContext->tproject = $args->tproject_name;
@@ -80,6 +82,10 @@ function init_args()
 	// asimon - 20100808 - added logic to refresh filtered tree on action
 	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
 	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+	
+	if (is_null($args->countReq)) {
+		$args->countReq = 0;
+	}
 	
 	return $args;
 }
@@ -207,14 +213,17 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
  * 
  *
  */
-function initialize_gui(&$dbHandler,&$commandMgr)
+function initialize_gui(&$dbHandler, &$commandMgr, &$req_cfg)
 {
     $gui = $commandMgr->initGuiBean();
     $gui->user_feedback = null;
     $gui->main_descr = null;
     $gui->action_descr = null;
     $gui->refresh_tree = 'no';
-
+    
+    // 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+	$gui->external_req_management = ($req_cfg->external_req_management == ENABLED) ? 1 : 0;
+    
     $gui->grants = new stdClass();
     $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
 

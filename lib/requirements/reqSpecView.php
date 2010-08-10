@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqSpecView.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2009/12/30 20:47:04 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2010/08/10 14:10:12 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
- * rev: 20080924 - franciscom - use requirements count to enable/disable features
+ * rev: 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+ *      20080924 - franciscom - use requirements count to enable/disable features
  *      20070415 - franciscom - custom field manager
  *      20070415 - franciscom - added reorder feature
  *
@@ -60,6 +61,10 @@ function initialize_gui(&$dbHandler,&$argsObj)
 	
     $gui = $commandMgr->initGuiBean();
 	$gui->req_spec_cfg = config_get('req_spec_cfg');
+	$gui->req_cfg = config_get('req_cfg');
+	
+	// 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+	$gui->external_req_management = ($gui->req_cfg->external_req_management == ENABLED) ? 1 : 0;
 	
 	$gui->grants = new stdClass();
 	$gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");

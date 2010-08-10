@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.139 2010/08/07 22:43:12 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.140 2010/08/10 14:10:11 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20100810 - asimon - added filtering by TC ID on prepareNode() and generateTestSpecTree()
  *  20100808 - asimon - generate_reqspec_tree() implemented to generate statically filtered
  *                      requirement specification tree, plus additional functions
  *                      get_filtered_req_map(), prepare_reqspec_treenode(),
@@ -87,6 +88,7 @@ function filterString($str)
  * @param array $exclude_branches map key=node_id
  * 
  * @internal Revisions:
+ * 20100810 - asimon - filtering by testcase ID
  * 20100428 - asimon - BUGID 3301, added filtering by custom fields
  * 20090328 - franciscom - BUGID 2299, that was generated during 20090308 
  *                         trying to fix another not reported bug.
@@ -124,7 +126,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 	// testplan => only used if opetions['viewType'] == 'testSpecTreeForTestPlan'
 	// 20100417 - franciscom - BUGID 2498
 	$my['filters'] = array('keywords' => null, 'executionType' => null, 'importance' => null,
-	                       'testplan' => null);
+	                       'testplan' => null, 'filter_tc_id' => null);
 
 	$my['options'] = array_merge($my['options'], (array)$options);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -206,7 +208,8 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
 		
 		$keys2init = array('filter_testcase_name',
 		                   'filter_execution_type',
-		                   'filter_priority');
+		                   'filter_priority',
+		                   'filter_tc_id');
 		
 		foreach ($keys2init as $keyname) {
 			$pnFilters[$keyname] = isset($my['filters'][$keyname]) ? $my['filters'][$keyname] : null;
@@ -359,6 +362,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  *         'not run'
  *
  * @internal Revisions
+ * 20100810 - asimon - filtering by testcase ID
  * 20100417 - franciscom -  BUGID 2498 - filter by test case importance
  * 20100415 - franciscom -  BUGID 2797 - filter by test case execution type
  */
@@ -404,7 +408,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 
 		// asimon - added importance here because of "undefined" error in event log
 		$my['filters'] = array('status' => null, 'assignedTo' => null, 
-		                       'importance' => null, 'executionType' => null);
+		                       'importance' => null, 'executionType' => null,
+		                       'filter_tc_id' => null);
 		
 		$my['options'] = array_merge($my['options'], (array)$options);
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -414,6 +419,9 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 	{
 		// 3301 - added filtering by testcase name
 		// 20100702 - and custom fields
+		// 20100810 - and testcase ID
+		$enabledFiltersOn['testcase_id'] = 
+			isset($my['filters']['filter_tc_id']);
 		$enabledFiltersOn['testcase_name'] = 
 			isset($my['filters']['filter_testcase_name']);
 		$enabledFiltersOn['keywords'] = isset($tck_map);
@@ -460,6 +468,14 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			// is found at position 0, if clause would then evaluate wrong because 
 			// 0 would be casted to false and we only want to delete node if it really is false
 			if (stripos($node['name'], $filter_name) === FALSE) {
+				$node = null;
+			}
+		}
+		
+		// filter by testcase ID
+		if ($node && $enabledFiltersOn['testcase_id']) {
+			$filter_id = $my['filters']['filter_tc_id'];
+			if ($node['id'] != $filter_id) {
 				$node = null;
 			}
 		}
@@ -818,8 +834,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	// can't use $build_id here because we need the build ID from settings panel
 	$build2filter_assignments = isset($filters->{'setting_build'}) ? $filters->{'setting_build'} : 0;
 	
-	
-	$tc_id = isset($filters->tc_id) ? $filters->tc_id : null; 
+	$tc_id = isset($filters->filter_tc_id) ? $filters->filter_tc_id : null; 
 	$build_id = isset($filters->filter_result_build) ? $filters->filter_result_build : null;
 	$bHideTCs = isset($filters->hide_testcases) ? $filters->hide_testcases : false;
 	$assignedTo = isset($filters->filter_assigned_user) ? $filters->filter_assigned_user : null; 
@@ -842,7 +857,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$tplan_mgr = new testplan($db);
 	$tproject_mgr = new testproject($db);
 	$tcase_mgr = new testcase($db);
-	
 	
 	$tree_manager = $tplan_mgr->tree_manager;
 	$tcase_node_type = $tree_manager->node_descr_id['testcase'];

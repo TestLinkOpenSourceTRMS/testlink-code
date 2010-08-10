@@ -18,10 +18,12 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.313 2010/08/09 10:58:29 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.314 2010/08/10 14:10:11 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100810 - asimon - BUGID 3317: added $tlCfg->req_cfg->external_req_management
+ *  20100810 - asimon - added TC ID filter for Test Cases to $tlCfg->tree_filter_cfg
  *  20100809 - asimon - BUGID 3662 - disabled advanced filter mode choice for TC editing mode
  *  20100808 - asimon - added requirement filtering options to $tlCfg->tree_filter_cfg
  *  20100625 - asimon - added $tlCfg->tree_filter_cfg for configuration of available filters on JS tree
@@ -1036,6 +1038,13 @@ $tlCfg->req_cfg->importDocBook->list_item_children = array('para','title');
 $tlCfg->req_cfg->importDocBook->table_entry_children = array('para');
 
 
+// If an external tool is used for requirement management, enable this setting.
+// You will get an additional field on requirement specifications where you
+// can enter the total count of requirements so that external requirements
+// are also counted for metrics/statistics. 
+$tlCfg->req_cfg->external_req_management = DISABLED;
+
+
 // ----------------------------------------------------------------------------
 /* [TREE FILTER CONFIGURATION] */
 
@@ -1086,6 +1095,7 @@ $tlCfg->tree_filter_cfg->requirements->show_filters = ENABLED;
 // Detailed settings for each mode.
 // Here, the single filter fields can be disabled if not wanted.
 // Also, the choice of advanced filter mode can be disabled.
+$tlCfg->tree_filter_cfg->testcases->execution_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_keywords = ENABLED;
@@ -1096,6 +1106,7 @@ $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_custom_fields = ENABL
 $tlCfg->tree_filter_cfg->testcases->execution_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->execution_mode->advanced_filter_mode_choice = ENABLED;
 
+$tlCfg->tree_filter_cfg->testcases->edit_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_keywords = ENABLED;
@@ -1104,6 +1115,7 @@ $tlCfg->tree_filter_cfg->testcases->edit_mode->filter_custom_fields = ENABLED;
 // filter mode choice disabled for this mode because there are no filters benefiting from it
 $tlCfg->tree_filter_cfg->testcases->edit_mode->advanced_filter_mode_choice = DISABLED;
 
+$tlCfg->tree_filter_cfg->testcases->plan_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_keywords = ENABLED;
@@ -1113,6 +1125,7 @@ $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->advanced_filter_mode_choice = ENABLED;
 
+$tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_tc_id = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_testcase_name = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_toplevel_testsuite = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_add_mode->filter_keywords = ENABLED;

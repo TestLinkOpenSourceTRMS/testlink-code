@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.14 2010/08/07 22:43:12 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.15 2010/08/10 14:10:11 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100810 - asimon - added TC ID filter for Test Cases
  * 20100807 - franciscom - BUGID 3660
  * 20100727 - asimon - BUGID 3630 - syntax error in get_argument_string()
  * 20100716 - asimon - BUGID 3406 - changes on init_settings() and $mode_setting_mapping
@@ -209,10 +210,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * Its keys are the names of the settings (class constants are used),
 	 * its values are the arrays for the input parser.
 	 * @var array
-	 * TODO use correct constants/settings here for the length of parameters instead of magic numbers
 	 */
-	private $all_filters = array('filter_testcase_name' => array("POST", tlInputParameter::STRING_N, 0, 100),
-	                             'filter_toplevel_testsuite' => array("POST", tlInputParameter::STRING_N, 0, 100),
+	private $all_filters = array('filter_tc_id' => array("POST", tlInputParameter::STRING_N),
+	                             'filter_testcase_name' => array("POST", tlInputParameter::STRING_N),
+	                             'filter_toplevel_testsuite' => array("POST", tlInputParameter::STRING_N),
 	                             'filter_keywords' => array("POST", tlInputParameter::ARRAY_INT),
 	                             'filter_priority' => array("POST", tlInputParameter::INT_N),
 	                             'filter_execution_type' => array("POST", tlInputParameter::INT_N),
@@ -231,12 +232,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * relying only on the config parameter.
 	 * @var array
 	 */
-	private $mode_filter_mapping = array('edit_mode' => array('filter_testcase_name',
+	private $mode_filter_mapping = array('edit_mode' => array('filter_tc_id',
+	                                                          'filter_testcase_name',
 	                                                          'filter_toplevel_testsuite',
 	                                                          'filter_keywords',
 	                                                          'filter_execution_type',
 	                                                          'filter_custom_fields'),
-	                                     'execution_mode' => array('filter_testcase_name',
+	                                     'execution_mode' => array('filter_tc_id',
+	                                                               'filter_testcase_name',
 	                                                               'filter_toplevel_testsuite',
 	                                                               'filter_keywords',
 	                                                               'filter_priority',
@@ -244,14 +247,16 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                               'filter_assigned_user',
 	                                                               'filter_custom_fields',
 	                                                               'filter_result'),
-	                                     'plan_mode' => array('filter_testcase_name',
+	                                     'plan_mode' => array('filter_tc_id',
+	                                                          'filter_testcase_name',
 	                                                          'filter_toplevel_testsuite',
 	                                                          'filter_keywords',
 	                                                          'filter_priority',
 	                                                          'filter_execution_type',
 	                                                          'filter_custom_fields',
 	                                                          'filter_result'),
-	                                     'plan_add_mode' => array('filter_testcase_name',
+	                                     'plan_add_mode' => array('filter_tc_id',
+	                                                              'filter_testcase_name',
 	                                                              'filter_toplevel_testsuite',
 	                                                              'filter_keywords',
 	                                                              'filter_priority',
@@ -354,7 +359,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->configuration->tc_cfg = config_get('testcase_cfg');
 		
 		// is choice of advanced filter mode enabled?
-    	if ($this->configuration->advanced_filter_mode_choice) {
+    	if (isset($this->configuration->advanced_filter_mode_choice)
+    	&& $this->configuration->advanced_filter_mode_choice == ENABLED) {
     		$this->filter_mode_choice_enabled = true;
     	} else {
     		$this->filter_mode_choice_enabled = false;
@@ -875,7 +881,6 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				// since the user should usually never see the whole tree here.
 				$additional_info = new stdClass();
 				$filters->hide_testcases = false;
-				$filters->tc_id = false; //filtering by testcase id could be implemented again...
 				$filters->show_testsuite_contents = $this->configuration->exec_cfg->show_testsuite_contents;
 				$additional_info->useCounters = $this->configuration->exec_cfg->enable_tree_testcase_counters;
 				
@@ -1045,6 +1050,33 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		}
 	} // end of method
 
+	private function init_filter_tc_id() {
+		$key = 'filter_tc_id';
+		$selection = $this->args->{$key};
+		$internal_id = null;
+		
+		if (!$this->testproject_mgr) {
+			$this->testproject_mgr = new testproject($this->db);
+		}
+		if (!$this->tc_mgr) {
+			$this->tc_mgr = new testcase($this->db);
+		}
+		
+		$tc_prefix = $this->testproject_mgr->getTestCasePrefix($this->args->testproject_id);
+		$tc_prefix .= $this->configuration->tc_cfg->glue_character;
+		
+		if (!$selection || $selection == $tc_prefix || $this->args->reset_filters) {
+			$selection = null;
+		} else {
+			$this->do_filtering = true;
+			// we got the external ID here when filtering, but need the internal one
+			$internal_id = $this->tc_mgr->getInternalID($selection);
+		}
+		
+		$this->filters[$key] = array('selected' => $selection ? $selection : $tc_prefix);
+		$this->active_filters[$key] = $internal_id;
+	} // end of method
+	
 	private function init_filter_testcase_name() {
 		$key = 'filter_testcase_name';
 		$selection = $this->args->{$key};

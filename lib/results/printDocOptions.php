@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/07/23 09:30:36 $ by $Author: asimon83 $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/08/10 14:10:12 $ by $Author: asimon83 $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -92,7 +92,7 @@ switch($args->doc_type)
 
   	  	$filters->filter_keywords = null;
   	  	$filters->filter_keywords_filter_type = null;
-  	  	$filters->tc_id = null;
+  	  	$filters->filter_tc_id = null;
   	  	$filters->filter_assigned_user = null;
   	  	$filters->filter_result_result = null;
   	  	$filters->filter_custom_fields = null;

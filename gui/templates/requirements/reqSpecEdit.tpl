@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.21 2010/08/07 22:43:12 asimon83 Exp $
+$Id: reqSpecEdit.tpl,v 1.22 2010/08/10 14:10:11 asimon83 Exp $
 Purpose: smarty template - create a new req document
 
 rev: 
+  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
   20100808 - asimon - added logic to refresh filtered tree on changes
   20091230 - franciscom - req spec type
 *}
@@ -40,12 +41,20 @@ rev:
 			selectField(f,'title');
 			return false;
 		}
+
+		{/literal}
+		{if $gui->external_req_management}
+		{literal}
 		if (isNaN(parseInt(f.countReq.value)))
 		{
 			alert_message(alert_box_title,warning_countreq_numeric);
 			selectField(f,'countReq');
 			return false;
 		}
+		{/literal}
+		{/if}
+		{literal}
+		
 		return true;
 	}
 	{/literal}
@@ -93,11 +102,15 @@ rev:
 		<div>
 			{$gui->scope}
 	   	</div>
+	   	
+	   	{if $gui->external_req_management}
 	   	<br />
 	   	<div class="labelHolder"><label for="countReq">{$labels.req_total}</label>
 			<input type="text" id="countReq" name="countReq" size="{#REQ_COUNTER_SIZE#}" 
 			      maxlength="{#REQ_COUNTER_MAXLEN#}" value="{$gui->total_req_counter}" />
 		</div>
+		{/if}
+		
 	  <br />
 		
   	<div class="labelHolder"> <label for="reqSpecType">{$labels.type}</label>

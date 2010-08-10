@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.4 2010/08/07 22:43:11 asimon83 Exp $
+ * $Id: inc_filter_panel.tpl,v 1.5 2010/08/10 14:10:11 asimon83 Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,6 +12,7 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20100810 - asimon - added TC ID filter for Test Cases
  *  20100808 - asimon - additional fields for requirement filtering
  *  20100709 - asimon - BUGID 3406: changes to unassign button
  *  20100610 - asimon - first implementation of filter control class hierarchy
@@ -145,6 +146,17 @@
 	<div id="filters" class="x-panel-body exec_additional_info" style="padding-top: 3px;">
 		
 		<table class="smallGrey" style="width:98%;">
+
+		{if $control->filters.filter_tc_id}
+			<tr>
+				<td>{$labels.th_tcid}</td>
+				<td><input type="text" name="filter_tc_id"
+				                       size="{#TC_ID_SIZE#}"
+				                       maxlength="{#TC_ID_MAXLEN#}"
+				                       value="{$control->filters.filter_tc_id.selected}" />
+				</td>
+			</tr>
+		{/if}
 
 		{if $control->filters.filter_testcase_name}
 			<tr>

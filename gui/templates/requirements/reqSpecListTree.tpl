@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.9 2010/08/07 22:43:12 asimon83 Exp $ 
+$Id: reqSpecListTree.tpl,v 1.10 2010/08/11 23:08:13 asimon83 Exp $ 
 show requirement specifications tree menu
 
 rev: 
@@ -21,8 +21,7 @@ rev:
 Ext.onReady(function() {
 	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
-	// Use a collapsible panel for filter settings
-	// and place a help icon in ther header
+	// collapsible panel for filters and settings
 	var settingsPanel = new Ext.ux.CollapsiblePanel({
 		id: 'tl_exec_filter',
 		applyTo: 'settings_panel'

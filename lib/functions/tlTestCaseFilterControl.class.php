@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.15 2010/08/10 14:10:11 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.16 2010/08/11 23:08:13 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100811 - asimon - BUGID 3566: show/hide CF
  * 20100810 - asimon - added TC ID filter for Test Cases
  * 20100807 - franciscom - BUGID 3660
  * 20100727 - asimon - BUGID 3630 - syntax error in get_argument_string()
@@ -1316,6 +1317,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$menu = $this->exec_cf_mgr->html_table_of_custom_field_inputs(self::CF_INPUT_SIZE);
 		$selection = $this->exec_cf_mgr->get_set_values();
 		
+		// BUGID 3566: show/hide CF
+		$ses_string = $this->mode . "_cf_filter_collapsed";
+		$collapsed = isset($_SESSION[$ses_string]) ? $_SESSION[$ses_string] : 0;
+		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
+		$_SESSION[$ses_string] = $collapsed;	
+		$btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
+				
 		// asimon - 20100713
 		// Fixed drag&drop error caused by this function. It always set $this->do_filtering
 		// to true here because of the missing $selection in the following if condition.
@@ -1391,7 +1399,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			} // end of foreach
 		}
 
-		$this->filters[$key] = array('items' => $menu, 'selected' => $selection);
+		// BUGID 3566: show/hide CF
+		$this->filters[$key] = array('items' => $menu, 
+			                         'btn_label' => $btn_label, 
+			                         'collapsed' => $collapsed);
 		$this->active_filters[$key] = $selection;
 	} // end of method
 

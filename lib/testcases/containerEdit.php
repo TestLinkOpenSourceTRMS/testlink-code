@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.116 $
- * @modified $Date: 2010/08/09 18:22:23 $ by $Author: franciscom $
+ * @version $Revision: 1.117 $
+ * @modified $Date: 2010/08/11 23:08:13 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * @internal revisions
+ *  20100811 - asimon - BUGID 3669
  *  20100722 - asimon - BUGID 3406, removal of changes for 3049
  *  20100628 - asimon - removal of constants from filter control class
  *  20100625 - asimon - refactoring for new filter features and BUGID 3516
@@ -353,31 +354,9 @@ function init_args($optionTransferCfg)
     	$args->containerID = $args->tprojectID;
     }
 
-//	// BUGID 
-//	// Get user choice for refresh tree after each operation
-//	if(isset($_SESSION['setting_refresh_tree_on_action']))
-//	{
-//		$args->refreshTree = $_SESSION['setting_refresh_tree_on_action'] == 'yes' ? 1 : 0;
-//    }
-//    else
-//    {
-//    	// use default from config.inc.php
-//    	$spec_cfg = config_get('spec_cfg');
-//    	$args->refreshTree = $spec_cfg->automatic_tree_refresh ? 1 : 0;
-//    }
-
-    // BUGID 3516
-	// For more information about the data accessed in session here, see the comment
-	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
-	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	
-	$mode = 'edit_mode';
-	
-	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
-	                ? $_SESSION[$mode][$form_token] : null;
-	
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
-                         $session_data['setting_refresh_tree_on_action'] : 0;
+    // BUGID 3669
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ?
+                         $_SESSION['setting_refresh_tree_on_action'] : 0;
     
     return $args;
 }
@@ -830,7 +809,8 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
         $guiObj = new stdClass();
    		$guiObj->attachments = getAttachmentInfosFrom($tsuiteMgr,$argsObj->objectID);
 		$guiObj->id = $argsObj->objectID;
-
+		// BUGID 3669
+		$guiObj->refreshTree = true;
         $tsuiteMgr->show($smartyObj,$guiObj,$template_dir,$argsObj->objectID,null,$user_feedback);
     }
 }

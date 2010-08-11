@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.647 2010/08/10 21:55:39 erikeloff Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.648 2010/08/11 23:08:12 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -604,6 +604,8 @@ $TLS_filter_result_any_prev_build = "ANY Previous Build";
 $TLS_document_id = "Document ID";
 $TLS_req_type = "Requirement Type";
 $TLS_req_spec_type = "Req. Spec. Type";
+$TLS_btn_hide_cf = "Hide Custom Fields";
+$TLS_btn_show_cf = "Show Custom Fields";
 
 
 // ----- gui/templates/execNavigator.tpl -----

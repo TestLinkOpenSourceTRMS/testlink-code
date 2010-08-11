@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.5 2010/08/10 14:10:11 asimon83 Exp $
+ * $Id: inc_filter_panel.tpl,v 1.6 2010/08/11 23:08:13 asimon83 Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,6 +12,7 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20100811 - asimon - BUGID 3566: show/hide CF
  *  20100810 - asimon - added TC ID filter for Test Cases
  *  20100808 - asimon - additional fields for requirement filtering
  *  20100709 - asimon - BUGID 3406: changes to unassign button
@@ -270,8 +271,8 @@
 
 		{* custom fields are placed here *}
 
-		{if $control->filters.filter_custom_fields}
-			<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
+		{if $control->filters.filter_custom_fields && !$control->filters.filter_custom_fields.collapsed}
+			<tr><td>&nbsp;</td></tr>
 			{$control->filters.filter_custom_fields.items}
 		{/if}
 
@@ -335,7 +336,15 @@
 			       id="doResetTree"
 			       name="btn_reset_filters"
 			       style="font-size: 90%;" />
-
+			
+			{if $control->filters.filter_custom_fields}
+			<input type="submit"
+			       value="{$control->filters.filter_custom_fields.btn_label}"
+			       id="doToggleCF"
+			       name="btn_toggle_cf"
+			       style="font-size: 90%;" />
+			{/if}
+			
 			{if $control->filter_mode_choice_enabled}
 			
 				{if $control->advanced_filter_mode}
@@ -522,8 +531,8 @@
 		</tr>
 	{/if}
 	
-	{if $control->filters.filter_custom_fields}
-		<tr><td>&nbsp;</td></tr> {* empty row for a little separation *}
+	{if $control->filters.filter_custom_fields && !$control->filters.filter_custom_fields.collapsed}
+		<tr><td>&nbsp;</td></tr>
 		{$control->filters.filter_custom_fields.items}
 	{/if}
 	
@@ -541,6 +550,14 @@
 		       id="doResetTree"
 		       name="btn_reset_filters"
 		       style="font-size: 90%;" />
+		
+		{if $control->filters.filter_custom_fields}
+			<input type="submit"
+			       value="{$control->filters.filter_custom_fields.btn_label}"
+			       id="doToggleCF"
+			       name="btn_toggle_cf"
+			       style="font-size: 90%;" />
+		{/if}
 		
 		{if $control->filter_mode_choice_enabled}
 			

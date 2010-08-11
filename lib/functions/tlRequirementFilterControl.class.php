@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.6 2010/08/09 18:34:48 franciscom Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.7 2010/08/11 23:08:13 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -16,6 +16,7 @@
  * 
  * @internal Revisions:
  * 
+ * 20100811 - asimon - BUGID 3566: show/hide CF
  * 20100808 - asimon - finished first implementation of requirement filtering
  * 20100624 - asimon - CVS merge (experimental branch to HEAD)
  * 20100503 - asimon - start of implementation of filter panel class hierarchy
@@ -445,6 +446,12 @@ class tlRequirementFilterControl extends tlFilterControl {
 		$filters = null;
 		$no_warning = true;
 		
+		// BUGID 3566: show/hide CF
+		$collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
+		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
+		$_SESSION['cf_filter_collapsed'] = $collapsed;	
+		$btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
+		
 		if (!$this->req_mgr) {
 			$this->req_mgr = new requirement_mgr($this->db);
 		}
@@ -467,7 +474,10 @@ class tlRequirementFilterControl extends tlFilterControl {
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
 
 				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
-
+				if ($this->args->reset_filters) {
+					$value = null;
+				}
+				
 				if ($verbose_type == 'date') {
 					// if cf is a date field, convert the three given values to unixtime format
 					if (isset($_REQUEST[$cf_input_name . '_day'])
@@ -494,19 +504,15 @@ class tlRequirementFilterControl extends tlFilterControl {
 				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'],
 				                                                   null, $no_warning));
 
-				$cf_html_code .= '<tr><td>' . htmlspecialchars($label) . '</td><td>' .
+				$cf_html_code .= '<tr class="cfRow"><td>' . htmlspecialchars($label) . '</td><td>' .
 				                 $this->req_mgr->cfield_mgr->string_custom_field_input($cf) .
 				                 '</td></tr>';
 			}
 
-			if (!$selection || $this->args->reset_filters) {
-				$selection = null;
-				$this->do_filtering = false;
-			} else {
-				$this->do_filtering = true;
-			}
-			
-			$this->filters[$key] = array('items' => $cf_html_code);
+			// BUGID 3566: show/hide CF
+			$this->filters[$key] = array('items' => $cf_html_code, 
+			                             'btn_label' => $btn_label, 
+			                             'collapsed' => $collapsed);
 			$this->active_filters[$key] = count($selection) ? $selection : null;
 		}
 	}

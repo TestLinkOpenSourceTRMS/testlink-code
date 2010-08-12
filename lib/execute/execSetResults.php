@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.164 $
- * @modified $Date: 2010/07/22 14:14:45 $ $Author: asimon83 $
+ * @version $Revision: 1.165 $
+ * @modified $Date: 2010/08/12 16:55:20 $ $Author: asimon83 $
  *
  * rev:
+ *  20100812 - asimon - BUGID 3672
  *  20100709 - asimon - BUGID 3590, BUGID 3574: build_id set to 0 as default instead of null
  *  20100628 - asimon - removal of constants from filter control class
  *  20100625 - asimon - added parameters $bugInterfaceOn, $bugInterface to exec_additional_info()
@@ -467,16 +468,17 @@ function init_args($cfgObj)
 
 	// BUGID 3516
 	// BUGID 3590, 3574
+	// BUGID 3672
 	$args->build_id = isset($session_data['setting_build']) ? 
-	                  intval($session_data['setting_build']) : 0;
-	if (!is_numeric($args->build_id)) {
+	                  intval($session_data['setting_build']) : null;
+	if (is_null($args->build_id)) {
 		$args->build_id = (isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id'])) ? 
 		                  $_REQUEST['build_id'] : 0;
 	}
 	
 	$args->platform_id = isset($session_data['setting_platform']) ? 
-	                  intval($session_data['setting_platform']) : 0;
-	if (!is_numeric($args->platform_id)) {
+	                  intval($session_data['setting_platform']) : null;
+	if (is_null($args->platform_id)) {
 		$args->platform_id = (isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id'])) ? 
 		                     $_REQUEST['platform_id'] : 0;
 	}

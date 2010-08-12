@@ -1,8 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.21 2010/07/22 14:14:46 asimon83 Exp $
+$Id: resultsGeneral.tpl,v 1.22 2010/08/12 14:28:49 asimon83 Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
+    20100811 - asimon - removed "results by assigned testers" table,
+                        was replaced by new report "results by tester per build"
     20100722 - asimon - BUGID 3406, 1508 - overall build status,
                         also replaced some unnecessary lang_get() calls by $labels-usage
 *}
@@ -79,14 +81,14 @@ Revisions:
            args_column_data=$gui->statistics->testsuites}
 
   
-  	{* by ASSIGNED Tester that is not the same that EFFECTIVE TESTER *}
+  	{* by ASSIGNED Tester that is not the same that EFFECTIVE TESTER 
   	{include file="results/inc_results_show_table.tpl"
            args_title=$labels.title_res_by_owner
            args_first_column_header=$labels.trep_owner
            args_first_column_key='name'
            args_show_percentage=true
            args_column_definition=$gui->columnsDefinition->assigned_testers
-           args_column_data=$gui->statistics->assigned_testers}
+           args_column_data=$gui->statistics->assigned_testers} *}
 
     {if $gui->showPlatforms}
       {include file="results/inc_results_show_table.tpl"

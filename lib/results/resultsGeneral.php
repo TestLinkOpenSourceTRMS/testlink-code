@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.68 $
- * @modified $Date: 2010/06/24 17:25:52 $ by $Author: asimon83 $
+ * @version $Revision: 1.69 $
+ * @modified $Date: 2010/08/12 14:28:49 $ by $Author: asimon83 $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
  *
  * Revisions:
+ *  20100811 - asimon - removed "results by assigned testers" table,
+ *                      was replaced by new report "results by tester per build"
  *  20100621 - eloff - BUGID 3542 - fixed typo
  *  20100206 - eloff - BUGID 3060 - Show verbose priority statistics like other tables.
  *  20100201 - franciscom - BUGID 0003123: General Test Plan Metrics - order of columns
@@ -86,13 +88,14 @@ else // do report
 	$gui->do_report['status_ok'] = 1;
 	$gui->do_report['msg'] = '';
 
-	$items2loop = array('keywords','assigned_testers');
-
+	//$items2loop = array('keywords','assigned_testers');
+	$items2loop = array('keywords');
+	
 	$kwr = $tplan_mgr->getStatusTotalsByKeyword($args->tplan_id);
     $gui->statistics->keywords = $tplan_mgr->tallyResultsForReport($kwr);
 
-    $usr=$tplan_mgr->getStatusTotalsByAssignedTester($args->tplan_id);
-    $gui->statistics->assigned_testers = $tplan_mgr->tallyResultsForReport($usr);
+//    $usr=$tplan_mgr->getStatusTotalsByAssignedTester($args->tplan_id);
+//    $gui->statistics->assigned_testers = $tplan_mgr->tallyResultsForReport($usr);
 
 	if( $gui->showPlatforms )
 	{

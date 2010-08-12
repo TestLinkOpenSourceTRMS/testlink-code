@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.140 2010/08/10 14:10:11 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.141 2010/08/12 17:47:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *	20100812 - franciscom - get_filtered_req_map() - BUGID 3671
  *  20100810 - asimon - added filtering by TC ID on prepareNode() and generateTestSpecTree()
  *  20100808 - asimon - generate_reqspec_tree() implemented to generate statically filtered
  *                      requirement specification tree, plus additional functions
@@ -2089,7 +2090,7 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
 						$sql .= " OR ";
 					}
 					$sql .= " CF{$suffix}.value LIKE '%{$value}%' ";
-					$count ++;
+					$count++;
 				}
 				$sql .= " ) ";
 			} else {
@@ -2128,37 +2129,34 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
 	
 	if (isset($filters['filter_type'])) {
 		$types = (array) $filters['filter_type'];
+
+		// BUGID 3671
 		foreach ($types as $key => $type) {
-			$types[$key] = $db->prepare_int($type);
+			$types[$key] = $db->prepare_string($type);
 		}
-		$types = implode(",", $types);
-		$sql .= " AND RV.type IN ({$types}) ";
+		$types = implode("','", $types);
+		$sql .= " AND RV.type IN ('{$types}') ";
 	}
 	
 	if (isset($filters['filter_spec_type'])) {
 		$spec_types = (array) $filters['filter_spec_type'];
+
+		// BUGID 3671
 		foreach ($spec_types as $key => $type) {
-			$spec_types[$key] = $db->prepare_int($type);
+			$spec_types[$key] = $db->prepare_string($type);
 		}
-		$spec_types = implode(",", $spec_types);
-		$sql .= " AND RS.type IN ({$spec_types}) ";
+		$spec_types = implode("','", $spec_types);
+		$sql .= " AND RS.type IN ('{$spec_types}') ";
 	}
 	
 	if (isset($filters['filter_relation'])) {
 		$sql .= " AND ( ";
 		$count = 1;
-		
 		foreach ($filters['filter_relation'] as $key => $rel_filter) {
 			$relation_info = explode('_', $rel_filter);
 			$relation_type = $db->prepare_int($relation_info[0]);
 			$relation_side = isset($relation_info[1]) ? $relation_info[1] : null;
-			
-			if ($count == 1) {
-				$sql .= " ( ";
-			}
-			if ($count > 1) {
-				$sql .= " OR ( ";
-			}
+			$sql .= ($count == 1) ? " ( " : " OR ( ";
 			
 			if ($relation_side == "destination") {
 				$sql .= " RR.destination_id = R.id ";
@@ -2169,15 +2167,13 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
 			}
 			
 			$sql .= " AND RR.relation_type = {$relation_type} ) ";
-			
-			$count ++;
+			$count++;
 		}
 		
 		$sql .= " ) ";
 	}
 	
 	$sql .= " ORDER BY RV.version DESC ";
-	
 	$filtered_map = $db->fetchRowsIntoMap($sql, 'id');
 	
 	return $filtered_map;

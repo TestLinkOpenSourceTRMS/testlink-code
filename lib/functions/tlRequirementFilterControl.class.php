@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.8 2010/08/12 14:00:16 asimon83 Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.9 2010/08/12 14:42:30 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -16,6 +16,7 @@
  * 
  * @internal Revisions:
  * 
+ * 20100812 - asimon - fixed cf input field size
  * 20100812 - asimon - don't show textarea inputs on filter panel
  * 20100811 - asimon - BUGID 3566: show/hide CF
  * 20100808 - asimon - finished first implementation of requirement filtering
@@ -505,10 +506,16 @@ class tlRequirementFilterControl extends tlFilterControl {
 				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'],
 				                                                   null, $no_warning));
 
+				$cf_size = self::CF_INPUT_SIZE;
+				// set special size for list inputs
+				if ($verbose_type == 'list' || $verbose_type == 'multiselection list') {
+					$cf_size = 3;
+				}
+				
 				// don't show textarea inputs here, they are too large for filterpanel
 				if ($verbose_type != 'text area') {
 					$cf_html_code .= '<tr class="cfRow"><td>' . htmlspecialchars($label) . '</td><td>' .
-					                 $this->req_mgr->cfield_mgr->string_custom_field_input($cf) .
+					                 $this->req_mgr->cfield_mgr->string_custom_field_input($cf, '', $cf_size) .
 					                 '</td></tr>';
 				}
 			}

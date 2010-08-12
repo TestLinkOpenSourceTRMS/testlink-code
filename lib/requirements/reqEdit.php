@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.51 $
- * @modified $Date: 2010/08/07 22:43:12 $ by $Author: asimon83 $
+ * @version $Revision: 1.52 $
+ * @modified $Date: 2010/08/12 14:00:16 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *  20100811 - asimon - fixed two warnings because of undefined variables in template
  *  20100808 - aismon - added logic to refresh filtered tree on action
  *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
  * 	                    BUGID 1748, requirement relations
@@ -242,6 +243,10 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
     $gui->grants = new stdClass();
     $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
 	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
+	
+	// 20100811 - asimon - fixed two warnings because of undefined variables in template
+	$gui->req_version_id = $argsObj->req_version_id;
+	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
 	
 	return $gui;
 }

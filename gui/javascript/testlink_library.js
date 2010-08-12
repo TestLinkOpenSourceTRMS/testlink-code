@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.104 2010/07/31 18:49:48 asimon83 Exp $
+// $Id: testlink_library.js,v 1.105 2010/08/12 14:00:16 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100811 - asimon - fixed IE JS error on openAssignmentOverviewWindow()
 // 20100731 - asimon - added openAssignmentOverviewWindow()
 // 20100708 - asimon - BUGID 3406 - removed PL()
 // 20100518 - franciscom - BUGID 3471 - spaces on window.open() name parameter
@@ -694,7 +695,7 @@ function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
 	url += "?user_id=" + user_id + "&build_id=" + build_id + "&tplan_id=" + tplan_id;
 	
 	var windowCfg = "width=800,height=600,resizable=yes,scrollbars=yes,dependent=yes";
-	window.open(fRoot + url, "Assignment Overview", windowCfg);
+	window.open(fRoot+url, '_blank', windowCfg);
 }
 
 /*

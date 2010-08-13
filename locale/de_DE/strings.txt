@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.167 2010/07/23 08:23:25 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.168 2010/08/13 08:54:22 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.642
+ * Last Update according to en_GB string file version 1.648
  *
  **/
 
@@ -41,6 +41,7 @@ $TLS_active = "Aktiv";
 $TLS_actions = "Aktionen";
 $TLS_asc = "aufsteigend";
 $TLS_any = "beliebig";
+$TLS_all = "Alle";
 $TLS_author = "Autor";
 $TLS_automated = "Automatisch";
 $TLS_automatic = "Automatisch";
@@ -594,6 +595,11 @@ $TLS_exec_build = "Auszuführendes Build";
 $TLS_assign_build = "Zuzuweisendes Build";
 $TLS_filter_result_all_prev_builds = "Ergebnis ALLER vorangegangener Builds";
 $TLS_filter_result_any_prev_build = "Ergebnis eines beliebigen vorangegangenen Builds";
+$TLS_document_id = "Dokument ID";
+$TLS_req_type = "Anforderungstyp";
+$TLS_req_spec_type = "Anf. Spez. Typ";
+$TLS_btn_hide_cf = "Benutzerdef. Felder ausblenden";
+$TLS_btn_show_cf = "Benutzerdef. Felder einblenden";
 
 
 // ----- gui/templates/execNavigator.tpl -----
@@ -1183,6 +1189,8 @@ $TLS_session_inactivity_timeout_at = "Timeout der Sitzung in";
 
 // ----- gui/templates/planAddTC_m1.tpl -----
 $TLS_add_tc = "Hinzufügen";
+$TLS_adding_tc = "Hinzufügen";
+$TLS_removal_tc = "Entfernen";
 $TLS_added_on_date = "Hinzugefügt am";
 $TLS_info_added_on_date = "Datum, an dem der Testfall dem Testplan hinzugefügt wurde";
 
@@ -1192,6 +1200,8 @@ $TLS_btn_add_selected_tc = "Ausgewählte Testfälle hinzufügen";
 $TLS_btn_save_exec_order = "Reihenfolge speichern";
 $TLS_btn_save_custom_fields = "Benutzerdefinierte Felder speichern";
 $TLS_btn_save_platform ="Plattform speichern";
+$TLS_check_uncheck_all_tc = "Markieren / demarkieren aller Testfälle";
+$TLS_for = "zum";
 $TLS_check_uncheck_tc = "Testfälle der Kategorie.";
 $TLS_check_uncheck_all_checkboxes = "Alle markieren / demarkieren";
 $TLS_check_uncheck_all_checkboxes_for_add = "alle an-/abwählen (zum Hinuzufügen)";
@@ -1518,6 +1528,14 @@ $TLS_th_bugs_not_linked = "Anzahl Testfälle ohne verlinkte Bugs: ";
 $TLS_th_assigned_to = "Zugewiesen an";
 
 
+// ----- gui/templates/resultsByTesterPerBuild.tpl -----
+$TLS_caption_results_by_tester_per_build = "Ergebnisse nach Tester pro Build";
+$TLS_results_by_tester_per_build = "Ergebnisse nach Tester pro Build";
+$TLS_progress = "Fortschritt [%]";
+$TLS_executions_without_assignment = "Ausführungen ohne Testerzuweisung";
+
+
+
 // ----- gui/templates/resultsGeneral.tpl -----
 $TLS_title_gen_test_rep = "Überblick Testergebnisse";
 $TLS_title_report_tc_priorities = "Testergebnisse nach Testpriorität";
@@ -1677,6 +1695,7 @@ $TLS_no_tc_spec_av = "Keine Test-Definition verfügbar!";
 
 
 // ----- gui/templates/tc_exec_assignment.tpl -----
+$TLS_all_platforms = "Alle Plattformen";
 $TLS_assign_to = "Zuweisen an";
 $TLS_btn_do = "Ausführen";
 $TLS_btn_update_selected_tc = "Testfälle aktualisieren";
@@ -1703,7 +1722,7 @@ $TLS_btn_remove_all_tester_assignments = "Entferne alle Testerzuweisungen der ge
 
 
 // ----- gui/templates/tc_exec_unassign_all.php -----
-$TLS_number_of_assignments_per_build = "%d Tester sind zu Testfällen für den Build  %s zugewiesen.";
+$TLS_number_of_assignments_per_build = "Es existieren %d Testzuweisungen für den Build %s";
 $TLS_unassign_all_tcs_warning_msg = "Bestätigen Sie das Entfernen aller Testerzuweisungen für den Build %s.";
 $TLS_unassign_all_tcs_msgbox_title = "Wirklich alle Testerzuweisungen entfernen?";
 $TLS_unassigned_all_tcs_msg = "Alle Testerzuweisungen für den Build %s wurden entfernt.";
@@ -2364,6 +2383,8 @@ $TLS_link_charts = "Grafiken";
 $TLS_link_report_blocked_tcs = "Blockierte Testfälle";
 $TLS_link_report_failed = "Fehlgeschlagene Testfälle";
 $TLS_link_report_general_tp_metrics = "Testplan Überblick";
+$TLS_link_report_by_tester_per_build = "Ergebnisse nach Tester pro Build";
+$TLS_link_assigned_tc_overview = "Übersicht der Testzuweisungen";
 $TLS_link_report_metrics_active_build = "Testplan Überblick des Aktiven Build";
 $TLS_link_report_metrics_more_builds = "Abfrage Metriken";
 $TLS_link_report_not_run = "Nicht durchgeführte Testfälle";
@@ -2409,6 +2430,11 @@ $TLS_send_mail_ko = 'Warnung: Probleme beim versenden der E-Mail - Details: ';
 
 
 // ----- lib/testcases/listTestCases.php -----
+
+
+
+// ----- lib/testcases/tcAssignedToUser.php -----
+$TLS_assigned_tc_overview = "Testprojekt: %s - Übersicht der Testzuweisungen für alle Benutzer";
 
 
 

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.286 2010/08/02 11:29:46 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.287 2010/08/13 11:58:45 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100813 - asimon - deactivated last slash on full path in get_assigned_to_user()
  * 20100802 - asimon - BUGID 3647 - filtering by build id in get_assigned_to_user() 
  * 20100731 - asimon - more modifications to get_assigned_to_user()
  * 20100722 - asimon - BUGID 3406 - modified statement to get build name in get_assigned_to_user()
@@ -3206,6 +3207,7 @@ class testcase extends tlObjectWithAttachments
 	 * @since 20090131 - franciscom
 	 *
 	 * @internal revision
+	 *  20100813 - asimon - deactivated last slash on full path
 	 *  20100802 - asimon - 3647
 	 *  20100731 - asimon - added option to load assignments for all users,
 	 *                      added user_id, build_id, platform_id to SELECT part of statement
@@ -3322,7 +3324,8 @@ class testcase extends tlObjectWithAttachments
 	                        foreach($path_info as $tcase_id => $pieces)
 	                        {
 	                            unset($pieces[0]);
-	                            $flat_path[$tcase_id]=implode('/',$pieces) . '/';  
+	                            // 20100813 - asimon - deactivated last slash on path
+	                            $flat_path[$tcase_id]=implode('/',$pieces);
 	                        }
 	                        $main_keys = array_keys($rs);
 

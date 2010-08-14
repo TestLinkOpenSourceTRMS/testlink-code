@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.314 2010/08/10 14:10:11 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.315 2010/08/14 13:58:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)	
  *  20100810 - asimon - BUGID 3317: added $tlCfg->req_cfg->external_req_management
  *  20100810 - asimon - added TC ID filter for Test Cases to $tlCfg->tree_filter_cfg
  *  20100809 - asimon - BUGID 3662 - disabled advanced filter mode choice for TC editing mode
@@ -276,6 +277,7 @@ $g_removeEventsOlderThan = 30;
  * 'SEAPINE'   : edit configuration in TL_ABS_PATH/cfg/seapine.cfg.php
  * 'GFORGE'    : edit configuration in TL_ABS_PATH/cfg/gforge.cfg.php
  * 'FOGBUGZ'   : edit configuration in TL_ABS_PATH/cfg/fogbugz.cfg.php
+ * 'YOUTRACK' : edit configuration in TL_ABS_PATH/cfg/youtrack.cfg.php
  * ]
  */
 $g_interface_bugs = 'NO';

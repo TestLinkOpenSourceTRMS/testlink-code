@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2010/06/24 17:25:56 $ $Author: asimon83 $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2010/08/14 13:59:12 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -19,6 +19,7 @@
  *
  *
  * rev:
+ *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)
  *	20100616 - eloff - Show error message if bts config is broken
  *	20100311 - Julian - BUGID 3256, BUGID 3098
  *						function checkBugID_existence() has to return true
@@ -40,7 +41,7 @@ require_once(TL_ABS_PATH. "/lib/functions/database.class.php");
 // If user configures an interface not declared here, pages trying to use bts
 // will give error message
 $btslist = array('BUGZILLA','MANTIS','JIRA', 'JIRASOAP', 'TRACKPLUS',
-		    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ');
+		    	 'EVENTUM','TRAC','SEAPINE','REDMINE','GFORGE','FOGBUGZ','YOUTRACK');
 
 $bts = array_flip($btslist);
 

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.287 2010/08/13 11:58:45 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.288 2010/08/14 14:37:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100814 - franciscom - getInternalID() - removed unused code and minor code rearrangement
  * 20100813 - asimon - deactivated last slash on full path in get_assigned_to_user()
  * 20100802 - asimon - BUGID 3647 - filtering by build id in get_assigned_to_user() 
  * 20100731 - asimon - more modifications to get_assigned_to_user()
@@ -2265,6 +2266,7 @@ class testcase extends tlObjectWithAttachments
 			$glueCharacter = $cfg->glue_character;
 		}
 		$internalID = 0;
+
 		// Find the last glue char
 		$gluePos = strrpos($stringID, $glueCharacter);
 		if ($gluePos !== false)
@@ -2272,7 +2274,6 @@ class testcase extends tlObjectWithAttachments
 			$rawTestCasePrefix = substr($stringID, 0, $gluePos);
 			$rawExternalID = substr($stringID, $gluePos+1);
 
-			$testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
 			$externalID = is_numeric($rawExternalID) ?  intval($rawExternalID) : 0;
 	
 			$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
@@ -2283,12 +2284,11 @@ class testcase extends tlObjectWithAttachments
 			$testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 			if(!is_null($testCases))
 			{
+				$testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
 	      		$sql = 	"SELECT id  FROM {$this->tables['testprojects']} " .
 	               		"WHERE prefix = '" . $testCasePrefix . "'";
 				$recordset = $this->db->get_recordset($sql);
 				$tproject_id = $recordset[0]['id'];
-	
-				$tprojectSet = array();
 				foreach($testCases as $tcaseID => $value)
 				{
 	        		$path2root = $this->tree_manager->get_path($tcaseID);

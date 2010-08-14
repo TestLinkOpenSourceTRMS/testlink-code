@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.14 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.15 2010/08/14 15:48:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100814 - franciscom - improvements on logic and feedback when user fill in test case id filter
  *	20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
  *  20100526 - Julian - BUGID 3490 - Search Test Cases based on requirements
  *	20100409 - franciscom - BUGID 3371 - Search Test Cases based on Test Importance
@@ -48,6 +49,7 @@ if ($args->tprojectID)
 
     $from = array('by_keyword_id' => ' ', 'by_custom_field' => ' ', 'by_requirement_doc_id' => '');
     $filter = null;
+	$tcaseID = null;
     
     // if Both dates exists check From >= To
     if( !is_null($args->creation_date_from) &&  !is_null($args->creation_date_to) )
@@ -168,30 +170,43 @@ if ($args->tprojectID)
                 " {$from['by_keyword_id']} {$from['by_custom_field']} {$from['by_requirement_doc_id']} " .
                 " WHERE 1=1 ";
            
-    if ($filter)
+           
+    // 20100814 - franciscom
+    // if user fill in test case [external] id filter, and we were not able to get tcaseID, do any query is useless
+    $applyFilters = true;
+    if( !is_null($filter) && isset($filter['by_tc_id']) && !is_null($tcaseID) && ($tcaseID <= 0) )
     {
-        $sqlPart2 .= implode("",$filter);
+    	// get the right feedback message
+    	$applyFilters = false;
+    	$gui->warning_msg = $tcaseID == 0 ? lang_get('testcase_does_not_exists') : lang_get('prefix_does_not_exists');
     }
-  
-    // Count results
-    $sql = $sqlCount . $sqlPart2;
-    $gui->row_qty = $db->fetchOneValue($sql); 
-    if ($gui->row_qty)
-    {
-    	if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
+    if( $applyFilters )
+    {      
+    	if ($filter)
     	{
-            $sql = $sqlFields . $sqlPart2;
-    		$map = $db->fetchRowsIntoMap($sql,'testcase_id');	
+    	    $sqlPart2 .= implode("",$filter);
+    	}
+    	
+    	// Count results
+    	$sql = $sqlCount . $sqlPart2;
+    	$gui->row_qty = $db->fetchOneValue($sql); 
+    	if ($gui->row_qty)
+    	{
+    		if ($gui->row_qty <= $tcase_cfg->search->max_qty_for_display)
+    		{
+    	        $sql = $sqlFields . $sqlPart2;
+    			$map = $db->fetchRowsIntoMap($sql,'testcase_id');	
+			}
+			else
+			{
+				$gui->warning_msg = lang_get('too_wide_search_criteria');
+			}	
 		}
-		else
-		{
-			$gui->warning_msg = lang_get('too_wide_search_criteria');
-		}	
 	}
 }
 
 $smarty = new TLSmarty();
-if($gui->row_qty)
+if($gui->row_qty > 0)
 {
 	$tpl = 'tcSearchResults.tpl';
 	$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;

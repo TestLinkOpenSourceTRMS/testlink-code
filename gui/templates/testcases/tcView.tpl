@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.41 2010/06/24 17:25:53 asimon83 Exp $
+$Id: tcView.tpl,v 1.42 2010/08/14 15:47:09 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
+    20100814 - franciscom - improvement on user feecback when no record found.
     20100315 - franciscom - fixed refresh tree issue 
     20100106 - franciscom - Multiple Test Case Steps Feature
     20090418 - franciscom - BUGID 2364 
@@ -248,7 +249,11 @@ function validateStepsReorder(formOID)
     <br>
 {/section}
 {else}
-	{$labels.no_records_found}
+  {if isset($gui->warning_msg) }
+	  {$gui->warning_msg}
+	{else}
+	  {$labels.no_records_found}
+	{/if}
 {/if}
 
 </div>

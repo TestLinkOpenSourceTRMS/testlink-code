@@ -10,9 +10,10 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.59 2010/05/07 06:47:18 mx-julian Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.60 2010/08/15 17:45:45 franciscom Exp $
  *
  * @internal Revisions:
+ *	20100815 - franciscom - BUGID 3654
  *  20100507 - Julian - changed time_limit for execution to umlimited
  *	20100110 - franciscom - added drop_tables();
  * 	20091109 - havlatm - general layout, header, logic update
@@ -408,7 +409,8 @@ switch($db_type)
 // --------------------------------------------------------------------------------------------
 if( $install && $conn_result['status'] != 0 )
 {
-	drop_tables($db);
+	// BUGID 3654
+	drop_tables($db,$db_table_prefix);
 }  
 
 
@@ -572,26 +574,29 @@ function write_config_db($filename, $data)
 
 
 // Drop tables to allow re-run Installation
-function drop_tables(&$dbHandler)
+// BUGID 3654
+function drop_tables(&$dbHandler,$dbTablePrefix)
 {
 	// From 1.9 and up we have detail of tables.
 	$schema = tlObjectWithDB::getDBTables();
 	
 	// tables present on target db
 	$my_ado=$dbHandler->get_dbmgr_object();
-	$the_tables =$my_ado->MetaTables('TABLES');  
-	if( count($the_tables) > 0 && isset($the_tables[0]))
+	$tablesOnDB =$my_ado->MetaTables('TABLES');  
+	if( count($tablesOnDB) > 0 && isset($tablesOnDB[0]))
 	{
 		echo "<br />Dropping all TL existent tables:<br />";
 		foreach($schema as $tablePlainName => $tableFullName)
 		{
-			$targetTable = $db_table_prefix . $tablePlainName;
-			// if( isset(in_array($targetTable,$the_tables) )
-			if( in_array($tableFullName,$the_tables) )
+			// echo 'DEBUG - $tablePlainName:' . $tablePlainName . '<br>';
+			// echo 'DEBUG - $tableFullName:' . $tableFullName . '<br>';
+			// BUGID 3654
+			$targetTable = $dbTablePrefix . $tablePlainName;
+			if( in_array($targetTable,$tablesOnDB) )
 			{
 				// Need to add option (CASCADE ?) to delete dependent object
-				echo "Droping $tableFullName" . "<br />";
-				$sql="DROP TABLE $tableFullName CASCADE";
+				echo "Droping $targetTable" . "<br />";
+				$sql="DROP TABLE $targetTable CASCADE";
 				$dbHandler->exec_query($sql);
 			}  	
 		}

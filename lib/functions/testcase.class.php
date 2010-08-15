@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.288 2010/08/14 14:37:45 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.289 2010/08/15 17:45:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100814 - franciscom - getInternalID() - removed unused code and minor code rearrangement
+ *						   changes in returned value when internal ID can not be found.	
  * 20100813 - asimon - deactivated last slash on full path in get_assigned_to_user()
  * 20100802 - asimon - BUGID 3647 - filtering by build id in get_assigned_to_user() 
  * 20100731 - asimon - more modifications to get_assigned_to_user()
@@ -2244,6 +2245,8 @@ class testcase extends tlObjectWithAttachments
 	 *          NN: test case number (generated using testprojects.tc_counter field)
 	 *
 	 * @return internal id (node id in nodes_hierarchy)
+	 *		   0 -> test case prefix OK, but external id does not exists
+	 *		   -1 -> test case prefix KO
 	 *
 	 * 20080818 - franciscom - Dev Note
 	 * I'm a feeling regarding performance of this function.
@@ -2260,22 +2263,38 @@ class testcase extends tlObjectWithAttachments
 	 */
 	function getInternalID($stringID,$glueCharacter = null)
 	{
+		$internalID = 0;
+
 		if (is_null($glueCharacter))
 		{
 			$cfg = config_get('testcase_cfg');
 			$glueCharacter = $cfg->glue_character;
 		}
-		$internalID = 0;
-
+		
 		// Find the last glue char
 		$gluePos = strrpos($stringID, $glueCharacter);
-		if ($gluePos !== false)
+		$status_ok = ($gluePos !== false);
+		if($status_ok)
 		{
+			$internalID = -1;
 			$rawTestCasePrefix = substr($stringID, 0, $gluePos);
 			$rawExternalID = substr($stringID, $gluePos+1);
-
 			$externalID = is_numeric($rawExternalID) ?  intval($rawExternalID) : 0;
 	
+			// Check first if Test Project prefix is valid, if not abort
+			$testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
+	      	$sql = 	"SELECT id  FROM {$this->tables['testprojects']} " .
+	           		"WHERE prefix = '" . $testCasePrefix . "'";
+			$tproject_info = $this->db->get_recordset($sql);
+			$status_ok = !is_null($tproject_info);
+		}
+		
+		if( $status_ok )
+		{
+			$internalID = 0;
+			
+			// get all test cases with requested external ID on all test projects.
+			// we do not have way to work only on one test project.
 			$sql = "SELECT DISTINCT NH.parent_id AS tcase_id" .
 	               " FROM {$this->tables['tcversions']} TCV, {$this->tables['nodes_hierarchy']} NH" .
 	               " WHERE TCV.id = NH.id " .
@@ -2284,11 +2303,7 @@ class testcase extends tlObjectWithAttachments
 			$testCases = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 			if(!is_null($testCases))
 			{
-				$testCasePrefix = $this->db->prepare_string($rawTestCasePrefix);
-	      		$sql = 	"SELECT id  FROM {$this->tables['testprojects']} " .
-	               		"WHERE prefix = '" . $testCasePrefix . "'";
-				$recordset = $this->db->get_recordset($sql);
-				$tproject_id = $recordset[0]['id'];
+				$tproject_id = $tproject_info[0]['id'];
 				foreach($testCases as $tcaseID => $value)
 				{
 	        		$path2root = $this->tree_manager->get_path($tcaseID);
@@ -2300,6 +2315,7 @@ class testcase extends tlObjectWithAttachments
 	      		}	
 			}
 		}
+
 		return $internalID;
 	}
 	

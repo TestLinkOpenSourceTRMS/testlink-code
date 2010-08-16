@@ -12,11 +12,13 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.82 2010/07/19 19:17:05 erikeloff Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.83 2010/08/16 13:59:27 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20100816 - Julian - changed default width for table columns
+ *	                  - added default sorting
  *	20100719 - Eloff - Implement extTable for this report
  *	20100617 - eloff - BUGID 3255 - fix bug links if available
  *	201005 - Julian - BUGID 3492 - show only test case summary for not run test cases
@@ -348,27 +350,27 @@ function buildMatrix($dataSet, $options = array())
 	);
 	$options = array_merge($default_options, $options);
 	$columns = array();
-	$columns[] = array('title' => lang_get('title_test_suite_name'), 'width' => 100);
-	$columns[] = array('title' => lang_get('title_test_case_title'), 'width' => 250);
-	$columns[] = array('title' => lang_get('version'), 'width' => 50);
+	$columns[] = array('title' => lang_get('title_test_suite_name'), 'width' => 80, 'type' => 'text');
+	$columns[] = array('title' => lang_get('title_test_case_title'), 'width' => 80, 'type' => 'text');
+	$columns[] = array('title' => lang_get('version'), 'width' => 30);
 	if ($options['show_platforms'])
 	{
-		$columns[] = array('title' => lang_get('platform'));
+		$columns[] = array('title' => lang_get('platform'), 'width' => 60);
 	}
 	if( $options['status_not_run'] )
 	{
-		$columns[] = array('title' => lang_get('assigned_to'));
-		$columns[] = array('title' => lang_get('summary'));
+		$columns[] = array('title' => lang_get('assigned_to'), 'width' => 60);
+		$columns[] = array('title' => lang_get('summary'), 'width' => 150, 'type' => 'text');
 	}
 	else
 	{
-		$columns[] = array('title' => lang_get('th_build'));
-		$columns[] = array('title' => lang_get('th_run_by'));
-		$columns[] = array('title' => lang_get('th_date'));
-		$columns[] = array('title' => lang_get('title_execution_notes'));
+		$columns[] = array('title' => lang_get('th_build'), 'width' => 35);
+		$columns[] = array('title' => lang_get('th_run_by'), 'width' => 60);
+		$columns[] = array('title' => lang_get('th_date'), 'width' => 60);
+		$columns[] = array('title' => lang_get('title_execution_notes'), 'width' => 150, 'type' => 'text');
 		if ($options['bugInterfaceOn'])
 		{
-			$columns[] = array('title' => lang_get('th_bugs'));
+			$columns[] = array('title' => lang_get('th_bugs'), 'type' => 'text');
 		}
 	}
 
@@ -378,11 +380,18 @@ function buildMatrix($dataSet, $options = array())
 		if ($options['show_platforms'])
 		{
 			$matrix->groupByColumn = TABLE_GROUP_BY_PLATFORM;
+			//sort by test case for not run report else sort by date
+			$matrix->sortByColumn = ($options['status_not_run']) ? 1:6;
 		}
 		else
 		{
 			$matrix->groupByColumn = TABLE_GROUP_BY_TESTSUITE;
+			//sort by test case for not run report else sort by date
+			$matrix->sortByColumn = ($options['status_not_run']) ? 1:5;
 		}
+	
+	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
+		
 	}
 	else
 	{

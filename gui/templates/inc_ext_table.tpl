@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.10 2010/08/16 12:35:20 asimon83 Exp $
+$Id: inc_ext_table.tpl,v 1.11 2010/08/16 13:59:27 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100816 - Julian - added function to allow column wrap (multiple lines per cell)
 	 20100816 - asimon - enable sorting of ExtJS table by a default column
 	 20100719 - Eloff - Update due to changes in tlExtTable
 	 20100719 - Julian - Replaced lables for toolbar items with more general ones
@@ -67,6 +68,10 @@ function statusCompare(val)
 function priorityRenderer(val)
 {
 	return prio_code_label[val];
+}
+
+function columnWrap(val){
+    return '<div style="white-space:normal !important;">'+ val +'</div>';
 }
 
 Ext.onReady(function() {

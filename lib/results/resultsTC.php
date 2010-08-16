@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.61 2010/07/23 14:11:10 asimon83 Exp $ 
+* $Id: resultsTC.php,v 1.62 2010/08/16 13:59:27 mx-julian Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,8 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100816 - Julian - changed default column width
+                    - added default sorting
 * 20100723 - asimon - BUGID 3590: crash when clicking testcase link because of missing build id
 * 20100719 - eloff - Update due to changes in tlExtTable
 * 20100716 - eloff - group by platform column
@@ -296,16 +298,16 @@ function checkRights(&$db,&$user)
 function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
 {
 	$columns = array(array('title' => lang_get('title_test_suite_name'), 'width' => 100),
-		             array('title' => lang_get('title_test_case_title'), 'width' => 350));
+		             array('title' => lang_get('title_test_case_title'), 'width' => 150));
 	if ($show_platforms)
 	{
-		$columns[] = array('title' => lang_get('platform'), 'width' => 150);
+		$columns[] = array('title' => lang_get('platform'), 'width' => 60);
 	}
 	
 	// BUGID 3418: check if test priority is enabled
 	if($_SESSION['testprojectOptions']->testPriorityEnabled) 
 	{
-		$columns[] = array('title' => lang_get('priority'), 'type' => 'priority');
+		$columns[] = array('title' => lang_get('priority'), 'type' => 'priority', 'width' => 40);
 	}
 	
 	foreach ($buildSet as $build) 
@@ -324,12 +326,20 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
 		{
 			$matrix->groupByColumn = TABLE_GROUP_BY_TESTSUITE;
 		}
+		
+		$matrix->sortDirection = 'DESC';
 
 		// BUGID 3418: check if test priority is enabled
 		if($_SESSION['testprojectOptions']->testPriorityEnabled) 
 		{
 			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));
+			//sort by priority
+			$matrix->sortByColumn = ($show_platforms) ? 3:2;
+		} else {
+			//sort by test case
+			$matrix->sortByColumn = 1;
 		}
+
 	} 
 	else 
 	{

@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/07/19 21:32:44 $ by $Author: erikeloff $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/08/16 13:59:27 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
+ *	20100816 - Julian - added default column width
+ *                    - added default sorting and grouping
  *	20100719 - eloff - Use tlExtTable
  *	20090504 - amitkhullar - BUGID 2465
  */
@@ -18,6 +20,9 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
+
+define('TABLE_GROUP_BY_BUILD', 1);
+define('TABLE_SORT_BY_DATE', 3);
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
@@ -110,15 +115,22 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 
 	// Create column headers
 	$columns = array(
-		lang_get('test_case'),
-		lang_get('build'),
-		lang_get('th_owner'),
-		lang_get('date'),
-		array('title' => lang_get('status'), 'type' => status));
+		array('title' => lang_get('test_case'), 'width' => 80),
+		array('title' => lang_get('build'), 'width' => 35),
+		array('title' => lang_get('th_owner'), 'width' => 60),
+		array('title' => lang_get('date'), 'width' => 60),
+		array('title' => lang_get('status'), 'type' => status, 'width' => 20));
 	foreach ($gui->cfields as $cfield)
 	{
-		$columns[] = $cfield['label'];
+		//if custom field is time for computing execution time do not waste space
+		if($cfield['name'] == 'CF_EXEC_TIME') {
+			$columns[] = array('title' => $cfield['label'], 'width' => 20);
+		} else {
+			$columns[] = array('title' => $cfield['label'], 'type' => 'text' );
+		}
 	}
+	
+	
 
 	// Extract the relevant data and build a matrix
 	$matrixData = array();
@@ -133,7 +145,9 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 
 		$dummy = null;
 		$rowData[] =
-			"<a href=\"lib/execute/execSetResults.php?level=testcase&build_id={$arrData['builds_id']}&id={$arrData['tcase_id']}&version_id={$arrData['tcversion_id']}&tplan_id={$gui->tplan_id}\">" .
+			"<!--{$arrData['execution_ts']}--><a href=\"lib/execute/execSetResults.php?" .
+			"level=testcase&build_id={$arrData['builds_id']}&id={$arrData['tcase_id']}" .
+			"&version_id={$arrData['tcversion_id']}&tplan_id={$gui->tplan_id}\">" .
 			localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $arrData['execution_ts']) .
 			'</a>';
 		// let the renderer localize status
@@ -148,6 +162,10 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	}
 	$table = new tlExtTable($columns, $matrixData, 'tl_table_results_cf');
 	$table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
+	$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+	$table->groupByColumn = TABLE_GROUP_BY_BUILD;
+	$table->sortByColumn = TABLE_SORT_BY_DATE;
+	$table->sortDirection = 'DESC';
 	$gui->tableSet = array($table);
 }
 

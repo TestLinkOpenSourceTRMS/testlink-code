@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.14 2010/07/31 18:49:49 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.15 2010/08/16 13:59:27 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  * 
+ * 20100816 - Julian - added default sorting and grouping
  * 20100730 - asimon - added table ID (0) to constructor of ext table
  *                     (required by changes to ext table class to avoid warnings in log)
  * 20100629 - asimon - added display of is_open/frozen attribute,
@@ -155,7 +156,7 @@ if(count($gui->reqIDs)) {
 			// coverage
 			if ($coverage_enabled) {
 		    	$expected = $version['expected_coverage'];
-		    	$coverage_string = lang_get('not_aplicable') . " ($current/0)";
+		    	$coverage_string = "<!-- -1 -->" . lang_get('not_aplicable') . " ($current/0)";
 		    	if ($expected) {
 		    		$percentage = round(100 / $expected * $current, 2);
 		    		$padded_percentage = sprintf("%010d", $percentage); //bring all percentages to same length
@@ -221,12 +222,19 @@ if(count($gui->reqIDs)) {
 	    }
         
 	    foreach($gui->cfields as $cf) {
-	    	$columns[] = htmlentities($cf['label'], ENT_QUOTES, $charset);
+	    	$columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $charset), 'type' => 'text');
 	    }
 
 	    // create table object, fill it with columns and row data and give it a title
 	    $matrix = new tlExtTable($columns, $rows, 0);
         $matrix->title = lang_get('requirements');
+        //group by Req Spec
+        $matrix->groupByColumn = 0;
+        //sort by coverage descending
+        $matrix->sortByColumn = 4;
+        $matrix->sortDirection = 'DESC';
+        //show custom field content in multiple lines
+        $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
         $gui->tableSet= array($matrix);
     }
 } else {

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.289 2010/08/15 17:45:19 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.290 2010/08/16 14:32:23 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -14,6 +14,7 @@
  * 20100814 - franciscom - getInternalID() - removed unused code and minor code rearrangement
  *						   changes in returned value when internal ID can not be found.	
  * 20100813 - asimon - deactivated last slash on full path in get_assigned_to_user()
+ *                     to remove it from test suite name in "tc assigned to user" tables
  * 20100802 - asimon - BUGID 3647 - filtering by build id in get_assigned_to_user() 
  * 20100731 - asimon - more modifications to get_assigned_to_user()
  * 20100722 - asimon - BUGID 3406 - modified statement to get build name in get_assigned_to_user()
@@ -3224,6 +3225,7 @@ class testcase extends tlObjectWithAttachments
 	 *
 	 * @internal revision
 	 *  20100813 - asimon - deactivated last slash on full path
+	 *                      to remove it from test suite name in "tc assigned to user" tables
 	 *  20100802 - asimon - 3647
 	 *  20100731 - asimon - added option to load assignments for all users,
 	 *                      added user_id, build_id, platform_id to SELECT part of statement
@@ -3341,6 +3343,7 @@ class testcase extends tlObjectWithAttachments
 	                        {
 	                            unset($pieces[0]);
 	                            // 20100813 - asimon - deactivated last slash on path
+	                            // to remove it from test suite name in "tc assigned to user" tables
 	                            $flat_path[$tcase_id]=implode('/',$pieces);
 	                        }
 	                        $main_keys = array_keys($rs);

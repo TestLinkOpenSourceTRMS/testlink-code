@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.11 2010/08/16 13:59:27 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.12 2010/08/16 14:44:49 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100816 - Eloff - allow text selection in wrapped columns
 	 20100816 - Julian - added function to allow column wrap (multiple lines per cell)
 	 20100816 - asimon - enable sorting of ExtJS table by a default column
 	 20100719 - Eloff - Update due to changes in tlExtTable
@@ -71,7 +72,7 @@ function priorityRenderer(val)
 }
 
 function columnWrap(val){
-    return '<div style="white-space:normal !important;">'+ val +'</div>';
+    return '<div style="white-space:normal !important; -moz-user-select: text; -webkit-user-select: text;">'+ val +'</div>';
 }
 
 Ext.onReady(function() {

@@ -8,11 +8,12 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.1 2010/07/31 18:49:50 asimon83 Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.2 2010/08/16 12:35:20 asimon83 Exp $
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
+ * 20100816 - asimon - enable default sorting by progress column
  * 20100731 - asimon - initial commit
  * 		
  */
@@ -53,7 +54,6 @@ foreach ($status_map as $status => $code) {
 
 $columns[] = array('title' => lang_get('progress'), 'width' => 30);
 
-
 // build the content of the table
 $rows = array();
 
@@ -84,7 +84,12 @@ foreach ($matrix as $build_id => $build_execution_map) {
 		}
 		
 		// add general progress for this user
-		$current_row[] = $statistics['progress'];
+		// add html comment with which js can sort the column
+		$percentage = is_numeric($statistics['progress']) ? $statistics['progress'] : 0;
+		$padded_percentage = sprintf("%010d", $percentage); //bring all percentages to same length
+		$commented_progress = "<!-- $padded_percentage --> {$statistics['progress']}";
+		
+		$current_row[] = $commented_progress;
 		
 		// add this row to the others
 		$rows[] = $current_row;
@@ -96,6 +101,10 @@ foreach ($matrix as $build_id => $build_execution_map) {
 $matrix = new tlExtTable($columns, $rows, 0);
 $matrix->title = lang_get('results_by_tester_per_build');
 $matrix->groupByColumn = 0; // default grouping by first column, which is build in this case
+
+// 20100816 - asimon - enable default sorting by progress column
+$matrix->sortByColumn = count($columns)-1; // sort by last column, which is progress
+
 $gui->tableSet = array($matrix);
 
 

@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.10 2010/07/19 18:54:03 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.11 2010/08/16 12:35:20 asimon83 Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100816 - asimon - enable sorting by a default column via $sortByColumn
  *	20100719 - eloff - Pass $tableID via constructor
  *	20100719 - franciscom - changing default value for $groupByColumn
  *	20100716 - eloff - Allow grouping on any column
@@ -45,6 +46,20 @@ class tlExtTable extends tlTable
 	 */
 	public $groupByColumn = -1;
 
+	/**
+	 * 20100816 - asimon - enable sorting by a default column.
+	 * If set to a positive integer value, use this column for sorting. 
+	 * User can choose to sort by other columns, this is just the default column.
+	 * If you activate this, you can also set $sortDirection if you don't want descending sorting.
+	 */
+	public $sortByColumn = -1;
+	
+	/**
+	 * 20100816 - asimon - enable sorting by a default column and with configurable direction.
+	 * If $sortByColumn is used, this will be used as the sort direction, default is descending (DESC).
+	 */
+	public $sortDirection = 'DESC';
+	
     /**
      * If true shows a toolbar in the table header.
      *

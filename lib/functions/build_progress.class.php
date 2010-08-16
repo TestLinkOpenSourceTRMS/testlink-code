@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: build_progress.class.php,v 1.1 2010/07/31 18:49:48 asimon83 Exp $
+ * @version CVS: $Id: build_progress.class.php,v 1.2 2010/08/16 12:35:20 asimon83 Exp $
  *
  * Generate information about the progress by tester per build.
  * 
@@ -199,8 +199,8 @@ class build_progress extends tlObjectWithDB {
 		}
 		
 		// add not run and total progress
-		if (is_numeric($counters['total']) && $counters['total'] != 0
-		&& is_numeric($nr_count) && $nr_count != 0) {
+		if (is_numeric($counters['total']) && $counters['total'] != 0) {
+		//&& is_numeric($nr_count) && $nr_count != 0) {
 			$percent = $nr_count / $counters['total'] * 100;
 			$percent = number_format($percent, 2);
 			$progress = number_format(100 - $percent, 2);

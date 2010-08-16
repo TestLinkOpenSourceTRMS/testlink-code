@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2010/08/02 11:29:45 $  $Author: asimon83 $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/08/16 12:35:19 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100816 - asimon - if priority is enabled, enable default sorting by that column
  *  20100802 - asimon - BUGID 3647, filtering by build
  *  20100731 - asimon - heavy refactoring, modified to include more parameters and flexibility,
  *                      changed table to ExtJS format
@@ -115,6 +116,8 @@ foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 	$columns[] = array('title' => lang_get('testcase'), 'width' => 80);
 	$columns[] = array('title' => lang_get('platform'), 'width' => 80);
 	
+	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
+	$column_count_before_priority = count($columns);
 	if ($args->priority_enabled) {
 		$columns[] = array('title' => lang_get('priority'), 'width' => 80);
 	}
@@ -183,6 +186,12 @@ foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 	$matrix->title = $testplan . ": {$tplan_name}";
 	// default grouping by first column, which is user for overview, build otherwise
 	$matrix->groupByColumn = 0;
+	
+	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
+	if ($args->priority_enabled) {
+		$matrix->sortByColumn = $column_count_before_priority;
+	}
+	
 	$gui->tableSet[$tableID] = $matrix;
 }
 

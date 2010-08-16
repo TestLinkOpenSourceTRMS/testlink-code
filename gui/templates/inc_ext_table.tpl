@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.9 2010/07/19 18:53:44 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.10 2010/08/16 12:35:20 asimon83 Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100816 - asimon - enable sorting of ExtJS table by a default column
 	 20100719 - Eloff - Update due to changes in tlExtTable
 	 20100719 - Julian - Replaced lables for toolbar items with more general ones
 	 20100716 - Eloff - Add toolbar and make panel stateful
@@ -79,6 +80,10 @@ Ext.onReady(function() {
 				fields['{$tableID}'])
 			{if $matrix->groupByColumn >= 0}
 			,groupField: 'idx{$matrix->groupByColumn}'
+			{/if}
+			// 20100816 - asimon - enable sorting by a default column
+			{if $matrix->sortByColumn >= 0}
+			,sortInfo:{ldelim}field:'idx{$matrix->sortByColumn}',direction:'{$matrix->sortDirection}'{rdelim}
 			{/if}
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);

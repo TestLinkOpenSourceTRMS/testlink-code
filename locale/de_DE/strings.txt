@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.168 2010/08/13 08:54:22 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.169 2010/08/16 16:07:38 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.648
+ * Last Update according to en_GB string file version 1.649
  *
  **/
 
@@ -258,6 +258,8 @@ $TLS_execution = "Testausführung";
 $TLS_testplan_design = "Testplanerstellung";
 $TLS_enable_on = "Aktivieren für";
 $TLS_closed_on_date="Closed on ";
+$TLS_prefix_does_not_exists="Testprojekt-Prefix existiert nicht";
+$TLS_testcase_does_not_exists="Testfall existiert nicht";
 
 
 // ----- JAVASCRIPT -----

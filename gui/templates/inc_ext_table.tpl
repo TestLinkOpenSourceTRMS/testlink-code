@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.12 2010/08/16 14:44:49 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.13 2010/08/17 14:30:35 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100817 - Julian - toolbar items configurable, hideGroupedColumn
 	 20100816 - Eloff - allow text selection in wrapped columns
 	 20100816 - Julian - added function to allow column wrap (multiple lines per cell)
 	 20100816 - asimon - enable sorting of ExtJS table by a default column
@@ -97,7 +98,9 @@ Ext.onReady(function() {
 			id: '{$tableID}',
 			store: store['{$tableID}'],
             {if $matrix->show_toolbar}
-			tbar: [{ldelim}
+			tbar: [
+			{if $matrix->toolbar_expand_collapse_groups_button}
+			{ldelim}
 				text: '{$labels.expand_groups|escape:javascript}',
 				iconCls: 'x-group-by-icon',
 				handler: function () {ldelim}
@@ -110,7 +113,12 @@ Ext.onReady(function() {
 				handler: function () {ldelim}
 					grid['{$tableID}'].getView().collapseAllGroups();
 				{rdelim},
-			{rdelim},
+			{rdelim}
+			{/if}
+			{if $matrix->toolbar_expand_collapse_groups_button && $matrix->toolbar_show_all_columns_button}
+			,
+			{/if}
+			{if $matrix->toolbar_show_all_columns_button}
 			{ldelim}
 				text: '{$labels.show_all_columns|escape:javascript}',
 				tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
@@ -122,12 +130,16 @@ Ext.onReady(function() {
 						cm.setHidden(i, false);
 					{rdelim}
 				{rdelim},
-			{rdelim}],
+			{rdelim}
+			{/if}
+			],
             {/if} {* /show_toolbar *}
-
 
 			view: new Ext.grid.GroupingView({ldelim}
 				forceFit: true
+				{if $matrix->hideGroupedColumn}
+				,hideGroupedColumn:true
+				{/if}
 				{rdelim}),
 				columns: columnData['{$tableID}']
 				{$matrix->getGridSettings()}

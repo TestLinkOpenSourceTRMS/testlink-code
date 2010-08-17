@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.11 2010/08/16 12:35:20 asimon83 Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.12 2010/08/17 14:30:35 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ * 	20100817 - Julian - default toolbar items, hideGroupedColumn
  *  20100816 - asimon - enable sorting by a default column via $sortByColumn
  *	20100719 - eloff - Pass $tableID via constructor
  *	20100719 - franciscom - changing default value for $groupByColumn
@@ -45,6 +46,11 @@ class tlExtTable extends tlTable
 	 * User can choose to group on other columns, this is just the default column.
 	 */
 	public $groupByColumn = -1;
+	
+	/**
+	 * If true the column the table is grouped by will not be shown
+	 */
+	public $hideGroupedColumn = true;
 
 	/**
 	 * 20100816 - asimon - enable sorting by a default column.
@@ -62,10 +68,18 @@ class tlExtTable extends tlTable
 	
     /**
      * If true shows a toolbar in the table header.
-     *
-     * @see inc_ext_table.tpl for the tools available.
      */
     public $show_toolbar = true;
+    
+    /**
+     * If true shows "expand groups" toolbutton in toolbar.
+     */
+    public $toolbar_expand_collapse_groups_button = true;
+    
+    /**
+     * If true shows "show all columns" toolbutton in toolbar.
+     */
+    public $toolbar_show_all_columns_button = true;
 
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.

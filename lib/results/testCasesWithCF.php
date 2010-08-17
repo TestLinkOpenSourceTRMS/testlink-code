@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/08/16 13:59:27 $ by $Author: mx-julian $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/08/17 14:30:35 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -165,6 +165,10 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 	$table->groupByColumn = TABLE_GROUP_BY_BUILD;
 	$table->sortByColumn = TABLE_SORT_BY_DATE;
+	//define toolbar
+	$table->show_toolbar = true;
+	$table->toolbar_expand_collapse_groups_button = true;
+	$table->toolbar_show_all_columns_button = true;
 	$table->sortDirection = 'DESC';
 	$gui->tableSet = array($table);
 }

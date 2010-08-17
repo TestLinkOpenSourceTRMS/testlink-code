@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/08/16 12:35:19 $  $Author: asimon83 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/08/17 14:30:35 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
@@ -187,9 +187,16 @@ foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 	// default grouping by first column, which is user for overview, build otherwise
 	$matrix->groupByColumn = 0;
 	
+	//define toolbar
+	$matrix->show_toolbar = true;
+	$matrix->toolbar_expand_collapse_groups_button = true;
+	$matrix->toolbar_show_all_columns_button = true;
+	
 	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
 	if ($args->priority_enabled) {
 		$matrix->sortByColumn = $column_count_before_priority;
+	} else {
+		$matrix->sortByColumn = 1;
 	}
 	
 	$gui->tableSet[$tableID] = $matrix;

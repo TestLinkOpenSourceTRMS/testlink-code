@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.13 2010/08/17 14:30:35 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.14 2010/08/17 20:05:18 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -25,7 +25,7 @@ Purpose: rendering of Ext Js table
 
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
-{lang_get var="labels" s="expand_groups, collapse_groups, show_all_columns,
+{lang_get var="labels" s="expand_collapse_groups, show_all_columns,
 	show_all_columns_tooltip"}
 {literal}
 <script type="text/javascript">
@@ -101,17 +101,10 @@ Ext.onReady(function() {
 			tbar: [
 			{if $matrix->toolbar_expand_collapse_groups_button}
 			{ldelim}
-				text: '{$labels.expand_groups|escape:javascript}',
+				text: '{$labels.expand_collapse_groups|escape:javascript}',
 				iconCls: 'x-group-by-icon',
 				handler: function () {ldelim}
-					grid['{$tableID}'].getView().expandAllGroups();
-				{rdelim},
-			{rdelim},
-			{ldelim}
-				text: '{$labels.collapse_groups|escape:javascript}',
-				iconCls: 'x-group-by-icon',
-				handler: function () {ldelim}
-					grid['{$tableID}'].getView().collapseAllGroups();
+					grid['{$tableID}'].getView().toggleAllGroups();
 				{rdelim},
 			{rdelim}
 			{/if}

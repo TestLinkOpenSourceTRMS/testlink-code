@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.12 2010/08/17 14:30:35 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.13 2010/08/17 20:05:43 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -72,7 +72,7 @@ class tlExtTable extends tlTable
     public $show_toolbar = true;
     
     /**
-     * If true shows "expand groups" toolbutton in toolbar.
+     * If true shows "expand/collapse groups" toolbutton in toolbar.
      */
     public $toolbar_expand_collapse_groups_button = true;
     

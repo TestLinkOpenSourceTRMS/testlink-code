@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.14 2010/08/17 20:05:18 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.15 2010/08/18 07:33:28 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100818 - Julian - use toolbar object to generate toolbar
 	 20100817 - Julian - toolbar items configurable, hideGroupedColumn
 	 20100816 - Eloff - allow text selection in wrapped columns
 	 20100816 - Julian - added function to allow column wrap (multiple lines per cell)
@@ -94,40 +95,40 @@ Ext.onReady(function() {
 			{/if}
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);
+		
+		tbar = new Ext.Toolbar();
+		
+		{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
+		tbar.add({ldelim}
+			text: '{$labels.expand_collapse_groups|escape:javascript}',
+			iconCls: 'x-group-by-icon',
+			handler: function () {ldelim}
+				grid['{$tableID}'].getView().toggleAllGroups();
+			{rdelim}
+		{rdelim});
+		{/if}
+		
+		{if $matrix->toolbar_show_all_columns_button && $matrix->show_toolbar}
+		tbar.add({ldelim}
+			text: '{$labels.show_all_columns|escape:javascript}',
+			tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
+			tooltipType: 'title',
+			iconCls: 'x-cols-icon',
+			handler: function (button, state) {ldelim}
+				var cm = grid['{$tableID}'].getColumnModel();
+				for (var i=0;i<cm.getColumnCount();i++) {ldelim}
+					cm.setHidden(i, false);
+				{rdelim}
+			{rdelim}
+		{rdelim});
+		{/if}
+		
 		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
 			id: '{$tableID}',
 			store: store['{$tableID}'],
-            {if $matrix->show_toolbar}
-			tbar: [
-			{if $matrix->toolbar_expand_collapse_groups_button}
-			{ldelim}
-				text: '{$labels.expand_collapse_groups|escape:javascript}',
-				iconCls: 'x-group-by-icon',
-				handler: function () {ldelim}
-					grid['{$tableID}'].getView().toggleAllGroups();
-				{rdelim},
-			{rdelim}
+			{if $matrix->show_toolbar}
+			tbar: tbar,
 			{/if}
-			{if $matrix->toolbar_expand_collapse_groups_button && $matrix->toolbar_show_all_columns_button}
-			,
-			{/if}
-			{if $matrix->toolbar_show_all_columns_button}
-			{ldelim}
-				text: '{$labels.show_all_columns|escape:javascript}',
-				tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
-				tooltipType: 'title',
-				iconCls: 'x-cols-icon',
-				handler: function (button, state) {ldelim}
-					var cm = grid['{$tableID}'].getColumnModel();
-					for (var i=0;i<cm.getColumnCount();i++) {ldelim}
-						cm.setHidden(i, false);
-					{rdelim}
-				{rdelim},
-			{rdelim}
-			{/if}
-			],
-            {/if} {* /show_toolbar *}
-
 			view: new Ext.grid.GroupingView({ldelim}
 				forceFit: true
 				{if $matrix->hideGroupedColumn}

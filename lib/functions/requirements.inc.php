@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.108 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.109 2010/08/18 14:37:08 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -991,16 +991,17 @@ function req_link_replace($dbHandler, $scope, $tprojectID)
 			$rs = $dbHandler->get_recordset($sql);
 			
 			if (count($rs)) {
-				// get root of linked node and check
-				$real_root = $tree_mgr->getTreeRoot($rs[0]['id']);
-				$matched_root_info = $tproject_mgr->get_by_prefix($matched_prefix);
-				if ($real_root != $matched_root_info['id']) {
-					continue;
+				//20100818 - Julian - fixed error if same doc_id exists in multiple projects
+				foreach($rs as $key => $value) {
+					// get root of linked node and check
+					$real_root = $tree_mgr->getTreeRoot($value['id']);
+					$matched_root_info = $tproject_mgr->get_by_prefix($matched_prefix);
+					if ($real_root == $matched_root_info['id']) {
+						$urlString = sprintf($string2replace[$accessKey], $value['id'],
+											$matched_anchor, $title[$accessKey], $value['doc_id']);
+						$scope = str_replace($matched_string,$urlString,$scope);
+					}
 				}
-				
-				$urlString = sprintf($string2replace[$accessKey], $rs[0]['id'],
-									$matched_anchor, $title[$accessKey], $rs[0]['doc_id']);
-				$scope = str_replace($matched_string,$urlString,$scope);
 			}
 		}
 	}

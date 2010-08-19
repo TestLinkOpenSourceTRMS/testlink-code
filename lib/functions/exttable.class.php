@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.13 2010/08/17 20:05:43 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.14 2010/08/19 11:47:27 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100819 - Julian - MultiSort, default Values for Grid Settings, more Grid Settings
  * 	20100817 - Julian - default toolbar items, hideGroupedColumn
  *  20100816 - asimon - enable sorting by a default column via $sortByColumn
  *	20100719 - eloff - Pass $tableID via constructor
@@ -39,6 +40,13 @@ class tlExtTable extends tlTable
 	 * @see addCustomBehaviour($type,$behaviour)
 	 */
 	protected $customBehaviour = array();
+	
+	/**
+	 * Array of multiSort Buttons.
+	 * @see addMultiSortButton($field,$direction)
+	 */
+	
+	public $multiSortButtons = array();
 
 	/**
 	 * If set to an POSITIVE INTEGER VALUE, use this column for grouping. 
@@ -51,6 +59,27 @@ class tlExtTable extends tlTable
 	 * If true the column the table is grouped by will not be shown
 	 */
 	public $hideGroupedColumn = true;
+	
+	/**
+	 * If true count of group items will be shown
+	 */
+	public $showGroupItemsCount = true;
+	
+	/**
+	 * defaults grid parameters used by getGridSettings()
+	 */
+	
+	public $title = null;
+	
+	public $width = null;
+	
+	public $height = 500;
+
+	public $autoHeight = true;
+	
+	public $collapsible = false;
+	
+	public $frame = true;
 
 	/**
 	 * 20100816 - asimon - enable sorting by a default column.
@@ -109,6 +138,11 @@ class tlExtTable extends tlTable
 	public function addCustomBehaviour($type, $behaviour)
 	{
 		$this->customBehaviour[$type] = $behaviour;
+	}
+	
+	public function addMultiSortButton($field, $direction)
+	{
+		$this->multiSortButtons[] = array('field' => $field , 'direction' => $direction);
 	}
 
 	/**
@@ -304,7 +338,7 @@ class tlExtTable extends tlTable
 	function getGridSettings()
 	{
 		$s = '';
-		$settings = array('title', 'width', 'height', 'autoHeight');
+		$settings = array('title', 'width', 'height', 'autoHeight', 'collapsible', 'frame');
 		foreach ($settings as $setting) {
 			$value = $this->{$setting};
 			if (!is_null($value)){

@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.15 2010/08/18 07:33:28 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.16 2010/08/19 11:47:27 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100819 - Julian - MultiSort, showGroupItemsCount
 	 20100818 - Julian - use toolbar object to generate toolbar
 	 20100817 - Julian - toolbar items configurable, hideGroupedColumn
 	 20100816 - Eloff - allow text selection in wrapped columns
@@ -77,6 +78,25 @@ function columnWrap(val){
     return '<div style="white-space:normal !important; -moz-user-select: text; -webkit-user-select: text;">'+ val +'</div>';
 }
 
+function updateButtons(button,table){
+	button.sortData.direction = button.sortData.direction.toggle('ASC','DESC');
+	button.setIconClass(button.iconCls.toggle('x-tbar-page-next', 'x-tbar-page-prev'));
+	doSort(table);
+}
+
+function doSort(table){
+	sorters = getSorters();
+	store[table].sort(sorters, 'ASC');
+}
+
+function getSorters() {
+var sorters = [];   
+	Ext.each(tbar.find('multisort', 'yes'), function(button) {
+		sorters.push(button.sortData);
+	}, this);
+	return sorters;
+}
+
 Ext.onReady(function() {
 {/literal}
 	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
@@ -131,6 +151,10 @@ Ext.onReady(function() {
 			{/if}
 			view: new Ext.grid.GroupingView({ldelim}
 				forceFit: true
+				{if $matrix->showGroupItemsCount}
+				,groupTextTpl: '{ldelim}text{rdelim} ({ldelim}[values.rs.length]{rdelim} ' +
+					'{ldelim}[values.rs.length > 1 ? "Items" : "Item"]{rdelim})'
+				{/if}
 				{if $matrix->hideGroupedColumn}
 				,hideGroupedColumn:true
 				{/if}
@@ -139,10 +163,48 @@ Ext.onReady(function() {
 				{$matrix->getGridSettings()}
 			{rdelim});
 	{/foreach}
+	
+	//MULTISORT
+	{if $matrix->multiSortButtons|count}
+	tbar.add({ldelim}
+		xtype: 'tbseparator'
+	{rdelim});
+
+	tbar.add({ldelim}
+		xtype: 'tbtext',
+		text: 'MultiSort:'
+	{rdelim});
+		
+	{foreach from=$matrix->multiSortButtons key=id item=button}
+		fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
+		tbar.add({ldelim}
+			text: fieldname,
+			{if $button.direction == 'ASC'}
+				iconCls: 'x-tbar-page-prev',
+				{else}
+					iconCls: 'x-tbar-page-next',
+				{/else}
+			{/if}
+			multisort: 'yes',
+			sortData: {ldelim}
+				field: 'idx{$button.field}',
+				direction: '{$button.direction}'
+			{rdelim},
+			listeners: {ldelim}
+				click: function (button,table) {ldelim}
+					updateButtons(button,{$tableID});
+					{rdelim}
+			{rdelim}
+		{rdelim});
+	{/foreach}
+	{/if}
 
 	{foreach from=$gui->tableSet key=idx item=matrix}
     {assign var=tableID value=$matrix->tableID}
 	  grid['{$tableID}'].render('{$tableID}_target');
+	  {if $matrix->multiSortButtons|count}
+	  	doSort({$tableID});
+	  {/if}
   {/foreach}
 
 });

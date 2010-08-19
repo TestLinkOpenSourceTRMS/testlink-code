@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php.example,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2010/08/19 18:34:11 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/08/19 19:08:34 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -36,6 +36,13 @@
 //     define('TL_ADODB_RELATIVE_PATH','/../../third_party/[WHERE YOU HAVE INSTALLED adodb YOU WANT TO TEST]/adodb.inc.php' );
 // }
 //
+// /** in this way you can switch ext js version in easy way,
+// 	To use a different version of Sencha (Old EXT-JS) that provided with TL */
+// if( !defined('TL_EXTJS_RELATIVE_PATH') )
+// {
+//     define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );
+// }
+
 // *******************************************************************************
 // If you want you have a different login template
 // key: original TL template name WITHOUT extension

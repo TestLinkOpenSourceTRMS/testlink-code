@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.15 2010/08/19 12:41:43 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.16 2010/08/19 15:24:22 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -226,7 +226,11 @@ class tlExtTable extends tlTable
 				}
 				if(isset($column['sortable']) && (count($this->multiSortButtons) < 2)){
 					$s .= ",sortable: {$column['sortable']}";
-				} else if(count($this->multiSortButtons) >= 2) {
+				} else {
+					$s .= ",sortable: true";
+				}
+			} else {
+				if(count($this->multiSortButtons) >= 2) {
 					$s .= ",sortable: false";
 				} else {
 					$s .= ",sortable: true";

@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.14 2010/08/19 11:47:27 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.15 2010/08/19 12:41:43 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -140,6 +140,14 @@ class tlExtTable extends tlTable
 		$this->customBehaviour[$type] = $behaviour;
 	}
 	
+	/**
+	 * To show MultiSort function in toolbar there must be at least two
+	 * multiSortButtons added.
+	 * 
+	 * @param int $field : column id to sort
+	 * @param string $direction: ASC or DESC sort direction
+	 **/
+	
 	public function addMultiSortButton($field, $direction)
 	{
 		$this->multiSortButtons[] = array('field' => $field , 'direction' => $direction);
@@ -205,7 +213,7 @@ class tlExtTable extends tlTable
 		for ($i=0;$i<$n_columns; $i++) {
 			$column = $this->columns[$i];
 			$title = is_array($column) ? $column['title'] : $column;
-			$s .= "{header: \"{$title}\", sortable: true, dataIndex: 'idx$i'";
+			$s .= "{header: \"{$title}\", dataIndex: 'idx$i'";
 			if (is_array($column)) {
 				if (isset($column['width'])) {
 					$s .= ",width: {$column['width']}";
@@ -215,6 +223,13 @@ class tlExtTable extends tlTable
 				{
 					// Attach a custom renderer
 					$s .= ",renderer: {$this->customBehaviour[$column['type']]['render']}";
+				}
+				if(isset($column['sortable']) && (count($this->multiSortButtons) < 2)){
+					$s .= ",sortable: {$column['sortable']}";
+				} else if(count($this->multiSortButtons) >= 2) {
+					$s .= ",sortable: false";
+				} else {
+					$s .= ",sortable: true";
 				}
 			}
 			$s .= "},\n";

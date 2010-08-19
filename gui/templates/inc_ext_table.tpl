@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.16 2010/08/19 11:47:27 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.17 2010/08/19 12:41:43 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -78,6 +78,7 @@ function columnWrap(val){
     return '<div style="white-space:normal !important; -moz-user-select: text; -webkit-user-select: text;">'+ val +'</div>';
 }
 
+//Functions for MultiSort
 function updateButtons(button,table){
 	button.sortData.direction = button.sortData.direction.toggle('ASC','DESC');
 	button.setIconClass(button.iconCls.toggle('x-tbar-page-next', 'x-tbar-page-prev'));
@@ -96,6 +97,7 @@ var sorters = [];
 	}, this);
 	return sorters;
 }
+//End Functions for MultiSort
 
 Ext.onReady(function() {
 {/literal}
@@ -110,7 +112,7 @@ Ext.onReady(function() {
 			,groupField: 'idx{$matrix->groupByColumn}'
 			{/if}
 			// 20100816 - asimon - enable sorting by a default column
-			{if $matrix->sortByColumn >= 0}
+			{if ($matrix->sortByColumn) >= 0 && (count($matrix->multiSortButtons) < 2)}
 			,sortInfo:{ldelim}field:'idx{$matrix->sortByColumn}',direction:'{$matrix->sortDirection}'{rdelim}
 			{/if}
 			{rdelim});
@@ -165,44 +167,44 @@ Ext.onReady(function() {
 	{/foreach}
 	
 	//MULTISORT
-	{if $matrix->multiSortButtons|count}
-	tbar.add({ldelim}
-		xtype: 'tbseparator'
-	{rdelim});
-
-	tbar.add({ldelim}
-		xtype: 'tbtext',
-		text: 'MultiSort:'
-	{rdelim});
-		
-	{foreach from=$matrix->multiSortButtons key=id item=button}
-		fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
+	{if count($matrix->multiSortButtons) >= 2}
 		tbar.add({ldelim}
-			text: fieldname,
-			{if $button.direction == 'ASC'}
-				iconCls: 'x-tbar-page-prev',
-				{else}
-					iconCls: 'x-tbar-page-next',
-				{/else}
-			{/if}
-			multisort: 'yes',
-			sortData: {ldelim}
-				field: 'idx{$button.field}',
-				direction: '{$button.direction}'
-			{rdelim},
-			listeners: {ldelim}
-				click: function (button,table) {ldelim}
-					updateButtons(button,{$tableID});
-					{rdelim}
-			{rdelim}
+			xtype: 'tbseparator'
 		{rdelim});
-	{/foreach}
+	
+		tbar.add({ldelim}
+			xtype: 'tbtext',
+			text: 'MultiSort:'
+		{rdelim});
+			
+		{foreach from=$matrix->multiSortButtons key=id item=button}
+			fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
+			tbar.add({ldelim}
+				text: fieldname,
+				{if $button.direction == 'ASC'}
+					iconCls: 'x-tbar-page-prev',
+					{else}
+						iconCls: 'x-tbar-page-next',
+					{/else}
+				{/if}
+				multisort: 'yes',
+				sortData: {ldelim}
+					field: 'idx{$button.field}',
+					direction: '{$button.direction}'
+				{rdelim},
+				listeners: {ldelim}
+					click: function (button,table) {ldelim}
+						updateButtons(button,{$tableID});
+						{rdelim}
+				{rdelim}
+			{rdelim});
+		{/foreach}
 	{/if}
 
 	{foreach from=$gui->tableSet key=idx item=matrix}
     {assign var=tableID value=$matrix->tableID}
 	  grid['{$tableID}'].render('{$tableID}_target');
-	  {if $matrix->multiSortButtons|count}
+	  {if count($matrix->multiSortButtons) >= 2}
 	  	doSort({$tableID});
 	  {/if}
   {/foreach}

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.290 2010/08/16 14:32:23 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.291 2010/08/19 18:30:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -3274,7 +3274,7 @@ class testcase extends tlObjectWithAttachments
 	        $filters .= " AND TPTCV.testplan_id IN (" . implode(',',$tplan_id) . ") "; 
 	    }     
 	    
-		// 3647
+		// BUGID 3647
 	    if (isset($my['filters']['build_id'])) {
 			$filters .= " AND UA.build_id = {$my['filters']['build_id']} ";
 		}

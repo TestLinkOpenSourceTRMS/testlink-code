@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.170 2010/08/17 20:05:18 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.171 2010/08/19 14:18:58 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1653,6 +1653,7 @@ $TLS_generated_by_TestLink_on = "Erstellt von TestLink am ";
 $TLS_show_all_columns = "Alle Spalten anzeigen";
 $TLS_show_all_columns_tooltip = "Alle Spalten anzeigen (falls versteckt)";
 $TLS_expand_collapse_groups='Gruppen ein-/ausklappen';
+$TLS_multisort = 'MultiSort:';
 
 // ----- gui/templates/resultsImport.tpl -----
 $TLS_results_import_format = "Die XML Datei muss in folgendem Format sein: ";

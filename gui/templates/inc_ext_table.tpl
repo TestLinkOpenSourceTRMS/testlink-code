@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.17 2010/08/19 12:41:43 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.18 2010/08/19 14:19:37 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -28,7 +28,7 @@ Purpose: rendering of Ext Js table
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
-	show_all_columns_tooltip"}
+	show_all_columns_tooltip, multisort"}
 {literal}
 <script type="text/javascript">
 /*
@@ -118,9 +118,28 @@ Ext.onReady(function() {
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);
 		
-		tbar = new Ext.Toolbar();
-		
-		{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
+		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
+			id: '{$tableID}',
+			store: store['{$tableID}'],
+			{if $matrix->show_toolbar}
+			tbar: tbar = new Ext.Toolbar(),
+			{/if}
+			view: new Ext.grid.GroupingView({ldelim}
+				forceFit: true
+				{if $matrix->showGroupItemsCount}
+				,groupTextTpl: '{ldelim}text{rdelim} ({ldelim}[values.rs.length]{rdelim} ' +
+					'{ldelim}[values.rs.length > 1 ? "Items" : "Item"]{rdelim})'
+				{/if}
+				{if $matrix->hideGroupedColumn}
+				,hideGroupedColumn:true
+				{/if}
+				{rdelim}),
+				columns: columnData['{$tableID}']
+				{$matrix->getGridSettings()}
+			{rdelim});
+	{/foreach}
+	
+	{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
 		tbar.add({ldelim}
 			text: '{$labels.expand_collapse_groups|escape:javascript}',
 			iconCls: 'x-group-by-icon',
@@ -139,48 +158,32 @@ Ext.onReady(function() {
 			handler: function (button, state) {ldelim}
 				var cm = grid['{$tableID}'].getColumnModel();
 				for (var i=0;i<cm.getColumnCount();i++) {ldelim}
-					cm.setHidden(i, false);
+					//do not show grouped column if hideGroupedColumn is true
+					if (grid['{$tableID}'].getView().hideGroupedColumn == false ||
+						store['{$tableID}'].groupField != 'idx'+i) {ldelim}
+						cm.setHidden(i, false);
+					{rdelim}
 				{rdelim}
 			{rdelim}
 		{rdelim});
-		{/if}
-		
-		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
-			id: '{$tableID}',
-			store: store['{$tableID}'],
-			{if $matrix->show_toolbar}
-			tbar: tbar,
-			{/if}
-			view: new Ext.grid.GroupingView({ldelim}
-				forceFit: true
-				{if $matrix->showGroupItemsCount}
-				,groupTextTpl: '{ldelim}text{rdelim} ({ldelim}[values.rs.length]{rdelim} ' +
-					'{ldelim}[values.rs.length > 1 ? "Items" : "Item"]{rdelim})'
-				{/if}
-				{if $matrix->hideGroupedColumn}
-				,hideGroupedColumn:true
-				{/if}
-				{rdelim}),
-				columns: columnData['{$tableID}']
-				{$matrix->getGridSettings()}
-			{rdelim});
-	{/foreach}
+	{/if}
 	
 	//MULTISORT
-	{if count($matrix->multiSortButtons) >= 2}
+	{if count($matrix->multiSortButtons) >= 2 && $matrix->show_toolbar}
 		tbar.add({ldelim}
 			xtype: 'tbseparator'
 		{rdelim});
 	
 		tbar.add({ldelim}
 			xtype: 'tbtext',
-			text: 'MultiSort:'
+			text: '{$labels.multisort|escape:javascript}'
 		{rdelim});
 			
 		{foreach from=$matrix->multiSortButtons key=id item=button}
 			fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
 			tbar.add({ldelim}
 				text: fieldname,
+				//todo: find better symbol 'sort-asc', 'sort-desc' dont want to show
 				{if $button.direction == 'ASC'}
 					iconCls: 'x-tbar-page-prev',
 					{else}

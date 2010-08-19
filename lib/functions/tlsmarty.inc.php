@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.25 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.26 2010/08/19 19:16:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -29,7 +29,8 @@ define('SMARTY_CORE_DIR', SMARTY_DIR . 'internals' . DIRECTORY_SEPARATOR);
 /** include parent extrenal component */
 require_once( SMARTY_DIR . 'Smarty.class.php');
 
-/** in this way you can switch ext js version in easy way */
+/** in this way you can switch ext js version in easy way,
+	To use a different version of Sencha (Old EXT-JS) that provided with TL */
 if( !defined('TL_EXTJS_RELATIVE_PATH') )
 {
     define('TL_EXTJS_RELATIVE_PATH','third_party/ext-js' );

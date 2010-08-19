@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.651 2010/08/19 14:18:59 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.652 2010/08/19 16:21:21 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1627,21 +1627,30 @@ $TLS_display_totals = "Totals";
 $TLS_display_test_cases = "Test Cases";
 $TLS_report_display_options = "Report display options";
 
+
+
 // ----- gui/templates/resultsReqs.tpl -----
 $TLS_no_srs_defined = "No Requirements Specification available for this Test Project";
 $TLS_req_without_tcase = "Requirements Not Covered by Test Cases";
+$TLS_count_of_reqs = "Number of Requirements";
+$TLS_req_availability = "Requirement-Availability";
+$TLS_show_only_finished_reqs = "Show only finished Requirements";
+$TLS_show_all_reqs = "Show all Requirements";
+$TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
+$TLS_title_test_plan = $TLS_testplan;
+$TLS_evaluation = "Evaluation";
+$TLS_partially_passed = "Partially passed";
+$TLS_partially_passed_reqs = "Partially passed Requirements";
+$TLS_uncovered = "Uncovered";
+$TLS_uncovered_reqs = "Uncovered Requirements";
 
-
-// IMPORTANT for dynamic generation labels
+// IMPORTANT for dynamic generation of labels
 // $TLS_req_title_<test case status>
-// If user add a new test case status he/she MUST add a new label
+// If user adds a new test case status he/she MUST add a new label
 $TLS_req_title_blocked = "Blocked Requirements";
 $TLS_req_title_failed = "Failed Requirements";
 $TLS_req_title_not_run = "Unexecuted Requirements";
 $TLS_req_title_passed = "Passed Requirements";
-
-$TLS_title_result_req_testplan = "Test Results based on Requirements Specification";
-$TLS_title_test_plan = $TLS_testplan;
 
 
 

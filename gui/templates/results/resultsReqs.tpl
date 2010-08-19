@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.18 2010/05/02 09:38:10 franciscom Exp $
+$Id: resultsReqs.tpl,v 1.19 2010/08/19 16:21:21 asimon83 Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
-rev: 
+rev:
+    20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
+                        complete redesign/rewrite of requirement based report 
     20100311 - franciscom - BUGID 3267
     20090402 - amitkhullar - added TC version while displaying the Req -> TC Mapping 
     20090305 - franciscom - added test case path on displayy
@@ -12,114 +14,55 @@ rev:
     20090111 - franciscom - BUGID 1967 + Refactoring
 *}
 {lang_get var='labels'
-          s='title_result_req_testplan,no_srs_defined,req_spec,req_total_count,req_title_in_tl,testcase,th_version,
-             req_without_tcase,
-             req_title_covered,req_title_uncovered,req,req_title_not_in_tl,req_title_nottestable,none,req_doc_id'}
+          s='title_result_req_testplan, show_only_finished_reqs, generated_by_TestLink_on'}
 
-{* Configure Actions *}
-{assign var="reqViewAction" value="lib/requirements/reqView.php?item=requirement&requirement_id="}
+{include file="inc_head.tpl" openHead="yes"}
 
-{assign var="canEditTC" value=$gui->allow_edit_tc} 
-{assign var="accessTestCaseAction" 
-        value="lib/testcases/archiveData.php?show_path=1&edit=testcase&allow_edit=$canEditTC&id="}
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+	{assign var=tableID value=table_$idx}
+	{if $smarty.foreach.initializer.first}
+		{$matrix->renderCommonGlobals()}
+		{if $matrix instanceof tlExtTable}
+			{include file="inc_ext_js.tpl" bResetEXTCss=1}
+			{include file="inc_ext_table.tpl"}
+		{/if}
+	{/if}
+	{$matrix->renderHeadSection($tableID)}
+{/foreach}
 
-{include file="inc_head.tpl"}
+</head>
+
 <body>
-<h1 class="title">
- 	{$labels.title_result_req_testplan} {$gui->reqSpecName|escape}
-</h1>
 
-<div class="workBack">
-{include file="inc_result_tproject_tplan.tpl" 
-         arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
+<h1 class="title">{$gui->pageTitle|escape}</h1>
 
-{if $gui->reqSpecSet == ''}
-<br />
-  <div class="user_feedback">{$labels.no_srs_defined}</div>
-{/if}
+<div class="workBack" style="overflow-y: auto;">
 
+{if $gui->warning_msg == ''}
+	
+	<p><form method="post">
+	<input type="checkbox" name="show_only_finished" value="show_only_finished"
+	       {if $gui->show_only_finished} checked="checked" {/if}
+	       onchange="this.form.submit()" /> {$labels.show_only_finished_reqs}
+	<input type="hidden"
+	       name="show_only_finished_hidden"
+	       value="{$gui->show_only_finished}" />
+	</form></p><br/>
+	
+	{foreach from=$gui->tableSet key=idx item=matrix}
+		{assign var=tableID value=table_$idx}
+   		{$matrix->renderBodySection($tableID)}
+	{/foreach}
+{else}
+	<div class="user_feedback">
+    {$gui->warning_msg}
+    </div>
+{/if}    
 
-{if $gui->reqSpecSet != ''}
-  <form method="get">
-  <table class="invisible">
-    <tr>
-    	<td>{$labels.req_spec}
-      		<select name="req_spec_id" onchange="form.submit()">
-  				{html_options options=$gui->reqSpecSet selected=$gui->req_spec_id}
-  			</select>
-  		</td>
-  	</tr>
-    <tr><td>&nbsp;</td></tr>
-    <tr><td>{$labels.req_total_count}</td><td align="right">{$gui->metrics.expectedTotal}</td></tr>
-    <tr><td>{$labels.req_title_in_tl}</td><td align="right">{$gui->metrics.total}</td></tr>
-    <tr><td>{$labels.req_title_covered}</td><td align="right">{$gui->metrics.covered}</td></tr>
-    <tr><td>{$labels.req_title_uncovered}</td><td align="right">{$gui->metrics.total-$gui->metrics.notTestable-$gui->metrics.covered}</td></tr>
-    <tr><td>{$labels.req_title_not_in_tl}</td><td align="right">{$gui->metrics.uncovered}</td></tr>
-    <tr><td>{$labels.req_title_nottestable}</td><td align="right">{$gui->metrics.notTestable}</td></tr>
-  </table>
-  </form>  
 </div>
-{* --------------------------------------------------------------------------------------------------- *}  
 
-  {* ------------------------------------------------------------------------------------------------- *}  
-  {* Display by Coverage Status *}
-  {foreach item=key from=$gui->coverageKeys} 
-    <div class="workBack">
-    {assign var="label_id" value=req_title_$key}
-    <h2>{lang_get s=$label_id}</h2>
-    {section name=row loop=$gui->coverage.$key}
-    {if $smarty.section.row.first}
-    <table class="simple">
-    	<tr>
-    		<th>{$labels.req_doc_id}</th>
-    		<th>{$labels.req}</th>
-    		<th>{$labels.testcase}</th>
-    	</tr>
-    {/if}
-    	<tr>
-    		<td>{$gui->coverage.$key[row].req_doc_id|escape}</td>
-    		<td><span class="bold"><a href="{$reqViewAction}{$gui->coverage.$key[row].id}">
-    			  {$gui->coverage.$key[row].title|escape}</a></span></td>
-    		<td>{assign var=tcList value=$gui->coverage.$key[row].tcList}
-    			{section name=idx loop=$tcList}
-    				<a href="{$accessTestCaseAction}{$tcList[idx].tcID}">{$tcList[idx].tcase_path|escape}{$gui->prefixStr|escape}{$tcList[idx].tcaseExternalID}{$gui->pieceSep}{$tcList[idx].title|escape}{$tlCfg->gui_separator_open}{$labels.th_version}{$gui->pieceSep}{$tcList[idx].version|escape}{$tlCfg->gui_separator_close}</a>{$gui->pieceSep}{lang_get s=$tcList[idx].status_label}<br/>
-    			{/section} 
-    		</td>
-    	</tr>
-    {if $smarty.section.row.last}
-    </table>
-    {/if}
-    {sectionelse}
-    	<p class="bold">{$labels.none}</p>
-    {/section}
-    </div>
-  {/foreach}
-  {* ------------------------------------------------------------------------------------------------- *}  
-
-  {* ------------------------------------------------------------------------------------------------- *}  
-  {* Requierements without Test Cases *}
-   <div class="workBack">
-    <h2>{$labels.req_without_tcase}</h2>
-    {if $gui->withoutTestCase != ''}
-       <table class="simple">
-       	<tr>
-       		<th>{$labels.req_doc_id}</th>
-       		<th>{$labels.req}</th>
-       	</tr>
-         {foreach item=reqnotest from=$gui->withoutTestCase}
-         	<tr>
-         		<td>{$reqnotest.req_doc_id|escape}</td>
-         		<td><span class="bold"><a href="{$reqViewAction}{$reqnotest.id}">
-         			  {$reqnotest.title|escape}</a></span></td>
-         	</tr>
-         {/foreach}
-       </table>
-    {else}
-    	<p class="bold">{$labels.none}</p>
-    {/if}
-    </div>
-  {* ------------------------------------------------------------------------------------------------- *}  
-{/if}
+{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 
 </body>
+
 </html>

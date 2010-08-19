@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.17 2010/08/19 16:12:21 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.18 2010/08/19 16:21:21 asimon83 Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100819 - asimon - additional parameters (hidden, hideable, groupable) for req based report and other tables
  *  20100819 - Julian - MultiSort, default Values for Grid Settings, more Grid Settings
  * 	20100817 - Julian - default toolbar items, hideGroupedColumn
  *  20100816 - asimon - enable sorting by a default column via $sortByColumn
@@ -218,6 +219,16 @@ class tlExtTable extends tlTable
 			if (is_array($column)) {
 				if (isset($column['width'])) {
 					$s .= ",width: {$column['width']}";
+				}
+				// asimon 20100817 - new parameters for req based report and other tables
+				if (isset($column['hidden'])) {
+					$s .= ",hidden: {$column['hidden']}";
+				}
+				if (isset($column['groupable'])) {
+					$s .= ",groupable: {$column['groupable']}";
+				}
+				if (isset($column['hideable'])) {
+					$s .= ",hideable: {$column['hideable']}";
 				}
 				if( isset($column['type']) && isset($this->customBehaviour[$column['type']]) &&
 					isset($this->customBehaviour[$column['type']]['render']) ) 

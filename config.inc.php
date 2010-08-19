@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.315 2010/08/14 13:58:21 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.316 2010/08/19 16:21:21 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -958,8 +958,9 @@ $tlCfg->req_cfg->coverageStatusAlgorithm['checkType']['all']=array('not_run','pa
 // $tlCfg->req_cfg->coverageStatusAlgorithm['checkFail']['all']='partially_passed';
 // $tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed',
 //                                                                'blocked','not_run','partially_passed');
-$tlCfg->req_cfg->coverageStatusAlgorithm['checkFail']['all']='failed';
-$tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
+// 20100819 - asimon - fix not needed anymore after rewrite of req based report
+//$tlCfg->req_cfg->coverageStatusAlgorithm['checkFail']['all']='failed';
+//$tlCfg->req_cfg->coverageStatusAlgorithm['displayOrder']=array('passed','failed','blocked','not_run');
 
 
 // Linking between requirements/requirement specifications

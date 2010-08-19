@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.16 2010/08/19 15:24:22 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.17 2010/08/19 16:12:21 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -211,6 +211,7 @@ class tlExtTable extends tlTable
 		$s = '[';
 		$n_columns = sizeof($this->columns);
 		for ($i=0;$i<$n_columns; $i++) {
+			$sortable = 'true';
 			$column = $this->columns[$i];
 			$title = is_array($column) ? $column['title'] : $column;
 			$s .= "{header: \"{$title}\", dataIndex: 'idx$i'";
@@ -225,17 +226,13 @@ class tlExtTable extends tlTable
 					$s .= ",renderer: {$this->customBehaviour[$column['type']]['render']}";
 				}
 				if(isset($column['sortable']) && (count($this->multiSortButtons) < 2)){
-					$s .= ",sortable: {$column['sortable']}";
-				} else {
-					$s .= ",sortable: true";
-				}
-			} else {
-				if(count($this->multiSortButtons) >= 2) {
-					$s .= ",sortable: false";
-				} else {
-					$s .= ",sortable: true";
+					$sortable = $column['sortable'];
 				}
 			}
+			if(count($this->multiSortButtons) >= 2) {
+				$sortable = 'false';
+			}
+			$s .= ",sortable: {$sortable}";
 			$s .= "},\n";
 		}
 		$s = trim($s,",\n");

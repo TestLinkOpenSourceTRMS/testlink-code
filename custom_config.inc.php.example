@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: custom_config.inc.php.example,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/02/28 09:52:33 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/08/19 18:34:11 $ by $Author: franciscom $
  *
  * SCOPE:
  * Constants and configuration parameters used throughout TestLink DEFINED BY USERS.
@@ -28,6 +28,13 @@
 //
 // Uncomment this if you want dBug() display info
 // define('DBUG_ON',1);
+//
+// To use a different version of ADODB that provided with TL, use a similar bunch of lines
+// on custom_config.inc.php
+// if( !defined('TL_ADODB_RELATIVE_PATH') )
+// {
+//     define('TL_ADODB_RELATIVE_PATH','/../../third_party/[WHERE YOU HAVE INSTALLED adodb YOU WANT TO TEST]/adodb.inc.php' );
+// }
 //
 // *******************************************************************************
 // If you want you have a different login template

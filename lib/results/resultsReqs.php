@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2010/08/19 16:21:21 $ by $Author: asimon83 $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2010/08/20 09:39:13 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20100820 - asimon - BUGID 3439: little refactorizations
  * 20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
  *                     complete redesign/rewrite of requirement based report 
  * 20090506 - franciscom - requirements refactoring
@@ -32,7 +33,9 @@ $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $glue_char = config_get('gui_title_separator_1');
-$msg_key = 'no_linked_req';
+// BUGID 3439
+$no_srs_msg_key = 'no_srs_defined';
+$no_finished_reqs_msg_key = 'no_finished_reqs';
 $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
 $req_spec_cfg = config_get('req_spec_cfg');
@@ -105,14 +108,25 @@ if (count($req_ids)) {
 			}
 		}
 	}
+	// BUGID 3439
+	if (!count($req_spec_map)) {
+		$gui->warning_msg = lang_get($no_finished_reqs_msg_key);
+	}
+} else {
+	$gui->warning_msg = lang_get($no_srs_msg_key);
 }
 
 
 // second step: walk through req spec map, count/calculate, store results
 if(count($req_spec_map)) {
-	$filters = array('tcase_id' => $tc_ids);
-	$options = null;
-	$testcases = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
+	
+	// BUGID 3439
+	$testcases = array();
+	if (count($tc_ids)) {
+		$filters = array('tcase_id' => $tc_ids);
+		$options = null;
+		$testcases = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
+	}
 	
 	foreach ($req_spec_map as $req_spec_id => $req_spec_info) {
 		$req_spec_map[$req_spec_id]['req_counters'] = array('total' => 0);
@@ -148,9 +162,6 @@ if(count($req_spec_map)) {
 			$req_spec_map[$req_spec_id]['req_counters']['total'] ++;
 		}
 	}
-} else {
-	$gui->warning_msg = lang_get($msg_key);
-	$gui->tableSet = null;
 }
 
 
@@ -159,29 +170,29 @@ if (count($req_spec_map)) {
 	// headers
 	$columns = array();
 	$columns[] = array('title' => lang_get('req_spec_short'),
-	                   'groupable' => 'true', 'hideable' => 'true', 'hidden' => 'true');
-	$columns[] = array('title' => lang_get('title'), 'width' => 50,
+	                   'groupable' => 'true', 'hideable' => 'false', 'hidden' => 'true');
+	$columns[] = array('title' => lang_get('title'), 'width' => 100,
 	                   'groupable' => 'false', 'type' => 'text');
-	$columns[] = array('title' => lang_get('version'), 'width' => 30, 'groupable' => 'false');
+	$columns[] = array('title' => lang_get('version'), 'width' => 60, 'groupable' => 'false');
 	
 	if ($coverage_enabled) {
-		$columns[] = array('title' => lang_get('th_coverage'), 'width' => 30, 'groupable' => 'false');
+		$columns[] = array('title' => lang_get('th_coverage'), 'width' => 60, 'groupable' => 'false');
 	}
 	
-	$columns[] = array('title' => lang_get('evaluation'), 'width' => 50, 'groupable' => 'false');
-	$columns[] = array('title' => lang_get('type'), 'width' => 40, 'groupable' => 'false');
+	$columns[] = array('title' => lang_get('evaluation'), 'width' => 60, 'groupable' => 'false');
+	$columns[] = array('title' => lang_get('type'), 'width' => 60, 'groupable' => 'false');
 	
 	// show status only if it was requested to show reqs with all statuses
 	if (!$args->show_only_finished) {
-		$columns[] = array('title' => lang_get('status'), 'width' => 40, 'groupable' => 'false');
+		$columns[] = array('title' => lang_get('status'), 'width' => 60, 'groupable' => 'false');
 	}
 	
 	foreach ($code_status_map as $code => $status) {
-		$columns[] = array('title' => $status['label'], 'width' => 30, 'groupable' => 'false');
+		$columns[] = array('title' => $status['label'], 'width' => 60, 'groupable' => 'false');
 	}
 	
 	// complete progress
-	$columns[] = array('title' => lang_get('progress'), 'width' => 40, 'groupable' => 'false');
+	$columns[] = array('title' => lang_get('progress'), 'width' => 60, 'groupable' => 'false');
 	
 	// data for rows
 	$rows = array();
@@ -294,7 +305,7 @@ if (count($req_spec_map)) {
 	$matrix->sortDirection = 'DESC';
 	//show long text content in multiple lines
 	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
-	$matrix->toolbar_show_all_columns_button = false;
+	$matrix->toolbar_show_all_columns_button = true;
 	$matrix->showGroupItemsCount = false;
 	$gui->tableSet = array($matrix);
 }
@@ -308,6 +319,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 /**
  * Builds a descriptive string which will be added to the grouping column of the ExtJS table
  * for each req spec to see information about the requirements in this spec and their status.
+ * 
  * @author Andreas Simon
  * @param array $evalcode_status_map
  * @param array $spec_info
@@ -347,6 +359,7 @@ function build_req_spec_description(&$evalcode_status_map, &$spec_info, $ext_mgm
 
 /**
  * Get the evaluation status of a single requirement.
+ * 
  * @author Andreas Simon
  * @param array $status_code_map
  * @param array $algorithm_cfg
@@ -455,18 +468,20 @@ function init_gui(&$argsObj) {
 	$gui->warning_msg = '';
 	$gui->tproject_name = $argsObj->tproject_name;
 	$gui->show_only_finished = $argsObj->show_only_finished;
+	$gui->tableSet = null;
 	
 	return $gui;
 }
 
 
 /**
- * Enter description here ...
+ * Check if the user has the needed rights to view this page (testplan metrics).
+ * 
  * @author Andreas Simon
- * @param unknown_type $db
- * @param unknown_type $user
+ * @param Database $db reference to database object
+ * @param tlUser $user reference to user object
  */
-function checkRights(&$db,&$user)
+function checkRights(&$db, &$user)
 {
 	return $user->hasRight($db,'testplan_metrics');
 }

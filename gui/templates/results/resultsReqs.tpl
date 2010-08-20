@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.19 2010/08/19 16:21:21 asimon83 Exp $
+$Id: resultsReqs.tpl,v 1.20 2010/08/20 09:39:13 asimon83 Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -38,17 +38,16 @@ rev:
 
 <div class="workBack" style="overflow-y: auto;">
 
+<p><form method="post">
+<input type="checkbox" name="show_only_finished" value="show_only_finished"
+       {if $gui->show_only_finished} checked="checked" {/if}
+       onchange="this.form.submit()" /> {$labels.show_only_finished_reqs}
+<input type="hidden"
+       name="show_only_finished_hidden"
+       value="{$gui->show_only_finished}" />
+</form></p><br/>
+
 {if $gui->warning_msg == ''}
-	
-	<p><form method="post">
-	<input type="checkbox" name="show_only_finished" value="show_only_finished"
-	       {if $gui->show_only_finished} checked="checked" {/if}
-	       onchange="this.form.submit()" /> {$labels.show_only_finished_reqs}
-	<input type="hidden"
-	       name="show_only_finished_hidden"
-	       value="{$gui->show_only_finished}" />
-	</form></p><br/>
-	
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value=table_$idx}
    		{$matrix->renderBodySection($tableID)}

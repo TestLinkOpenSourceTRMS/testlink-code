@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: build_progress.class.php,v 1.3 2010/08/20 09:39:14 asimon83 Exp $
+ * @version CVS: $Id: build_progress.class.php,v 1.4 2010/08/20 10:55:53 asimon83 Exp $
  *
  * Generate information about the progress by tester per build.
  * 
@@ -27,7 +27,7 @@ class build_progress extends tlObjectWithDB {
 	public $tplan_mgr = null;
 	public $tproject_mgr = null;
 	
-	private $na_string = null;
+	private $labels = null;
 	private $tplan_id = 0;
 	private $tplan_info = null;
 	private $build_set = null;
@@ -107,7 +107,7 @@ class build_progress extends tlObjectWithDB {
 		
 		parent::__construct($db);
 		
-		$this->na_string = lang_get('not_aplicable');
+		$this->labels = array('na' => lang_get('not_aplicable'));
 		
 		$res_cfg = config_get('results');
 		foreach ($res_cfg['status_label_for_exec_ui'] as $status => $label) {
@@ -253,8 +253,8 @@ class build_progress extends tlObjectWithDB {
 		$counters = array();
 		
 		if ($user_id == TL_NO_USER) {
-			$counters['total'] = $this->na_string;
-			$nr_count = $this->na_string;
+			$counters['total'] = $this->labels['na'];
+			$nr_count = $this->labels['na'];
 		} else {
 			$counters['total'] = $this->tplan_mgr->assignment_mgr->get_count_of_assignments_for_build_id(
 			                                                       $build_id, false, $user_id);
@@ -275,7 +275,7 @@ class build_progress extends tlObjectWithDB {
 			$counters[$status] = array('count' => 0, 'percentage' => 0);
 
 			if (!is_numeric($counters['total']) || $counters['total'] == 0) {
-				$counters[$status]['percentage'] = $this->na_string;
+				$counters[$status]['percentage'] = $this->labels['na'];
 			}
 			
 			if (isset($temp[$code])) {
@@ -297,8 +297,8 @@ class build_progress extends tlObjectWithDB {
 			$percent = number_format($percent, 2);
 			$progress = number_format(100 - $percent, 2);
 		} else {
-			$percent = $this->na_string;
-			$progress = $this->na_string;
+			$percent = $this->labels['na'];
+			$progress = $this->labels['na'];
 		}
 		
 		$counters['not_run']['count'] = $nr_count;

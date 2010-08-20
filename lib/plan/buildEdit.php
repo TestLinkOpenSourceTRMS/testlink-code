@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2010/07/26 19:00:57 $ $Author: asimon83 $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2010/08/20 13:42:43 $ $Author: franciscom $
  *
  * @internal revision
+ *	20100820 - franciscom - init_source_build_selector() - refactoring
+ *							refactoring to use only one variable ($gui) in interface to smarty
  *  20100726 - asimon - added number of existing assignments to source build selection
  *  20100707 - asimon - BUGID 3406: copy user assignments from other builds
  *                                  on creation of new builds
@@ -39,13 +41,13 @@ $build_mgr = new build_mgr($db);
 
 $args = init_args($_REQUEST,$_SESSION);
 $gui = new stdClass();
+$gui->main_descr = lang_get('title_build_2') . config_get('gui_title_separator_2') . 
+                   lang_get('test_plan') . config_get('gui_title_separator_1') . $args->tplan_name;
 
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args->notes);
 
 
-$main_descr = lang_get('title_build_2') . config_get('gui_title_sep_type2') . 
-              lang_get('test_plan') . config_get('gui_title_sep_type1') . $args->tplan_name;
 
 switch($args->do_action)
 {
@@ -79,18 +81,17 @@ switch($args->do_action)
 }
 
 $gui->release_date = $args->release_date;
+$gui->operation_descr = $op->operation_descr;
+$gui->user_feedback = $op->user_feedback;
+$gui->buttonCfg = $op->buttonCfg;
+$gui->mgt_view_events = $_SESSION['currentUser']->hasRight($db,"mgt_view_events");
+$gui->editorType = $editorCfg['type'];
+
 if(trim($gui->release_date) == '')
 {
     $gui->release_date = '0000-00-00';
 }
 
-$smarty->assign('editorType',$editorCfg['type']);
-$smarty->assign('main_descr',$main_descr);
-$smarty->assign('operation_descr',$op->operation_descr);
-$smarty->assign('user_feedback',$op->user_feedback);
-$smarty->assign('buttonCfg',$op->buttonCfg);
-$smarty->assign('testplan_create', has_rights($db,"mgt_testplan_create"));
-$smarty->assign('mgt_view_events',$_SESSION['currentUser']->hasRight($db,"mgt_view_events"));
 renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
 
 
@@ -151,11 +152,11 @@ function init_args($request_hash, $session_hash)
         $args->release_date = $release_date_Year . "-" . $release_date_Month . "-" . $release_date_Day;
     } 
 
-	$args->tplan_id	       = isset($session_hash['testplanID']) ? $session_hash['testplanID']: 0;
-	$args->tplan_name      = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
-	$args->testprojectID   = $session_hash['testprojectID'];
+	$args->tplan_id	= isset($session_hash['testplanID']) ? $session_hash['testplanID']: 0;
+	$args->tplan_name = isset($session_hash['testplanName']) ? $session_hash['testplanName']: '';
+	$args->testprojectID = $session_hash['testprojectID'];
 	$args->testprojectName = $session_hash['testprojectName'];
-	$args->userID          = $session_hash['userID'];
+	$args->userID = $session_hash['userID'];
 
 	return $args;
 }
@@ -274,7 +275,7 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
 
     	case "edit":
     	case "create":
-        $doRender = true;
+        	$doRender = true;
     		$tpl = is_null($templateCfg->template) ? $templateCfg->default_template : $templateCfg->template;
     		break;
     }
@@ -286,20 +287,19 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
    		// Attention this is affected by changes in templates
    		$guiObj->buildSet=$tplanMgr->get_builds($argsObj->tplan_id);
    		$guiObj->tplan_name=$argsObj->tplan_name;
+    	$guiObj->build_id = $argsObj->build_id;
+    	$guiObj->build_name = $argsObj->build_name;
+    	$guiObj->is_active = $argsObj->is_active;
+    	$guiObj->is_open = $argsObj->is_open;
+    	$guiObj->notes = $owebeditor->CreateHTML();
+    	$guiObj->enable_copy = $enable_copy;
    		
-   		$smartyObj->assign('gui',$guiObj);
-    	$smartyObj->assign('build_id',$argsObj->build_id);
-    	$smartyObj->assign('build_name', $argsObj->build_name);
-    	$smartyObj->assign('is_active', $argsObj->is_active);
-    	$smartyObj->assign('is_open', $argsObj->is_open);
-    	$smartyObj->assign('notes', $owebeditor->CreateHTML());
-    	$smartyObj->assign('enable_copy', $enable_copy);
-    	
     	// BUGID 3406
     	$html_menu = init_source_build_selector($tplanMgr, $argsObj);
-    	$smartyObj->assign('source_build', $html_menu);
-    	$smartyObj->assign('copy_tester_assignments', $argsObj->copy_tester_assignments);
-    	    	
+    	$guiObj->source_build = $html_menu;
+    	$guiObj->copy_tester_assignments = $argsObj->copy_tester_assignments;
+   		
+   		$smartyObj->assign('gui',$guiObj);
   		$smartyObj->display($templateCfg->template_dir . $tpl);
     }
 
@@ -541,28 +541,34 @@ function checkRights(&$db,&$user)
  * @author Andreas Simon
  * @param testplan $testplan_mgr reference to testplan manager object
  * @param object $argsObj reference to user input object
- * @return array $html_menu array structure with all information needed for the menu
+ * @return array $htmlMenu array structure with all information needed for the menu
+ *
+ * @internal revision
+ * 20100820 - franciscom - refactoring to remove unneeded support/temp variables and 
+ *						   event viewer complain due to foreach() over a null variable.
  */
 function init_source_build_selector(&$testplan_mgr, &$argsObj) {
 
-	$html_menu = array('items' => null, 'selected' => null, 'build_count' => 0);
-
-	$html_menu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id);
-	$html_menu['build_count'] = count($html_menu['items']);
+	$htmlMenu = array('items' => null, 'selected' => null, 'build_count' => 0);
+	$htmlMenu['items'] = $testplan_mgr->get_builds_for_html_options($argsObj->tplan_id);
 	
-	// display the number of existing execution assignments with each source build
-	foreach ($html_menu['items'] as $key => $name) {
-		$count = $testplan_mgr->assignment_mgr->get_count_of_assignments_for_build_id($key);
-		$html_menu['items'][$key] = $name . " (" . $count . ")"; 
-	}
 	
-	// if no build has been chosen yet, select the newest build by default
-	$source_build_id = $argsObj->source_build_id;
-	if (!$source_build_id && $html_menu['build_count']) {
-		$source_build_id = key($html_menu['items']);
-	}
-	$html_menu['selected'] = $source_build_id;
+	// get the number of existing execution assignments with each build
+	if( !is_null($htmlMenu['items']) )
+	{
+		$htmlMenu['build_count'] = count($htmlMenu['items']);
+		foreach ($htmlMenu['items'] as $key => $name) {
+			$count = $testplan_mgr->assignment_mgr->get_count_of_assignments_for_build_id($key);
+			$htmlMenu['items'][$key] = $name . " (" . $count . ")"; 
+		}
 		
-	return $html_menu;
+		// if no build has been chosen yet, select the newest build by default
+		if( !$argsObj->source_build_id )
+		{
+			$htmlMenu['selected'] = key($htmlMenu['items']);
+		} 
+	}   
+
+	return $htmlMenu;
 } // end of method
 ?>

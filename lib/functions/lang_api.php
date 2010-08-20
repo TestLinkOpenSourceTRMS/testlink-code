@@ -5,16 +5,17 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: lang_api.php,v 1.27 2010/02/12 00:20:12 havlat Exp $
+ * @version    	CVS: $Id: lang_api.php,v 1.28 2010/08/20 18:29:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
- *      20070501 - franciscom - lang_get_smarty() now accept a list of
- *                               strings to translate.
- *      20070501 - franciscom - enabled logic to manage a custom_strings.txt file
- * 		20050508 - fm - changes to lang_get_smarty()
- * 		200800606 - havlatm - added description.php resource
+ *	20100820 - franciscom - new feature on init_labels()
+ *	20070501 - franciscom - lang_get_smarty() now accept a list of
+ *	                         strings to translate.
+ *	20070501 - franciscom - enabled logic to manage a custom_strings.txt file
+ *	20050508 - fm - changes to lang_get_smarty()
+ *	200800606 - havlatm - added description.php resource
  *
  *
  * Thanks:
@@ -235,18 +236,22 @@ function localize_array( $input_array ) {
 /**
  * Translate array of TLS keys to array of localized labels
  * 
- * @param array $map_code_label map key=a code
+ * @param array $map_code_label map 
+ *			 key=code
  *           value: string_to_translate, that can be found in strings.txt
- * 
- * @return array  map key=a code
+ *			 if is_null(value), then key will be used as string_to_translate 
+ *
+ * @return array  map key=code
  *             value: lang_get(string_to_translate)
  * 
+ * @internal revision:
+ * 20100820 - franciscom - support for null as string_to_translate
  */
 function init_labels($map_code_label)
 {
 	foreach($map_code_label as $key => $label)
 	{
-		$map_code_label[$key] = lang_get($label);
+		$map_code_label[$key] = is_null($label) ? lang_get($key) : lang_get($label);
 	}
 	return $map_code_label;
 }

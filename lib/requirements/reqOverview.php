@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.18 2010/08/19 16:21:22 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.19 2010/08/20 17:59:45 franciscom Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -55,7 +55,7 @@ $relations_enabled = $req_cfg->relations->enable;
 
 $gui->reqIDs = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 
-if(count($gui->reqIDs)) {
+if(count($gui->reqIDs) > 0) {
 	
 	// get type and status labels
 	$type_labels = init_labels($req_cfg->type_labels);
@@ -65,31 +65,24 @@ if(count($gui->reqIDs)) {
 	$yes = lang_get('Yes');
 	
 	$gui->cfields = $cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement',
-                                                                 null, 'name');
-	if (!count($gui->cfields)) {
-			// manage the case where no custom fields are defined
-			$gui->cfields = array();
+                                                              null, 'name');
+	if (count($gui->cfields) == 0) {
+		// manage the case where no custom fields are defined
+		$gui->cfields = array();
 	}
 		
     // array to gather table data row per row
 	$rows = array();    
 	
+	$version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
 	foreach($gui->reqIDs as $id) {
 		
 		// now get the rest of information for this requirement
-		$version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
 		$req = $req_mgr->get_by_id($id, $version_option);
 		
 		// BUGID 3254:
-		// above function doesn't work as expected, therefore I delete older versions manually
-		// this if statement can be deleted when function is fixed
-		// if ($version_option == requirement_mgr::LATEST_VERSION) {
-			// $req = array(0 => $req[0]);
-		// }
-		// seems to work now
-		
 		$fields = $req_mgr->get_linked_cfields($id);
-		if (!count($fields)) {
+		if (count($fields) > 0) {
 			// manage the case where no custom fields are defined
 			$fields = array();
 		}
@@ -106,10 +99,11 @@ if(count($gui->reqIDs)) {
 		
 		// create the link to display
 		$title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $charset) . $glue_char . 
-					htmlentities($req[0]['title'], ENT_QUOTES, $charset);
-		$linked_title = '<!-- ' . $title . ' -->' . //add html comment with title for easier sorting 
-							'<a href="javascript:openLinkedReqWindow(' . $id . ')">' . 
-							$title . '</a>';
+				 htmlentities($req[0]['title'], ENT_QUOTES, $charset);
+		
+		// add html comment with title for easier sorting 
+		$linked_title = '<!-- ' . $title . ' -->' . '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . 
+						$title . '</a>';
 		
 		// reqspec-"path" to requirement
 		$path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
@@ -141,7 +135,6 @@ if(count($gui->reqIDs)) {
 	    	 */
 	    	
 	    	$result[] = $path;
-	    	
 	    	$result[] = $linked_title;
 	    	
 	    	// version number
@@ -174,10 +167,8 @@ if(count($gui->reqIDs)) {
 			
 			// get custom field values for this req
 			foreach ($fields as $cf) {
-				//$result[] = htmlentities($cf['value'], ENT_QUOTES, $charset);
 	    		$result[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $charset));
 	    	}
-	    	
 	    	$rows[] = $result;
     	}
     }

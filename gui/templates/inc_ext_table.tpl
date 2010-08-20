@@ -1,10 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.19 2010/08/19 15:24:22 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.20 2010/08/20 14:18:46 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
-	 20100819 - Julian - MultiSort, showGroupItemsCount
+	 20100819 - Julian - MultiSort (BUGID 3694), showGroupItemsCount
 	 20100818 - Julian - use toolbar object to generate toolbar
 	 20100817 - Julian - toolbar items configurable, hideGroupedColumn
 	 20100816 - Eloff - allow text selection in wrapped columns
@@ -79,9 +79,33 @@ function columnWrap(val){
 }
 
 //Functions for MultiSort
-function updateButtons(button,table){
-	button.sortData.direction = button.sortData.direction.toggle('ASC','DESC');
-	button.setIconClass(button.iconCls.toggle('x-tbar-page-next', 'x-tbar-page-prev'));
+function createSorterButton(config, table) {
+	config = config || {};
+	Ext.applyIf(config, {
+		listeners: {
+			click: function(button, tableid, changeDirection) {
+				updateButtons(button, table, true);                    
+			}
+		},
+		iconCls: 'tbar-sort-' + config.sortData.direction.toLowerCase(),
+		multisort: 'yes',
+		reorderable: true
+	});
+
+	return new Ext.Button(config);
+};
+    
+function updateButtons(button,table,changeDirection){
+	sortData = button.sortData;
+	iconCls = button.iconCls;
+	
+	if (sortData != undefined) {
+		if (changeDirection != false) {
+			button.sortData.direction = button.sortData.direction.toggle('ASC','DESC');
+			button.setIconClass(button.iconCls.toggle('tbar-sort-asc', 'tbar-sort-desc'));
+		}
+	}
+	store[table].clearFilter();
 	doSort(table);
 }
 
@@ -117,13 +141,76 @@ Ext.onReady(function() {
 			{/if}
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);
-		
+			
 		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
 			id: '{$tableID}',
 			store: store['{$tableID}'],
+			
+			//show toolbar
 			{if $matrix->show_toolbar}
-			tbar: tbar = new Ext.Toolbar(),
+			tbar: tbar = new Ext.Toolbar({ldelim}
+				//init plugins for multisort
+				{if count($matrix->multiSortButtons) >= 2}
+					plugins: [
+						reorderer = new Ext.ux.ToolbarReorderer(),
+						droppable = new Ext.ux.ToolbarDroppable({ldelim}
+						
+							createItem: function(data) {ldelim}
+								var column = this.getColumnFromDragDrop(data);
+								return createSorterButton({ldelim}
+									text    : column.header,
+									sortData: {ldelim}
+										field: column.dataIndex,
+										direction: "DESC"
+									{rdelim}
+								{rdelim}, {$tableID});
+							{rdelim},
+
+							canDrop: function(dragSource, event, data) {ldelim}
+								var sorters = getSorters(),
+                				column  = this.getColumnFromDragDrop(data);
+
+								for (var i=0; i < sorters.length; i++) {ldelim}
+									if (sorters[i].field == column.dataIndex) return false;
+								{rdelim}
+
+								return true;
+							{rdelim},
+				
+							afterLayout: doSort,
+
+							getColumnFromDragDrop: function(data) {ldelim}
+								var index    = data.header.cellIndex,
+								colModel = grid['{$tableID}'].colModel,
+								column   = colModel.getColumnById(colModel.getColumnId(index));
+
+								return column;
+							{rdelim}
+						{rdelim})
+					],
+					items: [],
+					listeners: {ldelim}
+						scope    : this,
+						reordered: function(button, table, changeDirection) {ldelim}
+							updateButtons(button,{$tableID}, false);
+						{rdelim}
+					{rdelim}
+				{/if} //end plugins for multisort
+			{rdelim}), //END tbar
+			{/if} 
+			
+			listeners: {ldelim}
+			{if count($matrix->multiSortButtons) >= 2}
+				scope: this,
+            
+				render: function() {ldelim}
+					var dragProxy = grid['{$tableID}'].getView().columnDrag,
+					ddGroup   = dragProxy.ddGroup;
+					droppable.addDDGroup(ddGroup);
+				{rdelim}
 			{/if}
+			{rdelim}, //END listeners
+
 			view: new Ext.grid.GroupingView({ldelim}
 				forceFit: true
 				{if $matrix->showGroupItemsCount}
@@ -136,9 +223,11 @@ Ext.onReady(function() {
 				{rdelim}),
 				columns: columnData['{$tableID}']
 				{$matrix->getGridSettings()}
-			{rdelim});
+			{rdelim} //END view
+		); //END grid
 	{/foreach}
 	
+	//show expand/collapse toolbar button
 	{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
 		tbar.add({ldelim}
 			text: '{$labels.expand_collapse_groups|escape:javascript}',
@@ -147,9 +236,10 @@ Ext.onReady(function() {
 				grid['{$tableID}'].getView().toggleAllGroups();
 			{rdelim}
 		{rdelim});
-		{/if}
-		
-		{if $matrix->toolbar_show_all_columns_button && $matrix->show_toolbar}
+	{/if}
+	
+	//show all columns toolbar button
+	{if $matrix->toolbar_show_all_columns_button && $matrix->show_toolbar}
 		tbar.add({ldelim}
 			text: '{$labels.show_all_columns|escape:javascript}',
 			tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
@@ -170,47 +260,40 @@ Ext.onReady(function() {
 	
 	//MULTISORT
 	{if count($matrix->multiSortButtons) >= 2 && $matrix->show_toolbar}
+		
+		//add button seperator
 		tbar.add({ldelim}
 			xtype: 'tbseparator'
 		{rdelim});
-	
+		
+		//add multisort text
 		tbar.add({ldelim}
 			xtype: 'tbtext',
 			text: '{$labels.multisort|escape:javascript}'
 		{rdelim});
-			
+		
+		//add button for each defined multisort button
 		{foreach from=$matrix->multiSortButtons key=id item=button}
 			fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
-			tbar.add({ldelim}
+			tbar.add(createSorterButton({ldelim}
 				text: fieldname,
-				//todo: find better symbol 'sort-asc', 'sort-desc' dont want to show
-				{if $button.direction == 'ASC'}
-					iconCls: 'x-tbar-page-prev',
-					{else}
-						iconCls: 'x-tbar-page-next',
-					{/else}
-				{/if}
-				multisort: 'yes',
 				sortData: {ldelim}
 					field: 'idx{$button.field}',
 					direction: '{$button.direction}'
 				{rdelim},
-				listeners: {ldelim}
-					click: function (button,table) {ldelim}
-						updateButtons(button,{$tableID});
-						{rdelim}
-				{rdelim}
-			{rdelim});
+			{rdelim}, {$tableID}));
 		{/foreach}
 	{/if}
+	//END MULTISORT
 
 	{foreach from=$gui->tableSet key=idx item=matrix}
     {assign var=tableID value=$matrix->tableID}
-	  grid['{$tableID}'].render('{$tableID}_target');
-	  {if count($matrix->multiSortButtons) >= 2}
-	  	doSort({$tableID});
-	  {/if}
-  {/foreach}
+		grid['{$tableID}'].render('{$tableID}_target');
+		//if multisort is enabled sort the data according to predefined multisort buttons
+		{if count($matrix->multiSortButtons) >= 2}
+			doSort({$tableID});
+		{/if}
+	{/foreach}
 
-});
+}); // END Ext.onReady
 </script>

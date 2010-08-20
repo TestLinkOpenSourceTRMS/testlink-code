@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.9 2010/05/16 13:46:17 franciscom Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.10 2010/08/20 10:18:59 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
@@ -125,7 +125,7 @@ class tlInventory extends tlObjectWithDB
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-	    $my['options'] = array('detailLevel' => null, 'accessField' => null);
+	    $my['options'] = array('detailLevel' => null, 'accessKey' => null);
 	    $my['options'] = array_merge($my['options'], (array)$options);
 
 		$doUnserialize = true;

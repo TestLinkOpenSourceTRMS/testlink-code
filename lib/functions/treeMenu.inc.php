@@ -8,11 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.141 2010/08/12 17:47:37 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.142 2010/08/20 15:26:45 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20100820 - asimon - refactoring for less redundant checks and better readibility of code
+ *                      in generateExecTree()
  *	20100812 - franciscom - get_filtered_req_map() - BUGID 3671
  *  20100810 - asimon - added filtering by TC ID on prepareNode() and generateTestSpecTree()
  *  20100808 - asimon - generate_reqspec_tree() implemented to generate statically filtered
@@ -797,6 +799,7 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * - Remove Test cases from test plan
  * 
  * @internal Revisions:
+ *  20100820 - asimon - refactoring for less redundant checks and better readibility
  *  20100719 - asimon - BUGID 3406 - user assignments per build:
  *                                   filter assigned test cases by setting_build
  *	20080617 - franciscom - return type changed to use extjs tree component
@@ -957,77 +960,115 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		}
 		
 		$filter_methods = config_get('execution_filter_methods');
-		$method_key = 'filter_result_method';
-		$result_key = 'filter_result_result';
-				
-		if( $apply_other_filters && property_exists($filters,$method_key)
-		&& !is_null($filters->{$method_key}) 
-		&& $filter_methods['status_code']['any_build'] == $filters->{$method_key}
-		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-		&& !is_null($filters->{$result_key})) {
-			if (in_array($resultsCfg['status_code']['not_run'], (array)$filters->{$result_key})) {
-				$tplan_tcases = filter_not_run_for_any_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-			} else {
-				$tplan_tcases = filter_by_status_for_any_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-			}
-			if (is_null($tplan_tcases)) {
-				$tplan_tcases = array();
-				$apply_other_filters=false;
-			}
+		
+		// 20100820 - asimon - refactoring for less redundant checks and better readibility
+		$ffn = array($filter_methods['status_code']['any_build'] => 'filter_by_status_for_any_build',
+			         $filter_methods['status_code']['all_builds'] => 'filter_by_same_status_for_all_builds',
+			         $filter_methods['status_code']['specific_build'] => 'filter_by_status_for_build',
+			         $filter_methods['status_code']['current_build'] => 'filter_by_status_for_build',
+			         $filter_methods['status_code']['latest_execution'] => 'filter_by_status_for_last_execution');
+		
+		$requested_filter_method = isset($filters->filter_result_method) ? $filters->filter_result_method : null;
+		$requested_filter_result = isset($filters->filter_result_result) ? (array)$filters->filter_result_result : null;
+		
+		// if "any" was selected as filtering status, don't filter by status
+		if (in_array($resultsCfg['status_code']['all'], $requested_filter_result)) {
+			$requested_filter_result = null;
 		}
-		
-		if( $apply_other_filters && property_exists($filters,$method_key)
-		&& !is_null($filters->{$method_key})
-		&& $filter_methods['status_code']['all_builds'] == $filters->{$method_key}
-		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-		&& !is_null($filters->{$result_key})) {
-			$tplan_tcases = filter_by_same_status_for_all_builds($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-			if (is_null($tplan_tcases)) {
-				$tplan_tcases = array();
-				$apply_other_filters=false;
+
+		if ($apply_other_filters && !is_null($requested_filter_method) && isset($ffn[$requested_filter_method])) {
+			// special case 1: when filtering by "not run" status in any build,
+			// we need another filter function
+			if (in_array($resultsCfg['status_code']['not_run'], $requested_filter_result)) {
+				$ffn[$filter_methods['status_code']['any_build']] = 'filter_not_run_for_any_build';
 			}
-		}		
-		
-		if( $apply_other_filters && property_exists($filters,$method_key)
-		&& !is_null($filters->{$method_key})
-		&& $filter_methods['status_code']['specific_build'] == $filters->{$method_key}
-		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-		&& !is_null($filters->{$result_key})) {
-			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-			if (is_null($tplan_tcases)) {
-				$tplan_tcases = array();
-				$apply_other_filters=false;
+			// special case 2: when filtering by "current build", we set the build to filter with
+			// to the build chosen in settings instead of the one in filters
+			if ($requested_filter_method == $filter_methods['status_code']['current_build']) {
+				$filters->filter_result_build = $filters->setting_build;
 			}
-		}
-		
-		if( $apply_other_filters && property_exists($filters,$method_key)
-		&& !is_null($filters->{$method_key})
-		&& $filter_methods['status_code']['current_build'] == $filters->{$method_key}
-		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-		&& !is_null($filters->{$result_key})) {
-			// set build id to filter with to build chosen for execution
-			$filters->{'filter_result_build'} = 
-			$filters->{'setting_build'};
 			
-			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+			// call the filter function and do the filtering
+			$tplan_tcases = $ffn[$requested_filter_method]($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+
 			if (is_null($tplan_tcases)) {
 				$tplan_tcases = array();
 				$apply_other_filters=false;
 			}
 		}
+		
+//		$method_key = 'filter_result_method';
+//		$result_key = 'filter_result_result';
+//		
+//		if( $apply_other_filters && property_exists($filters,$method_key)
+//		&& !is_null($filters->{$method_key}) 
+//		&& $filter_methods['status_code']['any_build'] == $filters->{$method_key}
+//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
+//		&& !is_null($filters->{$result_key})) {
+//			if (in_array($resultsCfg['status_code']['not_run'], (array)$filters->{$result_key})) {
+//				$tplan_tcases = filter_not_run_for_any_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+//			} else {
+//				$tplan_tcases = filter_by_status_for_any_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+//			}
+//			if (is_null($tplan_tcases)) {
+//				$tplan_tcases = array();
+//				$apply_other_filters=false;
+//			}
+//		}
+//		
+//		if( $apply_other_filters && property_exists($filters,$method_key)
+//		&& !is_null($filters->{$method_key})
+//		&& $filter_methods['status_code']['all_builds'] == $filters->{$method_key}
+//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
+//		&& !is_null($filters->{$result_key})) {
+//			$tplan_tcases = filter_by_same_status_for_all_builds($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+//			if (is_null($tplan_tcases)) {
+//				$tplan_tcases = array();
+//				$apply_other_filters=false;
+//			}
+//		}		
+//		
+//		if( $apply_other_filters && property_exists($filters,$method_key)
+//		&& !is_null($filters->{$method_key})
+//		&& $filter_methods['status_code']['specific_build'] == $filters->{$method_key}
+//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
+//		&& !is_null($filters->{$result_key})) {
+//			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+//			if (is_null($tplan_tcases)) {
+//				$tplan_tcases = array();
+//				$apply_other_filters=false;
+//			}
+//		}
+//		
+//		if( $apply_other_filters && property_exists($filters,$method_key)
+//		&& !is_null($filters->{$method_key})
+//		&& $filter_methods['status_code']['current_build'] == $filters->{$method_key}
+//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
+//		&& !is_null($filters->{$result_key})) {
+//			// set build id to filter with to build chosen for execution
+//			$filters->{'filter_result_build'} = 
+//			$filters->{'setting_build'};
+//			
+//			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+//			if (is_null($tplan_tcases)) {
+//				$tplan_tcases = array();
+//				$apply_other_filters=false;
+//			}
+//		}
+//
+//		if( $apply_other_filters && property_exists($filters,$method_key)
+//		&& !is_null($filters->{$method_key})
+//		&& $filter_methods['status_code']['latest_execution'] == $filters->{$method_key}
+//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
+//		&& !is_null($filters->{$result_key})) {
+//			$tplan_tcases = filter_by_status_for_last_execution($db, $tplan_mgr, $tplan_tcases, $tplan_id, $filters);
+//			if (is_null($tplan_tcases)) {
+//				$tplan_tcases = array();
+//				$apply_other_filters=false;
+//			}
+//		}
 
-		if( $apply_other_filters && property_exists($filters,$method_key)
-		&& !is_null($filters->{$method_key})
-		&& $filter_methods['status_code']['latest_execution'] == $filters->{$method_key}
-		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-		&& !is_null($filters->{$result_key})) {
-			$tplan_tcases = filter_by_status_for_last_execution($db, $tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-			if (is_null($tplan_tcases)) {
-				$tplan_tcases = array();
-				$apply_other_filters=false;
-			}
-		}
-
+		// end 20100820 refactoring
 		
 		// BUGID 3450 - Change colors/counters in exec tree.
 		// Means: replace exec status in filtered array $tplan_tcases 

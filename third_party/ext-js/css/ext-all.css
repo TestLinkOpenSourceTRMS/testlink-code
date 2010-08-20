@@ -4,7 +4,33 @@
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
-html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}ol,ul {list-style:none;}caption,th {text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;}q:before,q:after{content:'';}.ext-el-mask {
+ /*
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * @package 	TestLink
+ * @version    	CVS: $Id: ext-all.css,v 1.8 2010/08/20 15:12:55 franciscom Exp $
+ *
+ * Changed by TestLink Dev Team.
+ * With these definitions Test Case Formatting is broken
+ * Unable to understand who is the developer that found this solution.
+ * Applied change found on version 1.4 of Test Link CVS
+ *
+ * 
+ * html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}ol,ul {list-style:none;}caption,th {text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;}q:before,q:after{content:'';}.ext-el-mask {
+ *     z-index: 100;
+ *     position: absolute;
+ *     top:0;
+ *     left:0;
+ *     -moz-opacity: 0.5;
+ *     opacity: .50;
+ *     filter: alpha(opacity=50);
+ *     width: 100%;
+ *     height: 100%;
+ *     zoom: 1;
+ * }
+*/
+.ext-el-mask {
     z-index: 100;
     position: absolute;
     top:0;

@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.19 2010/08/20 17:59:45 franciscom Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.20 2010/08/20 18:41:59 franciscom Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -46,7 +46,6 @@ $args = init_args($tproject_mgr);
 $gui = init_gui($args);
 
 $glue_char = config_get('gui_title_separator_1');
-$msg_key = 'no_linked_req';
 $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
 
@@ -61,8 +60,11 @@ if(count($gui->reqIDs) > 0) {
 	$type_labels = init_labels($req_cfg->type_labels);
 	$status_labels = init_labels($req_cfg->status_labels);
 	
-	$no = lang_get('No');
-	$yes = lang_get('Yes');
+	$labels2get = array('no' => 'No', 'yes' => 'Yes', 'not_aplicable' => null,'match_count' => null, 
+						'req_spec_short' => null,'title' => null, 'version' => null, 'th_coverage' => null,
+						'frozen' => null, 'type'=> null,'status' => null,'th_relations' => null, 'requirements' => null);
+					
+	$labels = init_labels($labels2get);
 	
 	$gui->cfields = $cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement',
                                                               null, 'name');
@@ -79,6 +81,9 @@ if(count($gui->reqIDs) > 0) {
 		
 		// now get the rest of information for this requirement
 		$req = $req_mgr->get_by_id($id, $version_option);
+
+		// coverage data
+		$current = count($req_mgr->get_coverage($id));
 		
 		// BUGID 3254:
 		$fields = $req_mgr->get_linked_cfields($id);
@@ -87,8 +92,6 @@ if(count($gui->reqIDs) > 0) {
 			$fields = array();
 		}
     	
-		// coverage data
-		$current = count($req_mgr->get_coverage($id));
 
 		// number of relations, if feature is enabled
 		if ($relations_enabled) {
@@ -144,12 +147,12 @@ if(count($gui->reqIDs) > 0) {
 			$result[] = $version_str;
 	    	
 			// is it frozen?
-			$result[] = ($version['is_open']) ? $no : $yes;
+			$result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
 			
 			// coverage
 			if ($coverage_enabled) {
 		    	$expected = $version['expected_coverage'];
-		    	$coverage_string = "<!-- -1 -->" . lang_get('not_aplicable') . " ($current/0)";
+		    	$coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($current/0)";
 		    	if ($expected) {
 		    		$percentage = round(100 / $expected * $current, 2);
 		    		$padded_percentage = sprintf("%010d", $percentage); //bring all percentages to same length
@@ -175,7 +178,7 @@ if(count($gui->reqIDs) > 0) {
     
     if(($gui->row_qty = count($rows)) > 0 ) {
     	    	
-        $gui->pageTitle .= " - " . lang_get('match_count') . ": " . $gui->row_qty;
+        $gui->pageTitle .= " - " . $labels['match_count'] . ": " . $gui->row_qty;
 		
         // get column header titles for the table
         
@@ -196,20 +199,20 @@ if(count($gui->reqIDs) > 0) {
     	 * 9. then all custom fields in order of $fields
     	 */
         $columns = array();
-        $columns[] = array('title' => lang_get('req_spec_short'), 'width' => 200);
-        $columns[] = array('title' => lang_get('title'), 'width' => 150);
-        $columns[] = array('title' => lang_get('version'), 'width' => 50);
-        $columns[] = array('title' => lang_get('frozen'), 'width' => 50);
+        $columns[] = array('title' => $labels['req_spec_short'], 'width' => 200);
+        $columns[] = array('title' => $labels['title'], 'width' => 150);
+        $columns[] = array('title' => $labels['version'], 'width' => 50);
+        $columns[] = array('title' => $labels['frozen'], 'width' => 50);
         
         if ($coverage_enabled) {
-	    	$columns[] = lang_get('th_coverage');
+	    	$columns[] = $labels['th_coverage'];
 	    }
 	            
-        $columns[] = lang_get('type');
-        $columns[] = lang_get('status');
+        $columns[] = $labels['type'];
+        $columns[] = $labels['status'];
 	    
 		if ($relations_enabled) {
-	    	$columns[] = lang_get('th_relations');
+	    	$columns[] = $labels['th_relations'];
 	    }
         
 	    foreach($gui->cfields as $cf) {
@@ -218,23 +221,27 @@ if(count($gui->reqIDs) > 0) {
 
 	    // create table object, fill it with columns and row data and give it a title
 	    $matrix = new tlExtTable($columns, $rows, 0);
-        $matrix->title = lang_get('requirements');
+        $matrix->title = $labels['requirements'];
+        
         //group by Req Spec
         $matrix->groupByColumn = 0;
+        
         //sort by coverage descending
         $matrix->sortByColumn = 4;
         $matrix->sortDirection = 'DESC';
+        
         //define toolbar
         $matrix->show_toolbar = true;
         $matrix->toolbar_expand_collapse_groups_button = true;
         $matrix->toolbar_show_all_columns_button = true;
         $matrix->showGroupItemsCount = true;
+        
         //show custom field content in multiple lines
         $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
         $gui->tableSet= array($matrix);
     }
 } else {
-    $gui->warning_msg = lang_get($msg_key);
+    $gui->warning_msg = lang_get('no_linked_req');
 }
 
 $smarty = new TLSmarty();

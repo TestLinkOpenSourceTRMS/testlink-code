@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.142 2010/08/20 15:26:45 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.143 2010/08/20 17:24:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -828,13 +828,12 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
     	
 	$keyword_id = 0;
 	$keywordsFilterType = 'Or';
-	if (property_exists($filters, 'filter_keywords')
-	&& !is_null($filters->{'filter_keywords'})) {
+	if (property_exists($filters, 'filter_keywords') && !is_null($filters->{'filter_keywords'})) {
 		$keyword_id = $filters->{'filter_keywords'};
 		$keywordsFilterType = $filters->{'filter_keywords_filter_type'};
 	}
 
-	// 3406 - user assignments per build
+	// BUGID 3406 - user assignments per build
 	// can't use $build_id here because we need the build ID from settings panel
 	$build2filter_assignments = isset($filters->{'setting_build'}) ? $filters->{'setting_build'} : 0;
 	
@@ -885,17 +884,11 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
  	$my['filters'] = array('exclude_node_types' => $nt2exclude,
  	                       'exclude_children_of' => $nt2exclude_children);
 	
- 	// 3301 - added for filtering by toplevel testsuite
- 	if (isset($filters->{'filter_toplevel_testsuite'})
- 	&& is_array($filters->{'filter_toplevel_testsuite'})) {
- 		$my['filters']['exclude_branches'] = 
- 			$filters->{'filter_toplevel_testsuite'};
+ 	// BUGID 3301 - added for filtering by toplevel testsuite
+ 	if (isset($filters->{'filter_toplevel_testsuite'}) && is_array($filters->{'filter_toplevel_testsuite'})) {
+ 		$my['filters']['exclude_branches'] = $filters->{'filter_toplevel_testsuite'};
  	}
  	
-	// $order_cfg = array("type" =>'exec_order',"tplan_id" => $tplan_id);
-    // $test_spec = $tree_manager->get_subtree($tproject_id,$nt2exclude,$nt2exclude_children,
-	// 	                                    null,'',RECURSIVE_MODE,$order_cfg);
-	// 
     $test_spec = $tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
      
 	$test_spec['name'] = $tproject_name . " / " . $tplan_name;  // To be discussed
@@ -918,12 +911,8 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			
 			// Multiple step algoritm to apply keyword filter on type=AND
 			// get_linked_tcversions filters by keyword ALWAYS in OR mode.
-			// 20100520 - franciscom
-			// 3406: user assignments per build
-//			$opt = array('include_unassigned' => $include_unassigned, 
-//			             'steps_info' => false);
-			$opt = array('include_unassigned' => $include_unassigned, 
-			             'steps_info' => false,
+			// BUGID 3406: user assignments per build
+			$opt = array('include_unassigned' => $include_unassigned, 'steps_info' => false,
 			             'user_assignments_per_build' => $build2filter_assignments);
 
 			// 20100417 - BUGID 3380 - execution type
@@ -996,78 +985,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 				$apply_other_filters=false;
 			}
 		}
-		
-//		$method_key = 'filter_result_method';
-//		$result_key = 'filter_result_result';
-//		
-//		if( $apply_other_filters && property_exists($filters,$method_key)
-//		&& !is_null($filters->{$method_key}) 
-//		&& $filter_methods['status_code']['any_build'] == $filters->{$method_key}
-//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-//		&& !is_null($filters->{$result_key})) {
-//			if (in_array($resultsCfg['status_code']['not_run'], (array)$filters->{$result_key})) {
-//				$tplan_tcases = filter_not_run_for_any_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-//			} else {
-//				$tplan_tcases = filter_by_status_for_any_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-//			}
-//			if (is_null($tplan_tcases)) {
-//				$tplan_tcases = array();
-//				$apply_other_filters=false;
-//			}
-//		}
-//		
-//		if( $apply_other_filters && property_exists($filters,$method_key)
-//		&& !is_null($filters->{$method_key})
-//		&& $filter_methods['status_code']['all_builds'] == $filters->{$method_key}
-//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-//		&& !is_null($filters->{$result_key})) {
-//			$tplan_tcases = filter_by_same_status_for_all_builds($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-//			if (is_null($tplan_tcases)) {
-//				$tplan_tcases = array();
-//				$apply_other_filters=false;
-//			}
-//		}		
-//		
-//		if( $apply_other_filters && property_exists($filters,$method_key)
-//		&& !is_null($filters->{$method_key})
-//		&& $filter_methods['status_code']['specific_build'] == $filters->{$method_key}
-//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-//		&& !is_null($filters->{$result_key})) {
-//			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-//			if (is_null($tplan_tcases)) {
-//				$tplan_tcases = array();
-//				$apply_other_filters=false;
-//			}
-//		}
-//		
-//		if( $apply_other_filters && property_exists($filters,$method_key)
-//		&& !is_null($filters->{$method_key})
-//		&& $filter_methods['status_code']['current_build'] == $filters->{$method_key}
-//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-//		&& !is_null($filters->{$result_key})) {
-//			// set build id to filter with to build chosen for execution
-//			$filters->{'filter_result_build'} = 
-//			$filters->{'setting_build'};
-//			
-//			$tplan_tcases = filter_by_status_for_build($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-//			if (is_null($tplan_tcases)) {
-//				$tplan_tcases = array();
-//				$apply_other_filters=false;
-//			}
-//		}
-//
-//		if( $apply_other_filters && property_exists($filters,$method_key)
-//		&& !is_null($filters->{$method_key})
-//		&& $filter_methods['status_code']['latest_execution'] == $filters->{$method_key}
-//		&& !in_array($resultsCfg['status_code']['all'],(array)$filters->{$result_key})
-//		&& !is_null($filters->{$result_key})) {
-//			$tplan_tcases = filter_by_status_for_last_execution($db, $tplan_mgr, $tplan_tcases, $tplan_id, $filters);
-//			if (is_null($tplan_tcases)) {
-//				$tplan_tcases = array();
-//				$apply_other_filters=false;
-//			}
-//		}
-
 		// end 20100820 refactoring
 		
 		// BUGID 3450 - Change colors/counters in exec tree.
@@ -1077,16 +994,15 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// It has to be done before call to prepareNode() though,
 		// because that one sets the counters according to status.
 		if ($useColors && $colorBySelectedBuild) {
+			$tables = tlObject::getDBTables('executions');
 			foreach ($tplan_tcases as $id => $info) {
-				$tables = tlObject::getDBTables('executions');
-				
 				// get last execution result for selected build
 				$sql = " SELECT status FROM {$tables['executions']} E " .
 					   " WHERE tcversion_id = {$info['tcversion_id']} " .
 				       " AND testplan_id = {$tplan_id} " .
 					   " AND platform_id = {$info['platform_id']} " .
 					   " AND build_id = {$filters->setting_build} " .
-					   " ORDER BY execution_ts DESC limit 1 ";
+					   " ORDER BY execution_ts DESC LIMIT 1 ";
 				
 				$result = null;
 				$result = $db->fetchOneValue($sql);
@@ -1108,24 +1024,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		// has been filtered.
 		// Then to avoid changes to prepareNode() due to include_unassigned,
 		// seems enough to set assignedTo to 0, if include_unassigned==true
-		// $assignedTo = $include_unassigned ? 0 : $assignedTo;
-		$assignedTo = $include_unassigned ? 
-		              null : $assignedTo;
+		$assignedTo = $include_unassigned ? null : $assignedTo;
 		
 		$pnFilters = array('assignedTo' => $assignedTo);
-		
-//		$pnFilters['filter_testcase_name'] = 
-//			isset($filters->{'filter_testcase_name'}) ?
-//			$filters->{'filter_testcase_name'} : null;
-//			
-//		$pnFilters['filter_execution_type'] = 
-//			isset($filters->{'filter_execution_type'}) ?
-//			$filters->{'filter_execution_type'} : null;
-//		
-//		$pnFilters['filter_priority'] = 
-//			isset($filters->{'filter_priority'}) ?
-//			$filters->{'filter_priority'} : null;
-		
 		$keys2init = array('filter_testcase_name',
 		                   'filter_execution_type',
 		                   'filter_priority');
@@ -1145,13 +1046,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		}
 	
 		
-		// 3516
+		// BUGID 3516
 		// can now be left in form of array, will not be sent by URL anymore
 		//$keys = implode(array_keys($tplan_tcases), ",");
 		$keys = array_keys($tplan_tcases);
-		
-		// $getArguments .= "&show_only_tcs=" . $keys;
-		
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
 			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
 			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
@@ -1185,7 +1083,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 
 
 /**
- * ???
+ * 
  * 
  * @param integer $level
  * @param array &$node reference to recursive map
@@ -1256,12 +1154,9 @@ function get_testproject_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$hash_id_descr = array_flip($hash_descr_id);
 
 	$resultsCfg = config_get('results');
-	// $status_descr_code = $resultsCfg['status_code'];
-	// $status_code_descr = $resultsCfg['code_status'];
-  
 	$decoding_hash = array('node_id_descr' => $hash_id_descr,
-                       'status_descr_code' =>  $resultsCfg['status_code'],
-                       'status_code_descr' =>  $resultsCfg['code_status']);
+                           'status_descr_code' =>  $resultsCfg['status_code'],
+                       	   'status_code_descr' =>  $resultsCfg['code_status']);
 	
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 	
@@ -1316,9 +1211,8 @@ function get_testplan_nodes_testcount(&$db,$tproject_id, $tproject_name,
 	$hash_id_descr = array_flip($hash_descr_id);
 	
 	$resultsCfg=config_get('results');
-	$decoding_hash=array('node_id_descr' => $hash_id_descr,
-		'status_descr_code' =>  $resultsCfg['status_code'],
-		'status_code_descr' =>  $resultsCfg['code_status']);
+	$decoding_hash=array('node_id_descr' => $hash_id_descr, 'status_descr_code' =>  $resultsCfg['status_code'],
+		                 'status_code_descr' =>  $resultsCfg['code_status']);
 	
 	$test_spec = $tproject_mgr->get_subtree($tproject_id,RECURSIVE_MODE);
 	

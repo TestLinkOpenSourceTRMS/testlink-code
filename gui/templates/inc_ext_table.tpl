@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.20 2010/08/20 14:18:46 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.21 2010/08/20 16:21:15 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -136,7 +136,7 @@ Ext.onReady(function() {
 			,groupField: 'idx{$matrix->groupByColumn}'
 			{/if}
 			// 20100816 - asimon - enable sorting by a default column
-			{if ($matrix->sortByColumn >= 0) && (count($matrix->multiSortButtons) < 2)}
+			{if ($matrix->sortByColumn >= 0) && (count($matrix->multiSortButtons) == 0)}
 			,sortInfo:{ldelim}field:'idx{$matrix->sortByColumn}',direction:'{$matrix->sortDirection}'{rdelim}
 			{/if}
 			{rdelim});
@@ -150,7 +150,7 @@ Ext.onReady(function() {
 			{if $matrix->show_toolbar}
 			tbar: tbar = new Ext.Toolbar({ldelim}
 				//init plugins for multisort
-				{if count($matrix->multiSortButtons) >= 2}
+				{if count($matrix->multiSortButtons) > 0}
 					plugins: [
 						reorderer = new Ext.ux.ToolbarReorderer(),
 						droppable = new Ext.ux.ToolbarDroppable({ldelim}
@@ -168,7 +168,7 @@ Ext.onReady(function() {
 
 							canDrop: function(dragSource, event, data) {ldelim}
 								var sorters = getSorters(),
-                				column  = this.getColumnFromDragDrop(data);
+                					column  = this.getColumnFromDragDrop(data);
 
 								for (var i=0; i < sorters.length; i++) {ldelim}
 									if (sorters[i].field == column.dataIndex) return false;
@@ -176,8 +176,11 @@ Ext.onReady(function() {
 
 								return true;
 							{rdelim},
-				
-							afterLayout: doSort,
+							
+							//after multisort buttons changed sort data again 
+							afterLayout: function (table) {ldelim}
+								doSort({$tableID});
+							{rdelim},
 
 							getColumnFromDragDrop: function(data) {ldelim}
 								var index    = data.header.cellIndex,
@@ -187,7 +190,7 @@ Ext.onReady(function() {
 								return column;
 							{rdelim}
 						{rdelim})
-					],
+					],  //END plugins
 					items: [],
 					listeners: {ldelim}
 						scope    : this,
@@ -200,9 +203,8 @@ Ext.onReady(function() {
 			{/if} 
 			
 			listeners: {ldelim}
-			{if count($matrix->multiSortButtons) >= 2}
+			{if count($matrix->multiSortButtons) > 0}
 				scope: this,
-            
 				render: function() {ldelim}
 					var dragProxy = grid['{$tableID}'].getView().columnDrag,
 					ddGroup   = dragProxy.ddGroup;
@@ -259,7 +261,7 @@ Ext.onReady(function() {
 	{/if}
 	
 	//MULTISORT
-	{if count($matrix->multiSortButtons) >= 2 && $matrix->show_toolbar}
+	{if count($matrix->multiSortButtons) > 0 && $matrix->show_toolbar}
 		
 		//add button seperator
 		tbar.add({ldelim}
@@ -290,7 +292,7 @@ Ext.onReady(function() {
     {assign var=tableID value=$matrix->tableID}
 		grid['{$tableID}'].render('{$tableID}_target');
 		//if multisort is enabled sort the data according to predefined multisort buttons
-		{if count($matrix->multiSortButtons) >= 2}
+		{if count($matrix->multiSortButtons) > 0}
 			doSort({$tableID});
 		{/if}
 	{/foreach}

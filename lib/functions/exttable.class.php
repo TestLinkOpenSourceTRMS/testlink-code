@@ -6,14 +6,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.18 2010/08/19 16:21:21 asimon83 Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.19 2010/08/20 16:21:16 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
  *  20100819 - asimon - additional parameters (hidden, hideable, groupable) for req based report and other tables
- *  20100819 - Julian - MultiSort, default Values for Grid Settings, more Grid Settings
+ *  20100819 - Julian - MultiSort (BUGID 3694), default Values for Grid Settings, more Grid Settings
  * 	20100817 - Julian - default toolbar items, hideGroupedColumn
  *  20100816 - asimon - enable sorting by a default column via $sortByColumn
  *	20100719 - eloff - Pass $tableID via constructor
@@ -236,11 +236,11 @@ class tlExtTable extends tlTable
 					// Attach a custom renderer
 					$s .= ",renderer: {$this->customBehaviour[$column['type']]['render']}";
 				}
-				if(isset($column['sortable']) && (count($this->multiSortButtons) < 2)){
+				if(isset($column['sortable']) && (count($this->multiSortButtons) == 0)){
 					$sortable = $column['sortable'];
 				}
 			}
-			if(count($this->multiSortButtons) >= 2) {
+			if(count($this->multiSortButtons) > 0) {
 				$sortable = 'false';
 			}
 			$s .= ",sortable: {$sortable}";

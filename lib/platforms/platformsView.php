@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsView.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/11/30 21:52:19 $ by $Author: erikeloff $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2010/08/21 14:22:11 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  */
@@ -22,13 +22,18 @@ $platform_mgr = new tlPlatform($db, $args->testproject_id);
 $gui = new stdClass();
 $gui->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
 $gui->canManage = $args->currentUser->hasRight($db,"platform_management");
-$gui->action = null;
-$gui->sqlResult = null;
+$gui->user_feedback = null;
+
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
+
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$args = new stdClass();

@@ -1,11 +1,12 @@
 {* 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: reqOverview.tpl,v 1.4 2010/03/25 11:18:12 asimon83 Exp $
+ * $Id: reqOverview.tpl,v 1.5 2010/08/21 13:38:25 asimon83 Exp $
  *
  * Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * revisions:
+ * 20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
  * 20100310 - asimon - refactoring
  * 20100309 - asimon - initial commit
  *
@@ -76,11 +77,12 @@ Ext.onReady(function(){
 {if $gui->warning_msg == ''}
 	
 	<p><form method="post">
-	{if $gui->all_versions}
-		<input type="submit" name="latest_version" value="{$labels.dont_show_all_versions_btn}" id="dont_show_all_versions_btn" />
-	{else}
-		<input type="submit" name="all_versions" value="{$labels.show_all_versions_btn}" id="show_all_versions_btn" />
-	{/if}
+	<input type="checkbox" name="all_versions" value="all_versions"
+	       {if $gui->all_versions} checked="checked" {/if}
+	       onchange="this.form.submit()" /> {$labels.show_all_versions_btn}
+	<input type="hidden"
+	       name="all_versions_hidden"
+	       value="{$gui->all_versions}" />
 	</form></p><br/>
 	
 	{foreach from=$gui->tableSet key=idx item=matrix}

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.143 2010/08/20 17:24:26 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.144 2010/08/21 13:38:25 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -958,9 +958,10 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			         $filter_methods['status_code']['latest_execution'] => 'filter_by_status_for_last_execution');
 		
 		$requested_filter_method = isset($filters->filter_result_method) ? $filters->filter_result_method : null;
-		$requested_filter_result = isset($filters->filter_result_result) ? (array)$filters->filter_result_result : null;
+		$requested_filter_result = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
 		
 		// if "any" was selected as filtering status, don't filter by status
+		$requested_filter_result = (array)$requested_filter_result;
 		if (in_array($resultsCfg['status_code']['all'], $requested_filter_result)) {
 			$requested_filter_result = null;
 		}

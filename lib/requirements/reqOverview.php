@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.22 2010/08/21 08:44:43 franciscom Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.23 2010/08/21 13:38:25 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  * 
+ * 20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
  * 20100816 - Julian - added default sorting and grouping
  * 20100730 - asimon - added table ID (0) to constructor of ext table
  *                     (required by changes to ext table class to avoid warnings in log)
@@ -247,7 +248,18 @@ function init_args(&$tproject_mgr)
 {
 	$args = new stdClass();
 
-	$args->all_versions = isset($_REQUEST['all_versions']);
+	$all_versions = isset($_REQUEST['all_versions']) ? true : false;
+	$all_versions_hidden = isset($_REQUEST['all_versions_hidden']) ? true : false;
+	if ($all_versions) {
+		$selection = true;
+	} else if ($all_versions_hidden) {
+		$selection = false;
+	} else if (isset($_SESSION['all_versions'])) {
+		$selection = $_SESSION['all_versions'];
+	} else {
+		$selection = false;
+	}
+	$args->all_versions = $_SESSION['all_versions'] = $selection;
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : '';

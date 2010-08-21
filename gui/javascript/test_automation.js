@@ -1,23 +1,28 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: test_automation.js,v 1.4 2010/06/24 17:25:57 asimon83 Exp $ 
+// $Id: test_automation.js,v 1.5 2010/08/21 16:02:33 franciscom Exp $ 
 //
 // This library is automatically loaded with inc_header.tpl
 //
 // Code contributed by:
 //
+// 20100821 - franciscom - openImportResult() interface changes to solve BUGID 3470 reopened 
 
 /*
   function: openImportResult
 
-  args :
+  args: windows_title
+        test plan id
+        build id
+        platform id
 
   returns: A pop-up window which facilitates XML import
 
 */
-function openImportResult(windows_title) {
-	wref = window.open(fRoot+"lib/results/resultsImport.php",
+function openImportResult(windows_title,tplan_id,build_id,platform_id) {
+  args = "tplanID=" + tplan_id + "&buildID=" + build_id + "&platformID=" + platform_id;
+	wref = window.open(fRoot+"lib/results/resultsImport.php?"+args,
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
 	wref.focus();
 }

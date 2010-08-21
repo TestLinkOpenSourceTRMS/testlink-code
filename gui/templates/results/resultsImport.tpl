@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsImport.tpl,v 1.8 2010/05/18 20:28:09 franciscom Exp $
+$Id: resultsImport.tpl,v 1.9 2010/08/21 16:23:59 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
-20100518 - franciscom - BUGID 3470 - contribution twelve
+rev:
+    20100821 - franciscom - BUGID 3470 - reopened due to filters refactoring
+    20100518 - franciscom - BUGID 3470 - contribution twelve
 *}
 {include file="inc_head.tpl"}
 {lang_get var='labels' 
@@ -42,8 +44,10 @@ Purpose: smarty template - manage import of test cases and test suites
 	<p>{$labels.max_size_cvs_file1} {$gui->importLimit/1024} {$labels.max_size_cvs_file2}</p>
 	
 	<div class="groupBtn">
-		<input type="hidden" name="build" value="{$gui->buildID}" />
-    <input type="hidden" name="platform" value="{$gui->platformID}" /> {* BUGID 3470 *}
+		<input type="hidden" name="buildID" value="{$gui->buildID}" />
+    <input type="hidden" name="platformID" value="{$gui->platformID}" /> {* BUGID 3470 *}
+    <input type="hidden" name="tplanID" value="{$gui->tplan}" /> {* BUGID 3470 *}
+
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
 			onclick="javascript: location.href=fRoot+'lib/results/resultsImport.php';" />

@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.62 2010/08/21 18:03:56 franciscom Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.63 2010/08/21 18:09:23 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -74,7 +74,7 @@ if($gui->do_report['status_ok'])
 
 // BUGID 3370
 // get All test Plans for combobox
-$filters = array('plan_status' => $args->show_only_active_tplans ? 1 : 0);
+$filters = array('plan_status' => $args->show_only_active_tplans ? 1 : null);
 $options = array('outputType' => 'forHMLSelect');
 $gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id,$filters,$options);
 

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.169 2010/08/21 17:18:11 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.170 2010/08/21 18:02:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100821 - franciscom - get_all_testplans() - interface changes
  * 20100516 - franciscom - BUGID 3464 - delete()
  * 20100310 - asimon - BUGID 3227 - refactored get_all_requirement_ids() and count_all_requirements()
  *                                  to not be recursive and pascal-like anymore
@@ -1845,45 +1846,68 @@ function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_typ
                      [$exclude_tplans]: null -> do not apply exclusion
                                         id -> test plan id to exclude
          
+         [options]:
+         
   returns:
+  	20100821 - franciscom - added options
 
 */
-function get_all_testplans($testproject_id,$filters=null)
+function get_all_testplans($testproject_id,$filters=null,$options=null)
 {
-	$sql = " SELECT NH.id,NH.name,notes,active,is_public,testproject_id " .
+
+	$my['options'] = array('fields2get' => 'NH.id,NH.name,notes,active,is_public,testproject_id',
+						   'outputType' => null);
+	$my['options'] = array_merge($my['options'], (array)$options);
+
+    $forHMLSelect = false;
+	if( !is_null($my['options']['outputType']) && $my['options']['outputType'] == 'forHMLSelect')
+	{
+		$forHMLSelect = true;
+		$my['options']['fields2get'] = 'NH.id,NH.name';
+	}
+	
+	$sql = " SELECT {$my['options']['fields2get']} " .
 	       " FROM {$this->tables['nodes_hierarchy']} NH,{$this->tables['testplans']} TPLAN";
 	       
 	$where = " WHERE NH.id=TPLAN.id ";
-    $where .= ' AND (testproject_id = ' . $testproject_id . " ";
+    $where .= " AND (testproject_id = " . $this->db->prepare_int($testproject_id) . " ";
     if( !is_null($filters) )
     {
-        $key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,
-                         'tplan2exclude' => null);
+		$key2check=array('get_tp_without_tproject_id' => 0, 'plan_status' => null,
+		                 'tplan2exclude' => null);
+		
+		foreach($key2check as $varname => $defValue)
+		{
+		    $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
+		}                
         
-        foreach($key2check as $varname => $defValue)
-        {
-            $$varname=isset($filters[$varname]) ? $filters[$varname] : $defValue;   
-        }                
-        
-	      $where .= " ) ";
-    
-	      if(!is_null($plan_status))
-	      {
-	      	$my_active = to_boolean($plan_status);
-	      	$where .= " AND active = " . $my_active;
-	      }
-    
-	      if(!is_null($tplan2exclude))
-	      {
-	      	$where .= " AND TPLAN.id != {$tplan2exclude} ";
-	      }
+		$where .= " ) ";
+		
+		if(!is_null($plan_status))
+		{
+			$my_active = to_boolean($plan_status);
+			$where .= " AND active = " . $my_active;
+		}
+		
+		if(!is_null($tplan2exclude))
+		{
+			$where .= " AND TPLAN.id != {$tplan2exclude} ";
+		}
     }
     else
     {
-        $where .=")";  
+        $where .= ")";  
     }	
 	$sql .= $where . " ORDER BY name";
-	$map = $this->db->fetchRowsIntoMap($sql,'id');
+
+	if( $forHMLSelect )
+	{
+		$map = $this->db->fetchColumnsIntoMap($sql,'id','name');
+	}
+	else
+	{
+		$map = $this->db->fetchRowsIntoMap($sql,'id');
+	}
 	return($map);
 
 }

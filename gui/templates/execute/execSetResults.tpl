@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.59 2010/06/24 17:25:53 asimon83 Exp $
+$Id: execSetResults.tpl,v 1.60 2010/08/21 17:19:26 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
 
@@ -352,7 +352,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     	    	         value="{lang_get s=$gui->history_status_btn_name}" />
     	    	  <input type="button" id="pop_up_import_button" name="import_xml_button"
     	    	         value="{$labels.import_xml_results}"
-    	    	         onclick="javascript: openImportResult('import_xml_results');" />
+    	    	         onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},{$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
           
               {* 20081125 - franciscom - BUGID 1902*}
 		          {if $tlCfg->exec_cfg->enable_test_automation}

@@ -6,11 +6,15 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.291 2010/08/19 18:30:14 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.292 2010/08/21 11:54:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100821 - franciscom - BUGID 3695 - Test Case Steps - Export/Import - missing attribute execution type
+ *						   create_step() - fixed issue when execution_type was NULL.
+ *						   new method - update_tcversion_steps() needed for BUGID 3634	
+ *	
  * 20100814 - franciscom - getInternalID() - removed unused code and minor code rearrangement
  *						   changes in returned value when internal ID can not be found.	
  * 20100813 - asimon - deactivated last slash on full path in get_assigned_to_user()
@@ -449,7 +453,9 @@ class testcase extends tlObjectWithAttachments
 	
 	  returns:
 	
-	  rev: 20100106 - franciscom - Multiple Test Case Steps Feature
+	  rev: 
+	  	   20100821 - franciscom - BUGID 3696 - test case step execution type ignored	
+	  	   20100106 - franciscom - Multiple Test Case Steps Feature
 	  	   20080113 - franciscom - interface changes added tc_ext_id
 	
 	*/
@@ -463,7 +469,8 @@ class testcase extends tlObjectWithAttachments
 		       "author_id,creation_ts,execution_type,importance) " . 
 	  	       " VALUES({$tcase_version_id},{$tc_ext_id},{$version},'" .
 	  	       $this->db->prepare_string($summary) . "','" . $this->db->prepare_string($preconditions) . "'," . 
-	  	       $author_id . "," . $this->db->db_now() . ", {$execution_type},{$importance} )";
+	  	       $this->db->prepare_int($author_id) . "," . $this->db->db_now() . 
+	  	       ", {$execution_type},{$importance} )";
 		
 		$result = $this->db->exec_query($sql);
 		$ret['msg']='ok';
@@ -476,8 +483,8 @@ class testcase extends tlObjectWithAttachments
 			$op['status_ok'] = 1;
 			for($jdx=0 ; ($jdx < $steps2create && $op['status_ok']); $jdx++)
 			{
-				$op = $this->create_step($tcase_version_id,$steps[$jdx]['step_number'],
-				                         $steps[$jdx]['actions'],$steps[$jdx]['expected_results']);
+				$op = $this->create_step($tcase_version_id,$steps[$jdx]['step_number'],$steps[$jdx]['actions'],
+										 $steps[$jdx]['expected_results'],$steps[$jdx]['execution_type']);
 			}	 
 		}
 	
@@ -871,11 +878,26 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	
-	
-	// 20060726 - franciscom - default value changed for optional argument $tc_order
-	//                         create(), update()
-	//
-	// 20060424 - franciscom - interface changes added $keywords_id
+	/**
+	 * update test case specification
+	 * 
+	 * @param integer $id Test case unique identifier (node_hierarchy table)
+	 * @param integer $tcversion_id Test Case Version unique ID (node_hierarchy table)
+	 * @param string $name name/title
+	 * @param string $summary
+	 * @param string $preconditions
+	 * @param array $steps steps + expected results
+	 * @param integer $user_id who is doing the update
+	 * @param string $keywords_id optional list of keyword id to be linked to test case
+	 *				 this list will override previous keyword links (delete + insert).
+	 *
+	 * @param integer $tc_order optional order inside parent test suite
+	 * @param integer $execution_type optional
+	 * @param integer $importance optional
+	 * 
+	 *
+	 *
+	 */
 	function update($id,$tcversion_id,$name,$summary,$preconditions,$steps,
 	                $user_id,$keywords_id='',$tc_order=self::DEFAULT_ORDER,
 	                $execution_type=TESTCASE_EXECUTION_TYPE_MANUAL,$importance=2)
@@ -885,46 +907,54 @@ class testcase extends tlObjectWithAttachments
 		
 		
 		tLog("TC UPDATE ID=($id): exec_type=$execution_type importance=$importance");
-	
+		
 		// Check if new name will be create a duplicate testcase under same parent
-	  	$checkDuplicates = config_get('check_names_for_duplicates');
-	  	if ($checkDuplicates)
-	  	{  	
-			    $check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
-      	      $ret['status_ok'] = !$check['status']; 
-      	      $ret['msg'] = $check['msg']; 
-      	}    
+		$checkDuplicates = config_get('check_names_for_duplicates');
+		if ($checkDuplicates)
+		{  	
+			$check = $this->tree_manager->nodeNameExists($name,$this->my_node_type,$id);
+			$ret['status_ok'] = !$check['status']; 
+			$ret['msg'] = $check['msg']; 
+		}    
 	
-	  if($ret['status_ok'])
-	  {    
-	      $sql=array();
-		    $sql[] = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
-		               $this->db->prepare_string($name) . "' WHERE id= {$id}";
-	
-		    // test case version
-		    $sql[] = " UPDATE {$this->tables['tcversions']} tcversions " .
+		if($ret['status_ok'])
+		{    
+			$sql=array();
+			$sql[] = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
+					 $this->db->prepare_string($name) . "' WHERE id= {$id}";
+		
+			// test case version
+		   	$sql[] = " UPDATE {$this->tables['tcversions']} tcversions " .
 		             " SET summary='" . $this->db->prepare_string($summary) . "'," .
-		    		 " updater_id={$user_id}, modification_ts = " . $this->db->db_now() . "," .
-		    		 " execution_type={$execution_type}, importance={$importance} " . "," .
-		    		 " preconditions='" . $this->db->prepare_string($preconditions) . "' " .
-		    		 " WHERE tcversions.id = {$tcversion_id}";
-	
-	      foreach($sql as $stm)
-	      {
-	          $result = $this->db->exec_query($stm);
-	          if( !$result )
-	          {
-		    	  $ret['status_ok'] = 0;
-		    	  $ret['msg'] = $this->db->error_msg;
-	              break;
-	          }
-	      }
-	      
-	      if( $ret['status_ok'] )
-	      {      
-		        $this->updateKeywordAssignment($id,$keywords_id);
+		   		 	 " updater_id=" . $this->db->prepare_int($user_id) . ", " .
+		   		 	 " modification_ts = " . $this->db->db_now() . "," .
+		   		 	 " execution_type=" . $this->db->prepare_int($execution_type) . ", " . 
+		   		 	 " importance=" . $this->db->prepare_int($importance) . "," .
+		   		 	 " preconditions='" . $this->db->prepare_string($preconditions) . "' " .
+		   		 	 " WHERE tcversions.id = " . $this->db->prepare_int($tcversion_id); 
+		
+			foreach($sql as $stm)
+			{
+			    $result = $this->db->exec_query($stm);
+			    if( !$result )
+			    {
+					$ret['status_ok'] = 0;
+					$ret['msg'] = $this->db->error_msg;
+					break;
+			    }
+			}
+		    
+		    // BUGID 3634 - missing update.
+		    if( $ret['status_ok'] && !is_null($steps) )
+		    {
+		    	$this->update_tcversion_steps($tcversion_id,$steps);
 		    }
-	  }
+		    
+			if( $ret['status_ok'] )
+		    {      
+		       $this->updateKeywordAssignment($id,$keywords_id);
+		   	}
+		}
 	      
 		return $ret;
 	}
@@ -3075,16 +3105,19 @@ class testcase extends tlObjectWithAttachments
 	  		}
 		}
 		// ------------------------------------------------------------------------------------
+		// BUGID 3695 - missing execution_type
         // Multiple Test Case Steps Feature
        	$stepRootElem = "<steps>{{XMLCODE}}</steps>";
         $stepTemplate = "\n" . '<step>' . "\n" .
 				   		"\t<step_number><![CDATA[||STEP_NUMBER||]]></step_number>\n" .
 				   		"\t<actions><![CDATA[||ACTIONS||]]></actions>\n" .
 		           		"\t<expectedresults><![CDATA[||EXPECTEDRESULTS||]]></expectedresults>\n" .
+		                "\t<execution_type><![CDATA[||EXECUTIONTYPE||]]></execution_type>\n" .
 		           		"</step>\n";
         $stepInfo = array("||STEP_NUMBER||" => "step_number",
 						  "||ACTIONS||" => "actions",
-						  "||EXPECTEDRESULTS||" => "expected_results" );
+						  "||EXPECTEDRESULTS||" => "expected_results",
+						  "||EXECUTIONTYPE||" => "execution_type" );
 
         $stepSet = $tc_data[0]['steps'];
 		$xmlsteps = exportDataToXML($stepSet,$stepRootElem,$stepTemplate,$stepInfo,true);
@@ -4254,11 +4287,16 @@ class testcase extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $ret = array();
+	    
+	    // defensive programming
+	    $dummy = $this->db->prepare_int($execution_type);
+        $dummy = (isset($this->execution_types[$dummy])) ? $dummy : TESTCASE_EXECUTION_TYPE_MANUAL;
+	    
 		$item_id = $this->tree_manager->new_node($tcversion_id,$this->node_types_descr_id['testcase_step']);
 		$sql = "/* $debugMsg */ INSERT INTO {$this->tables['tcsteps']} " .
 		       " (id,step_number,actions,expected_results,execution_type) " .
 		       " VALUES({$item_id},{$step_number},'" . $this->db->prepare_string($actions) . "','" .
-		  	   $this->db->prepare_string($expected_results) . "', {$execution_type})";
+		  	   $this->db->prepare_string($expected_results) . "', " . $this->db->prepare_int($dummy) . ")";
       
 		$result = $this->db->exec_query($sql);
 		$ret = array('msg' => 'ok', 'id' => $item_id, 'status_ok' => 1, 'sql' => $sql);
@@ -4274,20 +4312,34 @@ class testcase extends tlObjectWithAttachments
 	/**
      * 
      *
+     *	@internal Revisions
+     *	20100821 - franciscom - added options
      */
-	function get_steps($tcversion_id,$step_number=0)
+	function get_steps($tcversion_id,$step_number=0,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	    $my['options'] = array( 'fields2get' => '*', 'accessKey' => null);
+	    $my['options'] = array_merge($my['options'], (array)$options);
 		
 		$step_filter = $step_number > 0 ? " AND step_number = {$step_number} " : "";
+		$safe_tcversion_id = $this->db->prepare_int($tcversion_id);
 		
 		$sql = "/* $debugMsg */ " . 
-		       " SELECT TCSTEPS.* FROM {$this->tables['tcsteps']} TCSTEPS " .
+		       " SELECT TCSTEPS.{$my['options']['fields2get']} " .
+		       " FROM {$this->tables['tcsteps']} TCSTEPS " .
 		       " JOIN {$this->tables['nodes_hierarchy']} NH_STEPS " .
 		       " ON NH_STEPS.id = TCSTEPS.id " . 
-		       " WHERE NH_STEPS.parent_id = {$tcversion_id} {$step_filter} ORDER BY step_number";
+		       " WHERE NH_STEPS.parent_id = {$safe_tcversion_id} {$step_filter} ORDER BY step_number";
 
-		$result = $this->db->get_recordset($sql);
+		if( is_null($my['options']['accessKey']) )
+		{
+			$result = $this->db->get_recordset($sql);
+		}
+		else
+		{
+			$result = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
+		}
 		return $result;
 	}
 
@@ -4346,14 +4398,18 @@ class testcase extends tlObjectWithAttachments
 	/**
      * 
      *
+     *	@internal Revisions
+     *	20100821 - franciscom - $step_id can be an array
      */
 	function delete_step_by_id($step_id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-		$sql = array();
 		
-		$sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']} WHERE id = {$step_id} ";
-		$sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} WHERE id = {$step_id} ";
+		$sql = array();
+	    $whereClause = " WHERE id IN (" . implode(',',(array)$step_id) . ")";
+		
+		$sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['tcsteps']} {$whereClause} ";
+		$sqlSet[] = "/* $debugMsg */ DELETE FROM {$this->tables['nodes_hierarchy']} {$whereClause} ";
 		foreach($sqlSet as $sql)
 		{
 			$this->db->exec_query($sql);
@@ -4387,11 +4443,11 @@ class testcase extends tlObjectWithAttachments
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $ret = array();
 		$sql = "/* $debugMsg */ UPDATE {$this->tables['tcsteps']} " .
-		       " SET step_number={$step_number}," .
+		       " SET step_number=" . $this->db->prepare_int($step_number) . "," .
 		       " actions='" . $this->db->prepare_string($actions) . "', " .
 		       " expected_results='" . $this->db->prepare_string($expected_results) . "', " .
-		       " execution_type = {$execution_type} " .
-		       " WHERE id = {$step_id} ";
+		       " execution_type = " . $this->db->prepare_int($execution_type)  .
+		       " WHERE id = " . $this->db->prepare_int($step_id);
        
 		$result = $this->db->exec_query($sql);
 		$ret = array('msg' => 'ok', 'status_ok' => 1, 'sql' => $sql);
@@ -4547,6 +4603,43 @@ class testcase extends tlObjectWithAttachments
 		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
 	    return $recordset;
 	}
+
+
+
+	/**
+	 * given a test case version id, the provided steps will be analized in order
+	 * to update whole steps/expected results structure for test case version.
+	 * This can result in some step removed, other updated and other new created.
+	 *	
+	 * @internal Revisions
+	 * 20100821 - franciscom - needed to fix import feature (BUGID 3634).
+	 */
+	function update_tcversion_steps($tcversion_id,$steps)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		// delete all current steps (if any exists)
+	    // Attention:
+	    // After addition of test case steps feature, a test case version can be root of
+	    // a subtree that contains the steps.
+		// Remember we are using (at least on Postgres FK => we need to delete in a precise order
+
+		$stepSet = $this->get_steps($tcversion_id,0,array('fields2get' => 'id', 'accessKey' => 'id'));				
+	    if( count($stepSet) > 0 )
+	    {
+			$this->delete_step_by_id(array_keys($stepSet));
+	    }
+
+		// Now insert steps
+		$loop2do = count($steps);
+		for($idx=0; $idx < $loop2do; $idx++)
+		{
+			$this->create_step($tcversion_id,$steps[$idx]['step_number'],$steps[$idx]['actions'],
+							   $steps[$idx]['expected_results'],$steps[$idx]['execution_type']);
+		}
+	}
+
+
 
 } // end class
 ?>

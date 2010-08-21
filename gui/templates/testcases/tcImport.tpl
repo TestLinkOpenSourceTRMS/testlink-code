@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.13 2010/06/24 17:25:53 asimon83 Exp $
+$Id: tcImport.tpl,v 1.14 2010/08/21 11:54:45 franciscom Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
-rev: 20091122 - franciscom - refacotirng to use alert_message()
+rev:
+    20100821 - franciscom - refactoring to use $gui 
+    20091122 - franciscom - refactoring to use alert_message()
 *}
 
 {lang_get var="labels"
@@ -20,12 +22,12 @@ rev: 20091122 - franciscom - refacotirng to use alert_message()
 </head>
 <body>
 
-<h1 class="title">{$container_description}{$smarty.const.TITLE_SEP}{$container_name|escape}</h1>
+<h1 class="title">{$gui->container_description}{$smarty.const.TITLE_SEP}{$gui->container_name|escape}</h1>
 
 <div class="workBack">
-<h1 class="title">{$import_title}</h1>
+<h1 class="title">{$gui->import_title}</h1>
 
-{if $resultMap eq null}
+{if $gui->resultMap eq null}
 <form method="post" enctype="multipart/form-data" action="{$SCRIPT_NAME}">
 
   <table>
@@ -63,8 +65,8 @@ rev: 20091122 - franciscom - refacotirng to use alert_message()
 	<p>{$labels.max_size_cvs_file1} {$gui->importLimitKB} {$labels.max_size_cvs_file2}</p>
 	<div class="groupBtn">
 		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
-		<input type="hidden" name="bIntoProject" value="{$bIntoProject}" />
-		<input type="hidden" name="containerID" value="{$containerID}" />
+		<input type="hidden" name="bIntoProject" value="{$gui->bIntoProject}" />
+		<input type="hidden" name="containerID" value="{$gui->containerID}" />
 		<input type="hidden" name="MAX_FILE_SIZE" value="{$gui->importLimitBytes}" /> {* restrict file size *}
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 
@@ -72,20 +74,20 @@ rev: 20091122 - franciscom - refacotirng to use alert_message()
 	</div>
 </form>
 {else}
-	{foreach item=result from=$resultMap}
+	{foreach item=result from=$gui->resultMap}
 		{$labels.title_imp_tc_data} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
 	{/foreach}
   {include file="inc_refreshTree.tpl"}
 {/if}
 
-{if $bImport > 0}
+{if $gui->bImport > 0}
 	{include file="inc_refreshTree.tpl"}
 {/if}
 
-{if $file_check.status_ok eq 0}
+{if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-  alert_message("{$labels.warning}","{$file_check.msg}");
-  // alert("{$file_check.msg}");
+  alert_message("{$labels.warning}","{$gui->file_check.msg}");
+  // alert("{$gui->file_check.msg}");
   </script>
 {/if}  
 

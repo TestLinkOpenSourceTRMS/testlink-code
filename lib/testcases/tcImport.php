@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.77 $
- * @modified $Date: 2010/08/21 09:54:09 $ by $Author: franciscom $
+ * @version $Revision: 1.78 $
+ * @modified $Date: 2010/08/21 11:54:46 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
@@ -935,6 +935,7 @@ function getStepsFromSimpleXMLObj($simpleXMLItems)
 			}
 		}
 	}
+	new dBug($items);
 	return $items;
 }
 

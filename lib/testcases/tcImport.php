@@ -4,12 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.76 $
- * @modified $Date: 2010/07/19 06:11:07 $ by $Author: amkhullar $
+ * @version $Revision: 1.77 $
+ * @modified $Date: 2010/08/21 09:54:09 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20100821 - franciscom - changes to getStepsFromSimpleXMLObj() due to:
+ *							BUGID 3695: Test Case Steps - Export/Import - missing attribute execution type
+ *								
  *  20100719 - amitkhullar - BUGID 3609 - fix for keyword import error
  *	20100620 - franciscom - Trying to reduce memory problems using statics on 
  *							saveImportedTCData() after issue 3521
@@ -38,50 +41,53 @@ require_once('../../third_party/phpexcel/reader.php');
 
 testlinkInitPage($db);
 
-$gui = new stdClass();
-$gui->importLimitBytes = config_get('import_file_max_size_bytes');
-$gui->importLimitKB = ($gui->importLimitBytes / 1024);
 
 $templateCfg = templateConfiguration();
 $pcheck_fn=null;
 $args = init_args();
-$gui->useRecursion = $args->useRecursion;
 
-$resultMap = null;
+$gui = new stdClass();
+$gui->importLimitBytes = config_get('import_file_max_size_bytes');
+$gui->importLimitKB = ($gui->importLimitBytes / 1024);
+$gui->hitCriteria = $args->hit_criteria;
+$gui->useRecursion = $args->useRecursion;
+$gui->containerID = $args->container_id;
+$gui->bImport = tlStringLen($args->importType);
+$gui->bIntoProject = $args->bIntoProject;
+$gui->resultMap = null;
+
 
 $dest_common = TL_TEMP_PATH . session_id(). "-importtcs";
-$dest_files = array('XML' => $dest_common . ".xml",
-                    'XLS' => $dest_common . ".xls");
-
+$dest_files = array('XML' => $dest_common . ".xml",'XLS' => $dest_common . ".xls");
 $dest=$dest_files['XML'];
 if(!is_null($args->importType))
 {
 	$dest = $dest_files[$args->importType];
 }
 
-$file_check = array('status_ok' => 1, 'msg' => 'ok');
+$gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
 
 if($args->useRecursion)
 {
-	$import_title = lang_get('title_tsuite_import_to');  
-	$container_description = lang_get('test_suite');
+	$gui->import_title = lang_get('title_tsuite_import_to');  
+	$gui->container_description = lang_get('test_suite');
 }
 else
 {
-	$import_title = lang_get('title_tc_import_to');
-	$container_description = lang_get('test_case');
+	$gui->import_title = lang_get('title_tc_import_to');
+	$gui->container_description = lang_get('test_case');
 }
 
-$container_name = '';
+$gui->container_name = '';
 if($args->container_id)
 {
 	$tree_mgr = new tree($db);
 	$node_info = $tree_mgr->get_node_hierarchy_info($args->container_id);
 	unset($tree_mgr);    
-	$container_name = $node_info['name'];
+	$gui->container_name = $node_info['name'];
 	if($args->container_id == $args->tproject_id)
 	{
-		$container_description=lang_get('testproject');
+		$gui->container_description=lang_get('testproject');
 	}	
 }
 
@@ -93,7 +99,7 @@ if ($args->do_upload)
 	
 	tLog('Uploaded file: '.$source);
 	$doIt = false;
-	$file_check = null;
+	$gui->file_check = null;
 	if (($source != 'none') && ($source != ''))
 	{ 
 		// ATTENTION:
@@ -101,13 +107,13 @@ if ($args->do_upload)
 		// Firefox and Chrome.
 		if( !($doIt = $_FILES['uploadedFile']['size'] <= $gui->importLimitBytes) )
 		{
-			$file_check['status_ok'] = 0;
-			$file_check['msg'] = sprintf(lang_get('file_size_exceeded'),$_FILES['uploadedFile']['size'],$gui->importLimitBytes);
+			$gui->file_check['status_ok'] = 0;
+			$gui->file_check['msg'] = sprintf(lang_get('file_size_exceeded'),$_FILES['uploadedFile']['size'],$gui->importLimitBytes);
 		}
 	}
 	if($doIt)
 	{ 
-		$file_check['status_ok'] = 1;
+		$gui->file_check['status_ok'] = 1;
 		if (move_uploaded_file($source, $dest))
 		{
 			tLog('Renamed uploaded file: '.$source);
@@ -125,10 +131,10 @@ if ($args->do_upload)
 			}
 	      	if(!is_null($pcheck_fn))
 	      	{
-				$file_check = $pcheck_fn($dest,$args->useRecursion);
+				$gui->file_check = $pcheck_fn($dest,$args->useRecursion);
 			}
 		}
-		if($file_check['status_ok'] && $pimport_fn)
+		if($gui->file_check['status_ok'] && $pimport_fn)
 		{
 			tLog('Check is Ok.');
 			$opt = array();
@@ -136,14 +142,14 @@ if ($args->do_upload)
 			$opt['importIntoProject'] = $args->bIntoProject;
 			$opt['duplicateLogic'] = array('hitCriteria' => $args->hit_criteria,
 			                               'actionOnHit' => $args->action_on_duplicated_name);
-			$resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,$args->userID,$opt);
+			$gui->resultMap = $pimport_fn($db,$dest,$args->container_id,$args->tproject_id,$args->userID,$opt);
 		}
 	}
-	else if(is_null($file_check))
+	else if(is_null($gui->file_check))
 	{
 		
 		tLog('Missing upload file','WARNING');
-		$file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
+		$gui->file_check = array('status_ok' => 0, 'msg' => lang_get('please_choose_file_to_import'));
 		$args->importType = null;
 	}
 }
@@ -175,14 +181,6 @@ $gui->action_on_duplicated_name=$args->action_on_duplicated_name;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);  
-$smarty->assign('import_title',$import_title);  
-$smarty->assign('file_check',$file_check);  
-$smarty->assign('resultMap',$resultMap); 
-$smarty->assign('containerID', $args->container_id);
-$smarty->assign('container_name', $container_name);
-$smarty->assign('container_description', $container_description);
-$smarty->assign('bIntoProject',$args->bIntoProject);
-$smarty->assign('bImport',tlStringLen($args->importType));
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
@@ -300,9 +298,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 	    $messages['start_warning'] = lang_get('start_warning');
 	    $messages['end_warning'] = lang_get('end_warning');
 	    $messages['testlink_warning'] = lang_get('testlink_warning');
-
-	    $messages['start_feedback'] = $messages['start_warning'] . "\n" . 
-	    							  $messages['testlink_warning'] . "\n";
+	    $messages['start_feedback'] = $messages['start_warning'] . "\n" . $messages['testlink_warning'] . "\n";
   		
   		
   		
@@ -913,11 +909,13 @@ function getTestCaseSetFromSimpleXMLObj($xmlTCs)
 /**
  * 
  *
+ * @internal revisions
+ * 20100821 - franciscom - BUGID 3695 - added "execution_type"
  */
 function getStepsFromSimpleXMLObj($simpleXMLItems)
 {
   	$itemStructure['elements'] = array('string' => array("actions","expectedresults"),
-				                       'integer' => array("step_number"));
+				                       'integer' => array("step_number","execution_type"));
 				                       
   	$itemStructure['transformations'] = array("expectedresults" => "expected_results");
 				                       

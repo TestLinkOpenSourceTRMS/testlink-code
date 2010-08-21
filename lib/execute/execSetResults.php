@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.165 $
- * @modified $Date: 2010/08/12 16:55:20 $ $Author: asimon83 $
+ * @version $Revision: 1.166 $
+ * @modified $Date: 2010/08/21 16:32:59 $ $Author: franciscom $
  *
  * rev:
+ *	20100821 - franciscom - code layout refactoring
  *  20100812 - asimon - BUGID 3672
  *  20100709 - asimon - BUGID 3590, BUGID 3574: build_id set to 0 as default instead of null
  *  20100628 - asimon - removal of constants from filter control class
@@ -154,11 +155,9 @@ if($args->doExec == 1)
 //
 
 // 20081221 - franciscom                              
-// 3406
-//$options = array('only_executed' => true, 'output' => 'mapOfArray',
-//                 'include_unassigned' => $args->include_unassigned);
+// BUGID 3406
 $options = array('only_executed' => true, 'output' => 'mapOfArray',
-                 'include_unassigned' => $args->include_unassigned,
+				 'include_unassigned' => $args->include_unassigned,
                  'user_assignments_per_build' => $args->build_id);
 
 
@@ -275,8 +274,7 @@ if(!is_null($linked_tcversions))
     	  $gui->other_exec_cfields=$other_info['cfexec_values'];
     	 
     	  // this piece of code is useful to avoid error on smarty template due to undefined value   
-    	  if( is_array($tcversion_id) && 
-    	      (count($gui->other_execs) != count($gui->map_last_exec)) )
+    	  if( is_array($tcversion_id) && (count($gui->other_execs) != count($gui->map_last_exec)) )
     	  {
     	    foreach($tcversion_id as $version_id)
     	    {
@@ -293,14 +291,14 @@ if(!is_null($linked_tcversions))
 } // if(!is_null($linked_tcversions))
 
 
-//Removing duplicate and NULL id's
+// Removing duplicate and NULL id's
 unset($userid_array['']);
-$passeduserarray = null;
+$userSet = null;
 if ($userid_array)
 {
 	foreach($userid_array as $value)
 	{		
-		$passeduserarray[] = $value;
+		$userSet[] = $value;
 	}
 }
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
@@ -308,19 +306,19 @@ smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproj
 // BUGID 2455, BUGID 3026
 // BUGID 3516
 // remove testcases which shall not be displayed because they were filtered out
-if (isset($args->testcases_to_show) && $args->level == 'testsuite') {
+if (!is_null($args->testcases_to_show) && $args->level == 'testsuite') {
 	foreach($gui->map_last_exec as $key => $tc) {
 		if (!in_array($tc['testcase_id'], $args->testcases_to_show)) {
-			//unset, tc shall not be displayed
-			unset($gui->map_last_exec[$key]);
+			unset($gui->map_last_exec[$key]); // tc shall not be displayed
 		}
 	}
-	//fix indexes for smarty
+	// fix indexes for smarty
 	$gui->map_last_exec = array_values($gui->map_last_exec);
 }
 
-$gui->can_use_bulk_op=$args->level == 'testsuite' &&
-                      (!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
+// $gui->can_use_bulk_op=$args->level == 'testsuite' && (!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
+$gui->can_use_bulk_op = ($args->level == 'testsuite' && count($gui->map_last_exec) > 1) ? 1 : 0;
+
 if( $gui->can_use_bulk_op )
 {
     $gui->execStatusValues=createResultsMenu();
@@ -345,7 +343,7 @@ else
 //  future must be initialized in a right way
 $smarty->assign('test_automation_enabled',0);
 $smarty->assign('cfg',$cfg);
-$smarty->assign('users',tlUser::getByIDs($db,$passeduserarray,'id'));
+$smarty->assign('users',tlUser::getByIDs($db,$userSet,'id'));
 $smarty->assign('gui',$gui);
 $smarty->assign('g_bugInterface', $g_bugInterface);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -368,12 +366,9 @@ function init_args($cfgObj)
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	
     // BUGID 3516
-	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	
 	$mode = 'execution_mode';
-	
-	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
-	                ? $_SESSION[$mode][$form_token] : null;
+	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
 	
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
 	$args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;
@@ -382,15 +377,24 @@ function init_args($cfgObj)
 	// can be a list, will arrive via form POST
 	$args->tc_versions = isset($_REQUEST['tc_version']) ? $_REQUEST['tc_version'] : null;  
   
-	// BUGID 3516
-	$args->filter_status = isset($session_data['filter_result_result']) ? 
-	                       $session_data['filter_result_result']: null;
-	$args->filter_assigned_to = isset($session_data['filter_assigned_user']) ? 
-	                            $session_data['filter_assigned_user'] : null;
-	//$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 'save_results' => 0, 
-	//                  'save_and_next' => 0,'filter_status' => null,'filter_assigned_to' => null);
-	$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 'save_results' => 0, 
-	                  'save_and_next' => 0);
+	// BUGID 3516,3590, 3574, 3672
+	$key2null = array('filter_status' => 'filter_result_result','filter_assigned_to' => 'filter_assigned_user', 
+					  'build_id' => 'setting_build', 'platform_id' => 'setting_platform');
+	
+	foreach($key2null as $key => $sessionKey)
+	{
+		$args->$key = isset($session_data[$sessionKey]) ? $session_data[$sessionKey] : null;
+	}
+
+	if (is_null($args->build_id)) {
+		$args->build_id = (isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id'])) ? $_REQUEST['build_id'] : 0;
+	}
+	
+	if (is_null($args->platform_id)) {
+		$args->platform_id = (isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id'])) ? $_REQUEST['platform_id'] : 0;
+	}
+
+	$key2loop = array('level' => '','status' => null, 'do_bulk_save' => 0, 'save_results' => 0, 'save_and_next' => 0);
 	foreach($key2loop as $key => $value)
 	{
 		$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
@@ -406,34 +410,17 @@ function init_args($cfgObj)
         $args->filter_status = unserialize($args->filter_status);
     }
 
-    // trim and unserialize not needed anymore, now is already array in session
-//    if(trim($args->filter_assigned_to) == "")
-//    {
-//        $args->filter_assigned_to = null;
-//    }
-//    else
-//    {
-//        $args->filter_assigned_to = unserialize($args->filter_assigned_to);
-//    }
-
  	$args->id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
     $cookiePrefix = 'TL_execSetResults_';
-    // $key4cookies = array('tpn_view_status' => array( 'cfg_key' => 'testplan_notes', 'suffix' => ''),
-    //                      'tsdetails_view_status' => array( 'cfg_key' => 'testsuite_details', 'suffix' => "_" . $args->id)
-    //                      'bn_view_status' => array( 'cfg_key' => 'build_description', 'suffix' => ''));
-       
+      
     // IMPORTANT: logic for test suite notes CAN NOT BE IMPLEMENTED HERE
     //            see smarty_assign_tsuite_info() in this file.  
     $key4cookies = array('tpn_view_status' => 'testplan_notes','bn_view_status' => 'build_description',
                          'platform_notes_view_status' => 'platform_description');
     
     // BUGID 3516, 3590, 3574
-	//$key2loop = array('id' => 0,'build_id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
-	//   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
-	//   	              'platform_notes_view_status' => 0,'platform_id' => 0);
-	$key2loop = array('id' => 0, 'exec_to_delete' => 0, 'version_id' => 0,
-	   	              'tpn_view_status' => 0, 'bn_view_status' => 0, 'bc_view_status' => 1,
-	   	              'platform_notes_view_status' => 0);
+	$key2loop = array('id' => 0, 'exec_to_delete' => 0, 'version_id' => 0, 'tpn_view_status' => 0, 
+					  'bn_view_status' => 0, 'bc_view_status' => 1,'platform_notes_view_status' => 0);
 	
 	foreach($key4cookies as $key => $cfgKey)
 	{
@@ -466,22 +453,6 @@ function init_args($cfgObj)
 		}
 	}
 
-	// BUGID 3516
-	// BUGID 3590, 3574
-	// BUGID 3672
-	$args->build_id = isset($session_data['setting_build']) ? 
-	                  intval($session_data['setting_build']) : null;
-	if (is_null($args->build_id)) {
-		$args->build_id = (isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id'])) ? 
-		                  $_REQUEST['build_id'] : 0;
-	}
-	
-	$args->platform_id = isset($session_data['setting_platform']) ? 
-	                  intval($session_data['setting_platform']) : null;
-	if (is_null($args->platform_id)) {
-		$args->platform_id = (isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id'])) ? 
-		                     $_REQUEST['platform_id'] : 0;
-	}
 	
     switch($args->level)
     {
@@ -505,36 +476,20 @@ function init_args($cfgObj)
 
 
 	// BUGID 3516
-//    if( isset($_REQUEST['keyword_id']) )
-//    {
-//       // can be a list
-//       $args->keyword_id=explode(',',$_REQUEST['keyword_id']);
-//       if( count($args->keyword_id) == 1)
-//       {
-//           $args->keyword_id=$args->keyword_id[0]; 
-//       }
-//    }
-//    else
-//    {
-//        $args->keyword_id=0;  
-//    }
 	$args->keyword_id = 0;
-	$fk = 'filter_keywords';
-	if (isset($session_data[$fk])) {
-		$args->keyword_id = $session_data[$fk];
+	if (isset($session_data['filter_keywords'])) {
+		$args->keyword_id = $session_data['filter_keywords'];
 		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
 			$args->keyword_id = $args->keyword_id[0];
 		}
 	}
 	
 	$args->keywordsFilterType = null;
-	$ft = 'filter_keywords_filter_type';
-	if (isset($session_data[$ft])) {
-		$args->keywordsFilterType = $session_data[$ft];
+	if (isset($session_data['filter_keywords_filter_type'])) {
+		$args->keywordsFilterType = $session_data['filter_keywords_filter_type'];
 	}
     
     // Checkbox
-    //$args->include_unassigned=isset($_REQUEST['include_unassigned']) ? $_REQUEST['include_unassigned'] : 0;
     $args->include_unassigned = isset($session_data['filter_assigned_user_include_unassigned']) 
                                 && $session_data['filter_assigned_user_include_unassigned'] != 0 ? 1 : 0;
 	
@@ -543,38 +498,22 @@ function init_args($cfgObj)
     // BUGID 3301 and related - asimon - changed refresh tree logic 
     // to adapt behavior of other forms (like tc edit)
     // additionally modified to only refresh on saving of test results, not on every click
-//    if(isset($_SESSION['setting_refresh_tree_on_action']))
-//	{
-//		$args->refreshTree = $_SESSION['setting_refresh_tree_on_action'] == 'yes' ? 1 : 0;
-//    }
-//    else
-//    {
-//    	// use default from config
-//    	$args->refreshTree = $cfgObj->spec_cfg->automatic_tree_refresh ? 1 : 0;
-//    }
-//    // if nothing has been executed (no status sent), don't refresh tree, ignore settings
-//    if (is_null($args->status)) {
-//    	$args->refreshTree = 0; 
-//    }
     $args->refreshTree = isset($session_data['setting_refresh_tree_on_action'])
                          ? $session_data['setting_refresh_tree_on_action'] : 0;
 	
 	$args->tproject_id = isset($_REQUEST['tproject_id']) ? $_REQUEST['tproject_id'] : $_SESSION['testprojectID'];
 	
-	//BUGID 2267
+	// BUGID 2267
 	$args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
 	$args->user = $_SESSION['currentUser'];
     $args->user_id = $args->user->dbID;
 
     // BUGID 3516
    	// BUGID 2455,BUGID 3026
-//	if (isset($_REQUEST['show_only_tcs']) && isset($_REQUEST['show_only_tcs']) != '') {
-//		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
-//	}
+   	$args->testcases_to_show = null;
 	if (isset($session_data['testcases_to_show'])) {
 		$args->testcases_to_show = $session_data['testcases_to_show'];
 	}
-	
 	return $args;
 }
 
@@ -1121,6 +1060,8 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     $gui = new stdClass();
     $gui->tplan_id=$argsObj->tplan_id;
     $gui->tproject_id=$argsObj->tproject_id;
+    $gui->build_id = $argsObj->build_id;
+    $gui->platform_id = $argsObj->platform_id;
     
     $gui->execStatusValues=null;
     $gui->can_use_bulk_op=0;
@@ -1199,12 +1140,6 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
                                          'btn_history_on','btn_history_off','history_on');
     $gui->history_status_btn_name = $gui->history_on ? 'btn_history_off' : 'btn_history_on';
 
-
-    // $gui->filter_mode = manage_filter_mode($_REQUEST,$_SESSION,$cfgObj->exec_cfg,
-    //                                        'btn_advanced','btn_simple','filterMode');
-    // 
-    // $gui->filter_mode_name = 
-    
     $dummy = $platformMgr->getLinkedToTestplan($argsObj->tplan_id);
     $gui->has_platforms = !is_null($dummy) ? 1 : 0;
     

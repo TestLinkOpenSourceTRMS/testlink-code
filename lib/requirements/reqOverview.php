@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.21 2010/08/21 08:25:02 franciscom Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.22 2010/08/21 08:44:43 franciscom Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -86,8 +86,7 @@ if(count($gui->reqIDs) > 0) {
 		// number of relations, if feature is enabled
 		if ($relations_enabled) {
 			$relations = $req_mgr->count_relations($id);
-			$padded_relations = sprintf("%010d", $relations);
-			$relations = "<!-- $padded_relations -->" . $relations;
+			$relations = "<!-- " . sprintf("%010d", $relations) . " -->" . $relations;
 		}
 		
 		// create the link to display
@@ -131,10 +130,8 @@ if(count($gui->reqIDs) > 0) {
 	    	$result[] = $linked_title;
 	    	
 	    	// version number
-	    	$version_num = $version['version'];
-	    	$padded_version_num = sprintf("%010d", $version_num);
-	    	$version_str = "<!-- $padded_version_num -->$version_num";
-			$result[] = $version_str;
+	    	$padded_data = sprintf("%010d", $version['version']);
+	    	$result[] = "<!-- $padded_data -->{$version['version']}";
 	    	
 			// is it frozen?
 			$result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
@@ -143,10 +140,10 @@ if(count($gui->reqIDs) > 0) {
 			if ($coverage_enabled) {
 		    	$expected = $version['expected_coverage'];
 		    	$coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($tc_coverage/0)";
-		    	if ($expected) {
+		    	if ($expected > 0) {
 		    		$percentage = round(100 / $expected * $tc_coverage, 2);
-		    		$padded_percentage = sprintf("%010d", $percentage); //bring all percentages to same length
-					$coverage_string = "<!-- $padded_percentage --> {$percentage}% ({$tc_coverage}/{$expected})";
+		    		$padded_data = sprintf("%010d", $percentage); //bring all percentages to same length
+					$coverage_string = "<!-- $padded_data --> {$percentage}% ({$tc_coverage}/{$expected})";
 		    	}
 		    	$result[] = $coverage_string;
 			}
@@ -162,6 +159,7 @@ if(count($gui->reqIDs) > 0) {
 			foreach ($linked_cfields as $cf) {
 	    		$result[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $charset));
 	    	}
+	    	
 	    	$rows[] = $result;
     	}
     }

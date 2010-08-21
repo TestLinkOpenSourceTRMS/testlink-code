@@ -8,9 +8,11 @@
  * @package 	TestLink
  * @author 		Kevin Levy
  * @copyright 	2010, TestLink community 
- * @version    	CVS: $Id: resultsImport.php,v 1.18 2010/05/18 20:58:16 franciscom Exp $
+ * @version    	CVS: $Id: resultsImport.php,v 1.19 2010/08/21 16:30:24 franciscom Exp $
  *
  * @internal Revisions:
+ *
+ * 20100821 - franciscom - BUGID 3470 - reopened
  * 20100328 - franciscom - BUGID 3470, BUGID 3475
  * 20100328 - franciscom - BUGID 3331 add bug id management
  * 20100214 - franciscom - xml managed using simpleXML
@@ -25,28 +27,38 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
-$args=init_args();
+$args = init_args();
 $gui = new stdClass();
 
-$ref=$_SERVER['HTTP_REFERER'];
-$url_array=preg_split('/[?=&]/',$ref);
-
-$key2extract = array('build_id' => 'buildID','platform_id' => 'platformID');
-
-foreach($key2extract as $accessKey => $memberKey)
-{
-	if( in_array($accessKey,$url_array) ) 
-	{
-		$dummyIndex=array_search($accessKey,$url_array) + 1;
-		$args->$memberKey=$url_array[$dummyIndex];
-	}
-
-}
-
+// 20100821 - franciscom
+// CRITIC:
+// All this logics is done to extract from referer important parameters
+// like: build id, etc.
+// Is not very clear why we have choose to use this logic, but when doing the filter refactoring
+// changes on key names (from build_id -> setting_build, and others), broken the code.
+//
+// On 20100821 I've (franciscom) choose a different approach:
+// changing the javascript function openImportResult() in test_automation.js.
+// Then I will remove this logic.
+// 
+// $ref=$_SERVER['HTTP_REFERER'];
+// $url_array=preg_split('/[?=&]/',$ref);
+// $key2extract = array('build_id' => 'buildID','platform_id' => 'platformID', 'tplan_id' => 'tplanID');
+// foreach($key2extract as $accessKey => $memberKey)
+// {
+// 	if( in_array($accessKey,$url_array) ) 
+// 	{
+// 		$dummyIndex = array_search($accessKey,$url_array) + 1;
+// 		$args->$memberKey=$url_array[$dummyIndex];
+// 	}
+// 
+// }
 
 $gui->import_title=lang_get('title_results_import_to');
 $gui->buildID=$args->buildID;
 $gui->platformID=$args->platformID;
+$gui->tplanID=$args->tplanID;
+
 $gui->file_check=array('status_ok' => 1, 'msg' => 'ok');
 $gui->importTypes=array("XML" => "XML");
 $gui->importLimit = config_get('import_file_max_size_bytes');
@@ -141,8 +153,7 @@ function importResults(&$db,&$xml,$context)
 		// if yes overwrite GUI selection with value get from file
 		//
 		$executionContext = $context;
-		$contextKeys = array('testplan' => 'tplan_id', 'build' => 'build_id',
-							 'platform' => 'platform_id');
+		$contextKeys = array('testplan' => 'tplan_id', 'build' => 'build_id', 'platform' => 'platform_id');
 		foreach( $contextKeys as $xmlkey => $execkey)
 		{
 			if( ($joker = $xml->$xmlkey) )
@@ -150,12 +161,12 @@ function importResults(&$db,&$xml,$context)
 				$executionContext->$execkey = (int) $joker['id'];
 			}
 		} 				
-			 
+
 		$xmlTCExec = $xml->xpath("//testcase");
 		$resultData = importExecutionsFromXML($xmlTCExec);
 		if ($resultData) 
 		{
-			$resultMap=saveImportedResultData($db,$resultData,$executionContext);
+			$resultMap = saveImportedResultData($db,$resultData,$executionContext);
 		}
 	}
 	return $resultMap;
@@ -220,7 +231,7 @@ function saveImportedResultData(&$db,$resultData,$context)
 	  	$status_ok=true;
 		$tcase_exec=$resultData[$idx];
 		
-		$checks=check_exec_values($db,$tcase_mgr,$user_mgr,$tcaseCfg,$tcase_exec,$columnDef['execution_bugs']);
+		$checks = check_exec_values($db,$tcase_mgr,$user_mgr,$tcaseCfg,$tcase_exec,$columnDef['execution_bugs']);
     	$status_ok=$checks['status_ok'];		
 		if($status_ok)
 		{
@@ -429,12 +440,17 @@ function init_args()
   	$_REQUEST=strings_stripSlashes($_REQUEST);
 
   	$args->importType=isset($_REQUEST['importType']) ? $_REQUEST['importType'] : null;
-  	$args->buildID=isset($_REQUEST['build']) ? intval($_REQUEST['build']) : null;
-  	$args->platformID=isset($_REQUEST['platform']) ? intval($_REQUEST['platform']) : null;
+
+	// BUGID 3470
+	// Need to use REQUEST because sometimes data arrives on GET and other on POST (has hidden fields)
+  	$args->buildID = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : null;
+  	$args->platformID = isset($_REQUEST['platformID']) ? intval($_REQUEST['platformID']) : null;
+  	$args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : null;
+  	$args->tplanID = !is_null($args->tplanID) ? $args->tplanID : $_SESSION['testplanID'];
+
   	
   	$args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
   	$args->userID=$_SESSION['userID'];
-  	$args->tplan_id=$_SESSION['testplanID'];
   	$args->testprojectName=$_SESSION['testprojectName'];
   	
   	return $args;
@@ -457,8 +473,7 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues,&$c
 {
 	$tables = tlObjectWithDB::getDBTables(array('users','execution_bugs'));
 
-    $checks=array('status_ok' => false, 'tcase_id' => 0, 'tester_id' => 0, 
-                  'msg' => array()); 
+    $checks=array('status_ok' => false, 'tcase_id' => 0, 'tester_id' => 0, 'msg' => array()); 
 	
 	$tcase_id=$execValues['tcase_id'];
 	$tcase_external_id=trim($execValues['tcase_external_id']);

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.168 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.169 2010/08/21 17:18:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -179,12 +179,12 @@ function create($name,$color,$options,$notes,$active=1,$tcasePrefix='',$is_publi
  * @return boolean result of DB update
  *
  * @internal
- * 	20100213 - havlatm - options updated, renamed, header description
+ * 	20100213 - havlatm - options updated, header description
  *	20060312 - franciscom - name is setted on nodes_hierarchy table
  *
  **/
-function projectUpdate($id, $name, $color, $notes,$options,$active=null,
-						$tcasePrefix=null,$is_public=null)
+function update($id, $name, $color, $notes,$options,$active=null,
+				$tcasePrefix=null,$is_public=null)
 {
     $status_ok=1;
 	$status_msg = 'ok';

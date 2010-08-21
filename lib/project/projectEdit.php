@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.50 2010/06/24 17:25:57 asimon83 Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.51 2010/08/21 17:17:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -320,9 +320,9 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
 	 if($op->status_ok)
 	 {
 	  	$options = prepareOptions($argsObj);
-        if( $tprojectMgr->projectUpdate($argsObj->tprojectID,trim($argsObj->tprojectName),
-        			$argsObj->color, $argsObj->notes, $options, $argsObj->active,
-        			$argsObj->tcasePrefix, $argsObj->is_public) )
+        if( $tprojectMgr->update($argsObj->tprojectID,trim($argsObj->tprojectName),
+        						 $argsObj->color, $argsObj->notes, $options, $argsObj->active,
+        						 $argsObj->tcasePrefix, $argsObj->is_public) )
         {
         	$op->msg = '';
         	$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);

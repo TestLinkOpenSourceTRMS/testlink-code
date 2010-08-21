@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.20 2010/08/20 18:41:59 franciscom Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.21 2010/08/21 08:25:02 franciscom Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -66,32 +66,22 @@ if(count($gui->reqIDs) > 0) {
 					
 	$labels = init_labels($labels2get);
 	
-	$gui->cfields = $cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement',
-                                                              null, 'name');
-	if (count($gui->cfields) == 0) {
-		// manage the case where no custom fields are defined
-		$gui->cfields = array();
-	}
-		
+	$gui->cfields4req = (array)$cfield_mgr->get_linked_cfields_at_design($args->tproject_id, 1, null, 'requirement', null, 'name');
+	$version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
+
     // array to gather table data row per row
 	$rows = array();    
 	
-	$version_option = ($args->all_versions) ? requirement_mgr::ALL_VERSIONS : requirement_mgr::LATEST_VERSION; 
 	foreach($gui->reqIDs as $id) {
 		
 		// now get the rest of information for this requirement
 		$req = $req_mgr->get_by_id($id, $version_option);
 
 		// coverage data
-		$current = count($req_mgr->get_coverage($id));
+		$tc_coverage = count($req_mgr->get_coverage($id));
 		
 		// BUGID 3254:
-		$fields = $req_mgr->get_linked_cfields($id);
-		if (count($fields) > 0) {
-			// manage the case where no custom fields are defined
-			$fields = array();
-		}
-    	
+		$linked_cfields = (array)$req_mgr->get_linked_cfields($id);
 
 		// number of relations, if feature is enabled
 		if ($relations_enabled) {
@@ -152,11 +142,11 @@ if(count($gui->reqIDs) > 0) {
 			// coverage
 			if ($coverage_enabled) {
 		    	$expected = $version['expected_coverage'];
-		    	$coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($current/0)";
+		    	$coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($tc_coverage/0)";
 		    	if ($expected) {
-		    		$percentage = round(100 / $expected * $current, 2);
+		    		$percentage = round(100 / $expected * $tc_coverage, 2);
 		    		$padded_percentage = sprintf("%010d", $percentage); //bring all percentages to same length
-					$coverage_string = "<!-- $padded_percentage --> {$percentage}% ({$current}/{$expected})";
+					$coverage_string = "<!-- $padded_percentage --> {$percentage}% ({$tc_coverage}/{$expected})";
 		    	}
 		    	$result[] = $coverage_string;
 			}
@@ -169,7 +159,7 @@ if(count($gui->reqIDs) > 0) {
 			}
 			
 			// get custom field values for this req
-			foreach ($fields as $cf) {
+			foreach ($linked_cfields as $cf) {
 	    		$result[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $charset));
 	    	}
 	    	$rows[] = $result;
@@ -215,7 +205,7 @@ if(count($gui->reqIDs) > 0) {
 	    	$columns[] = $labels['th_relations'];
 	    }
         
-	    foreach($gui->cfields as $cf) {
+	    foreach($gui->cfields4req as $cf) {
 	    	$columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $charset), 'type' => 'text');
 	    }
 
@@ -223,20 +213,20 @@ if(count($gui->reqIDs) > 0) {
 	    $matrix = new tlExtTable($columns, $rows, 0);
         $matrix->title = $labels['requirements'];
         
-        //group by Req Spec
+        // group by Req Spec
         $matrix->groupByColumn = 0;
         
-        //sort by coverage descending
+        // sort by coverage descending
         $matrix->sortByColumn = 4;
         $matrix->sortDirection = 'DESC';
         
-        //define toolbar
+        // define toolbar
         $matrix->show_toolbar = true;
         $matrix->toolbar_expand_collapse_groups_button = true;
         $matrix->toolbar_show_all_columns_button = true;
         $matrix->showGroupItemsCount = true;
         
-        //show custom field content in multiple lines
+        // show custom field content in multiple lines
         $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
         $gui->tableSet= array($matrix);
     }

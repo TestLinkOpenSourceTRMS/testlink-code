@@ -6,13 +6,14 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.161 2010/07/31 18:49:48 asimon83 Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.162 2010/08/21 15:36:11 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
  * @internal Revisions:
  * 
+ * 20100821 - asimon - BUGID 3682
  * 20100721 - asimon - BUGID 3406, 1508: changed for user assignments per build:
  *                                       results_overload(), tallyBuildResults(),
  *                                       getTotalsForBuilds(), createTotalsForBuilds(),
@@ -345,7 +346,8 @@ class results extends tlObjectWithDB
    			$this->totalsForPlan = $this->createTotalsForPlan($this->suiteStructure);
 
 			// must be done after totalsForPlan is performed because the total # of cases is needed
-			$arrBuilds = $tplan_mgr->get_builds($this->testPlanID);
+			// BUGID 3682
+   			$arrBuilds = $tplan_mgr->get_builds($this->testPlanID, testplan::GET_ACTIVE_BUILD);
 			
 			// 3406, 1508 - we need the totals per build here, not for the whole plan anymore
 			//$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,

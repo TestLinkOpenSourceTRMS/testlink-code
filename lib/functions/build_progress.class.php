@@ -6,11 +6,12 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: build_progress.class.php,v 1.4 2010/08/20 10:55:53 asimon83 Exp $
+ * @version CVS: $Id: build_progress.class.php,v 1.5 2010/08/21 15:36:11 asimon83 Exp $
  *
  * Generate information about the progress by tester per build.
  * 
  * @internal revisions:
+ * 20100821 - asimon - BUGID 3682
  * 20100820 - asimon - added last missing comments, little refactorization for table prefix
  * 20100731 - asimon - initial commit		
  */
@@ -135,7 +136,8 @@ class build_progress extends tlObjectWithDB {
 	 * @author Andreas Simon
 	 */
 	private function load_builds() {
-		$this->build_set = $this->tplan_mgr->get_builds($this->tplan_id);
+		// BUGID 3682
+		$this->build_set = $this->tplan_mgr->get_builds($this->tplan_id, testplan::GET_ACTIVE_BUILD);
 		
 		if (is_array($this->build_set)) {
 			$keys = array_keys($this->build_set);

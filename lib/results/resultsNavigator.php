@@ -2,7 +2,7 @@
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
  * This script is distributed under the GNU General Public License 2 or later. 
- * @version $Id: resultsNavigator.php,v 1.61 2010/06/24 17:25:52 asimon83 Exp $ 
+ * @version $Id: resultsNavigator.php,v 1.62 2010/08/21 18:03:56 franciscom Exp $ 
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * 
  * Scope: Launcher for Test Results and Metrics.
@@ -33,7 +33,9 @@ $gui->checked_show_inactive_tplans = $args->checked_show_inactive_tplans;
 
 $btsEnabled = config_get('interface_bugs') != 'NO';
 
-$tplan_mgr = new testplan($db);
+// $tplan_mgr = new testplan($db);
+$tproject_mgr = new testproject($db);
+
 $reports_mgr = new tlReports($db, $gui->tplan_id);
 
 // -----------------------------------------------------------------------------
@@ -72,7 +74,9 @@ if($gui->do_report['status_ok'])
 
 // BUGID 3370
 // get All test Plans for combobox
-$gui->tplans = $tplan_mgr->getTestPlanNamesById($args->tproject_id,$args->show_only_active_tplans);
+$filters = array('plan_status' => $args->show_only_active_tplans ? 1 : 0);
+$options = array('outputType' => 'forHMLSelect');
+$gui->tplans = $tproject_mgr->get_all_testplans($args->tproject_id,$filters,$options);
 
 
 $smarty = new TLSmarty();

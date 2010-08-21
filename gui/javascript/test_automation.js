@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: test_automation.js,v 1.6 2010/08/21 16:30:53 franciscom Exp $ 
+// $Id: test_automation.js,v 1.7 2010/08/21 17:18:50 franciscom Exp $ 
 //
 // Code contributed by:
 //
@@ -11,6 +11,7 @@
   function: openImportResult
 
   args: windows_title
+        test project id
         test plan id
         build id
         platform id
@@ -18,8 +19,8 @@
   returns: A pop-up window which facilitates XML import
 
 */
-function openImportResult(windows_title,tplan_id,build_id,platform_id) {
-  args = "tplanID=" + tplan_id + "&buildID=" + build_id + "&platformID=" + platform_id;
+function openImportResult(windows_title,tproject_id,tplan_id,build_id,platform_id) {
+  args = "tprojectID=" + tproject_id + "tplanID=" + tplan_id + "&buildID=" + build_id + "&platformID=" + platform_id;
 	wref = window.open(fRoot+"lib/results/resultsImport.php?"+args,
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
 	wref.focus();

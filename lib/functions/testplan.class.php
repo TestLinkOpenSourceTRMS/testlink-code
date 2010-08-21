@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.202 2010/07/27 11:55:21 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.203 2010/08/21 18:06:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -350,62 +350,6 @@ class testplan extends tlObjectWithAttachments
 		$recordset = $this->db->get_recordset($sql);
 		return $recordset;
 	}
-
-
-	/**
-	 * get list of Test Plans IDs + Names
-	 * @author havlatm
-	 * 
-	 * @param integer $projectId
-	 * @param boolean $activeOnly (optional) default TRUE
-	 * 
-	 * @return array map with following keys (or null if array is empty):
-	 *			id: testplan id
-	 *			name: testplan name 
-	 */
-	public function getTestPlanNames($projectId, $activeOnly=TRUE)
-	{	
-		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-        $sql = "/* $debugMsg */ " .
-		       " SELECT NH.id, NH.name " .
-			   " FROM {$this->tables['nodes_hierarchy']} NH " .
-			   " JOIN {$this->tables['testplans']} testplans ON NH.id = testplans.id " .
-			   " WHERE testplans.testproject_id = " . $projectId;
-		if ($activeOnly)
-		{
-			$sql .= ' AND testplans.active = 1 ';
-		}
-		$sql .= ' ORDER BY NH.name';
-		
-		$recordset = $this->db->get_recordset($sql);
-		return($recordset ? $recordset : null);
-	}
-
-
-	/**
-	 * get map of Test Plans
-	 * @author havlatm
-	 * 
-	 * @param integer $projectId
-	 * @param boolean $activeOnly (optional) default TRUE
-	 * 
-	 * @return array structured 'ID'=>'Name' 
-	 */
-	public function getTestPlanNamesById($projectId, $activeOnly=TRUE)
-	{
-		$out = null;
-		$arrPlans = $this->getTestPlanNames($projectId, $activeOnly);
-		
-		if (!is_null($arrPlans))
-		{
-			foreach($arrPlans as $key => $value)
-			{
-				$out[$value['id']] = $value['name'];
-			}
-		}
-		return $out;
-	}
-
 
 	/*
 	  function: count_testcases

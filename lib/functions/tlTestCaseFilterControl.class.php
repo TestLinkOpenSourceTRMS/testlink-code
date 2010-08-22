@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.16 2010/08/11 23:08:13 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.17 2010/08/22 11:59:28 franciscom Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -958,12 +958,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// when in plan mode (assigning execution), we want all builds,
 		// otherwise only those which are active and open
 		$active = ($this->mode == 'plan_mode') ? null : testplan::GET_ACTIVE_BUILD;
-		$open = ($this->mode == 'plan_mode') ? null : testplan::GET_ACTIVE_BUILD;
+		$open = ($this->mode == 'plan_mode') ? null : testplan::GET_OPEN_BUILD;
 		
-		$this->settings[$key]['items'] =
-			$this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
-
-		$tplan_build_ids = array_keys($this->settings[$key]['items']);
+		$this->settings[$key]['items'] = $this->testplan_mgr->get_builds_for_html_options($tplan_id, $active, $open);
+		$tplan_builds = array_keys($this->settings[$key]['items']);
 
 		// BUGID 3406 - depending on mode, we need different labels for this selector on GUI
 		$label = ($this->mode == 'plan_mode') ? 'assign_build' : 'exec_build';
@@ -975,12 +973,12 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $newest_build_id;
 		
 		// only take build ID into account if it really is a build from this testplan
-		$this->settings[$key]['selected'] = (in_array($this->args->{$key}, $tplan_build_ids)) ? 
+		$this->settings[$key]['selected'] = (in_array($this->args->{$key}, $tplan_builds)) ? 
 		                                    $this->args->{$key} : $newest_build_id;
 
 		// still no build selected? take first one from selection.
 		if (!$this->settings[$key]['selected'] && sizeof($this->settings[$key]['items'])) {
-			$this->settings[$key]['selected'] = end($tplan_build_ids);
+			$this->settings[$key]['selected'] = end($tplan_builds);
 		}
 	} // end of method
 

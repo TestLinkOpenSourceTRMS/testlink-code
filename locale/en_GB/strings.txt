@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.653 2010/08/20 09:39:13 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.654 2010/08/22 17:57:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1210,6 +1210,8 @@ $TLS_btn_save_exec_order = "Save order";
 $TLS_btn_save_custom_fields ="Save custom fields";
 $TLS_btn_save_platform ="Save platform";
 $TLS_check_uncheck_all_tc = "Check/uncheck all Test cases";
+$TLS_check_uncheck_all_tc_for = "Check/uncheck all Test cases for";
+$TLS_check_uncheck_tc_with_platform = "Check/uncheck Test cases with Platform";
 $TLS_for = "for";
 $TLS_check_uncheck_tc = "All Test Cases in the Test Suite.";
 $TLS_check_uncheck_all_checkboxes = "check/uncheck all";

@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.19 2010/08/20 16:21:16 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.20 2010/08/22 09:06:03 asimon83 Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100822 - asimon - new function getColumnIdxByName() to make sorting by column name possible
  *  20100819 - asimon - additional parameters (hidden, hideable, groupable) for req based report and other tables
  *  20100819 - Julian - MultiSort (BUGID 3694), default Values for Grid Settings, more Grid Settings
  * 	20100817 - Julian - default toolbar items, hideGroupedColumn
@@ -409,4 +410,21 @@ class tlExtTable extends tlTable
         return $jsCode;
 	}
 
+	/**
+	 * Get the index of a column by name of the column.
+	 * 
+	 * @author Andreas Simon
+	 * @param string $name
+	 * @return int $column_idx
+	 */
+	function getColumnIdxByName($name) {
+		$column_idx = 0;
+		foreach ($this->columns as $key => $column) {
+			$column_name = (is_array($column) && isset($column['title'])) ? $column['title'] : $column;
+			if ($name == $column_name) {
+				$column_idx = $key;
+			}
+		}
+		return $column_idx;
+	}
 }

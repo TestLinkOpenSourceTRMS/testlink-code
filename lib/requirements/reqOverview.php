@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.23 2010/08/21 13:38:25 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.24 2010/08/22 09:06:03 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  * 
+ * 20100822 - asimon - removal of magic numbers for default table sorting
  * 20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
  * 20100816 - Julian - added default sorting and grouping
  * 20100730 - asimon - added table ID (0) to constructor of ext table
@@ -212,11 +213,14 @@ if(count($gui->reqIDs) > 0) {
 	    $matrix = new tlExtTable($columns, $rows, 0);
         $matrix->title = $labels['requirements'];
         
+        // 20100822 - asimon - removal of magic numbers
         // group by Req Spec
-        $matrix->groupByColumn = 0;
-        
-        // sort by coverage descending
-        $matrix->sortByColumn = 4;
+        $group_id = $matrix->getColumnIdxByName($labels['req_spec_short']);
+        $matrix->groupByColumn = $group_id;
+        // sort by coverage descending if enabled, otherwise by status
+        $sort_name = ($coverage_enabled) ? $labels['th_coverage'] : $labels['status'];
+        $sort_id = $matrix->getColumnIdxByName($sort_name);
+        $matrix->sortByColumn = $sort_id;
         $matrix->sortDirection = 'DESC';
         
         // define toolbar

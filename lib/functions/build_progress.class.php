@@ -6,9 +6,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: build_progress.class.php,v 1.5 2010/08/21 15:36:11 asimon83 Exp $
- *
- * Generate information about the progress by tester per build.
+ * @version CVS: $Id: build_progress.class.php,v 1.6 2010/08/22 09:26:38 asimon83 Exp $
  * 
  * @internal revisions:
  * 20100821 - asimon - BUGID 3682
@@ -19,6 +17,17 @@
 /**
  * This class extends tlObjectWithDB to load and compute the data needed
  * to generate the build based results table in reports. 
+ * It generates information about the progress by tester per build.
+ * First, the necessary data from execution and assignment tables is loaded to
+ * generate a map of those executions which have been done on builds on which
+ * a tester has been assigned to the respective testcases. 
+ * Then, those executions will get loaded and written to a second map, which
+ * have been done on testcases that have no tester assigned on the build
+ * which has been executed. This information is needed to have the possibility
+ * to generate also data for old builds (before database migration from 1.9)
+ * without user assignments so that they can also be shown in statistics.
+ * Together, these maps will be computed to generate all the data
+ * and numbers, percentages and progress which will be displayed on resulting table.
  * 
  * @author Andreas Simon
  * @package TestLink

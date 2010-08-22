@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/08/17 14:30:35 $  $Author: mx-julian $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/08/22 18:36:17 $  $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100822 - franciscom - refactoring - getColumnsDefinition()
  *  20100816 - asimon - if priority is enabled, enable default sorting by that column
  *  20100802 - asimon - BUGID 3647, filtering by build
  *  20100731 - asimon - heavy refactoring, modified to include more parameters and flexibility,
@@ -18,40 +19,39 @@ require_once("common.php");
 require_once("exttable.class.php");
 
 testlinkInitPage($db);
+$templateCfg = templateConfiguration();
 $user = new tlUser($db);
 $names = $user->getNames($db);
 
-$gui=new stdClass();
-$gui->glueChar = config_get('testcase_cfg')->glue_character;
 $urgencyImportance = config_get('urgencyImportance');
 $results_config = config_get('results');
 
-$templateCfg = templateConfiguration();
 $args=init_args();
-
 if ($args->user_id > 0) {
 	$args->user_name = $names[$args->user_id]['login'];
 }
 
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
-$tproject_info=$tproject_mgr->get_by_id($args->tproject_id);
-$gui->tproject_name=$tproject_info['name'];
+$tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
+unset($tproject_mgr);
+
+$gui=new stdClass();
+$gui->glueChar = config_get('testcase_cfg')->glue_character;
+$gui->tproject_name = $tproject_info['name'];
+$gui->warning_msg = '';
+$gui->tableSet = null;
+
+$l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
+						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null));
 
 if ($args->show_all_users) {
-	$gui->pageTitle=sprintf(lang_get('assigned_tc_overview'), $gui->tproject_name);
+	$gui->pageTitle=sprintf($l18n['assigned_tc_overview'], $gui->tproject_name);
 } else {
-	$gui->pageTitle=sprintf(lang_get('testcases_assigned_to_user'), 
-	                        $gui->tproject_name, $args->user_name);
+	$gui->pageTitle=sprintf($l18n['testcases_assigned_to_user'],$gui->tproject_name, $args->user_name);
 }
 
-$tcversion_indicator = lang_get('tcversion_indicator');
-$goto_testspec = lang_get('goto_testspec');
-$version = lang_get('version');
-$testplan = lang_get('testplan');
-$priority = array('low' => lang_get('low_priority'),
-                  'medium' => lang_get('medium_priority'),
-                  'high' => lang_get('high_priority'));
+$priority = array('low' => lang_get('low_priority'),'medium' => lang_get('medium_priority'),'high' => lang_get('high_priority'));
 
 $map_status_code = $results_config['status_code'];
 $map_code_status = $results_config['code_status'];
@@ -67,8 +67,8 @@ foreach($map_code_status as $code => $status) {
 }
 
 // Get all test cases assigned to user without filtering by execution status
-$options=new stdClass();
-$options->mode='full_path';
+$options = new stdClass();
+$options->mode = 'full_path';
 
 $filters = array();
 
@@ -78,17 +78,17 @@ if (!$args->show_inactive_and_closed) {
 	$filters['tplan_status'] = 'active';
 }
 
-// 3647
+// BUGID 3647
 if ($args->build_id) {
 	$filters['build_id'] = $args->build_id;
 }
 
 $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;
-
 $gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id, 
                                                  $tplan_param, $options, $filters);
 
-if( !is_null($gui->resultSet) )
+$doIt = !is_null($gui->resultSet); 
+if( $doIt )
 {	
 	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
 
@@ -96,112 +96,79 @@ if( !is_null($gui->resultSet) )
     $sql="SELECT name,id FROM {$tables['nodes_hierarchy']} " .
          "WHERE id IN (" . implode(',',$tplanSet) . ")";
     $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
-}
-$gui->warning_msg='';
 
+	$optColumns = array('user' => $args->show_user_column, 'priority' => $args->priority_enabled);
+	list($colDefinition, $sortByColumn) = getColumnsDefinition($optColumns);
 
-foreach ($gui->resultSet as $tplan_id => $tcase_set) {
-	
-	$tableID = $tplan_id;
-	$tplan_name = htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
-	
-	$columns = array();
-	
-	if ($args->show_user_column) {
-		$columns[] = array('title' => lang_get('user'), 'width' => 80);
-	}
-	
-	$columns[] = array('title' => lang_get('build'), 'width' => 80);
-	$columns[] = array('title' => lang_get('testsuite'), 'width' => 80);
-	$columns[] = array('title' => lang_get('testcase'), 'width' => 80);
-	$columns[] = array('title' => lang_get('platform'), 'width' => 80);
-	
-	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
-	$column_count_before_priority = count($columns);
-	if ($args->priority_enabled) {
-		$columns[] = array('title' => lang_get('priority'), 'width' => 80);
-	}
-	
-	$columns[] = array('title' => lang_get('status'), 'width' => 80);
-	$columns[] = array('title' => lang_get('due_since'), 'width' => 150);
-		
-	$rows = array();
-	
-	foreach ($tcase_set as $tcase_platform) {
-		foreach ($tcase_platform as $tcase) {
-			$current_row = array();
-			$tcase_id = $tcase['testcase_id'];
-			$tcversion_id = $tcase['tcversion_id'];
-			
-			if ($args->show_user_column) {
-				$current_row[] = htmlspecialchars($names[$tcase['user_id']]['login']);
-			}
-	
-			$current_row[] = htmlspecialchars($tcase['build_name']);
-			$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
-			
-			$link = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}\" " . 
-			        " title=\"{$goto_testspec}\">" .
-			        htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] . 
-			        ":" . htmlspecialchars($tcase['name']) . "&nbsp(" . $version . ": " . 
-			        $tcase['version'] . ")</a>";
-			$current_row[] = $link;
-			
-			$current_row[] = htmlspecialchars($tcase['platform_name']);
-			
-			if ($args->priority_enabled) {
-				if ($tcase['priority'] >= $urgencyImportance->threshold['high']) {
-					$prio = $priority['high'];
-				} else if ($tcase['priority'] < $urgencyImportance->threshold['low']) {
-					$prio = $priority['low'];
-				} else {
-					$prio = $priority['medium'];
+	foreach ($gui->resultSet as $tplan_id => $tcase_set) {
+
+		$columns = $colDefinition;
+		$rows = array();
+
+		foreach ($tcase_set as $tcase_platform) {
+			foreach ($tcase_platform as $tcase) {
+				$current_row = array();
+				$tcase_id = $tcase['testcase_id'];
+				$tcversion_id = $tcase['tcversion_id'];
+				
+				if ($args->show_user_column) {
+					$current_row[] = htmlspecialchars($names[$tcase['user_id']]['login']);
 				}
-				$current_row[] = $prio;
-			}
-			
-			$last_execution = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 
-			                                                 $tcase['build_id'], 
-			                                                 $tcase['platform_id']);
-			$status = $last_execution[$tcversion_id]['status'];
-			if (!$status) {
-				$status = $map_status_code['not_run'];
-			}
-			$version_info = sprintf($tcversion_indicator, $tcase['version']);
-			$status_rich = '<span class="' . $map_statuscode_css[$status]['css_class'] . '">' . 
-			               $map_statuscode_css[$status]['translation'] . ' ' . 
-			               $version_info . '</span>';
-			$current_row[] = $status_rich;
-			
-			$current_row[] = htmlspecialchars($tcase['creation_ts']) . 
-			                 " (" . get_date_diff($tcase['creation_ts']) . ")";
-			
-			// add this row to the others
-			$rows[] = $current_row;
-		}
-	}
-	
-	// create the table object
-	$matrix = new tlExtTable($columns, $rows, $tableID);
-	$matrix->title = $testplan . ": {$tplan_name}";
-	// default grouping by first column, which is user for overview, build otherwise
-	$matrix->groupByColumn = 0;
-	
-	//define toolbar
-	$matrix->show_toolbar = true;
-	$matrix->toolbar_expand_collapse_groups_button = true;
-	$matrix->toolbar_show_all_columns_button = true;
-	
-	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
-	if ($args->priority_enabled) {
-		$matrix->sortByColumn = $column_count_before_priority;
-	} else {
-		$matrix->sortByColumn = 1;
-	}
-	
-	$gui->tableSet[$tableID] = $matrix;
-}
+		
+				$current_row[] = htmlspecialchars($tcase['build_name']);
+				$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
+				
+				$current_row[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}\" " . 
+				        		 " title=\"{$l18n['goto_testspec']}\">" .
+				        		 htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] . 
+				        		 ":" . htmlspecialchars($tcase['name']) . "&nbsp(" . $l18n['version'] . ": " . 
+				        		 $tcase['version'] . ")</a>";
 
+				$current_row[] = htmlspecialchars($tcase['platform_name']);
+				
+				if ($args->priority_enabled) {
+					if ($tcase['priority'] >= $urgencyImportance->threshold['high']) {
+						$current_row[] = $priority['high'];
+					} else if ($tcase['priority'] < $urgencyImportance->threshold['low']) {
+						$current_row[] = $priority['low'];
+					} else {
+						$current_row[] = $priority['medium'];
+					}
+				}
+				
+				$last_execution = $tcase_mgr->get_last_execution($tcase_id, $tcversion_id, $tplan_id, 
+				                                                 $tcase['build_id'], 
+				                                                 $tcase['platform_id']);
+				$status = $last_execution[$tcversion_id]['status'];
+				if (!$status) {
+					$status = $map_status_code['not_run'];
+				}
+				$current_row[] = '<span class="' . $map_statuscode_css[$status]['css_class'] . '">' . 
+				                 $map_statuscode_css[$status]['translation'] . ' ' . 
+				                 sprintf($l18n['tcversion_indicator'], $tcase['version']) . '</span>';
+
+				$current_row[] = htmlspecialchars($tcase['creation_ts']) . 
+				                 " (" . get_date_diff($tcase['creation_ts']) . ")";
+				
+				// add this row to the others
+				$rows[] = $current_row;
+			}
+		}
+		
+		$matrix = new tlExtTable($columns, $rows, $tplan_id);
+		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
+		
+		// default grouping by first column, which is user for overview, build otherwise
+		$matrix->groupByColumn = 0;
+		
+		// define toolbar
+		$matrix->show_toolbar = true;
+		$matrix->toolbar_expand_collapse_groups_button = true;
+		$matrix->toolbar_show_all_columns_button = true;
+		$matrix->sortByColumn = $sortByColumn;
+		$gui->tableSet[$tplan_id] = $matrix;
+	}
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
@@ -251,11 +218,13 @@ function init_args()
     }
 
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : 0;
-//    if( $args->tplan_id == 0)
-//    {
-//        $args->tplan_id = isset($_SESSION['testplanID']) ? $_SESSION['testplanID'] : 0;
-//    }
-    
+	$args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? 
+	                  $_REQUEST['build_id'] : 0;
+
+	// $args->show_all_users = isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0 ? true : false;
+	$args->show_all_users = (isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0);
+	$args->show_user_column = $args->show_all_users; 
+
     $args->user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : 0;
     if( $args->user_id == 0)
     {
@@ -263,20 +232,12 @@ function init_args()
         $args->user_name = $_SESSION['currentUser']->login;
     }	
 
-	$args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? 
-	                  $_REQUEST['build_id'] : 0;
 
-	$args->show_all_users = isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0 ? 
-	                        true : false;
-	
+
 	if ($args->show_all_users) {
 		$args->user_id = TL_USER_ANYBODY;
 	}
 	
-	$args->show_user_column = false;
-	if ($args->show_all_users ) {
-		$args->show_user_column = true;
-	}
 	
 	$args->show_inactive_and_closed = isset($_REQUEST['show_inactive_and_closed']) 
 	                                  && $_REQUEST['show_inactive_and_closed'] =! 0 ? 
@@ -285,5 +246,46 @@ function init_args()
 	$args->priority_enabled = $_SESSION['testprojectOptions']->testPriorityEnabled ? true : false;
 	
 	return $args;
+}
+
+
+/**
+ * get Columns definition for table to display
+ *
+ */
+function getColumnsDefinition($optionalColumns)
+{
+  	static $labels;
+	if( is_null($labels) )
+	{
+		$lbl2get = array('build' => null,'testsuite' => null,'testcase' => null,'platform' => null,
+		       			 'user' => null, 'priority' => null,'status' => null, 'version' => null, 'due_since' => null);
+		$labels = init_labels($lbl2get);
+	}
+
+	$colDef = array();
+	$sortByColNum = 1;
+	if ($optionalColumns['user']) 
+	{
+		$colDef[] = array('title' => $labels['user'], 'width' => 80);
+	}
+	
+	$colDef[] = array('title' => $labels['build'], 'width' => 80);
+	$colDef[] = array('title' => $labels['testsuite'], 'width' => 80);
+	$colDef[] = array('title' => $labels['testcase'], 'width' => 80);
+	$colDef[] = array('title' => $labels['platform'], 'width' => 80);
+	
+	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
+	if ($optionalColumns['priority']) 
+	{
+	  	// if priority is enabled, enable default sorting by that column
+	  	$sortByColNum = count($colDef);
+		$colDef[] = array('title' => $labels['priority'], 'width' => 80);
+	}
+	
+	$colDef[] = array('title' => $labels['status'] . " [{$labels['version']}]", 'width' => 80);
+	$colDef[] = array('title' => $labels['due_since'], 'width' => 150);
+
+	return array($colDef, $sortByColNum);
 }
 ?>

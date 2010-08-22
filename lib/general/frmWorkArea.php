@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/04/08 15:11:33 $ by $Author: asimon83 $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2010/08/22 16:26:43 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
  *
  * rev: 
+ *  20100822 - asimon - BUGID 3697: Assign Test Case execution - problems 
+ *                                  when no build is defined on test plan
  *  20100106 - asimon - contribution for 2976 req/reqspec search
  * 	20080620 - havlatm - urgency support
  * 	20080501 - franciscom -
@@ -78,7 +80,9 @@ if (isset($aa_tfp[$showFeature]) === FALSE)
 }
 
 // features that need to run the validate build function
-if (in_array($showFeature,array('executeTest','showMetrics')))
+// BUGID 3697: added "Assign Test Case execution to list of features for
+// which build availability needs to be checked
+if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment')))
 {
 	// Check if for test project selected at least a test plan exist (BUGID 623)
 	if( isset($_SESSION['testplanID']) )

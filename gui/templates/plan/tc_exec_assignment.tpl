@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.28 2010/08/10 21:55:39 erikeloff Exp $
+$Id: tc_exec_assignment.tpl,v 1.29 2010/08/22 17:46:28 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20100822 - franciscom - BUGID 3698
      20100709 - asimon - BUGID 3406 - changed assignment logic to operate on build 
                                       instead of testplan level
      20100209 - franciscom - minor code layout refactoring
@@ -71,12 +72,9 @@ function check_action_precondition(container_id,action)
 			<select name="bulk_tester_div"  id="bulk_tester_div">
 				{html_options options=$gui->testers selected=0}
 			</select>
-			<input type='button' name='{$ts.testsuite.name|escape}_mua'
-				onclick='
-					if(check_action_precondition("tc_exec_assignment","default"))
-						set_combo_if_checkbox("tc_exec_assignment",
-								"tester_for_tcid_",
-								Ext.get("bulk_tester_div").getValue())'
+			<input type='button' name='bulk_user_assignment' id='bulk_user_assignment'
+				onclick='if(check_action_precondition("tc_exec_assignment","default"))
+						        set_combo_if_checkbox("tc_exec_assignment","tester_for_tcid_",Ext.get("bulk_tester_div").getValue())'
 				value="{$labels.btn_do}" />
 		</div>
 		<div>

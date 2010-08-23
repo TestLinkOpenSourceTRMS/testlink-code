@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2010/08/20 09:39:13 $ by $Author: asimon83 $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2010/08/23 08:14:53 $ by $Author: mx-julian $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -298,15 +298,21 @@ if (count($req_spec_map)) {
 	// create table object
 	$matrix = new tlExtTable($columns, $rows, 0);
 	$matrix->title = $gui->pageTitle;
+	
 	// group by Req Spec and hide that column
-	$matrix->groupByColumn = 0;
-	// sort descending by progress percentage, last column
-	$matrix->sortByColumn = count($columns) - 1;
+	$matrix->groupByColumn = $matrix->getColumnIdxByName(lang_get('req_spec_short'));
+	
+	// sort descending by progress percentage
+	$matrix->sortByColumn = $matrix->getColumnIdxByName(lang_get('progress'));
 	$matrix->sortDirection = 'DESC';
+	
 	//show long text content in multiple lines
 	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
+	
+	//define toolbar
 	$matrix->toolbar_show_all_columns_button = true;
 	$matrix->showGroupItemsCount = false;
+	
 	$gui->tableSet = array($matrix);
 }
 

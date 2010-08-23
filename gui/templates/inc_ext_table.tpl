@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.24 2010/08/23 14:07:53 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.25 2010/08/23 21:38:10 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -32,7 +32,7 @@ Purpose: rendering of Ext Js table
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
-	show_all_columns_tooltip, multisort"}
+	show_all_columns_tooltip, default_state, multisort"}
 {literal}
 <script type="text/javascript">
 /*
@@ -267,6 +267,18 @@ Ext.onReady(function() {
 						cm.setHidden(i, false);
 					{rdelim}
 				{rdelim}
+			{rdelim}
+		{rdelim});
+	{/if}
+
+	//show all columns toolbar button
+	{if $matrix->toolbar_default_state_button && $matrix->show_toolbar}
+		tbar.add({ldelim}
+			text: '{$labels.default_state|escape:javascript}',
+			iconCls: 'tbar-default-state',
+			handler: function (button, state) {ldelim}
+				Ext.state.Manager.clear(grid['{$tableID}'].getStateId());
+				window.location.reload();
 			{rdelim}
 		{rdelim});
 	{/if}

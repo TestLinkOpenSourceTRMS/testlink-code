@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.24 2010/08/23 14:47:16 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.25 2010/08/23 21:38:10 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -98,12 +98,12 @@ class tlExtTable extends tlTable
 	 * If $sortByColumn is used, this will be used as the sort direction, default is descending (DESC).
 	 */
 	public $sortDirection = 'DESC';
-	
+
     /**
      * If true shows a toolbar in the table header.
      */
     public $show_toolbar = true;
-    
+
     /**
      * If true shows "expand/collapse groups" toolbutton in toolbar.
      */
@@ -113,6 +113,11 @@ class tlExtTable extends tlTable
      * If true shows "show all columns" toolbutton in toolbar.
      */
     public $toolbar_show_all_columns_button = true;
+
+	/**
+	 * If true show "reset to default settings" button
+	 */
+	public $toolbar_default_state_button = true;
 
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.

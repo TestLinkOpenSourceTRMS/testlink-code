@@ -12,13 +12,14 @@
  * @package TestLink
  * @author Andreas Morsing
  * @copyright 2005-2009, TestLink community 
- * @version CVS: $Id: logger.class.php,v 1.48 2010/08/08 18:57:47 franciscom Exp $
+ * @version CVS: $Id: logger.class.php,v 1.49 2010/08/23 21:43:24 franciscom Exp $
  * @link http://www.teamst.org
  * @since 1.8
  * 
  * @internal Revisions:
  * 
- *	20100808 - franciscom -  BUGID 3656 - crash on some DBMS due to Transactions instead of transactions
+ *  20100823 - franciscom - BUGID 3656 - reopened crash when using table prefix
+ *	20100808 - franciscom - BUGID 3656 - crash on some DBMS due to Transactions instead of transactions
  *	20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
  *	20090603 - franciscom - adding table prefix management
  *	20080517 - franciscom - exclude mktime() logs 
@@ -524,7 +525,7 @@ class tlEventManager extends tlObjectWithDB
 	    if (!is_null($users))
 	    {
 	    	// BUGID 3656
-	        $usersFilter = " JOIN transactions T ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
+	        $usersFilter = " JOIN {$this->tables['transactions']}  T ON T.id = E.transaction_id AND T.user_id IN ({$users}) ";
 	    }
 		$query = "SELECT E.id FROM {$this->tables['events']} E {$usersFilter}";
 	    if ($clauses)

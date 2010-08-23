@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/08/17 14:30:35 $ by $Author: mx-julian $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/08/23 08:05:58 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -20,9 +20,6 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
-
-define('TABLE_GROUP_BY_BUILD', 1);
-define('TABLE_SORT_BY_DATE', 3);
 
 $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
@@ -144,6 +141,8 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 		$rowData[] = $arrData['tester'];
 
 		$dummy = null;
+		//use html comment to be able to sort table by timestamp and not by link
+		//only link is visible in table but comment is used for sorting
 		$rowData[] =
 			"<!--{$arrData['execution_ts']}--><a href=\"lib/execute/execSetResults.php?" .
 			"level=testcase&build_id={$arrData['builds_id']}&id={$arrData['tcase_id']}" .
@@ -163,13 +162,17 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	$table = new tlExtTable($columns, $matrixData, 'tl_table_results_cf');
 	$table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
 	$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
-	$table->groupByColumn = TABLE_GROUP_BY_BUILD;
-	$table->sortByColumn = TABLE_SORT_BY_DATE;
+	
+	//group by build, sort by date descending
+	$table->groupByColumn = $table->getColumnIdxByName(lang_get('build'));
+	$table->sortByColumn = $table->getColumnIdxByName(lang_get('date'));
+	$table->sortDirection = 'DESC';
+	
 	//define toolbar
 	$table->show_toolbar = true;
 	$table->toolbar_expand_collapse_groups_button = true;
 	$table->toolbar_show_all_columns_button = true;
-	$table->sortDirection = 'DESC';
+
 	$gui->tableSet = array($table);
 }
 

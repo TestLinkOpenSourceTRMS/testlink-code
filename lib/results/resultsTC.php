@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.63 2010/08/17 14:30:35 mx-julian Exp $ 
+* $Id: resultsTC.php,v 1.64 2010/08/23 08:05:58 mx-julian Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -35,10 +35,6 @@ require_once('results.class.php');
 require_once('displayMgr.php');
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
-
-// Those defines are simply refering to the column number
-define('TABLE_GROUP_BY_TESTSUITE', 0);
-define('TABLE_GROUP_BY_PLATFORM', 2);
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -318,14 +314,10 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
 	if ($format == FORMAT_HTML) 
 	{
 		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_tc');
-		if ($show_platforms)
-		{
-			$matrix->groupByColumn = TABLE_GROUP_BY_PLATFORM;
-		}
-		else
-		{
-			$matrix->groupByColumn = TABLE_GROUP_BY_TESTSUITE;
-		}
+		
+		//if platforms feature is enabled group by platform otherwise group by test suite
+		$group_name = ($show_platforms) ? lang_get('platform') : lang_get('title_test_suite_name');
+		$matrix->groupByColumn = $matrix->getColumnIdxByName($group_name);
 		
 		$matrix->sortDirection = 'DESC';
 
@@ -334,12 +326,13 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
 		{
 			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));
 			//sort by priority
-			$matrix->sortByColumn = ($show_platforms) ? 3:2;
+			$matrix->sortByColumn = $matrix->getColumnIdxByName(lang_get('priority'));
 		} else {
 			//sort by test case
-			$matrix->sortByColumn = 1;
+			$matrix->sortByColumn = $matrix->getColumnIdxByName(lang_get('title_test_case_title'));
 		}
-		//define toolbar
+		
+		//define table toolbar
 		$matrix->show_toolbar = true;
 		$matrix->toolbar_expand_collapse_groups_button = true;
 		$matrix->toolbar_show_all_columns_button = true;

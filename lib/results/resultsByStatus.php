@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.84 2010/08/17 14:30:35 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.85 2010/08/23 08:05:58 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -34,10 +34,6 @@
  *	20080602 - franciscom - changes due to BUGID 1504
  *	20070623 - franciscom - BUGID 911
 */
-
-// Those defines are simply refering to the column number
-define('TABLE_GROUP_BY_TESTSUITE', 0);
-define('TABLE_GROUP_BY_PLATFORM', 3);
 
 require('../../config.inc.php');
 require_once('common.php');
@@ -377,24 +373,21 @@ function buildMatrix($dataSet, $options = array())
 	if ($format == FORMAT_HTML)
 	{
 		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_by_status');
-		if ($options['show_platforms'])
-		{
-			$matrix->groupByColumn = TABLE_GROUP_BY_PLATFORM;
-			//sort by test case for not run report else sort by date
-			$matrix->sortByColumn = ($options['status_not_run']) ? 1:6;
-		}
-		else
-		{
-			$matrix->groupByColumn = TABLE_GROUP_BY_TESTSUITE;
-			//sort by test case for not run report else sort by date
-			$matrix->sortByColumn = ($options['status_not_run']) ? 1:5;
-		}
-	
-	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
-	//define toolbar
-	$matrix->show_toolbar = true;
-	$matrix->toolbar_expand_collapse_groups_button = true;
-	$matrix->toolbar_show_all_columns_button = true;
+		
+		//for not run test cases report sort by test case title otherwise sort by date
+		$sort_name = ($options['status_not_run']) ? lang_get('title_test_case_title') : lang_get('th_date');
+		$matrix->sortByColumn = $matrix->getColumnIdxByName($sort_name);
+		
+		//if platforms feature is enabled group by platform otherwise group by test suite
+		$group_name = ($options['show_platforms']) ? lang_get('platform') : lang_get('title_test_suite_name');
+		$matrix->groupByColumn = $matrix->getColumnIdxByName($group_name);
+		
+		$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
+		
+		//define table toolbar
+		$matrix->show_toolbar = true;
+		$matrix->toolbar_expand_collapse_groups_button = true;
+		$matrix->toolbar_show_all_columns_button = true;
 	}
 	else
 	{

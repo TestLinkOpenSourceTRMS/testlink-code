@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.21 2010/08/20 16:21:15 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.22 2010/08/23 11:09:07 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100823 - Julian - quoted tableID as it is a string and no integer value
 	 20100819 - Julian - MultiSort (BUGID 3694), showGroupItemsCount
 	 20100818 - Julian - use toolbar object to generate toolbar
 	 20100817 - Julian - toolbar items configurable, hideGroupedColumn
@@ -163,7 +164,7 @@ Ext.onReady(function() {
 										field: column.dataIndex,
 										direction: "DESC"
 									{rdelim}
-								{rdelim}, {$tableID});
+								{rdelim}, '{$tableID}');
 							{rdelim},
 
 							canDrop: function(dragSource, event, data) {ldelim}
@@ -179,7 +180,7 @@ Ext.onReady(function() {
 							
 							//after multisort buttons changed sort data again 
 							afterLayout: function (table) {ldelim}
-								doSort({$tableID});
+								doSort('{$tableID}');
 							{rdelim},
 
 							getColumnFromDragDrop: function(data) {ldelim}
@@ -195,7 +196,7 @@ Ext.onReady(function() {
 					listeners: {ldelim}
 						scope    : this,
 						reordered: function(button, table, changeDirection) {ldelim}
-							updateButtons(button,{$tableID}, false);
+							updateButtons(button,'{$tableID}', false);
 						{rdelim}
 					{rdelim}
 				{/if} //end plugins for multisort
@@ -283,7 +284,7 @@ Ext.onReady(function() {
 					field: 'idx{$button.field}',
 					direction: '{$button.direction}'
 				{rdelim},
-			{rdelim}, {$tableID}));
+			{rdelim}, '{$tableID}'));
 		{/foreach}
 	{/if}
 	//END MULTISORT
@@ -293,7 +294,7 @@ Ext.onReady(function() {
 		grid['{$tableID}'].render('{$tableID}_target');
 		//if multisort is enabled sort the data according to predefined multisort buttons
 		{if count($matrix->multiSortButtons) > 0}
-			doSort({$tableID});
+			doSort('{$tableID}');
 		{/if}
 	{/foreach}
 

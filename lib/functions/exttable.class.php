@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.21 2010/08/23 11:10:13 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.22 2010/08/23 12:56:10 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100823 - eloff - Always store column config in full format(array-of-arrays)
  *  20100822 - asimon - new function getColumnIdxByName() to make sorting by column name possible
  *  20100819 - asimon - additional parameters (hidden, hideable, groupable) for req based report and other tables
  *  20100819 - Julian - MultiSort (BUGID 3694), default Values for Grid Settings, more Grid Settings
@@ -218,31 +219,28 @@ class tlExtTable extends tlTable
 		for ($i=0;$i<$n_columns; $i++) {
 			$sortable = 'true';
 			$column = $this->columns[$i];
-			$title = is_array($column) ? $column['title'] : $column;
-			$s .= "{header: \"{$title}\", dataIndex: 'idx$i'";
-			if (is_array($column)) {
-				if (isset($column['width'])) {
-					$s .= ",width: {$column['width']}";
-				}
-				// asimon 20100817 - new parameters for req based report and other tables
-				if (isset($column['hidden'])) {
-					$s .= ",hidden: {$column['hidden']}";
-				}
-				if (isset($column['groupable'])) {
-					$s .= ",groupable: {$column['groupable']}";
-				}
-				if (isset($column['hideable'])) {
-					$s .= ",hideable: {$column['hideable']}";
-				}
-				if( isset($column['type']) && isset($this->customBehaviour[$column['type']]) &&
-					isset($this->customBehaviour[$column['type']]['render']) ) 
-				{
-					// Attach a custom renderer
-					$s .= ",renderer: {$this->customBehaviour[$column['type']]['render']}";
-				}
-				if(isset($column['sortable']) && (count($this->multiSortButtons) == 0)){
-					$sortable = $column['sortable'];
-				}
+			$s .= "{header: \"{$column['title']}\", dataIndex: 'idx$i'";
+			if (isset($column['width'])) {
+				$s .= ",width: {$column['width']}";
+			}
+			// asimon 20100817 - new parameters for req based report and other tables
+			if (isset($column['hidden'])) {
+				$s .= ",hidden: {$column['hidden']}";
+			}
+			if (isset($column['groupable'])) {
+				$s .= ",groupable: {$column['groupable']}";
+			}
+			if (isset($column['hideable'])) {
+				$s .= ",hideable: {$column['hideable']}";
+			}
+			if( isset($column['type']) && isset($this->customBehaviour[$column['type']]) &&
+				isset($this->customBehaviour[$column['type']]['render']) )
+			{
+				// Attach a custom renderer
+				$s .= ",renderer: {$this->customBehaviour[$column['type']]['render']}";
+			}
+			if(isset($column['sortable']) && (count($this->multiSortButtons) == 0)){
+				$sortable = $column['sortable'];
 			}
 			if(count($this->multiSortButtons) > 0) {
 				$sortable = 'false';
@@ -271,14 +269,11 @@ class tlExtTable extends tlTable
 		for ($i=0; $i < $n_columns; $i++) {
 			$column = $this->columns[$i];
 			$s .= "{name: 'idx$i'";
-			if (is_array($column)) 
+			if(	isset($column['type']) &&
+				isset($this->customBehaviour[$column['type']]) &&
+				isset($this->customBehaviour[$column['type']]['sort']) )
 			{
-				if(	isset($column['type']) &&
-					isset($this->customBehaviour[$column['type']]) &&
-					isset($this->customBehaviour[$column['type']]['sort']) )
-				{	
-					$s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
-				}
+				$s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
 			}
 			
 			$s .= "},\n";
@@ -423,8 +418,7 @@ class tlExtTable extends tlTable
 	function getColumnIdxByName($name) {
 		$column_idx = 0;
 		foreach ($this->columns as $key => $column) {
-			$column_name = (is_array($column) && isset($column['title'])) ? $column['title'] : $column;
-			if ($name == $column_name) {
+			if ($name == $column['title']) {
 				$column_idx = $key;
 			}
 		}

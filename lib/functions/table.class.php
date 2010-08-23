@@ -12,6 +12,7 @@
  * @since 1.9
  *
  * @internal Revision:
+ *  20100823 - eloff - Always store column config in full format(array-of-arrays)
  *  20100719 - eloff - Pass $tableID via constructor
  **/
 
@@ -21,7 +22,18 @@
  */
 abstract class tlTable
 {
-	/** @var array that holds the columns of the table */
+	/**
+	 * @var array that holds the columns of the table
+	 *            Every column is an array with at least a title attribute,
+	 *            other attributes are optional.
+	 *            $column = array(
+	 *              'title' => 'My column',
+	 *              'width' => 150,
+	 *              'type' => 'status'
+	 *            );
+	 *            It is up to the derived class to use this information on
+	 *            rendering.
+	 */
 	protected $columns;
 	/**
 	 * @var array that holds the row data to be displayed. Every row is
@@ -58,10 +70,25 @@ abstract class tlTable
 	 *        is an array('title' => 'Column title 1',
 	 *                    'type' => 'string',
 	 *                    'width => 150);
+	 *        Internally the columns will always be saved in the second format.
+	 *        @see tlTable::$columns
 	 */
 	public function __construct($columns, $data, $tableID)
 	{
-		$this->columns = $columns;
+		// Expand the simple column format (array-of-titles) to full
+		// array-of-arrays
+		$this->columns = array();
+		foreach ($columns as $column) {
+			if (is_array($column)) {
+				$this->columns[] = $column;
+			}
+			else if (is_string($column)) {
+				$this->columns[] = array('title' => $column);
+			}
+			else {
+				throw new Exception("Invalid column header: " . $column);
+			}
+		}
 		$this->data = $data;
 		$this->tableID = $tableID;
 	}

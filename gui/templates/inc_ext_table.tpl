@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.25 2010/08/23 21:38:10 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.26 2010/08/23 21:53:39 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -271,7 +271,7 @@ Ext.onReady(function() {
 		{rdelim});
 	{/if}
 
-	//show all columns toolbar button
+	//show reset to default state toolbar button
 	{if $matrix->toolbar_default_state_button && $matrix->show_toolbar}
 		tbar.add({ldelim}
 			text: '{$labels.default_state|escape:javascript}',

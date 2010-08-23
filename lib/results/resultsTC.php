@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.65 2010/08/23 11:31:21 mx-julian Exp $ 
+* $Id: resultsTC.php,v 1.66 2010/08/23 14:09:35 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -320,7 +320,7 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
 		
 		//if platforms feature is enabled group by platform otherwise group by test suite
 		$group_name = ($show_platforms) ? lang_get('platform') : lang_get('title_test_suite_name');
-		$matrix->groupByColumn = $matrix->getColumnIdxByName($group_name);
+		$matrix->setGroupByColumnName($group_name);
 		
 		$matrix->sortDirection = 'DESC';
 
@@ -329,10 +329,10 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
 		{
 			$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));
 			//sort by priority
-			$matrix->sortByColumn = $matrix->getColumnIdxByName(lang_get('priority'));
+			$matrix->setSortByColumnName(lang_get('priority'));
 		} else {
 			//sort by test case
-			$matrix->sortByColumn = $matrix->getColumnIdxByName(lang_get('title_test_case_title'));
+			$matrix->setSortByColumnName(lang_get('title_test_case_title'));
 		}
 		
 		//define table toolbar

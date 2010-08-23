@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.22 2010/08/23 12:56:10 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.23 2010/08/23 14:09:35 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100823 - eloff - Add convinience methods setSortByColumnName and setGroupByColumnName
  *  20100823 - eloff - Always store column config in full format(array-of-arrays)
  *  20100822 - asimon - new function getColumnIdxByName() to make sorting by column name possible
  *  20100819 - asimon - additional parameters (hidden, hideable, groupable) for req based report and other tables
@@ -423,5 +424,21 @@ class tlExtTable extends tlTable
 			}
 		}
 		return $column_idx;
+	}
+
+	/**
+	 * Convinience function to group by column name.
+	 * @param string $name column name to group by
+	 */
+	function setGroupByColumnName($name) {
+		$this->groupByColumn = $this->getColumnIdxByName($name);
+	}
+
+	/**
+	 * Convinience function to sort on column name.
+	 * @param string $name column name to sort on
+	 */
+	function setSortByColumnName($name) {
+		$this->sortByColumn = $this->getColumnIdxByName($name);
 	}
 }

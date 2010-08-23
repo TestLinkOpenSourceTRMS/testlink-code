@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.25 2010/08/23 11:31:22 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.26 2010/08/23 14:09:35 erikeloff Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -218,12 +218,11 @@ if(count($gui->reqIDs) > 0) {
         
         // 20100822 - asimon - removal of magic numbers
         // group by Req Spec
-        $group_id = $matrix->getColumnIdxByName($labels['req_spec_short']);
-        $matrix->groupByColumn = $group_id;
+        $matrix->setGroupByColumnName($labels['req_spec_short']);
         
         // sort by coverage descending if enabled, otherwise by status
         $sort_name = ($coverage_enabled) ? $labels['th_coverage'] : $labels['status'];
-        $matrix->sortByColumn = $matrix->getColumnIdxByName($sort_name);
+        $matrix->setSortByColumnName($sort_name);
         $matrix->sortDirection = 'DESC';
         
         // define toolbar

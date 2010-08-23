@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.86 2010/08/23 11:31:21 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.87 2010/08/23 14:09:35 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -380,11 +380,11 @@ function buildMatrix($dataSet, &$args, $options = array())
 		
 		//for not run test cases report sort by test case title otherwise sort by date
 		$sort_name = ($options['status_not_run']) ? lang_get('title_test_case_title') : lang_get('th_date');
-		$matrix->sortByColumn = $matrix->getColumnIdxByName($sort_name);
+		$matrix->setSortByColumnName($sort_name);
 		
 		//if platforms feature is enabled group by platform otherwise group by test suite
 		$group_name = ($options['show_platforms']) ? lang_get('platform') : lang_get('title_test_suite_name');
-		$matrix->groupByColumn = $matrix->getColumnIdxByName($group_name);
+		$matrix->setGroupByColumnName($group_name);
 		
 		$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
 		

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2010/08/23 11:31:21 $ by $Author: mx-julian $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2010/08/23 14:09:35 $ by $Author: erikeloff $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -303,10 +303,10 @@ if (count($req_spec_map)) {
 	$matrix->title = $gui->pageTitle;
 	
 	// group by Req Spec and hide that column
-	$matrix->groupByColumn = $matrix->getColumnIdxByName(lang_get('req_spec_short'));
+	$matrix->setGroupByColumnName(lang_get('req_spec_short'));
 	
 	// sort descending by progress percentage
-	$matrix->sortByColumn = $matrix->getColumnIdxByName(lang_get('progress'));
+	$matrix->setSortByColumnName(lang_get('progress'));
 	$matrix->sortDirection = 'DESC';
 	
 	//show long text content in multiple lines

@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.20 2010/08/22 09:06:03 asimon83 Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.21 2010/08/23 11:10:13 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -115,6 +115,9 @@ class tlExtTable extends tlTable
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.
 	 * For use of column['type'] see $this->customTypes
+	 * @param string $tableID tableID is used to create a store for
+	 *                        table settings. tableID should be unique for
+	 *                        each table occurence in each project.
 	 *
 	 * @see tlTable::__construct($columns, $data)
 	 * @see addCustomBehaviour($type,$behaviour)

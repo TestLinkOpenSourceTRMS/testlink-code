@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.23 2010/08/23 14:09:35 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.24 2010/08/23 14:47:16 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -83,7 +83,7 @@ class tlExtTable extends tlTable
 	
 	public $collapsible = false;
 	
-	public $frame = true;
+	public $frame = false;
 
 	/**
 	 * 20100816 - asimon - enable sorting by a default column.

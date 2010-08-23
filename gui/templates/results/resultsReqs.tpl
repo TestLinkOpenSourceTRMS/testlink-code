@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.20 2010/08/20 09:39:13 asimon83 Exp $
+$Id: resultsReqs.tpl,v 1.21 2010/08/23 14:09:48 asimon83 Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
 rev:
+    20100823 - asimon - replaced "onchange" in form by "onclick" to get
+                        it working in IE too
     20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
                         complete redesign/rewrite of requirement based report 
     20100311 - franciscom - BUGID 3267
@@ -41,7 +43,7 @@ rev:
 <p><form method="post">
 <input type="checkbox" name="show_only_finished" value="show_only_finished"
        {if $gui->show_only_finished} checked="checked" {/if}
-       onchange="this.form.submit()" /> {$labels.show_only_finished_reqs}
+       onclick="this.form.submit();" /> {$labels.show_only_finished_reqs}
 <input type="hidden"
        name="show_only_finished_hidden"
        value="{$gui->show_only_finished}" />

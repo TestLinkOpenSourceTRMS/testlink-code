@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/06/24 17:25:53 $ $Author: asimon83 $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/08/23 19:42:37 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -135,7 +135,7 @@ $TLS_th_testcase 	= $TLS_test_case; // obsolete
 $TLS_th_requirement_feature = "Requirement Feature";
 
 $TLS_import_file_type = "Import file type";
-$TLS_max_file_size_is = "Max. file size ";
+$TLS_max_file_size_is = "Dimensione massima dell'archivio ";
 $TLS_supported_file_formats = "Supported file formats";
 $TLS_no_permissions_for_action = "You do not have permissions to perform this action!" .
                                  " Please contact your administrator.";
@@ -148,7 +148,7 @@ $TLS_warning_email_cf = "Custom Field %s accepts only email addresses";
 
 
 // Installation/Migration
-$TLS_start_warning = '---- Warning ----';
+$TLS_start_warning = '---- Attenzione ----';
 $TLS_testlink_warning = 'TestLink Warning';
 $TLS_testcase_name_too_long = 'test case name is too long (%s chars) > %s => has been truncated';
 $TLS_original_name = 'Original name';
@@ -163,7 +163,7 @@ $TLS_empty_first_name = " Per favore inserire il Nome";
 $TLS_empty_last_name = " Per favore inserire il cognome";
 $TLS_fatal_page_title = "TestLink ::: Errore Grave";
 $TLS_invalid_user_name = "Per favore inserire un utente valido.";
-$TLS_no_good_email_address = "Email address format seems no good";
+$TLS_no_good_email_address = "Il formato dell'indirizzo mail non sembra corretto";
 $TLS_passwd_dont_match = "Le password inserite non coincidono. Il confronto tiene conto di maiuscolo/minuscolo. Ridigitare le password";
 $TLS_user_cant_be_created_because = "Il tuo account non può essere creato :";
 $TLS_user_name_exists = "Per favore scegliere un'altro utente.";

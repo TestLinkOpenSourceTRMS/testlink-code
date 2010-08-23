@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.87 2010/08/23 14:09:35 erikeloff Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.88 2010/08/23 19:43:33 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -371,7 +371,7 @@ function buildMatrix($dataSet, &$args, $options = array())
 		}
 	}
 
-	if ($format == FORMAT_HTML)
+	if ($options['format'] == FORMAT_HTML)
 	{
 		//create unique tableid for each project. as columns differ on not run report make it part of id
 		$table_id = 'tl_'.$args->tproject_id.'_table_results_by_';

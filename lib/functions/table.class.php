@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: table.class.php,v 1.6 2010/08/23 19:56:17 franciscom Exp $
+ * @version CVS: $Id: table.class.php,v 1.7 2010/08/23 19:58:46 franciscom Exp $
  *
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
@@ -36,6 +36,7 @@ abstract class tlTable
 	 *            rendering.
 	 */
 	protected $columns;
+
 	/**
 	 * @var array that holds the row data to be displayed. Every row is
 	 *      an array with the column data as describled in $columns.
@@ -76,8 +77,7 @@ abstract class tlTable
 	 */
 	public function __construct($columns, $data, $tableID)
 	{
-		// Expand the simple column format (array-of-titles) to full
-		// array-of-arrays
+		// Expand the simple column format (array-of-titles) to full array-of-arrays
 		$this->columns = array();
 		foreach ($columns as $column) {
 			if (is_array($column)) {

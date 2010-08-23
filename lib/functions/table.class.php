@@ -6,7 +6,8 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id $
+ * @version CVS: $Id: table.class.php,v 1.6 2010/08/23 19:56:17 franciscom Exp $
+ *
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9

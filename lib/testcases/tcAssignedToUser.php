@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/08/22 18:36:17 $  $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/08/23 11:12:29 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100823 - asimon - refactoring: $table_id
  *  20100822 - franciscom - refactoring - getColumnsDefinition()
  *  20100816 - asimon - if priority is enabled, enable default sorting by that column
  *  20100802 - asimon - BUGID 3647, filtering by build
@@ -35,6 +36,10 @@ $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 unset($tproject_mgr);
+
+$table_id = 'tl_' . $args->tproject_id . '_' . $args->tplan_id . '_table_tc_assignment';
+$table_id .= ($args->show_all_users) ? '_overview' : '_for_user';
+$table_id .= ($args->build_id) ? '_window' : '';
 
 $gui=new stdClass();
 $gui->glueChar = config_get('testcase_cfg')->glue_character;
@@ -155,7 +160,7 @@ if( $doIt )
 			}
 		}
 		
-		$matrix = new tlExtTable($columns, $rows, $tplan_id);
+		$matrix = new tlExtTable($columns, $rows, $table_id);
 		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
 		
 		// default grouping by first column, which is user for overview, build otherwise

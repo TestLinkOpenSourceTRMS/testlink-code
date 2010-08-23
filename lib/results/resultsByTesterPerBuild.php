@@ -8,11 +8,12 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.4 2010/08/23 08:05:58 mx-julian Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.5 2010/08/23 11:12:29 asimon83 Exp $
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
+ * 20100823 - asimon - refactoring: $table_id
  * 20100816 - asimon - enable default sorting by progress column
  * 20100731 - asimon - initial commit
  * 		
@@ -39,6 +40,7 @@ $status_map = $progress->get_status_map();
 $build_set = $progress->get_build_set();
 $names = $user->getNames($db);
 
+$table_id = 'tl_' . $args->tproject_id . '_' . $args->tplan_id . '_table_results_tester_build';
 
 // build the table header
 $columns = array();
@@ -97,7 +99,7 @@ foreach ($matrix as $build_id => $build_execution_map) {
 }
 
 // create the table object
-$matrix = new tlExtTable($columns, $rows, 0);
+$matrix = new tlExtTable($columns, $rows, $table_id);
 $matrix->title = lang_get('results_by_tester_per_build');
 
 //group by build

@@ -6,14 +6,15 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.25 2010/08/23 21:38:10 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.26 2010/08/23 21:50:46 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100823 - franciscom - getColumnIdxByName() - minor refactoring forcing exit with break
  *  20100823 - eloff - Add convinience methods setSortByColumnName and setGroupByColumnName
- *  20100823 - eloff - Always store column config in full format(array-of-arrays)
+ *  				   Always store column config in full format(array-of-arrays)
  *  20100822 - asimon - new function getColumnIdxByName() to make sorting by column name possible
  *  20100819 - asimon - additional parameters (hidden, hideable, groupable) for req based report and other tables
  *  20100819 - Julian - MultiSort (BUGID 3694), default Values for Grid Settings, more Grid Settings
@@ -426,6 +427,7 @@ class tlExtTable extends tlTable
 		foreach ($this->columns as $key => $column) {
 			if ($name == $column['title']) {
 				$column_idx = $key;
+				break;
 			}
 		}
 		return $column_idx;

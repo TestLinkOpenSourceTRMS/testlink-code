@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/08/23 08:14:53 $ by $Author: mx-julian $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2010/08/23 11:31:21 $ by $Author: mx-julian $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20100823 - Julian - table now uses a unique table id per test project
  * 20100820 - asimon - BUGID 3439: little refactorizations
  * 20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
  *                     complete redesign/rewrite of requirement based report 
@@ -294,9 +295,11 @@ if (count($req_spec_map)) {
 			$rows[] = $single_row;
 		}
 	}
-		
+	
+	// create unique table id for each project
+	$table_id = 'tl_'.$args->tproject_id.'_table_results_reqs';
 	// create table object
-	$matrix = new tlExtTable($columns, $rows, 0);
+	$matrix = new tlExtTable($columns, $rows, $table_id);
 	$matrix->title = $gui->pageTitle;
 	
 	// group by Req Spec and hide that column

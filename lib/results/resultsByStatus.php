@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.85 2010/08/23 08:05:58 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.86 2010/08/23 11:31:21 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100823 - Julian - table now uses a unique table id per test project and report type
  *	20100816 - Julian - changed default width for table columns
  *	                  - added default sorting
  *	20100719 - Eloff - Implement extTable for this report
@@ -228,7 +229,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 new dBug($gui->dataSet);
 new dBug($gui->dataSetByPlatform);
 
-$gui->tableSet[] = buildMatrix($gui->dataSet, array(
+$gui->tableSet[] = buildMatrix($gui->dataSet, $args, array(
 		'status_not_run' => ($args->type == $statusCode['not_run']),
 		'bugInterfaceOn' => $gui->bugInterfaceOn,
 		'format' => $args->format,
@@ -336,7 +337,7 @@ function buildMailCfg(&$guiObj)
  * return tlExtTable
  *
  */
-function buildMatrix($dataSet, $options = array())
+function buildMatrix($dataSet, &$args, $options = array())
 {
 	$default_options = array(
 		'bugInterfaceOn' => false,
@@ -372,7 +373,10 @@ function buildMatrix($dataSet, $options = array())
 
 	if ($format == FORMAT_HTML)
 	{
-		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_by_status');
+		//create unique tableid for each project. as columns differ on not run report make it part of id
+		$table_id = 'tl_'.$args->tproject_id.'_table_results_by_';
+		$table_id .= ($options['status_not_run']) ? 'not_run' : 'status';
+		$matrix = new tlExtTable($columns, $dataSet, $table_id);
 		
 		//for not run test cases report sort by test case title otherwise sort by date
 		$sort_name = ($options['status_not_run']) ? lang_get('title_test_case_title') : lang_get('th_date');

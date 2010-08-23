@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.24 2010/08/22 09:06:03 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.25 2010/08/23 11:31:22 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  * 
+ * 20100823 - Julian - table now uses a unique table id per test project
  * 20100822 - asimon - removal of magic numbers for default table sorting
  * 20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
  * 20100816 - Julian - added default sorting and grouping
@@ -209,18 +210,20 @@ if(count($gui->reqIDs) > 0) {
 	    	$columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $charset), 'type' => 'text');
 	    }
 
+	    // create unique tableid for each project (columns can differ between projects)
+	    $table_id = 'tl_'.$args->tproject_id.'_table_req_overview';
 	    // create table object, fill it with columns and row data and give it a title
-	    $matrix = new tlExtTable($columns, $rows, 0);
+	    $matrix = new tlExtTable($columns, $rows, $table_id);
         $matrix->title = $labels['requirements'];
         
         // 20100822 - asimon - removal of magic numbers
         // group by Req Spec
         $group_id = $matrix->getColumnIdxByName($labels['req_spec_short']);
         $matrix->groupByColumn = $group_id;
+        
         // sort by coverage descending if enabled, otherwise by status
         $sort_name = ($coverage_enabled) ? $labels['th_coverage'] : $labels['status'];
-        $sort_id = $matrix->getColumnIdxByName($sort_name);
-        $matrix->sortByColumn = $sort_id;
+        $matrix->sortByColumn = $matrix->getColumnIdxByName($sort_name);
         $matrix->sortDirection = 'DESC';
         
         // define toolbar
@@ -228,7 +231,6 @@ if(count($gui->reqIDs) > 0) {
         $matrix->toolbar_expand_collapse_groups_button = true;
         $matrix->toolbar_show_all_columns_button = true;
         $matrix->showGroupItemsCount = true;
-        
         // show custom field content in multiple lines
         $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
         $gui->tableSet= array($matrix);

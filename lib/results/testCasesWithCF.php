@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/08/23 08:05:58 $ by $Author: mx-julian $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/08/23 11:31:21 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
+ *  20100823 - Julian - table now uses a unique table id per test project
  *	20100816 - Julian - added default column width
  *                    - added default sorting and grouping
  *	20100719 - eloff - Use tlExtTable
@@ -159,7 +160,9 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 
 		$matrixData[] = $rowData;
 	}
-	$table = new tlExtTable($columns, $matrixData, 'tl_table_results_cf');
+	// create unique table id for each project
+	$table_id = 'tl_'.$args->tproject_id.'_table_tc_with_cf';
+	$table = new tlExtTable($columns, $matrixData, $table_id);
 	$table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
 	$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 	

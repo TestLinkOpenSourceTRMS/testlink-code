@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.64 2010/08/23 08:05:58 mx-julian Exp $ 
+* $Id: resultsTC.php,v 1.65 2010/08/23 11:31:21 mx-julian Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100823 - Julian - table now uses a unique table id per test project and test plan
 * 20100816 - Julian - changed default column width
                     - added default sorting
 * 20100723 - asimon - BUGID 3590: crash when clicking testcase link because of missing build id
@@ -250,7 +251,7 @@ if ($lastResultMap != null)
     }
 } // end if
 
-$gui->tableSet[] =  buildMatrix($gui->buildInfoSet, $gui->matrix, $args->format, $show_platforms);
+$gui->tableSet[] =  buildMatrix($gui->buildInfoSet, $gui->matrix, $args->format, $show_platforms, $args);
 
 new dBug($gui);
 $smarty = new TLSmarty;
@@ -291,7 +292,7 @@ function checkRights(&$db,&$user)
  * return tlExtTable
  *
  */
-function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
+function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
 {
 	$columns = array(array('title' => lang_get('title_test_suite_name'), 'width' => 100),
 		             array('title' => lang_get('title_test_case_title'), 'width' => 150));
@@ -313,7 +314,9 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms)
 	
 	if ($format == FORMAT_HTML) 
 	{
-		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_tc');
+		//create unique table id for each project and each test plan (build columns differ)
+		$table_id = 'tl_'.$args->tproject_id. '_' .$args->tplan_id.'_table_results_tc';
+		$matrix = new tlExtTable($columns, $dataSet, $table_id);
 		
 		//if platforms feature is enabled group by platform otherwise group by test suite
 		$group_name = ($show_platforms) ? lang_get('platform') : lang_get('title_test_suite_name');

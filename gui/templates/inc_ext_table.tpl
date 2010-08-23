@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.23 2010/08/23 14:02:19 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.24 2010/08/23 14:07:53 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -237,15 +237,15 @@ Ext.onReady(function() {
 	{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
 		tbar.add({ldelim}
 			text: '{$labels.expand_collapse_groups|escape:javascript}',
-			last_state: 'expand',
+			last_state: 'expanded',
 			iconCls: 'x-group-by-icon',
 			handler: function () {ldelim}
-				if (this.last_state == 'expand') {ldelim}
+				if (this.last_state == 'expanded') {ldelim}
 					grid['{$tableID}'].getView().collapseAllGroups();
-					this.last_state = 'collapse';
+					this.last_state = 'collapsed';
 				{rdelim} else {ldelim}
 					grid['{$tableID}'].getView().expandAllGroups()
-					this.last_state = 'expand';
+					this.last_state = 'expanded';
 				{rdelim}
 			{rdelim}
 		{rdelim});
@@ -267,16 +267,6 @@ Ext.onReady(function() {
 						cm.setHidden(i, false);
 					{rdelim}
 				{rdelim}
-			{rdelim}
-		{rdelim});
-		
-		//reset
-		tbar.add({ldelim}
-			text: 'reset',
-			iconCls: 'x-group-by-icon',
-			handler: function () {ldelim}
-				grid['{$tableID}'].getStore().destroy();
-				grid['{$tableID}'].getStore().loadData(tableData['{$tableID}'])
 			{rdelim}
 		{rdelim});
 	{/if}

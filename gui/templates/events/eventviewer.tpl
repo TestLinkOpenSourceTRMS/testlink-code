@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.26 2010/05/08 17:38:17 franciscom Exp $
+$Id: eventviewer.tpl,v 1.27 2010/08/23 21:57:25 franciscom Exp $
 
 Event Viewer
 20100508 - franciscom - BUGID 3445
@@ -182,28 +182,29 @@ fieldset
 				<th>{$sortHintIcon}{$labels.th_event_description}</th>
 				<th>{$sortHintIcon}{$labels.th_user}</th>
 			</tr>
+
 			{assign var=transID value="-1"}
 			{foreach from=$gui->events item=event}
-			{assign var=userID value=$event->userID}
-			{if $event->transactionID neq $transID}
-				{assign var=transID value=$event->transactionID}
-				{assign var=padding value=""}
-			{/if}
-
-			<tr onClick="showEventDetails({$event->dbID})" class="{$event->getLogLevel()|escape}">
-					<td style="white-space:nowrap;{$padding}">{localize_timestamp ts=$event->timestamp}</td>
-					<td>{$event->getLogLevel()|escape}</td>
-					<td>{$event->description|escape|truncate:#EVENT_DESCRIPTION_TRUNCATE_LEN#}</td>
-					<td>
-					{if $gui->users[$userID] neq false}
-						{$gui->users[$userID]|escape}
-					{else}
-						&nbsp;
-					{/if}
-					</td>
-			</tr>
-				{assign var=padding value="padding-left:20px"}
-		{/foreach}
+			  {assign var=userID value=$event->userID}
+			  {if $event->transactionID neq $transID}
+			  	{assign var=transID value=$event->transactionID}
+			  	{assign var=padding value=""}
+			  {/if}
+        
+			  <tr onClick="showEventDetails({$event->dbID})" class="{$event->getLogLevel()|escape}">
+			  		<td style="white-space:nowrap;{$padding}">{localize_timestamp ts=$event->timestamp}</td>
+			  		<td>{$event->getLogLevel()|escape}</td>
+			  		<td>{$event->description|escape|truncate:#EVENT_DESCRIPTION_TRUNCATE_LEN#}</td>
+			  		<td>
+			  		{if isset($gui->users[$userID])}
+			  			{$gui->users[$userID]|escape}
+			  		{else}
+			  			&nbsp;
+			  		{/if}
+			  		</td>
+			  </tr>
+			  {assign var=padding value="padding-left:20px"}
+		  {/foreach}
 		</table>
 </div>
 <div id="eventDetailWindow" class="x-hidden">

@@ -1,10 +1,13 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.22 2010/08/23 11:09:07 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.23 2010/08/23 14:02:19 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
 	 20100823 - Julian - quoted tableID as it is a string and no integer value
+	                   - toolbar button to expand/collapse groups changed to not
+	                     use toggleAllGroups() function anymore as this function
+	                     did expand collapsed but also collapse expanded groups
 	 20100819 - Julian - MultiSort (BUGID 3694), showGroupItemsCount
 	 20100818 - Julian - use toolbar object to generate toolbar
 	 20100817 - Julian - toolbar items configurable, hideGroupedColumn
@@ -234,9 +237,16 @@ Ext.onReady(function() {
 	{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
 		tbar.add({ldelim}
 			text: '{$labels.expand_collapse_groups|escape:javascript}',
+			last_state: 'expand',
 			iconCls: 'x-group-by-icon',
 			handler: function () {ldelim}
-				grid['{$tableID}'].getView().toggleAllGroups();
+				if (this.last_state == 'expand') {ldelim}
+					grid['{$tableID}'].getView().collapseAllGroups();
+					this.last_state = 'collapse';
+				{rdelim} else {ldelim}
+					grid['{$tableID}'].getView().expandAllGroups()
+					this.last_state = 'expand';
+				{rdelim}
 			{rdelim}
 		{rdelim});
 	{/if}
@@ -257,6 +267,16 @@ Ext.onReady(function() {
 						cm.setHidden(i, false);
 					{rdelim}
 				{rdelim}
+			{rdelim}
+		{rdelim});
+		
+		//reset
+		tbar.add({ldelim}
+			text: 'reset',
+			iconCls: 'x-group-by-icon',
+			handler: function () {ldelim}
+				grid['{$tableID}'].getStore().destroy();
+				grid['{$tableID}'].getStore().loadData(tableData['{$tableID}'])
 			{rdelim}
 		{rdelim});
 	{/if}

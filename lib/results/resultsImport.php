@@ -8,10 +8,11 @@
  * @package 	TestLink
  * @author 		Kevin Levy
  * @copyright 	2010, TestLink community 
- * @version    	CVS: $Id: resultsImport.php,v 1.19 2010/08/21 16:30:24 franciscom Exp $
+ * @version    	CVS: $Id: resultsImport.php,v 1.20 2010/08/23 19:27:47 franciscom Exp $
  *
  * @internal Revisions:
  *
+ * 20100823 - franciscom - BUGID 3543 - added execution_type
  * 20100821 - franciscom - BUGID 3470 - reopened
  * 20100328 - franciscom - BUGID 3470, BUGID 3475
  * 20100328 - franciscom - BUGID 3331 add bug id management
@@ -27,7 +28,7 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 
-$args = init_args();
+$args = init_args($db);
 $gui = new stdClass();
 
 // 20100821 - franciscom
@@ -64,6 +65,7 @@ $gui->importTypes=array("XML" => "XML");
 $gui->importLimit = config_get('import_file_max_size_bytes');
 $gui->doImport = ($args->importType != "");
 $gui->testprojectName=$args->testprojectName;
+
 
 $resultMap=null;
 $dest=TL_TEMP_PATH . session_id()."-results.import";
@@ -130,7 +132,7 @@ function importExecutionResultsFromXML(&$db,$fileName,$context)
 	$xml = @simplexml_load_file($fileName);
 	if($xml !== FALSE)
 	{
-		$resultMap=importResults($db,$xml,$context);
+		$resultMap = importResults($db,$xml,$context);
 	}
 	return $resultMap;
 }
@@ -153,7 +155,9 @@ function importResults(&$db,&$xml,$context)
 		// if yes overwrite GUI selection with value get from file
 		//
 		$executionContext = $context;
-		$contextKeys = array('testplan' => 'tplan_id', 'build' => 'build_id', 'platform' => 'platform_id');
+		$contextKeys = array('testproject' => 'tprojectID', 'testplan' => 'tplanID', 
+							 'build' => 'buildID', 'platform' => 'platformID');
+		
 		foreach( $contextKeys as $xmlkey => $execkey)
 		{
 			if( ($joker = $xml->$xmlkey) )
@@ -176,13 +180,15 @@ function importResults(&$db,&$xml,$context)
 
 
 /*
-  function: 
+  function: saveImportedResultData
 
   args :
   
   returns: 
 
-  20100328 - franciscom - BUGID 3331 manage bug id	
+  rev: 
+ 		20100823 - franciscom - BUGID 3543 - added execution_type          		
+		20100328 - franciscom - BUGID 3331 manage bug id	
 */
 function saveImportedResultData(&$db,$resultData,$context)
 {
@@ -192,6 +198,14 @@ function saveImportedResultData(&$db,$resultData,$context)
 	}
 	$debugMsg = ' FUNCTION: ' . __FUNCTION__;
 	$tables = tlObjectWithDB::getDBTables(array('executions','execution_bugs'));
+	
+	
+	$l18n = array('import_results_tc_not_found' => '' ,'import_results_invalid_result' => '',
+				  'tproject_id_not_found' => '', 'import_results_ok' => '');
+	foreach($l18n as $key => $value)
+	{
+		$l18n[$key] = lang_get($key);
+	}
 	
 	// Get Column definitions to get size dinamically instead of create constants
 	$columnDef = array();
@@ -220,19 +234,60 @@ function saveImportedResultData(&$db,$resultData,$context)
 	if($tc_qty)
 	{
 		$tplan_mgr=new testplan($db);
+		$tproject_mgr=new testproject($db);
 	}
 	
-	for($idx=0; $idx < $tc_qty ;$idx++)
+	// Need to do checks on common settings
+	//
+	// test project exists
+	//
+	// test plan id: 
+	//              belongs to target test project
+	//              is active 
+	// build id:
+	//          belongs to target test plan
+	//          is open
+    //
+	// platform id:
+	//          is linked  to target test plan
+	//
+	$checks['status_ok'] = true;		
+	$checks['msg'] = null;
+	$dummy = $tproject_mgr->get_by_id($context->tprojectID);
+	$checks['status_ok'] = !is_null($dummy);
+	if( !$checks['status_ok'] )
 	{
-		$tester_id=0;
-	  	$tester_name='';	
-	  	$using_external_id=false;
-    	$message=null;
-	  	$status_ok=true;
-		$tcase_exec=$resultData[$idx];
+		$checks['msg'][] = sprintf($l19n['tproject_id_not_found'],$context->tprojectID);
+	}
+
+    // if( $checks['status_ok'] )
+    // {
+    // 	
+    // }
+
+	if( !$checks['status_ok'] )
+	{
+		foreach($checks['msg'] as $warning )
+		{
+			$resultMap[]=array($warning);
+		}
+	}
+    $doIt = $checks['status_ok'];
+    
+    
+	// --------------------------------------------------------------------	
+	
+	for($idx=0; $doIt && $idx < $tc_qty;$idx++)
+	{
+		$tester_id = 0;
+	  	$tester_name = '';	
+	  	$using_external_id = false;
+    	$message = null;
+	  	$status_ok = true;
+		$tcase_exec = $resultData[$idx];
 		
 		$checks = check_exec_values($db,$tcase_mgr,$user_mgr,$tcaseCfg,$tcase_exec,$columnDef['execution_bugs']);
-    	$status_ok=$checks['status_ok'];		
+    	$status_ok = $checks['status_ok'];		
 		if($status_ok)
 		{
 			$tcase_id=$checks['tcase_id'];
@@ -261,16 +316,16 @@ function saveImportedResultData(&$db,$resultData,$context)
 			$filters = array('tcase_id' => $tcase_id, 'build_id' => $context->buildID,
 		    			 	 'platform_id' => $context->platformID);
 
-		    $linked_cases=$tplan_mgr->get_linked_tcversions($context->tplan_id,$filters);
+		    $linked_cases=$tplan_mgr->get_linked_tcversions($context->tplanID,$filters);
 		    $info_on_case=$linked_cases[$tcase_id];
 
 		    if (!$linked_cases)
 		    {
-		    	$message=sprintf(lang_get('import_results_tc_not_found'),$tcase_identity);
+		    	$message=sprintf($l18n['import_results_tc_not_found'],$tcase_identity);
   	    	}
 		    else if (!$result_is_acceptable) 
 		    {
-		    	$message=sprintf(lang_get('import_results_invalid_result'),$tcase_identity,$tcase_exec['result']);
+		    	$message=sprintf($l18n['import_results_invalid_result'],$tcase_identity,$tcase_exec['result']);
 		    } 
 		    else 
 		    {
@@ -292,11 +347,14 @@ function saveImportedResultData(&$db,$resultData,$context)
               		$tester_name=$user->login;
               		$tester_id=$context->userID;
           		}
+
+				// BUGID 3543 - added execution_type          		
           		$sql = " /* $debugMsg */ " .
 		      	       " INSERT INTO {$tables['executions']} (build_id,tester_id,status,testplan_id," .
-		               " tcversion_id,execution_ts,notes,tcversion_number,platform_id)" .
-	          	       " VALUES ({$context->buildID}, {$tester_id},'{$result_code}',{$context->tplan_id}, ".
-	          	       " {$tcversion_id},{$execution_ts},'{$notes}', {$version}, {$context->platformID})";
+		               " tcversion_id,execution_ts,notes,tcversion_number,platform_id,execution_type)" .
+	          	       " VALUES ({$context->buildID}, {$tester_id},'{$result_code}',{$context->tplanID}, ".
+	          	       " {$tcversion_id},{$execution_ts},'{$notes}', {$version}, " . 
+	          	       " {$context->platformID}, {$tcase_exec['execution_type']})";
 	          	$db->exec_query($sql); 
 
 				// BUGID 3331 
@@ -319,7 +377,7 @@ function saveImportedResultData(&$db,$resultData,$context)
 	          			}
 	          		}
 				}
-		    	$message=sprintf(lang_get('import_results_ok'),$tcase_identity,$version,$tester_name,
+		    	$message=sprintf($l18n['import_results_ok'],$tcase_identity,$version,$tester_name,
 		    	                 $resulstCfg['code_status'][$result_code],$execution_ts);
 
 		    }
@@ -389,6 +447,8 @@ function importExecutionFromXML(&$xmlTCExec)
 	$execInfo['notes'] = (string) trim($xmlTCExec->notes);
   	$execInfo['timestamp'] = (string) trim($xmlTCExec->timestamp);
   	$execInfo['tester'] = (string) trim($xmlTCExec->tester);
+  	$execInfo['execution_type'] = (int) trim($xmlTCExec->execution_type); //BUGID 3543
+
 
 	$bugQty = count($xmlTCExec->bug_id);
 	if( ($bugQty = count($xmlTCExec->bug_id)) > 0 )
@@ -427,14 +487,14 @@ function check_xml_execution_results($fileName)
 
 
 /*
-  function: init_args()
+  function: init_args(&$dbHandler)
 
   args :
   
   returns: 
 
 */
-function init_args()
+function init_args(&$dbHandler)
 {
 	$args=new stdClass();
   	$_REQUEST=strings_stripSlashes($_REQUEST);
@@ -448,10 +508,22 @@ function init_args()
   	$args->tplanID = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : null;
   	$args->tplanID = !is_null($args->tplanID) ? $args->tplanID : $_SESSION['testplanID'];
 
+  	$args->tprojectID = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : null;
+  	if( is_null($args->tprojectID))
+  	{
+  		$args->tprojectID = $_SESSION['testprojectID'];
+		$args->testprojectName = $_SESSION['testprojectName'];
+  		
+  	}
+	else
+	{
+  		$tproject_mgr = new testproject($dbHandler);
+  		$dummy = $tproject_mgr->get_by_id($args->tprojectID);
+  		$args->testprojectName = $dummy['name'];
+	}
   	
   	$args->doUpload=isset($_REQUEST['UploadFile']) ? 1 : 0;
   	$args->userID=$_SESSION['userID'];
-  	$args->testprojectName=$_SESSION['testprojectName'];
   	
   	return $args;
 }
@@ -531,6 +603,7 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues,&$c
 		    $checks['msg'][]=sprintf(lang_get('invalid_tester'),$identity,$execValues['tester']); 
 		}
     }
+    
     // BUGID 3331
     $execValues['bug_id'] = isset($execValues['bug_id']) ? trim((string) $execValues['bug_id']) : '';
     if($checks['status_ok'] && $execValues['bug_id'] != '' )
@@ -541,6 +614,17 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues,&$c
 		    $checks['msg'][]=sprintf(lang_get('bug_id_invalid_len'),$field_len,$columnDef['bug_id']->max_length); 
 		}
 		
+	}
+	
+	// BUGID 3543
+    if($checks['status_ok'] && isset($execValues['execution_type']) )
+    {
+		$execDomain = $tcase_mgr->get_execution_types();
+		$checks['status_ok'] = isset($execDomain[$execValues['execution_type']]);
+		if( !$checks['status_ok'] )
+		{
+			$checks['msg'][]=sprintf(lang_get('invalid_exec_type'),$execValues['execution_type']);
+		}
 	}
     return $checks;
 }

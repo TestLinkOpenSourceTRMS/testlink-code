@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.171 2010/08/19 14:18:58 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.172 2010/08/23 22:35:46 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.649
+ * Last Update according to en_GB string file version 1.657
  *
  **/
 
@@ -1203,6 +1203,8 @@ $TLS_btn_save_exec_order = "Reihenfolge speichern";
 $TLS_btn_save_custom_fields = "Benutzerdefinierte Felder speichern";
 $TLS_btn_save_platform ="Plattform speichern";
 $TLS_check_uncheck_all_tc = "Markieren / demarkieren aller Testfälle";
+$TLS_check_uncheck_all_tc_for = "Markieren / demarkieren aller Testfälle zum";
+$TLS_check_uncheck_tc_with_platform = "Markieren / demarkieren aller Testfälle mit Plattform";
 $TLS_for = "zum";
 $TLS_check_uncheck_tc = "Testfälle der Kategorie.";
 $TLS_check_uncheck_all_checkboxes = "Alle markieren / demarkieren";
@@ -1619,19 +1621,25 @@ $TLS_report_display_options = "Report-Anzeigeoptionen";
 
 // ----- gui/templates/resultsReqs.tpl -----
 $TLS_no_srs_defined = "Keine Anforderungs-Definition für dieses Testprojekt vorhanden.";
-$TLS_req_without_tcase = "Nicht durch Testfälle abgedeckte Anforderungen";
-
+$TLS_no_finished_reqs = "Es sind keine fertigen Anforderungen für dieses Testprojekt verfügbar";
+$TLS_count_of_reqs = "Anzahl der Anforderungen";
+$TLS_req_availability = "Verfügbare Anforderungen";
+$TLS_show_only_finished_reqs = "Zeige nur fertige Anforderungen";
+$TLS_title_result_req_testplan = "Testergebnisse basierend auf Anforderungsspezifikation";
+$TLS_title_test_plan = $TLS_testplan;
+$TLS_evaluation = "Bewertung";
+$TLS_partially_passed = "Teilweise erfüllt";
+$TLS_partially_passed_reqs = "Teilweise erfüllte Anforderungen";
+$TLS_uncovered = "nicht abgedeckt";
+$TLS_uncovered_reqs = "Nicht abgedeckte Anforderungen";
 
 // IMPORTANT for dynamic generation labels
 // $TLS_req_title_<test case status> 
-// If user add a new test case status he/she MUST add a new label
+// If user adds a new test case status he/she MUST add a new label
 $TLS_req_title_blocked = "Blockierte Anforderungen";
 $TLS_req_title_failed = "Nicht erfüllte Anforderungen";
 $TLS_req_title_not_run = "Nicht überprüfte Anforderungen";
 $TLS_req_title_passed = "Erfüllte Anforderungen";
-
-$TLS_title_result_req_testplan = "Testergebnisse basierend auf Anforderungsspezifikation";
-$TLS_title_test_plan = $TLS_testplan;
 
 
 
@@ -1653,6 +1661,7 @@ $TLS_generated_by_TestLink_on = "Erstellt von TestLink am ";
 $TLS_show_all_columns = "Alle Spalten anzeigen";
 $TLS_show_all_columns_tooltip = "Alle Spalten anzeigen (falls versteckt)";
 $TLS_expand_collapse_groups='Gruppen ein-/ausklappen';
+$TLS_default_state = "Zurücksetzen";
 $TLS_multisort = 'MultiSort:';
 
 // ----- gui/templates/resultsImport.tpl -----
@@ -1954,6 +1963,8 @@ $TLS_tcase_external_id_do_not_exists = "Testfall mit external id=%s, konnte nich
 $TLS_tcase_internal_id_do_not_exists = "Testfall mit internal id=%s, konnte nicht gefunden werden "  . $TLS_imp_result_ko;
 $TLS_tcase_id_is_not_number = "Testfall mit internal id=%s ist kein numerischer Wert " . $TLS_imp_result_ko;
 $TLS_bug_id_invalid_len = "Länge der BUG ID ist unngültig [%s > %s] " . $TLS_imp_result_ko;
+$TLS_tproject_id_not_found = "Testprojekt ID nicht gefunden [%s] " . $TLS_imp_result_ko;
+$TLS_invalid_exec_type = "Ausführungstyp [%s] ist ungültig" . $TLS_imp_result_ko;
 
 
 // ----- lib/functions/results.inc.php -----

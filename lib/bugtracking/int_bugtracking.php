@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: int_bugtracking.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2010/08/14 13:59:12 $ $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2010/08/23 18:02:39 $ $Author: franciscom $
  *
  * @author Andreas Morsing
  *
@@ -19,6 +19,7 @@
  *
  *
  * rev:
+ *	20100823 - franciscom - BUGID 3699
  *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)
  *	20100616 - eloff - Show error message if bts config is broken
  *	20100311 - Julian - BUGID 3256, BUGID 3098
@@ -361,7 +362,7 @@ $g_bugInterface = null;
 $bts_type = config_get('interface_bugs');
 if (isset($bts[$bts_type]))
 {
-	$btsname = strtolower($g_interface_bugs);
+	$btsname = strtolower($bts_type);
 	$configPHP = $btsname . '.cfg.php';
 	$interfacePHP = 'int_' . $btsname . '.php';
 

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/08/23 16:30:35 $ by $Author: erikeloff $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/08/23 20:55:56 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
+ * 20100823 - Julian - added unique table id, default sorting and grouping
  * 20100823 - eloff - Improve report with ext table and information on platforms and prio
  * 
  */
@@ -93,10 +94,20 @@ function buildTable($data, &$args, $options) {
 		lang_get('platform'),
 		array('title' => lang_get('priority'), 'type' => 'priority'),
 	);
-	$matrix = new tlExtTable($columns, $data);
+	
+	// unique table id for each project
+	$table_id = 'tl_'.$args->tproject_id.'_table_tc_without_tester';
+	$matrix = new tlExtTable($columns, $data, $table_id);
+	
+	// group by test suite , sort by test case
+	$matrix->setGroupByColumnName(lang_get('testsuite'));
+	$matrix->setSortByColumnName(lang_get('testcase'));
+	
 	if($_SESSION['testprojectOptions']->testPriorityEnabled)
 	{
 		$matrix->addCustomBehaviour('priority', array('render' => 'priorityRenderer'));
+		// if priority is enabled sort by priority
+		$matrix->setSortByColumnName(lang_get('priority'));
 	}
 	return $matrix;
 }

@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.173 2010/08/23 22:37:59 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.174 2010/08/24 11:18:53 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.657
+ * Last Update according to en_GB string file version 1.658
  *
  **/
 
@@ -2569,6 +2569,8 @@ $TLS_btn_export_all_reqspec = "Alle Anforderungsspezifikationen exportieren";
 
 // ----- lib/requirements/reqOverview.php -----
 $TLS_caption_req_overview = "Anforderungsübersicht";
+$TLS_number_of_reqs = "Anzahl Anforderungen";
+$TLS_number_of_versions = "Anzahl Anforderungsversionen";
 $TLS_no_linked_req = 'Es wurden keine Anforderungen in diesem Projekt definiert.';
 $TLS_th_coverage = 'Abdeckung';
 $TLS_all_versions_displayed = 'Alle Versionen der Anforderungen werden angezeigt.';

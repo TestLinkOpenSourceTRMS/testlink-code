@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.32 2010/08/24 06:44:00 mx-julian Exp $
+$Id: testlink.css,v 1.33 2010/08/24 11:15:42 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
@@ -838,6 +838,7 @@ th.testlink, td.testlink, tr.testlink td {
 .tbar-sort-asc{background-image: url("../images/sort_asc.gif") !important;
                background-position: 4px 7px !important;}
 .tbar-default-state {
-	background-image: url("../images/edit-undo-blue.png") !important;}
+	background-image: url("../images/edit-undo.png") !important;
+}
 
 /* ----- END ------------------------------------------------------------------------- */

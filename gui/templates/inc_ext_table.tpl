@@ -1,10 +1,11 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.27 2010/08/24 06:44:00 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.28 2010/08/24 13:34:00 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
 	 20100824 - Julian - added refresh toolbar button
+	                   - added function to remove multisort buttons
 	 20100823 - Julian - quoted tableID as it is a string and no integer value
 	                   - toolbar button to expand/collapse groups changed to not
 	                     use toggleAllGroups() function anymore as this function
@@ -33,7 +34,8 @@ Purpose: rendering of Ext Js table
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
-	show_all_columns_tooltip, default_state, multisort, button_refresh"}
+	show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
+	button_refresh"}
 {literal}
 <script type="text/javascript">
 /*
@@ -88,11 +90,16 @@ function createSorterButton(config, table) {
 	config = config || {};
 	Ext.applyIf(config, {
 		listeners: {
-			click: function(button, tableid, changeDirection) {
-				updateButtons(button, table, true);                    
+			"click": function(button, e) {
+				if(e.shiftKey == true) {
+					button.destroy();
+				} else {
+					updateButtons(button, table, true);
+				}
 			}
 		},
 		iconCls: 'tbar-sort-' + config.sortData.direction.toLowerCase(),
+		tooltipType: 'title',
 		multisort: 'yes',
 		reorderable: true
 	});
@@ -196,7 +203,7 @@ Ext.onReady(function() {
 							{rdelim}
 						{rdelim})
 					],  //END plugins
-					items: [],
+					items: [], //necessary line as otherwise plugins will throw an error
 					listeners: {ldelim}
 						scope    : this,
 						reordered: function(button, table, changeDirection) {ldelim}
@@ -315,6 +322,7 @@ Ext.onReady(function() {
 			fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
 			tbar.add(createSorterButton({ldelim}
 				text: fieldname,
+				tooltip: '{$labels.multisort_tooltip|escape:javascript}',
 				sortData: {ldelim}
 					field: 'idx{$button.field}',
 					direction: '{$button.direction}'

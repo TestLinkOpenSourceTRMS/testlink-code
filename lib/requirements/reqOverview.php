@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.27 2010/08/24 06:44:00 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.28 2010/08/24 10:57:03 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -63,9 +63,11 @@ if(count($gui->reqIDs) > 0) {
 	$type_labels = init_labels($req_cfg->type_labels);
 	$status_labels = init_labels($req_cfg->status_labels);
 	
-	$labels2get = array('no' => 'No', 'yes' => 'Yes', 'not_aplicable' => null,'match_count' => null, 
-						'req_spec_short' => null,'title' => null, 'version' => null, 'th_coverage' => null,
-						'frozen' => null, 'type'=> null,'status' => null,'th_relations' => null, 'requirements' => null);
+	$labels2get = array('no' => 'No', 'yes' => 'Yes', 'not_aplicable' => null,
+	                    'req_spec_short' => null,'title' => null, 'version' => null, 'th_coverage' => null,
+	                    'frozen' => null, 'type'=> null,'status' => null,'th_relations' => null, 'requirements' => null,
+                        'number_of_reqs' => null, 'number_of_versions' => null
+    );
 					
 	$labels = init_labels($labels2get);
 	
@@ -168,8 +170,8 @@ if(count($gui->reqIDs) > 0) {
     }
     
     if(($gui->row_qty = count($rows)) > 0 ) {
-    	    	
-        $gui->pageTitle .= " - " . $labels['match_count'] . ": " . $gui->row_qty;
+    	$version_string = ($args->all_versions) ? $labels['number_of_versions'] : $labels['number_of_reqs'];
+        $gui->pageTitle .= " - " . $version_string . ": " . $gui->row_qty;
 		
         // get column header titles for the table
         

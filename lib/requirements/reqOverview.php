@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.26 2010/08/23 14:09:35 erikeloff Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.27 2010/08/24 06:44:00 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -229,6 +229,7 @@ if(count($gui->reqIDs) > 0) {
         $matrix->show_toolbar = true;
         $matrix->toolbar_expand_collapse_groups_button = true;
         $matrix->toolbar_show_all_columns_button = true;
+        $matrix->toolbar_refresh_button = true;
         $matrix->showGroupItemsCount = true;
         // show custom field content in multiple lines
         $matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));

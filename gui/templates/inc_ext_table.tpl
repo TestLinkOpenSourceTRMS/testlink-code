@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.26 2010/08/23 21:53:39 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.27 2010/08/24 06:44:00 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100824 - Julian - added refresh toolbar button
 	 20100823 - Julian - quoted tableID as it is a string and no integer value
 	                   - toolbar button to expand/collapse groups changed to not
 	                     use toggleAllGroups() function anymore as this function
@@ -32,7 +33,7 @@ Purpose: rendering of Ext Js table
  @url http://extjs.com/deploy/dev/examples/grid/array-grid.html
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
-	show_all_columns_tooltip, default_state, multisort"}
+	show_all_columns_tooltip, default_state, multisort, button_refresh"}
 {literal}
 <script type="text/javascript">
 /*
@@ -278,7 +279,19 @@ Ext.onReady(function() {
 			iconCls: 'tbar-default-state',
 			handler: function (button, state) {ldelim}
 				Ext.state.Manager.clear(grid['{$tableID}'].getStateId());
-				window.location.reload();
+				//window.location.reload(); replaced due to IE, FF problems
+				window.location = window.location;
+			{rdelim}
+		{rdelim});
+	{/if}
+	
+	//show refresh toolbar button
+	{if $matrix->toolbar_refresh_button && $matrix->show_toolbar}
+		tbar.add({ldelim}
+			text: '{$labels.button_refresh|escape:javascript}',
+			iconCls: 'x-tbar-loading',
+			handler: function (button, state) {ldelim}
+				window.location = window.location;
 			{rdelim}
 		{rdelim});
 	{/if}

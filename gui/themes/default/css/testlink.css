@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.31 2010/08/23 21:38:10 erikeloff Exp $
+$Id: testlink.css,v 1.32 2010/08/24 06:44:00 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
@@ -793,7 +793,7 @@ th.testlink, td.testlink, tr.testlink td {
 
 
 /* *********************************************************************************** */
-/* Taken from ext js 2.0, and adapted */
+/* Taken from Ext JS, and adapted */
 
 .x-tl-panel{border-style:solid;border-color:#99bbe8;border-width:0;}
 .x-tl-panel-header{overflow:hidden;color:#15428b;font:bold 11px tahoma,arial,verdana,sans-serif;
@@ -834,14 +834,10 @@ th.testlink, td.testlink, tr.testlink td {
 .x-tl-panel-body{overflow:hidden;}
 .x-tl-panel-collapsed .x-resizable-handle{display:none;}
 .tbar-sort-desc {background-image: url("../images/sort_desc.gif") !important;
-                background-position: 4px 7px !important;
-}
+                background-position: 4px 7px !important;}
 .tbar-sort-asc{background-image: url("../images/sort_asc.gif") !important;
-               background-position: 4px 7px !important;
-}
-
+               background-position: 4px 7px !important;}
 .tbar-default-state {
-	background-image: url("../images/edit-undo.png") !important;
-}
+	background-image: url("../images/edit-undo-blue.png") !important;}
 
 /* ----- END ------------------------------------------------------------------------- */

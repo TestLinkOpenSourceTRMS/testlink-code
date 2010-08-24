@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.26 2010/08/23 21:50:46 franciscom Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.27 2010/08/24 06:43:59 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100824 - Julian - new attribute $toolbar_refresh_button
  *	20100823 - franciscom - getColumnIdxByName() - minor refactoring forcing exit with break
  *  20100823 - eloff - Add convinience methods setSortByColumnName and setGroupByColumnName
  *  				   Always store column config in full format(array-of-arrays)
@@ -119,6 +120,11 @@ class tlExtTable extends tlTable
 	 * If true show "reset to default settings" button
 	 */
 	public $toolbar_default_state_button = true;
+	
+	/**
+	 * If true show "refresh" button
+	 */
+	public $toolbar_refresh_button = true;
 
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.

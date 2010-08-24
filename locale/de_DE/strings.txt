@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.174 2010/08/24 11:18:53 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.175 2010/08/24 13:53:43 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.658
+ * Last Update according to en_GB string file version 1.659
  *
  **/
 
@@ -1663,6 +1663,9 @@ $TLS_show_all_columns_tooltip = "Alle Spalten anzeigen (falls versteckt)";
 $TLS_expand_collapse_groups='Gruppen ein-/ausklappen';
 $TLS_default_state = "Zurücksetzen";
 $TLS_multisort = 'MultiSort:';
+$TLS_multisort_tooltip = 'Klicken um die Richtung der Sortierung zu ändern. ' .
+                         'Shift-Klick um den Button zu entfernen. ' .
+                         'Multisort Buttons können umgeordnet werden.';
 
 // ----- gui/templates/resultsImport.tpl -----
 $TLS_results_import_format = "Die XML Datei muss in folgendem Format sein: ";

@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/08/25 14:50:51 $  $Author: erikeloff $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/08/25 15:39:57 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100825 - Julian - make table collapsible if more than 1 table is shown
  *  20100825 - eloff - BUGID 3711 - Hide platform if not used
  *  20100823 - asimon - refactoring: $table_id
  *  20100822 - franciscom - refactoring - getColumnsDefinition()
@@ -171,6 +172,12 @@ if( $doIt )
 		
 		// default grouping by first column, which is user for overview, build otherwise
 		$matrix->groupByColumn = 0;
+		
+		// make table collapsible if more than 1 table is shown and surround by frame
+		if (count($tplanSet) > 1) {
+			$matrix->collapsible = true;
+			$matrix->frame = true;
+		}
 		
 		// define toolbar
 		$matrix->show_toolbar = true;

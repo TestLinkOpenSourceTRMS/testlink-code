@@ -1,9 +1,11 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.22 2010/02/17 21:32:43 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.23 2010/08/25 11:32:52 mx-julian Exp $
  Purpose: smarty template - main page / site map
 
  rev :
+       20100825 - Julian - removed <p> tags from "test execution" and "test plan contents"
+                           blocks to eliminate unused space
        20090807 - franciscom - platform feature
        20090131 - franciscom - new link to access to test cases assigned to logged user
        20081228 - franciscom - new feature user can choose vertical order of link groups
@@ -176,7 +178,6 @@
 	{* ------------------------------------------------------------------------------------------ *}
 	{if $display_right_block_2}
     <div id='test_execution_topics'>
-		  <p>
 		  {if $gui->grants.testplan_execute == "yes"}
 		  	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	          <a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
@@ -193,7 +194,6 @@
  	    <br />
  		  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	         <a href="{$gui->url.testcase_assignments}">{$labels.href_my_testcase_assignments}</a>
-	    </p>
     </div>
 	{/if}
   {* ------------------------------------------------------------------------------------------ *}
@@ -201,8 +201,6 @@
   {* ------------------------------------------------------------------------------------------ *}
 	{if $display_right_block_3}
     <div id='testplan_contents_topics'>
-		<p>
-		
 		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
 	    <a href="lib/platforms/platformsAssign.php?tplan_id={$gui->testplanID}">{$labels.href_platform_assign}</a>
 		  <br />
@@ -228,8 +226,6 @@
 	   		<a href="{$gui->launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
 		    <br />
 		{/if}
-      
-		</p>
     </div>
   {/if}
   {* ------------------------------------------------------------------------------------------ *}

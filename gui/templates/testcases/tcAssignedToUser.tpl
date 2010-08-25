@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.13 2010/07/31 18:49:49 asimon83 Exp $
+$Id: tcAssignedToUser.tpl,v 1.14 2010/08/25 15:18:12 erikeloff Exp $
 Purpose: smarty template - view test case in test specification
 rev:
+20100825 - eloff - remove redundant headers
 20100731 - asimon - replaced table (changed to ExtJS format) and included some more data
 20100722 - asimon - BUGID 3406 - added columns for build ID and testsuite
 20100708 - Julian - BUGID 3591 - Column priority added
@@ -41,12 +42,10 @@ rev:
 
 		{foreach from=$gui->tableSet key=idx item=matrix}
 		
-		<h1 align="left">{$matrix->title}</h1>
-		
-		{assign var=tableID value=table_$idx}
-	   	{$matrix->renderBodySection($tableID)}
-		
-		<p>&nbsp</p>
+			<p>
+			{assign var=tableID value=table_$idx}
+			{$matrix->renderBodySection($tableID)}
+			</p>
 		
 		{/foreach}
 	

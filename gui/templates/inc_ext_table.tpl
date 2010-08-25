@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.28 2010/08/24 13:34:00 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.29 2010/08/25 15:18:12 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100825 - eloff - Fix toolbars if multiple tables are rendered
 	 20100824 - Julian - added refresh toolbar button
 	                   - added function to remove multisort buttons
 	 20100823 - Julian - quoted tableID as it is a string and no integer value
@@ -239,7 +240,6 @@ Ext.onReady(function() {
 				{$matrix->getGridSettings()}
 			{rdelim} //END view
 		); //END grid
-	{/foreach}
 	
 	//show expand/collapse toolbar button
 	{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
@@ -302,6 +302,7 @@ Ext.onReady(function() {
 			{rdelim}
 		{rdelim});
 	{/if}
+	{/foreach}
 	
 	//MULTISORT
 	{if count($matrix->multiSortButtons) > 0 && $matrix->show_toolbar}

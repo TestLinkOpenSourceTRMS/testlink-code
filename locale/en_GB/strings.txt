@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.660 2010/08/25 06:42:24 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.661 2010/08/25 08:59:21 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1793,7 +1793,7 @@ $TLS_TestProject = "Test Project";
 $TLS_User = "User";
 $TLS_btn_change = "Change";
 $TLS_caption_assign_testplan_user_roles = "Assign test plan roles to users";
-$TLS_caption_assign_testproject_user_roles = "Assign Test Project user roles";
+$TLS_caption_assign_testproject_user_roles = "Assign Test Project User Roles";
 $TLS_menu_assign_testproject_roles = "Assign Test Project roles";
 $TLS_th_roles = "Role";
 $TLS_th_roles_testplan = "Test Plan Role";
@@ -1884,17 +1884,17 @@ $TLS_warning_delete_testplan = "<p>You are going to delete: %s </p><p>Are you su
 
 
 // ----- gui/templates/mainPage_left.tpl -----
-$TLS_href_assign_user_roles = "Assign user roles";
+$TLS_href_assign_user_roles = "Assign User Roles";
 $TLS_href_browse_tc = "Browse Test Cases";
-$TLS_href_cfields_management = "Define custom fields";
-$TLS_href_cfields_tproject_assign = "Assign custom fields";
+$TLS_href_cfields_management = "Define Custom Fields";
+$TLS_href_cfields_tproject_assign = "Assign Custom Fields";
 $TLS_href_edit_tc = "Test Specification";
 $TLS_href_inventory = "Inventory";
 $TLS_href_inventory_management = 'Inventory management';
 $TLS_href_keywords_assign = "Assign Keywords";
 $TLS_href_keywords_manage = "Keyword Management";
 $TLS_href_keywords_view = "View Keywords";
-$TLS_href_print_tc = "Generate Test Specification document";
+$TLS_href_print_tc = "Generate Test Specification Document";
 $TLS_href_print_req = "Generate Requirement Specification Document";
 $TLS_href_req_assign = "Assign Requirements";
 $TLS_href_req_spec = "Requirement Specification";
@@ -1908,7 +1908,7 @@ $TLS_title_requirements = "Requirement Specification";
 $TLS_title_test_spec = "Test Specification";
 $TLS_title_product_mgmt = "Test Project";
 $TLS_href_plan_define_priority = "Test Plan priority";
-$TLS_href_my_testcase_assignments="Test Cases assigned to me";
+$TLS_href_my_testcase_assignments="Test Cases Assigned to Me";
 $TLS_href_platform_management = "Platform Management";
 
 
@@ -1933,16 +1933,16 @@ $TLS_reqid = "Requirement ID";
 $TLS_href_add_remove_test_cases = "Add / Remove Test Cases";
 $TLS_href_build_new = "Builds / Releases";
 $TLS_href_execute_test = "Execute Tests";
-$TLS_href_metrics_dashboard = "Metrics dashboard";
-$TLS_href_newest_tcversions = "Show Test Cases newest versions";
-$TLS_href_plan_assign_urgency = "Set urgent tests";
+$TLS_href_metrics_dashboard = "Metrics Dashboard";
+$TLS_href_newest_tcversions = "Show Test Cases Newest Versions";
+$TLS_href_plan_assign_urgency = "Set Urgent Tests";
 $TLS_href_plan_management = "Test Plan Management";
-$TLS_href_plan_mstones = "Milestone overview";
-$TLS_href_rep_and_metrics = "Test reports and Metrics";
-$TLS_href_tc_exec_assignment = "Assign Test Case execution";
+$TLS_href_plan_mstones = "Milestone Overview";
+$TLS_href_rep_and_metrics = "Test Reports and Metrics";
+$TLS_href_tc_exec_assignment = "Assign Test Case Execution";
 $TLS_href_update_tplan = "Update Linked Test Case Versions";
 $TLS_href_platform_assign = "Add / Remove Platforms";
-$TLS_current_test_plan = "Current testplan";
+$TLS_current_test_plan = "Current Test Plan";
 $TLS_href_upd_mod_tc = "Update modified Test Cases";
 $TLS_msg_no_rights_for_tp = "<br /> You don't have permissions for any ACTIVE Test Plan";
 $TLS_testplan_role = "Test Plan role ";
@@ -2057,7 +2057,7 @@ $TLS_no_rights = "no rights";
 
 
 // ----- lib/functions/testproject.class.php -----
-$TLS_error_creating_req_spec = "Error while creating Requirement Specification document";
+$TLS_error_creating_req_spec = "Error while creating Requirement Specification Document";
 $TLS_info_product_name_empty = "Empty name is not possible.";
 $TLS_keyword_already_exists = "This keyword already exists";
 $TLS_string_contains_bad_chars = "Name contains bad chars which cannot be used";

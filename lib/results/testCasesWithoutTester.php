@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2010/08/23 20:55:56 $ by $Author: mx-julian $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/08/25 14:09:23 $ by $Author: erikeloff $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
+ * 20100825 - eloff - BUGID 3712 - show only platform if available
  * 20100823 - Julian - added unique table id, default sorting and grouping
  * 20100823 - eloff - Improve report with ext table and information on platforms and prio
  * 
@@ -29,6 +30,7 @@ $gui->pageTitle = lang_get('caption_testCasesWithoutTester');
 $gui->warning_msg = '';
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
+$show_platforms = !is_null($tplan_mgr->getPlatforms($args->tplan_id));
 
 $msg_key = 'no_linked_tcversions';
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
@@ -67,8 +69,11 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 			$row = array(
 				$verbosePath,
 				$link,
-				$item['platform_name'],
 			);
+			if ($show_platforms)
+			{
+				$row[] = $item['platform_name'];
+			}
 
 			if($_SESSION['testprojectOptions']->testPriorityEnabled)
 			{
@@ -77,7 +82,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 			$data[] = $row;
 		}
 
-		$gui->tableSet[] = buildTable($data, $args);
+		$gui->tableSet[] = buildTable($data, $args, $show_platforms);
 	}
 }
 
@@ -87,13 +92,17 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
-function buildTable($data, &$args, $options) {
+function buildTable($data, &$args, $show_platforms) {
 	$columns = array(
 		lang_get('testsuite'),
 		lang_get('testcase'),
-		lang_get('platform'),
-		array('title' => lang_get('priority'), 'type' => 'priority'),
 	);
+
+	if ($show_platforms)
+	{
+		$columns[] = lang_get('platform');
+	}
+	$columns[] = array('title' => lang_get('priority'), 'type' => 'priority');
 	
 	// unique table id for each project
 	$table_id = 'tl_'.$args->tproject_id.'_table_tc_without_tester';

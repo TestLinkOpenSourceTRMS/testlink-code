@@ -4,14 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/08/25 12:11:31 $ by $Author: erikeloff $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/08/25 12:45:07 $ by $Author: erikeloff $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
  *	20100825 - eloff - add platform_name in table
+ *	                   add test suite column
  *	20100823 - Julian - table now uses a unique table id per test project
  *	20100816 - Julian - added default column width
  *                    - added default sorting and grouping
@@ -27,6 +28,7 @@ $cfield_mgr = new cfield_mgr($db);
 $templateCfg = templateConfiguration();
 
 $tplan_mgr = new testplan($db);
+$tcase_mgr = new testcase($db);
 $args = init_args($tplan_mgr);
 
 $gui = new stdClass();
@@ -114,6 +116,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 
 	// Create column headers
 	$columns = array(
+		array('title' => lang_get('test_suite') ),
 		array('title' => lang_get('test_case'), 'width' => 80),
 	);
 	if ($show_platforms)
@@ -144,6 +147,12 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	foreach ($result as $arrData)
 	{
 		$rowData = array();
+
+		// Get test suite path
+		$dummy = $tcase_mgr->getPathLayered(array($arrData['tcase_id']));
+		$dummy = end($dummy);
+		$rowData[] = $dummy['value'];
+
 		$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $arrData['tcase_id'] . '">' .
 			buildExternalIdString($gui->tcasePrefix, $arrData['tc_external_id']) .
 			' : ' . $arrData['tcase_name'] . '</a>';
@@ -174,7 +183,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 		$matrixData[] = $rowData;
 	}
 	// create unique table id for each project
-	$table_id = 'tl_'.$args->tproject_id.'_table_tc_with_cf';
+	$table_id = 'tl_'.$args->tplan_id.'_table_tc_with_cf';
 	$table = new tlExtTable($columns, $matrixData, $table_id);
 	$table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
 	$table->addCustomBehaviour('text', array('render' => 'columnWrap'));

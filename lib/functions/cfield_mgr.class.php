@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.80 2010/07/26 04:47:33 amkhullar Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.81 2010/08/25 12:11:30 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ * 20100825 - eloff - BUGID 3713 - add platform_name to output of get_linked_cfields_at_execution()
  * 20100726 - amitkhullar - BUGID 3555 - sort order while displaying custom fields.
  * 20100701 - asimon - BUGID 3414: removed a single space character in string_custom_field_input() 
  *                     because of an error that was caused by it 
@@ -1470,13 +1471,10 @@ function name_is_unique($id,$name)
              key: custom field id
 
 
-    rev :
-          20090717 - franciscom
-          added location argument
-          
-          20070526 - franciscom
-          changed order by clause
-
+    @internal Revisions:
+        20100825 - eloff - added platform name to output
+        20090717 - franciscom - added location argument
+        20070526 - franciscom - changed order by clause
 
   */
   function get_linked_cfields_at_execution($tproject_id,$enabled,
@@ -1517,9 +1515,10 @@ function name_is_unique($id,$name)
             $base_values ='';
             $additional_values .= ",CF.name,CF.label,CF.id,CFEV.value AS value,CFEV.tcversion_id AS node_id," .
                                   "EXEC.id AS exec_id, EXEC.tcversion_id,EXEC.tcversion_number," .
-	                                "EXEC.execution_ts,EXEC.status AS exec_status,EXEC.notes AS exec_notes, " .
-	                                "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " . 
-                                  "B.id AS builds_id,B.name AS build_name, U.login AS tester " ;
+                                  "EXEC.execution_ts,EXEC.status AS exec_status,EXEC.notes AS exec_notes, " .
+                                  "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " .
+                                  "B.id AS builds_id,B.name AS build_name, U.login AS tester, " .
+                                  "PLAT.name AS platform_name";
             
             $additional_join .= " JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
                                 " AND CFEV.testplan_id={$testplan_id} " .
@@ -1535,6 +1534,9 @@ function name_is_unique($id,$name)
             $additional_join .= " JOIN {$this->tables['users']} U ON  U.id = EXEC.tester_id " .
                                 " JOIN {$this->tables['nodes_hierarchy']} NHA ON NHA.id = EXEC.tcversion_id " .
                                 " JOIN {$this->tables['nodes_hierarchy']} NHB ON NHB.id = NHA.parent_id  " ;
+
+            // Use left join, if platforms is not used platform_name will become null
+            $additional_join .= " LEFT JOIN {$this->tables['platforms']} PLAT ON EXEC.platform_id = PLAT.id";
 
 			      // $order_clause="ORDER BY EXEC.tcversion_id,EXEC.status,EXEC.id";
             $order_clause="ORDER BY EXEC.tcversion_id,exec_status,exec_id";

@@ -4,14 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/08/23 14:09:35 $ by $Author: erikeloff $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/08/25 12:11:31 $ by $Author: erikeloff $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
- *  20100823 - Julian - table now uses a unique table id per test project
+ *	20100825 - eloff - add platform_name in table
+ *	20100823 - Julian - table now uses a unique table id per test project
  *	20100816 - Julian - added default column width
  *                    - added default sorting and grouping
  *	20100719 - eloff - Use tlExtTable
@@ -37,6 +38,7 @@ $gui->resultSet = null;
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 $gui->tplan_id = $args->tplan_id;
+$show_platforms = !is_null($tplan_mgr->getPlatforms($args->tplan_id));
 $testCaseSet = array();
 $msg_key = 'no_linked_tc_cf';
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
@@ -65,7 +67,6 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
     // This will be used on report to give name to header of columns that hold custom field value
     $gui->cfields = $cfield_mgr->get_linked_cfields_at_execution($args->tproject_id,1,'testcase',
                                                                  null,null,null,'name');
-    
     if(!is_null($gui->cfields))
     {
         foreach($gui->cfields as $key => $values)
@@ -114,10 +115,18 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	// Create column headers
 	$columns = array(
 		array('title' => lang_get('test_case'), 'width' => 80),
+	);
+	if ($show_platforms)
+	{
+		$columns[] = array('title' => lang_get('platform'), 'width' => 40);
+	}
+	array_push($columns,
 		array('title' => lang_get('build'), 'width' => 35),
 		array('title' => lang_get('th_owner'), 'width' => 60),
 		array('title' => lang_get('date'), 'width' => 60),
-		array('title' => lang_get('status'), 'type' => status, 'width' => 20));
+		array('title' => lang_get('status'), 'type' => status, 'width' => 30));
+
+
 	foreach ($gui->cfields as $cfield)
 	{
 		//if custom field is time for computing execution time do not waste space
@@ -138,6 +147,10 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 		$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $arrData['tcase_id'] . '">' .
 			buildExternalIdString($gui->tcasePrefix, $arrData['tc_external_id']) .
 			' : ' . $arrData['tcase_name'] . '</a>';
+		if ($show_platforms)
+		{
+			$rowData[] = $arrData['platform_name'];
+		}
 		$rowData[] = $arrData['build_name'];
 		$rowData[] = $arrData['tester'];
 

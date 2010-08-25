@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.659 2010/08/24 13:33:58 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.660 2010/08/25 06:42:24 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -836,8 +836,8 @@ $TLS_req_title_analyse = "Analyse Requirements Specification document ";
 $TLS_req_title_covered = "Requirements covered by Test Cases";
 $TLS_req_title_in_tl = "Requirements within TestLink";
 $TLS_req_title_nottestable = "Not testable Requirements";
-$TLS_req_title_uncovered = "Requirements uncovered by Test Cases";
-$TLS_req_title_not_in_tl = "Uncovered or not-testable requirements";
+$TLS_req_title_uncovered = "Requirements not covered by Test Cases";
+$TLS_req_title_not_in_tl = "Not covered or not-testable requirements";
 $TLS_req_total_count = "Total count of requirements";
 
 
@@ -1186,7 +1186,7 @@ $TLS_title_edit_personal_data = "Personal";
 $TLS_title_admin = "User Management";
 $TLS_title_events = "Events";
 $TLS_title_execute = "Test Execution";
-$TLS_title_results = "Test Results";
+$TLS_title_results = "Test Reports";
 $TLS_title_specification = "Test Specification";
 $TLS_session_inactivity_timeout_at = "Session idle timeout at";
 
@@ -1642,8 +1642,8 @@ $TLS_title_test_plan = $TLS_testplan;
 $TLS_evaluation = "Evaluation";
 $TLS_partially_passed = "Partially passed";
 $TLS_partially_passed_reqs = "Partially passed Requirements";
-$TLS_uncovered = "Uncovered";
-$TLS_uncovered_reqs = "Uncovered Requirements";
+$TLS_uncovered = "Not covered";
+$TLS_uncovered_reqs = "Not covered Requirements";
 
 // IMPORTANT for dynamic generation of labels
 // $TLS_req_title_<test case status>
@@ -2900,7 +2900,7 @@ $TLS_access_to_bts="Access issue tracking system";
 
 // ----- uncoveredTestCases.php -----
 $TLS_report_testcases_without_requirement = $TLS_link_report_uncovered_testcases;
-$TLS_no_uncovered_testcases = 'No uncovered Test Cases';
+$TLS_no_uncovered_testcases = 'All Test Cases are covered';
 $TLS_testproject_has_no_reqspec = 'There are no Requirement Spec. defined';
 $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 

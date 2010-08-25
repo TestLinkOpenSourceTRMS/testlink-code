@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/08/23 11:12:29 $  $Author: asimon83 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/08/25 14:50:51 $  $Author: erikeloff $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100825 - eloff - BUGID 3711 - Hide platform if not used
  *  20100823 - asimon - refactoring: $table_id
  *  20100822 - franciscom - refactoring - getColumnsDefinition()
  *  20100816 - asimon - if priority is enabled, enable default sorting by that column
@@ -37,15 +38,13 @@ $tproject_mgr = new testproject($db);
 $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 unset($tproject_mgr);
 
-$table_id = 'tl_' . $args->tproject_id . '_' . $args->tplan_id . '_table_tc_assignment';
-$table_id .= ($args->show_all_users) ? '_overview' : '_for_user';
-$table_id .= ($args->build_id) ? '_window' : '';
-
 $gui=new stdClass();
 $gui->glueChar = config_get('testcase_cfg')->glue_character;
 $gui->tproject_name = $tproject_info['name'];
 $gui->warning_msg = '';
 $gui->tableSet = null;
+
+$tplan_mgr = new testplan($db);
 
 $l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
 						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null));
@@ -103,11 +102,11 @@ if( $doIt )
     $gui->tplanNames=$db->fetchRowsIntoMap($sql,'id');
 
 	$optColumns = array('user' => $args->show_user_column, 'priority' => $args->priority_enabled);
-	list($colDefinition, $sortByColumn) = getColumnsDefinition($optColumns);
 
 	foreach ($gui->resultSet as $tplan_id => $tcase_set) {
 
-		$columns = $colDefinition;
+		$show_platforms = !is_null($tplan_mgr->getPlatforms($tplan_id));
+		list($columns, $sortByColumn) = getColumnsDefinition($optColumns, $show_platforms);
 		$rows = array();
 
 		foreach ($tcase_set as $tcase_platform) {
@@ -129,7 +128,10 @@ if( $doIt )
 				        		 ":" . htmlspecialchars($tcase['name']) . "&nbsp(" . $l18n['version'] . ": " . 
 				        		 $tcase['version'] . ")</a>";
 
-				$current_row[] = htmlspecialchars($tcase['platform_name']);
+				if ($show_platforms)
+				{
+					$current_row[] = htmlspecialchars($tcase['platform_name']);
+				}
 				
 				if ($args->priority_enabled) {
 					if ($tcase['priority'] >= $urgencyImportance->threshold['high']) {
@@ -160,6 +162,10 @@ if( $doIt )
 			}
 		}
 		
+		$table_id = 'tl_' . $args->tproject_id . '_' . $tplan_id . '_table_tc_assignment';
+		$table_id .= ($args->show_all_users) ? '_overview' : '_for_user';
+		$table_id .= ($args->build_id) ? '_window' : '';
+
 		$matrix = new tlExtTable($columns, $rows, $table_id);
 		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
 		
@@ -258,7 +264,7 @@ function init_args()
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition($optionalColumns)
+function getColumnsDefinition($optionalColumns, $show_platforms)
 {
   	static $labels;
 	if( is_null($labels) )
@@ -278,7 +284,10 @@ function getColumnsDefinition($optionalColumns)
 	$colDef[] = array('title' => $labels['build'], 'width' => 80);
 	$colDef[] = array('title' => $labels['testsuite'], 'width' => 80);
 	$colDef[] = array('title' => $labels['testcase'], 'width' => 80);
-	$colDef[] = array('title' => $labels['platform'], 'width' => 80);
+	if ($show_platforms)
+	{
+		$colDef[] = array('title' => $labels['platform'], 'width' => 80);
+	}
 	
 	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
 	if ($optionalColumns['priority']) 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/08/25 12:45:07 $ by $Author: erikeloff $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2010/08/25 12:49:44 $ by $Author: erikeloff $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -127,7 +127,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 		array('title' => lang_get('build'), 'width' => 35),
 		array('title' => lang_get('th_owner'), 'width' => 60),
 		array('title' => lang_get('date'), 'width' => 60),
-		array('title' => lang_get('status'), 'type' => status, 'width' => 30));
+		array('title' => lang_get('status'), 'type' => 'status', 'width' => 30));
 
 
 	foreach ($gui->cfields as $cfield)

@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.175 2010/08/24 13:53:43 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.176 2010/08/25 15:41:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.659
+ * Last Update according to en_GB string file version 1.662
  *
  **/
 
@@ -1169,7 +1169,7 @@ $TLS_keywords = "Stichworte";
 
 
 // ----- gui/templates/navBar.tpl -----
-$TLS_access_doc = "Dokumentation";
+$TLS_access_doc = "Dokument wählen";
 $TLS_home = "Projekt";
 $TLS_link_logout = "Abmelden";
 $TLS_product = "Testprojekt";
@@ -1883,6 +1883,7 @@ $TLS_href_user_management = "Benutzer verwalten";
 $TLS_href_admin_modules = "Systemkonfiguration";
 $TLS_title_requirements = "Anforderungsspezifikation";
 $TLS_title_test_spec = "Testspezifikation";
+$TLS_title_documentation = "Dokumentation";
 $TLS_title_product_mgmt = "Testprojekte verwalten";
 $TLS_href_plan_define_priority = "Test Plan Priorität";
 $TLS_href_my_testcase_assignments = "Mir zugewiesene Testfälle";

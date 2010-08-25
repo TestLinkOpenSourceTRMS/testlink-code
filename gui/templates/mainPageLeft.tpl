@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.29 2010/06/24 17:25:52 asimon83 Exp $     
+ $Id: mainPageLeft.tpl,v 1.30 2010/08/25 11:46:52 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :         
@@ -24,7 +24,7 @@
                           href_search_req, href_search_req_spec,href_inventory,
                           href_platform_management, href_inventory_management,
                           href_print_tc,href_keywords_assign, href_req_overview,
-                          href_print_req'}
+                          href_print_req, title_documentation'}
 
 
 
@@ -135,7 +135,7 @@
     function display_left_block_5()
     {
         var p5 = new Ext.Panel({
-                                title: 'TestLink',
+                                title: {/literal}'{$labels.title_documentation}'{literal},
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: true,

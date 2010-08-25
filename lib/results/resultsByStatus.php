@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.88 2010/08/23 19:43:33 erikeloff Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.89 2010/08/25 09:48:28 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100823 - Julian - changed default grouping and sorting
  *  20100823 - Julian - table now uses a unique table id per test project and report type
  *	20100816 - Julian - changed default width for table columns
  *	                  - added default sorting
@@ -378,14 +379,25 @@ function buildMatrix($dataSet, &$args, $options = array())
 		$table_id .= ($options['status_not_run']) ? 'not_run' : 'status';
 		$matrix = new tlExtTable($columns, $dataSet, $table_id);
 		
-		//for not run test cases report sort by test case title otherwise sort by date
-		$sort_name = ($options['status_not_run']) ? lang_get('title_test_case_title') : lang_get('th_date');
+		//if not run report: group by tester, sort by test suite
+		//blocked, failed report: group by build, sort by platform (if enabled) else sort by date
+		$sort_name = 0;
+		$group_name = 0;
+		if ($options['status_not_run']) {
+			$sort_name = lang_get('title_test_suite_name');
+			$group_name = lang_get('assigned_to');
+		} else {
+			$group_name = lang_get('th_build');
+			if ($options['show_platforms']) {
+				$sort_name = lang_get('platform');
+			} else {
+				$sort_name = lang_get('th_date');
+			}
+		}
+		
 		$matrix->setSortByColumnName($sort_name);
-		
-		//if platforms feature is enabled group by platform otherwise group by test suite
-		$group_name = ($options['show_platforms']) ? lang_get('platform') : lang_get('title_test_suite_name');
 		$matrix->setGroupByColumnName($group_name);
-		
+
 		$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
 		
 		//define table toolbar

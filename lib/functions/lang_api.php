@@ -5,11 +5,14 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: lang_api.php,v 1.28 2010/08/20 18:29:14 franciscom Exp $
+ * @version    	CVS: $Id: lang_api.php,v 1.29 2010/08/25 18:05:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *	20100823 - franciscom - forcing loading of en_GB, for displaying missing localization
+ *							on english (if available), instead of LOCALIZED
+ *
  *	20100820 - franciscom - new feature on init_labels()
  *	20070501 - franciscom - lang_get_smarty() now accept a list of
  *	                         strings to translate.
@@ -49,40 +52,81 @@ $g_lang_overrides = array();
 function lang_get( $p_string, $p_lang = null, $bDontFireEvents = false)
 {
 	if ($p_string == '' || is_null($p_string))
+	{
 		return $p_string;
+	}
 	
 	$t_lang = $p_lang;
+	if (null === $t_lang)
+	{
+		$t_lang = isset($_SESSION['locale']) ? $_SESSION['locale'] : TL_DEFAULT_LOCALE;
+	}
 	
-	if (null === $p_lang)
-		$t_lang = isset($_SESSION['locale']) ? $_SESSION['locale'] : null;
-		if (null === $t_lang)
-			$t_lang = TL_DEFAULT_LOCALE;
-		
-		lang_ensure_loaded($t_lang);
-		global $g_lang_strings;
-		$loc_str = null;
-		if (isset($g_lang_strings[$t_lang][$p_string]))
-			$loc_str = $g_lang_strings[$t_lang][$p_string];
-		else if(isset($g_lang_strings['en_GB'][$p_string]))
-			$loc_str = $g_lang_strings['en_GB'][$p_string];
-		
-		$the_str = $loc_str;
-		if (!is_null($loc_str))
+	lang_ensure_loaded($t_lang);
+	global $g_lang_strings;
+	
+	$loc_str = null;
+	$missingL18N = false;
+	$englishSolutionFound = false;
+	
+	if (isset($g_lang_strings[$t_lang][$p_string]))
+	{
+		$loc_str = $g_lang_strings[$t_lang][$p_string];
+	}
+	else
+	{
+		if( $t_lang != 'en_GB' )
 		{
-			$stringFileCharset = "ISO-8859-1";
-			if (isset($g_lang_strings[$t_lang]['STRINGFILE_CHARSET']))
-				$stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];
-			if ($stringFileCharset != TL_TPL_CHARSET)
-				$the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
+			// force load of english strings
+			lang_ensure_loaded('en_GB');
 		}
-		else
+		if(isset($g_lang_strings['en_GB'][$p_string]))
 		{
-			if (!$bDontFireEvents)
-				logWarningEvent(_TLS("audit_missing_localization",$p_string,$t_lang),"LOCALIZATION");
+			$missingL18N = true;
+			$englishSolutionFound = true;
+			$loc_str = $g_lang_strings['en_GB'][$p_string];
+		}
+	}
+	
+	
+	$the_str = $loc_str;
+	$missingL18N = is_null($loc_str) || $missingL18N;
+	
+	if (!is_null($loc_str))
+	{
+		$stringFileCharset = "ISO-8859-1";
+		if (isset($g_lang_strings[$t_lang]['STRINGFILE_CHARSET']))
+			$stringFileCharset = $g_lang_strings[$t_lang]['STRINGFILE_CHARSET'];
 			
+		if ($stringFileCharset != TL_TPL_CHARSET)
+			$the_str = iconv($stringFileCharset,TL_TPL_CHARSET,$loc_str);
+	}
+	
+	if( $missingL18N ) 
+	{
+		// if( $t_lang != 'en_GB' )
+		// {
+		// 	// force load of english strings
+		// 	lang_ensure_loaded('en_GB');
+		// }
+		
+		if(!$bDontFireEvents)
+		{
+			// 20100823 - franciscom
+			// When testing with a user with locale = italian, found
+			// 1. missing localized string was replaced with version present on english strings
+			// 2. no log written to event viewer
+			// 3. detected a call to lang_get() with language en_GB
+			//
+			$msg = sprintf("string '%s' is not localized for locale '%s'",$p_string,$t_lang);
+			logWarningEvent($msg,"LOCALIZATION");
+		}
+		if( !$englishSolutionFound )
+		{
 			$the_str = TL_LOCALIZE_TAG .$p_string;
 		}
-		return $the_str;
+	}
+	return $the_str;
 }
 
 
@@ -170,23 +214,34 @@ function lang_get_smarty($params, &$smarty)
 function lang_load( $p_lang ) {
 	global $g_lang_strings, $g_active_language;
 	global $TLS_STRINGFILE_CHARSET;
+
 	$g_active_language  = $p_lang;
+
 	if ( isset( $g_lang_strings[ $p_lang ] ) ) {
 		return;
 	}
-	$t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
 
+	$t_lang_dir_base = TL_ABS_PATH . 'locale' . DIRECTORY_SEPARATOR;
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'strings.txt';
 	if (file_exists($lang_resource_path))
+	{
 		require($lang_resource_path);
+	}
 	else
+	{
 		require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'strings.txt');
-
+    }
+    
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'description.php';
 	if (file_exists($lang_resource_path))
+	{
 		require($lang_resource_path );
+	}
 	else
+	{
 		require($t_lang_dir_base . 'en_GB' . DIRECTORY_SEPARATOR . 'description.php');
+    }
+    
 	// Allow overriding strings declared in the language file.
 	// custom_strings_inc.php can use $g_active_language
 	$lang_resource_path = $t_lang_dir_base . $p_lang . DIRECTORY_SEPARATOR . 'custom_strings.txt';
@@ -195,13 +250,14 @@ function lang_load( $p_lang ) {
 	}
 
 	$t_vars = get_defined_vars();
-	foreach ( array_keys( $t_vars ) as $t_var ) {
+	foreach( array_keys($t_vars) as $t_var ) 
+	{
 		$t_lang_var = preg_replace( '/^TLS_/', '', $t_var );
-		if ( $t_lang_var != $t_var) {
-			$g_lang_strings[ $p_lang ][ $t_lang_var ] = $$t_var;
+		if ( $t_lang_var != $t_var) 
+		{
+			$g_lang_strings[$p_lang][$t_lang_var] = $$t_var;
 		}
 	}
-	
 }
 
 
@@ -211,7 +267,7 @@ function lang_load( $p_lang ) {
 function lang_ensure_loaded( $p_lang ) {
 	global $g_lang_strings;
 
-	if ( ! isset( $g_lang_strings[ $p_lang ] ) ) {
+	if ( !isset( $g_lang_strings[ $p_lang ] ) ) {
 		lang_load( $p_lang );
 	}
 }

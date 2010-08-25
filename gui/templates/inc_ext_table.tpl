@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.29 2010/08/25 15:18:12 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.30 2010/08/25 20:49:38 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -123,12 +123,13 @@ function updateButtons(button,table,changeDirection){
 }
 
 function doSort(table){
-	sorters = getSorters();
+	sorters = getSorters(table);
 	store[table].sort(sorters, 'ASC');
 }
 
-function getSorters() {
-var sorters = [];   
+function getSorters(table) {
+var sorters = [];
+	tbar = grid[table].getTopToolbar();
 	Ext.each(tbar.find('multisort', 'yes'), function(button) {
 		sorters.push(button.sortData);
 	}, this);
@@ -180,7 +181,7 @@ Ext.onReady(function() {
 							{rdelim},
 
 							canDrop: function(dragSource, event, data) {ldelim}
-								var sorters = getSorters(),
+								var sorters = getSorters('{$tableID}'),
                 					column  = this.getColumnFromDragDrop(data);
 
 								for (var i=0; i < sorters.length; i++) {ldelim}
@@ -219,9 +220,10 @@ Ext.onReady(function() {
 			{if count($matrix->multiSortButtons) > 0}
 				scope: this,
 				render: function() {ldelim}
-					var dragProxy = grid['{$tableID}'].getView().columnDrag,
-					ddGroup   = dragProxy.ddGroup;
-					droppable.addDDGroup(ddGroup);
+					dragProxy = grid['{$tableID}'].getView().columnDrag;
+					ddGroup = dragProxy.ddGroup;
+					//TODO
+					//droppable.addDDGroup(ddGroup);
 				{rdelim}
 			{/if}
 			{rdelim}, //END listeners
@@ -241,97 +243,97 @@ Ext.onReady(function() {
 			{rdelim} //END view
 		); //END grid
 	
-	//show expand/collapse toolbar button
-	{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
-		tbar.add({ldelim}
-			text: '{$labels.expand_collapse_groups|escape:javascript}',
-			last_state: 'expanded',
-			iconCls: 'x-group-by-icon',
-			handler: function () {ldelim}
-				if (this.last_state == 'expanded') {ldelim}
-					grid['{$tableID}'].getView().collapseAllGroups();
-					this.last_state = 'collapsed';
-				{rdelim} else {ldelim}
-					grid['{$tableID}'].getView().expandAllGroups()
-					this.last_state = 'expanded';
-				{rdelim}
-			{rdelim}
-		{rdelim});
-	{/if}
-	
-	//show all columns toolbar button
-	{if $matrix->toolbar_show_all_columns_button && $matrix->show_toolbar}
-		tbar.add({ldelim}
-			text: '{$labels.show_all_columns|escape:javascript}',
-			tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
-			tooltipType: 'title',
-			iconCls: 'x-cols-icon',
-			handler: function (button, state) {ldelim}
-				var cm = grid['{$tableID}'].getColumnModel();
-				for (var i=0;i<cm.getColumnCount();i++) {ldelim}
-					//do not show grouped column if hideGroupedColumn is true
-					if (grid['{$tableID}'].getView().hideGroupedColumn == false ||
-						store['{$tableID}'].groupField != 'idx'+i) {ldelim}
-						cm.setHidden(i, false);
+		//show expand/collapse toolbar button
+		{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
+			tbar.add({ldelim}
+				text: '{$labels.expand_collapse_groups|escape:javascript}',
+				last_state: 'expanded',
+				iconCls: 'x-group-by-icon',
+				handler: function () {ldelim}
+					if (this.last_state == 'expanded') {ldelim}
+						grid['{$tableID}'].getView().collapseAllGroups();
+						this.last_state = 'collapsed';
+					{rdelim} else {ldelim}
+						grid['{$tableID}'].getView().expandAllGroups()
+						this.last_state = 'expanded';
 					{rdelim}
 				{rdelim}
-			{rdelim}
-		{rdelim});
-	{/if}
-
-	//show reset to default state toolbar button
-	{if $matrix->toolbar_default_state_button && $matrix->show_toolbar}
-		tbar.add({ldelim}
-			text: '{$labels.default_state|escape:javascript}',
-			iconCls: 'tbar-default-state',
-			handler: function (button, state) {ldelim}
-				Ext.state.Manager.clear(grid['{$tableID}'].getStateId());
-				//window.location.reload(); replaced due to IE, FF problems
-				window.location = window.location;
-			{rdelim}
-		{rdelim});
-	{/if}
+			{rdelim});
+		{/if}
+		
+		//show all columns toolbar button
+		{if $matrix->toolbar_show_all_columns_button && $matrix->show_toolbar}
+			tbar.add({ldelim}
+				text: '{$labels.show_all_columns|escape:javascript}',
+				tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
+				tooltipType: 'title',
+				iconCls: 'x-cols-icon',
+				handler: function (button, state) {ldelim}
+					var cm = grid['{$tableID}'].getColumnModel();
+					for (var i=0;i<cm.getColumnCount();i++) {ldelim}
+						//do not show grouped column if hideGroupedColumn is true
+						if (grid['{$tableID}'].getView().hideGroupedColumn == false ||
+							store['{$tableID}'].groupField != 'idx'+i) {ldelim}
+							cm.setHidden(i, false);
+						{rdelim}
+					{rdelim}
+				{rdelim}
+			{rdelim});
+		{/if}
 	
-	//show refresh toolbar button
-	{if $matrix->toolbar_refresh_button && $matrix->show_toolbar}
-		tbar.add({ldelim}
-			text: '{$labels.button_refresh|escape:javascript}',
-			iconCls: 'x-tbar-loading',
-			handler: function (button, state) {ldelim}
-				window.location = window.location;
-			{rdelim}
-		{rdelim});
-	{/if}
+		//show reset to default state toolbar button
+		{if $matrix->toolbar_default_state_button && $matrix->show_toolbar}
+			tbar.add({ldelim}
+				text: '{$labels.default_state|escape:javascript}',
+				iconCls: 'tbar-default-state',
+				handler: function (button, state) {ldelim}
+					Ext.state.Manager.clear(grid['{$tableID}'].getStateId());
+					//window.location.reload(); replaced due to IE, FF problems
+					window.location = window.location;
+				{rdelim}
+			{rdelim});
+		{/if}
+		
+		//show refresh toolbar button
+		{if $matrix->toolbar_refresh_button && $matrix->show_toolbar}
+			tbar.add({ldelim}
+				text: '{$labels.button_refresh|escape:javascript}',
+				iconCls: 'x-tbar-loading',
+				handler: function (button, state) {ldelim}
+					window.location = window.location;
+				{rdelim}
+			{rdelim});
+		{/if}
+		
+		//MULTISORT
+		{if count($matrix->multiSortButtons) > 0 && $matrix->show_toolbar}
+			
+			//add button seperator
+			tbar.add({ldelim}
+				xtype: 'tbseparator'
+			{rdelim});
+			
+			//add multisort text
+			tbar.add({ldelim}
+				xtype: 'tbtext',
+				text: '{$labels.multisort|escape:javascript}'
+			{rdelim});
+			
+			//add button for each defined multisort button
+			{foreach from=$matrix->multiSortButtons key=id item=button}
+				fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
+				tbar.add(createSorterButton({ldelim}
+					text: fieldname,
+					tooltip: '{$labels.multisort_tooltip|escape:javascript}',
+					sortData: {ldelim}
+						field: 'idx{$button.field}',
+						direction: '{$button.direction}'
+					{rdelim},
+				{rdelim}, '{$tableID}'));
+			{/foreach}
+		{/if}
+		//END MULTISORT
 	{/foreach}
-	
-	//MULTISORT
-	{if count($matrix->multiSortButtons) > 0 && $matrix->show_toolbar}
-		
-		//add button seperator
-		tbar.add({ldelim}
-			xtype: 'tbseparator'
-		{rdelim});
-		
-		//add multisort text
-		tbar.add({ldelim}
-			xtype: 'tbtext',
-			text: '{$labels.multisort|escape:javascript}'
-		{rdelim});
-		
-		//add button for each defined multisort button
-		{foreach from=$matrix->multiSortButtons key=id item=button}
-			fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
-			tbar.add(createSorterButton({ldelim}
-				text: fieldname,
-				tooltip: '{$labels.multisort_tooltip|escape:javascript}',
-				sortData: {ldelim}
-					field: 'idx{$button.field}',
-					direction: '{$button.direction}'
-				{rdelim},
-			{rdelim}, '{$tableID}'));
-		{/foreach}
-	{/if}
-	//END MULTISORT
 
 	{foreach from=$gui->tableSet key=idx item=matrix}
     {assign var=tableID value=$matrix->tableID}

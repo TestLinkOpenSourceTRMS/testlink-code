@@ -1,12 +1,13 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.30 2010/08/25 11:46:52 mx-julian Exp $     
+ $Id: mainPageLeft.tpl,v 1.31 2010/08/25 11:57:03 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
- rev :         
+ rev :
+    20100501 - Julian - blocks are not draggable anymore
     20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
- 	  20100309 - asimon - BUGID 3227, added link for req overview page
- 	  20100106 - asimon - contribution for 2976 req/reqspec search                                    
+ 	20100309 - asimon - BUGID 3227, added link for req overview page
+ 	20100106 - asimon - contribution for 2976 req/reqspec search                                    
     20090808 - franciscom - grouping rights on gui->grants
     20081228 - franciscom - new feature user can choose vertical order of link groups
     20070523 - franciscom - test case search link enabled only if session testproject
@@ -95,7 +96,7 @@
                                 title: {/literal}'{$labels.title_requirements}'{literal},
                                 collapsible:false,
                                 collapsed: false,
-                                draggable: true,
+                                draggable: false,
                                 contentEl: 'requirements_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
@@ -118,7 +119,7 @@
                                 title: {/literal}'{$labels.title_test_spec}'{literal},
                                 collapsible:false,
                                 collapsed: false,
-                                draggable: true,
+                                draggable: false,
                                 contentEl: 'testspecification_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
@@ -138,7 +139,7 @@
                                 title: {/literal}'{$labels.title_documentation}'{literal},
                                 collapsible:false,
                                 collapsed: false,
-                                draggable: true,
+                                draggable: false,
                                 contentEl: 'testlink_application',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",

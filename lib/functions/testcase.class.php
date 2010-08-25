@@ -6,12 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.293 2010/08/25 20:53:58 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.294 2010/08/25 20:56:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
- * 20100825 - franciscom - BUGID 3713 - _blind_delete() issue
+ * 20100825 - franciscom - BUGID 3702 - _blind_delete() issue
  * 20100821 - franciscom - BUGID 3695 - Test Case Steps - Export/Import - missing attribute execution type
  *						   create_step() - fixed issue when execution_type was NULL.
  *						   new method - update_tcversion_steps() needed for BUGID 3634	
@@ -1256,7 +1256,7 @@ class testcase extends tlObjectWithAttachments
 		nodes from hierarchy
 	
 		rev:
-			 20100825 - BUGID 3713 
+			 20100825 - BUGID 3702 
 		     20070602 - franciscom - delete attachments
 	*/
 	function _blind_delete($id,$version_id=self::ALL_VERSIONS,$children=null)
@@ -1286,7 +1286,7 @@ class testcase extends tlObjectWithAttachments
 	
 		// Multiple Test Case Steps Feature
 		
-		// BUGID 3713
+		// BUGID 3702
 		if( !is_null($children['step']) )
 		{
 			// remove null elements

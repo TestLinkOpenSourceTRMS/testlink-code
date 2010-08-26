@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.33 2010/08/26 08:42:18 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.34 2010/08/26 09:29:34 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100826 - eloff - BUGID 3714 - Use JsonCookieProvider
 	 20100826 - Julian - fixed multisort feature for multiple tables
 	                   - added checks if table state is stored
 	 20100825 - eloff - Fix toolbars if multiple tables are rendered
@@ -40,6 +41,7 @@ Purpose: rendering of Ext Js table
 	show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
 	button_refresh"}
 {literal}
+<script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
 /*
  statusRenderer() 
@@ -141,7 +143,7 @@ var sorters = [];
 
 Ext.onReady(function() {
 {/literal}
-	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+	Ext.state.Manager.setProvider(new Ext.ux.JsonCookieProvider());
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value=$matrix->tableID}
 
@@ -286,7 +288,7 @@ Ext.onReady(function() {
 				{rdelim}
 			{rdelim});
 		{/if}
-	
+
 		//show reset to default state toolbar button
 		{if $matrix->toolbarDefaultStateButton && $matrix->showToolbar && $matrix->storeTableState}
 			tbar.add({ldelim}

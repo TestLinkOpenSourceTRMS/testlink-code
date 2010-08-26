@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.2 2010/01/27 08:14:22 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.3 2010/08/26 09:29:33 erikeloff Exp $
  * @filesource
 http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
@@ -17,6 +17,7 @@ http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_
  * @link http://www.extjs.com/learn/Extension:NameSpace
  *
  * @internal revisions:
+ * 20100826 - eloff - BUGID 3714 - Added JsonCookieProvider to use less size
  * 20100124 - eloff - BUGID3088 - added requireSessionAndSubmit()
  * 20100109 - eloff - inital commit of this file
  *                    BUGID 2800: CollapsiblePanel
@@ -58,6 +59,25 @@ Ext.ux.CollapsiblePanel = Ext.extend(Ext.Panel, {
 	collapsible: true,
 	stateEvents: ['collapse', 'expand'],
 	titleCollapse: true
+});
+
+
+/**
+ * Extends Ext.state.CookieProvider but uses json format for storing state.
+ * Json format uses less space than the default format
+ */
+Ext.ux.JsonCookieProvider = Ext.extend(Ext.state.CookieProvider, {
+	decodeValue: function (value) {
+		try {
+			return Ext.util.JSON.decode(value);
+		}
+		catch (e) {
+			return null;
+		}
+	},
+	encodeValue: function (value) {
+		return Ext.util.JSON.encode(value);
+	}
 });
 
 /**

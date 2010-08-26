@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.32 2010/08/26 07:27:48 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.33 2010/08/26 08:42:18 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -141,9 +141,7 @@ var sorters = [];
 
 Ext.onReady(function() {
 {/literal}
-	{if $matrix->storeTableState}
 	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
-	{/if}
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value=$matrix->tableID}
 
@@ -163,6 +161,9 @@ Ext.onReady(function() {
 		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
 			id: '{$tableID}',
 			store: store['{$tableID}'],
+			{if !$matrix->storeTableState}
+				stateful: false,
+			{/if}
 			
 			//show toolbar
 			{if $matrix->showToolbar}

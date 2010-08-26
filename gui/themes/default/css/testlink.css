@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.33 2010/08/24 11:15:42 erikeloff Exp $
+$Id: testlink.css,v 1.34 2010/08/26 13:34:48 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
@@ -839,6 +839,9 @@ th.testlink, td.testlink, tr.testlink td {
                background-position: 4px 7px !important;}
 .tbar-default-state {
 	background-image: url("../images/edit-undo.png") !important;
+}
+.tbar-info{
+	background-image: url("../images/question16_16.gif") !important;
 }
 
 /* ----- END ------------------------------------------------------------------------- */

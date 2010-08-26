@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.177 2010/08/26 11:46:21 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.178 2010/08/26 13:32:42 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.663
+ * Last Update according to en_GB string file version 1.664
  *
  **/
 
@@ -1662,7 +1662,7 @@ $TLS_show_all_columns = "Alle Spalten anzeigen";
 $TLS_show_all_columns_tooltip = "Alle Spalten anzeigen (falls versteckt)";
 $TLS_expand_collapse_groups='Gruppen ein-/ausklappen';
 $TLS_default_state = "Zurücksetzen";
-$TLS_multisort = 'MultiSort:';
+$TLS_multisort = 'MultiSort';
 $TLS_multisort_tooltip = 'Um nach mehreren Spalten zu sortieren - einfach ' .
                          'den gewünschen Spaltenkopf auf den freien Platz ' .
                          'der Toolbar ziehen.';

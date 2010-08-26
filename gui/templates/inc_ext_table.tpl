@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.36 2010/08/26 11:40:16 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.37 2010/08/26 13:32:43 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -325,6 +325,8 @@ Ext.onReady(function() {
 			//add multisort text
 			tbar.add({ldelim}
 				handleMouseEvents: false,
+				iconCls: 'tbar-info',
+				iconAlign: 'right',
 				text: '{$labels.multisort|escape:javascript}',
 				tooltip: '{$labels.multisort_tooltip|escape:javascript}',
 				tooltipType: 'title'

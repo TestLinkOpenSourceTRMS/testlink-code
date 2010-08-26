@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.37 2010/08/26 13:32:43 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.38 2010/08/26 13:41:16 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -98,6 +98,7 @@ function createSorterButton(config, table) {
 			"click": function(button, e) {
 				if(e.shiftKey == true) {
 					button.destroy();
+					doSort(table);
 				} else {
 					updateButtons(button, table, true);
 				}

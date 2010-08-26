@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.31 $
- * @modified $Date: 2010/08/23 14:09:35 $ by $Author: erikeloff $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2010/08/26 07:27:47 $ by $Author: mx-julian $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -313,7 +313,7 @@ if (count($req_spec_map)) {
 	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
 	
 	//define toolbar
-	$matrix->toolbar_show_all_columns_button = true;
+	$matrix->toolbarShowAllColumnsButton = true;
 	$matrix->showGroupItemsCount = false;
 	
 	$gui->tableSet = array($matrix);

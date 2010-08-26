@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.6 2010/08/23 14:09:35 erikeloff Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.7 2010/08/26 07:27:47 mx-julian Exp $
  *
  * Lists results and progress by tester per build.
  * 
@@ -109,9 +109,9 @@ $matrix->setGroupByColumnName(lang_get('build'));
 $matrix->setSortByColumnName(lang_get('progress'));
 
 //define toolbar
-$matrix->show_toolbar = true;
-$matrix->toolbar_expand_collapse_groups_button = true;
-$matrix->toolbar_show_all_columns_button = true;
+$matrix->showToolbar = true;
+$matrix->toolbarExpandCollapseGroupsButton = true;
+$matrix->toolbarShowAllColumnsButton = true;
 
 $gui->tableSet = array($matrix);
 

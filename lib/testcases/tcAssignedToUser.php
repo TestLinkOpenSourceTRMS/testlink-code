@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/08/26 06:56:54 $  $Author: mx-julian $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/08/26 07:27:48 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
@@ -181,9 +181,9 @@ if( $doIt )
 		}
 		
 		// define toolbar
-		$matrix->show_toolbar = true;
-		$matrix->toolbar_expand_collapse_groups_button = true;
-		$matrix->toolbar_show_all_columns_button = true;
+		$matrix->showToolbar = true;
+		$matrix->toolbarExpandCollapseGroupsButton = true;
+		$matrix->toolbarShowAllColumnsButton = true;
 		$matrix->sortByColumn = $sortByColumn;
 		$gui->tableSet[$tplan_id] = $matrix;
 	}

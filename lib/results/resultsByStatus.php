@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.89 2010/08/25 09:48:28 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.90 2010/08/26 07:27:47 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -401,9 +401,9 @@ function buildMatrix($dataSet, &$args, $options = array())
 		$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
 		
 		//define table toolbar
-		$matrix->show_toolbar = true;
-		$matrix->toolbar_expand_collapse_groups_button = true;
-		$matrix->toolbar_show_all_columns_button = true;
+		$matrix->showToolbar = true;
+		$matrix->toolbarExpandCollapseGroupsButton = true;
+		$matrix->toolbarShowAllColumnsButton = true;
 	}
 	else
 	{

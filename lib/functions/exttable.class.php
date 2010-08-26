@@ -6,13 +6,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.27 2010/08/24 06:43:59 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.28 2010/08/26 07:27:48 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
- *	20100824 - Julian - new attribute $toolbar_refresh_button
+ *	20100826 - Julian - BUGID 3714 - new attribute $storeTableState
+ *	20100824 - Julian - new attribute $toolbarRefreshButton
  *	20100823 - franciscom - getColumnIdxByName() - minor refactoring forcing exit with break
  *  20100823 - eloff - Add convinience methods setSortByColumnName and setGroupByColumnName
  *  				   Always store column config in full format(array-of-arrays)
@@ -72,7 +73,7 @@ class tlExtTable extends tlTable
 	public $showGroupItemsCount = true;
 	
 	/**
-	 * defaults grid parameters used by getGridSettings()
+	 * default grid parameters used by getGridSettings()
 	 */
 	
 	public $title = null;
@@ -104,27 +105,33 @@ class tlExtTable extends tlTable
     /**
      * If true shows a toolbar in the table header.
      */
-    public $show_toolbar = true;
+    public $showToolbar = true;
 
     /**
      * If true shows "expand/collapse groups" toolbutton in toolbar.
      */
-    public $toolbar_expand_collapse_groups_button = true;
+    public $toolbarExpandCollapseGroupsButton = true;
     
     /**
      * If true shows "show all columns" toolbutton in toolbar.
      */
-    public $toolbar_show_all_columns_button = true;
+    public $toolbarShowAllColumnsButton = true;
 
 	/**
 	 * If true show "reset to default settings" button
 	 */
-	public $toolbar_default_state_button = true;
+	public $toolbarDefaultStateButton = true;
 	
 	/**
 	 * If true show "refresh" button
 	 */
-	public $toolbar_refresh_button = true;
+	public $toolbarRefreshButton = true;
+	
+	/**
+	 * If true save table state to cookie
+	 * see BUGID 3714 for information about problems
+	 */
+	public $storeTableState = false;
 
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.

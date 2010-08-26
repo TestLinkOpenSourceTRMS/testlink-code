@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.66 2010/08/23 14:09:35 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.67 2010/08/26 07:27:47 mx-julian Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -336,9 +336,9 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
 		}
 		
 		//define table toolbar
-		$matrix->show_toolbar = true;
-		$matrix->toolbar_expand_collapse_groups_button = true;
-		$matrix->toolbar_show_all_columns_button = true;
+		$matrix->showToolbar = true;
+		$matrix->toolbarExpandCollapseGroupsButton = true;
+		$matrix->toolbarShowAllColumnsButton = true;
 
 	} 
 	else 

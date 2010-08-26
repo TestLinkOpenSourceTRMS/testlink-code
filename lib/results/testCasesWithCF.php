@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/08/25 12:49:44 $ by $Author: erikeloff $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/08/26 07:27:47 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -194,9 +194,9 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	$table->sortDirection = 'DESC';
 	
 	//define toolbar
-	$table->show_toolbar = true;
-	$table->toolbar_expand_collapse_groups_button = true;
-	$table->toolbar_show_all_columns_button = true;
+	$table->showToolbar = true;
+	$table->toolbarExpandCollapseGroupsButton = true;
+	$table->toolbarShowAllColumnsButton = true;
 
 	$gui->tableSet = array($table);
 }

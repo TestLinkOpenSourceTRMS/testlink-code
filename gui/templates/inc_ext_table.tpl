@@ -1,10 +1,11 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.31 2010/08/26 06:30:11 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.32 2010/08/26 07:27:48 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
 	 20100826 - Julian - fixed multisort feature for multiple tables
+	                   - added checks if table state is stored
 	 20100825 - eloff - Fix toolbars if multiple tables are rendered
 	 20100824 - Julian - added refresh toolbar button
 	                   - added function to remove multisort buttons
@@ -140,20 +141,22 @@ var sorters = [];
 
 Ext.onReady(function() {
 {/literal}
+	{if $matrix->storeTableState}
 	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+	{/if}
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value=$matrix->tableID}
 
 		store['{$tableID}'] = new Ext.data.GroupingStore({ldelim}
 			reader: new Ext.data.ArrayReader({ldelim}{rdelim},
 				fields['{$tableID}'])
-			{if $matrix->groupByColumn >= 0}
-			,groupField: 'idx{$matrix->groupByColumn}'
-			{/if}
-			// 20100816 - asimon - enable sorting by a default column
-			{if ($matrix->sortByColumn >= 0) && (count($matrix->multiSortButtons) == 0)}
-			,sortInfo:{ldelim}field:'idx{$matrix->sortByColumn}',direction:'{$matrix->sortDirection}'{rdelim}
-			{/if}
+				{if $matrix->groupByColumn >= 0}
+					,groupField: 'idx{$matrix->groupByColumn}'
+				{/if}
+				// 20100816 - asimon - enable sorting by a default column
+				{if ($matrix->sortByColumn >= 0) && (count($matrix->multiSortButtons) == 0)}
+					,sortInfo:{ldelim}field:'idx{$matrix->sortByColumn}',direction:'{$matrix->sortDirection}'{rdelim}
+				{/if}
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);
 			
@@ -162,7 +165,7 @@ Ext.onReady(function() {
 			store: store['{$tableID}'],
 			
 			//show toolbar
-			{if $matrix->show_toolbar}
+			{if $matrix->showToolbar}
 			tbar: tbar = new Ext.Toolbar({ldelim}
 				//init plugins for multisort
 				{if count($matrix->multiSortButtons) > 0}
@@ -231,20 +234,22 @@ Ext.onReady(function() {
 			view: new Ext.grid.GroupingView({ldelim}
 				forceFit: true
 				{if $matrix->showGroupItemsCount}
-				,groupTextTpl: '{ldelim}text{rdelim} ({ldelim}[values.rs.length]{rdelim} ' +
-					'{ldelim}[values.rs.length > 1 ? "Items" : "Item"]{rdelim})'
+					,groupTextTpl: '{ldelim}text{rdelim} ({ldelim}[values.rs.length]{rdelim} ' +
+						'{ldelim}[values.rs.length > 1 ? "Items" : "Item"]{rdelim})'
 				{/if}
 				{if $matrix->hideGroupedColumn}
-				,hideGroupedColumn:true
+					,hideGroupedColumn:true
 				{/if}
-				{rdelim}),
-				columns: columnData['{$tableID}']
-				{$matrix->getGridSettings()}
-			{rdelim} //END view
-		); //END grid
+				{rdelim}), //END view
+			
+			columns: columnData['{$tableID}']
+			
+			{$matrix->getGridSettings()}
+			
+		{rdelim}); //END grid
 	
 		//show expand/collapse toolbar button
-		{if $matrix->toolbar_expand_collapse_groups_button && $matrix->show_toolbar}
+		{if $matrix->toolbarExpandCollapseGroupsButton && $matrix->showToolbar}
 			tbar.add({ldelim}
 				text: '{$labels.expand_collapse_groups|escape:javascript}',
 				last_state: 'expanded',
@@ -262,7 +267,7 @@ Ext.onReady(function() {
 		{/if}
 		
 		//show all columns toolbar button
-		{if $matrix->toolbar_show_all_columns_button && $matrix->show_toolbar}
+		{if $matrix->toolbarShowAllColumnsButton && $matrix->showToolbar}
 			tbar.add({ldelim}
 				text: '{$labels.show_all_columns|escape:javascript}',
 				tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
@@ -282,7 +287,7 @@ Ext.onReady(function() {
 		{/if}
 	
 		//show reset to default state toolbar button
-		{if $matrix->toolbar_default_state_button && $matrix->show_toolbar}
+		{if $matrix->toolbarDefaultStateButton && $matrix->showToolbar && $matrix->storeTableState}
 			tbar.add({ldelim}
 				text: '{$labels.default_state|escape:javascript}',
 				iconCls: 'tbar-default-state',
@@ -295,7 +300,7 @@ Ext.onReady(function() {
 		{/if}
 		
 		//show refresh toolbar button
-		{if $matrix->toolbar_refresh_button && $matrix->show_toolbar}
+		{if $matrix->toolbarRefreshButton && $matrix->showToolbar}
 			tbar.add({ldelim}
 				text: '{$labels.button_refresh|escape:javascript}',
 				iconCls: 'x-tbar-loading',
@@ -306,7 +311,7 @@ Ext.onReady(function() {
 		{/if}
 		
 		//MULTISORT
-		{if count($matrix->multiSortButtons) > 0 && $matrix->show_toolbar}
+		{if count($matrix->multiSortButtons) > 0 && $matrix->showToolbar}
 			
 			//add button seperator
 			tbar.add({ldelim}
@@ -333,8 +338,10 @@ Ext.onReady(function() {
 			{/foreach}
 		{/if}
 		//END MULTISORT
-
+		
+		//render grid
 		grid['{$tableID}'].render('{$tableID}_target');
+		
 		//if multisort is enabled sort the data according to predefined multisort buttons
 		{if count($matrix->multiSortButtons) > 0}
 			doSort('{$tableID}');

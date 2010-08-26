@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.3 2010/08/26 09:29:33 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.4 2010/08/26 10:44:42 erikeloff Exp $
  * @filesource
 http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
@@ -18,6 +18,7 @@ http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_
  *
  * @internal revisions:
  * 20100826 - eloff - BUGID 3714 - Added JsonCookieProvider to use less size
+ *                    Added SlimGridPanel
  * 20100124 - eloff - BUGID3088 - added requireSessionAndSubmit()
  * 20100109 - eloff - inital commit of this file
  *                    BUGID 2800: CollapsiblePanel
@@ -77,6 +78,25 @@ Ext.ux.JsonCookieProvider = Ext.extend(Ext.state.CookieProvider, {
 	},
 	encodeValue: function (value) {
 		return Ext.util.JSON.encode(value);
+	}
+});
+
+
+/**
+ * Implementation that removes unneccessary state information. This object
+ * does only include grouping, sorting and hidden columns (not column width)
+ * in saved state. This is made to keep cookie size small.
+ */
+Ext.ux.SlimGridPanel = Ext.extend(Ext.grid.GridPanel, {
+	getState : function(){
+		var o = Ext.ux.SlimGridPanel.superclass.getState.call(this);
+		for (var i = 0; i < o.columns.length; i++) {
+			// delete info on visible columns
+			if (!o.columns[i].hidden) {
+				delete o.columns[i];
+			}
+		}
+		return o;
 	}
 });
 

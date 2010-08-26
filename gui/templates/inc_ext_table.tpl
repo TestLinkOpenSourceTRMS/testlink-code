@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.34 2010/08/26 09:29:34 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.35 2010/08/26 10:44:43 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -160,7 +160,7 @@ Ext.onReady(function() {
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);
 			
-		grid['{$tableID}'] = new Ext.grid.GridPanel({ldelim}
+		grid['{$tableID}'] = new Ext.ux.SlimGridPanel({ldelim}
 			id: '{$tableID}',
 			store: store['{$tableID}'],
 			{if !$matrix->storeTableState}

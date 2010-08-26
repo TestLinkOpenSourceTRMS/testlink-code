@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.28 2010/08/26 07:27:48 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.29 2010/08/26 10:44:43 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -131,7 +131,7 @@ class tlExtTable extends tlTable
 	 * If true save table state to cookie
 	 * see BUGID 3714 for information about problems
 	 */
-	public $storeTableState = false;
+	public $storeTableState = true;
 
 	/**
 	 * Creates a helper object to render a table to a EXT-JS GridPanel.

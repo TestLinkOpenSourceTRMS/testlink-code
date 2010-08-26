@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.38 2010/08/26 13:41:16 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.39 2010/08/26 14:12:47 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -201,7 +201,7 @@ Ext.onReady(function() {
 							{rdelim},
 							
 							//after multisort buttons changed sort data again 
-							afterLayout: function (table) {ldelim}
+							afterLayout: function () {ldelim}
 								doSort('{$tableID}');
 							{rdelim},
 
@@ -217,7 +217,7 @@ Ext.onReady(function() {
 					items: [], //necessary line as otherwise plugins will throw an error
 					listeners: {ldelim}
 						scope    : this,
-						reordered: function(button, table, changeDirection) {ldelim}
+						reordered: function(button) {ldelim}
 							updateButtons(button,'{$tableID}', false);
 						{rdelim}
 					{rdelim}

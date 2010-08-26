@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.30 2010/08/25 20:49:38 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.31 2010/08/26 06:30:11 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100826 - Julian - fixed multisort feature for multiple tables
 	 20100825 - eloff - Fix toolbars if multiple tables are rendered
 	 20100824 - Julian - added refresh toolbar button
 	                   - added function to remove multisort buttons
@@ -222,8 +223,7 @@ Ext.onReady(function() {
 				render: function() {ldelim}
 					dragProxy = grid['{$tableID}'].getView().columnDrag;
 					ddGroup = dragProxy.ddGroup;
-					//TODO
-					//droppable.addDDGroup(ddGroup);
+					droppable.addDDGroup(ddGroup);
 				{rdelim}
 			{/if}
 			{rdelim}, //END listeners
@@ -333,10 +333,7 @@ Ext.onReady(function() {
 			{/foreach}
 		{/if}
 		//END MULTISORT
-	{/foreach}
 
-	{foreach from=$gui->tableSet key=idx item=matrix}
-    {assign var=tableID value=$matrix->tableID}
 		grid['{$tableID}'].render('{$tableID}_target');
 		//if multisort is enabled sort the data according to predefined multisort buttons
 		{if count($matrix->multiSortButtons) > 0}

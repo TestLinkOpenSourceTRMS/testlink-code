@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.35 2010/08/26 10:44:43 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.36 2010/08/26 11:40:16 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -39,7 +39,7 @@ Purpose: rendering of Ext Js table
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
 	show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
-	button_refresh"}
+	multisort_button_tooltip, button_refresh"}
 {literal}
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
@@ -104,6 +104,7 @@ function createSorterButton(config, table) {
 			}
 		},
 		iconCls: 'tbar-sort-' + config.sortData.direction.toLowerCase(),
+		{/literal}tooltip: '{$labels.multisort_button_tooltip|escape:javascript}',{literal}
 		tooltipType: 'title',
 		multisort: 'yes',
 		reorderable: true
@@ -154,7 +155,7 @@ Ext.onReady(function() {
 					,groupField: 'idx{$matrix->groupByColumn}'
 				{/if}
 				// 20100816 - asimon - enable sorting by a default column
-				{if ($matrix->sortByColumn >= 0) && (count($matrix->multiSortButtons) == 0)}
+				{if $matrix->sortByColumn >= 0}
 					,sortInfo:{ldelim}field:'idx{$matrix->sortByColumn}',direction:'{$matrix->sortDirection}'{rdelim}
 				{/if}
 			{rdelim});
@@ -171,7 +172,7 @@ Ext.onReady(function() {
 			{if $matrix->showToolbar}
 			tbar: tbar = new Ext.Toolbar({ldelim}
 				//init plugins for multisort
-				{if count($matrix->multiSortButtons) > 0}
+				{if $matrix->allowMultiSort}
 					plugins: [
 						reorderer = new Ext.ux.ToolbarReorderer(),
 						droppable = new Ext.ux.ToolbarDroppable({ldelim}
@@ -224,7 +225,7 @@ Ext.onReady(function() {
 			{/if} 
 			
 			listeners: {ldelim}
-			{if count($matrix->multiSortButtons) > 0}
+			{if $matrix->allowMultiSort}
 				scope: this,
 				render: function() {ldelim}
 					dragProxy = grid['{$tableID}'].getView().columnDrag;
@@ -314,7 +315,7 @@ Ext.onReady(function() {
 		{/if}
 		
 		//MULTISORT
-		{if count($matrix->multiSortButtons) > 0 && $matrix->showToolbar}
+		{if $matrix->allowMultiSort && $matrix->showToolbar}
 			
 			//add button seperator
 			tbar.add({ldelim}
@@ -323,32 +324,16 @@ Ext.onReady(function() {
 			
 			//add multisort text
 			tbar.add({ldelim}
-				xtype: 'tbtext',
-				text: '{$labels.multisort|escape:javascript}'
+				handleMouseEvents: false,
+				text: '{$labels.multisort|escape:javascript}',
+				tooltip: '{$labels.multisort_tooltip|escape:javascript}',
+				tooltipType: 'title'
 			{rdelim});
-			
-			//add button for each defined multisort button
-			{foreach from=$matrix->multiSortButtons key=id item=button}
-				fieldname = grid['{$tableID}'].getColumnModel().getColumnHeader('{$button.field}');
-				tbar.add(createSorterButton({ldelim}
-					text: fieldname,
-					tooltip: '{$labels.multisort_tooltip|escape:javascript}',
-					sortData: {ldelim}
-						field: 'idx{$button.field}',
-						direction: '{$button.direction}'
-					{rdelim},
-				{rdelim}, '{$tableID}'));
-			{/foreach}
 		{/if}
 		//END MULTISORT
 		
 		//render grid
 		grid['{$tableID}'].render('{$tableID}_target');
-		
-		//if multisort is enabled sort the data according to predefined multisort buttons
-		{if count($matrix->multiSortButtons) > 0}
-			doSort('{$tableID}');
-		{/if}
 	{/foreach}
 
 }); // END Ext.onReady

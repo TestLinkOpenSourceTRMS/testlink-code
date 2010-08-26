@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/08/25 15:39:57 $  $Author: mx-julian $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/08/26 06:56:54 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100826 - Julian - removed redundant version indication
  *  20100825 - Julian - make table collapsible if more than 1 table is shown
  *  20100825 - eloff - BUGID 3711 - Hide platform if not used
  *  20100823 - asimon - refactoring: $table_id
@@ -126,8 +127,9 @@ if( $doIt )
 				$current_row[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}\" " . 
 				        		 " title=\"{$l18n['goto_testspec']}\">" .
 				        		 htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] . 
-				        		 ":" . htmlspecialchars($tcase['name']) . "&nbsp(" . $l18n['version'] . ": " . 
-				        		 $tcase['version'] . ")</a>";
+				        		 ":" . htmlspecialchars($tcase['name']) . 
+				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']) 
+				        		  . "</a>";
 
 				if ($show_platforms)
 				{
@@ -152,8 +154,7 @@ if( $doIt )
 					$status = $map_status_code['not_run'];
 				}
 				$current_row[] = '<span class="' . $map_statuscode_css[$status]['css_class'] . '">' . 
-				                 $map_statuscode_css[$status]['translation'] . ' ' . 
-				                 sprintf($l18n['tcversion_indicator'], $tcase['version']) . '</span>';
+				                 $map_statuscode_css[$status]['translation'] . '</span>';
 
 				$current_row[] = htmlspecialchars($tcase['creation_ts']) . 
 				                 " (" . get_date_diff($tcase['creation_ts']) . ")";
@@ -289,11 +290,11 @@ function getColumnsDefinition($optionalColumns, $show_platforms)
 	}
 	
 	$colDef[] = array('title' => $labels['build'], 'width' => 80);
-	$colDef[] = array('title' => $labels['testsuite'], 'width' => 80);
-	$colDef[] = array('title' => $labels['testcase'], 'width' => 80);
+	$colDef[] = array('title' => $labels['testsuite'], 'width' => 130);
+	$colDef[] = array('title' => $labels['testcase'], 'width' => 130);
 	if ($show_platforms)
 	{
-		$colDef[] = array('title' => $labels['platform'], 'width' => 80);
+		$colDef[] = array('title' => $labels['platform'], 'width' => 50);
 	}
 	
 	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
@@ -301,11 +302,11 @@ function getColumnsDefinition($optionalColumns, $show_platforms)
 	{
 	  	// if priority is enabled, enable default sorting by that column
 	  	$sortByColNum = count($colDef);
-		$colDef[] = array('title' => $labels['priority'], 'width' => 80);
+		$colDef[] = array('title' => $labels['priority'], 'width' => 50);
 	}
 	
-	$colDef[] = array('title' => $labels['status'] . " [{$labels['version']}]", 'width' => 80);
-	$colDef[] = array('title' => $labels['due_since'], 'width' => 150);
+	$colDef[] = array('title' => $labels['status'], 'width' => 50);
+	$colDef[] = array('title' => $labels['due_since'], 'width' => 100);
 
 	return array($colDef, $sortByColNum);
 }

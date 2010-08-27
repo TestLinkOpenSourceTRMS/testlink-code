@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.203 2010/08/21 18:06:27 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.204 2010/08/27 19:36:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20100827 - franciscom - new method wrapper - hasLinkedPlatforms()
  *  20100727 - asimon - BUGID 3629: modified statement in get_linked_tcversions()
  *  20100725 - asimon - BUGID 3497 and hopefully also 3530 fixed in unlink_tcversions()
  *  20100723 - asimon - commented out some old debug message in copy_linked_tcversions()
@@ -2868,10 +2869,6 @@ class testplan extends tlObjectWithAttachments
     {
         $my['options'] = array('outputFormat' => 'array', 'addIfNull' => false);
 	    $my['options'] = array_merge($my['options'], (array)$options);
-
-    	// $method2call = ($my['options']['outputFormat']=='map') ? 'getLinkedToTestplanAsMap' : 'getLinkedToTestplan';
-    	// 
-    	// $platforms = $this->platform_mgr->$method2call($id);
         switch($my['options']['outputFormat'])
         {
         	case 'map':
@@ -2890,6 +2887,18 @@ class testplan extends tlObjectWithAttachments
 		}
     	return $platforms; 
     }
+
+	/**
+	 * Logic to determine if platforms should be visible for a given testplan.
+	 * @return bool true if the testplan has one or more linked platforms;
+	 *              otherwise false.
+	 */
+    function hasLinkedPlatforms($id)
+    {
+    	return $this->platform_mgr->platformsActiveForTestplan($id);
+    }	
+
+
 
     /**
      * changes platform id on a test plan linked test case versions for

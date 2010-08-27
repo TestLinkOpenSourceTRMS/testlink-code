@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.9 2010/08/12 14:42:30 asimon83 Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.10 2010/08/27 07:49:03 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -15,7 +15,8 @@
  * It holds logic to be used at GUI level to manage a common set of settings and filters for requirements.
  * 
  * @internal Revisions:
- * 
+ *
+ * 20100827 - asimon - BUGID 3718 - enable drag&drop per default, disable only if filtering is done
  * 20100812 - asimon - fixed cf input field size
  * 20100812 - asimon - don't show textarea inputs on filter panel
  * 20100811 - asimon - BUGID 3566: show/hide CF
@@ -207,7 +208,8 @@ class tlRequirementFilterControl extends tlFilterControl {
 		
 		// enable drag and drop
 		$drag_and_drop = new stdClass();
-		$drag_and_drop->enabled = false;
+        // BUGID 3718 - enable drag&drop per default, later disable if filtering is done
+		$drag_and_drop->enabled = true;
 		$drag_and_drop->BackEndUrl = $gui->basehref . 'lib/ajax/dragdroprequirementnodes.php';
 		$drag_and_drop->useBeforeMoveNode = TRUE;
 				
@@ -227,6 +229,9 @@ class tlRequirementFilterControl extends tlFilterControl {
 			
 			$root_node = $tree_menu->rootnode;
 			$children = $tree_menu->menustring ? $tree_menu->menustring : "[]";
+
+            // BUGID 3718: disable drag&drop if tree has been filtered
+            $drag_and_drop->enabled = false;
 		} else {
 			$loader = $gui->basehref . 'lib/ajax/getrequirementnodes.php?' .
 			                         "root_node={$this->args->testproject_id}";

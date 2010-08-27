@@ -5,15 +5,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.4 2010/08/26 10:44:42 erikeloff Exp $
- * @filesource
-http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
+ * @version CVS: $Id: ext_extensions.js,v 1.5 2010/08/27 18:12:57 franciscom Exp $
+ * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
  *
  *
- * This files includes extensions and customizations to to Ext-js classes.
- * In Ext-js User eXtensions are placed in the Ext.ux namespace
+ * Extensions and customizations to Ext-js classes.
+ * In Ext-js , User eXtensions are placed in the Ext.ux namespace
  * @link http://www.extjs.com/learn/Extension:NameSpace
  *
  * @internal revisions:
@@ -25,9 +24,9 @@ http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_
  **/
 
 /**
- * CollapsiblePanel is a class that extends an ordinary Ext.Panel. This extension
- * is a panel with collapse/expand enabled and it stores the current state via
- * Ext:s state manager.
+ * CollapsiblePanel is a class that extends an ordinary Ext.Panel. 
+ * This extension is a panel with collapse/expand enabled and it stores 
+ * the current state via Ext:s state manager.
  * @link http://www.extjs.com/deploy/dev/docs/?class=Ext.state.Manager
  *
  * Inspired by:
@@ -83,20 +82,21 @@ Ext.ux.JsonCookieProvider = Ext.extend(Ext.state.CookieProvider, {
 
 
 /**
- * Implementation that removes unneccessary state information. This object
- * does only include grouping, sorting and hidden columns (not column width)
- * in saved state. This is made to keep cookie size small.
+ * Implementation that removes unneccessary state information. 
+ * This object does only include grouping, sorting and 
+ * hidden columns (not column width) in saved state. 
+ * This is made to keep cookie size small.
  */
 Ext.ux.SlimGridPanel = Ext.extend(Ext.grid.GridPanel, {
 	getState : function(){
-		var o = Ext.ux.SlimGridPanel.superclass.getState.call(this);
-		for (var i = 0; i < o.columns.length; i++) {
+		var obj = Ext.ux.SlimGridPanel.superclass.getState.call(this);
+		for (var idx = 0; idx < obj.columns.length; idx++) {
 			// delete info on visible columns
-			if (!o.columns[i].hidden) {
-				delete o.columns[i];
+			if (!obj.columns[idx].hidden) {
+				delete obj.columns[idx];
 			}
 		}
-		return o;
+		return obj;
 	}
 });
 
@@ -104,8 +104,8 @@ Ext.ux.SlimGridPanel = Ext.extend(Ext.grid.GridPanel, {
  * This function makes sure the user is still logged in (has a valid session)
  * before submitting a form.
  *
- * This is needed to avoid data loss if session has timed out in background.
- * If operates by making an ajax call to login.php?action=ajaxcheck and gets a
+ * Needed to avoid data loss if session has timed out in background.
+ * It operates by making an ajax call to login.php?action=ajaxcheck and gets a
  * response whether the session is still valid or not. If the session is valid
  * submit the form. Otherwise show a login form in a popup to let the user
  * renew the session before submitting.

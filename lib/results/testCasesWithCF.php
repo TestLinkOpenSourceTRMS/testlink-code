@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/08/26 07:27:47 $ by $Author: mx-julian $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2010/08/27 07:59:39 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
+ *  20100827 - Julian - only show test case if at least one custom field has a value
  *	20100825 - eloff - add platform_name in table
  *	                   add test suite column
  *	20100823 - Julian - table now uses a unique table id per test project
@@ -116,8 +117,9 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 
 	// Create column headers
 	$columns = array(
-		array('title' => lang_get('test_suite') ),
+		array('title' => lang_get('test_suite'), 'width' => 80 ),
 		array('title' => lang_get('test_case'), 'width' => 80),
+		array('title' => lang_get('version'), 'width' => 20),
 	);
 	if ($show_platforms)
 	{
@@ -156,6 +158,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 		$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $arrData['tcase_id'] . '">' .
 			buildExternalIdString($gui->tcasePrefix, $arrData['tc_external_id']) .
 			' : ' . $arrData['tcase_name'] . '</a>';
+		$rowData[] = $arrData['tcversion_number'];
 		if ($show_platforms)
 		{
 			$rowData[] = $arrData['platform_name'];
@@ -174,13 +177,18 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 			'</a>';
 		// let the renderer localize status
 		$rowData[] = $arrData['exec_status'];
-
+		
+		$hasValue = false;
 		foreach ($arrData['cfields'] as $cf_value)
 		{
 			$rowData[] = $cf_value;
+			if ($cf_value) {
+				$hasValue = true;
+			}
 		}
-
-		$matrixData[] = $rowData;
+		if ($hasValue) {
+			$matrixData[] = $rowData;
+		}
 	}
 	// create unique table id for each project
 	$table_id = 'tl_'.$args->tplan_id.'_table_tc_with_cf';

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/06/24 17:25:52 $ $Author: asimon83 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/08/27 09:48:54 $ $Author: mx-julian $
  *
  * @author franciscom
  *
@@ -67,7 +67,7 @@ function getMetrics(&$db,$args)
         {    
 			$metrics[$tplan_id][$platform_name['id']]['tplan_name'] = $value['name'];
 			$metrics[$tplan_id][$platform_name['id']]['platform_name'] = $platform_name['id'] == 0 ?
-			                                                             '' : $platform_name['name'];
+			                                      lang_get('not_aplicable') : $platform_name['name'];
 			$metrics[$tplan_id][$platform_name['id']]['executed'] = 0;
 			$metrics[$tplan_id][$platform_name['id']]['active'] = 0;
 			$metrics[$tplan_id][$platform_name['id']]['total'] = 0;

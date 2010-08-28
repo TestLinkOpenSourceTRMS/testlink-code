@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.155 2010/08/10 16:14:38 asimon83 Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.156 2010/08/28 14:42:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ * 	20100828 - franciscom - BUGID 3156 tinymce problems - OK Internet Explorer 8, Firefox
  *  20100810 - asimon - BUGID 3579: solved tree refreshing problems
  *  20100628 - asimon - removal of constants from filter control class
  *  20100625 - asimon - refactoring of filter feature
@@ -477,12 +478,12 @@ function createWebEditors($basehref,$editorCfg,$editorSet=null)
     $specGUICfg=config_get('spec_cfg');
     $layout=$specGUICfg->steps_results_layout;
 
-    $cols=array('steps' => array('horizontal' => 38, 'vertical' => 44),
-                'expected_results' => array('horizontal' => 38, 'vertical' => 44));
-        
-    $owe = new stdClass();
-    
     // Rows and Cols configuration
+    $owe = new stdClass();
+
+    $cols = array('steps' => array('horizontal' => 38, 'vertical' => 44),
+                  'expected_results' => array('horizontal' => 38, 'vertical' => 44));
+
     $owe->cfg = array('summary' => array('rows'=> null,'cols' => null),
                       'preconditions' => array('rows'=> null,'cols' => null) ,
                       'steps' => array('rows'=> null,'cols' => $cols['steps'][$layout]) ,
@@ -584,6 +585,11 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 {
     $smartyObj = new TLSmarty();
+    
+    // BUGID 3156
+    // need by webeditor loading logic present on inc_head.tpl
+    $smartyObj->assign('editorType',$guiObj->editorType);  
+
     $renderType = 'none';
     //
     // key: operation requested (normally received from GUI on doAction)

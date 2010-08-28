@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.34 2010/08/26 13:34:48 mx-julian Exp $
+$Id: testlink.css,v 1.35 2010/08/28 09:41:09 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
@@ -387,6 +387,11 @@ table.common td,th{
 
 table.common td, table.simple td, th{
 	vertical-align: top;
+}
+
+/* Margin fix for paragraphs in steps table */
+table.common td p:first-child, table.simple td p:first-child {
+	margin-top: 0;
 }
 
 table.common caption, table.smallGrey caption {

@@ -1,7 +1,12 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_head.tpl,v 1.35 2010/06/24 17:25:52 asimon83 Exp $
+$Id: inc_head.tpl,v 1.36 2010/08/28 14:47:54 franciscom Exp $
 Purpose: smarty template - HTML Common Header
+
+
+Critic Smarty Global Variables expected
+
+editorType: used to understand if code for tinymce need to be loaded 
 
 rev :
      20100212 - eloff - BUGID 3103 - remove js-timeout alert in favor of BUGID 3088
@@ -44,7 +49,6 @@ rev :
     {include file="inc_jsCfieldsValidation.tpl"}
 	{/if}
    
-	
 	{if $editorType == 'tinymce'}
     <script type="text/javascript" language="javascript"
     	src="{$basehref}third_party/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>

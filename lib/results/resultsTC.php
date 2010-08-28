@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.67 2010/08/26 07:27:47 mx-julian Exp $ 
+* $Id: resultsTC.php,v 1.68 2010/08/28 09:24:58 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100828 - eloff - adapt to rendering of status column
 * 20100823 - Julian - table now uses a unique table id per test project and test plan
 * 20100816 - Julian - changed default column width
                     - added default sorting
@@ -176,8 +177,8 @@ if ($lastResultMap != null)
 				$suiteExecutions = $executionsMap[$suiteId];
 			    
 			    // Remember the status of the last build that was executed
-			    // $lastBuildRun = array($resultsCfg['status_code']['not_run'], $not_run_label);
-				$lastBuildRun = array($not_run_label);
+				// Use array format for status as specified in tlTable::$data
+				$lastBuildRun = null;
 
 				// iterate over all builds and lookup results for current test case			
 				// Keeps a list of status for every build
@@ -185,7 +186,7 @@ if ($lastResultMap != null)
 				for ($idx = 0 ; $idx < $buildQty; $idx++) 
 				{
 					$buildId = $buildIDSet[$idx];
-					$resultsForBuild = $not_run_label;
+					$resultsForBuild = null;
 					$lastStatus = $resultsCfg['status_code']['not_run'];
 					
 					// BUGID 3419
@@ -202,36 +203,36 @@ if ($lastResultMap != null)
 						    ($execution_array['build_id'] == $buildId) &&
 						    ($execution_array['platform_id'] == $platformId))
 						{
-							$cssClass = $gui->map_status_css[$execution_array['status']]; 
-							$resultsForBuild = $map_tc_status_code_langet[$execution_array['status']];	
-							$resultsForBuild .= sprintf($versionTag,$execution_array['version']);
-							$resultsForBuild = '<span class="' . $cssClass . '">' . $resultsForBuild . '</span>';
+							$status = $execution_array['status'];
+							$resultsForBuildText = $map_tc_status_code_langet[$status];
+							$resultsForBuildText .= sprintf($versionTag,$execution_array['version']);
+							$resultsForBuild = array(
+								"value" => $status,
+								"text" => $resultsForBuildText,
+								"class" => $gui->map_status_css[$status]);
 
 							$lastStatus = $execution_array['status'];
 						}
 					}
-					if( $resultsForBuild == $not_run_label )
+					// If no execution was found => not run
+					if( $resultsForBuild === null )
 					{
 						$cssClass = $gui->map_status_css[$resultsCfg['status_code']['not_run']]; 
-						$resultsForBuild .= sprintf($versionTag,$linkedTCVersion);
-						$resultsForBuild = '<span class="' . $cssClass . '">' . $resultsForBuild . '</span>';
+						$resultsForBuildText = $not_run_label;
+						$resultsForBuildText .= sprintf($versionTag,$linkedTCVersion);
+						$resultsForBuild = array(
+							"value" => $resultsCfg['status_code']['not_run'],
+							"text" => $resultsForBuildText,
+							"class" => $cssClass);
 					}
 					
-					// CRITIC - $buildExecStatus
-					// methods on classes: 
-					//                    exttable.class.php
-					//                    tlHTMLTable.class.php
-					// Depends on structure of elements present on $buildExecStatus.
-					// Right now element[0] is used a value to be displayed.
-					// If you plan to change this, give a careful look to these classes
-					//
-					$buildExecStatus[$idx] = array($resultsForBuild,$cssClass);
-					if ($lastStatus != $resultsCfg['status_code']['not_run'])
+					$buildExecStatus[$idx] = $resultsForBuild;
+					// keep track of last executed status
+					if ($lastBuildRun == null || $lastStatus != $resultsCfg['status_code']['not_run'])
 					{
-						$lastBuildRun = array($resultsForBuild,$cssClass);
+						$lastBuildRun = $resultsForBuild;
 					}
-					//next($gui->buildInfoSet);
-				} // end for loop
+				} // end build for loop
 
 			    if ($gui->matrixCfg->buildColumns['showStatusLastExecuted'])
 			    {

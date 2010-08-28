@@ -6,13 +6,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: table.class.php,v 1.7 2010/08/23 19:58:46 franciscom Exp $
+ * @version CVS: $Id: table.class.php,v 1.8 2010/08/28 09:24:58 erikeloff Exp $
  *
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100828 - eloff - Changed format on status column
  *  20100823 - eloff - Always store column config in full format(array-of-arrays)
  *  20100719 - eloff - Pass $tableID via constructor
  **/
@@ -40,6 +41,9 @@ abstract class tlTable
 	/**
 	 * @var array that holds the row data to be displayed. Every row is
 	 *      an array with the column data as describled in $columns.
+	 *      If the data type is status the value should be an array like
+	 *      array('value' => 'f', 'text' => 'Failed', 'class' => 'failed_text')
+	 *      to allow coloring and sorting in table.
 	 */
 	protected $data;
 
@@ -74,6 +78,7 @@ abstract class tlTable
 	 *                    'width => 150);
 	 *        Internally the columns will always be saved in the second format.
 	 *        @see tlTable::$columns
+	 *        @see tlTable::$data
 	 */
 	public function __construct($columns, $data, $tableID)
 	{

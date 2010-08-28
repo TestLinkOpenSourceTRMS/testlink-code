@@ -6,12 +6,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.30 2010/08/26 11:40:16 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.31 2010/08/28 09:24:58 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100828 - eloff - Refactored rendering of status
+ *	                   Add status behaviour as default
  *	20100826 - Julian - BUGID 3714 - new attribute $storeTableState
  *	20100824 - Julian - new attribute $toolbarRefreshButton
  *	20100823 - franciscom - getColumnIdxByName() - minor refactoring forcing exit with break
@@ -145,6 +147,7 @@ class tlExtTable extends tlTable
 	public function __construct($columns, $data, $tableID)
 	{
 		parent::__construct($columns, $data, $tableID);
+		$this->addCustomBehaviour('status', array('render' => 'statusRenderer', 'sort' => 'statusCompare'));
 	}
 
 	/**
@@ -172,42 +175,7 @@ class tlExtTable extends tlTable
 	 */
 	function buildContent()
 	{
-		$s = '[';
-		foreach ($this->data as $row => $rowData) {
-			$row_string = '[';
-			foreach ($rowData as $key => $val) 
-			{
-				// Escape data
-				if (is_string($val)) 
-				{
-					$row_string .= json_encode($val) . ',';
-				} 
-				else if (is_array($val)) 
-				{
-					// BUGID 3419
-					if( is_string($val[0]) )
-					{
-						$row_string .= "'" . $val[0] . "',";
-					}
-					else
-					{
-						// 20100503 - franciscom
-						// Do not understand why need to use " as part of value
-						$row_string .= "\"{$val[0]}\",";
-					}
-				} 
-				else 
-				{
-					$row_string .= "{$val},";
-				}
-			}
-			$row_string = trim($row_string,",");
-			$row_string .= '],'."\n";
-			$s .= $row_string;
-		}
-		$s = trim($s,",\n");
-		$s .= '];';
-		return $s;
+		return json_encode($this->data);
 	}
 
 	/**

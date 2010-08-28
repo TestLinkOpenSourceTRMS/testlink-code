@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: tlHTMLTable.class.php,v 1.4 2010/07/19 18:54:13 erikeloff Exp $
+ * @version CVS: $Id: tlHTMLTable.class.php,v 1.5 2010/08/28 09:24:58 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlHTMLTable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100828 - eloff - Changed format on status column
  *  20100719 - eloff - Pass $tableID via constructor
  *  20100503 - franciscom - BUGID 3418 - changed in renderStatus(), due to changes on data structure
  *  20091223 - eloff - created class
@@ -89,12 +90,9 @@ class tlHTMLTable extends tlTable
 	}
 
 	// BUGID 3418
-	public function renderStatus($value)
+	public function renderStatus($item)
 	{
-		// $status = $this->code_status[$value[0]];
-		// $color = $this->status_color[$status];
-		// return "<span style=\"color: #{$color}\">{$value[1]}</span>";
-		return $value[0];
+		return "<span class=\"{$item['class']}\">{$item['text']}</span>";
 	}
 
 	public function renderPriority($prio)

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2010/08/27 20:06:49 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2010/08/28 09:24:58 $ by $Author: erikeloff $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
+ *	20100828 - eloff - adapt to rendering of status column
  *	20100827 - franciscom - refactoring - removed unused variables
  *  20100827 - Julian - only show test case if at least one custom field has a value
  *	20100825 - eloff - add platform_name in table
@@ -69,8 +70,12 @@ if( $args->doIt )
 					 "&version_id={$item['tcversion_id']}&tplan_id={$gui->tplan_id}\">" .
 					 localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $item['execution_ts']) . '</a>';
 			
-		// let the renderer localize status
-		$rowData[] = $item['exec_status'];
+		// Use array for status to get correct rendering and sorting
+		$rowData[] = array(
+			'value' => $item['exec_status'],
+			'text' => $gui->status_code_labels[$item['exec_status']],
+			'class' => $gui->code_status[$item['exec_status']] . '_text',
+		);
 		
 		$hasValue = false;
 		foreach ($item['cfields'] as $cf_value)
@@ -163,14 +168,15 @@ function initializeGui(&$dbHandler,&$argsObj)
 
     // Get the mapping for the Verbose Status Description of Test Case Status
     $resultsCfg = config_get('results');
-    $gui->code_status = $resultsCfg['code_status'];
-    foreach($gui->code_status as $code => $verbose)
+    $guiObj->code_status = $resultsCfg['code_status'];
+    foreach($guiObj->code_status as $code => $verbose)
     {
         if(isset($resultsCfg['status_label'][$verbose]))
         {
-            $gui->status_code_labels[$code] = lang_get($resultsCfg['status_label'][$verbose]);
+            $guiObj->status_code_labels[$code] = lang_get($resultsCfg['status_label'][$verbose]);
         }
     }
+	new dBug($guiObj->code_status);
 
 
 	return $guiObj; 

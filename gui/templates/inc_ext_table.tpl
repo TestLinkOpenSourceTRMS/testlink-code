@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.39 2010/08/26 14:12:47 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.40 2010/08/28 09:24:58 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20100828 - eloff - Refactored the rendering of status
 	 20100826 - eloff - BUGID 3714 - Use JsonCookieProvider
 	 20100826 - Julian - fixed multisort feature for multiple tables
 	                   - added checks if table state is stored
@@ -47,18 +48,10 @@ Purpose: rendering of Ext Js table
  statusRenderer() 
  translate this code to a localized string and applies formatting
 */
-function statusRenderer(val)
+function statusRenderer(item)
 {
-  // This must be refactore using same styles that other features
-  // and MUST NOT BE HARDCODED HERE
-  //
-	var style = "";
-	if (val == "p")			style = "color: green; font-weight: bold";
-	else if (val == "f")	style = "color: red; font-weight: bold";
-	else if (val == "n")	style = "color: gray";
-	else					style = "color: blue";
-
-	return "<span style=\""+style+"\">" + status_code_label[val] + "</span>";
+	item.class = item.class || "";
+	return "<span class=\""+item.class+"\">" + item.text + "</span>";
 }
 
 /*
@@ -69,16 +62,16 @@ function statusRenderer(val)
  WARNING: Global coupling
           uses variable status_code_order
 */
-function statusCompare(val)
+function statusCompare(item)
 {
 	var order=0;
-	order = status_code_order[val];
+	order = status_code_order[item.value];
 	if( order == undefined )
 	{
 	  alert('Configuration Issue - test case execution status code: ' + val + ' is not configured ');
 	  order = -1;
 	}
-	return order;	
+	return order;
 }
 
 function priorityRenderer(val)

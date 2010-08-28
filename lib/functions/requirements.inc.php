@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.109 2010/08/18 14:37:08 mx-julian Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.110 2010/08/28 13:36:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100828 - franciscom - deprecated functions removed
  * 20100508 - franciscom - BUGID 3447: CVS Import - add new column type 
  * 20100301 - asimon - modified req_link_replace()
  * 20091202 - franciscom - added contribution req_link_replace()
@@ -29,81 +30,6 @@
 
 /** inlude basic functions for printing Test Specification document */
 require_once("print.inc.php"); //TODO is this needed here anymore after removal of render functions?
-
-
-// printing code commented out and moved to other printing functions
-// can be deleted later
-///**
-// * render Requirement Specification
-// * @author Martin Havlat
-// * 
-// * @param resource &$db reference to database handler
-// * @param integer $srs_id requirements specification identifier
-// * @param string $tproject_id
-// * @param string $user_id
-// * @param string $base_href
-// * 
-// * @return string complete HTML source
-// *
-// * @uses print.inc.php 
-// * @todo havlatm: refactore and move to other printing functions
-// *  
-// **/
-//function renderSRS(&$db,$srs_id, $tproject_id, $user_id, $base_href)
-//{
-//	$tproject_mgr = new testproject($db);
-//	$tprojectInfo = $tproject_mgr->get_by_id($tproject_id);
-//	
-//	$doc_info = new stdClass(); 
-//	$doc_info->tproject_name = htmlspecialchars($tprojectInfo["name"]);
-//	$doc_info->tproject_scope = $tprojectInfo['notes'];
-//	$doc_info->title = '';
-//	$doc_info->type_name = '';
-//	
-//	$arrSpec = $tproject_mgr->getReqSpec($tproject_id,$srs_id);
-//	$doc_info->author =  gendocGetUserName($db, $arrSpec[0]['author_id']);
-//	
-//	$output =  renderHTMLHeader($arrSpec[0]['title'],$base_href);
-//	$output .= renderFirstPage($doc_info);
-//	
-//	$output .= "<h2>" . lang_get('scope') . "</h2>\n<div>" . $arrSpec[0]['scope'] . "</div>\n";
-//	$output .= renderRequirements($db,$srs_id);
-//	$output .= "\n</body>\n</html>";
-//	
-//	return $output;
-//}
-
-///**
-// * render Requirement for SRS
-// *
-// * @param resource &$db reference to database handler
-// * @param integer $srs_id
-// *
-// * @author Martin Havlat
-// **/
-//function renderRequirements(&$db,$srs_id)
-//{
-//	$req_spec_mgr = new requirement_spec_mgr($db);
-//	$arrReq = $req_spec_mgr->get_requirements($srs_id);
-//
-//	$output = "<h2>" . lang_get('reqs') . "</h2>\n<div>\n";
-//	if (count($arrReq))
-//	{
-//		foreach ($arrReq as $REQ)
-//		{
-//			$output .= '<h3>' . htmlspecialchars($REQ["req_doc_id"]). " - " .
-//					   htmlspecialchars($REQ['title']) . "</h3>\n<div>" .
-//					   $REQ['scope'] . "</div>\n";
-//		}
-//	}
-//	else
-//	{
-//		$output .= '<p>' . lang_get('none') . '</p>';
-//	}
-//	$output .= "\n</div>";
-//
-//	return $output;
-//}
 
 
 /**
@@ -269,7 +195,6 @@ function compareImportedReqs(&$dbHandler,$arrImportSource,$tprojectID,$reqSpecID
 	return $arrImport;
 }
 
-// 20061014 - franciscom
 function getReqDocIDs(&$db,$srs_id)
 {
   	$req_spec_mgr = new requirement_spec_mgr($db);

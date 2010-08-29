@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.23 2010/08/29 09:23:58 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.24 2010/08/29 17:52:26 franciscom Exp $
 
 
 Important Development note:
@@ -25,6 +25,9 @@ This is done to simplify logic.
 rev :
      20100829 - franciscom - BUGID 3707 - Things that works with Firefox, 
                                           BUT NOT with Chrome and Internet Explorer
+                                          added body on load event, to initialize when
+                                          accessing in edit mode.
+
      20100121 - franciscom - BUGID - layout change
      20090524 - franciscom - Refactoring to have a better picture on User Interface of
                              Custom Field application area usage
@@ -307,13 +310,11 @@ function initShowOnExec(id_master,show_on_cfg)
   }
 }
 </script>
-
-
 {/literal}
-
 </head>
 
-<body {$body_onload}>
+{* <body {$body_onload}> *}
+<body onload="configure_cf_attr('combo_cf_node_type_id',js_enable_on_cfg,js_show_on_cfg);">
 
 <h1 class="title">
   	{$labels.title_cfields_mgmt} 

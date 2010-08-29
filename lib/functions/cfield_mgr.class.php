@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.81 2010/08/25 12:11:30 erikeloff Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.82 2010/08/29 09:26:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ * 20100829 - franciscom - BUGID 3707,3708 usability issue + browser different behaviour
  * 20100825 - eloff - BUGID 3713 - add platform_name to output of get_linked_cfields_at_execution()
  * 20100726 - amitkhullar - BUGID 3555 - sort order while displaying custom fields.
  * 20100701 - asimon - BUGID 3414: removed a single space character in string_custom_field_input() 
@@ -213,17 +214,19 @@ class cfield_mgr extends tlObject
     //
     // 0 => combo will not displayed
     //
-    var $enable_on_cfg = array('execution' => array('testsuite' => 0,
+    // BUGID 3707,3708
+    // May be need a review, because after the changes, seems a little bit silly.
+    var $enable_on_cfg = array(	'execution' => array('testsuite' => 0,
                                                     'testplan'  => 0,
                                                     'testcase'  => 1,
                                                     'requirement_spec' => 0,
                                                     'requirement' => 0),
-                             'design' => array('testsuite' => 1,
-                                                 'testplan'  => 1,
-                                                 'testcase'  => 1,
-                                                 'requirement_spec' => 0,
-                                                 'requirement' => 0),
-                             'testplan_design' => array('testsuite' => 0,
+								'design' => array('testsuite' => 0,	 //	
+                                                  'testplan'  => 0,  //
+                                                  'testcase'  => 1,
+                                                  'requirement_spec' => 0,
+                                                  'requirement' => 0),
+                             	'testplan_design' => array('testsuite' => 0,
                                                           'testplan'  => 0,
                                                           'testcase'  => 1,
                                                           'requirement_spec' => 0,
@@ -1537,8 +1540,6 @@ function name_is_unique($id,$name)
 
             // Use left join, if platforms is not used platform_name will become null
             $additional_join .= " LEFT JOIN {$this->tables['platforms']} PLAT ON EXEC.platform_id = PLAT.id";
-
-			      // $order_clause="ORDER BY EXEC.tcversion_id,EXEC.status,EXEC.id";
             $order_clause="ORDER BY EXEC.tcversion_id,exec_status,exec_id";
             
             $fetchMethod='fetchArrayRowsIntoMap';

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.22 2010/01/21 22:05:10 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.23 2010/08/29 09:23:58 franciscom Exp $
 
 
 Important Development note:
@@ -23,6 +23,8 @@ This is done to simplify logic.
 
 
 rev :
+     20100829 - franciscom - BUGID 3707 - Things that works with Firefox, 
+                                          BUT NOT with Chrome and Internet Explorer
      20100121 - franciscom - BUGID - layout change
      20090524 - franciscom - Refactoring to have a better picture on User Interface of
                              Custom Field application area usage
@@ -188,7 +190,12 @@ function configure_cf_attr(id_nodetype,enable_on_cfg,show_on_cfg)
   {
     key=keys2loop[idx];
     oid='option_' + key;
-    option_item=document.getElementById(oid);
+    option_item = document.getElementById(oid);
+
+    // Dev Note:
+    // Only Firefox (@20100829) is able to hide/show an option present on a HTML select.
+    // IE and Chrome NOT 
+    // Need to understand then if is better to remove all this code
     if( enable_on_cfg[key][o_nodetype.value] == 0 )
     {
       option_item.style.display='none';

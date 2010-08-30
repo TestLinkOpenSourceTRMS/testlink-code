@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/08/28 09:24:58 $ by $Author: erikeloff $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2010/08/30 16:15:21 $ by $Author: franciscom $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
+ *	20100830 - franciscom - fixed warnings on eventviewer
  *	20100828 - eloff - adapt to rendering of status column
  *	20100827 - franciscom - refactoring - removed unused variables
  *  20100827 - Julian - only show test case if at least one custom field has a value
@@ -176,13 +177,14 @@ function initializeGui(&$dbHandler,&$argsObj)
             $guiObj->status_code_labels[$code] = lang_get($resultsCfg['status_label'][$verbose]);
         }
     }
-	new dBug($guiObj->code_status);
-
-
 	return $guiObj; 
 }
 
 
+/**
+ * 
+ * 
+ */
 function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
 {
 	
@@ -192,13 +194,16 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     // This will be used on report to give name to header of columns that hold custom field value
     $guiObj->cfields = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',
                                                                  null,null,null,'name');
-    if(!is_null($guiObj->cfields))
+    
+    // this way on caller can be used on array operations, without warnings
+    $guiObj->cfields = (array)$guiObj->cfields;  
+    if( count($guiObj->cfields) > 0 )
     {
-        foreach($guiObj->cfields as $key => $values)
-        {
-           $cf_place_holder['cfields'][$key]='';
-        }
-    }
+    	foreach($guiObj->cfields as $key => $values)
+    	{
+    	   $cf_place_holder['cfields'][$key]='';
+    	}
+	}
 
     $cf_map = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',
                                                           null,null,$tplan_id,'exec_id');
@@ -207,6 +212,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     // Every row is an execution with exec data plus a column that contains following map:
     // 'cfields' => CFNAME1 => value
     //              CFNAME2 => value
+    $guiObj->resultSet = array();
     if(!is_null($cf_map))
     {
         foreach($cf_map as $exec_id => $exec_info)
@@ -232,7 +238,6 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
     {
         $guiObj->pageTitle .= " - " . lang_get('match_count') . ":" . $guiObj->row_qty;
     }
-
 }
 
 

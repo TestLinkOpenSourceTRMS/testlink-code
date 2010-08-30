@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.31 2010/08/28 09:24:58 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.32 2010/08/30 14:54:36 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -175,6 +175,12 @@ class tlExtTable extends tlTable
 	 */
 	function buildContent()
 	{
+		foreach ($this->data as &$row) {
+			// Use only column values from each row (makes every index numeric)
+			// This makes sure a js array is created, if named keys are used
+			// json_encode will create a js object instead.
+			$row = array_values($row);
+		}
 		return json_encode($this->data);
 	}
 

@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.90 2010/08/26 07:27:47 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.91 2010/08/30 14:54:36 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -206,21 +206,16 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 		$levelSet=array_keys($topLevelSuites[$key]['items']);
 		foreach($levelSet as $level)
 		{
-			//$loop2do=count($topLevelSuites[$key]['items'][$level]);
-			$loop2do=count($elem[$level]);
-			for($jdx=0 ; $jdx < $loop2do ; $jdx++)
+			foreach ($elem[$level] as $item)
 			{
-				// $gui->dataSet[$idx]=$topLevelSuites[$key]['items'][$level][$jdx];
-				$gui->dataSet[$idx]=$elem[$level][$jdx];
-				unset($gui->dataSet[$idx]['level']);
-				unset($gui->dataSet[$idx]['platformID']);
+				unset($item['level']);
+				unset($item['platformID']);
 				if (!$show_platforms)
 				{
-					unset($gui->dataSet[$idx]['platformName']);
+					unset($item['platformName']);
 				}
 		        
-		        $accessKey = $elem[$level][$jdx]['platformID'];
-		        $gui->dataSetByPlatform[$accessKey][]=$gui->dataSet[$idx];
+				$gui->dataSet[] = $item;
 		        $idx++;
 			}  		
 		}
@@ -228,7 +223,6 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 }    	
 
 new dBug($gui->dataSet);
-new dBug($gui->dataSetByPlatform);
 
 $gui->tableSet[] = buildMatrix($gui->dataSet, $args, array(
 		'status_not_run' => ($args->type == $statusCode['not_run']),
@@ -287,7 +281,6 @@ function initializeGui($statusCode,&$argsObj)
     // Count for the Failed Issues whose bugs have to be raised/not linked. 
     $guiObj->without_bugs_counter = 0; 
     $guiObj->dataSet = null;
-    $guiObj->dataSetByPlatform = null;
     $guiObj->title = null;
     $guiObj->type = $argsObj->type;
 

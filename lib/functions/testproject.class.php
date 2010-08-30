@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.170 2010/08/21 18:02:47 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.171 2010/08/30 16:06:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -853,8 +853,9 @@ function count_testcases($id)
 	 */
 	function getTestCasePrefix($id)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$ret=null;
-		$sql = "SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
+		$sql = "/* $debugMsg */ SELECT prefix FROM {$this->object_table} WHERE id = {$id}";
 		$ret = $this->db->fetchOneValue($sql);
 		return ($ret);
 	}

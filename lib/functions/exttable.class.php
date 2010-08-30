@@ -6,13 +6,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.33 2010/08/30 16:41:37 franciscom Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.34 2010/08/30 16:45:46 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
  *	20100830 - franciscom - buildColumns() refactored
+ *							buildContent() minor refactored to avoid warnings on event viewer
  *	20100828 - eloff - Refactored rendering of status
  *	                   Add status behaviour as default
  *	20100826 - Julian - BUGID 3714 - new attribute $storeTableState
@@ -176,11 +177,14 @@ class tlExtTable extends tlTable
 	 */
 	function buildContent()
 	{
-		foreach ($this->data as &$row) {
-			// Use only column values from each row (makes every index numeric)
-			// This makes sure a js array is created, if named keys are used
-			// json_encode will create a js object instead.
-			$row = array_values($row);
+		if( !is_null($this->data) ) // to avoid warnings on foreach
+		{
+			foreach ($this->data as &$row) {
+				// Use only column values from each row (makes every index numeric)
+				// This makes sure a js array is created, if named keys are used
+				// json_encode will create a js object instead.
+				$row = array_values($row);
+			}
 		}
 		return json_encode($this->data);
 	}
@@ -385,7 +389,7 @@ class tlExtTable extends tlTable
 	}
 
 	/**
-	 * Get the index of a column by name of the column.
+	 * Get the index of a column by (localized) name of the column.
 	 * 
 	 * @author Andreas Simon
 	 * @param string $name

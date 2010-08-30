@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.664 2010/08/26 13:32:42 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.665 2010/08/30 14:41:25 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2912,6 +2912,10 @@ $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 // ----- testCasesWithoutTester -----
 $TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
 $TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
+$TLS_testCasesWithoutTester_info = "This report shows all test cases, which have not been executed for any build " .
+                                   "of the test plan and have not been assigned to any build for execution. " .
+                                   "If platforms are assigned to this test plan, the condition has to be fulfilled " .
+                                   "for each platform seperately.";
 
 // ----- freeTestCases -----
 $TLS_report_free_testcases_on_testproject=$TLS_link_report_free_testcases_on_testproject;

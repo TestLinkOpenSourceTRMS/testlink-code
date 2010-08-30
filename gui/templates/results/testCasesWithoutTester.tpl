@@ -1,15 +1,18 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithoutTester.tpl,v 1.2 2010/08/23 16:30:35 erikeloff Exp $
+$Id: testCasesWithoutTester.tpl,v 1.3 2010/08/30 14:41:25 mx-julian Exp $
 
 Purpose: For a test plan, list test cases that has no tester assigned
 
-rev: 20081227 - franciscom - BUGID 
+rev: 
+	20100830 - Julian - added information for users about report
+	20081227 - franciscom - BUGID
 *}
 
 {lang_get var="labels" 
           s='no_uncovered_testcases,testproject_has_no_reqspec,
-             testproject_has_no_requirements,generated_by_TestLink_on'}
+             testproject_has_no_requirements,generated_by_TestLink_on,
+             testCasesWithoutTester_info'}
 {include file="inc_head.tpl" openHead="yes"}
 </head>
 <body>
@@ -28,8 +31,13 @@ rev: 20081227 - franciscom - BUGID
 		{/if}
 		{$gui->tableSet[0]->renderHeadSection()}
 		{$gui->tableSet[0]->renderBodySection()}
-
+		
+		<br />
+		<p class="italic">{$labels.testCasesWithoutTester_info}</p>
+		<br />
+		
 		{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
+		
 	{else}
 		<h2>{$labels.no_testcases_without_tester}</h2>
 	{/if}

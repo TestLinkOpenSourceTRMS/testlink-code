@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/08/25 14:09:23 $ by $Author: erikeloff $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/08/30 14:41:25 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
+ * 20100830 - Julian - BUGID 3723 - filter shown test cases by not run status
  * 20100825 - eloff - BUGID 3712 - show only platform if available
  * 20100823 - Julian - added unique table id, default sorting and grouping
  * 20100823 - eloff - Improve report with ext table and information on platforms and prio
@@ -36,7 +37,8 @@ $msg_key = 'no_linked_tcversions';
 if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 {
 	$msg_key = 'all_testcases_have_tester';
-	$filters = array('assigned_to' => TL_USER_NOBODY);
+	//BUGID 3723 - filter test cases by exec_status => 'n'
+	$filters = array('assigned_to' => TL_USER_NOBODY, 'exec_status' => 'n');
 	$options = array('output' => 'array');
 	$testCaseSet = $tplan_mgr->get_linked_tcversions($args->tplan_id,
 		$filters, $options);

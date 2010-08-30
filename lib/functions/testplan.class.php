@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.204 2010/08/27 19:36:35 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.205 2010/08/30 12:55:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -661,7 +661,8 @@ class testplan extends tlObjectWithAttachments
 		// BUGID 3406: user assignments per build 
 		$ua_build = isset($my['options']['user_assignments_per_build']) ? 
 		            $my['options']['user_assignments_per_build'] : 0;
-		// 3629
+		
+		// BUGID 3629
 		$ua_build_sql = $ua_build && is_numeric($ua_build) ? " AND UA.build_id={$ua_build} " : " ";
 		
         // @TODO - 20091004 - franciscom
@@ -817,8 +818,6 @@ class testplan extends tlObjectWithAttachments
 		switch($my['options']['details'])
 		{
 			case 'full':
-			// Multiple Test Case Steps Feature
-			// $more_tcase_fields .= 'TCV.summary,TCV.steps,TCV.expected_results,';
 			$more_tcase_fields .= 'TCV.summary,';
 			$join_for_parent .= " JOIN {$this->tables['nodes_hierarchy']} NHC ON NHB.parent_id = NHC.id ";
 			$more_parent_fields .= 'NHC.name as tsuite_name,';
@@ -930,8 +929,6 @@ class testplan extends tlObjectWithAttachments
 			$tsuiteSet = is_array($my['filters']['tsuites_id']) ? $my['filters']['tsuites_id'] : array($my['filters']['tsuites_id']);
 			$sql .= " AND NHB.parent_id IN (" . implode(',',$tsuiteSet) . ")";
 		}
-		
-		// BUGID 989 - added NHB.node_order (test case order)
 		$sql .= " ORDER BY testsuite_id,NHB.node_order,tc_id,platform_id,E.id ASC";
 
  		switch($my['options']['output'])
@@ -979,7 +976,6 @@ class testplan extends tlObjectWithAttachments
         	
 				case 'mapOfArray':
 				case 'mapOfMap':
-				    // $itemSet = array_keys($recordset);
 	  				foreach($itemSet as $itemKey)
 	  				{
 	  					$keySet = array_keys($recordset[$itemKey]);

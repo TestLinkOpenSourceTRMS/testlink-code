@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.205 2010/08/30 12:55:58 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.206 2010/08/30 13:32:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20100830 - franciscom - get_linked_tcversions() - missing cast to array	$my['filters']['exec_status']
  *	20100827 - franciscom - new method wrapper - hasLinkedPlatforms()
  *  20100727 - asimon - BUGID 3629: modified statement in get_linked_tcversions()
  *  20100725 - asimon - BUGID 3497 and hopefully also 3530 fixed in unlink_tcversions()
@@ -28,7 +29,6 @@
  *  20100525 - Julian - changed default for steps_info option on get_linked_tcversions() to false
  *  					-> performance improvement because not all steps are loaded per default
  *	20100520 - franciscom - getTestCaseSiblings() join bug
- *	20100520 - franciscom - new option on get_linked_tcversions()
  *	20100518 - franciscom - BUGID 3473
  *	20100516 - franciscom - BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
  *	20100506 - franciscom - new method - get_linked_items_id(), that has perfomance advantages
@@ -61,7 +61,6 @@
  *  20091004 - franciscom - get_linked_tcversions() - fixed query when requesting exec status filtering.
  *                                                  - added more columns to output record set
  *  20090923 - franciscom - link_tcversions() - will return data
- *  20090921 - franciscom - get_linked_tcversions() new options
  *  20090920 - franciscom - getStatusTotals(), will replace some result.class method
  *  20090919 - franciscom - copy_as(), copy_linked_tcversions() added contribution (refactored)
  *                          to copy user assignment.
@@ -545,8 +544,7 @@ class testplan extends tlObjectWithAttachments
          	               array() with user id to be used on filter
          	
          	[exec_status]: default NULL => do not filter by execution status
-         	               character or array   => filter by execution status=character
-         	                                       
+         	               character or array => filter by execution status=character
          	
          	[build_id]: default 0 => do not filter by build id
          	            numeric   => filter by build id
@@ -651,6 +649,9 @@ class testplan extends tlObjectWithAttachments
  		// Cast to array to handle $options = null
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
 		$my['options'] = array_merge($my['options'], (array)$options);
+		
+		// 20100830 - franciscom - bug found by Julian
+		$my['filters']['exec_status'] = (array)$my['filters']['exec_status'];
 
 		// new dBug($my['filters']);
 		// new dBug($my['options']);
@@ -752,8 +753,8 @@ class testplan extends tlObjectWithAttachments
 		if(!is_null($my['filters']['exec_status']) )
 		{
 			$executions['filter'] = '';
-			$notrun['filter']=null;
-			$otherexec['filter']=null;
+			$notrun['filter'] = null;
+			$otherexec['filter'] = null;
 			
 			$notRunPresent = array_search($status_not_run,$my['filters']['exec_status']); 
 			if($notRunPresent !== false)
@@ -800,10 +801,13 @@ class testplan extends tlObjectWithAttachments
 			$builds['filter'] = " AND E.build_id={$my['filters']['build_id']} ";
 		}
 		
+		// there are several situation where you need to use LEFT OUTER
 		if(!$my['options']['only_executed'])
 		{
 			$executions['join'] = " LEFT OUTER ";
 		}
+		
+		
 		// platform feature
 		$executions['join'] .= " JOIN {$this->tables['executions']} E ON " .
 			                   " (NHA.id = E.tcversion_id AND " .
@@ -836,8 +840,6 @@ class testplan extends tlObjectWithAttachments
 		
 	    // BUGID 3406 - assignments per build
 	    // BUGID 3492 - Added execution notes to sql statement of get_linked_tcversions
-		// 20100417 - added TCV.importance
-		// 20090719 - added SQL comment on query text to make debug simpler.
 		$sql = "/* $debugMsg */ " .
 		       " SELECT NHB.parent_id AS testsuite_id, {$more_tcase_fields} {$more_parent_fields}" .
 			   " NHA.parent_id AS tc_id, NHB.node_order AS z, NHB.name," .

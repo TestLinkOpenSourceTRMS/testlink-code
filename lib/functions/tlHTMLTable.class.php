@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: tlHTMLTable.class.php,v 1.5 2010/08/28 09:24:58 erikeloff Exp $
+ * @version CVS: $Id: tlHTMLTable.class.php,v 1.6 2010/08/30 21:11:29 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlHTMLTable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -92,7 +92,7 @@ class tlHTMLTable extends tlTable
 	// BUGID 3418
 	public function renderStatus($item)
 	{
-		return "<span class=\"{$item['class']}\">{$item['text']}</span>";
+		return "<span class=\"{$item['cssClass']}\">{$item['text']}</span>";
 	}
 
 	public function renderPriority($prio)

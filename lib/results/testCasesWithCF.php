@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2010/08/30 16:15:21 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2010/08/30 21:11:29 $ by $Author: erikeloff $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -75,7 +75,7 @@ if( $args->doIt )
 		$rowData[] = array(
 			'value' => $item['exec_status'],
 			'text' => $gui->status_code_labels[$item['exec_status']],
-			'class' => $gui->code_status[$item['exec_status']] . '_text',
+			'cssClass' => $gui->code_status[$item['exec_status']] . '_text',
 		);
 		
 		$hasValue = false;

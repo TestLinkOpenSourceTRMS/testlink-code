@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: table.class.php,v 1.8 2010/08/28 09:24:58 erikeloff Exp $
+ * @version CVS: $Id: table.class.php,v 1.9 2010/08/30 21:11:29 erikeloff Exp $
  *
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
@@ -42,7 +42,7 @@ abstract class tlTable
 	 * @var array that holds the row data to be displayed. Every row is
 	 *      an array with the column data as describled in $columns.
 	 *      If the data type is status the value should be an array like
-	 *      array('value' => 'f', 'text' => 'Failed', 'class' => 'failed_text')
+	 *      array('value' => 'f', 'text' => 'Failed', 'cssClass' => 'failed_text')
 	 *      to allow coloring and sorting in table.
 	 */
 	protected $data;

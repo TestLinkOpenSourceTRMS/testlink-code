@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.40 2010/08/28 09:24:58 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.41 2010/08/30 21:11:29 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -50,8 +50,8 @@ Purpose: rendering of Ext Js table
 */
 function statusRenderer(item)
 {
-	item.class = item.class || "";
-	return "<span class=\""+item.class+"\">" + item.text + "</span>";
+	item.cssClass = item.cssClass || "";
+	return "<span class=\""+item.cssClass+"\">" + item.text + "</span>";
 }
 
 /*

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.68 2010/08/28 09:24:58 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.69 2010/08/30 21:11:29 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -209,7 +209,7 @@ if ($lastResultMap != null)
 							$resultsForBuild = array(
 								"value" => $status,
 								"text" => $resultsForBuildText,
-								"class" => $gui->map_status_css[$status]);
+								"cssClass" => $gui->map_status_css[$status]);
 
 							$lastStatus = $execution_array['status'];
 						}
@@ -223,7 +223,7 @@ if ($lastResultMap != null)
 						$resultsForBuild = array(
 							"value" => $resultsCfg['status_code']['not_run'],
 							"text" => $resultsForBuildText,
-							"class" => $cssClass);
+							"cssClass" => $cssClass);
 					}
 					
 					$buildExecStatus[$idx] = $resultsForBuild;

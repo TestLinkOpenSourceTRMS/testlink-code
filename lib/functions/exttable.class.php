@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.32 2010/08/30 14:54:36 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.33 2010/08/30 16:41:37 franciscom Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100830 - franciscom - buildColumns() refactored
  *	20100828 - eloff - Refactored rendering of status
  *	                   Add status behaviour as default
  *	20100826 - Julian - BUGID 3714 - new attribute $storeTableState
@@ -196,37 +197,35 @@ class tlExtTable extends tlTable
 	{
 		$s = '[';
 		$n_columns = sizeof($this->columns);
-		for ($i=0;$i<$n_columns; $i++) {
-			$sortable = 'true';
+		$options = array('width','hidden','groupable','hideable');
+
+		for ($i=0; $i<$n_columns; $i++) {
 			$column = $this->columns[$i];
 			$s .= "{header: \"{$column['title']}\", dataIndex: 'idx$i'";
-			if (isset($column['width'])) {
-				$s .= ",width: {$column['width']}";
+			
+            foreach($options as $opt_str)
+            {
+				if (isset($column[$opt_str])) {
+					$s .= ",$$opt_str: {$column[$opt_str]}";
+				}
 			}
-			// asimon 20100817 - new parameters for req based report and other tables
-			if (isset($column['hidden'])) {
-				$s .= ",hidden: {$column['hidden']}";
-			}
-			if (isset($column['groupable'])) {
-				$s .= ",groupable: {$column['groupable']}";
-			}
-			if (isset($column['hideable'])) {
-				$s .= ",hideable: {$column['hideable']}";
-			}
+
 			if( isset($column['type']) && isset($this->customBehaviour[$column['type']]) &&
 				isset($this->customBehaviour[$column['type']]['render']) )
 			{
 				// Attach a custom renderer
 				$s .= ",renderer: {$this->customBehaviour[$column['type']]['render']}";
 			}
+
+			$sortable = 'true';
 			if(isset($column['sortable'])){
 				$sortable = $column['sortable'];
 			}
 			$s .= ",sortable: {$sortable}";
+
 			$s .= "},\n";
 		}
-		$s = trim($s,",\n");
-		$s .= '];';
+		$s = trim($s,",\n") . '];';
 		return $s;
 	}
 

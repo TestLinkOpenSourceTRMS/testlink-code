@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/08/30 16:08:00 $ by $Author: franciscom $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/08/30 20:09:59 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
+ * 20100830 - Julian - Added test case summary column
  * 20100830 - franciscom - refactoring
  * 20100830 - Julian - BUGID 3723 - filter shown test cases by not run status
  * 20100825 - eloff - BUGID 3712 - show only platform if available
@@ -41,7 +42,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	// BUGID 3723 - filter test cases by exec_status => not run
 	$cfg = config_get('results');
 	$filters = array('assigned_to' => TL_USER_NOBODY, 'exec_status' => $cfg['status_code']['not_run']);
-	$options = array('output' => 'array');
+	$options = array('output' => 'array', 'details' => 'summary');
 	$testCaseSet = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters, $options);
 	if(($gui->row_qty = count($testCaseSet)) > 0)
 	{
@@ -78,6 +79,9 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 			{
 				$row[] = $tplan_mgr->urgencyImportanceToPriorityLevel($item['priority']);
 			}
+			
+			$row[] = strip_tags($item['summary']);
+			
 			$data[] = $row;
 		}
 
@@ -98,7 +102,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  */
 function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled) 
 {
-	$key2search = array('testsuite','testcase','platform','priority');
+	$key2search = array('testsuite','testcase','platform','priority','summary');
 	foreach($key2search as $key)
 	{
 		$labels[$key] = lang_get($key);
@@ -109,6 +113,8 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 		$columns[] = $labels['platform'];
 	}
 	$columns[] = array('title' => $labels['priority'], 'type' => 'priority');
+	
+	$columns[] = array('title' => $labels['summary']);
 	
 	// unique table id for each project
 	$table_id = 'tl_'. $tproject_id . '_table_tc_without_tester';

@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.206 2010/08/30 13:32:14 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.207 2010/08/30 16:06:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *	20100830 - franciscom - get_linked_tcversions() - missing cast to array	$my['filters']['exec_status']
+ *							urgencyImportanceToPriorityLevel() - refactored
  *	20100827 - franciscom - new method wrapper - hasLinkedPlatforms()
  *  20100727 - asimon - BUGID 3629: modified statement in get_linked_tcversions()
  *  20100725 - asimon - BUGID 3497 and hopefully also 3530 fixed in unlink_tcversions()
@@ -3522,20 +3523,18 @@ class testplan extends tlObjectWithAttachments
             $priorityLevelsCfg = config_get('priority_levels');
         }
 
-        if (is_null($importance)) {
-            // No importance given, interpret $urgency as urgency * importance
-            $urgencyImportance = intval($urgency);
-        } else {
-            $urgencyImportance = intval($urgency) * intval($importance);
-        }
-
-        if ($urgencyImportance >= $priorityLevelsCfg[HIGH]) {
-            return HIGH;
-        } else if ($urgencyImportance >= $priorityLevelsCfg[MEDIUM]) {
-            return MEDIUM;
-        } else {
-            return LOW;
-        }
+        $urgencyImportance = intval($urgency) * (is_null($importance) ? 1 : intval($importance)) ;
+		
+        $levels2check = array(HIGH,MEDIUM,LOW);  // order is important for algorithm
+		foreach($levels2check as $level)
+		{
+			if($urgencyImportance >= $priorityLevelsCfg[$level])
+			{
+				break;
+			}
+		}		
+        return $level;
+        
     }
 
 

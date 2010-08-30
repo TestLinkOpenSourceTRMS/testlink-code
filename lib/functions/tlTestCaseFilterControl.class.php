@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.17 2010/08/22 11:59:28 franciscom Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.18 2010/08/30 09:14:59 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100830 - asimon - BUGID 3726: store user's selection of build and platform
  * 20100811 - asimon - BUGID 3566: show/hide CF
  * 20100810 - asimon - added TC ID filter for Test Cases
  * 20100807 - franciscom - BUGID 3660
@@ -407,7 +408,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 		$this->args->{'filter_assigned_user_include_unassigned'} = 
 			isset($_REQUEST['filter_assigned_user_include_unassigned']) ? 1 : 0;
-			
+
 		// got session token sent by form or do we have to generate a new one?
 		$sent_token = null;
 		$this->args->form_token = null;
@@ -969,8 +970,16 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		
 		// if no build has been chosen by user, select newest build by default
 		$newest_build_id = $this->testplan_mgr->get_max_build_id($tplan_id, $active, $open);
-		
-		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $newest_build_id;
+
+		// BUGID 3726
+		$session_key = $tplan_id . '_stored_setting_build';
+		$session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
+
+		$this->args->{$key} = $this->args->{$key} > 0 ? $this->args->{$key} : $session_selection;
+
+		if (!$this->args->{$key}) {
+			$this->args->{$key} = $newest_build_id;
+		}
 		
 		// only take build ID into account if it really is a build from this testplan
 		$this->settings[$key]['selected'] = (in_array($this->args->{$key}, $tplan_builds)) ? 
@@ -980,6 +989,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		if (!$this->settings[$key]['selected'] && sizeof($this->settings[$key]['items'])) {
 			$this->settings[$key]['selected'] = end($tplan_builds);
 		}
+
+		$_SESSION[$session_key] = $this->settings[$key]['selected'];
 	} // end of method
 
 	private function init_setting_testplan() {
@@ -1040,6 +1051,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 		$this->settings[$key]['items'] = $this->platform_mgr->getLinkedToTestplanAsMap($testplan_id);
 
+		// BUGID 3726
+		$session_key = $testplan_id . '_stored_setting_platform';
+		$session_selection = isset($_SESSION[$session_key]) ? $_SESSION[$session_key] : null;
+
+		if (!$this->settings[$key]['selected']) {
+			$this->settings[$key]['selected'] = $session_selection;
+		}
+
 		if (!isset($this->settings[$key]['items']) || !is_array($this->settings[$key]['items'])) {
 			$this->settings[$key] = false;
 		} else if (isset($this->settings[$key]['items']) && is_array($this->settings[$key]['items']) && 
@@ -1047,6 +1066,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					// platforms exist, but none has been selected yet, so select first one
 			$this->settings[$key]['selected'] =	key($this->settings[$key]['items']);
 		}
+
+		$_SESSION[$session_key] = $this->settings[$key]['selected'];
 	} // end of method
 
 	private function init_filter_tc_id() {

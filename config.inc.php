@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.316 2010/08/19 16:21:21 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.317 2010/08/31 14:19:26 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -458,7 +458,7 @@ $tlCfg->dashboard_precision = 2;
  *
  * The next keys/areas are supported:
  * 		'all' (default setting),
- * 		'design', 'testplan', 'build', 'testproject', 'role', 'requirement', 'requirement_spec'.
+ * 		'design', 'steps_design', 'testplan', 'build', 'testproject', 'role', 'requirement', 'requirement_spec'.
  *
  * Examples:
  * <code>

@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.156 2010/08/28 14:42:46 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.157 2010/08/31 14:19:26 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100831 - asimon - BUGID 3532
  * 	20100828 - franciscom - BUGID 3156 tinymce problems - OK Internet Explorer 8, Firefox
  *  20100810 - asimon - BUGID 3579: solved tree refreshing problems
  *  20100628 - asimon - removal of constants from filter control class
@@ -41,11 +42,16 @@ require_once("opt_transfer.php");
 require_once("web_editor.php");
 
 $cfg = getCfg();
-require_once(require_web_editor($cfg->webEditorCfg['type']));
-
 testlinkInitPage($db);
 $optionTransferName = 'ot';
 $args = init_args($cfg->spec,$optionTransferName);
+
+// BUGID 3532
+if ($args->doAction == "editStep" || $args->doAction == "createStep" || $args->doAction == "doCreateStep") {
+	$cfg->webEditorCfg=getWebEditorCfg('steps_design');
+}
+
+require_once(require_web_editor($cfg->webEditorCfg['type']));
 
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
@@ -519,7 +525,7 @@ function getCfg()
     $cfg->exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'requirement_spec' => 1);
     $cfg->tcase_template = config_get('testcase_template');
     $cfg->webEditorCfg=getWebEditorCfg('design');
-    
+
     $cfg->editorKeys = new stdClass();
     $cfg->editorKeys->testcase = array('summary' => true, 'preconditions' => true);    
     $cfg->editorKeys->step = array('steps' => true, 'expected_results' => true);    
@@ -630,7 +636,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
 
     	    case "doCreate":
     	    case "doDelete":
-    	    case "doCreateStep":
     	    case "doCopyStep":
     	    case "doUpdateStep":
   				$initWebEditorFromTemplate = false;
@@ -638,6 +643,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
   			break;
   			
     	    case "create":
+			case "doCreateStep":
   			default:	
   				$initWebEditorFromTemplate = true;
   			break;

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.666 2010/08/30 18:51:17 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.667 2010/08/31 09:35:32 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1164,7 +1164,7 @@ $TLS_title_t_r_on_build = "Test Results on Build";
 $TLS_title_t_r_owner = " Assigned to";
 $TLS_title_test_case = $TLS_test_case;
 $TLS_version = "Version";
-$TLS_warning_delete_execution = "You are going to delete execution<br /><br /> Are you sure?";;
+$TLS_warning_delete_execution = "You are going to delete execution. Are you sure?";
 $TLS_warning_nothing_will_be_saved = "For the selected execution result nothing will be written to database";
 $TLS_edit_execution = "edit execution";
 $TLS_platform_description = "Platform description";

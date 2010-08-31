@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.4 2010/01/12 10:38:51 franciscom Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.5 2010/08/31 09:31:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
  *
  * @internal Revisions:
+ * 20100831 - Julian - added requirement title to page heading
  */
 
 require_once("../../config.inc.php");
@@ -72,8 +73,10 @@ if ($args->compare_selected_versions) {
 	}
 
 	$gui->diff_array = $diff_array;
+	$glue_char = config_get('gui_title_separator_1');   
 	$gui->subtitle = sprintf(lang_get('diff_subtitle_req'), $args->version_left, $args->version_left, 
-	                         $args->version_right, $args->version_right, $reqSet[0]['req_doc_id']);
+	                         $args->version_right, $args->version_right, 
+	                         $reqSet[0]['req_doc_id'] . $glue_char . $reqSet[0]['title']);
 }
 
 $smarty->assign('gui', $gui);

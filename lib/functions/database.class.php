@@ -9,7 +9,7 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.54 2010/04/28 06:29:05 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.55 2010/08/31 12:18:16 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -583,7 +583,7 @@ class database
 	 *        cumulative=0 -> return items= array('X' => array('A','C'), 'Y' => array('B','0') )
 	 *
 	 *        cumulative=1 -> return items= 
-	 *                        array('X' => array( 0 => array('A','C'), 1 => array('B','>')),
+	 *                        array('X' => array( 0 => array('A','C'), 1 => array('B','Z')),
 	 *                              'Y' => array( 0 => array('B','0')I )
 	 *
 	 * @param integer $limit (optional) number of rows

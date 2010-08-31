@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.294 2010/08/25 20:56:38 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.295 2010/08/31 20:07:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100831 - franciscom - BUGID 3729 - get_by_name() 
  * 20100825 - franciscom - BUGID 3702 - _blind_delete() issue
  * 20100821 - franciscom - BUGID 3695 - Test Case Steps - Export/Import - missing attribute execution type
  *						   create_step() - fixed issue when execution_type was NULL.
@@ -331,6 +332,9 @@ class testcase extends tlObjectWithAttachments
 	{
 		$dummy = config_get('field_size');
 		$name_max_len = $dummy->testcase_name;
+		$name = trim($name);
+        $originalNameLen = tlStringLen($name);
+
         $getOptions = array();
 		$ret = array('id' => -1,'external_id' => 0, 'status_ok' => 1,'msg' => 'ok', 
 		             'new_name' => '', 'version_number' => 1, 'has_duplicate' => false);
@@ -435,13 +439,22 @@ class testcase extends tlObjectWithAttachments
 	  if( $ret['status_ok'] && $doCreate)
 	  {
 	  	
+	  	$safeLenName = tlSubStr($name, 0, $name_max_len);
+	  	
 	    // Get tproject id
 	    $path2root=$this->tree_manager->get_path($parent_id);
 	    $tproject_id=$path2root[0]['parent_id'];
 	    $tcaseNumber=$this->tproject_mgr->generateTestCaseNumber($tproject_id);
-	    $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$name,$order,$id);
+	    $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
 	    $ret['id'] = $tcase_id;
 	    $ret['external_id'] = $tcaseNumber;
+		if( !$ret['has_duplicate'] )
+		{
+			$ret['new_name'] = $safeLenName;
+			$ret['msg'] = sprintf(lang_get('testcase_name_length_exceeded'),$originalNameLen,$name_max_len);
+		}
+		
+
 	  }
 	
 	  return $ret;
@@ -557,16 +570,24 @@ class testcase extends tlObjectWithAttachments
 	        [$tproject_name]
 	
 	  returns: hash
+	  
+	  @internal revisions
+	  20100831 - franciscom - BUGID 3729
+	  
 	*/
 	function get_by_name($name, $tsuite_name = '', $tproject_name = '')
 	{
+
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 	    $recordset = null;
 	    $filters_on = array('tsuite_name' => false, 'tproject_name' => false);
 	
-	    $tsuite_name = trim($tsuite_name);
-	    $tproject_name = trim($tproject_name);
+		// BUGID 3729 - limit all names
+		$field_size = config_get('field_size');
+	    $tsuite_name = tlSubStr(trim($tsuite_name),0, $field_size->testsuite_name);
+	    $tproject_name = tlSubStr(trim($tproject_name),0,$field_size->testproject_name);
+	    $name = tlSubStr(trim($name), 0, $field_size->testcase_name);
 	    
 		$sql = "/* $debugMsg */ " . 	    
 	           " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .

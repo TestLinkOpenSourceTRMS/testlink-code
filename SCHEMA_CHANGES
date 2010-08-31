@@ -1,8 +1,12 @@
 ----------------------------------------------------------------------
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: SCHEMA_CHANGES,v 1.8 2008/06/27 08:37:50 franciscom Exp $ 
+$Id: SCHEMA_CHANGES,v 1.9 2010/08/31 20:22:58 franciscom Exp $ 
 Author: franciscom
 ----------------------------------------------------------------------
+
+Schema Changes on TL 1.9
+
+Need to be documented 
 
 Schema Changes on TL 1.7.x / 1.8.x 
 

@@ -12,12 +12,14 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.92 2010/08/31 09:51:10 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.93 2010/08/31 19:40:15 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *  20100832 - Julian - BUGID 3722 - fixed not run report
+ *  20100831 - Julian - BUGID 3722 - fixed not run report
+ *                    - BUGID 3721 - added without_bugs_counter again
+ *                    - BUGID 3731 - fixed failed blocked test cases report
  *  20100823 - Julian - changed default grouping and sorting
  *  20100823 - Julian - table now uses a unique table id per test project and report type
  *	20100816 - Julian - changed default width for table columns
@@ -109,11 +111,21 @@ if( $args->type == $statusCode['not_run'] )
 	$options = array('output' => 'array', 'details' => 'summary');
 	$myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters, $options);
 	$user_key='user_id';
+	
+	//to be able to use only one php file to generate not run and failed/blocked report
+	//we need to manipulate the myRBB array for not run report to match the same array
+	//structure as on failed/blocked report: output-array vs output-mapOfMap
+	//only manipulate the array if it has results to not pretend the array has content
+	if(count($myRBB) > 0 ) {
+		$myRBB = array(0 => $myRBB);
+	}
+	
 }
 else
 {
 	$filters = array('exec_status' => array($args->type));
-	$options = array('output' => 'array' , 'last_execution' => true, 'only_executed' => true, 'details' => 'summary',
+	//mapOfMapPlatformBuild because we need all executions of all builds for each platform
+	$options = array('output' => 'mapOfMapExecPlatform' , 'last_execution' => true, 'only_executed' => true, 'details' => 'summary',
 	                 'execution_details' => 'add_build');
 	$myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 	$user_key='tester_id';
@@ -127,80 +139,91 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
     $gdx=0;
 	foreach($myRBB as $item)
 	{
-	    $suiteName='';
-		$bugString='';
-	    if( $item[$user_key] == 0 )
-	    {
-	    	$testerName = lang_get('nobody');
-	    }
-	    else
-	    {
-	    	if (array_key_exists($item[$user_key], $arrOwners))
-			{
-			   $testerName = $arrOwners[$item[$user_key]];
-			}
-			else
-			{
-			    // user id has been deleted
-			    $testerName = sprintf($deleted_user_label,$item[$user_key]);
-			}
-		}
-		$tcaseName = buildExternalIdString($tproject_info['prefix'], $item['external_id']). ':' . $item['name'];
-		if( !isset($pathCache[$item['tc_id']]) )
-		{
-			$dummy=$tcase_mgr->getPathLayered(array($item['tc_id']));	
-			$pathCache[$item['tc_id']] = $dummy[$item['testsuite_id']]['value'];
-			$levelCache[$item['tc_id']] = $dummy[$item['testsuite_id']]['level'];
-            $ky=current(array_keys($dummy)); 
-            $topCache[$item['tc_id']]=$ky;
-		}
-	    $verbosePath = $pathCache[$item['tc_id']];
-	    $level = $levelCache[$item['tc_id']];
-		if( $args->type == $statusCode['not_run'] )
-		{
-			
-			$build_mgr = new build_mgr($db);
-			if (isset($item['assigned_build_id'])) {
-				$build_info = $build_mgr->get_by_id($item['assigned_build_id']);
-				$item['assigned_build_name'] = $build_info['name'];
-			} else {
-				$item['assigned_build_name'] = lang_get('unassigned');
-			}
-			
-			// When not run, test case version, is the version currently linked to test plan
-			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
-							array('suiteName' => $verbosePath, 'level' => $level,
-							      'testTitle' => htmlspecialchars($tcaseName),
-							      'testVersion' => $item['version'], 
-							      'platformName' => htmlspecialchars($item['platform_name']),
-							      'buildName' => htmlspecialchars($item['assigned_build_name']),
-							      'testerName' => htmlspecialchars($testerName),
-							      'notes' => strip_tags($item['summary']),
-							      'platformID' => $item['platform_id']);
-		}			
-		else
-		{
-			// BUGID 3492
-			// BUGID 3356
-			// When test case has been runned, version must be get from executions.tcversion_number 
-			if ($gui->bugInterfaceOn) {
-				$bugs = get_bugs_for_exec($db, $bugInterface, $item['exec_id']);
-				foreach ($bugs as $bug) {
-					$bugString .= $bug['link_to_bts'] . '<br/>';
+		foreach($item as $testcase) {
+		    $suiteName='';
+			$bugString='';
+		    if( $testcase[$user_key] == 0 )
+		    {
+		    	$testerName = lang_get('nobody');
+		    }
+		    else
+		    {
+		    	if (array_key_exists($testcase[$user_key], $arrOwners))
+				{
+				   $testerName = $arrOwners[$testcase[$user_key]];
+				}
+				else
+				{
+				    // user id has been deleted
+				    $testerName = sprintf($deleted_user_label,$testcase[$user_key]);
 				}
 			}
-			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
-							array('suiteName' => $verbosePath, 'testTitle' => htmlspecialchars($tcaseName),
-			                      'testVersion' => $item['tcversion_number'], 
-			                      'platformName' => htmlspecialchars($item['platform_name']),
-			                      'buildName' => htmlspecialchars($item['build_name']),
-			                      'testerName' => htmlspecialchars($testerName),
-			                      'localizedTS' => $item['execution_ts'],
-			                      'notes' => strip_tags($item['execution_notes']),
-			                      'bugString' => $bugString,
-			                      'platformID' => $item['platform_id']);
-		}	      
-	}
+			$tcaseName = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']). ':' . $testcase['name'];
+			if( !isset($pathCache[$testcase['tc_id']]) )
+			{
+				$dummy=$tcase_mgr->getPathLayered(array($testcase['tc_id']));	
+				$pathCache[$testcase['tc_id']] = $dummy[$testcase['testsuite_id']]['value'];
+				$levelCache[$testcase['tc_id']] = $dummy[$testcase['testsuite_id']]['level'];
+	            $ky=current(array_keys($dummy)); 
+	            $topCache[$testcase['tc_id']]=$ky;
+			}
+		    $verbosePath = $pathCache[$testcase['tc_id']];
+		    $level = $levelCache[$testcase['tc_id']];
+		    
+			if( $args->type == $statusCode['not_run'] )
+			{
+				
+				$build_mgr = new build_mgr($db);
+				if (isset($testcase['assigned_build_id'])) {
+					$build_info = $build_mgr->get_by_id($testcase['assigned_build_id']);
+					$testcase['assigned_build_name'] = $build_info['name'];
+				} else {
+					$testcase['assigned_build_name'] = lang_get('unassigned');
+				}
+				
+				// When not run, test case version, is the version currently linked to test plan
+				$topLevelSuites[$topCache[$testcase['tc_id']]]['items'][$level][] = 
+								array('suiteName' => $verbosePath, 'level' => $level,
+								      'testTitle' => htmlspecialchars($tcaseName),
+								      'testVersion' => $testcase['version'], 
+								      'platformName' => htmlspecialchars($testcase['platform_name']),
+								      'buildName' => htmlspecialchars($testcase['assigned_build_name']),
+								      'testerName' => htmlspecialchars($testerName),
+								      'notes' => strip_tags($testcase['summary']),
+								      'platformID' => $testcase['platform_id']);
+			}			
+			else
+			{
+				// BUGID 3492
+				// BUGID 3356
+				// When test case has been runned, version must be get from executions.tcversion_number 
+				if ($gui->bugInterfaceOn) {
+					$bugs = get_bugs_for_exec($db, $bugInterface, $testcase['exec_id']);
+					
+					//count all test cases that have no bug linked
+					if (count($bugs) == 0) {
+						$gui->without_bugs_counter += 1;
+					}
+					
+					foreach ($bugs as $bug) {
+						$bugString .= $bug['link_to_bts'] . '<br/>';
+ 
+					}
+				}
+				
+				$topLevelSuites[$topCache[$testcase['tc_id']]]['items'][$level][] = 
+								array('suiteName' => $verbosePath, 'testTitle' => htmlspecialchars($tcaseName),
+				                      'testVersion' => $testcase['tcversion_number'], 
+				                      'platformName' => htmlspecialchars($testcase['platform_name']),
+				                      'buildName' => htmlspecialchars($testcase['build_name']),
+				                      'testerName' => htmlspecialchars($testerName),
+				                      'localizedTS' => $testcase['execution_ts'],
+				                      'notes' => strip_tags($testcase['execution_notes']),
+				                      'bugString' => $bugString,
+				                      'platformID' => $testcase['platform_id']);
+			} 
+		}  //END foreach item  
+	}//END foreach MyRBB 
 
     // Rearrange for display
 	$key2loop=array_keys($topLevelSuites);
@@ -233,7 +256,17 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			}  		
 		}
     }    	
-}    	
+} else {
+	if($args->type == $statusCode['not_run']) {
+		$gui->warning_msg = lang_get('no_notrun');
+	}
+	if($args->type == $statusCode['failed']) {
+		$gui->warning_msg = lang_get('no_failed');
+	}
+	if($args->type == $statusCode['blocked']) {
+		$gui->warning_msg = lang_get('no_blocked');
+	}
+}	
 
 new dBug($gui->dataSet);
 
@@ -296,6 +329,7 @@ function initializeGui($statusCode,&$argsObj)
     $guiObj->dataSet = null;
     $guiObj->title = null;
     $guiObj->type = $argsObj->type;
+    $guiObj->warning_msg = '';
 
     // Humm this may be can be configured ???
     foreach(array('failed','blocked','not_run') as $verbose_status)

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.667 2010/08/31 09:35:32 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.668 2010/08/31 19:40:15 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1531,14 +1531,21 @@ $TLS_title_test_suite_name = $TLS_test_suite;
 
 
 // ----- gui/templates/resultsByStatus.tpl -----
-$TLS_info_test_results = "There are only last test results listed. " .
-		                     "i.e. Test Case is not shown if test result for latest execution " .
-		                     "has another status (except not run).";
 $TLS_th_bugs = "Bugs";
 $TLS_th_date = "Date";
 $TLS_th_run_by = "Run by";
 $TLS_th_bugs_not_linked = "Total no. of Test Cases with missing/linked Bugs:";
 $TLS_th_assigned_to = "Assigned To";
+$TLS_info_failed_tc_report = "This report shows all test cases for each build " .
+                             "and each platform (if used for this test plan), " .
+                             "whose last execution result is \"failed\".";
+$TLS_info_blocked_tc_report = "This report shows all test cases for each build " .
+                              "and each platform (if used for this test plan), " .
+                              "whose last execution result is \"blocked\".";
+$TLS_info_notrun_tc_report = "This report shows all not run test cases";
+$TLS_no_blocked = "There are no blocked test cases";
+$TLS_no_notrun = "There are no test case that have not been run";
+$TLS_no_failed = "There are no failed test cases";
 
 
 

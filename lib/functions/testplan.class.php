@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.208 2010/08/31 09:51:10 mx-julian Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.209 2010/08/31 19:40:15 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -657,7 +657,8 @@ class testplan extends tlObjectWithAttachments
 		// new dBug($my['filters']);
 		// new dBug($my['options']);
 
-		$groupByPlatform=($my['options']['output']=='mapOfMap') ? ',platform_id' : '';
+		$groupByPlatform=($my['options']['output']=='mapOfMap' || 
+		                  $my['options']['output']=='mapOfMapExecPlatform') ? ',platform_id' : '';
 		$groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
 
 		// BUGID 3406: user assignments per build 
@@ -949,6 +950,12 @@ class testplan extends tlObjectWithAttachments
 			// no matter how many executions has been done
 			
 			$recordset = $this->db->fetchMapRowsIntoMap($sql,'tc_id','platform_id');
+			break;
+			
+			case 'mapOfMapExecPlatform':
+			// with this option we got just one record for each (platform, build)
+			
+			$recordset = $this->db->fetchMapRowsIntoMap($sql,'exec_id','platform_id');
 			break;
 			
 			case 'map':

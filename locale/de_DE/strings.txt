@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.182 2010/08/31 16:11:10 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.183 2010/08/31 19:40:15 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1546,6 +1546,16 @@ $TLS_th_date = "Datum";
 $TLS_th_run_by = "Getestet von";
 $TLS_th_bugs_not_linked = "Anzahl Testfälle ohne verlinkte Bugs: ";
 $TLS_th_assigned_to = "Zugewiesen an";
+$TLS_info_failed_tc_report = "Dieser Report zeigt alle Testfälle für jeden Build und " .
+                             "jede Plattform (sofern in Verwendung für diesen Testplan), ".
+                             "deren letztes Ausführungsergebnis \"Fehlgeschlagen\" ist.";
+$TLS_info_blocked_tc_report = "Dieser Report zeigt alle Testfälle für jeden Build und " .
+                              "jede Plattform (sofern in Verwendung für diesen Testplan), ".
+                              "deren letztes Ausführungsergebnis \"Blockiert\" ist.";
+$TLS_info_notrun_tc_report = "Dieser Report zeigt alle nicht durchgeführten Testfälle";
+$TLS_no_blocked = "Es existieren keine blockierten Testfälle";
+$TLS_no_notrun = "Es existieren keine Testfälle, die noch nicht ausgeführt wurden";
+$TLS_no_failed = "Es existieren keine fehlgeschlagenen Testfälle";
 
 
 // ----- gui/templates/resultsByTesterPerBuild.tpl -----

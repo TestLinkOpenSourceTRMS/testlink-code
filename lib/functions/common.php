@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.194 2010/07/14 14:40:33 asimon83 Exp $
+ * @version    	CVS: $Id: common.php,v 1.195 2010/08/31 20:08:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
@@ -767,7 +767,6 @@ function executeTestCase($testcase_id,$tree_manager,$cfield_manager){
  * @return string trimmed string
  *
  * @author Francisco Mancardi - 20050905 - refactoring
- * @todo havlatm - 20100207 - using should be refactored for inputparameter.inc.php
  */
 function trim_and_limit($s, $len = 100)
 {

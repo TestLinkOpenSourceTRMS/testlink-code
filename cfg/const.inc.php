@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.152 2010/07/14 14:40:33 asimon83 Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.153 2010/08/31 19:59:24 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -221,11 +221,12 @@ define('MENU_ITEM_CLOSE', '</div><br />');
 /** 
  * Used to force the max len of this field, during the automatic creation of requirements
  * or other import features
- * @todo havlatm: convert to $tlCfg->gui object
  */ 
 $g_field_size = new stdClass();
+$g_field_size->node_name = 100;
 $g_field_size->testsuite_name = 100;
 $g_field_size->testcase_name = 100;
+$g_field_size->testproject_name = 100;
 
 // requirements and req_spec tables field sizes
 $g_field_size->req_docid = 64;

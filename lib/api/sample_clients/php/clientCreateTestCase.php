@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientCreateTestCase.php,v $
  *
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/05/16 08:47:35 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/08/31 19:59:48 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -18,14 +18,15 @@ show_api_db_sample_msg();
 
 $tcCounter = 1;
 $method='createTestCase';
-$unitTestDescription="Test #{$tcCounter}- {$method}";
+$unitTestDescription = "Test #{$tcCounter}- {$method} - With NAME exceeding limit";
 $tcCounter++;
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testprojectid"]=620;
-$args["testsuiteid"]=621;
-$args["testcasename"]='File System Check';
+$args["testprojectid"]=280;
+$args["testsuiteid"]=297;
+$args["testcasename"]=
+'TEST CASE NAME IS LONGER THAT ALLOWED SIZE - 100 CHARACTERS - The quick brown fox jumps over the X % lazydog (bye bye dog)';
 $args["summary"]='Test Case created via API';
 $args["preconditions"]='Test Link API Up & Running';
 $args["steps"][]=array('step_number' => 1, 'actions' => 'Start Server', 'expected_results' => 'green light');

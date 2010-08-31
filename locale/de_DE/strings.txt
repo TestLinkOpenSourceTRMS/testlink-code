@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.181 2010/08/31 09:35:32 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.182 2010/08/31 16:11:10 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -200,8 +200,10 @@ $TLS_req_spec_type_user_req_spec = "User Requirement Specification";
 $TLS_req_spec_type_system_req_spec = "System Requirement Specification";
 
 
-$TLS_exec_not_run_result_note = "Wichtiger Hinweis: Wurde ein Ergebnis einmal von 'Not Run' auf einen anderen Wert gesetzt,  " .
-                                "kann dieser nicht mehr auf 'Not Run' gesetzt werden. <br />Das Ergebnis kann weiterhin zu jedem anderen Wert geändert werden.";
+$TLS_exec_not_run_result_note = "Wichtiger Hinweis: Wurde ein Ergebnis einmal von 'Not Run' " .
+                                "auf einen anderen Wert gesetzt, kann dieser nicht mehr auf " .
+                                "'Not Run' gesetzt werden. <br />Das Ergebnis kann weiterhin " .
+                                "zu jedem anderen Wert geändert werden.";
 
 $TLS_req_status_not_testable = "nicht testbar";
 $TLS_req_status_draft = "Entwurf";
@@ -238,7 +240,8 @@ $TLS_th_requirement_feature = "Anforderungsverwaltung";
 $TLS_import_file_type = "Import Dateiart";
 $TLS_max_file_size_is = "Max. Dateigröße %s ";
 $TLS_supported_file_formats = "Unterstützte Dateiformate";
-$TLS_no_permissions_for_action = "Sie haben keine Berechtigung diese Aktion auszuführen! Bitte kontaktieren Sie Ihren Administrator.";
+$TLS_no_permissions_for_action = "Sie haben keine Berechtigung diese Aktion auszuführen! ".
+                                 "Bitte kontaktieren Sie Ihren Administrator.";
 
 $TLS_name_already_exists = "Name:%s existiert bereits";
 $TLS_created_with_new_name = "Erstellt mit Name:%s, weil Name:%s bereits existiert";
@@ -283,7 +286,8 @@ $TLS_end_warning =  '---- *** ----';
 
 // --------------------------------------------------------------------------------------
 // ----- firstLogin.php -----
-$TLS_cant_create_user = "Der Benutzer konnte nicht angelegt werden. Bitte informieren Sie Ihren Systemadministrator über dieses Problem!";
+$TLS_cant_create_user = "Der Benutzer konnte nicht angelegt werden. Bitte informieren Sie Ihren ".
+                        "Systemadministrator über dieses Problem!";
 $TLS_empty_email_address = "Die Email-Adresse darf nicht leer sein!";
 $TLS_empty_first_name = "Der Vorname darf nicht leer sein!";
 $TLS_empty_last_name = "Der Nachname darf nicht leer sein!";
@@ -395,7 +399,8 @@ $TLS_no_linked_tcversions = "keine verlinkten Testfall-Versionen";
 $TLS_testplan_seems_empty = "Testplan scheint leer zu sein - Nichts zu tun";
 
 // resultsGeneral.php
-$TLS_report_tspec_has_no_tsuites = "Für dieses Projekt sind keine Testsuiten definiert, <br>daher existieren keine Ausführungs-Daten => Bericht kann nicht erstellt werden";
+$TLS_report_tspec_has_no_tsuites = "Für dieses Projekt sind keine Testsuiten definiert, <br>daher " .
+                                   "existieren keine Ausführungs-Daten => Bericht kann nicht erstellt werden";
 
 $TLS_report_tcase_platorm_relationship = "Plattformen wurden für diesen Testplan angelegt.<br />" .
                                          "Die Benutzung von Plattformen hat Auswirkungen auf die Metriken, weil <br />" .
@@ -406,8 +411,10 @@ $TLS_report_tcase_platorm_relationship = "Plattformen wurden für diesen Testpla
 
 // ----- resultsNavigator.php -----
 $TLS_title_nav_results = "Berichte und Metriken";
-$TLS_report_tplan_has_no_build = "Testplan hat keine Builds, <br>daher existieren keine Ausführungs-Daten => Bericht kann nicht erstellt werden";
-$TLS_report_tplan_has_no_tcases = "Testplan hat keine verlinkten Testfälle, <br>daher existieren keine Ausführungs-Daten => Bericht kann nicht erstellt werden";
+$TLS_report_tplan_has_no_build = "Testplan hat keine Builds, <br>daher existieren keine Ausführungs-Daten " .
+                                 "=> Bericht kann nicht erstellt werden";
+$TLS_report_tplan_has_no_tcases = "Testplan hat keine verlinkten Testfälle, <br>daher existieren keine Ausführungs-Daten " .
+                                  "=> Bericht kann nicht erstellt werden";
 
 // ----- tcEdit.php -----
 $TLS_copy_keyword_assignments = "Zugewiesene Stichwörter kopieren";
@@ -559,7 +566,8 @@ $TLS_title_cfield_edit = "Editieren ";
 $TLS_type = "Typ";
 $TLS_warning_empty_cfield_label = "Bitte geben Sie eine Beschriftung für das benutzerdefinierte Feld ein!";
 $TLS_warning_empty_cfield_name = "Bitte geben Sie einen Namen für das benutzerdefinierte Feld ein!";
-$TLS_warning_is_in_use = "Sie können den Typ weder bearbeiten noch löschen <br /> da bereits ein Wert zu diesem benutzerdefinierten Feld<br />hinzugefügt wurde ";
+$TLS_warning_is_in_use = "Sie können den Typ weder bearbeiten noch löschen <br /> da bereits ein Wert " .
+                         "zu diesem benutzerdefinierten Feld<br />hinzugefügt wurde ";
 
 $TLS_warning_no_type_change = "Sie können den Typ des benutzerdefinierten Felds nicht ändern, weil <br /> " .
                               "für das Feld bereits ein Wert von einem Nutzer <br />" .
@@ -893,7 +901,8 @@ $TLS_trep_ts = $TLS_test_suite;
 
 
 // gui/templates/reqSpecEdit.tpl
-$TLS_req_total_description = "Verwenden Sie diesen Paramter um die korrekte Anzahl der Anforderungen im Dokument zu überschreiben. '0' bedeutet nicht verwendet.";
+$TLS_req_total_description = "Verwenden Sie diesen Paramter um die korrekte Anzahl der " .
+                             "Anforderungen im Dokument zu überschreiben. '0' bedeutet nicht verwendet.";
 $TLS_copy_req_spec = "Kopiere Anf. Spez.";
 
 
@@ -1469,8 +1478,12 @@ $TLS_btn_create_platform = "Plattform erstellen";
 $TLS_btn_edit_platform = "editieren";
 $TLS_th_platform = "Plattform";
 $TLS_menu_manage_platforms = "Plattform Verwaltung";
-$TLS_warning_delete_platform = "Sie löschen: %s <br /> Dies wird <b>ALLE</b> Ausführungen in allen Testplänen entfernen<br />Diese Operation ist nicht umkehrbar!<br/>Sind Sie sicher?";
-$TLS_warning_cannot_delete_platform = "Plattform <b>%s</b> wird verwendet!<br/>Sie können sie jetzt nicht löschen. Sie müssen sie erst aus Testplänen entfernen, in denen sie genutzt wird.";
+$TLS_warning_delete_platform = "Sie löschen: %s <br /> Dies wird <b>ALLE</b> Ausführungen " .
+                               "in allen Testplänen entfernen<br />Diese Operation ist " .
+                               "nicht umkehrbar!<br/>Sind Sie sicher?";
+$TLS_warning_cannot_delete_platform = "Plattform <b>%s</b> wird verwendet!<br/>Sie können " .
+                                      "sie jetzt nicht löschen. Sie müssen sie erst aus " .
+                                      "Testplänen entfernen, in denen sie genutzt wird.";
 $TLS_warning_enter_at_least1 = "Bitte geben Sie mindestens ";
 $TLS_warning_enter_at_least2 = " Zeichen ein.";
 $TLS_warning_enter_less1 = "Bitte geben Sie weniger als";
@@ -1492,7 +1505,11 @@ $TLS_assigned_platforms = "Zugewiesene Plattformen";
 $TLS_add_remove_platforms = "Plattformen dem Testplan %s zuweisen/entnehmen";
 $TLS_platform_linked_count = " (verwendet in %s Testfällen)";
 $TLS_platform_unlink_warning_title = "Plattform wird verwendet";
-$TLS_platform_unlink_warning_message = "Die ausgewählte(n) Plattform(en) wird/werden verwendet.<br/> <b/>Alle Testausführungen gehen verloren</b> wenn Sie fortsetzen.<br/>Sind Sie sicher, dass Sie die ausgewählte(n) Plattform(en) entfernen möchten?";
+$TLS_platform_unlink_warning_message = "Die ausgewählte(n) Plattform(en) wird/werden " .
+                                       "verwendet.<br/> <b/>Alle Testausführungen gehen " .
+                                       "verloren</b> wenn Sie fortsetzen.<br/>Sind Sie " .
+                                       "sicher, dass Sie die ausgewählte(n) Plattform(en) " .
+                                       "entfernen möchten?";
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Anforderungen exportieren";
@@ -1524,7 +1541,6 @@ $TLS_title_test_suite_name = $TLS_test_suite;
 
 
 // ----- gui/templates/resultsByStatus.tpl -----
-$TLS_info_test_results = "Es sind nur die letzten Ergebnisse aufgeführt. Z.Bsp. Testfall wird nicht angezeigt, wenn das Testergebnis für einen späteren Build einen anderen Status hat (Ausnahme 'nicht durchgeführt').";
 $TLS_th_bugs = "Fehler";
 $TLS_th_date = "Datum";
 $TLS_th_run_by = "Getestet von";
@@ -1845,7 +1861,9 @@ $TLS_th_description = "Beschreibung";
 $TLS_th_open = "Offen";
 $TLS_title_build_list = "Liste der vorhandenen Builds";
 $TLS_warning_delete_build = "Wollen Sie den Build %s wirklich löschen? Dadurch werden auch alle abhängigen Daten gelöscht!";
-$TLS_builds_description = "Jeder Build wird durch einen Titel identifiziert. Er hat zwei Attribute:<br /> Aktiv / Inaktiv - bestimmt, ob der Build für TestLink verfügbar ist. Inaktive builds werden in der Ausführung und in Berichten nicht angezeigt.
+$TLS_builds_description = "Jeder Build wird durch einen Titel identifiziert. Er hat zwei Attribute:<br /> ".
+                          "Aktiv / Inaktiv - bestimmt, ob der Build für TestLink verfügbar ist. Inaktive " .
+                          "Builds werden in der Ausführung und in Berichten nicht angezeigt.
 <br /> Offen / Geschlossen - bestimmt, ob Testergebnisse für diese Build geändert werden können.";
 $TLS_build_copy_help = "Wenn sie die Option: " . "<b>[{$TLS_copy_to_all_tplans}]</b> wählen&nbsp;" .
                      "&nbsp;,wird der Name des Builds in allen Testplänen des Testprojekts gesucht " .
@@ -2122,7 +2140,9 @@ $TLS_check_email_config="Überprüfen Sie die folgenden Parameter der E-Mail Fun
 $TLS_directory_is_writable = "das Verzeichnis ist beschreibbar";
 $TLS_does_not_exist = "existiert nicht";
 $TLS_exists = "existiert";
-$TLS_ldap_extension_not_loaded = "LDAP ist als Login-Methode eingerichtet.<br>Es wurde aber keine LDAP Erweiterung geladen  => Sie werden sich nicht einloggen können.<br>Bitte wenden Sie sich an den TestLink Administrator";
+$TLS_ldap_extension_not_loaded = "LDAP ist als Login-Methode eingerichtet.<br>Es wurde aber keine LDAP " .
+                                 "Erweiterung geladen  => Sie werden sich nicht einloggen können.<br>Bitte " .
+                                 "wenden Sie sich an den TestLink Administrator";
 $TLS_sec_note_admin_default_pwd = "Sie sollten das Standard-Passwort für den 'admin' Account ändern!";
 $TLS_sec_note_remove_install_dir = "Bitte entfernen Sie das install-Verzeichnis!";
 $TLS_error_domxml_missing = "Die DOMXML-Erweiterung scheint nicht aktiviert zu sein. XML-Importe werden nicht funktionieren!";
@@ -2435,12 +2455,14 @@ $TLS_format_mail_html 	= 'Email (HTML)';
 
 
 // ----- lib/results/resultsSend.php -----
-$TLS_send_to_empty_email_warning = "Ohne Emailadresse kann die EMail nicht verschickt werden, das Feld darf nicht leer sein! Bitte geben Sie eine EmailAdresse ein.";
+$TLS_send_to_empty_email_warning = "Ohne Emailadresse kann die EMail nicht verschickt werden, " .
+                                   "das Feld darf nicht leer sein! Bitte geben Sie eine EmailAdresse ein.";
 $TLS_warning_create_build_first = "Sie müssen erst mind. einen Build erstellen oder Daten importieren!";
 
 
 // ----- lib/results/displayMgr.php -----
-$TLS_error_sendreport_no_email_credentials = "Für diesen Benutzer ist keine Email Adresse hinterlegt, bitte ergänzen Sie diese in der Benutzerverwaltung.";
+$TLS_error_sendreport_no_email_credentials = "Für diesen Benutzer ist keine Email Adresse hinterlegt, " .
+                                             "bitte ergänzen Sie diese in der Benutzerverwaltung.";
 
 $TLS_mail_sent_to = 'E-Mail wurde an %s gesendet';
 $TLS_send_mail_ko = 'Warnung: Probleme beim versenden der E-Mail - Details: ';
@@ -2539,7 +2561,8 @@ $TLS_error_user_not_deleted = "Der Benutzer konnte nicht gelöscht werden!";
 $TLS_error_user_not_disabled = "Der Benutzer konnte nicht deaktiviert werden!";
 $TLS_error_user_login_length_error = "Der Login war entweder zu kurz oder zu lang!";
 $TLS_invalid_smtp_hostname = 'SMTP Hostname scheint ungültig zu sein'; 
-$TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Passwort kann nicht zurückgesetzt werden. Grund: SMTP Hostname scheint ungültig zu sein'; 
+$TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Passwort kann nicht zurückgesetzt werden. Grund: ' .
+                                                        'SMTP Hostname scheint ungültig zu sein'; 
 $TLS_password_cannot_be_reseted_reason = 'Passwort kann nicht zurückgesetzt werden. Grund: %s '; 
 
 

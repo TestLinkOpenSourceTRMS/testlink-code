@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithoutTester.tpl,v 1.3 2010/08/30 14:41:25 mx-julian Exp $
+$Id: testCasesWithoutTester.tpl,v 1.4 2010/08/31 19:41:35 mx-julian Exp $
 
 Purpose: For a test plan, list test cases that has no tester assigned
 
@@ -42,6 +42,7 @@ rev:
 		<h2>{$labels.no_testcases_without_tester}</h2>
 	{/if}
 {else}
+	<br />
     {$gui->warning_msg}
 {/if}
 </div>

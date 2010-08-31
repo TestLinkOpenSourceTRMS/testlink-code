@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.91 2010/08/30 14:54:36 erikeloff Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.92 2010/08/31 09:51:10 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100832 - Julian - BUGID 3722 - fixed not run report
  *  20100823 - Julian - changed default grouping and sorting
  *  20100823 - Julian - table now uses a unique table id per test project and report type
  *	20100816 - Julian - changed default width for table columns
@@ -102,10 +103,12 @@ for($idx=0 ; $idx < $loop2do; $idx++)
 
 if( $args->type == $statusCode['not_run'] )
 {
-    $filters=null;
-    $options=array('group_by_platform_tcversion' => true);
-	$myRBB = $tplan_mgr->getNotExecutedLinkedTCVersionsDetailed($args->tplan_id,$filters,$options);
-	$user_key='assigned_to';
+	//BUGID 3722
+	$cfg = config_get('results');
+	$filters = array('exec_status' => $cfg['status_code']['not_run']);
+	$options = array('output' => 'array', 'details' => 'summary');
+	$myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters, $options);
+	$user_key='user_id';
 }
 else
 {
@@ -128,7 +131,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 		$bugString='';
 	    if( $item[$user_key] == 0 )
 	    {
-	    	$testerName = '';
+	    	$testerName = lang_get('nobody');
 	    }
 	    else
 	    {
@@ -155,12 +158,22 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 	    $level = $levelCache[$item['tc_id']];
 		if( $args->type == $statusCode['not_run'] )
 		{
+			
+			$build_mgr = new build_mgr($db);
+			if (isset($item['assigned_build_id'])) {
+				$build_info = $build_mgr->get_by_id($item['assigned_build_id']);
+				$item['assigned_build_name'] = $build_info['name'];
+			} else {
+				$item['assigned_build_name'] = lang_get('unassigned');
+			}
+			
 			// When not run, test case version, is the version currently linked to test plan
 			$topLevelSuites[$topCache[$item['tc_id']]]['items'][$level][] = 
 							array('suiteName' => $verbosePath, 'level' => $level,
 							      'testTitle' => htmlspecialchars($tcaseName),
 							      'testVersion' => $item['version'], 
 							      'platformName' => htmlspecialchars($item['platform_name']),
+							      'buildName' => htmlspecialchars($item['assigned_build_name']),
 							      'testerName' => htmlspecialchars($testerName),
 							      'notes' => strip_tags($item['summary']),
 							      'platformID' => $item['platform_id']);
@@ -350,6 +363,7 @@ function buildMatrix($dataSet, &$args, $options = array())
 	}
 	if( $options['status_not_run'] )
 	{
+		$columns[] = array('title' => lang_get('th_build'), 'width' => 35);
 		$columns[] = array('title' => lang_get('assigned_to'), 'width' => 60);
 		$columns[] = array('title' => lang_get('summary'), 'width' => 150, 'type' => 'text');
 	}
@@ -372,15 +386,12 @@ function buildMatrix($dataSet, &$args, $options = array())
 		$table_id .= ($options['status_not_run']) ? 'not_run' : 'status';
 		$matrix = new tlExtTable($columns, $dataSet, $table_id);
 		
-		//if not run report: group by tester, sort by test suite
-		//blocked, failed report: group by build, sort by platform (if enabled) else sort by date
+		//if not run report: sort by test suite
+		//blocked, failed report: sort by platform (if enabled) else sort by date
 		$sort_name = 0;
-		$group_name = 0;
 		if ($options['status_not_run']) {
-			$sort_name = lang_get('title_test_suite_name');
-			$group_name = lang_get('assigned_to');
+			$sort_name = lang_get('assigned_to');
 		} else {
-			$group_name = lang_get('th_build');
 			if ($options['show_platforms']) {
 				$sort_name = lang_get('platform');
 			} else {
@@ -389,7 +400,7 @@ function buildMatrix($dataSet, &$args, $options = array())
 		}
 		
 		$matrix->setSortByColumnName($sort_name);
-		$matrix->setGroupByColumnName($group_name);
+		$matrix->setGroupByColumnName(lang_get('th_build'));
 
 		$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
 		

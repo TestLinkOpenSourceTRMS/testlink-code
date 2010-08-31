@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.207 2010/08/30 16:06:20 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.208 2010/08/31 09:51:10 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2962,6 +2962,8 @@ class testplan extends tlObjectWithAttachments
     /**
      * get detailed information of test case versions linke to test plan an NOT executed
      * gives detaile for each platform and build combination
+     *
+     * @deprecated 1.9
      *
 	 * @param id: test plan id
 	 * @param filters: optional, map with following keys

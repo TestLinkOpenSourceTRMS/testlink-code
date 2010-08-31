@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/08/30 20:09:59 $ by $Author: mx-julian $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/08/31 09:46:45 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
@@ -107,14 +107,17 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 	{
 		$labels[$key] = lang_get($key);
 	}				
-	$columns = array($labels['testsuite'],$labels['testcase']);
+	$columns[] = array('title' => $labels['testsuite'], 'width' => 20);
+	
+	$columns[] = array('title' => $labels['testcase'], 'width' => 25);
+	
 	if ($show_platforms)
 	{
-		$columns[] = $labels['platform'];
+		$columns[] = array('title' => $labels['platform'], 'width' => 10);
 	}
-	$columns[] = array('title' => $labels['priority'], 'type' => 'priority');
+	$columns[] = array('title' => $labels['priority'], 'type' => 'priority', 'width' => 5);
 	
-	$columns[] = array('title' => $labels['summary']);
+	$columns[] = array('title' => $labels['summary'], 'type' => 'text', 'width' => 40);
 	
 	// unique table id for each project
 	$table_id = 'tl_'. $tproject_id . '_table_tc_without_tester';
@@ -122,6 +125,7 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 	
 	$matrix->setGroupByColumnName($labels['testsuite']);
 	$matrix->setSortByColumnName($labels['testcase']);
+	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
 	
 	if($priorityMgmtEnabled) 
 	{

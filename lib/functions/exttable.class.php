@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.34 2010/08/30 16:45:46 franciscom Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.35 2010/08/31 05:37:18 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -210,7 +210,7 @@ class tlExtTable extends tlTable
             foreach($options as $opt_str)
             {
 				if (isset($column[$opt_str])) {
-					$s .= ",$$opt_str: {$column[$opt_str]}";
+					$s .= ",$opt_str: {$column[$opt_str]}";
 				}
 			}
 

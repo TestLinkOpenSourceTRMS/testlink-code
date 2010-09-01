@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.50 2010/09/01 19:29:22 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.51 2010/09/01 19:51:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -466,12 +466,17 @@ class testcaseCommands
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
 
-		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
 		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
 												null,array('output' => 'full_without_steps'));
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$tcaseInfo[0]['tc_external_id'] = $external[0];
 		$guiObj->testcase = $tcaseInfo[0];
+		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
+		$guiObj->updaterObj = null;
+		if( !is_null($guiObj->testcase['updater_id']) )
+		{
+			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
+		}	
 		
 		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
 		                              $tcaseInfo[0]['version']); 
@@ -517,6 +522,12 @@ class testcaseCommands
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$tcaseInfo[0]['tc_external_id'] = $external[0];
 		$guiObj->testcase = $tcaseInfo[0];
+		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
+		$guiObj->updaterObj = null;
+		if( !is_null($guiObj->testcase['updater_id']) )
+		{
+			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
+		}	
 
 		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
 		                              $tcaseInfo[0]['version']); 
@@ -564,6 +575,14 @@ class testcaseCommands
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$tcaseInfo[0]['tc_external_id'] = $external[0];
 		$guiObj->testcase = $tcaseInfo[0];
+		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
+		$guiObj->updaterObj = null;
+		if( !is_null($guiObj->testcase['updater_id']) )
+		{
+			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
+		}	
+	
+		
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
         
         $oWebEditorKeys = array('steps' => 'actions', 'expected_results' => 'expected_results');
@@ -610,7 +629,13 @@ class testcaseCommands
 
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$tcaseInfo[0]['tc_external_id'] = $external[0];
-        $guiObj->testcase = $tcaseInfo[0];
+		$guiObj->testcase = $tcaseInfo[0];
+		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
+		$guiObj->updaterObj = null;
+		if( !is_null($guiObj->testcase['updater_id']) )
+		{
+			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
+		}	
 
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
@@ -645,7 +670,13 @@ class testcaseCommands
 
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$tcaseInfo[0]['tc_external_id'] = $external[0];
-        $guiObj->testcase = $tcaseInfo[0];
+		$guiObj->testcase = $tcaseInfo[0];
+		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
+		$guiObj->updaterObj = null;
+		if( !is_null($guiObj->testcase['updater_id']) )
+		{
+			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
+		}	
 
 		$guiObj->main_descr = lang_get('test_case');
 		$this->tcaseMgr->set_step_number($argsObj->step_set);
@@ -700,6 +731,12 @@ class testcaseCommands
 		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
 		$tcaseInfo[0]['tc_external_id'] = $external[0];
 		$guiObj->testcase = $tcaseInfo[0];
+		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
+		$guiObj->updaterObj = null;
+		if( !is_null($guiObj->testcase['updater_id']) )
+		{
+			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
+		}	
 
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'), $argsObj->step_number,
 		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 

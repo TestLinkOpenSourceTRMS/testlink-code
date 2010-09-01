@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.31 2010/09/01 19:34:30 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.32 2010/09/01 19:51:08 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -137,8 +137,8 @@ DEBUG: $gui->action: {$gui->action} <br>
 		         inc_tcbody_show_title="yes"
              inc_tcbody_tableColspan=2
              inc_tcbody_labels=$labels
-             inc_tcbody_author_userinfo=''
-             inc_tcbody_updater_userinfo=''
+             inc_tcbody_author_userinfo=$gui->authorObj
+             inc_tcbody_updater_userinfo=$gui->updaterObj
              inc_tcbody_cf=null}
 
 

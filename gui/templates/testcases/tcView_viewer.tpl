@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.79 2010/06/24 17:25:53 asimon83 Exp $
+$Id: tcView_viewer.tpl,v 1.80 2010/09/01 18:03:19 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20100901 - franciscom - refactoring using inc_tcbody.tpl
     20100621 - eloff - BUGID 3241 - Implement vertical layout
     20100615 - eloff - hide automation column if not enabled
     20100530 - franciscom - new JS function launchEditStep()
@@ -82,6 +83,7 @@ rev:
 
 {assign var="author_userinfo" value=$args_users[$args_testcase.author_id]}
 {assign var="updater_userinfo" value=""}
+
 {if $args_testcase.updater_id != ''}
   {assign var="updater_userinfo" value=$args_users[$args_testcase.updater_id]}
 {/if}
@@ -242,64 +244,17 @@ function launchEditStep(step_id)
   <input type="hidden" id="stepsControls_step_id" name="step_id" value="0" />
 	<input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
 
-<table class="simple">
-  {if $args_show_title == "yes"}
-	<tr>
-		<th colspan="{$tableColspan}">
-		{$args_testcase.tc_external_id}{$smarty.const.TITLE_SEP}{$args_testcase.name|escape}</th>
-	</tr>
-  {/if}
 
-  {if $args_show_version == "yes"}
-	  <tr>
-	  	<td class="bold" colspan="{$tableColspan}">{$tcView_viewer_labels.version}
-	  	{$args_testcase.version|escape}
-	  	</td>
-	  </tr>
-	{/if}
-
-	<tr class="time_stamp_creation">
-  		<td colspan="{$tableColspan}">
-      		{$tcView_viewer_labels.title_created}&nbsp;{localize_timestamp ts=$args_testcase.creation_ts}&nbsp;
-      		{$tcView_viewer_labels.by}&nbsp;{$author_userinfo->getDisplayName()|escape}
-  		</td>
-  </tr>
-
- {if $args_testcase.updater_last_name != "" || $args_testcase.updater_first_name != ""}
-	<tr class="time_stamp_creation">
-  		<td colspan="{$tableColspan}">
-    		{$tcView_viewer_labels.title_last_mod}&nbsp;{localize_timestamp ts=$args_testcase.modification_ts}
-		  	&nbsp;{$tcView_viewer_labels.by}&nbsp;{$updater_userinfo->getDisplayName()|escape}
-    	</td>
-  </tr>
- {/if}
- 
-
-
-	<tr>
-		<td class="bold" colspan="{$tableColspan}">{$tcView_viewer_labels.summary}</td>
-	</tr>
-	<tr>
-		<td colspan="{$tableColspan}">{$args_testcase.summary}</td>
-	</tr>
-
-	<tr>
-		<td class="bold" colspan="{$tableColspan}">{$tcView_viewer_labels.preconditions}</td>
-	</tr>
-	<tr>
-		<td colspan="{$tableColspan}">{$args_testcase.preconditions}</td>
-	</tr>
-
-	{* 20090718 - franciscom *}
-	{if $args_cf.before_steps_results neq ''}
-	<tr>
-	  <td>
-    {$args_cf.before_steps_results}
-    </td>
-	</tr>
-	{/if}
-
-{*  onclick="showHideByClass('span','order_info');event.stopPropagation();"> *}
+		{include file="inc_tcbody.tpl" 
+             inc_tcbody_close_table=false
+             inc_tcbody_testcase=$args_testcase
+		         inc_tcbody_show_title=$args_show_title
+             inc_tcbody_tableColspan=$tableColspan
+             inc_tcbody_labels=$tcView_viewer_labels
+             inc_tcbody_author_userinfo=$author_userinfo
+             inc_tcbody_updater_userinfo=$updater_userinfo
+             inc_tcbody_cf=$args_cf}
+		
 
 	{if $args_testcase.steps != ''}
 	{include file="inc_steps.tpl"

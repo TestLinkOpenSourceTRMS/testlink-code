@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_tcbody.tpl,v 1.2 2010/09/01 18:11:37 franciscom Exp $
+$Id: inc_tcbody.tpl,v 1.3 2010/09/01 19:14:06 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -19,13 +19,16 @@ rev:
 	  	{$inc_tcbody_testcase.version|escape}
 	  	</td>
 	  </tr>
+	  
+	{if $inc_tcbody_author_userinfo != ''}  
 	<tr class="time_stamp_creation">
   		<td colspan="{$inc_tcbody_tableColspan}">
       		{$inc_tcbody_labels.title_created}&nbsp;{localize_timestamp ts=$inc_tcbody_testcase.creation_ts}&nbsp;
       		{$inc_tcbody_labels.by}&nbsp;{$inc_tcbody_author_userinfo->getDisplayName()|escape}
   		</td>
   </tr>
-
+  {/if}
+  
  {if $inc_tcbody_testcase.updater_id != ''}
 	<tr class="time_stamp_creation">
   		<td colspan="{$inc_tcbody_tableColspan}">

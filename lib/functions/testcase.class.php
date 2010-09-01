@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.295 2010/08/31 20:07:11 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.296 2010/09/01 19:13:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100901 - franciscom - get_by_id() - new output option
  * 20100831 - franciscom - BUGID 3729 - get_by_name() 
  * 20100825 - franciscom - BUGID 3702 - _blind_delete() issue
  * 20100821 - franciscom - BUGID 3695 - Test Case Steps - Export/Import - missing attribute execution type
@@ -1832,7 +1833,7 @@ class testcase extends tlObjectWithAttachments
 	
 			 [options]:		
 	         			[output]: default 'full'
-	         					  domain 'full','essential'        
+	         					  domain 'full','essential','full_without_steps'        
 	
 	  returns: array 
 	
@@ -1892,6 +1893,7 @@ class testcase extends tlObjectWithAttachments
 		switch($my['options']['output'])
 		{
 			case 'full':
+			case 'full_without_steps':
 				$sql = "SELECT UA.login AS updater_login,UB.login AS author_login,
 			     		NHTC.name,NHTC.node_order,NHTCV.parent_id AS testcase_id, TCV.*,
 			     		UB.first AS author_first_name,UB.last AS author_last_name,

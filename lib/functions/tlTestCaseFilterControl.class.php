@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.18 2010/08/30 09:14:59 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.19 2010/09/01 09:18:08 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100901 - asimon - re-enable option "user_filter_default"
  * 20100830 - asimon - BUGID 3726: store user's selection of build and platform
  * 20100811 - asimon - BUGID 3566: show/hide CF
  * 20100810 - asimon - added TC ID filter for Test Cases
@@ -1293,11 +1294,16 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				// user is only simple tester and may not see/execute everything
 				$simple = true;
 			}
-			
+
 			$view_mode = $simple ? $this->configuration->exec_cfg->view_mode->tester : 'all';
 			
 			if ($view_mode != 'all') {
 				$visible_testers = (array)$this->user->getDisplayName();
+				$selection = (array)$this->user->dbID;
+			}
+
+			// re-enable option "user_filter_default"
+			if (!$selection && $this->configuration->exec_cfg->user_filter_default == 'logged_user') {
 				$selection = (array)$this->user->dbID;
 			}
 		}

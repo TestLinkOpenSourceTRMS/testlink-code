@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.29 2010/09/01 18:45:42 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.30 2010/09/01 19:29:22 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -39,7 +39,7 @@ rev:
           s="warning_step_number_already_exists,warning,warning_step_number,
              expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,
              btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
-             title_created,version,by,summary,preconditions,tc_external_id"}
+             title_created,version,by,summary,preconditions"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}

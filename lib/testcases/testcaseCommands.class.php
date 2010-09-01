@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.49 2010/09/01 19:23:29 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.50 2010/09/01 19:29:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -470,7 +470,7 @@ class testcaseCommands
 		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
 												null,array('output' => 'full_without_steps'));
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
-
+		$tcaseInfo[0]['tc_external_id'] = $external[0];
 		$guiObj->testcase = $tcaseInfo[0];
 		
 		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
@@ -514,9 +514,10 @@ class testcaseCommands
 		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
 												null,array('output' => 'full_without_steps'));
 
-		$guiObj->testcase = $tcaseInfo[0];
-		
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$tcaseInfo[0]['tc_external_id'] = $external[0];
+		$guiObj->testcase = $tcaseInfo[0];
+
 		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
 		                              $tcaseInfo[0]['version']); 
 
@@ -561,6 +562,7 @@ class testcaseCommands
 		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
 												null,array('output' => 'full_without_steps'));
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$tcaseInfo[0]['tc_external_id'] = $external[0];
 		$guiObj->testcase = $tcaseInfo[0];
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
         
@@ -606,8 +608,10 @@ class testcaseCommands
 		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
 												null,array('output' => 'full_without_steps'));
 
-        $guiObj->testcase = $tcaseInfo[0];
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$tcaseInfo[0]['tc_external_id'] = $external[0];
+        $guiObj->testcase = $tcaseInfo[0];
+
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
 		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 
@@ -639,8 +643,10 @@ class testcaseCommands
 		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
 												null,array('output' => 'full_without_steps'));
 
-		$guiObj->testcase = $tcaseInfo[0];
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$tcaseInfo[0]['tc_external_id'] = $external[0];
+        $guiObj->testcase = $tcaseInfo[0];
+
 		$guiObj->main_descr = lang_get('test_case');
 		$this->tcaseMgr->set_step_number($argsObj->step_set);
 		$guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
@@ -691,8 +697,10 @@ class testcaseCommands
 		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
 												null,array('output' => 'full_without_steps'));
 
-		$guiObj->testcase = $tcaseInfo[0];
 		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
+		$tcaseInfo[0]['tc_external_id'] = $external[0];
+		$guiObj->testcase = $tcaseInfo[0];
+
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'), $argsObj->step_number,
 		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 
 

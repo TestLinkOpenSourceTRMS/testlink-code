@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2010/08/30 21:11:29 $ by $Author: erikeloff $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2010/09/01 11:27:37 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
+ *  20100901 - Julian - added execution notes column (hidden)
  *	20100830 - franciscom - fixed warnings on eventviewer
  *	20100828 - eloff - adapt to rendering of status column
  *	20100827 - franciscom - refactoring - removed unused variables
@@ -29,6 +30,7 @@ require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
+$charset = config_get('charset');
 
 $tcase_mgr = new testcase($db);
 $args = init_args($db);
@@ -79,9 +81,16 @@ if( $args->doIt )
 		);
 		
 		$hasValue = false;
+		
+		$rowData[] = htmlentities(strip_tags($item['exec_notes']),ENT_QUOTES, $charset);
+		
+		if($item['exec_notes']) {
+			$hasValue = true;
+		}
+		
 		foreach ($item['cfields'] as $cf_value)
 		{
-			$rowData[] = $cf_value;
+			$rowData[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf_value, ENT_QUOTES, $charset));;
 			if ($cf_value) {
 				$hasValue = true;
 			}
@@ -248,8 +257,8 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
 function getColumnsDefinition($showPlatforms,$customFields)
 {
 
-	$colDef = array(array('title' => lang_get('test_suite'), 'width' => 80 ),
-					array('title' => lang_get('test_case'), 'width' => 80),
+	$colDef = array(array('title' => lang_get('test_suite'), 'width' => 80, 'type' => 'text'),
+					array('title' => lang_get('test_case'), 'width' => 80, 'type' => 'text'),
 					array('title' => lang_get('version'), 'width' => 20));
 		
 	if ($showPlatforms)
@@ -261,6 +270,8 @@ function getColumnsDefinition($showPlatforms,$customFields)
 				array('title' => lang_get('th_owner'), 'width' => 60),
 				array('title' => lang_get('date'), 'width' => 60),
 				array('title' => lang_get('status'), 'type' => 'status', 'width' => 30));
+				
+	$colDef[] = array('title' => lang_get('title_execution_notes'), 'type' => 'text', 'hidden' => true);
 
 
 	foreach ($customFields as $cfield)

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.157 2010/08/31 14:19:26 asimon83 Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.158 2010/09/01 13:18:25 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -47,7 +47,8 @@ $optionTransferName = 'ot';
 $args = init_args($cfg->spec,$optionTransferName);
 
 // BUGID 3532
-if ($args->doAction == "editStep" || $args->doAction == "createStep" || $args->doAction == "doCreateStep") {
+if ($args->doAction == "editStep" || $args->doAction == "createStep"
+		|| $args->doAction == "doCreateStep" || $args->doAction == "doUpdateStep") {
 	$cfg->webEditorCfg=getWebEditorCfg('steps_design');
 }
 

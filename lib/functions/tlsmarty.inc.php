@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.26 2010/08/19 19:16:49 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.27 2010/09/01 21:00:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
  * @internal Revisions:
  *
+ * 	20100901 - franciscom - added new image 
  *	20100621 - eloff - added guard_header_smarty() function
  * 	20100121 - franciscom - added show_help_icon to remove error on event viewer
  * 	20090304 - franciscom - removed some MAGIC NUMBERS 
@@ -259,6 +260,7 @@ class TLSmarty extends Smarty
         $this->assign("sort_img",$sort_img);
         $this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
         $this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
+        $this->assign("insert_step_img",TL_THEME_IMG_DIR . "/insert_step.png");
         
         $msg = lang_get('show_hide_api_info');
         $toggle_api_info_img="<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .

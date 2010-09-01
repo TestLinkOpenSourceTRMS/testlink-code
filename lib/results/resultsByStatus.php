@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.94 2010/09/01 14:39:57 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.95 2010/09/01 14:44:10 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -162,7 +162,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			
 			$tcaseName = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']). ':' . $testcase['name'];
 			$tcLink = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . 
-			          $testcase['tc_id'] . '">' . htmlentities($tcaseName) . '</a>';
+			          $testcase['tc_id'] . '">' . htmlspecialchars($tcaseName) . '</a>';
 			
 			if( !isset($pathCache[$testcase['tc_id']]) )
 			{

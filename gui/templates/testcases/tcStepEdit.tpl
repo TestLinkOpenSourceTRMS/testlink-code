@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.28 2010/08/08 13:31:45 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.29 2010/09/01 18:45:42 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -38,7 +38,8 @@ rev:
 {lang_get var="labels"
           s="warning_step_number_already_exists,warning,warning_step_number,
              expected_results,step_actions,step_number_verbose,btn_cancel,btn_create_step,
-             btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr"}
+             btn_copy_step,btn_save,cancel,warning_unsaved,step_number,execution_type_short_descr,
+             title_created,version,by,summary,preconditions,tc_external_id"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
@@ -128,6 +129,21 @@ DEBUG: $gui->action: {$gui->action} <br>
 	<input type="hidden" name="step_id" value="{$gui->step_id}" />
 	<input type="hidden" name="step_number" value="{$gui->step_number}" />
 	<input type="hidden" name="goback_url" value="{$goBackAction}" />
+
+
+		{include file="inc_tcbody.tpl" 
+             inc_tcbody_close_table=true
+             inc_tcbody_testcase=$gui->testcase
+		         inc_tcbody_show_title="yes"
+             inc_tcbody_tableColspan=2
+             inc_tcbody_labels=$labels
+             inc_tcbody_author_userinfo=''
+             inc_tcbody_updater_userinfo=''
+             inc_tcbody_cf=null}
+
+
+
+
 	<div class="groupBtn">
 		<input id="do_update_step" type="submit" name="do_update_step" 
 		       onclick="doAction.value='{$gui->operation}'" value="{$labels.btn_save}" />

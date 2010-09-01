@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.80 2010/09/01 18:03:19 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.81 2010/09/01 20:59:30 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -39,7 +39,7 @@ rev:
              title_last_mod,title_created,by,expected_results,keywords,
              btn_create_step,step_number,btn_reorder_steps,step_actions,
              execution_type_short_descr,delete_step,show_hide_reorder,
-             test_plan,platform,
+             test_plan,platform,insert_step,
              execution_type,test_importance,none,preconditions,btn_compare_versions"}
 
 {lang_get s='warning_delete_step' var="warning_msg"}
@@ -232,6 +232,19 @@ function launchEditStep(step_id)
   document.getElementById('stepsControls_doAction').value='editStep';
   document.getElementById('stepsControls').submit();
 }
+
+/**
+ * used instead of window.open().
+ *
+ */
+function launchInsertStep(step_id)
+{
+  document.getElementById('stepsControls_step_id').value=step_id;
+  document.getElementById('stepsControls_doAction').value='insertStep';
+  document.getElementById('stepsControls').submit();
+}
+
+
 </script>
 {/literal}
 
@@ -255,7 +268,6 @@ function launchEditStep(step_id)
              inc_tcbody_updater_userinfo=$updater_userinfo
              inc_tcbody_cf=$args_cf}
 		
-
 	{if $args_testcase.steps != ''}
 	{include file="inc_steps.tpl"
 	         layout=$gui->steps_results_layout

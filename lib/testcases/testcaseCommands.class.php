@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.48 2010/09/01 18:46:44 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.49 2010/09/01 19:23:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -264,8 +264,9 @@ class testcaseCommands
 		// BUGID 3610
 		$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
 
-		  // to get the name before the user operation
-        $tc_old = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
+		// 20100901 - seems useless
+		// to get the name before the user operation
+        // $tc_old = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id);
 
         $ret=$this->tcaseMgr->update($argsObj->tcase_id, $argsObj->tcversion_id, $argsObj->name, 
 		                             $argsObj->summary, $argsObj->preconditions, $argsObj->tcaseSteps, 
@@ -601,7 +602,11 @@ class testcaseCommands
 	    $guiObj = $this->initGuiBean($argsObj);
 		$guiObj->user_feedback = '';
 		
-		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
+												null,array('output' => 'full_without_steps'));
+
+        $guiObj->testcase = $tcaseInfo[0];
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
@@ -630,7 +635,11 @@ class testcaseCommands
 	function doReorderSteps(&$argsObj,$request)
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
-		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
+												null,array('output' => 'full_without_steps'));
+
+		$guiObj->testcase = $tcaseInfo[0];
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$guiObj->main_descr = lang_get('test_case');
 		$this->tcaseMgr->set_step_number($argsObj->step_set);
@@ -678,7 +687,11 @@ class testcaseCommands
 		$guiObj->action = __FUNCTION__;
 		$guiObj->operation = 'doUpdateStep';
 		
-		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
+												null,array('output' => 'full_without_steps'));
+
+		$guiObj->testcase = $tcaseInfo[0];
 		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'), $argsObj->step_number,
 		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 

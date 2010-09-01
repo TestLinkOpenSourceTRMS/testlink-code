@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.93 2010/08/31 19:40:15 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.94 2010/09/01 14:39:57 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100901 - Julian - added test case edit link for test case column
  *  20100831 - Julian - BUGID 3722 - fixed not run report
  *                    - BUGID 3721 - added without_bugs_counter again
  *                    - BUGID 3731 - fixed failed blocked test cases report
@@ -158,7 +159,11 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 				    $testerName = sprintf($deleted_user_label,$testcase[$user_key]);
 				}
 			}
+			
 			$tcaseName = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']). ':' . $testcase['name'];
+			$tcLink = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . 
+			          $testcase['tc_id'] . '">' . htmlentities($tcaseName) . '</a>';
+			
 			if( !isset($pathCache[$testcase['tc_id']]) )
 			{
 				$dummy=$tcase_mgr->getPathLayered(array($testcase['tc_id']));	
@@ -184,7 +189,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 				// When not run, test case version, is the version currently linked to test plan
 				$topLevelSuites[$topCache[$testcase['tc_id']]]['items'][$level][] = 
 								array('suiteName' => $verbosePath, 'level' => $level,
-								      'testTitle' => htmlspecialchars($tcaseName),
+								      'testTitle' => $tcLink,
 								      'testVersion' => $testcase['version'], 
 								      'platformName' => htmlspecialchars($testcase['platform_name']),
 								      'buildName' => htmlspecialchars($testcase['assigned_build_name']),
@@ -212,7 +217,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 				}
 				
 				$topLevelSuites[$topCache[$testcase['tc_id']]]['items'][$level][] = 
-								array('suiteName' => $verbosePath, 'testTitle' => htmlspecialchars($tcaseName),
+								array('suiteName' => $verbosePath, 'testTitle' => $tcLink,
 				                      'testVersion' => $testcase['tcversion_number'], 
 				                      'platformName' => htmlspecialchars($testcase['platform_name']),
 				                      'buildName' => htmlspecialchars($testcase['build_name']),
@@ -283,6 +288,7 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 
 /**
 * Function returns number of Test Cases in the Test Plan
+* @deprecated 1.9
 * @return string Link of Test ID + Title
 */
 function buildTCLink($tcID,$tcversionID, $title, $buildID,$testCaseExternalId, $tplanId)

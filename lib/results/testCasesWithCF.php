@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2010/09/01 11:27:37 $ by $Author: mx-julian $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/09/01 11:56:48 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -82,7 +82,7 @@ if( $args->doIt )
 		
 		$hasValue = false;
 		
-		$rowData[] = htmlentities(strip_tags($item['exec_notes']),ENT_QUOTES, $charset);
+		$rowData[] = strip_tags($item['exec_notes']);
 		
 		if($item['exec_notes']) {
 			$hasValue = true;

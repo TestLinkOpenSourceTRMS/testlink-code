@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.158 2010/09/01 13:18:25 asimon83 Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.159 2010/09/01 21:25:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ * 	20100901 - franciscom - work on insert step
  *  20100831 - asimon - BUGID 3532
  * 	20100828 - franciscom - BUGID 3156 tinymce problems - OK Internet Explorer 8, Firefox
  *  20100810 - asimon - BUGID 3579: solved tree refreshing problems
@@ -111,6 +112,7 @@ switch($args->doAction)
     case "doUpdateStep":
     case "doDeleteStep":
     case "doReorderSteps":
+    case "doInsertStep":
         $op = $commandMgr->$pfn($args,$_REQUEST);
         $doRender = true;
     break;
@@ -612,7 +614,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
                              'createStep' => 'doCreateStep', 'doCreateStep' => 'doCreateStep',
                              'doCopyStep' => 'doUpdateStep',
                              'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
-                             'doDeleteStep' => '', 'doReorderSteps' => '');
+                             'doDeleteStep' => '', 'doReorderSteps' => '',
+                             'doInsertStep' => 'doCreateStep');
 
 	
 	$key2work = 'initWebEditorFromTemplate';
@@ -645,6 +648,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
   			
     	    case "create":
 			case "doCreateStep":
+  			case "doInsertStep":
   			default:	
   				$initWebEditorFromTemplate = true;
   			break;
@@ -684,6 +688,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
         case "doDeleteStep":
         case "doReorderSteps":
         case "doCopyStep":
+        case "doInsertStep":
             $renderType = 'template';
             
             // Document !!!!

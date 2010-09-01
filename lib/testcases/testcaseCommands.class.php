@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.52 2010/09/01 20:10:32 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.53 2010/09/01 21:22:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -513,7 +513,6 @@ class testcaseCommands
   		$guiObj->template=$templateCfg->default_template;
 		$guiObj->action = __FUNCTION__;
 		
-		new dBug($guiObj);
 		return $guiObj;
 	}
 
@@ -727,6 +726,68 @@ class testcaseCommands
   		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;
 	}
+
+
+
+	/**
+   	 * doInsertStep
+     *
+     */
+	function doInsertStep(&$argsObj,$request)
+	{
+	    $guiObj = $this->initGuiBean($argsObj);
+		$guiObj->user_feedback = '';
+		$guiObj->step_exec_type = $argsObj->exec_type;
+        $guiObj->tcversion_id = $argsObj->tcversion_id;
+
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
+
+		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
+		$newStepNumber = $stepInfo['step_number'] + 1;
+ 
+   		// Get all existent steps
+   		$stepNumberSet = array();
+		$existentSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+		$stepsQty = count($existentSteps);
+		for($idx=0; $idx < $stepsQty; $idx++)
+		{
+			$stepNumberSet[$idx] = $existentSteps[$idx]['step_number'];
+		}
+		
+		$newStepNumber = $stepInfo['step_number'] + 1;
+        $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$newStepNumber,'','');
+		
+		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$newStepNumber,
+									  $guiObj->testcase['tc_external_id'] . ':' . 
+									  $guiObj->testcase['name'], $guiObj->testcase['version']); 
+
+		if( $op['status_ok'] )
+		{
+			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
+		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+		    $guiObj->cleanUpWebEditor = true;
+
+			// renumber steps only if new step hits an existent step number
+			$hitPos = array_search($newStepNumber, $stepNumberSet);
+			if( $hitPos !== FALSE )
+			{
+				// Process starts from this position
+			}
+		}	
+   		// Get all existent steps
+		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
+		$guiObj->action = __FUNCTION__;
+		$guiObj->step_number = $newStepNumber;
+
+		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
+		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+
+    	$templateCfg = templateConfiguration('tcStepEdit');
+  		$guiObj->template=$templateCfg->default_template;
+		return $guiObj;
+	}
+
 
 } // end class  
 ?>

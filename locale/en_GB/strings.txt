@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.669 2010/08/31 20:04:44 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.670 2010/09/01 11:17:00 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2435,9 +2435,16 @@ $TLS_list_of_not_run = "Not Run Test Cases";
 $TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 
+
 // ----- lib/results/resultsTC.php -----
 $TLS_result_on_last_build = '[Last Build]';
 $TLS_tcversion_indicator = ' [v%s]';
+
+
+//--
+$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
+$TLS_info_testCasesWithCF = "This Report shows all test cases with any custom field " .
+                            "set on test execution or an execution note (hidden).";
 
 
 // ----- cfg/reports.cfg.php -----
@@ -2460,7 +2467,6 @@ $TLS_link_report_total_bugs = "Bugs per Test Case";
 $TLS_link_report_uncovered_testcases = "Test Cases without Requirements Assignment";
 $TLS_link_report_tcases_with_cf = "Test Cases with Custom Fields info";
 $TLS_link_report_reqs_with_cf = "Requirements with Custom Fields info";
-$TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
 $TLS_caption_requirementsWithCF = $TLS_link_report_reqs_with_cf;
 $TLS_link_report_free_testcases_on_testproject = "Test Cases not assigned to Any Test Plan";
 

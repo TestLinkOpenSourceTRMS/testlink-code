@@ -1,11 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_tcbody.tpl,v 1.1 2010/09/01 18:04:22 franciscom Exp $
+$Id: inc_tcbody.tpl,v 1.2 2010/09/01 18:11:37 franciscom Exp $
 viewer for test case in test specification
 
 rev:
     20100901 - franciscom - display test case body 
-}
+*}
 <table class="simple">
   {if $inc_tcbody_show_title == "yes"}
 	<tr>

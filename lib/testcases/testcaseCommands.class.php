@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.51 2010/09/01 19:51:09 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.52 2010/09/01 20:10:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
  *  20100901 - franciscom - changes to *step method to display test case body on read only mode on GUI
+ *							initTestCaseBasicInfo() - new method to gather common logic
  *  20100808 - franciscom - initGuiBean() - added steps key to remove error display from event viewer
  *  20100716 - eloff - BUGID 3610 - fixes missing steps_results_layout in $gui
  *  20100625 - asimon - refactoring for new filter features,
@@ -105,6 +106,30 @@ class testcaseCommands
         $obj->loadOnCancelURL = "archiveData.php?edit=testcase&show_mode={$obj->show_mode}&id=%s&version_id=%s";
 		return $obj;
 	}
+	 
+	/**
+	 * initialize common test case information, useful when working on steps
+ 	 *
+ 	 */
+
+	function initTestCaseBasicInfo(&$argsObj,&$guiObj)
+	{
+		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
+												null,array('output' => 'full_without_steps'));
+		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$tcaseInfo[0]['tc_external_id'] = $external[0];
+		$guiObj->testcase = $tcaseInfo[0];
+		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
+		$guiObj->updaterObj = null;
+		if( !is_null($guiObj->testcase['updater_id']) )
+		{
+			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
+		}	
+	}
+
+	 
+	 
+	 
 	 
 	/**
 	 * 
@@ -466,20 +491,9 @@ class testcaseCommands
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
 
-		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
-												null,array('output' => 'full_without_steps'));
-		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
-		$tcaseInfo[0]['tc_external_id'] = $external[0];
-		$guiObj->testcase = $tcaseInfo[0];
-		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
-		$guiObj->updaterObj = null;
-		if( !is_null($guiObj->testcase['updater_id']) )
-		{
-			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
-		}	
-		
-		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
-		                              $tcaseInfo[0]['version']); 
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
+		$guiObj->main_descr = sprintf(lang_get('create_step'), $guiObj->testcase['tc_external_id'] . ':' . 
+									  $guiObj->testcase['name'], $guiObj->testcase['version']); 
         
 		$max_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
 		$max_step++;;
@@ -490,7 +504,6 @@ class testcaseCommands
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-        // $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
         
    		// Get all existent steps
@@ -515,22 +528,10 @@ class testcaseCommands
 		$guiObj->step_exec_type = $argsObj->exec_type;
         $guiObj->tcversion_id = $argsObj->tcversion_id;
 
-		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
-		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
-												null,array('output' => 'full_without_steps'));
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
+		$guiObj->main_descr = sprintf(lang_get('create_step'), $guiObj->testcase['tc_external_id'] . ':' . 
+									  $guiObj->testcase['name'], $guiObj->testcase['version']); 
 
-		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
-		$tcaseInfo[0]['tc_external_id'] = $external[0];
-		$guiObj->testcase = $tcaseInfo[0];
-		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
-		$guiObj->updaterObj = null;
-		if( !is_null($guiObj->testcase['updater_id']) )
-		{
-			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
-		}	
-
-		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
-		                              $tcaseInfo[0]['version']); 
 
 		$new_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
 		$new_step++;
@@ -555,7 +556,8 @@ class testcaseCommands
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;
@@ -569,20 +571,8 @@ class testcaseCommands
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
 		$guiObj->user_feedback = '';
-		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
-		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
-												null,array('output' => 'full_without_steps'));
-		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
-		$tcaseInfo[0]['tc_external_id'] = $external[0];
-		$guiObj->testcase = $tcaseInfo[0];
-		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
-		$guiObj->updaterObj = null;
-		if( !is_null($guiObj->testcase['updater_id']) )
-		{
-			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
-		}	
-	
-		
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
+
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
         
         $oWebEditorKeys = array('steps' => 'actions', 'expected_results' => 'expected_results');
@@ -593,7 +583,8 @@ class testcaseCommands
   		}
 
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
-		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 
+									  $guiObj->testcase['tc_external_id'] . ':' . 
+									  $guiObj->testcase['name'], $guiObj->testcase['version']); 
 
 		$guiObj->tcase_id = $argsObj->tcase_id;
 		$guiObj->tcversion_id = $argsObj->tcversion_id;
@@ -623,23 +614,12 @@ class testcaseCommands
 	    $guiObj = $this->initGuiBean($argsObj);
 		$guiObj->user_feedback = '';
 		
-		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
-		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
-												null,array('output' => 'full_without_steps'));
-
-		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
-		$tcaseInfo[0]['tc_external_id'] = $external[0];
-		$guiObj->testcase = $tcaseInfo[0];
-		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
-		$guiObj->updaterObj = null;
-		if( !is_null($guiObj->testcase['updater_id']) )
-		{
-			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
-		}	
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
 
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$stepInfo['step_number'],
-		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 
+									  $guiObj->testcase['tc_external_id'] . ':' . 
+									  $guiObj->testcase['name'], $guiObj->testcase['version']); 
 
         $op = $this->tcaseMgr->update_step($argsObj->step_id,$argsObj->step_number,$argsObj->steps,
                                            $argsObj->expected_results,$argsObj->exec_type);		
@@ -664,20 +644,7 @@ class testcaseCommands
 	function doReorderSteps(&$argsObj,$request)
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
-		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
-		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
-												null,array('output' => 'full_without_steps'));
-
-		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
-		$tcaseInfo[0]['tc_external_id'] = $external[0];
-		$guiObj->testcase = $tcaseInfo[0];
-		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
-		$guiObj->updaterObj = null;
-		if( !is_null($guiObj->testcase['updater_id']) )
-		{
-			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
-		}	
-
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
 		$guiObj->main_descr = lang_get('test_case');
 		$this->tcaseMgr->set_step_number($argsObj->step_set);
 		$guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
@@ -725,21 +692,10 @@ class testcaseCommands
 		$guiObj->operation = 'doUpdateStep';
 		
 		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
-		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
-												null,array('output' => 'full_without_steps'));
-
-		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
-		$tcaseInfo[0]['tc_external_id'] = $external[0];
-		$guiObj->testcase = $tcaseInfo[0];
-		$guiObj->authorObj = tlUser::getByID($this->db,$guiObj->testcase['author_id'],'id');
-		$guiObj->updaterObj = null;
-		if( !is_null($guiObj->testcase['updater_id']) )
-		{
-			$guiObj->updaterObj = tlUser::getByID($this->db,$guiObj->testcase['updater_id'],'id');
-		}	
-
-		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'), $argsObj->step_number,
-		                              $external[0] . ':' . $tcaseInfo[0]['name'], $tcaseInfo[0]['version']); 
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
+		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$argsObj->step_number,
+									  $guiObj->testcase['tc_external_id'] . ':' . 
+									  $guiObj->testcase['name'], $guiObj->testcase['version']); 
 
 		$new_step = $this->tcaseMgr->get_latest_step_number($argsObj->tcversion_id); 
 		$new_step++;
@@ -765,7 +721,8 @@ class testcaseCommands
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
+
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;

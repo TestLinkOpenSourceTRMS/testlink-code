@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_steps.tpl,v 1.3 2010/07/01 14:21:57 mx-julian Exp $
+$Id: inc_steps.tpl,v 1.4 2010/09/01 20:59:13 franciscom Exp $
 Purpose: Show the steps for a testcase in vertical or horizontal layout
          Included from files tcView_viewer.tpl and inc_exec_test_spec.tpl
 Author : eloff, 2010
@@ -12,9 +12,9 @@ Author : eloff, 2010
 	@param $steps Array of the steps
 	@param $edit_enabled Steps links to edit page if true
 *}
-{lang_get var="labels" s="show_hide_reorder, step_number, step_actions,
-                          expected_results, execution_type_short_descr,
-                          delete_step"}
+{lang_get var="inc_steps_labels" 
+          s="show_hide_reorder, step_number, step_actions,expected_results, 
+             execution_type_short_descr,delete_step,insert_step"}
 {lang_get s='warning_delete_step' var="warning_msg"}
 {lang_get s='delete' var="del_msgbox_title"}
 
@@ -23,17 +23,18 @@ Author : eloff, 2010
 		<th>
 		{if $edit_enabled && $steps != ''}
 			<img class="clickable" src="{$tlImages.reorder}" align="left"
-			     title="{$labels.show_hide_reorder}"
+			     title="{$inc_steps_labels.show_hide_reorder}"
 			     onclick="showHideByClass('span','order_info');">
 		{/if}
-			{$labels.step_number}
+			{$inc_steps_labels.step_number}
 		</th>
-		<th>{$labels.step_actions}</th>
-		<th>{$labels.expected_results}</th>
+		<th>{$inc_steps_labels.step_actions}</th>
+		<th>{$inc_steps_labels.expected_results}</th>
 		{if $session['testprojectOptions']->automationEnabled}
-		<th width="25">{$labels.execution_type_short_descr}</th>
+		<th width="25">{$inc_steps_labels.execution_type_short_descr}</th>
 		{/if}
 		{if $edit_enabled}
+		<th>&nbsp;</th>
 		<th>&nbsp;</th>
 		{/if}
 	</tr>
@@ -58,12 +59,18 @@ Author : eloff, 2010
 		{if $edit_enabled}
 		<td class="clickable_icon">
 			<img style="border:none;cursor: pointer;"
-			     title="{$labels.delete_step}"
-			     alt="{$labels.delete_step}"
+			     title="{$inc_steps_labels.delete_step}"
+			     alt="{$inc_steps_labels.delete_step}"
 			     onclick="delete_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
 					                               '{$del_msgbox_title}','{$warning_msg}');"
 			     src="{$delete_img}"/>
 		</td>
+		
+		<td class="clickable_icon">
+			<img style="border:none;cursor: pointer;"  title="{$inc_steps_labels.insert_step}"    alt="{$inc_steps_labels.insert_step}"
+			     onclick="launchInsertStep({$step_info.id});"    src="{$insert_step_img}"/>
+		</td>
+		
 		{/if}
 	</tr>
 	{/foreach}
@@ -71,14 +78,14 @@ Author : eloff, 2010
 	{* Vertical layout *}
 	{if $edit_enabled}
 	<tr><td>
-		<img class="clickable" src="{$tlImages.reorder}" align="left" title="{$labels.show_hide_reorder}"
+		<img class="clickable" src="{$tlImages.reorder}" align="left" title="{$inc_steps_labels.show_hide_reorder}"
 		onclick="showHideByClass('span','order_info');"></td>
-		<td>{$labels.show_hide_reorder}</td>
+		<td>{$inc_steps_labels.show_hide_reorder}</td>
 	</tr>
 	{/if}
 	{foreach from=$steps item=step_info}
 	<tr>
-		<th width="20">{$labels.step_number}
+		<th width="20">{$inc_steps_labels.step_number}
 		<span class="order_info" style='display:none'>
 		<input type="text" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
 		       value="{$step_info.step_number}"
@@ -86,9 +93,9 @@ Author : eloff, 2010
 		       maxlength="{#STEP_NUMBER_MAXLEN#}">
 		{include file="error_icon.tpl" field="step_number"}
 		</span>{$step_info.step_number}</th>
-		<th>{$labels.step_actions}</th>
+		<th>{$inc_steps_labels.step_actions}</th>
 		{if $session['testprojectOptions']->automationEnabled}
-		<th>{$labels.execution_type_short_descr}:
+		<th>{$inc_steps_labels.execution_type_short_descr}:
 		    {$gui->execution_types[$step_info.execution_type]}</th>
 		{else}
 		<th>&nbsp;</th>
@@ -105,8 +112,8 @@ Author : eloff, 2010
 		{if $edit_enabled}
 		<td class="clickable_icon">
 			<img style="border:none;cursor: pointer;"
-			     title="{$labels.delete_step}"
-			     alt="{$labels.delete_step}"
+			     title="{$inc_steps_labels.delete_step}"
+			     alt="{$inc_steps_labels.delete_step}"
 			     onclick="delete_confirmation({$step_info.id},
 			             '{$step_info.step_number|escape:'javascript'|escape}',
 			             '{$del_msgbox_title}','{$warning_msg}');"
@@ -116,7 +123,7 @@ Author : eloff, 2010
 	</tr>
 	<tr>
 		<th style="background: transparent; border: none"></th>
-		<th colspan="2">{$labels.expected_results}</th>
+		<th colspan="2">{$inc_steps_labels.expected_results}</th>
 	</tr>
 	<tr {if $edit_enabled} style="cursor:pointer;"
 	    onclick="launchEditStep({$step_info.id})"{/if}>

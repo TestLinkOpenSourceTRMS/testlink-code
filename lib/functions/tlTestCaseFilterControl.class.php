@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.19 2010/09/01 09:18:08 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.20 2010/09/01 11:29:28 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100901 - asimon - re-enabled filter for assigned user when assigning testcases
  * 20100901 - asimon - re-enable option "user_filter_default"
  * 20100830 - asimon - BUGID 3726: store user's selection of build and platform
  * 20100811 - asimon - BUGID 3566: show/hide CF
@@ -256,6 +257,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                          'filter_keywords',
 	                                                          'filter_priority',
 	                                                          'filter_execution_type',
+		                                                      // enabled user filter when assigning testcases
+		                                                      'filter_assigned_user',
 	                                                          'filter_custom_fields',
 	                                                          'filter_result'),
 	                                     'plan_add_mode' => array('filter_tc_id',
@@ -540,6 +543,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$this->filters[$name] = false;
 				$this->active_filters[$name] = null;
 			}
+		}
+
+		// special situation: the assigned user filter is in plan mode only needed for one feature
+		if ($this->mode == 'plan_mode' && $this->args->feature != 'tc_exec_assignment') {
+			$this->settings['filter_assigned_user'] = false;
 		}
 
 		// add the important settings to active filter array

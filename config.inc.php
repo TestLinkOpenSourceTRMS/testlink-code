@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.317 2010/08/31 14:19:26 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.318 2010/09/01 11:29:28 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100901 - asimon - re-enabled filter for assigned user when assigning testcases
  *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)	
  *  20100810 - asimon - BUGID 3317: added $tlCfg->req_cfg->external_req_management
  *  20100810 - asimon - added TC ID filter for Test Cases to $tlCfg->tree_filter_cfg
@@ -1124,6 +1125,7 @@ $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_toplevel_testsuite = ENABL
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_keywords = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_priority = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_execution_type = ENABLED;
+$tlCfg->tree_filter_cfg->testcases->plan_mode->filter_assigned_user = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_custom_fields = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->filter_result = ENABLED;
 $tlCfg->tree_filter_cfg->testcases->plan_mode->advanced_filter_mode_choice = ENABLED;

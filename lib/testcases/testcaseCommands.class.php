@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.47 2010/08/08 10:42:25 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.48 2010/09/01 18:46:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100901 - franciscom - changes to *step method to display test case body on read only mode on GUI
  *  20100808 - franciscom - initGuiBean() - added steps key to remove error display from event viewer
  *  20100716 - eloff - BUGID 3610 - fixes missing steps_results_layout in $gui
  *  20100625 - asimon - refactoring for new filter features,
@@ -96,6 +97,9 @@ class testcaseCommands
         {
         	$obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : 'show'; 
         }
+
+		// useful when working on steps
+		
 
 		// need to check where is used
         $obj->loadOnCancelURL = "archiveData.php?edit=testcase&show_mode={$obj->show_mode}&id=%s&version_id=%s";
@@ -461,9 +465,13 @@ class testcaseCommands
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
 
-		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
-		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
+		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
+												null,array('output' => 'full_without_steps'));
+		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 
+		$guiObj->testcase = $tcaseInfo[0];
+		
 		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
 		                              $tcaseInfo[0]['version']); 
         
@@ -476,7 +484,8 @@ class testcaseCommands
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
-        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
+        // $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$tcaseInfo[0]['id'],$argsObj->tcversion_id);
+        $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
         
    		// Get all existent steps
 		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);
@@ -484,6 +493,8 @@ class testcaseCommands
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 		$guiObj->action = __FUNCTION__;
+		
+		new dBug($guiObj);
 		return $guiObj;
 	}
 
@@ -498,8 +509,13 @@ class testcaseCommands
 		$guiObj->step_exec_type = $argsObj->exec_type;
         $guiObj->tcversion_id = $argsObj->tcversion_id;
 
-		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
-		$external = $this->tcaseMgr->getExternalID($tcaseInfo[0]['id'],$argsObj->testproject_id);
+		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
+												null,array('output' => 'full_without_steps'));
+
+		$guiObj->testcase = $tcaseInfo[0];
+		
+		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
 		$guiObj->main_descr = sprintf(lang_get('create_step'), $external[0] . ':' . $tcaseInfo[0]['name'], 
 		                              $tcaseInfo[0]['version']); 
 
@@ -540,8 +556,11 @@ class testcaseCommands
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
 		$guiObj->user_feedback = '';
-		$tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
+		$tcaseInfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id,$argsObj->tcversion_id,
+												null,array('output' => 'full_without_steps'));
 		$external = $this->tcaseMgr->getExternalID($argsObj->tcase_id,$argsObj->testproject_id);
+		$guiObj->testcase = $tcaseInfo[0];
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
         
         $oWebEditorKeys = array('steps' => 'actions', 'expected_results' => 'expected_results');

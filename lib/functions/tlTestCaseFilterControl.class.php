@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.20 2010/09/01 11:29:28 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.21 2010/09/01 12:28:17 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100901 - asimon - show button "show/hide cf" only when there are cfields
  * 20100901 - asimon - re-enabled filter for assigned user when assigning testcases
  * 20100901 - asimon - re-enable option "user_filter_default"
  * 20100830 - asimon - BUGID 3726: store user's selection of build and platform
@@ -1342,6 +1343,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	private function init_filter_custom_fields() {
 		
 		$key = 'filter_custom_fields';
+
+		$this->filters[$key] = false;
+		$this->active_filters[$key] = null;
+
 		if (!$this->exec_cf_mgr) {
 			$this->exec_cf_mgr = new exec_cfield_mgr($this->db, $this->args->testproject_id);
 		}
@@ -1430,13 +1435,13 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				} // end of switch
 
 			} // end of foreach
-		}
 
-		// BUGID 3566: show/hide CF
-		$this->filters[$key] = array('items' => $menu, 
-			                         'btn_label' => $btn_label, 
-			                         'collapsed' => $collapsed);
-		$this->active_filters[$key] = $selection;
+			// BUGID 3566: show/hide CF
+			$this->filters[$key] = array('items' => $menu,
+										 'btn_label' => $btn_label,
+										 'collapsed' => $collapsed);
+			$this->active_filters[$key] = $selection;
+		}
 	} // end of method
 
 	private function init_filter_result() {

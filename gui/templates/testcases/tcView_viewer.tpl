@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.81 2010/09/01 20:59:30 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.82 2010/09/01 21:02:19 franciscom Exp $
 viewer for test case in test specification
 
 rev:
     20100901 - franciscom - refactoring using inc_tcbody.tpl
+                            added launchInsertStep()
     20100621 - eloff - BUGID 3241 - Implement vertical layout
     20100615 - eloff - hide automation column if not enabled
     20100530 - franciscom - new JS function launchEditStep()
@@ -240,7 +241,7 @@ function launchEditStep(step_id)
 function launchInsertStep(step_id)
 {
   document.getElementById('stepsControls_step_id').value=step_id;
-  document.getElementById('stepsControls_doAction').value='insertStep';
+  document.getElementById('stepsControls_doAction').value='doInsertStep';
   document.getElementById('stepsControls').submit();
 }
 

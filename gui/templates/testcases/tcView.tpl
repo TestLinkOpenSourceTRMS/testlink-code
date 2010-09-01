@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.42 2010/08/14 15:47:09 franciscom Exp $
+$Id: tcView.tpl,v 1.43 2010/09/01 14:57:26 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -182,7 +182,7 @@ function validateStepsReorder(formOID)
         {assign var="vid" value=$gui->tc_current_version[idx][0].id}
         {assign var="div_id" value="vers_$vid"}
         {assign var="memstatus_id" value="mem_$div_id"}
-  
+        <br />
         {include file="inc_show_hide_mgmt.tpl" 
                  show_hide_container_title=$labels.other_versions
                  show_hide_container_id=$div_id

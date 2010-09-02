@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.673 2010/09/01 21:03:05 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.674 2010/09/02 15:08:17 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1654,6 +1654,13 @@ $TLS_partially_passed = "Partially passed";
 $TLS_partially_passed_reqs = "Partially passed Requirements";
 $TLS_uncovered = "Not covered";
 $TLS_uncovered_reqs = "Not covered Requirements";
+$TLS_linked_tcs = "Linked test cases";
+$TLS_no_linked_tcs = "No linked test cases";
+$TLS_info_resultsReqs = "This report shows existing requirements and provides information " .
+                        "about their testing progress, expressed by the number of linked " .
+                        "test cases with the corresponding execution results. To see " .
+                        "the result for each linked test case of a requirement make the " .
+                        "hidden \"Linked test cases\" column visible.";
 
 // IMPORTANT for dynamic generation of labels
 // $TLS_req_title_<test case status>

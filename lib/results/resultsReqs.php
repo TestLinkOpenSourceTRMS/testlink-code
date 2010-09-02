@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2010/08/26 07:27:47 $ by $Author: mx-julian $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2010/09/02 15:08:15 $ by $Author: mx-julian $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20100902 - Julian - BUGID 3717 - show linked tcs and the results for each req
  * 20100823 - Julian - table now uses a unique table id per test project
  * 20100820 - asimon - BUGID 3439: little refactorizations
  * 20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
@@ -34,6 +35,7 @@ $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
 
 $glue_char = config_get('gui_title_separator_1');
+$glue_char_tc = config_get('testcase_cfg')->glue_character;
 // BUGID 3439
 $no_srs_msg_key = 'no_srs_defined';
 $no_finished_reqs_msg_key = 'no_finished_reqs';
@@ -50,7 +52,9 @@ $status_labels = init_labels($req_cfg->status_labels);
 $labels = array('requirements' => lang_get('requirements'),
                 'type' => lang_get('type'),
                 'na' => lang_get('not_aplicable'),
-                'req_availability' => lang_get('req_availability'));
+                'req_availability' => lang_get('req_availability'),
+                'linked_tcs' => lang_get('linked_tcs'),
+                'no_linked_tcs' => lang_get('no_linked_tcs'));
 
 $status_code_map = array();
 foreach ($results_cfg['status_label_for_exec_ui'] as $status => $label) {
@@ -77,6 +81,7 @@ $args = init_args($tproject_mgr);
 $gui = init_gui($args);
 
 $req_ids = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
+$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 $req_spec_map = array();
 $tc_ids = array();
 $testcases = array();
@@ -195,6 +200,9 @@ if (count($req_spec_map)) {
 	// complete progress
 	$columns[] = array('title' => lang_get('progress'), 'width' => 60, 'groupable' => 'false');
 	
+	$columns[] = array ('title' => $labels['linked_tcs'], 'groupable' => 'false', 'width' => 250, 
+	             'hidden' => 'true', 'type' => 'text');
+	
 	// data for rows
 	$rows = array();
 	
@@ -291,6 +299,30 @@ if (count($req_spec_map)) {
 			
 			// complete progress
 			$single_row[] = ($total_count) ? comment_percentage($progress_percentage) : $labels['na'];
+			
+			//BUGID 3717 - show all linked tcversions incl exec result
+			$linked_tcs_with_status = '';
+			if (count($req_info['linked_testcases']) > 0 ) {
+				foreach($req_info['linked_testcases'] as $testcase) {
+					$tc_id = $testcase['id'];
+					$status = $status_code_map['not_run'];
+					
+					if(isset($testcases[$tc_id]['exec_status'])) {
+						$status = $testcases[$tc_id]['exec_status'];
+					}
+					
+					$colored_status = '<span class="' . $eval_status_map[$status]['css_class'] . '">[' . 
+					                  $eval_status_map[$status]['label'] . ']</span>';
+					                  
+					$linked_tcs_with_status .= "{$colored_status} {$prefix}{$glue_char_tc}" .
+					                           "{$testcase['tc_external_id']}{$glue_char}" .
+					                           "{$testcase['name']}<br>";
+				}
+			} else  {
+				$linked_tcs_with_status = $labels['no_linked_tcs'];
+			}
+			
+			$single_row[] = $linked_tcs_with_status;
 			
 			$rows[] = $single_row;
 		}

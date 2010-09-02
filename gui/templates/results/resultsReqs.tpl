@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.21 2010/08/23 14:09:48 asimon83 Exp $
+$Id: resultsReqs.tpl,v 1.22 2010/09/02 15:08:17 mx-julian Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -16,7 +16,8 @@ rev:
     20090111 - franciscom - BUGID 1967 + Refactoring
 *}
 {lang_get var='labels'
-          s='title_result_req_testplan, show_only_finished_reqs, generated_by_TestLink_on'}
+          s='title_result_req_testplan, show_only_finished_reqs, 
+          generated_by_TestLink_on, info_resultsReqs'}
 
 {include file="inc_head.tpl" openHead="yes"}
 
@@ -58,11 +59,15 @@ rev:
 	<div class="user_feedback">
     {$gui->warning_msg}
     </div>
-{/if}    
+{/if}
 
-</div>
+<br />
+<p class="italic">{$labels.info_resultsReqs}</p>
+<br />
 
 {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
+
+</div>
 
 </body>
 

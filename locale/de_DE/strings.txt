@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.184 2010/09/01 11:40:30 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.185 2010/09/02 15:08:15 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1659,6 +1659,14 @@ $TLS_partially_passed = "Teilweise erfüllt";
 $TLS_partially_passed_reqs = "Teilweise erfüllte Anforderungen";
 $TLS_uncovered = "nicht abgedeckt";
 $TLS_uncovered_reqs = "Nicht abgedeckte Anforderungen";
+$TLS_linked_tcs = "Zugewiesene Testfälle";
+$TLS_no_linked_tcs = "Keine zugewiesenen Testfälle";
+$TLS_info_resultsReqs = "Dieser Report zeigt die existierenden Anforderungen und stellt " .
+                        "Informationen über ihren Testfortschritt bereit. Dieser wird " .
+                        "durch die Anzahl der zugewiesenen Testfälle und deren Testergebnisse " .
+                        "ausgedrückt. Um die Testergebnisse für jeden zugewiesenen Testfall " .
+                        "sehen zu können machen sie die versteckte Spalte \"Zugewiesene " .
+                        "Testfälle\" sichtbar";
 
 // IMPORTANT for dynamic generation labels
 // $TLS_req_title_<test case status> 

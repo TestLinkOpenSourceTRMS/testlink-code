@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.7 2010/08/26 07:27:47 mx-julian Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.8 2010/09/02 09:31:19 mx-julian Exp $
  *
  * Lists results and progress by tester per build.
  * 
@@ -82,12 +82,20 @@ foreach ($matrix as $build_id => $build_execution_map) {
 		// add count and percentage for each possible status
 		foreach ($status_map as $status => $code) {
 			$current_row[] = $statistics[$status]['count'];
-			$current_row[] = $statistics[$status]['percentage'];
+			
+			//use html comment to allow js sort this column properly
+			$status_percentage = is_numeric($statistics[$status]['percentage']) ? 
+			                     $statistics[$status]['percentage'] : -1;
+			$padded_status_percentage = sprintf("%010d", $status_percentage);
+			$commented_status_percentage = "<!-- $padded_status_percentage --> " .
+			                               "{$statistics[$status]['percentage']}";
+			
+			$current_row[] = $commented_status_percentage;
 		}
 		
 		// add general progress for this user
 		// add html comment with which js can sort the column
-		$percentage = is_numeric($statistics['progress']) ? $statistics['progress'] : 0;
+		$percentage = is_numeric($statistics['progress']) ? $statistics['progress'] : -1;
 		$padded_percentage = sprintf("%010d", $percentage); //bring all percentages to same length
 		$commented_progress = "<!-- $padded_percentage --> {$statistics['progress']}";
 		

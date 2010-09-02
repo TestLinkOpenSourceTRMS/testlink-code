@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.296 2010/09/01 19:13:24 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.297 2010/09/02 18:13:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100902 - franciscom - BUGID 3736 - update_last_modified()
  * 20100901 - franciscom - get_by_id() - new output option
  * 20100831 - franciscom - BUGID 3729 - get_by_name() 
  * 20100825 - franciscom - BUGID 3702 - _blind_delete() issue
@@ -4673,6 +4674,21 @@ class testcase extends tlObjectWithAttachments
 			$this->create_step($tcversion_id,$steps[$idx]['step_number'],$steps[$idx]['actions'],
 							   $steps[$idx]['expected_results'],$steps[$idx]['execution_type']);
 		}
+	}
+
+	/**
+	 * update_last_modified
+ 	 *
+ 	 */
+	function update_last_modified($tcversion_id,$user_id,$time_stamp=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$changed_ts = !is_null($time_stamp) ? $time_stamp : $this->db->db_now();
+		$sql = " UPDATE {$this->tables['tcversions']} tcversions " .
+		       " SET updater_id=" . $this->db->prepare_int($user_id) . ", " .
+			   " modification_ts = " . $changed_ts . 
+		   	   " WHERE tcversions.id = " . $this->db->prepare_int($tcversion_id); 
+		$this->db->exec_query($sql);
 	}
 
 

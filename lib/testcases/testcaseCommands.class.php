@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.53 2010/09/01 21:22:58 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.54 2010/09/02 18:21:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20100902 - franciscom - BUGID 3736
  *  20100901 - franciscom - changes to *step method to display test case body on read only mode on GUI
  *							initTestCaseBasicInfo() - new method to gather common logic
  *  20100808 - franciscom - initGuiBean() - added steps key to remove error display from event viewer
@@ -98,9 +99,6 @@ class testcaseCommands
         {
         	$obj->$p2check = !is_null($argsObj->$p2check) ? $argsObj->$p2check : 'show'; 
         }
-
-		// useful when working on steps
-		
 
 		// need to check where is used
         $obj->loadOnCancelURL = "archiveData.php?edit=testcase&show_mode={$obj->show_mode}&id=%s&version_id=%s";
@@ -536,12 +534,15 @@ class testcaseCommands
 		$new_step++;
         $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$new_step,
                                            $argsObj->steps,$argsObj->expected_results,$argsObj->exec_type);	
-                                           	
+                              
+        new dBug($op);                                   	
 		if( $op['status_ok'] )
 		{
 			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
 		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
 		    $guiObj->cleanUpWebEditor = true;
+			$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+			$this->initTestCaseBasicInfo($argsObj,$guiObj);
 		}	
 
 		$guiObj->action = __FUNCTION__;
@@ -623,6 +624,9 @@ class testcaseCommands
         $op = $this->tcaseMgr->update_step($argsObj->step_id,$argsObj->step_number,$argsObj->steps,
                                            $argsObj->expected_results,$argsObj->exec_type);		
 
+		$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
+
 		$guiObj->tcversion_id = $argsObj->tcversion_id;
 		$guiObj->step_id = $argsObj->step_id;
 		$guiObj->step_number = $stepInfo['step_number'];
@@ -643,9 +647,11 @@ class testcaseCommands
 	function doReorderSteps(&$argsObj,$request)
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
-		$this->initTestCaseBasicInfo($argsObj,$guiObj);
+		// $this->initTestCaseBasicInfo($argsObj,$guiObj);
 		$guiObj->main_descr = lang_get('test_case');
 		$this->tcaseMgr->set_step_number($argsObj->step_set);
+		$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
 		$guiObj->template="archiveData.php?version_id={$argsObj->tcversion_id}&" . 
 						  "edit=testcase&id={$argsObj->tcase_id}&show_mode={$guiObj->show_mode}";
 		return $guiObj;
@@ -672,6 +678,9 @@ class testcaseCommands
 
 		$guiObj->user_feedback = '';
         $op = $this->tcaseMgr->delete_step_by_id($argsObj->step_id);
+   		$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+		$this->initTestCaseBasicInfo($argsObj,$guiObj);
+
 		return $guiObj;
 	}
 
@@ -708,6 +717,9 @@ class testcaseCommands
 		{
 			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created_as_copy'),$new_step,$argsObj->step_number);
 		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+
+   			$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+			$this->initTestCaseBasicInfo($argsObj,$guiObj);
 		}	
 
 
@@ -773,6 +785,10 @@ class testcaseCommands
 			{
 				// Process starts from this position
 			}
+			$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
+			$this->initTestCaseBasicInfo($argsObj,$guiObj);
+
+			
 		}	
    		// Get all existent steps
 		$guiObj->tcaseSteps = $this->tcaseMgr->get_steps($argsObj->tcversion_id);

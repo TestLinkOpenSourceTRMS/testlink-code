@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2010/09/02 15:08:15 $ by $Author: mx-julian $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2010/09/03 11:26:56 $ by $Author: mx-julian $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -54,7 +54,8 @@ $labels = array('requirements' => lang_get('requirements'),
                 'na' => lang_get('not_aplicable'),
                 'req_availability' => lang_get('req_availability'),
                 'linked_tcs' => lang_get('linked_tcs'),
-                'no_linked_tcs' => lang_get('no_linked_tcs'));
+                'no_linked_tcs' => lang_get('no_linked_tcs'),
+                'goto_testspec' => lang_get('goto_testspec'));
 
 $status_code_map = array();
 foreach ($results_cfg['status_label_for_exec_ui'] as $status => $label) {
@@ -305,18 +306,22 @@ if (count($req_spec_map)) {
 			if (count($req_info['linked_testcases']) > 0 ) {
 				foreach($req_info['linked_testcases'] as $testcase) {
 					$tc_id = $testcase['id'];
-					$status = $status_code_map['not_run'];
 					
+					$status = $status_code_map['not_run'];
 					if(isset($testcases[$tc_id]['exec_status'])) {
 						$status = $testcases[$tc_id]['exec_status'];
 					}
 					
 					$colored_status = '<span class="' . $eval_status_map[$status]['css_class'] . '">[' . 
 					                  $eval_status_map[$status]['label'] . ']</span>';
-					                  
-					$linked_tcs_with_status .= "{$colored_status} {$prefix}{$glue_char_tc}" .
-					                           "{$testcase['tc_external_id']}{$glue_char}" .
-					                           "{$testcase['name']}<br>";
+					
+					$tc_name = $prefix . $glue_char_tc . $testcase['tc_external_id'] . $glue_char .
+					           $testcase['name'];
+					           
+					$tc_edit_link = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id=" .
+					                $tc_id . "\" title = \"{$labels['goto_testspec']}\">" . $tc_name . "</a>";
+					
+					$linked_tcs_with_status .= "{$colored_status} {$tc_edit_link}<br>";
 				}
 			} else  {
 				$linked_tcs_with_status = $labels['no_linked_tcs'];

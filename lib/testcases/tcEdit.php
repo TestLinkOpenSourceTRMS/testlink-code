@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.159 2010/09/01 21:25:20 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.160 2010/09/03 17:02:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -45,14 +45,7 @@ require_once("web_editor.php");
 $cfg = getCfg();
 testlinkInitPage($db);
 $optionTransferName = 'ot';
-$args = init_args($cfg->spec,$optionTransferName);
-
-// BUGID 3532
-if ($args->doAction == "editStep" || $args->doAction == "createStep"
-		|| $args->doAction == "doCreateStep" || $args->doAction == "doUpdateStep") {
-	$cfg->webEditorCfg=getWebEditorCfg('steps_design');
-}
-
+$args = init_args($cfg,$optionTransferName);
 require_once(require_web_editor($cfg->webEditorCfg['type']));
 
 $tcase_mgr = new testcase($db);
@@ -334,7 +327,7 @@ if ($show_newTC_form)
   returns:
 
 */
-function init_args($spec_cfg,$otName)
+function init_args(&$cfgObj,$otName)
 {
     $tc_importance_default=config_get('testcase_importance_default');
     
@@ -439,6 +432,21 @@ function init_args($spec_cfg,$otName)
 	$args->basehref = $_SESSION['basehref'];
 
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
+
+
+	// BUGID 3532
+	// if ($args->doAction == "editStep" || $args->doAction == "createStep" || 
+	// 	$args->doAction == "doCreateStep" || $args->doAction == "doUpdateStep") {
+	// 	$cfg->webEditorCfg = getWebEditorCfg('steps_design');
+	// }
+	$action2check = array("editStep" => true,"createStep" => true, "doCreateStep" => true,
+						  "doUpdateStep" => true, "doInsertStep" => true);
+	
+	if( isset($action2check[$args->doAction]) )
+	{
+		$cfgObj->webEditorCfg = getWebEditorCfg('steps_design');	
+	}   
+
     return $args;
 }
 

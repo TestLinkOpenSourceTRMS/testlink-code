@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: reports.cfg.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/07/31 18:49:49 $ by $Author: asimon83 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/09/03 11:25:53 $ by $Author: mx-julian $
  * @author Martin Havlat
  *
  * SCOPE: Definition of report/metrics menu 
  * 
  * Revision:
+ *  20100903 - Julian - BUGID 37006 - disabled uncovered_testcases report 
  *  20100731 - asimon - added results by tester per build and assignment overview
  *  20090421 - amitkhullar- BUGID 2410 - Custom Field report for Test Plan
  *  20090414 - franciscom - BUGID 2363 - free test cases i.e. not assigned to a test plan.
@@ -155,12 +156,12 @@ $tlCfg->reports_list['results_requirements'] = array(
 	'enabled' => 'req',
 	'format' => 'format_html'
 );
-$tlCfg->reports_list['uncovered_testcases'] = array( 
-	'title' => 'link_report_uncovered_testcases',
-	'url' => 'lib/results/uncoveredTestCases.php',
-	'enabled' => 'req',
-	'format' => 'format_html'
-);
+//$tlCfg->reports_list['uncovered_testcases'] = array( 
+//	'title' => 'link_report_uncovered_testcases',
+//	'url' => 'lib/results/uncoveredTestCases.php',
+//	'enabled' => 'req',
+//	'format' => 'format_html'
+//);
 $tlCfg->reports_list['list_problems'] = array( 
 	'title' => 'link_report_total_bugs',
 	'url' => 'lib/results/resultsBugs.php',

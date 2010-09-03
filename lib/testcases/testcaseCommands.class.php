@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.55 2010/09/03 17:13:55 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.56 2010/09/03 17:54:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100903 - franciscom - work on insert step
  *  20100902 - franciscom - BUGID 3736
  *  20100901 - franciscom - changes to *step method to display test case body on read only mode on GUI
  *							initTestCaseBasicInfo() - new method to gather common logic
@@ -650,7 +651,6 @@ class testcaseCommands
 	function doReorderSteps(&$argsObj,$request)
 	{
 	    $guiObj = $this->initGuiBean($argsObj);
-		// $this->initTestCaseBasicInfo($argsObj,$guiObj);
 		$guiObj->main_descr = lang_get('test_case');
 		$this->tcaseMgr->set_step_number($argsObj->step_set);
 		$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
@@ -764,14 +764,12 @@ class testcaseCommands
 		for($idx=0; $idx < $stepsQty; $idx++)
 		{
 			$stepNumberSet[$idx] = $existentSteps[$idx]['step_number'];
+			$stepIDSet[$idx] = $existentSteps[$idx]['id'];
 		}
-
 		
 		$stepInfo = $this->tcaseMgr->get_step_by_id($argsObj->step_id);
 		$newStepNumber = $stepInfo['step_number'] + 1;
 	    $op = $this->tcaseMgr->create_step($argsObj->tcversion_id,$newStepNumber,'','');
-		new dBug($op);
-		
  		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$newStepNumber,
 									  $guiObj->testcase['tc_external_id'] . ':' . 
 									  $guiObj->testcase['name'], $guiObj->testcase['version']); 
@@ -787,6 +785,23 @@ class testcaseCommands
 			if( $hitPos !== FALSE )
 			{
 				// Process starts from this position
+				$just_renumbered = array('pos' => $hitPos, 'value' => $newStepNumber+1); 
+				$renumbered[$stepIDSet[$hitPos]] = $just_renumbered['value']; 
+				
+				// now check if new renumbered collides with next
+				// if not nothing needs to be done
+				// if yes need to loop
+				$startFrom = $hitPos +1;
+				$endOn = count($stepNumberSet);
+				for($jdx = $startFrom; $jdx < $endOn; $jdx++)
+				{
+					if( $stepNumberSet[$jdx] == $just_renumbered['value'] )
+					{
+						$just_renumbered['value']++;
+						$renumbered[$stepIDSet[$jdx]] = $just_renumbered['value']; 
+					}
+				}
+				$this->tcaseMgr->set_step_number($renumbered);
 			}
 			$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 			$this->initTestCaseBasicInfo($argsObj,$guiObj);
@@ -801,9 +816,6 @@ class testcaseCommands
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
 		$guiObj->step_set = is_null($guiObj->step_set) ? '' : implode(",",array_keys($guiObj->step_set));
         $guiObj->loadOnCancelURL = sprintf($guiObj->loadOnCancelURL,$argsObj->tcase_id,$argsObj->tcversion_id);
-
-
-		new dBug($guiObj);
     	$templateCfg = templateConfiguration('tcStepEdit');
   		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;

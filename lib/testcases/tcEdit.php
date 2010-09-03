@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.160 2010/09/03 17:02:04 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.161 2010/09/03 17:54:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -623,7 +623,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$cfgObj)
                              'doCopyStep' => 'doUpdateStep',
                              'editStep' => 'doUpdateStep', 'doUpdateStep' => 'doUpdateStep',  
                              'doDeleteStep' => '', 'doReorderSteps' => '',
-                             'doInsertStep' => 'doCreateStep');
+                             'doInsertStep' => 'doUpdateStep');
 
 	
 	$key2work = 'initWebEditorFromTemplate';

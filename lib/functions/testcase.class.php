@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.297 2010/09/02 18:13:00 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.298 2010/09/04 17:16:51 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -450,7 +450,7 @@ class testcase extends tlObjectWithAttachments
 	    $tcase_id = $this->tree_manager->new_node($parent_id,$this->my_node_type,$safeLenName,$order,$id);
 	    $ret['id'] = $tcase_id;
 	    $ret['external_id'] = $tcaseNumber;
-		if( !$ret['has_duplicate'] )
+		if( !$ret['has_duplicate'] && ($originalNameLen > $name_max_len) )
 		{
 			$ret['new_name'] = $safeLenName;
 			$ret['msg'] = sprintf(lang_get('testcase_name_length_exceeded'),$originalNameLen,$name_max_len);

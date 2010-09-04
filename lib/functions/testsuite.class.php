@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.98 2010/07/15 16:45:41 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.99 2010/09/04 17:17:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100904 - franciscom - BUGID 3571 - get_by_name() interface changes
  * 20100602 - franciscom - BUGID 3498 - get_by_name() - missing JOIN
  * 20100328 - franciscom - get_by_id() interface and return set changes
  *						   get_children() - new method - contribution - BUGID 2645
@@ -334,15 +335,21 @@ class testsuite extends tlObjectWithAttachments
 	           name: testsuite name
 	
 	  @internal Revisions
+	  20100904 - added parent_id
 	  20100602 - BUGID 3498	
 	*/
-	function get_by_name($name)
+	function get_by_name($name, $parent_id=null)
 	{
 		$sql = " SELECT TS.*, NH.name, NH.parent_id " .
 			   " FROM {$this->tables['testsuites']} TS " .
 			   " JOIN {$this->tables['nodes_hierarchy']} NH " .
 			   " ON NH.id = TS.id " .
 			   " WHERE NH.name = '" . $this->db->prepare_string($name) . "'";
+		
+		if( !is_null($parent_id) )
+		{
+			$sql .= " AND NH.parent_id = " . $this->db->prepare_int($parent_id);	
+		}
 		
 		$recordset = $this->db->get_recordset($sql);
 		return $recordset;

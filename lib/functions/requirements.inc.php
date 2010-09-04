@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.110 2010/08/28 13:36:17 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.111 2010/09/04 09:56:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100904 - franciscom - BUGID 0003745: CSV Requirements Import Updates Frozen Requirement
  * 20100828 - franciscom - deprecated functions removed
  * 20100508 - franciscom - BUGID 3447: CVS Import - add new column type 
  * 20100301 - asimon - modified req_link_replace()
@@ -92,11 +93,20 @@ function executeImportedReqs(&$db,$arrImportSource, $map_cur_reqdoc_id,$conflict
 				{
 					$item = current($req_mgr->getByDocID($docID,$tprojectID));
 					$last_version = $req_mgr->get_last_version_info($item['id']);
-					$op = $req_mgr->update($item['id'],$last_version['id'],$docID,$title,$scope,$userID,
-						                   $status,$type,$expected_coverage,$node_order,SKIP_CONTROLS);
-					if( $op['status_ok']) 
+					
+					// BUGID 0003745: CSV Requirements Import Updates Frozen Requirement
+					if( $last_version['is_open'] == 1 )
 					{
-						$import_status['msg'] = lang_get('req_import_result_overwritten');
+						$op = $req_mgr->update($item['id'],$last_version['id'],$docID,$title,$scope,$userID,
+							                   $status,$type,$expected_coverage,$node_order,SKIP_CONTROLS);
+						if( $op['status_ok']) 
+						{
+							$import_status['msg'] = lang_get('req_import_result_overwritten');
+						}
+					}	
+					else
+					{
+						$import_status['msg'] = lang_get('req_import_result_skipped_is_frozen');
 					}
 				}
 				elseif ($conflictSolution == 'skip') 

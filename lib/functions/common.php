@@ -13,12 +13,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.195 2010/08/31 20:08:07 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.196 2010/09/04 20:22:51 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
- *  20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
+ *	20100904 - eloff - BUGID 3740 - redirect to destination after login
+ * 	20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
  *	20100616 - eloff - config_get: log warning when requested option does not exist
  * 	20100310 - franciscom - changes to make code compatible with smarty 3
  * 	20100207 - havlatm - cleanup
@@ -225,7 +226,8 @@ function checkSessionValid(&$db, $redirect=true)
         {
             $fName = "../" . $fName;
         }
-        redirect($fName . "?note=expired","top.location");
+		$destination = "&destination=" . urlencode($_SERVER['REQUEST_URI']);
+        redirect($fName . "?note=expired" . $destination,"top.location");
         exit();
 	}
 	return $isValidSession;

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.27 2009/11/28 23:12:11 havlat Exp $
+$Id: login.tpl,v 1.28 2010/09/04 20:22:51 erikeloff Exp $
 Purpose: smarty template - login page 
 -------------------------------------------------------------------------------------- *}
 {lang_get var='labels' s='login_name,password,btn_login,new_user_q,lost_password_q'}
@@ -32,6 +32,7 @@ window.onload=function()
     {if $gui->login_disabled eq 0}		
   		<div class="messages" style="width:100%;text-align:center;">{$gui->note}</div>
 		<input type="hidden" name="reqURI" value="{$gui->reqURI|escape:'url'}"/>
+		<input type="hidden" name="destination" value="{$gui->destination|escape:'url'}"/>
   		<p class="label">{$labels.login_name}<br />
 			<input type="text" name="tl_login" id="login" size="{#LOGIN_SIZE#}" maxlength="{#LOGIN_MAXLEN#}" />
 		</p>

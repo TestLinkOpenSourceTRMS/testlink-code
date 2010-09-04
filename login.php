@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: login.php,v 1.56 2010/02/02 12:52:36 franciscom Exp $
+ * @version    	CVS: $Id: login.php,v 1.57 2010/09/04 20:22:51 erikeloff Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/login.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions
+ * 20100904 - eloff - BUGID 3740 - redirect to destination after login
  * 20100202 - franciscom - BUGID 0003129: After login failure blank page is displayed
  * 20100127 - eloff - Send localized login form strings with response to ajaxcheck
  * 20100124 - eloff - Added login functionality via ajax
@@ -64,13 +65,20 @@ switch($args->action)
 		 }
 		 else
 		 {
+			 // Login successful, redirect to destination
 		 	$args->currentUser = $_SESSION['currentUser'];
 		 	logAuditEvent(TLS("audit_login_succeeded",$args->login,
 		 	                  $_SERVER['REMOTE_ADDR']),"LOGIN",$args->currentUser->dbID,"users");
 		 	if ($args->action == 'ajaxlogin') {
 		 		echo json_encode(array('success' => true));
 		 	} else {
+				// If destination param is set redirect to given page ...
+				if (!empty($args->destination)) {
+					redirect($args->destination);
+				}
+				// ... or show main page
 		 		redirect($_SESSION['basehref']."index.php".($args->preqURI ? "?reqURI=".urlencode($args->preqURI) :""));
+				exit();
 		 	}
 		 }
 		 break;
@@ -112,12 +120,14 @@ if( $doRender )
  */
 function init_args()
 {
+	// 2010904 - eloff - Why is req and reqURI parameters to the login?
 	$iParams = array("note" => array(tlInputParameter::STRING_N,0,255),
 		             "tl_login" => array(tlInputParameter::STRING_N,0,30),
 		             "tl_password" => array(tlInputParameter::STRING_N,0,32),
 		             "req" => array(tlInputParameter::STRING_N,0,4000),
 		             "reqURI" => array(tlInputParameter::STRING_N,0,4000),
 		             "action" => array(tlInputParameter::STRING_N,0, 10),
+		             "destination" => array(tlInputParameter::STRING_N, 0, 255),
 	);
 	$pParams = R_PARAMS($iParams);
 
@@ -127,6 +137,7 @@ function init_args()
     $args->pwd = $pParams['tl_password'];
     $args->reqURI = urlencode($pParams['req']);
     $args->preqURI = urlencode($pParams['reqURI']);
+	$args->destination = urldecode($pParams['destination']);
 
 	if ($pParams['action'] == 'ajaxcheck' || $pParams['action'] == 'ajaxlogin') {
 		$args->action = $pParams['action'];
@@ -181,6 +192,7 @@ function init_gui(&$db,$args)
     		break;
     }
 	$gui->reqURI = $args->reqURI ? $args->reqURI : $args->preqURI;
+	$gui->destination = $args->destination;
     
 	return $gui;
 }

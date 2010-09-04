@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.99 2010/09/04 17:17:10 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.100 2010/09/04 17:43:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100904 - franciscom - BUGID 3571 - get_by_name() interface changes
+ *						   update() - interface changes	
  * 20100602 - franciscom - BUGID 3498 - get_by_name() - missing JOIN
  * 20100328 - franciscom - get_by_id() interface and return set changes
  *						   get_children() - new method - contribution - BUGID 2645
@@ -240,8 +241,10 @@ class testsuite extends tlObjectWithAttachments
 	/**
 	 * update
 	 *
+	 * @internal Revisions
+	 * 20100904 - franciscom - added node_order
 	 */
-	function update($id, $name, $details, $parent_id=null)
+	function update($id, $name, $details, $parent_id=null, $node_order=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	  	$ret['status_ok']=0;
@@ -256,8 +259,13 @@ class testsuite extends tlObjectWithAttachments
 	  		
 			if ($result)
 			{
-				$sql = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']}  SET name='" . 
-					   $this->db->prepare_string($name) . "' WHERE id= {$id}";
+				$sql = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+					   " SET name='" .  $this->db->prepare_string($name) . "' ";
+				if( !is_null($node_order) && intval($node_order) > 0 )
+				{
+					$sql .= ', node_order=' . $this->db->prepare_int(intval($node_order)); 	   
+				}	   
+				$sql .=	" WHERE id= {$id}";
 				$result = $this->db->exec_query($sql);
 			}
 			

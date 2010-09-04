@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.78 $
- * @modified $Date: 2010/08/21 11:54:46 $ by $Author: franciscom $
+ * @version $Revision: 1.79 $
+ * @modified $Date: 2010/09/04 17:54:09 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20100904 - franciscom - BUGID 3571 - Add 'create new version' choice when Import Test Suite
  *	20100821 - franciscom - changes to getStepsFromSimpleXMLObj() due to:
  *							BUGID 3695: Test Case Steps - Export/Import - missing attribute execution type
  *								
@@ -156,9 +157,21 @@ if ($args->do_upload)
 
 if($args->useRecursion)
 {
-  $obj_mgr = new testsuite($db);
-  $gui->actionOptions=null;
-  $gui->hitOptions=null;
+	// BUGID 3240 - Contribution 
+	$obj_mgr = new testsuite($db);
+	// $gui->actionOptions=null;
+	// $gui->hitOptions=null;
+	// $gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
+	// 						  'generate_new' => lang_get('new_testcase_under_new_testsuite'),
+    //                           'create_new_version' => lang_get('new_version_under_testsuite'));
+
+  	$gui->actionOptions=array('update_last_version' => lang_get('update_last_testcase_version'),
+                              'generate_new' => lang_get('generate_new_testcase'),
+                              'create_new_version' => lang_get('create_new_testcase_version'));
+	
+	$gui->hitOptions=array('name' => lang_get('same_name'),
+                           'internalID' => lang_get('same_internalID'),
+                           'externalID' => lang_get('same_externalID'));
 }
 else
 {
@@ -230,7 +243,8 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 			
 			if ($useRecursion && ($xml->getName() == 'testsuite'))
 			{
-				$resultMap = importTestSuitesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject);
+				$resultMap = importTestSuitesFromSimpleXML($db,$xml,$parentID,$tproject_id,$userID,
+														   $kwMap,$importIntoProject,$duplicateLogic);
 			}
 
 		}
@@ -935,7 +949,7 @@ function getStepsFromSimpleXMLObj($simpleXMLItems)
 			}
 		}
 	}
-	new dBug($items);
+	// new dBug($items);
 	return $items;
 }
 
@@ -968,9 +982,12 @@ function getKeywordsFromSimpleXMLObj($simpleXMLItems)
   args :
   returns: 
   
-  rev: 20090204 - franciscom - added node_order
+  @internal revisions
+  added duplicate logic
+  
 */
-function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,$userID,$kwMap,$importIntoProject = 0)
+function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
+									   $userID,$kwMap,$importIntoProject = 0,$duplicateLogic)
 {
 	static $tsuiteXML;
 	static $tsuiteMgr;
@@ -997,12 +1014,24 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 		// getItemsFromSimpleXMLObj() first argument must be an array
         $dummy = getItemsFromSimpleXMLObj(array($xml),$tsuiteXML);
         $tsuite = current($dummy); 
+		$tsuiteID = $parentID;  // hmmm, not clear
 
-		$tsuiteID = $parentID;
 		if ($tsuite['name'] != "")
 		{
-			$ret = $tsuiteMgr->create($parentID,$tsuite['name'],$tsuite['details'],$tsuite['node_order']);
-			$tsuiteID = $ret['id'];
+			// Check if Test Suite with this name exists on this container
+			// if yes -> update instead of create
+			$info = $tsuiteMgr->get_by_name($tsuite['name'],$parentID);
+			if( is_null($info) )
+			{
+				$ret = $tsuiteMgr->create($parentID,$tsuite['name'],$tsuite['details'],$tsuite['node_order']);
+				$tsuiteID = $ret['id'];
+			}
+			else
+			{
+				$tsuiteID = $info[0]['id'];
+				$ret = $tsuiteMgr->update($tsuiteID,$tsuite['name'],$tsuite['details'],null,$tsuite['node_order']);
+			}
+			
 			unset($tsuite);
 			unset($dummy);
 			
@@ -1027,13 +1056,19 @@ function importTestSuitesFromSimpleXML(&$dbHandler,&$xml,$parentID,$tproject_id,
 				case 'testcase':
 				    // getTestCaseSetFromSimpleXMLObj() first argument must be an array
 					$tcData = getTestCaseSetFromSimpleXMLObj(array($target));
-					// TEST 
-					$resultMap = array_merge($resultMap,saveImportedTCData($dbHandler,$tcData,$tproject_id,$tsuiteID,$userID,$kwMap));
+
+					// 20100904 - francisco.mancardi@gruppotesi.com
+					// echo 'Going to work on Test Case INSIDE Test Suite:' . $tsuite['name'] . '<br>';
+					$resultMap = array_merge($resultMap,
+											 saveImportedTCData($dbHandler,$tcData,$tproject_id,
+											                    $tsuiteID,$userID,$kwMap,$duplicateLogic));
 					unset($tcData);
 				break;
 
 				case 'testsuite':
-					$resultMap = array_merge($resultMap,$myself($dbHandler,$target,$tsuiteID,$tproject_id,$userID,$kwMap));
+					$resultMap = array_merge($resultMap,
+											 $myself($dbHandler,$target,$tsuiteID,
+											         $tproject_id,$userID,$kwMap,$importIntoProject,$duplicateLogic));
 				break;
 
 				// do not understand why we need to do this particular logic.

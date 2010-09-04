@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.674 2010/09/02 15:08:17 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.675 2010/09/04 09:42:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -3021,6 +3021,7 @@ $TLS_import_req_exists_here = 'Doc ID exists';
 
 $TLS_invalid_release_date = 'Release date is not a valid date';
 $TLS_insert_step = "Insert step";
+$TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZEN';
 
 // ----- END ------------------------------------------------------------------
 ?>

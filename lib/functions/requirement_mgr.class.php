@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2010/06/24 17:25:53 $ by $Author: asimon83 $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2010/09/04 09:44:06 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20100904 - franciscom - BUGID 3685: XML Requirements Import Updates Frozen Requirement
  *	20100520 - franciscom - BUGID 2169 - customFieldValuesAsXML() new method_exists
  *	20100511 - franciscom - createFromXML() new method
  *	20100509 - franciscom - update() interface changes.
@@ -1154,6 +1155,8 @@ function xmlToMapRequirement($xml_item)
 /**
  * createFromXML
  *
+ * @internal revisions
+ * 20100904 - franciscoM - BUGID 3685: XML Requirements Import Updates Frozen Requirement
  */
 function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {
@@ -1166,7 +1169,8 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 	$my['options'] = array( 'actionOnDuplicate' => "update");
 	$my['options'] = array_merge($my['options'], (array)$options);
 
-	$labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '');
+	$labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '', 
+					'frozen_req_unable_to_import' => '');
 	foreach($labels as $key => $dummy)
 	{
 		$labels[$key] = lang_get($key);
@@ -1189,6 +1193,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 		$check_in_tproject = $this->getByDocID($req['docid'],$tproject_id,null,$getOptions);
 		if(is_null($check_in_tproject))
 		{
+			// if requirement is frozen => do not import
 			$this->create($parent_id,$req['docid'],$req['title'],$req['description'],
 		    		         $author_id,$req['status'],$req['type'],$req['expected_coverage'],
 		    		         $req['node_order']);
@@ -1205,13 +1210,20 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     else
     {
 		// Need to get Last Version no matter active or not.
-		// What to do if is Frozen ??? -> now ignore and update anyway
 		$reqID = key($check_in_reqspec);
 		$last_version = $this->get_last_version_info($reqID);
-		$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
+
+		// BUGID 3685
+		// What to do if is Frozen ??? -> DO NOT IMPORT
+		$msgID = 'frozen_req_unable_to_import';
+		if( $last_version['is_open'] == 1 )
+		{
+			$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
 								$author_id,$req['status'],$req['type'],$req['expected_coverage'],
 								$req['node_order']);
-		$msgID = 'import_req_updated';
+			$msgID = 'import_req_updated';
+		}
+		
     }               		 
     $user_feedback = array('doc_id' => $req['docid'],'title' => $req['title'], 
     				 	   'import_status' => sprintf($labels[$msgID],$req['docid']));

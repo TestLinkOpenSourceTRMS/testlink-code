@@ -4,12 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.79 $
- * @modified $Date: 2010/09/04 17:54:09 $ by $Author: franciscom $
+ * @version $Revision: 1.80 $
+ * @modified $Date: 2010/09/05 16:47:41 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
+ *							processCustomFields()
  *	20100904 - franciscom - BUGID 3571 - Add 'create new version' choice when Import Test Suite
  *	20100821 - franciscom - changes to getStepsFromSimpleXMLObj() due to:
  *							BUGID 3695: Test Case Steps - Export/Import - missing attribute execution type
@@ -260,6 +262,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
   returns: 
   
   rev:
+  	  20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level	
  	  20100317 - franciscom - manage different criteria to decide that test case
  	  	                      is present on system
  	  	                                 		
@@ -449,12 +452,15 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		// If Check fails => give message to user.
 		// Else Import CF data
 		// 	
+
 		$hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
 		if($hasCustomFieldsInfo)
 		{
 		    if($tprojectHas['customFields'])
 		    {                         
-		        $msg = processCustomFields($tcase_mgr,$name,$ret['id'],$tc['customfields'],$linkedCustomFields,$feedbackMsg);
+				// BUGID 3431 - Custom Field values at Test Case VERSION Level
+		        $msg = processCustomFields(	$tcase_mgr,$name,$ret['id'],$ret['tcversion_id'],$tc['customfields'],
+		        							$linkedCustomFields,$feedbackMsg);
 		        if( !is_null($msg) )
 		        {
 		            $resultMap = array_merge($resultMap,$msg);
@@ -733,8 +739,10 @@ function init_args()
  * Else return an array of messages.
  *
  *
+ * @internal revisions
+ * 20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
  */
-function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$cfValues,$cfDefinition,$messages)
+function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$tcversionId,$cfValues,$cfDefinition,$messages)
 {
     static $missingCfMsg;
     $cf2insert=null;
@@ -756,7 +764,9 @@ function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$cfValues,$cfDefinit
            $resultMsg[] = array($tcaseName,$missingCfMsg[$value['name']]); 
        }
     }  
-    $tcaseMgr->cfield_mgr->design_values_to_db($cf2insert,$tcaseId,null,'simple');
+    //
+    // BUGID 3431 - Custom Field values at Test Case VERSION Level
+    $tcaseMgr->cfield_mgr->design_values_to_db($cf2insert,$tcversionId,null,'simple');
     return $resultMsg;
 }
 

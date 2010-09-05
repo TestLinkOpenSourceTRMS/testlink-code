@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.300 2010/09/05 16:16:54 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.301 2010/09/05 16:35:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -16,6 +16,7 @@
  *							copy_tcversion(),_blind_delete(),show(),copy_to(),create_new_version()
  *							get_linked_cfields_at_design(),html_table_of_custom_field_inputs()
  *							html_table_of_custom_field_values(),copy_cfields_design_values()
+ *							exportTestCaseDataToXML()
  *
  * 20100905 - franciscom - create() - added new key on ret value 'tcversion_id'
  *
@@ -3162,7 +3163,11 @@ class testcase extends tlObjectWithAttachments
         	// Get Custom Field Data
 		if ($optExport['CFIELDS'])
 		{
-			$cfMap = $this->get_linked_cfields_at_design($tcase_id,null,null,$tproject_id);
+			// BUGID 3431
+			// $cfMap = $this->get_linked_cfields_at_design($tcase_id,null,null,$tproject_id);
+			$cfMap = $this->get_linked_cfields_at_design($tcase_id,$tcversion_id,null,null,$tproject_id);        	                                                                                  
+
+        	
         	
 	    	// ||yyy||-> tags,  {{xxx}} -> attribute 
 	    	// tags and attributes receive different treatment on exportDataToXML()

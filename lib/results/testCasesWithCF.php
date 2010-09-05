@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2010/09/01 11:56:48 $ by $Author: mx-julian $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2010/09/05 17:52:25 $ by $Author: franciscom $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -201,8 +201,7 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
 
     // Get the custom fields linked/enabled on execution to a test project
     // This will be used on report to give name to header of columns that hold custom field value
-    $guiObj->cfields = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',
-                                                                 null,null,null,'name');
+    $guiObj->cfields = $cfieldMgr->get_linked_cfields_at_execution($tproject_id,1,'testcase',null,null,null,'name');
     
     // this way on caller can be used on array operations, without warnings
     $guiObj->cfields = (array)$guiObj->cfields;  

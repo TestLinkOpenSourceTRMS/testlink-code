@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.43 $
- * @modified $Date: 2010/07/23 19:05:52 $ by $Author: asimon83 $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2010/09/05 17:40:51 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * SCOPE:
@@ -255,7 +255,7 @@ switch ($doc_info->type)
 						$pnFilters = null;
                         $pnOptions =  array('hideTestCases' => 0);
 						
-						// 3624
+						// BUGID 3624
                         $pnOptions = array_merge($pnOptions, $pnOptionsAdd);
 						
 						// prepareNode($db,$tInfo,$decoding_hash,$dummy,$dummy,$tp_tcs,SHOW_TESTCASES);
@@ -338,7 +338,7 @@ if ($treeForPlatform)
 				
 				case DOC_TEST_SPEC:
 					$docText .= renderSimpleChapter(lang_get('scope'), $doc_info->tproject_scope);
-					// 3459 - added platform ID
+					// BUGID 3459 - added platform ID
 					$docText .= renderTestSpecTreeForPrinting($db, $tree, $doc_info->content_range,
 					            $printingOptions, null, 0, 1, $args->user_id,0,null,$args->tproject_id,$platform_id);
 				break;

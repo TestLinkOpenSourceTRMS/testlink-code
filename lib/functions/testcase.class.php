@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.298 2010/09/04 17:16:51 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.299 2010/09/05 10:10:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100905 - franciscom - create() - added new key on ret value 'tcversion_id'
  * 20100902 - franciscom - BUGID 3736 - update_last_modified()
  * 20100901 - franciscom - get_by_id() - new output option
  * 20100831 - franciscom - BUGID 3729 - get_by_name() 
@@ -257,6 +258,10 @@ class testcase extends tlObjectWithAttachments
 
 	/**
 	 * create a test case
+	 *
+	 * @internal revisions
+	 *
+	 * 20100905 - franciscom - added new key on ret value 'tcversion_id';
 	 */
 	function create($parent_id,$name,$summary,$preconditions,$steps,$author_id,
 	                $keywords_id='',$tc_order=self::DEFAULT_ORDER,$id=self::AUTOMATIC_ID,
@@ -298,6 +303,7 @@ class testcase extends tlObjectWithAttachments
 			
 			
 			$ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
+			$ret['tcversion_id'] = $op['status_ok'] ? $op['id'] : -1;
 		}
 		return $ret;
 	}

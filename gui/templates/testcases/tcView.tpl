@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.43 2010/09/01 14:57:26 mx-julian Exp $
+$Id: tcView.tpl,v 1.44 2010/09/05 15:55:30 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
+    20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
+                            use of: $gui->cf_current_version, $gui->cf_other_versions
     20100814 - franciscom - improvement on user feecback when no record found.
     20100315 - franciscom - fixed refresh tree issue 
     20100106 - franciscom - Multiple Test Case Steps Feature
@@ -153,7 +155,7 @@ function validateStepsReorder(formOID)
 		         args_show_title=$gui->show_title
 		         args_activate_deactivate_name='activate'
 		         args_activate_deactivate='bnt_activate'
-		         args_cf=$gui->cf[idx] 
+		         args_cf=$gui->cf_current_version[idx] 
 		         args_tcase_cfg=$gui->tcase_cfg
 		         args_users=$gui->users
 		         args_tproject_name=$gui->tprojectName
@@ -192,7 +194,7 @@ function validateStepsReorder(formOID)
                
         <div id="vers_{$vid}" class="workBack">
         
-  	    {foreach from=$gui->testcase_other_versions[idx] item=my_testcase}
+  	    {foreach from=$gui->testcase_other_versions[idx] item=my_testcase key=tdx}
 
             {assign var="version_num" value=$my_testcase.version}
             {assign var="title" value=$labels.version}
@@ -202,14 +204,22 @@ function validateStepsReorder(formOID)
             {assign var="div_id" value="v_$vid"}
             {assign var="div_id" value="$div_id$sep$version_num"}
             {assign var="memstatus_id" value="mem_$div_id"}
-           
             {include file="inc_show_hide_mgmt.tpl" 
                      show_hide_container_title=$title
                      show_hide_container_id=$div_id
                      show_hide_container_draw=false
                      show_hide_container_class='exec_additional_info'
                      show_hide_container_view_status_id=$memstatus_id}
+                     
   	          <div id="{$div_id}" class="workBack">
+				      {*
+				      BE CAREFUL
+				      args_cf=$gui->cf_other_versions[idx][tdx]  - KO
+           		args_cf=$gui->cf_other_versions[$idx][$tdx]  - KO
+           		args_cf=$gui->cf_other_versions[$idx][tdx]  - KO
+           		args_cf=$gui->cf_other_versions[idx][$tdx] - OK 
+           		- do not know if there is info on smarty manuals
+				      *}
 				      {include file="testcases/tcView_viewer.tpl" 
                        args_testcase=$my_testcase 
                        args_keywords_map=$gui->keywords_map[idx] 
@@ -223,7 +233,7 @@ function validateStepsReorder(formOID)
                        args_show_version="no" 
                        args_show_title="no"
                        args_users=$gui->users
-                       args_cf=$gui->cf[idx]
+                       args_cf=$gui->cf_other_versions[idx][$tdx]
            		         args_linked_versions=null
 	         		         args_has_testplans=$gui->has_testplans}
   	         </div>

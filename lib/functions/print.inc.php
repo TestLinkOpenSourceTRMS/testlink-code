@@ -8,13 +8,16 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.106 2010/08/04 03:08:24 amkhullar Exp $
+ * @version $Id: print.inc.php,v 1.107 2010/09/05 17:49:43 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
+ *							renderTestCaseForPrinting()
+ *
  *  20100803 - amitkhullar - Added condition check for null req. custom fields @line 230/346  
  *  20100723 - asimon - BUGID 3459: added platform ID to renderTestCaseForPrinting(),
  *                                  renderTestSpecTreeForPrinting() and
@@ -594,7 +597,6 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 		case 'testproject':
 		    if($tplan_id != 0)
 		    {
-		        // 20090330 - franciscom
 		        // we are printing a test plan, get it's custom fields
                 $cfieldFormatting=array('table_css_style' => 'class="cf"');
                 if ($printingOptions['cfields'])
@@ -613,7 +615,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 		break;
 
 		case 'testcase':
-			// 3459 - added $platform_id
+			// BUGID 3459 - added $platform_id
 			$code .= renderTestCaseForPrinting($db, $node, $printingOptions, $level,
 			                                   $tplan_id, $tcPrefix, $tprojectID, $platform_id);
 	    break;
@@ -701,13 +703,15 @@ function gendocGetUserName(&$db, $userId)
  * 
  * @param $integer db DB connection identifier 
  * @return string generated html code
- * @internal 
- *      20100724 - asimon - BUGID 3459 - added platform ID
- *      20100723 - asimon - BUGID 3451 and related finally solved
- *      20090517 - havlatm - fixed execution layot; added tester name
- *      20080819 - franciscom - removed mysql only code
- *      20071014 - franciscom - display test case version
- *      20070509 - franciscom - added Contribution
+ *
+ * @internal revisions
+ * 20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
+ * 20100724 - asimon - BUGID 3459 - added platform ID
+ * 20100723 - asimon - BUGID 3451 and related finally solved
+ * 20090517 - havlatm - fixed execution layot; added tester name
+ * 20080819 - franciscom - removed mysql only code
+ * 20071014 - franciscom - display test case version
+ * 20070509 - franciscom - added Contribution
  */
 function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tplan_id = 0,
                                    $prefix = null, $tprojectID = 0, $platform_id = 0)
@@ -762,6 +766,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 	// $versionID was used in the following "dirty" SQL statement, but was still set to "-1" 
 	//(the value to load all tc versions) instead of a real testcase version ID.
 	$versionID = $tcInfo['id'];
+	
 	// This still does not change the fact that this marked SQL statement below
 	// should be removed and replaced by existing functions.
 	// ----- BUGID 3451 and related ---------------------------------------
@@ -772,13 +777,15 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
   	if ($printingOptions['cfields'])
 	{
 		if (!$locationFilters)
+		{
         	$locationFilters = $tc_mgr->buildCFLocationMap();
-		// 20090719 - franciscom - cf location
+        }	
      	foreach($locationFilters as $fkey => $fvalue)
 		{ 
+			// BUGID 3431 - Custom Field values at Test Case VERSION Level
 			$cfields['specScope'][$fkey] = 
 					$tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
-			                                               $tprojectID,$cfieldFormatting);
+			                                                   $tprojectID,$cfieldFormatting,$tcInfo['id']);
 		}	                                               
 	}
 
@@ -825,7 +832,6 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
  	$code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . 
  			htmlspecialchars($external_id) . ": " . $name;
 
-    
 	// add test case version
 	if($cfg['doc']->tc_version_enabled && isset($node['version'])) 
 	{

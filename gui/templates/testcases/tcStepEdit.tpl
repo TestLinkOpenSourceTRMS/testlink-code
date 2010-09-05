@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.32 2010/09/01 19:51:08 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.33 2010/09/05 14:25:07 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -131,7 +131,7 @@ DEBUG: $gui->action: {$gui->action} <br>
 	<input type="hidden" name="goback_url" value="{$goBackAction}" />
 
 
-		{include file="inc_tcbody.tpl" 
+		{include file="testcases/inc_tcbody.tpl" 
              inc_tcbody_close_table=true
              inc_tcbody_testcase=$gui->testcase
 		         inc_tcbody_show_title="yes"

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.82 2010/09/01 21:02:19 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.83 2010/09/05 14:25:07 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -259,7 +259,7 @@ function launchInsertStep(step_id)
 	<input type="hidden" id="stepsControls_show_mode" name="show_mode" value="{$gui->show_mode}" />
 
 
-		{include file="inc_tcbody.tpl" 
+		{include file="testcases/inc_tcbody.tpl" 
              inc_tcbody_close_table=false
              inc_tcbody_testcase=$args_testcase
 		         inc_tcbody_show_title=$args_show_title
@@ -270,7 +270,7 @@ function launchInsertStep(step_id)
              inc_tcbody_cf=$args_cf}
 		
 	{if $args_testcase.steps != ''}
-	{include file="inc_steps.tpl"
+	{include file="testcases/inc_steps.tpl"
 	         layout=$gui->steps_results_layout
 	         edit_enabled=$edit_enabled
 	         steps=$args_testcase.steps}

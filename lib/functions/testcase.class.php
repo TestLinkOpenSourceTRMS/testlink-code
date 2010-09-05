@@ -6,12 +6,19 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.299 2010/09/05 10:10:37 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.300 2010/09/05 16:16:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100905 - franciscom -	BUGID 3431 - Custom Field values at Test Case VERSION Level
+ *							changes to methods: 
+ *							copy_tcversion(),_blind_delete(),show(),copy_to(),create_new_version()
+ *							get_linked_cfields_at_design(),html_table_of_custom_field_inputs()
+ *							html_table_of_custom_field_values(),copy_cfields_design_values()
+ *
  * 20100905 - franciscom - create() - added new key on ret value 'tcversion_id'
+ *
  * 20100902 - franciscom - BUGID 3736 - update_last_modified()
  * 20100901 - franciscom - get_by_id() - new output option
  * 20100831 - franciscom - BUGID 3729 - get_by_name() 
@@ -300,7 +307,6 @@ class testcase extends tlObjectWithAttachments
 			// Multiple Test Case Steps Feature
 			$op = $this->create_tcversion($ret['id'],$ret['external_id'],$version_number,$summary,
 			                              $preconditions,$steps,$author_id,$execution_type,$importance);
-			
 			
 			$ret['msg'] = $op['status_ok'] ? $ret['msg'] : $op['msg'];
 			$ret['tcversion_id'] = $op['status_ok'] ? $op['id'] : -1;
@@ -690,6 +696,8 @@ class testcase extends tlObjectWithAttachments
 	function show(&$smarty,$guiObj,$template_dir,$id,$version_id = self::ALL_VERSIONS,
 	              $viewer_args = null,$path_info=null,$mode=null)
 	{
+
+		// echo 'DEBUG' . __FUNCTION__ . '<br>';
 	    $status_ok = 1;
 	
 	    $gui = is_null($guiObj) ? new stdClass() : $guiObj;
@@ -724,9 +732,7 @@ class testcase extends tlObjectWithAttachments
 	    // 20090718 - franciscom
 	    $cf_smarty = null;
 	    $formatOptions=null;
-	    $cfx=0;
-        $filters=$this->buildCFLocationMap();
-	    	     
+        $cfPlaces = $this->buildCFLocationMap();
 	    if( !is_null($mode) && $mode=='editOnExec' )
 	    {
 	        // refers to two javascript functions present in testlink_library.js
@@ -829,6 +835,7 @@ class testcase extends tlObjectWithAttachments
 	    
 	    if($status_ok && sizeof($a_id))
 	    {
+	    	$cfx=0;
 		  	$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');
 		  	$allReqs = $req_mgr->get_all_for_tcase($a_id);
 		  	foreach($a_id as $key => $tc_id)
@@ -847,22 +854,56 @@ class testcase extends tlObjectWithAttachments
 		  		$gui->linked_versions[] = $this->get_linked_versions($tc_id);
 		  		$keywords_map[] = isset($allTCKeywords[$tc_id]) ? $allTCKeywords[$tc_id] : null;
 		  		$tc_current = $tc_array[0];
+		  		$tcversion_id_current = $tc_array[0]['id']; 
 		  		$gui->tc_current_version[] = array($tc_current);
+		  		
+		  		// new dBug($tc_current);
 		  		
 		  		//Get UserID and Updater ID for current Version
 		  		$userid_array[$tc_current['author_id']] = null;
 		  		$userid_array[$tc_current['updater_id']] = null;
 	    
+	    		// BUGID 3431
+	      		foreach($cfPlaces as $locationKey => $locationFilter)
+		  		{ 
+		  			// BUGID 3431
+		  			$cf_current_version[$cfx][$locationKey] = 
+		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
+		  			 	                                         null,null,$tproject_id,null,$tcversion_id_current);
+		  		}	
+  			
+	    
+				// Other versions (if exists)	    
 		  		if(count($tc_array) > 1)
 		  		{
 		  			$tc_other_versions[] = array_slice($tc_array,1);
+					
+					$target_idx = count($tc_other_versions) - 1;
+					
+					// BUGID 3431
+					$loop2do = count($tc_other_versions[$target_idx]);
+					// echo 'count($tc_other_versions):' . count($tc_other_versions) . '<br>';
+					// echo '$loop2do:' . $loop2do . '<br>';
+					for($qdx=0; $qdx < $loop2do; $qdx++)
+					{
+						$target_tcversion = $tc_other_versions[$target_idx][$qdx]['id'];
+	      				foreach($cfPlaces as $locationKey => $locationFilter)
+		  				{ 
+		  					// BUGID 3431
+		  					$cf_other_versions[$cfx][$qdx][$locationKey] = 
+		  						$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
+		  					 	                                         null,null,$tproject_id,null,$target_tcversion);
+		  				}	
+					}
 		  		}
 		  		else
 		  		{
 		  			$tc_other_versions[] = null;
+		  			$cf_other_versions[$cfx]=null;
 		  		}	
+		  		$cfx++;
 		  		
-		  		//Get author and updater id for each version
+		  		// Get author and updater id for each version
 		  		if ($tc_other_versions[0])
 		  		{
 		  			foreach($tc_other_versions[0] as $key => $version)
@@ -873,15 +914,7 @@ class testcase extends tlObjectWithAttachments
 		  		}
 		  		$tcReqs = isset($allReqs[$tc_id]) ? $allReqs[$tc_id] : null;
 		  		$arrReqs[] = $tcReqs;
-		  		
-		  		foreach($filters as $locationKey => $locationFilter)
-		  		{ 
-		  			$cf_smarty[$cfx][$locationKey] = 
-		  				$this->html_table_of_custom_field_values($tc_id,'design',$locationFilter,
-		  				                                         null,null,$tproject_id);
-		  		}	
-		  		$cfx++;
-		  		
+
 		  	} // foreach($a_id as $key => $tc_id)
 	    } // if (sizeof($a_id))
 
@@ -889,7 +922,9 @@ class testcase extends tlObjectWithAttachments
 		unset($userid_array['']);
 		$passeduserarray = array_keys($userid_array);
 
-		$gui->cf = $cf_smarty;
+		$gui->cf = null; // $cf_current_version; // $cf_smarty;
+		$gui->cf_current_version = $cf_current_version; // $cf_smarty;
+		$gui->cf_other_versions = $cf_other_versions; // $cf_smarty;
 		$gui->refreshTree = $viewer_defaults['refreshTree'];
 		$gui->sqlResult = $viewer_defaults['msg_result'];
 		$gui->action = $viewer_defaults['action'];
@@ -1296,12 +1331,17 @@ class testcase extends tlObjectWithAttachments
 		$destroyTC = false;
 	    $item_id = $version_id;
 		$tcversion_list = $version_id;
+	   	$target_nodes = $version_id;
 	    if( $version_id == self::ALL_VERSIONS)
 	    {
 	    	$destroyTC = true;
 	        $item_id = $id;
 		    $tcversion_list=implode(',',$children['tcversion']);
+	   	 	$target_nodes = $children['tcversion'];
 	    }
+
+	    // BUGID 3431
+	    $this->cfield_mgr->remove_all_design_values_from_node($target_nodes);
 
 		// BUGID 3465: Delete Test Project - User Execution Assignment is not deleted
 		// BUGID 3573: MySQL does not like ALIAS
@@ -1356,7 +1396,8 @@ class testcase extends tlObjectWithAttachments
 	    	}
 
 	        $this->deleteAttachments($id);
-	        $this->cfield_mgr->remove_all_design_values_from_node($id);
+	        // BUGID 3431
+	        // $this->cfield_mgr->remove_all_design_values_from_node($id);
 	    
 	    }
 	    
@@ -1460,6 +1501,7 @@ class testcase extends tlObjectWithAttachments
 	  args :id: testcase id
 	
 	  returns: testproject id
+	  
 	
 	*/
 	function get_testproject($id)
@@ -1475,6 +1517,7 @@ class testcase extends tlObjectWithAttachments
 	
 	                        changed return type
 	
+		BUGID 3431
 	*/
 	function copy_to($id,$parent_id,$user_id,$options=null,$mappings=null)
 	{
@@ -1509,6 +1552,8 @@ class testcase extends tlObjectWithAttachments
 		        
 	 			foreach($tcase_info as $tcversion)
 				{
+					// new dBug($tcversion);
+					
 					// 20100221 - franciscom - 
 					// IMPORTANT NOTICE:
 					// In order to implement COPY to another test project, WE CAN NOT ASK
@@ -1523,6 +1568,13 @@ class testcase extends tlObjectWithAttachments
 	    			{
 	    				// 20100204 - franciscom
 	    				$newTCObj['mappings'][$tcversion['id']] = $op['id'];
+
+						// ATTENTION:  NEED TO UNDERSTAND HOW TO MANAGE COPY TO OTHER TEST PROJECTS
+						// 
+						// BUGID 3431
+						$this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' => $tcversion['id']),
+						  								  array('id' => $newTCObj['id'], 'tcversion_id' => $op['id']));
+
 	    				
 	    				// Need to get all steps
 	    				$stepsSet = $this->get_steps($tcversion['id']);
@@ -1551,8 +1603,11 @@ class testcase extends tlObjectWithAttachments
 					$this->copyReqAssignmentTo($id,$newTCObj['id'],$my['mappings']['requirements']);
 				}
 				
-				
-				$this->copy_cfields_design_values($id,$newTCObj['id']);
+				// BUGID 3431 
+				// $this->copy_cfields_design_values($id,$newTCObj['id']);
+				// $this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' =>),
+				// 								  array('id' => $newTCObj['id'],));
+	            
 	            $this->copy_attachments($id,$newTCObj['id']);
 			}
 		}
@@ -1577,7 +1632,8 @@ class testcase extends tlObjectWithAttachments
 	
 	  rev : 20070701 - franciscom - added version key on return map.
 	*/
-	function create_new_version($id,$user_id,$source_version_id=null)
+	// BUGID 3431
+	function create_new_version($id,$user_id,$source_version_id=null, $options=null)
 	{
 	  $tcversion_id = $this->tree_manager->new_node($id,$this->node_types_descr_id['testcase_version']);
 	
@@ -1588,7 +1644,7 @@ class testcase extends tlObjectWithAttachments
 	  {
 	  	$from = $last_version_info['id'];
 	  }
-	  $this->copy_tcversion($from,$tcversion_id,$last_version_info['version']+1,$user_id);
+	  $this->copy_tcversion($id,$from,$tcversion_id,$last_version_info['version']+1,$user_id);
 	
 	  $ret['id'] = $tcversion_id;
 	  $ret['version'] = $last_version_info['version']+1;
@@ -1680,7 +1736,8 @@ class testcase extends tlObjectWithAttachments
 	  		20080119 - franciscom - tc_external_id management
 	
 	*/
-	function copy_tcversion($from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
+	// // BUGID 3431
+	function copy_tcversion($id,$from_tcversion_id,$to_tcversion_id,$as_version_number,$user_id)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $now = $this->db->db_now();
@@ -1695,6 +1752,12 @@ class testcase extends tlObjectWithAttachments
 	         " FROM {$this->tables['tcversions']} " .
 	         " WHERE id={$from_tcversion_id} ";
 		$result = $this->db->exec_query($sql);	
+	   
+	    // BUGID 3431
+	    // copy custom fields values JUST DESIGN AREA
+	    $this->copy_cfields_design_values(array('id' => $id, 'tcversion_id' => $from_tcversion_id),
+						  				  array('id' => $id, 'tcversion_id' => $to_tcversion_id));
+    
 	    
 	    // Need to get all steps
 	    $stepsSet = $this->get_steps($from_tcversion_id);
@@ -3623,6 +3686,7 @@ class testcase extends tlObjectWithAttachments
 	            has to be linked to a testproject, in order to be used.
 	
 	  args: id: testcase id
+	  		tcversion_id: testcase version id  ---- BUGID 3431
 	        [parent_id]: node id of parent testsuite of testcase.
 	                     need to understand to which testproject the testcase belongs.
 	                     this information is vital, to get the linked custom fields.
@@ -3689,14 +3753,21 @@ class testcase extends tlObjectWithAttachments
 	       20070302 - check for $id not null, is not enough, need to check is > 0
 	
 	*/
-	function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null)
+	// BUGID 3431
+	// function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null)
+	function get_linked_cfields_at_design($id,$tcversion_id,$parent_id=null,$filters=null,$tproject_id = null)
 	{
+		// echo 'DEBUG' . __FUNCTION__ . '<br>';
 		if (!$tproject_id)
 		{
 			$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
 		}
+		
+		// BUGID 3431 - NEED CHANGE
+		// $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
+		//                                                           self::ENABLED,$filters,'testcase',$id);
 		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
-		                                                          self::ENABLED,$filters,'testcase',$id);
+		                                                          self::ENABLED,$filters,'testcase',$tcversion_id);
 		return $cf_map;
 	}
 	
@@ -3770,6 +3841,10 @@ class testcase extends tlObjectWithAttachments
 	                   scope='execution'
 	                   link_id=execution id
 	                   
+	                   BUGID 3431 
+	                   scope='design'
+	                   link_id=tcversion id
+	                   
 	
 	        [tplan_id]: default null
 	                    used when scope='execution' and YOU NEED to get input with value
@@ -3783,6 +3858,8 @@ class testcase extends tlObjectWithAttachments
 	  
 	  rev: 20080811 - franciscom - BUGID 1650 (REQ)
 	
+	BUGID 3431 - 
+	
 	*/
 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
 	                                           $link_id=null,$tplan_id=null,
@@ -3790,6 +3867,8 @@ class testcase extends tlObjectWithAttachments
 	{
 		$cf_smarty = '';
 	
+		// echo 'DEBUG' . __FUNCTION__ . '<br>';
+		// echo '<pre>';		debug_print_backtrace(); echo '</pre>';
 	  // BUGID 1650
 	  $cf_scope=trim($scope);
 	  $method_name='get_linked_cfields_at_' . $cf_scope;
@@ -3802,7 +3881,9 @@ class testcase extends tlObjectWithAttachments
 	
 	      case 'design':
 	          // added $filters
-	      		$cf_map = $this->$method_name($id,$parent_id,$filters,$tproject_id);    
+				// BUGID 3431 - 
+	      		// $cf_map = $this->$method_name($id,$parent_id,$filters,$tproject_id);    
+	      		$cf_map = $this->$method_name($id,$link_id,$parent_id,$filters,$tproject_id);    
 	      break;
 	      	
 	      case 'execution':
@@ -3890,10 +3971,16 @@ class testcase extends tlObjectWithAttachments
 	        [$tproject_id]
 	        [$formatOptions]
 	        [$link_id]: default null
-	                   used only when scope='testplan_design'.
+	                   scope='testplan_design'.
 	                   link_id=testplan_tcversions.id this value is also part of key
 	                   to access CF values on new table that hold values assigned
 	                   to CF used on the 'tesplan_design' scope.
+	
+					   BUGID 3431
+					   scope='design'.
+	                   link_id=tcversion_id
+					    	
+	
 	
 	
 	  returns: html string
@@ -3925,7 +4012,9 @@ class testcase extends tlObjectWithAttachments
 	    switch($scope)
 	    {
 	        case 'design':
-	            $cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tproject_id);
+	         	// BUGID 3431
+	            // $cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tproject_id);
+	            $cf_map = $this->get_linked_cfields_at_design($id,$link_id,null,$filters,$tproject_id);
 	        break;
 	    
 	        case 'testplan_design':
@@ -4007,6 +4096,9 @@ class testcase extends tlObjectWithAttachments
 	          				display_order
 	
 	
+	
+	
+	-- BUGID 3431 NO CHANGE
 	*/
 	function get_linked_cfields_at_execution($id,$parent_id=null,$show_on_execution=null,
 	                                         $execution_id=null,$testplan_id=null,
@@ -4035,18 +4127,21 @@ class testcase extends tlObjectWithAttachments
 	            with the values presents for $from_id, testcase we are using as
 	            source for our copy.
 	
-	  args: from_id: source testcase id
-	        to_id: target testcase id
+	  args: source: map('id' => testcase id, 'tcversion_id' => testcase id) 
+	        destination: map('id' => testcase id, 'tcversion_id' => testcase id) 
 	
 	  returns: -
 	
+	
+	BUGID 3431 NEEDE CHANGE -> from_id -> from tcversion id 
 	*/
-	function copy_cfields_design_values($from_id,$to_id)
+	function copy_cfields_design_values($source,$destination)
 	{
 	  // Get all cfields linked to any testcase of this test project
 	  // with the values presents for $from_id, testcase we are using as
 	  // source for our copy
-	  $cfmap_from=$this->get_linked_cfields_at_design($from_id);
+	  // $cfmap_from=$this->get_linked_cfields_at_design($from_id);
+	  $cfmap_from = $this->get_linked_cfields_at_design($source['id'],$source['tcversion_id']);
 	
 	  $cfield=null;
 	  if( !is_null($cfmap_from) )
@@ -4056,7 +4151,7 @@ class testcase extends tlObjectWithAttachments
 	      $cfield[$key]=array("type_id"  => $value['type'], "cf_value" => $value['value']);
 	    }
 	  }
-	  $this->cfield_mgr->design_values_to_db($cfield,$to_id,null,'tcase_copy_cfields');
+	  $this->cfield_mgr->design_values_to_db($cfield,$destination['tcversion_id'],null,'tcase_copy_cfields');
 	}
 	
 	
@@ -4112,6 +4207,7 @@ class testcase extends tlObjectWithAttachments
 	          				display_order
 	
 	
+	BUGID 3431 NO CHANGE - because ONLY ONE VERSION CAN BE LINKED to test plan
 	*/
 	function get_linked_cfields_at_testplan_design($id,$parent_id=null,$filters=null,
 	                                               $link_id=null,$testplan_id=null,$tproject_id = null)

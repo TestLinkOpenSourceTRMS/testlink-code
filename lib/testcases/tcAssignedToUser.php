@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/08/26 07:27:48 $  $Author: mx-julian $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/09/06 12:08:31 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100906 - asimon -  BUGID 3749
  *  20100826 - Julian - removed redundant version indication
  *  20100825 - Julian - make table collapsible if more than 1 table is shown
  *  20100825 - eloff - BUGID 3711 - Hide platform if not used
@@ -82,6 +83,8 @@ $filters = array();
 if (!$args->show_inactive_and_closed) {
 	//BUGID 3575: show only assigned test cases for ACTIVE test plans
 	$filters['tplan_status'] = 'active';
+	// BUGID 3749
+	$filters['build_status'] = 'open';
 }
 
 // BUGID 3647

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.301 2010/09/05 16:35:27 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.302 2010/09/06 12:08:25 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100906 - asimon -  BUGID 3749
  * 20100905 - franciscom -	BUGID 3431 - Custom Field values at Test Case VERSION Level
  *							changes to methods: 
  *							copy_tcversion(),_blind_delete(),show(),copy_to(),create_new_version()
@@ -3368,6 +3369,7 @@ class testcase extends tlObjectWithAttachments
 	 * @since 20090131 - franciscom
 	 *
 	 * @internal revision
+	 *  20100906 - asimon -  BUGID 3749
 	 *  20100813 - asimon - deactivated last slash on full path
 	 *                      to remove it from test suite name in "tc assigned to user" tables
 	 *  20100802 - asimon - 3647
@@ -3436,6 +3438,22 @@ class testcase extends tlObjectWithAttachments
 	        	$filters .= " AND TPLAN.active = 0 ";
 	    	break;
 	    }
+
+		// BUGID 3749
+		switch($my['filters']['build_status'])
+		{
+			case 'open':
+				$filters .= " AND BUILDS.is_open = 1 ";
+			break;
+
+			case 'closed':
+				$filters .= " AND BUILDS.is_open = 0 ";
+			break;
+
+		case 'all':
+		default:
+			break;
+		}
 
 	    $sql .= $filters;
 	    

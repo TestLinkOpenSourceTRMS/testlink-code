@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.679 2010/09/06 13:29:48 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.680 2010/09/06 15:44:45 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1502,7 +1502,7 @@ $TLS_assigned_platforms = "Assigned platforms";
 $TLS_add_remove_platforms = "Add / Remove Platforms to Test Plan: %s";
 $TLS_platform_linked_count = " (Used in %s testcases)";
 $TLS_platform_unlink_warning_title = "Platform is in use";
-$TLS_platform_unlink_warning_message = "The selected platform(s) are being used.<br/>If you continue <b/>all execution data will be lost</b>.<br/>Are you sure you want to remove the selected platform(s)?";
+$TLS_platform_unlink_warning_message = "The selected platform(s) are being used and cannot be removed.<br/><br/>To remove the platform you must first remove all test cases assigned to this platform.";
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Export requirements";

@@ -1,7 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsAssign.tpl,v 1.6 2010/02/01 15:06:36 franciscom Exp $
+$Id: platformsAssign.tpl,v 1.7 2010/09/06 15:44:45 erikeloff Exp $
 Purpose: smarty template - assign platforms to testplans
+
+@internal Revisions:
+20100906 - eloff - BUGID 3738 - don't allow removing platform with linked TCs
 *}
 {lang_get var="labels"
           s="title_platforms,menu_assign_platform_to_testplan,
@@ -28,7 +31,7 @@ Purpose: smarty template - assign platforms to testplans
 
 
 /* Checks if any of the removed platforms has linked testcases.
- * If that is the case, a warning dialog is displayed
+ * If that is the case, an alert dialog is displayed
  *
  * 20091201 - Eloff - Added transferLeft function
  */
@@ -40,21 +43,24 @@ Purpose: smarty template - assign platforms to testplans
 			num_with_linked_to_move++;
 		}
 	}
-  // Trying to remove platforms with linked TCs. Show warning/confirm dialog
+	// Don't allow removal of platforms with linked TCs.
 	if (num_with_linked_to_move > 0) {
-		function callback(btn,text)
-		{
-			if (btn == "yes") {
-				moveSelectedOptions(this.right,this.left,this.autoSort,this.staticOptionRegex); this.update();
-			}
-		}
-		Ext.Msg.confirm("{/literal}{$labels.platform_unlink_warning_title}{literal}",
-		                "{/literal}{$labels.platform_unlink_warning_message}{literal}", callback, this);
+		Ext.Msg.alert("{/literal}{$labels.platform_unlink_warning_title}{literal}",
+		                "{/literal}{$labels.platform_unlink_warning_message}{literal}");
 	}
 	else {
 		// this is the default call from option transfer
 		moveSelectedOptions(this.right,this.left,this.autoSort,this.staticOptionRegex); this.update();
 	}
+};
+{/literal}
+// Select all options in right panel, and move to left
+{$opt_cfg->js_ot_name}.transferAllLeft={literal}function(){
+	options = this.right.options;
+	Ext.query("option", this.right).each(function(el, i) {
+			el.selected = true;
+		});
+	this.transferLeft();
 };
 {/literal}
   </script>

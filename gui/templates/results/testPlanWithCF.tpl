@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testPlanWithCF.tpl,v 1.3 2010/05/02 09:38:10 franciscom Exp $
+$Id: testPlanWithCF.tpl,v 1.4 2010/09/06 13:29:47 mx-julian Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
@@ -9,7 +9,7 @@ rev:
 
 {lang_get var="labels" 
           s='no_uncovered_testcases,testproject_has_no_reqspec,
-             testproject_has_no_requirements,no_linked_tc_cf,generated_by_TestLink_on,
+             testproject_has_no_requirements,no_linked_tplan_cf,generated_by_TestLink_on,
              test_case,build,th_owner,date,status'}
 {include file="inc_head.tpl" openHead="yes"}
 </head>
@@ -48,7 +48,7 @@ rev:
 
       {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
     {else}
-    	<h2>{$labels.no_linked_tc_cf}</h2>
+    	<h2>{$labels.no_linked_tplan_cf}</h2>
     {/if}
 {else}
     {$gui->warning_msg}

@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.190 2010/09/06 08:39:45 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.191 2010/09/06 13:29:47 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2433,6 +2433,9 @@ $TLS_list_of_not_run = "Nicht ausgeführte Testfälle";
 // ----- lib/results/testPlanWithCF----
 $TLS_link_report_tplans_with_cf = "Test Pläne mit benutzerdefinierten Feldern";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
+$TLS_no_linked_tplan_cf = "Es existieren keine Testfälle für die ein benutzerdefiniertes " .
+                          "Feld während dem Hinzufügen zum Testplan gesetzt wurde";
+                          
 
 // ----- lib/results/resultsTC.php -----
 $TLS_result_on_last_build = '[Letztes Build]';

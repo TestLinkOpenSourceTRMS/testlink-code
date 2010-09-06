@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.678 2010/09/06 07:30:15 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.679 2010/09/06 13:29:48 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2442,6 +2442,8 @@ $TLS_list_of_not_run = "Not Run Test Cases";
 // ----- lib/results/testPlanWithCF----
 $TLS_link_report_tplans_with_cf = "Test Plan with Custom Field info";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
+$TLS_no_linked_tplan_cf = "There are no test cases where a custom field " .
+                          "was set while adding to the test plan";
 
 
 // ----- lib/results/resultsTC.php -----

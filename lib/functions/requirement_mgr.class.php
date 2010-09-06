@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2010/09/06 20:26:28 $ by $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2010/09/06 20:44:39 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -14,7 +14,7 @@
  *
  * rev:
  *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- *							create(), html_table_of_custom_field_inputs()
+ *							create(), html_table_of_custom_field_inputs(),copy_version()
  *
  *	20100904 - franciscom - BUGID 3685: XML Requirements Import Updates Frozen Requirement
  *	20100520 - franciscom - BUGID 2169 - customFieldValuesAsXML() new method_exists
@@ -338,7 +338,7 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 			                            $status,$type,intval($expected_coverage));
 			$result['msg'] = $op['status_ok'] ? $result['msg'] : $op['msg'];
 
-			// 
+			// BUGID 2877 - Custom Fields linked to Requirement Versions
 			$result['version_id'] = $op['status_ok'] ? $op['id'] : -1;
 
 		}	
@@ -1791,7 +1791,10 @@ function html_table_of_custom_field_values($id,$version_id)
 	  // get a new id
 	  $version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
 	  $last_version_info =  $this->get_last_version_info($id);
-	  $this->copy_version($last_version_info['id'],$version_id,$last_version_info['version']+1,$user_id);
+	  
+	  // BUGID 2877 - Custom Fields linked to Requirement Versions
+	  // $this->copy_version($last_version_info['id'],$version_id,$last_version_info['version']+1,$user_id);
+	  $this->copy_version($id,$last_version_info['id'],$version_id,$last_version_info['version']+1,$user_id);
 	
 	  $ret['id'] = $version_id;
 	  $ret['version'] = $last_version_info['version']+1;
@@ -1830,8 +1833,11 @@ function html_table_of_custom_field_values($id,$version_id)
     /**
 	 * 
  	 *
+ 	 * @internal revisions
+ 	 * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions 
      */
-	function copy_version($from_version_id,$to_version_id,$as_version_number,$user_id)
+	// function copy_version($from_version_id,$to_version_id,$as_version_number,$user_id)
+	function copy_version($id,$from_version_id,$to_version_id,$as_version_number,$user_id)
 	{
 		
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1844,6 +1850,13 @@ function html_table_of_custom_field_values($id,$version_id)
 	         " FROM {$this->tables['req_versions']} " .
 	         " WHERE id={$from_version_id} ";
 	    $result = $this->db->exec_query($sql);
+	         
+	    // BUGID 2877 - Custom Fields linked to Requirement Versions     
+	    $this->copy_cfields(array('id' => $id, 'version_id' => $from_version_id),
+						  	array('id' => $id, 'version_id' => $to_version_id));
+
+
+	         
 	}
 
     /**

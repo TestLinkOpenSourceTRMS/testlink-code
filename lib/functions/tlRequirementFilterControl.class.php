@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.10 2010/08/27 07:49:03 asimon83 Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.11 2010/09/06 20:07:38 franciscom Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -16,6 +16,7 @@
  * 
  * @internal Revisions:
  *
+ * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Req version
  * 20100827 - asimon - BUGID 3718 - enable drag&drop per default, disable only if filtering is done
  * 20100812 - asimon - fixed cf input field size
  * 20100812 - asimon - don't show textarea inputs on filter panel
@@ -463,7 +464,9 @@ class tlRequirementFilterControl extends tlFilterControl {
 			$this->req_mgr = new requirement_mgr($this->db);
 		}
 		
-		$cfields = $this->req_mgr->get_linked_cfields(null, $this->args->testproject_id);
+		// BUGID 2877 -  Custom Fields linked to Req version
+		// $cfields = $this->req_mgr->get_linked_cfields(null, $this->args->testproject_id);
+		$cfields = $this->req_mgr->get_linked_cfields(null, null, $this->args->testproject_id);
 		$cf_prefix = $this->req_mgr->cfield_mgr->name_prefix;
 		$cf_html_code = "";
 		$selection = array();

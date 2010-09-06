@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.187 2010/09/06 07:19:30 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.188 2010/09/06 07:30:15 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2444,7 +2444,7 @@ $TLS_no_linked_tc_cf='Es existieren keine Testfälle mit benutzerdefinierten Fel
                      'Ausführungsnotizen';
 $TLS_info_testCasesWithCF = "Dieser Report zeigt alle Testfälle, für die bei der " .
                             "Testausführung ein Wert für ein beliebiges benutzerdefiniertes " .
-                            "Feld oder eine Ausführungsnotiz (versteckt) gesetzt wurde";
+                            "Feld oder eine Ausführungsnotiz gesetzt wurde";
 
 
 // ----- cfg/reports.cfg.php -----

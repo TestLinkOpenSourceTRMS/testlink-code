@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.185 2010/09/02 15:08:15 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.186 2010/09/06 06:52:32 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.671
+ * Last Update according to en_GB string file version 1.676
  *
  **/
 
@@ -2095,6 +2095,7 @@ $TLS_req_import_format_docbook = " - DocBook XML Format";
 $TLS_req_import_result_overwritten = "Die Ergebnisse wurden überschrieben";
 $TLS_req_import_result_skipped = "Die Ergebnisse wurden übersprungen";
 $TLS_warning_duplicate_reqdoc_id = "Doppelte Dok. ID %s";
+$TLS_req_import_result_skipped_is_frozen = "übersprungen (ist eingefroren)";
 
 
 //  ----- lib/functions/requirement_spec_mgr.class.php -----
@@ -3011,5 +3012,8 @@ $TLS_import_req_conflicts_other_branch = 'Dok ID steht in Konflikt mit Anforderu
 $TLS_import_req_exists_here = 'Dok ID existiert';
 
 $TLS_invalid_release_date = 'Ungültiges Release Datum';
+$TLS_insert_step = "Schritt einfügen";
+$TLS_frozen_req_unable_to_import = 'Übersprungen - Anforderung - Dok. ID:%s - ist EINGEFROREN';
+
 // ----- END ------------------------------------------------------------------
 ?>

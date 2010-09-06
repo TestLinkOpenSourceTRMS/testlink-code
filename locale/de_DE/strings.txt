@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.188 2010/09/06 07:30:15 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.189 2010/09/06 08:38:28 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2368,7 +2368,8 @@ $TLS_req_created = "Anforderung %s wurde erfolgreich erstellt";
 // ----- lib/req/reqTcAssign.php -----
 $TLS_req_msg_noselect = "nichts ausgewählt";
 $TLS_req_msg_notupdated_coverage = "Deckung für die Anfordungen konnte nicht aktualisiert werden: ";
-$TLS_bulk_req_assign_msg = "Diese Operation wird ausgewählte Anforderungen zu (maximal) %s Testfälle<br>des aktuellen Branchs zuweisen.";
+$TLS_bulk_req_assign_msg = "Diese Operation wird die ausgewählten Anforderungen den %s Testfällen, die in dieser Testsuite " .
+                           "enthalten sind zuweisen.";
 
 $TLS_bulk_req_assign_no_test_cases = 'Operation konnte nicht durchgeführt werden, da keine Testfälle in der Test Suite vorhanden sind';
 

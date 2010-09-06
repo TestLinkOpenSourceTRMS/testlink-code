@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.676 2010/09/04 09:57:37 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.677 2010/09/06 07:19:30 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2450,7 +2450,7 @@ $TLS_tcversion_indicator = ' [v%s]';
 
 
 // ----- lib/results/testCasesWithCF.php -----
-$TLS_link_report_tcases_with_cf = "Test Cases with Custom Fields info";
+$TLS_link_report_tcases_with_cf = "Test Cases with Excution Details";
 $TLS_caption_testCasesWithCF = $TLS_link_report_tcases_with_cf;
 $TLS_no_linked_tc_cf= 'There are no Test Cases with Custom Field information or execution notes';
 $TLS_info_testCasesWithCF = "This Report shows all test cases with any custom field " .

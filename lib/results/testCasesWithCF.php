@@ -4,14 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/09/05 17:52:25 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/09/06 07:19:30 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
- *  20100901 - Julian - added execution notes column (hidden)
+ *  20100901 - Julian - added execution notes column
  *	20100830 - franciscom - fixed warnings on eventviewer
  *	20100828 - eloff - adapt to rendering of status column
  *	20100827 - franciscom - refactoring - removed unused variables
@@ -270,7 +270,7 @@ function getColumnsDefinition($showPlatforms,$customFields)
 				array('title' => lang_get('date'), 'width' => 60),
 				array('title' => lang_get('status'), 'type' => 'status', 'width' => 30));
 				
-	$colDef[] = array('title' => lang_get('title_execution_notes'), 'type' => 'text', 'hidden' => true);
+	$colDef[] = array('title' => lang_get('title_execution_notes'), 'type' => 'text');
 
 
 	foreach ($customFields as $cfield)

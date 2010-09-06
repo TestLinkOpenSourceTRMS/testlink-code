@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/07/19 13:00:41 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/09/06 20:25:19 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
  * 
+ *	20100906 - franciscom - BUGID 2877 -  Custom Fields linked to Req versions
  *	20100719 - franciscom - BUGID 3327 - manage duplicated DOC ID when creating, without loosing filled-in data
  * 	20100323 - asimon - BUGID 3312 - fixed audit log message when freezing a req version
  *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
@@ -100,7 +101,9 @@ class reqCommands
         
 		$obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
 		$obj->action_descr = lang_get('create_req');
-		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+		
+		// BUGID 2877 -  Custom Fields linked to Req versions 
+		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id);
       	$obj->template = 'reqEdit.tpl';
 		$obj->submit_button_label = lang_get('btn_save');
 		$obj->reqStatusDomain = $this->reqStatusDomain;
@@ -146,7 +149,13 @@ class reqCommands
 		                   TITLE_SEP .  $obj->req['title'];
 		                   
 		$obj->action_descr = lang_get('edit_req');
-		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->tproject_id);
+		
+		// BUGID 2877 -  Custom Fields linked to Req versions 
+		// $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->tproject_id);
+		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->req_version_id,
+																		 $argsObj->tproject_id);
+
+		
 		$obj->template = 'reqEdit.tpl';
 		$obj->submit_button_label = lang_get('btn_save');
 	  	$obj->reqStatusDomain = $this->reqStatusDomain;
@@ -175,7 +184,10 @@ class reqCommands
       	$obj->req = null;
 		$obj->main_descr = lang_get('req_spec_short') . TITLE_SEP . $req_spec['title'];
 		$obj->action_descr = lang_get('create_req');
-		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+
+		// BUGID 2877 -  Custom Fields linked to Req versions 
+		// $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
+		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id);
 	
 		$obj->submit_button_label=lang_get('btn_save');
 		$obj->template = null;
@@ -203,8 +215,15 @@ class reqCommands
 		{
 			logAuditEvent(TLS("audit_requirement_created",$argsObj->reqDocId),"CREATE",$ret['id'],"requirements");
 			$obj->user_feedback = sprintf(lang_get('req_created'),$argsObj->reqDocId,$argsObj->title);
-			$cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id) ;
-			$this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
+
+			// BUGID 2877 -  Custom Fields linked to Req versions 
+			// $cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id);
+			$cf_map = $this->reqMgr->get_linked_cfields(null,null,$argsObj->tproject_id);
+
+			// BUGID 2877 -  Custom Fields linked to Req versions 
+			// $this->reqMgr->values_to_db($request,$ret['id'],$cf_map);
+			$this->reqMgr->values_to_db($request,$ret['version_id'],$cf_map);
+
   			$obj->template = 'reqEdit.tpl';
   			$obj->req_id = $ret['id'];
 			$argsObj->scope = '';
@@ -251,8 +270,14 @@ class reqCommands
         	$obj->main_descr = '';
 		    $obj->action_descr = '';
           	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
-		  	$cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id);
-		  	$this->reqMgr->values_to_db($request,$argsObj->req_id,$cf_map);
+
+	        // BUGID 2877 -  Custom Fields linked to Req versions 
+		  	// $cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id);
+		  	$cf_map = $this->reqMgr->get_linked_cfields(null,null,$argsObj->tproject_id);
+		  	
+	        // BUGID 2877 -  Custom Fields linked to Req versions 
+		  	// $this->reqMgr->values_to_db($request,$argsObj->req_id,$cf_map);
+		  	$this->reqMgr->values_to_db($request,$argsObj->req_version_id,$cf_map);
 
 		  	logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
 		}
@@ -261,7 +286,12 @@ class reqCommands
 			// Action has failed => no change done on DB.
 	        $old = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
 	        $obj->main_descr = $descr_prefix . $old['title'];
-          	$obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->tproject_id);
+	        
+	        // BUGID 2877 -  Custom Fields linked to Req versions 
+          	// $obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->tproject_id);
+			$obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->req_version_id,
+																			 $argsObj->tproject_id);
+
 		}
 		return $obj;	
 	}
@@ -307,7 +337,7 @@ class reqCommands
 		// BUGID 3312
 		logAuditEvent(TLS("audit_req_version_frozen",$req_version['version'],
 		                  $req_version['req_doc_id'],$req_version['title']),
-		              "FREEZE",$argsObj->req_version_id,"req_version");
+		                  "FREEZE",$argsObj->req_version_id,"req_version");
   
 		$obj->template = 'show_message.tpl';
 		$obj->template_dir = '';

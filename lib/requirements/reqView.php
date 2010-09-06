@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.32 $
- * @modified $Date: 2010/05/09 07:38:12 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2010/09/06 21:12:19 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
  *
  *	@internal revision
+ *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select to requirement_mgr
  *                                   as it is now used from multiple files
  *	20100319 - franciscom - refactoring of BUGID 1748 
@@ -88,10 +89,29 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->req = current($gui->req_versions);
     $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);
     
+    
     // This seems weird but is done to adapt template than can display multiple
     // requirements. This logic has been borrowed from test case versions management
-    $gui->current_version[] = array($gui->req);
- 	$gui->other_versions[] = count($gui->req_versions) > 1 ? array_slice($gui->req_versions,1) : null;
+    $gui->current_version[0] = array($gui->req);
+	
+	// BUGID 2877 - Custom Fields linked to Requirement Versions
+	$gui->cfields_current_version[0] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$gui->req['version_id'],
+																				  $argsObj->tproject_id);
+
+	// Now CF for other Versions
+ 	$gui->other_versions[0] = null;
+ 	$gui->cfields_other_versions[] = null;
+ 	if( count($gui->req_versions) > 1 )
+ 	{
+ 		$gui->other_versions[0] = array_slice($gui->req_versions,1);
+ 		$loop2do = count($gui->other_versions[0]);
+ 		for($qdx=0; $qdx < $loop2do; $qdx++)
+		{
+			$target_version = $gui->other_versions[0][$qdx]['version_id'];
+			$gui->cfields_other_versions[0][$qdx]= 
+				$req_mgr->html_table_of_custom_field_values($gui->req_id,$target_version,$argsObj->tproject_id);
+		}
+ 	}
 	
     $gui->show_title = false;
     $gui->main_descr = lang_get('req') . $gui->pieceSep .  $gui->req['title'];
@@ -101,8 +121,10 @@ function initialize_gui(&$dbHandler,$argsObj)
     {
         $gui->parent_descr = lang_get('req_spec_short') . $gui->pieceSep . $gui->req['req_spec_title'];
     }
-    $gui->cfields = array();
-    $gui->cfields[] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);
+    
+    // BUGID 2877 - Custom Fields linked to Requirement Versions
+    // $gui->cfields = array();
+    // $gui->cfields[] = $req_mgr->html_table_of_custom_field_values($gui->req_id,$argsObj->tproject_id);
    	$gui->attachments[$gui->req_id] = getAttachmentInfosFrom($req_mgr,$gui->req_id);
     
     $gui->attachmentTableName = $req_mgr->getAttachmentTableName();

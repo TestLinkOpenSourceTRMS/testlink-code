@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.82 $
- * @modified $Date: 2010/05/11 18:36:26 $ by $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2010/09/07 17:28:49 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -974,11 +974,7 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	               "\n<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
 	               "<scope><![CDATA[{$containerData['scope']}]]> \n</scope>{$cfXML}";
 	}
-	// else
-	// {
-	// 	$xmlData = "<requirement>";
-	// }
-  
+ 
 	$req_spec = $this->getReqTree($id);
 	$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
 	if( !is_null($childNodes) )
@@ -998,7 +994,7 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	    	  	{
 	    	      $req_mgr = new requirement_mgr($this->db);
 	    		}
-	    		$reqXMLData = $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
+	    		// $reqXMLData = $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
 	    		$xmlData .= $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
 	    	}
 	    }
@@ -1007,10 +1003,6 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	{
 		$xmlData .= "</req_spec>";
 	}
-	// else
-	// {
-	// 	$xmlData .= "</requirement>";
-	// }
 	return $xmlData;
 }
 

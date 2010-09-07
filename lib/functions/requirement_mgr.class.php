@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.89 $
- * @modified $Date: 2010/09/07 17:16:46 $ by $Author: franciscom $
+ * @version $Revision: 1.90 $
+ * @modified $Date: 2010/09/07 17:33:10 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -14,7 +14,7 @@
  *
  * rev:
  *  20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- *							delete()
+ *							delete(),exportReqToXML()
  *
  *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *							create(), html_table_of_custom_field_inputs(),copy_version()
@@ -1096,8 +1096,16 @@ function set_order($map_id_order)
  */
 function exportReqToXML($id,$tproject_id=null)
 {            
+
+	$req = $this->get_by_id($id,requirement_mgr::LATEST_VERSION);
+	$reqData[] = $req[0]; 
+
+	
 	// BUGID 2169
-	$cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
+	// BUGID 2877 - Custom Fields linked to Requirement Versions 
+	// $cfXML = $this->customFieldValuesAsXML($id,$tproject_id);
+	$cfXML = $this->customFieldValuesAsXML($id,$req[0]['version_id'],$tproject_id);
+	
 
  	$rootElem = "{{XMLCODE}}";
 	$elemTpl = "\t" .   "<requirement>" .
@@ -1120,8 +1128,6 @@ function exportReqToXML($id,$tproject_id=null)
 							    "||EXPECTED_COVERAGE||" => "expected_coverage",
 							    );
 	
-	$req = $this->get_by_id($id,requirement_mgr::LATEST_VERSION);
-	$reqData[] = $req[0]; 
 	
 	
 	$xmlStr = exportDataToXML($reqData,$rootElem,$elemTpl,$info,true);						    

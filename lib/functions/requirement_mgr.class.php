@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2010/09/06 20:44:39 $ by $Author: franciscom $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2010/09/07 17:16:46 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
+ *							delete()
+ *
  *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *							create(), html_table_of_custom_field_inputs(),copy_version()
  *
@@ -461,6 +464,9 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
     returns:
 
+
+	@internal revisions
+	20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions 
   */
 	function delete($id,$version_id = self::ALL_VERSIONS)
  	{
@@ -484,8 +490,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 			$where_clause_this = " WHERE id = {$id}";
 	    }
 		
-		// When deleting only one version, we need to check if we need to delete 
-		// requirement also.
+		// When deleting only one version, we need to check if we need to delete  requirement also.
 		$children[] = $version_id;
 	  	if( $version_id == self::ALL_VERSIONS)
 	  	{
@@ -504,8 +509,9 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	    	$children_rs=$this->db->fetchRowsIntoMap($sql,'id');
             $children = array_keys($children_rs); 
 
+			// BUGID 2877 - Custom Fields linked to Requirement Versions
 	    	// Delete Custom fields
-	    	$this->cfield_mgr->remove_all_design_values_from_node($id);
+	    	// $this->cfield_mgr->remove_all_design_values_from_node($id);
 	  		
 	  		// delete dependencies with test specification
 	  		$sql = "DELETE FROM {$this->tables['req_coverage']} " . $where_clause_coverage;
@@ -525,12 +531,15 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
         // Delete version info
 	  	if( $doIt )
 	  	{
-	  			$where_clause_children = " WHERE id IN (" .implode(',',$children) . ") ";
-	  			$sql = "DELETE FROM {$this->tables['req_versions']} " . $where_clause_children;
-	  			$result = $this->db->exec_query($sql);
-
-	  			$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where_clause_children;
-	  			$result = $this->db->exec_query($sql);
+	  		// BUGID 2877 - Custom Fields linked to Requirement Versions                    
+	  		$this->cfield_mgr->remove_all_design_values_from_node((array)$children);
+	  		
+	  		$where_clause_children = " WHERE id IN (" .implode(',',$children) . ") ";
+	  		$sql = "DELETE FROM {$this->tables['req_versions']} " . $where_clause_children;
+	  		$result = $this->db->exec_query($sql);
+        	
+	  		$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} " . $where_clause_children;
+	  		$result = $this->db->exec_query($sql);
 		} 
 
 		if( $deleteAll && $result)

@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.82 2010/08/29 09:26:16 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.83 2010/09/07 17:24:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -75,12 +75,6 @@
  *                         code contributed by Seweryn Plywaczyk
  *
  * 20070227 - franciscom - BUGID 677
- * 20070110 - franciscom - solved bug set_active()
- *
- * 20070105 - franciscom -
- * 1. solved bugs on design_values_to_db()
- * 2. refactoring - design_values_to_db()
- *                  execution_values_to_db()
  *
 **/
 
@@ -891,8 +885,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   */
   function remove_all_design_values_from_node($node_id)
   {
-
-    $sql="DELETE FROM {$this->tables['cfield_design_values']} ";
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	
+    $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} ";
     if( is_array($node_id) )
     {
 
@@ -902,6 +897,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     {
       $sql .= " WHERE node_id={$node_id}";
     }
+
     $this->db->exec_query($sql);
   } //function end
 

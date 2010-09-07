@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: resultsImport.tpl,v 1.9 2010/08/21 16:23:59 franciscom Exp $
+$Id: resultsImport.tpl,v 1.10 2010/09/07 07:18:39 mx-julian Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev:
+    20100908 - Julian - BUGID 3752 - $gui->tplan to $gui->tplanID
     20100821 - franciscom - BUGID 3470 - reopened due to filters refactoring
     20100518 - franciscom - BUGID 3470 - contribution twelve
 *}
@@ -46,7 +47,7 @@ rev:
 	<div class="groupBtn">
 		<input type="hidden" name="buildID" value="{$gui->buildID}" />
     <input type="hidden" name="platformID" value="{$gui->platformID}" /> {* BUGID 3470 *}
-    <input type="hidden" name="tplanID" value="{$gui->tplan}" /> {* BUGID 3470 *}
+    <input type="hidden" name="tplanID" value="{$gui->tplanID}" /> {* BUGID 3470 & BUGID 3752 *}
 
 		<input type="submit" name="UploadFile" value="{$labels.btn_upload_file}" />
 		<input type="button" name="cancel" value="{$labels.btn_cancel}" 

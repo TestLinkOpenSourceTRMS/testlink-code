@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2010/05/11 18:36:26 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/09/08 13:14:32 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
@@ -83,7 +83,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 {
     $retval = new stdClass();
-    $retval->items = null;
+    $retval->items = array();
     $retval->msg = '';
     
 	if($argsObj->importType == 'XML')
@@ -92,7 +92,6 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 	    
 	    // if achecked_req is null => user has not selected any requirement, anyway we are going to create reqspec tree
 	    $filter['requirements'] = $argsObj->achecked_req;
-	    $retval->items = array();
 
     	$isReqSpec = property_exists($xml,'req_spec');
 		if($isReqSpec)
@@ -109,11 +108,11 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     		if( count($selectedKeys) > 0 )
     		{
    	    		$reqMgr = new requirement_mgr($dbHandler);
-    			$retval->items = null;
         		foreach($selectedKeys as $kdx)
         		{
-        			$retval->items[] = $reqMgr->createFromXML($xml->requirement[$kdx],$argsObj->tproject_id,
-        			                                          $argsObj->req_spec_id,$argsObj->user_id);
+        			$dummy = $reqMgr->createFromXML($xml->requirement[$kdx],$argsObj->tproject_id,
+        			                                $argsObj->req_spec_id,$argsObj->user_id);
+    				$retval->items = array_merge($retval->items,$dummy);
         		}
         	}
     	}
@@ -125,6 +124,8 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 	}
 	unlink($fileName);
 	$retval->msg = lang_get('req_import_finished');
+	
+	new dBug($retval);
     return $retval;    
 }
 

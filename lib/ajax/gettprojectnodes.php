@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.20 2010/06/24 17:25:53 asimon83 Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.21 2010/09/08 17:12:21 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -23,7 +23,8 @@
 * 	public property 'attributes' of object of Class Ext.tree.TreeNode 
 * 	
 *
-*   rev: 20100530 - franciscom - added custom node attribute: tlNodeType
+*   rev: 
+*		 20100908 - franciscom - added custom node attribute: testlink_node_type
 *		 20081213 - franciscom - BUGID 1928 - contribution
 *        20080820 - franciscom - added operation argument
 *                                values: 'manage','print'
@@ -126,7 +127,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
  	        $path['cls'] = 'folder';
 
 			// customs key will be accessed using node.attributes.[key name]
-	        $path['tlNodeType'] = $row['node_type'];
+	        $path['testlink_node_type'] = $row['node_type'];
 	       
 	        $tcase_qty = null;
 	        switch($row['node_type'])

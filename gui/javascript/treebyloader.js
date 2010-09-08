@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.7 2010/06/24 17:25:57 asimon83 Exp $
+$Id: treebyloader.js,v 1.8 2010/09/08 17:10:43 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -24,6 +24,7 @@ Ext.ux.tree.RemoteTreePanel by Saki - ver.: 1.0
 Author: franciscom - 20080525
 
 rev:
+    20100908 - franciscom - work on CTRL+Drag&Drop for copy (just started)
     20100603 - franciscom - added context menu logic to solve partially 
                BUGID 2408: Relation between internal testcaseid,testplanid,...
                
@@ -31,6 +32,75 @@ rev:
     
     Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
 */
+
+
+/*
+  function: checkCtrlKey()
+
+  args: dropEventObject
+  
+  beforenodedrop
+    public event beforenodedrop
+    Fires when a DD object is dropped on a node in this tree for preprocessing. 
+    Return false to cancel the drop. 
+  
+  The dropEvent passed to handlers has the following properties:
+    tree - The TreePanel
+    target - The node being targeted for the drop
+    data - The drag data from the drag source
+    point - The point of the drop - append, above or below
+    source - The drag source
+    rawEvent - Raw mouse event
+    dropNode - Drop node(s) provided by the source OR you can supply node(s) to be inserted by setting them on this object.
+    cancel - Set this to true to cancel the drop.
+  
+  Subscribers will be called with the following parameters:
+    dropEvent : Object
+  This event is defined by TreePanel.  
+  
+ 
+  returns: 
+
+  rev: 
+*/
+function checkCtrlKey(dropEventObject)
+{
+    var status=true;
+		dumpProps(dropEventObject.dropNode.attributes);
+		
+		if (dropEventObject.rawEvent.ctrlKey) 
+		{
+      dropEventObject.tree.initialConfig.copyOrMove = 'copy';
+
+      // Ext.Ajax.request({
+      //     url: treeCfg.dragDropBackEndUrl,
+      //     params: {doAction: 'copyNode', nodeid: nodeid, 
+      //              oldparentid: oldparentid, newparentid: newparentid,                   
+      //              top_or_bottom: 'bottom'}
+      // });
+
+
+
+		  // dropEventObject.dropNode = copyDropNode(dropEventObject.dropNode);
+      dropEventObject.dropNode = new Ext.tree.AsyncTreeNode(dropEventObject.dropNode.attributes);
+
+
+
+
+
+		  // status=false;
+		}
+		else
+		{
+      dropEventObject.tree.initialConfig.copyOrMove = 'move';
+		}  
+    
+    // alert('checkCtrlKey ' + dropEventObject.tree.initialConfig.copyOrMove);
+    
+    return status;
+}
+
+
 
 /*
   function: checkMovement()
@@ -48,6 +118,7 @@ function checkMovement(newparent,node,oldparentid,newparentid,nodeorder)
     var status=true;
     var newparent_node_type =newparent.attributes.testlink_node_type;
     var node_type = node.attributes.testlink_node_type;
+    
     switch(node_type)
     {
         case 'requirement':
@@ -62,6 +133,15 @@ function checkMovement(newparent,node,oldparentid,newparentid,nodeorder)
 }
 
 
+/*
+  function: writeNodePositionToDB()
+
+  args: same interface that beforemovenode()
+  
+  returns: 
+
+  rev: 
+*/
 function writeNodePositionToDB(newparent,nodeid,oldparentid,newparentid,nodeorder)
 {
     var children=newparent.childNodes
@@ -190,24 +270,16 @@ TreePanelState.prototype.restoreState = function(defaultPath)
 
 TreePanelState.prototype.menuShow = function(node,eventObj) 
 {
-  // node.select();
-  // this.clickedNode = node;
-	// var alignEl = node.getUI().getEl();
-	// var xy = this.contextMenu.getEl().getAlignToXY(alignEl, 'tl-tl', [0, 18]);
 
   this.clickedNode = node;
-  switch(node.attributes.tlNodeType)
+  switch(node.attributes.testlink_node_type)
   {
     case 'testsuite':
       this.contextMenu.show(node.ui.getEl());           
-	    //this.contextMenu.showAt([eventObj.getXY()[0], xy[1]]);
-	    //eventObj.stopEvent();
     break;
 
     case 'testcase':
       this.contextMenu.show(node.ui.getEl());           
-	    //this.contextMenu.showAt([eventObj.getXY()[0], xy[1]]);
-	    //eventObj.stopEvent();
     break;
   }
 
@@ -215,20 +287,29 @@ TreePanelState.prototype.menuShow = function(node,eventObj)
 
 
 
+//    
+// function displayAPI(item,eventObject,treeObj)
+// {
+//   alert('this' + this);
+//   // dumpProps(this);
+//   alert(treeObj.clickedNode);
+//   alert(treeObj.clickedNode.id);
+//   alert('displayAPI');
+//   alert(item.text);
+// 
+// }
+// 
    
-function displayAPI(item,eventObject,treeObj)
-{
-  alert('this' + this);
-  // dumpProps(this);
-  alert(treeObj.clickedNode);
-  alert(treeObj.clickedNode.id);
-  alert('displayAPI');
-  alert(item.text);
+/*
+  function: dumpProps() 
+            utility for debug
 
-}
+  args: 
+  
+  returns: 
 
-   
-   
+  rev: 
+*/
 function dumpProps(obj, parent) {
    // Go through all the properties of the passed-in object
    for (var i in obj) {
@@ -258,6 +339,9 @@ Ext.onReady(function(){
     // shorthand
     var Tree = Ext.tree;
     
+    // added config option copyOrMove, can be used (RW) with this access path
+    // .initialConfig.copyOrMove
+    //
     var tree = new Tree.TreePanel({
         el:treeCfg.tree_div_id,
         useArrows:true,
@@ -265,7 +349,8 @@ Ext.onReady(function(){
         animate:true,
         contextMenu:true,  // is really needed ?
         enableDD:treeCfg.enableDD,
-        containerScroll: true, 
+        containerScroll: true,
+        copyOrMove: 'move', 
         loader: new Tree.TreeLoader({
             dataUrl:treeCfg.loader
         })
@@ -333,7 +418,7 @@ Ext.onReady(function(){
     });
     
     tree.on('movenode', function(tree,node,oldParent,newParent,newNodePosition ){ 
-              writeNodePositionToDB(newParent,node.id,oldParent.id,newParent.id,newNodePosition);                    
+                writeNodePositionToDB(newParent,node.id,oldParent.id,newParent.id,newNodePosition);                    
     });                                          
     
     
@@ -348,6 +433,17 @@ Ext.onReady(function(){
                   return checkMovement(newParent,node,oldParent.id,newParent.id,newNodePosition);                    
         });                                          
     }   
+    
+    // 20100908
+    tree.on(
+            'beforenodedrop', 
+            function(dropEvent)
+            { 
+                  return checkCtrlKey(dropEvent);                    
+            }
+    );                                          
+    
+    
     
     // restore last state from tree or to the root node as default
     treeState.restoreState(tree.root.getPath());                  

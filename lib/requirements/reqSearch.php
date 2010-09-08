@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.2 2010/03/24 12:46:35 asimon83 Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.3 2010/09/08 12:36:45 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
  * 20100324 - asimon - added searching for requirement relation type (BUGID 1748)
  */
 
@@ -113,7 +114,8 @@ if ($args->tprojectID)
         $args->custom_field_value = $db->prepare_string($args->custom_field_value);
         $from['by_custom_field'] = " , {$tables['cfield_design_values']} CFD "; 
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-                                     " AND CFD.node_id=NHP.id " .
+                                     // BUGID 2877 -  Custom Fields linked to Req versions
+                                     " AND CFD.node_id=RV.id " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
     } else {
     	// avoid E_NOTICE because of undefined index

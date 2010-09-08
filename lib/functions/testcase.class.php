@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.302 2010/09/06 12:08:25 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.303 2010/09/08 18:44:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100908 - franciscom - exportTestCaseDataToXML() - testcase::LATEST_VERSION has problems
  * 20100906 - asimon -  BUGID 3749
  * 20100905 - franciscom -	BUGID 3431 - Custom Field values at Test Case VERSION Level
  *							changes to methods: 
@@ -859,8 +860,6 @@ class testcase extends tlObjectWithAttachments
 		  		$tcversion_id_current = $tc_array[0]['id']; 
 		  		$gui->tc_current_version[] = array($tc_current);
 		  		
-		  		// new dBug($tc_current);
-		  		
 		  		//Get UserID and Updater ID for current Version
 		  		$userid_array[$tc_current['author_id']] = null;
 		  		$userid_array[$tc_current['updater_id']] = null;
@@ -1554,7 +1553,6 @@ class testcase extends tlObjectWithAttachments
 		        
 	 			foreach($tcase_info as $tcversion)
 				{
-					// new dBug($tcversion);
 					
 					// 20100221 - franciscom - 
 					// IMPORTANT NOTICE:
@@ -1568,7 +1566,6 @@ class testcase extends tlObjectWithAttachments
 					
 	    			if( $op['status_ok'] )
 	    			{
-	    				// 20100204 - franciscom
 	    				$newTCObj['mappings'][$tcversion['id']] = $op['id'];
 
 						// ATTENTION:  NEED TO UNDERSTAND HOW TO MANAGE COPY TO OTHER TEST PROJECTS
@@ -3136,13 +3133,16 @@ class testcase extends tlObjectWithAttachments
 	
 	  args :
 	
+			$tcversion_id: can be testcase::LATEST_VERSION
+			
 	  returns:
 	
 	  rev:
-	   * 20100315 - amitkhullar - Added options for Requirements and CFields for Export.
-	   * 20100105 - franciscom - added execution_type, importance
-	   * 20090204 - franciscom - added export of node_order
-	   * 20080206 - franciscom - added externalid
+	   20100908 - franciscom - testcase::LATEST_VERSION has problems
+	   20100315 - amitkhullar - Added options for Requirements and CFields for Export.
+	   20100105 - franciscom - added execution_type, importance
+	   20090204 - franciscom - added export of node_order
+	   20080206 - franciscom - added externalid
 	
 	*/
 	function exportTestCaseDataToXML($tcase_id,$tcversion_id,$tproject_id=null,
@@ -3157,18 +3157,17 @@ class testcase extends tlObjectWithAttachments
 	  	}
 	
 		$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
+		$testCaseVersionID = $tc_data[0]['id'];
+		
 		if (!$tproject_id)
 		{
 			$tproject_id = $this->getTestProjectFromTestCase($tcase_id);
 		}
-        	// Get Custom Field Data
+        // Get Custom Field Data
 		if ($optExport['CFIELDS'])
 		{
 			// BUGID 3431
-			// $cfMap = $this->get_linked_cfields_at_design($tcase_id,null,null,$tproject_id);
-			$cfMap = $this->get_linked_cfields_at_design($tcase_id,$tcversion_id,null,null,$tproject_id);        	                                                                                  
-
-        	
+			$cfMap = $this->get_linked_cfields_at_design($tcase_id,$testCaseVersionID,null,null,$tproject_id);        	                                                                                  
         	
 	    	// ||yyy||-> tags,  {{xxx}} -> attribute 
 	    	// tags and attributes receive different treatment on exportDataToXML()

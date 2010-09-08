@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.100 2010/09/04 17:43:06 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.101 2010/09/08 18:44:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1060,12 +1060,14 @@ class testsuite extends tlObjectWithAttachments
 	function exportTestSuiteDataToXML($container_id,$tproject_id,$optExport = array())
 	{
 		static $keywordMgr;
+		static $getLastVersionOpt = array('output' => 'minimun');
+		static $tcase_mgr;
+		
 		if(is_null($keywordMgr))
 		{
   	    	$keywordMgr = new tlKeyword();      
 		}	
 		
-		// echo __FUNCTION__ . '<br>';
 		$xmlTC = null;
 		$doRecursion = isset($optExport['RECURSIVE']) ? $optExport['RECURSIVE'] : 0;
 		if($doRecursion)
@@ -1073,7 +1075,7 @@ class testsuite extends tlObjectWithAttachments
 		    $cfXML = null;
 			$kwXML = null;
 			$tsuiteData = $this->get_by_id($container_id);
-			if (@$optExport['KEYWORDS'])
+			if(@$optExport['KEYWORDS'])
 			{
 				$kwMap = $this->getKeywords($container_id);
 				if ($kwMap)
@@ -1083,15 +1085,10 @@ class testsuite extends tlObjectWithAttachments
 			}
 			if ($optExport['CFIELDS'])
 		    {
-				// 20090106 - franciscom - custom fields
-	        	$cfMap=$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
-				if( !is_null($cfMap) && count($cfMap) > 0 )
+	        	$cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
+				if( count($cfMap) > 0 )
 		    	{
-	        	    $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-		    	    $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
-		    	  	                         '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
-		    	    $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
-		    	    $cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+		    	    $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
 		    	} 
 		    }
 	        $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .

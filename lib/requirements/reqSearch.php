@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.3 2010/09/08 12:36:45 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.4 2010/09/08 13:21:53 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
@@ -27,7 +27,10 @@ $tproject_mgr = new testproject($db);
     	
 $req_cfg = config_get('req_cfg');
 $tcase_cfg = config_get('testcase_cfg');
-$gui = new stdClass();
+
+$commandMgr = new reqCommands($db);
+$gui = $commandMgr->initGuiBean();
+
 $gui->main_descr = lang_get('caption_search_form_req');
 $gui->warning_msg = '';
 $gui->path_info = null;

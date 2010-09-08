@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/09/06 20:25:19 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2010/09/08 13:21:53 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  * 
  * web command experiment
@@ -68,6 +68,7 @@ class reqCommands
 		$obj->hilite_item_name = false;
 		$obj->display_path = false;
 		$obj->show_match_count = false;
+		$obj->match_count = 0;
 		$obj->main_descr = '';
 		$obj->action_descr = '';
 		$obj->cfields = null;

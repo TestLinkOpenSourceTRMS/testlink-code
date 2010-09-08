@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.16 2010/09/06 21:12:19 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.17 2010/09/08 13:21:53 mx-julian Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -130,7 +130,7 @@ var pF_delete_req_relation = delete_req_relation;
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 {* fixed a little bug, here $gui->pageTitle was called instead of $gui->main_descr *}
-<h1 class="title">{$gui->main_descr|escape}{if $gui->show_match_count} - {$labels.match_count}: {$gui->match_count}{/if}
+<h1 class="title">{$gui->main_descr|escape}{if isset($gui->show_match_count)} - {$labels.match_count}: {$gui->match_count}{/if}
 </h1>
 {if !isset($refresh_tree) }
   {assign var="refresh_tree" value=false}
@@ -139,7 +139,7 @@ var pF_delete_req_relation = delete_req_relation;
 
 <div class="workBack">
 
-{if $gui->current_version}
+{if isset($gui->current_version)}
 {section name=idx loop=$gui->current_version}
 
 	{assign var="reqID" value=$gui->current_version[idx][0].id}

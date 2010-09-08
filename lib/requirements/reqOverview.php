@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.29 2010/08/26 07:27:48 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.30 2010/09/08 12:18:45 franciscom Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  * 
+ * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
  * 20100823 - Julian - table now uses a unique table id per test project
  * 20100822 - asimon - removal of magic numbers for default table sorting
  * 20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
@@ -84,9 +85,6 @@ if(count($gui->reqIDs) > 0) {
 
 		// coverage data
 		$tc_coverage = count($req_mgr->get_coverage($id));
-		
-		// BUGID 3254:
-		$linked_cfields = (array)$req_mgr->get_linked_cfields($id);
 
 		// number of relations, if feature is enabled
 		if ($relations_enabled) {
@@ -160,7 +158,10 @@ if(count($gui->reqIDs) > 0) {
 				$result[] = $relations;
 			}
 			
-			// get custom field values for this req
+			
+			// BUGID 2877 -  Custom Fields linked to Req versions
+			// get custom field values for this req version
+			$linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
 			foreach ($linked_cfields as $cf) {
 	    		$result[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $charset));
 	    	}

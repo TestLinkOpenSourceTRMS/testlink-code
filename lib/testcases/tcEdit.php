@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.162 2010/09/08 21:00:53 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.163 2010/09/08 21:07:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -124,7 +124,8 @@ if($args->delete_tc_version)
 {
 	$status_quo_map = $tcase_mgr->get_versions_status_quo($args->tcase_id);
 	$exec_status_quo = $tcase_mgr->get_exec_status($args->tcase_id);
-    
+    $gui->delete_mode = 'single'; 
+
     $msg = '';
 	$sq = null;
 	if(!is_null($exec_status_quo))

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcDelete.tpl,v 1.12 2010/09/08 21:01:53 franciscom Exp $
+$Id: tcDelete.tpl,v 1.13 2010/09/08 21:10:27 franciscom Exp $
 Purpose: smarty template - delete test case in test specification
 
 rev :
@@ -36,7 +36,7 @@ rev :
 {if $gui->sqlResult == ''}
 	{if $gui->delete_mode == 'single'}
 	  {if $gui->exec_status_quo != ''}
-	      <table class="link_and_exec" >
+	      <table class="simple" >
 	  		<tr>
 	  			<th>{$labels.th_version}</th>
 	  			<th>{$labels.th_linked_to_tplan}</th>
@@ -48,9 +48,9 @@ rev :
 	  				{foreach from=$status_on_platform key=platform_id item=status}
 	  			    <tr>
 	  				    <td align="right">{$status.version}</td>
-	  				    <td align="right">{$status.tplan_name|escape}</td>
+	  				    <td align="left">{$status.tplan_name|escape}</td>
 	  			      {if $gui->display_platform}
-	  			        <td align="right">{$status.platform_name|escape}</td>
+	  			        <td align="left">{$status.platform_name|escape}</td>
 	  			      {/if}
 	  				    <td align="center">{if $status.executed != ""}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png" />{/if}</td>
 	  				  </tr>
@@ -73,7 +73,7 @@ rev :
   
   {else}
 	  {if $gui->exec_status_quo != ''}
-	      <table class="link_and_exec" >
+	      <table class="simple" >
 	  		<tr>
 	  			<th>&nbsp;</th>
 	  			<th>{$labels.th_version}</th>
@@ -85,7 +85,7 @@ rev :
 	  				{foreach from=$status_on_platform key=platform_id item=status}
 	  			    <tr>
 	  				    <td align="right">{$status.version}</td>
-	  				    <td align="right">{$status.tplan_name|escape}</td>
+	  				    <td align="left">{$status.tplan_name|escape}</td>
 	  				    <td align="center">{if $status.executed neq ""}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png" />{/if}</td>
 	  				  </tr>
 	  			  {/foreach}

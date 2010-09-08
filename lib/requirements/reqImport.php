@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2010/09/08 13:14:32 $ by $Author: franciscom $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2010/09/08 14:56:54 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
- * 
+ *
+ * 20100908 - asimon -  BUGID 3761: requirement tree refresh after requirement import
  * 20100321 - franciscom - work on import child requirements XML format - not finished
  * 20081103 - sisajr - DocBook XML extension
  * 20080504 - franciscom - removed tmp file after import
@@ -53,6 +54,9 @@ switch($args->doAction)
         $dummy = doExecuteImport($db,$gui->fileName,$args,$req_spec_mgr);
 		$gui->items = $dummy->items;        
         $gui->importResult = lang_get('import_done');
+
+        // BUGID 3761: requirement tree refresh after requirement import
+        $gui->refreshTree = $args->refreshTree;
     break;
 }
 
@@ -171,7 +175,11 @@ function init_args()
     $args->tproject_name = $_SESSION['testprojectName'];
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
    	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
-    
+
+    // BUGID 3761: requirement tree refresh after requirement import
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
+	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+
     return $args;
 }
 

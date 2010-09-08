@@ -1,10 +1,11 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.18 2010/05/11 18:36:25 franciscom Exp $
+$Id: reqImport.tpl,v 1.19 2010/09/08 14:56:53 asimon83 Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
 Revision:
+20100908 - asimon - BUGID 3761: requirement tree refresh after requirement import
 20050830 - MHT - result presentation updated
 20051015 - scs - fixed back button
 20051202 - scs - fixed 211
@@ -165,6 +166,11 @@ Revision:
  {/if}
 
 </div>
+
+{* BUGID 3761: requirement tree refresh after requirement import *}
+{if isset($gui->refreshTree) && $gui->refreshTree}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
 
 </body>
 </html>

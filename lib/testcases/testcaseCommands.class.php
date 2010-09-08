@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.57 2010/09/05 15:57:55 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.58 2010/09/08 08:13:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -165,7 +165,6 @@ class testcaseCommands
 		foreach($cfPlaces as $locationKey => $locationFilter)
 		{ 
 			// BUGID 3431 - NO CHANGE NEEDED
-			echo 'GET CF';
 			$guiObj->cf[$locationKey] = 
 				$this->tcaseMgr->html_table_of_custom_field_inputs(null,null,'design','',null,null,
 				                                                   $argsObj->testproject_id,$locationFilter);

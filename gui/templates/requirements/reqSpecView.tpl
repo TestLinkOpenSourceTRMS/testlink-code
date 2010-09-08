@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.40 2010/08/10 14:10:11 asimon83 Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.41 2010/09/08 13:53:08 mx-julian Exp $ *}
 {*
    Purpose: view a requirement specification
    Author: Martin Havlat
@@ -67,14 +67,19 @@
 
 <body {$body_onload}>
 <h1 class="title">
+  {if isset($gui->direct_link)}
   {$toggle_direct_link_img} &nbsp;
+  {/if}
 	{$gui->main_descr|escape}
+	{if $gui->req_spec.id}
 	{include file="inc_help.tpl" helptopic="hlp_requirementsCoverage" show_help_icon=true}
+	{/if}
 </h1>
 
 <div class="workBack">
+   {if isset($gui->direct_link)}
    <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
-
+   {/if}
 {* contribution by asimon *}
 {if $gui->req_spec.id}
 {* end contribution by asimon *}
@@ -145,7 +150,7 @@
 {/if}
 
 </div>
-{if $gui->refresh_tree == 'yes'}
+{if isset($gui->refresh_tree) && $gui->refresh_tree == 'yes'}
    {include file="inc_refreshTree.tpl"}
 {/if}
 </body>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.92 $
- * @modified $Date: 2010/09/08 12:55:42 $ by $Author: franciscom $
+ * @version $Revision: 1.93 $
+ * @modified $Date: 2010/09/08 13:25:33 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1296,7 +1296,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     				 	     'import_status' => sprintf($labels[$msgID],$req['docid']));
     
     // 20100907 - Custom Fields import
-    if( $status_ok && $doProcessCF && !is_null($req['custom_fields']) )
+    if( $status_ok && $doProcessCF && isset($req['custom_fields']) && !is_null($req['custom_fields']) )
     {
     	$cf2insert = null;
     	foreach($req['custom_fields'] as $cfname => $cfvalue)

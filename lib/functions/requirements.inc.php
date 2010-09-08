@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.111 2010/09/04 09:56:46 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.112 2010/09/08 19:23:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -790,13 +790,6 @@ function check_syntax_xml($fileName)
   $ret=array();
   $ret['status_ok']=1;
   $ret['msg']='ok';
-
-  //@ -> shhhh!!!! silence please
-  // if (!$dom = @domxml_open_file($fileName))
-  // {
-  //   $ret['status_ok']=0;
-  //   $ret['msg']=lang_get('file_is_not_xml');
-  // }
   return($ret);
 }
 

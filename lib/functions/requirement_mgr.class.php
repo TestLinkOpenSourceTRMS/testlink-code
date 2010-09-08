@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.90 $
- * @modified $Date: 2010/09/07 17:33:10 $ by $Author: franciscom $
+ * @version $Revision: 1.91 $
+ * @modified $Date: 2010/09/08 10:22:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
+ *							createFromXML()
  *  20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *							delete(),exportReqToXML()
  *
@@ -1178,25 +1180,47 @@ function xmlToMapRequirement($xml_item)
  * createFromXML
  *
  * @internal revisions
- * 20100904 - franciscoM - BUGID 3685: XML Requirements Import Updates Frozen Requirement
+ * 20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
+ * 20100904 - franciscom - BUGID 3685: XML Requirements Import Updates Frozen Requirement
  */
 function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {
+    static $missingCfMsg;
+	static $linkedCF;
+	static $messages;
+	static $labels;
+	static $doProcessCF = false;
+
+    if(is_null($linkedCF) )
+    {
+    	$linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
+    															 	'requirement',null,'name');
+		$doProcessCF = true;
+
+		$messages = array();
+  		$messages['cf_warning'] = lang_get('no_cf_defined_can_not_import');
+  		$messages['cfield'] = lang_get('cf_value_not_imported_missing_cf_on_testproject');
+
+		$labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '', 
+						'frozen_req_unable_to_import' => '', 'requirement' => '');
+		foreach($labels as $key => $dummy)
+		{
+			$labels[$key] = lang_get($key);
+		}	
+	}	
+		
+    $cf2insert=null;
+	$status_ok = true;
 	$user_feedback = null;
 	$req = $this->xmlToMapRequirement($xml);
 
+	$newReq = null;
     $copy_req = null;
 	$getOptions = array('output' => 'minimun');
     $has_filters = !is_null($filters);
 	$my['options'] = array( 'actionOnDuplicate' => "update");
 	$my['options'] = array_merge($my['options'], (array)$options);
 
-	$labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '', 
-					'frozen_req_unable_to_import' => '');
-	foreach($labels as $key => $dummy)
-	{
-		$labels[$key] = lang_get($key);
-	}
 
     // Check:
     // If item with SAME DOCID exists inside container
@@ -1216,9 +1240,9 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 		if(is_null($check_in_tproject))
 		{
 			// if requirement is frozen => do not import
-			$this->create($parent_id,$req['docid'],$req['title'],$req['description'],
-		    		         $author_id,$req['status'],$req['type'],$req['expected_coverage'],
-		    		         $req['node_order']);
+			$newReq = $this->create($parent_id,$req['docid'],$req['title'],$req['description'],
+		    		         		$author_id,$req['status'],$req['type'],$req['expected_coverage'],
+		    		         		$req['node_order']);
 			$msgID = 'import_req_created';
 		}             		 
         else
@@ -1226,7 +1250,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 			// Can not have req with same req doc id on another branch => BLOCK
 			// What to do if is Frozen ??? -> now ignore and update anyway
 			$msgID = 'import_req_skipped';
-
+			$status_ok = false;
         }               		 
 	}
     else
@@ -1238,19 +1262,49 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 		// BUGID 3685
 		// What to do if is Frozen ??? -> DO NOT IMPORT
 		$msgID = 'frozen_req_unable_to_import';
+		$status_ok = false;
 		if( $last_version['is_open'] == 1 )
 		{
 			$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
 								$author_id,$req['status'],$req['type'],$req['expected_coverage'],
 								$req['node_order']);
 			$msgID = 'import_req_updated';
+			$status_ok = true;
 		}
 		
-    }               		 
-    $user_feedback = array('doc_id' => $req['docid'],'title' => $req['title'], 
-    				 	   'import_status' => sprintf($labels[$msgID],$req['docid']));
-	
-	
+    }     
+	$req_version_id = !is_null($newReq) ? $newReq['version_id'] : $last_version['id'];
+
+    $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
+    				 	     'import_status' => sprintf($labels[$msgID],$req['docid']));
+    
+    // 20100907 - Custom Fields import
+    if( $status_ok && $doProcessCF && !is_null($req['custom_fields']) )
+    {
+    	$cf2insert = null;
+    	foreach($req['custom_fields'] as $cfname => $cfvalue)
+    	{
+    		$cfname = trim($cfname);
+       		if( isset($linkedCF[$cfname]) )
+       		{
+           		$cf2insert[$linkedCF[$cfname]['id']]=array('type_id' => $linkedCF[$cfname]['type'],
+                                                            'cf_value' => $cfvalue);         
+       		}
+       		else
+       		{
+           		if( !isset($missingCfMsg[$cfname]) )
+           		{
+               		$missingCfMsg[$cfname] = sprintf($messages['cfield'],$cfname,$labels['requirement']);
+           		}
+    			$user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
+    				 	                 'import_status' => $missingCfMsg[$cfname]);
+       		}
+    	}  
+ 		if( !is_null($cf2insert) )
+ 		{
+    		$this->cfield_mgr->design_values_to_db($cf2insert,$req_version_id,null,'simple');
+    	}	
+    }
 	return $user_feedback;
 }
 
@@ -1604,9 +1658,6 @@ function html_table_of_custom_field_values($id,$version_id)
         $target_doc = $this->generateDocID($id,$root);		
 
 		$item_versions = $this->get_by_id($id);
-		
-		new dBug($item_versions);
-		
 		if($item_versions)
 		{
 			$new_item = $this->create_req_only($parent_id,$target_doc,$item_versions[0]['title'],

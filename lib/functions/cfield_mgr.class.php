@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.83 2010/09/07 17:24:33 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.84 2010/09/08 10:22:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -499,6 +499,8 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   function get_linked_cfields_at_design($tproject_id,$enabled,$filters=null,
                                         $node_type=null,$node_id=null,$access_key='id')
   {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  	
     $additional_join="";
     $additional_values="";
     $additional_filter="";
@@ -551,7 +553,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         }
     }
 
-    $sql="SELECT CF.*,CFTP.display_order,CFTP.location" .
+    $sql="/* $debugMsg */ SELECT CF.*,CFTP.display_order,CFTP.location" .
          $additional_values .
          " FROM {$this->object_table} CF " .
          " JOIN {$this->tables['cfield_testprojects']} CFTP ON CFTP.field_id=CF.id " .
@@ -563,7 +565,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          $additional_filter .
          " ORDER BY display_order,CF.id ";
 
+  	// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
+	
     $map = $this->db->fetchRowsIntoMap($sql,$access_key);
     return($map);
   }

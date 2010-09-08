@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.15 2010/08/14 15:48:50 franciscom Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.16 2010/09/08 14:02:09 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100908 - Julian - BUGID 2877 - Custom Fields linked to TC versions
  *	20100814 - franciscom - improvements on logic and feedback when user fill in test case id filter
  *	20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
  *  20100526 - Julian - BUGID 3490 - Search Test Cases based on requirements
@@ -134,7 +135,8 @@ if ($args->tprojectID)
         $args->custom_field_id = $db->prepare_string($args->custom_field_id);
         $args->custom_field_value = $db->prepare_string($args->custom_field_value);
         $from['by_custom_field']= " JOIN {$tables['cfield_design_values']} CFD " .
-                                  " ON CFD.node_id=NH_TC.id ";
+                                  //BUGID 2877 - Custom Fields linked to TC versions
+                                  " ON CFD.node_id=NH_TCV.id ";
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
     }

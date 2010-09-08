@@ -3,14 +3,15 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/08/10 14:10:12 $ $Author: asimon83 $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/09/08 09:52:57 $ $Author: asimon83 $
  *
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.
  *
- * rev: 
+ * rev:
+ *  20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
  *  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
  *  20100808 - aismon - added logic to refresh filtered tree on action
  *	20091202 - franciscom - fixed bug on webeditor value init.
@@ -190,7 +191,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 			}
 			break;  
     }
-    
+
     switch($renderType)
     {
         case 'template':
@@ -219,7 +220,8 @@ function initialize_gui(&$dbHandler, &$commandMgr, &$req_cfg)
     $gui->user_feedback = null;
     $gui->main_descr = null;
     $gui->action_descr = null;
-    $gui->refresh_tree = 'no';
+    // BUGID 3755: misspelled variable refresh_tree instead of refreshTree
+    $gui->refreshTree = 0;
     
     // 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
 	$gui->external_req_management = ($req_cfg->external_req_management == ENABLED) ? 1 : 0;

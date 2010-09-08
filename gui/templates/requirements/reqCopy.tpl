@@ -1,11 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCopy.tpl,v 1.6 2009/12/24 08:37:33 franciscom Exp $
+$Id: reqCopy.tpl,v 1.7 2010/09/08 09:52:57 asimon83 Exp $
 Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
 
 rev :
+     20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
      20091223 - franciscom - added checkbox for test case assignment copy
 *}
 {lang_get var='labels'
@@ -112,6 +113,12 @@ function check_action_precondition(container_id,action,msg)
 		</div>
 
 	</form>
+
+	{* BUGID 3755: tree not refreshed when copying requirements *}
+	{if isset($smarty.session.setting_refresh_tree_on_action) && $smarty.session.setting_refresh_tree_on_action}
+	{include file="inc_refreshTreeWithFilters.tpl"}
+	{/if}
+
 </div>
 </body>
 </html>

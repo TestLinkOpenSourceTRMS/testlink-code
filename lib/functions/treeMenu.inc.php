@@ -8,11 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.144 2010/08/21 13:38:25 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.145 2010/09/08 17:08:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *	20100908 - franciscom - extjs_renderExecTreeNodeOnOpen() - 'tlNodeType' -> testlink_node_type
+ *						 	 
  *  20100820 - asimon - refactoring for less redundant checks and better readibility of code
  *                      in generateExecTree()
  *	20100812 - franciscom - get_filtered_req_map() - BUGID 3671
@@ -1323,7 +1325,8 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	
 	// $doIt=true;
 	// custom Property that will be accessed by EXT-JS using node.attributes
-   	$node['tlNodeType'] = $node_type;
+   	// 20100908 - tlNodeType -> 'testlink_node_type'
+   	$node['testlink_node_type'] = $node_type;
 	switch($node_type)
 	{
 		case 'testproject':
@@ -2193,7 +2196,7 @@ function prepare_reqspec_treenode($level, &$node, &$filtered_map, &$map_id_nodet
 
 /**
  * Prepares nodes in the filtered requirement tree for displaying with ExtJS.
- * @author Andreas Simn
+ * @author Andreas Simon
  * @param array $node the object to prepare
  * @param array $filtered_map a map of filtered requirements, req that are not in this map will be deleted
  * @param array $map_id_nodetype array with node type IDs as keys, node type descriptions as values
@@ -2226,6 +2229,8 @@ function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
 	$node['leaf'] = false; // will be set to true later for requirement nodes
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['cls'] = 'folder';
+	
+	// custom Properties that will be accessed by EXT-JS using node.attributes 
 	$node['testlink_node_type']	= $node_type;
 	$node['forbidden_parent'] = $forbidden_parents[$node_type];
 	

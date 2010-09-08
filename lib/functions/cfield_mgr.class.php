@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.84 2010/09/08 10:22:48 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.85 2010/09/08 13:56:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ * 20100908 - franciscom - exportValueAsXML() - removed \n placed in wrong place
  * 20100829 - franciscom - BUGID 3707,3708 usability issue + browser different behaviour
  * 20100825 - eloff - BUGID 3713 - add platform_name to output of get_linked_cfields_at_execution()
  * 20100726 - amitkhullar - BUGID 3555 - sort order while displaying custom fields.
@@ -2351,12 +2352,13 @@ function getXMLServerParams($node_id)
  */
  function exportValueAsXML($cfMap)
  {
-    $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-    $cfElemTemplate = "\t" . '<custom_field><name><![CDATA[' . "\n||NAME||\n]]>" . "</name>" .
-	                         '<value><![CDATA['."\n||VALUE||\n]]>".'</value></custom_field>'."\n";
+    $cfRootElem = "<custom_fields>\n{{XMLCODE}}\n</custom_fields>";
+    $cfElemTemplate = "\t" . "<custom_field>\n\t\t<name><![CDATA[||NAME||]]></name>\n\t\t" .
+	                           "<value><![CDATA[||VALUE||]]></value>\n" .
+	                  "\t" . "</custom_field>";
     $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
 	$cfXML = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
-  return $cfXML; 
+  	return $cfXML; 
  }
 
 

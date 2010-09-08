@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.58 2010/09/08 08:13:06 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.59 2010/09/08 09:57:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -257,9 +257,6 @@ class testcaseCommands
    			$guiObj->$key = isset($tc_data[0][$key]) ?  $tc_data[0][$key] : '';
    			$argsObj->$key = $guiObj->$key;
   		}
- 		
- 		echo __FUNCTION__;
- 		new dBug($argsObj);
  		
   		$cf_smarty = null;
 		$cfPlaces = $this->tcaseMgr->buildCFLocationMap();

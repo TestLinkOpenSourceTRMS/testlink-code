@@ -6,12 +6,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.303 2010/09/08 18:44:03 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.304 2010/09/08 21:05:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100908 - franciscom - exportTestCaseDataToXML() - testcase::LATEST_VERSION has problems
+ 						   get_exec_status() - changes in output
+ * 		
  * 20100906 - asimon -  BUGID 3749
  * 20100905 - franciscom -	BUGID 3431 - Custom Field values at Test Case VERSION Level
  *							changes to methods: 
@@ -2178,7 +2180,8 @@ class testcase extends tlObjectWithAttachments
 	
 	
 	  rev: 
-	      
+	       20100908 - franciscom - added platform name in output recordset
+	       	
 	       20080531 - franciscom
 	       Because we allow people to update test case version linked to test plan,
 	       and to do this we update tcversion_id on executions to new version
@@ -2210,11 +2213,13 @@ class testcase extends tlObjectWithAttachments
 			   " SELECT DISTINCT NH.parent_id AS tcase_id, NH.id AS tcversion_id, " .
 			   " T.tcversion_id AS linked, T.platform_id, TCV.active, E.tcversion_id AS executed, " . 
 			   " E.testplan_id AS exec_on_tplan, E.tcversion_number, " .
-			   " T.testplan_id, NHB.name AS tplan_name, TCV.version " .
+			   " T.testplan_id, NHB.name AS tplan_name, TCV.version, PLAT.name AS platform_name " .
 			   " FROM   {$this->tables['nodes_hierarchy']} NH " .
 			   " JOIN {$this->tables['testplan_tcversions']}  T ON T.tcversion_id = NH.id " .
 			   " JOIN {$this->tables['tcversions']}  TCV ON T.tcversion_id = TCV.id " .
 			   " JOIN {$this->tables['nodes_hierarchy']} NHB ON T.testplan_id = NHB.id " .
+			   " LEFT OUTER JOIN {$this->tables['platforms']} PLAT " .
+			   " ON T.platform_id = PLAT.id " .
 			   " LEFT OUTER JOIN {$this->tables['executions']} E " .
 			   " ON (E.tcversion_id = NH.id AND E.testplan_id=T.testplan_id AND E.platform_id=T.platform_id ) " .
 			   " WHERE  NH.parent_id = {$id} ";

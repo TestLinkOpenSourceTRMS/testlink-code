@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.93 $
- * @modified $Date: 2010/09/08 13:25:33 $ by $Author: franciscom $
+ * @version $Revision: 1.94 $
+ * @modified $Date: 2010/09/08 15:10:07 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -14,7 +14,7 @@
  *
  * rev:
  *  20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
- *							createFromXML()
+ *							createFromXML(),copy_to()
  *							new method createFromMap()
  *
  *  20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
@@ -1679,6 +1679,7 @@ function html_table_of_custom_field_values($id,$version_id)
 		{
 			$new_item = $this->create_req_only($parent_id,$target_doc,$item_versions[0]['title'],
 			                                   $item_versions[0]['author_id'],$item_versions[0]['node_order']);
+			
 			if ($new_item['status_ok'])
 			{
 		        $ret['status_ok']=1;
@@ -1693,14 +1694,11 @@ function html_table_of_custom_field_values($id,$version_id)
 
 	    			$new_item['mappings'][$req_version['id']] = $op['id'];
 	    			
-	    			// BUGID - CF on version
-	        		$this->copy_cfields(array('id' => 9, 'version_id' =>  9),
-	        							array('id' => 9, 'version_id' => $new_item['id']));
+	    			// BUGID 2877 - CF on version
+	        		$this->copy_cfields(array('id' => $req_version['id'], 'version_id' =>  $req_version['version_id']),
+	        							array('id' => $new_item['id'], 'version_id' => $op['id']));
 	    			
 				}
-				
-				// BUGID - NEEDS CHANGES
-				// $this->copy_cfields($id,$new_item['id']);
 	        	
 	        	$this->copy_attachments($id,$new_item['id']);
 		    	if( isset($my['options']['copy_also']['testcase_assignment']) &&

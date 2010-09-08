@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.91 $
- * @modified $Date: 2010/09/08 10:22:34 $ by $Author: franciscom $
+ * @version $Revision: 1.92 $
+ * @modified $Date: 2010/09/08 12:55:42 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -15,6 +15,8 @@
  * rev:
  *  20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *							createFromXML()
+ *							new method createFromMap()
+ *
  *  20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *							delete(),exportReqToXML()
  *
@@ -1185,6 +1187,21 @@ function xmlToMapRequirement($xml_item)
  */
 function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
 {
+	$reqAsMap = $this->xmlToMapRequirement($xml);
+	
+	return 	$this->createFromMap($reqAsMap,$tproject_id,$parent_id,$author_id,$filters,$options);
+}
+
+
+/**
+ * createFromMap
+ *
+ * @internal revisions
+ * 20100908 - franciscom - created
+ */
+function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
+{
+
     static $missingCfMsg;
 	static $linkedCF;
 	static $messages;
@@ -1212,7 +1229,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     $cf2insert=null;
 	$status_ok = true;
 	$user_feedback = null;
-	$req = $this->xmlToMapRequirement($xml);
+	// $req = $this->xmlToMapRequirement($xml);
 
 	$newReq = null;
     $copy_req = null;

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.84 $
- * @modified $Date: 2010/09/08 13:44:22 $ by $Author: franciscom $
+ * @version $Revision: 1.85 $
+ * @modified $Date: 2010/09/08 13:59:13 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -975,7 +975,7 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	               "\n<type><![CDATA[{$containerData['type']}]]></type>\n" .
 	               "\n<node_order><![CDATA[{$containerData['node_order']}]]></node_order>\n" .
 	               "\n<total_req><![CDATA[{$containerData['total_req']}]]></total_req>\n" .
-	               "<scope><![CDATA[{$containerData['scope']}]]> \n</scope>{$cfXML}";
+	               "<scope>\n<![CDATA[{$containerData['scope']}]]>\n</scope>\n{$cfXML}";
 	}
  
 	$req_spec = $this->getReqTree($id);
@@ -997,7 +997,6 @@ function exportReqSpecToXML($id,$tproject_id,$optExport=array())
 	    	  	{
 	    	      $req_mgr = new requirement_mgr($this->db);
 	    		}
-	    		// $reqXMLData = $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
 	    		$xmlData .= $req_mgr->exportReqToXML($cNode['id'],$tproject_id);
 	    	}
 	    }
@@ -1327,13 +1326,13 @@ function html_table_of_custom_field_values($id,$tproject_id)
   */
  function customFieldValuesAsXML($id,$tproject_id)
  {
-    $xml = null;
-    $cfMap=$this->get_linked_cfields($id,$tproject_id);
-		if( !is_null($cfMap) && count($cfMap) > 0 )
-	  {
-        $xml = $this->cfield_mgr->exportValueAsXML($cfMap);
-    }
-    return $xml;
+	$xml = null;
+	$cfMap = $this->get_linked_cfields($id,$tproject_id);
+	if( !is_null($cfMap) && count($cfMap) > 0 )
+	{
+		$xml = $this->cfield_mgr->exportValueAsXML($cfMap);
+	}
+	return $xml;
  }
 
 

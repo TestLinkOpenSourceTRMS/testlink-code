@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.21 2010/09/01 12:28:17 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.22 2010/09/09 08:46:16 mx-julian Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -1436,12 +1436,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 			} // end of foreach
 
-			// BUGID 3566: show/hide CF
-			$this->filters[$key] = array('items' => $menu,
-										 'btn_label' => $btn_label,
-										 'collapsed' => $collapsed);
-			$this->active_filters[$key] = $selection;
 		}
+		
+		// BUGID 3566: show/hide CF
+		$this->filters[$key] = array('items' => $menu,
+		                             'btn_label' => $btn_label,
+		                             'collapsed' => $collapsed);
+		$this->active_filters[$key] = $selection;
+		
 	} // end of method
 
 	private function init_filter_result() {

@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.146 2010/09/09 10:56:04 mx-julian Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.147 2010/09/09 11:29:43 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
+ *                                 - Custom Fields linked to TC versions
  *	20100908 - franciscom - extjs_renderExecTreeNodeOnOpen() - 'tlNodeType' -> testlink_node_type				 	 
  *  20100820 - asimon - refactoring for less redundant checks and better readibility of code
  *                      in generateExecTree()
@@ -1433,7 +1434,7 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 	static $debugMsg = null;
 	
 	if (!$debugMsg) {
-		$tables = tlObject::getDBTables('cfield_design_values');
+		$tables = tlObject::getDBTables(array('cfield_design_values','nodes_hierarchy'));
 		$debugMsg = 'Function: ' . __FUNCTION__;
 	}
 	
@@ -1474,46 +1475,23 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 			// node is testcase, check if we need to delete it
 			
 			$passed = false;
+			//BUGID 2877 - Custom Fields linked to TC versions
+			$sql = " /* $debugMsg */ SELECT CFD.value FROM {$tables['cfield_design_values']} CFD," .
+				   " {$tables['nodes_hierarchy']} NH" .
+				   " WHERE CFD.node_id = NH.id" .
+				   " AND NH.parent_id = {$node['id']} AND value in ('" . implode("' , '",$cf_hash) . "')";
 			
-			foreach ($cf_hash as $cf_id => $cf_value)
-			{
-				// there will never be more than one record that has a field_id / node_id combination
-				$sql = " /* $debugMsg */ SELECT value FROM {$tables['cfield_design_values']} " .
-				       " WHERE field_id = $cf_id " .
-				       " AND node_id = {$node['id']} ";
-				
-				$result = $db->exec_query($sql);
-				$row = $db->fetch_array($result);
-				
-				// push both to arrays so we can compare
-				$possibleValues = explode ('|', $row['value']);
-				$valuesSelected = explode ('|', $cf_value);
-				
-				// we want to match any selected item from list and checkboxes.
-				if ( count($valuesSelected) ) {
-					foreach ($valuesSelected as $vs_id => $vs_value) {
-						$found = array_search($vs_value, $possibleValues);
-						if (is_int($found)) {
-							$passed = true;
-						} else {
-							$passed = false;
-							break;
-						}
-					}
-				}
-
-				// jumping out of foreach here creates an AND search
-				// removing this if would cause OR search --> the first found value counts
-				if (!$passed) {
-					break;
-				}
-			}
+			$rows = $db->fetchRowsIntoMap($sql,'value');
+			
+			//if there exist as many rows as custom fields to be filtered by
+			//the tc does meet the criteria
+			$passed = (count($rows) == count($cf_hash)) ? true : false;
 			
 			// now delete node if no match was found
 			if (!$passed) {
 				unset($tcase_tree[$key]);
 				$node_deleted = true;
-			}			
+			}
 		}
 	}
 	

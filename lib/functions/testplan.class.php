@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.210 2010/09/09 14:18:50 mx-julian Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.211 2010/09/09 14:23:14 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -971,7 +971,7 @@ class testplan extends tlObjectWithAttachments
 			// Fisrt choice:
 			// Enable this feature only if recordset maintains original structured
 			//
-			if (!is_null($my['filters']['cf_hash'])) {
+			if (!is_null($my['filters']['cf_hash']) && !is_null($recordset)) {
 				$recordset = $this->filter_cf_selection($recordset, $my['filters']['cf_hash']);
 			}
 			break;

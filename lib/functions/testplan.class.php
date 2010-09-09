@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.209 2010/08/31 19:40:15 mx-julian Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.210 2010/09/09 14:18:50 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100909 - Julian - BUGID 2877 - Custom Fields linked to TC versions
  *	20100830 - franciscom - get_linked_tcversions() - missing cast to array	$my['filters']['exec_status']
  *							urgencyImportanceToPriorityLevel() - refactored
  *	20100827 - franciscom - new method wrapper - hasLinkedPlatforms()
@@ -2467,42 +2468,19 @@ class testplan extends tlObjectWithAttachments
 		
 		foreach ($tp_tcs as $tc_id => $tc_value)
 		{
+			$passed = false;
+			//BUGID 2877 - Custom Fields linked to TC versions
+			$sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
+				   " {$this->tables['nodes_hierarchy']} NH" .
+				   " WHERE CFD.node_id = NH.id" .
+				   " AND NH.parent_id = {$tc_value['tc_id']} AND value in ('" . implode("' , '",$cf_hash) . "')";
 			
-			foreach ($cf_hash as $cf_id => $cf_value)
-			{
-				$passed = 0;
-				// there will never be more than one record that has a field_id / node_id combination
-				$sql = "SELECT value FROM {$this->tables['cfield_design_values']} " .
-					"WHERE field_id = $cf_id " .
-					"AND node_id = $tc_id ";
-				
-				$result = $this->db->exec_query($sql);
-				$myrow = $this->db->fetch_array($result);
-				
-				// push both to arrays so we can compare
-				$possibleValues = explode ('|', $myrow['value']);
-				$valuesSelected = explode ('|', $cf_value);
-				
-				// we want to match any selected item from list and checkboxes.
-				if ( count($valuesSelected) ) {
-					foreach ($valuesSelected as $vs_id => $vs_value) {
-						$found = array_search($vs_value, $possibleValues);
-						if (is_int($found)) {
-							$passed = 1;
-						} else {
-							$passed = 0;
-							break;
-						}
-					}
-				}
-				// if we don't match, fall out of the foreach.
-				// this gives a "and" search for all cf's, if this is removed then it responds
-				// as an "or" search
-				// perhaps this could be parameterized.
-				if ($passed == 0) {
-					break;
-				}
-			}
+			$rows = $this->db->fetchRowsIntoMap($sql,'value');
+			
+			//if there exist as many rows as custom fields to be filtered by
+			//the tc does meet the criteria
+			$passed = (count($rows) == count($cf_hash)) ? true : false;
+			
 			if ($passed) {
 				$new_tp_tcs[$tc_id] = $tp_tcs[$tc_id];
 			}

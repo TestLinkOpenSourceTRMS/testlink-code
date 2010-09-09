@@ -8,13 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.145 2010/09/08 17:08:24 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.146 2010/09/09 10:56:04 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *	20100908 - franciscom - extjs_renderExecTreeNodeOnOpen() - 'tlNodeType' -> testlink_node_type
- *						 	 
+ *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
+ *	20100908 - franciscom - extjs_renderExecTreeNodeOnOpen() - 'tlNodeType' -> testlink_node_type				 	 
  *  20100820 - asimon - refactoring for less redundant checks and better readibility of code
  *                      in generateExecTree()
  *	20100812 - franciscom - get_filtered_req_map() - BUGID 3671
@@ -2017,7 +2017,8 @@ function get_filtered_req_map(&$db, $testproject_id, &$testproject_mgr, $filters
 		
 		foreach ($filters['filter_custom_fields'] as $cf_id => $cf_value) {
 			$sql .= " JOIN {$tables['cfield_design_values']} CF{$suffix} " .
-			        " ON CF{$suffix}.node_id = R.id ";
+			        //BUGID 2877 -  Custom Fields linked to Req versions
+			        " ON CF{$suffix}.node_id = RV.id " .
 			        " AND CF{$suffix}.field_id = {$cf_id} ";
 			
 			// single value or array?

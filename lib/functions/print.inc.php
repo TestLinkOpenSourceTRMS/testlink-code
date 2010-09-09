@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.107 2010/09/05 17:49:43 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.108 2010/09/09 06:58:39 mx-julian Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
  *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
  *							renderTestCaseForPrinting()
  *
@@ -229,7 +230,8 @@ function renderRequirementNodeForPrinting(&$db,$node, &$printingOptions, $tocPre
 	
 	if ($printingOptions['req_cf']) 
 	{
-		$linked_cf = $req_mgr->get_linked_cfields($req['id']);
+		//BUGID 2877 - Custom Fields linked to Req versions
+		$linked_cf = $req_mgr->get_linked_cfields($req['id'], $req['version_id']);
 		if ($linked_cf)
 		{
 			foreach ($linked_cf as $key => $cf) 

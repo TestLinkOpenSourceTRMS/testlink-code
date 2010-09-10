@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.680 2010/09/06 15:44:45 erikeloff Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.681 2010/09/10 18:40:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -496,6 +496,7 @@ $TLS_include_nested = "Including nested data (copy only).";
 $TLS_sorry_further = "I'm sorry there are no further ";
 $TLS_title_move_cp = "Move/Copy";
 $TLS_title_move_cp_testcases = "Move/Copy Test Cases";
+$TLS_title_delete_testcases = "Delete Test Cases";
 
 // ----- gui/templates/reqCreate.tpl -----
 $TLS_req_create = "Create a requirement";
@@ -540,6 +541,7 @@ $TLS_btn_move_cp_testcases = "Move/Copy Test Cases";
 $TLS_btn_new_testsuite = "New child Test Suite";
 $TLS_btn_new_tc = "Create Test Cases";
 $TLS_btn_reorder = "Reorder children";
+$TLS_btn_delete_testcases = "Delete Test Cases";
 $TLS_container_title_testproject = $TLS_testproject;
 $TLS_container_title_testplan = $TLS_testplan;
 $TLS_edit_testproject_basic_data = "Edit Test Project basic data";
@@ -2567,6 +2569,7 @@ $TLS_title_tsuite_export_all = "Export all Test Suites";
 $TLS_delete = "Delete";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
 $TLS_warning_empty_com_name = "Please give a name to Test Suite";
+$TLS_all_testcases_have_been_deleted = "All Test Cases have been deleted";
 
 
 

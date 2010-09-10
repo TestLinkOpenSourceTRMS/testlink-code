@@ -6,13 +6,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.304 2010/09/08 21:05:18 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.305 2010/09/10 19:12:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100910 - franciscom - getExternalID() improvements
  * 20100908 - franciscom - exportTestCaseDataToXML() - testcase::LATEST_VERSION has problems
- 						   get_exec_status() - changes in output
+ *						   get_exec_status() - changes in output
  * 		
  * 20100906 - asimon -  BUGID 3749
  * 20100905 - franciscom -	BUGID 3431 - Custom Field values at Test Case VERSION Level
@@ -4400,6 +4401,9 @@ class testcase extends tlObjectWithAttachments
 	function getExternalID($id,$tproject_id=null,$prefix=null)
 	{
 		static $cfg;
+		static $root;
+		static $tcase_prefix;
+		
 		if( is_null($cfg) )
 		{
 			$cfg = config_get('testcase_cfg');
@@ -4407,7 +4411,14 @@ class testcase extends tlObjectWithAttachments
        	
 		if( is_null($prefix) )
 		{
-       		list($prefix,$root) = $this->getPrefix($id,$tproject_id);
+			if( is_null($root) ||  ($root != $tproject_id) )
+			{
+       			list($tcase_prefix,$root) = $this->getPrefix($id,$tproject_id);
+       		}	
+		}
+		else
+		{
+			$tcase_prefix = $prefix;
 		}
 		$info = $this->get_last_version_info($id, array('output' => 'minimun'));
         $external = $info['tc_external_id'];

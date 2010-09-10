@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.681 2010/09/10 18:40:25 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.682 2010/09/10 19:31:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2570,6 +2570,7 @@ $TLS_delete = "Delete";
 $TLS_delete_notice = "Warning: All Related Execution Results will be deleted";
 $TLS_warning_empty_com_name = "Please give a name to Test Suite";
 $TLS_all_testcases_have_been_deleted = "All Test Cases have been deleted";
+$TLS_delete_testcases = "Delete Test Cases";
 
 
 

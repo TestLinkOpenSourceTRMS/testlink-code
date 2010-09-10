@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.118 $
- * @modified $Date: 2010/09/10 19:13:06 $ by $Author: franciscom $
+ * @version $Revision: 1.119 $
+ * @modified $Date: 2010/09/10 19:28:50 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
@@ -201,10 +201,12 @@ switch($action)
 
 
     case 'delete_testcases':
+        $args->refreshTree = false;
     	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args);
     	break;
 
     case 'do_delete_testcases':
+        $args->refreshTree = true;
         doDeleteTestCases($db,$args->tcaseSet,$tcase_mgr);
     	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
     						  lang_get('all_testcases_have_been_deleted'));
@@ -913,8 +915,9 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 
 	$guiObj->objectID = $containerID;
 	$guiObj->object_name = $containerName;
+	$guiObj->refreshTree = $argsObj->refreshTree;
+
 	$smartyObj->assign('gui', $guiObj);
-	$smartyObj->assign('testcases', $children);
 }
 
 

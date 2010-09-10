@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.60 2010/09/08 21:00:54 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.61 2010/09/10 19:23:01 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -406,7 +406,7 @@ class testcaseCommands
  		$guiObj->delete_message = '';
 		$cfg = config_get('testcase_cfg');
 
- 		$my_ret = $this->tcaseMgr->check_link_and_exec_status($argsObj->tcase_id);
+ 		// $my_ret = $this->tcaseMgr->check_link_and_exec_status($argsObj->tcase_id);
  		$guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id);
  		$guiObj->delete_mode = 'single';
  		$guiObj->display_platform = false;
@@ -855,41 +855,5 @@ class testcaseCommands
   		$guiObj->template=$templateCfg->default_template;
 		return $guiObj;
 	}
-
-
-
-	/**
-	 * 
- 	 *
- 	 */
-	function deleteBulk(&$argsObj,$request)
-	{
-    	$guiObj = $this->initGuiBean($argsObj);
- 		$guiObj->delete_message = '';
-		$cfg = config_get('testcase_cfg');
-
- 		$my_ret = $this->tcaseMgr->check_link_and_exec_status($argsObj->tcase_id);
- 		$guiObj->exec_status_quo = $this->tcaseMgr->get_exec_status($argsObj->tcase_id);
-		                  
-		
-		$tcinfo = $this->tcaseMgr->get_by_id($argsObj->tcase_id);
-		list($prefix,$root) = $this->tcaseMgr->getPrefix($argsObj->tcase_id,$argsObj->testproject_id);
-        $prefix .= $cfg->glue_character;
-        $external_id = $prefix . $tcinfo[0]['tc_external_id'];
-        
-		$guiObj->title = lang_get('title_del_tc');
-		$guiObj->testcase_name =  $tcinfo[0]['name'];
-		$guiObj->testcase_id = $argsObj->tcase_id;
-		$guiObj->tcversion_id = testcase::ALL_VERSIONS;
-		$guiObj->refreshTree = 1;
- 		$guiObj->main_descr = lang_get('title_del_tc') . TITLE_SEP . $external_id . TITLE_SEP . $tcinfo[0]['name'];  
-    
-    	$templateCfg = templateConfiguration('tcDelete');
-  		$guiObj->template=$templateCfg->default_template;
-		return $guiObj;
-	}
-
-
-
 } // end class  
 ?>

@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.30 2010/09/08 12:18:45 franciscom Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.31 2010/09/10 08:53:19 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -195,18 +195,18 @@ if(count($gui->reqIDs) > 0) {
         $columns = array();
         $columns[] = array('title' => $labels['req_spec_short'], 'width' => 200);
         $columns[] = array('title' => $labels['title'], 'width' => 150);
-        $columns[] = array('title' => $labels['version'], 'width' => 50);
-        $columns[] = array('title' => $labels['frozen'], 'width' => 50);
+        $columns[] = array('title' => $labels['version'], 'width' => 40);
+        $columns[] = array('title' => $labels['frozen'], 'width' => 40);
         
         if ($coverage_enabled) {
-	    	$columns[] = $labels['th_coverage'];
+	    	$columns[] = array('title' => $labels['th_coverage'], 'width' => 80);
 	    }
 	            
-        $columns[] = $labels['type'];
-        $columns[] = $labels['status'];
+        $columns[] = array('title' => $labels['type'], 'width' => 60);
+        $columns[] = array('title' => $labels['status'], 'width' => 60);
 	    
 		if ($relations_enabled) {
-	    	$columns[] = $labels['th_relations'];
+	    	$columns[] = array('title' => $labels['th_relations'], 'width' => 50);
 	    }
         
 	    foreach($gui->cfields4req as $cf) {

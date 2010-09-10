@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.119 $
- * @modified $Date: 2010/09/10 19:28:50 $ by $Author: franciscom $
+ * @version $Revision: 1.120 $
+ * @modified $Date: 2010/09/10 19:34:15 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
@@ -711,7 +711,7 @@ function moveTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,$ar
 	{
 	    $children = null;
 	    $op_ok = false;
-	    $user_feedback = lang_get('no_testcases_available');
+	    $user_feedback = lang_get('no_testcases_available_or_tsuite');
 	}
 
 	$smartyObj->assign('op_ok', $op_ok);
@@ -838,6 +838,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 {
 
 	$guiObj = new stdClass();
+    $guiObj->main_descr = lang_get('delete_testcases');
 
 	$tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
 	$testcase_cfg = config_get('testcase_cfg');

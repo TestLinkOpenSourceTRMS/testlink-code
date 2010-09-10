@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.682 2010/09/10 19:31:26 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.683 2010/09/10 19:33:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -219,7 +219,8 @@ $TLS_problems_loading_xml_content = "Unable to load XML data, Check your file.";
 $TLS_search_type_like = "Search on this value will be done on LIKE mode";
 $TLS_exec_assign_no_testcase = "Please select at least one Test Case.";
 $TLS_select_at_least_one_testcase = "Please select at least one Test Case and a target!";
-$TLS_no_testcases_available = "No Test Cases or no destination Test Suites available!";
+$TLS_no_testcases_available = "No Test Cases available!";
+$TLS_no_testcases_available_or_tsuite = "No Test Cases or no destination Test Suites available!";
 $TLS_warning_must_be_number = "Value must be a number";
 $TLS_select_at_least_one_req = "Please select at least one Requirement";
 

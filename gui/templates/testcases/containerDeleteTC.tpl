@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerDeleteTC.tpl,v 1.2 2010/09/10 19:08:59 franciscom Exp $
+$Id: containerDeleteTC.tpl,v 1.3 2010/09/10 19:32:18 franciscom Exp $
 
 Purpose:
 
@@ -51,7 +51,7 @@ function check_action_precondition(container_id,action,msg)
 
 <body>
 {lang_get s=$level var=level_translated}
-<h1 class="title">{$level_translated}{$smarty.const.TITLE_SEP}{$object_name|escape} </h1>
+<h1 class="title">{$level_translated}{$smarty.const.TITLE_SEP}{$gui->object_name|escape} </h1>
 
 <div class="workBack">
 <h1 class="title">{$gui->main_descr|escape}</h1>

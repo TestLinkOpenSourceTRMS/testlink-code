@@ -1,15 +1,17 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerDeleteTC.tpl,v 1.1 2010/09/09 16:42:29 franciscom Exp $
+$Id: containerDeleteTC.tpl,v 1.2 2010/09/10 19:08:59 franciscom Exp $
 
 Purpose:
 
 rev :
+
+20100910 - franciscom - BUGID 3047: Deleting multiple TCs
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
-             check_uncheck_all_checkboxes,btn_delete,
-             choose_target,copy_keywords,btn_move,btn_cp'}
+             check_uncheck_all_checkboxes,btn_delete,th_linked_to_tplan,th_version,
+             platform,th_executed,choose_target,copy_keywords,btn_move,btn_cp'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
@@ -54,11 +56,12 @@ function check_action_precondition(container_id,action,msg)
 <div class="workBack">
 <h1 class="title">{$gui->main_descr|escape}</h1>
 
-{if $op_ok == false}
+{if $gui->op_ok == false}
 	{$gui->user_feedback}
 {else}
 	<form id="delete_testcases" name="delete_testcases" method="post"
-	      action="lib/testcases/containerEdit.php?objectID={$objectID}">
+	      action="lib/testcases/containerEdit.php?objectID={$gui->objectID}">
+    <input type="hidden" name="do_delete_testcases"  id="do_delete_testcases"  value="1" />
 
     {if $gui->user_feedback != ''}
       <div class="user_feedback">{$gui->user_feedback}</div>
@@ -80,22 +83,55 @@ function check_action_precondition(container_id,action,msg)
           <th>{$labels.th_test_case}</th>
           </tr>
           
-        {foreach from=$testcases key=rowid item=tcinfo}
+        {foreach from=$gui->testCaseSet key=rowid item=tcinfo}
             <tr>
                 <td>
-                    <input type="checkbox" name="tcaseSet[]" id="tcaseSet_{$tcinfo.tcid}" value="{$tcinfo.tcid}" />
+                    <input type="checkbox" name="tcaseSet[]" id="tcaseSet_{$tcinfo.id}" value="{$tcinfo.id}" />
                 </td>
                 <td>
-                    {$tcprefix|escape}{$tcinfo.tcexternalid|escape}&nbsp;&nbsp;
+                    {$tcinfo.external_id|escape}&nbsp;&nbsp;
                 </td>
                 <td>
-                    {$tcinfo.tcname|escape}
+                    {$tcinfo.name|escape}
                 </td>
             </tr>
+            {if $gui->exec_status_quo[$rowid] != ''}
+            <tr>
+            <td colspan=2>&nbsp;</td>
+            <td>
+	                      <table class="simple">
+	                  		<tr>
+	                  			<th>{$labels.th_version}</th>
+	                  			<th>{$labels.th_linked_to_tplan}</th>
+	                  			{if $gui->display_platform[$rowid]}<th>{$labels.platform}</th> {/if}
+	                  			<th>{$labels.th_executed}</th>
+	                  			</tr>
+	                  		{foreach from=$gui->exec_status_quo[$rowid] key=testcase_version_id item=on_tplan_status}
+	                  			{foreach from=$on_tplan_status key=tplan_id item=status_on_platform}
+	                  				{foreach from=$status_on_platform key=platform_id item=status}
+	                  			    <tr>
+	                  				    <td style="width:4%;text-align:right;">{$status.version}</td>
+	                  				    <td align="left">{$status.tplan_name|escape}</td>
+	                  			      {if $gui->display_platform[$rowid]}
+	                  			        <td align="left">{$status.platform_name|escape}</td>
+	                  			      {/if}
+	                  				    <td style="width:4%;text-align:center;">{if $status.executed != ""}<img src="{$smarty.const.TL_THEME_IMG_DIR}/apply_f2_16.png" />{/if}</td>
+	                  				  </tr>
+	                  			  {/foreach}
+	                  			{/foreach}
+	                  		{/foreach}
+	                      </table>
+            </td>
+            </tr>
+            {/if}
         {/foreach}
         </table>
         <br />
     </div>
+
+
+
+
 		<div>
 			<input type="submit" name="do_delete_testcases" value="{$labels.btn_delete}">
 		</div>

@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.117 $
- * @modified $Date: 2010/08/11 23:08:13 $ by $Author: asimon83 $
+ * @version $Revision: 1.118 $
+ * @modified $Date: 2010/09/10 19:13:06 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
+ *  20100909 - franciscom - BUGID 3047: Deleting multiple TCs
  *  20100811 - asimon - BUGID 3669
  *  20100722 - asimon - BUGID 3406, removal of changes for 3049
  *  20100628 - asimon - removal of constants from filter control class
@@ -31,16 +32,12 @@ require_once("../../config.inc.php");
 require_once("common.php");
 require_once("opt_transfer.php");
 require_once("web_editor.php");
-// BUGID 3406
-// require_once("specview.php"); //BUGID 3049
 $editorCfg=getWebEditorCfg('design');
 require_once(require_web_editor($editorCfg['type']));
 
 testlinkInitPage($db);
 $tree_mgr = new tree($db);
 $tproject_mgr = new testproject($db);
-// BUGID 3406
-// $tplan_mgr = new testplan($db);
 $tsuite_mgr = new testsuite($db);
 $tcase_mgr = new testcase($db);
 
@@ -60,17 +57,18 @@ $smarty->assign('editorType',$editorCfg['type']);
 $a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
-                'del_testsuites_bulk' => 'containerDeleteBulk.tpl',
                 'updateTCorder' => 'containerView.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl',
-                'do_copy_tcase_set' => 'containerMoveTC.tpl');   
+                'do_copy_tcase_set' => 'containerMoveTC.tpl',
+                'delete_testcases' =>  'containerDeleteTC.tpl',
+                'do_delete_testcases' =>  'containerDeleteTC.tpl');
 
-// BUGID 3406 - removed 'doUnassignFromPlan' => 0
 $a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite' => 0,'do_move' => 0,
 					'do_copy' => 0,'reorder_testsuites' => 1,'do_testsuite_reorder' => 0,
                     'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
                     'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
-                    'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0);
+                    'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0, 
+                    'delete_testcases' => 0,'do_delete_testcases' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
@@ -134,11 +132,6 @@ switch($action)
     case 'delete_testsuite':
    		$refreshTree = deleteTestSuite($smarty,$args,$tsuite_mgr,$tree_mgr,$tcase_mgr,$level);
     break;
-
-    case 'del_testsuites_bulk':
-   		$refreshTree = deleteTestSuitesBulk($smarty,$args,$tsuite_mgr,$tree_mgr,$tcase_mgr,$level);
-    break;
-
 
     case 'move_testsuite_viewer':
 		moveTestSuiteViewer($smarty,$tproject_mgr,$args);
@@ -206,12 +199,17 @@ switch($action)
     	moveTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$args,$op['userfeedback']);
     	break;
 
-// BUGID 3406
-//    // BUGID 3049
-//    case 'doUnassignFromPlan':
-//    	removeTestcaseAssignments($db, $args, $tplan_mgr, $smarty, $template_dir);
-//    	break;
-    	
+
+    case 'delete_testcases':
+    	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args);
+    	break;
+
+    case 'do_delete_testcases':
+        doDeleteTestCases($db,$args->tcaseSet,$tcase_mgr);
+    	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
+    						  lang_get('all_testcases_have_been_deleted'));
+    	break;
+
     default:
     	trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
     	break;
@@ -224,6 +222,10 @@ if($the_tpl)
 }
 
 
+/**
+ * 
+ *
+ */
 function getValuesFromPost($akeys2get)
 {
 	$akeys2get[] = 'container_name';
@@ -542,34 +544,6 @@ function  reorderTestSuiteViewer(&$smartyObj,&$treeMgr,$argsObj)
 
 
 /*
-  function: doTestSuiteReorder
-
-
-  args:
-
-  returns: -
-
-  rev:
-      20080602 - franciscom - fixed typo bug 
-      20080223 - franciscom - fixed typo error - BUGID 1408
-      removed wrong global coupling
-*/
-// function doTestSuiteReorder(&$smartyObj,$template_dir,&$tprojectMgr,&$tsuiteMgr,$argsObj)
-// {
-// 	$nodes_in_order = transform_nodes_order($argsObj->nodes_order,$argsObj->containerID);
-// 	$tprojectMgr->tree_manager->change_order_bulk($nodes_in_order);
-// 	if($argsObj->containerID == $argsObj->tprojectID)
-// 	{
-// 		$objMgr = $tprojectMgr;
-// 	}
-// 	else
-// 	{
-// 		$objMgr = $tsuiteMgr;
-// 	}
-// 	$objMgr->show($smartyObj,$template_dir,$argsObj->containerID,,null,'ok');
-// }
-
-/*
   function: updateTestSuite
 
   args:
@@ -848,18 +822,120 @@ function moveTestCases(&$smartyObj,$template_dir,&$tsuiteMgr,&$treeMgr,$argsObj)
  
  
  
- /*
-  function: deleteTestSuitesBulk
+/*
+  function: deleteTestCasesViewer
+            prepares smarty variables to display move testcases viewer
 
   args:
 
-  returns: true -> refresh tree
-           false -> do not refresh
+  returns: -
 
 */
-function deleteTestSuitesBulk(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,$level)
+function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&$tsuiteMgr,
+							   &$tcaseMgr,$argsObj,$feedback = null)
 {
+
+	$guiObj = new stdClass();
+
+	$tables = $tprojectMgr->getDBTables(array('nodes_hierarchy','node_types','tcversions'));
+	$testcase_cfg = config_get('testcase_cfg');
+	$glue = $testcase_cfg->glue_character;
+	
+	$containerID = isset($argsObj->testsuiteID) ? $argsObj->testsuiteID : $argsObj->objectID;
+	$containerName = $argsObj->tsuite_name;
+	if( is_null($containerName) )
+	{
+		$dummy = $treeMgr->get_node_hierarchy_info($argsObj->objectID);
+		$containerName = $dummy['name'];
+	}
+
+	$guiObj->testCaseSet = $tsuiteMgr->get_children_testcases($containerID);
+	$guiObj->exec_status_quo = null;
+	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID);
+
+	foreach($guiObj->testCaseSet as &$child)
+	{
+		$external = $tcaseMgr->getExternalID($child['id'],null,$tcasePrefix);
+		$child['external_id'] = $external[0];
+		
+		// key level 1 : Test Case Version ID
+		// key level 2 : Test Plan  ID
+		// key level 3 : Platform ID
+		$guiObj->exec_status_quo[] = $tcaseMgr->get_exec_status($child['id']);	
+	} 
+
+	
+	// Need to understand if platform column has to be displayed on GUI
+	if( !is_null($guiObj->exec_status_quo) )             
+	{
+		// key level 1 : Test Case Version ID
+		// key level 2 : Test Plan  ID
+		// key level 3 : Platform ID
+		
+		$itemSet = array_keys($guiObj->exec_status_quo);
+		foreach($itemSet as $mainKey)
+		{
+			$guiObj->display_platform[$mainKey] = false;
+			$versionSet = array_keys($guiObj->exec_status_quo[$mainKey]);
+			$stop = false;
+			
+			foreach($versionSet as $version_id)
+			{
+				$tplanSet = array_keys($guiObj->exec_status_quo[$mainKey][$version_id]);
+				foreach($tplanSet as $tplan_id)
+				{
+					if( ($guiObj->display_platform[$mainKey] = !isset($guiObj->exec_status_quo[$mainKey][$version_id][$tplan_id][0])) )
+					{
+						$stop = true;
+						break;
+					}
+				}
+				if($stop)
+				{
+					break;
+				}
+			}
+		}	
+	}
+ 	// check if operation can be done
+	$guiObj->user_feedback = $feedback;
+	if(!is_null($guiObj->testCaseSet) && (sizeof($guiObj->testCaseSet) > 0) )
+	{
+	    $guiObj->op_ok = true;
+	    $guiObj->user_feedback = '';
+	}
+	else
+	{
+	    $guiObj->children = null;
+	    $guiObj->op_ok = false;
+	    $guiObj->user_feedback = is_null($guiObj->user_feedback) ? lang_get('no_testcases_available') : $guiObj->user_feedback;
+	}
+
+	$guiObj->objectID = $containerID;
+	$guiObj->object_name = $containerName;
+	$smartyObj->assign('gui', $guiObj);
+	$smartyObj->assign('testcases', $children);
 }
 
+
+/*
+  function: doDeleteTestCasesViewer
+            prepares smarty variables to display move testcases viewer
+
+  args:
+
+  returns: -
+
+*/
+function doDeleteTestCases(&$dbHandler,$tcaseSet,&$tcaseMgr)
+{
+     if( count($tcaseSet) > 0 )
+     {
+     	foreach($tcaseSet as $victim)
+     	{
+     		$tcaseMgr->delete($victim);
+        }
+     }
+}
 
 ?>

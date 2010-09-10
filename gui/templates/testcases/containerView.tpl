@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.32 2010/07/22 14:14:43 asimon83 Exp $ *}
+{* $Id: containerView.tpl,v 1.33 2010/09/10 19:09:46 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
+  20100910 - franciscom - BUGID 3047: Deleting multiple TCs
   20010708 - asimon - BUGID 3406: removed buttons and labels for 3049 
   20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
   20100212 - asimon - BUGID 3049 - added removing of testplan assignment feature
@@ -25,7 +26,7 @@ rev :
              keywords,alt_del_testsuite, alt_edit_testsuite, alt_move_cp_testcases, alt_move_cp_testsuite, 
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
 	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
-	           btn_del_testsuites_bulk,
+	           btn_del_testsuites_bulk,btn_delete_testcases,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name'}
 
@@ -236,11 +237,6 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 			<input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
 			<input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />
 			<input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />
-
-{* 20071102 - franciscom @TODO unfinished feature
-			<input type="button" name="execButton" value="{$labels.btn_execute_automatic_testcases}"
-			       onclick="javascript: startExecution({$container_data.id},'testsuite');" />
-*}
 		</form>
 		</span>
 		<form method="post" action="lib/testcases/containerEdit.php">
@@ -248,13 +244,11 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 			<input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
 	    <input type="submit" name="move_testcases_viewer" value="{$labels.btn_move_cp_testcases}"
          		 title="{$labels.alt_move_cp_testcases}" />
+			<input type="submit" name="delete_testcases" value="{$labels.btn_delete_testcases}"
+				     title="{$labels.btn_delete_testcases}" />
 		</form>
 
 		</div>
-{*
-		<div id="inProgress"></div><br />
-		<div id="executionResults"></div>
-*}
 	{/if}
 	
 	{* ----- show Test Suite data --------------------------------------------- *}

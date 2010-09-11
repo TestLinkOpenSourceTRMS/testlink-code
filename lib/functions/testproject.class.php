@@ -6,10 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.172 2010/09/11 13:42:39 amkhullar Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.173 2010/09/11 17:18:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20100911 - amitkhullar - BUGID 3764
  * 20100821 - franciscom - get_all_testplans() - interface changes
  * 20100516 - franciscom - BUGID 3464 - delete()
  * 20100310 - asimon - BUGID 3227 - refactored get_all_requirement_ids() and count_all_requirements()

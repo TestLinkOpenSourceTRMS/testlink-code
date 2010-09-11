@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.44 2010/09/11 15:45:55 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.45 2010/09/11 15:53:02 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -470,6 +470,29 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_requirements ON  /*prefix*/requirements
 (
 	srs_id ASC,
 ) ON [PRIMARY]
+
+
+--- Test Link 1.9
+CREATE TABLE /*prefix*/req_versions(  
+	id int NOT NULL,
+  version INTEGER NOT NULL DEFAULT '1',
+  scope TEXT NULL DEFAULT NULL,
+  status CHAR(1) NOT NULL DEFAULT 'V',
+  type CHAR(1) NULL DEFAULT NULL,
+  active INT NOT NULL DEFAULT '1',
+  is_open INT NOT NULL DEFAULT '1',
+  expected_coverage INT NOT NULL DEFAULT 1,
+  author_id  INT NULL DEFAULT NULL,
+	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_versions_creation_ts DEFAULT (getdate()),
+  modifier_id INT NULL DEFAULT NULL,
+	modification_ts datetime NULL,
+  PRIMARY KEY ("id","version")
+  CONSTRAINT /*prefix*/PK_req_versions PRIMARY KEY CLUSTERED 
+  (
+	  id,version 
+  ) ON [PRIMARY]
+) ON [PRIMARY]
+
 
 CREATE TABLE /*prefix*/role_rights (
 	role_id int NOT NULL CONSTRAINT /*prefix*/DF_role_rights_role_id DEFAULT ((0)),

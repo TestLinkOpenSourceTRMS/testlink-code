@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.23 2010/03/14 08:54:28 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.24 2010/09/11 17:10:17 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 -- IMPORTANT NOTE:
@@ -19,7 +19,7 @@
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.2','first version with API feature',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.3','Test Link 1.9',GETDATE());
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON

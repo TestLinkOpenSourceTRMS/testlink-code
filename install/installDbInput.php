@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.3 2010/07/22 14:14:45 asimon83 Exp $
+ * @version    	CVS: $Id: installDbInput.php,v 1.4 2010/09/11 17:10:32 franciscom Exp $
  *
  * @internal Revisions:
  * 20100705 - asimon - added warning regarding user assignments migration
@@ -124,9 +124,10 @@ include 'installHead.inc';
 		<select id="databasetype" name="databasetype">
 			<option value="mysql" selected>MySQL (5.0 and later)</option>
 			<option value="postgres" >Postgres (8.0 and later)</option>
+			<option value="mssql" >Microsoft SQL Server 2000/2500</option>
 			<!--- 
 			20100124 - franciscom - Not ready => disabled
-			<option value="mssql" >Microsoft SQL Server 2000</option> --->
+			<option value="mssql" >Microsoft SQL Server 2000/2500</option> --->
 		</select>	
 		</p>
 		<p>

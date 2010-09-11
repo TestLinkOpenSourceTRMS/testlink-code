@@ -1,6 +1,6 @@
 <?php
 /* TestLink Open Source Project - http://testlink.sourceforge.net/ */
-/* $Id: sqlParser.class.php,v 1.12 2009/07/15 17:25:58 franciscom Exp $ */
+/* $Id: sqlParser.class.php,v 1.13 2010/09/11 17:10:32 franciscom Exp $ */
 // File: sqlParser.class.php
 //       MySQL Dump Parser
 //
@@ -42,10 +42,6 @@ class SqlParser {
   */
 function process($filename) 
 {
-    // $target=array('create' => "CREATE TABLE ", 'insert' => "INSERT INTO ",
-    //               'comment_on_table'=> null, 'sequence' => null,
-    //               'index_on' => null, 'foreing_key' => null);
-                  
     $new_value=null;
 
     // -----------------------------------------------------------------
@@ -65,18 +61,12 @@ function process($filename)
         break;
           
         case 'postgres':
-        // $target['create'] = $target['create'] . '"';
-        // $target['foreing_key'] = "REFERENCES ";
-        // $target['index_on'] = '" ON "';
-        // $target['comment_on_table']='COMMENT ON TABLE ';
         $target['sequence'] = "SELECT setval('";
         $do_additional_replace=true; 
         $cfil = array_filter($contents,array($this,"only_good_sql"));
         break;
         
         case 'mssql':
-        // $target['create'] = $target['create'] . '[';
-        // $target['insert'] = $target['insert'] . '[';
         $cfil = array_filter($contents,array($this,"only_good_sql"));
         break;
     }
@@ -113,6 +103,8 @@ function process($filename)
       $sql_dodo =  trim($sql_do, "\r\n ");			
       if( strlen($sql_dodo) > 0 )
       {
+
+			// echo '<br>READY TO RUN: ' . $sql_do . '<br><br>';
   			$num = $num + 1;
   			$status_ok=$this->db_conn->exec_query($sql_do);
   			if(!$status_ok)

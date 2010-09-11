@@ -1,13 +1,14 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.46 2010/09/11 15:58:32 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.47 2010/09/11 17:10:17 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
 --
 -- ATTENTION: do not use a different naming convention, that one already in use.
---
+--            TEXTIMAGE Option can be used only tables that have fields of type:
+--            varchar(MAXSIZEALLOWED), nvarchar(MAXSIZEALLOWED), varbinary(MAXSIZEALLOWED), xml 
 -- 
 -- Rev :
 --
@@ -69,8 +70,7 @@ CREATE TABLE /*prefix*/transactions (
   (
 	  id ASC
   ) ON [PRIMARY]
-) ON [PRIMARY]
-
+) ON [PRIMARY];
 --
 --
 --
@@ -88,24 +88,24 @@ CREATE TABLE /*prefix*/events (
   (
 	  id ASC
   ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_transaction_id ON  /*prefix*/events
 (
 	transaction_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_fired_at ON  /*prefix*/events
 (
 	fired_at ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 
 CREATE TABLE /*prefix*/db_version (
 version varchar(50)  NOT NULL CONSTRAINT /*prefix*/DF_db_version_version DEFAULT (N'unknown'),
 upgrade_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_db_version_upgrade_ts DEFAULT (getdate()),
 notes text  NULL
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 
 CREATE TABLE /*prefix*/assignment_status (
@@ -115,7 +115,7 @@ CREATE TABLE /*prefix*/assignment_status (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/cfield_node_types (
 	field_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_node_types_field_id DEFAULT ((0)),
@@ -125,12 +125,12 @@ CREATE TABLE /*prefix*/cfield_node_types (
 	field_id ASC,
 	node_type_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_custom_fields_assign ON  /*prefix*/cfield_node_types
 (
 	node_type_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/testplan_tcversions (
 	id int IDENTITY(1,1) NOT NULL,
@@ -149,7 +149,7 @@ CREATE TABLE /*prefix*/testplan_tcversions (
 	tcversion_id ASC,
 	testplan_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/cfield_testprojects (
 	field_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_field_id DEFAULT ((0)),
@@ -164,7 +164,8 @@ CREATE TABLE /*prefix*/cfield_testprojects (
 	field_id ASC,
 	testproject_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
+
 
 CREATE TABLE /*prefix*/object_keywords (
 	id int IDENTITY(1,1) NOT NULL,
@@ -175,7 +176,7 @@ CREATE TABLE /*prefix*/object_keywords (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/custom_fields (
 	id int IDENTITY(1,1) NOT NULL,
@@ -197,12 +198,12 @@ CREATE TABLE /*prefix*/custom_fields (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_custom_fields_name ON  /*prefix*/custom_fields 
 (
 	name ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/roles (
 	id int IDENTITY(1,1) NOT NULL,
@@ -216,7 +217,7 @@ CREATE TABLE /*prefix*/roles (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE TABLE /*prefix*/execution_bugs (
 	execution_id int NOT NULL CONSTRAINT /*prefix*/DF_execution_bugs_execution_id DEFAULT ((0)),
@@ -226,7 +227,7 @@ CREATE TABLE /*prefix*/execution_bugs (
 	execution_id ASC,
 	bug_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/user_assignments (
 	id int IDENTITY(1,1) NOT NULL,
@@ -242,12 +243,12 @@ CREATE TABLE /*prefix*/user_assignments (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_user_assignments ON  /*prefix*/user_assignments 
 (
 	feature_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/executions (
 	id int IDENTITY(1,1) NOT NULL,
@@ -264,13 +265,12 @@ CREATE TABLE /*prefix*/executions (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_executions_execution_type ON  /*prefix*/executions 
 (
 	execution_type ASC
-) ON [PRIMARY]
-
+) ON [PRIMARY];
 
 
 CREATE TABLE /*prefix*/risk_assignments (
@@ -288,7 +288,7 @@ CREATE TABLE /*prefix*/risk_assignments (
 	testplan_id ASC,
 	node_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/rights (
 	id int IDENTITY(1,1) NOT NULL,
@@ -301,7 +301,7 @@ CREATE TABLE /*prefix*/rights (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/builds (
 	id int IDENTITY(1,1) NOT NULL,
@@ -318,18 +318,18 @@ CREATE TABLE /*prefix*/builds (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_name ON  /*prefix*/builds 
 (
 	testplan_id ASC,
 	name ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_testplan_id ON  /*prefix*/builds 
 (
 	testplan_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/keywords (
 	id int IDENTITY(1,1) NOT NULL,
@@ -340,17 +340,17 @@ CREATE TABLE /*prefix*/keywords (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_keywords ON  /*prefix*/keywords 
 (
 	testproject_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_keywords_keyword ON  /*prefix*/keywords 
 (
 	keyword ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/milestones (
 	id int IDENTITY(1,1) NOT NULL,
@@ -364,18 +364,18 @@ CREATE TABLE /*prefix*/milestones (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_Testplan ON  /*prefix*/milestones 
 (
 	testplan_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_name_testplan_id ON  /*prefix*/milestones 
 (
 	name ASC,
 	testplan_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 
 CREATE TABLE /*prefix*/attachments (
@@ -395,7 +395,7 @@ CREATE TABLE /*prefix*/attachments (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE TABLE /*prefix*/node_types (
 	id int IDENTITY(1,1) NOT NULL,
@@ -404,7 +404,7 @@ CREATE TABLE /*prefix*/node_types (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/nodes_hierarchy (
 	id int IDENTITY(1,1) NOT NULL,
@@ -416,24 +416,24 @@ CREATE TABLE /*prefix*/nodes_hierarchy (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_pid_m_nodeorder ON  /*prefix*/nodes_hierarchy 
 (
 	parent_id ASC,
 	node_order ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/req_coverage (
 	req_id int NOT NULL,
 	testcase_id int NOT NULL
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_req_testcase ON  /*prefix*/req_coverage 
 (
 	req_id ASC,
 	testcase_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/req_specs (
 	id int NOT NULL,
@@ -449,27 +449,27 @@ CREATE TABLE /*prefix*/req_specs (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_testproject_id ON  /*prefix*/req_specs 
 (
 	testproject_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/requirements (
 	id int NOT NULL,
 	srs_id int NOT NULL,
 	req_doc_id varchar(64)  NOT NULL,
- CONSTRAINT /*prefix*/PK_requirements PRIMARY KEY CLUSTERED 
-(
-	id ASC
-) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+  CONSTRAINT /*prefix*/PK_requirements PRIMARY KEY CLUSTERED 
+  (
+	  id ASC
+  ) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_requirements ON  /*prefix*/requirements 
 (
-	srs_id ASC,
-) ON [PRIMARY]
+	srs_id ASC
+) ON [PRIMARY];
 
 
 --- Test Link 1.9
@@ -486,13 +486,11 @@ CREATE TABLE /*prefix*/req_versions(
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_versions_creation_ts DEFAULT (getdate()),
   modifier_id INT NULL DEFAULT NULL,
 	modification_ts datetime NULL,
-  PRIMARY KEY ("id","version")
   CONSTRAINT /*prefix*/PK_req_versions PRIMARY KEY CLUSTERED 
   (
 	  id,version 
   ) ON [PRIMARY]
-) ON [PRIMARY]
-
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/role_rights (
 	role_id int NOT NULL CONSTRAINT /*prefix*/DF_role_rights_role_id DEFAULT ((0)),
@@ -502,7 +500,7 @@ CREATE TABLE /*prefix*/role_rights (
 	role_id ASC,
 	right_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/testcase_keywords (
 	testcase_id int NOT NULL CONSTRAINT /*prefix*/DF_testcase_keywords_testcase_id DEFAULT ((0)),
@@ -512,12 +510,12 @@ CREATE TABLE /*prefix*/testcase_keywords (
 	testcase_id ASC,
 	keyword_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_testcase_keywords ON  /*prefix*/testcase_keywords 
 (
 	testcase_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/tcversions (
 	id int NOT NULL,
@@ -538,7 +536,7 @@ CREATE TABLE /*prefix*/tcversions (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 
 --
@@ -555,7 +553,7 @@ CREATE TABLE /*prefix*/tcsteps (
   (
 	id ASC
   ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 
 CREATE TABLE /*prefix*/testplans (
@@ -568,19 +566,21 @@ CREATE TABLE /*prefix*/testplans (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_testproject_id_active ON  /*prefix*/testplans 
 (
 	testproject_id ASC,
 	active ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/testprojects (
 	id int NOT NULL,
 	notes text  NULL,
 	color varchar(12)  NOT NULL CONSTRAINT /*prefix*/DF_testprojects_color DEFAULT (N'#9BD'),
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_active DEFAULT ((1)),
+	is_public tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_is_public DEFAULT ((1)),
+  options TEXT,
 	option_reqs tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_reqs DEFAULT ((0)),
 	option_priority tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_priority DEFAULT ((0)),
   option_automation tinyint NOT NULL CONSTRAINT /*prefix*/DF_testprojects_option_automation DEFAULT ((0)),
@@ -595,15 +595,13 @@ CREATE TABLE /*prefix*/testprojects (
 		prefix
 	)  ON [PRIMARY] 
   
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_id_active ON  /*prefix*/testprojects 
 (
 	id ASC,
 	active ASC
-) ON [PRIMARY]
-
-
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/testsuites (
 	id int NOT NULL,
@@ -612,7 +610,7 @@ CREATE TABLE /*prefix*/testsuites (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE TABLE /*prefix*/user_testproject_roles (
 	user_id int NOT NULL CONSTRAINT /*prefix*/DF_user_testproject_roles_user_id DEFAULT ((0)),
@@ -623,7 +621,7 @@ CREATE TABLE /*prefix*/user_testproject_roles (
 	user_id ASC,
 	testproject_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/user_testplan_roles (
 	user_id int NOT NULL,
@@ -634,7 +632,7 @@ CREATE TABLE /*prefix*/user_testplan_roles (
 	user_id ASC,
 	testplan_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/users (
 	id int IDENTITY(1,1) NOT NULL,
@@ -652,12 +650,12 @@ CREATE TABLE /*prefix*/users (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_users_login ON  /*prefix*/users 
 (
 	login ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/cfield_design_values (
 	field_id int NOT NULL,
@@ -668,12 +666,12 @@ CREATE TABLE /*prefix*/cfield_design_values (
 	field_id ASC,
 	node_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_cfield_design_values ON  /*prefix*/cfield_design_values 
 (
 	node_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 -- 
 CREATE TABLE /*prefix*/cfield_testplan_design_values (
@@ -685,15 +683,13 @@ CREATE TABLE /*prefix*/cfield_testplan_design_values (
 	field_id ASC,
 	link_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_cfield_testplan_design_values ON  /*prefix*/cfield_testplan_design_values 
 (
 	link_id ASC
-) ON [PRIMARY] 
+) ON [PRIMARY]; 
 --
-
-
 
 CREATE TABLE /*prefix*/assignment_types (
 	id int IDENTITY(1,1) NOT NULL,
@@ -703,7 +699,7 @@ CREATE TABLE /*prefix*/assignment_types (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE TABLE /*prefix*/cfield_execution_values (
 	field_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_execution_values_field_id DEFAULT ((0)),
@@ -718,7 +714,7 @@ CREATE TABLE /*prefix*/cfield_execution_values (
 	testplan_id ASC,
 	tcversion_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];
 
 
 CREATE TABLE /*prefix*/text_templates (
@@ -738,7 +734,7 @@ CREATE TABLE /*prefix*/text_templates (
 		type,
 		title
 	)  ON [PRIMARY] 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE TABLE /*prefix*/user_group (
   id int IDENTITY(1,1) NOT NULL,
@@ -752,12 +748,12 @@ CREATE TABLE /*prefix*/user_group (
 	(
 		title
 	)  ON [PRIMARY] 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE TABLE /*prefix*/user_group_assign (
   usergroup_id int NOT NULL,
   user_id int NOT NULL,
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];
 
 --- 1.9 tables
 CREATE TABLE /*prefix*/platforms (
@@ -769,9 +765,7 @@ CREATE TABLE /*prefix*/platforms (
 	(
 		id
 	)  ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-
-CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testproject_id,name);
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE TABLE /*prefix*/testplan_platforms (
   id int IDENTITY(1,1) NOT NULL,
@@ -781,12 +775,12 @@ CREATE TABLE /*prefix*/testplan_platforms (
 	(
 		id
 	)  ON [PRIMARY]
-)ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+)ON [PRIMARY];
 
 CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/UIX_testplan_platforms ON  /*prefix*/testplan_platforms 
 (
 	testplan_id,platform_id
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 
 CREATE TABLE /*prefix*/inventory (
@@ -802,17 +796,17 @@ CREATE TABLE /*prefix*/inventory (
 	(
 		id
 	)  ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_inventory_testproject_id ON  /*prefix*/inventory
 (
 		testproject_id
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/UIX_inventory ON  /*prefix*/inventory 
 (
 	name,testproject_id
-) ON [PRIMARY]
+) ON [PRIMARY];
 
 
 --- 
@@ -827,4 +821,4 @@ CREATE TABLE /*prefix*/req_relations (
 	(
 		id
 	)  ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY];

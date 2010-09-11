@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.62 2010/07/26 19:01:15 asimon83 Exp $
+ * @version    	CVS: $Id: specview.php,v 1.63 2010/09/11 16:06:35 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 
+ *
+ *  20100911 - asimon - BUGID 3768
  *  20100726 - asimon - BUGID 3628: in addLinkedVersionsInfo(), a missing [0] in condition 
  *                                  caused missing priority
  *  20100721 - asimon - BUGID 3406 - added $options for new user assignments per build to 
@@ -494,7 +495,12 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	
 	// 20100411 - BUGID 2797 - filter by test case execution type
 	$useFilter=array('keyword_id' => false, 'tcase_id' => false, 'exec_type' => false);
-	
+
+	// BUGID 3768
+	if(!is_array($filters['keyword_id']) ) {
+		$filters['keyword_id'] = array($filters['keyword_id']);
+	}
+
 	if(($useFilter['keyword_id']=$filters['keyword_id'][0] > 0))
 	{
 		$applyFilters = true;

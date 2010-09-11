@@ -11,7 +11,11 @@ Set tabs to 4 for best viewing.
   Native mssql driver. Requires mssql client. Works on Windows. 
   To configure for Unix, see 
    	http://phpbuilder.com/columns/alberto20000919.php3
-	
+
+
+
+20100911 - francisco.mancardi@gruppotesi.com
+function MetaPrimaryKeys($table, $owner=false)	
 */
 
 

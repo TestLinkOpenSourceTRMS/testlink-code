@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.43 2010/09/11 15:42:09 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.44 2010/09/11 15:45:55 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -718,7 +718,36 @@ CREATE TABLE /*prefix*/user_group_assign (
   user_id int NOT NULL,
 ) ON [PRIMARY]
 
---- 1.9 Table
+--- 1.9 tables
+CREATE TABLE /*prefix*/platforms (
+  id int IDENTITY(1,1) NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  testproject_id int NOT NULL DEFAULT '0',
+  notes text NOT NULL,
+	CONSTRAINT /*prefix*/PK_platforms PRIMARY KEY  CLUSTERED 
+	(
+		id
+	)  ON [PRIMARY]
+) ON [PRIMARY]
+
+CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testproject_id,name);
+
+CREATE TABLE /*prefix*/testplan_platforms (
+  id int IDENTITY(1,1) NOT NULL,
+  testplan_id int NOT NULL DEFAULT '0',
+  platform_id int NOT NULL DEFAULT '0',
+	CONSTRAINT /*prefix*/PK_testplan_platforms PRIMARY KEY  CLUSTERED 
+	(
+		id
+	)  ON [PRIMARY]
+)ON [PRIMARY]
+
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/UIX_testplan_platforms ON  /*prefix*/testplan_platforms 
+(
+	testplan_id,platform_id
+) ON [PRIMARY]
+
+
 CREATE TABLE /*prefix*/inventory (
   id int IDENTITY(1,1) NOT NULL,
 	testproject_id int NOT NULL CONSTRAINT /*prefix*/DF_inventory_testproject_id DEFAULT ((0)),

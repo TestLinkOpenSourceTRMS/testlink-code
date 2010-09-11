@@ -3,6 +3,7 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * Migrate from 1.8.x tp 1.9.0
+ *
  * tasks:
  * - create records on node_hierarchy for req_version
  *   getting new IDs.
@@ -10,11 +11,15 @@
  *   getting new IDs.
  * - Update IDs on ....
  * - Update project options
+ * - ....
  *  
- * $Id: migrate_18_to_19.php,v 1.9 2010/07/22 14:14:43 asimon83 Exp $
+ * Included on installNewDB.php
+ *
+ * $Id: migrate_18_to_19.php,v 1.10 2010/09/11 08:19:25 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
+ *	20100911 - franciscom - migrate_cfield_links()
  *  20100707 - asimon - req spec type set to "1" like done for requirements
  *  20100705 - asimon - added migrate_user_assignments()
  *  20100701 - Julian - requirement type set to "1"
@@ -30,6 +35,10 @@ define('FULL_FEEDBACK',FALSE);
 define('DBVERSION4MIG', 'DB 1.2');
 
 
+/**
+ * 
+ *
+ */
 function migrate_18_to_19(&$dbHandler,$tableSet)
 {
     migrate_requirements($dbHandler,$tableSet);
@@ -37,6 +46,7 @@ function migrate_18_to_19(&$dbHandler,$tableSet)
     migrate_testcases($dbHandler,$tableSet);
     migrate_project_options($dbHandler,$tableSet);
     migrate_user_assignments($dbHandler, $tableSet);
+    migrate_cfield_links($dbHandler, $tableSet);
 }
 
 
@@ -377,5 +387,52 @@ function migrate_user_assignments(&$dbHandler, $tableSet) {
 	// check how long the function is running on huge databases...
 	//$endtime = microtime(true) - $starttime;
 	//echo "<br/>migrate_user_assignments() needed $endtime seconds to finish<br/>";
+}
+
+/**
+ * Migrate custom field values AT DESIGN TIME, for test cases and requirements,
+ * to point to item version instead of item:
+ * test case version instead of test case
+ * requirement version instead of requirement
+ * 
+ * @author Francisco Mancardi 
+ * @param database $dbHandler
+ * @param array $tableSet
+ */
+function migrate_cfield_links(&$dbHandler, $tableSet) 
+{
+	$treeMgr = new tree($dbHandler);
+	$nodeTypes = $treeMgr->get_available_node_types();
+	echo $nodesTypes['testcase'];
+	unset($treeMgr);
+	
+	$sql = " SELECT CFDV.*, NHITEM.node_type_id, NHVERSION.id AS version_node_id" .
+	       " FROM {$tableSet['cfield_design_values']} CFDV " .
+	       " JOIN {$tableSet['nodes_hierarchy']} NHITEM ON NHITEM.id = CFDV.node_id " .
+	       " JOIN {$tableSet['nodes_hierarchy']} NHVERSION ON NHVERSION.parent_id = NHITEM.id " .
+	       " WHERE NHITEM.node_type_id IN ({$nodeTypes['testcase']},{$nodeTypes['requirement']}) ";
+	
+	$workingSet = $dbHandler->get_recordset($sql);
+	
+	echo 'Records to process: count($workingSet)<br>';
+	if( !is_null($workingSet) )
+	{
+		foreach($workingSet as $target)
+		{
+			$values[] = "( {$target['field_id']}, {$target['version_node_id']}, '{$target['value']}' )";
+			$victims[$target['node_id']] = $target['node_type_id'];
+		}
+	
+		$sql = " INSERT INTO {$tableSet['cfield_design_values']} (field_id,node_id,value) VALUES ";
+		$vSet = implode(',',$values);
+		
+		$sql .= $vSet;
+		$dbHandler->exec_query($sql);
+		foreach($victims as $node_id => $node_type_id)
+		{
+			$sql = " DELETE FROM {$tableSet['cfield_design_values']} WHERE node_id = $node_id "; 
+		    $dbHandler->exec_query($sql);
+		}
+	}
 }
 ?>

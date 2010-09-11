@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.45 2010/09/11 15:53:02 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.46 2010/09/11 15:58:32 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -523,9 +523,9 @@ CREATE TABLE /*prefix*/tcversions (
 	id int NOT NULL,
 	tc_external_id int NULL,
 	version smallint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_version DEFAULT ((1)),
-	summary text  NULL,
-	steps text  NULL,
-	expected_results text  NOT NULL,
+	layout INT NOT NULL DEFAULT '1',
+  summary text  NULL,
+  preconditions TEXT NULL,
 	importance tinyint NOT NULL CONSTRAINT /*prefix*/DF_tcversions_importance DEFAULT ((2)),
 	author_id int NULL,
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_tcversions_creation_ts DEFAULT (getdate()),
@@ -539,6 +539,24 @@ CREATE TABLE /*prefix*/tcversions (
 	id ASC
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+
+--
+-- Test Link 1.9 - 
+--
+CREATE TABLE /*prefix*/tcsteps (  
+	id int NOT NULL,
+  step_number INT NOT NULL DEFAULT '1',
+  actions TEXT NULL DEFAULT NULL,
+  expected_results TEXT NULL DEFAULT NULL,
+  active INT NOT NULL DEFAULT '1',
+  execution_type INT NOT NULL DEFAULT '1',
+  CONSTRAINT /*prefix*/PK_tcsteps PRIMARY KEY CLUSTERED 
+  (
+	id ASC
+  ) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
 
 CREATE TABLE /*prefix*/testplans (
 	id int NOT NULL,
@@ -605,7 +623,7 @@ CREATE TABLE /*prefix*/user_testproject_roles (
 	user_id ASC,
 	testproject_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE TABLE /*prefix*/user_testplan_roles (
 	user_id int NOT NULL,
@@ -616,7 +634,7 @@ CREATE TABLE /*prefix*/user_testplan_roles (
 	user_id ASC,
 	testplan_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE TABLE /*prefix*/users (
 	id int IDENTITY(1,1) NOT NULL,
@@ -634,7 +652,7 @@ CREATE TABLE /*prefix*/users (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_users_login ON  /*prefix*/users 
 (
@@ -650,7 +668,7 @@ CREATE TABLE /*prefix*/cfield_design_values (
 	field_id ASC,
 	node_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_cfield_design_values ON  /*prefix*/cfield_design_values 
 (
@@ -667,12 +685,12 @@ CREATE TABLE /*prefix*/cfield_testplan_design_values (
 	field_id ASC,
 	link_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_cfield_testplan_design_values ON  /*prefix*/cfield_testplan_design_values 
 (
 	link_id ASC
-) ON [PRIMARY]
+) ON [PRIMARY] 
 --
 
 
@@ -685,7 +703,7 @@ CREATE TABLE /*prefix*/assignment_types (
 (
 	id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE TABLE /*prefix*/cfield_execution_values (
 	field_id int NOT NULL CONSTRAINT /*prefix*/DF_cfield_execution_values_field_id DEFAULT ((0)),
@@ -700,7 +718,7 @@ CREATE TABLE /*prefix*/cfield_execution_values (
 	testplan_id ASC,
 	tcversion_id ASC
 ) ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 
 CREATE TABLE /*prefix*/text_templates (
@@ -720,7 +738,7 @@ CREATE TABLE /*prefix*/text_templates (
 		type,
 		title
 	)  ON [PRIMARY] 
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE TABLE /*prefix*/user_group (
   id int IDENTITY(1,1) NOT NULL,
@@ -734,12 +752,12 @@ CREATE TABLE /*prefix*/user_group (
 	(
 		title
 	)  ON [PRIMARY] 
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE TABLE /*prefix*/user_group_assign (
   usergroup_id int NOT NULL,
   user_id int NOT NULL,
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 --- 1.9 tables
 CREATE TABLE /*prefix*/platforms (
@@ -751,7 +769,7 @@ CREATE TABLE /*prefix*/platforms (
 	(
 		id
 	)  ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE UNIQUE INDEX /*prefix*/platforms_uidx1 ON /*prefix*/platforms (testproject_id,name);
 
@@ -763,7 +781,7 @@ CREATE TABLE /*prefix*/testplan_platforms (
 	(
 		id
 	)  ON [PRIMARY]
-)ON [PRIMARY]
+)ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/UIX_testplan_platforms ON  /*prefix*/testplan_platforms 
 (
@@ -784,7 +802,7 @@ CREATE TABLE /*prefix*/inventory (
 	(
 		id
 	)  ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 CREATE NONCLUSTERED INDEX /*prefix*/IX_inventory_testproject_id ON  /*prefix*/inventory
 (
@@ -809,4 +827,4 @@ CREATE TABLE /*prefix*/req_relations (
 	(
 		id
 	)  ON [PRIMARY]
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]

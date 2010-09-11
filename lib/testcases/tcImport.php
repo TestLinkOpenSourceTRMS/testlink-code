@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.80 $
- * @modified $Date: 2010/09/05 16:47:41 $ by $Author: franciscom $
+ * @version $Revision: 1.81 $
+ * @modified $Date: 2010/09/11 13:42:12 $ by $Author: amkhullar $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *  20100911 - amitkhullar - BUGID 3764 - Req Mapping Error while import of Test cases.
  *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
  *							processCustomFields()
  *	20100904 - franciscom - BUGID 3571 - Add 'create new version' choice when Import Test Suite
@@ -341,7 +342,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
         $tprojectHas['customFields']=!is_null($linkedCustomFields);                   
 
         // BUGID - 20090205 - franciscom
-		$reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title'),'title');
+		$reqSpecSet = $tproject_mgr->getReqSpec($tproject_id,null,array('RSPEC.id','NH.name AS title','RSPEC.doc_id as rspec_doc_id', 'REQ.req_doc_id'),'req_doc_id');
 		$tprojectHas['reqSpec'] = (!is_null($reqSpecSet) && count($reqSpecSet) > 0);
 
 		$getVersionOpt = array('output' => 'minimun');
@@ -777,7 +778,7 @@ function processCustomFields(&$tcaseMgr,$tcaseName,$tcaseId,$tcversionId,$cfValu
  * If everything OK, assign to test case.
  * Else return an array of messages.
  *
- *
+ * 20100911 - amitkhullar - BUGID 3764
  */
 function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$reqSpecSet,$messages)
 {
@@ -790,8 +791,9 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
 
     foreach($tcReq as $ydx => $value)
     {
+      $cachedReqSpec=array();
       $doit=false;
-      if( ($doit=isset($reqSpecSet[$value['req_spec_title']])) )
+      if( ($doit=isset($reqSpecSet[$value['doc_id']])) )
       {
           if( !(isset($cachedReqSpec[$value['req_spec_title']])) )
           {
@@ -800,7 +802,7 @@ function processRequirements(&$dbHandler,&$reqMgr,$tcaseName,$tcaseId,$tcReq,$re
               // value: map with follogin keys
               //        id => requirement specification id
               //        req => map with key: requirement document id
-              $cachedReqSpec[$value['req_spec_title']]['id']=$reqSpecSet[$value['req_spec_title']]['id'];
+              $cachedReqSpec[$value['req_spec_title']]['id']=$reqSpecSet[$value['doc_id']]['id'];
               $cachedReqSpec[$value['req_spec_title']]['req']=null;
           }
       }

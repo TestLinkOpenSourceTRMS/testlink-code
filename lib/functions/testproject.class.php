@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.171 2010/08/30 16:06:28 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.172 2010/09/11 13:42:39 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1319,6 +1319,7 @@ function setPublicStatus($id,$status)
 	 *
 	 * @author Martin Havlat
 	 * @internal rev: 
+	 * 20100911 - amitkhullar - BUGID 3764
 	 * 20090506 - francisco.mancardi@gruppotesi.com - Requirements Refactoring
 	 *       
 	 **/
@@ -1332,14 +1333,14 @@ function setPublicStatus($id,$status)
     
 	    $fields = is_null($fields) ? $fields2get : implode(',',$fields);
     	$sql = "  /* $debugMsg */ SELECT {$fields} FROM {$this->tables['req_specs']} RSPEC, " .
-       		   " {$this->tables['nodes_hierarchy']} NH " .
-           	   " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id ";
+       		   " {$this->tables['nodes_hierarchy']} NH , {$this->tables['requirements']} REQ " .
+           	   " WHERE testproject_id={$testproject_id} AND RSPEC.id=NH.id AND REQ.SRS_ID = RSPEC.id" ;
            
 		if (!is_null($id))
 	    {
     	    $sql .= " AND RSPEC.id=" . $id;
 	    }
-    	$sql .= "  ORDER BY title";
+    	$sql .= "  ORDER BY RSPEC.id,title";
 	    $rs = is_null($access_key) ? $this->db->get_recordset($sql) : $this->db->fetchRowsIntoMap($sql,$access_key);
 	      
 		return $rs;

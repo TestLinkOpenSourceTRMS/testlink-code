@@ -10,9 +10,10 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.60 2010/08/15 17:45:45 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.61 2010/09/11 16:41:25 franciscom Exp $
  *
  * @internal Revisions:
+ *	20100911 - franciscom - drop_tables() - MS SQL does not like 'CASCADE'
  *	20100815 - franciscom - BUGID 3654
  *  20100507 - Julian - changed time_limit for execution to umlimited
  *	20100110 - franciscom - added drop_tables();
@@ -163,6 +164,9 @@ echo "</b><br />Creating connection to Database Server:<b> ";
 // Connect to DB Server without choosing an specific database
 $db = new database($db_type);
 define('NO_DSN',FALSE);
+// 
+// echo 'DDD';
+// echo $db_server, $db_admin_name, $db_admin_pass;
 @$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
 
 if( $conn_result['status'] == 0 ) 
@@ -410,7 +414,7 @@ switch($db_type)
 if( $install && $conn_result['status'] != 0 )
 {
 	// BUGID 3654
-	drop_tables($db,$db_table_prefix);
+	drop_tables($db,$db_table_prefix,$db_type);
 }  
 
 
@@ -441,7 +445,7 @@ if ( count($a_sql_data > 0) )
 	{
 		if ( count($sql_data > 0) )
 		{
-			echo $msg_process_data;
+			// echo $msg_process_data;
 			foreach ($sql_data as $sql_file) 
 			{
 				$sqlParser->process($sql_file);
@@ -575,7 +579,7 @@ function write_config_db($filename, $data)
 
 // Drop tables to allow re-run Installation
 // BUGID 3654
-function drop_tables(&$dbHandler,$dbTablePrefix)
+function drop_tables(&$dbHandler,$dbTablePrefix,$dbType)
 {
 	// From 1.9 and up we have detail of tables.
 	$schema = tlObjectWithDB::getDBTables();
@@ -596,7 +600,8 @@ function drop_tables(&$dbHandler,$dbTablePrefix)
 			{
 				// Need to add option (CASCADE ?) to delete dependent object
 				echo "Droping $targetTable" . "<br />";
-				$sql="DROP TABLE $targetTable CASCADE";
+				$sql="DROP TABLE $targetTable";
+				$sql .= $dbType != 'mssql' ? " CASCADE " : ' ';
 				$dbHandler->exec_query($sql);
 			}  	
 		}

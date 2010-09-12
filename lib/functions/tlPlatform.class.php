@@ -6,11 +6,12 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.20 2010/07/11 17:05:24 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.21 2010/09/12 14:12:51 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
- *
+ *                                 
+ *	20100912 - franciscom - BUGID 3771 - getAll() MS SQL Query problem
  *	20100711 - franciscom - BUGID 3564: TestCases added via tl.addTestCaseToTestPlan won't show up for execution
  *	20100705 - franciscom - getLinkedToTestplan() - interface changes
  *	20100225 - eloff - rename platformVisibleForTestplan() to platformsActiveForTestplan()
@@ -229,6 +230,9 @@ class tlPlatform extends tlObjectWithDB
 	 *                         testplans this platform is used in
 	 *                         
 	 * @return array 
+	 *
+	 * @internal revisions
+	 * 20100912 - franciscom - BUGID 3771 
 	 */
 	public function getAll($options = null)
 	{
@@ -236,14 +240,26 @@ class tlPlatform extends tlObjectWithDB
 		$options = array_merge($default, (array)$options);
 		
 		$tproject_filter = " WHERE PLAT.testproject_id = {$this->tproject_id} ";
+		
+		// 20100912 - franciscom
+		// At least on MS SQL Server 2005 you can not do GROUP BY fields of type TEXT
+		// notes is a TEXT field
 		if ($options['include_linked_count'])
 		{
-			$sql =  " SELECT PLAT.id,PLAT.name,PLAT.notes, " .
+			// $sql =  " SELECT PLAT.id,PLAT.name,PLAT.notes, " .
+			// 		" COUNT(TPLAT.testplan_id) AS linked_count " .
+			// 		" FROM {$this->tables['platforms']} PLAT " .
+			// 		" LEFT JOIN {$this->tables['testplan_platforms']} TPLAT " .
+			// 		" ON TPLAT.platform_id = PLAT.id " . $tproject_filter .
+			// 		" GROUP BY PLAT.id, PLAT.name, PLAT.notes";
+			
+			$sql =  " SELECT PLAT.id,PLAT.name," .
 					" COUNT(TPLAT.testplan_id) AS linked_count " .
 					" FROM {$this->tables['platforms']} PLAT " .
 					" LEFT JOIN {$this->tables['testplan_platforms']} TPLAT " .
 					" ON TPLAT.platform_id = PLAT.id " . $tproject_filter .
-					" GROUP BY PLAT.id, PLAT.name, PLAT.notes";
+					" GROUP BY PLAT.id, PLAT.name";
+			
 		}
 		else
 		{

@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.49 2010/09/12 08:07:01 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.50 2010/09/12 08:14:11 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -275,6 +275,12 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_executions_execution_type ON  /*prefix*/e
 	execution_type ASC
 ) ON [PRIMARY];
 
+CREATE NONCLUSTERED INDEX /*prefix*/IX_executions ON  /*prefix*/executions 
+(
+	testplan_id ASC,
+	tcversion_id ASC,
+) ON [PRIMARY];
+
 
 CREATE TABLE /*prefix*/risk_assignments (
 	id int IDENTITY(1,1) NOT NULL,
@@ -359,6 +365,7 @@ CREATE TABLE /*prefix*/milestones (
 	id int IDENTITY(1,1) NOT NULL,
 	testplan_id int NOT NULL CONSTRAINT /*prefix*/DF_milestones_testplan_id DEFAULT ((0)),
 	target_date datetime NOT NULL,
+	start_date datetime NULL,
 	a tinyint NOT NULL CONSTRAINT /*prefix*/DF_milestones_A DEFAULT ((0)),
 	b tinyint NOT NULL CONSTRAINT /*prefix*/DF_milestones_B DEFAULT ((0)),
 	c tinyint NOT NULL CONSTRAINT /*prefix*/DF_milestones_C DEFAULT ((0)),
@@ -441,6 +448,7 @@ CREATE NONCLUSTERED INDEX /*prefix*/IX_req_testcase ON  /*prefix*/req_coverage
 CREATE TABLE /*prefix*/req_specs (
 	id int NOT NULL,
 	testproject_id int NOT NULL,
+	doc_id VARCHAR(64) NOT NULL,
 	scope text  NULL,
 	total_req int NOT NULL CONSTRAINT /*prefix*/DF_req_specs_total_req DEFAULT ((0)),
 	type char(1)  NOT NULL CONSTRAINT /*prefix*/DF_req_specs_type DEFAULT (N'n'),
@@ -454,10 +462,17 @@ CREATE TABLE /*prefix*/req_specs (
 ) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
 
-CREATE NONCLUSTERED INDEX /*prefix*/IX_testproject_id ON  /*prefix*/req_specs 
+CREATE NONCLUSTERED INDEX /*prefix*/IX_req_specs_testproject_id ON  /*prefix*/req_specs 
 (
 	testproject_id ASC
 ) ON [PRIMARY];
+
+
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/UIX_req_specs ON  /*prefix*/req_specs 
+(
+	doc_id,testproject_id
+) ON [PRIMARY];
+
 
 CREATE TABLE /*prefix*/requirements (
 	id int NOT NULL,

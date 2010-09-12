@@ -1,7 +1,7 @@
 <?php
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: migrate_16_to_17.php,v 1.23 2009/06/30 10:59:23 havlat Exp $ 
+$Id: migrate_16_to_17.php,v 1.24 2010/09/12 09:59:58 franciscom Exp $ 
 
 20070515 - franciscom - 
 improved controls on source db version
@@ -21,7 +21,7 @@ define('ADODB_ERROR_LOG_TYPE',3);
 
 // 20080114 - asielb - fix for bug 1244
 // 200804 - havlatm fixed wrong compare
-if (lowercase(substr(PHP_OS, 0, 3)) == "win")
+if (strtolower(substr(PHP_OS, 0, 3)) == "win")
 {
 	define('ADODB_ERROR_LOG_DEST','C:/testlink_errors.log');
 }

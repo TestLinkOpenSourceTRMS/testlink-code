@@ -595,7 +595,7 @@ order by constraint_name, referenced_table_name, keyno";
 		return array($sql,$this->qstr($sql2),$max,$sql2);
 	}
 	
-	function PrepareSP($sql)
+	function PrepareSP($sql,$param=true)
 	{
 		if (!$this->_has_mssql_init) {
 			ADOConnection::outp( "PrepareSP: mssql_init only available since PHP 4.1.0");

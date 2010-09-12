@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/08/23 19:42:37 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/09/12 08:26:25 $ $Author: franciscom $
  *
  * @author Francisco Mancardi
  *
@@ -2307,6 +2307,12 @@ $TLS_testproject_has_no_requirements = 'There are no Requirements defined';
 $TLS_caption_testCasesWithoutTester = $TLS_link_report_tcases_without_tester;
 $TLS_all_testcases_have_tester = 'All Test Cases have Tester Assigned';
 
+
+
+$TLS_desc_project_inventory_management = 'Gestione Infrastruttura';
+$TLS_desc_project_inventory_view = 'Visualizza Infrastruttura';
+$TLS_desc_platforms_management = 'Gestione Piattaforme';
+$TLS_desc_platforms_view = 'Visualizza Piattaforme';
 
 // ----- END ------------------------------------------------------------------
 ?>

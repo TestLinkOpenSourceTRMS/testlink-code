@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.62 2010/07/22 14:14:46 asimon83 Exp $
+-- $Id: testlink_create_tables.sql,v 1.63 2010/09/12 08:19:04 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -24,6 +24,7 @@
 -- 
 --  Rev :
 -- 
+--  20100912 - franciscom - requirements index ("srs_id","req_doc_id") changed to UNIQUE
 --  20100705 - asimon - added column build_id to user_assignments
 --  20100308 - franciscom - req_relations table added
 --  20100124 - franciscom - is_open,active added to req_versions table
@@ -532,7 +533,7 @@ CREATE TABLE /*prefix*/requirements (
   "req_doc_id" VARCHAR(64) NOT NULL,
   PRIMARY KEY ("id")
 ); 
-CREATE INDEX /*prefix*/requirements_idx1 ON /*prefix*/requirements ("srs_id","req_doc_id");
+CREATE UNIQUE INDEX /*prefix*/requirements_idx1 ON /*prefix*/requirements ("srs_id","req_doc_id");
 
 CREATE TABLE /*prefix*/req_versions(  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),

@@ -6,7 +6,7 @@
  * @package     TestLink
  * @author      Erik Eloff
  * @copyright   2006-2009, TestLink community
- * @version     CVS: $Id: tlPlatform.class.php,v 1.21 2010/09/12 14:12:51 franciscom Exp $
+ * @version     CVS: $Id: tlPlatform.class.php,v 1.22 2010/09/12 15:15:53 franciscom Exp $
  * @link        http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -236,16 +236,21 @@ class tlPlatform extends tlObjectWithDB
 	 */
 	public function getAll($options = null)
 	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$default = array('include_linked_count' => false);
 		$options = array_merge($default, (array)$options);
 		
 		$tproject_filter = " WHERE PLAT.testproject_id = {$this->tproject_id} ";
 		
-		// 20100912 - franciscom
-		// At least on MS SQL Server 2005 you can not do GROUP BY fields of type TEXT
-		// notes is a TEXT field
-		if ($options['include_linked_count'])
+		$sql =  " SELECT id, name, notes  FROM {$this->tables['platforms']} PLAT {$tproject_filter} " .
+				" ORDER BY name";
+
+		$rs = $this->db->get_recordset($sql);
+		if( !is_null($rs) && $options['include_linked_count'])
 		{
+			// 20100912 - franciscom
+			// At least on MS SQL Server 2005 you can not do GROUP BY fields of type TEXT
+			// notes is a TEXT field
 			// $sql =  " SELECT PLAT.id,PLAT.name,PLAT.notes, " .
 			// 		" COUNT(TPLAT.testplan_id) AS linked_count " .
 			// 		" FROM {$this->tables['platforms']} PLAT " .
@@ -253,21 +258,21 @@ class tlPlatform extends tlObjectWithDB
 			// 		" ON TPLAT.platform_id = PLAT.id " . $tproject_filter .
 			// 		" GROUP BY PLAT.id, PLAT.name, PLAT.notes";
 			
-			$sql =  " SELECT PLAT.id,PLAT.name," .
-					" COUNT(TPLAT.testplan_id) AS linked_count " .
+			$sql =  " SELECT PLAT.id, COUNT(TPLAT.testplan_id) AS linked_count " .
 					" FROM {$this->tables['platforms']} PLAT " .
 					" LEFT JOIN {$this->tables['testplan_platforms']} TPLAT " .
 					" ON TPLAT.platform_id = PLAT.id " . $tproject_filter .
-					" GROUP BY PLAT.id, PLAT.name";
+					" GROUP BY PLAT.id ";
+			$figures = $this->db->fetchRowsIntoMap($sql,'id');   
 			
+			$loop2do = count($rs);
+			for($idx=0; $idx < $loop2do; $idx++)
+			{
+				$rs[$idx]['linked_count'] = $figures[$rs[$idx]['id']]['linked_count'];				
+			} 			   
 		}
-		else
-		{
-			$sql =  " SELECT id, name, notes " .
-					" FROM {$this->tables['platforms']} PLAT {$tproject_filter} ";
-		}
-		$sql .= " ORDER BY name";
-		return $this->db->get_recordset($sql);
+		
+		return $rs;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.48 2010/09/12 07:56:00 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.49 2010/09/12 08:07:01 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -261,6 +261,7 @@ CREATE TABLE /*prefix*/executions (
 	testplan_id int NOT NULL CONSTRAINT /*prefix*/DF_executions_testplan_id DEFAULT ((0)),
 	tcversion_id int NOT NULL CONSTRAINT /*prefix*/DF_executions_tcversion_id DEFAULT ((0)),
 	tcversion_number smallint NOT NULL CONSTRAINT /*prefix*/DF_executions_tcversion_number DEFAULT ((1)),
+	platform_id int NOT NULL CONSTRAINT /*prefix*/DF_executions_platform_id DEFAULT ((0)),
 	execution_type tinyint NOT NULL CONSTRAINT /*prefix*/DF_executions_execution_type DEFAULT ((1)),
 	notes text  NULL CONSTRAINT /*prefix*/DF_executions_notes DEFAULT (NULL),
  CONSTRAINT /*prefix*/PK_executions PRIMARY KEY CLUSTERED 

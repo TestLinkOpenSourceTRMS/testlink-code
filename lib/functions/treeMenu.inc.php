@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.147 2010/09/09 11:29:43 mx-julian Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.148 2010/09/12 15:02:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *	20100912 - franciscom - BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
  *                                 - Custom Fields linked to TC versions
  *	20100908 - franciscom - extjs_renderExecTreeNodeOnOpen() - 'tlNodeType' -> testlink_node_type				 	 
@@ -1006,10 +1007,16 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 				       " AND testplan_id = {$tplan_id} " .
 					   " AND platform_id = {$info['platform_id']} " .
 					   " AND build_id = {$filters->setting_build} " .
-					   " ORDER BY execution_ts DESC LIMIT 1 ";
+					   " ORDER BY execution_ts DESC ";
 				
+				// BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
+				// get_recordset($sql,$fetch_mode = null,$limit = -1)
 				$result = null;
-				$result = $db->fetchOneValue($sql);
+				$rs = $db->get_recordset($sql,null,1);
+				if( !is_null($rs) )
+				{
+					$result = $rs[0]['status'];	
+				}
 				
 				if (is_null($result)) {
 					// if no value can be loaded it has to be set to not run
@@ -1647,15 +1654,19 @@ function filter_by_status_for_last_execution(&$db, &$tplan_mgr,&$tcase_set,$tpla
 	
 	foreach($tcase_set as $tc_id => $tc_info) {
 		// get last execution result for each testcase, 
+		
 		// if it differs from the result in tcase_set the tcase will be deleted from set
 		$sql = " SELECT status FROM {$tables['executions']} E " .
 			   " WHERE tcversion_id = {$tc_info['tcversion_id']} AND testplan_id = {$tplan_id} " .
 			   " AND platform_id = {$tc_info['platform_id']} " .
 			   " AND status = '{$tc_info['exec_status']}' " .
 			   " AND status IN ('{$in_status}') " .
-			   " ORDER BY execution_ts DESC limit 1 ";
+			   " ORDER BY execution_ts DESC "; 
+			   
 		$result = null;
-		$result = $db->fetchArrayRowsIntoMap($sql,'status');
+		
+		// BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
+		$result = $db->fetchArrayRowsIntoMap($sql,'status',1);
 		
 		if (is_null($result)) {
 			unset($tcase_set[$tc_id]);

@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.318 2010/09/01 11:29:28 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.319 2010/09/12 12:55:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -577,6 +577,7 @@ $tlCfg->document_generator->confidential_msg = '';
 $tlCfg->document_generator->css_template = 'css/tl_documents.css';
 
 /** Misc settings */
+// Display test case version when creating test spec document
 $tlCfg->document_generator->tc_version_enabled = FALSE;
 
 

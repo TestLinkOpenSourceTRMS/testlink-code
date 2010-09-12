@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: ownerBarChart.php,v 1.14 2009/06/04 19:22:01 schlundus Exp $ 
+* $Id: ownerBarChart.php,v 1.15 2010/09/12 17:09:17 franciscom Exp $ 
 *
 * @author	Kevin Levy
 *
@@ -14,11 +14,17 @@ require_once('charts.inc.php');
 testlinkInitPage($db,true,false,"checkRights");
 
 $cfg = new stdClass();
-$cfg->chartTitle = lang_get('results_by_tester'); 
-$cfg->XSize = 700;
-$cfg->YSize = 300;
 $cfg->scale = new stdClass();
-$cfg->scale->legendXAngle = 35;
+
+$chart_cfg = config_get('results');
+$chart_cfg = $chart_cfg['charts']['dimensions']['ownerBarChart'];
+
+$cfg->chartTitle = lang_get($chart_cfg['chartTitle']);
+$cfg->XSize = $chart_cfg['XSize'];
+$cfg->YSize = $chart_cfg['YSize'];
+$cfg->beginX = $chart_cfg['beginX'];
+$cfg->beginY = $chart_cfg['beginY'];
+$cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
 
 $info = getDataAndScale($db);
 createChart($info,$cfg);

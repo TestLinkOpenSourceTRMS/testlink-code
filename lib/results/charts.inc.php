@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: charts.inc.php,v 1.4 2010/09/12 16:37:19 franciscom Exp $ 
+ * $Id: charts.inc.php,v 1.5 2010/09/12 17:09:17 franciscom Exp $ 
  *
  * @author	Francisco Mancardi - francisco.mancardi@gmail.com
  *
@@ -66,6 +66,7 @@ function createChart(&$info,&$cfg)
     $chartCfg->title->color=array('R' => 0, 'G' => 0, 'B' => 255);
     
     $Test = new pChart($chartCfg->XSize,$chartCfg->YSize);
+    $Test->reportWarnings("GD");
     $Test->drawBackground($backgndColor['R'],$backgndColor['G'],$backgndColor['B']);
     $Test->drawGraphArea($chartCfg->graphArea->color['R'],
                          $chartCfg->graphArea->color['G'],$chartCfg->graphArea->color['B']);

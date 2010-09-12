@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.154 2010/09/01 16:36:43 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.155 2010/09/12 17:09:59 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -915,8 +915,26 @@ $tlCfg->guiTopMenu[7] = array(
 ); 
 
 
-/**  @TODO havlatm: remove const; in addition the text should refer to Install manual */  
 define( 'PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT',	'docs/tl-file-formats.pdf');
 
+
+// Configure Charts dimension
+$tlCfg->results['charts']['dimensions'] = 
+	array('topLevelSuitesBarChart'  => array('chartTitle' => 'results_top_level_suites',
+											 'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
+											 'legendXAngle' => 35 ),
+	      'keywordBarChart'  => array('chartTitle' => 'results_by_keyword',
+							 		  'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
+									  'legendXAngle' => 25 ),
+	      'ownerBarChart'  => array('chartTitle' => 'results_by_tester',
+							 		  'XSize' => 900,'YSize' => 400,'beginX' => 40, 'beginY' => 100,
+									  'legendXAngle' => 35 ),
+	      'overallPieChart'  => array('chartTitle' => 'results_by_tester',
+							 		  'XSize' => 400,'YSize' => 400,'radius' => 150, 'legendX' => 10, 'legendY' => 15 ),
+	      'platformPieChart'  => array('chartTitle' => 'results_by_tester',
+							 		  'XSize' => 400,'YSize' => 400,'radius' => 150, 'legendX' => 10, 'legendY' => 15 )
+	);							
+	
+		
 // ----- END ----------------------------------------------------------------------------
 ?>

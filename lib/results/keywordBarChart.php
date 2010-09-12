@@ -1,25 +1,35 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: keywordBarChart.php,v 1.15 2009/06/04 19:22:01 schlundus Exp $ 
+ * $Id: keywordBarChart.php,v 1.16 2010/09/12 17:09:17 franciscom Exp $ 
  *
  * @author	Kevin Levy
  *
  * - PHP autoload feature is used to load classes on demand
  *
- * rev: 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
- *      20081113 - franciscom - BUGID 1848
+ * @internal revisions
+ *
+ * 20100912 - franciscom - BUGID 2215
+ * 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
+ * 20081113 - franciscom - BUGID 1848
  */
 require_once('../../config.inc.php');
 require_once('charts.inc.php');
 testlinkInitPage($db,true,false,"checkRights");
 
 $cfg = new stdClass();
-$cfg->chartTitle = lang_get('results_by_keyword'); 
-$cfg->XSize = 650;
-$cfg->YSize = 250;
 $cfg->scale = new stdClass();
-$cfg->scale->legendXAngle = 25;
+
+$chart_cfg = config_get('results');
+$chart_cfg = $chart_cfg['charts']['dimensions']['keywordBarChart'];
+
+$cfg->chartTitle = lang_get($chart_cfg['chartTitle']);
+$cfg->XSize = $chart_cfg['XSize'];
+$cfg->YSize = $chart_cfg['YSize'];
+$cfg->beginX = $chart_cfg['beginX'];
+$cfg->beginY = $chart_cfg['beginY'];
+$cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
+
 
 $info = getDataAndScale($db);
 createChart($info,$cfg);

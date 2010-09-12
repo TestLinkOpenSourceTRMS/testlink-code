@@ -4,13 +4,16 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: topLevelSuitesBarChart.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2009/05/27 18:42:07 $ by $Author: schlundus $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/09/12 17:09:17 $ by $Author: franciscom $
  *
  * @author	Kevin Levy
  *
-* rev: 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
-*      20081113 - franciscom - BUGID 1848
+ * @internal revisions
+ *
+ * 20100912 - franciscom - BUGID 2215
+ * 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
+ * 20081113 - franciscom - BUGID 1848
  *
  */
 require_once('../../config.inc.php');
@@ -18,11 +21,17 @@ require_once('charts.inc.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $cfg = new stdClass();
-$cfg->chartTitle = lang_get('results_top_level_suites');
-$cfg->XSize = 700;
-$cfg->YSize = 275;
 $cfg->scale = new stdClass();
-$cfg->scale->legendXAngle = 35;
+
+$chart_cfg = config_get('results');
+$chart_cfg = $chart_cfg['charts']['dimensions']['topLevelSuitesBarChart'];
+
+$cfg->chartTitle = lang_get($chart_cfg['chartTitle']);
+$cfg->XSize = $chart_cfg['XSize'];
+$cfg->YSize = $chart_cfg['YSize'];
+$cfg->beginX = $chart_cfg['beginX'];
+$cfg->beginY = $chart_cfg['beginY'];
+$cfg->scale->legendXAngle = $chart_cfg['legendXAngle'];
 
 $info = getDataAndScale($db);
 createChart($info,$cfg);

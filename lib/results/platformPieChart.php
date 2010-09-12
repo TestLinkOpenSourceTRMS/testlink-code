@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	
- * @version    	CVS: $Id: platformPieChart.php,v 1.2 2009/12/22 16:20:08 erikeloff Exp $
+ * @version    	CVS: $Id: platformPieChart.php,v 1.3 2010/09/12 17:09:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -23,10 +23,11 @@ include(PCHART_PATH . "/pChart/pChart.class");
 testlinkInitPage($db,true,false,"checkRights");
 
 $resultsCfg = config_get('results');
+$chart_cfg = $resultsCfg['charts']['dimensions']['platformPieChart'];
+
 $args = init_args();
 $tplan_mgr = new testplan($db);
 $totalsByPlatform = $tplan_mgr->getStatusTotalsByPlatform($args->tplan_id);
-// new dBug($totalsByPlatform);
 
 $totals=$totalsByPlatform[$args->platform_id]['details'];
 unset($totals['total']);
@@ -43,15 +44,7 @@ foreach($totals as $key => $value)
     {
     	$series_color[] = $resultsCfg['charts']['status_colour'][$key];
     }	
-    // else
-    // {
-    // 	$series_color[] = $resultsCfg['charts']['status_colour']['not_run']
-    // }
 }
-
-// new dBug($values);
-// new dBug($labels);
-// new dBug($series_color);
 
 // Dataset definition    
 $DataSet = new pData;   
@@ -62,13 +55,11 @@ $DataSet->SetAbsciseLabelSerie("Serie8");
 
 // Initialise the graph
 $pChartCfg = new stdClass(); 
-$pChartCfg->XSize = 400;
-$pChartCfg->YSize = 400;                    
-$pChartCfg->centerX = intval($pChartCfg->XSize/2);                    
-$pChartCfg->centerY = intval($pChartCfg->YSize/2);
-$pChartCfg->radius = 150;
-$pChartCfg->legendX = 10;                    
-$pChartCfg->legendY = 15;
+$pChartCfg->XSize = $chart_cfg['XSize'];
+$pChartCfg->YSize = $chart_cfg['YSize'];                    
+$pChartCfg->radius = $chart_cfg['radius'];
+$pChartCfg->legendX = $chart_cfg['legendX'];                    
+$pChartCfg->legendY = $chart_cfg['legendY'];
 
 $graph = new stdClass();
 $graph->data = $DataSet->GetData();

@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	
- * @version    	CVS: $Id: overallPieChart.php,v 1.11 2009/10/25 19:23:06 franciscom Exp $
+ * @version    	CVS: $Id: overallPieChart.php,v 1.12 2010/09/12 17:09:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -22,6 +22,8 @@ include(PCHART_PATH . "/pChart/pChart.class");
 testlinkInitPage($db,true,false,"checkRights");
 
 $resultsCfg = config_get('results');
+$chart_cfg = $resultsCfg['charts']['dimensions']['overallPieChart'];
+
 $args = init_args();
 $tplan_mgr = new testplan($db);
 $totals = $tplan_mgr->getStatusTotals($args->tplan_id);
@@ -48,13 +50,15 @@ $DataSet->SetAbsciseLabelSerie("Serie8");
 
 // Initialise the graph
 $pChartCfg = new stdClass(); 
-$pChartCfg->XSize = 400;
-$pChartCfg->YSize = 400;                    
+$pChartCfg->XSize = $chart_cfg['XSize'];
+$pChartCfg->YSize = $chart_cfg['YSize'];                    
+$pChartCfg->radius = $chart_cfg['radius'];
+$pChartCfg->legendX = $chart_cfg['legendX'];                    
+$pChartCfg->legendY = $chart_cfg['legendY'];
+
 $pChartCfg->centerX = intval($pChartCfg->XSize/2);                    
 $pChartCfg->centerY = intval($pChartCfg->YSize/2);
-$pChartCfg->radius = 150;
-$pChartCfg->legendX = 10;                    
-$pChartCfg->legendY = 15;
+
 
 $graph = new stdClass();
 $graph->data = $DataSet->GetData();
@@ -75,6 +79,11 @@ $Test->drawBasicPieGraph($graph->data,$graph->description,
 $Test->drawPieLegend($pChartCfg->legendX,$pChartCfg->legendY,$graph->data,$graph->description,250,250,250);                                
 $Test->Stroke();
 
+
+/**
+ * 
+ *
+ */
 function checkRights(&$db,&$user)
 {
 	return $user->hasRight($db,'testplan_metrics');

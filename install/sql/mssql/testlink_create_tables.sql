@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.50 2010/09/12 08:14:11 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.51 2010/09/12 08:17:24 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -484,9 +484,9 @@ CREATE TABLE /*prefix*/requirements (
   ) ON [PRIMARY]
 ) ON [PRIMARY];
 
-CREATE NONCLUSTERED INDEX /*prefix*/IX_requirements ON  /*prefix*/requirements 
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_requirements ON  /*prefix*/requirements 
 (
-	srs_id ASC
+	srs_id,req_doc_id
 ) ON [PRIMARY];
 
 

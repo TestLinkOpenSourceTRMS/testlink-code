@@ -1,11 +1,14 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: charts.inc.php,v 1.3 2009/12/08 16:11:05 havlat Exp $ 
+ * $Id: charts.inc.php,v 1.4 2010/09/12 16:37:19 franciscom Exp $ 
  *
  * @author	Francisco Mancardi - francisco.mancardi@gmail.com
  *
- * rev: 20081113 - franciscom - BUGID 1848
+ * @internal revisions
+ *
+ * 20100912 - franciscom - BUGID 2215
+ * 20081113 - franciscom - BUGID 1848
  *
  */
 require_once('../../config.inc.php');
@@ -26,8 +29,8 @@ function createChart(&$info,&$cfg)
 {
     $backgndColor=array('R' => 255, 'G' => 255, 'B' => 254);
     $chartCfg=new stdClass();
-    $chartCfg->XSize=$info->canDraw ? $cfg->XSize : 600;
-    $chartCfg->YSize=$info->canDraw ? $cfg->YSize : 50;                    
+    $chartCfg->XSize = $info->canDraw ? $cfg->XSize : 600;
+    $chartCfg->YSize = $info->canDraw ? $cfg->YSize : 50;                    
     
     $chartCfg->border = new stdClass();
     $chartCfg->border->width = 1;
@@ -35,8 +38,10 @@ function createChart(&$info,&$cfg)
 
     $chartCfg->graphArea = new stdClass();
     $chartCfg->graphArea->color=array('R' => 213, 'G' => 217, 'B' => 221);
-    $chartCfg->graphArea->beginX = 40; 
-    $chartCfg->graphArea->beginY = 40;
+    
+    $chartCfg->graphArea->beginX = property_exists($cfg,'beginX') ? $cfg->beginX : 40; 
+    $chartCfg->graphArea->beginY = property_exists($cfg,'beginY') ? $cfg->beginY : 100; 
+    
     $chartCfg->graphArea->endX = $chartCfg->XSize - $chartCfg->graphArea->beginX;
     $chartCfg->graphArea->endY = $chartCfg->YSize - $chartCfg->graphArea->beginY;
 

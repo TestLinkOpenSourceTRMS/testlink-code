@@ -20,7 +20,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.16 2010/09/13 06:41:07 mx-julian Exp $
+ * @version    	CVS: $Id: description.php,v 1.17 2010/09/13 09:52:42 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -262,7 +262,7 @@ If you click on a tester name in this table, you will get a more detailed overvi
 about all Test Cases assigned to that user and his testing progress.<br /><br />
 <h3>Note:</h3>
 This Report shows those test cases, which are assigned to a specific user and have been executed 
-for each build. Even if a test case has been executed by another user than the assigned user, 
+based on each build. Even if a test case has been executed by another user than the assigned user, 
 the test case will appear as executed for the assigned user.
 ";
 

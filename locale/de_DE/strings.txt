@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.191 2010/09/06 13:29:47 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.192 2010/09/13 06:57:21 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.676
+ * Last Update according to en_GB string file version 1.683
  *
  **/
 
@@ -220,7 +220,8 @@ $TLS_problems_loading_xml_content = "Die XML Daten konnten nicht geladen werden,
 $TLS_search_type_like = "Search on this value will be done on LIKE mode";
 $TLS_exec_assign_no_testcase = "Bitte wählen Sie mindestens einen Testfall!";
 $TLS_select_at_least_one_testcase = "Bitte wählen Sie mindestens einen Testfall und ein Ziel!";
-$TLS_no_testcases_available = "Keine Testfälle oder Ziel-Testsuites verfügbar!";
+$TLS_no_testcases_available = "Keine Testfälle verfügbar!";
+$TLS_no_testcases_available_or_tsuite = "Keine Testfälle oder Ziel-Testsuites verfügbar!";
 $TLS_warning_must_be_number = "Wert muss eine Zahl sein";
 $TLS_select_at_least_one_req = "Bitte wählen Sie eine Anforderung aus!";
 
@@ -497,6 +498,7 @@ $TLS_include_nested = "Inklusive Daten (nur Kopieren).";
 $TLS_sorry_further = "Es sind keine weiteren ";
 $TLS_title_move_cp = "Verschieben / Kopieren";
 $TLS_title_move_cp_testcases = "Testfälle verschieben / kopieren";
+$TLS_title_delete_testcases = "Testfälle löschen";
 
 // ----- gui/templates/reqCreate.tpl -----
 $TLS_req_create = "Anforderung erstellen";
@@ -541,6 +543,7 @@ $TLS_btn_move_cp_testcases = "Verschiebe/Kopiere Testfälle";
 $TLS_btn_new_testsuite = "Neue Testsuite";
 $TLS_btn_new_tc = "Testfälle erstellen";
 $TLS_btn_reorder = "Testsuites umordnen";
+$TLS_btn_delete_testcases = "Testfälle löschen";
 $TLS_container_title_testproject = $TLS_testproject;
 $TLS_container_title_testplan = $TLS_testplan;
 $TLS_edit_testproject_basic_data = "Testprojekt Basis-Daten ändern";
@@ -1507,10 +1510,12 @@ $TLS_add_remove_platforms = "Plattformen dem Testplan %s zuweisen/entnehmen";
 $TLS_platform_linked_count = " (verwendet in %s Testfällen)";
 $TLS_platform_unlink_warning_title = "Plattform wird verwendet";
 $TLS_platform_unlink_warning_message = "Die ausgewählte(n) Plattform(en) wird/werden " .
-                                       "verwendet.<br/> <b/>Alle Testausführungen gehen " .
-                                       "verloren</b> wenn Sie fortsetzen.<br/>Sind Sie " .
-                                       "sicher, dass Sie die ausgewählte(n) Plattform(en) " .
-                                       "entfernen möchten?";
+                                       "verwendet und können nicht entfernt werden.<br/> " .
+                                       "Um die Plattform entfernen zu können müssen erst " .
+                                       "alle Testfallzuweisungen zu dieser Plattform " .
+                                       "entfernt werden.";
+
+
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Anforderungen exportieren";
@@ -2558,6 +2563,8 @@ $TLS_title_tsuite_export_all = "Alle Testsuiten exportieren";
 $TLS_delete = "Löschen";
 $TLS_delete_notice = "Warnung: Alle verknüpften Ergebnisse der Ausführung werden gelöscht!";
 $TLS_warning_empty_com_name = "Bitte einen Namen für diese Testsuite angeben!";
+$TLS_all_testcases_have_been_deleted = "Alle Testfälle wurden gelöscht";
+$TLS_delete_testcases = "Testfälle löschen";
 
 
 

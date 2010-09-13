@@ -18,7 +18,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: description.php,v 1.8 2010/09/13 06:58:34 mx-julian Exp $
+ * @version    	CVS: $Id: description.php,v 1.9 2010/09/13 07:01:22 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -253,6 +253,7 @@ Custom Fields with:<br />
 you will see these in this page ONLY for Test Cases linked to Test Plan.
 ";
 
+
 // resultsByTesterPerBuild.tpl
 $TLS_hlp_results_by_tester_per_build_table = "<h3>More information about testers:</h3>
 If you click on a tester name in this table, you will get a more detailed overview
@@ -262,6 +263,7 @@ This Report shows those test cases, which are assigned to a specific user and ha
 for each build. Even if a test case has been executed by another user than the assigned user, 
 the test case will appear as executed for the assigned user.
 ";
+
 
 // xxx.html
 //$TLS_hlp_xxx = "";

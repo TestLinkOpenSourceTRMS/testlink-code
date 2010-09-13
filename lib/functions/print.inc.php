@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.108 2010/09/09 06:58:39 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.109 2010/09/13 11:39:49 mx-julian Exp $
  * @uses printDocument.php
  *
  *
@@ -91,6 +91,11 @@
 /** uses get_bugs_for_exec() */
 require_once("exec.inc.php");
 
+if (config_get('interface_bugs') != 'NO')
+{
+  require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
+               DIRECTORY_SEPARATOR . 'int_bugtracking.php');
+}
 
 /**
  * render a requirement as HTML code for printing
@@ -1267,8 +1272,7 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
 			{
 				$bugString .= $bugInfo['link_to_bts']."<br />";
 			}
-			$out .= '<tr><td colspan="' .  $cfg['tableColspan'] . 
-			        '" width="' . $cfg['firstColWidth'] . '" valign="top">' . 
+			$out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
 			        $labels['bugs'] . '</td><td>' . $bugString ."</td></tr>\n"; 
 					
 		}

@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.109 2010/09/13 11:39:49 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.110 2010/09/13 11:40:40 mx-julian Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20100913 - Julian - BUGID 3754
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
  *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
  *							renderTestCaseForPrinting()

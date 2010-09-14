@@ -34,7 +34,7 @@
  * @package 	TestLink
  * @author 		asimon
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: linkto.php,v 1.6 2010/03/01 13:29:02 asimon83 Exp $
+ * @version    	CVS: $Id: linkto.php,v 1.7 2010/09/14 12:39:13 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -139,6 +139,7 @@ else
 	{
 		//add anchor
 		$url = $jump_to['url'] . $anchor;
+		$smarty->assign('treewidth', TL_FRMWORKAREA_LEFT_FRAME_WIDTH);
 		$smarty->assign('workframe', $url);
 		$smarty->assign('treeframe', $itemCode[$_GET['item']]);
 		$smarty->display('frmInner.tpl');

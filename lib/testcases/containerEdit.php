@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.120 $
- * @modified $Date: 2010/09/10 19:34:15 $ by $Author: franciscom $
+ * @version $Revision: 1.121 $
+ * @modified $Date: 2010/09/14 18:37:12 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
+ *  20100914 - franciscom - BUGID 3639 - reorderTestCasesDictionary()
  *  20100909 - franciscom - BUGID 3047: Deleting multiple TCs
  *  20100811 - asimon - BUGID 3669
  *  20100722 - asimon - BUGID 3406, removal of changes for 3049
@@ -57,7 +58,7 @@ $smarty->assign('editorType',$editorCfg['type']);
 $a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
-                'updateTCorder' => 'containerView.tpl',
+//                'reorder_testcases_alpha' => 'containerView.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl',
                 'do_copy_tcase_set' => 'containerMoveTC.tpl',
                 'delete_testcases' =>  'containerDeleteTC.tpl',
@@ -68,7 +69,8 @@ $a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite
                     'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
                     'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
                     'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0, 
-                    'delete_testcases' => 0,'do_delete_testcases' => 0);
+                    'delete_testcases' => 0,'do_delete_testcases' => 0, 
+                    'reorder_testcases_alpha' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
@@ -163,7 +165,6 @@ switch($action)
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
 		$guiObj->page_title = lang_get('container_title_testsuite');
-
      	$tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,$msg);
     	break;
 
@@ -211,6 +212,19 @@ switch($action)
     	deleteTestCasesViewer($db,$smarty,$tproject_mgr,$tree_mgr,$tsuite_mgr,$tcase_mgr,$args,
     						  lang_get('all_testcases_have_been_deleted'));
     	break;
+
+
+	case 'reorder_testcases_alpha':
+    	reorderTestCasesDictionary($args,$tsuite_mgr,$tree_mgr);
+
+		$guiObj = new stdClass();
+		$guiObj->refreshTree = true;
+  	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
+	  	$guiObj->id = $args->testsuiteID;
+		$guiObj->page_title = lang_get('container_title_testsuite');
+     	$tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
+    	break;
+	
 
     default:
     	trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
@@ -940,6 +954,27 @@ function doDeleteTestCases(&$dbHandler,$tcaseSet,&$tcaseMgr)
      		$tcaseMgr->delete($victim);
         }
      }
+}
+
+
+/**
+ * 
+ *
+ */
+function reorderTestCasesDictionary($argsObj,&$tsuiteMgr,&$treeMgr)
+{
+	$tcaseSet = (array)$tsuiteMgr->get_children_testcases($argsObj->testsuiteID);
+	if( ($loop2do = count($tcaseSet)) > 0 )
+	{
+		for($idx=0; $idx < $loop2do; $idx++)
+		{
+			$a2sort[$tcaseSet[$idx]['id']] =  $tcaseSet[$idx]['name'];
+			// $a2sort_id[$tcaseSet[$idx]['id']] = $tcaseSet[$idx]['id'];
+		}
+		natsort($a2sort);
+		$a2sort = array_keys($a2sort);
+		$treeMgr->change_order_bulk($a2sort);
+	}
 }
 
 ?>

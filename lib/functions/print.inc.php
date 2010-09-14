@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.110 2010/09/13 11:40:40 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.111 2010/09/14 16:56:12 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20100914 - franciscom - BUGID 437: TC version not visible in generated test specification
  *  20100913 - Julian - BUGID 3754
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
  *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
@@ -648,7 +649,7 @@ function renderTestSpecTreeForPrinting(&$db,&$node,$item_type,&$printingOptions,
 			{
 			    $tsCnt++;
 			}
-			// 3459 - added $platform_id
+			// BUGID 3459 - added $platform_id
 			$code .= renderTestSpecTreeForPrinting($db, $current, $item_type, $printingOptions,
 			                                       $tocPrefix, $tsCnt, $level+1, $user_id,
 			                                       $tplan_id, $tcPrefix, $tprojectID, $platform_id);
@@ -762,6 +763,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 	}
 	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : testcase::LATEST_VERSION;
     $tcInfo = $tc_mgr->get_by_id($id,$versionID);
+    
     if ($tcInfo)
     {
     	$tcInfo = $tcInfo[0];
@@ -797,11 +799,11 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 		}	                                               
 	}
 
-/** 
- * @TODO THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
- * using existent methods - franciscom - 20090329 
- * Need to get CF with execution scope
- */
+	/** 
+	 * @TODO THIS IS NOT THE WAY TO DO THIS IS ABSOLUTELY WRONG AND MUST BE REFACTORED, 
+	 * using existent methods - franciscom - 20090329 
+	 * Need to get CF with execution scope
+	 */
 	$exec_info = null;
 	$bGetExecutions = false;
 	if ($printingOptions["docType"] != DOC_TEST_SPEC)
@@ -840,11 +842,12 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
  	$code .= '<tr><th colspan="' . $cfg['tableColspan'] . '">' . $labels['test_case'] . " " . 
  			htmlspecialchars($external_id) . ": " . $name;
 
-	// add test case version
-	if($cfg['doc']->tc_version_enabled && isset($node['version'])) 
+	// add test case version 
+	$version_number = isset($node['version']) ? $node['version'] : $tcInfo['version'];
+	if($cfg['doc']->tc_version_enabled)
 	{
-		$code .= '&nbsp;<span style="font-size: 80%;"' . $cfg['gui']->role_separator_open . 
-        	   	$labels['version'] . $cfg['gui']->title_separator_1 .  $node['version'] . 
+		$code .= '&nbsp;<span style="font-size: 80%;">' . $cfg['gui']->role_separator_open . 
+        	   	$labels['version'] . $cfg['gui']->title_separator_1 .  $version_number . 
            		$cfg['gui']->role_separator_close . '</span>';
   	}
    	$code .= "</th></tr>\n";

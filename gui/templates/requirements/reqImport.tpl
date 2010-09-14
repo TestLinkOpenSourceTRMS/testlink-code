@@ -1,17 +1,12 @@
 {* ----------------------------------------------------------------- *
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqImport.tpl,v 1.19 2010/09/08 14:56:53 asimon83 Exp $
+$Id: reqImport.tpl,v 1.20 2010/09/14 21:27:36 franciscom Exp $
 Purpose: smarty template - requirements import initial page
 Author: Martin Havlat
 
 Revision:
+20100908 - franciscom - option to skip frozen req
 20100908 - asimon - BUGID 3761: requirement tree refresh after requirement import
-20050830 - MHT - result presentation updated
-20051015 - scs - fixed back button
-20051202 - scs - fixed 211
-20061014 - franciscom - added alert due to:
-                        no text file ($ftype_ok)
-                        bad syntax ($fsyntax_ok)
 * ----------------------------------------------------------------- *}
 {lang_get var="labels" 
           s='note_keyword_filter,check_uncheck_all_checkboxes_for_add,
@@ -21,7 +16,7 @@ Revision:
              req_import_option_skip,req_import_option_overwrite,
              title_req_import_check_input,req_import_check_note,
              req_import_dont_empty,btn_import,btn_cancel,Result,
-             req_doc_id,title,req_import_option_header,
+             req_doc_id,title,req_import_option_header,warning,
              check_uncheck_all_checkboxes,remove_tc,show_tcase_spec,
              check_uncheck_all_checkboxes_for_rm'}
 
@@ -50,21 +45,21 @@ Revision:
     </form>
     
     {if $gui->file_check.status_ok eq 0}
-      <script>
-      alert("{$gui->file_check.msg}");
+      <script type="text/javascript">
+        alert_message("{$labels.warning}","{$gui->file_check.msg}");
       </script>
     {elseif $gui->try_upload  && ($gui->arrImport == "") }
       <script>
       alert("{$labels.check_req_file_structure}");
       </script>
     {/if}
-  
   {elseif $gui->doAction == 'uploadFile'}
 
     {if !is_null($gui->items)}
     
       {if $gui->importType == 'XML'}
   	    <form method='post' action='{$SCRIPT_NAME}?req_spec_id={$gui->req_spec_id}'>
+ 		    <input type='hidden' value="{$gui->skip_frozen_req}" name='skip_frozen_req' />
  		    <input type='hidden' value="{$gui->importType}" name='importType' />
 		    <input type="hidden" name="scope" id="scope" value="{$gui->scope}" />
         {include file="$viewer_template" }
@@ -74,7 +69,7 @@ Revision:
   	    			onclick="javascript: location.href='{$req_spec_view_url}';" />
   	    	</div>
   	    </form>
-  	    
+         	    
         {if $gui->scope == 'branch' || $gui->scope == 'tree'}
   	    {else}
   	    {/if}

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.85 $
- * @modified $Date: 2010/09/08 13:59:13 $ by $Author: franciscom $
+ * @version $Revision: 1.86 $
+ * @modified $Date: 2010/09/14 21:26:09 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1376,8 +1376,12 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     $copy_reqspec = null;
     $copy_req = null;
 	$getOptions = array('output' => 'minimun');
-	$my['options'] = array( 'actionOnDuplicate' => "update");
+	$my['options'] = array( 'actionOnDuplicate' => "update", 'skipFrozenReq' => true);
 	$my['options'] = array_merge($my['options'], (array)$options);
+
+	// echo __CLASS__ . ' ' . __FUNCTION__;
+	// new dBug($options);
+	// new dBug($my['options']);
 
 	$items = $this->xmlToMapReqSpec($xml);
     
@@ -1499,8 +1503,8 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
                 for($jdx = 0;$jdx < $items_qty; $jdx++)
                 {
                     $req = $reqSet[$keys2insert[$jdx]];
-                    // $user_feedback[] = $req_mgr->createFromMap($req,$tproject_id,$reqSpecID,$author_id);
-                    $dummy = $req_mgr->createFromMap($req,$tproject_id,$reqSpecID,$author_id);
+                    $dummy = $req_mgr->createFromMap($req,$tproject_id,$reqSpecID,$author_id,
+                    								 null,$my['options']);
 					$user_feedback = array_merge($user_feedback,$dummy);
                 } 
             }  // if($create_req)   

@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.94 $
- * @modified $Date: 2010/09/08 15:10:07 $ by $Author: franciscom $
+ * @version $Revision: 1.95 $
+ * @modified $Date: 2010/09/14 21:26:09 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20100914 - franciscom - createFromMap() - added new option 'skipFrozenReq'
  *  20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *							createFromXML(),copy_to()
  *							new method createFromMap()
@@ -1229,15 +1230,18 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $cf2insert=null;
 	$status_ok = true;
 	$user_feedback = null;
-	// $req = $this->xmlToMapRequirement($xml);
 
 	$newReq = null;
     $copy_req = null;
 	$getOptions = array('output' => 'minimun');
     $has_filters = !is_null($filters);
-	$my['options'] = array( 'actionOnDuplicate' => "update");
+	$my['options'] = array( 'actionOnDuplicate' => "update", 'skipFrozenReq' => true);
 	$my['options'] = array_merge($my['options'], (array)$options);
 
+	// echo __CLASS__ . ' ' . __FUNCTION__;
+	// new dBug($options);
+	// new dBug($my['options']);
+	
 
     // Check:
     // If item with SAME DOCID exists inside container
@@ -1280,7 +1284,9 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 		// What to do if is Frozen ??? -> DO NOT IMPORT
 		$msgID = 'frozen_req_unable_to_import';
 		$status_ok = false;
-		if( $last_version['is_open'] == 1 )
+		
+		new dBug($my['options']);
+		if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
 		{
 			$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
 								$author_id,$req['status'],$req['type'],$req['expected_coverage'],

@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: migrate_cf_links.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2010/09/13 07:19:33 $  $Author: mx-julian $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2010/09/14 16:12:36 $  $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
  * Migrate Custom field data from item to item version (1.9 RC1 and up)
@@ -16,7 +16,6 @@ testlinkInitPage($db);
 
 $treeMgr = new tree($db);
 $nodeTypes = $treeMgr->get_available_node_types();
-echo $nodesTypes['testcase'];
 unset($treeMgr);
 
 

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/09/08 14:56:54 $ by $Author: asimon83 $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/09/14 21:27:15 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
+ * 20100914 - franciscom - manage option skip frozen requirements
  * 20100908 - asimon -  BUGID 3761: requirement tree refresh after requirement import
  * 20100321 - franciscom - work on import child requirements XML format - not finished
  * 20081103 - sisajr - DocBook XML extension
@@ -92,6 +93,11 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
     
 	if($argsObj->importType == 'XML')
 	{
+    	$opts = array('skipFrozenReq' => ($argsObj->skip_frozen_req ? true : false));
+
+		new dBug($argsObj);
+		new dBug($opts);
+		
 		$xml = simplexml_load_file($fileName);
 	    
 	    // if achecked_req is null => user has not selected any requirement, anyway we are going to create reqspec tree
@@ -102,7 +108,8 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 		{
         	foreach($xml->req_spec as $xkm)
     		{
-    			$dummy = $reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,$argsObj->user_id);
+    			$dummy = $reqSpecMgr->createFromXML($xkm,$argsObj->tproject_id,$argsObj->req_spec_id,
+    												$argsObj->user_id,null,$opts);
     			$retval->items = array_merge($retval->items,$dummy);
     		}
     	}   
@@ -115,7 +122,7 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
         		foreach($selectedKeys as $kdx)
         		{
         			$dummy = $reqMgr->createFromXML($xml->requirement[$kdx],$argsObj->tproject_id,
-        			                                $argsObj->req_spec_id,$argsObj->user_id);
+        			                                $argsObj->req_spec_id,$argsObj->user_id,null,$opts);
     				$retval->items = array_merge($retval->items,$dummy);
         		}
         	}
@@ -129,7 +136,6 @@ function doExecuteImport(&$dbHandler,$fileName,&$argsObj,&$reqSpecMgr)
 	unlink($fileName);
 	$retval->msg = lang_get('req_import_finished');
 	
-	new dBug($retval);
     return $retval;    
 }
 
@@ -158,6 +164,8 @@ function init_args()
     
     // useRecursion: used when you want to work on test project or req. spec
     $args->useRecursion = isset($request['useRecursion']) ? 1 : 0;
+    $args->skip_frozen_req = isset($request['skip_frozen_req']) ? 1 : 0;
+
     
     $args->doAction='askFileName';
     $action_keys = array('uploadFile','executeImport');
@@ -170,15 +178,15 @@ function init_args()
         }    
     }
     
-    $args->achecked_req=isset($request['achecked_req']) ? $request['achecked_req'] : null;
+    $args->achecked_req = isset($request['achecked_req']) ? $request['achecked_req'] : null;
     $args->tproject_id = $_SESSION['testprojectID'];
     $args->tproject_name = $_SESSION['testprojectName'];
     $args->user_id = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
    	$args->scope = isset($_REQUEST['scope']) ? $_REQUEST['scope'] : 'items';
 
     // BUGID 3761: requirement tree refresh after requirement import
-	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action'])
-	                     ? $_SESSION['setting_refresh_tree_on_action'] : 0;
+	$args->refreshTree = isset($_SESSION['setting_refresh_tree_on_action']) ? 
+						 $_SESSION['setting_refresh_tree_on_action'] : 0;
 
     return $args;
 }
@@ -289,6 +297,10 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr)
     $file_size_limit = config_get('import_file_max_size_bytes');
     $gui->importFileGui->maxFileSize=round(strval($file_size_limit)/1024);
     $gui->importFileGui->fileSizeLimitMsg=sprintf(lang_get('max_file_size_is'), $gui->importFileGui->maxFileSize  . ' KB ');
+    
+
+    $gui->importFileGui->skip_frozen_req_checked = $argsObj->skip_frozen_req ? ' checked="checked" ' : '';
+    
     
     $gui->importFileGui->return_to_url=$session['basehref'];
     if( is_null($argsObj->req_spec_id) )

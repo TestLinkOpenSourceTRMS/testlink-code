@@ -1,7 +1,7 @@
 <?php
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: charts.inc.php,v 1.5 2010/09/12 17:09:17 franciscom Exp $ 
+ * $Id: charts.inc.php,v 1.6 2010/09/14 19:44:24 franciscom Exp $ 
  *
  * @author	Francisco Mancardi - francisco.mancardi@gmail.com
  *
@@ -46,7 +46,22 @@ function createChart(&$info,&$cfg)
     $chartCfg->graphArea->endY = $chartCfg->YSize - $chartCfg->graphArea->beginY;
 
     $chartCfg->scale=new stdClass();
-    $chartCfg->scale->mode=SCALE_ADDALL;
+
+	// 20100914 - franciscom 
+	// After reading documentation
+	// drawScale
+	// Today there is four way of computing scales :
+	//
+    // - Getting Max & Min values per serie : ScaleMode = SCALE_NORMAL
+    // - Like the previous one but setting the min value to 0 : ScaleMode = SCALE_START0
+    // - Getting the series cumulative Max & Min values : ScaleMode = SCALE_ADDALL
+    // - Like the previous one but setting the min value to 0 : ScaleMode = SCALE_ADDALLSTART0
+	//
+	// This will depends on the kind of graph you are drawing, today only the stacked bar chart 
+	// can use the SCALE_ADDALL mode. 
+	// Drawing graphs were you want to fix the min value to 0 you must use the SCALE_START0 option. 
+	//
+    $chartCfg->scale->mode = SCALE_ADDALLSTART0;
     $chartCfg->scale->color = array('R' => 0, 'G' => 0, 'B' => 0);
     $chartCfg->scale->drawTicks = TRUE;
     $chartCfg->scale->angle=$cfg->scale->legendXAngle;

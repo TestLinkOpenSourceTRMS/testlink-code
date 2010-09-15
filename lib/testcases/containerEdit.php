@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.123 $
- * @modified $Date: 2010/09/15 20:55:12 $ by $Author: franciscom $
+ * @version $Revision: 1.124 $
+ * @modified $Date: 2010/09/15 21:26:37 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
@@ -52,6 +52,9 @@ $opt_cfg=new stdClass();
 $opt_cfg->js_ot_name = 'ot';
 
 $args = init_args($opt_cfg);
+
+new dBug($args);
+
 $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
@@ -59,7 +62,6 @@ $smarty->assign('editorType',$editorCfg['type']);
 $a_keys['testsuite'] = array('details');
 $a_tpl = array( 'move_testsuite_viewer' => 'containerMove.tpl',
                 'delete_testsuite' => 'containerDelete.tpl',
-//                'reorder_testcases_alpha' => 'containerView.tpl',
                 'move_testcases_viewer' => 'containerMoveTC.tpl',
                 'do_copy_tcase_set' => 'containerMoveTC.tpl',
                 'delete_testcases' =>  'containerDeleteTC.tpl',
@@ -70,8 +72,8 @@ $a_actions = array ('edit_testsuite' => 0,'new_testsuite' => 0,'delete_testsuite
                     'add_testsuite' => 1,'move_testsuite_viewer' => 0,'update_testsuite' => 1,
                     'move_testcases_viewer' => 0,'do_move_tcase_set' => 0,
                     'do_copy_tcase_set' => 0, 'del_testsuites_bulk' => 0, 
-                    'delete_testcases' => 0,'do_delete_testcases' => 0, 
-                    'reorder_testcases' => 0);
+                    'delete_testcases' => 0,'do_delete_testcases' => 0, 'reorder_testcases' => 0, 
+                    'reorder_testsuites_alpha' => 0, 'reorder_testproject_testsuites_alpha' => 0);
 
 $a_init_opt_transfer=array('edit_testsuite' => 1,'new_testsuite'  => 1,'add_testsuite'  => 1,
                            'update_testsuite' => 1);
@@ -121,6 +123,7 @@ if($get_c_data)
 		$name_ok = 0;
 	}
 }
+
 
 switch($action)
 {
@@ -228,6 +231,27 @@ switch($action)
      	$tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
     	break;
 	
+
+	case 'reorder_testsuites_alpha': 
+    	reorderTestSuitesDictionary($args,$tree_mgr,$args->testsuiteID);
+		// $guiObj = new stdClass();
+		// $guiObj->refreshTree = true;
+  	  	// $guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
+	  	// $guiObj->id = $args->testsuiteID;
+		// $guiObj->page_title = lang_get('container_title_testsuite');
+     	// $tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
+    	break;
+
+	case 'reorder_testproject_testsuites_alpha':
+
+    	reorderTestSuitesDictionary($args,$tree_mgr,$args->tprojectID);
+		// $guiObj = new stdClass();
+		// $guiObj->refreshTree = true;
+  	  	// // $guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
+	  	// $guiObj->id = $args->testsuiteID;
+		// $guiObj->page_title = lang_get('container_title_testsuite');
+     	// $tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
+    	break;
 
     default:
     	trigger_error("containerEdit.php - No correct GET/POST data", E_USER_ERROR);
@@ -982,7 +1006,7 @@ function reorderTestCasesDictionary($argsObj,&$tsuiteMgr,&$treeMgr)
 	{
 		for($idx=0; $idx < $loop2do; $idx++)
 		{
-			$a2sort_id[$tcaseSet[$idx]['id']] = $tcaseSet[$idx]['id'];
+			$a2sort[$tcaseSet[$idx]['id']] = $tcaseSet[$idx]['id'];
 		}
 		natsort($a2sort);
 		$a2sort = array_keys($a2sort);
@@ -1010,5 +1034,29 @@ function reorderTestCasesByExtID($argsObj,&$tsuiteMgr,&$treeMgr)
 	$tcaseSet = $tsuiteMgr->db->fetchColumnsIntoMap($sql,'tc_external_id','id');
 	$treeMgr->change_order_bulk($tcaseSet);
 }
+
+
+
+function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
+{
+	$exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'testcase' => 1, 'requirement_spec' => 1);
+
+	$itemSet = (array)$treeMgr->get_children($parent_id,$exclude_node_types);
+	new dBug($itemSet);
+	
+	if( ($loop2do = count($itemSet)) > 0 )
+	{
+		for($idx=0; $idx < $loop2do; $idx++)
+		{
+			$a2sort[$itemSet[$idx]['name']] = $itemSet[$idx]['id'];
+		}
+		natsort($a2sort);
+		$a2sort = array_keys($a2sort);
+		new dBug($a2sort);
+		
+		$treeMgr->change_order_bulk($a2sort);
+	}
+}
+
 
 ?>

@@ -18,11 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.321 2010/09/15 19:10:45 amkhullar Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.322 2010/09/15 20:11:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *  20100915 - amitkhullar - BUGID 3639 - added $tlcfg->tree_sort_order for Reorder Test Cases
+ *  20100915 - amitkhullar - BUGID 3639 - added $tlcfg->testcase_reorder_by for Reorder Test Cases
  *  20100915 - Julian - BUGID 3777 - added $tlCfg->req_cfg->allow_insertion_of_last_doc_id
  *  20100901 - asimon - re-enabled filter for assigned user when assigning testcases
  *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)	
@@ -530,7 +530,7 @@ $tlCfg->treemenu_show_testcase_id = TRUE;
 // 'EXTERNAL_ID' -> Sort on Test Case External ID field displayed on tree.(Default)
 // 'TCNAME' -> Sort on Test Case Name field
 
-$tlCfg->tree_sort_order = 'EXTERNAL_ID';
+$tlCfg->testcase_reorder_by = 'EXTERNAL_ID';
 
 // ----------------------------------------------------------------------------
 /* [GUI: Javascript libraries] */

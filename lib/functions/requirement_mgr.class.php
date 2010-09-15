@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.95 $
- * @modified $Date: 2010/09/14 21:26:09 $ by $Author: franciscom $
+ * @version $Revision: 1.96 $
+ * @modified $Date: 2010/09/15 12:53:42 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20100915 - Julian - BUGID 3777 - Added get_last_doc_id_for_project()
  *	20100914 - franciscom - createFromMap() - added new option 'skipFrozenReq'
  *  20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *							createFromXML(),copy_to()
@@ -1915,6 +1916,32 @@ function html_table_of_custom_field_values($id,$version_id)
 			$info = $this->db->fetchFirstRow($sql);
 		}
 		return $info;
+	}
+	
+	/**
+	 * get last defined req doc id for specific test project
+	 * 
+	 * @author Julian Krien
+	 * 
+	 * @param int $tproj_id test project id
+	 * 
+	 * @return string last defned req doc id
+	 */
+	
+	function get_last_doc_id_for_project($tproj_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$info = null;
+		
+		$tproject_mgr = new testproject($this->db);
+		
+		$all_reqs = $tproject_mgr->get_all_requirement_ids($tproj_id);
+		//only use maximum value of all reqs array
+		$last_req = max($all_reqs);
+
+		$last_req = $this->get_by_id($last_req);
+		
+		return $last_req[0]['req_doc_id'];
 	}
 
     /**

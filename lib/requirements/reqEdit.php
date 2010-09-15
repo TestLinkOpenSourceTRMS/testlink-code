@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.52 $
- * @modified $Date: 2010/08/12 14:00:16 $ by $Author: asimon83 $
+ * @version $Revision: 1.53 $
+ * @modified $Date: 2010/09/15 12:53:41 $ by $Author: mx-julian $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *  20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
  *  20100811 - asimon - fixed two warnings because of undefined variables in template
  *  20100808 - aismon - added logic to refresh filtered tree on action
  *  20100319 - asimon - BUGID 3307 - set coverage to 0 if null, to avoid database errors with null value
@@ -222,6 +223,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 {
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
+	$req_mgr = new requirement_mgr($dbHandler);
 
     $gui = $commandMgr->initGuiBean();
     $gui->req_cfg = config_get('req_cfg');
@@ -248,6 +250,9 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 	$gui->req_version_id = $argsObj->req_version_id;
 	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
 	
+	$gui->last_doc_id = $req_mgr->get_last_doc_id_for_project($argsObj->tproject_id);
+	$gui->doAction = $argsObj->doAction;
+
 	return $gui;
 }
 

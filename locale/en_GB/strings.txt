@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.686 2010/09/14 20:29:47 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.687 2010/09/15 12:53:41 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -505,6 +505,7 @@ $TLS_req_doc_id = "Document ID";
 $TLS_warning_empty_req_title = "Requirement title cannot be empty!";
 $TLS_warning_empty_reqdoc_id = "Requirement document id cannot be empty!";
 $TLS_create_testcase_from_req = "Create Test Cases from Requirements";
+$TLS_insert_last_req_doc_id = "Insert Document ID of last created Requirement";
 
 // ----- gui/templates/reqCopy.tpl -----
 $TLS_copy_one_req = "Copy requirement";

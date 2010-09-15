@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.319 2010/09/12 12:55:48 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.320 2010/09/15 12:53:41 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100915 - Julian - BUGID 3777 - added $tlCfg->req_cfg->allow_insertion_of_last_doc_id
  *  20100901 - asimon - re-enabled filter for assigned user when assigning testcases
  *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)	
  *  20100810 - asimon - BUGID 3317: added $tlCfg->req_cfg->external_req_management
@@ -1048,6 +1049,12 @@ $tlCfg->req_cfg->importDocBook->table_entry_children = array('para');
 // can enter the total count of requirements so that external requirements
 // are also counted for metrics/statistics. 
 $tlCfg->req_cfg->external_req_management = DISABLED;
+
+
+//If enabled an icon next to Document ID field will show up that allows
+//to insert the last defined Requirement Document ID within the same Project
+//into Document ID field
+$tlCfg->req_cfg->allow_insertion_of_last_doc_id = DISABLED;
 
 
 // ----------------------------------------------------------------------------

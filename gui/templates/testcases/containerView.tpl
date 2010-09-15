@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.36 2010/09/15 20:55:11 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.37 2010/09/15 21:42:16 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -28,7 +28,7 @@ rev :
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
 	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
 	           btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
-	           btn_reorder_testcases_externalid,
+	           btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name'}
 
@@ -98,6 +98,9 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 		<input type="button" onclick="location='{$importToTProjectAction}'"
 			                       value="{$labels.btn_import_testsuite}" />
 		<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
+
+		<input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
+				     title="{$labels.btn_reorder_testsuites_alpha}" />
 
     {* TO BE DEVELOPED  
 		<input type="submit" name="del_testsuites_bulk" id="del_testsuites_bulk"
@@ -225,9 +228,13 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 				     title="{$labels.alt_del_testsuite}" />
 			<input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"
 				     title="{$labels.alt_move_cp_testsuite}" />
+		  <input type="submit" name="reorder_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
+				     title="{$labels.btn_reorder_testsuites_alpha}" />
 
+      <br />
 			<input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
 			<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />
+
 		</form>
 	    </div>
 

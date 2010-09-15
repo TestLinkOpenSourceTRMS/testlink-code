@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.101 2010/09/08 18:44:03 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.102 2010/09/15 21:42:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -442,7 +442,6 @@ class testsuite extends tlObjectWithAttachments
 		$gui->cf = '';
 	    $gui->sqlResult = '';
 		$gui->sqlAction = '';
-		// 20100314 - franciscom 
 		$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
 
         // BUGID 0003233: After test suite edit, display of Test suite do not 

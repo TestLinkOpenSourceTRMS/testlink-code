@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.124 $
- * @modified $Date: 2010/09/15 21:26:37 $ by $Author: franciscom $
+ * @version $Revision: 1.125 $
+ * @modified $Date: 2010/09/15 21:42:16 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
+ *  20100916 - franciscom - BUGID 3778, 3779 - Option to reorder ALL CHILDREN Test Suites
  *  20100916 - franciscom - BUGID 3639 - reworked
  *  20100914 - franciscom - BUGID 3639 - reorderTestCasesDictionary()
  *  20100909 - franciscom - BUGID 3047: Deleting multiple TCs
@@ -53,8 +54,6 @@ $opt_cfg->js_ot_name = 'ot';
 
 $args = init_args($opt_cfg);
 
-new dBug($args);
-
 $gui_cfg = config_get('gui');
 $smarty = new TLSmarty();
 $smarty->assign('editorType',$editorCfg['type']);
@@ -95,6 +94,9 @@ foreach ($a_actions as $the_key => $the_val)
 		break;
 	}
 }
+
+$lblkey = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
+$btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 
 $smarty->assign('level', $level);
 $smarty->assign('page_title',lang_get('container_title_' . $level));
@@ -219,11 +221,9 @@ switch($action)
 
     // BUGID 3639 
 	case 'reorder_testcases': 
-		$lblkey = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
-
     	reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr,$sortCriteria);
 		$guiObj = new stdClass();
-		$guiObj->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
+		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
 		$guiObj->refreshTree = true;
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
@@ -234,23 +234,24 @@ switch($action)
 
 	case 'reorder_testsuites_alpha': 
     	reorderTestSuitesDictionary($args,$tree_mgr,$args->testsuiteID);
-		// $guiObj = new stdClass();
-		// $guiObj->refreshTree = true;
-  	  	// $guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
-	  	// $guiObj->id = $args->testsuiteID;
-		// $guiObj->page_title = lang_get('container_title_testsuite');
-     	// $tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
+		$guiObj = new stdClass();
+		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
+		$guiObj->refreshTree = true;
+  	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
+	  	$guiObj->id = $args->testsuiteID;
+		$guiObj->page_title = lang_get('container_title_testsuite');
+     	$tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
     	break;
 
 	case 'reorder_testproject_testsuites_alpha':
-
     	reorderTestSuitesDictionary($args,$tree_mgr,$args->tprojectID);
-		// $guiObj = new stdClass();
-		// $guiObj->refreshTree = true;
-  	  	// // $guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
-	  	// $guiObj->id = $args->testsuiteID;
-		// $guiObj->page_title = lang_get('container_title_testsuite');
-     	// $tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
+		$guiObj = new stdClass();
+		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
+		$guiObj->refreshTree = true;
+  	  	$guiObj->attachments = getAttachmentInfosFrom($tproject_mgr,$args->tprojectID);
+	  	$guiObj->id = $args->tprojectID;
+		$guiObj->page_title = lang_get('container_title_testsuite');
+     	$tproject_mgr->show($smarty,$guiObj,$template_dir,$args->tprojectID,null,null);
     	break;
 
     default:
@@ -1006,7 +1007,7 @@ function reorderTestCasesDictionary($argsObj,&$tsuiteMgr,&$treeMgr)
 	{
 		for($idx=0; $idx < $loop2do; $idx++)
 		{
-			$a2sort[$tcaseSet[$idx]['id']] = $tcaseSet[$idx]['id'];
+			$a2sort[$tcaseSet[$idx]['id']] = $tcaseSet[$idx]['name'];
 		}
 		natsort($a2sort);
 		$a2sort = array_keys($a2sort);
@@ -1037,23 +1038,22 @@ function reorderTestCasesByExtID($argsObj,&$tsuiteMgr,&$treeMgr)
 
 
 
+/**
+ * 
+ *
+ */
 function reorderTestSuitesDictionary($args,$treeMgr,$parent_id)
 {
 	$exclude_node_types = array('testplan' => 1, 'requirement' => 1, 'testcase' => 1, 'requirement_spec' => 1);
-
 	$itemSet = (array)$treeMgr->get_children($parent_id,$exclude_node_types);
-	new dBug($itemSet);
-	
 	if( ($loop2do = count($itemSet)) > 0 )
 	{
 		for($idx=0; $idx < $loop2do; $idx++)
 		{
-			$a2sort[$itemSet[$idx]['name']] = $itemSet[$idx]['id'];
+			$a2sort[$itemSet[$idx]['id']] = $itemSet[$idx]['name'];
 		}
 		natsort($a2sort);
 		$a2sort = array_keys($a2sort);
-		new dBug($a2sort);
-		
 		$treeMgr->change_order_bulk($a2sort);
 	}
 }

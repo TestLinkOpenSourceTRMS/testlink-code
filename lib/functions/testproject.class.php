@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.173 2010/09/11 17:18:48 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.174 2010/09/15 21:42:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -636,7 +636,7 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
  	$gui->moddedItem = $gui->container_data;
  	$gui->level = 'testproject';
  	$gui->page_title = lang_get('testproject');
- 	$gui->refreshTree = false;
+	$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
     $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
  	
 	if ($modded_item_id)

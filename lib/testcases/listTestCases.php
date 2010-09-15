@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 *
-* 	@version 	$Id: listTestCases.php,v 1.58 2010/08/07 15:14:16 franciscom Exp $
+* 	@version 	$Id: listTestCases.php,v 1.59 2010/09/15 19:12:07 amkhullar Exp $
 * 	@author 	Martin Havlat
 *
 * 	Generates tree menu with test specification.
@@ -56,7 +56,7 @@ function initializeGui(&$dbHandler, &$control) {
 	$gui = new stdClass();
 	$gui->feature = $control->args->feature;
 	$gui->treeHeader = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
-	
+	$gui->tree_sort_order = config_get('tree_sort_order');
 	$feature_path = array('edit_tc' => "lib/testcases/archiveData.php",
 	                      'keywordsAssign' => "lib/keywords/keywordsAssign.php",
 	                      'assignReqs' => "lib/requirements/reqTcAssign.php");

@@ -1,10 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.34 2010/09/14 18:36:49 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.35 2010/09/15 19:14:14 amkhullar Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
-  20100914 - franciscom - BUGID 3639
+  20100914 - franciscom - BUGID 3639 Reoder Test Cases
   20100910 - franciscom - BUGID 3047: Deleting multiple TCs
   20010708 - asimon - BUGID 3406: removed buttons and labels for 3049 
   20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -28,6 +28,7 @@ rev :
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
 	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
 	           btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
+	           btn_reorder_testcases_id,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name'}
 
@@ -247,9 +248,15 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
          		 title="{$labels.alt_move_cp_testcases}" />
 			<input type="submit" name="delete_testcases" value="{$labels.btn_delete_testcases}"
 				     title="{$labels.btn_delete_testcases}" />
-			<br />	     
-			<input type="submit" name="reorder_testcases_alpha" value="{$labels.btn_reorder_testcases_alpha}"
+			<br />
+			{* --BUG ID 3639 Reorder Test Case-- *}
+			{if $gui->tree_sort_order eq 'TCNAME'}	     
+			<input type="submit" name="reorder_testcases" value="{$labels.btn_reorder_testcases_alpha}"
 				     title="{$labels.btn_reorder_testcases_alpha}" />
+			{elseif $gui->tree_sort_order eq 'EXTERNAL_ID'}
+			<input type="submit" name="reorder_testcases" value="{$labels.btn_reorder_testcases_id}"
+				     title="{$labels.btn_reorder_testcases_id}" />			
+			{/if}
 		</form>
 
 		</div>

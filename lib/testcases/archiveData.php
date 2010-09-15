@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.75 2010/08/14 15:54:44 franciscom Exp $
+ * 	@version 	$Id: archiveData.php,v 1.76 2010/09/15 19:13:44 amkhullar Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -10,6 +10,7 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
+ *  20100916 - amitkhullar - BUGID 3639
  *  20100628 - asimon - BUGID 3406: removed old logic from BUGID 3049,
  *                      functionality will be changed because of user assigments per build
  *  20100628 - asimon - removal of constants from filter control class
@@ -40,6 +41,7 @@ switch($args->feature)
 		$item_mgr = new $args->feature($db);
 		$gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$gui->id = $args->id;
+		$gui->tree_sort_order = config_get('tree_sort_order');
 		if($args->feature == 'testproject')
 		{
 			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id);

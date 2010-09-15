@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.76 2010/09/15 19:13:44 amkhullar Exp $
+ * 	@version 	$Id: archiveData.php,v 1.77 2010/09/15 20:55:11 franciscom Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -41,7 +41,10 @@ switch($args->feature)
 		$item_mgr = new $args->feature($db);
 		$gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$gui->id = $args->id;
-		$gui->tree_sort_order = config_get('tree_sort_order');
+		
+		$lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
+		$gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
+
 		if($args->feature == 'testproject')
 		{
 			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id);

@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.322 2010/09/15 20:11:28 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.323 2010/09/15 20:55:11 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -528,9 +528,10 @@ $tlCfg->treemenu_show_testcase_id = TRUE;
  *  test suite level using reorder button 
  */
 // 'EXTERNAL_ID' -> Sort on Test Case External ID field displayed on tree.(Default)
-// 'TCNAME' -> Sort on Test Case Name field
+// 'NAME' -> Sort on Test Case Name field
 
 $tlCfg->testcase_reorder_by = 'EXTERNAL_ID';
+// $tlCfg->testcase_reorder_by = 'NAME';
 
 // ----------------------------------------------------------------------------
 /* [GUI: Javascript libraries] */

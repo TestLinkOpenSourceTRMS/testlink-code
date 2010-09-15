@@ -2,7 +2,7 @@
 /**
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 *
-* 	@version 	$Id: listTestCases.php,v 1.59 2010/09/15 19:12:07 amkhullar Exp $
+* 	@version 	$Id: listTestCases.php,v 1.60 2010/09/15 20:55:12 franciscom Exp $
 * 	@author 	Martin Havlat
 *
 * 	Generates tree menu with test specification.
@@ -52,11 +52,15 @@ $smarty->display($templateCfg->template_dir . 'tcTree.tpl');
  * @param tlTestCaseFilterControl $control
  * @return stdClass $gui
  */
-function initializeGui(&$dbHandler, &$control) {
+function initializeGui(&$dbHandler, &$control) 
+{
 	$gui = new stdClass();
 	$gui->feature = $control->args->feature;
 	$gui->treeHeader = lang_get('title_navigator'). ' - ' . lang_get('title_test_spec');
-	$gui->tree_sort_order = config_get('tree_sort_order');
+
+	$lblkey = (config_get('testcase_reorder_by') == 'NAME') ? '_alpha' : '_externalid';
+	$gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
+
 	$feature_path = array('edit_tc' => "lib/testcases/archiveData.php",
 	                      'keywordsAssign' => "lib/keywords/keywordsAssign.php",
 	                      'assignReqs' => "lib/requirements/reqTcAssign.php");

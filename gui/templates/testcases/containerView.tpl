@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.35 2010/09/15 19:14:14 amkhullar Exp $ *}
+{* $Id: containerView.tpl,v 1.36 2010/09/15 20:55:11 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -28,7 +28,7 @@ rev :
              btn_new_testsuite, btn_reorder,btn_execute_automatic_testcases,
 	           btn_edit_testsuite,btn_del_testsuite,btn_move_cp_testsuite,
 	           btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
-	           btn_reorder_testcases_id,
+	           btn_reorder_testcases_externalid,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
 	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name'}
 
@@ -249,14 +249,8 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 			<input type="submit" name="delete_testcases" value="{$labels.btn_delete_testcases}"
 				     title="{$labels.btn_delete_testcases}" />
 			<br />
-			{* --BUG ID 3639 Reorder Test Case-- *}
-			{if $gui->tree_sort_order eq 'TCNAME'}	     
-			<input type="submit" name="reorder_testcases" value="{$labels.btn_reorder_testcases_alpha}"
-				     title="{$labels.btn_reorder_testcases_alpha}" />
-			{elseif $gui->tree_sort_order eq 'EXTERNAL_ID'}
-			<input type="submit" name="reorder_testcases" value="{$labels.btn_reorder_testcases_id}"
-				     title="{$labels.btn_reorder_testcases_id}" />			
-			{/if}
+			<input type="submit" name="reorder_testcases" value="{$gui->btn_reorder_testcases}"
+				     title="{$gui->btn_reorder_testcases}" />
 		</form>
 
 		</div>

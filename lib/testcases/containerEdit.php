@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.122 $
- * @modified $Date: 2010/09/15 19:12:32 $ by $Author: amkhullar $
+ * @version $Revision: 1.123 $
+ * @modified $Date: 2010/09/15 20:55:12 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
+ *  20100916 - franciscom - BUGID 3639 - reworked
  *  20100914 - franciscom - BUGID 3639 - reorderTestCasesDictionary()
  *  20100909 - franciscom - BUGID 3047: Deleting multiple TCs
  *  20100811 - asimon - BUGID 3669
@@ -213,17 +214,17 @@ switch($action)
     						  lang_get('all_testcases_have_been_deleted'));
     	break;
 
-        //BUGID 3639
-	case 'reorder_testcases':
-		
-    	reorderTestCasesDictionary($args,$tsuite_mgr,$tree_mgr);
+    // BUGID 3639 
+	case 'reorder_testcases': 
+		$lblkey = ($sortCriteria = config_get('testcase_reorder_by')) == 'NAME' ? '_alpha' : '_externalid';
 
+    	reorderTestCasesByCriteria($args,$tsuite_mgr,$tree_mgr,$sortCriteria);
 		$guiObj = new stdClass();
+		$guiObj->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 		$guiObj->refreshTree = true;
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
 		$guiObj->page_title = lang_get('container_title_testsuite');
-		$guiObj->tree_sort_order = config_get('tree_sort_order');
      	$tsuite_mgr->show($smarty,$guiObj,$template_dir,$args->testsuiteID,null,null);
     	break;
 	
@@ -963,25 +964,51 @@ function doDeleteTestCases(&$dbHandler,$tcaseSet,&$tcaseMgr)
  * 
  *
  */
+function reorderTestCasesByCriteria($argsObj,&$tsuiteMgr,&$treeMgr,$sortCriteria)
+{
+    $pfn = ($sortCriteria == 'NAME') ? 'reorderTestCasesDictionary' : 'reorderTestCasesByExtID';
+	$pfn($argsObj,&$tsuiteMgr,&$treeMgr);
+}
+
+
+/**
+ * 
+ *
+ */
 function reorderTestCasesDictionary($argsObj,&$tsuiteMgr,&$treeMgr)
 {
-
-	$tree_sort_order = config_get('tree_sort_order');
-
-	$tcaseSet = (array)$tsuiteMgr->get_children_testcases($argsObj->testsuiteID,'full');
-
-	
+	$tcaseSet = (array)$tsuiteMgr->get_children_testcases($argsObj->testsuiteID,'simple');
 	if( ($loop2do = count($tcaseSet)) > 0 )
 	{
 		for($idx=0; $idx < $loop2do; $idx++)
 		{
-			$a2sort[$tcaseSet[$idx]['id']] = ($tree_sort_order == 'TCNAME')? $tcaseSet[$idx]['name'] : $tcaseSet[$idx]['tc_external_id'];
-			// $a2sort_id[$tcaseSet[$idx]['id']] = $tcaseSet[$idx]['id'];
+			$a2sort_id[$tcaseSet[$idx]['id']] = $tcaseSet[$idx]['id'];
 		}
 		natsort($a2sort);
 		$a2sort = array_keys($a2sort);
 		$treeMgr->change_order_bulk($a2sort);
 	}
+}
+
+
+/**
+ * 
+ *
+ */
+function reorderTestCasesByExtID($argsObj,&$tsuiteMgr,&$treeMgr)
+{
+	$tables = $tsuiteMgr->getDBTables(array('nodes_hierarchy','testsuites','tcversions'));
+
+	$sql = " SELECT DISTINCT NHTC.id,TCV.tc_external_id " .
+		   " FROM {$tables['nodes_hierarchy']} NHTC " .
+		   " JOIN {$tables['nodes_hierarchy']} NHTCV ON NHTCV.parent_id = NHTC.id " .
+		   " JOIN {$tables['tcversions']} TCV ON TCV.id = NHTCV.id " .
+		   " JOIN {$tables['testsuites']} TS ON NHTC.parent_id = TS.id " .
+		   " WHERE TS.id = " . intval($argsObj->testsuiteID) . 
+		   " ORDER BY tc_external_id ASC";
+
+	$tcaseSet = $tsuiteMgr->db->fetchColumnsIntoMap($sql,'tc_external_id','id');
+	$treeMgr->change_order_bulk($tcaseSet);
 }
 
 ?>

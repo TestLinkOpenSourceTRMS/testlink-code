@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.54 $
- * @modified $Date: 2010/09/15 13:18:59 $ by $Author: mx-julian $
+ * @version $Revision: 1.55 $
+ * @modified $Date: 2010/09/15 18:47:59 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -199,7 +199,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
     }
     
     $req_mgr = new requirement_mgr($dbHandler);
-    $guiObj->last_doc_id = $req_mgr->get_last_doc_id_for_project($argsObj->tproject_id);
+    $guiObj->last_doc_id = $req_mgr->get_last_doc_id_for_testproject($argsObj->tproject_id);
 	$guiObj->doAction = $argsObj->doAction;
 
     switch($renderType)

@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.306 2010/09/15 06:39:09 amkhullar Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.307 2010/09/15 18:42:31 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20100915 - amitkhullar - BUG ID 3776
+ * 20100915 - amitkhullar - BUGID 3776
  * 20100910 - franciscom - getExternalID() improvements
  * 20100908 - franciscom - exportTestCaseDataToXML() - testcase::LATEST_VERSION has problems
  *						   get_exec_status() - changes in output
@@ -3570,7 +3570,7 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function update_order($id,$order)
 	{
-	  $result=$this->tree_manager->change_order_bulk(array($order => $id));  	
+	  	$result=$this->tree_manager->change_order_bulk(array($order => $id));  	
 		return $result ? 1: 0;
 	}
 	
@@ -4422,7 +4422,7 @@ class testcase extends tlObjectWithAttachments
 		}
 		$info = $this->get_last_version_info($id, array('output' => 'minimun'));
         $external = $info['tc_external_id'];
-        //BUG ID - 3776
+        //BUGID - 3776
        	$identity = $tcase_prefix . $cfg->glue_character . $external;
 		return array($identity,$tcase_prefix,$cfg->glue_character,$external);
 	}

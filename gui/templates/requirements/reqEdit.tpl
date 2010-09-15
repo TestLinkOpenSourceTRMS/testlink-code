@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.28 2010/09/15 12:53:42 mx-julian Exp $
+$Id: reqEdit.tpl,v 1.29 2010/09/15 13:19:00 mx-julian Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
@@ -193,7 +193,9 @@ function insert_last_doc_id() {
   		        value="{$gui->req.req_doc_id|escape}" />
   				{include file="error_icon.tpl" field="reqDocId"}
   				
-  				{if $gui->req_cfg->allow_insertion_of_last_doc_id && $gui->doAction == 'create'}
+  				//BUGID 3777
+  				{if $gui->req_cfg->allow_insertion_of_last_doc_id && $gui->last_doc_id != null
+  				    && ($gui->doAction == 'create' || $gui->doAction == 'doCreate')}
 	  				<span onclick="javascript:insert_last_doc_id();" >
 	  				<img src="{$smarty.const.TL_THEME_IMG_DIR}/insert_step.png"
 	  				     title="{$labels.insert_last_req_doc_id}"/>

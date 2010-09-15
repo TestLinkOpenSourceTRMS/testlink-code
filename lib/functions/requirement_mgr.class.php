@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.96 $
- * @modified $Date: 2010/09/15 12:53:42 $ by $Author: mx-julian $
+ * @version $Revision: 1.97 $
+ * @modified $Date: 2010/09/15 13:19:00 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1936,12 +1936,15 @@ function html_table_of_custom_field_values($id,$version_id)
 		$tproject_mgr = new testproject($this->db);
 		
 		$all_reqs = $tproject_mgr->get_all_requirement_ids($tproj_id);
-		//only use maximum value of all reqs array
-		$last_req = max($all_reqs);
-
-		$last_req = $this->get_by_id($last_req);
-		
-		return $last_req[0]['req_doc_id'];
+		if(count($all_reqs) > 0) {
+			//only use maximum value of all reqs array
+			$last_req = max($all_reqs);
+			$last_req = $this->get_by_id($last_req);
+			
+			return $last_req[0]['req_doc_id'];
+		} else {
+			return null;
+		}
 	}
 
     /**

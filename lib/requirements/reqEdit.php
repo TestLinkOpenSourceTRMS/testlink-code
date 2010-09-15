@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.53 $
- * @modified $Date: 2010/09/15 12:53:41 $ by $Author: mx-julian $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2010/09/15 13:18:59 $ by $Author: mx-julian $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -54,7 +54,7 @@ if(method_exists($commandMgr,$pFn))
 {
 	$op = $commandMgr->$pFn($args,$_REQUEST);
 }
-renderGui($args,$gui,$op,$templateCfg,$editorCfg);
+renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
 
 
 /**
@@ -114,7 +114,7 @@ function init_args()
  * 
  *
  */
-function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
+function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
 {
     $smartyObj = new TLSmarty();
     $renderType = 'none';
@@ -197,6 +197,10 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
             } 
         break;
     }
+    
+    $req_mgr = new requirement_mgr($dbHandler);
+    $guiObj->last_doc_id = $req_mgr->get_last_doc_id_for_project($argsObj->tproject_id);
+	$guiObj->doAction = $argsObj->doAction;
 
     switch($renderType)
     {
@@ -223,7 +227,6 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 {
     $req_spec_mgr = new requirement_spec_mgr($dbHandler);
-	$req_mgr = new requirement_mgr($dbHandler);
 
     $gui = $commandMgr->initGuiBean();
     $gui->req_cfg = config_get('req_cfg');
@@ -249,9 +252,6 @@ function initialize_gui(&$dbHandler,&$argsObj,&$commandMgr)
 	// 20100811 - asimon - fixed two warnings because of undefined variables in template
 	$gui->req_version_id = $argsObj->req_version_id;
 	$gui->preSelectedType = TL_REQ_TYPE_USE_CASE;
-	
-	$gui->last_doc_id = $req_mgr->get_last_doc_id_for_project($argsObj->tproject_id);
-	$gui->doAction = $argsObj->doAction;
 
 	return $gui;
 }

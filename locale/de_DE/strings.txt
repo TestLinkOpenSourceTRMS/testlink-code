@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.193 2010/09/16 07:01:06 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.194 2010/09/16 07:47:39 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.689
+ * Last Update according to en_GB string file version 1.690
  *
  **/
 
@@ -2650,6 +2650,9 @@ $TLS_latest_version_displayed = 'Nur die letzte Version der Anforderungen wird a
 $TLS_dont_show_all_versions_btn = 'Zeige nur die letzte Version der Anforderungen';
 $TLS_show_all_versions_btn = 'Zeige alle Versionen der Anforderungen';
 $TLS_frozen = 'Eingefroren';
+$TLS_notes_req_overview = "Diese Übersicht zeigt alle Anforderungen (letzte oder alle Versionen) " .
+                          "und die dazugehörigen Attribute. Zusätzlich werden alle benutzerdefinierten " .
+                          "Felder für Anforderungen in einer seperaten Spalte angezeigt.";
 
 
 // ----- reqSpecEdit.php -----

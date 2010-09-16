@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.125 $
- * @modified $Date: 2010/09/15 21:42:16 $ by $Author: franciscom $
+ * @version $Revision: 1.126 $
+ * @modified $Date: 2010/09/16 07:28:52 $ by $Author: mx-julian $
  * @author Martin Havlat
  *
  * @internal revisions
@@ -992,7 +992,7 @@ function doDeleteTestCases(&$dbHandler,$tcaseSet,&$tcaseMgr)
 function reorderTestCasesByCriteria($argsObj,&$tsuiteMgr,&$treeMgr,$sortCriteria)
 {
     $pfn = ($sortCriteria == 'NAME') ? 'reorderTestCasesDictionary' : 'reorderTestCasesByExtID';
-	$pfn($argsObj,&$tsuiteMgr,&$treeMgr);
+	$pfn($argsObj,$tsuiteMgr,$treeMgr);
 }
 
 

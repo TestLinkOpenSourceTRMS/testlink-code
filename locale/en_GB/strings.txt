@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.690 2010/09/16 07:41:44 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.691 2010/09/16 07:47:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2665,7 +2665,7 @@ $TLS_show_all_versions_btn = 'Show all versions of each requirement';
 $TLS_frozen = 'Frozen';
 $TLS_notes_req_overview = "This Overview shows all requirements (last or all versions) " .
                           "and all the related attributes. In addition all defined custom " .
-                          "fields for requirements will be shown in a seperate column";
+                          "fields for requirements will be shown in a seperate column.";
 
 
 // ----- reqSpecEdit.php -----

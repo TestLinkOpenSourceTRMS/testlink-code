@@ -22,11 +22,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.192 2010/09/13 06:57:21 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.193 2010/09/16 07:01:06 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.683
+ * Last Update according to en_GB string file version 1.689
  *
  **/
 
@@ -502,10 +502,11 @@ $TLS_title_delete_testcases = "Testfälle löschen";
 
 // ----- gui/templates/reqCreate.tpl -----
 $TLS_req_create = "Anforderung erstellen";
-$TLS_req_doc_id = "Dok. ID";
+$TLS_req_doc_id = "Dokument ID";
 $TLS_warning_empty_req_title = "Sie müssen der Anforderung einen Titel geben!";
 $TLS_warning_empty_reqdoc_id = "Die Anforderungs-Dokumenten ID darf nicht leer sein!";
 $TLS_create_testcase_from_req = "Testfälle aus Anforderungen erstellen";
+$TLS_insert_last_req_doc_id = "Füge Dokument ID der zuletzt erstellen Anforderung ein";
 
 // ----- gui/templates/reqCopy.tpl -----
 $TLS_copy_one_req = "Anforderung kopieren";
@@ -544,6 +545,9 @@ $TLS_btn_new_testsuite = "Neue Testsuite";
 $TLS_btn_new_tc = "Testfälle erstellen";
 $TLS_btn_reorder = "Testsuites umordnen";
 $TLS_btn_delete_testcases = "Testfälle löschen";
+$TLS_btn_reorder_testcases_alpha = "Testfälle neu ordnen (lexikographisch)";
+$TLS_btn_reorder_testcases_externalid = "Testfälle neu ordnen (ID absteigend)";
+$TLS_btn_reorder_testsuites_alpha = "Untergeordnete Testsuiten neu ordnen (lexikographisch)";
 $TLS_container_title_testproject = $TLS_testproject;
 $TLS_container_title_testplan = $TLS_testplan;
 $TLS_edit_testproject_basic_data = "Testprojekt Basis-Daten ändern";
@@ -672,6 +676,7 @@ $TLS_title_req_import = "Anforderungen importieren";
 $TLS_title_req_import_check_input = "Überprüfe Import-Daten";
 $TLS_title_req_spec_import = "Req. Spec. importieren";
 $TLS_check_status = "Überprüfe Status";
+$TLS_skip_frozen_req = "Eingefrorene Anforderungen überspringen";
 
 
 

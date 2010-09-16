@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.689 2010/09/15 21:42:16 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.690 2010/09/16 07:41:44 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1486,8 +1486,11 @@ $TLS_btn_create_platform = "Create platform";
 $TLS_btn_edit_platform = "Edit";
 $TLS_th_platform = "Platform";
 $TLS_menu_manage_platforms = "Platform Management";
-$TLS_warning_delete_platform = "You are going to delete: %s <br /> This will remove <b>ALL</b> execution data in all testplans<br />You cannot undo this operation<br/>Are you sure?";
-$TLS_warning_cannot_delete_platform = "<b>%s</b> is being used!<br/>You cannot remove it now. You must first remove it from the testplans using it";
+$TLS_warning_delete_platform = "You are going to delete: %s <br /> This will remove <b>ALL</b> " .
+                               "execution data in all testplans<br />You cannot undo this operation" .
+                               "<br/>Are you sure?";
+$TLS_warning_cannot_delete_platform = "<b>%s</b> is being used!<br/>You cannot remove it now. " .
+                                      "You must first remove it from the testplans using it";
 $TLS_warning_enter_at_least1 = "Please enter at least ";
 $TLS_warning_enter_at_least2 = " chars.";
 $TLS_warning_enter_less1 = "Please enter less than";
@@ -1509,7 +1512,9 @@ $TLS_assigned_platforms = "Assigned platforms";
 $TLS_add_remove_platforms = "Add / Remove Platforms to Test Plan: %s";
 $TLS_platform_linked_count = " (Used in %s testcases)";
 $TLS_platform_unlink_warning_title = "Platform is in use";
-$TLS_platform_unlink_warning_message = "The selected platform(s) are being used and cannot be removed.<br/><br/>To remove the platform you must first remove all test cases assigned to this platform.";
+$TLS_platform_unlink_warning_message = "The selected platform(s) are being used and cannot be removed." .
+                                       "<br/><br/>To remove the platform you must first remove all test " .
+                                       "cases assigned to this platform.";
 
 // ----- gui/templates/reqexport.tpl -----
 $TLS_title_req_export = "Export requirements";
@@ -2609,7 +2614,8 @@ $TLS_error_user_not_deleted = "The user couldn't be deleted!";
 $TLS_error_user_not_disabled = "The user couldn't be disabled!";
 $TLS_error_user_login_length_error = "The login was either too short or too long!";
 $TLS_invalid_smtp_hostname = 'SMTP Hostname seems to be invalid';
-$TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Password Reset can not be done. Reason: SMTP Hostname seems to be invalid';
+$TLS_password_cannot_be_reseted_invalid_smtp_hostname = 'Password Reset can not be done. ' .
+                                                        'Reason: SMTP Hostname seems to be invalid';
 $TLS_password_cannot_be_reseted_reason = 'Password Reset can not be done. Reason: %s ';
 
 
@@ -2634,8 +2640,10 @@ $TLS_list_inactive_tplans1 = "Listing ";
 $TLS_list_inactive_tplans2 = "Active Test Plans that are currently not associated with a Test Project";
 $TLS_assoc_test_project = "Associated Test Project";
 $TLS_btn_fix_tplans = "Update";
-$TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br />Please contact your administrator";
-$TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project - That's Good!";
+$TLS_fix_tplans_no_rights = "You do not have rights to manage test projects<br />" .
+                            "Please contact your administrator";
+$TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associated with a Test Project " .
+                        "- That's Good!";
 
 
 // ----- lib/project/project_req_spec_mgmt.tpl -----
@@ -2655,6 +2663,9 @@ $TLS_latest_version_displayed = 'Only the latest version of each requirement is 
 $TLS_dont_show_all_versions_btn = 'Show only latest version of each requirement';
 $TLS_show_all_versions_btn = 'Show all versions of each requirement';
 $TLS_frozen = 'Frozen';
+$TLS_notes_req_overview = "This Overview shows all requirements (last or all versions) " .
+                          "and all the related attributes. In addition all defined custom " .
+                          "fields for requirements will be shown in a seperate column";
 
 
 // ----- reqSpecEdit.php -----

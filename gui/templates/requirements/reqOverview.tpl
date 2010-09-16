@@ -1,6 +1,6 @@
 {* 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: reqOverview.tpl,v 1.6 2010/08/23 14:09:48 asimon83 Exp $
+ * $Id: reqOverview.tpl,v 1.7 2010/09/16 07:41:44 mx-julian Exp $
  *
  * Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -17,7 +17,7 @@
 {lang_get var="labels" 
           s='testproject_has_no_reqspec, testproject_has_no_requirements, generated_by_TestLink_on,
              all_versions_displayed, latest_version_displayed, show_all_versions_btn, 
-             dont_show_all_versions_btn'}
+             dont_show_all_versions_btn, notes_req_overview'}
 
 {include file="inc_head.tpl" openHead="yes"}
 
@@ -94,6 +94,8 @@ Ext.onReady(function(){
 	
 	<br/>
 	
+	<p>{$labels.notes_req_overview}</p>
+	<br/>
 	<p>{lang_get s='hlp_req_coverage_table'}</p>
 {else}
 	<div class="user_feedback">

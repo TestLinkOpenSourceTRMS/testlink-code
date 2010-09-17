@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithCF.tpl,v 1.9 2010/09/01 11:16:45 mx-julian Exp $
+$Id: testCasesWithCF.tpl,v 1.10 2010/09/17 13:26:07 mx-julian Exp $
 
 Purpose: For a test plan, list test cases with Custom Fields at Execution
 
@@ -38,7 +38,10 @@ rev:
 
 {if $gui->warning_msg == ''}
     {if ($gui->resultSet)}
-		{$matrix->renderBodySection()}
+		{foreach from=$gui->tableSet key=idx item=matrix}
+			{assign var=tableID value=table_$idx}
+   			{$matrix->renderBodySection($tableID)}
+		{/foreach}
 		<br />
 		<p class="italic">{$labels.info_testCasesWithCF}</p>
 		<br />

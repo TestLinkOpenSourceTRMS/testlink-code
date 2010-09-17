@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.196 2010/09/04 20:22:51 erikeloff Exp $
+ * @version    	CVS: $Id: common.php,v 1.197 2010/09/17 18:14:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
@@ -375,12 +375,13 @@ function initProject(&$db,$hash_user_sel)
  * - initialize project data (if requested)
  * 
  * @param integer $db DB connection identifier
- * @param boolean $initProject (optional) Set true if adjustment of Product or
- * 		Test Plan is required; default is FALSE
- * @param boolean $bDontCheckSession (optional) Set to true if no session should be
- * 		 started
+ * @param boolean $initProject (optional) Set true if adjustment of Test Project or  
+ *										  Test Plan is required; default is FALSE
+ * @param boolean $dontCheckSession (optional) Set to true if no session should be started
+ * @param string $userRightsCheckFunction (optional) name of function used to check user right needed
+ *													 to execute the page
  */
-function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false,$userRightsCheckFunction = null)
+function testlinkInitPage(&$db, $initProject = FALSE, $dontCheckSession = false,$userRightsCheckFunction = null)
 {
 	doSessionStart();
 	setPaths();
@@ -390,13 +391,19 @@ function testlinkInitPage(&$db, $initProject = FALSE, $bDontCheckSession = false
 	
 	static $pageStatistics = null;
 	if (!$pageStatistics && (config_get('log_level') == 'EXTENDED'))
+	{
 		$pageStatistics = new tlPageStatistics($db);
+	}
 	
-	if (!$bDontCheckSession)
+	if (!$dontCheckSession)
+	{
 		checkSessionValid($db);
-
+	}
+	
 	if ($userRightsCheckFunction)
+	{
 		checkUserRightsFor($db,$userRightsCheckFunction);
+	}
 		
 	// adjust Product and Test Plan to $_SESSION
 	if ($initProject)
@@ -895,6 +902,10 @@ function isValidISODateTime($ISODateTime)
 }
 
 
+/**
+ * 
+ *
+ */
 function checkUserRightsFor(&$db,$pfn)
 {
 	$script = basename($_SERVER['PHP_SELF']);
@@ -904,8 +915,11 @@ function checkUserRightsFor(&$db,$pfn)
 	if (!$pfn($db,$currentUser,$action))
 	{
 		if (!$action)
+		{
 			$action = "any";
-		logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),$action,$currentUser->dbID,"users");
+		}
+		logAuditEvent(TLS("audit_security_user_right_missing",$currentUser->login,$script,$action),
+					  $action,$currentUser->dbID,"users");
 		$bExit = true;
 	}
 	if ($bExit)

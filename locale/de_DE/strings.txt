@@ -8,25 +8,26 @@
  * This list of labels is defined as GLOBAL string variables. The first sections are general 
  * for strings used over all GUI. These definition should not be redefined. Next sections are 
  * related to particular pages. Comment with page filename indicate a begin of section. There 
- * must be defined all other strings. 
+ * Do not use html elements in this file.
  *
  * To avoid override of other globals we are using $TLS_ (Test Link String) prefix.
- * This must be a reserved prefix. The second part of variable name (after 
+ * This must be a reserved prefix. The second part of variable name (after
  * prefix) should indicate usage (warning, title), the third one indicate the page relation
  * and text at the end.
  *
  * Warning: be careful about format - the file is parsed by script
- * Warning: if JS string you must use \\n to get \n for end of line
+ * 		comment only with "//" except header
+ * Warning: for JS string you must use \\n to get \n for end of line
  * Note: API interface is not localized (except error messages)
  * 
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.194 2010/09/16 07:47:39 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.195 2010/09/17 13:56:36 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.690
+ * Last Update according to en_GB string file version 1.695
  *
  **/
 
@@ -635,11 +636,12 @@ $TLS_error_no_testprojects_present = "Derzeit sind keine Testprojekte definiert!
 
 
 // ----- gui/templates/metrics_dashbord.tpl -----
-$TLS_th_total_tc = "Testfall-Nummer";
+$TLS_th_total_tc = "Testfälle (Gesamt)";
 $TLS_th_active_tc = "Aktive Testfälle";
 $TLS_th_executed_tc = "Ausgeführte Testfälle";
-$TLS_th_executed_vs_active = "Ausgeführte/Aktive [%]";
-$TLS_th_executed_vs_total = "Ausgeführte/Gesamt [%]";
+$TLS_th_executed_vs_active = "Fortschritt (Ausgeführte/Aktive) [%]";
+$TLS_th_executed_vs_total = "Fortschritt (Ausgeführte/Gesamt) [%]";
+$TLS_show_only_active = "Zeige Metrik nur für aktive Testpläne";
 
 
 // ----- gui/templates/newest_tcversions.tpl -----

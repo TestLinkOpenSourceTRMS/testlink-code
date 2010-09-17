@@ -4,21 +4,23 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/09/17 11:22:19 $ $Author: mx-julian $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2010/09/17 13:21:43 $ $Author: mx-julian $
  *
  * @author franciscom
  *
  * @internal revisions
  * 20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
+ *                                - use of exttable 
  * 20100526 - Julian - fixed wrong access to platform array
  * 20100525 - Julian - added option 'step_info' => 0 to get_linked_tcversions call
- * 					   to improve performance
+ *                     to improve performance
  * 20090919 - franciscom - added platform info
  *
 **/
 require('../../config.inc.php');
 require_once('common.php');
+require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
@@ -26,7 +28,69 @@ $args = init_args();
 $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
 $gui->show_only_active = $args->show_only_active;
+$gui->warning_msg = '';
 list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$args);
+
+if(count($gui->tplan_metrics) > 0) {
+
+	// Create column headers
+	$columns = getColumnsDefinition($gui->show_platforms);
+	
+	// Extract the relevant data and build a matrix
+	$matrixData = array();
+	
+	foreach ($gui->tplan_metrics as $tplan_metrics)
+	{
+		foreach($tplan_metrics as $platform_metric) {
+			$rowData = array();
+			$rowData[] = strip_tags($platform_metric['tplan_name']);
+			if ($gui->show_platforms) {
+				$rowData[] = strip_tags($platform_metric['platform_name']);
+			}
+			$rowData[] = $platform_metric['total'];
+			$rowData[] = $platform_metric['active'];
+			$rowData[] = $platform_metric['executed'];
+	
+			//to be able to properly sort by percentage add html comment
+			$executed_vs_active_string = "<!-- -1 -->" . lang_get('not_aplicable');
+			if ($platform_metric['executed_vs_active'] > 0) {
+				$percentage_comment = sprintf("%010d", $platform_metric['executed_vs_active']);
+				$executed_vs_active_string = "<!-- $percentage_comment -->" . $platform_metric['executed_vs_active'];
+			}
+			$rowData[] = $executed_vs_active_string;
+			              
+			$executed_vs_total_string = "<!-- -1 -->" . lang_get('not_aplicable');
+			if ($platform_metric['executed_vs_total'] > 0) {
+				$percentage_comment = sprintf("%010d", $platform_metric['executed_vs_total']);
+				$executed_vs_total_string = "<!-- $percentage_comment -->" . $platform_metric['executed_vs_total'];
+			}
+			$rowData[] = $executed_vs_total_string;
+			
+			$matrixData[] = $rowData;
+		}
+	}
+	
+	// create unique table id for each test plan
+	$table_id = 'tl_'.$args->tproject_id.'_table_metrics_dashboard';
+	$table = new tlExtTable($columns, $matrixData, $table_id);
+	
+	//if platforms are to be shown -> group by test plan
+	// if no platforms are to be shown -> no grouping
+	if($gui->show_platforms) {
+		$table->setGroupByColumnName(lang_get('test_plan'));
+	}
+	
+	$table->setSortByColumnName(lang_get('th_executed_vs_active'));
+	$table->sortDirection = 'DESC';
+	
+	$table->showToolbar = true;
+	$table->toolbarExpandCollapseGroupsButton = true;
+	$table->toolbarShowAllColumnsButton = true;
+	
+	$gui->tableSet = array($table);
+} else {
+	$gui->warning_msg = lang_get('no_testplans_available');
+}
 
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
@@ -134,6 +198,31 @@ function getMetrics(&$db,$args)
     	}	
  	}
 	return array($metrics, $show_platforms);
+}
+
+/**
+ * get Columns definition for table to display
+ *
+ */
+function getColumnsDefinition($showPlatforms)
+{
+	$colDef = array();
+	
+	$colDef[] = array('title' => lang_get('test_plan'), 'width' => 60, 'type' => 'text');
+		
+	if ($showPlatforms)
+	{
+		$colDef[] = array('title' => lang_get('platform'), 'width' => 60);
+	}
+	
+	$colDef[] = array('title' => lang_get('th_total_tc'), 'width' => 40);
+	$colDef[] = array('title' => lang_get('th_active_tc'), 'width' => 40);
+	$colDef[] = array('title' => lang_get('th_executed_tc'), 'width' => 40);
+	$colDef[] = array('title' => lang_get('th_executed_vs_active'), 'width' => 40);
+	$colDef[] = array('title' => lang_get('th_executed_vs_total'), 'width' => 40);
+	
+	return $colDef;
+	
 }
 
 function init_args()

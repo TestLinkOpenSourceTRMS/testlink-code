@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.692 2010/09/17 11:22:19 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.693 2010/09/17 13:21:42 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2204,7 +2204,7 @@ $TLS_no_build_warning_part2 = "Please create it first or ask your administrator.
 
 
 // ----- lib/general/myTPInfo.php -----
-$TLS_no_testplans_available = "I'm sorry there are no Test Plans available";
+$TLS_no_testplans_available = "There are no Test Plans available";
 
 
 // ----- lib/general/tlsmarty.inc.php -----

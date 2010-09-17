@@ -5,8 +5,11 @@
  *
  * Filename $RCSfile: bugAdd.php,v $
  *
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/06/24 17:25:57 $ by $Author: asimon83 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/09/17 10:47:54 $ by $Author: amkhullar $
+ * 
+ * rev:
+ *	20100917 - amitkhullar - missing $gui param to smarty
  */
 require_once('../../config.inc.php');
 require_once('common.php');
@@ -48,6 +51,7 @@ $smarty = new TLSmarty();
 $smarty->assign('bugIDMaxLength',$g_bugInterface->getBugIDMaxLength());
 $smarty->assign('bts_url', $g_bugInterface->getEnterBugURL());
 $smarty->assign('msg',$msg);
+$smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**

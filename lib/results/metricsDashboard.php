@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/09/17 13:21:43 $ $Author: mx-julian $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/09/17 13:44:57 $ $Author: mx-julian $
  *
  * @author franciscom
  *
@@ -52,14 +52,15 @@ if(count($gui->tplan_metrics) > 0) {
 			$rowData[] = $platform_metric['executed'];
 	
 			//to be able to properly sort by percentage add html comment
-			$executed_vs_active_string = "<!-- -1 -->" . lang_get('not_aplicable');
+			//show percentage for platforms/testplan with no executed test cases as 0
+			$executed_vs_active_string = "<!-- 0 -->0";
 			if ($platform_metric['executed_vs_active'] > 0) {
 				$percentage_comment = sprintf("%010d", $platform_metric['executed_vs_active']);
 				$executed_vs_active_string = "<!-- $percentage_comment -->" . $platform_metric['executed_vs_active'];
 			}
 			$rowData[] = $executed_vs_active_string;
 			              
-			$executed_vs_total_string = "<!-- -1 -->" . lang_get('not_aplicable');
+			$executed_vs_total_string = "<!-- 0 -->0";
 			if ($platform_metric['executed_vs_total'] > 0) {
 				$percentage_comment = sprintf("%010d", $platform_metric['executed_vs_total']);
 				$executed_vs_total_string = "<!-- $percentage_comment -->" . $platform_metric['executed_vs_total'];

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.307 2010/09/15 18:42:31 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.308 2010/09/17 18:33:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100917 - franciscom - html_table_of_custom_field_values() added colspan arg
  * 20100915 - amitkhullar - BUGID 3776
  * 20100910 - franciscom - getExternalID() improvements
  * 20100908 - franciscom - exportTestCaseDataToXML() - testcase::LATEST_VERSION has problems
@@ -4016,9 +4017,14 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function html_table_of_custom_field_values($id,$scope='design',$filters=null,$execution_id=null,
 	                                           $testplan_id=null,$tproject_id = null,
-	                                           $formatOptions=null,$link_id=null)
+	                                           $formatOptions=null,$link_id=null,$colspan=null)
 	{
-	    $td_style='class="labelHolder"' ;
+	    $td_style='class="labelHolder" ';
+	    if( !is_null($colspan) )
+	    {
+	    	$td_style .= ' colspan="' . $colspan . '" '; 
+	    }
+	    
 	    $add_table=true;
 	    $table_style='';
 	    if( !is_null($formatOptions) )

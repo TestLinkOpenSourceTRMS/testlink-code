@@ -5,7 +5,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.12 2010/09/17 11:22:18 mx-julian Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.13 2010/09/17 18:27:49 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -598,10 +598,13 @@ class tlUser extends tlDBObject
 		$tplans_role = $this->tplanRoles;
 		$effective_role = $this->globalRole;
 		if(!is_null($tplans_role) && isset($tplans_role[$tplan_id]))
+		{
 			$effective_role = $tplans_role[$tplan_id];  
+		}
 		else if(!is_null($tprojects_role) && isset($tprojects_role[$tproject_id]))
+		{
 			$effective_role = $tprojects_role[$tproject_id];  
-		
+		}
 		return $effective_role;
 	}
 

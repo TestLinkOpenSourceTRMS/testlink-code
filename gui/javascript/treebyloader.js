@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.8 2010/09/08 17:10:43 franciscom Exp $
+$Id: treebyloader.js,v 1.9 2010/09/17 17:26:33 franciscom Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -66,7 +66,7 @@ rev:
 function checkCtrlKey(dropEventObject)
 {
     var status=true;
-		dumpProps(dropEventObject.dropNode.attributes);
+		// dumpProps(dropEventObject.dropNode.attributes);
 		
 		if (dropEventObject.rawEvent.ctrlKey) 
 		{

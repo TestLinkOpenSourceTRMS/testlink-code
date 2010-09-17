@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.7 2010/09/17 17:43:08 franciscom Exp $
+$Id: inc_req_import_viewer.tpl,v 1.8 2010/09/17 17:45:43 franciscom Exp $
 
 
 rev :
@@ -29,10 +29,7 @@ function check_action_precondition(container_id,action)
 
 {* prefix for checkbox name ADD*}   
 {assign var="add_cb" value="achecked_req"}
-
-  {* --------------------------------------------------------------------------------------------------------------- *}
-	<h1 class="title">{$gui->main_descr|escape}</h1>
-  {if $gui->has_items || true}
+  {if $gui->has_items }
    <div class="workBack">
 	  {assign var=top_level value=$gui->items[0].level}
 	  {foreach from=$gui->items item=rspec key=idx name="div_drawing"}
@@ -41,7 +38,6 @@ function check_action_precondition(container_id,action)
 	      <div id="{$div_id}" style="margin-left:{$rspec.level}0px; border:1;">
         {* check/uncheck on ALL contained Containers is implemented with this clickable image *}
         {if $rspec.req_spec !=''}
-          <br />
 	        <h3 class="testlink">
 	        {* 
 	        <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"

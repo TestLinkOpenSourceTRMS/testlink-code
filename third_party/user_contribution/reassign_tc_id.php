@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reassign_tc_id.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/11/10 16:11:58 $  $Author: havlat $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/09/17 18:26:09 $  $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
  * utility to align Test Case External ID to Test Case INTERNAL ID
@@ -14,6 +14,14 @@ require_once("../../config.inc.php");
 require_once("common.php");
 
 testlinkInitPage($db);
+// Check if user has right role to execute
+if( !($_SESSION['currentUser']->globalRole->name=='admin') )
+{
+	echo 'You need to have admin role in order to use this page <b> ';
+	die();
+}
+
+
 $tcase_mgr = new testcase($db);
 $tproject_mgr = new testproject($db);
 

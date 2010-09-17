@@ -2,8 +2,8 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: migrate_cf_links.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2010/09/14 16:12:36 $  $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/09/17 18:26:09 $  $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
  * Migrate Custom field data from item to item version (1.9 RC1 and up)
@@ -13,6 +13,13 @@ require_once("../../config.inc.php");
 require_once("common.php");
 
 testlinkInitPage($db);
+
+// Check if user has right role to execute
+if( !($_SESSION['currentUser']->globalRole->name=='admin') )
+{
+	echo 'You need to have admin role in order to use this page <b> ';
+	die();
+}
 
 $treeMgr = new tree($db);
 $nodeTypes = $treeMgr->get_available_node_types();
@@ -50,5 +57,21 @@ if( !is_null($workingSet) )
 		$sql = " DELETE FROM {$tables['cfield_design_values']} WHERE node_id = $node_id "; 
 	    $db->exec_query($sql);
 	}
+}
+
+/**
+ * Checks the user rights for accessing the page
+ * 
+ * used as parameter in testlinkInitPage
+ *
+ * @param $db resource the database connection handle
+ * @param $user tlUser the object of the current user
+ *
+ * @return boolean return true if the page can be viewed, false if not
+ */
+function checkRights(&$db,&$user)
+{
+	$hasRights = ($user->globalRole->name=='admin');
+	return $hasRights;
 }
 ?>

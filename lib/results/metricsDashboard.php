@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/08/27 09:48:54 $ $Author: mx-julian $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/09/17 11:22:19 $ $Author: mx-julian $
  *
  * @author franciscom
  *
  * @internal revisions
+ * 20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
  * 20100526 - Julian - fixed wrong access to platform array
  * 20100525 - Julian - added option 'step_info' => 0 to get_linked_tcversions call
  * 					   to improve performance
@@ -24,6 +25,7 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
+$gui->show_only_active = $args->show_only_active;
 list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$args);
 
 $smarty = new TLSmarty;
@@ -41,7 +43,15 @@ function getMetrics(&$db,$args)
   
 	// BUGID 1215
 	// get all tesplans accessibles  for user, for $tproject_id
-	$test_plans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id);
+	
+    if($args->show_only_active) {
+    	$options = array('active' => ACTIVE);
+    } else {
+    	$options = array('active' => TP_ALL_STATUS);
+    }
+    
+	$test_plans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,null,$options);
+
 
 	// Get count of testcases linked to every testplan
 	foreach($test_plans as $key => $value)
@@ -133,6 +143,19 @@ function init_args()
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
 	$args->currentUserID = $_SESSION['currentUser']->dbID;
+	
+	$show_only_active = isset($_REQUEST['show_only_active']) ? true : false;
+	$show_only_active_hidden = isset($_REQUEST['show_only_active_hidden']) ? true : false;
+	if ($show_only_active) {
+		$selection = true;
+	} else if ($show_only_active_hidden) {
+		$selection = false;
+	} else if (isset($_SESSION['show_only_active'])) {
+		$selection = $_SESSION['show_only_active'];
+	} else {
+		$selection = true;
+	}
+	$args->show_only_active = $_SESSION['show_only_active'] = $selection;
 	
 	return $args;
 }

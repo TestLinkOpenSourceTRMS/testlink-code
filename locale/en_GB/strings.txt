@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.691 2010/09/16 07:47:29 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.692 2010/09/17 11:22:19 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -640,6 +640,7 @@ $TLS_th_active_tc = "Active Test Cases";
 $TLS_th_executed_tc = "Executed Test Cases";
 $TLS_th_executed_vs_active = "Executed/Active [%]";
 $TLS_th_executed_vs_total = "Executed/Total [%]";
+$TLS_show_only_active = "Show metrics only for active test plans";
 
 
 // ----- gui/templates/newest_tcversions.tpl -----

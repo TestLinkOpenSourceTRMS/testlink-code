@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.6 2010/05/11 18:36:25 franciscom Exp $
+$Id: inc_req_import_viewer.tpl,v 1.7 2010/09/17 17:43:08 franciscom Exp $
 
 
 rev :
@@ -42,41 +42,32 @@ function check_action_precondition(container_id,action)
         {* check/uncheck on ALL contained Containers is implemented with this clickable image *}
         {if $rspec.req_spec !=''}
           <br />
-	        <h3 class="testlink"><img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
+	        <h3 class="testlink">
+	        {* 
+	        <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			                              onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$div_id}");'
                                     title="{$labels.check_uncheck_children_checkboxes}" />
+          *}
           {$rspec.req_spec.doc_id|escape}::{$rspec.req_spec.title|escape}
 	        </h3>
         {/if}
         {* used as memory for the check/uncheck all checkbox javascript logic *}
         <input type="hidden" name="add_value_{$div_id}"  id="add_value_{$div_id}"  value="0" />
 
-    	  {if TRUE}
           {if $rspec.requirements != '' }
             <table cellspacing="0" style="font-size:small;" width="100%">
             {* ---------------------------------------------------------------------------------------------------- *}
 			      {* Heading *}
 			      <tr style="background-color:#059; font-weight:bold; color:white">
-			      	<td width="5" align="center">
-			          <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
-			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_","add_value_{$div_id}");'
-                     title="{$labels.check_uncheck_all_checkboxes}" />
-			      	</td>
               <td>{$labels.doc_id_short}</td> 
               <td>{$labels.title}</td>
               <td align="center">&nbsp;&nbsp;{$labels.scope}</td>
             </tr>
             {* ---------------------------------------------------------------------------------------------------- *}
-      
             {foreach from=$rspec.requirements item=req key=reqIndex}
               <tr>
-            	 	<td>
-               		<input type="checkbox"  name='{$add_cb}[{$idx}][{$reqIndex}]' align="middle"
-                  			                        id='{$add_cb}_{$idx}_{$reqIndex}' 
-                    		                        value="1" />
-            	    	</td>
-            	    	<td>
-            	    		{$req.docid|escape}
+            	  <td>
+            	  {$req.docid|escape}
             	    	</td>
                     <td>
             	    	{$req.title|escape}
@@ -88,7 +79,6 @@ function check_action_precondition(container_id,action)
             {/foreach} 
           </table>
           {/if}
-      {/if} {* write buttons*}
 
       {if $gui->items_qty eq $smarty.foreach.div_drawing.iteration }
           {assign var=next_level value=0}

@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.20 2010/08/02 08:57:56 amkhullar Exp $
+$Id: inc_exec_test_spec.tpl,v 1.21 2010/09/17 10:47:15 amkhullar Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
+    20100917 - amitkhullar - BUGID 3780
 	20100802 - amitkhullar - Moved the Design time Custom Fields before Exec CF. 
     20100621 - eloff - BUGID 3241 - Implement vertical layout
     20100105 - franciscom - Test Case Steps
@@ -74,7 +75,7 @@ Rev:
 		{/if}
 
 	{if $args_tc_exec.steps != ''}
-		{include file="inc_steps.tpl"
+		{include file="testcases/inc_steps.tpl"
 		         layout=$args_cfg->exec_cfg->steps_results_layout
 		         edit_enabled=false
 		         steps=$args_tc_exec.steps}

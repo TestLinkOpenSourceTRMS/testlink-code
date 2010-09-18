@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.33 2010/07/11 17:08:02 franciscom Exp $
+ * $Id: APIErrors.php,v 1.34 2010/09/18 13:30:05 franciscom Exp $
  */
 
 /** 
@@ -11,7 +11,9 @@
  * @package 	TestlinkAPI
  * @link      http://testlink.org/api/
  *
- * rev: 20090420 - franciscom - BUGID 2158
+ * rev: 
+ *		20100918 - franciscom - BUGID 1890
+ *		20090420 - franciscom - BUGID 2158
  *      20090304 - franciscom - BUGID 2191
  *      20080518 - franciscom - TestLink Development team - www.teamst.org
  *      suppress log for missing localization strings.
@@ -207,6 +209,26 @@ define('NO_TESTCASE_FOUND_STR', lang_get('API_NO_TESTCASE_FOUND',null,1));
  */
 define('INVALID_STATUS', 6000);
 define('INVALID_STATUS_STR' , lang_get('API_INVALID_STATUS',null,1));
+
+define('ATTACH_TEMP_FILE_CREATION_ERROR', 6001);
+define('ATTACH_TEMP_FILE_CREATION_ERROR_STR' , lang_get('API_ATTACH_TEMP_FILE_CREATION_ERROR',null,1));
+
+
+define('ATTACH_TEMP_FILE_CREATION_ERROR', 6002);
+define('ATTACH_TEMP_FILE_CREATION_ERROR_STR', lang_get('API_ATTACH_TEMP_FILE_CREATION_ERROR',null,1));
+
+define('ATTACH_DB_WRITE_ERROR', 6003);
+define('ATTACH_DB_WRITE_ERROR_STR', lang_get('API_ATTACH_DB_WRITE_ERROR',null,1));
+
+define('ATTACH_FEATURE_DISABLED', 6004);
+define('ATTACH_FEATURE_DISABLED_STR', lang_get('API_ATTACH_FEATURE_DISABLED',null,1));
+
+define('ATTACH_INVALID_FK', 6005);
+define('ATTACH_INVALID_FK_STR', lang_get('API_ATTACH_INVALID_FK',null,1));
+
+define('ATTACH_INVALID_ATTACHMENT', 6006);
+define('ATTACH_INVALID_ATTACHMENT_STR', lang_get('API_ATTACH_INVALID_ATTACHMENT',null,1));
+
 
 /**
  * 7000 level - Test Project errors

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.5 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.6 2010/09/18 09:21:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
+ * 20100918 - franciscom - BUGID 1890 - storeFileInFSRepository() - contribution by kinow	
  * 20091220 - franciscom - new method copyAttachments()
  *
  */
@@ -208,19 +209,33 @@ class tlAttachmentRepository extends tlObjectWithDB
 	}
 
 	/**
-	 * Stores a file into the FS-repository
-	 *
+	 * Stores a file into the FS-repository. 
+	 * It checks if the given  tmp name is of an uploaded file. 
+	 * If so, it moves the file from the temp dir to the upload destination using move_uploaded_file(). 
+	 * Else it simply rename the file through rename function.
+	 * This process is needed to allow use of this method when uploading attachments via XML-RPC API
+	 * 
 	 * @param string $fTmpName the filename
 	 * @param string $destFPath [ref] the destination file name
 	 *
 	 * @return bool returns true if the file was uploaded, false else
+	 *
+	 * @internal revision
+	 * 20100918 - francisco.mancardi@gruppotesi.com - BUGID 1890 - contribution by kinow
 	 **/
 	protected function storeFileInFSRepository($fTmpName,&$destFPath)
 	{
 		switch($this->repositoryCompressionType)
 		{
 			case TL_REPOSITORY_COMPRESSIONTYPE_NONE:
-				$fileUploaded = move_uploaded_file($fTmpName,$destFPath);
+				if ( is_uploaded_file($fTmpName))
+				{
+					$fileUploaded = move_uploaded_file($fTmpName,$destFPath);
+				} 
+				else 
+				{
+					$fileUploaded = rename($fTmpName,$destFPath);
+				}
 				break;
 				
 			case TL_REPOSITORY_COMPRESSIONTYPE_GZIP:

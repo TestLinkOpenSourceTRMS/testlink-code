@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2010/07/31 18:49:50 $ by $Author: asimon83 $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2010/09/18 13:47:51 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ * 	20100918 - franciscom - BUGID 1890 - uploadAttachment(), upload*Attachment - contribution by kinow	
  *  20100731 - asimon - BUGID 3644 (additional fix for BUGID 2607)
  *	20100715 - franciscom - BUGID 3604 - getTestCasesForTestPlan()
  *	20100711 - franciscom - BUGID 3564 - addTestCaseToTestPlan()
@@ -157,6 +158,9 @@ class TestlinkXMLRPCServer extends IXR_Server
 
 	/** The api key being used to make a request */
 	protected $devKey = null;
+	
+	/** boolean to allow a method to invoke another method and avoid double auth */
+	protected $authenticated = false;
 
 	/** The version of a test case that is being used */
 	/** This value is setted in following method:     */
@@ -225,6 +229,13 @@ class TestlinkXMLRPCServer extends IXR_Server
 	public static $testCasePathNameParamName = "testcasepathname";
     public static $userParamName = "user";
     public static $getStepsInfoParamName = "getstepsinfo";
+    public static $foreignKeyIdParamName = "fkid";
+    public static $foreignKeyTableNameParamName = "fktable";
+    public static $titleParamName = "title";
+    public static $descriptionParamName = "description";
+    public static $fileNameParamName = "filename";
+    public static $fileTypeParamName = "filetype";
+    public static $contentParamName = "content";
 
 
 	// public static $executionRunTypeParamName		= "executionruntype";
@@ -278,6 +289,12 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.createTestPlan' => 'this:createTestPlan',
 	                            'tl.createTestProject' => 'this:createTestProject',
 	                            'tl.createTestSuite' => 'this:createTestSuite',
+	                            'tl.uploadRequirementSpecificationAttachment' => 'this:uploadRequirementSpecificationAttachment',
+	                            'tl.uploadRequirementAttachment' => 'this:uploadRequirementAttachment',
+	                            'tl.uploadTestProjectAttachment' => 'this:uploadTestProjectAttachment',
+	                            'tl.uploadTestSuiteAttachment' => 'this:uploadTestSuiteAttachment',
+	                            'tl.uploadTestCaseAttachment' => 'this:uploadTestCaseAttachment',
+	                            'tl.uploadAttachment' => 'this:uploadAttachment',
                                 'tl.assignRequirements' => 'this:assignRequirements',     
                                 'tl.addTestCaseToTestPlan' => 'this:addTestCaseToTestPlan',
 	                            'tl.getProjects' => 'this:getProjects',
@@ -416,6 +433,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    if(!$this->_isDevKeyPresent())
 	    {
 	    	$this->errors[] = new IXR_ERROR(NO_DEV_KEY, $messagePrefix . NO_DEV_KEY_STR);
+	    	$this->authenticated = false;
 	    	return false;
 	    }
 	    else
@@ -426,12 +444,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    if(!$this->_isDevKeyValid($this->devKey))
 	    {
 	    	$this->errors[] = new IXR_Error(INVALID_AUTH, $messagePrefix . INVALID_AUTH_STR);
+	    	$this->authenticated = false;
 	    	return false;			
 	    }
 	    else
 	    {
 	    	//Load User
-	    	$this->user = tlUser::getByID($this->dbObj,$this->userID);		    	
+	    	$this->user = tlUser::getByID($this->dbObj,$this->userID);	
+	    	$this->authenticated = true;	    	
 	    	return true;
 	    }				
     }
@@ -4132,13 +4152,390 @@ public function getTestCase($args)
 	}
 
 
+/**
+ * Uploads an attachment for a Requirement Specification.
+ * 
+ * The attachment content must be Base64 encoded by the client before sending it.
+ * 
+ * @param struct $args
+ * @param string $args["devKey"] Developer key
+ * @param int $args["reqspecid"] The Requirement Specification ID
+ * @param string $args["title"] (Optional) The title of the Attachment 
+ * @param string $args["description"] (Optional) The description of the Attachment
+ * @param string $args["filename"] The file name of the Attachment (e.g.:notes.txt)
+ * @param string $args["filetype"] The file type of the Attachment (e.g.: text/plain)
+ * @param string $args["content"] The content (Base64 encoded) of the Attachment
+ * 
+ * @since 1.9beta6
+ * @return mixed $resultInfo an array containing the fk_id, fk_table, title, 
+ * description, file_name, file_size and file_type. If any errors occur it 
+ * returns the error map.
+ */
+public function uploadRequirementSpecificationAttachment($args)
+{
+	$args[self::$foreignKeyTableNameParamName] = 'req_specs';
+	$args[self::$foreignKeyIdParamName] = $args['reqspecid'];
+	return $this->uploadAttachment($args);
+}
+
+/**
+ * Uploads an attachment for a Requirement.
+ * 
+ * The attachment content must be Base64 encoded by the client before sending it.
+ * 
+ * @param struct $args
+ * @param string $args["devKey"] Developer key
+ * @param int $args["requirementid"] The Requirement ID
+ * @param string $args["title"] (Optional) The title of the Attachment 
+ * @param string $args["description"] (Optional) The description of the Attachment
+ * @param string $args["filename"] The file name of the Attachment (e.g.:notes.txt)
+ * @param string $args["filetype"] The file type of the Attachment (e.g.: text/plain)
+ * @param string $args["content"] The content (Base64 encoded) of the Attachment
+ * 
+ * @since 1.9beta6
+ * @return mixed $resultInfo an array containing the fk_id, fk_table, title, 
+ * description, file_name, file_size and file_type. If any errors occur it 
+ * returns the erros map.
+ */
+public function uploadRequirementAttachment($args)
+{
+	$args[self::$foreignKeyTableNameParamName] = 'requirements';
+	$args[self::$foreignKeyIdParamName] = $args['requirementid'];
+	return $this->uploadAttachment($args);
+}
+
+/**
+ * Uploads an attachment for a Test Project.
+ * 
+ * The attachment content must be Base64 encoded by the client before sending it.
+ * 
+ * @param struct $args
+ * @param string $args["devKey"] Developer key
+ * @param int $args["testprojectid"] The Test Project ID
+ * @param string $args["title"] (Optional) The title of the Attachment 
+ * @param string $args["description"] (Optional) The description of the Attachment
+ * @param string $args["filename"] The file name of the Attachment (e.g.:notes.txt)
+ * @param string $args["filetype"] The file type of the Attachment (e.g.: text/plain)
+ * @param string $args["content"] The content (Base64 encoded) of the Attachment
+ * 
+ * @since 1.9beta6
+ * @return mixed $resultInfo an array containing the fk_id, fk_table, title, 
+ * description, file_name, file_size and file_type. If any errors occur it 
+ * returns the erros map.
+ */
+public function uploadTestProjectAttachment($args)
+{
+	$checkFunctions = array('authenticate', 'checkTestProjectID');
+    $statusOk = $this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+	
+	$args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
+	$args[self::$foreignKeyIdParamName] = $args[self::$testProjectIDParamName];
+	return $this->uploadAttachment($args);
+	
+}
+
+/**
+ * Uploads an attachment for a Test Suite.
+ * 
+ * The attachment content must be Base64 encoded by the client before sending it.
+ * 
+ * @param struct $args
+ * @param string $args["devKey"] Developer key
+ * @param int $args["testsuiteid"] The Test Suite ID
+ * @param string $args["title"] (Optional) The title of the Attachment 
+ * @param string $args["description"] (Optional) The description of the Attachment
+ * @param string $args["filename"] The file name of the Attachment (e.g.:notes.txt)
+ * @param string $args["filetype"] The file type of the Attachment (e.g.: text/plain)
+ * @param string $args["content"] The content (Base64 encoded) of the Attachment
+ * 
+ * @since 1.9beta6
+ * @return mixed $resultInfo an array containing the fk_id, fk_table, title, 
+ * description, file_name, file_size and file_type. If any errors occur it 
+ * returns the erros map.
+ */
+public function uploadTestSuiteAttachment($args)
+{
+	$checkFunctions = array('authenticate', 'checkTestSuiteID');
+    $statusOk=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+	
+	$args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
+	$args[self::$foreignKeyIdParamName] = $args[self::$testSuiteIDParamName];
+	return $this->uploadAttachment($args);
+}
+
+/**
+ * Uploads an attachment for a Test Case.
+ * 
+ * The attachment content must be Base64 encoded by the client before sending it.
+ * 
+ * @param struct $args
+ * @param string $args["devKey"] Developer key
+ * @param int $args["testcaseid"] Test Case INTERNAL ID
+ * @param string $args["title"] (Optional) The title of the Attachment 
+ * @param string $args["description"] (Optional) The description of the Attachment
+ * @param string $args["filename"] The file name of the Attachment (e.g.:notes.txt)
+ * @param string $args["filetype"] The file type of the Attachment (e.g.: text/plain)
+ * @param string $args["content"] The content (Base64 encoded) of the Attachment
+ * 
+ * @since 1.9beta6
+ * @return mixed $resultInfo an array containing the fk_id, fk_table, title, 
+ * description, file_name, file_size and file_type. If any errors occur it 
+ * returns the erros map.
+ */
+public function uploadTestCaseAttachment($args)
+{
+	$checkFunctions = array('authenticate', 'checkTestCaseID');
+    $statusOk=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+	$args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
+	$args[self::$foreignKeyIdParamName] = $args[self::$testCaseIDParamName];
+	return $this->uploadAttachment($args);
+}
+
+/**
+ * Uploads an attachment for an execution.
+ * 
+ * The attachment content must be Base64 encoded by the client before sending it.
+ * 
+ * @param struct $args
+ * @param string $args["devKey"] Developer key
+ * @param int $args["executionid"] execution ID
+ * @param string $args["title"] (Optional) The title of the Attachment 
+ * @param string $args["description"] (Optional) The description of the Attachment
+ * @param string $args["filename"] The file name of the Attachment (e.g.:notes.txt)
+ * @param string $args["filetype"] The file type of the Attachment (e.g.: text/plain)
+ * @param string $args["content"] The content (Base64 encoded) of the Attachment
+ * 
+ * @since 1.9beta6
+ * @return mixed $resultInfo an array containing the fk_id, fk_table, title, 
+ * description, file_name, file_size and file_type. If any errors occur it 
+ * returns the erros map.
+ */
+public function uploadExecutionAttachment($args)
+{
+	$args[self::$foreignKeyTableNameParamName] = 'executions';
+	$args[self::$foreignKeyIdParamName] = $args['executionid'];
+	return $this->uploadAttachment($args);
+}
+
+/**
+ * Uploads an attachment for specified table. You must specify the table that 
+ * the attachment is connected (nodes_hierarchy, builds, etc) and the foreign 
+ * key id in this table.
+ * 
+ * The attachment content must be Base64 encoded by the client before sending it.
+ * 
+ * @param struct $args
+ * @param string $args["devKey"] Developer key
+ * @param int $args["fkid"] The Attachment Foreign Key ID
+ * @param string $args["fktable"] The Attachment Foreign Key Table
+ * @param string $args["title"] (Optional) The title of the Attachment 
+ * @param string $args["description"] (Optional) The description of the Attachment
+ * @param string $args["filename"] The file name of the Attachment (e.g.:notes.txt)
+ * @param string $args["filetype"] The file type of the Attachment (e.g.: text/plain)
+ * @param string $args["content"] The content (Base64 encoded) of the Attachment
+ * 
+ * @since 1.9beta6
+ * @return mixed $resultInfo an array containing the fk_id, fk_table, title, 
+ * description, file_name, file_size and file_type. If any errors occur it 
+ * returns the erros map.
+ */
+public function uploadAttachment($args)
+{
+	$resultInfo = array();
+	$this->_setArgs($args);
+	$msg_prefix="(" .__FUNCTION__ . ") - ";
+	
+	$checkFunctions = array();
+	
+	// TODO: please, somebody review if this is valid. I added this property 
+	// to avoid the upload method of double authenticating the user. 
+	// Otherwise, when uploadTestCaseAttachment was called, for instante, it 
+	// would authenticate, check if the nodes_hierarchy is type TestCase 
+	// and then call uploadAttachment that would, authenticate again.
+	// What do you think?
+	if( !$this->authenticated ) 
+	{
+		$checkFunctions[] = 'authenticate'; 
+	}
+	// check if :
+	// TL has attachments enabled
+	// provided FK is valid
+	// attachment info is ok
+	$checkFunctions[] = 'isAttachmentEnabled'; 
+	$checkFunctions[] = 'checkForeignKey';
+	$checkFunctions[] = 'checkUploadAttachmentRequest';
+
+    $statusOk = $this->_runChecks($checkFunctions); // && $this->userHasRight("mgt_view_tc");
+	
+	if($statusOk)
+	{		
+		$fkId = $this->args[self::$foreignKeyIdParamName];
+	    $fkTable = $this->args[self::$foreignKeyTableNameParamName];
+	    $title = $this->args[self::$titleParamName];
+	    
+	    // creates a temp file and returns an array with size and tmp_name
+	    $fInfo = $this->createAttachmentTempFile();
+	    if ( !$fInfo )
+	    {
+			// TODO use right error message and code
+			// Error creating attachment temp file. Ask user to check temp dir 
+			// settings in php.ini and security and rights of this dir.
+	    	$msg = $msg_prefix . ATTACH_TEMP_FILE_CREATION_ERROR_STR;
+	    	$this->errors[] = new IXR_ERROR(ATTACH_TEMP_FILE_CREATION_ERROR,$msg); 
+	    	$statusOk = false;
+	    } 
+	    else 
+	    {
+	    	// The values have already been validated in the method 
+	    	// checkUploadAttachmentRequest()
+	    	$fInfo['name'] = $args[self::$fileNameParamName];
+	    	$fInfo['type'] = $args[self::$fileTypeParamName];
+	    	
+			$attachmentRepository = tlAttachmentRepository::create($this->dbObj);
+			$uploadedFile = $attachmentRepository->insertAttachment($fkId,$fkTable,$title,$fInfo);
+			if( !$uploadedFile )
+			{
+	    		$msg = $msg_prefix . ATTACH_DB_WRITE_ERROR_STR;
+	    		$this->errors[] = new IXR_ERROR(ATTACH_DB_WRITE_ERROR,$msg); 
+	    		$statusOk = false; 
+			} 
+			else 
+			{
+				// We are returning some data that the user originally sent. 
+				// Perhaps we could return only new data, like the file size?
+				$resultInfo['fk_id'] = $args[self::$foreignKeyIdParamName];
+				$resultInfo['fk_table'] = $args[self::$foreignKeyTableNameParamName];
+				$resultInfo['title'] = $args[self::$titleParamName];
+				$resultInfo['description'] = $args[self::$descriptionParamName];
+				$resultInfo['file_name'] = $args[self::$fileNameParamName];
+
+				// It would be nice have all info available in db
+				// $resultInfo['file_path'] = $args[""]; 
+				// we could also return the tmp_name, but would it be useful?
+ 				$resultInfo['file_size'] = $fInfo['size'];
+ 				$resultInfo['file_type'] = $args[self::$fileTypeParamName];
+			}
+	    }
+	}
+  	
+	return $statusOk ? $resultInfo : $this->errors;
+}
+
+/**
+ * <p>Checks if the attachments feature is enabled in TestLink 
+ * configuration.</p>
+ * 
+ * @since 1.9beta6
+ * @return boolean true if attachments feature is enabled in TestLink 
+ * configuration, false otherwise.
+ */
+protected function isAttachmentEnabled($msg_prefix='')
+{
+	$status_ok = true;
+	if (!config_get("attachments")->enabled) 
+	{
+	    $msg = $msg_prefix . ATTACH_FEATURE_DISABLED_STR;
+	    $this->errors[] = new IXR_ERROR(ATTACH_FEATURE_DISABLED,$msg); 
+		$status_ok = false;
+	}
+	return $status_ok;
+}
+
+/**
+ * <p>Checks if the given foreign key is valid. What this method basically does 
+ * is query the database looking for the foreign key id in the foreign key 
+ * table.</p>
+ * 
+ * @since 1.9beta6
+ * @return boolean true if the given foreign key exists, false otherwise.
+ */
+protected function checkForeignKey($msg_prefix='')
+{
+	$statusOk = true;
+	
+	$fkId = $this->args[self::$foreignKeyIdParamName];
+    $fkTable = $this->args[self::$foreignKeyTableNameParamName];
+    
+	if ( isset($fkId) && isset($fkTable) )
+	{
+		$query = "SELECT id FROM {$this->tables[$fkTable]} WHERE id={$fkId}";
+		$result = $this->dbObj->fetchFirstRowSingleColumn($query, "id");
+	}
+       	
+    if(null == $result)
+    {
+    	$msg = $msg_prefix . sprintf(ATTACH_INVALID_FK_STR, $fkId, $fkTable);
+	    $this->errors[] = new IXR_ERROR(ATTACH_INVALID_FK,$msg);
+        $statusOk = false;     		
+	}
+	
+	return $statusOk;
+}
+
+/**
+ * <p>Checks if the attachment parameters are valid. It checks if the 
+ * <b>file_name</b> parameter is set, if the <b>content</b> is set and if 
+ * the <b>file type</b> is set. If the <b>file type</b> is not set, then it uses 
+ * <b>application/octet-stream</b>. 
+ * This default content type refers to <i>binary</i> files.</p> 
+ * 
+ * @since 1.9beta6
+ * @return boolean true if the file name and the content are set
+ */
+protected function checkUploadAttachmentRequest($msg_prefix = '')
+{
+	// Did the client set file name?
+	$status = isset($this->args[self::$fileNameParamName]);
+	if ( $status )
+	{
+		// Did the client set file content? 
+		$status = isset($this->args[self::$contentParamName]);
+		if ( $status )
+		{
+			// Did the client set the file type? If not so use binary as default file type
+			if ( isset($this->args[self::$fileTypeParamName]) )
+			{
+				// By default, if no file type is provided, put it as binary
+				$this->args[self::$fileTypeParamName] = "application/octet-stream";
+			}
+		}
+	}
+
+	if(!$status) 
+	{
+		$msg = $msg_prefix . sprintf(ATTACH_INVALID_ATTACHMENT_STR, $this->args[self::$fileNameParamName], 
+									 sizeof($this->args[self::$contentParamName]));
+	    $this->errors[] = new IXR_ERROR(ATTACH_INVALID_ATTACHMENT,$msg);
+	}
+	
+	return $status;
+}
+
+/**
+ * <p>Creates a temporary file and writes the attachment content into this file.</p>
+ * 
+ * <p>Before writing to the file it <b>Base64 decodes</b> the file content.</p>
+ * 
+ * @since 1.9beta6
+ * @return file handler
+ */
+protected function createAttachmentTempFile()
+{
+	$resultInfo = array();
+	$filename = tempnam(sys_get_temp_dir(), 'tl-');
+	
+	$resultInfo["tmp_name"] = $filename;
+	$handle = fopen( $filename, "w" );
+	fwrite($handle, base64_decode($this->args[self::$contentParamName]));
+	fclose( $handle );
+	
+	$filesize = filesize($filename);
+	$resultInfo["size"] = $filesize;
+	
+    return $resultInfo;
+}
+
+
 
 } // class end
-
-// /**
-//  * Where the Server object is initialized
-//  * 
-//  * @see __construct()
-//  */
-// $XMLRPCServer = new TestlinkXMLRPCServer();
 ?>

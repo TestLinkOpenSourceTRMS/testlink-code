@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.696 2010/09/17 13:55:45 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.697 2010/09/18 13:29:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2815,6 +2815,14 @@ $TLS_API_LINKED_FEATURE_ALREADY_EXISTS = "Test Case version is already linked to
 
 $TLS_API_OTHER_VERSION_IS_ALREADY_LINKED = " Test Case version number %s <> %s (requested version) , " .
                                            " is already linked to Test Plan (name=%s/id=%s).";
+
+
+$TLS_API_ATTACH_TEMP_FILE_CREATION_ERROR = 'Error creating attachment temporary file.';
+$TLS_API_ATTACH_DB_WRITE_ERROR = 'Error inserting attachment on DB';
+$TLS_API_ATTACH_FEATURE_DISABLED = 'Attachment feature is disabled';
+$TLS_API_ATTACH_INVALID_FK = "Invalid Foreign Key ID[%s] Table[%s]";
+$TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_NAME [%s] CONTENT_SIZE [%s]";
+
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login for '{%1}' from '{%2}' succeeded";

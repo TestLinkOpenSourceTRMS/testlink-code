@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.86 2010/04/11 08:47:21 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.87 2010/09/18 16:03:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100918 - franciscom - BUGID 3790 - delete_subtree_objects()
  * 20100317 - franciscom - get_node_hierarchy_info() interface changes.
  * 20100306 - franciscom - get_subtree_list() new argument to change output type
  *						   new method() - getAllItemsID - BUGID 0003003: EXTJS does not count # req's
@@ -1155,7 +1156,7 @@ class tree extends tlObject
 	/**
 	 * delete_subtree_objects()
 	 * 
-	 * ATTENTION: subtree root node ($node_id) IS NOT DELETED.
+	 * ATTENTION: subtree root node ($node_id?? or root_id?) IS NOT DELETED.
 	 *
 	 * BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
 	 */
@@ -1191,14 +1192,23 @@ class tree extends tlObject
 					//
 					if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
 					{
-						$this->delete_subtree_objects(null,$rowID,$and_not_in_clause,
-							                          $exclude_children_of,$exclude_branches);
+						file_put_contents('c:\delete_subtree_objects', 'rowid:' . $rowID . "nodeType: $nodeType\n", FILE_APPEND);                            
+						
+						// 20100918 - franciscom
+						// I'm paying not having commented this well
+						// Why I've set root_id to null ?
+						// doing this when traversing a tree, containers under level of subtree root
+						// will not be deleted => and this seems to be wrong.
+						// BUGID 3790
+						// $this->delete_subtree_objects(null,$rowID,$and_not_in_clause,$exclude_children_of,$exclude_branches);
+						$this->delete_subtree_objects($root_id,$rowID,$and_not_in_clause,$exclude_children_of,$exclude_branches);
 					}
 					else
 					{
 						// For us in this method context this node is a leaf => just delete
 						if( !is_null($nodeClassName) )
 						{ 
+							// file_put_contents('c:\delete_subtree_objects', $nodeClassName  & ' ' & $rowID, FILE_APPEND);                            
 							$item_mgr = new $nodeClassName($this->db);
 							$item_mgr->delete($rowID);        
 						}
@@ -1210,15 +1220,20 @@ class tree extends tlObject
 		// Must delete myself if I'm empty, only if I'm not subtree root.
 		// Done this way to avoid infinte recursion for some type of nodes
 		// that use this method as it's delete method. (example testproject).
+		
+		// 20100918 - franciscom
+		// Hmmm, need to recheck if this condition is ok
+		// 
 		if( !is_null($root_id) && ($node_id != $root_id) )
 		{
-			$children = $this->db->get_recordset($sql);
-			if( is_null($children) || count($children) == 0 )
+			$children = (array)$this->db->get_recordset($sql);
+			 
+			// if( is_null($children) || count($children) == 0 )
+			if( count($children) == 0 )
 			{
 				$sql2 = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
 					    " WHERE NH.id = {$node_id}";
 				$node_info = $this->db->get_recordset($sql2);
-			
 				if( isset($this->class_name[$node_info[0]['node_type_id']]) )
 				{
 					$className = $this->class_name[$node_info[0]['node_type_id']];

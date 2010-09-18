@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/09/18 13:47:51 $ by $Author: franciscom $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2010/09/18 14:45:46 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -4173,9 +4173,11 @@ public function getTestCase($args)
  */
 public function uploadRequirementSpecificationAttachment($args)
 {
+	$msg_prefix = "(" .__FUNCTION__ . ") - ";
 	$args[self::$foreignKeyTableNameParamName] = 'req_specs';
 	$args[self::$foreignKeyIdParamName] = $args['reqspecid'];
-	return $this->uploadAttachment($args);
+    $this->_setArgs($args);
+	return $this->uploadAttachment($args,$msg_prefix,false);
 }
 
 /**
@@ -4199,9 +4201,11 @@ public function uploadRequirementSpecificationAttachment($args)
  */
 public function uploadRequirementAttachment($args)
 {
+	$msg_prefix = "(" .__FUNCTION__ . ") - ";
 	$args[self::$foreignKeyTableNameParamName] = 'requirements';
 	$args[self::$foreignKeyIdParamName] = $args['requirementid'];
-	return $this->uploadAttachment($args);
+    $this->_setArgs($args);
+	return $this->uploadAttachment($args,$msg_prefix,false);
 }
 
 /**
@@ -4225,13 +4229,17 @@ public function uploadRequirementAttachment($args)
  */
 public function uploadTestProjectAttachment($args)
 {
-	$checkFunctions = array('authenticate', 'checkTestProjectID');
-    $statusOk = $this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+	$msg_prefix = "(" .__FUNCTION__ . ") - ";
+	$ret = null;
 	
 	$args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
 	$args[self::$foreignKeyIdParamName] = $args[self::$testProjectIDParamName];
-	return $this->uploadAttachment($args);
-	
+    $this->_setArgs($args);
+    
+	$checkFunctions = array('authenticate', 'checkTestProjectID');
+    $statusOk = $this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+    $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
+	return $ret;
 }
 
 /**
@@ -4255,12 +4263,15 @@ public function uploadTestProjectAttachment($args)
  */
 public function uploadTestSuiteAttachment($args)
 {
-	$checkFunctions = array('authenticate', 'checkTestSuiteID');
-    $statusOk=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
-	
+	$msg_prefix = "(" .__FUNCTION__ . ") - ";
 	$args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
 	$args[self::$foreignKeyIdParamName] = $args[self::$testSuiteIDParamName];
-	return $this->uploadAttachment($args);
+    $this->_setArgs($args);
+	
+	$checkFunctions = array('authenticate', 'checkTestSuiteID');
+    $statusOk = $this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+    $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
+	return $ret;
 }
 
 /**
@@ -4284,11 +4295,17 @@ public function uploadTestSuiteAttachment($args)
  */
 public function uploadTestCaseAttachment($args)
 {
-	$checkFunctions = array('authenticate', 'checkTestCaseID');
-    $statusOk=$this->_runChecks($checkFunctions) && $this->userHasRight("mgt_view_tc");
+	$ret = null;
+	$msg_prefix = "(" .__FUNCTION__ . ") - ";
+	
 	$args[self::$foreignKeyTableNameParamName] = 'nodes_hierarchy';
 	$args[self::$foreignKeyIdParamName] = $args[self::$testCaseIDParamName];
-	return $this->uploadAttachment($args);
+    $this->_setArgs($args);
+	$checkFunctions = array('authenticate', 'checkTestCaseID');
+
+    $statusOk = $this->_runChecks($checkFunctions,$msg_prefix) && $this->userHasRight("mgt_view_tc");
+    $ret = $statusOk ? $this->uploadAttachment($args,$msg_prefix,false) : $this->errors;
+	return $ret;
 }
 
 /**
@@ -4312,9 +4329,11 @@ public function uploadTestCaseAttachment($args)
  */
 public function uploadExecutionAttachment($args)
 {
+	$msg_prefix = "(" .__FUNCTION__ . ") - ";
 	$args[self::$foreignKeyTableNameParamName] = 'executions';
 	$args[self::$foreignKeyIdParamName] = $args['executionid'];
-	return $this->uploadAttachment($args);
+    $this->_setArgs($args);
+	return $this->uploadAttachment($args,$msg_prefix,false);
 }
 
 /**
@@ -4339,11 +4358,14 @@ public function uploadExecutionAttachment($args)
  * description, file_name, file_size and file_type. If any errors occur it 
  * returns the erros map.
  */
-public function uploadAttachment($args)
+public function uploadAttachment($args, $messagePrefix='', $setArgs=true)
 {
 	$resultInfo = array();
-	$this->_setArgs($args);
-	$msg_prefix="(" .__FUNCTION__ . ") - ";
+	if( $setArgs )
+	{
+		$this->_setArgs($args);
+	}
+	$msg_prefix = ($messagePrefix == '') ? ("(" .__FUNCTION__ . ") - ") : $messagePrefix;
 	
 	$checkFunctions = array();
 	
@@ -4365,19 +4387,19 @@ public function uploadAttachment($args)
 	$checkFunctions[] = 'checkForeignKey';
 	$checkFunctions[] = 'checkUploadAttachmentRequest';
 
-    $statusOk = $this->_runChecks($checkFunctions); // && $this->userHasRight("mgt_view_tc");
-	
+    $statusOk = $this->_runChecks($checkFunctions,$msg_prefix); // && $this->userHasRight("mgt_view_tc");
+
 	if($statusOk)
 	{		
 		$fkId = $this->args[self::$foreignKeyIdParamName];
 	    $fkTable = $this->args[self::$foreignKeyTableNameParamName];
 	    $title = $this->args[self::$titleParamName];
-	    
+
+		// return array($fkId,$fkTable,$title);	    
 	    // creates a temp file and returns an array with size and tmp_name
 	    $fInfo = $this->createAttachmentTempFile();
 	    if ( !$fInfo )
 	    {
-			// TODO use right error message and code
 			// Error creating attachment temp file. Ask user to check temp dir 
 			// settings in php.ini and security and rights of this dir.
 	    	$msg = $msg_prefix . ATTACH_TEMP_FILE_CREATION_ERROR_STR;

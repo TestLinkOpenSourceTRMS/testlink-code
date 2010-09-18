@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.34 2010/09/18 13:30:05 franciscom Exp $
+ * $Id: APIErrors.php,v 1.35 2010/09/18 13:47:00 franciscom Exp $
  */
 
 /** 
@@ -213,20 +213,16 @@ define('INVALID_STATUS_STR' , lang_get('API_INVALID_STATUS',null,1));
 define('ATTACH_TEMP_FILE_CREATION_ERROR', 6001);
 define('ATTACH_TEMP_FILE_CREATION_ERROR_STR' , lang_get('API_ATTACH_TEMP_FILE_CREATION_ERROR',null,1));
 
-
-define('ATTACH_TEMP_FILE_CREATION_ERROR', 6002);
-define('ATTACH_TEMP_FILE_CREATION_ERROR_STR', lang_get('API_ATTACH_TEMP_FILE_CREATION_ERROR',null,1));
-
-define('ATTACH_DB_WRITE_ERROR', 6003);
+define('ATTACH_DB_WRITE_ERROR', 6002);
 define('ATTACH_DB_WRITE_ERROR_STR', lang_get('API_ATTACH_DB_WRITE_ERROR',null,1));
 
-define('ATTACH_FEATURE_DISABLED', 6004);
+define('ATTACH_FEATURE_DISABLED', 6003);
 define('ATTACH_FEATURE_DISABLED_STR', lang_get('API_ATTACH_FEATURE_DISABLED',null,1));
 
-define('ATTACH_INVALID_FK', 6005);
+define('ATTACH_INVALID_FK', 6004);
 define('ATTACH_INVALID_FK_STR', lang_get('API_ATTACH_INVALID_FK',null,1));
 
-define('ATTACH_INVALID_ATTACHMENT', 6006);
+define('ATTACH_INVALID_ATTACHMENT', 6005);
 define('ATTACH_INVALID_ATTACHMENT_STR', lang_get('API_ATTACH_INVALID_ATTACHMENT',null,1));
 
 

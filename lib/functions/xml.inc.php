@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: xml.inc.php,v 1.18 2010/02/20 19:37:49 franciscom Exp $
+ * @version    	CVS: $Id: xml.inc.php,v 1.19 2010/09/19 08:32:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -128,7 +128,4 @@ function getItemsFromSimpleXMLObj($simpleXMLItems,$itemStructure)
   	}	
 	return $items;
 }
-
-
-
 ?>

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.698 2010/09/19 16:51:41 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.699 2010/09/19 17:10:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2379,6 +2379,14 @@ $TLS_tproject_import_requirements = '%s : Import Requirements';
 $TLS_reqspec_import_requirements = '%s : Import Requirements';
 $TLS_tproject_import_req_spec = '%s : Import Req. Specs';
 $TLS_reqspec_import_req_spec = '%s : Import Req. Specs';
+
+$TLS_same_docid = 'has same DOC ID';
+$TLS_same_title = 'has same title';
+
+$TLS_update_last_requirement_version='Update data on Latest version';
+$TLS_create_new_requirement_version='Create a new version';
+// $TLS_generate_new_requirement='Create a new requirement with different title and DOC ID';
+
 $TLS_duplicate_req_criteria = "Consider Requirement as duplicate if";
 
 

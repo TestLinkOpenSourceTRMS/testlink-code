@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.99 $
- * @modified $Date: 2010/09/19 09:55:27 $ by $Author: franciscom $
+ * @version $Revision: 1.100 $
+ * @modified $Date: 2010/09/19 13:38:37 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1207,6 +1207,15 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 /**
  * createFromMap
  *
+ * Map structure
+ * node_order => 0
+ * title => Breaks
+ * docid => MAZDA3-0001
+ * description => Heavy Rain Conditions
+ * status => [empty string]
+ * type => [empty string]
+ * expected_coverage => 0
+ *
  * @internal revisions
  * 20100908 - franciscom - created
  */
@@ -1248,11 +1257,6 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	$my['options'] = array( 'actionOnDuplicate' => "update", 'skipFrozenReq' => true);
 	$my['options'] = array_merge($my['options'], (array)$options);
 
-	// echo __CLASS__ . ' ' . __FUNCTION__;
-	// new dBug($options);
-	// new dBug($my['options']);
-	
-
     // Check:
     // If item with SAME DOCID exists inside container
 	// If there is a hit
@@ -1265,6 +1269,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	$getOptions = array('output' => 'minimun');
 	$msgID = 'import_req_skipped';
 	$check_in_reqspec = $this->getByDocID($req['docid'],$tproject_id,$parent_id,$getOptions);
+
 	if(is_null($check_in_reqspec))
 	{
 		$check_in_tproject = $this->getByDocID($req['docid'],$tproject_id,null,$getOptions);
@@ -1294,8 +1299,6 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 		// What to do if is Frozen ??? -> DO NOT IMPORT
 		$msgID = 'frozen_req_unable_to_import';
 		$status_ok = false;
-		
-		new dBug($my['options']);
 		if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
 		{
 			$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
@@ -1306,14 +1309,13 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 		}
 		
     }     
-	$req_version_id = !is_null($newReq) ? $newReq['version_id'] : $last_version['id'];
-
     $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
     				 	     'import_status' => sprintf($labels[$msgID],$req['docid']));
     
     // 20100907 - Custom Fields import
     if( $status_ok && $doProcessCF && isset($req['custom_fields']) && !is_null($req['custom_fields']) )
     {
+		$req_version_id = !is_null($newReq) ? $newReq['version_id'] : $last_version['id'];
     	$cf2insert = null;
     	foreach($req['custom_fields'] as $cfname => $cfvalue)
     	{

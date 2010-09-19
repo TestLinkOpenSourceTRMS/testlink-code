@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.98 $
- * @modified $Date: 2010/09/15 18:46:33 $ by $Author: franciscom $
+ * @version $Revision: 1.99 $
+ * @modified $Date: 2010/09/19 09:55:27 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1191,6 +1191,15 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
 {
 	$reqAsMap = $this->xmlToMapRequirement($xml);
 	
+	// Map structure
+	// node_order => 0
+	// title => Breaks
+	// docid => MAZDA3-0001
+	// description => Heavy Rain Conditions
+	// status => [empty string]
+	// type => [empty string]
+	// expected_coverage => 0
+
 	return 	$this->createFromMap($reqAsMap,$tproject_id,$parent_id,$author_id,$filters,$options);
 }
 

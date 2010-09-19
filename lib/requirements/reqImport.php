@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2010/09/19 13:49:23 $ by $Author: franciscom $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2010/09/19 17:43:52 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
@@ -71,8 +71,10 @@ function doExecuteImport($fileName,&$argsObj,&$reqSpecMgr,&$reqMgr)
     $context->user_id = $argsObj->user_id;
 	$context->importType = $argsObj->importType;
 
-    $opts = array('skipFrozenReq' => ($argsObj->skip_frozen_req ? true : false));
-    
+    $opts = array();
+    $opts['skipFrozenReq'] = ($argsObj->skip_frozen_req ? true : false);
+    $opts['hitCriteria'] = $argsObj->hitCriteria;
+    $opts['actionOnHit'] = $argsObj->actionOnHit;
     
 	// manage file upload process
     $source = isset($_FILES['uploadedFile']['tmp_name']) ? $_FILES['uploadedFile']['tmp_name'] : null;
@@ -125,6 +127,14 @@ function init_args()
 {
     $args = new stdClass();
     $request = strings_stripSlashes($_REQUEST);
+   
+   
+    $key='actionOnHit';
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'update_last_version';
+
+    $key='hitCriteria';
+    $args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : 'docid';
+   
    
     $args->req_spec_id = isset($request['req_spec_id']) ? $request['req_spec_id'] : null;
     $args->importType = isset($request['importType']) ? $request['importType'] : null;
@@ -229,6 +239,15 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr,&$reqMgr)
     {
         $gui->importFileGui->return_to_url .= "lib/requirements/reqSpecView.php?req_spec_id=$argsObj->req_spec_id";
     } 
+    
+    //'generate_new' => lang_get('generate_new_requirement'),
+    $gui->actionOptions=array('update_last_version' => lang_get('update_last_requirement_version'),
+                              'create_new_version' => lang_get('create_new_requirement_version'));
+	
+	$gui->hitOptions=array('docid' => lang_get('same_docid'),'title' => lang_get('same_title'));
+
+	$gui->duplicate_criteria_verbose = lang_get('duplicate_req_criteria');
+
     return $gui;    
 }
 

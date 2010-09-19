@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.100 $
- * @modified $Date: 2010/09/19 13:38:37 $ by $Author: franciscom $
+ * @version $Revision: 1.101 $
+ * @modified $Date: 2010/09/19 17:43:52 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -349,7 +349,6 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 
 			// BUGID 2877 - Custom Fields linked to Requirement Versions
 			$result['version_id'] = $op['status_ok'] ? $op['id'] : -1;
-
 		}	
 	}
 	return $result;
@@ -1239,7 +1238,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
   		$messages['cfield'] = lang_get('cf_value_not_imported_missing_cf_on_testproject');
 
 		$labels = array('import_req_created' => '','import_req_skipped' =>'', 'import_req_updated' => '', 
-						'frozen_req_unable_to_import' => '', 'requirement' => '');
+						'frozen_req_unable_to_import' => '', 'requirement' => '', 
+						'import_req_new_version_created' => '');
 		foreach($labels as $key => $dummy)
 		{
 			$labels[$key] = lang_get($key);
@@ -1254,7 +1254,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     $copy_req = null;
 	$getOptions = array('output' => 'minimun');
     $has_filters = !is_null($filters);
-	$my['options'] = array( 'actionOnDuplicate' => "update", 'skipFrozenReq' => true);
+	$my['options'] = array( 'hitCriteria' => 'docid' , 'actionOnHit' => "update", 
+							'skipFrozenReq' => true);
 	$my['options'] = array_merge($my['options'], (array)$options);
 
     // Check:
@@ -1268,14 +1269,15 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	// 
 	$getOptions = array('output' => 'minimun');
 	$msgID = 'import_req_skipped';
-	$check_in_reqspec = $this->getByDocID($req['docid'],$tproject_id,$parent_id,$getOptions);
 
+	$target = array('key' => $my['options']['hitCriteria'], 'value' => $req[$my['options']['hitCriteria']]);
+	$check_in_reqspec = $this->getByAttribute($target,$tproject_id,$parent_id,$getOptions);
+	
 	if(is_null($check_in_reqspec))
 	{
-		$check_in_tproject = $this->getByDocID($req['docid'],$tproject_id,null,$getOptions);
+		$check_in_tproject = $this->getByAttribute($target,$tproject_id,null,$getOptions);
 		if(is_null($check_in_tproject))
 		{
-			// if requirement is frozen => do not import
 			$newReq = $this->create($parent_id,$req['docid'],$req['title'],$req['description'],
 		    		         		$author_id,$req['status'],$req['type'],$req['expected_coverage'],
 		    		         		$req['node_order']);
@@ -1291,21 +1293,37 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	}
     else
     {
-		// Need to get Last Version no matter active or not.
 		$reqID = key($check_in_reqspec);
-		$last_version = $this->get_last_version_info($reqID);
 
-		// BUGID 3685
-		// What to do if is Frozen ??? -> DO NOT IMPORT
-		$msgID = 'frozen_req_unable_to_import';
-		$status_ok = false;
-		if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
+    	switch($my['options']['actionOnHit'])
 		{
-			$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
-								$author_id,$req['status'],$req['type'],$req['expected_coverage'],
-								$req['node_order']);
-			$msgID = 'import_req_updated';
-			$status_ok = true;
+			case 'update_last_version':
+				// Need to get Last Version no matter active or not.
+				$last_version = $this->get_last_version_info($reqID);
+        		
+				// BUGID 3685
+				// What to do if is Frozen ??? -> DO NOT IMPORT
+				$msgID = 'frozen_req_unable_to_import';
+				$status_ok = false;
+				if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
+				{
+					$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
+										    $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+										    $req['node_order']);
+					$msgID = 'import_req_updated';
+					$status_ok = true;
+				}
+			break;
+			
+			case 'create_new_version':
+				$newItem = $this->create_new_version($reqID,$author_id);
+
+				// Set always new version to NOT Frozen
+				$this->updateOpen($newItem['id'],1);				
+				$newReq['version_id'] = $newItem['id']; 
+				$msgID = 'import_req_new_version_created';
+				$status_ok = true;
+			break;	
 		}
 		
     }     
@@ -1601,7 +1619,7 @@ function html_table_of_custom_field_values($id,$version_id)
    testproject_id
    title
    scope
-   */
+  */
 	function getByDocID($doc_id,$tproject_id=null,$parent_id=null, $options = null)
   	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
@@ -1892,7 +1910,6 @@ function html_table_of_custom_field_values($id,$version_id)
 	  $last_version_info =  $this->get_last_version_info($id);
 	  
 	  // BUGID 2877 - Custom Fields linked to Requirement Versions
-	  // $this->copy_version($last_version_info['id'],$version_id,$last_version_info['version']+1,$user_id);
 	  $this->copy_version($id,$last_version_info['id'],$version_id,$last_version_info['version']+1,$user_id);
 	
 	  $ret['id'] = $version_id;
@@ -2273,5 +2290,75 @@ function html_table_of_custom_field_values($id,$version_id)
 		
 		return $htmlSelect;
 	}
+	
+	
+
+	/**
+	 * 
+ 	 * 
+ 	 */
+	function getByAttribute($attr,$tproject_id=null,$parent_id=null, $options = null)
+  	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+	    $my['options'] = array( 'check_criteria' => '=', 'access_key' => 'id', 
+	                            'case' => 'sensitive', 'output' => 'standard');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+    	
+    	   
+  		$output=null;
+  		$target = $this->db->prepare_string(trim($attr['value']));
+  		
+  		$where_clause = $attr['key'] == 'name' ? " NH_REQ.name " : " REQ.req_doc_id ";  
+  		
+	    switch($my['options']['check_criteria'])
+	    {
+	    	case '=':
+	    	default:
+	    		$check_criteria = " = '{$target}' ";
+	    	break;
+	    	
+	    	case 'like':
+	    		$check_criteria = " LIKE '{$target}%' ";
+	    	break;
+	    }
+  		
+		$sql = " /* $debugMsg */ SELECT ";
+		switch($my['options']['output'])
+		{
+			case 'standard':
+				 $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+		       			 " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order ";
+		    break;
+		       			 
+			case 'minimun':
+				 $sql .= " REQ.id,REQ.srs_id,REQ.req_doc_id,NH_REQ.name AS title, REQ_SPEC.testproject_id";
+		    break;
+			
+		}
+		$sql .= " FROM {$this->object_table} REQ " .
+		       	" /* Get Req info from NH */ " .
+		       	" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+		       	" JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+		       	" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+				" WHERE {$where_clause} {$check_criteria} ";
+  		
+  		if( !is_null($tproject_id) )
+  		{
+  			$sql .= " AND REQ_SPEC.testproject_ID={$tproject_id}";
+  		}
+    	
+  		if( !is_null($parent_id) )
+  		{
+  			$sql .= " AND REQ.srs_id={$parent_id}";
+  		}
+
+  		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+  		
+  		return $output;
+  	}
+
+	
+	
 } // class end
 ?>

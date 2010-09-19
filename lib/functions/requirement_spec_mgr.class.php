@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.86 $
- * @modified $Date: 2010/09/14 21:26:09 $ by $Author: franciscom $
+ * @version $Revision: 1.87 $
+ * @modified $Date: 2010/09/19 17:43:52 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
@@ -1376,7 +1376,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
     $copy_reqspec = null;
     $copy_req = null;
 	$getOptions = array('output' => 'minimun');
-	$my['options'] = array( 'actionOnDuplicate' => "update", 'skipFrozenReq' => true);
+	$my['options'] = array('skipFrozenReq' => true);
 	$my['options'] = array_merge($my['options'], (array)$options);
 
 	// echo __CLASS__ . ' ' . __FUNCTION__;

@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.113 2010/09/19 10:25:28 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.114 2010/09/19 15:56:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20100919 - franciscom - importReqDataFromCSV() refactoring
+ *						   importReqDataFromDocBook() added missing keys on generated map	
  * 20100904 - franciscom - BUGID 0003745: CSV Requirements Import Updates Frozen Requirement
  * 20100828 - franciscom - deprecated functions removed
  * 20100508 - franciscom - BUGID 3447: CVS Import - add new column type 
@@ -507,8 +508,15 @@ function importReqDataFromDocBook($fileName)
 				$counter[$index] = 0;
 			}
 			$counter[$index]++;
-			$xmlData[$idx]['req_doc_id'] = $matches[0] . " " . $counter[$index];
+			$xmlData[$idx]['docid'] = $matches[0] . " " . $counter[$index];
 		}
+
+		// 20100919 - to refactor in future
+		$xmlData[$idx]['node_order'] = $idx;
+		$xmlData[$idx]['expected_coverage'] = 0;
+		$xmlData[$idx]['type'] = TL_REQ_TYPE_FEATURE;
+		$xmlData[$idx]['status'] = TL_REQ_STATUS_VALID;
+
 		$idx++;
 	}
 	return $xmlData;

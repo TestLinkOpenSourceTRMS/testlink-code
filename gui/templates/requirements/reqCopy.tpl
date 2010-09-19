@@ -1,11 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCopy.tpl,v 1.7 2010/09/08 09:52:57 asimon83 Exp $
+$Id: reqCopy.tpl,v 1.8 2010/09/19 14:11:08 franciscom Exp $
 Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
 
 rev :
+     20100919 - franciscom -BUGID 3787 
      20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
      20091223 - franciscom - added checkbox for test case assignment copy
 *}
@@ -78,12 +79,12 @@ function check_action_precondition(container_id,action,msg)
 		{* need to do JS checks*}
     {* used as memory for the check/uncheck all checkbox javascript logic *}
     <input type="hidden" name="add_value_memory"  id="add_value_memory"  value="0" />
-		<div id="move_copy_checkboxes">
+		<div id="checkbox_region">
         <table class="simple">
           <tr>
           <th class="clickable_icon">
 			         <img src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
-			              onclick='cs_all_checkbox_in_div("copy_checkboxes","itemSet_","add_value_memory");'
+			              onclick='cs_all_checkbox_in_div("checkbox_region","itemSet_","add_value_memory");'
                     title="{$labels.check_uncheck_all_checkboxes}" />
 			    </th>
           <th style="width:15%">{$labels.req_doc_id}</th>
@@ -109,7 +110,7 @@ function check_action_precondition(container_id,action,msg)
 		<div>
       <input type="hidden" name="doAction" id="doAction"  value="{$gui->doActionButton}" />
 			<input type="submit" name="copy" value="{$labels.btn_cp}"
-			       onclick="return check_action_precondition('move_copy_checkboxes','copy','{$check_msg}');"  />
+			       onclick="return check_action_precondition('checkbox_region','copy','{$check_msg}');"  />
 		</div>
 
 	</form>

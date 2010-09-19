@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.155 2010/09/12 17:09:59 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.156 2010/09/19 09:38:02 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -650,6 +650,9 @@ $tlCfg->req_cfg->status_labels = array(TL_REQ_STATUS_VALID => 'review_status_val
  * <li><b>Non-functional</b> - performance, infrastructure, robustness, security, safety, etc.</li>
  * <li><b>Constrain</b> - Constraints and Limitations</li>
  * </ul>
+ *
+ * CRITIC: DO NOT REMOVE ANY OF THIS CONSTANTS, BECAUSE TL EXPECT THIS TO BE DEFINED
+ *
  * @since TestLink 1.9
  **/
 define('TL_REQ_TYPE_INFO', 1);

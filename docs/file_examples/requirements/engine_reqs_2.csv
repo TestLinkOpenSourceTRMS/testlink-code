@@ -1,0 +1,13 @@
+# new format
+# column 1: Requirement DOC ID
+# column 2: Title
+# column 3: Scope
+# column 4: Type -> see file cfg/const.inc.php TL_REQ_TYPE_*
+# column 5: Status -> see file cfg/const.inc.php TL_REQ_STATUS_*
+# column 6: expected_coverage
+# column 7: order -> inside the set of req been imported
+#
+# DOCID , TITLE, SCOPE, TYPE, STATUS, EXPCOV, ORDER
+TENGA-0001,AZ-Terrestrial Propulsor,Scope For Terrestrial,1,F,3,2
+TENGA-0002,AZ-Main Deflector,"<p>Main deflector bla, bla, bla.</p>",2,W,1,4
+TENGA-0004,AZ-Main Deflector 3,,16,Z,1,1

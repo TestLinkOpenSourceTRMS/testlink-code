@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.5 2010/09/20 14:52:31 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.6 2010/09/20 15:50:07 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
@@ -20,6 +20,7 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("requirements.inc.php");
+require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -35,6 +36,7 @@ $gui->main_descr = lang_get('caption_search_form_req');
 $gui->warning_msg = '';
 $gui->path_info = null;
 $gui->resultSet = null;
+$gui->tableSet = null;
 
 $map = null;
 $args = init_args();
@@ -196,8 +198,63 @@ else
 	$tpl = isset($the_tpl['reqSearchView']) ? $the_tpl['reqSearchView'] : 'reqViewVersions.tpl';
 }
 
+if(count($gui->resultSet) > 0) {
+	$columns = getColumnsDefinition();
+
+	// Extract the relevant data and build a matrix
+	$matrixData = array();
+	
+	foreach($gui->resultSet as $result) {
+		$rowData = array();
+
+		$rowData[] = strip_tags($gui->path_info[$result['id']]);
+		//build test case link
+		$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
+		            strip_tags($result['name']);
+		
+		$matrixData[] = $rowData;
+	}
+	//create unique table id for this report
+	//it is not necessary to create a unique id on project or test plan level as columns never change
+	$table_id = 'tl_table_req_search';
+	$table = new tlExtTable($columns, $matrixData, $table_id);
+	
+	$table->setGroupByColumnName(lang_get('req_spec'));
+	
+	$table->setSortByColumnName(lang_get('requirement'));
+	$table->sortDirection = 'DESC';
+	
+	$table->showToolbar = true;
+	$table->allowMultiSort = false;
+	$table->toolbarRefreshButton = false;
+	$table->toolbarShowAllColumnsButton = false;
+	
+	$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+	
+	//dont save settings for this table
+	$table->storeTableState = false;
+	
+	$gui->tableSet = array($table);
+}
+
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
+
+
+/**
+ * get Columns definition for table to display
+ *
+ */
+function getColumnsDefinition()
+{
+	$colDef = array();
+	
+	$colDef[] = array('title' => lang_get('req_spec'), 'type' => 'text');
+	$colDef[] = array('title' => lang_get('requirement'), 'type' => 'text');
+
+	return $colDef;
+}
+
 
 /*
  function:

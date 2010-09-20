@@ -4,6 +4,17 @@ Purpose: show results for requirement search.
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+  {assign var=tableID value=$matrix->tableID}
+  {if $smarty.foreach.initializer.first}
+    {$matrix->renderCommonGlobals()}
+    {if $matrix instanceof tlExtTable}
+        {include file="inc_ext_js.tpl" bResetEXTCss=1}
+        {include file="inc_ext_table.tpl"}
+    {/if}
+  {/if}
+  {$matrix->renderHeadSection()}
+{/foreach}
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
 {include file="inc_ext_js.tpl" css_only=1}
@@ -12,34 +23,23 @@ Purpose: show results for requirement search.
 
 {assign var=this_template_dir value=$smarty.template|dirname}
 {lang_get var='labels' 
-          s='no_records_found,other_versions,version'}
+          s='no_records_found,other_versions,version, generated_by_TestLink_on'}
 
 <body onLoad="viewElement(document.getElementById('other_versions'),false)">
 <h1 class="title">{$gui->pageTitle}</h1>
 
 <div class="workBack">
 {if $gui->warning_msg == ''}
-    {if $gui->resultSet}
-        <table class="simple">
-            {foreach from=$gui->resultSet item=req}
-	            {assign var="id" value=$req.id}
-	            <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
-	            <td>
-	        		{$gui->path_info[$id]|escape}
-	        	</td>
-	        	<td>
-	        		<a href="lib/requirements/reqView.php?item=requirement&requirement_id={$id}">
-	        		{$req.name|escape}</a>
-	            </td>
-	        	  </tr>
-	        {/foreach}
-        </table>
-    {else}
-        	{$labels.no_records_found}
-    {/if}
+	{foreach from=$gui->tableSet key=idx item=matrix}
+		{assign var=tableID value=table_$idx}
+		{$matrix->renderBodySection($tableID)}
+	{/foreach}
+	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
-    {$gui->warning_msg}
-{/if}   
+	<div class="user_feedback">
+	{$gui->warning_msg}
+	</div>
+{/if}    
 </div>
 </body>
 </html>

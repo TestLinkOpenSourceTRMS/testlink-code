@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.6 2010/09/20 15:50:07 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.7 2010/09/20 19:18:01 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20100920 - franciscom - minor refactoring
  * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
  * 20100324 - asimon - added searching for requirement relation type (BUGID 1748)
  */
@@ -50,7 +51,8 @@ if ($args->tprojectID)
 							array('cfield_design_values', 'nodes_hierarchy', 'req_specs', 'req_relations', 
 								'req_versions', 'requirements', 'req_coverage', 'tcversions'));
 	$filter = null;
-	$from = null;
+    $from = array('by_custom_field' => null, 'by_relation_type' => null, 'by_tcid' => null);
+
 	
 	if ($args->requirement_document_id) {
 		//search by id
@@ -108,25 +110,19 @@ if ($args->tprojectID)
 		$from['by_relation_type'] = " , {$tables['req_relations']} RR "; 
         $filter['by_relation_type'] = " AND RR.relation_type={$relation_type} " .
                                       " AND ( $relation_side ) ";
-	} else {
-    	// avoid E_NOTICE because of undefined index
-    	$from['by_relation_type'] = null;
-    }
+	}
 	
 	if($args->custom_field_id > 0) {
-		//search by custom fields
         $args->custom_field_id = $db->prepare_string($args->custom_field_id);
         $args->custom_field_value = $db->prepare_string($args->custom_field_value);
         $from['by_custom_field'] = " , {$tables['cfield_design_values']} CFD "; 
+
+        // BUGID 2877 -  Custom Fields linked to Req versions
         $filter['by_custom_field'] = " AND CFD.field_id={$args->custom_field_id} " .
-                                     // BUGID 2877 -  Custom Fields linked to Req versions
                                      " AND CFD.node_id=RV.id " .
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
-    } else {
-    	// avoid E_NOTICE because of undefined index
-    	$from['by_custom_field'] = null;
-    }
-	
+    } 
+    
     if ($args->tcid != "" && strcmp($args->tcid, $gui->tcasePrefix) != 0) {
     	//search for reqs linked to this testcase
     	$tcid = $db->prepare_string($args->tcid);
@@ -140,9 +136,6 @@ if ($args->tprojectID)
     	$filter['by_tcid'] = "AND TCV.tc_external_id='$tcid' AND TCV.id = NHA.id " .
     						" AND NHA.parent_id = NHAP.id AND RC.testcase_id = NHAP.id " .
     						" AND RC.req_id = NHP.id ";
-    } else {
-    	// avoid E_NOTICE because of undefined index
-    	$from['by_tcid'] = null;
     }
     
 	if ($args->reqStatus != "nostatus") {

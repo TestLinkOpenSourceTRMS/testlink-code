@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.114 2010/09/20 18:25:56 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.115 2010/09/20 18:59:52 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *	20100920 - franciscom -  renderTestCaseForPrinting() - changed key on $cfieldFormatting
  *  20100914 - franciscom - BUGID 437: TC version not visible in generated test specification
  *  20100913 - Julian - BUGID 3754
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
@@ -714,6 +715,7 @@ function gendocGetUserName(&$db, $userId)
  * @return string generated html code
  *
  * @internal revisions
+ * 20100920 - franciscom - changed key on $cfieldFormatting
  * 20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
  * 20100724 - asimon - BUGID 3459 - added platform ID
  * 20100723 - asimon - BUGID 3451 and related finally solved
@@ -743,7 +745,6 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 	$tcInfo = null;
     $tcResultInfo = null;
     $tcase_pieces = null;
-	$cfieldFormatting = array('label_css_style' => '','add_table' => false);
     
     // init static elements
     $id = $node['id'];
@@ -761,6 +762,11 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 	    }
 	    $tcase_prefix .= $cfg['testcase']->glue_character;
 	}
+
+	// 20100920 - franciscom
+	$cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
+	$cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 'value_css_style' => {$cspan} );
+
 	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : testcase::LATEST_VERSION;
     $tcInfo = $tc_mgr->get_by_id($id,$versionID);
     
@@ -795,8 +801,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 			// BUGID 3431 - Custom Field values at Test Case VERSION Level
 			$cfields['specScope'][$fkey] = 
 					$tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
-			                                                   $tprojectID,$cfieldFormatting,$tcInfo['id'],
-			                                                   $cfg['tableColspan']-1);                                  
+			                                                   $tprojectID,$cfieldFormatting,$tcInfo['id']);             
 		}           
 	}
 
@@ -828,8 +833,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
     	$execution_id = $exec_info[0]['execution_id'];
         $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
                                                                            $execution_id, $tplan_id,
-                                                                           $tprojectID,$cfieldFormatting,
-		                                                                   null,$cfg['tableColspan']-1);
+                                                                           $tprojectID,$cfieldFormatting);
     }
 	  
 	if ($printingOptions['toc'])

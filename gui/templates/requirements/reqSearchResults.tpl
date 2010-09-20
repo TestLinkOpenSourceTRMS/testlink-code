@@ -33,15 +33,15 @@ rev:
 
 <div class="workBack">
 {if $gui->warning_msg == ''}
-	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
-		{$matrix->renderBodySection($tableID)}
-	{/foreach}
-	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
+  {foreach from=$gui->tableSet key=idx item=matrix}
+    {assign var=tableID value=table_$idx}
+    {$matrix->renderBodySection($tableID)}
+  {/foreach}
+  {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
-	<div class="user_feedback">
-	{$gui->warning_msg}
-	</div>
+  <div class="user_feedback">
+  {$gui->warning_msg}
+  </div>
 {/if}    
 </div>
 </body>

@@ -7,12 +7,14 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.7 2010/09/20 19:18:01 franciscom Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.8 2010/09/20 19:50:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20100920 - Julian - use exttable to display search results
+ *                   - created function to build table
  * 20100920 - franciscom - minor refactoring
  * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
  * 20100324 - asimon - added searching for requirement relation type (BUGID 1748)
@@ -191,48 +193,51 @@ else
 	$tpl = isset($the_tpl['reqSearchView']) ? $the_tpl['reqSearchView'] : 'reqViewVersions.tpl';
 }
 
-if(count($gui->resultSet) > 0) {
-	$columns = getColumnsDefinition();
-
-	// Extract the relevant data and build a matrix
-	$matrixData = array();
-	
-	foreach($gui->resultSet as $result) {
-		$rowData = array();
-
-		$rowData[] = strip_tags($gui->path_info[$result['id']]);
-		//build test case link
-		$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
-		            strip_tags($result['name']);
-		
-		$matrixData[] = $rowData;
-	}
-	//create unique table id for this report
-	//it is not necessary to create a unique id on project or test plan level as columns never change
-	$table_id = 'tl_table_req_search';
-	$table = new tlExtTable($columns, $matrixData, $table_id);
-	
-	$table->setGroupByColumnName(lang_get('req_spec'));
-	
-	$table->setSortByColumnName(lang_get('requirement'));
-	$table->sortDirection = 'DESC';
-	
-	$table->showToolbar = true;
-	$table->allowMultiSort = false;
-	$table->toolbarRefreshButton = false;
-	$table->toolbarShowAllColumnsButton = false;
-	
-	$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
-	
-	//dont save settings for this table
-	$table->storeTableState = false;
-	
-	$gui->tableSet = array($table);
-}
+$gui->tableSet[] = buildExtTable($gui);
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
+function buildExtTable($gui) {
+	if(count($gui->resultSet) > 0) {
+		$columns = getColumnsDefinition();
+	
+		// Extract the relevant data and build a matrix
+		$matrixData = array();
+		
+		foreach($gui->resultSet as $result) {
+			$rowData = array();
+	
+			$rowData[] = strip_tags($gui->path_info[$result['id']]);
+			//build test case link
+			$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
+			            strip_tags($result['name']);
+			
+			$matrixData[] = $rowData;
+		}
+		//create unique table id for this report
+		//it is not necessary to create a unique id on project or test plan level as columns never change
+		$table_id = 'tl_table_req_search';
+		$table = new tlExtTable($columns, $matrixData, $table_id);
+		
+		$table->setGroupByColumnName(lang_get('req_spec'));
+		
+		$table->setSortByColumnName(lang_get('requirement'));
+		$table->sortDirection = 'DESC';
+		
+		$table->showToolbar = true;
+		$table->allowMultiSort = false;
+		$table->toolbarRefreshButton = false;
+		$table->toolbarShowAllColumnsButton = false;
+		
+		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+		
+		//dont save settings for this table
+		$table->storeTableState = false;
+		
+		return($table);
+	}
+}
 
 /**
  * get Columns definition for table to display

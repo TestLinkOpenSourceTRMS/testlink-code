@@ -4,17 +4,20 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.2 $
- * @modified $Date: 2009/05/21 19:24:05 $ by $Author: schlundus $
+ * @version $Revision: 1.3 $
+ * @modified $Date: 2010/09/20 12:25:26 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
- * rev: 20090412 - franciscom - BUGID 2363
+ * rev: 
+ * 20100920 - Julian - use exttable
+ * 20090412 - franciscom - BUGID 2363
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
+require_once('exttable.class.php');
 testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
@@ -28,7 +31,7 @@ $msg_key = 'all_testcases_has_testplan';
 $gui = new stdClass();
 $gui->freeTestCases = $tproject_mgr->getFreeTestCases($args->tproject_id);
 $gui->path_info = null;
-$gui->resultSet = null;
+$gui->tableSet = null;
 if(!is_null($gui->freeTestCases['items']))
 {
     if($gui->freeTestCases['allfree'])
@@ -39,12 +42,48 @@ if(!is_null($gui->freeTestCases['items']))
   	else
   	{
         $msg_key = '';    
-        $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . $tcase_cfg->glue_character;
+        $tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id) . $tcase_cfg->glue_character;
         $tcaseSet = array_keys($gui->freeTestCases['items']);
-        $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcaseSet);
-  	    $gui->resultSet = $gui->freeTestCases['items'];
+        $options = array('output_format' => 'path_as_string');
+        $tsuites = $tproject_mgr->tree_manager->get_full_path_verbose($tcaseSet,$options);
+        $titleSeperator = config_get('gui_title_separator_1');
+  	    
+		$columns = getColumnsDefinition();
+	
+		// Extract the relevant data and build a matrix
+		$matrixData = array();
+		
+		foreach($gui->freeTestCases['items'] as $tcases) {
+			$rowData = array();
+			
+			$rowData[] = strip_tags($tsuites[$tcases['id']]);
+			//build test case link
+			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcases['id']}\">" .
+			             $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
+			             strip_tags($tcases['name']);
+			
+			$matrixData[] = $rowData;
+		}
+		//create unique table id for this report
+		//it is not necessary to create a unique id on project or test plan level as columns never change
+		$table_id = 'tl_table_test_cases_not_assigned_to_any_test_plan';
+		$table = new tlExtTable($columns, $matrixData, $table_id);
+		
+		$table->setGroupByColumnName(lang_get('test_suite'));
+		
+		$table->setSortByColumnName(lang_get('test_case'));
+		$table->sortDirection = 'ASC';
+		
+		$table->showToolbar = true;
+		$table->toolbarExpandCollapseGroupsButton = true;
+		$table->toolbarShowAllColumnsButton = true;
+		
+		$gui->tableSet = array($table);
+  	    
   	}
 }
+
+
 $gui->tproject_name = $args->tproject_name;
 $gui->pageTitle = lang_get('report_free_testcases_on_testproject');
 $gui->warning_msg = lang_get($msg_key);
@@ -53,7 +92,21 @@ $gui->warning_msg = lang_get($msg_key);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
-  
+
+
+/**
+ * get Columns definition for table to display
+ *
+ */
+function getColumnsDefinition()
+{
+	$colDef = array();
+	
+	$colDef[] = array('title' => lang_get('test_suite'), 'type' => 'text');
+	$colDef[] = array('title' => lang_get('test_case'), 'type' => 'text');
+
+	return $colDef;
+}
 
 /**
  * init_args

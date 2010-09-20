@@ -1,15 +1,29 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: freeTestCases.tpl,v 1.2 2009/04/21 10:06:21 amkhullar Exp $
+$Id: freeTestCases.tpl,v 1.3 2010/09/20 12:25:25 mx-julian Exp $
 
 For a test project, list FREE test cases, i.e. not assigned to a test plan.
 
-rev: 20090414 - franciscom - BUGID 2363
+rev: 
+	20100920 - Julian - use exttable
+	20090414 - franciscom - BUGID 2363
 *}
 
 {lang_get var="labels" 
           s='all_testcases_has_testplan,generated_by_TestLink_on'}
 {include file="inc_head.tpl" openHead="yes"}
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+  {assign var=tableID value=$matrix->tableID}
+  {if $smarty.foreach.initializer.first}
+    {$matrix->renderCommonGlobals()}
+    {if $matrix instanceof tlExtTable}
+        {include file="inc_ext_js.tpl" bResetEXTCss=1}
+        {include file="inc_ext_table.tpl"}
+    {/if}
+  {/if}
+  {$matrix->renderHeadSection()}
+{/foreach}
+
 </head>
 <body>
 <h1 class="title">{$gui->pageTitle|escape}</h1>
@@ -19,28 +33,15 @@ rev: 20090414 - franciscom - BUGID 2363
           arg_tproject_name=$gui->tproject_name arg_tplan_name=''}	
 
 {if $gui->warning_msg == ''}
-    {if $gui->resultSet}
-        <table class="simple">
-        {foreach from=$gui->resultSet item=tcase}
-            {assign var="tcase_id" value=$tcase.id}
-           <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
-            <td>
-        	      {foreach from=$gui->path_info[$tcase_id] item=path_part}
-        	          {$path_part|escape} /
-        	      {/foreach}
-        	  <a href="lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}">
-        	  {$gui->tcasePrefix|escape}{$tcase.tc_external_id|escape}:{$tcase.name|escape}</a>
-            </td>
-        	  </tr>
-        {/foreach}
-        </table>
-
-      {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
-    {else}
-    	<h2>{$labels.all_testcases_has_testplan}</h2>
-    {/if}
+	{foreach from=$gui->tableSet key=idx item=matrix}
+		{assign var=tableID value=table_$idx}
+		{$matrix->renderBodySection($tableID)}
+	{/foreach}
+	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
-    {$gui->warning_msg}
+	<div class="user_feedback">
+	{$gui->warning_msg}
+	</div>
 {/if}    
 </div>
 </body>

@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.87 2010/09/18 16:03:15 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.88 2010/09/20 12:25:25 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *
+ * 20100920 - Julian - get_full_path_verbose - added new output format
  * 20100918 - franciscom - BUGID 3790 - delete_subtree_objects()
  * 20100317 - franciscom - get_node_hierarchy_info() interface changes.
  * 20100306 - franciscom - get_subtree_list() new argument to change output type
@@ -1060,6 +1060,16 @@ class tree extends tlObject
         {
         	switch ($output_format)
         	{
+        		case 'path_as_string':
+				$flat_path=null;
+				foreach($path_to as $tcase_id => $pieces)
+				{
+					//remove test project node
+					unset($pieces['name'][0]);
+					$flat_path[$tcase_id]=implode('/',$pieces['name']);
+				}
+				$path_to = $flat_path;
+        		break;
         		case 'id_name':
         		break;
         		

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2009 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2010 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -116,15 +116,21 @@ FCKXHtml._RemoveXHtmlJobProperties = function ( node )
 		return ;
 
 	// Clear the _fckhtmljob attribute.
-	if ( typeof node._fckxhtmljob !== 'undefined' )
-		node.removeAttribute('_fckxhtmljob') ;
+	if ( typeof node._fckxhtmljob == 'undefined' && node.tagName !== 'BODY')
+		return;
 
+	node.removeAttribute('_fckxhtmljob') ;
 	// Recurse upon child nodes.
 	if ( node.hasChildNodes() )
 	{
 		var childNodes = node.childNodes ;
 		for ( var i = childNodes.length - 1 ; i >= 0 ; i-- )
-			FCKXHtml._RemoveXHtmlJobProperties( childNodes.item(i) ) ;
+		{
+			var child = childNodes[i];
+			// Funny IE. #4642. It say that it has child nodes but their parent is not this node. Skip them
+			if (child.parentNode == node)
+				FCKXHtml._RemoveXHtmlJobProperties( child ) ;
+		}
 	}
 }
 

@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2009 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2010 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -27,7 +27,7 @@ bg.js      Found: 373   Missing: 59
 bn.js      Found: 380   Missing: 52
 bs.js      Found: 226   Missing: 206
 ca.js      Found: 420   Missing: 12
-cs.js      Found: 428   Missing: 4
+cs.js      Found: 432   Missing: 0
 da.js      Found: 419   Missing: 13
 de.js      Found: 420   Missing: 12
 el.js      Found: 396   Missing: 36
@@ -39,7 +39,7 @@ es.js      Found: 428   Missing: 4
 et.js      Found: 411   Missing: 21
 eu.js      Found: 420   Missing: 12
 fa.js      Found: 413   Missing: 19
-fi.js      Found: 411   Missing: 21
+fi.js      Found: 427   Missing: 5
 fo.js      Found: 420   Missing: 12
 fr-ca.js   Found: 419   Missing: 13
 fr.js      Found: 428   Missing: 4
@@ -70,7 +70,7 @@ sk.js      Found: 420   Missing: 12
 sl.js      Found: 426   Missing: 6
 sr-latn.js Found: 368   Missing: 64
 sr.js      Found: 368   Missing: 64
-sv.js      Found: 409   Missing: 23
+sv.js      Found: 431   Missing: 1
 th.js      Found: 393   Missing: 39
 tr.js      Found: 428   Missing: 4
 uk.js      Found: 419   Missing: 13

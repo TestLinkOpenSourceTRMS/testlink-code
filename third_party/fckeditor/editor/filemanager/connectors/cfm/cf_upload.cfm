@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="yes" showdebugoutput="no">
 <!---
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2009 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2010 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -68,4 +68,4 @@
 	<cfset SendUploadResults( "1", "", "", "Invalid type specified" ) >
 </cfif>
 
-<cfset FileUpload( sType, sCurrentFolder, sCommand )>
+<cfset FCKeditorFileUpload( sType, sCurrentFolder, sCommand )>

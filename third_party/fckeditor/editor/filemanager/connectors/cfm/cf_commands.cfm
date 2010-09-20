@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="Yes">
 <!---
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2009 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2010 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -23,7 +23,7 @@
  * in the ColdFusion Connector (MX 6.0 and above).
 --->
 
-<cffunction name="FileUpload" returntype="void" output="true">
+<cffunction name="FCKeditorFileUpload" returntype="void" output="true">
 	<cfargument name="resourceType" type="string" required="yes" default="">
 	<cfargument name="currentFolder" type="string" required="yes" default="">
 	<cfargument name="sCommand" type="string" required="yes" default="">

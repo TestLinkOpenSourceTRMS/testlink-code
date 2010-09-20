@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.703 2010/09/20 13:33:33 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.704 2010/09/20 13:57:36 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1548,6 +1548,13 @@ $TLS_info_bugs_per_tc_report = "This report shows all bugs linked to test cases 
 
 
 
+// ----- gui/templates/resultsTC.tpl -----
+$TLS_info_resultsTC_report = "This report shows the last test case execution result for each " .
+                             "build. In addition the last column shows the last test case " .
+                             "execution result for the last created build.";
+
+
+
 // ----- gui/templates/resultsByStatus.tpl -----
 $TLS_th_bugs = "Bugs";
 $TLS_th_date = "Date";
@@ -2447,7 +2454,7 @@ $TLS_req_rel_is_related_to = "related to";
 
 
 
-// ----- lib/results/resultsBugs.php -----
+// ----- lib/results/resultsTC.php -----
 $TLS_title_test_report_all_builds = "Test Report: Results of Test Cases for all Builds";
 
 

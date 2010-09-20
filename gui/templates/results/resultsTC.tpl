@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.13 2010/07/19 18:53:57 erikeloff Exp $ *}
+{* $Id: resultsTC.tpl,v 1.14 2010/09/20 13:57:37 mx-julian Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
     20100719 - eloff - Update due to changes in tlExtTable
@@ -10,7 +10,8 @@
 
 {lang_get var="labels"
           s="title,date,printed_by,title_test_suite_name,platform,
-             title_test_case_title,version,generated_by_TestLink_on, priority"}
+             title_test_case_title,version,generated_by_TestLink_on, priority,
+             info_resultsTC_report"}
 
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
@@ -51,6 +52,9 @@
   {$matrix->renderBodySection()}
 {/foreach}
 
+<br />
+  <p class="italic">{$labels.info_resultsTC_report}</p>
+<br />
 
 {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div>

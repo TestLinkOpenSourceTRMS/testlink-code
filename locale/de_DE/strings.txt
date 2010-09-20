@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.195 2010/09/17 13:56:36 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.196 2010/09/20 06:03:42 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.695
+ * Last Update according to en_GB string file version 1.700
  *
  **/
 
@@ -2370,6 +2370,15 @@ $TLS_reqspec_import_requirements = '%s : Importiere Anforderungen';
 $TLS_tproject_import_req_spec = '%s : Importiere Anforderungsspezifikationen';
 $TLS_reqspec_import_req_spec = '%s : Importiere Anforderungsspezifikationen';
 
+$TLS_same_docid = 'hat die gleiche Dok ID';
+$TLS_same_title = 'hat den gleichen Titel';
+
+$TLS_update_last_requirement_version='Aktualisiere Daten der letzten Version';
+$TLS_create_new_requirement_version='Erstelle eine neue Version';
+// $TLS_generate_new_requirement='Create a new requirement with different title and DOC ID';
+
+$TLS_duplicate_req_criteria = "Behandle Anforderung als Duplikat, wenn";
+
 
 // ----- lib/req/reqSpecView.php -----
 $TLS_cant_create_tc_from_req_nothing_sel = "Bitte wählen Sie eine Anforderung aus!";
@@ -2804,6 +2813,14 @@ $TLS_API_LINKED_FEATURE_ALREADY_EXISTS = "Test Case version is already linked to
 $TLS_API_OTHER_VERSION_IS_ALREADY_LINKED = " Test Case version number %s <> %s (requested version) , " .
                                            " is already linked to Test Plan (name=%s/id=%s).";
 
+
+$TLS_API_ATTACH_TEMP_FILE_CREATION_ERROR = 'Error creating attachment temporary file.';
+$TLS_API_ATTACH_DB_WRITE_ERROR = 'Error inserting attachment on DB';
+$TLS_API_ATTACH_FEATURE_DISABLED = 'Attachment feature is disabled';
+$TLS_API_ATTACH_INVALID_FK = "Invalid Foreign Key ID[%s] Table[%s]";
+$TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_NAME [%s] CONTENT_SIZE [%s]";
+
+
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login für '{%1}' von '{%2}' erfolgreich";
 $TLS_audit_login_failed = "Login für '{%1}' von '{%2}' fehlgeschlagen";
@@ -3028,6 +3045,8 @@ $TLS_import_req_spec_ancestor_skipped = 'Wurde übersprungen - Anf. Spez. - Dok 
 $TLS_import_req_created = 'Wurde erstellt - Anforderung - Dok ID:%s';
 $TLS_import_req_skipped = 'Wurde übersprungen - Anforderung - Dok ID:%s - Existiert bereits in anderem Zweig';
 $TLS_import_req_updated = 'Wurde aktualisiert - Anforderung - Dok ID:%s';
+$TLS_import_req_new_version_created = 'Neue Version erstellt - Anforderung - Dok ID:%s';
+
 $TLS_import_done = 'Import erledigt';
 $TLS_import_req_conflicts_other_branch = 'Dok ID steht in Konflikt mit Anforderung im anderem Zweig';
 $TLS_import_req_exists_here = 'Dok ID existiert';

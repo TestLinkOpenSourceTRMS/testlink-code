@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.112 2010/09/20 07:17:24 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.113 2010/09/20 08:45:57 mx-julian Exp $
  * @uses printDocument.php
  *
  *
@@ -1252,6 +1252,7 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan)
 	$testerName = gendocGetUserName($dbHandler, $exec_info[0]['tester_id']);
 	$executionNotes = $exec_info[0]['notes'];
 
+	$td_colspan = '';
 	if( !is_null($colspan) ) {
 		$td_colspan .= ' colspan="' . $colspan . '" '; 
 	}

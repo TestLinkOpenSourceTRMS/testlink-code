@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.309 2010/09/20 07:17:25 mx-julian Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.310 2010/09/20 08:45:57 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -4020,9 +4020,10 @@ class testcase extends tlObjectWithAttachments
 	                                           $formatOptions=null,$link_id=null,$colspan=null)
 	{
 		$td_style='class="labelHolder"';
+		$td_colspan = '';
 	    if( !is_null($colspan) )
 	    {
-			$td_colspan .= ' colspan="' . $colspan . '" '; 
+			$td_colspan = ' colspan="' . $colspan . '" '; 
 	    }
 	    
 	    $add_table=true;

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.174 2010/09/15 21:42:16 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.175 2010/09/20 12:49:09 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100920 - Julian - getFreeTestCases() added importance to output
  * 20100911 - amitkhullar - BUGID 3764
  * 20100821 - franciscom - get_all_testplans() - interface changes
  * 20100516 - franciscom - BUGID 3464 - delete()
@@ -2054,7 +2055,7 @@ function getFreeTestCases($id,$options=null)
     {
         $in_clause=implode(',',array_keys($free));
    	    $sql = " SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
-   	           " NHA.parent_id AS id, NHB.name " .
+   	           " TCV.importance AS importance, NHA.parent_id AS id, NHB.name " .
    	           " FROM {$this->tables['tcversions']} TCV,{$this->tables['nodes_hierarchy']} NHA, " .
 	           "      {$this->tables['nodes_hierarchy']} NHB " .
 	           " WHERE NHA.parent_id IN ({$in_clause}) " .

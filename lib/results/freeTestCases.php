@@ -4,14 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.3 $
- * @modified $Date: 2010/09/20 12:25:26 $ by $Author: mx-julian $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/09/20 12:49:09 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
  * rev: 
  * 20100920 - Julian - use exttable
+ *                   - added importance column
  * 20090412 - franciscom - BUGID 2363
  *
  */
@@ -62,6 +63,18 @@ if(!is_null($gui->freeTestCases['items']))
 			             $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
 			             strip_tags($tcases['name']);
 			
+			switch ($tcases['importance']) {
+				case 1:
+					$rowData[] = "<!-- 1 -->" . lang_get('low_importance');
+					break;
+				case 2:
+					$rowData[] = "<!-- 2 -->" . lang_get('medium_importance');
+					break;
+				case 3:
+					$rowData[] = "<!-- 3 -->" . lang_get('high_importance');
+					break;
+			}
+			
 			$matrixData[] = $rowData;
 		}
 		//create unique table id for this report
@@ -71,8 +84,8 @@ if(!is_null($gui->freeTestCases['items']))
 		
 		$table->setGroupByColumnName(lang_get('test_suite'));
 		
-		$table->setSortByColumnName(lang_get('test_case'));
-		$table->sortDirection = 'ASC';
+		$table->setSortByColumnName(lang_get('importance'));
+		$table->sortDirection = 'DESC';
 		
 		$table->showToolbar = true;
 		$table->toolbarExpandCollapseGroupsButton = true;
@@ -104,6 +117,7 @@ function getColumnsDefinition()
 	
 	$colDef[] = array('title' => lang_get('test_suite'), 'type' => 'text');
 	$colDef[] = array('title' => lang_get('test_case'), 'type' => 'text');
+	$colDef[] = array('title' => lang_get('importance'), 'width' => 20);
 
 	return $colDef;
 }

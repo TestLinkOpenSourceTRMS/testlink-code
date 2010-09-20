@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.704 2010/09/20 13:57:36 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.705 2010/09/20 14:25:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1567,7 +1567,8 @@ $TLS_info_failed_tc_report = "This report shows all test cases for each build " 
 $TLS_info_blocked_tc_report = "This report shows all test cases for each build " .
                               "and each platform (if used for this test plan), " .
                               "whose last execution result is \"blocked\".";
-$TLS_info_notrun_tc_report = "This report shows all not run test cases";
+$TLS_info_notrun_tc_report = "This report shows all test cases that have not been executed " .
+                             "for any build within this test plan";
 $TLS_no_blocked = "There are no blocked test cases";
 $TLS_no_notrun = "There are no test case that have not been run";
 $TLS_no_failed = "There are no failed test cases";

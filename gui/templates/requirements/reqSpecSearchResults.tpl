@@ -24,11 +24,11 @@ Purpose: show results for requirement specification search.
 	            {assign var="id" value=$req_spec.id}
 	            <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
 	            <td>
-	        	      {foreach from=$gui->path_info[$id] item=path_part}
-	        	          {$path_part|escape} /
-	        	      {/foreach}
-	        	  <a href="lib/requirements/reqSpecView.php?item=req_spec&req_spec_id={$id}">
-	        	  {$req_spec.name|escape}</a>
+	            	{if $gui->path_info[$id] != ''}
+	        			{$gui->path_info[$id]|escape}/
+	        		{/if}
+	        		<a href="lib/requirements/reqSpecView.php?item=req_spec&req_spec_id={$id}">
+	        		{$req_spec.name|escape}</a>
 	            </td>
 	        	  </tr>
 	        {/foreach}

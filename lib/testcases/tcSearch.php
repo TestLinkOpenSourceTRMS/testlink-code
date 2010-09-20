@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.16 2010/09/08 14:02:09 mx-julian Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.17 2010/09/20 14:52:31 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -216,7 +216,8 @@ if($gui->row_qty > 0)
 	{
 		$tcase_mgr = new testcase($db);   
 	    $tcase_set = array_keys($map);
-	    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set);
+	    $options = array('output_format' => 'path_as_string');
+	    $gui->path_info = $tproject_mgr->tree_manager->get_full_path_verbose($tcase_set, $options);
 		$gui->resultSet = $map;
 	}
 }

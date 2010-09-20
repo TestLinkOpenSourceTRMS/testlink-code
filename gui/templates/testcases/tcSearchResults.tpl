@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcSearchResults.tpl,v 1.3 2010/06/24 17:25:53 asimon83 Exp $
+$Id: tcSearchResults.tpl,v 1.4 2010/09/20 14:52:31 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 rev: 20080322 - franciscom - php errors clean up
 *}
@@ -27,9 +27,9 @@ rev: 20080322 - franciscom - php errors clean up
             {assign var="tcversion_id" value=$tcase.tcversion_id}
            <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
             <td>
-        	      {foreach from=$gui->path_info[$tcase_id] item=path_part}
-        	          {$path_part|escape} /
-        	      {/foreach}
+        	  {$gui->path_info[$tcase_id]}
+        	</td>
+        	<td>
         	  <a href="lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}">
         	  {$gui->tcasePrefix}{$tcase.tc_external_id|escape}:{$tcase.name|escape}</a>
             </td>

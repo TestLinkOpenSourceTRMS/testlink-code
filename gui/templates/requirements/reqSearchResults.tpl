@@ -25,11 +25,11 @@ Purpose: show results for requirement search.
 	            {assign var="id" value=$req.id}
 	            <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
 	            <td>
-	        	      {foreach from=$gui->path_info[$id] item=path_part}
-	        	          {$path_part|escape} /
-	        	      {/foreach}
-	        	  <a href="lib/requirements/reqView.php?item=requirement&requirement_id={$id}">
-	        	  {$req.name|escape}</a>
+	        		{$gui->path_info[$id]|escape}
+	        	</td>
+	        	<td>
+	        		<a href="lib/requirements/reqView.php?item=requirement&requirement_id={$id}">
+	        		{$req.name|escape}</a>
 	            </td>
 	        	  </tr>
 	        {/foreach}

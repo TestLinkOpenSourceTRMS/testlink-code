@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.2 2010/09/08 13:53:08 mx-julian Exp $
+ * @version    	CVS: $Id: reqSpecSearch.php,v 1.3 2010/09/20 14:52:31 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
@@ -98,7 +98,8 @@ if($gui->row_qty)
 	if($gui->row_qty <= $req_cfg->search->max_qty_for_display)
 	{
 		$req_set=array_keys($map);
-		$gui->path_info=$tproject_mgr->tree_manager->get_full_path_verbose($req_set);
+		$options = array('output_format' => 'path_as_string');
+		$gui->path_info=$tproject_mgr->tree_manager->get_full_path_verbose($req_set, $options);
 	}
 	else
 	{

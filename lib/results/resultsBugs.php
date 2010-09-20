@@ -4,11 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2010/06/24 17:25:52 $ by $Author: asimon83 $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2010/09/20 10:01:42 $ by $Author: mx-julian $
  * @author kevinlevy
  * 
  * rev :
+ *	20100920 - Julian - use exttable
  *	20100616 - eloff - refactor out results class
  *	20100124 - eloff - BUGID 3012 - don't show internal id in report
  *	20080413 - franciscom - refactoring + BUGID 1477 
@@ -17,15 +18,19 @@
 
 
 require('../../config.inc.php');
+require_once('common.php');
 require_once("lang_api.php");
 require_once('displayMgr.php');
 require_once('exec.inc.php'); // used for bug string lookup
+require_once('exttable.class.php');
 if (config_get('interface_bugs') != 'NO')
 {
   require_once(TL_ABS_PATH. 'lib' . DIRECTORY_SEPARATOR . 'bugtracking' .
                DIRECTORY_SEPARATOR . 'int_bugtracking.php');
 }
 testlinkInitPage($db,true,false,"checkRights");
+$gui = new stdClass();
+$gui->warning_msg = '';
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -73,22 +78,56 @@ foreach ($testcase_bugs as &$row)
 }
 $arrData = array_values($testcase_bugs);
 
+if(count($arrData) > 0) {
+	// Create column headers
+	$columns = getColumnsDefinition();
+
+	// Extract the relevant data and build a matrix
+	$matrixData = array();
+	
+	foreach($arrData as $bugs) {
+		$rowData = array();
+		
+		$rowData[] = $bugs[0];
+		$rowData[] = $bugs[1];
+		$rowData[] = $bugs[2];
+		
+		$matrixData[] = $rowData;
+	}
+	// create unique table id for each test plan
+	$table_id = 'tl_'.$args->tplan_id.'_table_bugs_per_test_case';
+	$table = new tlExtTable($columns, $matrixData, $table_id);
+	
+	$table->setGroupByColumnName(lang_get('title_test_suite_name'));
+	
+	$table->setSortByColumnName(lang_get('title_test_case_title'));
+	$table->sortDirection = 'ASC';
+	
+	$table->showToolbar = true;
+	$table->toolbarExpandCollapseGroupsButton = true;
+	$table->toolbarShowAllColumnsButton = true;
+	
+	$gui->tableSet = array($table);
+} else {
+	$gui->warning_msg = lang_get('no_linked_bugs');
+}
+
 $totalOpenBugs = count($openBugs);
 $totalResolvedBugs = count($resolvedBugs);
 $totalBugs = $totalOpenBugs + $totalResolvedBugs;
 $totalCasesWithBugs = count($arrData);
 
 $smarty = new TLSmarty;
-$smarty->assign('user',$args->user);
-$smarty->assign('printDate','');
-$smarty->assign('tproject_name', $tproject_info['name']);
-$smarty->assign('tplan_name', $tplan_info['name'] );
-$smarty->assign('title', lang_get('link_report_total_bugs'));
-$smarty->assign('arrData', $arrData);
-$smarty->assign('totalOpenBugs', $totalOpenBugs);
-$smarty->assign('totalResolvedBugs', $totalResolvedBugs);
-$smarty->assign('totalBugs', $totalBugs);
-$smarty->assign('totalCasesWithBugs', $totalCasesWithBugs);
+$gui->user = $args->user;
+$gui->printDate = '';
+$gui->tproject_name = $tproject_info['name'];
+$gui->tplan_name = $tplan_info['name'];
+$gui->title = lang_get('link_report_total_bugs');
+$gui->totalOpenBugs = $totalOpenBugs;
+$gui->totalResolvedBugs = $totalResolvedBugs;
+$gui->totalBugs = $totalBugs;
+$gui->totalCasesWithBugs = $totalCasesWithBugs;
+$smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 /**
@@ -137,6 +176,21 @@ function buildBugString(&$db,$execID,&$openBugsArray,&$resolvedBugsArray)
 		}
 	}
 	return $bugUrls;
+}
+
+/**
+ * get Columns definition for table to display
+ *
+ */
+function getColumnsDefinition()
+{
+	$colDef = array();
+	
+	$colDef[] = array('title' => lang_get('title_test_suite_name'), 'width' => 30, 'type' => 'text');
+	$colDef[] = array('title' => lang_get('title_test_case_title'), 'width' => 30, 'type' => 'text');
+	$colDef[] = array('title' => lang_get('title_test_case_bugs'), 'width' => 40, 'type' => 'text');
+
+	return $colDef;
 }
 
 

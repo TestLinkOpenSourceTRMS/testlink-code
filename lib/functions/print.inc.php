@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.115 2010/09/20 18:59:52 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.116 2010/09/20 19:09:32 franciscom Exp $
  * @uses printDocument.php
  *
  *
@@ -765,7 +765,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 
 	// 20100920 - franciscom
 	$cspan = ' colspan = "' . ($cfg['tableColspan']-1) . '" ';
-	$cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 'value_css_style' => {$cspan} );
+	$cfieldFormatting = array('label_css_style' => '',  'add_table' => false, 'value_css_style' => $cspan );
 
 	$versionID = isset($node['tcversion_id']) ? $node['tcversion_id'] : testcase::LATEST_VERSION;
     $tcInfo = $tc_mgr->get_by_id($id,$versionID);

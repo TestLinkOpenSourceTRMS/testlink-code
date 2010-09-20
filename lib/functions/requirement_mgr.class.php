@@ -5,15 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.102 $
- * @modified $Date: 2010/09/20 19:35:05 $ by $Author: franciscom $
+ * @version $Revision: 1.103 $
+ * @modified $Date: 2010/09/20 19:52:21 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
- *  20100920 - franciscom - 
+ *  20100920 - franciscom - 3686: When importing requirements, provide the option to 'create new version'
  *  20100915 - Julian - BUGID 3777 - Added get_last_doc_id_for_testproject()
  *	20100914 - franciscom - createFromMap() - added new option 'skipFrozenReq'
  *  20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
@@ -1247,7 +1247,6 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 		}	
 	}	
 		
-	echo __FUNCTION__ . '<br>';	
     $cf2insert=null;
 	$status_ok = true;
 	$user_feedback = null;
@@ -1300,10 +1299,6 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 		$last_version = $this->get_last_version_info($reqID);
 		$msgID = 'frozen_req_unable_to_import';
 		$status_ok = false;
-
-		new dBug($last_version);
-		new dBug($my['options']['skipFrozenReq']);
-				
 		if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
 		{
     		switch($my['options']['actionOnHit'])

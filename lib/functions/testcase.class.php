@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.308 2010/09/17 18:33:43 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.309 2010/09/20 07:17:25 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -4019,17 +4019,17 @@ class testcase extends tlObjectWithAttachments
 	                                           $testplan_id=null,$tproject_id = null,
 	                                           $formatOptions=null,$link_id=null,$colspan=null)
 	{
-	    $td_style='class="labelHolder" ';
+		$td_style='class="labelHolder"';
 	    if( !is_null($colspan) )
 	    {
-	    	$td_style .= ' colspan="' . $colspan . '" '; 
+			$td_colspan .= ' colspan="' . $colspan . '" '; 
 	    }
 	    
 	    $add_table=true;
 	    $table_style='';
 	    if( !is_null($formatOptions) )
 	    {
-	        $td_style=isset($formatOptions['td_css_style']) ? $formatOptions['td_css_style'] : $td_style;
+			$td_style=isset($formatOptions['td_css_style']) ? $formatOptions['td_css_style'] : $td_style;
 	        $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
 	        $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
 	    } 
@@ -4073,7 +4073,7 @@ class testcase extends tlObjectWithAttachments
 	                $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
 	
 					$cf_smarty .= "<tr><td {$td_style}> " .
-									htmlspecialchars($label) . ":</td><td>" .
+									htmlspecialchars($label) . ":</td><td {$td_colspan}>" .
 									$this->cfield_mgr->string_custom_field_value($cf_info,$id) .
 									"</td></tr>\n";
 				}

@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.111 2010/09/14 16:56:12 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.112 2010/09/20 07:17:24 mx-julian Exp $
  * @uses printDocument.php
  *
  *
@@ -795,8 +795,9 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 			// BUGID 3431 - Custom Field values at Test Case VERSION Level
 			$cfields['specScope'][$fkey] = 
 					$tc_mgr->html_table_of_custom_field_values($id,'design',$fvalue,null,$tplan_id,
-			                                                   $tprojectID,$cfieldFormatting,$tcInfo['id']);
-		}	                                               
+			                                                   $tprojectID,$cfieldFormatting,$tcInfo['id'],
+			                                                   $cfg['tableColspan']-1);                                  
+		}           
 	}
 
 	/** 
@@ -827,7 +828,8 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
     	$execution_id = $exec_info[0]['execution_id'];
         $cfields['execScope'] = $tc_mgr->html_table_of_custom_field_values($versionID,'execution',null,
                                                                            $execution_id, $tplan_id,
-                                                                           $tprojectID,$cfieldFormatting);
+                                                                           $tprojectID,$cfieldFormatting,
+		                                                                   null,$cfg['tableColspan']-1);
     }
 	  
 	if ($printingOptions['toc'])
@@ -935,7 +937,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 	{
 		if ($exec_info) 
 		{
-			$code .= buildTestExecResults($db,$cfg,$labels,$exec_info);
+			$code .= buildTestExecResults($db,$cfg,$labels,$exec_info,$cfg['tableColspan']-1);
 		}
 		else
 		{
@@ -1226,7 +1228,7 @@ function initRenderTestCaseCfg(&$tcaseMgr)
 
     // 20100306 - contribution by romans
 	// BUGID 0003235: Printing Out Test Report Shows empty Column Headers for "Steps" and "Step Actions"
-    $labelsKeys=array('last_exec_result', 'testnotes', 'none', 'reqs','author', 'summary',
+    $labelsKeys=array('last_exec_result', 'title_execution_notes', 'none', 'reqs','author', 'summary',
                       'steps', 'expected_results','build', 'test_case', 'keywords','version', 
                       'test_status_not_run', 'not_aplicable', 'bugs','tester','preconditions',
                       'step_number', 'step_actions', 'last_edit');
@@ -1243,25 +1245,29 @@ function initRenderTestCaseCfg(&$tcaseMgr)
  * 
  *
  */
-function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
+function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan)
 {
 	$out='';
 	$testStatus = $cfg['status_labels'][$exec_info[0]['status']];
 	$testerName = gendocGetUserName($dbHandler, $exec_info[0]['tester_id']);
 	$executionNotes = $exec_info[0]['notes'];
+
+	if( !is_null($colspan) ) {
+		$td_colspan .= ' colspan="' . $colspan . '" '; 
+	}
 	    
 	$out .= '<tr><td width="20%" valign="top">' .
 			'<span class="label">' . $labels['last_exec_result'] . ':</span></td>' .
-			'<td><b>' . $testStatus . "</b></td></tr>\n" .
+			'<td '  .$td_colspan . '><b>' . $testStatus . "</b></td></tr>\n" .
     		'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['build'] .'</td>' . 
-    		'<td>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n" .
+    		'<td '  .$td_colspan . '>' . htmlspecialchars($exec_info[0]['build_name']) . "</b></td></tr>\n" .
     		'<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . $labels['tester'] .'</td>' . 
-    		'<td>' . $testerName . "</b></td></tr>\n";
+    		'<td '  .$td_colspan . '>' . $testerName . "</b></td></tr>\n";
 
     if ($executionNotes != '') // show exection notes is not empty
     {
-		$out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">'.$labels['testnotes'] . '</td>' .
-			    '<td>' . nl2br($executionNotes)  . "</td></tr>\n"; 
+		$out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">'.$labels['title_execution_notes'] . '</td>' .
+			    '<td '  .$td_colspan . '>' . nl2br($executionNotes)  . "</td></tr>\n"; 
     }
 
 	$bug_interface = config_get('bugInterface');
@@ -1277,7 +1283,7 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info)
 				$bugString .= $bugInfo['link_to_bts']."<br />";
 			}
 			$out .= '<tr><td width="' . $cfg['firstColWidth'] . '" valign="top">' . 
-			        $labels['bugs'] . '</td><td>' . $bugString ."</td></tr>\n"; 
+			        $labels['bugs'] . '</td><td ' . $td_colspan . '>' . $bugString ."</td></tr>\n"; 
 					
 		}
 	}

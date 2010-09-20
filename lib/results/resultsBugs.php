@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2010/09/20 10:01:42 $ by $Author: mx-julian $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/09/20 11:48:16 $ by $Author: mx-julian $
  * @author kevinlevy
  * 
  * rev :
@@ -94,7 +94,7 @@ if(count($arrData) > 0) {
 		
 		$matrixData[] = $rowData;
 	}
-	// create unique table id for each test plan
+	// create unique table id for each test project
 	$table_id = 'tl_'.$args->tplan_id.'_table_bugs_per_test_case';
 	$table = new tlExtTable($columns, $matrixData, $table_id);
 	

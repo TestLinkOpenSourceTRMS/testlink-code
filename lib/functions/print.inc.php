@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.113 2010/09/20 08:45:57 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.114 2010/09/20 18:25:56 franciscom Exp $
  * @uses printDocument.php
  *
  *
@@ -743,7 +743,7 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 	$tcInfo = null;
     $tcResultInfo = null;
     $tcase_pieces = null;
-	$cfieldFormatting = array('td_css_style' => '','add_table' => false);
+	$cfieldFormatting = array('label_css_style' => '','add_table' => false);
     
     // init static elements
     $id = $node['id'];

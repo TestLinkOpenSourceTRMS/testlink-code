@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.102 2010/09/15 21:42:16 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.103 2010/09/20 18:25:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1267,12 +1267,12 @@ class testsuite extends tlObjectWithAttachments
 	                                           $tproject_id = null,$formatOptions=null) 
 	{
 	    $filters=array('show_on_execution' => $show_on_execution);    
-	    $td_style='class="labelHolder"' ;
+	    $label_css_style=' class="labelHolder" ' ;
 	    $add_table=true;
 	    $table_style='';
 	    if( !is_null($formatOptions) )
 	    {
-	        $td_style=isset($formatOptions['td_css_style']) ? $formatOptions['td_css_style'] : $td_style;
+	        $label_css_style=isset($formatOptions['label_css_style']) ? $formatOptions['label_css_style'] : $label_css_style;
 	        $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
 	        $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
 	    } 
@@ -1301,7 +1301,7 @@ class testsuite extends tlObjectWithAttachments
 	        {
 	          // true => do not create input in audit log
 	          $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
-	          $cf_smarty .= "<tr><td {$td_style} >" . htmlspecialchars($label) . "</td><td>" .
+	          $cf_smarty .= "<tr><td {$label_css_style} >" . htmlspecialchars($label) . "</td><td>" .
 	                        $this->cfield_mgr->string_custom_field_value($cf_info,$id) .
 	                        "</td></tr>\n";
 	        }

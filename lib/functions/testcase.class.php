@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.310 2010/09/20 08:45:57 mx-julian Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.311 2010/09/20 18:26:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20100917 - franciscom - html_table_of_custom_field_values() added colspan arg
+ * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
  * 20100915 - amitkhullar - BUGID 3776
  * 20100910 - franciscom - getExternalID() improvements
  * 20100908 - franciscom - exportTestCaseDataToXML() - testcase::LATEST_VERSION has problems
@@ -4017,20 +4017,20 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function html_table_of_custom_field_values($id,$scope='design',$filters=null,$execution_id=null,
 	                                           $testplan_id=null,$tproject_id = null,
-	                                           $formatOptions=null,$link_id=null,$colspan=null)
+	                                           $formatOptions=null,$link_id=null)
 	{
-		$td_style='class="labelHolder"';
-		$td_colspan = '';
-	    if( !is_null($colspan) )
-	    {
-			$td_colspan = ' colspan="' . $colspan . '" '; 
-	    }
-	    
+		$label_css_style = ' class="labelHolder" ';
+		$value_css_style = ' ';
+
 	    $add_table=true;
 	    $table_style='';
 	    if( !is_null($formatOptions) )
 	    {
-			$td_style=isset($formatOptions['td_css_style']) ? $formatOptions['td_css_style'] : $td_style;
+			$label_css_style = isset($formatOptions['label_css_style']) ? 
+										 $formatOptions['label_css_style'] : $label_css_style;
+			$value_css_style = isset($formatOptions['value_css_style']) ? 
+										 $formatOptions['value_css_style'] : $value_css_style;
+
 	        $add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
 	        $table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
 	    } 
@@ -4073,8 +4073,8 @@ class testcase extends tlObjectWithAttachments
 	                // true => do not create input in audit log
 	                $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
 	
-					$cf_smarty .= "<tr><td {$td_style}> " .
-									htmlspecialchars($label) . ":</td><td {$td_colspan}>" .
+					$cf_smarty .= "<tr><td {$label_css_style}> " .	htmlspecialchars($label) . ":</td>" . 
+									"<td {$value_css_style}>" .
 									$this->cfield_mgr->string_custom_field_value($cf_info,$id) .
 									"</td></tr>\n";
 				}

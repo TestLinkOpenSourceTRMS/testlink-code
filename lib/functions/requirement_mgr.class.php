@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.101 $
- * @modified $Date: 2010/09/19 17:43:52 $ by $Author: franciscom $
+ * @version $Revision: 1.102 $
+ * @modified $Date: 2010/09/20 19:35:05 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20100920 - franciscom - 
  *  20100915 - Julian - BUGID 3777 - Added get_last_doc_id_for_testproject()
  *	20100914 - franciscom - createFromMap() - added new option 'skipFrozenReq'
  *  20100908 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
@@ -1246,6 +1247,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 		}	
 	}	
 		
+	echo __FUNCTION__ . '<br>';	
     $cf2insert=null;
 	$status_ok = true;
 	$user_feedback = null;
@@ -1293,39 +1295,38 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	}
     else
     {
+		// Need to get Last Version no matter active or not.
 		$reqID = key($check_in_reqspec);
+		$last_version = $this->get_last_version_info($reqID);
+		$msgID = 'frozen_req_unable_to_import';
+		$status_ok = false;
 
-    	switch($my['options']['actionOnHit'])
+		new dBug($last_version);
+		new dBug($my['options']['skipFrozenReq']);
+				
+		if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
 		{
-			case 'update_last_version':
-				// Need to get Last Version no matter active or not.
-				$last_version = $this->get_last_version_info($reqID);
-        		
-				// BUGID 3685
-				// What to do if is Frozen ??? -> DO NOT IMPORT
-				$msgID = 'frozen_req_unable_to_import';
-				$status_ok = false;
-				if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
-				{
-					$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
-										    $author_id,$req['status'],$req['type'],$req['expected_coverage'],
-										    $req['node_order']);
-					$msgID = 'import_req_updated';
-					$status_ok = true;
-				}
-			break;
-			
-			case 'create_new_version':
-				$newItem = $this->create_new_version($reqID,$author_id);
-
-				// Set always new version to NOT Frozen
-				$this->updateOpen($newItem['id'],1);				
-				$newReq['version_id'] = $newItem['id']; 
-				$msgID = 'import_req_new_version_created';
-				$status_ok = true;
-			break;	
-		}
-		
+    		switch($my['options']['actionOnHit'])
+			{
+				case 'update_last_version':
+						$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
+											    $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+											    $req['node_order']);
+						$msgID = 'import_req_updated';
+						$status_ok = true;
+				break;
+				
+				case 'create_new_version':
+						$newItem = $this->create_new_version($reqID,$author_id);
+        	        	
+						// Set always new version to NOT Frozen
+						$this->updateOpen($newItem['id'],1);				
+						$newReq['version_id'] = $newItem['id']; 
+						$msgID = 'import_req_new_version_created';
+						$status_ok = true;
+				break;	
+			}
+		}		
     }     
     $user_feedback[] = array('doc_id' => $req['docid'],'title' => $req['title'], 
     				 	     'import_status' => sprintf($labels[$msgID],$req['docid']));

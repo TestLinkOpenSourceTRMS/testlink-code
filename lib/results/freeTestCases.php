@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/09/20 12:49:09 $ by $Author: mx-julian $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2010/09/20 13:06:25 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
@@ -23,6 +23,8 @@ testlinkInitPage($db,true,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $tcase_cfg = config_get('testcase_cfg');
+
+$importance_levels = config_get('importance_levels');
 
 $args = init_args();
 $tproject_mgr = new testproject($db);
@@ -64,13 +66,13 @@ if(!is_null($gui->freeTestCases['items']))
 			             strip_tags($tcases['name']);
 			
 			switch ($tcases['importance']) {
-				case 1:
+				case $importance_levels[LOW]:
 					$rowData[] = "<!-- 1 -->" . lang_get('low_importance');
 					break;
-				case 2:
+				case $importance_levels[MEDIUM]:
 					$rowData[] = "<!-- 2 -->" . lang_get('medium_importance');
 					break;
-				case 3:
+				case $importance_levels[HIGH]:
 					$rowData[] = "<!-- 3 -->" . lang_get('high_importance');
 					break;
 			}

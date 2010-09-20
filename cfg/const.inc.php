@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.156 2010/09/19 09:38:02 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.157 2010/09/20 13:06:25 mx-julian Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -565,6 +565,13 @@ define( 'ERROR_LDAP_BIND_FAILED',				1404 );
 $tlCfg->priority_levels = array( 
 	HIGH => 6, // high priority include 6 and more
 	MEDIUM => 3,
+	LOW => 1
+);
+
+/** @var array importance levels */
+$tlCfg->importance_levels = array( 
+	HIGH => 3,
+	MEDIUM => 2,
 	LOW => 1
 );
 

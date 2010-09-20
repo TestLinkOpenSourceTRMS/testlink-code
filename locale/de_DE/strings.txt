@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.196 2010/09/20 06:03:42 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.197 2010/09/20 13:40:56 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.700
+ * Last Update according to en_GB string file version 1.703
  *
  **/
 
@@ -1550,7 +1550,9 @@ $TLS_title_test_case_bugs = "Testfall Fehler";
 $TLS_title_test_case_timestamp = "Testfall Zeitstempel";
 $TLS_title_test_case_title = $TLS_test_case;
 $TLS_title_test_suite_name = $TLS_test_suite;
-
+$TLS_no_linked_bugs = "Es wurden keine Bugs erfasst";
+$TLS_info_bugs_per_tc_report = "Dieser Report zeigt alle Bugs, die einem Testfall während " . 
+                               "der Testausführung zugewiesen wurden";
 
 
 // ----- gui/templates/resultsByStatus.tpl -----
@@ -2974,6 +2976,8 @@ $TLS_testCasesWithoutTester_info = "Dieser Report zeigt alle Testfälle, die fü
 $TLS_report_free_testcases_on_testproject=$TLS_link_report_free_testcases_on_testproject;
 $TLS_all_testcases_has_testplan="Alle Testfälle wurden einem Testplan hinzugefügt";
 $TLS_all_testcases_are_free="Es wurden noch keine Testfälle einem Testplan hinzugefügt";
+$TLS_info_tc_not_assigned_to_any_tplan = "Dieser Report zeigt alle Testfälle, die KEINEM Test Plan " .
+                                         "dieses Projekts hinzugefügt wurden.";
 
 // ----- timeCharts ----- 
 $TLS_interval_end_date 		= "Last Interval Date";

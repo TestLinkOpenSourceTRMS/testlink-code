@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/09/20 12:01:07 $ by $Author: mx-julian $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/09/20 12:20:47 $ by $Author: mx-julian $
  * @author kevinlevy
  * 
  * rev :
@@ -31,6 +31,7 @@ if (config_get('interface_bugs') != 'NO')
 testlinkInitPage($db,true,false,"checkRights");
 $gui = new stdClass();
 $gui->warning_msg = '';
+$gui->tableSet = null;
 
 $templateCfg = templateConfiguration();
 $args = init_args();

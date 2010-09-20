@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.8 2010/09/20 19:50:51 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.9 2010/09/20 20:01:21 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
@@ -200,7 +200,10 @@ $smarty->display($templateCfg->template_dir . $tpl);
 
 function buildExtTable($gui) {
 	if(count($gui->resultSet) > 0) {
-		$columns = getColumnsDefinition();
+		$columns = array();
+		
+		$columns[] = array('title' => lang_get('req_spec'), 'type' => 'text');
+		$columns[] = array('title' => lang_get('requirement'), 'type' => 'text');
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
@@ -238,21 +241,6 @@ function buildExtTable($gui) {
 		return($table);
 	}
 }
-
-/**
- * get Columns definition for table to display
- *
- */
-function getColumnsDefinition()
-{
-	$colDef = array();
-	
-	$colDef[] = array('title' => lang_get('req_spec'), 'type' => 'text');
-	$colDef[] = array('title' => lang_get('requirement'), 'type' => 'text');
-
-	return $colDef;
-}
-
 
 /*
  function:

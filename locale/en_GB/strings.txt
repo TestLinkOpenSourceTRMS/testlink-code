@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.702 2010/09/20 12:25:25 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.703 2010/09/20 13:33:33 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1544,6 +1544,7 @@ $TLS_title_test_case_timestamp = "Test Case timestamp";
 $TLS_title_test_case_title = $TLS_test_case;
 $TLS_title_test_suite_name = $TLS_test_suite;
 $TLS_no_linked_bugs = "There are no linked Bugs";
+$TLS_info_bugs_per_tc_report = "This report shows all bugs linked to test cases during execution.";
 
 
 
@@ -2986,6 +2987,8 @@ $TLS_testCasesWithoutTester_info = "This report shows all test cases, which have
 $TLS_report_free_testcases_on_testproject=$TLS_link_report_free_testcases_on_testproject;
 $TLS_all_testcases_has_testplan="All Test Cases have been assigned to a Test Plan";
 $TLS_all_testcases_are_free="No Test Case has been assigned to a Test Plan";
+$TLS_info_tc_not_assigned_to_any_tplan = "This report shows all test cases that have not been added " .
+                                         "to ANY test plan of this project.";
 
 // ----- timeCharts -----
 $TLS_interval_end_date 		= "Last Interval Date";

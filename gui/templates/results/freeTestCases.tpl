@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: freeTestCases.tpl,v 1.4 2010/09/20 12:26:25 mx-julian Exp $
+$Id: freeTestCases.tpl,v 1.5 2010/09/20 13:33:33 mx-julian Exp $
 
 For a test project, list FREE test cases, i.e. not assigned to a test plan.
 
@@ -10,7 +10,7 @@ rev:
 *}
 
 {lang_get var="labels" 
-          s='all_testcases_has_testplan,generated_by_TestLink_on'}
+          s='generated_by_TestLink_on, info_tc_not_assigned_to_any_tplan'}
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
   {assign var=tableID value=$matrix->tableID}
@@ -37,6 +37,8 @@ rev:
 		{assign var=tableID value=table_$idx}
 		{$matrix->renderBodySection($tableID)}
 	{/foreach}
+	<br />
+	<p class="italic">{$labels.info_tc_not_assigned_to_any_tplan}</p>
 	<br />
 	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}

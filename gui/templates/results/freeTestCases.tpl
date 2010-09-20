@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: freeTestCases.tpl,v 1.3 2010/09/20 12:25:25 mx-julian Exp $
+$Id: freeTestCases.tpl,v 1.4 2010/09/20 12:26:25 mx-julian Exp $
 
 For a test project, list FREE test cases, i.e. not assigned to a test plan.
 
@@ -37,6 +37,7 @@ rev:
 		{assign var=tableID value=table_$idx}
 		{$matrix->renderBodySection($tableID)}
 	{/foreach}
+	<br />
 	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
 	<div class="user_feedback">

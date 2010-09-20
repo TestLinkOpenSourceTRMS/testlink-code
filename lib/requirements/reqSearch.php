@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.9 2010/09/20 20:01:21 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.10 2010/09/20 20:14:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
@@ -198,34 +198,40 @@ $gui->tableSet[] = buildExtTable($gui);
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
+/**
+ * 
+ *
+ */
 function buildExtTable($gui) {
+	
 	if(count($gui->resultSet) > 0) {
+		$labels = array('req_spec' => lang_get('req_spec'), 'requirement' => lang_get('requirement'));
 		$columns = array();
 		
-		$columns[] = array('title' => lang_get('req_spec'), 'type' => 'text');
-		$columns[] = array('title' => lang_get('requirement'), 'type' => 'text');
+		$columns[] = array('title' => $labels['req_spec'], 'type' => 'text');
+		$columns[] = array('title' => $labels['requirement'], 'type' => 'text');
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
 		
 		foreach($gui->resultSet as $result) {
 			$rowData = array();
-	
 			$rowData[] = strip_tags($gui->path_info[$result['id']]);
-			//build test case link
+
+			// build test case link
 			$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
-			            strip_tags($result['name']);
+			             strip_tags($result['name']);
 			
 			$matrixData[] = $rowData;
 		}
-		//create unique table id for this report
-		//it is not necessary to create a unique id on project or test plan level as columns never change
+	
+		// create unique table id for this report
+		// it is not necessary to create a unique id on project or test plan level as columns never change
 		$table_id = 'tl_table_req_search';
 		$table = new tlExtTable($columns, $matrixData, $table_id);
 		
-		$table->setGroupByColumnName(lang_get('req_spec'));
-		
-		$table->setSortByColumnName(lang_get('requirement'));
+		$table->setGroupByColumnName($labels['req_spec']);
+		$table->setSortByColumnName($labels['requirement']);
 		$table->sortDirection = 'DESC';
 		
 		$table->showToolbar = true;
@@ -235,7 +241,7 @@ function buildExtTable($gui) {
 		
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 		
-		//dont save settings for this table
+		// dont save settings for this table
 		$table->storeTableState = false;
 		
 		return($table);

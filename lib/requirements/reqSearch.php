@@ -7,13 +7,13 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.10 2010/09/20 20:14:41 franciscom Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.11 2010/09/20 20:25:45 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
- * 20100920 - Julian - use exttable to display search results
+ * 20100920 - Julian - BUGID 3793 - use exttable to display search results
  *                   - created function to build table
  * 20100920 - franciscom - minor refactoring
  * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions

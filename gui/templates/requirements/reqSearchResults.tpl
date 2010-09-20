@@ -3,7 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: show results for requirement search.
 
 rev:
-  20100920 - Julian - use exttable to display search results
+  20100920 - Julian - BUGID 3793 - use exttable to display search results
 *}
 
 {include file="inc_head.tpl" openHead='yes'}

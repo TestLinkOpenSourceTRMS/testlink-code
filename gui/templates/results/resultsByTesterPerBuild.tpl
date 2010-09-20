@@ -1,6 +1,6 @@
 {* 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: resultsByTesterPerBuild.tpl,v 1.1 2010/07/31 18:49:49 asimon83 Exp $
+ * $Id: resultsByTesterPerBuild.tpl,v 1.2 2010/09/20 14:10:37 mx-julian Exp $
  *
  * Lists results and progress by tester per build in a grouping ExtJS table.
  * 
@@ -8,6 +8,9 @@
  * 20100731 - asimon - initial commit
  *
  *}
+ 
+{lang_get var="labels"
+         s="generated_by_TestLink_on,hlp_results_by_tester_per_build_table"}
 
 {include file="inc_head.tpl" openHead="yes"}
 
@@ -37,12 +40,10 @@
 {/foreach}
 
 <br/>
-	
-<p>{lang_get s='hlp_results_by_tester_per_build_table'}</p>
+<p>{$labels.hlp_results_by_tester_per_build_table}</p>
+<br /><br />
+{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 
 </div>
-
-{lang_get s="generated_by_TestLink_on"} {$smarty.now|date_format:$gsmarty_timestamp_format}
-
 </body>
 </html>

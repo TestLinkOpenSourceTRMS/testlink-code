@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.22 2010/09/02 15:08:17 mx-julian Exp $
+$Id: resultsReqs.tpl,v 1.23 2010/09/20 13:44:17 mx-julian Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -55,17 +55,17 @@ rev:
 		{assign var=tableID value=table_$idx}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
+	
+	<br />
+		<p class="italic">{$labels.info_resultsReqs}</p>
+	<br />
+
+	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
 	<div class="user_feedback">
     {$gui->warning_msg}
     </div>
 {/if}
-
-<br />
-<p class="italic">{$labels.info_resultsReqs}</p>
-<br />
-
-{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 
 </div>
 

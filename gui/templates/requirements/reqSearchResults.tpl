@@ -37,6 +37,7 @@ rev:
     {assign var=tableID value=table_$idx}
     {$matrix->renderBodySection($tableID)}
   {/foreach}
+  <br />
   {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
   <div class="user_feedback">

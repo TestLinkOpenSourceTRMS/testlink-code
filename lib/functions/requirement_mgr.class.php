@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.103 $
- * @modified $Date: 2010/09/20 19:52:21 $ by $Author: franciscom $
+ * @version $Revision: 1.104 $
+ * @modified $Date: 2010/09/20 20:00:37 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -2305,7 +2305,7 @@ function html_table_of_custom_field_values($id,$version_id)
   		$output=null;
   		$target = $this->db->prepare_string(trim($attr['value']));
   		
-  		$where_clause = $attr['key'] == 'name' ? " NH_REQ.name " : " REQ.req_doc_id ";  
+  		$where_clause = $attr['key'] == 'title' ? " NH_REQ.name " : " REQ.req_doc_id ";  
   		
 	    switch($my['options']['check_criteria'])
 	    {
@@ -2348,6 +2348,8 @@ function html_table_of_custom_field_values($id,$version_id)
   		{
   			$sql .= " AND REQ.srs_id={$parent_id}";
   		}
+
+  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
   		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
   		

@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.212 2010/09/20 18:25:56 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.213 2010/09/20 19:04:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100920 - franciscom -  html_table_of_custom_field_values() changed keys on $formatOptions
  *  20100909 - Julian - BUGID 2877 - Custom Fields linked to TC versions
  *	20100830 - franciscom - get_linked_tcversions() - missing cast to array	$my['filters']['exec_status']
  *							urgencyImportanceToPriorityLevel() - refactored
@@ -2408,12 +2409,16 @@ class testplan extends tlObjectWithAttachments
 	{
 		$cf_smarty='';
 		$parent_id=null;
-		$label_css_style = ' class="labelHolder" ' ;
+	    $label_css_style=' class="labelHolder" ' ;
+   		$value_css_style = ' ';
+
 		$add_table=true;
 		$table_style='';
 		if( !is_null($formatOptions) )
 		{
-			$td_style=isset($formatOptions['label_css_style']) ? $formatOptions['label_css_style'] : $label_css_style;
+			$label_css_style = isset($formatOptions['label_css_style']) ? $formatOptions['label_css_style'] : $label_css_style;
+			$value_css_style = isset($formatOptions['value_css_style']) ? $formatOptions['value_css_style'] : $value_css_style;
+
 			$add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
 			$table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
 		} 
@@ -2437,8 +2442,9 @@ class testplan extends tlObjectWithAttachments
 				{
 					// true => do not create input in audit log
 					$label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
-					$cf_smarty .= "<tr><td {$label_css_style}>" . htmlspecialchars($label) . "</td><td>" .
-						$this->cfield_mgr->string_custom_field_value($cf_info,$id) . "</td></tr>\n";
+					$cf_smarty .= "<tr><td {$label_css_style}>" . htmlspecialchars($label) . "</td>" .
+								  "<td {$value_css_style}>" .
+						          $this->cfield_mgr->string_custom_field_value($cf_info,$id) . "</td></tr>\n";
 				}
 			}
 		}

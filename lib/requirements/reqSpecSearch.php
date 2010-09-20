@@ -7,16 +7,18 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.3 2010/09/20 14:52:31 mx-julian Exp $
+ * @version    	CVS: $Id: reqSpecSearch.php,v 1.4 2010/09/20 21:00:43 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
  *
  * @internal Revisions:
+ * 20100920 - Julian - BUGID 3793 - use exttable for search result
  */
 
 require_once("../../config.inc.php");
 require_once("common.php");
+require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
@@ -31,6 +33,7 @@ $gui->main_descr = lang_get('caption_search_form_req_spec');
 $gui->warning_msg = '';
 $gui->path_info = null;
 $gui->resultSet = null;
+$gui->tableSet = null;
 
 $map = null;
 $args = init_args();
@@ -114,8 +117,50 @@ else
 	$gui->type = "rec_spec";
 }
 
+$gui->tableSet[] = buildExtTable($gui);
+
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
+
+
+function buildExtTable($gui) {
+	if(count($gui->resultSet) > 0) {
+		$labels = array('req_spec' => lang_get('req_spec'));
+		$columns = array();
+		$columns[] = array('title' => $labels['req_spec'], 'type' => 'text', 'groupable' => 'false', 
+		                   'hideable' => 'false');
+	
+		// Extract the relevant data and build a matrix
+		$matrixData = array();
+		
+		foreach($gui->resultSet as $result) {
+			$rowData = array();
+			$path = ($gui->path_info[$result['id']]) ? $gui->path_info[$result['id']] . " / " : "";
+			// use html comment to properly sort by full path
+			$rowData[] = "<!-- " . strip_tags($path) . strip_tags($result['name']) ." -->" . strip_tags($path) . 
+			             "<a href=\"lib/requirements/reqSpecView.php?item=req_spec&req_spec_id={$result['id']}\">" .
+			             strip_tags($result['name']);
+			
+			$matrixData[] = $rowData;
+		}
+		// create unique table id for this report
+		// it is not necessary to create a unique id on project or test plan level as columns never change
+		$table_id = 'tl_table_req_spec_search';
+		$table = new tlExtTable($columns, $matrixData, $table_id);
+		
+		$table->setSortByColumnName($labels['req_spec']);
+		$table->sortDirection = 'ASC';
+		
+		$table->showToolbar = false;
+		
+		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+		
+		// dont save settings for this table
+		$table->storeTableState = false;
+		
+		return($table);
+	}
+}
 
 /*
  function:

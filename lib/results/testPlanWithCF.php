@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testPlanWithCF.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/09/21 13:44:32 $ by $Author: mx-julian $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
@@ -146,10 +146,8 @@ function buildExtTable($gui,$tcase_mgr,$gluechar,$charset)
 				$matrixData[] = $rowData;
 			}
 		}
-	
-		// create unique table id for each test plan
-		$table_id = 'tl_table_tplan_with_cf';
-		$table = new tlExtTable($columns, $matrixData, $table_id);
+		
+		$table = new tlExtTable($columns, $matrixData, 'tl_table_tplan_with_cf');
 
 		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 		

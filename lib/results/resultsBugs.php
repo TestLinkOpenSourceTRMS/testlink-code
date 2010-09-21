@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/09/20 12:20:47 $ by $Author: mx-julian $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
  * @author kevinlevy
  * 
  * rev :
@@ -95,9 +95,8 @@ if(count($arrData) > 0) {
 		
 		$matrixData[] = $rowData;
 	}
-	// create unique table id for this report
-	$table_id = 'tl_table_bugs_per_test_case';
-	$table = new tlExtTable($columns, $matrixData, $table_id);
+	
+	$table = new tlExtTable($columns, $matrixData, 'tl_table_bugs_per_test_case');
 	
 	$table->setGroupByColumnName(lang_get('title_test_suite_name'));
 	

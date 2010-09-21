@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2010/09/21 13:51:30 $ by $Author: mx-julian $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -99,10 +99,8 @@ if( $args->doIt )
 			$matrixData[] = $rowData;
 		}
 	}
-
-	// create unique table id for each test plan
-	$table_id = 'tl_'.$args->tplan_id.'_table_tc_with_cf';
-	$table = new tlExtTable($columns, $matrixData, $table_id);
+	
+	$table = new tlExtTable($columns, $matrixData, 'tl_table_tc_with_cf');
 	$table->addCustomBehaviour('status', array('render' => 'statusRenderer'));
 	$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
 	

@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.8 2010/09/02 09:31:19 mx-julian Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.9 2010/09/21 20:53:59 mx-julian Exp $
  *
  * Lists results and progress by tester per build.
  * 
@@ -39,8 +39,6 @@ $matrix = $progress->get_results_matrix();
 $status_map = $progress->get_status_map();
 $build_set = $progress->get_build_set();
 $names = $user->getNames($db);
-
-$table_id = 'tl_' . $args->tproject_id . '_' . $args->tplan_id . '_table_results_tester_build';
 
 // build the table header
 $columns = array();
@@ -107,7 +105,7 @@ foreach ($matrix as $build_id => $build_execution_map) {
 }
 
 // create the table object
-$matrix = new tlExtTable($columns, $rows, $table_id);
+$matrix = new tlExtTable($columns, $rows, 'tl_table_results_by_tester_per_build');
 $matrix->title = lang_get('results_by_tester_per_build');
 
 //group by build

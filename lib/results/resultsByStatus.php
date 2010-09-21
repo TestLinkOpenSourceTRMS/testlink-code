@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.95 2010/09/01 14:44:10 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.96 2010/09/21 20:53:59 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -421,10 +421,7 @@ function buildMatrix($dataSet, &$args, $options = array())
 
 	if ($options['format'] == FORMAT_HTML)
 	{
-		//create unique tableid for each project. as columns differ on not run report make it part of id
-		$table_id = 'tl_'.$args->tproject_id.'_table_results_by_';
-		$table_id .= ($options['status_not_run']) ? 'not_run' : 'status';
-		$matrix = new tlExtTable($columns, $dataSet, $table_id);
+		$matrix = new tlExtTable($columns, $dataSet, 'tl_table_results_by_status');
 		
 		//if not run report: sort by test suite
 		//blocked, failed report: sort by platform (if enabled) else sort by date

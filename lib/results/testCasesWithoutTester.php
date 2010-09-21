@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/08/31 09:46:45 $ by $Author: mx-julian $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
@@ -119,9 +119,7 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 	
 	$columns[] = array('title' => $labels['summary'], 'type' => 'text', 'width' => 40);
 	
-	// unique table id for each project
-	$table_id = 'tl_'. $tproject_id . '_table_tc_without_tester';
-	$matrix = new tlExtTable($columns, $data, $table_id);
+	$matrix = new tlExtTable($columns, $data, 'tl_table_tc_without_tester');
 	
 	$matrix->setGroupByColumnName($labels['testsuite']);
 	$matrix->setSortByColumnName($labels['testcase']);

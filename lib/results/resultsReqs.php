@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2010/09/03 11:26:56 $ by $Author: mx-julian $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -333,10 +333,8 @@ if (count($req_spec_map)) {
 		}
 	}
 	
-	// create unique table id for each project
-	$table_id = 'tl_'.$args->tproject_id.'_table_results_reqs';
 	// create table object
-	$matrix = new tlExtTable($columns, $rows, $table_id);
+	$matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
 	$matrix->title = $gui->pageTitle;
 	
 	// group by Req Spec and hide that column

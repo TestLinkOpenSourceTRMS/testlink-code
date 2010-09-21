@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.20 2010/09/21 10:07:28 mx-julian Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.21 2010/09/21 20:53:59 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -267,11 +267,8 @@ function buildExtTable($gui, $charset) {
 			
 			$matrixData[] = $rowData;
 		}
-	
-		// create unique table id for this report
-		// it is not necessary to create a unique id on project or test plan level as columns never change
-		$table_id = 'tl_table_test_case_search';
-		$table = new tlExtTable($columns, $matrixData, $table_id);
+		
+		$table = new tlExtTable($columns, $matrixData, 'tl_table_test_case_search');
 		
 		$table->setGroupByColumnName($labels['test_suite']);
 		$table->setSortByColumnName($labels['test_case']);

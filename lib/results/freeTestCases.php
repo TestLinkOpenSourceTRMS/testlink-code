@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/09/20 13:06:25 $ by $Author: mx-julian $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
@@ -79,10 +79,8 @@ if(!is_null($gui->freeTestCases['items']))
 			
 			$matrixData[] = $rowData;
 		}
-		//create unique table id for this report
-		//it is not necessary to create a unique id on project or test plan level as columns never change
-		$table_id = 'tl_table_test_cases_not_assigned_to_any_test_plan';
-		$table = new tlExtTable($columns, $matrixData, $table_id);
+		
+		$table = new tlExtTable($columns, $matrixData, 'tl_table_test_cases_not_assigned_to_any_test_plan');
 		
 		$table->setGroupByColumnName(lang_get('test_suite'));
 		

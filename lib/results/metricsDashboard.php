@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/09/17 13:44:57 $ $Author: mx-julian $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2010/09/21 20:53:59 $ $Author: mx-julian $
  *
  * @author franciscom
  *
@@ -71,9 +71,7 @@ if(count($gui->tplan_metrics) > 0) {
 		}
 	}
 	
-	// create unique table id for each test plan
-	$table_id = 'tl_'.$args->tproject_id.'_table_metrics_dashboard';
-	$table = new tlExtTable($columns, $matrixData, $table_id);
+	$table = new tlExtTable($columns, $matrixData, 'tl_table_metrics_dashboard');
 	
 	//if platforms are to be shown -> group by test plan
 	// if no platforms are to be shown -> no grouping

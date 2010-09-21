@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.13 2010/09/21 10:02:52 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.14 2010/09/21 20:53:59 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
@@ -230,10 +230,7 @@ function buildExtTable($gui, $charset) {
 			$matrixData[] = $rowData;
 		}
 	
-		// create unique table id for this report
-		// it is not necessary to create a unique id on project or test plan level as columns never change
-		$table_id = 'tl_table_req_search';
-		$table = new tlExtTable($columns, $matrixData, $table_id);
+		$table = new tlExtTable($columns, $matrixData, 'tl_table_req_search');
 		
 		$table->setGroupByColumnName($labels['req_spec']);
 		$table->setSortByColumnName($labels['requirement']);

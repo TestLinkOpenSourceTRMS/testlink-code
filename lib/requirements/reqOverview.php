@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.33 2010/09/21 13:00:56 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.34 2010/09/21 20:53:59 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -228,10 +228,8 @@ if(count($gui->reqIDs) > 0) {
 	    	$columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $charset), 'type' => 'text');
 	    }
 
-	    // create unique tableid for each project (columns can differ between projects)
-	    $table_id = 'tl_'.$args->tproject_id.'_table_req_overview';
 	    // create table object, fill it with columns and row data and give it a title
-	    $matrix = new tlExtTable($columns, $rows, $table_id);
+	    $matrix = new tlExtTable($columns, $rows, 'tl_table_req_overview');
         $matrix->title = $labels['requirements'];
         
         // 20100822 - asimon - removal of magic numbers

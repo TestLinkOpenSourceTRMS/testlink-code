@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.197 2010/09/20 13:40:56 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.198 2010/09/21 14:00:40 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.703
+ * Last Update according to en_GB string file version 1.708
  *
  **/
 
@@ -1555,6 +1555,14 @@ $TLS_info_bugs_per_tc_report = "Dieser Report zeigt alle Bugs, die einem Testfal
                                "der Testausführung zugewiesen wurden";
 
 
+
+// ----- gui/templates/resultsTC.tpl -----
+$TLS_info_resultsTC_report = "Dieser Report zeigt die letzte Testfallausführung für jeden " .
+                             "Build. Zusätzlich zeigt die letzte Spalte die letzte " .
+                             "Testfallausführung für den zuletzt erstellten Build.";
+
+
+
 // ----- gui/templates/resultsByStatus.tpl -----
 $TLS_th_bugs = "Fehler";
 $TLS_th_date = "Datum";
@@ -1567,7 +1575,8 @@ $TLS_info_failed_tc_report = "Dieser Report zeigt alle Testfälle für jeden Bui
 $TLS_info_blocked_tc_report = "Dieser Report zeigt alle Testfälle für jeden Build und " .
                               "jede Plattform (sofern in Verwendung für diesen Testplan), ".
                               "deren letztes Ausführungsergebnis \"Blockiert\" ist.";
-$TLS_info_notrun_tc_report = "Dieser Report zeigt alle nicht durchgeführten Testfälle";
+$TLS_info_notrun_tc_report = "Dieser Report zeigt alle Testfälle, die für keinen Build " .
+                             "innerhalb dieses Test Plans ausgeführt wurden";
 $TLS_no_blocked = "Es existieren keine blockierten Testfälle";
 $TLS_no_notrun = "Es existieren keine Testfälle, die noch nicht ausgeführt wurden";
 $TLS_no_failed = "Es existieren keine fehlgeschlagenen Testfälle";
@@ -2437,7 +2446,7 @@ $TLS_req_rel_is_related_to = "verwandt mit";
 
 
 
-// ----- lib/results/resultsBugs.php -----
+// ----- lib/results/resultsTC.php -----
 $TLS_title_test_report_all_builds = "Testreport: Ergebnisse der Testfälle für alle Builds";
 
 
@@ -2458,6 +2467,9 @@ $TLS_link_report_tplans_with_cf = "Test Pläne mit benutzerdefinierten Feldern";
 $TLS_caption_testPlanWithCF = $TLS_link_report_tplans_with_cf;
 $TLS_no_linked_tplan_cf = "Es existieren keine Testfälle für die ein benutzerdefiniertes " .
                           "Feld während dem Hinzufügen zum Testplan gesetzt wurde";
+$TLS_info_testPlanWithCF = "Dieser Report zeigt alle Testfälle, für die ein benutzerdefiniertes " .
+                           "Feld während dem Hinzufügen zum Testplan gesetzt wurde";
+
                           
 
 // ----- lib/results/resultsTC.php -----
@@ -2666,6 +2678,7 @@ $TLS_frozen = 'Eingefroren';
 $TLS_notes_req_overview = "Diese Übersicht zeigt alle Anforderungen (letzte oder alle Versionen) " .
                           "und die dazugehörigen Attribute. Zusätzlich werden alle benutzerdefinierten " .
                           "Felder für Anforderungen in einer seperaten Spalte angezeigt.";
+$TLS_calendar_week_short = "KW";
 
 
 // ----- reqSpecEdit.php -----

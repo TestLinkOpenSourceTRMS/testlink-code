@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.198 2010/09/21 14:00:40 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.199 2010/09/21 14:36:44 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -2502,7 +2502,7 @@ $TLS_link_report_tcases_without_tester = "Testfälle ohne zugewiesene Tester";
 $TLS_link_report_test = "Testergebnisse der versch. Builds";
 $TLS_link_report_test_plan = "Test Plan Report";
 $TLS_link_report_test_report = "Test Report";
-$TLS_link_report_total_bugs = "Gesamtanzahl Fehler für jeden Testfall";
+$TLS_link_report_total_bugs = "Zugewiesene Bugs pro Testfall";
 $TLS_link_report_uncovered_testcases = "Report über nicht abgedeckte Testfälle";
 $TLS_link_report_reqs_with_cf = "Anforderungen mit benutzerdefinierten Feldern";
 $TLS_caption_requirementsWithCF = $TLS_link_report_reqs_with_cf;

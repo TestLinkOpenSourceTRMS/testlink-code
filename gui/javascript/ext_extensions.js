@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.5 2010/08/27 18:12:57 franciscom Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.6 2010/09/21 20:12:53 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
@@ -16,6 +16,7 @@
  * @link http://www.extjs.com/learn/Extension:NameSpace
  *
  * @internal revisions:
+ * 20100921 - eloff - BUGID 3714 - Load cookie state even if referenced columns are missing
  * 20100826 - eloff - BUGID 3714 - Added JsonCookieProvider to use less size
  *                    Added SlimGridPanel
  * 20100124 - eloff - BUGID3088 - added requireSessionAndSubmit()
@@ -88,6 +89,47 @@ Ext.ux.JsonCookieProvider = Ext.extend(Ext.state.CookieProvider, {
  * This is made to keep cookie size small.
  */
 Ext.ux.SlimGridPanel = Ext.extend(Ext.grid.GridPanel, {
+    /**
+     * applyState() get the state to be applied from the cookie. But this
+     * GridPanel may have another set of columns, we must sanitize the input
+     * from the cookie by removing saved state that is not applicable on
+     * this GridPanel.
+     *
+     * If group column from cookie is not present, then remove it before
+     * applying. The same behaviour is implemented for sort.
+     */
+    applyState: function (state) {
+        var config = this.colModel.config;
+        // Remove group by state if that column is missing
+        if (state.group) {
+            var groupColAvailable = false;
+            for (var i=0; i < config.length; i++) {
+                if (config[i].dataIndex === state.group) {
+                    groupColAvailable = true;
+                }
+            }
+            if (!groupColAvailable) {
+                delete state.group;
+            }
+        }
+        // Remove sort column state if that column is missing
+        if (state.sort) {
+            var sortColAvailable = false;
+            for (var i=0; i < config.length; i++) {
+                if (config[i].dataIndex === state.sort.field) {
+                    sortColAvailable = true;
+                }
+            }
+            if (!sortColAvailable) {
+                delete state.sort;
+            }
+        }
+		Ext.ux.SlimGridPanel.superclass.applyState.call(this, state);
+    },
+    /**
+     * getState() is overidden to remove redundant state information to keep
+     * cookie size small.
+     */
 	getState : function(){
 		var obj = Ext.ux.SlimGridPanel.superclass.getState.call(this);
 		for (var idx = 0; idx < obj.columns.length; idx++) {

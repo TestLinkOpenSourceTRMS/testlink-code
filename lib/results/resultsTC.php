@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.69 2010/08/30 21:11:29 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.70 2010/09/21 20:12:53 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -316,7 +316,7 @@ function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
 	if ($format == FORMAT_HTML) 
 	{
 		//create unique table id for each project and each test plan (build columns differ)
-		$table_id = 'tl_'.$args->tproject_id. '_' .$args->tplan_id.'_table_results_tc';
+		$table_id = 'tl_'.$args->tproject_id. '_table_results_tc';
 		$matrix = new tlExtTable($columns, $dataSet, $table_id);
 		
 		//if platforms feature is enabled group by platform otherwise group by test suite

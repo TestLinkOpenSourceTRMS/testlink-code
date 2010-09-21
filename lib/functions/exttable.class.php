@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.35 2010/08/31 05:37:18 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.36 2010/09/21 20:12:53 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *	20100921 - eloff - refactor column index names
  *	20100830 - franciscom - buildColumns() refactored
  *							buildContent() minor refactored to avoid warnings on event viewer
  *	20100828 - eloff - Refactored rendering of status
@@ -93,11 +94,12 @@ class tlExtTable extends tlTable
 
 	/**
 	 * 20100816 - asimon - enable sorting by a default column.
-	 * If set to a positive integer value, use this column for sorting. 
+	 * If set (via setSortByColumnName), use this column for sorting. The value must be in the format from titleToColumnName.
 	 * User can choose to sort by other columns, this is just the default column.
 	 * If you activate this, you can also set $sortDirection if you don't want descending sorting.
+	 * @see tlTable::titleToColumnName()
 	 */
-	public $sortByColumn = -1;
+	public $sortByColumn = null;
 	
 	/**
 	 * 20100816 - asimon - enable sorting by a default column and with configurable direction.
@@ -193,9 +195,9 @@ class tlExtTable extends tlTable
 	 * Build a JS object to describe the columns needed be EXT-JS GridPanel. This
 	 * is supposed to be used as columnData.
 	 *
-	 * @return string [{header: "Test Suite", sortable: true, dataIndex: 'idx0'},
-	 *                 {header: "Test Case", dataIndex: 'idx1',width: 350},
-	 *                 {header: "Version", dataIndex: 'idx2'}];
+	 * @return string [{header: "Test Suite", sortable: true, dataIndex: 'id_TestSuite'},
+	 *                 {header: "Test Case", dataIndex: 'id_TestCase',width: 350},
+	 *                 {header: "Version", dataIndex: 'id_Version'}];
 	 */
 	function buildColumns()
 	{
@@ -205,7 +207,7 @@ class tlExtTable extends tlTable
 
 		for ($i=0; $i<$n_columns; $i++) {
 			$column = $this->columns[$i];
-			$s .= "{header: \"{$column['title']}\", dataIndex: 'idx$i'";
+			$s .= "{header: \"{$column['title']}\", dataIndex: '{$column['js_id']}'";
 			
             foreach($options as $opt_str)
             {
@@ -237,18 +239,18 @@ class tlExtTable extends tlTable
 	 * Build a JS object to describe the fields needed be EXT-JS ArrayStore. This
 	 * is supposed to be used as columnData.
 	 *
-	 * @return string [{name: 'idx0'},
-	 *                 {name: 'idx1'},
-	 *                 {name: 'idx2'}];
+	 * @return string in the following format
+	 *                 [{name: 'id_TestSuite'},
+	 *                 {name: 'id_TestCase'},
+	 *                 {name: 'id_Status', sortType: statusCompare}];
 	 */
 	function buildFields()
-
 	{
 		$s = '[';
 		$n_columns = sizeof($this->columns);
 		for ($i=0; $i < $n_columns; $i++) {
 			$column = $this->columns[$i];
-			$s .= "{name: 'idx$i'";
+			$s .= "{name: '{$column['js_id']}'";
 			if(	isset($column['type']) &&
 				isset($this->customBehaviour[$column['type']]) &&
 				isset($this->customBehaviour[$column['type']]['sort']) )
@@ -395,7 +397,7 @@ class tlExtTable extends tlTable
 	 * @param string $name
 	 * @return int $column_idx
 	 */
-	function getColumnIdxByName($name) {
+	protected function getColumnIdxByName($name) {
 		$column_idx = 0;
 		foreach ($this->columns as $key => $column) {
 			if ($name == $column['title']) {
@@ -411,7 +413,8 @@ class tlExtTable extends tlTable
 	 * @param string $name column name to group by
 	 */
 	function setGroupByColumnName($name) {
-		$this->groupByColumn = $this->getColumnIdxByName($name);
+		$idx = $this->getColumnIdxByName($name);
+		$this->groupByColumn = $this->columns[$idx]['js_id'];
 	}
 
 	/**
@@ -419,6 +422,7 @@ class tlExtTable extends tlTable
 	 * @param string $name column name to sort on
 	 */
 	function setSortByColumnName($name) {
-		$this->sortByColumn = $this->getColumnIdxByName($name);
+		$idx = $this->getColumnIdxByName($name);
+		$this->sortByColumn = $this->columns[$idx]['js_id'];
 	}
 }

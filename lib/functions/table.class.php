@@ -6,13 +6,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: table.class.php,v 1.9 2010/08/30 21:11:29 erikeloff Exp $
+ * @version CVS: $Id: table.class.php,v 1.10 2010/09/21 20:12:53 erikeloff Exp $
  *
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100921 - eloff - added js_id value to columns
  *  20100828 - eloff - Changed format on status column
  *  20100823 - eloff - Always store column config in full format(array-of-arrays)
  *  20100719 - eloff - Pass $tableID via constructor
@@ -26,15 +27,18 @@ abstract class tlTable
 {
 	/**
 	 * @var array that holds the columns of the table
-	 *            Every column is an array with at least a title attribute,
+	 *            Every column is an array with at least a title and js_id attribute,
 	 *            other attributes are optional.
 	 *            $column = array(
 	 *              'title' => 'My column',
+	 *              'js_id' => 'id_Mycolumn',
 	 *              'width' => 150,
 	 *              'type' => 'status'
 	 *            );
 	 *            It is up to the derived class to use this information on
-	 *            rendering.
+	 *            rendering. The js_id key is used to identify the data
+	 *            field when using ext js.
+	 *            @see tlTable::titleToColumnName()
 	 */
 	protected $columns;
 
@@ -82,14 +86,19 @@ abstract class tlTable
 	 */
 	public function __construct($columns, $data, $tableID)
 	{
-		// Expand the simple column format (array-of-titles) to full array-of-arrays
+		// Expand the simple column format (array-of-titles) to full
+		// array-of-arrays and compute js friendly column names.
 		$this->columns = array();
 		foreach ($columns as $column) {
 			if (is_array($column)) {
+				$column['js_id'] = $this->titleToColumnName($column['title']);
 				$this->columns[] = $column;
 			}
 			else if (is_string($column)) {
-				$this->columns[] = array('title' => $column);
+				$this->columns[] = array(
+					'title' => $column,
+					'js_id' => $this->titleToColumnName($column)
+				);
 			}
 			else {
 				throw new Exception("Invalid column header: " . $column);
@@ -113,4 +122,22 @@ abstract class tlTable
 	 * Outputs the code that should be in <body>
 	 */
 	public abstract function renderBodySection();
+
+
+	/**
+	 * Transforms a column title (localized string) to a valid
+	 * js identifier by removing all invalid chars.
+	 */
+	protected function titleToColumnName($title) {
+		static $allowedChars = "abcdefghijklmnopqrstuvwxyz0123456789";
+		// always start with this to avoid number in beginning
+		$js_safe = 'id_';
+		$chars = str_split($title);
+		foreach ($chars as $char) {
+			if (stripos($allowedChars, $char) !== FALSE) {
+				$js_safe .= $char;
+			}
+		}
+		return $js_safe;
+	}
 }

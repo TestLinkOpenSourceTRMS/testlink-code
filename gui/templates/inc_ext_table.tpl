@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.42 2010/09/20 15:30:49 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.43 2010/09/21 20:12:53 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -146,11 +146,11 @@ Ext.onReady(function() {
 			reader: new Ext.data.ArrayReader({ldelim}{rdelim},
 				fields['{$tableID}'])
 				{if $matrix->groupByColumn >= 0}
-					,groupField: 'idx{$matrix->groupByColumn}'
+					,groupField: '{$matrix->groupByColumn}'
 				{/if}
 				// 20100816 - asimon - enable sorting by a default column
-				{if $matrix->sortByColumn >= 0}
-					,sortInfo:{ldelim}field:'idx{$matrix->sortByColumn}',direction:'{$matrix->sortDirection}'{rdelim}
+				{if !is_null($matrix->sortByColumn)}
+					,sortInfo:{ldelim}field:'{$matrix->sortByColumn}',direction:'{$matrix->sortDirection}'{rdelim}
 				{/if}
 			{rdelim});
 		store['{$tableID}'].loadData(tableData['{$tableID}']);

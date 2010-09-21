@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2010/09/06 07:19:30 $ by $Author: mx-julian $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2010/09/21 13:51:30 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
@@ -242,9 +242,9 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
         }
     }
 
-    if(($guiObj->row_qty=count($cf_map)) > 0 )
+    if(($guiObj->row_qty=count($cf_map)) == 0 )
     {
-        $guiObj->pageTitle .= " - " . lang_get('match_count') . ":" . $guiObj->row_qty;
+        $guiObj->warning_msg = lang_get('no_linked_tc_cf');
     }
 }
 

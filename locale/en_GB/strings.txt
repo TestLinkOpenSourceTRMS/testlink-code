@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.706 2010/09/21 12:52:32 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.707 2010/09/21 13:00:56 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2686,7 +2686,7 @@ $TLS_frozen = 'Frozen';
 $TLS_notes_req_overview = "This Overview shows all requirements (last or all versions) " .
                           "and all the related attributes. In addition all defined custom " .
                           "fields for requirements will be shown in a seperate column.";
-$TLS_calendar_week = "CW";
+$TLS_calendar_week_short = "CW";
 
 
 // ----- reqSpecEdit.php -----

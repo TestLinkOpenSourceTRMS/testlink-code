@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.32 2010/09/21 12:52:31 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.33 2010/09/21 13:00:56 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -54,8 +54,8 @@ $glue_char = config_get('gui_title_separator_1');
 $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
 $date_format_cfg = config_get('date_format');
-$week_short = lang_get('calendar_week');
-
+$week_short = lang_get('calendar_week_short');
+$time_format_cfg = config_get('timestamp_format');
 $coverage_enabled = $req_cfg->expected_coverage_management;
 $relations_enabled = $req_cfg->relations->enable;
 
@@ -173,6 +173,9 @@ if(count($gui->reqIDs) > 0) {
 				// 20100921 - asimon - added datetime formatting and calendar week for date custom fields
 				if ($verbose_type == 'date' && is_numeric($value) && $value != 0) {
 					$value = strftime("$date_format_cfg ($week_short %W)", $value);
+				}
+				if ($verbose_type == 'datetime' && is_numeric($value) && $value != 0) {
+					$value = strftime("$time_format_cfg ($week_short %W)", $value);
 				}
 
 				$result[] = $value;

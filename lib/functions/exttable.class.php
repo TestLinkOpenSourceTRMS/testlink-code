@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.36 2010/09/21 20:12:53 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.37 2010/09/21 20:26:51 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100921 - Julian - added stripeRows setting to getGridSettings(), default: enabled
  *	20100921 - eloff - refactor column index names
  *	20100830 - franciscom - buildColumns() refactored
  *							buildContent() minor refactored to avoid warnings on event viewer
@@ -91,7 +92,10 @@ class tlExtTable extends tlTable
 	public $collapsible = false;
 	
 	public $frame = false;
-
+	
+	// x-grid3-row-alt of extjs css file is responsible for color
+	public $stripeRows = true;
+	
 	/**
 	 * 20100816 - asimon - enable sorting by a default column.
 	 * If set (via setSortByColumnName), use this column for sorting. The value must be in the format from titleToColumnName.
@@ -346,7 +350,7 @@ class tlExtTable extends tlTable
 	function getGridSettings()
 	{
 		$s = '';
-		$settings = array('title', 'width', 'height', 'autoHeight', 'collapsible', 'frame');
+		$settings = array('title', 'width', 'height', 'autoHeight', 'collapsible', 'frame', 'stripeRows');
 		foreach ($settings as $setting) {
 			$value = $this->{$setting};
 			if (!is_null($value)){

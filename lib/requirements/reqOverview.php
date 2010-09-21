@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.31 2010/09/10 08:53:19 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.32 2010/09/21 12:52:31 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
- * 
+ *
+ * 20100921 - asimon - added datetime formatting and calendar week for date custom fields
  * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
  * 20100823 - Julian - table now uses a unique table id per test project
  * 20100822 - asimon - removal of magic numbers for default table sorting
@@ -52,6 +53,8 @@ $gui = init_gui($args);
 $glue_char = config_get('gui_title_separator_1');
 $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
+$date_format_cfg = config_get('date_format');
+$week_short = lang_get('calendar_week');
 
 $coverage_enabled = $req_cfg->expected_coverage_management;
 $relations_enabled = $req_cfg->relations->enable;
@@ -162,8 +165,17 @@ if(count($gui->reqIDs) > 0) {
 			// BUGID 2877 -  Custom Fields linked to Req versions
 			// get custom field values for this req version
 			$linked_cfields = (array)$req_mgr->get_linked_cfields($id,$version['version_id']);
+
 			foreach ($linked_cfields as $cf) {
-	    		$result[] = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $charset));
+				$verbose_type = trim($req_mgr->cfield_mgr->custom_field_types[$cf['type']]);
+				$value = preg_replace('!\s+!', ' ', htmlspecialchars($cf['value'], ENT_QUOTES, $charset));
+
+				// 20100921 - asimon - added datetime formatting and calendar week for date custom fields
+				if ($verbose_type == 'date' && is_numeric($value) && $value != 0) {
+					$value = strftime("$date_format_cfg ($week_short %W)", $value);
+				}
+
+				$result[] = $value;
 	    	}
 	    	
 	    	$rows[] = $result;

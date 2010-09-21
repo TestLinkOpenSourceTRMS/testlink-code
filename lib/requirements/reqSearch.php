@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.11 2010/09/20 20:25:45 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.12 2010/09/21 08:44:58 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
@@ -31,6 +31,7 @@ $tproject_mgr = new testproject($db);
     	
 $req_cfg = config_get('req_cfg');
 $tcase_cfg = config_get('testcase_cfg');
+$charset = config_get('charset');
 
 $commandMgr = new reqCommands($db);
 $gui = $commandMgr->initGuiBean();
@@ -193,7 +194,11 @@ else
 	$tpl = isset($the_tpl['reqSearchView']) ? $the_tpl['reqSearchView'] : 'reqViewVersions.tpl';
 }
 
-$gui->tableSet[] = buildExtTable($gui);
+$table = buildExtTable($gui, $charset);
+
+if (!is_null($table)) {
+	$gui->tableSet[] = $table;
+}
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
@@ -202,13 +207,13 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui) {
-	
+function buildExtTable($gui, $charset) {
+	$table = null;
 	if(count($gui->resultSet) > 0) {
 		$labels = array('req_spec' => lang_get('req_spec'), 'requirement' => lang_get('requirement'));
 		$columns = array();
 		
-		$columns[] = array('title' => $labels['req_spec'], 'type' => 'text');
+		$columns[] = array('title' => $labels['req_spec']);
 		$columns[] = array('title' => $labels['requirement'], 'type' => 'text');
 	
 		// Extract the relevant data and build a matrix
@@ -216,11 +221,11 @@ function buildExtTable($gui) {
 		
 		foreach($gui->resultSet as $result) {
 			$rowData = array();
-			$rowData[] = strip_tags($gui->path_info[$result['id']]);
+			$rowData[] = htmlentities($gui->path_info[$result['id']], ENT_QUOTES, $charset);
 
-			// build test case link
+			// build requirement link
 			$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
-			             strip_tags($result['name']);
+			             htmlentities($result['name'], ENT_QUOTES, $charset);
 			
 			$matrixData[] = $rowData;
 		}
@@ -243,9 +248,8 @@ function buildExtTable($gui) {
 		
 		// dont save settings for this table
 		$table->storeTableState = false;
-		
-		return($table);
 	}
+	return($table);
 }
 
 /*

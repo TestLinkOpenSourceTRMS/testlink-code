@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.4 2010/09/20 21:00:43 mx-julian Exp $
+ * @version    	CVS: $Id: reqSpecSearch.php,v 1.5 2010/09/21 08:44:58 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
@@ -25,6 +25,7 @@ $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
 $req_cfg = config_get('req_cfg');
+$charset = config_get('charset');
 
 $commandMgr = new reqSpecCommands($db);
 $gui = $commandMgr->initGuiBean();
@@ -117,13 +118,18 @@ else
 	$gui->type = "rec_spec";
 }
 
-$gui->tableSet[] = buildExtTable($gui);
+$table = buildExtTable($gui, $charset);
+
+if (!is_null($table)) {
+	$gui->tableSet[] = $table;
+}
 
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 
-function buildExtTable($gui) {
+function buildExtTable($gui, $charset) {
+	$table = null;
 	if(count($gui->resultSet) > 0) {
 		$labels = array('req_spec' => lang_get('req_spec'));
 		$columns = array();
@@ -137,9 +143,11 @@ function buildExtTable($gui) {
 			$rowData = array();
 			$path = ($gui->path_info[$result['id']]) ? $gui->path_info[$result['id']] . " / " : "";
 			// use html comment to properly sort by full path
-			$rowData[] = "<!-- " . strip_tags($path) . strip_tags($result['name']) ." -->" . strip_tags($path) . 
+			// build req spec link
+			$rowData[] = "<!-- " . htmlentities($path, ENT_QUOTES, $charset) . htmlentities($result['name'], ENT_QUOTES, $charset) ." -->" . 
+			             htmlentities($path, ENT_QUOTES, $charset) . 
 			             "<a href=\"lib/requirements/reqSpecView.php?item=req_spec&req_spec_id={$result['id']}\">" .
-			             strip_tags($result['name']);
+			             htmlentities($result['name'], ENT_QUOTES, $charset);
 			
 			$matrixData[] = $rowData;
 		}
@@ -157,9 +165,8 @@ function buildExtTable($gui) {
 		
 		// dont save settings for this table
 		$table->storeTableState = false;
-		
-		return($table);
 	}
+	return($table);
 }
 
 /*

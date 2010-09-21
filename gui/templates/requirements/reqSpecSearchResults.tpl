@@ -3,6 +3,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: show results for requirement specification search.
 
 rev:
+  20100921 - Julian - removed unused code
   20100920 - Julian - BUGID 3793 - use exttable to display search results
 *}
 
@@ -18,16 +19,9 @@ rev:
   {/if}
   {$matrix->renderHeadSection()}
 {/foreach}
-<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-{include file="inc_ext_js.tpl" css_only=1}
 
 </head>
 
-{assign var=this_template_dir value=$smarty.template|dirname}
-{lang_get var='labels' 
-          s='no_records_found,other_versions,version,generated_by_TestLink_on'}
-
-<body onLoad="viewElement(document.getElementById('other_versions'),false)">
 <h1 class="title">{$gui->pageTitle}</h1>
 
 <div class="workBack">
@@ -37,7 +31,7 @@ rev:
     {$matrix->renderBodySection($tableID)}
   {/foreach}
   <br />
-  {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
+  {lang_get s='generated_by_TestLink_on'} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
   <div class="user_feedback">
   {$gui->warning_msg}

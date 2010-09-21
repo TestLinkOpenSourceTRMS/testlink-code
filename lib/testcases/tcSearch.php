@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.19 2010/09/21 10:03:18 mx-julian Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.20 2010/09/21 10:07:28 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -273,7 +273,7 @@ function buildExtTable($gui, $charset) {
 		$table_id = 'tl_table_test_case_search';
 		$table = new tlExtTable($columns, $matrixData, $table_id);
 		
-		$table->setGroupByColumnName($labels['req_spec']);
+		$table->setGroupByColumnName($labels['test_suite']);
 		$table->setSortByColumnName($labels['test_case']);
 		$table->sortDirection = 'DESC';
 		

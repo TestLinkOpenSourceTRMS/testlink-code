@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.5 2010/09/21 08:44:58 mx-julian Exp $
+ * @version    	CVS: $Id: reqSpecSearch.php,v 1.6 2010/09/21 10:02:52 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
@@ -22,6 +22,8 @@ require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
+$tpl = 'reqSpecSearchResults.tpl';
+
 $tproject_mgr = new testproject($db);
 
 $req_cfg = config_get('req_cfg');
@@ -94,10 +96,9 @@ if ($args->tprojectID)
 
 $smarty = new TLSmarty();
 $gui->row_qty=count($map);
-if($gui->row_qty)
+if($gui->row_qty > 0)
 {
-	$tpl = 'reqSpecSearchResults.tpl';
-	$gui->pageTitle = $gui->main_descr . " - " . lang_get('match_count') . ": " . $gui->row_qty;
+
 	$gui->resultSet=$map;
 	if($gui->row_qty <= $req_cfg->search->max_qty_for_display)
 	{
@@ -112,10 +113,7 @@ if($gui->row_qty)
 }
 else
 {
-	$the_tpl = config_get('tpl');
-	$gui->pageTitle = $gui->main_descr;
-	$tpl = isset($the_tpl['reqSpecSearchView']) ? $the_tpl['reqSpecSearchView'] : 'reqSpecView.tpl';
-	$gui->type = "rec_spec";
+	$gui->warning_msg=lang_get('no_records_found');
 }
 
 $table = buildExtTable($gui, $charset);
@@ -124,6 +122,7 @@ if (!is_null($table)) {
 	$gui->tableSet[] = $table;
 }
 
+$gui->pageTitle = $gui->main_descr . " - " . lang_get('match_count') . ": " . $gui->row_qty;
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 

@@ -34,6 +34,7 @@ rev:
   {lang_get s='generated_by_TestLink_on'} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
   <div class="user_feedback">
+  <br />
   {$gui->warning_msg}
   </div>
 {/if}    

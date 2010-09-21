@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcSearchResults.tpl,v 1.5 2010/09/21 08:46:20 mx-julian Exp $
+$Id: tcSearchResults.tpl,v 1.6 2010/09/21 10:03:18 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -35,6 +35,7 @@ rev:
   {lang_get s='generated_by_TestLink_on'} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
   <div class="user_feedback">
+  <br />
   {$gui->warning_msg}
   </div>
 {/if} 

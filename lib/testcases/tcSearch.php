@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.18 2010/09/21 08:46:20 mx-julian Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.19 2010/09/21 10:03:18 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -33,6 +33,7 @@ require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
+$tpl = 'tcSearchResults.tpl';
 $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
@@ -212,9 +213,7 @@ if ($args->tprojectID)
 
 $smarty = new TLSmarty();
 if($gui->row_qty > 0)
-{
-	$tpl = 'tcSearchResults.tpl';
-	$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
+{	
 	if ($map)
 	{
 		$tcase_mgr = new testcase($db);   
@@ -226,8 +225,7 @@ if($gui->row_qty > 0)
 }
 else
 {
-	$the_tpl = config_get('tpl');
-    $tpl = isset($the_tpl['tcSearchView']) ? $the_tpl['tcSearchView'] : 'tcView.tpl';
+	$gui->warning_msg=lang_get('no_records_found');
 }
 
 $table = buildExtTable($gui, $charset);
@@ -236,6 +234,7 @@ if (!is_null($table)) {
 	$gui->tableSet[] = $table;
 }
 
+$gui->pageTitle .= " - " . lang_get('match_count') . " : " . $gui->row_qty;
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 

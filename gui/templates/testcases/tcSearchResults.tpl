@@ -1,47 +1,43 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcSearchResults.tpl,v 1.4 2010/09/20 14:52:31 mx-julian Exp $
+$Id: tcSearchResults.tpl,v 1.5 2010/09/21 08:46:20 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
-rev: 20080322 - franciscom - php errors clean up
+
+rev:
+  20100921 - Julian - BUGID 3793 - use exttable to display search results
+  20080322 - franciscom - php errors clean up
 *}
 
 {include file="inc_head.tpl" openHead='yes'}
-<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-{include file="inc_ext_js.tpl" css_only=1}
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+  {assign var=tableID value=$matrix->tableID}
+  {if $smarty.foreach.initializer.first}
+    {$matrix->renderCommonGlobals()}
+    {if $matrix instanceof tlExtTable}
+        {include file="inc_ext_js.tpl" bResetEXTCss=1}
+        {include file="inc_ext_table.tpl"}
+    {/if}
+  {/if}
+  {$matrix->renderHeadSection()}
+{/foreach}
 
 </head>
 
-{assign var=this_template_dir value=$smarty.template|dirname}
-{lang_get var='labels' 
-          s='no_records_found,other_versions,version,title_test_case'}
-
-<body onLoad="viewElement(document.getElementById('other_versions'),false)">
 <h1 class="title">{$gui->pageTitle}</h1>
 
 <div class="workBack">
 {if $gui->warning_msg == ''}
-    {if $gui->resultSet}
-        <table class="simple">
-        {foreach from=$gui->resultSet item=tcase}
-            {assign var="tcase_id" value=$tcase.testcase_id}
-            {assign var="tcversion_id" value=$tcase.tcversion_id}
-           <tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">       
-            <td>
-        	  {$gui->path_info[$tcase_id]}
-        	</td>
-        	<td>
-        	  <a href="lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}">
-        	  {$gui->tcasePrefix}{$tcase.tc_external_id|escape}:{$tcase.name|escape}</a>
-            </td>
-        	  </tr>
-        {/foreach}
-        </table>
-    {else}
-        	{$labels.no_records_found}
-    {/if}
+  {foreach from=$gui->tableSet key=idx item=matrix}
+    {assign var=tableID value=table_$idx}
+    {$matrix->renderBodySection($tableID)}
+  {/foreach}
+  <br />
+  {lang_get s='generated_by_TestLink_on'} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
-    {$gui->warning_msg}
-{/if}   
+  <div class="user_feedback">
+  {$gui->warning_msg}
+  </div>
+{/if} 
 </div>
 </body>
 </html>

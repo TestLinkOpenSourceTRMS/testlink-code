@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.17 2010/09/20 14:52:31 mx-julian Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.18 2010/09/21 08:46:20 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100920 - Julian - BUGID 3793 - use exttable to display search results
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to TC versions
  *	20100814 - franciscom - improvements on logic and feedback when user fill in test case id filter
  *	20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
@@ -28,12 +29,14 @@
  **/
 require_once("../../config.inc.php");
 require_once("common.php");
+require_once('exttable.class.php');
 testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $tproject_mgr = new testproject($db);
 
 $tcase_cfg = config_get('testcase_cfg');
+$charset = config_get('charset');
 $args = init_args();
 
 $gui = initializeGui($args);
@@ -224,10 +227,69 @@ if($gui->row_qty > 0)
 else
 {
 	$the_tpl = config_get('tpl');
-    $tpl = isset($the_tpl['tcSearchView']) ? $the_tpl['tcSearchView'] : 'tcView.tpl'; 
+    $tpl = isset($the_tpl['tcSearchView']) ? $the_tpl['tcSearchView'] : 'tcView.tpl';
 }
+
+$table = buildExtTable($gui, $charset);
+
+if (!is_null($table)) {
+	$gui->tableSet[] = $table;
+}
+
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
+
+/**
+ * 
+ *
+ */
+function buildExtTable($gui, $charset) {
+	$table = null;
+	if(count($gui->resultSet) > 0) {
+		$labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
+		$columns = array();
+		
+		$columns[] = array('title' => $labels['test_suite']);
+		$columns[] = array('title' => $labels['test_case'], 'type' => 'text');
+	
+		// Extract the relevant data and build a matrix
+		$matrixData = array();
+		
+		$titleSeperator = config_get('gui_title_separator_1');
+		
+		foreach($gui->resultSet as $result) {
+			$rowData = array();
+			$rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
+			
+			// build test case link
+			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$result['testcase_id']}\">" .
+			             htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
+			             htmlentities($result['name'], ENT_QUOTES, $charset);
+			
+			$matrixData[] = $rowData;
+		}
+	
+		// create unique table id for this report
+		// it is not necessary to create a unique id on project or test plan level as columns never change
+		$table_id = 'tl_table_test_case_search';
+		$table = new tlExtTable($columns, $matrixData, $table_id);
+		
+		$table->setGroupByColumnName($labels['req_spec']);
+		$table->setSortByColumnName($labels['test_case']);
+		$table->sortDirection = 'DESC';
+		
+		$table->showToolbar = true;
+		$table->allowMultiSort = false;
+		$table->toolbarRefreshButton = false;
+		$table->toolbarShowAllColumnsButton = false;
+		
+		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+		
+		// dont save settings for this table
+		$table->storeTableState = false;
+	}
+	return($table);
+}
 
 
 /**
@@ -306,6 +368,7 @@ function initializeGui(&$argsObj)
 	$gui->tcasePrefix = '';
 	$gui->path_info = null;
 	$gui->resultSet = null;
+	$gui->tableSet = null;
 	$gui->bodyOnLoad = null;
 	$gui->bodyOnUnload = null;
 	$gui->refresh_tree = false;

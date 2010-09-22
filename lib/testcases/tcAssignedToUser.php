@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/09/22 17:36:17 $  $Author: mx-julian $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2010/09/22 17:37:01 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
@@ -212,10 +212,6 @@ if( $doIt )
 		$gui->tableSet[$tplan_id] = $matrix;
 	}
 }
-
-echo "<pre>";
-print_r($gui->tableSet);
-echo "</pre>";
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

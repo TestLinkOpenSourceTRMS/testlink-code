@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.311 2010/09/20 18:26:06 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.312 2010/09/22 08:04:30 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -3446,19 +3446,21 @@ class testcase extends tlObjectWithAttachments
 	    }
 
 		// BUGID 3749
-		switch($my['filters']['build_status'])
-		{
-			case 'open':
-				$filters .= " AND BUILDS.is_open = 1 ";
-			break;
-
-			case 'closed':
-				$filters .= " AND BUILDS.is_open = 0 ";
-			break;
-
-		case 'all':
-		default:
-			break;
+		if(isset($my['filters']['build_status'])) {
+			switch($my['filters']['build_status'])
+			{
+				case 'open':
+					$filters .= " AND BUILDS.is_open = 1 ";
+				break;
+	
+				case 'closed':
+					$filters .= " AND BUILDS.is_open = 0 ";
+				break;
+	
+			case 'all':
+			default:
+				break;
+			}
 		}
 
 	    $sql .= $filters;

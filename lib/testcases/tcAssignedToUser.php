@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/09/22 12:27:46 $  $Author: asimon83 $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/09/22 14:37:44 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
@@ -137,17 +137,13 @@ if( $doIt )
 				$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
 
 				// create linked icons
-				$exec_link = "<a href=\"lib/execute/execSetResults.php?" .
-						"version_id={$tcversion_id}" .
-				        "&level=testcase&id={$tcase_id}" .
-						"&setting_build={$tcase['build_id']}" .
-						"&setting_platform={$tcase['platform_id']}\">" .
-						"<img src=\"{$exec_img}\" />" .
-						"</a> ";
+				$exec_link = "<a href=\"javascript:openExecutionWindow(" .
+				             "{$tcase_id}, {$tcversion_id}, {$tcase['build_id']}, " .
+				             "{$tcase['testplan_id']}, {$tcase['platform_id']});\">" .
+						     "<img src=\"{$exec_img}\" /></a> ";
 
-				$edit_link = " <a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}\">" .
-				             "<img src=\"{$edit_img}\" />" .
-				             "</a> ";
+				$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
+				             "<img src=\"{$edit_img}\" /></a> ";
 
 				$current_row[] = $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] .
 				        		 ":" . htmlspecialchars($tcase['name']) .

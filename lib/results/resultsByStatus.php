@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.96 2010/09/21 20:53:59 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.97 2010/09/22 14:37:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution in popups
  *  20100901 - Julian - added test case edit link for test case column
  *  20100831 - Julian - BUGID 3722 - fixed not run report
  *                    - BUGID 3721 - added without_bugs_counter again
@@ -86,6 +87,9 @@ $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
 $testCaseCfg = config_get('testcase_cfg');
 
+$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
+$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
+
 $mailCfg = buildMailCfg($gui);
 
 
@@ -131,7 +135,7 @@ else
 	$myRBB = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
 	$user_key='tester_id';
 }
-
+//echo "<pre>"; print_r($myRBB); echo "</pre>";
 if( !is_null($myRBB) and count($myRBB) > 0 )
 {
     $pathCache=null;
@@ -159,10 +163,36 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 				    $testerName = sprintf($deleted_user_label,$testcase[$user_key]);
 				}
 			}
-			
+
+		    // create linked icons
+
+		    $exec_link = "";
+		    $build_id = null;
+		    if (isset($testcase['build_id'])) {
+			    $build_id = $testcase['build_id'];
+		    } else if (isset($testcase['assigned_build_id'])) {
+			    $build_id = $testcase['assigned_build_id'];
+		    }
+		    if (!is_null($build_id)) {
+			    $exec_link = "<a href=\"javascript:openExecutionWindow(" .
+				             "{$testcase['tc_id']}, {$testcase['tcversion_id']}, {$build_id}, " .
+				             "{$args->tplan_id}, {$testcase['platform_id']});\">" .
+				             "<img src=\"{$exec_img}\" /></a> ";
+		    }
+
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$testcase['tc_id']});\">" .
+						 "<img src=\"{$edit_img}\" /></a> ";
+
+			$current_row[] = $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] .
+							 ":" . htmlspecialchars($tcase['name']) .
+							 sprintf($l18n['tcversion_indicator'],$tcase['version']);
+
 			$tcaseName = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']). ':' . $testcase['name'];
-			$tcLink = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . 
-			          $testcase['tc_id'] . '">' . htmlspecialchars($tcaseName) . '</a>';
+
+		    $tcLink = $exec_link . $edit_link . $tcaseName;
+
+		    //$tcLink = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' .
+			//          $testcase['tc_id'] . '">' . htmlspecialchars($tcaseName) . '</a>';
 			
 			if( !isset($pathCache[$testcase['tc_id']]) )
 			{

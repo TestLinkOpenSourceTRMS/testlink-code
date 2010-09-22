@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.105 2010/08/12 14:00:16 asimon83 Exp $
+// $Id: testlink_library.js,v 1.106 2010/09/22 14:37:43 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20100922 - asimon - added openExecutionWindow() und openTCEditWindow()
 // 20100811 - asimon - fixed IE JS error on openAssignmentOverviewWindow()
 // 20100731 - asimon - added openAssignmentOverviewWindow()
 // 20100708 - asimon - BUGID 3406 - removed PL()
@@ -697,6 +698,42 @@ function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
 	var windowCfg = "width=800,height=600,resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+url, '_blank', windowCfg);
 }
+
+
+/**
+ * Open testcase description in a popup window.
+ * @author Andreas Simon
+ * @param tc_id
+ */
+function openTCEditWindow(tc_id) {
+	var url = "lib/testcases/archiveData.php?edit=testcase&id=" + tc_id;
+
+	var windowCfg = "width=800,height=600,resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+url, '_blank', windowCfg);
+}
+
+
+/**
+ * Open testcase for execution in a popup window.
+ * @author Andreas Simon
+ * @param tc_id
+ * @param tcversion_id
+ * @param build_id
+ * @param tplan_id
+ * @param platform_id
+ */
+function openExecutionWindow(tc_id, tcversion_id, build_id, tplan_id, platform_id) {
+	var url = "lib/execute/execSetResults.php?" +
+	          "version_id=" + tcversion_id +
+	          "&level=testcase&id=" + tc_id +
+	          "&tplan_id=" + tplan_id +
+	          "&setting_build=" + build_id +
+	          "&setting_platform=" + platform_id;
+
+	var windowCfg = "width=800,height=600,resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+url, '_blank', windowCfg);
+}
+
 
 /*
   function: open_help_window

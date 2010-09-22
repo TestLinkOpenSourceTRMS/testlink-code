@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/09/06 12:08:31 $  $Author: asimon83 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2010/09/22 08:16:07 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100922 - Julian - BUGID 3714 - refactored default grouping and sorting
  *  20100906 - asimon -  BUGID 3749
  *  20100826 - Julian - removed redundant version indication
  *  20100825 - Julian - make table collapsible if more than 1 table is shown
@@ -141,11 +142,11 @@ if( $doIt )
 				
 				if ($args->priority_enabled) {
 					if ($tcase['priority'] >= $urgencyImportance->threshold['high']) {
-						$current_row[] = $priority['high'];
+						$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority['high'];
 					} else if ($tcase['priority'] < $urgencyImportance->threshold['low']) {
-						$current_row[] = $priority['low'];
+						$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority['low'];
 					} else {
-						$current_row[] = $priority['medium'];
+						$current_row[] = "<!-- " . $tcase['priority'] . " -->" . $priority['medium'];
 					}
 				}
 				
@@ -167,15 +168,11 @@ if( $doIt )
 			}
 		}
 		
-		$table_id = 'tl_' . $args->tproject_id . '_' . $tplan_id . '_table_tc_assignment';
-		$table_id .= ($args->show_all_users) ? '_overview' : '_for_user';
-		$table_id .= ($args->build_id) ? '_window' : '';
-
-		$matrix = new tlExtTable($columns, $rows, $table_id);
+		$matrix = new tlExtTable($columns, $rows, "tl_table_tc_assigned_to_user");
 		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
 		
 		// default grouping by first column, which is user for overview, build otherwise
-		$matrix->groupByColumn = 0;
+		$matrix->setGroupByColumnName($columns[0]['title']);
 		
 		// make table collapsible if more than 1 table is shown and surround by frame
 		if (count($tplanSet) > 1) {
@@ -187,7 +184,9 @@ if( $doIt )
 		$matrix->showToolbar = true;
 		$matrix->toolbarExpandCollapseGroupsButton = true;
 		$matrix->toolbarShowAllColumnsButton = true;
-		$matrix->sortByColumn = $sortByColumn;
+		
+		$matrix->setSortByColumnName($sortByColumn);
+		$matrix->sortDirection = 'DESC';
 		$gui->tableSet[$tplan_id] = $matrix;
 	}
 }
@@ -286,10 +285,15 @@ function getColumnsDefinition($optionalColumns, $show_platforms)
 	}
 
 	$colDef = array();
-	$sortByColNum = 1;
+	// sort by test suite per default
+	$sortByCol = $labels['testsuite'];
+	
+	// user column is only shown for assignment overview
 	if ($optionalColumns['user']) 
 	{
 		$colDef[] = array('title' => $labels['user'], 'width' => 80);
+		// for assignment overview sort by build
+		$sortByCol = $labels['build'];
 	}
 	
 	$colDef[] = array('title' => $labels['build'], 'width' => 80);
@@ -303,14 +307,13 @@ function getColumnsDefinition($optionalColumns, $show_platforms)
 	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
 	if ($optionalColumns['priority']) 
 	{
-	  	// if priority is enabled, enable default sorting by that column
-	  	$sortByColNum = count($colDef);
+	  	$sortByCol = $labels['priority'];
 		$colDef[] = array('title' => $labels['priority'], 'width' => 50);
 	}
 	
 	$colDef[] = array('title' => $labels['status'], 'width' => 50);
 	$colDef[] = array('title' => $labels['due_since'], 'width' => 100);
 
-	return array($colDef, $sortByColNum);
+	return array($colDef, $sortByCol);
 }
 ?>

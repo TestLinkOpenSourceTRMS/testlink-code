@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.17 $
- * @modified $Date: 2010/09/22 08:37:03 $  $Author: mx-julian $
+ * @version $Revision: 1.18 $
+ * @modified $Date: 2010/09/22 12:27:46 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution
  *  20100922 - Julian - BUGID 3714 - refactored default grouping and sorting
  *  20100906 - asimon -  BUGID 3749
  *  20100826 - Julian - removed redundant version indication
@@ -47,6 +48,9 @@ $gui->glueChar = config_get('testcase_cfg')->glue_character;
 $gui->tproject_name = $tproject_info['name'];
 $gui->warning_msg = '';
 $gui->tableSet = null;
+
+$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
+$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $tplan_mgr = new testplan($db);
 
@@ -101,7 +105,7 @@ $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPL
 $gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id, 
                                                  $tplan_param, $options, $filters);
 
-$doIt = !is_null($gui->resultSet); 
+$doIt = !is_null($gui->resultSet);
 if( $doIt )
 {	
 	$tables = tlObjectWithDB::getDBTables(array('nodes_hierarchy'));
@@ -131,13 +135,30 @@ if( $doIt )
 		
 				$current_row[] = htmlspecialchars($tcase['build_name']);
 				$current_row[] = htmlspecialchars($tcase['tcase_full_path']);
-				
-				$current_row[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}\" " . 
-				        		 " title=\"{$l18n['goto_testspec']}\">" .
-				        		 htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] . 
-				        		 ":" . htmlspecialchars($tcase['name']) . 
-				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']) 
-				        		  . "</a>";
+
+				// create linked icons
+				$exec_link = "<a href=\"lib/execute/execSetResults.php?" .
+						"version_id={$tcversion_id}" .
+				        "&level=testcase&id={$tcase_id}" .
+						"&setting_build={$tcase['build_id']}" .
+						"&setting_platform={$tcase['platform_id']}\">" .
+						"<img src=\"{$exec_img}\" />" .
+						"</a> ";
+
+				$edit_link = " <a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}\">" .
+				             "<img src=\"{$edit_img}\" />" .
+				             "</a> ";
+
+				$current_row[] = $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] .
+				        		 ":" . htmlspecialchars($tcase['name']) .
+				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']);
+
+//				$current_row[] = $link . " <a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}\" " .
+//				        		 " title=\"{$l18n['goto_testspec']}\">" .
+//				        		 htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] .
+//				        		 ":" . htmlspecialchars($tcase['name']) .
+//				        		 sprintf($l18n['tcversion_indicator'],$tcase['version'])
+//				        		  . "</a>";
 
 				if ($show_platforms)
 				{

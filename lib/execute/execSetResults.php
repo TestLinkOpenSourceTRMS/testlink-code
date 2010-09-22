@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.167 $
- * @modified $Date: 2010/09/05 17:32:20 $ $Author: franciscom $
+ * @version $Revision: 1.168 $
+ * @modified $Date: 2010/09/22 12:27:46 $ $Author: asimon83 $
  *
  * rev:
+ *  20100922 - asimon - let this page be functional withouth a form token too, changed init_args()
  *	20100821 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
  *	20100821 - franciscom - code layout refactoring
  *  20100812 - asimon - BUGID 3672
@@ -357,6 +358,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
   returns: 
   
   rev:
+    20100922 - asimon - let this page be functional withouth a form token too
 	20100625 - asimon - fixed a little bug in platform id initializing when no platform is used
 	                    (now number 0 instead of value null)
 	20090913 - franciscom - fixed bug on filter_status initialization
@@ -385,6 +387,10 @@ function init_args($cfgObj)
 	foreach($key2null as $key => $sessionKey)
 	{
 		$args->$key = isset($session_data[$sessionKey]) ? $session_data[$sessionKey] : null;
+		// let this page be functional withouth a form token too (when called from testcases assigned to me)
+		if (is_null($args->$key)) {
+			$args->$key = isset($_REQUEST[$sessionKey]) ? $_REQUEST[$sessionKey] : null;
+		}
 	}
 
 	if (is_null($args->build_id)) {

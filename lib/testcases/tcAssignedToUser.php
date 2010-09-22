@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2010/09/22 14:37:44 $  $Author: asimon83 $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2010/09/22 17:36:17 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
@@ -138,8 +138,8 @@ if( $doIt )
 
 				// create linked icons
 				$exec_link = "<a href=\"javascript:openExecutionWindow(" .
-				             "{$tcase_id}, {$tcversion_id}, {$tcase['build_id']}, " .
-				             "{$tcase['testplan_id']}, {$tcase['platform_id']});\">" .
+				             "{$tcase_id},{$tcversion_id},{$tcase['build_id']}," .
+				             "{$tcase['testplan_id']},{$tcase['platform_id']});\">" .
 						     "<img src=\"{$exec_img}\" /></a> ";
 
 				$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
@@ -189,7 +189,8 @@ if( $doIt )
 			}
 		}
 		
-		$matrix = new tlExtTable($columns, $rows, "tl_table_tc_assigned_to_user");
+		// tplan_id has to be part of table id as a single table for each tplan is created
+		$matrix = new tlExtTable($columns, $rows, "tl_table_tc_assigned_to_user_for_tplan_".$tplan_id);
 		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
 		
 		// default grouping by first column, which is user for overview, build otherwise
@@ -211,6 +212,10 @@ if( $doIt )
 		$gui->tableSet[$tplan_id] = $matrix;
 	}
 }
+
+echo "<pre>";
+print_r($gui->tableSet);
+echo "</pre>";
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

@@ -7,10 +7,11 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	
- * @version    	CVS: $Id: platformPieChart.php,v 1.3 2010/09/12 17:09:17 franciscom Exp $
+ * @version    	CVS: $Id: platformPieChart.php,v 1.4 2010/09/22 12:28:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100922 - Julian - BUGID 3798
  * 20091222 - eloff - fixed extraction of data to current data structures
  *
  *
@@ -60,6 +61,10 @@ $pChartCfg->YSize = $chart_cfg['YSize'];
 $pChartCfg->radius = $chart_cfg['radius'];
 $pChartCfg->legendX = $chart_cfg['legendX'];                    
 $pChartCfg->legendY = $chart_cfg['legendY'];
+
+// BUGID 3798
+$pChartCfg->centerX = intval($pChartCfg->XSize/2);                    
+$pChartCfg->centerY = intval($pChartCfg->YSize/2);
 
 $graph = new stdClass();
 $graph->data = $DataSet->GetData();

@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/09/22 08:16:07 $  $Author: mx-julian $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/09/22 08:37:03 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
@@ -91,6 +91,10 @@ if (!$args->show_inactive_and_closed) {
 // BUGID 3647
 if ($args->build_id) {
 	$filters['build_id'] = $args->build_id;
+	
+	// if build_id is set, show assignments regardless of build and tplan status
+	$filters['build_status'] = 'all';
+	$filters['tplan_status'] = 'all';
 }
 
 $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;

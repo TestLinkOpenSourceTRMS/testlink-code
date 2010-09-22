@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.18 $
- * @modified $Date: 2010/09/21 20:53:59 $ $Author: mx-julian $
+ * @version $Revision: 1.19 $
+ * @modified $Date: 2010/09/22 12:35:28 $ $Author: mx-julian $
  *
  * @author franciscom
  *
  * @internal revisions
+ * 20100922 - Julian - Hide "Progress (Executed/Total)"-Column by default
  * 20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
  *                                - use of exttable 
  * 20100526 - Julian - fixed wrong access to platform array
@@ -218,7 +219,8 @@ function getColumnsDefinition($showPlatforms)
 	$colDef[] = array('title' => lang_get('th_active_tc'), 'width' => 40);
 	$colDef[] = array('title' => lang_get('th_executed_tc'), 'width' => 40);
 	$colDef[] = array('title' => lang_get('th_executed_vs_active'), 'width' => 40);
-	$colDef[] = array('title' => lang_get('th_executed_vs_total'), 'width' => 40);
+	// hide progress related to total number of test cases by default
+	$colDef[] = array('title' => lang_get('th_executed_vs_total'), 'width' => 40, 'hidden' => true);
 	
 	return $colDef;
 	

@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.71 2010/09/21 20:53:59 mx-julian Exp $ 
+* $Id: resultsTC.php,v 1.72 2010/09/23 14:42:52 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author 
+* 20100923 - eloff - refactored to use improved table interface
 * 20100828 - eloff - adapt to rendering of status column
 * 20100823 - Julian - table now uses a unique table id per test project and test plan
 * 20100816 - Julian - changed default column width
@@ -295,17 +296,17 @@ function checkRights(&$db,&$user)
  */
 function buildMatrix($buildSet, $dataSet, $format, $show_platforms, &$args)
 {
-	$columns = array(array('title' => lang_get('title_test_suite_name'), 'width' => 100),
-		             array('title' => lang_get('title_test_case_title'), 'width' => 150));
+	$columns = array(array('title_key' => 'title_test_suite_name', 'width' => 100),
+	                 array('title_key' => 'title_test_case_title', 'width' => 150));
 	if ($show_platforms)
 	{
-		$columns[] = array('title' => lang_get('platform'), 'width' => 60);
+		$columns[] = array('title_key' => 'platform', 'width' => 60);
 	}
 	
 	// BUGID 3418: check if test priority is enabled
 	if($_SESSION['testprojectOptions']->testPriorityEnabled) 
 	{
-		$columns[] = array('title' => lang_get('priority'), 'type' => 'priority', 'width' => 40);
+		$columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 40);
 	}
 	
 	foreach ($buildSet as $build) 

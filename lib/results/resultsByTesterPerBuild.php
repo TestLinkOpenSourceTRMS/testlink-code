@@ -8,11 +8,12 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.9 2010/09/21 20:53:59 mx-julian Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.10 2010/09/23 11:09:38 mx-julian Exp $
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
+ * 20100923 - Julian - BUGID 3802
  * 20100823 - asimon - refactoring: $table_id
  * 20100816 - asimon - enable default sorting by progress column
  * 20100731 - asimon - initial commit
@@ -49,7 +50,7 @@ $columns[] = array('title' => lang_get('th_tc_assigned'), 'width' => 50);
 foreach ($status_map as $status => $code) {
 	$label = $results_config['status_label'][$status];
 	$columns[] = array('title' => lang_get($label), 'width' => 20);
-	$columns[] = array('title' => '[%]', 'width' => 20);
+	$columns[] = array('title' => lang_get($label).' '.lang_get('in_percent'), 'width' => 30);
 }
 
 $columns[] = array('title' => lang_get('progress'), 'width' => 30);

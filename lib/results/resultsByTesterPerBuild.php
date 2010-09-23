@@ -8,12 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.12 2010/09/23 13:32:44 erikeloff Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.13 2010/09/23 14:24:27 mx-julian Exp $
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
  * 20100923 - Julian - BUGID 3803
+ *                   - added status label to status percentage column to be able to reorder columns
+ *                     without losing the context
  * 20100823 - asimon - refactoring: $table_id
  * 20100816 - asimon - enable default sorting by progress column
  * 20100731 - asimon - initial commit
@@ -50,7 +52,7 @@ $columns[] = array('title' => lang_get('th_tc_assigned'), 'width' => 50);
 foreach ($status_map as $status => $code) {
 	$label = $results_config['status_label'][$status];
 	$columns[] = array('title' => lang_get($label), 'width' => 20);
-	$columns[] = array('title' => lang_get('in_percent'), 'width' => 30);
+	$columns[] = array('title' => lang_get($label) . " " . lang_get('in_percent'), 'width' => 30);
 }
 
 $columns[] = array('title' => lang_get('progress'), 'width' => 30);

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.709 2010/09/23 11:09:39 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.710 2010/09/23 14:24:27 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -116,7 +116,7 @@ $TLS_parent_child='is Parent or is Child';
 $TLS_blocks_depends = 'Blocks or Depends';
 $TLS_related_to='is related to';
 $TLS_unknown_code='unknown code: %s';
-$TLS_in_percent = "[in %]";
+$TLS_in_percent = "[%]";
 
 $TLS_file_size_exceeded = 'File size (%s) > allowed size (%s)';
 

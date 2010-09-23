@@ -1,12 +1,14 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.23 2010/05/02 15:26:59 franciscom Exp $
+$Id: usersView.tpl,v 1.24 2010/09/23 07:55:25 mx-julian Exp $
 
 Purpose: smarty template - users overview
 
-20100426 - asimon - removed forgotten comment end sign (template syntax error)
-20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
-20100326 - franciscom - BUGID 3324
+rev:
+  20100923 - Julian - BUGID 3802
+  20100426 - asimon - removed forgotten comment end sign (template syntax error)
+  20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
+  20100326 - franciscom - BUGID 3324
 *}
 {include file="inc_head.tpl" openHead="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -137,7 +139,9 @@ function toggleRowByClass(oid,className,displayValue)
 				<td>{$userObj->emailAddress|escape}</td>
 				<td>{$r_d|escape}</td>
 				<td>
-				 {$optLocale[$userObj->locale]|escape}
+				 {* BUGID 3802 *}
+				 {assign var="user_locale" value=$userObj->locale}
+				 {$optLocale.$user_locale|escape}
 				</td>
 				<td align="center">
 					{if $userObj->isActive eq 1}

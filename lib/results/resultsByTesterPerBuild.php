@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.11 2010/09/23 11:56:53 amkhullar Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.12 2010/09/23 13:32:44 erikeloff Exp $
  *
  * Lists results and progress by tester per build.
  * 
@@ -50,7 +50,7 @@ $columns[] = array('title' => lang_get('th_tc_assigned'), 'width' => 50);
 foreach ($status_map as $status => $code) {
 	$label = $results_config['status_label'][$status];
 	$columns[] = array('title' => lang_get($label), 'width' => 20);
-	$columns[] = array('title' => lang_get($label).' '.lang_get('in_percent'), 'width' => 30);
+	$columns[] = array('title' => lang_get('in_percent'), 'width' => 30);
 }
 
 $columns[] = array('title' => lang_get('progress'), 'width' => 30);

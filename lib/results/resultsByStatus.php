@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.98 2010/09/23 10:33:41 amkhullar Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.99 2010/09/23 14:42:14 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100923 - eloff - refactored to use improved table interface
  *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution in popups
  *  20100901 - Julian - added test case edit link for test case column
  *  20100831 - Julian - BUGID 3722 - fixed not run report
@@ -420,28 +421,28 @@ function buildMatrix($dataSet, &$args, $options = array())
 	);
 	$options = array_merge($default_options, $options);
 	$columns = array();
-	$columns[] = array('title' => lang_get('title_test_suite_name'), 'width' => 80, 'type' => 'text');
-	$columns[] = array('title' => lang_get('title_test_case_title'), 'width' => 80, 'type' => 'text');
-	$columns[] = array('title' => lang_get('version'), 'width' => 30);
+	$columns[] = array('title_key' => 'title_test_suite_name', 'width' => 80, 'type' => 'text');
+	$columns[] = array('title_key' => 'title_test_case_title', 'width' => 80, 'type' => 'text');
+	$columns[] = array('title_key' => 'version', 'width' => 30);
 	if ($options['show_platforms'])
 	{
-		$columns[] = array('title' => lang_get('platform'), 'width' => 60);
+		$columns[] = array('title_key' => 'platform', 'width' => 60);
 	}
 	if( $options['status_not_run'] )
 	{
-		$columns[] = array('title' => lang_get('th_build'), 'width' => 35);
-		$columns[] = array('title' => lang_get('assigned_to'), 'width' => 60);
-		$columns[] = array('title' => lang_get('summary'), 'width' => 150, 'type' => 'text');
+		$columns[] = array('title_key' => 'th_build', 'width' => 35);
+		$columns[] = array('title_key' => 'assigned_to', 'width' => 60);
+		$columns[] = array('title_key' => 'summary', 'width' => 150, 'type' => 'text');
 	}
 	else
 	{
-		$columns[] = array('title' => lang_get('th_build'), 'width' => 35);
-		$columns[] = array('title' => lang_get('th_run_by'), 'width' => 60);
-		$columns[] = array('title' => lang_get('th_date'), 'width' => 60);
-		$columns[] = array('title' => lang_get('title_execution_notes'), 'width' => 150, 'type' => 'text');
+		$columns[] = array('title_key' => 'th_build', 'width' => 35);
+		$columns[] = array('title_key' => 'th_run_by', 'width' => 60);
+		$columns[] = array('title_key' => 'th_date', 'width' => 60);
+		$columns[] = array('title_key' => 'title_execution_notes', 'width' => 150, 'type' => 'text');
 		if ($options['bugInterfaceOn'])
 		{
-			$columns[] = array('title' => lang_get('th_bugs'), 'type' => 'text');
+			$columns[] = array('title_key' => 'th_bugs', 'type' => 'text');
 		}
 	}
 

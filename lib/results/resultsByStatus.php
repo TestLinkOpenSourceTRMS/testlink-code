@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.97 2010/09/22 14:37:44 asimon83 Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.98 2010/09/23 10:33:41 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -183,10 +183,6 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$testcase['tc_id']});\">" .
 						 "<img src=\"{$edit_img}\" /></a> ";
 
-			$current_row[] = $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] .
-							 ":" . htmlspecialchars($tcase['name']) .
-							 sprintf($l18n['tcversion_indicator'],$tcase['version']);
-
 			$tcaseName = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']). ':' . $testcase['name'];
 
 		    $tcLink = $exec_link . $edit_link . $tcaseName;
@@ -303,7 +299,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 	}
 }	
 
-new dBug($gui->dataSet);
+//new dBug($gui->dataSet);
 
 $gui->tableSet[] = buildMatrix($gui->dataSet, $args, array(
 		'status_not_run' => ($args->type == $statusCode['not_run']),

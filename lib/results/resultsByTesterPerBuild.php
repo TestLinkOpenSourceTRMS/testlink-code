@@ -8,12 +8,12 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.10 2010/09/23 11:09:38 mx-julian Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.11 2010/09/23 11:56:53 amkhullar Exp $
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
- * 20100923 - Julian - BUGID 3802
+ * 20100923 - Julian - BUGID 3803
  * 20100823 - asimon - refactoring: $table_id
  * 20100816 - asimon - enable default sorting by progress column
  * 20100731 - asimon - initial commit

@@ -8,11 +8,12 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.13 2010/09/23 14:24:27 mx-julian Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.14 2010/09/23 14:41:18 erikeloff Exp $
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
+ * 20100923 - eloff - refactored to use improved table interface
  * 20100923 - Julian - BUGID 3803
  *                   - added status label to status percentage column to be able to reorder columns
  *                     without losing the context
@@ -45,17 +46,17 @@ $names = $user->getNames($db);
 
 // build the table header
 $columns = array();
-$columns[] = array('title' => lang_get('build'), 'width' => 50);
-$columns[] = array('title' => lang_get('user'), 'width' => 50);
-$columns[] = array('title' => lang_get('th_tc_assigned'), 'width' => 50);
+$columns[] = array('title_key' => 'build', 'width' => 50);
+$columns[] = array('title_key' => 'user', 'width' => 50);
+$columns[] = array('title_key' => 'th_tc_assigned', 'width' => 50);
 
 foreach ($status_map as $status => $code) {
 	$label = $results_config['status_label'][$status];
-	$columns[] = array('title' => lang_get($label), 'width' => 20);
-	$columns[] = array('title' => lang_get($label) . " " . lang_get('in_percent'), 'width' => 30);
+	$columns[] = array('title_key' => $label, 'width' => 20);
+	$columns[] = array('title_key' => 'in_percent', 'width' => 30);
 }
 
-$columns[] = array('title' => lang_get('progress'), 'width' => 30);
+$columns[] = array('title_key' => 'progress', 'width' => 30);
 
 // build the content of the table
 $rows = array();

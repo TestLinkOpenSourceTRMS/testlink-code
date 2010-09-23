@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: table.class.php,v 1.11 2010/09/23 13:32:43 erikeloff Exp $
+ * @version CVS: $Id: table.class.php,v 1.12 2010/09/23 14:24:55 erikeloff Exp $
  *
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
@@ -14,6 +14,7 @@
  *
  * @internal Revision:
  *  20100922 - eloff - BUGID 3805 - allow duplicate column names by generating unique id
+ *                     Added option to pass title_key when creating columns
  *  20100921 - eloff - added col_id value to columns
  *  20100828 - eloff - Changed format on status column
  *  20100823 - eloff - Always store column config in full format(array-of-arrays)
@@ -80,10 +81,25 @@ abstract class tlTable
 	 *        (i.e. array('Title 1', 'Title 2')) or an array where each value
 	 *        is an array('title' => 'Column title 1',
 	 *                    'type' => 'string',
-	 *                    'width => 150);
-	 *        Internally the columns will always be saved in the second format.
-	 *        Also a unique column id will be generated based on title if
-	 *        col_id is not given as parameter.
+	 *                    'width' => 150);
+	 *
+	 *        Let the constructor do localization:
+	 *        array('title_key' => 'title_test_case_title', 'width' => 150)
+	 *
+	 *        Explicitly set column id:
+	 *        array('title' => '[%]', 'col_id' => 'passed_percent')
+	 *
+	 *        It is possible to set title_key instead of title: this will mean
+	 *        the localization is done within the constructor and that title_key
+	 *        can be used as column id. If title key is not given then create a
+	 *        column id based on the localized title.
+	 *
+	 *        It is possible to override the generated column id by passing a
+	 *        value as col_id.
+	 *
+	 *        Internally the columns will always be saved in the full format
+	 *        (array-of-arrays).
+	 *
 	 *        @see tlTable::$columns
 	 *        @see tlTable::$data
 	 */
@@ -94,8 +110,20 @@ abstract class tlTable
 		$this->columns = array();
 		foreach ($columns as $column) {
 			if (is_array($column)) {
+				if (isset($column['title_key'])) {
+					if (isset($column['title'])) {
+						throw new Exception("Both title and title_key are set: use only one of them");
+					}
+					$column['title'] = lang_get($column['title_key']);
+				}
+
+				// If $title_key was given, use that for col_id, otherwise use $title
 				if (!isset($column['col_id'])) {
-					$column['col_id'] = $this->titleToColumnName($column['title']);
+					$key = $column['title'];
+					if (isset($column['title_key'])) {
+						$key = $column['title_key'];
+					}
+					$column['col_id'] = $this->titleToColumnName($key);
 				}
 				$this->columns[] = $column;
 			}
@@ -138,7 +166,7 @@ abstract class tlTable
 	 */
 	private function titleToColumnName($title) {
 		static $usedNames = array();
-		static $allowedChars = "abcdefghijklmnopqrstuvwxyz0123456789";
+		static $allowedChars = "_abcdefghijklmnopqrstuvwxyz0123456789";
 		// always start with this to avoid number in beginning
 		$js_safe = 'id_';
 		$chars = str_split($title);

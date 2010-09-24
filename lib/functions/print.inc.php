@@ -8,7 +8,7 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.117 2010/09/23 17:24:25 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.118 2010/09/24 11:24:48 mx-julian Exp $
  * @uses printDocument.php
  *
  *
@@ -526,7 +526,7 @@ function renderFirstPage($doc_info)
 		// BUGID 3804 - contribution
 		$output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
            		   'title="configure using $tlCfg->document_generator->company_logo" style="height: 53px;"'.
-           		   ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . docCfg->company_logo . '" />';
+           		   ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" />';
 	}
 	$output .= "</div>\n";
 	$output .= '<div class="doc_title"><p>' . $doc_info->title . '</p>';

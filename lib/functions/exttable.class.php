@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.38 2010/09/23 13:32:43 erikeloff Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.39 2010/09/24 11:12:01 asimon83 Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20100924 - asimon - made export ("download") button configurable
  *  20100921 - Julian - added stripeRows setting to getGridSettings(), default: enabled
  *	20100921 - eloff - refactor column index names
  *	20100830 - franciscom - buildColumns() refactored
@@ -135,7 +136,13 @@ class tlExtTable extends tlTable
 	 * If true show "refresh" button
 	 */
 	public $toolbarRefreshButton = true;
-	
+
+	/**
+	 * If true, show export button in table toolbar.
+	 * @var bool
+	 */
+	public $showExportButton = false;
+
 	/**
 	 * If true save table state to cookie
 	 * see BUGID 3714 for information about problems
@@ -156,6 +163,8 @@ class tlExtTable extends tlTable
 	{
 		parent::__construct($columns, $data, $tableID);
 		$this->addCustomBehaviour('status', array('render' => 'statusRenderer', 'sort' => 'statusCompare'));
+
+		$this->showExportButton = config_get('enableTableExportButton');
 	}
 
 	/**

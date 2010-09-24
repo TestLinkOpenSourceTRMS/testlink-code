@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.323 2010/09/15 20:55:11 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.324 2010/09/24 11:12:01 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100924 - asimon - added $tlCfg->enableTableExportButton
  *  20100915 - amitkhullar - BUGID 3639 - added $tlcfg->testcase_reorder_by for Reorder Test Cases
  *  20100915 - Julian - BUGID 3777 - added $tlCfg->req_cfg->allow_insertion_of_last_doc_id
  *  20100901 - asimon - re-enabled filter for assigned user when assigning testcases
@@ -1274,6 +1275,13 @@ $tlCfg->urgencyImportance->threshold['high'] = 6;
  * @TODO list with feature are disabled.
  */
 $tlCfg->demoMode = OFF;
+
+/**
+ * If enabled, every Ext JS table in TestLink will offer an export button,
+ * which generates a file with the contents of the table.
+ */
+$tlCfg->enableTableExportButton = DISABLED;
+
 
 // ----- End of Config ------------------------------------------------------------------
 // --------------------------------------------------------------------------------------

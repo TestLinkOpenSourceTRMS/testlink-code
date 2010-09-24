@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_js.tpl,v 1.12 2010/08/20 14:18:46 mx-julian Exp $
+$Id: inc_ext_js.tpl,v 1.13 2010/09/24 11:12:00 asimon83 Exp $
 Purpose: include files for:
          Ext JS Library - Copyright(c) 2006-2007, Ext JS, LLC.
          licensing@extjs.com - http://www.extjs.com/license
@@ -38,6 +38,7 @@ not useful
 <script type="text/javascript" src="{$basehref}{$ext_location}/ux/Reorderer.js" language="javascript"></script>
 <script type="text/javascript" src="{$basehref}{$ext_location}/ux/ToolbarReorderer.js" language="javascript"></script>
 <script type="text/javascript" src="{$basehref}{$ext_location}/ux/ToolbarDroppable.js" language="javascript"></script>
+<script type="text/javascript" src="{$basehref}{$ext_location}/ux/Exporter-all.js" language="javascript"></script>
 
 {/if}
 

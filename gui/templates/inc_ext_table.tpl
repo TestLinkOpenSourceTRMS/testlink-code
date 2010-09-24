@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.43 2010/09/21 20:12:53 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.44 2010/09/24 11:12:00 asimon83 Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -308,6 +308,14 @@ Ext.onReady(function() {
 			{rdelim});
 		{/if}
 		
+		//Export Button
+		{if $matrix->showExportButton && $matrix->showToolbar}
+			tbar.add(new Ext.ux.Exporter.Button({ldelim}
+				component: grid['{$tableID}'],
+				store: store['{$tableID}']
+			{rdelim}));
+		{/if}
+
 		//MULTISORT
 		{if $matrix->allowMultiSort && $matrix->showToolbar}
 			

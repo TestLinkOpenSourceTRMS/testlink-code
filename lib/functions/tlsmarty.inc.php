@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.27 2010/09/01 21:00:18 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.28 2010/09/25 17:15:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -249,6 +249,9 @@ class TLSmarty extends Smarty
                           'api_info' => TL_THEME_IMG_DIR . "/brick.png",
         	              'direct_link' => TL_THEME_IMG_DIR . "/world_link.png",
                           'checked' => TL_THEME_IMG_DIR . "/apply_f2_16.png",
+                          'export_import' =>TL_THEME_IMG_DIR . "/export_import.png",
+                          'export' =>TL_THEME_IMG_DIR . "/export.png",
+                          'import' =>TL_THEME_IMG_DIR . "/import.png",
                           'delete' =>TL_THEME_IMG_DIR . "/trash.png");
 
         $this->assign("tlImages",$tlImages);

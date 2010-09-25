@@ -137,18 +137,19 @@ When accessing Installer page you will found following options:
 
 This list comprise people that has helped
 
+--- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
 * Julian Krien  
 * Andreas Simon
 * Erik Eloff
 
---- Automated Testing ---
-* Masami Ichikawa
-
---- Contributors and earlier developers ---
+--- Contributors and developers active on other releases ---
 * Martin Havlat - Project lead, builds, infrastructure, developer
 * Andreas Morsing - core developer
 * Amit Khullar
+
+* Masami Ichikawa - Automated Testing
+
 
 * Toshiyuki Kawanishi - Japanese localization, developer
 * Chad Rosen - (Originator - version 1.0.x)

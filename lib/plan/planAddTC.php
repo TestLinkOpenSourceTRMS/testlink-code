@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.102 2010/08/10 21:55:39 erikeloff Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.103 2010/09/25 16:45:41 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -43,7 +43,7 @@ $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args,$tplan_mgr,$tcase_mgr);
 
-// 3406
+// BUGID 3406
 $gui->build = init_build_selector($tplan_mgr, $args);
 
 $keywordsFilter = null;
@@ -121,7 +121,7 @@ switch($args->doAction)
 					    $features2['add'][$feature_id]['creation_ts'] = $db_now;
 					    $features2['add'][$feature_id]['platform_name'] = $platformSet[$platform_id];
 					    
-					    // 3406 
+					    // BUGID 3406 
 					    $features2['add'][$feature_id]['build_id'] = $args->build_id;
 					}
             	}
@@ -362,7 +362,7 @@ function init_args()
 		$args->keywordsFilterType = $session_data[$ft];
 	}
 	
-	// 3406
+	// BUGID 3406
 	$args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
 	
 	return $args;

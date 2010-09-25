@@ -137,23 +137,20 @@ When accessing Installer page you will found following options:
 
 This list comprise people that has helped
 
---- Project core team ---
-* Martin Havlat - Project lead, builds, infrastructure, developer
-* Francisco Mancardi - Project lead, core developer, contributors code reviewer
-* Andreas Morsing - core developer
-
---- Developers ---
-* Erik Eloff
-* Julian Krien
+* Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
+* Julian Krien  
 * Andreas Simon
-* Amit Khullar
+* Erik Eloff
 
 --- Automated Testing ---
 * Masami Ichikawa
-* Toshiyuki Kawanishi - Japanese localization, developer
 
 --- Contributors and earlier developers ---
+* Martin Havlat - Project lead, builds, infrastructure, developer
+* Andreas Morsing - core developer
+* Amit Khullar
 
+* Toshiyuki Kawanishi - Japanese localization, developer
 * Chad Rosen - (Originator - version 1.0.x)
 * Kevin Levy - Developer
 * Asiel Brumfield - Infrastructure, developer

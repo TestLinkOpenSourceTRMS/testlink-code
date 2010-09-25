@@ -9,12 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.213 2010/09/20 19:04:38 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.214 2010/09/25 17:49:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *  20100920 - franciscom -  html_table_of_custom_field_values() changed keys on $formatOptions
+ *	20100925 - franciscom - BUGID 3649 - new method exportLinkedItemsToXML();
+ *  20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
  *  20100909 - Julian - BUGID 2877 - Custom Fields linked to TC versions
  *	20100830 - franciscom - get_linked_tcversions() - missing cast to array	$my['filters']['exec_status']
  *							urgencyImportanceToPriorityLevel() - refactored
@@ -3641,6 +3642,119 @@ class testplan extends tlObjectWithAttachments
         }
         return $user_platform;
     }
+
+
+	/**
+	 * create XML string with following structure
+	 *
+	 *	<?xml version="1.0" encoding="UTF-8"?>
+	 *	  <testplan>
+	 *	    <name></name>
+	 *	    <platforms>
+	 *	      <platform>
+	 *	        <name> </name>
+	 *	      </platform>
+	 *	      <platform>
+	 *	      ...
+	 *	      </platform>
+	 *	    </platforms>
+	 *	    <executables>
+	 *	      <link>
+	 *	        <platform>
+	 *	          <name> </name>
+	 *	        </platform>
+	 *	        <testcase>
+	 *	          <name> </name>
+	 *	          <externalid> </externalid>
+	 *	          <version> </version>
+	 *	          <execution_order> </execution_order>
+	 *	        </testcase>
+	 *	      </link>
+	 *	      <link>
+	 *	      ...
+	 *	      </link>
+	 *	    </executables>
+	 *	  </testplan>	 
+	 *	</xml>
+ 	 *
+ 	 */
+	function exportLinkedItemsToXML($id)
+	{
+		$item_info = $this->get_by_id($id);
+						
+		// Linked platforms
+		$xml_root = "<platforms>{{XMLCODE}}\n</platforms>";
+
+		// ||yyy||-> tags,  {{xxx}} -> attribute 
+		// tags and attributes receive different treatment on exportDataToXML()
+		//
+		// each UPPER CASE word in this map is a KEY, that MUST HAVE AN OCCURENCE on $elemTpl
+		//
+		$xml_template = "\n\t" . 
+						"<platform>" . 
+        				"\t\t" . "<name><![CDATA[||PLATFORMNAME||]]></name>" .
+      					"\n\t" . "</platform>";
+    					
+		$xml_mapping = null;
+		$xml_mapping = array("||PLATFORMNAME||" => "platform_name");
+
+		$mm = (array)$this->platform_mgr->getLinkedToTestplanAsMap($id);
+		$loop2do = count($mm);
+		if( $loop2do > 0 )
+		{ 
+			$items2loop = array_keys($mm);
+			foreach($items2loop as $itemkey)
+			{
+				$mm[$itemkey] = array('platform_name' => $mm[$itemkey]);
+			}
+		}
+		$linked_platforms = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
+
+		// Linked test cases
+		$xml_root = "\n<executables>{{XMLCODE}}\n</executables>";
+		$xml_template = "\n\t" . 
+						"<link>" . "\n" .
+						"\t\t" . "<platform>" . "\n" . 
+						"\t\t\t" . "<name><![CDATA[||PLATFORMNAME||]]></name>" . "\n" .
+						"\t\t" . "</platform>" . "\n" . 
+						"\t\t" . "<testcase>" . "\n" . 
+			            "\t\t\t" . "<name><![CDATA[||NAME||]]></name>\n" .
+			            "\t\t\t" . "<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
+			            "\t\t\t" . "<version><![CDATA[||VERSION||]]></version>\n" .
+			            "\t\t\t" . "<execution_order><![CDATA[||EXECUTION_ORDER||]]></execution_order>\n" .
+						"\t\t" . "</testcase>" . "\n" . 
+						"</link>" . "\n" .
+
+		$xml_mapping = null;
+		$xml_mapping = array("||PLATFORMNAME||" => "platform_name","||EXTERNALID||" => "external_id",							
+							 "||NAME||" => "name","||VERSION||" => "version",
+							 "||EXECUTION_ORDER||" => "execution_order");
+
+		$mm = $this->get_linked_tcversions($id,null,array('output' => 'array'));
+		
+		$linked_testcases = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
+
+		$item_info['linked_platforms'] = $linked_platforms;
+		$item_info['linked_testcases'] = $linked_testcases;
+		$xml_root = "\n\t<testplan>{{XMLCODE}}\n\t</testplan>";
+		$xml_template = "\n\t\t" . "<name><![CDATA[||TESTPLANNAME||]]></name>" . "\n" .
+						"\t\t||LINKED_PLATFORMS||\n" . "\t\t||LINKED_TESTCASES||\n";
+
+		$xml_mapping = null;
+		$xml_mapping = array("||TESTPLANNAME||" => "name","||LINKED_PLATFORMS||" => "linked_platforms",							
+							 "||LINKED_TESTCASES||" => "linked_testcases");
+						 
+		$xml = exportDataToXML(array($item_info),$xml_root,$xml_template,$xml_mapping);
+
+		// for debug - 
+		// file_put_contents('c:\testplan.class.php.xml',$xml,FILE_APPEND);                             
+		// file_put_contents('c:\testplan.class.php.xml',$xml);                             
+		return $xml;
+	}
+
+
+
+
 
 
 

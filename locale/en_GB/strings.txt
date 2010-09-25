@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.711 2010/09/25 16:54:20 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.712 2010/09/25 17:46:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -134,7 +134,7 @@ $TLS_create = "create";
 $TLS_copy = "copy";
 $TLS_delete = "delete";
 $TLS_disable = "disable";
-
+$TLS_export_import = "Export/Import";
 $TLS_executed	= "executed";
 $TLS_move	= "Move";
 $TLS_remove = "remove";
@@ -3083,5 +3083,8 @@ $TLS_invalid_release_date = 'Release date is not a valid date';
 $TLS_insert_step = "Insert step";
 $TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZEN';
 
+
+// ----- lib/plan/planExport.php -----
+$TLS_export_test_plan = 'Export Test Plan';
 // ----- END ------------------------------------------------------------------
 ?>

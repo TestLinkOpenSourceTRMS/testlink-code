@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planExport.php,v 1.2 2010/09/25 17:46:39 franciscom Exp $
+ * @version    	CVS: $Id: planExport.php,v 1.3 2010/09/25 17:54:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -29,7 +29,12 @@ $tplan_mgr = new testplan($db);
 $args = init_args();
 $gui = initializeGui($args,$tplan_mgr);
 
-new dBug($args);
+if ($args->doExport)
+{
+	$content = $tplan_mgr->exportLinkedItemsToXML($args->tplan_id);
+	downloadContentsToFile($content,$gui->export_filename);
+	exit();
+}
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

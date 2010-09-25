@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planExport.tpl,v 1.1 2010/05/09 15:50:02 franciscom Exp $ 
+$Id: planExport.tpl,v 1.2 2010/09/25 17:50:39 franciscom Exp $ 
 
 test plan export
 
@@ -41,9 +41,9 @@ function validateForm(f)
 
 {if $gui->do_it eq 1}
   <form method="post" id="export_xml" enctype="multipart/form-data" 
-        action="lib/testcases/tcExport.php"
+        action="lib/plan/planExport.php"
         onSubmit="javascript:return validateForm(this);">
-  
+    <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
     <table>
     <tr>
     <td>
@@ -63,19 +63,6 @@ function validateForm(f)
 	  <a href={$basehref}{$smarty.const.PARTIAL_URL_TL_FILE_FORMATS_DOCUMENT}>{lang_get s="view_file_format_doc"}</a>
   	</td>
   	</tr>
-    <tr>
-    <td>{$labels.title_req_export}</td>
-    <td><input type="checkbox" name="exportReqs" value="1" checked /></td>
-    </tr>  	
-    <tr>
-    <td>{$labels.export_cfields}</td>
-    <td><input type="checkbox" name="exportCFields" value="1" checked /></td>
-    </tr>
-    <tr>
-    <td>{$labels.export_with_keywords}</td>
-    <td><input type="checkbox" name="exportKeywords" value="0" /></td>
-    </tr>
-
   	</table>
   	
   	<div class="groupBtn">

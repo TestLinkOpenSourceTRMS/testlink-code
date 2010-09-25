@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.214 2010/09/25 17:49:39 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.215 2010/09/25 17:57:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3653,6 +3653,7 @@ class testplan extends tlObjectWithAttachments
 	 *	    <platforms>
 	 *	      <platform>
 	 *	        <name> </name>
+	 *	        <internal_id> </internal_id>
 	 *	      </platform>
 	 *	      <platform>
 	 *	      ...
@@ -3693,10 +3694,11 @@ class testplan extends tlObjectWithAttachments
 		$xml_template = "\n\t" . 
 						"<platform>" . 
         				"\t\t" . "<name><![CDATA[||PLATFORMNAME||]]></name>" .
+        				"\t\t" . "<internal_id><![CDATA[||PLATFORMID||]]></internal_id>" .
       					"\n\t" . "</platform>";
     					
 		$xml_mapping = null;
-		$xml_mapping = array("||PLATFORMNAME||" => "platform_name");
+		$xml_mapping = array("||PLATFORMNAME||" => "platform_name", "||PLATFORMID||" => 'id');
 
 		$mm = (array)$this->platform_mgr->getLinkedToTestplanAsMap($id);
 		$loop2do = count($mm);
@@ -3705,7 +3707,7 @@ class testplan extends tlObjectWithAttachments
 			$items2loop = array_keys($mm);
 			foreach($items2loop as $itemkey)
 			{
-				$mm[$itemkey] = array('platform_name' => $mm[$itemkey]);
+				$mm[$itemkey] = array('platform_name' => $mm[$itemkey], 'id' => $itemkey);
 			}
 		}
 		$linked_platforms = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));

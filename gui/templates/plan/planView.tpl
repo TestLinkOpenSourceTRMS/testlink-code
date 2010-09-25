@@ -1,12 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.21 2010/05/01 19:39:55 franciscom Exp $ 
+$Id: planView.tpl,v 1.22 2010/09/25 17:51:00 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
      some smarty and javascript variables are created on the inc_*.tpl files.
      
 Rev:
+    20100925 - franciscom - BUGID 3649 - test plan export/import
     20080805 - franciscom - api config refactoring
     20080116 - franciscom - added option to show/hide id useful for API 
     20080109 - franciscom - added sort table by JS
@@ -21,13 +22,15 @@ Rev:
 {assign var="editAction" value="$managerURL?do_action=edit&amp;tplan_id="}
 {assign var="deleteAction" value="$managerURL?do_action=do_delete&tplan_id="}
 {assign var="createAction" value="$managerURL?do_action=create"}
+{assign var="exportAction" value="lib/plan/planExport.php?tplan_id="}
 
 
 {lang_get var="labels" 
           s='testplan_title_tp_management,testplan_txt_empty_list,sort_table_by_column,
           testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
           testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,public,
-          btn_testplan_create,th_id,error_no_testprojects_present'}
+          btn_testplan_create,th_id,error_no_testprojects_present,btn_export_import,
+          export_import,export'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg"}
@@ -66,6 +69,7 @@ var del_action=fRoot+'{$deleteAction}';
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
 			<th class="{$noSortableColumnClass}">{$labels.public}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>
+			<th class="{$noSortableColumnClass}">{$labels.export}</th>
 		</tr>
 		{foreach item=testplan from=$gui->tplans}
 		<tr>
@@ -107,6 +111,12 @@ var del_action=fRoot+'{$deleteAction}';
 					   onclick="delete_confirmation({$testplan.id},'{$testplan.name|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title}','{$warning_msg}');"
 				     src="{$delete_img}"/>
+			</td>
+			<td class="clickable_icon">
+			    <a href="{$exportAction}{$testplan.id}"> 
+				  <img style="border:none;cursor: pointer;" alt="{$labels.export}" title="{$labels.export}" 
+				       src="{$tlImages.export}"/>
+				  </a>     
 			</td>
 		</tr>
 		{/foreach}

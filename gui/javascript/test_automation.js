@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/ 
 // This script is distributed under the GNU General Public License 2 or later. 
 //
-// $Id: test_automation.js,v 1.7 2010/08/21 17:18:50 franciscom Exp $ 
+// $Id: test_automation.js,v 1.8 2010/09/26 07:56:43 franciscom Exp $ 
 //
 // Code contributed by:
 //
@@ -20,7 +20,7 @@
 
 */
 function openImportResult(windows_title,tproject_id,tplan_id,build_id,platform_id) {
-  args = "tprojectID=" + tproject_id + "tplanID=" + tplan_id + "&buildID=" + build_id + "&platformID=" + platform_id;
+  args = "tprojectID=" + tproject_id + "&tplanID=" + tplan_id + "&buildID=" + build_id + "&platformID=" + platform_id;
 	wref = window.open(fRoot+"lib/results/resultsImport.php?"+args,
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
 	wref.focus();

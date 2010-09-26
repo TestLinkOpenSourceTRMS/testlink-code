@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.712 2010/09/25 17:46:10 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.713 2010/09/26 14:18:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1130,6 +1130,7 @@ $TLS_btn_save_all_tests_results = "Save all executions";
 $TLS_btn_save_tc_exec_results = "Save execution";
 $TLS_btn_save_exec_and_movetonext = "Save and move to next";
 $TLS_bug_mgmt = "BUG management";
+$TLS_btn_export_testcases = "Export Test Cases";
 $TLS_build_is_closed = "Build is closed";
 $TLS_builds_notes = "Build description";
 $TLS_bulk_tc_status_management = "Bulk TC status management";
@@ -3086,5 +3087,8 @@ $TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZE
 
 // ----- lib/plan/planExport.php -----
 $TLS_export_test_plan = 'Export Test Plan';
+
+// ----- lib/execute/execExport.php -----
+$TLS_export_execution_set = 'Export Execution Set';
 // ----- END ------------------------------------------------------------------
 ?>

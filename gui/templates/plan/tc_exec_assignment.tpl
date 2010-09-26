@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.29 2010/08/22 17:46:28 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.30 2010/09/26 17:16:51 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20100926 - franciscom - HTML improvements using <thead>,<tbody>
      20100822 - franciscom - BUGID 3698
      20100709 - asimon - BUGID 3406 - changed assignment logic to operate on build 
                                       instead of testplan level
@@ -113,27 +114,29 @@ function check_action_precondition(container_id,action)
             <table cellspacing="0" style="font-size:small;" width="100%">
             {* ---------------------------------------------------------------------------------------------------- *}
 			      {* Heading *}
+			      <thead>
 			      <tr style="background-color:#059; font-weight:bold; color:white">
-			      	<td width="5" align="center">
+			      	<th width="5" align="center">
 			          <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />
-			      	</td>
-              <td class="tcase_id_cell">{$labels.th_id}</td> 
-              <td>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
-              	{$labels.version}{$gsmarty_gui->role_separator_close}</td>
+			      	</th>
+              <th class="tcase_id_cell">{$labels.th_id}</th> 
+              <th>{$labels.th_test_case}&nbsp;{$gsmarty_gui->role_separator_open}
+              	{$labels.version}{$gsmarty_gui->role_separator_close}</th>
               	
               {if $gui->platforms != ''}
-			      	  <td>{$labels.platform}</td>
+			      	  <th>{$labels.platform}</th>
               {/if}	
 			      	{if $session['testprojectOptions']->testPriorityEnabled}
-			      	  <td align="center">{$labels.priority}</td>
+			      	  <th align="center">{$labels.priority}</th>
 			      	{/if}
-              <td align="center">&nbsp;&nbsp;{$labels.assigned_to}</td>
-              <td align="center">&nbsp;&nbsp;{$labels.assign_to}</td>
+              <th align="center">&nbsp;&nbsp;{$labels.assigned_to}</th>
+              <th align="center">&nbsp;&nbsp;{$labels.assign_to}</th>
             </tr>
+			      </thead>
             {* ---------------------------------------------------------------------------------------------------- *}
-      
+            <tbody>  
             {foreach from=$ts.testcases item=tcase}
               {* loop over platforms *}
               {foreach from=$tcase.feature_id key=platform_id item=feature}
@@ -192,6 +195,7 @@ function check_action_precondition(container_id,action)
                 <td colspan="8"><hr></td>
               {/if}
             {/foreach} {* {foreach from=$ts.testcases item=tcase} *}
+            </tbody>
           </table>
           {/if}
       {/if} {* write buttons*}

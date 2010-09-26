@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.312 2010/09/22 08:04:30 mx-julian Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.313 2010/09/26 14:19:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20100926 - franciscom - exportTestCaseDataToXML() a new management for tcase_id
  * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
  * 20100915 - amitkhullar - BUGID 3776
  * 20100910 - franciscom - getExternalID() improvements
@@ -3145,6 +3146,9 @@ class testcase extends tlObjectWithAttachments
 	  returns:
 	
 	  rev:
+	   20100926 - franciscom - manage tcase_id not present, to allow export using 
+	   						   tcversion id as target
+	   						   
 	   20100908 - franciscom - testcase::LATEST_VERSION has problems
 	   20100315 - amitkhullar - Added options for Requirements and CFields for Export.
 	   20100105 - franciscom - added execution_type, importance
@@ -3162,7 +3166,16 @@ class testcase extends tlObjectWithAttachments
 	  	    $reqMgr = new requirement_mgr($this->db);      
 	  	    $keywordMgr = new tlKeyword();      
 	  	}
-	
+
+		// Useful when you need to get info but do not have tcase id	
+		$tcase_id = intval((int)($tcase_id));
+		$tcversion_id = intval((int)($tcversion_id));
+		if( $tcase_id <= 0 && $tcversion_id > 0)
+		{
+			$info = $this->tree_manager->get_node_hierarchy_info($tcversion_id);
+			$tcase_id = $info['parent_id'];
+		}
+		
 		$tc_data = $this->get_by_id($tcase_id,$tcversion_id);
 		$testCaseVersionID = $tc_data[0]['id'];
 		
@@ -3251,6 +3264,7 @@ class testcase extends tlObjectWithAttachments
 		$elemTpl = "\n".'<testcase internalid="{{TESTCASE_ID}}" name="{{NAME}}">' . "\n" .
 				       "\t<node_order><![CDATA[||NODE_ORDER||]]></node_order>\n" .
 				       "\t<externalid><![CDATA[||EXTERNALID||]]></externalid>\n" .
+				       "\t<version><![CDATA[||VERSION||]]></version>\n" .
 		               "\t<summary><![CDATA[||SUMMARY||]]></summary>\n" .
 		               "\t<preconditions><![CDATA[||PRECONDITIONS||]]></preconditions>\n" .
 		               "\t<execution_type><![CDATA[||EXECUTIONTYPE||]]></execution_type>\n" .
@@ -3269,6 +3283,7 @@ class testcase extends tlObjectWithAttachments
 		  			  "{{NAME}}" => "name",
 		  			  "||NODE_ORDER||" => "node_order",
 		  			  "||EXTERNALID||" => "tc_external_id",
+		  			  "||VERSION||" => "version",
 		  			  "||SUMMARY||" => "summary",
 		  			  "||PRECONDITIONS||" => "preconditions",
 		  			  "||EXECUTIONTYPE||" => "execution_type",

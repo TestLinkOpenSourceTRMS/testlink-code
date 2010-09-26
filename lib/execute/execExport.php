@@ -3,20 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  * 
- * Allows export in XML format of:
- *
- * . complete plan contents: 
- *   linked platforms
- *	 linked test cases (minimal information)
- *
+ * Allows export in XML format of set of test cases displayed on BULK execution
  * 	 
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: execExport.php,v 1.1 2010/09/26 09:33:17 franciscom Exp $
+ * @version    	CVS: $Id: execExport.php,v 1.2 2010/09/26 14:24:26 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
  **/
 require_once("../../config.inc.php");
 require_once("../functions/common.php");
@@ -25,17 +21,12 @@ testlinkInitPage($db);
 $templateCfg = templateConfiguration();
 
 $tplan_mgr = new testplan($db);
-
 $args = init_args();
 $gui = initializeGui($args,$tplan_mgr);
 
 if ($args->doExport)
 {
-	// Generate Context
-	$execContext = contextAsXML($db,$args,$tplan_mgr);
-    
-	
-	$content = $tplan_mgr->exportLinkedItemsToXML($args->tplan_id);
+	$content = contentAsXML($db,$args,$tplan_mgr);
 	downloadContentsToFile($content,$gui->export_filename);
 	exit();
 }
@@ -56,14 +47,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
-    
-    	
-	new dBug($_REQUEST);
-
     $args = new stdClass();
     $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
-
 
 	$key2loop = array('tproject','tplan','platform','build','tsuite');
 	foreach($key2loop as $item)
@@ -76,7 +62,7 @@ function init_args()
     $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
     $args->goback_url=isset($_REQUEST['goback_url']) ? $_REQUEST['goback_url'] : null;
 
-	new dBug($args);
+    $args->tcversionSet=isset($_REQUEST['tcversionSet']) ? $_REQUEST['tcversionSet'] : null;
     return $args;
 }
 
@@ -92,10 +78,10 @@ function initializeGui(&$argsObj,&$tplanMgr)
 	$guiObj = new stdClass();
 	$guiObj->do_it = 1;
 	$guiObj->nothing_todo_msg = '';
-	$guiObj->export_filename = 'export_' . $info['name'] . '.xml';
+	$guiObj->export_filename = 'export_execution_set.xml';
 	$guiObj->exportTypes = array('XML' => 'XML');
-	$guiObj->page_title = lang_get('export_test_plan');
-	$guiObj->object_name = $info['name'];
+	$guiObj->page_title = lang_get('export_execution_set');
+	$guiObj->object_name = '';
 	$guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : ''; 
 
 	$key2loop = array('tproject','tplan','platform','build','tsuite');
@@ -105,11 +91,27 @@ function initializeGui(&$argsObj,&$tplanMgr)
 		// $inputKey = $item . 'ID';
 		$guiObj->$argsKey = intval($argsObj->$argsKey);
 	}
-
-	new dBug($guiObj);
+    $guiObj->tcversionSet  = $argsObj->tcversionSet;
 	return $guiObj;
 }
 
+
+
+/**
+ * 
+ *
+ */
+function contentAsXML(&$dbHandler,$contextSet,&$tplanMgr)
+{
+	$dummy = array();
+	$dummy['context'] = contextAsXML($dbHandler,$contextSet,$tplanMgr);
+	$dummy['tcaseSet'] = tcaseSetAsXML($dbHandler,$contextSet);    
+
+	$xmlString = TL_XMLEXPORT_HEADER . 
+				"\n<executionSet>\n\t{$dummy['context']}\n\t{$dummy['tcaseSet']}\n\t</executionSet>";
+    return $xmlString;
+
+}
 
 /**
  * 
@@ -187,5 +189,23 @@ function contextAsXML(&$dbHandler,$contextSet,&$tplanMgr)
 	// echo '</xmp></pre>';
     
     return $contextXML;
+}
+
+/**
+ * 
+ *
+ */
+function  tcaseSetAsXML(&$dbHandler,$contextSet)
+{
+	$tcaseMgr = new testcase($dbHandler);
+	$tcversionSet = explode(',',$contextSet->tcversionSet);
+	$xmlTC = "<testcases>\n\t";
+	foreach($tcversionSet as $tcversion_id)
+	{
+		$xmlTC .= $tcaseMgr->exportTestCaseDataToXML(0,$tcversion_id,$contextSet->tproject_id,true);
+
+    }
+    $xmlTC .= "</testcases>\n\t";
+	return $xmlTC;
 }
 ?>

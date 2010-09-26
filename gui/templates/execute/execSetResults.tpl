@@ -1,9 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.60 2010/08/21 17:19:26 franciscom Exp $
+$Id: execSetResults.tpl,v 1.61 2010/09/26 14:26:31 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
-
+  20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
   20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
   20100503 - franciscom - BUGID 3260: Import XML Results is not working with Internet Explorer
                           reason: passing string without string separator to  openImportResult()
@@ -47,13 +47,15 @@ Rev:
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
              deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
-             btn_save_exec_and_movetonext,step_number,
+             btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,
              preconditions,platform,platform_description,exec_not_run_result_note'}
 
 
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
+
+{assign var="exportAction" value="lib/execute/execExport.php?tplan_id="}
 
 {include file="inc_head.tpl" popup='yes' openHead='yes' jsValidate="yes" editorType=$gui->editorType}
 <script language="JavaScript" src="gui/javascript/radio_utils.js" type="text/javascript"></script>
@@ -176,8 +178,26 @@ function checkSubmitForStatus($statusCode)
   }
   return true;
 }
+
+
+/**
+ * 
+ *
+ */
+function openExportTestCases(windows_title,tsuite_id,tproject_id,tplan_id,build_id,platform_id,tcversion_set) 
+{
+  args = "tsuiteID=" + tsuite_id + "&tprojectID=" + tproject_id + "&tplanID=" + tplan_id; 
+  args += "&buildID=" + build_id + "&platformID=" + platform_id;
+  args += "&tcversionSet=" + tcversion_set;
+	wref = window.open(fRoot+"lib/execute/execExport.php?"+args,
+	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
+	wref.focus();
+}
 </script>
 {/literal}
+
+
+
 
 
 {* Initialize note panels. The array panel_init_functions is filled with init
@@ -342,6 +362,7 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
         {/if}
     	{/if}
 
+
       {if !($cfg->exec_cfg->show_testsuite_contents && $gui->can_use_bulk_op)}
           <hr />
           <div class="groupBtn">
@@ -352,7 +373,8 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
     	    	         value="{lang_get s=$gui->history_status_btn_name}" />
     	    	  <input type="button" id="pop_up_import_button" name="import_xml_button"
     	    	         value="{$labels.import_xml_results}"
-    	    	         onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},{$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
+    	    	         onclick="javascript: openImportResult('import_xml_results',{$gui->tproject_id},
+    	    	                                                {$gui->tplan_id},{$gui->build_id},{$gui->platform_id});" />
           
               {* 20081125 - franciscom - BUGID 1902*}
 		          {if $tlCfg->exec_cfg->enable_test_automation}
@@ -372,8 +394,15 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
       {$labels.exec_not_run_result_note}
       </div>
       *}
+
       <div>
       <br />
+      <input type="button" id="do_export_testcases" name="do_export_testcases"  value="{$labels.btn_export_testcases}"
+    	         onclick="javascript: openExportTestCases('export_testcases',{$gui->node_id},{$gui->tproject_id},
+    	                                                  {$gui->tplan_id},{$gui->build_id},{$gui->platform_id},
+    	                                                  '{$gui->tcversionSet}');" />
+
+
  	    <table class="mainTable-x" width="100%">
  	    <tr>
  	    <th>{$labels.th_testsuite}</th><th>{$labels.title_test_case}</th>

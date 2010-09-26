@@ -8,10 +8,11 @@
  * @package 	TestLink
  * @author 		Kevin Levy
  * @copyright 	2010, TestLink community 
- * @version    	CVS: $Id: resultsImport.php,v 1.20 2010/08/23 19:27:47 franciscom Exp $
+ * @version    	CVS: $Id: resultsImport.php,v 1.21 2010/09/26 15:26:12 franciscom Exp $
  *
  * @internal Revisions:
  *
+ * 20100926 - franciscom - BUGID 3751: New attribute "execution type" makes old XML import files incompatible
  * 20100823 - franciscom - BUGID 3543 - added execution_type
  * 20100821 - franciscom - BUGID 3470 - reopened
  * 20100328 - franciscom - BUGID 3470, BUGID 3475
@@ -251,19 +252,17 @@ function saveImportedResultData(&$db,$resultData,$context)
 	// platform id:
 	//          is linked  to target test plan
 	//
+	// execution type if not present -> set to MANUAL
+	//				  if presente is valid i.e. inside the TL domain
+	//
 	$checks['status_ok'] = true;		
 	$checks['msg'] = null;
 	$dummy = $tproject_mgr->get_by_id($context->tprojectID);
 	$checks['status_ok'] = !is_null($dummy);
 	if( !$checks['status_ok'] )
 	{
-		$checks['msg'][] = sprintf($l19n['tproject_id_not_found'],$context->tprojectID);
+		$checks['msg'][] = sprintf($l18n['tproject_id_not_found'],$context->tprojectID);
 	}
-
-    // if( $checks['status_ok'] )
-    // {
-    // 	
-    // }
 
 	if( !$checks['status_ok'] )
 	{
@@ -286,6 +285,10 @@ function saveImportedResultData(&$db,$resultData,$context)
 	  	$status_ok = true;
 		$tcase_exec = $resultData[$idx];
 		
+		// BUGID 3751: New attribute "execution type" makes old XML import files incompatible
+		// Important NOTICE:
+		// tcase_exec is passed BY REFERENCE to allow check_exec_values()change execution type if needed
+		//
 		$checks = check_exec_values($db,$tcase_mgr,$user_mgr,$tcaseCfg,$tcase_exec,$columnDef['execution_bugs']);
     	$status_ok = $checks['status_ok'];		
 		if($status_ok)
@@ -447,7 +450,7 @@ function importExecutionFromXML(&$xmlTCExec)
 	$execInfo['notes'] = (string) trim($xmlTCExec->notes);
   	$execInfo['timestamp'] = (string) trim($xmlTCExec->timestamp);
   	$execInfo['tester'] = (string) trim($xmlTCExec->tester);
-  	$execInfo['execution_type'] = (int) trim($xmlTCExec->execution_type); //BUGID 3543
+  	$execInfo['execution_type'] = intval((int) trim($xmlTCExec->execution_type)); //BUGID 3543
 
 
 	$bugQty = count($xmlTCExec->bug_id);
@@ -540,8 +543,11 @@ function init_args(&$dbHandler)
            tester_id: tester_id if controls OK  
            msg -> array with localized messages  
 
+  @internal revisions:
+  20100926 - franciscom - BUGID 3751: New attribute "execution type" makes old XML import files incompatible
+  						  Passed $execValues BY REFERENCE to allow change of execution type if needed	
 */
-function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues,&$columnDef)
+function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$columnDef)
 {
 	$tables = tlObjectWithDB::getDBTables(array('users','execution_bugs'));
 
@@ -619,11 +625,23 @@ function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,$execValues,&$c
 	// BUGID 3543
     if($checks['status_ok'] && isset($execValues['execution_type']) )
     {
+    	// BUGID 3751
+    	$execValues['execution_type'] = intval($execValues['execution_type']); 
 		$execDomain = $tcase_mgr->get_execution_types();
-		$checks['status_ok'] = isset($execDomain[$execValues['execution_type']]);
-		if( !$checks['status_ok'] )
+		if( $execValues['execution_type'] == 0 )
 		{
-			$checks['msg'][]=sprintf(lang_get('invalid_exec_type'),$execValues['execution_type']);
+			$execValues['execution_type'] = TESTCASE_EXECUTION_TYPE_MANUAL;
+			// right now this is useless, but may be in future can be used, then I choose to leave it.
+			$checks['msg'][]=sprintf(lang_get('missing_exec_type'),
+			                         $execValues['execution_type'],$execDomain[$execValues['execution_type']]);
+		}
+		else
+		{
+			$checks['status_ok'] = isset($execDomain[$execValues['execution_type']]);
+			if( !$checks['status_ok'] )
+			{
+				$checks['msg'][]=sprintf(lang_get('invalid_exec_type'),$execValues['execution_type']);
+			}
 		}
 	}
     return $checks;

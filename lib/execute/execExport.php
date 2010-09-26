@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: execExport.php,v 1.2 2010/09/26 14:24:26 franciscom Exp $
+ * @version    	CVS: $Id: execExport.php,v 1.3 2010/09/26 14:46:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -92,6 +92,8 @@ function initializeGui(&$argsObj,&$tplanMgr)
 		$guiObj->$argsKey = intval($argsObj->$argsKey);
 	}
     $guiObj->tcversionSet  = $argsObj->tcversionSet;
+	$guiObj->drawCancelButton = false;
+
 	return $guiObj;
 }
 

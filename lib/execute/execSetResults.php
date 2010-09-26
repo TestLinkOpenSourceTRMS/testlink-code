@@ -4,10 +4,13 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.168 $
- * @modified $Date: 2010/09/22 12:27:46 $ $Author: asimon83 $
+ * @version $Revision: 1.169 $
+ * @modified $Date: 2010/09/26 14:49:01 $ $Author: franciscom $
  *
  * rev:
+ *	20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
+ *							added $gui->tcversionSet
+ *	
  *  20100922 - asimon - let this page be functional withouth a form token too, changed init_args()
  *	20100821 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
  *	20100821 - franciscom - code layout refactoring
@@ -99,7 +102,6 @@ if ($do_show_instructions)
     show_instructions('executeTest');
     exit();
 }
-
 
 // ---------------------------------------------------------
 // Testplan executions and result archiving. Checks whether execute cases button was clicked
@@ -194,6 +196,8 @@ if(!is_null($linked_tcversions))
         list($tcase_id,$tcversion_id) = processTestSuite($db,$gui,$args,$linked_tcversions,
                                                          $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
+   	$gui->tcversionSet = implode(',',$tcversion_id);
+
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
     $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
     
@@ -1156,6 +1160,9 @@ function initializeGui(&$dbHandler,&$argsObj,&$cfgObj,&$tplanMgr,&$tcaseMgr)
     { 
     	$gui->platform_info = $platformMgr->getByID($argsObj->platform_id);
     }
+    
+    
+    $gui->node_id = $argsObj->id;
     return $gui;
 }
 

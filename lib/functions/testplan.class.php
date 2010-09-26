@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.215 2010/09/25 17:57:38 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.216 2010/09/26 09:23:46 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
  *	20100925 - franciscom - BUGID 3649 - new method exportLinkedItemsToXML();
  *  20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
  *  20100909 - Julian - BUGID 2877 - Custom Fields linked to TC versions
@@ -2410,7 +2411,7 @@ class testplan extends tlObjectWithAttachments
 	{
 		$cf_smarty='';
 		$parent_id=null;
-	    $label_css_style=' class="labelHolder" ' ;
+	    	$label_css_style=' class="labelHolder" ' ;
    		$value_css_style = ' ';
 
 		$add_table=true;
@@ -2800,16 +2801,16 @@ class testplan extends tlObjectWithAttachments
 				   " LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id " .
 				   " AND T.testplan_id=E.testplan_id AND E.build_id=$build " .
 				   " WHERE T.testplan_id={$id} AND E.status IS NULL ";
-			
 			$results[] = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		}
-		
 		$recordset = array();
 		foreach ($results as $result) 
 		{
-			$recordset = array_merge_recursive($recordset, $result);
+			if (!is_null($result) && (is_array($result)) ) //BUGID 3806
+			{
+				$recordset = array_merge_recursive($recordset, $result);
+			}
 		} 
-		
 		$new_set = array();
 		foreach ($recordset as $key => $val) {
 			$new_set[$val['tcase_id']] = $val;
@@ -3753,12 +3754,6 @@ class testplan extends tlObjectWithAttachments
 		// file_put_contents('c:\testplan.class.php.xml',$xml);                             
 		return $xml;
 	}
-
-
-
-
-
-
 
 
 } // end class testplan

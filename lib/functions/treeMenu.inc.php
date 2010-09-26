@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.148 2010/09/12 15:02:26 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.149 2010/09/26 09:23:35 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
  *	20100912 - franciscom - BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
  *                                 - Custom Fields linked to TC versions
@@ -1646,11 +1647,12 @@ function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
  * @param array $filters filters to apply to test case set
  * @return array new tcase_set
  */
-function filter_by_status_for_last_execution(&$db, &$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+function filter_by_status_for_last_execution(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) {
+	testlinkInitPage($db); //BUGID 3806
 	$tables = tlObject::getDBTables('executions');
 	$result_key = 'filter_result_result';
 	
-	$in_status = implode("','", $filters->$result_key);
+	$in_status = $filters->$result_key;
 	
 	foreach($tcase_set as $tc_id => $tc_info) {
 		// get last execution result for each testcase, 

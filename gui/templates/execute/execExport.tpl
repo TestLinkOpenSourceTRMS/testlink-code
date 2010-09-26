@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: execExport.tpl,v 1.1 2010/09/26 14:27:30 franciscom Exp $ 
+$Id: execExport.tpl,v 1.2 2010/09/26 14:46:46 franciscom Exp $ 
 
 execution test case set export
 
@@ -76,9 +76,11 @@ function validateForm(f)
   		<input type="hidden" name="containerID" value="{$gui->containerID}" />
   		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
   		<input type="submit" name="export" value="{$labels.btn_export}" />
+      {if $gui->drawCancelButton}
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"
     		     {else}  onclick="javascript:history.back();" {/if} />
+      {/if}
   	</div>
   </form>
 {else}

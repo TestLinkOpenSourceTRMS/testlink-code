@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.13 2010/07/31 18:49:48 asimon83 Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.14 2010/09/27 12:27:49 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions:
@@ -252,7 +252,7 @@ class assignment_mgr extends tlObjectWithDB
 		if (isset($build_id) && is_numeric($build_id)) {
 			$count = $this->db->fetchOneValue($sql);
 		}
-		
+		echo $sql;
 		return $count;
 	}
 	

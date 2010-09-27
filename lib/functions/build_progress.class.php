@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: build_progress.class.php,v 1.7 2010/09/27 12:13:32 asimon83 Exp $
+ * @version CVS: $Id: build_progress.class.php,v 1.8 2010/09/27 12:27:49 asimon83 Exp $
  * 
  * @internal revisions:
  * 20100927 - asimon - corrected count of not run test cases
@@ -295,7 +295,9 @@ class build_progress extends tlObjectWithDB {
 			if (isset($temp[$code])) {
 				$counters[$status]['count'] = $temp[$code];
 
-				$nr_count = $nr_count - $temp[$code];
+				if ($user_id != TL_NO_USER) {
+					$nr_count = $nr_count - $temp[$code];
+				}
 
 				if ($counters[$status]['count'] != 0
 				&& is_numeric($counters['total']) && $counters['total'] != 0) {

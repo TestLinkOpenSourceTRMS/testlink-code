@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.61 2010/09/10 19:23:01 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.62 2010/09/27 13:51:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *	20100927 - franciscom - BUGID 3810: Steps are manual by default, even when added to automatic test case
  *	20100905 - franciscom -	BUGID 3431 - Custom Field values at Test Case VERSION Level
  *	20100903 - franciscom - work on insert step
  *  20100902 - franciscom - BUGID 3736
@@ -524,6 +525,8 @@ class testcaseCommands
 	/**
    	 * createStep
      *
+     * @internal revisions
+     * 20100927 - franciscom - BUGID 3810
      */
 	function createStep(&$argsObj,$request)
 	{
@@ -537,7 +540,7 @@ class testcaseCommands
 		$max_step++;;
 
 		$guiObj->step_number = $max_step;
-		$guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+		$guiObj->step_exec_type = $guiObj->testcase['execution_type']; // BUGID 3810
 		$guiObj->tcversion_id = $argsObj->tcversion_id;
 
 		$guiObj->step_set = $this->tcaseMgr->get_step_numbers($argsObj->tcversion_id);
@@ -557,6 +560,7 @@ class testcaseCommands
 	/**
    	 * doCreateStep
      *
+     * 20100927 - franciscom - BUGID 3810
      */
 	function doCreateStep(&$argsObj,$request)
 	{
@@ -578,7 +582,7 @@ class testcaseCommands
 		if( $op['status_ok'] )
 		{
 			$guiObj->user_feedback = sprintf(lang_get('step_number_x_created'),$argsObj->step_number);
-		    $guiObj->step_exec_type = TESTCASE_EXECUTION_TYPE_MANUAL;
+		    $guiObj->step_exec_type = $guiObj->testcase['execution_type'];  // BUGID 3810
 		    $guiObj->cleanUpWebEditor = true;
 			$this->tcaseMgr->update_last_modified($argsObj->tcversion_id,$argsObj->user_id);
 			$this->initTestCaseBasicInfo($argsObj,$guiObj);

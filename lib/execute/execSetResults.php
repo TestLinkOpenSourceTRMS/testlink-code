@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.169 $
- * @modified $Date: 2010/09/26 14:49:01 $ $Author: franciscom $
+ * @version $Revision: 1.170 $
+ * @modified $Date: 2010/09/27 08:19:33 $ $Author: asimon83 $
  *
  * rev:
+ *  20100927 - asimon - avoid warning in event log
  *	20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
  *							added $gui->tcversionSet
  *	
@@ -196,7 +197,10 @@ if(!is_null($linked_tcversions))
         list($tcase_id,$tcversion_id) = processTestSuite($db,$gui,$args,$linked_tcversions,
                                                          $tree_mgr,$tcase_mgr,$attachmentRepository);
     }
-   	$gui->tcversionSet = implode(',',$tcversion_id);
+
+	// 20100927 - asimon - check if value is an array before calling implode
+	// to avoid warnings in event log
+   	$gui->tcversionSet = is_array($tcversion_id) ? implode(',',$tcversion_id) : $tcversion_id;
 
     // will create a record even if the testcase version has not been executed (GET_NO_EXEC)
     $gui->map_last_exec = getLastExecution($db,$tcase_id,$tcversion_id,$gui,$args,$tcase_mgr);
@@ -1227,7 +1231,7 @@ function processTestCase($tcase,&$guiObj,&$argsObj,&$cfgObj,$linked_tcversions,
 	$guiObj->tSuiteAttachments[$tc_info['parent_id']] = getAttachmentInfos($docRepository,$tc_info['parent_id'],
 		                                                                   'nodes_hierarchy',true,1);
 
-		                                                                      
+
     return array($tcase_id,$tcversion_id);
 }
 

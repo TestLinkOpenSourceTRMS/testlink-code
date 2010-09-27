@@ -1,9 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.35 2010/08/28 09:41:09 erikeloff Exp $
+$Id: testlink.css,v 1.36 2010/09/27 14:48:20 franciscom Exp $
 
 Purpose: Default TestLink CSS
 
+20100927 - franciscom - added comment explaining style used to mimic a fixed section on top of screen
 20100503 - franciscom - BUGID 3419 - add classes (*_text) to be used to change text color according to status
 20100409 - eloff - add styles for help headings to show structure better
 20100225 - eloff - BUGID 3217 - Ext removes bullets from all lists, re-add bullets to our lists
@@ -43,7 +44,11 @@ body, body.testlink {
 	padding:		0px;
 }
 
-/** use together with #header-wrap */
+/** 
+use together with #header-wrap, to create a section on top of body
+that remain always visible while rest of body content scrolls,
+giving visual experience that body goes under the section on top
+*/
 body.fixedheader {
 	padding-top:	97px !important;
 	padding-top:	0; /* IE 6 does not understand fixed */
@@ -156,6 +161,11 @@ div.testproject_title{
 
 /* **** general classes ************************************* */
 
+/** 
+use together with body.fixedheader, to create a section on top of body
+that remain always visible while rest of body content scrolls,
+giving visual experience that body goes under the section on top
+*/
 #header-wrap {
 	background:		#eee;
 	border-bottom:	1px solid #000;

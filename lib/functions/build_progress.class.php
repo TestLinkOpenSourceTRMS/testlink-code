@@ -6,9 +6,10 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: build_progress.class.php,v 1.6 2010/08/22 09:26:38 asimon83 Exp $
+ * @version CVS: $Id: build_progress.class.php,v 1.7 2010/09/27 12:13:32 asimon83 Exp $
  * 
  * @internal revisions:
+ * 20100927 - asimon - corrected count of not run test cases
  * 20100821 - asimon - BUGID 3682
  * 20100820 - asimon - added last missing comments, little refactorization for table prefix
  * 20100731 - asimon - initial commit		
@@ -269,9 +270,11 @@ class build_progress extends tlObjectWithDB {
 		} else {
 			$counters['total'] = $this->tplan_mgr->assignment_mgr->get_count_of_assignments_for_build_id(
 			                                                       $build_id, false, $user_id);
-			$nr_count = $this->tplan_mgr->assignment_mgr->get_not_run_tc_count_per_build($build_id, 
-			                                                                             false, 
-			                                                                             $user_id);
+			// workaround for incorrect not run value
+			//$nr_count = $this->tplan_mgr->assignment_mgr->get_not_run_tc_count_per_build($build_id,
+			//                                                                             false,
+			//                                                                             $user_id);
+			$nr_count = $counters['total'];
 		}
 		
 		$temp = array();
@@ -291,7 +294,9 @@ class build_progress extends tlObjectWithDB {
 			
 			if (isset($temp[$code])) {
 				$counters[$status]['count'] = $temp[$code];
-				
+
+				$nr_count = $nr_count - $temp[$code];
+
 				if ($counters[$status]['count'] != 0
 				&& is_numeric($counters['total']) && $counters['total'] != 0) {
 					$percent = $counters[$status]['count'] / $counters['total'] * 100;

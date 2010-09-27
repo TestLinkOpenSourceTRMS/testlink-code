@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.103 2010/09/25 16:45:41 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.104 2010/09/27 11:12:30 asimon83 Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20100927 - asimon - refresh tree only when action is done
  * 20100721 - asimon - BUGID 3406: assign users per build when adding testcases to plan,
  *                                 added init_build_selector()
  * 20100628 - asimon - removal of constants from filter control class
@@ -265,7 +266,16 @@ if($do_display)
     
     // This has to be done ONLY AFTER has all data needed => after gen_spec_view() call
 	setAdditionalGuiData($gui);
-    
+
+	// 20100927 - asimon - refresh tree only when action is done
+	switch ($args->doAction) {
+		case 'doReorder':
+		case 'doSavePlatforms':
+		case 'doSaveCustomFields':
+		case 'doAddRemove':
+			$gui->refreshTree = $args->refreshTree;
+		break;
+	}
     
 	$smarty->assign('gui', $gui);
 	$smarty->display($templateCfg->template_dir .  'planAddTC_m1.tpl');
@@ -478,7 +488,7 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $tplan_info = $tplanMgr->get_by_id($argsObj->tplan_id);
     $gui->testPlanName = $tplan_info['name'];
     $gui->pageTitle = lang_get('test_plan') . $title_separator . $gui->testPlanName;
-    $gui->refreshTree = $argsObj->refreshTree;
+    //$gui->refreshTree = $argsObj->refreshTree;
     $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
     $gui->testerID = $argsObj->testerID;
     $gui->send_mail = $argsObj->send_mail;

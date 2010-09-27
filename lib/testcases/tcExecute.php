@@ -4,7 +4,7 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcExecute.php,v $
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
  * Handles testcase execution through AJAX calls. 
  * Testcases are executed on a remote server, and the response 
@@ -19,7 +19,7 @@
  *                 Precede 'tc_' for custom fields assigned to testcase level.
  * 
  *
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @modified $Date: 2010/09/27 14:06:04 $ by $Author: franciscom $
 */
 require_once("../../config.inc.php");
 require_once("common.php");
@@ -143,18 +143,16 @@ function remote_exec_testcase_set(&$db,$parent_id,$msg)
 	return $xmlResponse;
 }
 
+/**
+ * 
+ *
+ */
 function init_args()
 {
-	$iParams = array(
-			"testcase_id" => array(tlInputParameter::INT_N,0),
-			"level" => array(tlInputParameter::STRING_N,0,50),
-		);
-
+	$iParams = array("testcase_id" => array(tlInputParameter::INT_N,0),
+			         "level" => array(tlInputParameter::STRING_N,0,50));
 	$args = new stdClass();
-	$pParams = R_PARAMS($iParams,$args);
-	var_dump($args);
-	
+	R_PARAMS($iParams,$args);
 	return $args;
 }
-
 ?>

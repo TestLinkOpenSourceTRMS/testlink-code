@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.324 2010/09/24 11:12:01 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.325 2010/09/27 14:05:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1347,9 +1347,6 @@ define ('TL_DEFAULT_LOCALE', $tlCfg->default_language);
 //
 /** Revered list of Test Case execution results */
 $tlCfg->results['code_status'] = array_flip($tlCfg->results['status_code']);
-
-
-// var_dump($tlCfg->testcase_cfg->duplicated_name_algorithm);
 
 // --------------------------------------------------------------------------------------
 /** Converted and derived variables (Users should not modify this section) */

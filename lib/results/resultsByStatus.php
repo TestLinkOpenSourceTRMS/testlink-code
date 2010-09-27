@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.99 2010/09/23 14:42:14 erikeloff Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.100 2010/09/27 14:24:13 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20100927 - asimon - added mouseover information for the exec and edit icons
  *  20100923 - eloff - refactored to use improved table interface
  *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution in popups
  *  20100901 - Julian - added test case edit link for test case column
@@ -82,7 +83,8 @@ $bugInterface = null;
 if ($gui->bugInterfaceOn) {
 	$bugInterface = config_get('bugInterface');
 }
-$deleted_user_label = lang_get('deleted_user');
+
+$labels = init_labels(array('deleted_user' => null, 'design' => null, 'execution' => null));
 
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
@@ -161,7 +163,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 				else
 				{
 				    // user id has been deleted
-				    $testerName = sprintf($deleted_user_label,$testcase[$user_key]);
+				    $testerName = sprintf($labels['deleted_user'],$testcase[$user_key]);
 				}
 			}
 
@@ -178,11 +180,11 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			    $exec_link = "<a href=\"javascript:openExecutionWindow(" .
 				             "{$testcase['tc_id']}, {$testcase['tcversion_id']}, {$build_id}, " .
 				             "{$args->tplan_id}, {$testcase['platform_id']});\">" .
-				             "<img src=\"{$exec_img}\" /></a> ";
+				             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
 		    }
 
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$testcase['tc_id']});\">" .
-						 "<img src=\"{$edit_img}\" /></a> ";
+						 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 
 			$tcaseName = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']). ':' . $testcase['name'];
 

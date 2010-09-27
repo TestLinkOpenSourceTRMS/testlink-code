@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.21 $
- * @modified $Date: 2010/09/22 17:37:01 $  $Author: mx-julian $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2010/09/27 14:24:13 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20100927 - asimon - added mouseover information for the exec and edit icons
  *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution
  *  20100922 - Julian - BUGID 3714 - refactored default grouping and sorting
  *  20100906 - asimon -  BUGID 3749
@@ -55,7 +56,8 @@ $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 $tplan_mgr = new testplan($db);
 
 $l18n = init_labels(array('tcversion_indicator' => null,'goto_testspec' => null, 'version' => null, 
-						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null));
+						  'testplan' => null, 'assigned_tc_overview' => null,'testcases_assigned_to_user' => null,
+                           'design' => null, 'execution' => null));
 
 if ($args->show_all_users) {
 	$gui->pageTitle=sprintf($l18n['assigned_tc_overview'], $gui->tproject_name);
@@ -140,10 +142,10 @@ if( $doIt )
 				$exec_link = "<a href=\"javascript:openExecutionWindow(" .
 				             "{$tcase_id},{$tcversion_id},{$tcase['build_id']}," .
 				             "{$tcase['testplan_id']},{$tcase['platform_id']});\">" .
-						     "<img src=\"{$exec_img}\" /></a> ";
+						     "<img title=\"{$l18n['execution']}\" src=\"{$exec_img}\" /></a> ";
 
 				$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
-				             "<img src=\"{$edit_img}\" /></a> ";
+				             "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> ";
 
 				$current_row[] = $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] .
 				        		 ":" . htmlspecialchars($tcase['name']) .

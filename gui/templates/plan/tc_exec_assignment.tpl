@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.31 2010/09/27 16:04:09 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.32 2010/09/27 20:01:02 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
-     20100927 - franciscom - BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
+     20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
+                             BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
                              <div id="header-wrap" -> added height:110px;
                              added z-index to avoid problems with scrolling when using EXT-JS and header-wrap
      20100926 - franciscom - HTML improvements using <thead>,<tbody>
@@ -34,6 +35,7 @@ rev :
 	var alert_box_title = "{$labels.warning}";
 {literal}
 
+loop2do=0;   // needed for the convert grid logic
 function check_action_precondition(container_id,action)
 {
 	if(checkbox_count_checked(container_id) <= 0)
@@ -43,6 +45,21 @@ function check_action_precondition(container_id,action)
 	}
 	return true;
 }
+
+// 20100927 - franciscom
+Ext.onReady(function()
+{
+  // create the grid
+  var idx=0;
+  var gridSet = new Array();
+  for(idx=1; idx <= loop2do; idx++)
+  {
+    gridSet[idx] = new Ext.ux.grid.TableGrid("the-table-"+idx, {
+                       stripeRows: true // stripe alternate rows
+                   });
+    gridSet[idx].render();
+  }
+});
 
 {/literal}
 </script>
@@ -96,6 +113,7 @@ function check_action_precondition(container_id,action)
 
   {if $gui->has_tc}
    <div class="workBack">
+	  {assign var=table_counter value=0}
 	  {assign var=top_level value=$gui->items[0].level}
 	  {foreach from=$gui->items item=ts key=idx name="div_drawing"}
 	    {assign var="ts_id" value=$ts.testsuite.id}
@@ -115,7 +133,8 @@ function check_action_precondition(container_id,action)
 
     	  {if $ts.write_buttons eq 'yes'}
           {if $ts.testcase_qty gt 0}
-            <table cellspacing="0" style="font-size:small;" width="100%">
+	          {assign var="table_counter" value=$table_counter+1}
+            <table cellspacing="0" style="font-size:small;" width="100%" id="the-table-{$table_counter}">
             {* ---------------------------------------------------------------------------------------------------- *}
 			      {* Heading *}
 			      <thead>
@@ -194,10 +213,13 @@ function check_action_precondition(container_id,action)
                     </td>
                   </tr>
                   {/if}		
-              {/foreach}            
+              {/foreach}   
+              {*
+              removed to use ext-js         
               {if $gui->platforms != ''}
                 <td colspan="8"><hr></td>
               {/if}
+              *}
             {/foreach} {* {foreach from=$ts.testcases item=tcase} *}
             </tbody>
           </table>
@@ -218,7 +240,14 @@ function check_action_precondition(container_id,action)
     
     {/if} {* $ts_id != '' *}
 	{/foreach}
+
 	</div>
+  
+  <script type="text/javascript">
+  // needed for the convert grid logic
+  loop2do={$table_counter};
+  </script>
+
   {/if}
   
 </form>

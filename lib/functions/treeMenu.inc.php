@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.149 2010/09/26 09:23:35 amkhullar Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.150 2010/09/27 08:55:48 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -1651,8 +1651,9 @@ function filter_by_status_for_last_execution(&$tplan_mgr,&$tcase_set,$tplan_id,$
 	testlinkInitPage($db); //BUGID 3806
 	$tables = tlObject::getDBTables('executions');
 	$result_key = 'filter_result_result';
-	
-	$in_status = $filters->$result_key;
+
+	// need to check if result is array because multiple can be selected in advanced filter mode
+	$in_status = is_array($filters->$result_key) ? implode("','", $filters->$result_key) : $filters->$result_key;
 	
 	foreach($tcase_set as $tc_id => $tc_info) {
 		// get last execution result for each testcase, 

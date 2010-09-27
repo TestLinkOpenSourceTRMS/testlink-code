@@ -8,10 +8,11 @@
  * @package 	TestLink
  * @author 		jbarchibald
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.14 2010/04/29 14:56:25 asimon83 Exp $
+ * @version    	CVS: $Id: exec_cfield_mgr.class.php,v 1.15 2010/09/27 08:15:23 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *      20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
  *      20100316 - Julian - cosmetical changes for input field sizes of custom fields
  *      20090514 - franciscom - localize label
  *      20071006 - franciscom - exec_cfield_mgr() interface change
@@ -203,6 +204,7 @@ function html_table_of_custom_field_inputs($htmlInputSize=0)
             switch($value['verbose_type']){
 
             case 'checkbox':
+            case 'radio':
             case 'multiselection list':
                 $cf_string = '';
 

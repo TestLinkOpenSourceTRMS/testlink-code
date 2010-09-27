@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.22 2010/09/09 08:46:16 mx-julian Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.23 2010/09/27 08:15:23 amkhullar Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
  * 20100901 - asimon - show button "show/hide cf" only when there are cfields
  * 20100901 - asimon - re-enabled filter for assigned user when assigning testcases
  * 20100901 - asimon - re-enable option "user_filter_default"
@@ -1403,7 +1404,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 						$replacement = '${1} selected ${2}';
 						$menu = preg_replace($pattern, $replacement, $menu, $limit);
 					break;
-
+					case 'radio':
 					case 'checkbox':
 					case 'multiselection list':
 						// this is similar to single selection list, but a bit more complicated

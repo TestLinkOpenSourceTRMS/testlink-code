@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.23 2010/09/27 08:15:23 amkhullar Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.24 2010/09/27 10:53:45 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100972 - asimon - additional fix to BUGID 3809
  * 20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
  * 20100901 - asimon - show button "show/hide cf" only when there are cfields
  * 20100901 - asimon - re-enabled filter for assigned user when assigning testcases
@@ -1390,7 +1391,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			
 			// no magic number: 1 because of course only one replacement per value shall be done
 			$limit = 1;
-	
+
 			foreach ($selection as $cf_id => $value) {
 				
 				$cf_html_name = $field_names[$cf_id]['cf_name'];
@@ -1404,7 +1405,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 						$replacement = '${1} selected ${2}';
 						$menu = preg_replace($pattern, $replacement, $menu, $limit);
 					break;
-					case 'radio':
+					
 					case 'checkbox':
 					case 'multiselection list':
 						// this is similar to single selection list, but a bit more complicated
@@ -1418,8 +1419,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 							$menu = preg_replace($pattern, $replacement, $menu, $limit);
 						}
 					break;
-					
-					
+
+					// BUGID 3809
+					case 'radio':
+						$pattern = '/(.*name="' . $cf_html_name . '.*value="' . $value . '")(.*)/';
+						$replacement = '${1} checked="checked" ${2}';
+						$menu = preg_replace($pattern, $replacement, $menu, $limit);
+					break;
+
 					case 'numeric':
 					case 'float':
 					case 'email':

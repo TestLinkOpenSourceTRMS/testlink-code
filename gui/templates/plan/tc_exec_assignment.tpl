@@ -1,9 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.30 2010/09/26 17:16:51 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.31 2010/09/27 16:04:09 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20100927 - franciscom - BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
+                             <div id="header-wrap" -> added height:110px;
+                             added z-index to avoid problems with scrolling when using EXT-JS and header-wrap
      20100926 - franciscom - HTML improvements using <thead>,<tbody>
      20100822 - franciscom - BUGID 3698
      20100709 - asimon - BUGID 3406 - changed assignment logic to operate on build 
@@ -52,7 +55,8 @@ function check_action_precondition(container_id,action)
 <form id='tc_exec_assignment' name='tc_exec_assignment' method='post'>
 
   {* --------------------------------------------------------------------------------------------------------------- *}
-  <div id="header-wrap"> <!-- header-wrap -->
+  {* added z-index to avoid problems with scrolling when using EXT-JS *}
+  <div id="header-wrap" style="z-index:999;height:110px;"> <!-- header-wrap -->
 	<h1 class="title">{$gui->main_descr|escape}</h1>
   {if $gui->has_tc}
     {include file="inc_update.tpl" result=$sqlResult refresh="yes"}

@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: login.php,v 1.57 2010/09/04 20:22:51 erikeloff Exp $
+ * @version    	CVS: $Id: login.php,v 1.58 2010/09/28 08:58:23 mx-julian Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/login.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions
+ * 20100928 - Julian - Redirection after Login only for linkto.php
  * 20100904 - eloff - BUGID 3740 - redirect to destination after login
  * 20100202 - franciscom - BUGID 0003129: After login failure blank page is displayed
  * 20100127 - eloff - Send localized login form strings with response to ajaxcheck
@@ -73,7 +74,7 @@ switch($args->action)
 		 		echo json_encode(array('success' => true));
 		 	} else {
 				// If destination param is set redirect to given page ...
-				if (!empty($args->destination)) {
+				if (!empty($args->destination) && preg_match("/linkto.php/", $args->destination)) {
 					redirect($args->destination);
 				}
 				// ... or show main page

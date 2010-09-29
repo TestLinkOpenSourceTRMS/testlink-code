@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.24 2010/09/27 10:53:45 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.25 2010/09/29 14:13:03 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20100929 - asimon - BUGID 3817
  * 20100972 - asimon - additional fix to BUGID 3809
  * 20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
  * 20100901 - asimon - show button "show/hide cf" only when there are cfields
@@ -1443,13 +1444,14 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				} // end of switch
 
 			} // end of foreach
-
 		}
-		
+
 		// BUGID 3566: show/hide CF
-		$this->filters[$key] = array('items' => $menu,
-		                             'btn_label' => $btn_label,
-		                             'collapsed' => $collapsed);
+		if ($field_names) {
+			$this->filters[$key] = array('items' => $menu,
+										 'btn_label' => $btn_label,
+										 'collapsed' => $collapsed);
+		}
 		$this->active_filters[$key] = $selection;
 		
 	} // end of method
@@ -1485,13 +1487,18 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$result_selection = $this->args->{$result_key};
 		$method_selection = $this->args->{$method_key};
 		$build_selection = $this->args->{$build_key};
-		
+
 		// default values
 		$default_filter_method = $this->configuration->filter_methods['default_type'];
 		$any_result_key = $this->configuration->results['status_code']['all'];
 		$newest_build_id = $this->testplan_mgr->get_max_build_id($tplan_id, testplan::GET_ACTIVE_BUILD);
-		
-		if (is_null($result_selection) || is_null($method_selection) || $this->args->reset_filters) {
+
+		// BUGID 3817
+		if (is_null($method_selection)) {
+			$method_selection = $default_filter_method;
+		}
+
+		if (is_null($result_selection) || $this->args->reset_filters) {
 			// no selection yet or filter reset requested
 			$result_selection = $any_result_key;
 			$method_selection = $default_filter_method;
@@ -1530,6 +1537,9 @@ class tlTestCaseFilterControl extends tlFilterControl {
 			$this->active_filters[$result_key] = null;
 			$this->active_filters[$method_key] = null;
 			$this->active_filters[$build_key] = null;
+			$this->filters[$key][$result_key]['selected'] = $any_result_key;
+			$this->filters[$key][$method_key]['selected'] = $default_filter_method;
+			$this->filters[$key][$build_key]['selected'] = $newest_build_id;
 		} else {
 			$this->active_filters[$result_key] = $result_selection;
 			$this->active_filters[$method_key] = $method_selection;

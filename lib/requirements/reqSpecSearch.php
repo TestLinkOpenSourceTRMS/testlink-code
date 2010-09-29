@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.7 2010/09/21 20:53:59 mx-julian Exp $
+ * @version    	CVS: $Id: reqSpecSearch.php,v 1.8 2010/09/29 14:13:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
  *
  * @internal Revisions:
+ * 20100929 - asimon - added req doc id to result table
  * 20100920 - Julian - BUGID 3793 - use exttable for search result
  */
 
@@ -81,7 +82,7 @@ if ($args->tprojectID)
                                      " AND CFD.value like '%{$args->custom_field_value}%' ";
     }
 
-    $sql = " SELECT NH.id AS id,NH.name as name " .
+    $sql = " SELECT NH.id AS id,NH.name as name,RS.doc_id " .
 		   " FROM {$tables['nodes_hierarchy']} NH, " . 
 		   " {$tables['req_specs']} RS {$from['by_custom_field']} " .
            " WHERE NH.id = RS.id " .
@@ -146,6 +147,7 @@ function buildExtTable($gui, $charset) {
 			$rowData[] = "<!-- " . htmlentities($path, ENT_QUOTES, $charset) . htmlentities($result['name'], ENT_QUOTES, $charset) ." -->" . 
 			             htmlentities($path, ENT_QUOTES, $charset) . 
 			             "<a href=\"lib/requirements/reqSpecView.php?item=req_spec&req_spec_id={$result['id']}\">" .
+			             htmlentities($result['doc_id'], ENT_QUOTES, $charset) . ":" .
 			             htmlentities($result['name'], ENT_QUOTES, $charset);
 			
 			$matrixData[] = $rowData;

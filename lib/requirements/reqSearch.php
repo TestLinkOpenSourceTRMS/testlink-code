@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.14 2010/09/21 20:53:59 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.15 2010/09/29 14:13:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20100929 - asimon - added req doc id to result table
  * 20100920 - Julian - BUGID 3793 - use exttable to display search results
  *                   - created function to build table
  * 20100920 - franciscom - minor refactoring
@@ -149,7 +150,7 @@ if ($args->tprojectID)
 		$filter['by_status'] = " AND RV.status='{$status}' ";
 	}
 	
-	$sql = "SELECT DISTINCT NHP.id, NHP.name FROM {$tables['nodes_hierarchy']} NH," . 
+	$sql = "SELECT DISTINCT NHP.id, NHP.name, REQ.req_doc_id FROM {$tables['nodes_hierarchy']} NH," .
   			"{$tables['nodes_hierarchy']} NHP, {$tables['requirements']} REQ," .
 			"{$tables['req_versions']} RV {$from['by_custom_field']} {$from['by_tcid']} {$from['by_relation_type']} " .
 			"WHERE NH.parent_id = NHP.id AND RV.id=NH.id AND REQ.id=NHP.id ";
@@ -225,6 +226,7 @@ function buildExtTable($gui, $charset) {
 
 			// build requirement link
 			$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
+			             htmlentities($result['req_doc_id'], ENT_QUOTES, $charset) . ":" .
 			             htmlentities($result['name'], ENT_QUOTES, $charset);
 			
 			$matrixData[] = $rowData;

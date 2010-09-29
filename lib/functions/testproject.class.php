@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.175 2010/09/20 12:49:09 mx-julian Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.176 2010/09/29 07:42:02 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
  * 20100920 - Julian - getFreeTestCases() added importance to output
  * 20100911 - amitkhullar - BUGID 3764
  * 20100821 - franciscom - get_all_testplans() - interface changes
@@ -1788,18 +1789,20 @@ function setPublicStatus($id,$status)
                                                [keyword_id] => 2
                                                [keyword] => Terminator ) )
 
-
+@internal revisions:
+  20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
 */
-function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_type='OR')
+function get_keywords_tcases($testproject_id, $keyword_id=0, $keyword_filter_type='Or')
 {
     $keyword_filter= '' ;
     $subquery='';
-    
+
     if( is_array($keyword_id) )
     {
         $keyword_filter = " AND keyword_id IN (" . implode(',',$keyword_id) . ")";          	
-        
-        if($keyword_filter_type == 'AND')
+
+        // asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
+        if($keyword_filter_type == 'And')
         {
 		        $subquery = "AND testcase_id IN (" .
 		                    " SELECT FOXDOG.testcase_id FROM

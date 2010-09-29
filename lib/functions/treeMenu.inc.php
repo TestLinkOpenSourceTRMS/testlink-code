@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.150 2010/09/27 08:55:48 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.151 2010/09/29 07:42:02 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
  *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
  *	20100912 - franciscom - BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
@@ -929,8 +930,9 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                    'exec_type' => $execution_type);
 			
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-			
-			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'AND')
+
+			// BUGID 3814: fixed keyword filtering with "and" selected as type
+			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
 			{
 				$filteredSet = $tcase_mgr->filterByKeyword(array_keys($tplan_tcases),$keyword_id,$keywordsFilterType);
 

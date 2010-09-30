@@ -1,12 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: projectView.tpl,v 1.21 2010/05/01 18:19:22 franciscom Exp $
+$Id: projectView.tpl,v 1.22 2010/09/30 18:04:14 franciscom Exp $
 Purpose: smarty template - edit / delete Test Plan
 
 Development hint:
      some variables smarty and javascript are created on the inc_*.tpl files.
 
 Rev :
+    20100930 - franciscom - BUGID 2344: Private test project
     20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
     20080805 - franciscom - api config refactoring
     20080116 - franciscom - added option to show/hide id useful for API
@@ -64,9 +65,7 @@ var del_action=fRoot+'{$deleteAction}';
 			<th>{$sortHintIcon}{$labels.tcase_id_prefix}</th>
 			<th class="{$noSortableColumnClass}">{$labels.th_requirement_feature}</th>
 			<th class="icon_cell">{$labels.th_active}</th>
-{* havlatm: the feature is not ready for using - must be disabled (developed by Francisco)
 			<th class="icon_cell">{$labels.public}</th>
-*}
 			{if $gui->canManage == "yes"}
 			<th class="icon_cell">{$labels.th_delete}</th>
 			{/if}
@@ -109,7 +108,6 @@ var del_action=fRoot+'{$deleteAction}';
   					&nbsp;
   				{/if}
 			</td>
-{* havlatm: the feature is not ready for using - must be disabled (developed by Francisco)
 			<td class="clickable_icon">
 				{if $testproject.is_public}
   					<img style="border:none"
@@ -120,7 +118,6 @@ var del_action=fRoot+'{$deleteAction}';
   					&nbsp;
   				{/if}
 			</td>
-*}
 			{if $gui->canManage == "yes"}
 			<td class="clickable_icon">
 				  <img style="border:none;cursor: pointer;"  alt="{$labels.testproject_alt_delete}"

@@ -33,10 +33,11 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.59 2010/03/07 10:12:34 franciscom Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.60 2010/09/30 18:10:14 franciscom Exp $
  * 
  *
  * @internal rev: 
+ *	20100930 - franciscom - BUGID 2344: Private test project
  *	20100307 - franciscom - removed wrong right due to copy/paste BUGID 3249
  *	20100220 - franciscom - added inventory rights
  *  20090425 - franciscom - BUGID 2417 - new right for test projects
@@ -225,9 +226,10 @@ function checkForRights($rights,$roleQuestion,$bAND = 1)
  *                 effective_role_id  user role for test project
  *                 is_inherited
  */
-function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = null)
+function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = null)
 {
 	$effective_role = array();
+	$tproject_id = $tproject['id'];
 	if (!is_null($user_id))
 	{
 		$users = tlUser::getByIDs($db,(array)$user_id);
@@ -241,9 +243,17 @@ function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = 
 	{
 		foreach($users as $id => $user)
 		{
+			// manage admin exception
 			$isInherited = 1;
 			$effectiveRoleID = $user->globalRoleID;
 			$effectiveRole = $user->globalRole;
+			if( ($user->globalRoleID != TL_ROLES_ADMIN) && !$tproject['is_public'])
+			{
+				$isInherited = $tproject['is_public'];
+				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
+				$effectiveRole = '<no rights>';
+			}
+			
 			if(isset($user->tprojectRoles[$tproject_id]))
 			{
 				$isInherited = 0;
@@ -289,9 +299,9 @@ function get_tproject_effective_role(&$db,$tproject_id,$user_id = null,$users = 
                   effective_role_id    user role for test plan
                   is_inherited       
  */
-function get_tplan_effective_role(&$db,$tplan_id,$tproject_id,$user_id = null,$users = null)
+function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$users = null)
 {
-	$effective_role = get_tproject_effective_role($db,$tproject_id,$user_id,$users);   
+	$effective_role = get_tproject_effective_role($db,$tproject,1,$user_id,$users);   
 
 	foreach($effective_role as $user_id => $row)
 	{

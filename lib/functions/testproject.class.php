@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.176 2010/09/29 07:42:02 asimon83 Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.177 2010/09/30 18:14:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20100930 - franciscom - BUGID 2344: Private test project
  * 20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
  * 20100920 - Julian - getFreeTestCases() added importance to output
  * 20100911 - amitkhullar - BUGID 3764
@@ -503,7 +504,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
     $items = array();
 
     // Get default role
-    $sql = " SELECT id,role_id FROM {$this->tables['users']}  where id={$user_id}";
+    $sql = " SELECT id,role_id FROM {$this->tables['users']} where id={$user_id}";
     $user_info = $this->db->get_recordset($sql);
 	$role_id=$user_info[0]['role_id'];
 
@@ -512,16 +513,30 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
  	          JOIN {$this->object_table} testprojects ON nodes_hierarchy.id=testprojects.id
 	          LEFT OUTER JOIN {$this->tables['user_testproject_roles']} user_testproject_roles
 		        ON testprojects.id = user_testproject_roles.testproject_id AND
-		 	      user_testproject_roles.user_id = {$user_id} WHERE ";
+		 	      user_testproject_roles.user_id = {$user_id} WHERE 1=1 ";
 
-	if ($role_id != TL_ROLES_NO_RIGHTS)
+	
+	// BUGID 2344: Private test project
+	if( $role_id != TL_ROLES_ADMIN )
 	{
-		$sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
+		if ($role_id != TL_ROLES_NO_RIGHTS)
+		{
+			// $sql .=  "(role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
+			// (A AND (B OR C) ) OR (NOT A AND C) 
+			$sql .=  " AND "; 
+			$sql_public = " ( is_public = 1 AND (role_id IS NULL OR role_id != " . TL_ROLES_NO_RIGHTS. ") )";
+			$sql_private = " ( is_public = 0 AND role_id != " . TL_ROLES_NO_RIGHTS. ") ";
+    	
+			$sql .= " ( {$sql_public}  OR {$sql_private} ) ";
+		}
+		else
+		{
+			// User need specific role
+			$sql .=  " AND (role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
+    	}
 	}
-	else
-	{
-		$sql .=  "(role_id IS NOT NULL AND role_id != ".TL_ROLES_NO_RIGHTS.")";
-    }
+
+	// $sql .=  " AND (role_id IS NULL OR role_id != ".TL_ROLES_NO_RIGHTS.")";
 
 	if (has_rights($this->db,'mgt_modify_product') != 'yes')
 	{

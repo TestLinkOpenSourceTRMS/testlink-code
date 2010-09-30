@@ -11,10 +11,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.29 2010/03/14 09:18:07 franciscom Exp $
+ * @version    	CVS: $Id: usersAssign.php,v 1.30 2010/09/30 18:08:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20100930 - franciscom - BUGID 2344: Private test project
  *	20100313 - erikeloff - BUGID 3271 - show only active users on assign to project/test plan
  *	20091129 - franciscom - ISSUE 2554 - colouring
  *
@@ -117,11 +118,16 @@ if(is_null($gui->features) || count($gui->features) == 0)
 	$gui->user_feedback = $gui->not_for_you;
 }
 
+new dBug($gui);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$iParams = array(
@@ -241,6 +247,8 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
     // Accessible means user has a role on test project
 	$testprojects = $objMgr->get_accessible_for_user($argsObj->userID,'array_of_map',$order_by);
 	
+	new dBug($testprojects);
+	
 	// Another more restrictive filter has to be applied, related to what we want to do
 	// user has to be right to manage roles on test project 
 	if($argsObj->user->hasRight($dbHandler,"mgt_users"))
@@ -273,11 +281,25 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 			$argsObj->featureID = $features[0]['id'];
 		}	
 	}
+	
+	// get private/public status for feature2check
+	$loop2do = sizeof($testprojects);
+	$featureIsPublic = 1;
+	for($ppx=0; $ppx < $loop2do; $ppx++)
+	{
+		if( $testprojects[$ppx]['id'] == $argsObj->featureID )
+		{
+			$featureIsPublic = $testprojects[$ppx]['is_public'];
+			break;
+		}
+	}
+	
 	foreach($users as &$user)
 	{
 		$user->readTestProjectRoles($dbHandler,$argsObj->featureID);
 	}
-	$effectiveRoles = get_tproject_effective_role($dbHandler,$argsObj->featureID,null,$users);
+	$effectiveRoles = get_tproject_effective_role($dbHandler,array('id' => $argsObj->featureID, 'is_public' => $featureIsPublic),
+												  null,$users);
 	return array($effectiveRoles,$features,$argsObj->featureID);
 }
 

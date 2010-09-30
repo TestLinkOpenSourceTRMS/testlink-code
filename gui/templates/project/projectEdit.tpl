@@ -3,9 +3,10 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.29 2010/05/01 18:21:03 franciscom Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.30 2010/09/30 18:04:14 franciscom Exp $
  *
  * Revisions:
+ *  20100930 - franciscom - BUGID 2344: Private test project
  *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *	20100212 - havlatm - inventory support
  *	20100204 - franciscom - test project copy
@@ -182,15 +183,12 @@
       		</tr>
 
 			<input type="hidden" name="is_public" value="1" />
-{* havlatm: the feature is not ready for using - must be disabled (developed by Francisco)
 			<tr>
 				<td></td><td>
 			    	<input type="checkbox" name="is_public" {if $gui->is_public eq 1} checked="checked"	{/if} />
 			    	{$labels.public}
 			    </td>
       		</tr>
-*}
-
 			<tr><td cols="2">
 		    {if $gui->canManage == "yes"}
 				<div class="groupBtn">

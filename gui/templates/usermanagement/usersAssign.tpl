@@ -1,8 +1,9 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.18 2010/05/01 19:45:41 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.19 2010/09/30 18:05:03 franciscom Exp $ 
 
 rev:
+    20100930 - franciscom - BUGID 2344: Private test project
     20100314 - eloff - BUGID 3272 - send assign form via POST to allow more data to be sent
     20091129 - franciscom - ISSUE 2554 - coloruing
     20090426 - franciscom - BUGID 2442- added bulk setting management
@@ -15,7 +16,7 @@ rev:
     
 *}
 {lang_get var="labels" 
-          s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,
+          s='TestProject,TestPlan,btn_change,title_user_mgmt,set_roles_to,show_only_authorized_users,
              warn_demo,User,btn_upd_user_data,btn_do,title_assign_roles'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
@@ -47,6 +48,41 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
 }
 {/literal}
 </script>
+
+{literal}
+<script type="text/javascript">
+function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayValue)
+{
+  var trTags = document.getElementsByTagName("tr");
+  var cbox = document.getElementById(oid);
+  
+  for( idx=0; idx < trTags.length; idx++ ) 
+  {
+    if( trTags[idx].className == className ) 
+    {
+      if( displayValue == undefined )
+      {
+        if( cbox.checked )
+        {
+          trTags[idx].style.display = displayCheckOn;
+        }
+        else
+        {
+          trTags[idx].style.display = displayCheckOff;
+        }
+      } 
+      else
+      {
+        trTags[idx].style.display = displayValue;
+      }
+    }
+  }
+
+}
+</script>
+{/literal}
+
+
 
 </head>
 <body>
@@ -121,6 +157,19 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
 		  </td>
 			</tr>
 
+    	{if $gui->featureType == 'testproject'}
+   		<tr>
+   		<td class="labelHolder">{$labels.show_only_authorized_users}</td><td>&nbsp;</td>
+      <td> 
+          <input name="show_only_authorized_users" id="show_only_authorized_users" 
+                  type="checkbox" {$checked_hide_inactive_users} 
+           value="on" onclick="toggleRowByClass('show_only_authorized_users','not_authorized_user','none','table-row')">
+      </td>
+			</tr>
+
+    	{/if}
+
+
 		</table>
     </div>
     
@@ -132,24 +181,29 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
     		<th>{$sortHintIcon}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$gui->users item=user}
-    	{assign var="globalRoleName" value=$user->globalRole->name}
-    	<tr bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
+    	    {assign var="globalRoleName" value=$user->globalRole->name}
+    			{assign var=uID value=$user->dbID}
+
+          {* get role name to add to inherited in order to give better information to user *}
+          {assign var="effective_role_id" value=$gui->userFeatureRoles[$uID].effective_role_id}
+          {if $gui->userFeatureRoles[$uID].is_inherited == 1}
+            {assign var="ikx" value=$effective_role_id}
+          {else}
+            {assign var="ikx" value=$gui->userFeatureRoles[$uID].uplayer_role_id}
+          {/if}
+          {assign var="inherited_role_name" value=$gui->optRights[$ikx]->name}
+
+          {assign var="user_row_class" value=''}
+          {if $effective_role_id == $smarty.const.TL_ROLES_NO_RIGHTS}
+            {assign var="user_row_class" value='class="not_authorized_user"'}
+          {/if}
+
+    	<tr {$user_row_class} bgcolor="{cycle values="#eeeeee,#d0d0d0"}">
     		<td {if $gui->role_colour != '' && $gui->role_colour[$globalRoleName] != ''}  		
     		      style="background-color: {$gui->role_colour[$globalRoleName]};" {/if}>
     		    {$user->getDisplayName()|escape}</td>
     		<td>
-    			{assign var=uID value=$user->dbID}
-          {* --------------------------------------------------------------------- *}
-          {* get role name to add to inherited in order to give 
-             better information to user
-          *}
-          {if $gui->userFeatureRoles[$uID].is_inherited == 1}
-            {assign var="ikx" value=$gui->userFeatureRoles[$uID].effective_role_id}
-          {else}
-            {assign var="ikx" value=$gui->userFeatureRoles[$uID].uplayer_role_id}
-          {/if}
-			    {assign var="inherited_role_name" value=$gui->optRights[$ikx]->name}
-             <select name="userRole[{$uID}]" id="userRole_{$uID}">
+          <select name="userRole[{$uID}]" id="userRole_{$uID}">
 		      {foreach key=role_id item=role from=$gui->optRights}
 		        <option value="{$role_id}"
 		          {if ($gui->userFeatureRoles[$uID].effective_role_id == $role_id && 

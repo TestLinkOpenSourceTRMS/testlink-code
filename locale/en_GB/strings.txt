@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.714 2010/09/26 15:09:04 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.715 2010/09/30 18:07:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1848,6 +1848,7 @@ $TLS_title_assign_roles = "Assign roles";
 $TLS_set_roles_to = "Set roles to";
 $TLS_testproject_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Projects";
 $TLS_testplan_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Plans";
+$TLS_show_only_authorized_users = 'Show only authorized users';
 
 
 // ----- gui/templates/usersedit.tpl -----

@@ -1,14 +1,15 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.72 2010/09/23 14:42:52 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.73 2010/09/30 14:59:48 asimon83 Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
 * 
 * Show Test Report by individual test case.
 *
-* @author 
+* @author
+* 20100930 - asimon - added icons for testcase editing and execution
 * 20100923 - eloff - refactored to use improved table interface
 * 20100828 - eloff - adapt to rendering of status column
 * 20100823 - Julian - table now uses a unique table id per test project and test plan
@@ -48,6 +49,10 @@ $gui->title = lang_get('title_test_report_all_builds');
 $gui->printDate = '';
 $gui->matrixCfg  = config_get('resultMatrixReport');
 $gui->matrixData = array();
+
+$labels = init_labels(array('design' => null, 'execution' => null));
+$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
+$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $buildIDSet = null;
 $buildQty = 0;
@@ -144,19 +149,18 @@ if ($lastResultMap != null)
 				
 				// BUGID 3590: crash when clicking testcase link
 				$buildId = $tcase['buildIdLastExecuted'] ? $tcase['buildIdLastExecuted'] : $last_build;
-				
-				$link = '<a href="' . $_SESSION['basehref'] . 'lib/execute/execSetResults.php?' .
-				        'level=testcase' .
-				        '&build_id=' . $buildId .
-				        '&id=' . $testCaseId .
-				        '&version_id=' . $tcase['tcversion_id'] .
-				        '&tplan_id=' . $args->tplan_id .
-				        '&platform_id=' . $platformId .'">' .
-				        htmlspecialchars("{$external_id}:{$name}",ENT_QUOTES) . '</a>';
+
+			    $tc_name = htmlspecialchars("{$external_id}:{$name}",ENT_QUOTES);
+
+				// create linked icons
+				$edit_link = "<a href=\"javascript:openTCEditWindow({$testCaseId});\">" .
+							 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
+
+				$tcLink = $edit_link . $tc_name;
 
 				$rowArray = null;
 				$rowArray[$cols['tsuite']] = $suiteName;
-				$rowArray[$cols['link']] = $link;
+				$rowArray[$cols['link']] = $tcLink;
 				if ($show_platforms)
 				{
 					$rowArray[$cols['platform']] = $gui->platforms[$platformId];
@@ -197,6 +201,13 @@ if ($lastResultMap != null)
 					// entries that match current:
 					// test case id,build id ,platform id
 					$qta_suites=sizeOf($suiteExecutions);
+
+					// build icon for execution link
+					$exec_link = "<a href=\"javascript:openExecutionWindow(" .
+					             "{$testCaseId}, {$tcase['tcversion_id']}, {$buildId}, " .
+					             "{$args->tplan_id}, {$platformId});\">" .
+					             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
+
 					for ($jdx = 0; $jdx < $qta_suites; $jdx++) 
 					{
 						$execution_array = $suiteExecutions[$jdx];
@@ -207,9 +218,10 @@ if ($lastResultMap != null)
 							$status = $execution_array['status'];
 							$resultsForBuildText = $map_tc_status_code_langet[$status];
 							$resultsForBuildText .= sprintf($versionTag,$execution_array['version']);
+
 							$resultsForBuild = array(
 								"value" => $status,
-								"text" => $resultsForBuildText,
+								"text" => $exec_link . $resultsForBuildText,
 								"cssClass" => $gui->map_status_css[$status]);
 
 							$lastStatus = $execution_array['status'];
@@ -221,9 +233,10 @@ if ($lastResultMap != null)
 						$cssClass = $gui->map_status_css[$resultsCfg['status_code']['not_run']]; 
 						$resultsForBuildText = $not_run_label;
 						$resultsForBuildText .= sprintf($versionTag,$linkedTCVersion);
+
 						$resultsForBuild = array(
 							"value" => $resultsCfg['status_code']['not_run'],
-							"text" => $resultsForBuildText,
+							"text" => $exec_link . $resultsForBuildText,
 							"cssClass" => $cssClass);
 					}
 					

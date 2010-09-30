@@ -11,7 +11,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.30 2010/09/30 18:08:40 franciscom Exp $
+ * @version    	CVS: $Id: usersAssign.php,v 1.31 2010/09/30 18:22:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -118,7 +118,6 @@ if(is_null($gui->features) || count($gui->features) == 0)
 	$gui->user_feedback = $gui->not_for_you;
 }
 
-new dBug($gui);
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
@@ -246,8 +245,6 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 
     // Accessible means user has a role on test project
 	$testprojects = $objMgr->get_accessible_for_user($argsObj->userID,'array_of_map',$order_by);
-	
-	new dBug($testprojects);
 	
 	// Another more restrictive filter has to be applied, related to what we want to do
 	// user has to be right to manage roles on test project 

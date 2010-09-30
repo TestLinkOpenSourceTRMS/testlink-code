@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.86 2010/09/30 13:42:43 asimon83 Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.87 2010/09/30 13:53:34 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1526,7 +1526,7 @@ function name_is_unique($id,$name)
                                   "EXEC.execution_ts,EXEC.status AS exec_status,EXEC.notes AS exec_notes, " .
                                   "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " .
                                   "B.id AS builds_id,B.name AS build_name, U.login AS tester, " .
-                                  "PLAT.name AS platform_name, PLAT.id AS platform_id";
+                                  "PLAT.name AS platform_name, COALESCE(PLAT.id,0) AS platform_id";
             
             $additional_join .= " JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
                                 " AND CFEV.testplan_id={$testplan_id} " .

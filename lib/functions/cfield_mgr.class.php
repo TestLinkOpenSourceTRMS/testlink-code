@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.85 2010/09/08 13:56:21 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.86 2010/09/30 13:42:43 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 
+ *
+ * 20100930 - asimon - added platform_id to get_linked_cfields_at_execution()
  * 20100908 - franciscom - exportValueAsXML() - removed \n placed in wrong place
  * 20100829 - franciscom - BUGID 3707,3708 usability issue + browser different behaviour
  * 20100825 - eloff - BUGID 3713 - add platform_name to output of get_linked_cfields_at_execution()
@@ -1476,6 +1477,7 @@ function name_is_unique($id,$name)
 
 
     @internal Revisions:
+   *    20100930 - asimon - added platform id to statement
         20100825 - eloff - added platform name to output
         20090717 - franciscom - added location argument
         20070526 - franciscom - changed order by clause
@@ -1517,12 +1519,14 @@ function name_is_unique($id,$name)
         if( !is_null($testplan_id) )
         {
             $base_values ='';
+
+            // asimon - 20100930 - added platform id to statement
             $additional_values .= ",CF.name,CF.label,CF.id,CFEV.value AS value,CFEV.tcversion_id AS node_id," .
                                   "EXEC.id AS exec_id, EXEC.tcversion_id,EXEC.tcversion_number," .
                                   "EXEC.execution_ts,EXEC.status AS exec_status,EXEC.notes AS exec_notes, " .
                                   "NHB.id AS tcase_id, NHB.name AS tcase_name, TCV.tc_external_id, " .
                                   "B.id AS builds_id,B.name AS build_name, U.login AS tester, " .
-                                  "PLAT.name AS platform_name";
+                                  "PLAT.name AS platform_name, PLAT.id AS platform_id";
             
             $additional_join .= " JOIN {$this->tables['cfield_execution_values']} CFEV ON CFEV.field_id=CF.id " .
                                 " AND CFEV.testplan_id={$testplan_id} " .

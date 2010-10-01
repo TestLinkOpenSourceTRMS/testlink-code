@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.104 $
- * @modified $Date: 2010/09/20 20:00:37 $ by $Author: franciscom $
+ * @version $Revision: 1.105 $
+ * @modified $Date: 2010/10/01 11:46:20 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20101001 - asimon - extended html_table_of_custom_field_inputs()
+ *                      to not lose entered custom field values on errors
  *  20100920 - franciscom - 3686: When importing requirements, provide the option to 'create new version'
  *  20100915 - Julian - BUGID 3777 - Added get_last_doc_id_for_testproject()
  *	20100914 - franciscom - createFromMap() - added new option 'skipFrozenReq'
@@ -1458,16 +1460,22 @@ function get_linked_cfields($id,$version_id,$parent_id=null)
 
   returns: html string
 
+
+  @internal revisions:
+    20101001 - asimon - extended to not lose entered custom field values on errors
+
 */
 // function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
-function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name_suffix='')
+function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name_suffix='', $request = null)
 
 {
     $NO_WARNING_IF_MISSING=true;
     $cf_smarty = '';
     // $cf_map = $this->get_linked_cfields($id,$parent_id);
     $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id);
-    
+
+    $prefix = $this->cfield_mgr->get_name_prefix();
+
     if(!is_null($cf_map))
     {
     	$cf_smarty = "<table>";
@@ -1475,7 +1483,28 @@ function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name
     	{
             $label=str_replace(TL_LOCALIZE_TAG,'',
                                lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
-    
+
+            $input_name="{$prefix}{$cf_info['type']}_{$cf_info['id']}{$name_suffix}";
+            $value = isset($request[$input_name]) ? $request[$input_name] : null;
+	        $verbose_type = trim($this->cfield_mgr->custom_field_types[$cf_info['type']]);
+
+	        if ($verbose_type == 'date') {
+		        // if cf is a date field, convert the three given values to unixtime format
+		        if (isset($request[$input_name . '_day'])
+		        && isset($request[$input_name . '_month'])
+		        && isset($request[$input_name . '_year'])) {
+			        $day = $request[$input_name . '_day'];
+			        $month = $request[$input_name . '_month'];
+			        $year = $request[$input_name . '_year'];
+			        $value = mktime(0, 0, 0, $month, $day, $year);
+		        }
+	        }
+
+	        if (!is_null($value) && is_array($value)){
+		        $value = implode("|", $value);
+	        }
+	        $cf_info['value'] = $value;
+
     		$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
     			          $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
     					  "</td></tr>\n";

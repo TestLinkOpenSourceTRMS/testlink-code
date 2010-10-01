@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.313 2010/09/26 14:19:10 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.314 2010/10/01 11:46:20 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101001 - asimon - custom fields do not lose entered values on errors
  * 20100926 - franciscom - exportTestCaseDataToXML() a new management for tcase_id
  * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
  * 20100915 - amitkhullar - BUGID 3776
@@ -3909,7 +3910,7 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
 	                                           $link_id=null,$tplan_id=null,
-	                                           $tproject_id = null,$filters=null)
+	                                           $tproject_id = null,$filters=null, $request = null)
 	{
 		$cf_smarty = '';
 	
@@ -3940,12 +3941,37 @@ class testcase extends tlObjectWithAttachments
 	  
 		if(!is_null($cf_map))
 		{
+
+			$prefix = $this->cfield_mgr->get_name_prefix();
+
 			$cf_smarty = "<table>";
 			foreach($cf_map as $cf_id => $cf_info)
 			{
 	            // true => do not create input in audit log
 	            $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
-	
+
+	            // 20101001 - asimon - custom fields do not lose entered values on errors
+	            $input_name="{$prefix}{$cf_info['type']}_{$cf_info['id']}{$name_suffix}";
+				$value = isset($request[$input_name]) ? $request[$input_name] : null;
+				$verbose_type = trim($this->cfield_mgr->custom_field_types[$cf_info['type']]);
+
+				if ($verbose_type == 'date') {
+					// if cf is a date field, convert the three given values to unixtime format
+					if (isset($request[$input_name . '_day'])
+					&& isset($request[$input_name . '_month'])
+					&& isset($request[$input_name . '_year'])) {
+						$day = $request[$input_name . '_day'];
+						$month = $request[$input_name . '_month'];
+						$year = $request[$input_name . '_year'];
+						$value = mktime(0, 0, 0, $month, $day, $year);
+					}
+				}
+
+				if (!is_null($value) && is_array($value)){
+					$value = implode("|", $value);
+				}
+				$cf_info['value'] = $value;
+
 				// Want to give an html id to <td> used as labelHolder, to use it in Javascript
 				// logic to validate CF content
 				$cf_html_string = $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix);

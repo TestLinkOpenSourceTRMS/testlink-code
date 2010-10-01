@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/09/08 13:21:53 $ by $Author: mx-julian $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2010/10/01 11:46:21 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
- * 
+ *
+ *  20101001 - asimon - custom fields do not lose entered values on errors
  *	20100906 - franciscom - BUGID 2877 -  Custom Fields linked to Req versions
  *	20100719 - franciscom - BUGID 3327 - manage duplicated DOC ID when creating, without loosing filled-in data
  * 	20100323 - asimon - BUGID 3312 - fixed audit log message when freezing a req version
@@ -122,7 +123,7 @@ class reqCommands
 		if (defined('TL_REQ_TYPE_USE_CASE') && isset($obj->reqTypeDomain[TL_REQ_TYPE_USE_CASE])) {
 			$obj->preSelectedType = TL_REQ_TYPE_USE_CASE;
 		}
-		
+
 		$obj->display_path = false;
  		return $obj;	
 	}
@@ -188,8 +189,11 @@ class reqCommands
 
 		// BUGID 2877 -  Custom Fields linked to Req versions 
 		// $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
-		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id);
-	
+
+		// 20101001 - asimon - custom fields do not lose entered values on errors
+		// $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id);
+		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, null, $request);
+
 		$obj->submit_button_label=lang_get('btn_save');
 		$obj->template = null;
       	$obj->reqStatusDomain=$this->reqStatusDomain;

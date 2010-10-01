@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/10/01 14:41:43 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20101001 - asimon - added icon for requirement editing
  * 20100902 - Julian - BUGID 3717 - show linked tcs and the results for each req
  * 20100823 - Julian - table now uses a unique table id per test project
  * 20100820 - asimon - BUGID 3439: little refactorizations
@@ -49,13 +50,15 @@ $external_req_mgmt = $req_cfg->external_req_management;
 $req_type_labels = init_labels($req_cfg->type_labels);
 $req_spec_type_labels = init_labels($req_spec_cfg->type_labels);
 $status_labels = init_labels($req_cfg->status_labels);
-$labels = array('requirements' => lang_get('requirements'),
+$labels = array('requirement' => lang_get('requirement'),
+	            'requirements' => lang_get('requirements'),
                 'type' => lang_get('type'),
                 'na' => lang_get('not_aplicable'),
                 'req_availability' => lang_get('req_availability'),
                 'linked_tcs' => lang_get('linked_tcs'),
                 'no_linked_tcs' => lang_get('no_linked_tcs'),
                 'goto_testspec' => lang_get('goto_testspec'));
+$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $status_code_map = array();
 foreach ($results_cfg['status_label_for_exec_ui'] as $status => $label) {
@@ -228,11 +231,16 @@ if (count($req_spec_map)) {
 			// create the linked title to display
 			$title = htmlentities($req_info['req_doc_id'], ENT_QUOTES, $charset) . $glue_char . 
 			         htmlentities($req_info['title'], ENT_QUOTES, $charset);
-			$linked_title = '<!-- ' . $title . ' -->' . 
-			                '<a href="javascript:openLinkedReqWindow(' . $req_id . ')">' . 
-			                $title . '</a>';
-			
-			$single_row[] = $linked_title;
+			//$linked_title = '<!-- ' . $title . ' -->' .
+			//                '<a href="javascript:openLinkedReqWindow(' . $req_id . ')">' .
+			//                $title . '</a>';
+
+			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $req_id . ")\">" .
+						 "<img title=\"{$labels['requirement']}\" src=\"{$edit_icon}\" /></a> ";
+
+		    $link = $edit_link . $title;
+
+			$single_row[] = $link;
 	    	
 	    	// version number
 	    	$version_num = $req_info['version'];

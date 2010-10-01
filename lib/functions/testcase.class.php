@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.314 2010/10/01 11:46:20 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.315 2010/10/01 12:51:47 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -3970,7 +3970,10 @@ class testcase extends tlObjectWithAttachments
 				if (!is_null($value) && is_array($value)){
 					$value = implode("|", $value);
 				}
-				$cf_info['value'] = $value;
+
+	            if (!is_null($value)) {
+		            $cf_info['value'] = $value;
+	            }
 
 				// Want to give an html id to <td> used as labelHolder, to use it in Javascript
 				// logic to validate CF content

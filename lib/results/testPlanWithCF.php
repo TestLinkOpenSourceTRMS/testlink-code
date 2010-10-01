@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testPlanWithCF.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/10/01 14:26:50 $ by $Author: asimon83 $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
  *
  * rev:
+ *      20101001 - asimon - added linked icon for testcase editing
  *      20100921 - Julian - BUGID 3797 - use exttable
  * 		20090504 - amitkhullar - BUGID 2465
  */
@@ -36,6 +37,9 @@ $gui->resultSet = null;
 $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
+
+$labels = init_labels(array('design' => null));
+$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $testCaseSet = array();
 
@@ -90,7 +94,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 	}
 }
 
-$table = buildExtTable($gui,$tcase_mgr,$glue_char,$charset);
+$table = buildExtTable($gui,$tcase_mgr, $tplan_mgr, $args->tplan_id, $glue_char,$charset, $labels, $edit_icon);
 
 if (!is_null($table)) {
 	$gui->tableSet[] = $table;
@@ -103,7 +107,7 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * 
  *
  */
-function buildExtTable($gui,$tcase_mgr,$gluechar,$charset)
+function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset, $labels, $edit_icon)
 {
 	$table = null;
 	if(count($gui->resultSet) > 0) {
@@ -119,19 +123,29 @@ function buildExtTable($gui,$tcase_mgr,$gluechar,$charset)
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
-		
+
 		foreach ($gui->resultSet as $item)
 		{
 			$rowData = array();
-	
+
 			// Get test suite path
 			$dummy = $tcase_mgr->getPathLayered(array($item['tcase_id']));
 			$dummy = end($dummy);
 			$rowData[] = $dummy['value'];
-	
-			$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $item['tcase_id'] . '">' .
-						 buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
-						 $gluechar . $item['tcase_name'] . '</a>';
+
+			$name = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
+			                              $gluechar . $item['tcase_name'];
+
+			// create linked icons
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tcase_id']});\">" .
+						 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
+
+		    $link = $edit_link . $name;
+
+			$rowData[] = $link;
+//			$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $item['tcase_id'] . '">' .
+//						 buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
+//						 $gluechar . $item['tcase_name'] . '</a>';
 			
 			$hasValue = false;
 

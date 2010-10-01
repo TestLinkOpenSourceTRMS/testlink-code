@@ -4,14 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.13 $
- * @modified $Date: 2010/10/01 12:51:47 $ by $Author: asimon83 $
+ * @version $Revision: 1.14 $
+ * @modified $Date: 2010/10/01 14:26:50 $ by $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
- * 20101001 - asimon - added linked icons for testcase editing and execution
+ * 20101001 - asimon - added linked icon for testcase editing
  * 20100830 - Julian - Added test case summary column
  * 20100830 - franciscom - refactoring
  * 20100830 - Julian - BUGID 3723 - filter shown test cases by not run status
@@ -36,7 +36,6 @@ $gui->tproject_name = $args->tproject_name;
 $gui->tplan_name = $args->tplan_name;
 
 $labels = init_labels(array('design' => null, 'execution' => null));
-$exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $msg_key = 'no_linked_tcversions';
@@ -67,8 +66,6 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 		$path_info = $tree_mgr->get_full_path_verbose($tcase_set);
 		unset($tree_mgr);
 
-		$build_id = $tplan_mgr->get_max_build_id($args->tplan_id, testplan::GET_ACTIVE_BUILD, testplan::GET_OPEN_BUILD);
-
 		$data = array();
 		foreach ($testCaseSet as $item)
 		{
@@ -76,15 +73,10 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 			$name = buildExternalIdString($prefix,$item['external_id'] . ': ' . $item['name']);
 
 			// create linked icons
-		    $exec_link = "<a href=\"javascript:openExecutionWindow(" .
-						 "{$item['tc_id']}, {$item['tcversion_id']}, {$build_id}, " .
-						 "{$args->tplan_id}, {$item['platform_id']});\">" .
-						 "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
-		    
-			$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tc_id']});\">" .
+		    $edit_link = "<a href=\"javascript:openTCEditWindow({$item['tc_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 
-		    $link = $exec_link . $edit_link . $name;
+		    $link = $edit_link . $name;
 
 			$row = array($verbosePath,$link);
 			if ($args->show_platforms)

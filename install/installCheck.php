@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installCheck.php,v 1.1 2009/11/10 16:10:20 havlat Exp $
+ * @version    	CVS: $Id: installCheck.php,v 1.2 2010/10/02 13:33:17 franciscom Exp $
  *
  * @internal Revisions:
  * 20080914 - franciscom - check_php_resource_settings() 
@@ -25,11 +25,8 @@ if( !isset($_SESSION) )
   session_start();
 }
 
-$inst_phase = 'checking';
+$inst_phase = 'checking';  // global variable -> absolutely wrong use as usual, used on installHead.inc	
 $msg='';
-//$inst_type = $_GET['installationType'];
-//$isUpgrade = ($inst_type == "upgrade") ? TRUE: FALSE;
-
 include 'installHead.inc';
 ?>
 <div class="tlStory">
@@ -40,6 +37,7 @@ include 'installHead.inc';
 
 <?php
 // Check before DB installation
+$inst_type = $_GET['installationType'];
 $errors = 0;
 reportCheckingSystem($errors);
 reportCheckingWeb($errors);

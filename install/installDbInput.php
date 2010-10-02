@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.4 2010/09/11 17:10:32 franciscom Exp $
+ * @version    	CVS: $Id: installDbInput.php,v 1.5 2010/10/02 13:33:17 franciscom Exp $
  *
  * @internal Revisions:
  * 20100705 - asimon - added warning regarding user assignments migration
@@ -25,10 +25,7 @@ if( !isset($_SESSION) )
 }
 
 $msg='';
-$inst_phase = 'dbaccess';
-//$inst_type = $_GET['installationType'];
-//$isUpgrade = ($inst_type == "upgrade") ? TRUE: FALSE;
-
+$inst_phase = 'dbaccess';  // global variable -> absolutely wrong use as usual, used on installHead.inc	
 include 'installHead.inc';
 ?>
 <div class="tlStory">

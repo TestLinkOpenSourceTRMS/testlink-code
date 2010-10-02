@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.81 $
- * @modified $Date: 2010/09/11 13:42:12 $ by $Author: amkhullar $
+ * @version $Revision: 1.82 $
+ * @modified $Date: 2010/10/02 17:52:11 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20101002 - franciscom - BUGID 3801
  *  20100911 - amitkhullar - BUGID 3764 - Req Mapping Error while import of Test cases.
  *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
  *							processCustomFields()
@@ -263,6 +264,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
   returns: 
   
   rev:
+	  20101002 - franciscom - BUGID 3801	
   	  20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level	
  	  20100317 - franciscom - manage different criteria to decide that test case
  	  	                      is present on system
@@ -418,8 +420,13 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
          	        	$ret = $tcase_mgr->update($tcase_id,$tcversion_id,$name,$summary,
          	        	                          $preconditions,$steps,$userID,$kwIDs,
          	        	                          $node_order,$exec_type,$importance);
-         	        	                          
+
+
+						// BUGID 3801
+						$ret['id'] = $tcase_id;
+						$ret['tcversion_id'] = $tcversion_id;
          	        	$resultMap[] = array($name,$messages['already_exists_updated']);
+
 	     	        break;
 		 	        
 		 	        case 0:
@@ -457,6 +464,8 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
 		if($hasCustomFieldsInfo)
 		{
+			new dBug($ret);
+			
 		    if($tprojectHas['customFields'])
 		    {                         
 				// BUGID 3431 - Custom Field values at Test Case VERSION Level

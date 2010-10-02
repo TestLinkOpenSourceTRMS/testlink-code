@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.158 2010/10/02 13:21:58 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.159 2010/10/02 17:24:19 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -836,6 +836,7 @@ define('VALID_REQ', 'v');
 // We can not use $g_timestamp_format, because format strings for date() and strftime() 
 // uses same LETTER with different meanings (Bad Luck!)
 $tlCfg->gui = new stdClass();
+$tlCfg->gui->custom_fields = new stdClass();
 $tlCfg->gui->custom_fields->time_format = 'H:i:s';                                                       
 
 

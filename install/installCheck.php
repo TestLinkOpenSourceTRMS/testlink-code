@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installCheck.php,v 1.2 2010/10/02 13:33:17 franciscom Exp $
+ * @version    	CVS: $Id: installCheck.php,v 1.3 2010/10/02 18:02:06 franciscom Exp $
  *
  * @internal Revisions:
  * 20080914 - franciscom - check_php_resource_settings() 
@@ -42,7 +42,6 @@ $errors = 0;
 reportCheckingSystem($errors);
 reportCheckingWeb($errors);
 reportCheckingPermissions($errors,$inst_type);
-
 ?>
 	</table>
 </div>

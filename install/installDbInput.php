@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.6 2010/10/02 14:59:36 franciscom Exp $
+ * @version    	CVS: $Id: installDbInput.php,v 1.7 2010/10/02 18:02:30 franciscom Exp $
  *
  * @internal Revisions:
  * 20101002 - franciscom - BUGID 3083	
@@ -73,7 +73,7 @@ include 'installHead.inc';
 			{
 				if( f.tableprefix.value.search(/^[A-Za-z0-9_]*$/) == -1)
 				{
-					alert('Table prefix must contain only Letters,numbers and underscore!');
+					alert('Table prefix must contain only letters,numbers and underscore!');
 					return false;
 				}
 				

@@ -9,9 +9,10 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.5 2010/10/02 13:33:17 franciscom Exp $
+ * @version    	CVS: $Id: installDbInput.php,v 1.6 2010/10/02 14:59:36 franciscom Exp $
  *
  * @internal Revisions:
+ * 20101002 - franciscom - BUGID 3083	
  * 20100705 - asimon - added warning regarding user assignments migration
  * 20090603 - franciscom - added table prefix management
  * 
@@ -41,7 +42,7 @@ include 'installHead.inc';
 			// 20060215 - franciscom
 			if( f.databasename.value.indexOf('/') >= 0 ||
 			    f.databasename.value.indexOf('\\') >= 0 ||
-          f.databasename.value.indexOf('.') >= 0 )
+          		f.databasename.value.indexOf('.') >= 0 )
 			{
 				alert('Database name contains forbbiden characters!');
 				return false;
@@ -67,7 +68,25 @@ include 'installHead.inc';
 				return false;
 			}
 
-			
+			// 20101002 - franciscom (using code attached on BUGID 3083)
+			if(f.tableprefix.value != "") 
+			{
+				if( f.tableprefix.value.search(/^[A-Za-z0-9_]*$/) == -1)
+				{
+					alert('Table prefix must contain only Letters,numbers and underscore!');
+					return false;
+				}
+				
+				// Check max len, after trim, really not needed because
+				// first check woth regexp does not allow spaces
+				// f.tableprefix.value.replace(/^\s*/, "").replace(/\s*$/, "");
+				if( f.tableprefix.value.length > 8 )  // Sorry by MAGIC NUMBER
+				{
+					alert('Table prefix lenght <= 8!');
+					return false;
+				}
+			}
+		
 			/*
 			if(f.cmsadmin.value=="") {
 				alert('You need to enter a username for the TestLink admin account!');
@@ -157,7 +176,7 @@ include 'installHead.inc';
 		<?php } ?>
 		<p>
 	    <div class="labelHolder"><label for="tableprefix">Table prefix</label></div>
-	    <input type="text" id="tableprefix" name="tableprefix" style="width:200px" value="">
+	    <input type="text" id="tableprefix" name="tableprefix" size="8" maxlength="8" value="">
 	    (optional)
 		</p>
 		<?php if($_SESSION['isNew']){ ?>

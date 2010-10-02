@@ -5,11 +5,12 @@
  *
  * @package 	TestLink
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: firstLogin.php,v 1.34 2009/09/28 08:40:21 franciscom Exp $
+ * @version    	CVS: $Id: firstLogin.php,v 1.35 2010/10/02 14:01:38 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 
+ *	20101002 - franciscom - BUGID 3828: TL19RC1 - User self signup - Too many warnings in event log.
  *	20090927 - franciscom - added feature: 
  *                          send mail notification to users with administrator role, 
  *                          when user creates her/his acccount.
@@ -49,8 +50,8 @@ if($args->doEditUser)
 		{
 			$user->login = $args->login;
 			$user->emailAddress = $args->email;
-			$user->firstName = $args->first;
-			$user->lastName = $args->last;
+			$user->firstName = $args->firstName;
+			$user->lastName = $args->lastName;
 			$result = $user->writeToDB($db);
 		}
 		if ($result >= tl::OK)
@@ -85,10 +86,9 @@ function init_args()
 		             "login" => array(tlInputParameter::STRING_N,0,30),
 		             "password" => array(tlInputParameter::STRING_N,0,32),
 		             "password2" => array(tlInputParameter::STRING_N,0,32),
-		             "first" => array(tlInputParameter::STRING_N,0,30),
-		             "last" => array(tlInputParameter::STRING_N,0,30),
-		             "email" => array(tlInputParameter::STRING_N,0,100),
-	);
+		             "firstName" => array(tlInputParameter::STRING_N,0,30),
+		             "lastName" => array(tlInputParameter::STRING_N,0,30),
+		             "email" => array(tlInputParameter::STRING_N,0,100));
 	$args = new stdClass();
 	P_PARAMS($iParams,$args);
 	return $args;

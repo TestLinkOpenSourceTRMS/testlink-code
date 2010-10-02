@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.157 2010/09/20 13:06:25 mx-julian Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.158 2010/10/02 13:21:58 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -639,6 +639,7 @@ define('TL_REQ_STATUS_REWORK','W');
 define('TL_REQ_STATUS_FINISH','F');
 
 // key: status; value: text label
+$tlCfg->req_cfg = new stdClass();
 $tlCfg->req_cfg->status_labels = array(TL_REQ_STATUS_VALID => 'review_status_valid', 
 					                   TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
 					                   TL_REQ_STATUS_DRAFT => 'req_status_draft',
@@ -775,8 +776,7 @@ define('TL_REQ_SPEC_TYPE_SYSTEM_REQ_SPEC', 3);
 // define('TL_REQ_SPEC_TYPE_CULTURAL_AND_POLITICAL',8);
 // define('TL_REQ_SPEC_TYPE_LEGAL',9);
 
-
-
+$tlCfg->req_spec_cfg = new stdClass();
 $tlCfg->req_spec_cfg->type_labels = array(
 		TL_REQ_SPEC_TYPE_SECTION => 'req_spec_type_section', 
 		TL_REQ_SPEC_TYPE_USER_REQ_SPEC => 'req_spec_type_user_req_spec',
@@ -835,6 +835,7 @@ define('VALID_REQ', 'v');
 // Format string follows date() spec - see PHP Manual
 // We can not use $g_timestamp_format, because format strings for date() and strftime() 
 // uses same LETTER with different meanings (Bad Luck!)
+$tlCfg->gui = new stdClass();
 $tlCfg->gui->custom_fields->time_format = 'H:i:s';                                                       
 
 

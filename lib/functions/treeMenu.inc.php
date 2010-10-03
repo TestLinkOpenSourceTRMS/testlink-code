@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.151 2010/09/29 07:42:02 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.152 2010/10/03 16:01:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -1041,9 +1041,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		$assignedTo = $include_unassigned ? null : $assignedTo;
 		
 		$pnFilters = array('assignedTo' => $assignedTo);
-		$keys2init = array('filter_testcase_name',
-		                   'filter_execution_type',
-		                   'filter_priority');
+		$keys2init = array('filter_testcase_name','filter_execution_type','filter_priority');
 		
 		foreach ($keys2init as $keyname) {
 			$pnFilters[$keyname] = isset($filters->{$keyname}) ? $filters->{$keyname} : null;

@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.90 2010/10/03 18:58:02 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.91 2010/10/03 19:52:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
  *						   interface changes -> _get_subtree_rec(), _get_subtree()
+ *						   Added new option on remove_empty_nodes_of_type on _get_subtree_rec()  	
  * 20100920 - Julian - get_full_path_verbose - added new output format
  * 20100918 - franciscom - BUGID 3790 - delete_subtree_objects()
  * 20100317 - franciscom - get_node_hierarchy_info() interface changes.
@@ -906,7 +907,6 @@ class tree extends tlObject
 	// 
 	function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
 	{
-		// echo __FUNCTION__;
 		static $s_testCaseNodeTypeID;
 		if (!$s_testCaseNodeTypeID)
 		{
@@ -916,7 +916,8 @@ class tree extends tlObject
         $my['filters'] = array('exclude_children_of' => null,'exclude_branches' => null,
         					   'additionalWhereClause' => '', 'family' => null);
                                
-        $my['options'] = array('order_cfg' => array("type" =>'spec_order'),'key_type' => 'std');
+        $my['options'] = array('order_cfg' => array("type" =>'spec_order'),'key_type' => 'std',
+        					   'remove_empty_nodes_of_type' => null);
 
 		// Cast to array to handle $options = null
 		$my['filters'] = array_merge($my['filters'], (array)$filters);
@@ -951,6 +952,11 @@ class tree extends tlObject
 			// Hmmm, no action regarding platforms. is OK ??
 			//
 			// REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION
+			//
+			// Important Notice:
+			// Second part of UNION, allows to get from nodes hierarchy,
+			// only test cases that has a version linked to test plan.
+			//
 			$sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
 			     "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
 			     "                NH.name, NH.node_type_id " .
@@ -1035,9 +1041,22 @@ class tree extends tlObject
 		        //
 		        if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
 		  		{
-		  				$this->_get_subtree_rec($rowID,$node,$filters,$options);
+		  				$this->_get_subtree_rec($rowID,$node,$my['filters'],$my['options']);
 		        }
-	  			$pnode[$children_key][] = $node;
+
+				// 20101003 - franciscom 
+				// Have added this logic, because when export test plan will be developed
+				// having a test spec tree where test suites that do not contribute to test plan
+				// are pruned/removed is very important, to avoid additional processing
+				//		        
+		        //  !is_null($my['options']['remove_empty_nodes_of_type']) && 
+		        $doRemove = is_null($node[$children_key]) && 
+		        	        $node['node_type_id'] == $my['options']['remove_empty_nodes_of_type'];
+		        
+		        if(!$doRemove)
+		        {
+	  				$pnode[$children_key][] = $node;
+	  			}	
 	  		} // if(!isset($exclude_branches[$rowID]))
 	  	} //while
 	}

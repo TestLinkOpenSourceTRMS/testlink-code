@@ -5,14 +5,17 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.105 $
- * @modified $Date: 2010/10/01 11:46:20 $ by $Author: asimon83 $
+ * @version $Revision: 1.106 $
+ * @modified $Date: 2010/10/03 14:01:16 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
+ *							create_new_version() interface changed
+ *
  *  20101001 - asimon - extended html_table_of_custom_field_inputs()
  *                      to not lose entered custom field values on errors
  *  20100920 - franciscom - 3686: When importing requirements, provide the option to 'create new version'
@@ -1916,30 +1919,40 @@ function html_table_of_custom_field_values($id,$version_id)
 	
 	/*
 	  function: create_new_version()
-	            create a new version, doing a copy of last version.
+	            create a new version, doing BY DEFAULT a copy of last version.
+	            If reqVersionID is passed, then this version will be used as source data.
 	
 	  args : $id: requirement id
 	         $user_id: who is doing this operation.
+			 $reqVersionID = default null => use last version as source 
 	
 	  returns:
 	          map:  id: node id of created tcversion
 	                version: version number (i.e. 5)
 	                msg
 	
-	  rev: 
+	  @internal revisions
+	  20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used. 
 	*/
-	function create_new_version($id,$user_id)
+	function create_new_version($id,$user_id,$reqVersionID=null)
 	{
 	  // get a new id
 	  $version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
-	  $last_version_info =  $this->get_last_version_info($id);
 	  
-	  // BUGID 2877 - Custom Fields linked to Requirement Versions
-	  $this->copy_version($id,$last_version_info['id'],$version_id,$last_version_info['version']+1,$user_id);
-	
+	  // Needed to get higher version NUMBER, to generata new VERSION NUMBER
+	  $sourceVersionInfo =  $this->get_last_version_info($id);
+	  $newVersionNumber = $sourceVersionInfo['version']+1; 
+
+	  $ret = array();
 	  $ret['id'] = $version_id;
-	  $ret['version'] = $last_version_info['version']+1;
+	  $ret['version'] = $newVersionNumber;
 	  $ret['msg'] = 'ok';
+
+	  $sourceVersionID = is_null($reqVersionID) ? $sourceVersionInfo['id'] : $reqVersionID;
+
+	  // BUGID 2877 - Custom Fields linked to Requirement Versions
+	  $this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
+	
 	  return $ret;
 	}
 

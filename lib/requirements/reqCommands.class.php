@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2010/10/01 11:46:21 $ by $Author: asimon83 $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2010/10/03 14:01:17 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
  *
+ *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
  *  20101001 - asimon - custom fields do not lose entered values on errors
  *	20100906 - franciscom - BUGID 2877 -  Custom Fields linked to Req versions
  *	20100719 - franciscom - BUGID 3327 - manage duplicated DOC ID when creating, without loosing filled-in data
@@ -518,17 +519,21 @@ class reqCommands
     
     returns: 
 
+   	@internal revisions
+	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
+
   */
 	function doCreateVersion(&$argsObj,$request)
 	{
-		$ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id);
+		// added $argsObj->req_version_id
+		$ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,$argsObj->req_version_id);
 		$obj = $this->initGuiBean();
 		$obj->user_feedback = $ret['msg'];
        	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
       	$obj->req = null;
 		$obj->req_id = $argsObj->req_id;
 		return $obj;	
-  }
+	}
   
   
    /**

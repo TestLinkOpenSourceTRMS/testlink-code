@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.152 2010/10/03 16:01:14 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.153 2010/10/03 19:53:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *	20101003 - franciscom - generateExecTree() - added option remove_empty_nodes_of_type on get_subtree() call
  *  20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
  *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
  *	20100912 - franciscom - BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
@@ -805,6 +806,8 @@ function renderTreeNode($level,&$node,$hash_id_descr,
  * - Remove Test cases from test plan
  * 
  * @internal Revisions:
+ *
+ *	20101003 - franciscom - added option remove_empty_nodes_of_type on get_subtree() call
  *  20100820 - asimon - refactoring for less redundant checks and better readibility
  *  20100719 - asimon - BUGID 3406 - user assignments per build:
  *                                   filter assigned test cases by setting_build
@@ -885,7 +888,15 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 	$nt2exclude_children = array('testcase' => 'exclude_my_children',
 		                         'requirement_spec'=> 'exclude_my_children');
 	
-  	$my['options']=array('recursive' => true,
+  	// 20101003 - franciscom
+  	// remove test spec, test suites (or branches) that have ZERO test cases linked to test plan
+  	// 
+  	// IMPORTANT:
+  	// using 'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id))
+  	// makes the magic of ignoring test cases not linked to test plan.
+  	// This unexpected bonus can be useful on export test plan as XML.
+  	//
+  	$my['options']=array('recursive' => true, 'remove_empty_nodes_of_type' => $tree_manager->node_descr_id['testsuite'],
   	                     'order_cfg' => array("type" =>'exec_order',"tplan_id" => $tplan_id));
  	$my['filters'] = array('exclude_node_types' => $nt2exclude,
  	                       'exclude_children_of' => $nt2exclude_children);
@@ -930,7 +941,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
                                    'exec_type' => $execution_type);
 			
 			$tplan_tcases = $tplan_mgr->get_linked_tcversions($tplan_id,$linkedFilters,$opt);
-
+			
 			// BUGID 3814: fixed keyword filtering with "and" selected as type
 			if($tplan_tcases && $doFilterByKeyword && $keywordsFilterType == 'And')
 			{

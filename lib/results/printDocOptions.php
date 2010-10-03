@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/08/10 14:10:12 $ by $Author: asimon83 $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/10/03 15:49:49 $ by $Author: franciscom $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,6 +14,7 @@
  *		Test specification/ Test plan.
  *
  * rev :
+ *		20101003 - franciscom - init_checkboxes() refactored used common pattern
  *		20100723 - BUGID 3451 and related
  *  	20100326 - asimon - refactored to include requirement documents
  *                          added init_checkboxes()
@@ -76,20 +77,6 @@ switch($args->doc_type)
   	  	// See print.inc.php for the real solution!
   	  	
 		// Set of filters Off
-//		$filters->keyword_id = null;
-//		$filters->keywordsFilterType = null;
-//		$filters->tc_id = null;
-//		$filters->assignedTo = null;
-//		$filters->status = null;
-//		$filters->cf_hash = null;
-//		$filters->platform_id = null;
-//
-//		$filters->build_id = $latestBuild;
-//		$filters->hide_testcases = HIDE_TESTCASES;
-//		$filters->include_unassigned = 1;
-//		$filters->show_testsuite_contents = 1;
-//		$filters->statusAllPrevBuilds = null;
-
   	  	$filters->filter_keywords = null;
   	  	$filters->filter_keywords_filter_type = null;
   	  	$filters->filter_tc_id = null;
@@ -279,105 +266,54 @@ function init_checkboxes(&$args) {
 	$arrCheckboxes = array();
 	
 	// these are the options which are always needed, type-specific ones follow below in switch
-	$arrCheckboxes[] = array( 'value' => 'toc', 
-			                          'description' => 'opt_show_toc', 
-			                          'checked' => 'n');
-	$arrCheckboxes[] = array( 'value' => 'headerNumbering', 
-			                          'description' => 'opt_show_hdrNumbering', 
-			                          'checked' => 'n');
+	$arrCheckboxes[] = array( 'value' => 'toc','description' => 'opt_show_toc', 'checked' => 'n');
+	$arrCheckboxes[] = array( 'value' => 'headerNumbering','description' => 'opt_show_hdrNumbering','checked' => 'n');
 	
-	switch($args->doc_type) {
-		
+	switch($args->doc_type) 
+	{
 		case 'reqspec':
-			
-			$arrCheckboxes[] = array( 'value' => 'req_spec_scope', 
-			                          'description' => 'opt_req_spec_scope', 
-			                          'checked' => 'y');
-			$arrCheckboxes[] = array( 'value' => 'req_spec_author', 
-			                          'description' => 'opt_req_spec_author', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_spec_overwritten_count_reqs', 
-			                          'description' => 'opt_req_spec_overwritten_count_reqs', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_spec_type', 
-			                          'description' => 'opt_req_spec_type', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_spec_cf', 
-			                          'description' => 'opt_req_spec_cf', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_scope', 
-			                          'description' => 'opt_req_scope', 
-			                          'checked' => 'y');
-			$arrCheckboxes[] = array( 'value' => 'req_author', 
-			                          'description' => 'opt_req_author', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_status', 
-			                          'description' => 'opt_req_status', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_type', 
-			                          'description' => 'opt_req_type', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_cf', 
-			                          'description' => 'opt_req_cf', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_relations', 
-			                          'description' => 'opt_req_relations',
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_linked_tcs',
-			                          'description' => 'opt_req_linked_tcs', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'req_coverage', 
-			                          'description' => 'opt_req_coverage', 
-			                          'checked' => 'n');
+			$key2init= array('req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
+						     'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
+							 'req_type','req_cf','req_relations','req_linked_tcs','req_coverage');
+
+			$key2init2yes = array('req_spec_scope' => 'y','req_scope' => 'y');
+			foreach($key2init as $key)
+			{
+				$checked = isset($key2init2yes[$key]) ? $key2init2yes[$key] : 'n';
+				$arrCheckboxes[] = array('value' => $key,'description' => 'opt_' . $key, 'checked' => $checked);
+			} 
 		break;
 		
 		default:
-			
-			$arrCheckboxes[] = array( 'value' => 'header', 
-			                          'description' => 'opt_show_suite_txt', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'summary', 
-			                          'description' => 'opt_show_tc_summary', 
-			                          'checked' => 'y');
-			$arrCheckboxes[] = array( 'value' => 'body', 
-			                          'description' => 'opt_show_tc_body', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'author', 
-			                          'description' => 'opt_show_tc_author', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'keyword', 
-			                          'description' => 'opt_show_tc_keys', 
-			                          'checked' => 'n');
-			$arrCheckboxes[] = array( 'value' => 'cfields', 
-			                          'description' => 'opt_show_cfields', 
-			                          'checked' => 'n');
+			$arrCheckboxes[] = array('value' => 'header','description' => 'opt_show_suite_txt','checked' => 'n');
+			$arrCheckboxes[] = array('value' => 'summary','description' => 'opt_show_tc_summary','checked' => 'y');
+			$arrCheckboxes[] = array('value' => 'body','description' => 'opt_show_tc_body','checked' => 'n');
+			$arrCheckboxes[] = array('value' => 'author','description' => 'opt_show_tc_author','checked' => 'n');
+			$arrCheckboxes[] = array('value' => 'keyword','description' => 'opt_show_tc_keys','checked' => 'n');
+			$arrCheckboxes[] = array('value' => 'cfields','description' => 'opt_show_cfields','checked' => 'n');
 
-			if($args->testprojectOptReqs) {
-				$arrCheckboxes[] = array( 'value' => 'requirement',
-                                          'description' => 'opt_show_tc_reqs', 
-                                          'checked' => 'n');
+			if($args->testprojectOptReqs) 
+			{
+				$arrCheckboxes[] = array( 'value' => 'requirement','description' => 'opt_show_tc_reqs','checked' => 'n');
 			}
 
-			if($args->doc_type == 'testplan') {
-				$arrCheckboxes[] = array( 'value' => 'testplan',
-                                          'description' => 'opt_show_tplan_txt', 
-                                          'checked' => 'n');
-			} else if ($args->doc_type == 'testreport')	{
-				$arrCheckboxes[] = array( 'value' => 'passfail',
-                                          'description' => 'opt_show_passfail', 
-                                          'checked' => 'y');
-				$arrCheckboxes[] = array( 'value' => 'metrics',
-                                          'description' => 'opt_show_metrics', 
-                                          'checked' => 'n');
+			if($args->doc_type == 'testplan') 
+			{
+				$arrCheckboxes[] = array( 'value' => 'testplan','description' => 'opt_show_tplan_txt','checked' => 'n');
+			} 
+			else if ($args->doc_type == 'testreport')	
+			{
+				$arrCheckboxes[] = array( 'value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
+				$arrCheckboxes[] = array( 'value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
 			}
 		break;		
 	}
 
-	foreach ($arrCheckboxes as $key => $elem) {
+	foreach ($arrCheckboxes as $key => $elem) 
+	{
 		$arrCheckboxes[$key]['description'] = lang_get($elem['description']);
 	}
 	
 	return $arrCheckboxes;
 }
-
 ?>

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.177 2010/09/30 18:14:40 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.178 2010/10/03 17:51:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
  * 20100930 - franciscom - BUGID 2344: Private test project
  * 20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
  * 20100920 - Julian - getFreeTestCases() added importance to output
@@ -596,7 +597,7 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
         [recursive_mode]: default false
         [exclude_testcases]: default: false
         [exclude_branches]
-        [and_not_in_clause]:
+        [additionalWhereClause]:
 
 
   returns: map
@@ -606,14 +607,14 @@ function get_accessible_for_user($user_id,$output_type='map',$order_by=" ORDER B
 
 */
 function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
-                     $exclude_branches=null, $and_not_in_clause='')
+                     $exclude_branches=null, $additionalWhereClause='')
 {
   
   	$my['options']=array('recursive' => $recursive_mode);
  	$my['filters'] = array('exclude_node_types' => $this->nt2exclude,
  	                       'exclude_children_of' => $this->nt2exclude_children,
  	                       'exclude_branches' => $exclude_branches,
- 	                       'and_not_in_clause' => $and_not_in_clause);      
+ 	                       'additionalWhereClause' => $additionalWhereClause);      
  
   	if($exclude_testcases)
   	{

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.88 2010/09/20 12:25:25 mx-julian Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.89 2010/10/03 17:52:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
  * 20100920 - Julian - get_full_path_verbose - added new output format
  * 20100918 - franciscom - BUGID 3790 - delete_subtree_objects()
  * 20100317 - franciscom - get_node_hierarchy_info() interface changes.
@@ -715,8 +716,8 @@ class tree extends tlObject
 	                            not be visited => no information will be retrieved.
 	        
 	        
-	        [and_not_in_clause]: sql filter to include in sql sentence used to retrieve nodes.
-	                             default: null -> no action taken.
+	        [additionalWhereClause]: sql filter to include in sql sentence used to retrieve nodes.
+	                                 default: null -> no action taken.
 	                              
 	        [options]: map with following keys
 	                              
@@ -761,7 +762,7 @@ class tree extends tlObject
 	function get_subtree($node_id,$filters=null,$options=null)
 	{
         $my['filters'] = array('exclude_node_types' => null, 'exclude_children_of' => null,
-	                           'exclude_branches' => null,'and_not_in_clause' => '');
+	                           'exclude_branches' => null,'additionalWhereClause' => '');
                                
         $my['options'] = array('recursive' => false, 'order_cfg' => array("type" =>'spec_order'),
 	                           'key_type' => 'std');
@@ -773,7 +774,7 @@ class tree extends tlObject
 		$the_subtree = array();
 	 		
 		// Generate NOT IN CLAUSE to exclude some node types
-	 	$not_in_clause = $my['filters']['and_not_in_clause'];
+	 	$not_in_clause = $my['filters']['additionalWhereClause'];
 	 	if(!is_null($my['filters']['exclude_node_types']))
 	  	{
 	  		$exclude = array();
@@ -809,7 +810,7 @@ class tree extends tlObject
 	// I would like this method will be have PRIVate scope, but seems not possible in PHP4
 	// that's why I've prefixed with _
 	//
-	function _get_subtree($node_id,&$node_list,$and_not_in_clause='',
+	function _get_subtree($node_id,&$node_list,$additionalWhereClause='',
 	                                           $exclude_children_of=null,
 	                                           $exclude_branches=null,
 	                                           $order_cfg=array("type" =>'spec_order'))
@@ -819,19 +820,19 @@ class tree extends tlObject
 	    {
 	        case 'spec_order':
 	  	    $sql = " SELECT * from {$this->object_table} " .
-	  	           " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
+	  	           " WHERE parent_id = {$node_id} {$additionalWhereClause}" .
 			       " ORDER BY node_order,id";
 			    break;
 			    
 			case 'exec_order':
 			// REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION
-	        $sql="SELECT s* FROM ( SELECT NH.node_order AS spec_order," . 
+	        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
 	             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
 	             "                NH.name, NH.node_type_id" .
 	             "                FROM {$this->object_table} NH, {$this->tables['node_types']} NT" .
 	             "                WHERE parent_id = {$node_id}" .
 	             "                AND NH.node_type_id=NT.id" .
-	             "                AND NT.description <> 'testcase' {$and_not_in_clause}" .
+	             "                AND NT.description <> 'testcase' {$additionalWhereClause}" .
 	             "                UNION" .
 	             "                SELECT NHA.node_order AS spec_order, " .
 	             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
@@ -882,7 +883,7 @@ class tree extends tlObject
 				if( !isset($exclude_children_of[$this->node_types[$row['node_type_id']]]) && 
 				    !isset($exclude_branches[$row['id']]) )
 				{
-				  $this->_get_subtree($row['id'],$node_list,$and_not_in_clause,
+				  $this->_get_subtree($row['id'],$node_list,$additionalWhereClause,
 				                      $exclude_children_of,$exclude_branches,$order_cfg);	
 				  
 				}
@@ -893,7 +894,7 @@ class tree extends tlObject
 	 
 	// 20061008 - franciscom - added ID in order by clause
 	// 
-	function _get_subtree_rec($node_id,&$pnode,$and_not_in_clause = '',
+	function _get_subtree_rec($node_id,&$pnode,$additionalWhereClause = '',
 	                          $exclude_children_of = null,$exclude_branches = null,
 	                          $order_cfg = array("type" =>'spec_order'),$key_type = 'std')
 	{
@@ -907,18 +908,21 @@ class tree extends tlObject
 	    {
 	        case 'spec_order':
 	  	    	$sql = " SELECT * FROM {$this->object_table} " .
-	  	           	   " WHERE parent_id = {$node_id} {$and_not_in_clause}" .
+	  	           	   " WHERE parent_id = {$node_id} {$additionalWhereClause}" .
 			           " ORDER BY node_order,id";
 		    break;
 			    
 		    case 'exec_order':
+			// 20101003 - franciscom -
+			// Hmmm, no action regarding platforms. is OK ??
+			//
 			// REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION
 			$sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
 			     "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
 			     "                NH.name, NH.node_type_id " .
 			     "                FROM {$this->tables['nodes_hierarchy']}  NH" .
 			     "                WHERE parent_id = {$node_id}" .
-			     "                AND node_type_id <> {$s_testCaseNodeTypeID} {$and_not_in_clause}" .
+			     "                AND node_type_id <> {$s_testCaseNodeTypeID} {$additionalWhereClause}" .
 			     "                UNION" .
 			     "                SELECT NHA.node_order AS spec_order, " .
 			     "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
@@ -994,10 +998,9 @@ class tree extends tlObject
 		        // in a null result set.
 		        //
 		        //
-		        if(!isset($exclude_children_of[$nodeType]) && 
-		           !isset($exclude_branches[$rowID]))
+		        if(!isset($exclude_children_of[$nodeType]) && !isset($exclude_branches[$rowID]))
 		  			{
-		  				$this->_get_subtree_rec($rowID,$node,$and_not_in_clause,
+		  				$this->_get_subtree_rec($rowID,$node,$additionalWhereClause,
 		                                  $exclude_children_of,$exclude_branches,
 		                                  $order_cfg,$key_type);	
 		        	}
@@ -1170,7 +1173,7 @@ class tree extends tlObject
 	 *
 	 * BUGID 3147 - Delete test project with requirements defined crashed with memory exhausted
 	 */
-	function delete_subtree_objects($root_id,$node_id,$and_not_in_clause = '',$exclude_children_of = null,
+	function delete_subtree_objects($root_id,$node_id,$additionalWhereClause = '',$exclude_children_of = null,
 	                                $exclude_branches = null)
 	{
 		static $debugMsg;
@@ -1180,7 +1183,7 @@ class tree extends tlObject
 		}
 		
 		$sql = "/* $debugMsg */ SELECT NH.* FROM {$this->object_table} NH " .
-			   " WHERE NH.parent_id = {$node_id} {$and_not_in_clause} ";
+			   " WHERE NH.parent_id = {$node_id} {$additionalWhereClause} ";
 		
 		$rs = $this->db->get_recordset($sql);
 		if( !is_null($rs) )
@@ -1210,8 +1213,8 @@ class tree extends tlObject
 						// doing this when traversing a tree, containers under level of subtree root
 						// will not be deleted => and this seems to be wrong.
 						// BUGID 3790
-						// $this->delete_subtree_objects(null,$rowID,$and_not_in_clause,$exclude_children_of,$exclude_branches);
-						$this->delete_subtree_objects($root_id,$rowID,$and_not_in_clause,$exclude_children_of,$exclude_branches);
+						// $this->delete_subtree_objects(null,$rowID,$additionalWhereClause,$exclude_children_of,$exclude_branches);
+						$this->delete_subtree_objects($root_id,$rowID,$additionalWhereClause,$exclude_children_of,$exclude_branches);
 					}
 					else
 					{

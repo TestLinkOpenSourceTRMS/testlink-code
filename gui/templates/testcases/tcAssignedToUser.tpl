@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.16 2010/10/04 13:22:25 asimon83 Exp $
+$Id: tcAssignedToUser.tpl,v 1.17 2010/10/04 15:08:50 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 rev:
 20101004 - asimon - added checkbox to enable displaying of closed builds
@@ -38,19 +38,18 @@ rev:
 <h1 class="title">{$gui->pageTitle}</h1>
 <div class="workBack">
 
-
-<p><form method="post">
-<input type="checkbox" name="show_closed_builds" value="show_closed_builds"
-	   {if $gui->show_closed_builds} checked="checked" {/if}
-	   onclick="this.form.submit();" /> {$labels.show_closed_builds_btn}
-<input type="hidden"
-	   name="show_closed_builds_hidden"
-	   value="{$gui->show_closed_builds}" />
-</form></p><br/>
-
 {if $gui->warning_msg == ''}
 
 	{if $gui->resultSet}
+	
+		<p><form method="post">
+		<input type="checkbox" name="show_closed_builds" value="show_closed_builds"
+			   {if $gui->show_closed_builds} checked="checked" {/if}
+			   onclick="this.form.submit();" /> {$labels.show_closed_builds_btn}
+		<input type="hidden"
+			   name="show_closed_builds_hidden"
+			   value="{$gui->show_closed_builds}" />
+		</form></p><br/>
 
 		{foreach from=$gui->tableSet key=idx item=matrix}
 		

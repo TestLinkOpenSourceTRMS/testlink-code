@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.11 2010/09/17 13:21:43 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.12 2010/10/04 14:17:21 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
@@ -25,8 +25,8 @@
 {/foreach}
 
 <body>
-<div class="workBack">
 <h1 class="title">{$labels.testproject} {$smarty.const.TITLE_SEP} {$gui->tproject_name|escape}</h1>
+<div class="workBack">
 
 {if $gui->warning_msg == ''}
 	<p><form method="post">

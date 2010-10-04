@@ -8,10 +8,12 @@
  * @package 	TestLink
  * @author 		Kevin Levy
  * @copyright 	2010, TestLink community 
- * @version    	CVS: $Id: resultsImport.php,v 1.21 2010/09/26 15:26:12 franciscom Exp $
+ * @version    	CVS: $Id: resultsImport.php,v 1.22 2010/10/04 19:48:00 franciscom Exp $
  *
  * @internal Revisions:
  *
+ * 20101004 - franciscom - added new checks other than	if( isset($tcase_exec['bug_id']) )
+ *						   to avoid warnings on event viewer.	
  * 20100926 - franciscom - BUGID 3751: New attribute "execution type" makes old XML import files incompatible
  * 20100823 - franciscom - BUGID 3543 - added execution_type
  * 20100821 - franciscom - BUGID 3470 - reopened
@@ -360,8 +362,8 @@ function saveImportedResultData(&$db,$resultData,$context)
 	          	       " {$context->platformID}, {$tcase_exec['execution_type']})";
 	          	$db->exec_query($sql); 
 
-				// BUGID 3331 
-				if( isset($tcase_exec['bug_id']) )
+				// BUGID 3331
+				if( isset($tcase_exec['bug_id']) && !is_null($tcase_exec['bug_id']) && is_array($tcase_exec['bug_id']) )
 				{ 
 					$execution_id = $db->insert_id($tables['executions']);
 					foreach($tcase_exec['bug_id'] as $bug_id)

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.56 2010/08/10 21:55:39 erikeloff Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.57 2010/10/04 13:22:25 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
+ * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
  * 20100721 - asimon - BUGID 3406 - testcase execution assignment per build
  * 20100326 - amitkhullar - BUGID 3346: Update the date on updating test case asssigments
  * 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
@@ -350,10 +351,14 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
 	    $gui->buildName = $build_info['name'];
 	    $gui->main_descr = sprintf(lang_get('title_tc_exec_assignment'), 
 	                               $gui->buildName, $gui->testPlanName);
-	    
+
+	    // 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
+	    $tproject_mgr = new testproject($dbHandler);
+	    $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
+
 	    $gui->all_users = tlUser::getAll($dbHandler,null,"id",null);
 	   	$gui->users = getUsersForHtmlOptions($dbHandler,null,null,null,$gui->all_users);
-	   	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id,$gui->all_users);
+	   	$gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$tproject_info,$gui->all_users);
 	}
 
     return $gui;

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.715 2010/09/30 18:07:56 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.716 2010/10/04 13:22:25 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2553,6 +2553,7 @@ $TLS_send_mail_ko = 'Warning: Problems sending mail - details: ';
 
 // ----- lib/testcases/tcAssignedToUser.php -----
 $TLS_assigned_tc_overview = "Test Project: %s - Test Case Assignment Overview for all Users";
+$TLS_show_closed_builds_btn = "Show also closed builds";
 
 
 

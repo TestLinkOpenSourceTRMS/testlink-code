@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.104 2010/09/27 11:12:30 asimon83 Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.105 2010/10/04 13:22:25 asimon83 Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
  * 20100927 - asimon - refresh tree only when action is done
  * 20100721 - asimon - BUGID 3406: assign users per build when adding testcases to plan,
  *                                 added init_build_selector()
@@ -489,7 +490,12 @@ function initializeGui(&$dbHandler,$argsObj,&$tplanMgr,&$tcaseMgr)
     $gui->testPlanName = $tplan_info['name'];
     $gui->pageTitle = lang_get('test_plan') . $title_separator . $gui->testPlanName;
     //$gui->refreshTree = $argsObj->refreshTree;
-    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id,$argsObj->tproject_id);
+
+	// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
+    $tproject_mgr = new testproject($dbHandler);
+    $tproject_info = $tproject_mgr->get_by_id($argsObj->tproject_id);
+
+    $gui->testers = getTestersForHtmlOptions($dbHandler,$argsObj->tplan_id, $tproject_info);
     $gui->testerID = $argsObj->testerID;
     $gui->send_mail = $argsObj->send_mail;
     $gui->send_mail_checked = '';

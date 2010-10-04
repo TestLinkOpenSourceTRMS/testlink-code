@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.22 $
- * @modified $Date: 2010/09/27 14:24:13 $  $Author: asimon83 $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2010/10/04 13:22:25 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20101004 - asimon - BUGID 3824: added checkbox do display closed builds
  *  20100927 - asimon - added mouseover information for the exec and edit icons
  *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution
  *  20100922 - Julian - BUGID 3714 - refactored default grouping and sorting
@@ -49,6 +50,7 @@ $gui->glueChar = config_get('testcase_cfg')->glue_character;
 $gui->tproject_name = $tproject_info['name'];
 $gui->warning_msg = '';
 $gui->tableSet = null;
+$gui->show_closed_builds = $args->show_closed_builds;
 
 $exec_img = TL_THEME_IMG_DIR . "exec_icon.png";
 $edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
@@ -94,6 +96,12 @@ if (!$args->show_inactive_and_closed) {
 	$filters['build_status'] = 'open';
 }
 
+if ($args->show_closed_builds) {
+	$filters['build_status'] = 'all';
+}
+
+
+
 // BUGID 3647
 if ($args->build_id) {
 	$filters['build_id'] = $args->build_id;
@@ -104,7 +112,7 @@ if ($args->build_id) {
 }
 
 $tplan_param = ($args->tplan_id) ? array($args->tplan_id) : testcase::ALL_TESTPLANS;
-$gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id, 
+$gui->resultSet=$tcase_mgr->get_assigned_to_user($args->user_id, $args->tproject_id,
                                                  $tplan_param, $options, $filters);
 
 $doIt = !is_null($gui->resultSet);
@@ -277,7 +285,19 @@ function init_args()
         $args->user_name = $_SESSION['currentUser']->login;
     }	
 
-
+	// BUGID 3824
+    $show_closed_builds = isset($_REQUEST['show_closed_builds']) ? true : false;
+	$show_closed_builds_hidden = isset($_REQUEST['show_closed_builds_hidden']) ? true : false;
+	if ($show_closed_builds) {
+		$selection = true;
+	} else if ($show_closed_builds_hidden) {
+		$selection = false;
+	} else if (isset($_SESSION['show_closed_builds'])) {
+		$selection = $_SESSION['show_closed_builds'];
+	} else {
+		$selection = false;
+	}
+	$args->show_closed_builds = $_SESSION['show_closed_builds'] = $selection;
 
 	if ($args->show_all_users) {
 		$args->user_id = TL_USER_ANYBODY;

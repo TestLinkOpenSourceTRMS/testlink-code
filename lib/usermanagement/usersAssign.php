@@ -11,10 +11,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.31 2010/09/30 18:22:29 franciscom Exp $
+ * @version    	CVS: $Id: usersAssign.php,v 1.32 2010/10/04 13:22:25 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
  *  20100930 - franciscom - BUGID 2344: Private test project
  *	20100313 - erikeloff - BUGID 3271 - show only active users on assign to project/test plan
  *	20091129 - franciscom - ISSUE 2554 - colouring
@@ -362,7 +363,11 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 		$user->readTestProjectRoles($dbHandler,$argsObj->testprojectID);
 		$user->readTestPlanRoles($dbHandler,$argsObj->featureID);
 	}
-	$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$argsObj->testprojectID,null,$users);
+
+	// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
+	$tproject_info = $tprojectMgr->get_by_id($argsObj->tproject_id);
+
+	$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
  	return array($effectiveRoles,$features,$argsObj->featureID);
 }
 

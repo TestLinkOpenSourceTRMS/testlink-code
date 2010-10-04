@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.107 2010/05/02 16:56:36 franciscom Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.108 2010/10/04 13:22:24 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -356,7 +356,7 @@ function getAllUsersRoles(&$db,$order_by = null)
  * 
  * @return array TBD  
  */
-function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null, 
+function getTestersForHtmlOptions(&$db,$tplanID,$tproject,$users = null, 
                                   $additional_testers = null,$activeStatus = 'active')
 {
 	$orOperand = false;
@@ -376,7 +376,7 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tprojectID,$users = null,
 	    break;
     }
 
-    $users_roles = get_tplan_effective_role($db,$tplanID,$tprojectID,null,$users);
+    $users_roles = get_tplan_effective_role($db,$tplanID,$tproject,null,$users);
     $userFilter = array();
     foreach($users_roles as $keyUserID => $roleInfo)
     {

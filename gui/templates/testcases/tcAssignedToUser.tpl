@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.15 2010/09/20 14:18:51 mx-julian Exp $
+$Id: tcAssignedToUser.tpl,v 1.16 2010/10/04 13:22:25 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 rev:
+20101004 - asimon - added checkbox to enable displaying of closed builds
 20100825 - eloff - remove redundant headers
 20100731 - asimon - replaced table (changed to ExtJS format) and included some more data
 20100722 - asimon - BUGID 3406 - added columns for build ID and testsuite
@@ -31,11 +32,22 @@ rev:
 {assign var=this_template_dir value=$smarty.template|dirname}
 {lang_get var='labels' 
           s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform,goto_testspec,priority,
-             high_priority,medium_priority,low_priority,build,testsuite,generated_by_TestLink_on'}
+             high_priority,medium_priority,low_priority,build,testsuite,generated_by_TestLink_on,show_closed_builds_btn'}
 
 <body>
 <h1 class="title">{$gui->pageTitle}</h1>
 <div class="workBack">
+
+
+<p><form method="post">
+<input type="checkbox" name="show_closed_builds" value="show_closed_builds"
+	   {if $gui->show_closed_builds} checked="checked" {/if}
+	   onclick="this.form.submit();" /> {$labels.show_closed_builds_btn}
+<input type="hidden"
+	   name="show_closed_builds_hidden"
+	   value="{$gui->show_closed_builds}" />
+</form></p><br/>
+
 {if $gui->warning_msg == ''}
 
 	{if $gui->resultSet}

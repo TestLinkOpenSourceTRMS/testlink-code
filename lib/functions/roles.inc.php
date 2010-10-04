@@ -33,7 +33,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.60 2010/09/30 18:10:14 franciscom Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.61 2010/10/04 13:22:24 asimon83 Exp $
  * 
  *
  * @internal rev: 
@@ -238,7 +238,7 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
 	{
 		$users = tlUser::getAll($db);
 	}
-	
+
 	if ($users)
 	{
 		foreach($users as $id => $user)
@@ -301,7 +301,9 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
  */
 function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$users = null)
 {
-	$effective_role = get_tproject_effective_role($db,$tproject,1,$user_id,$users);   
+	// the "1" in parameters caused the user menus to only display one user instead of all 
+	//$effective_role = get_tproject_effective_role($db,$tproject,1,$user_id,$users);
+	$effective_role = get_tproject_effective_role($db,$tproject,$user_id,$users);
 
 	foreach($effective_role as $user_id => $row)
 	{

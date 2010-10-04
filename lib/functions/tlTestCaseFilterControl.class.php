@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.25 2010/09/29 14:13:03 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.26 2010/10/04 13:22:24 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -1272,6 +1272,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 	private function init_filter_assigned_user() {
+		if (!$this->testproject_mgr) {
+			$this->testproject_mgr = new testproject($this->db);
+		}
+
 		$key = 'filter_assigned_user';
 		$unassigned_key = 'filter_assigned_user_include_unassigned';
 		$tplan_id = $this->settings['setting_testplan']['selected'];
@@ -1283,8 +1287,10 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		} else {
 			$this->do_filtering = true;
 		}
-		
-		$all_testers = getTestersForHtmlOptions($this->db, $tplan_id, $this->args->testproject_id, null,
+
+		$tproject_info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
+
+		$all_testers = getTestersForHtmlOptions($this->db, $tplan_id, $tproject_info, null,
 			                                    array(TL_USER_ANYBODY => $this->option_strings['any'],
 			                                          TL_USER_NOBODY => $this->option_strings['none'],
 			                                          TL_USER_SOMEBODY => $this->option_strings['somebody']),

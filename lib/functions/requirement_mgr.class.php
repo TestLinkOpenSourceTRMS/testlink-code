@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.106 $
- * @modified $Date: 2010/10/03 14:01:16 $ by $Author: franciscom $
+ * @version $Revision: 1.107 $
+ * @modified $Date: 2010/10/04 20:13:32 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -2390,11 +2390,7 @@ function html_table_of_custom_field_values($id,$version_id)
   		{
   			$sql .= " AND REQ.srs_id={$parent_id}";
   		}
-
-  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-
   		$output = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
-  		
   		return $output;
   	}
 

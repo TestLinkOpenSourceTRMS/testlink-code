@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.23 $
- * @modified $Date: 2010/10/04 13:22:25 $  $Author: asimon83 $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/10/04 15:03:18 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
@@ -89,15 +89,19 @@ $options->mode = 'full_path';
 $filters = array();
 
 // if opened by click on username from page "results by user per build", show all testplans
-if (!$args->show_inactive_and_closed) {
-	//BUGID 3575: show only assigned test cases for ACTIVE test plans
-	$filters['tplan_status'] = 'active';
-	// BUGID 3749
-	$filters['build_status'] = 'open';
-}
+//if (!$args->show_inactive_and_closed) {
+//	//BUGID 3575: show only assigned test cases for ACTIVE test plans
+//	$filters['tplan_status'] = 'active';
+//	// BUGID 3749
+//	$filters['build_status'] = 'open';
+//}
+
+$filters['tplan_status'] = 'active';
 
 if ($args->show_closed_builds) {
 	$filters['build_status'] = 'all';
+} else {
+	$filters['build_status'] = 'open';
 }
 
 

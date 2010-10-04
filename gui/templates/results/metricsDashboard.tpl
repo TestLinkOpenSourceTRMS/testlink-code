@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.12 2010/10/04 14:17:21 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.13 2010/10/04 15:41:19 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
@@ -11,7 +11,7 @@
 {lang_get var="labels"
           s="generated_by_TestLink_on,testproject,test_plan,th_total_tc,th_active_tc,th_executed_tc,
              th_executed_vs_active,th_executed_vs_total,platform,show_only_active"}
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead='yes'}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
   {assign var=tableID value=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
@@ -23,6 +23,8 @@
   {/if}
   {$matrix->renderHeadSection()}
 {/foreach}
+
+</head>
 
 <body>
 <h1 class="title">{$labels.testproject} {$smarty.const.TITLE_SEP} {$gui->tproject_name|escape}</h1>

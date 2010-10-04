@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.17 2010/10/04 15:08:50 mx-julian Exp $
+$Id: tcAssignedToUser.tpl,v 1.18 2010/10/04 15:41:19 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 rev:
 20101004 - asimon - added checkbox to enable displaying of closed builds
@@ -13,15 +13,13 @@ rev:
 20080322 - franciscom - php errors clean up
 *}
 
-{include file="inc_head.tpl" openHead='yes' enableTableSorting="yes"}
-<script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
-
-{include file="inc_ext_js.tpl"}
+{include file="inc_head.tpl" openHead='yes'}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
 	{assign var=tableID value=table_$idx}
 	{if $smarty.foreach.initializer.first}
 		{$matrix->renderCommonGlobals()}
+		{include file="inc_ext_js.tpl" bResetEXTCss=1}
 		{include file="inc_ext_table.tpl"}
 	{/if}
 	{$matrix->renderHeadSection($tableID)}
@@ -39,9 +37,7 @@ rev:
 <div class="workBack">
 
 {if $gui->warning_msg == ''}
-
 	{if $gui->resultSet}
-	
 		<p><form method="post">
 		<input type="checkbox" name="show_closed_builds" value="show_closed_builds"
 			   {if $gui->show_closed_builds} checked="checked" {/if}
@@ -49,14 +45,14 @@ rev:
 		<input type="hidden"
 			   name="show_closed_builds_hidden"
 			   value="{$gui->show_closed_builds}" />
-		</form></p><br/>
+		</form></p><br />
 
 		{foreach from=$gui->tableSet key=idx item=matrix}
 		
 			<p>
 			{assign var=tableID value=table_$idx}
 			{$matrix->renderBodySection($tableID)}
-			</p>
+			<br /></p>
 		
 		{/foreach}
 		

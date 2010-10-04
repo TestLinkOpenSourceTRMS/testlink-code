@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<results>
+<testcase external_id="MDK-1" name="set exec result - test plan WITHOUT PLATFORMS">
+  <result>p</result>
+  <notes>functionality works great </notes>
+</testcase>
+
+<testcase external_id="MDK-2" name="set exec result - test plan WITH WRONG PLATFORM NAME">
+  <result>b</result>
+  <notes>BLOCKED</notes>
+</testcase>
+
+<testcase external_id="MDK-3" name="set exec result - test plan WITH WRONG PLATFORM ID">
+  <result>f</result>
+  <notes>failed - ;( </notes>
+</testcase>
+</results>

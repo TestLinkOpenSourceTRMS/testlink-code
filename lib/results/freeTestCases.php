@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.6 $
- * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/10/05 08:29:41 $ by $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
- * rev: 
+ * rev:
+ * 20101005 - asimon - added linked icon for testcase editing
  * 20100920 - Julian - use exttable
  *                   - added importance column
  * 20090412 - franciscom - BUGID 2363
@@ -30,6 +31,9 @@ $args = init_args();
 $tproject_mgr = new testproject($db);
 
 $msg_key = 'all_testcases_has_testplan';
+
+$edit_label = lang_get('design');
+$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $gui = new stdClass();
 $gui->freeTestCases = $tproject_mgr->getFreeTestCases($args->tproject_id);
@@ -61,9 +65,17 @@ if(!is_null($gui->freeTestCases['items']))
 			
 			$rowData[] = strip_tags($tsuites[$tcases['id']]);
 			//build test case link
-			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcases['id']}\">" .
-			             $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
+
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$tcases['id']});\">" .
+						 "<img title=\"{$edit_label}\" src=\"{$edit_img}\" /></a> ";
+			$tcaseName = $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
 			             strip_tags($tcases['name']);
+		    $tcLink = $edit_link . $tcaseName;
+			$rowData[] = $tcLink;
+
+//			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcases['id']}\">" .
+//			             $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
+//			             strip_tags($tcases['name']);
 			
 			switch ($tcases['importance']) {
 				case $importance_levels[LOW]:

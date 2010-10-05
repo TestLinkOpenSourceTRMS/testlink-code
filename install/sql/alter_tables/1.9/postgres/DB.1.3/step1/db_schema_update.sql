@@ -1,6 +1,6 @@
--- $Revision: 1.10 $
--- $Date: 2010/07/22 14:14:44 $
--- $Author: asimon83 $
+-- $Revision: 1.11 $
+-- $Date: 2010/10/05 10:22:45 $
+-- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
 --
@@ -50,6 +50,8 @@
 --
 --
 -- internal revision:
+--  20101005 - franciscom - BUGID 3855: Upgrading from 1.8 to 1.9 does not work with PostgreSQL
+--                          ALTER TABLE /*prefix*/builds ADD COLUMN release_date DATE NULL;
 --  20100705 - asimon - added new column build_id to user_assignments
 --  20100308 - franciscom - req_relations table added
 --
@@ -143,7 +145,7 @@ COMMENT ON TABLE /*prefix*/user_assignments IS 'Updated to TL 1.9.0 - DB 1.3';
 -- builds
 ALTER TABLE /*prefix*/builds ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
-ALTER TABLE /*prefix*/builds ADD COLUMN release_date DATE NOT NULL;
+ALTER TABLE /*prefix*/builds ADD COLUMN release_date DATE NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN closed_on_date DATE NULL;
 --- TO BE CHECKED
 --- CREATE INDEX /*prefix*/builds_testplan_id ON /*prefix*/builds ("testplan_id");

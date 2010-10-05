@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.26 2010/10/04 13:22:24 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.27 2010/10/05 14:17:08 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
  * 20100929 - asimon - BUGID 3817
  * 20100972 - asimon - additional fix to BUGID 3809
  * 20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
@@ -531,16 +532,19 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 		// iterate through all filters and activate the needed ones
 		$this->display_filters = false;
+
 		foreach ($this->all_filters as $name => $info) {
 			$init_method = "init_$name";
-			if (in_array($name, $this->mode_filter_mapping[$this->mode]) && 
-				method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED) {
+			// BUGID 3853
+			if (in_array($name, $this->mode_filter_mapping[$this->mode]) &&
+				method_exists($this, $init_method) && $this->configuration->{$name} == ENABLED &&
+				$this->configuration->show_filters == ENABLED) {
 
 				$this->$init_method();
-				
+
 				// there is at least one filter item to display => switch panel on
 				$this->display_filters = true;
-				
+
 			} else {
 				// is not needed, deactivate filter by setting it to false in main array
 				// and of course also in active filters array

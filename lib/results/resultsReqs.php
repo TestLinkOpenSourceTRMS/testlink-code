@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2010/10/01 14:41:43 $ by $Author: asimon83 $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2010/10/05 08:12:02 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20101005 - asimon - added linked icon also for testcases linked to requirements
  * 20101001 - asimon - added icon for requirement editing
  * 20100902 - Julian - BUGID 3717 - show linked tcs and the results for each req
  * 20100823 - Julian - table now uses a unique table id per test project
@@ -326,10 +327,12 @@ if (count($req_spec_map)) {
 					$tc_name = $prefix . $glue_char_tc . $testcase['tc_external_id'] . $glue_char .
 					           $testcase['name'];
 					           
-					$tc_edit_link = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id=" .
-					                $tc_id . "\" title = \"{$labels['goto_testspec']}\">" . $tc_name . "</a>";
-					
-					$linked_tcs_with_status .= "{$colored_status} {$tc_edit_link}<br>";
+					//$tc_edit_link = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id=" .
+					//                $tc_id . "\" title = \"{$labels['goto_testspec']}\">" . $tc_name . "</a>";
+					$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
+								 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
+
+					$linked_tcs_with_status .= "{$edit_link} {$colored_status} {$tc_name}<br>";
 				}
 			} else  {
 				$linked_tcs_with_status = $labels['no_linked_tcs'];

@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.11 2010/09/06 20:07:38 franciscom Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.12 2010/10/05 13:58:27 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -16,6 +16,7 @@
  * 
  * @internal Revisions:
  *
+ * 20101005 - asimon - BUGID 3852: filter requirements by status resets on apply
  * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Req version
  * 20100827 - asimon - BUGID 3718 - enable drag&drop per default, disable only if filtering is done
  * 20100812 - asimon - fixed cf input field size
@@ -312,8 +313,9 @@ class tlRequirementFilterControl extends tlFilterControl {
 		$items = array(self::ANY => $this->option_strings['any']) + 
 		         (array) init_labels($this->configuration->req_cfg->status_labels);
 
+		// BUGID 3852
 		if (!$selection || $this->args->reset_filters || $selection == self::ANY
-		|| (is_array($selection) && in_array(self::ANY, $selection))) {
+		|| (is_array($selection) && in_array(self::ANY, $selection, true))) {
 			$selection = null;
 		} else {
 			$this->do_filtering = true;

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.315 2010/10/01 12:51:47 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.316 2010/10/05 06:49:52 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101005 - amitkhullar - BUGID - 3849, alias name not supported in Update stmts in postgres.
  * 20101001 - asimon - custom fields do not lose entered values on errors
  * 20100926 - franciscom - exportTestCaseDataToXML() a new management for tcase_id
  * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
@@ -995,8 +996,9 @@ class testcase extends tlObjectWithAttachments
 			$sql[] = " UPDATE {$this->tables['nodes_hierarchy']} SET name='" .
 					 $this->db->prepare_string($name) . "' WHERE id= {$id}";
 		
-			// test case version
-		   	$sql[] = " UPDATE {$this->tables['tcversions']} tcversions " .
+			// test case version 
+			// BUGID - 3849
+		   	$sql[] = " UPDATE {$this->tables['tcversions']} " .
 		             " SET summary='" . $this->db->prepare_string($summary) . "'," .
 		   		 	 " updater_id=" . $this->db->prepare_int($user_id) . ", " .
 		   		 	 " modification_ts = " . $this->db->db_now() . "," .
@@ -3566,11 +3568,12 @@ class testcase extends tlObjectWithAttachments
 	
 	  returns: 1 -> everything ok.
 	           0 -> some error
-	
+	  rev:
+	  	  BUGID - 3849
 	*/
 	function update_active_status($id,$tcversion_id,$active_status)
 	{
-		$sql = " UPDATE {$this->tables['tcversions']} tcversions SET active={$active_status}" .
+		$sql = " UPDATE {$this->tables['tcversions']} SET active={$active_status}" .
 			   " WHERE tcversions.id = {$tcversion_id}";
 	
 		$result = $this->db->exec_query($sql);
@@ -4873,12 +4876,14 @@ class testcase extends tlObjectWithAttachments
 	/**
 	 * update_last_modified
  	 *
+ 	 * rev: 
+ 	 * 	BUGID - 3849
  	 */
 	function update_last_modified($tcversion_id,$user_id,$time_stamp=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$changed_ts = !is_null($time_stamp) ? $time_stamp : $this->db->db_now();
-		$sql = " UPDATE {$this->tables['tcversions']} tcversions " .
+		$sql = " UPDATE {$this->tables['tcversions']} " .
 		       " SET updater_id=" . $this->db->prepare_int($user_id) . ", " .
 			   " modification_ts = " . $changed_ts . 
 		   	   " WHERE tcversions.id = " . $this->db->prepare_int($tcversion_id); 

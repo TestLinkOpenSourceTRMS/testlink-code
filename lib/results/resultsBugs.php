@@ -4,11 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/09/21 20:53:59 $ by $Author: mx-julian $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2010/10/05 07:40:41 $ by $Author: asimon83 $
  * @author kevinlevy
  * 
  * rev :
+ *  20101005 - asimon - added linked icon for test case editing
  *	20100920 - Julian - use exttable
  *	20100616 - eloff - refactor out results class
  *	20100124 - eloff - BUGID 3012 - don't show internal id in report
@@ -36,6 +37,9 @@ $gui->tableSet = null;
 $templateCfg = templateConfiguration();
 $args = init_args();
 
+$edit_label = lang_get('design');
+$edit_img = TL_THEME_IMG_DIR . "edit_icon.png";
+
 $openBugs = array();
 $resolvedBugs = array();
 $arrData = array();
@@ -62,6 +66,12 @@ foreach ($results as $execution) {
 		if (!isset($testcase_bugs[$tc_id])) {
 			$suiteName = $execution['tsuite_name'];
 			$tc_name = buildExternalIdString($tproject_info['prefix'], $execution['external_id']) . ":" . $execution['name'];
+
+			// add linked icon for editing
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
+						 "<img title=\"{$edit_label}\" src=\"{$edit_img}\" /></a> ";
+			$tc_name = $edit_link . $tc_name;
+
 			$testcase_bugs[$tc_id] = array($suiteName, $tc_name, array());
 		}
 		foreach ($bug_urls as $url)

@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.16 2010/10/05 08:45:11 asimon83 Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.17 2010/10/05 09:03:13 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
@@ -46,7 +46,7 @@ $gui->path_info = null;
 $gui->resultSet = null;
 $gui->tableSet = null;
 
-$edit_label = lang_get('design');
+$edit_label = lang_get('requirement');
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $map = null;

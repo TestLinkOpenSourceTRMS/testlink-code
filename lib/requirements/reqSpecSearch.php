@@ -7,7 +7,7 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.9 2010/10/05 08:53:35 asimon83 Exp $
+ * @version    	CVS: $Id: reqSpecSearch.php,v 1.10 2010/10/05 09:03:13 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
@@ -34,7 +34,7 @@ $charset = config_get('charset');
 $commandMgr = new reqSpecCommands($db);
 $gui = $commandMgr->initGuiBean();
 
-$edit_label = lang_get('design');
+$edit_label = lang_get('requirement_spec');
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $gui->main_descr = lang_get('caption_search_form_req_spec');

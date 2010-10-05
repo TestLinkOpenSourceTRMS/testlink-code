@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.21 2010/09/21 20:53:59 mx-julian Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.22 2010/10/05 09:03:12 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20101005 - asimon - replaced linked test case title by linked icon for editing
  *	20100920 - Julian - BUGID 3793 - use exttable to display search results
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to TC versions
  *	20100814 - franciscom - improvements on logic and feedback when user fill in test case id filter
@@ -39,6 +40,9 @@ $tproject_mgr = new testproject($db);
 $tcase_cfg = config_get('testcase_cfg');
 $charset = config_get('charset');
 $args = init_args();
+
+$edit_label = lang_get('design');
+$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $gui = initializeGui($args);
 $map = null;
@@ -228,7 +232,7 @@ else
 	$gui->warning_msg=lang_get('no_records_found');
 }
 
-$table = buildExtTable($gui, $charset);
+$table = buildExtTable($gui, $charset, $edit_icon, $edit_label);
 
 if (!is_null($table)) {
 	$gui->tableSet[] = $table;
@@ -242,7 +246,7 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui, $charset) {
+function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 	$table = null;
 	if(count($gui->resultSet) > 0) {
 		$labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
@@ -261,10 +265,16 @@ function buildExtTable($gui, $charset) {
 			$rowData[] = htmlentities($gui->path_info[$result['testcase_id']], ENT_QUOTES, $charset);
 			
 			// build test case link
-			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$result['testcase_id']}\">" .
-			             htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
+//			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$result['testcase_id']}\">" .
+//			             htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
+//			             htmlentities($result['name'], ENT_QUOTES, $charset);
+			$edit_link = "<a href=\"javascript:openTCEditWindow({$result['testcase_id']});\">" .
+						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
+			$tcaseName = htmlentities($gui->tcasePrefix, ENT_QUOTES, $charset) . $result['tc_external_id'] . $titleSeperator .
 			             htmlentities($result['name'], ENT_QUOTES, $charset);
-			
+		    $tcLink = $edit_link . $tcaseName;
+			$rowData[] = $tcLink;
+
 			$matrixData[] = $rowData;
 		}
 		

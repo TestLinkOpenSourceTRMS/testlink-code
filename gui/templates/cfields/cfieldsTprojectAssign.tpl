@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsTprojectAssign.tpl,v 1.8 2010/01/21 22:05:10 franciscom Exp $
+$Id: cfieldsTprojectAssign.tpl,v 1.9 2010/10/05 06:50:21 amkhullar Exp $
 Purpose: management Custom fields assignment to a test project
 
 rev :
+     20101005 - amitkhullar - BUGID 3848 - enable link on Unassigned Custom Field
      20100121 - franciscom - added more information for users
      20090717 - franciscom - location management
      20070527 - franciscom - added check/uncheck all logic
@@ -131,7 +132,8 @@ rev :
       	{foreach key=cf_id item=cf from=$gui->other_cf}
       	<tr>
       		<td class="clickable_icon"> <input type="checkbox" id="free_cfield{$cf.id}" name="cfield[{$cf.id}]" /></td>
-      		<td class="bold">{$cf.name|escape}</td>
+      		<td class="bold"><a href="lib/cfields/cfieldsEdit.php?do_action=edit&amp;cfield_id={$cf.id}"
+   		   	                    title="{$labels.manage_cfield}">{$cf.name|escape}</a></td>
       		<td class="bold">{$cf.label|escape}</td>
       		<td class="bold">{$gui->cf_available_types[$cf.type]|escape}</td>
       		<td class="bold">{$gui->cf_allowed_nodes[$cf.node_type_id]|escape}</td>

@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.13 2010/10/05 14:17:08 asimon83 Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.14 2010/10/05 15:44:35 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -313,8 +313,8 @@ class tlRequirementFilterControl extends tlFilterControl {
 		         (array) init_labels($this->configuration->req_cfg->status_labels);
 
 		// BUGID 3852
-		if (!$selection || $this->args->reset_filters || $selection == self::ANY
-		|| (is_array($selection) && in_array(self::ANY, $selection, true))) {
+		if (!$selection || $this->args->reset_filters
+		|| (is_array($selection) && in_array('0', $selection, true))) {
 			$selection = null;
 		} else {
 			$this->do_filtering = true;

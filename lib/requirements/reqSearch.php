@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.15 2010/09/29 14:13:03 asimon83 Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.16 2010/10/05 08:45:11 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20101005 - asimon - replaced linked requirement title by linked icon
  * 20100929 - asimon - added req doc id to result table
  * 20100920 - Julian - BUGID 3793 - use exttable to display search results
  *                   - created function to build table
@@ -44,6 +45,9 @@ $gui->warning_msg = '';
 $gui->path_info = null;
 $gui->resultSet = null;
 $gui->tableSet = null;
+
+$edit_label = lang_get('design');
+$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $map = null;
 $args = init_args();
@@ -194,7 +198,7 @@ else
 	$gui->warning_msg=lang_get('no_records_found');
 }
 
-$table = buildExtTable($gui, $charset);
+$table = buildExtTable($gui, $charset, $edit_icon, $edit_label);
 
 if (!is_null($table)) {
 	$gui->tableSet[] = $table;
@@ -208,7 +212,7 @@ $smarty->display($templateCfg->template_dir . $tpl);
  * 
  *
  */
-function buildExtTable($gui, $charset) {
+function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 	$table = null;
 	if(count($gui->resultSet) > 0) {
 		$labels = array('req_spec' => lang_get('req_spec'), 'requirement' => lang_get('requirement'));
@@ -225,9 +229,16 @@ function buildExtTable($gui, $charset) {
 			$rowData[] = htmlentities($gui->path_info[$result['id']], ENT_QUOTES, $charset);
 
 			// build requirement link
-			$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
-			             htmlentities($result['req_doc_id'], ENT_QUOTES, $charset) . ":" .
-			             htmlentities($result['name'], ENT_QUOTES, $charset);
+			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $result['id'] . ")\">" .
+						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
+			$title = htmlentities($result['req_doc_id'], ENT_QUOTES, $charset) . ":" .
+			         htmlentities($result['name'], ENT_QUOTES, $charset);
+			$link = $edit_link . $title;
+			$rowData[] = $link;
+
+//			$rowData[] = "<a href=\"lib/requirements/reqView.php?item=requirement&requirement_id={$result['id']}\">" .
+//			             htmlentities($result['req_doc_id'], ENT_QUOTES, $charset) . ":" .
+//			             htmlentities($result['name'], ENT_QUOTES, $charset);
 			
 			$matrixData[] = $rowData;
 		}

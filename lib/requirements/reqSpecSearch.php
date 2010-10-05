@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSpecSearch.php,v 1.8 2010/09/29 14:13:03 asimon83 Exp $
+ * @version    	CVS: $Id: reqSpecSearch.php,v 1.9 2010/10/05 08:53:35 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search results for requirement specifications.
  *
  * @internal Revisions:
+ * 20101005 - asimon - replaced linked req spec title by linked icon
  * 20100929 - asimon - added req doc id to result table
  * 20100920 - Julian - BUGID 3793 - use exttable for search result
  */
@@ -32,6 +33,9 @@ $charset = config_get('charset');
 
 $commandMgr = new reqSpecCommands($db);
 $gui = $commandMgr->initGuiBean();
+
+$edit_label = lang_get('design');
+$edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $gui->main_descr = lang_get('caption_search_form_req_spec');
 $gui->warning_msg = '';
@@ -117,7 +121,7 @@ else
 	$gui->warning_msg=lang_get('no_records_found');
 }
 
-$table = buildExtTable($gui, $charset);
+$table = buildExtTable($gui, $charset, $edit_icon, $edit_label);
 
 if (!is_null($table)) {
 	$gui->tableSet[] = $table;
@@ -128,7 +132,7 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $tpl);
 
 
-function buildExtTable($gui, $charset) {
+function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 	$table = null;
 	if(count($gui->resultSet) > 0) {
 		$labels = array('req_spec' => lang_get('req_spec'));
@@ -144,12 +148,19 @@ function buildExtTable($gui, $charset) {
 			$path = ($gui->path_info[$result['id']]) ? $gui->path_info[$result['id']] . " / " : "";
 			// use html comment to properly sort by full path
 			// build req spec link
-			$rowData[] = "<!-- " . htmlentities($path, ENT_QUOTES, $charset) . htmlentities($result['name'], ENT_QUOTES, $charset) ." -->" . 
-			             htmlentities($path, ENT_QUOTES, $charset) . 
-			             "<a href=\"lib/requirements/reqSpecView.php?item=req_spec&req_spec_id={$result['id']}\">" .
-			             htmlentities($result['doc_id'], ENT_QUOTES, $charset) . ":" .
-			             htmlentities($result['name'], ENT_QUOTES, $charset);
-			
+//			$rowData[] = "<!-- " . htmlentities($path, ENT_QUOTES, $charset) . htmlentities($result['name'], ENT_QUOTES, $charset) ." -->" .
+//			             htmlentities($path, ENT_QUOTES, $charset) .
+//			             "<a href=\"lib/requirements/reqSpecView.php?item=req_spec&req_spec_id={$result['id']}\">" .
+//			             htmlentities($result['doc_id'], ENT_QUOTES, $charset) . ":" .
+//			             htmlentities($result['name'], ENT_QUOTES, $charset);
+
+			$edit_link = "<a href=\"javascript:openLinkedReqSpecWindow(" . $result['id'] . ")\">" .
+						 "<img title=\"{$edit_label}\" src=\"{$edit_icon}\" /></a> ";
+			$title = htmlentities($result['doc_id'], ENT_QUOTES, $charset) . ":" .
+			         htmlentities($result['name'], ENT_QUOTES, $charset);
+			$link = $edit_link . $title;
+			$rowData[] = $link;
+
 			$matrixData[] = $rowData;
 		}
 

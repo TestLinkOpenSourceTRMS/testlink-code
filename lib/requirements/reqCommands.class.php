@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2010/10/03 14:01:17 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2010/10/06 10:26:21 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
  *
+ *  20101006 - asimon - BUGID 3854
  *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
  *  20101001 - asimon - custom fields do not lose entered values on errors
  *	20100906 - franciscom - BUGID 2877 -  Custom Fields linked to Req versions
@@ -321,7 +322,7 @@ class reqCommands
 		$obj->user_feedback = sprintf(lang_get('req_deleted'),$req['req_doc_id'],$req['title']);
 		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req['title'];
 		$obj->title=lang_get('delete_req');
-		$obj->refresh_tree = 'yes';
+		$obj->refreshTree = 1;
 		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
   	}
@@ -353,7 +354,7 @@ class reqCommands
 		
 		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req_version['title'];
 		$obj->title=lang_get('freeze_req');
-		$obj->refresh_tree = 'no';
+		$obj->refreshTree = 0;
 		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
   	}
@@ -386,7 +387,7 @@ class reqCommands
 		$this->reqMgr->set_order($nodes_in_order);
 		  
 		$obj->req_spec = $this->reqSpecMgr->get_by_id($req_spec_id);
-      	$obj->refresh_tree = 'yes';
+      	$obj->refreshTree = 1;
 	    
       	return $obj;
   	}
@@ -560,7 +561,7 @@ class reqCommands
 		
 		$obj->main_descr=lang_get('requirement') . TITLE_SEP . $req_version['title'];
 		$obj->title=lang_get('delete_req');
-		$obj->refresh_tree = 'no';
+		$obj->refreshTree = 0;
 		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
   	}

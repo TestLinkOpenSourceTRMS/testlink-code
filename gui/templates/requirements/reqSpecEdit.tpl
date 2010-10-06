@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.22 2010/08/10 14:10:11 asimon83 Exp $
+$Id: reqSpecEdit.tpl,v 1.23 2010/10/06 10:26:22 asimon83 Exp $
 Purpose: smarty template - create a new req document
 
-rev: 
+rev:
+  20101006 - asimon - BUGID 3854
   20100810 - asimon - BUGID 3317: disabled total count of requirements by default
   20100808 - asimon - added logic to refresh filtered tree on changes
   20091230 - franciscom - req spec type
@@ -127,11 +128,12 @@ rev:
 		    </div>
 		<br />
 		{/if}
-	
+
+		{* BUGID 3854 *}
 		<div class="groupBtn">
 			<input type="hidden" name="doAction" value="" />
 			<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
-		       onclick="doAction.value='{$gui->operation}'" />
+		       onclick="doAction.value='{$gui->operation}';parent.frames['treeframe'].document.forms['filter_panel_form'].submit();" />
 			<input type="button" name="go_back" value="{$labels.cancel}" 
 				onclick="javascript: history.back();"/>
 		</div>

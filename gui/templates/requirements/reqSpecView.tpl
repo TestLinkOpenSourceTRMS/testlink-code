@@ -1,10 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.41 2010/09/08 13:53:08 mx-julian Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.42 2010/10/06 10:26:22 asimon83 Exp $ *}
 {*
    Purpose: view a requirement specification
    Author: Martin Havlat
 
-   rev: 20100810 - asimon - BUGID 3317: disabled total count of requirements by default
+   rev:
+        20101006 - asimon - BUGID 3854
+        20100810 - asimon - BUGID 3317: disabled total count of requirements by default
         20100321 - franciscom - req_spec_import/export url
         20071226 - franciscom - fieldset class added (thanks ext je team)
         20071106 - franciscom - added ext js library
@@ -150,8 +152,8 @@
 {/if}
 
 </div>
-{if isset($gui->refresh_tree) && $gui->refresh_tree == 'yes'}
-   {include file="inc_refreshTree.tpl"}
+{if isset($gui->refreshTree) && $gui->refreshTree}
+   {include file="inc_refreshTreeWithFilters.tpl"}
 {/if}
 </body>
 </html>

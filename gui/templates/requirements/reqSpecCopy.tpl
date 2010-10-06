@@ -1,11 +1,13 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecCopy.tpl,v 1.3 2009/12/25 11:37:17 franciscom Exp $
+$Id: reqSpecCopy.tpl,v 1.4 2010/10/06 10:26:22 asimon83 Exp $
 @author: francisco mancardi
 Purpose: copy req specification
 
 rev :
+20101006 - asimon - BUGID 3854
 *}
+
 {include file="inc_head.tpl"}
 {lang_get s='container' var='parent'}
 {lang_get var="labels"
@@ -48,6 +50,12 @@ rev :
 
 	</form>
 {/if}
+
+{* BUGID 3854 *}
+{if isset($gui->refreshTree) && $gui->refreshTree}
+   {include file="inc_refreshTreeWithFilters.tpl"}
+{/if}
+
 </div>
 </body>
 </html>

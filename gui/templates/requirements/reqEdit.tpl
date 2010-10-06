@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.30 2010/09/15 13:44:41 mx-julian Exp $
+$Id: reqEdit.tpl,v 1.31 2010/10/06 10:26:22 asimon83 Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20101006 - asimon - BUGID 3854
 20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
 20100808 - asimon - added logic to refresh filtered tree on changes
 20100502 - franciscom - BUGID 3413: removed debug info
@@ -268,10 +269,11 @@ function insert_last_doc_id() {
      <br />
   	{/if}
 
+	{* BUGID 3854 *}
 	<div class="groupBtn">
 		<input type="hidden" name="doAction" value="" />
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
-	         onclick="doAction.value='{$gui->operation}'"/>
+	         onclick="doAction.value='{$gui->operation}';parent.frames['treeframe'].document.forms['filter_panel_form'].submit();"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 			onclick="javascript: history.back();"/>
 	</div>

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.19 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2010/10/06 10:26:21 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * web command experiment
  *
  * 
  *	@internal revisions
+ *  20101006 - asimon - BUGID 3854
  *	20091223 - franciscom - new feature copy requirements
  *	20091207 - franciscom - logic to get order when creating new item 
  *	20090324 - franciscom - added logic to avoid losing user work if title already exists.
@@ -269,7 +270,7 @@ class reqSpecCommands
 		$guiObj->title=lang_get('delete_req_spec');
 
 		$guiObj->user_feedback = sprintf(lang_get('req_spec_deleted'),$req_spec['title']);
-		$guiObj->refresh_tree = 'yes'; // needed to enable refresh_tree logic
+		$guiObj->refreshTree = 1; // needed to enable refresh_tree logic
 		$guiObj->result = 'ok';  
       	
 		return $guiObj;	
@@ -321,7 +322,7 @@ class reqSpecCommands
 		// need to remove first element, is testproject
 		array_shift($nodes_in_order);
 		$this->reqSpecMgr->set_order($nodes_in_order);
-      	$guiObj->refresh_tree='yes';
+      	$guiObj->refreshTree=1;
 	    return $guiObj;
   }
 

@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.217 2010/09/27 08:15:23 amkhullar Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.218 2010/10/06 13:58:13 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101006 - asimon - BUGID 3846: copy test plan does not copy tester assignments
  *  20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
  *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
  *  20100925 - franciscom - BUGID 3649 - new method exportLinkedItemsToXML();
@@ -1351,10 +1352,11 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
+		// BUGID 3846
 		$cp_methods = array('copy_milestones' => 'copy_milestones',
 			                'copy_user_roles' => 'copy_user_roles',
-			                'copy_platforms_links' => 'copy_platforms_links',
-			                'copy_builds' => 'copy_builds');
+			                'copy_platforms_links' => 'copy_platforms_links');
+			                //'copy_builds' => 'copy_builds');
 
 		$mapping_methods = array('copy_platforms_links' => 'platforms');
 
@@ -1386,8 +1388,15 @@ class testplan extends tlObjectWithAttachments
 				 "WHERE id={$new_tplan_id}";
 			$this->db->exec_query($sql);
 		}
-		
-		
+
+		// BUGID 3846
+		// copy builds and tcversions out of following loop, because of the user assignments per build
+		// special measures have to be taken
+		$build_id_mapping = null;
+		if($my['options']['items2copy']['copy_builds']) {
+			$build_id_mapping = $this->copy_builds($id,$new_tplan_id);
+		}
+
 		// Important Notice:
 		// Since the addition of Platforms, test case versions are linked to Test Plan AND Platforms
 		// this means, that not matter user choice, we will force Platforms COPY.
@@ -1398,9 +1407,10 @@ class testplan extends tlObjectWithAttachments
 		if( $my['options']['items2copy']['copy_tcases'] )
 		{
 			$my['options']['items2copy']['copy_platforms_links'] = 1;
-			$this->copy_linked_tcversions($id,$new_tplan_id,$user_id,$my['options'],$mappings);
+			// BUGID 3846
+			$this->copy_linked_tcversions($id,$new_tplan_id,$user_id,$my['options'],$mappings, $build_id_mapping);
 		}
-		
+
 		foreach( $my['options']['items2copy'] as $key => $do_copy )
 		{
 			if( $do_copy )
@@ -1431,7 +1441,10 @@ class testplan extends tlObjectWithAttachments
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$rs=$this->get_builds($id);
-		
+
+		// BUGID 3846
+		$id_mapping = array();
+
 		if(!is_null($rs))
 		{
 			foreach($rs as $build)
@@ -1441,8 +1454,15 @@ class testplan extends tlObjectWithAttachments
 					"'" . $this->db->prepare_string($build['notes']) ."',{$new_tplan_id})";
 				
 				$this->db->exec_query($sql);
+
+				// BUGID 3846
+				$new_id = $this->db->insert_id($this->tables['builds']);
+				$id_mapping[$build['id']] = $new_id;
 			}
 		}
+
+		// BUGID 3846
+		return $id_mapping;
 	}
 
 
@@ -1463,11 +1483,10 @@ class testplan extends tlObjectWithAttachments
   
  	 Note: test urgency is set to default in the new Test plan (not copied)
 	*/
-	private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null)
-	
+	private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
-    
+
 		$my['options']['tcversion_type'] = null;
 	    $my['options']['copy_assigned_to'] = 0;
 		$my['options'] = array_merge($my['options'], (array)$options);
@@ -1476,7 +1495,9 @@ class testplan extends tlObjectWithAttachments
 		$sql="/* $debugMsg */ "; 
 		if($my['options']['copy_assigned_to'])
 		{
-			$sql .= " SELECT TPTCV.*, COALESCE(UA.user_id,-1) AS tester " .
+			// BUGID 3846
+			$sql .= " SELECT TPTCV.*, COALESCE(UA.user_id,-1) AS tester, " .
+					" COALESCE(UA.build_id,0) as assigned_build " .
 			        " FROM {$this->tables['testplan_tcversions']} TPTCV " .
 			        " LEFT OUTER JOIN {$this->tables['user_assignments']} UA ON " .
 			        " UA.feature_id = TPTCV.id " .
@@ -1493,6 +1514,10 @@ class testplan extends tlObjectWithAttachments
 		{
 			$tcase_mgr = new testcase($this->db);
 			$doMappings = !is_null($mappings);
+
+			// BUGID 3846
+			$already_linked_versions = array();
+
 			foreach($rs as $elem)
 			{
 				$tcversion_id = $elem['tcversion_id'];
@@ -1531,21 +1556,29 @@ class testplan extends tlObjectWithAttachments
 					   " {$elem['node_order']},{$elem['urgency']})";
 					   
  				 //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-	   
-				$this->db->exec_query($sql);
-				$new_feature_id = $this->db->insert_id($this->tables['testplan_tcversions']);
+
+				// BUGID 3846
+				if (!in_array($tcversion_id, $already_linked_versions)) {
+					$this->db->exec_query($sql);
+					$new_feature_id = $this->db->insert_id($this->tables['testplan_tcversions']);
+					$already_linked_versions[] = $tcversion_id;
+				}
 				
 				if($my['options']['copy_assigned_to'] && $elem['tester'] > 0)
 				{
 					$features_map = array();
 					$feature_id=$new_feature_id;
 					$features_map[$feature_id]['user_id'] = $elem['tester'];
+					// BUGID 3846
+					$features_map[$feature_id]['build_id'] = $build_id_mapping[$elem['assigned_build']];
 					$features_map[$feature_id]['type'] = $this->assignment_types['testcase_execution']['id'];
 					$features_map[$feature_id]['status']  = $this->assignment_status['open']['id'];
 					$features_map[$feature_id]['creation_ts'] = $now_ts;
 					$features_map[$feature_id]['assigner_id'] = $user_id;
-					
-					$this->assignment_mgr->assign($features_map);
+
+					if ($features_map[$feature_id]['build_id'] != 0) {
+						$this->assignment_mgr->assign($features_map);
+					}
 				}
 				
 			}

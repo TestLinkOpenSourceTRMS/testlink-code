@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community
- * @version    	CVS: $Id: execNavigator.php,v 1.120 2010/10/03 15:32:41 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.121 2010/10/07 17:42:56 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101007 - franciscom - 	BUGID 3270 - Export Test Plan in XML Format
  * 20100628 - asimon - removal of constants from filter control class
  * 20100624 - asimon - CVS merge (experimental branch to HEAD)
  * 20100622 - asimon - huge refactoring for new filter design,
@@ -75,6 +76,8 @@ function initializeGui(&$control) {
 	$gui->src_workframe = $control->args->basehref . $gui->menuUrl .
 	                "?edit=testproject&id={$control->args->testproject_id}" . $gui->args;
 	
+	// BUGID 3270 - Export Test Plan in XML Format
+	$control->draw_export_testplan_button = true;
 	return $gui;
 }
 ?>

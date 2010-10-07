@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.6 2010/08/11 23:08:13 asimon83 Exp $
+ * $Id: inc_filter_panel.tpl,v 1.7 2010/10/07 17:42:56 franciscom Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,6 +12,7 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
  *  20100811 - asimon - BUGID 3566: show/hide CF
  *  20100810 - asimon - added TC ID filter for Test Cases
  *  20100808 - asimon - additional fields for requirement filtering
@@ -30,7 +31,7 @@
                         btn_bulk_update_to_latest_version, priority, tc_title,
                         custom_field, search_type_like,
                         document_id, req_expected_coverage, title,
-                        status, req_type, req_spec_type, th_tcid, has_relation_type'}
+                        status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -131,6 +132,26 @@
 		  			</td>
 		  		</tr>
 			{/if}
+
+			{if $control->draw_export_testplan_button}
+				<tr>
+		   			<td colspan="2">
+	          <input type="button" value="{$labels.btn_export_testplan_tree}">
+            </td>
+		  		</tr>
+			{/if}
+
+
+				{*
+				<tr>
+		   		<td>{$labels.export_testplan_tree}</td>
+          <input type="button" value="{$labels.btn_export_testplan_tree}"
+           name="doTestPlanExport" id="doTestPlanExport">
+           onclick="update2latest({$gui->tPlanID})" />
+          </td> 
+		  	</tr>
+		  	*}
+
 
 			</table>
 		</div> {* settings *}

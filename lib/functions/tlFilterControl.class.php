@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlFilterControl.class.php,v 1.7 2010/08/09 19:06:36 franciscom Exp $
+ * @version    CVS: $Id: tlFilterControl.class.php,v 1.8 2010/10/07 17:42:56 franciscom Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlFilterControl.class.php?view=markup
  *
@@ -19,6 +19,7 @@
  *
  * @internal Revisions:
  *
+ * 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
  * 20100808 - asimon - little changes for first implementation of requirement filtering
  * 20100803 - asimon - corrected error in parameter initializing in init_args()
  * 20100628 - asimon - removal of constants
@@ -89,6 +90,14 @@ abstract class tlFilterControl extends tlObjectWithDB {
 	 * @var bool
 	 */
 	public $draw_bulk_update_button = false;
+	
+	/**
+	 * defines, wether the button to export test plan tree shall be drawn on template
+	 * @var bool
+	 */
+	public $draw_export_testplan_button = false;  // BUGID 3270 - Export Test Plan in XML Format
+	
+	
 	
 	/**
 	 * will hold the localized string options (any/none/somebody/...)

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/10/07 11:20:59 $ by $Author: asimon83 $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/10/07 13:27:58 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Report requirement based results
@@ -61,7 +61,8 @@ $labels = array('requirement' => lang_get('requirement'),
                 'req_availability' => lang_get('req_availability'),
                 'linked_tcs' => lang_get('linked_tcs'),
                 'no_linked_tcs' => lang_get('no_linked_tcs'),
-                'goto_testspec' => lang_get('goto_testspec'));
+                'goto_testspec' => lang_get('goto_testspec'),
+                'design' => null);
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $status_code_map = array();
@@ -90,15 +91,14 @@ $gui = init_gui($args);
 // BUGID 3856
 $gui_open = config_get('gui_separator_open');
 $gui_close = config_get('gui_separator_close');
-$gui->platforms = array(0 => $gui_open . lang_get('any') . $gui_close)
-                + $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+$platforms = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
+$gui->platforms = $platforms ? array(0 => $gui_open . lang_get('any') . $gui_close) + $platforms : null;
 
 $req_ids = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 $req_spec_map = array();
 $tc_ids = array();
 $testcases = array();
-
 
 // first step: get the requirements and linked testcases with which we have to work,
 // order them into $req_spec_map by spec

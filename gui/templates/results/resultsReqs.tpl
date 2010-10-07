@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.24 2010/10/07 11:20:59 asimon83 Exp $
+$Id: resultsReqs.tpl,v 1.25 2010/10/07 13:27:59 asimon83 Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -43,11 +43,13 @@ rev:
 <div class="workBack" style="overflow-y: auto;">
 
 <p><form method="post">
+{if $gui->platforms}
 {* BUGID 3856 *}
 {$labels.platform} <select name="platform" onchange="this.form.submit()">
 	{html_options options=$gui->platforms
 	              selected=$gui->selected_platform}
 </select><br/>
+{/if}
 <input type="checkbox" name="show_only_finished" value="show_only_finished"
        {if $gui->show_only_finished} checked="checked" {/if}
        onclick="this.form.submit();" /> {$labels.show_only_finished_reqs}

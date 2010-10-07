@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.316 2010/10/05 06:49:52 amkhullar Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.317 2010/10/07 17:11:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- * 20101005 - amitkhullar - BUGID - 3849, alias name not supported in Update stmts in postgres.
+ * 20101005 - amitkhullar - BUGID 3849, alias name not supported in Update stmts in postgres.
  * 20101001 - asimon - custom fields do not lose entered values on errors
  * 20100926 - franciscom - exportTestCaseDataToXML() a new management for tcase_id
  * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions

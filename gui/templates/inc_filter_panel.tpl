@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.7 2010/10/07 17:42:56 franciscom Exp $
+ * $Id: inc_filter_panel.tpl,v 1.8 2010/10/07 19:57:02 franciscom Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -92,6 +92,7 @@
 			{/if}
 
 			{if $control->settings.setting_platform}
+			  {assign var="platformID" value=$control->settings.setting_platform.selected}
 				<tr>
 					<th>{$labels.platform}</th>
 					<td>
@@ -136,23 +137,12 @@
 			{if $control->draw_export_testplan_button}
 				<tr>
 		   			<td colspan="2">
-	          <input type="button" value="{$labels.btn_export_testplan_tree}">
+	          <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"
+         	         onclick="javascript: openExportTestPlan('export_testplan','{$control->settings.setting_testplan.selected}',
+         	                                                 '{$platformID}');" />
             </td>
 		  		</tr>
 			{/if}
-
-
-				{*
-				<tr>
-		   		<td>{$labels.export_testplan_tree}</td>
-          <input type="button" value="{$labels.btn_export_testplan_tree}"
-           name="doTestPlanExport" id="doTestPlanExport">
-           onclick="update2latest({$gui->tPlanID})" />
-          </td> 
-		  	</tr>
-		  	*}
-
-
 			</table>
 		</div> {* settings *}
 	</div> {* settings_panel *}

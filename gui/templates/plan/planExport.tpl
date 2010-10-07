@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planExport.tpl,v 1.2 2010/09/25 17:50:39 franciscom Exp $ 
+$Id: planExport.tpl,v 1.3 2010/10/07 19:51:41 franciscom Exp $ 
 
 test plan export
 
 Revisions:
+
+20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
 
 *}
 {lang_get var="labels" 
@@ -44,6 +46,8 @@ function validateForm(f)
         action="lib/plan/planExport.php"
         onSubmit="javascript:return validateForm(this);">
     <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
+    <input type="hidden" name="platform_id" id="platform_id" value="{$gui->platform_id}">
+    <input type="hidden" name="exportContent" id="exportContent" value="{$gui->exportContent}">
     <table>
     <tr>
     <td>

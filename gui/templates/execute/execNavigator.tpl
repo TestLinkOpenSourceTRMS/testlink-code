@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.48 2010/06/25 11:57:00 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.49 2010/10/07 19:52:50 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
   20100625 - asimon - removed old ext js constant
   20100610 - asimon - BUGID 3301 - new included template inc_filter_panel.tpl
   20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
@@ -60,6 +61,20 @@ rev :
 			applyTo: 'filter_panel'
 		});
 	});
+
+/**
+ * 
+ *
+ * internal revisions
+ * BUGID 3270 - Export Test Plan in XML Format
+ */
+function openExportTestPlan(windows_title,tplan_id,platform_id) 
+{
+  args = "tplanID=" + tplan_id + "&platformID=" + platform_id + "&exportContent=tree";
+	wref = window.open(fRoot+"lib/plan/planExport.php?"+args,
+	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
+	wref.focus();
+}
 </script>
 {/literal}
 

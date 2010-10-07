@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community
- * @version    	CVS: $Id: execNavigator.php,v 1.121 2010/10/07 17:42:56 franciscom Exp $
+ * @version    	CVS: $Id: execNavigator.php,v 1.122 2010/10/07 19:53:26 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
@@ -53,7 +53,6 @@ $templateCfg = templateConfiguration();
 $control = new tlTestCaseFilterControl($db, 'execution_mode');
 $gui = initializeGui($control);
 $control->build_tree_menu($gui);
-
 $smarty = new TLSmarty();
 
 $smarty->assign('gui',$gui);

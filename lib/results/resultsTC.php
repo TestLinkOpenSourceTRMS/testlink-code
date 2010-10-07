@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.73 2010/09/30 14:59:48 asimon83 Exp $ 
+* $Id: resultsTC.php,v 1.74 2010/10/07 12:00:15 asimon83 Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author
+* 20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
 * 20100930 - asimon - added icons for testcase editing and execution
 * 20100923 - eloff - refactored to use improved table interface
 * 20100828 - eloff - adapt to rendering of status column
@@ -155,12 +156,14 @@ if ($lastResultMap != null)
 				// create linked icons
 				$edit_link = "<a href=\"javascript:openTCEditWindow({$testCaseId});\">" .
 							 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
-
-				$tcLink = $edit_link . $tc_name;
+			    // 20101007 - asimon - BUGID 3857
+			    $mail_link = "<a href=\"javascript:openTCEditWindow({$testCaseId});\">{$tc_name}</a> ";
+			    $tcLink = $edit_link . $tc_name;
 
 				$rowArray = null;
 				$rowArray[$cols['tsuite']] = $suiteName;
-				$rowArray[$cols['link']] = $tcLink;
+			    // 20101007 - asimon - BUGID 3857
+				$rowArray[$cols['link']] = $args->format == FORMAT_MAIL_HTML ? $mail_link : $tcLink;
 				if ($show_platforms)
 				{
 					$rowArray[$cols['platform']] = $gui->platforms[$platformId];

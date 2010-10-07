@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.218 2010/10/06 13:58:13 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.219 2010/10/07 11:08:54 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101007 - asimon - BUGID 3867
  *  20101006 - asimon - BUGID 3846: copy test plan does not copy tester assignments
  *  20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
  *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
@@ -658,8 +659,11 @@ class testplan extends tlObjectWithAttachments
 		$my['options'] = array_merge($my['options'], (array)$options);
 		
 		// 20100830 - franciscom - bug found by Julian
-		$my['filters']['exec_status'] = (array)$my['filters']['exec_status'];
-
+		// BUGID 3867
+		//$my['filters']['exec_status'] = (array)$my['filters']['exec_status'];
+		if (!is_null($my['filters']['exec_status'])) {
+			$my['filters']['exec_status'] = (array)$my['filters']['exec_status'];
+		}
 		// new dBug($my['filters']);
 		// new dBug($my['options']);
 

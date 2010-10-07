@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.325 2010/09/27 14:05:09 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.326 2010/10/07 08:18:43 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1279,6 +1279,8 @@ $tlCfg->demoMode = OFF;
 /**
  * If enabled, every Ext JS table in TestLink will offer an export button,
  * which generates a file with the contents of the table.
+ * ATTENTION: This feature is fully experimental. Enable at your own risk!
+ *            Enabling it can cause broken tables.
  */
 $tlCfg->enableTableExportButton = DISABLED;
 

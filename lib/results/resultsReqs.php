@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.37 $
- * @modified $Date: 2010/10/05 08:12:02 $ by $Author: asimon83 $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/10/07 11:20:59 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20101007 - asimon - BUGID 3856: Requirement based report should regard platforms
  * 20101005 - asimon - added linked icon also for testcases linked to requirements
  * 20101001 - asimon - added icon for requirement editing
  * 20100902 - Julian - BUGID 3717 - show linked tcs and the results for each req
@@ -35,6 +36,8 @@ $tproject_mgr = new testproject($db);
 $tplan_mgr = new testplan($db);
 $req_mgr = new requirement_mgr($db);
 $req_spec_mgr = new requirement_spec_mgr($db);
+// BUGID 3856
+$platform_mgr = new tlPlatform($db);
 
 $glue_char = config_get('gui_title_separator_1');
 $glue_char_tc = config_get('testcase_cfg')->glue_character;
@@ -84,6 +87,11 @@ $eval_status_map['uncovered'] = array('label' => lang_get('uncovered'),
 
 $args = init_args($tproject_mgr);
 $gui = init_gui($args);
+// BUGID 3856
+$gui_open = config_get('gui_separator_open');
+$gui_close = config_get('gui_separator_close');
+$gui->platforms = array(0 => $gui_open . lang_get('any') . $gui_close)
+                + $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
 
 $req_ids = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
 $prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
@@ -135,10 +143,14 @@ if(count($req_spec_map)) {
 	$testcases = array();
 	if (count($tc_ids)) {
 		$filters = array('tcase_id' => $tc_ids);
-		$options = null;
+		// BUGID 3856
+		if ($args->platform != 0) {
+			$filters['platform_id'] = $args->platform;
+		}
+		$options = array('last_execution' => true, 'output' => 'map');
 		$testcases = $tplan_mgr->get_linked_tcversions($args->tplan_id, $filters, $options);
 	}
-	
+
 	foreach ($req_spec_map as $req_spec_id => $req_spec_info) {
 		$req_spec_map[$req_spec_id]['req_counters'] = array('total' => 0);
 		
@@ -504,7 +516,10 @@ function init_args(&$tproject_mgr)
 	$args->tplan_id = intval($_SESSION['resultsNavigator_testplanID']);
 	
 	$args->format = $_SESSION['resultsNavigator_format'];
-	
+
+	// BUGID 3856
+	$args->platform = isset($_REQUEST['platform']) ? $_REQUEST['platform'] : 0;
+
 	return $args;
 }
 
@@ -524,7 +539,9 @@ function init_gui(&$argsObj) {
 	$gui->tproject_name = $argsObj->tproject_name;
 	$gui->show_only_finished = $argsObj->show_only_finished;
 	$gui->tableSet = null;
-	
+	// BUGID 3856
+	$gui->selected_platform = $argsObj->platform;
+
 	return $gui;
 }
 

@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.23 2010/09/20 13:44:17 mx-julian Exp $
+$Id: resultsReqs.tpl,v 1.24 2010/10/07 11:20:59 asimon83 Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
 rev:
+    20101007 - asimon - BUGID 3856: Requirement based report should regard platforms
     20100823 - asimon - replaced "onchange" in form by "onclick" to get
                         it working in IE too
     20100819 - asimon - BUGIDs 3261, 3439, 3488, 3569, 3299, 3259, 3687: 
@@ -17,7 +18,7 @@ rev:
 *}
 {lang_get var='labels'
           s='title_result_req_testplan, show_only_finished_reqs, 
-          generated_by_TestLink_on, info_resultsReqs'}
+          generated_by_TestLink_on, info_resultsReqs, platform'}
 
 {include file="inc_head.tpl" openHead="yes"}
 
@@ -42,6 +43,11 @@ rev:
 <div class="workBack" style="overflow-y: auto;">
 
 <p><form method="post">
+{* BUGID 3856 *}
+{$labels.platform} <select name="platform" onchange="this.form.submit()">
+	{html_options options=$gui->platforms
+	              selected=$gui->selected_platform}
+</select><br/>
 <input type="checkbox" name="show_only_finished" value="show_only_finished"
        {if $gui->show_only_finished} checked="checked" {/if}
        onclick="this.form.submit();" /> {$labels.show_only_finished_reqs}

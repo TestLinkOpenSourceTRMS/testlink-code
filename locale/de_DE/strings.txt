@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.199 2010/09/21 14:36:44 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.200 2010/10/07 08:28:12 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.708
+ * Last Update according to en_GB string file version 1.716
  *
  **/
 
@@ -116,6 +116,7 @@ $TLS_parent_child='ist Vater oder ist Kind';
 $TLS_blocks_depends = 'blockiert oder hängt ab von';
 $TLS_related_to='ist verwandt mit';
 $TLS_unknown_code='unbekannter Code: %s';
+$TLS_in_percent = "[%]";
 
 $TLS_file_size_exceeded = 'Dateigröße (%s) > zugelassene Größe (%s)';
 
@@ -133,7 +134,7 @@ $TLS_create = "Erstellen";
 $TLS_copy = "Kopieren";
 $TLS_delete = "Löschen";
 $TLS_disable = "Deaktivieren";
-
+$TLS_export_import = "Export/Import";
 $TLS_executed	= "Ausgeführt";
 $TLS_move	= "Verschieben";
 $TLS_remove = "Entfernen";
@@ -154,6 +155,7 @@ $TLS_btn_create_step = "Schritt erstellen";
 $TLS_btn_delete = "Löschen";
 $TLS_btn_edit = "Bearbeiten";
 $TLS_btn_export = "Exportieren";
+$TLS_btn_export_import = "Export/Import";
 $TLS_btn_find = "Suchen";
 $TLS_btn_goback = "zurück";
 $TLS_btn_generate_doc = "Dokument erstellen";
@@ -1130,6 +1132,7 @@ $TLS_btn_save_all_tests_results = "Alle Ausführungen speichern";
 $TLS_btn_save_tc_exec_results = "Ergebnisse speichern";
 $TLS_btn_save_exec_and_movetonext = "Speichern und weiter mit dem Nächsten";
 $TLS_bug_mgmt = "BUG Verwaltung";
+$TLS_btn_export_testcases = "Testfälle exportieren";
 $TLS_build_is_closed = "Build ist geschlossen";
 $TLS_builds_notes = "Build Notizen";
 $TLS_bulk_tc_status_management = "Mehrfach Testfall Status Änderung";
@@ -1848,8 +1851,9 @@ $TLS_th_roles_testplan = "Testplan Rolle";
 $TLS_th_roles_testproject = "Testprojekt Rolle";
 $TLS_title_assign_roles = "Rollen zuweisen";
 $TLS_set_roles_to = "Rollen setzen";
-$TLS_testproject_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Projects"; //todo
-$TLS_testplan_roles_assign_disabled="Your role configuration do not allow you Assign Roles for Test Plans"; //todo
+$TLS_testproject_roles_assign_disabled = "Ihre Rolle erlaubt es ihnen nicht Rollen für dieses Testprojekt zuzuweisen";
+$TLS_testplan_roles_assign_disabled = "Ihre Rolle erlaubt es ihnen nicht Rollen für Testpläne zuzuweisen";
+$TLS_show_only_authorized_users = 'Zeige nur autorisierte Benutzer';
 
 
 // ----- gui/templates/usersedit.tpl -----
@@ -2032,6 +2036,7 @@ $TLS_tcase_id_is_not_number = "Testfall mit internal id=%s ist kein numerischer 
 $TLS_bug_id_invalid_len = "Länge der BUG ID ist unngültig [%s > %s] " . $TLS_imp_result_ko;
 $TLS_tproject_id_not_found = "Testprojekt ID nicht gefunden [%s] " . $TLS_imp_result_ko;
 $TLS_invalid_exec_type = "Ausführungstyp [%s] ist ungültig" . $TLS_imp_result_ko;
+$TLS_missing_exec_type = "Ausführungstyp wurde nicht angegeben - benutze (%s => %s)";
 
 
 // ----- lib/functions/results.inc.php -----
@@ -2542,6 +2547,7 @@ $TLS_send_mail_ko = 'Warnung: Probleme beim versenden der E-Mail - Details: ';
 
 // ----- lib/testcases/tcAssignedToUser.php -----
 $TLS_assigned_tc_overview = "Testprojekt: %s - Übersicht der Testzuweisungen für alle Benutzer";
+$TLS_show_closed_builds_btn = "Zeige auch geschlossene Builds";
 
 
 
@@ -3072,5 +3078,10 @@ $TLS_invalid_release_date = 'Ungültiges Release Datum';
 $TLS_insert_step = "Schritt einfügen";
 $TLS_frozen_req_unable_to_import = 'Übersprungen - Anforderung - Dok. ID:%s - ist EINGEFROREN';
 
+// ----- lib/plan/planExport.php -----
+$TLS_export_test_plan = 'Testplan exportieren';
+
+// ----- lib/execute/execExport.php -----
+$TLS_export_execution_set = 'Ausführungen exportieren';
 // ----- END ------------------------------------------------------------------
 ?>

@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		-
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: userInfo.php,v 1.31 2010/01/11 19:16:30 franciscom Exp $
+ * @version    	CVS: $Id: userInfo.php,v 1.32 2010/10/08 15:18:13 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
  *
+ *	20101008 - Julian - reload navBar after changing personal data (localization)
  *	20100106 - franciscom - security improvement - checkDoAction()
  *                        - BUGID 3043 -  genApiKey -> genAPIKey
  */
@@ -32,6 +33,7 @@ $op = new stdClass();
 $op->auditMsg = null;
 $op->user_feedback = null;
 $op->status = tl::OK;
+$update_title_bar = 0;
 
 $doUpdate = false;
 switch($args->doAction)
@@ -45,6 +47,7 @@ switch($args->doAction)
 		$op->status = tl::OK;
 		$op->auditMsg = "audit_user_saved";
 		$op->user_feedback = lang_get('result_user_changed');
+		$update_title_bar = 1;
     	break;
 
     case 'changePassword':
@@ -91,7 +94,7 @@ $smarty->assign('api_ui_show',$user);
 $smarty->assign('mgt_view_events',$user->hasRight($db,"mgt_view_events"));
 $smarty->assign('loginHistory', $loginHistory);
 $smarty->assign('user_feedback', $op->user_feedback);
-$smarty->assign('update_title_bar',0);
+$smarty->assign('update_title_bar',$update_title_bar);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.33 $
- * @modified $Date: 2010/10/08 12:53:48 $ by $Author: mx-julian $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2010/10/08 12:56:27 $ by $Author: mx-julian $
  *
  * rev: 
  *		20101008 - Julian - BUGID 3871: use exttable for event viewer
@@ -249,7 +249,7 @@ function buildExtTable($gui,$show_icon,$charset)
 		
 		$table->setGroupByColumnName(lang_get('th_loglevel'));
 		$table->setSortByColumnName(lang_get('th_timestamp'));
-		$table->sortDirection = 'ASC';
+		$table->sortDirection = 'DESC';
 		
 		$table->showToolbar = true;
 		$table->toolbarExpandCollapseGroupsButton = true;

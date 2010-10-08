@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesView.tpl,v 1.15 2009/12/07 20:12:19 franciscom Exp $
+$Id: rolesView.tpl,v 1.16 2010/10/08 14:28:13 mx-julian Exp $
 Purpose: smarty template - View defined roles
 
 rev:
@@ -112,7 +112,6 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 		</table>
 	{/if}
 {/if}
-</div>
 {if $draw_create_btn}
 <div class="groupBtn">
 <form method="post" action="{$createRoleAction}" name="launch_create">
@@ -120,4 +119,5 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 </form>
 </div>
 {/if}
+</div>
 </body>

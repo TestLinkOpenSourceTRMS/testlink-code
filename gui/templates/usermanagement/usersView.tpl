@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.24 2010/09/23 07:55:25 mx-julian Exp $
+$Id: usersView.tpl,v 1.25 2010/10/08 14:28:13 mx-julian Exp $
 
 Purpose: smarty template - users overview
 
@@ -163,14 +163,14 @@ function toggleRowByClass(oid,className,displayValue)
 			{/foreach}
 		</table>
 		</form>
-	</div>
 
-	<div class="groupBtn">
-	<form method="post" action="{$createUserAction}" name="launch_create">
-	<input type="submit" name="doCreate"  value="{$labels.btn_create}" />
-  </form>
+		<div class="groupBtn">
+		<form method="post" action="{$createUserAction}" name="launch_create">
+		<input type="submit" name="doCreate"  value="{$labels.btn_create}" />
+  		</form>
+		</div>
 	</div>
-
+	
 	{*  BUGID 0000103: Localization is changed but not strings *}
 	{if $update_title_bar == 1}
 	{literal}

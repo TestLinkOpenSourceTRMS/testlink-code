@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2010/10/08 11:58:04 $ by $Author: mx-julian $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2010/10/08 12:53:48 $ by $Author: mx-julian $
  *
  * rev: 
  *		20101008 - Julian - BUGID 3871: use exttable for event viewer
@@ -59,10 +59,6 @@ $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $arg
 										 $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
 										 $filters->endTime,$filters->users);
 
-//echo "<pre>";
-//print_r($gui->events);
-//echo "</pre>";
-
 if (count($gui->events) > 0) {
 	$table = buildExtTable($gui, $show_icon, $charset);
 	
@@ -72,8 +68,6 @@ if (count($gui->events) > 0) {
 } else {
 	$gui->warning_msg = lang_get("no_events");
 }
-
-
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

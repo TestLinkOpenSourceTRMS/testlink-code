@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.27 2010/08/23 21:57:25 franciscom Exp $
+$Id: eventviewer.tpl,v 1.28 2010/10/08 11:58:04 mx-julian Exp $
 
 Event Viewer
+20100108 - Julian - BUGID 3871 - use exttable for event viewer
 20100508 - franciscom - BUGID 3445
 *}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -12,11 +13,22 @@ Event Viewer
           s='event_viewer,th_loglevel,th_timestamp,th_description,title_eventdetails,
              title_eventinfo,label_startdate,label_enddate,btn_apply,click_on_event_info,
              btn_clear_events,btn_clear_all_events,th_event_description,select_user,clear_tip,
-             message_please_wait,btn_close,th_role_description,th_user'}
+             message_please_wait,btn_close,th_role_description,th_user,generated_by_TestLink_on'}
 
 
-{include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
-{include file="inc_ext_js.tpl"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
+
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+  {assign var=tableID value=$matrix->tableID}
+  {if $smarty.foreach.initializer.first}
+    {$matrix->renderCommonGlobals()}
+    {if $matrix instanceof tlExtTable}
+        {include file="inc_ext_table.tpl"}
+    {/if}
+  {/if}
+  {$matrix->renderHeadSection()}
+{/foreach}
 
 <script type="text/javascript">
 var strPleaseWait = "{$labels.message_please_wait|escape:javascript}";
@@ -90,33 +102,6 @@ fieldset
 	height:100%;
 
 }
-#eventviewer
-{
-	white-space:nowrap;
-	cursor: hand;
-	cursor: pointer;
-}
-
-#eventviewer tr.AUDIT
-{
-	color:blue;
-}
-#eventviewer tr.ERROR
-{
-	color:red;
-	font-weight:bold;
-	border: 1px solid red;
-	white-space: pre;
-}
-#eventviewer tr.WARNING
-{
-	color:black;
-	font-weight:bold;
-}
-#eventviewer tr.INFO
-{
-	color:green;
-}
 </style>
 {/literal}
 
@@ -174,38 +159,24 @@ fieldset
 		</form>
 		<br/>
 		<br/>
-		<span class="italic">{$labels.click_on_event_info}</span>
-		<table class="common sortable" width="95%" id="eventviewer">
-			<tr>
-				<th>{$sortHintIcon}{$labels.th_timestamp}</th>
-				<th>{$sortHintIcon}{$labels.th_loglevel}</th>
-				<th>{$sortHintIcon}{$labels.th_event_description}</th>
-				<th>{$sortHintIcon}{$labels.th_user}</th>
-			</tr>
+		
+				
+		{if $gui->warning_msg == ''}
+		    {foreach from=$gui->tableSet key=idx item=matrix}
+		       {assign var=tableID value=table_$idx}
+		       {$matrix->renderBodySection($tableID)}
+		    {/foreach}
+		    <br />
+		    <p class="italic">{$labels.click_on_event_info}</p>
+		    <br />
+		    {$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
+		{else}
+		    <br />
+		    <div class="user_feedback">
+		    {$gui->warning_msg}
+		    </div>
+		{/if} 
 
-			{assign var=transID value="-1"}
-			{foreach from=$gui->events item=event}
-			  {assign var=userID value=$event->userID}
-			  {if $event->transactionID neq $transID}
-			  	{assign var=transID value=$event->transactionID}
-			  	{assign var=padding value=""}
-			  {/if}
-        
-			  <tr onClick="showEventDetails({$event->dbID})" class="{$event->getLogLevel()|escape}">
-			  		<td style="white-space:nowrap;{$padding}">{localize_timestamp ts=$event->timestamp}</td>
-			  		<td>{$event->getLogLevel()|escape}</td>
-			  		<td>{$event->description|escape|truncate:#EVENT_DESCRIPTION_TRUNCATE_LEN#}</td>
-			  		<td>
-			  		{if isset($gui->users[$userID])}
-			  			{$gui->users[$userID]|escape}
-			  		{else}
-			  			&nbsp;
-			  		{/if}
-			  		</td>
-			  </tr>
-			  {assign var=padding value="padding-left:20px"}
-		  {/foreach}
-		</table>
 </div>
 <div id="eventDetailWindow" class="x-hidden">
 	<div class="x-window-header">{$labels.title_eventinfo}</div>

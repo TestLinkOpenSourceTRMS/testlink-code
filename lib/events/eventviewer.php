@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.31 $
- * @modified $Date: 2010/05/08 17:39:27 $ by $Author: franciscom $
+ * @version $Revision: 1.32 $
+ * @modified $Date: 2010/10/08 11:58:04 $ by $Author: mx-julian $
  *
  * rev: 
+ *		20101008 - Julian - BUGID 3871: use exttable for event viewer
  *		20100508 - franciscom - BUGID 3445: Ability to delete events from selected class from event logs 
  *		20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
  *      20081029 - franciscom - added 'clear' action to delete all events and transactions
@@ -17,12 +18,15 @@
 require_once("../../config.inc.php");
 require_once("common.php");
 require_once("users.inc.php");
+require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
 $gui = initializeGui($db,$args);
 $filters = getFilters();
+$show_icon = TL_THEME_IMG_DIR . "plus.gif";
+$charset = config_get('charset');
 
 switch($args->doAction)
 {
@@ -54,6 +58,21 @@ switch($args->doAction)
 $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
 										 $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
 										 $filters->endTime,$filters->users);
+
+//echo "<pre>";
+//print_r($gui->events);
+//echo "</pre>";
+
+if (count($gui->events) > 0) {
+	$table = buildExtTable($gui, $show_icon, $charset);
+	
+	if (!is_null($table)) {
+		$gui->tableSet[] = $table;
+	}
+} else {
+	$gui->warning_msg = lang_get("no_events");
+}
+
 
 
 $smarty = new TLSmarty();
@@ -132,6 +151,10 @@ function initializeGui(&$dbHandler,&$argsObj)
 
     // $gui->canDelete = has_rights($db,"events_mgt") ? 1 : 0;
     $gui->canDelete = $argsObj->currentUser->hasRight($dbHandler,"events_mgt");
+    
+    $gui->warning_msg = "";
+    $gui->tableSet = null;
+    
 	return $gui;
 }
 
@@ -177,5 +200,67 @@ function getFilters(&$argsObj=null)
 		}
 	}	
 	return $filters;
+}
+
+/**
+ * 
+ *
+ */
+function buildExtTable($gui,$show_icon,$charset)
+{
+	$table = null;
+	if(count($gui->events) > 0) {
+		$columns = array();
+		$columns[] = array('title' => lang_get('th_timestamp'), 'width' => 15);
+		$columns[] = array('title' => lang_get('th_loglevel'), 'width' => 15);
+		$columns[] = array('title' => lang_get('th_user'), 'width' => 15);
+		$columns[] = array('title' => lang_get('th_event_description'),'type' => 'text');
+		$columns[] = array('title' => lang_get('th_transaction'), 'width' => 15, 'hidden' => 'true');
+	
+		// Extract the relevant data and build a matrix
+		$matrixData = array();
+
+		foreach ($gui->events as $event_key => $event)
+		{
+			$transactionID = $event->transactionID;
+			
+			$rowData = array();
+
+			// necessary as localize_dateOrTimeStamp expects 2nd parameter to pass by reference
+			$dummy = null; 
+			// use html comment to sort properly by timestamp
+			$rowData[] = "<!--{$event->timestamp}-->" .
+			             localize_dateOrTimeStamp(null, $dummy, 'timestamp_format',$event->timestamp);
+			             
+			$rowData[] = $event->getlogLevel();
+			
+			if (isset($event->userID)) {
+				$rowData[] = $gui->users[$event->userID];
+			} else {
+				$rowData[] = "";
+			}
+			
+			$rowData[] = "<a onClick=\"showEventDetails({$event->dbID});\" style=\"cursor: hand; cursor: pointer;\">" . 
+			             "<img title=\"" . lang_get("show_eventdetails") ."\" src=\"{$show_icon}\" /> </a>" .
+			             htmlentities($event->description, ENT_QUOTES, $charset);
+			             
+			$rowData[] = $event->transactionID;
+			
+			$matrixData[] = $rowData;
+		}
+		
+		$table = new tlExtTable($columns, $matrixData, 'tl_table_eventviewer');
+
+		$table->addCustomBehaviour('text', array('render' => 'columnWrap'));
+		
+		$table->setGroupByColumnName(lang_get('th_loglevel'));
+		$table->setSortByColumnName(lang_get('th_timestamp'));
+		$table->sortDirection = 'ASC';
+		
+		$table->showToolbar = true;
+		$table->toolbarExpandCollapseGroupsButton = true;
+		$table->toolbarShowAllColumnsButton = true;
+	}
+	return($table);
 }
 ?>

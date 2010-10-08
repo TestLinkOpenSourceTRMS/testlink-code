@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.718 2010/10/07 17:42:00 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.719 2010/10/08 11:58:04 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2960,12 +2960,15 @@ $TLS_message_please_wait = "Please wait ...";
 $TLS_title_eventinfo = "Event information";
 $TLS_title_eventdetails = "Event details";
 $TLS_th_user = "User";
+$TLS_th_transaction = "Transaction";
 $TLS_show_event_history = "Show the event history";
 $TLS_btn_clear_all_events = "Clear All Events";
 $TLS_btn_clear_events = "Clear Events";
 $TLS_th_event_description = "Description";
 $TLS_select_user = "User (Default All)";
 $TLS_clear_tip = "Delete events with log level(s) selected, or all if no level selected";
+$TLS_show_eventdetails = "Show event details";
+$TLS_no_events = "No Events available";
 
 
 // ----- int_mantis.php -----

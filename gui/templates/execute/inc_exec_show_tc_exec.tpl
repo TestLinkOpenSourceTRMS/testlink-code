@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.27 2010/07/09 08:43:18 mx-julian Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.28 2010/10/08 07:17:48 mx-julian Exp $
 Purpose: 
 Author: franciscom
 
 Rev:
+	20101008 - Julian - avoid warnings on event viewer
 	20100708 - Julian - BUGID 3587 - executions of closed builds cannot be deleted anymore
 	                               - bugs cannot be added or deleted if build is closed
 	                               - new greyed icons used
@@ -377,7 +378,7 @@ Rev:
   			</tr>
 
         {* Execution Bugs (if any) *}
-        {if $gui->bugs[$execID] neq ""}
+        {if isset($gui->bugs[$execID])}
 		<tr style="background-color: {$bg_color}">
    			<td colspan="{$my_colspan}">
    				{*BUGID 3587*}

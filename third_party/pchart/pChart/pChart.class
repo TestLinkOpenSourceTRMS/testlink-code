@@ -1,4 +1,19 @@
 <?php
+/*
+ * MINOR BUG FIXES ON TEST LINK
+ *
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * @package 	TestLink
+ * @copyright 	2005-2009, TestLink community
+ * @version    	CVS: $Id: config.inc.php,v 1.326 2010/10/07 08:18:43 mx-julian Exp $
+ * @link 		http://www.teamst.org/index.php
+ *
+ * @internl revisions
+ * 20101008 - franciscom - new checks to avoid Division by Zero ERROR
+ *
+ */
  /*
      pChart - a PHP class to build charts!
      Copyright (C) 2008 Jean-Damien POGOLOTTI
@@ -2375,10 +2390,13 @@
 
      /* Validate serie */
      if ( $Series != 1 )
+     {
       RaiseFatal("Pie chart can only accept one serie of data.");
-
-     $SpliceRatio         = 360 / $PieSum;
-     $SplicePercent       = 100 / $PieSum;
+     }
+      
+     //  20101008 - franciscom - add new check to avoid division by zero
+     $SpliceRatio         = 360 / ($PieSum > 0 ? $PieSum : 1);
+     $SplicePercent       = 100 / ($PieSum > 0 ? $PieSum : 1);
 
      /* Calculate all polygons */
      $Angle    = 0; $TopPlots = "";
@@ -2495,8 +2513,15 @@
        return(0);
       }
 
-     $SpliceRatio   = 360 / $PieSum;
-     $SplicePercent = 100 / $PieSum;
+
+
+     //  20101008 - franciscom - add new check to avoid division by zero
+     // $SpliceRatio   = 360 / $PieSum;
+     // $SplicePercent = 100 / $PieSum;
+     $SpliceRatio         = 360 / ($PieSum > 0 ? $PieSum : 1);
+     $SplicePercent       = 100 / ($PieSum > 0 ? $PieSum : 1);
+
+
 
      /* Calculate all polygons */
      $Angle = 0; $TopPlots = "";
@@ -2617,10 +2642,18 @@
 
      /* Validate serie */
      if ( $Series != 1 )
+     {
       RaiseFatal("Pie chart can only accept one serie of data.");
-
+     }
+     
      $SpliceDistanceRatio = $SpliceDistance;
      $SkewHeight          = ($Radius * $Skew) / 100;
+
+
+     //  20101008 - franciscom - add new check to avoid division by zero
+     $PieSum = ($PieSum > 0 ? $PieSum : 1);
+     $rPieSum = ($rPieSum > 0 ? $rPieSum : 1);
+
      $SpliceRatio         = (360 - $SpliceDistanceRatio * count($iValues) ) / $PieSum;
      $SplicePercent       = 100 / $PieSum;
      $rSplicePercent      = 100 / $rPieSum;

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.317 2010/10/07 17:11:37 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.318 2010/10/08 11:15:26 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101008 - asimon - BUGID 3311
  * 20101005 - amitkhullar - BUGID 3849, alias name not supported in Update stmts in postgres.
  * 20101001 - asimon - custom fields do not lose entered values on errors
  * 20100926 - franciscom - exportTestCaseDataToXML() a new management for tcase_id
@@ -717,7 +718,8 @@ class testcase extends tlObjectWithAttachments
 	    $gui->linked_versions=null;
 		$gui->tc_current_version = array();
 	    $gui->bodyOnLoad="";
-	    $gui->bodyOnUnload="";
+	    // 20101008 - asimon - BUGID 3311
+	    //$gui->bodyOnUnload="";
 	    $gui->submitCode="";
 	    $gui->dialogName = '';
 	    $gui->platforms = null;

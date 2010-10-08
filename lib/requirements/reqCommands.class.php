@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2010/10/06 10:26:21 $ by $Author: asimon83 $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2010/10/08 11:15:26 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
  *
+ *  20101008 - asimon - BUGID 3311
  *  20101006 - asimon - BUGID 3854
  *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
  *  20101001 - asimon - custom fields do not lose entered values on errors
@@ -67,7 +68,8 @@ class reqCommands
 		$obj = new stdClass();
 		$obj->pageTitle = '';
 		$obj->bodyOnLoad = '';
-		$obj->bodyOnUnload = '';
+		// 20101008 - asimon - BUGID 3311
+		$obj->bodyOnUnload = "storeWindowSize('ReqPopup');";
 		$obj->hilite_item_name = false;
 		$obj->display_path = false;
 		$obj->show_match_count = false;

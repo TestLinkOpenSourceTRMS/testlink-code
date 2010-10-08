@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.18 2010/10/04 15:41:19 mx-julian Exp $
+$Id: tcAssignedToUser.tpl,v 1.19 2010/10/08 11:15:26 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 rev:
+20101008 - asimon - BUGID 3311
 20101004 - asimon - added checkbox to enable displaying of closed builds
 20100825 - eloff - remove redundant headers
 20100731 - asimon - replaced table (changed to ExtJS format) and included some more data
@@ -32,7 +33,8 @@ rev:
           s='no_records_found,testplan,testcase,version,assigned_on,due_since,platform,goto_testspec,priority,
              high_priority,medium_priority,low_priority,build,testsuite,generated_by_TestLink_on,show_closed_builds_btn'}
 
-<body>
+{* 20101008 - asimon - BUGID 3311 *}
+<body onUnload="storeWindowSize('AssignmentOverview')">
 <h1 class="title">{$gui->pageTitle}</h1>
 <div class="workBack">
 

@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.77 2010/09/15 20:55:11 franciscom Exp $
+ * 	@version 	$Id: archiveData.php,v 1.78 2010/10/08 11:15:27 asimon83 Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -10,6 +10,7 @@
  *	Also called when search option on Navigation Bar is used
  *
  *	@internal revision
+ *  20101008 - asimon - BUGID 3311
  *  20100916 - amitkhullar - BUGID 3639
  *  20100628 - asimon - BUGID 3406: removed old logic from BUGID 3049,
  *                      functionality will be changed because of user assigments per build
@@ -68,6 +69,8 @@ switch($args->feature)
 		$gui->attachments = null;
 		$gui->direct_link = null;
 		$gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
+		// 20101008 - asimon - BUGID 3311
+		$gui->bodyOnUnload = 'storeWindowSize(\'TCEditPopup\')';
     	
    		// has been called from a test case search
 		if(!is_null($args->targetTestCase) && strcmp($args->targetTestCase,$args->tcasePrefix) != 0)

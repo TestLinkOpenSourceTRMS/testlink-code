@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.61 2010/09/26 14:26:31 franciscom Exp $
+$Id: execSetResults.tpl,v 1.62 2010/10/08 11:15:26 asimon83 Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+  20101008 - asimon - BUGID 3311
   20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
   20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
   20100503 - franciscom - BUGID 3260: Import XML Results is not working with Internet Explorer
@@ -234,7 +235,9 @@ IMPORTANT: if you change value, you need to chang init_args() logic on execSetRe
               {if $round_enabled}Nifty('div.exec_additional_info');{/if}
               {if #ROUND_TC_SPEC#}Nifty('div.exec_test_spec');{/if}
               {if #ROUND_EXEC_HISTORY#}Nifty('div.exec_history');{/if}
-              {if #ROUND_TC_TITLE#}Nifty('div.exec_tc_title');{/if}">
+              {if #ROUND_TC_TITLE#}Nifty('div.exec_tc_title');{/if}"
+      {* 20101008 - asimon - BUGID 3311 *}
+      onUnload="storeWindowSize('TCExecPopup')">
 
 <h1 class="title">
 	{$labels.title_t_r_on_build} {$gui->build_name|escape}

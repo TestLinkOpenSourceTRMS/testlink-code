@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.106 2010/09/22 14:37:43 asimon83 Exp $
+// $Id: testlink_library.js,v 1.107 2010/10/08 11:15:26 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20101008 - asimon - BUGID 3311
 // 20100922 - asimon - added openExecutionWindow() und openTCEditWindow()
 // 20100811 - asimon - fixed IE JS error on openAssignmentOverviewWindow()
 // 20100731 - asimon - added openAssignmentOverviewWindow()
@@ -694,8 +695,23 @@ function planRemoveTC(warning_msg)
 function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
 	var url = "lib/testcases/tcAssignedToUser.php";
 	url += "?user_id=" + user_id + "&build_id=" + build_id + "&tplan_id=" + tplan_id;
-	
-	var windowCfg = "width=800,height=600,resizable=yes,scrollbars=yes,dependent=yes";
+
+	// 20101008 - asimon - BUGID 3311
+	var width = getCookie("AssignmentOverviewWidth");
+	var height = getCookie("AssignmentOverviewHeight");
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+	alert(windowCfg);
 	window.open(fRoot+url, '_blank', windowCfg);
 }
 
@@ -708,7 +724,22 @@ function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
 function openTCEditWindow(tc_id) {
 	var url = "lib/testcases/archiveData.php?edit=testcase&id=" + tc_id;
 
-	var windowCfg = "width=800,height=600,resizable=yes,scrollbars=yes,dependent=yes";
+	// 20101008 - asimon - BUGID 3311
+	var width = getCookie("TCEditPopupWidth");
+	var height = getCookie("TCEditPopupHeight");
+	
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+	
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+	alert(windowCfg);
 	window.open(fRoot+url, '_blank', windowCfg);
 }
 
@@ -730,7 +761,22 @@ function openExecutionWindow(tc_id, tcversion_id, build_id, tplan_id, platform_i
 	          "&setting_build=" + build_id +
 	          "&setting_platform=" + platform_id;
 
-	var windowCfg = "width=800,height=600,resizable=yes,scrollbars=yes,dependent=yes";
+	// 20101008 - asimon - BUGID 3311
+	var width = getCookie("TCExecPopupWidth");
+	var height = getCookie("TCExecPopupHeight");
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+	
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+	alert(windowCfg);
 	window.open(fRoot+url, '_blank', windowCfg);
 }
 
@@ -805,7 +851,22 @@ function openLinkedReqWindow(req_id, anchor)
 	var feature_url = "lib/requirements/reqView.php";
 	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + anchor;
 
-	windowCfg="width=800,height=400,resizable=yes,scrollbars=yes,dependent=yes";
+	// 20101008 - asimon - BUGID 3311
+	var width = getCookie("ReqPopupWidth");
+	var height = getCookie("ReqPopupHeight");
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+	alert(windowCfg);
 	window.open(fRoot+feature_url,"Requirement",windowCfg);
 }
 
@@ -828,7 +889,22 @@ function openLinkedReqSpecWindow(reqspec_id, anchor)
 	var feature_url = "lib/requirements/reqSpecView.php";
 	feature_url += "?req_spec_id=" + reqspec_id + anchor;
 
-	windowCfg="width=800,height=400,resizable=yes,scrollbars=yes,dependent=yes";
+	// 20101008 - asimon - BUGID 3311
+	var width = getCookie("ReqSpecPopupWidth");
+	var height = getCookie("ReqSpecPopupHeight");
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+	alert(windowCfg);
 	window.open(fRoot+feature_url,"RequirementSpecification",windowCfg);
 }
 
@@ -1095,7 +1171,7 @@ function showFeedback(success, msg_text)
 function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id)
 {
 	var target_url = "lib/execute/editExecution.php";
-	var windowCfg = "width=510,height=270,resizable=yes,dependent=yes,scrollbars=yes";
+	var windowCfg = "width=800,height=600,resizable=yes,dependent=yes,scrollbars=yes";
 	window.open(fRoot+target_url+"?exec_id="+exec_id+"&tcversion_id="+tcversion_id+"&tplan_id="+tplan_id+"&tproject_id="+tproject_id,
 	            "execution_notes",windowCfg);
 }
@@ -1127,4 +1203,45 @@ function get_docs(name, server_name)
       var w = window.open();
       w.location = server_name + '/docs/' + name;
   }
+}
+
+/**
+ * Helper function for BUGID 3311. Loads the value of a given cookie.
+ * @param name Name of the cookie to load.
+ */
+function getCookie(name) {
+	var cookie = document.cookie;
+
+	var posName = cookie.indexOf("; " + name + "=");
+	if (posName == -1) {
+		if (cookie.indexOf(name + "=") == 0) {
+			posName = 0;
+		}
+		else {
+			return null;
+		}
+	}
+
+	var valueStart = cookie.indexOf("=", posName)+1;
+	var valueEnd = cookie.indexOf(";", posName+1);
+	if (valueEnd == -1) valueEnd = cookie.length;
+
+	var value = cookie.substring(valueStart, valueEnd);
+	return unescape(value);
+}
+
+/**
+ * Helper function for BUGID 3311. Stores the size of the current window to a cookie with the given name.
+ * @param windowname The name for which the cookie shall be stored.
+ */
+function storeWindowSize(windowname) {
+	var width = window.innerWidth || (window.document.documentElement.clientWidth || window.document.body.clientWidth);
+	var height = window.innerHeight || (window.document.documentElement.clientHeight || window.document.body.clientHeight);
+
+	var expires = new Date();
+	// Expires in 10 days
+	expires = new Date(expires.getTime() + 1000*60*60*24*10);
+
+	document.cookie = windowname+'Width='+width+'; expires='+expires.toGMTString()+'; path=/';
+	document.cookie = windowname+'Height='+height+'; expires='+expires.toGMTString()+'; path=/';
 }

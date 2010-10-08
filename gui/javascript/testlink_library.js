@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.107 2010/10/08 11:15:26 asimon83 Exp $
+// $Id: testlink_library.js,v 1.108 2010/10/08 12:33:28 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -711,7 +711,6 @@ function openAssignmentOverviewWindow(user_id, build_id, tplan_id) {
 	}
 
 	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
-	alert(windowCfg);
 	window.open(fRoot+url, '_blank', windowCfg);
 }
 
@@ -739,7 +738,6 @@ function openTCEditWindow(tc_id) {
 	}
 	
 	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
-	alert(windowCfg);
 	window.open(fRoot+url, '_blank', windowCfg);
 }
 
@@ -776,7 +774,6 @@ function openExecutionWindow(tc_id, tcversion_id, build_id, tplan_id, platform_i
 	}
 	
 	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
-	alert(windowCfg);
 	window.open(fRoot+url, '_blank', windowCfg);
 }
 
@@ -866,7 +863,6 @@ function openLinkedReqWindow(req_id, anchor)
 	}
 
 	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
-	alert(windowCfg);
 	window.open(fRoot+feature_url,"Requirement",windowCfg);
 }
 
@@ -904,7 +900,6 @@ function openLinkedReqSpecWindow(reqspec_id, anchor)
 	}
 
 	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
-	alert(windowCfg);
 	window.open(fRoot+feature_url,"RequirementSpecification",windowCfg);
 }
 
@@ -1171,7 +1166,22 @@ function showFeedback(success, msg_text)
 function openExecEditWindow(exec_id,tcversion_id,tplan_id,tproject_id)
 {
 	var target_url = "lib/execute/editExecution.php";
-	var windowCfg = "width=800,height=600,resizable=yes,dependent=yes,scrollbars=yes";
+
+	// 20101008 - asimon - BUGID 3311
+	var width = getCookie("ExecEditPopupWidth");
+	var height = getCookie("ExecEditPopupHeight");
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+target_url+"?exec_id="+exec_id+"&tcversion_id="+tcversion_id+"&tplan_id="+tplan_id+"&tproject_id="+tproject_id,
 	            "execution_notes",windowCfg);
 }

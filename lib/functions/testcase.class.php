@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.318 2010/10/08 11:15:26 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.319 2010/10/08 12:33:28 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -719,7 +719,7 @@ class testcase extends tlObjectWithAttachments
 		$gui->tc_current_version = array();
 	    $gui->bodyOnLoad="";
 	    // 20101008 - asimon - BUGID 3311
-	    //$gui->bodyOnUnload="";
+	    $gui->bodyOnUnload = "storeWindowSize('TCEditPopup')";
 	    $gui->submitCode="";
 	    $gui->dialogName = '';
 	    $gui->platforms = null;

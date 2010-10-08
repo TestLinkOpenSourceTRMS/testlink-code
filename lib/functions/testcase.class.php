@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.319 2010/10/08 12:33:28 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.320 2010/10/08 18:28:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101008 - franciscom - BUGID 3849
  * 20101008 - asimon - BUGID 3311
  * 20101005 - amitkhullar - BUGID 3849, alias name not supported in Update stmts in postgres.
  * 20101001 - asimon - custom fields do not lose entered values on errors
@@ -1007,7 +1008,7 @@ class testcase extends tlObjectWithAttachments
 		   		 	 " execution_type=" . $this->db->prepare_int($execution_type) . ", " . 
 		   		 	 " importance=" . $this->db->prepare_int($importance) . "," .
 		   		 	 " preconditions='" . $this->db->prepare_string($preconditions) . "' " .
-		   		 	 " WHERE tcversions.id = " . $this->db->prepare_int($tcversion_id); 
+		   		 	 " WHERE id = " . $this->db->prepare_int($tcversion_id); 
 		
 			foreach($sql as $stm)
 			{

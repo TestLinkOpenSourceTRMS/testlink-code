@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.19 2010/09/30 18:05:03 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.20 2010/10/08 14:26:48 mx-julian Exp $ 
 
 rev:
     20100930 - franciscom - BUGID 2344: Private test project
@@ -227,7 +227,6 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
     		<input type="submit" name="do_update" value="{$labels.btn_upd_user_data}" />
     	</div>
   </form>
-  <hr />
 {/if} {* if $gui->features *}
 </div>
 </body>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+	<testplan>
+		<name><![CDATA[PLAN_ONE]]></name>
+		
+		
+<executables>
+	<link>
+		<platform>
+			<name><![CDATA[]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[set exec result - test plan WITHOUT PLATFORMS]]></name>
+			<externalid><![CDATA[1]]></externalid>
+			<version><![CDATA[2]]></version>
+			<execution_order><![CDATA[1000]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[set exec result - test plan WITH WRONG PLATFORM NAME]]></name>
+			<externalid><![CDATA[2]]></externalid>
+			<version><![CDATA[3]]></version>
+			<execution_order><![CDATA[1010]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[set exec result - test plan WITH WRONG PLATFORM ID]]></name>
+			<externalid><![CDATA[3]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1020]]></execution_order>
+		</testcase>
+</link>
+
+</executables>
+
+	</testplan>

@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.91 2010/10/03 19:52:55 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.92 2010/10/09 18:32:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101009 - franciscom - _get_subtree_rec(), _get_subtree() added tcversion_id in output set
  * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
  *						   interface changes -> _get_subtree_rec(), _get_subtree()
  *						   Added new option on remove_empty_nodes_of_type on _get_subtree_rec()  	
@@ -802,6 +803,7 @@ class tree extends tlObject
 	}
 	
 	
+	// 20101009 - franciscom - added tcversion_id in output set
 	// 20061008 - franciscom - added ID in order by clause
 	// 
 	// 20060312 - franciscom
@@ -829,7 +831,7 @@ class tree extends tlObject
 		$order_cfg = $my['options']['order_cfg'];
 		$key_type = $my['options']['key_type'];		
 	   
-	    switch($order_cfg['type'] )
+	    switch($order_cfg['type'])
 	    {
 	        case 'spec_order':
 	  	    $sql = " SELECT * from {$this->object_table} " .
@@ -839,9 +841,14 @@ class tree extends tlObject
 			    
 			case 'exec_order':
 			// REMEMBER THAT DISTINCT IS NOT NEEDED when you does UNION
+			//
+			// First query get Nodes that ARE NOT test case => test suites
+			// Second query get the TEST CASES
+			//
+			// 20101009 - franciscom - added tcversion_id , neeed for test plan export
 	        $sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
 	             "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
-	             "                NH.name, NH.node_type_id" .
+	             "                NH.name, NH.node_type_id, 0 AS tcversion_id" .
 	             "                FROM {$this->object_table} NH, {$this->tables['node_types']} NT" .
 	             "                WHERE parent_id = {$node_id}" .
 	             "                AND NH.node_type_id=NT.id" .
@@ -849,7 +856,7 @@ class tree extends tlObject
 	             "                UNION" .
 	             "                SELECT NHA.node_order AS spec_order, " .
 	             "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
-	             "                       NHA.name, NHA.node_type_id" .
+	             "                       NHA.name, NHA.node_type_id, T.tcversion_id" .
 	             "                FROM {$this->object_table} NHA, {$this->object_table} NHB," .
 	             "                     {$this->tables['testplan_tcversions']}  T,{$this->tables['node_types']} NT" .
 	             "                WHERE NHA.id=NHB.parent_id " .
@@ -876,6 +883,7 @@ class tree extends tlObject
 				$node_table = $this->node_tables[$this->node_types[$row['node_type_id']]];
 				$node_list[] = array('id' => $row['id'],
 				                     'parent_id' => $row['parent_id'],
+				                     'tcversion_id' => (isset($row['parent_id']) ? $row['parent_id'] : -1),
 				                     'node_type_id' => $row['node_type_id'],
 				                     'node_order' => $row['node_order'],
 				                     'node_table' => $node_table,
@@ -903,6 +911,7 @@ class tree extends tlObject
 	} // function end
 	 
 	 
+	// 20101009 - franciscom - added tcversion_id in output set 
 	// 20061008 - franciscom - added ID in order by clause
 	// 
 	function _get_subtree_rec($node_id,&$pnode,$filters = null, $options = null)
@@ -959,14 +968,14 @@ class tree extends tlObject
 			//
 			$sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
 			     "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
-			     "                NH.name, NH.node_type_id " .
+			     "                NH.name, NH.node_type_id, 0 AS tcversion_id " .
 			     "                FROM {$this->tables['nodes_hierarchy']}  NH" .
 			     "                WHERE parent_id = {$node_id}" .
 			     "                AND node_type_id <> {$s_testCaseNodeTypeID} {$additionalWhereClause}" .
 			     "                UNION" .
 			     "                SELECT NHA.node_order AS spec_order, " .
 			     "                       T.node_order AS node_order, NHA.id, NHA.parent_id, " .
-			     "                       NHA.name, NHA.node_type_id " .
+			     "                       NHA.name, NHA.node_type_id, T.tcversion_id " .
 			     "                FROM {$this->tables['nodes_hierarchy']} NHA, " .
 			     "                     {$this->tables['nodes_hierarchy']} NHB," .
 			     "                     {$this->tables['testplan_tcversions']} T" .
@@ -1002,6 +1011,11 @@ class tree extends tlObject
 	                                       'node_table' => $node_table,
 	                                       'name' => $row['name'],
 	  		    	           			   $children_key => null);
+	  		    	           			   
+	  		    	        if( isset($row['tcversion_id']) && $row['tcversion_id'] > 0)
+	  		    	        {
+	  		    	        	$node['tcversion_id'] = $row['tcversion_id'];
+	  		    	        }    			   
 	  		    	    	break;
 	  		    	    
 				    	   case 'extjs':

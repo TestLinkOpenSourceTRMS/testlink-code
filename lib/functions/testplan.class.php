@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.221 2010/10/09 15:09:50 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.222 2010/10/09 15:24:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3816,7 +3816,7 @@ class testplan extends tlObjectWithAttachments
 	 *	<?xml version="1.0" encoding="UTF-8"?>
 	 *	
 	 */
-	function exportTestPlanDataToXML($id,$optExport = array(),$tproject_id=null)
+	function exportTestPlanDataToXML($id,$platform_id,$optExport = array(),$tproject_id=null)
 	{
 		static $keywordMgr;
 		static $getLastVersionOpt = array('output' => 'minimun');
@@ -3855,6 +3855,16 @@ class testplan extends tlObjectWithAttachments
 		{
 			$zorba = '<testsuites>' . $this->exportTestSuiteDataToXML($tplan_spec,$tproject_id) . '</testsuites>';
 		} 
+		
+		// get Test Plan data and platform (if exists)
+		if( $platform_id > 0)
+		{
+			$info = $this->platform_mgr->getByID($platform_id);
+			new dBug($info);
+			die();	
+		}
+		
+		$info = $this->get_by_id($id);
 		return $zorba;
 	}
 

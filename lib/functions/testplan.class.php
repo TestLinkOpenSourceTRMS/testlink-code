@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.226 2010/10/09 18:22:12 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.227 2010/10/09 18:38:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3908,12 +3908,13 @@ class testplan extends tlObjectWithAttachments
 		static $getLastVersionOpt = array('output' => 'minimun');
 		static $tcaseMgr;
 		static $tsuiteMgr;
+		static $tcaseExportOptions;
 		
 		if(is_null($keywordMgr))
 		{
+			$tcaseExportOptions = array('CFIELDS' => true, 'KEYWORDS' => 'true');
   	    	$keywordMgr = new tlKeyword();      
 			$tsuiteMgr = new testsuite($this->db);
-
 		}	
 		
 		$xmlTC = null;
@@ -3961,7 +3962,8 @@ class testplan extends tlObjectWithAttachments
 		    			}
 		    			// testcase::LATEST_VERSION,
 		    			$xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
-		    			                                             $tproject_id,testcase::NOXMLHEADER);
+		    			                                             $tproject_id,testcase::NOXMLHEADER,
+		    			                                             $tcaseExportOptions);
 		    		break;
 		    	}
 		    }

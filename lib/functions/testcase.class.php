@@ -6,10 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.320 2010/10/08 18:28:28 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.321 2010/10/09 07:59:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *
+ * 20101009 - franciscom - BUGID 3868: Importing exported XML results - custom fields have unexpected NEW LINES		
  * 20101008 - franciscom - BUGID 3849
  * 20101008 - asimon - BUGID 3311
  * 20101005 - amitkhullar - BUGID 3849, alias name not supported in Update stmts in postgres.
@@ -3152,6 +3154,7 @@ class testcase extends tlObjectWithAttachments
 	  returns:
 	
 	  rev:
+	   20101009 - franciscom - BUGID 3868: Importing exported XML results - custom fields have unexpected NEW LINES		
 	   20100926 - franciscom - manage tcase_id not present, to allow export using 
 	   						   tcversion id as target
 	   						   
@@ -3167,10 +3170,12 @@ class testcase extends tlObjectWithAttachments
 	{
 		static $reqMgr; 
 		static $keywordMgr;
+		static $cfieldMgr; 
 	  	if( is_null($reqMgr) )
 	  	{
 	  	    $reqMgr = new requirement_mgr($this->db);      
 	  	    $keywordMgr = new tlKeyword();      
+	  	    $cfieldMgr = new cfield_mgr($this->db);      
 	  	}
 
 		// Useful when you need to get info but do not have tcase id	
@@ -3203,12 +3208,14 @@ class testcase extends tlObjectWithAttachments
 	    	//
 			if( !is_null($cfMap) && count($cfMap) > 0 )
 			{
-				$cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
-			    $cfElemTemplate = "\t" . "<custom_field>\n" .
-			                             "\t<name><![CDATA[||NAME||]]></name>\n" .
-			                             "\t<value><![CDATA[||VALUE||\n]]></value>\n</custom_field>\n";
-			    $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
-			    $tc_data[0]['xmlcustomfields'] = exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+				// BUGID 3868
+				// $cfRootElem = "<custom_fields>{{XMLCODE}}</custom_fields>";
+			    // $cfElemTemplate = "\t" . "<custom_field>\n" .
+			    //                   "\t<name><![CDATA[||NAME||]]></name>\n" .
+			    //                   "\t<value><![CDATA[||VALUE||]]></value>\n</custom_field>\n";
+			    // $cfDecode = array ("||NAME||" => "name","||VALUE||" => "value");
+			    // $tc_data[0]['xmlcustomfields'] = $cfieldMgr->exportDataToXML($cfMap,$cfRootElem,$cfElemTemplate,$cfDecode,true);
+				$tc_data[0]['xmlcustomfields'] = $cfieldMgr->exportValueAsXML($cfMap);
 			} 
 		}
 		

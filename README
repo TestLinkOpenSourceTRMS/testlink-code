@@ -1,5 +1,5 @@
 ===============================================================
-                    TestLink 1.9 - Read me
+                    TestLink 1.9 RC1 - Read me
 ===============================================================
 
 Contents
@@ -50,18 +50,19 @@ See CHANGELOG file for detailed list.
 Server environment should consists from:
 - web-server: Apache 1.2 , 2.x
 - PHP 5.2, 5.3
-- DBMS: MySQL 4.1 - 5.x , Postgres 8.x , MS-SQL 2000
+- DBMS: MySQL 5.x , Postgres 8.x , MS-SQL 2005
 
 Supported client web-browsers: 
 - Firefox 3.x
-- Internet Explorer 6.x, 7.x   
+- Internet Explorer 6.x, 7.x, 8.x
+- Chrome   
 
 
 4. Installation
 ===============================================================
 The following details the basic steps for installation on any   
-system. The instructions may seem unix-centric but should work  
-fine on Windows systems.
+system. 
+Instructions may seem unix-centric but should work on Windows systems.
 
 Barring complications, it should take you about 10-20 minutes 
 to install, configure, and be using TestLink.
@@ -139,7 +140,7 @@ This list comprise people that has helped
 
 --- Most Active on this release
 * Francisco Mancardi - Project lead, builds, core developer, contributors code reviewer
-* Julian Krien  
+* Julian Krien - Leader of testlink-qa group effort on 1.9 RC1 
 * Andreas Simon
 * Erik Eloff
 
@@ -147,6 +148,15 @@ This list comprise people that has helped
 * Martin Havlat - Project lead, builds, infrastructure, developer
 * Andreas Morsing - core developer
 * Amit Khullar
+
+--- TestLink - QA - for 1.9 RC1
+* Andreia Balani
+* Andreas Simon
+* Biache Benoit
+* James Bohnert
+* Micky Zhang
+* Rocky Yang
+
 
 * Masami Ichikawa - Automated Testing
 

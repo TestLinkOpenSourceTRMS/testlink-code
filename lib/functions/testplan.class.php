@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.222 2010/10/09 15:24:32 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.223 2010/10/09 15:32:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3860,8 +3860,29 @@ class testplan extends tlObjectWithAttachments
 		if( $platform_id > 0)
 		{
 			$info = $this->platform_mgr->getByID($platform_id);
-			new dBug($info);
-			die();	
+			
+			// ||yyy||-> tags,  {{xxx}} -> attribute 
+			// tags and attributes receive different treatment on exportDataToXML()
+			//
+			// each UPPER CASE word in this map is a KEY, that MUST HAVE AN OCCURENCE on $elemTpl
+			//
+			$xml_template = "\n\t" . 
+							"<platform>" . 
+        					"\t\t" . "<name><![CDATA[||PLATFORMNAME||]]></name>" .
+        					"\t\t" . "<internal_id><![CDATA[||PLATFORMID||]]></internal_id>" .
+      						"\n\t" . "</platform>";
+    						
+    		$xml_root = '';					
+			$xml_mapping = null;
+			$xml_mapping = array("||PLATFORMNAME||" => "platform_name", "||PLATFORMID||" => 'id');
+
+			$mm[0] = array('platform_name' => $info['name'], 'id' => $platform_id);
+		    $platform_chunk = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
+			echo '<pre><xmp>';
+			echo $platform_chunk;	
+			echo '</xmp></pre>';
+			die();
+
 		}
 		
 		$info = $this->get_by_id($id);
@@ -3926,7 +3947,7 @@ class testplan extends tlObjectWithAttachments
 		    		break;
 		    		
 		    		case 'testcases':
-		    	    	if( is_null($tcase_mgr) )
+		    	    	if( is_null($tcaseMgr) )
 		    	    	{
 		    			    $tcaseMgr = new testcase($this->db);
 		    			}

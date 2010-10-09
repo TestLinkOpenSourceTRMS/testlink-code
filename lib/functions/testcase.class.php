@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.321 2010/10/09 07:59:22 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.322 2010/10/09 15:35:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101009 - franciscom - exportTestCaseDataToXML() - better checks on $optExport
  * 20101009 - franciscom - BUGID 3868: Importing exported XML results - custom fields have unexpected NEW LINES		
  * 20101008 - franciscom - BUGID 3849
  * 20101008 - asimon - BUGID 3311
@@ -175,7 +176,7 @@ class testcase extends tlObjectWithAttachments
     const ANY_BUILD=null;
     const GET_NO_EXEC=1; 
     const ANY_PLATFORM=null;
-    
+	const NOXMLHEADER=true;    
         
     
 	/** @var database handler */
@@ -3154,6 +3155,7 @@ class testcase extends tlObjectWithAttachments
 	  returns:
 	
 	  rev:
+	   20101009	 - franciscom - better checks on $optExport
 	   20101009 - franciscom - BUGID 3868: Importing exported XML results - custom fields have unexpected NEW LINES		
 	   20100926 - franciscom - manage tcase_id not present, to allow export using 
 	   						   tcversion id as target
@@ -3195,7 +3197,7 @@ class testcase extends tlObjectWithAttachments
 			$tproject_id = $this->getTestProjectFromTestCase($tcase_id);
 		}
         // Get Custom Field Data
-		if ($optExport['CFIELDS'])
+		if (isset($optExport['CFIELDS']) && $optExport['CFIELDS'])
 		{
 			// BUGID 3431
 			$cfMap = $this->get_linked_cfields_at_design($tcase_id,$testCaseVersionID,null,null,$tproject_id);        	                                                                                  
@@ -3220,7 +3222,7 @@ class testcase extends tlObjectWithAttachments
 		}
 		
 		// Get Keywords
-		if ($optExport['KEYWORDS'])
+		if (isset($optExport['KEYWORDS']) && $optExport['KEYWORDS'])
 		{
 			$keywords = $this->getKeywords($tcase_id);
 			if(!is_null($keywords))
@@ -3231,7 +3233,7 @@ class testcase extends tlObjectWithAttachments
 		}
     	
     	// Get Requirements
-		if ($optExport['REQS'])
+		if (isset($optExport['REQS']) && $optExport['REQS'])
 		{
 	  		$requirements = $reqMgr->get_all_for_tcase($tcase_id);
 	  		if( !is_null($requirements) && count($requirements) > 0 )

@@ -9,12 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.224 2010/10/09 17:52:55 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.225 2010/10/09 17:53:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *	20101009 - franciscom - 
+ *	20101009 - franciscom - BUGID 3270: Export Test Plan in XML Format
  *	20101009 - franciscom - new method exportTestPlanDataToXML() (work in progress)
  *  20101007 - asimon - BUGID 3867
  *  20101006 - asimon - BUGID 3846: copy test plan does not copy tester assignments

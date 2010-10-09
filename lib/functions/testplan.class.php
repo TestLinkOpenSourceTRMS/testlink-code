@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.220 2010/10/09 10:10:56 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.221 2010/10/09 15:09:50 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3850,76 +3850,89 @@ class testplan extends tlObjectWithAttachments
     	$tplan_spec = $this->tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
 
 		
-		new dBug($tplan_spec);
-		die();
-		
-		
-		
-		// if($doRecursion)
-		// {
-		//     $cfXML = null;
-		// 	$kwXML = null;
-		// 	$tsuiteData = $this->get_by_id($container_id);
-		// 	if(@$optExport['KEYWORDS'])
-		// 	{
-		// 		$kwMap = $this->getKeywords($container_id);
-		// 		if ($kwMap)
-		// 		{
-		// 			$kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
-		// 		}	
-		// 	}
-		// 	if ($optExport['CFIELDS'])
-		//     {
-	    //     	$cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
-		// 		if( count($cfMap) > 0 )
-		//     	{
-		//     	    $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
-		//     	} 
-		//     }
-	    //     $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
-	    //              "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
-		//              "<details><![CDATA[{$tsuiteData['details']}]]> \n{$kwXML}{$cfXML}</details>";
-		// }
-		// else
-		// {
-		// 	$xmlTC = "<testcases>";
-	    // }
-	    // 
-		// $test_spec = $this->get_subtree($container_id,self::USE_RECURSIVE_MODE);
-	    // 
-	    // 
-		// $childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null ;
-		// $tcase_mgr=null;
-		// if( !is_null($childNodes) )
-		// {
-		//     $loop_qty=sizeof($childNodes); 
-		//     for($idx = 0;$idx < $loop_qty;$idx++)
-		//     {
-		//     	$cNode = $childNodes[$idx];
-		//     	$nTable = $cNode['node_table'];
-		//     	if ($doRecursion && $nTable == 'testsuites')
-		//     	{
-		//     		$xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
-		//     	}
-		//     	else if ($nTable == 'testcases')
-		//     	{
-		//     	    if( is_null($tcase_mgr) )
-		//     	    {
-		//     		    $tcase_mgr = new testcase($this->db);
-		//     		}
-		//     		$xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
-		//     		                                              $tproject_id,true,$optExport);
-		//     	}
-		//     }
-		// }   
-		// $xmlTC .= $doRecursion ? "</testsuite>" : "</testcases>"; 
-		// return $xmlTC;
+		$zorba = null;
+		if( !is_null($tplan_spec) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
+		{
+			$zorba = '<testsuites>' . $this->exportTestSuiteDataToXML($tplan_spec,$tproject_id) . '</testsuites>';
+		} 
+		return $zorba;
 	}
 
 
+	/**
+	 * DocBlock with nested lists
+ 	 *
+     */
+	private function exportTestSuiteDataToXML($container,$tproject_id)
+	{
+		static $keywordMgr;
+		static $getLastVersionOpt = array('output' => 'minimun');
+		static $tcaseMgr;
+		static $tsuiteMgr;
+		
+		if(is_null($keywordMgr))
+		{
+  	    	$keywordMgr = new tlKeyword();      
+			$tsuiteMgr = new testsuite($this->db);
 
+		}	
+		
+		$xmlTC = null;
+		$cfXML = null;
+		$kwXML = null;
+		
+		if( isset($container['id']) )
+		{
+			// echo 'I am a Test Suite' . ' - my name is: ' . $container['name'] . '<br>';
+			$kwMap = $tsuiteMgr->getKeywords($container['id']);
+			if ($kwMap)
+			{
+				$kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
+			}	
 
+	    	$cfMap = (array)$tsuiteMgr->get_linked_cfields_at_design($container['id'],null,null,$tproject_id);
+			if( count($cfMap) > 0 )
+			{
+			    $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
+			} 
+			
+			$tsuiteData = $tsuiteMgr->get_by_id($container['id']);
+	    	$xmlTC = "\n\t<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
+	    	         "\n\t\t<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>" .
+			         "\n\t\t<details><![CDATA[{$tsuiteData['details']}]]>" .
+			         "\n\t\t{$kwXML}{$cfXML}</details>";
+	    }
+		$childNodes = isset($container['childNodes']) ? $container['childNodes'] : null ;
+		if( !is_null($childNodes) )
+		{
+		    $loop_qty=sizeof($childNodes); 
+		    for($idx = 0;$idx < $loop_qty;$idx++)
+		    {
+		    	$cNode = $childNodes[$idx];
+				switch($cNode['node_table'])
+		    	{
+		    		case 'testsuites':
+		    			$xmlTC .= $this->exportTestSuiteDataToXML($cNode,$tproject_id);
+		    		break;
+		    		
+		    		case 'testcases':
+		    	    	if( is_null($tcase_mgr) )
+		    	    	{
+		    			    $tcaseMgr = new testcase($this->db);
+		    			}
+		    			$xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
+		    			                                             $tproject_id,testcase::NOXMLHEADER);
+		    		break;
+		    	}
+		    }
+		}   
 
+		if( isset($container['id']) )
+		{
+			$xmlTC .= "</testsuite>"; 
+        }
+		return $xmlTC;
+	}
 
 } // end class testplan
 

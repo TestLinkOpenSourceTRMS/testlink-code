@@ -16,7 +16,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planExport.php,v 1.4 2010/10/07 19:53:42 franciscom Exp $
+ * @version    	CVS: $Id: planExport.php,v 1.5 2010/10/09 08:55:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -68,13 +68,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
-    
-    new dBug($_REQUEST);
-    
     $args = new stdClass();
     $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
-    $args->tproject_id = $_REQUEST['tproject_id'];
+    $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
 
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
     if( $args->tplan_id == 0 )

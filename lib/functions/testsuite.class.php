@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.104 2010/09/20 19:04:38 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.105 2010/10/09 18:37:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101009 - franciscom - exportTestSuiteDataToXML() - better checks on $optExport
  * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
  * 20100904 - franciscom - BUGID 3571 - get_by_name() interface changes
  *						   update() - interface changes	
@@ -1075,7 +1076,7 @@ class testsuite extends tlObjectWithAttachments
 		    $cfXML = null;
 			$kwXML = null;
 			$tsuiteData = $this->get_by_id($container_id);
-			if(@$optExport['KEYWORDS'])
+			if( isset($optExport['KEYWORDS']) && $optExport['KEYWORDS'])
 			{
 				$kwMap = $this->getKeywords($container_id);
 				if ($kwMap)
@@ -1083,7 +1084,7 @@ class testsuite extends tlObjectWithAttachments
 					$kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
 				}	
 			}
-			if ($optExport['CFIELDS'])
+			if (isset($optExport['CFIELDS']) && $optExport['CFIELDS'])
 		    {
 	        	$cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
 				if( count($cfMap) > 0 )
@@ -1101,8 +1102,7 @@ class testsuite extends tlObjectWithAttachments
 	    }
 	  
 		$test_spec = $this->get_subtree($container_id,self::USE_RECURSIVE_MODE);
-	
-	 
+	 	
 		$childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null ;
 		$tcase_mgr=null;
 		if( !is_null($childNodes) )

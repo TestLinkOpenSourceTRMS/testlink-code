@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.219 2010/10/07 11:08:54 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.220 2010/10/09 10:10:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20101009 - franciscom - new method exportTestPlanDataToXML() (work in progress)
  *  20101007 - asimon - BUGID 3867
  *  20101006 - asimon - BUGID 3846: copy test plan does not copy tester assignments
  *  20100927 - amitkhullar - BUGID 3809 - Radio button based Custom Fields not working
@@ -3805,6 +3806,119 @@ class testplan extends tlObjectWithAttachments
 		// file_put_contents('c:\testplan.class.php.xml',$xml);                             
 		return $xml;
 	}
+
+
+
+
+	/**
+	 * create XML string with following structure
+	 *
+	 *	<?xml version="1.0" encoding="UTF-8"?>
+	 *	
+	 */
+	function exportTestPlanDataToXML($id,$optExport = array(),$tproject_id=null)
+	{
+		static $keywordMgr;
+		static $getLastVersionOpt = array('output' => 'minimun');
+		static $tcase_mgr;
+		
+		
+		if(is_null($keywordMgr))
+		{
+  	    	$keywordMgr = new tlKeyword();      
+		}	
+		if( is_null($tproject_id) )
+		{
+			$dummy = $this->tree_manager->get_node_hierarchy_info($id);
+			$tproject_id = $dummy['parent_id'];
+		}
+		
+		$xmlTC = null;
+		
+		// Need to get family
+		// $tplan_spec = $this->tree_manager->get_subtree($id,tree::USE_RECURSIVE_MODE);
+		$nt2exclude = array('testplan' => 'exclude_me','requirement_spec'=> 'exclude_me',
+		                    'requirement'=> 'exclude_me');
+		$nt2exclude_children = array('testcase' => 'exclude_my_children',
+		                             'requirement_spec'=> 'exclude_my_children');
+
+		$my = array();
+		$my['options']=array('recursive' => true, 
+							 'remove_empty_nodes_of_type' => $this->tree_manager->node_descr_id['testsuite'],
+  	                         'order_cfg' => array("type" =>'exec_order',"tplan_id" => $id));
+ 		$my['filters'] = array('exclude_node_types' => $nt2exclude,'exclude_children_of' => $nt2exclude_children);
+    	$tplan_spec = $this->tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
+
+		
+		new dBug($tplan_spec);
+		die();
+		
+		
+		
+		// if($doRecursion)
+		// {
+		//     $cfXML = null;
+		// 	$kwXML = null;
+		// 	$tsuiteData = $this->get_by_id($container_id);
+		// 	if(@$optExport['KEYWORDS'])
+		// 	{
+		// 		$kwMap = $this->getKeywords($container_id);
+		// 		if ($kwMap)
+		// 		{
+		// 			$kwXML = "<keywords>" . $keywordMgr->toXMLString($kwMap,true) . "</keywords>";
+		// 		}	
+		// 	}
+		// 	if ($optExport['CFIELDS'])
+		//     {
+	    //     	$cfMap = (array)$this->get_linked_cfields_at_design($container_id,null,null,$tproject_id);
+		// 		if( count($cfMap) > 0 )
+		//     	{
+		//     	    $cfXML = $this->cfield_mgr->exportValueAsXML($cfMap);
+		//     	} 
+		//     }
+	    //     $xmlTC = "<testsuite name=\"" . htmlspecialchars($tsuiteData['name']). '" >' .
+	    //              "\n<node_order><![CDATA[{$tsuiteData['node_order']}]]></node_order>\n" .
+		//              "<details><![CDATA[{$tsuiteData['details']}]]> \n{$kwXML}{$cfXML}</details>";
+		// }
+		// else
+		// {
+		// 	$xmlTC = "<testcases>";
+	    // }
+	    // 
+		// $test_spec = $this->get_subtree($container_id,self::USE_RECURSIVE_MODE);
+	    // 
+	    // 
+		// $childNodes = isset($test_spec['childNodes']) ? $test_spec['childNodes'] : null ;
+		// $tcase_mgr=null;
+		// if( !is_null($childNodes) )
+		// {
+		//     $loop_qty=sizeof($childNodes); 
+		//     for($idx = 0;$idx < $loop_qty;$idx++)
+		//     {
+		//     	$cNode = $childNodes[$idx];
+		//     	$nTable = $cNode['node_table'];
+		//     	if ($doRecursion && $nTable == 'testsuites')
+		//     	{
+		//     		$xmlTC .= $this->exportTestSuiteDataToXML($cNode['id'],$tproject_id,$optExport);
+		//     	}
+		//     	else if ($nTable == 'testcases')
+		//     	{
+		//     	    if( is_null($tcase_mgr) )
+		//     	    {
+		//     		    $tcase_mgr = new testcase($this->db);
+		//     		}
+		//     		$xmlTC .= $tcase_mgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
+		//     		                                              $tproject_id,true,$optExport);
+		//     	}
+		//     }
+		// }   
+		// $xmlTC .= $doRecursion ? "</testsuite>" : "</testcases>"; 
+		// return $xmlTC;
+	}
+
+
+
+
 
 
 } // end class testplan

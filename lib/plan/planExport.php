@@ -16,7 +16,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planExport.php,v 1.7 2010/10/09 15:24:14 franciscom Exp $
+ * @version    	CVS: $Id: planExport.php,v 1.8 2010/10/09 18:44:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -113,7 +113,8 @@ function initializeGui(&$argsObj,&$tplanMgr)
 	$guiObj = new stdClass();
 	$guiObj->do_it = 1;
 	$guiObj->nothing_todo_msg = '';
-	$guiObj->export_filename = 'export_' . str_replace(' ','_',$info['name']) . '.xml';
+	// $guiObj->export_filename = 'export_' . str_replace(' ','_',$info['name']) . '.xml';
+	$guiObj->export_filename = $argsObj->exportContent . '_' . str_replace(' ','_',$info['name']) . '.xml';
 	$guiObj->exportTypes = array('XML' => 'XML');
 	$guiObj->page_title = lang_get('export_test_plan');
 	$guiObj->object_name = $info['name'];

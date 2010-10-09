@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.8 2010/10/07 19:57:02 franciscom Exp $
+ * $Id: inc_filter_panel.tpl,v 1.9 2010/10/09 08:38:41 franciscom Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,6 +12,7 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20101009 - franciscom - fixed error viewer warning
  *  20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
  *  20100811 - asimon - BUGID 3566: show/hide CF
  *  20100810 - asimon - added TC ID filter for Test Cases
@@ -39,8 +40,10 @@
 
 {* hidden input with token to manage transfer of data between left and right frame *}
 {if isset($control->form_token)}
-<input type="hidden" name="form_token" value="{$control->form_token}">
+  <input type="hidden" name="form_token" value="{$control->form_token}">
 {/if}
+
+{assign var="platformID" value=0}
 
 {if $control->draw_tc_unassign_button}
 	<input type="button" 

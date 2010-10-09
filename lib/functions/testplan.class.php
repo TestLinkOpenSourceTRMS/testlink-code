@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.227 2010/10/09 18:38:00 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.228 2010/10/09 18:58:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3835,9 +3835,20 @@ class testplan extends tlObjectWithAttachments
 		                             'requirement_spec'=> 'exclude_my_children');
 
 		$my = array();
-		$my['options']=array('recursive' => true, 
-							 'remove_empty_nodes_of_type' => $this->tree_manager->node_descr_id['testsuite'],
-  	                         'order_cfg' => array("type" =>'exec_order',"tplan_id" => $id));
+		
+		// this can be a litte weird but ...
+		// when 
+		// 'order_cfg' => array("type" =>'exec_order'
+		// additional info test plan id, and platform id are used to get
+		// a filtered view of tree.
+		//
+		$order_cfg = array("type" =>'exec_order',"tplan_id" => $id);
+		if( $platform_id > 0 )
+		{
+			$order_cfg['platform_id'] = $platform_id;
+		}
+		$my['options']=array('recursive' => true, 'order_cfg' => $order_cfg,
+							 'remove_empty_nodes_of_type' => $this->tree_manager->node_descr_id['testsuite']);
  		$my['filters'] = array('exclude_node_types' => $nt2exclude,'exclude_children_of' => $nt2exclude_children);
     	$tplan_spec = $this->tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
 

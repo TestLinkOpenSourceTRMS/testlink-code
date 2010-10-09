@@ -16,7 +16,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planExport.php,v 1.5 2010/10/09 08:55:49 franciscom Exp $
+ * @version    	CVS: $Id: planExport.php,v 1.6 2010/10/09 10:11:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -45,7 +45,7 @@ if ($args->doExport)
 		
 		case 'tree':
 		// need to be developed
-		$content = $tplan_mgr->exportLinkedItemsToXML($args->tplan_id);
+		$content = $tplan_mgr->exportTestPlanDataToXML($args->tplan_id);
 		break;
 	}
 	downloadContentsToFile($content,$gui->export_filename);

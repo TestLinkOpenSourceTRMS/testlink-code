@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.225 2010/10/09 17:53:44 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.226 2010/10/09 18:22:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -3819,16 +3819,6 @@ class testplan extends tlObjectWithAttachments
 	 */
 	function exportTestPlanDataToXML($id,$platform_id,$optExport = array(),$tproject_id=null)
 	{
-		static $keywordMgr;
-		static $getLastVersionOpt = array('output' => 'minimun');
-		static $tcase_mgr;
-		
-		// echo __FUNCTION__;
-		
-		if(is_null($keywordMgr))
-		{
-  	    	$keywordMgr = new tlKeyword();      
-		}	
 		if( is_null($tproject_id) )
 		{
 			$dummy = $this->tree_manager->get_node_hierarchy_info($id);
@@ -3969,7 +3959,8 @@ class testplan extends tlObjectWithAttachments
 		    	    	{
 		    			    $tcaseMgr = new testcase($this->db);
 		    			}
-		    			$xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],testcase::LATEST_VERSION,
+		    			// testcase::LATEST_VERSION,
+		    			$xmlTC .= $tcaseMgr->exportTestCaseDataToXML($cNode['id'],$cNode['tcversion_id'],
 		    			                                             $tproject_id,testcase::NOXMLHEADER);
 		    		break;
 		    	}

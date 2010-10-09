@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.10 2010/10/09 08:54:00 franciscom Exp $
+ * $Id: inc_filter_panel.tpl,v 1.11 2010/10/09 09:43:41 franciscom Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -137,7 +137,7 @@
 		  		</tr>
 			{/if}
 
-			{if $control->draw_export_testplan_button && FALSE} {* Forced to disable on RC1 till dev will be finished*}
+			{if $control->draw_export_testplan_button}
 				<tr>
 		   			<td colspan="2">
 	          <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"

@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.223 2010/10/09 15:32:58 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.224 2010/10/09 17:52:55 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20101009 - franciscom - 
  *	20101009 - franciscom - new method exportTestPlanDataToXML() (work in progress)
  *  20101007 - asimon - BUGID 3867
  *  20101006 - asimon - BUGID 3846: copy test plan does not copy tester assignments
@@ -3822,6 +3823,7 @@ class testplan extends tlObjectWithAttachments
 		static $getLastVersionOpt = array('output' => 'minimun');
 		static $tcase_mgr;
 		
+		// echo __FUNCTION__;
 		
 		if(is_null($keywordMgr))
 		{
@@ -3850,17 +3852,14 @@ class testplan extends tlObjectWithAttachments
     	$tplan_spec = $this->tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
 
 		
-		$zorba = null;
-		if( !is_null($tplan_spec) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
-		{
-			$zorba = '<testsuites>' . $this->exportTestSuiteDataToXML($tplan_spec,$tproject_id) . '</testsuites>';
-		} 
-		
-		// get Test Plan data and platform (if exists)
+		// get Test Plan data
+		$item_info = $this->get_by_id($id);
+
+		// get target platform (if exists)
+		$target_platform = '';
 		if( $platform_id > 0)
 		{
 			$info = $this->platform_mgr->getByID($platform_id);
-			
 			// ||yyy||-> tags,  {{xxx}} -> attribute 
 			// tags and attributes receive different treatment on exportDataToXML()
 			//
@@ -3872,20 +3871,39 @@ class testplan extends tlObjectWithAttachments
         					"\t\t" . "<internal_id><![CDATA[||PLATFORMID||]]></internal_id>" .
       						"\n\t" . "</platform>";
     						
-    		$xml_root = '';					
+    		$xml_root = "{{XMLCODE}}";					
 			$xml_mapping = null;
 			$xml_mapping = array("||PLATFORMNAME||" => "platform_name", "||PLATFORMID||" => 'id');
 
-			$mm[0] = array('platform_name' => $info['name'], 'id' => $platform_id);
-		    $platform_chunk = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,('noXMLHeader'=='noXMLHeader'));
-			echo '<pre><xmp>';
-			echo $platform_chunk;	
-			echo '</xmp></pre>';
-			die();
-
+			$mm = array();
+			$mm[$platform_id] = array('platform_name' => $info['name'], 'id' => $platform_id);
+		    $item_info['target_platform'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
+		    			   									('noXMLHeader'=='noXMLHeader'));
+		    $target_platform = "\t\t||TARGET_PLATFORM||\n";
+		    // echo 'dfdfdf';
+			// echo '<pre><xmp>';
+			// echo $platform_chunk;	
+			// echo '</xmp></pre>';
 		}
+
+		// get test plan contents (test suites and test cases)
+		$item_info['testsuites'] = null;
+		if( !is_null($tplan_spec) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
+		{
+			$item_info['testsuites'] = '<testsuites>' . $this->exportTestSuiteDataToXML($tplan_spec,$tproject_id) . 
+									   '</testsuites>';
+		} 
 		
-		$info = $this->get_by_id($id);
+		$xml_root = "\n\t<testplan>{{XMLCODE}}\n\t</testplan>";
+		$xml_template = "\n\t\t" . "<name><![CDATA[||TESTPLANNAME||]]></name>" . "\n" .
+						$target_platform  . "\t\t||TESTSUITES||\n";
+
+		$xml_mapping = null;
+		$xml_mapping = array("||TESTPLANNAME||" => "name","||TARGET_PLATFORM||" => "target_platform",							
+							 "||TESTSUITES||" => "testsuites");
+
+		$zorba = exportDataToXML(array($item_info),$xml_root,$xml_template,$xml_mapping);
+		
 		return $zorba;
 	}
 

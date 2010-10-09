@@ -6,10 +6,13 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.92 2010/10/09 18:32:14 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.93 2010/10/09 18:58:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101009 - franciscom - order_cfg config options, added filtering by platform_id when 
+ *						   order done by exec_order on _get_subtree_rec()
+ *
  * 20101009 - franciscom - _get_subtree_rec(), _get_subtree() added tcversion_id in output set
  * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
  *						   interface changes -> _get_subtree_rec(), _get_subtree()
@@ -966,6 +969,12 @@ class tree extends tlObject
 			// Second part of UNION, allows to get from nodes hierarchy,
 			// only test cases that has a version linked to test plan.
 			//
+			// 20101009 - franciscom
+			$platform_filter = "";
+			if( isset($order_cfg['platform_id']) && $order_cfg['platform_id'] > 0 )
+			{
+				$platform_filter = " AND T.platform_id = {$order_cfg['platform_id']} ";
+			}
 			$sql="SELECT * FROM ( SELECT NH.node_order AS spec_order," . 
 			     "                NH.node_order AS node_order, NH.id, NH.parent_id," . 
 			     "                NH.name, NH.node_type_id, 0 AS tcversion_id " .
@@ -983,6 +992,7 @@ class tree extends tlObject
 			     "                AND NHA.node_type_id = {$s_testCaseNodeTypeID}" .
 			     "                AND NHB.id=T.tcversion_id " .
 			     "                AND NHA.parent_id = {$node_id}" .
+			     "				  {$platform_filter} " .	
 			     "                AND T.testplan_id = {$order_cfg['tplan_id']}) AC" .
 			     "                ORDER BY node_order,spec_order,id";
 			break;

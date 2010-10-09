@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planExport.tpl,v 1.3 2010/10/07 19:51:41 franciscom Exp $ 
+$Id: planExport.tpl,v 1.4 2010/10/09 08:46:20 franciscom Exp $ 
 
 test plan export
 
 Revisions:
-
+20101009 - franciscom - BUGID 3270 - improvements to avoid event viewer warnings
 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
 
 *}
@@ -70,10 +70,14 @@ function validateForm(f)
   	</table>
   	
   	<div class="groupBtn">
+  	  {* 20101009 - franciscom *}
+  		{if $gui->exportContent == 'linkedItems'}
   		<input type="hidden" name="testcase_id" value="{$gui->tcID}" />
   		<input type="hidden" name="tcversion_id" value="{$gui->tcVersionID}" />
   		<input type="hidden" name="containerID" value="{$gui->containerID}" />
   		<input type="hidden" name="useRecursion" value="{$gui->useRecursion}" />
+  		{/if}
+  		
   		<input type="submit" name="export" value="{$labels.btn_export}" />
   		<input type="button" name="cancel" value="{$labels.btn_cancel}"
     		     {if $gui->goback_url != ''}  onclick="location='{$gui->goback_url}'"

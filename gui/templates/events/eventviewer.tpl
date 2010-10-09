@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.29 2010/10/08 13:28:57 mx-julian Exp $
+$Id: eventviewer.tpl,v 1.30 2010/10/09 12:03:12 mx-julian Exp $
 
 Event Viewer
-20100108 - Julian - Show Calender in foreground, added second div for endDate Cal
+20101009 - Julian - endDate and startDate fields are now readonly. onClick opens Calender
+20101008 - Julian - Show Calender in foreground, added second div for endDate Cal
                   - BUGID 3871 - use exttable for event viewer
 20100508 - franciscom - BUGID 3445
 *}
@@ -142,11 +143,11 @@ fieldset
 			</fieldset>
 
 			<fieldset class="x-fieldset"><legend>{$labels.th_timestamp}</legend>
-			{$labels.label_startdate}:&nbsp;<input type="text" name="startDate" id="startDate" value="{$gui->startDate}" />
-			<input type="button" style="cursor:pointer" onclick="showCal('startDate-cal','startDate');" value="^" />
+			{$labels.label_startdate}:&nbsp;<input type="text" onclick="showCal('startDate-cal','startDate');"
+				                             name="startDate" id="startDate" value="{$gui->startDate}" readonly />
 			<div id="startDate-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
-			{$labels.label_enddate}:&nbsp;<input type="text" name="endDate" id="endDate" value="{$gui->endDate}" />
-			<input type="button" style="cursor:pointer" onclick="showCal('endDate-cal','endDate');" value="^" />
+			{$labels.label_enddate}:&nbsp;<input type="text" onclick="showCal('endDate-cal','endDate');"
+				                           name="endDate" id="endDate" value="{$gui->endDate}" readonly />
 			<div id="endDate-cal" style="position:absolute;width:240px;left:540px;z-index:1;"></div>
 			<input type="submit" value="{$labels.btn_apply}" onclick="doAction.value='filter'" />
 			<br />

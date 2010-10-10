@@ -1,12 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.28 2010/08/10 16:14:38 asimon83 Exp $ 
+$Id: tcEdit.tpl,v 1.29 2010/10/10 09:16:22 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
-    20100810 - asimon - BUGID 3579: solved tree refreshing problems
-    20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
-	20100306 - eloff - BUGID 3062 - Check for duplicate name
+  20100810 - asimon - BUGID 3579: solved tree refreshing problems
+  20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
+	20100306 - eloff - BUGID 3062 - Check for duplicate name via AJAX call - checkDuplicateName()
 	20100124 - eloff - BUGID 3088 - Check valid session before submit
 	20100110 - eloff - BUGID 2036 - Check modified content before exit
 	20090422 - franciscom - BUGID 2414
@@ -76,6 +76,11 @@ function validateForm(the_form)
 	return Ext.ux.requireSessionAndSubmit(the_form);
 }
 
+
+/**
+ * BUGID 3062
+ *
+ */
 function checkDuplicateName() {
 	Ext.Ajax.request({
 		url: 'lib/ajax/checkDuplicateName.php',

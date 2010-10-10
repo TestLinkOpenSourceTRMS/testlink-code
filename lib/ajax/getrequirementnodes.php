@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.14 2010/06/24 17:25:53 asimon83 Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.15 2010/10/10 14:47:57 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -19,6 +19,7 @@
 *   - Assign requirements to test cases
 *
 *	@internal revision
+*	20101010 - franciscom - added custom node attribute: testlink_node_name
 *	20100306 - franciscom - BUGID 0003003: EXTJS does not count # req's
 *	20091208 - franciscom - added management of new attribute 'forbidden_parent'
 *                           to manage req spec movement when child req spec management is ENABLED.  
@@ -119,6 +120,8 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
  	        // public property 'attributes' of object of Class Ext.tree.TreeNode 
  	        // 
  	        $path['testlink_node_type']	= $row['node_type'];		                                 
+	        $path['testlink_node_name'] = $path['text']; // already htmlspecialchars() done
+
             $path['forbidden_parent'] = 'none';
             switch($row['node_type'])
             {

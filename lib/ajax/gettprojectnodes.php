@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettprojectnodes.php,v 1.21 2010/09/08 17:12:21 franciscom Exp $
+* 	@version 	$Id: gettprojectnodes.php,v 1.22 2010/10/10 14:47:57 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -24,6 +24,7 @@
 * 	
 *
 *   rev: 
+*		 20101010 - franciscom - added custom node attribute: testlink_node_name
 *		 20100908 - franciscom - added custom node attribute: testlink_node_type
 *		 20081213 - franciscom - BUGID 1928 - contribution
 *        20080820 - franciscom - added operation argument
@@ -128,6 +129,7 @@ function display_children($dbHandler,$root_node,$parent,$filter_node,
 
 			// customs key will be accessed using node.attributes.[key name]
 	        $path['testlink_node_type'] = $row['node_type'];
+	        $path['testlink_node_name'] = $path['text']; // already htmlspecialchars() done
 	       
 	        $tcase_qty = null;
 	        switch($row['node_type'])

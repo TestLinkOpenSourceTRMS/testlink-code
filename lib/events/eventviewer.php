@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.34 $
- * @modified $Date: 2010/10/08 12:56:27 $ by $Author: mx-julian $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2010/10/10 00:33:58 $ by $Author: mx-julian $
  *
  * rev: 
  *		20101008 - Julian - BUGID 3871: use exttable for event viewer
@@ -228,10 +228,10 @@ function buildExtTable($gui,$show_icon,$charset)
 			             
 			$rowData[] = $event->getlogLevel();
 			
-			if (isset($event->userID)) {
+			if (isset($event->userID) && $event->userID != false) {
 				$rowData[] = $gui->users[$event->userID];
 			} else {
-				$rowData[] = "";
+				$rowData[] = lang_get("not_aplicable");
 			}
 			
 			$rowData[] = "<a onClick=\"showEventDetails({$event->dbID});\" style=\"cursor: hand; cursor: pointer;\">" . 

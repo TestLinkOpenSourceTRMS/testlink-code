@@ -1,12 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.29 2010/10/10 09:16:22 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.30 2010/10/10 09:46:31 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
   20100810 - asimon - BUGID 3579: solved tree refreshing problems
   20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
-	20100306 - eloff - BUGID 3062 - Check for duplicate name via AJAX call - checkDuplicateName()
+	20100306 - eloff - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
 	20100124 - eloff - BUGID 3088 - Check valid session before submit
 	20100110 - eloff - BUGID 2036 - Check modified content before exit
 	20090422 - franciscom - BUGID 2414
@@ -39,7 +39,11 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 var alert_box_title = "{$labels.warning}";
 
-{literal}
+{literal}        
+/**
+ * validate certain form controls before submitting
+ *
+ */
 function validateForm(the_form)
 {
     var status_ok = true;
@@ -81,9 +85,9 @@ function validateForm(the_form)
  * BUGID 3062
  *
  */
-function checkDuplicateName() {
+function checkTCaseDuplicateName() {
 	Ext.Ajax.request({
-		url: 'lib/ajax/checkDuplicateName.php',
+		url: 'lib/ajax/checkTCaseDuplicateName.php',
 		method: 'GET',
 		params: {
 			testcase_id: $('testcase_id').value,
@@ -97,15 +101,14 @@ function checkDuplicateName() {
 		}
 	});
 }
-
 {/literal}
 </script>
 {if $tlCfg->gui->checkNotSaved}
-<script type="text/javascript">
-var unload_msg = "{$labels.warning_unsaved}";
-var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
-</script>
-<script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var unload_msg = "{$labels.warning_unsaved}";
+  var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
+  </script>
+  <script src="gui/javascript/checkmodified.js" type="text/javascript"></script>
 {/if}
 </head>
 

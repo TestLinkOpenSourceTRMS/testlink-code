@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.22 2010/10/10 09:17:07 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.23 2010/10/10 09:46:31 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 @internal Revisions:
-	20100306 - eloff - BUGID 3062 - Check for duplicate name via JAXA using checkDuplicateName()
+	20100306 - eloff - BUGID 3062 - Check for duplicate name via JAXA using checkTCaseDuplicateName()
 	20090831 - franciscom - preconditions
 	20090718 - franciscom - added management of custom field location
 	20061231 - franciscom - viewer for tcEdit.tpl and tcNew.tpl
@@ -35,7 +35,7 @@ Purpose: smarty template - create new testcase
 			maxlength="{#TESTCASE_NAME_MAXLEN#}"
 			onchange="content_modified = true"
 			onkeypress="content_modified = true"
-			onkeyup="checkDuplicateName()"
+			onkeyup="javascript:checkTCaseDuplicateName()"
 			{if isset($gui->tc.name)}
 		       value="{$gui->tc.name|escape}"
 			{else}

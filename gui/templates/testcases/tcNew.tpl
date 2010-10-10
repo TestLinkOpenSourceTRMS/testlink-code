@@ -1,13 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.13 2010/06/24 17:25:53 asimon83 Exp $
+$Id: tcNew.tpl,v 1.14 2010/10/10 09:46:31 franciscom Exp $
 Purpose: smarty template - create new testcase
 
+20101010 - franciscom - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
 20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
 20100103 - franciscom - refactoring to use $gui
 20091122 - franciscom - refactoring to use ext-js alert
-20070214 - franciscom -
-BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
+20070214 - franciscom - BUGID 628: Name edit Invalid action parameter/other behaviours if Enter pressed.
  ----------------------------------------------------------------- *}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -48,19 +48,36 @@ function validateForm(f)
   }
   return true;
 }
-</script>
+
+
+/**
+ * BUGID 3062
+ *
+ */
+function checkTCaseDuplicateName() {
+	Ext.Ajax.request({
+		url: 'lib/ajax/checkTCaseDuplicateName.php',
+		method: 'GET',
+		params: {
+			testcase_id: $('testcase_id').value,
+			name: $('testcase_name').value
+		},
+		success: function(result, request) {
+			var obj = Ext.util.JSON.decode(result.responseText);
+			$("testcase_name_warning").innerHTML = obj['message'];
+		},
+		failure: function (result, request) {
+		}
+	});
+}
 {/literal}
+</script>
 
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('testcase_name')">
 
-{* 
-<h1 class="title">{$gui->parent_info.description}{$tlCfg->gui_title_separator_1}
-	{$gui->parent_info.name|escape}{$tlCfg->gui_title_separator_2}{$labels.title_new_tc}</h1>
-*}
 <h1 class="title">{$gui->main_descr|escape}</h1>
-
 <div class="workBack">
 
 {include file="inc_update.tpl" result=$gui->sqlResult item="testcase" name=$gui->name user_feedback=$gui->user_feedback}

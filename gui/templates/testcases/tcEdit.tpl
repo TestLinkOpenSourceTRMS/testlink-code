@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.30 2010/10/10 09:46:31 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.31 2010/10/10 10:34:19 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
+  20101010 - franciscom - refactoring of BUGID 3062 -> gui/javascript/tcase_utils.js
   20100810 - asimon - BUGID 3579: solved tree refreshing problems
   20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
 	20100306 - eloff - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
@@ -23,6 +24,7 @@ Purpose: smarty template - edit test specification: test case
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 <script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
+<script language="javascript" src="gui/javascript/tcase_utils.js" type="text/javascript"></script>
 
 {assign var="opt_cfg" value=$gui->opt_cfg}
 <script type="text/javascript" language="JavaScript">
@@ -79,30 +81,9 @@ function validateForm(the_form)
 	show_modified_warning=false;
 	return Ext.ux.requireSessionAndSubmit(the_form);
 }
-
-
-/**
- * BUGID 3062
- *
- */
-function checkTCaseDuplicateName() {
-	Ext.Ajax.request({
-		url: 'lib/ajax/checkTCaseDuplicateName.php',
-		method: 'GET',
-		params: {
-			testcase_id: $('testcase_id').value,
-			name: $('testcase_name').value
-		},
-		success: function(result, request) {
-			var obj = Ext.util.JSON.decode(result.responseText);
-			$("testcase_name_warning").innerHTML = obj['message'];
-		},
-		failure: function (result, request) {
-		}
-	});
-}
 {/literal}
 </script>
+
 {if $tlCfg->gui->checkNotSaved}
   <script type="text/javascript">
   var unload_msg = "{$labels.warning_unsaved}";

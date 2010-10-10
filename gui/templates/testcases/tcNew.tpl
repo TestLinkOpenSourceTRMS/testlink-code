@@ -1,9 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.14 2010/10/10 09:46:31 franciscom Exp $
+$Id: tcNew.tpl,v 1.15 2010/10/10 13:35:33 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20101010 - franciscom - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
+                        need to add input for testcase_id, to make checkTCaseDuplicateName() work OK
+                        because edit and new test case are managed using common smarty template
+                        then can not have TWO different calls to checkTCaseDuplicateName()
+                        added testsuite_id for same logic
+
 20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
 20100103 - franciscom - refactoring to use $gui
 20091122 - franciscom - refactoring to use ext-js alert
@@ -20,6 +25,7 @@ Purpose: smarty template - create new testcase
 {include file="inc_del_onclick.tpl"}
 <script language="JavaScript" src="gui/javascript/OptionTransfer.js" type="text/javascript"></script>
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
+<script language="javascript" src="gui/javascript/tcase_utils.js" type="text/javascript"></script>
 
 {assign var="opt_cfg" value=$gui->opt_cfg}
 <script language="JavaScript" type="text/javascript">
@@ -48,28 +54,6 @@ function validateForm(f)
   }
   return true;
 }
-
-
-/**
- * BUGID 3062
- *
- */
-function checkTCaseDuplicateName() {
-	Ext.Ajax.request({
-		url: 'lib/ajax/checkTCaseDuplicateName.php',
-		method: 'GET',
-		params: {
-			testcase_id: $('testcase_id').value,
-			name: $('testcase_name').value
-		},
-		success: function(result, request) {
-			var obj = Ext.util.JSON.decode(result.responseText);
-			$("testcase_name_warning").innerHTML = obj['message'];
-		},
-		failure: function (result, request) {
-		}
-	});
-}
 {/literal}
 </script>
 
@@ -85,7 +69,8 @@ function checkTCaseDuplicateName() {
 <form method="post" action="lib/testcases/tcEdit.php?containerID={$gui->containerID}"
       name="tc_new" id="tc_new"
       onSubmit="javascript:return validateForm(this);">
-
+      <input type="hidden" name="testcase_id" id="testcase_id" value=0>
+      <input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->containerID}">
 
   {if $gui->steps != ''}
   <table class="simple">

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.24 2010/10/10 10:35:26 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.25 2010/10/10 13:35:33 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 @internal Revisions:
@@ -36,7 +36,8 @@ Purpose: smarty template - create new testcase
 			maxlength="{#TESTCASE_NAME_MAXLEN#}"
 			onchange="content_modified = true"
 			onkeypress="content_modified = true"
-			onkeyup="javascript:checkTCaseDuplicateName($('testcase_id').value,$('testcase_name').value,'testcase_name_warning')"
+			onkeyup="javascript:checkTCaseDuplicateName($('testcase_id').value,$('testcase_name').value,
+			                                            $('testsuite_id').value,'testcase_name_warning')"
 			{if isset($gui->tc.name)}
 		       value="{$gui->tc.name|escape}"
 			{else}

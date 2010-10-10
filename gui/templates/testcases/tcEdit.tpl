@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.31 2010/10/10 10:34:19 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.32 2010/10/10 13:35:33 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
   20101010 - franciscom - refactoring of BUGID 3062 -> gui/javascript/tcase_utils.js
+                          added testsuite_id for same logic
   20100810 - asimon - BUGID 3579: solved tree refreshing problems
   20100315 - franciscom - BUGID 3410: Smarty 3.0 compatibility - changes in smarty.template behaviour
 	20100306 - eloff - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
@@ -108,6 +109,7 @@ function validateForm(the_form)
 <form method="post" action="lib/testcases/tcEdit.php" name="tc_edit"
       onSubmit="return validateForm(this);">
 
+	<input type="hidden" name="testsuite_id" id="testsuite_id" value="{$gui->tc.testsuite_id}" />
 	<input type="hidden" name="testcase_id" id="testcase_id" value="{$gui->tc.testcase_id}" />
 	<input type="hidden" name="tcversion_id" value="{$gui->tc.id}" />
 	<input type="hidden" name="version" value="{$gui->tc.version}" />

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Erik Eloff
  * @copyright 	2010, TestLink community
- * @version    	CVS: $Id: checkTCaseDuplicateName.php,v 1.2 2010/10/10 13:33:34 franciscom Exp $
+ * @version    	CVS: $Id: checkTCaseDuplicateName.php,v 1.3 2010/10/10 13:41:13 franciscom Exp $
  *
  * @internal Revisions:
  * 20101010 - franciscom - added testsuite_id as parameter, needed to do checks when creating test case
@@ -49,9 +49,9 @@ if (has_rights($db, 'mgt_view_tc'))
 }
 else
 {
-	tLog('Invalid right for the user: '.$args['right'], 'ERROR');
+	tLog('User has not right needed to do requested action - checkTCaseDuplicateName.php', 'ERROR');
 	$data['success'] = false;
-	$data['message'] = lang_get('Invalid right');
+	$data['message'] = lang_get('user_has_no_right_for_action');
 }
 
 echo json_encode($data);

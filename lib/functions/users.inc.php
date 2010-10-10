@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.109 2010/10/10 15:52:30 franciscom Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.110 2010/10/10 15:55:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
@@ -210,7 +210,7 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
  * 
  * @param resource &$db reference to database handler
  * @param integer $userID 
- * @param string $newPasswordSendMethod
+ * @param string $newPasswordSendMethod, default 'send_password_by_mail'
  * 
  * @return hash
  *         status: integer result status code
@@ -218,7 +218,7 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
  *		   msg: error message (if any)	
  */
 // function resetPassword(&$db,$userID,&$errorMsg)
-function resetPassword(&$db,$userID,$passwordSendMethod)
+function resetPassword(&$db,$userID,$passwordSendMethod='send_password_by_mail')
 {
 	$retval = array('status' => tl::OK, 'password' => '', 'msg' => ''); 
 	$user = new tlUser($userID);

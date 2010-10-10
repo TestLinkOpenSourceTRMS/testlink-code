@@ -9,9 +9,10 @@
  * @package 	TestLink
  * @author 		Erik Eloff
  * @copyright 	2010, TestLink community
- * @version    	CVS: $Id: checkTCaseDuplicateName.php,v 1.1 2010/10/10 09:44:08 franciscom Exp $
+ * @version    	CVS: $Id: checkTCaseDuplicateName.php,v 1.2 2010/10/10 13:33:34 franciscom Exp $
  *
  * @internal Revisions:
+ * 20101010 - franciscom - added testsuite_id as parameter, needed to do checks when creating test case
  * 20100225 - eloff - initial commit
  *
  **/
@@ -22,19 +23,26 @@ testlinkInitPage($db);
 $data = array('success' => true, 'message' => '');
 
 $iParams = array("name" => array(tlInputParameter::STRING_N,0,100),
-	             "testcase_id" => array(tlInputParameter::INT));
+	             "testcase_id" => array(tlInputParameter::INT),
+	             "testsuite_id" => array(tlInputParameter::INT));
 $args = G_PARAMS($iParams);
 
 if (has_rights($db, 'mgt_view_tc'))
 {
 	$tree_manager = new tree($db);
-
 	$node_types_descr_id=$tree_manager->get_available_node_types();
-	$my_node_type=$node_types_descr_id['testcase'];
-	$name = $args['name'];
-	$tc_id = $args['testcase_id'];
+	
+	// To allow name check when creating a NEW test case => we do not have test case id
+	$args['testcase_id'] = ($args['testcase_id'] > 0 )? $args['testcase_id'] : null;
+	$args['testsuite_id'] = ($args['testsuite_id'] > 0 )? $args['testsuite_id'] : null;
 
-	$check = $tree_manager->nodeNameExists($name, $my_node_type, $tc_id);
+	// for debug - 
+	// $xx = "\$args['testcase_id']:{$args['testcase_id']} - \$args['name']:{$args['name']}" .
+	//       " - \$args['testsuite_id']:{$args['testsuite_id']}";
+	// file_put_contents('c:\checkTCaseDuplicateName.php.ajax', $xx);                            
+
+	$check = $tree_manager->nodeNameExists($args['name'], $node_types_descr_id['testcase'],
+										   $args['testcase_id'],$args['testsuite_id']);
 
 	$data['success'] = !$check['status'];
 	$data['message'] = $check['msg'];

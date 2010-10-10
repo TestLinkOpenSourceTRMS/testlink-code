@@ -5,9 +5,10 @@
  *
  * Filename $RCSfile: lostPassword.php,v $
  *
- * @version $Revision: 1.39 $
- * @modified $Date: 2009/09/28 08:40:21 $ $Author: franciscom $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/10/10 15:56:40 $ $Author: franciscom $
  *
+ * 20101010 - francisco - changes due to resetPassword() refactoring
 **/
 require_once('config.inc.php');
 require_once('common.php');
@@ -40,8 +41,9 @@ if ($args->login != "" && !$gui->external_password_mgmt)
 	}
 	else
 	{
-		$result = resetPassword($db,$userID,$gui->note);
-		if ($result >= tl::OK)
+		$result = resetPassword($db,$userID);
+		$gui->note = $result['msg'];
+		if ($result['status'] >= tl::OK)
 		{
 		  	$user = new tlUser($userID);
 		  	if ($user->readFromDB($db) >= tl::OK)
@@ -51,13 +53,13 @@ if ($args->login != "" && !$gui->external_password_mgmt)
 			redirect(TL_BASE_HREF ."login.php?note=lost");
 			exit();
 		}
-		else if ($result == tlUser::E_EMAILLENGTH)
+		else if ($result['status'] == tlUser::E_EMAILLENGTH)
 		{
 			$gui->note = lang_get('mail_empty_address');
 		}	
 		else if ($note != "")
 		{
-			$gui->note = getUserErrorMessage($result);
+			$gui->note = getUserErrorMessage($result['status']);
 		}	
 	}
 }

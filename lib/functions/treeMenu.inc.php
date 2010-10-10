@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.153 2010/10/03 19:53:20 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.154 2010/10/10 14:45:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *	20101010 - franciscom - added testlink_node_name as new attribute to be accessed while working with EXT-JS tree
  *	20101003 - franciscom - generateExecTree() - added option remove_empty_nodes_of_type on get_subtree() call
  *  20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
  *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
@@ -1347,6 +1348,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 	// custom Property that will be accessed by EXT-JS using node.attributes
    	// 20100908 - tlNodeType -> 'testlink_node_type'
    	$node['testlink_node_type'] = $node_type;
+	$node['testlink_node_name'] = $name;
 	switch($node_type)
 	{
 		case 'testproject':
@@ -1731,8 +1733,8 @@ function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters
 
 
 /** VERY IMPORTANT: node must be passed BY REFERENCE */
-function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled,
-			$bForPrinting,$showTestCaseID,$testCasePrefix)
+function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled,$bForPrinting,
+											$showTestCaseID,$testCasePrefix)
 {
 	$name = filterString($node['name']);
 	$buildLinkTo = 1;
@@ -1769,6 +1771,8 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled
 	} // switch	
 	
 	$node['text']=$label;
+	$node['testlink_node_name'] = $name;
+   	$node['testlink_node_type'] = $node_type;
 	$node['position']=isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['href']=is_null($pfn)? '' : "javascript:{$pfn}({$node['id']})";
 	
@@ -1784,7 +1788,7 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled
 		}  
 	}
 	$key2del=array('node_type_id','parent_id','node_order','node_table',
-		'tcversion_id','external_id','version','testcase_count');  
+				   'tcversion_id','external_id','version','testcase_count');  
 	
 	foreach($key2del as $key)
 	{
@@ -1793,6 +1797,7 @@ function extjs_renderTestSpecTreeNodeOnOpen(&$node,$node_type,$tc_action_enabled
 			unset($node[$key]); 
 		}  
 	}
+	
 }
 
 
@@ -2230,6 +2235,7 @@ function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
 	
 	$node['href'] = "javascript:{$js_functions[$node_type]}({$node_id});";
 	$node['text'] = htmlspecialchars($node['name']);
+
 	$node['leaf'] = false; // will be set to true later for requirement nodes
 	$node['position'] = isset($node['node_order']) ? $node['node_order'] : 0;
 	$node['cls'] = 'folder';
@@ -2237,6 +2243,8 @@ function render_reqspec_treenode(&$node, &$filtered_map, &$map_id_nodetype) {
 	// custom Properties that will be accessed by EXT-JS using node.attributes 
 	$node['testlink_node_type']	= $node_type;
 	$node['forbidden_parent'] = $forbidden_parents[$node_type];
+	$node['testlink_node_name'] = $node['text'];
+
 	
 	switch ($node_type) {
 		case 'testproject':

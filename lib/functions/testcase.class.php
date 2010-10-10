@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.322 2010/10/09 15:35:52 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.323 2010/10/10 10:51:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101010 - franciscom - get_by_id() - added testsuite_id on output recordset
  * 20101009 - franciscom - exportTestCaseDataToXML() - better checks on $optExport
  * 20101009 - franciscom - BUGID 3868: Importing exported XML results - custom fields have unexpected NEW LINES		
  * 20101008 - franciscom - BUGID 3849
@@ -1978,7 +1979,8 @@ class testcase extends tlObjectWithAttachments
 			case 'full':
 			case 'full_without_steps':
 				$sql = "SELECT UA.login AS updater_login,UB.login AS author_login,
-			     		NHTC.name,NHTC.node_order,NHTCV.parent_id AS testcase_id, TCV.*,
+			     		NHTC.name,NHTC.node_order,NHTC.parent_id AS testsuite_id,
+			     		NHTCV.parent_id AS testcase_id, TCV.*,
 			     		UB.first AS author_first_name,UB.last AS author_last_name,
 			     		UA.first AS updater_first_name,UA.last AS updater_last_name
 	         			FROM {$this->tables['nodes_hierarchy']} NHTCV
@@ -1992,6 +1994,7 @@ class testcase extends tlObjectWithAttachments
 	         	
 			case 'essential':
 				$sql = " SELECT NHTC.name,NHTC.node_order,NHTCV.parent_id AS testcase_id, " . 
+				       " NHTC.parent_id AS testsuite_id, " .
 				       " TCV.version, TCV.id, TCV.tc_external_id " .
 	         		   " FROM {$this->tables['nodes_hierarchy']} NHTCV " . 
 	         		   " JOIN {$this->tables['nodes_hierarchy']} NHTC ON NHTCV.parent_id = NHTC.id " .

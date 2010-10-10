@@ -8,11 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.108 2010/10/04 13:22:24 asimon83 Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.109 2010/10/10 15:52:30 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
  * 
+ *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users 
+ *							resetPassword() - interface changes and logic changes
  *	20100502 - franciscom - resetPassword() - fixed bad comparison to set $errorMsg
  *	20100427 - franciscom - BUGID 3396 
  *	20091215 - eloff - read active testplan from cookie into session
@@ -208,44 +210,56 @@ function buildUserMap($users,$add_options = false, $additional_options=null)
  * 
  * @param resource &$db reference to database handler
  * @param integer $userID 
- * @param string &$errorMsg reference to error message
+ * @param string $newPasswordSendMethod
  * 
- * @return integer result status code
+ * @return hash
+ *         status: integer result status code
+ *         password: new password
+ *		   msg: error message (if any)	
  */
-function resetPassword(&$db,$userID,&$errorMsg)
+// function resetPassword(&$db,$userID,&$errorMsg)
+function resetPassword(&$db,$userID,$passwordSendMethod)
 {
-
-	$errorMsg = '';
+	$retval = array('status' => tl::OK, 'password' => '', 'msg' => ''); 
 	$user = new tlUser($userID);
-	$result = $user->readFromDB($db);
+	$retval['status'] = $user->readFromDB($db);
 	
-	if ($result >= tl::OK)
+	if ($retval['status'] >= tl::OK)
 	{
-		$result = tlUser::E_EMAILLENGTH;
+		$retval['status'] = tlUser::E_EMAILLENGTH;
 		if ($user->emailAddress != "")
 		{
 			$newPassword = tlUser::generatePassword(8,4); 
-			$result = $user->setPassword($newPassword);
-			if ($result >= tl::OK)
+			$retval['status'] = $user->setPassword($newPassword);
+			
+			if ($retval['status'] >= tl::OK)
 			{
+				$retval['password'] = $newPassword;
+				
 				// BUGID 3396
-				$msgBody = lang_get('your_password_is') . "\n\n" . $newPassword . "\n\n" . lang_get('contact_admin');
-				$mail_op = @email_send(config_get('from_email'), $user->emailAddress,lang_get('mail_passwd_subject'), 
-									   $msgBody);
-				if ($mail_op->status_ok)
+				$mail_op = new stdClass();
+				$mail_op->status_ok = false;
+				if( $passwordSendMethod == 'send_password_by_mail' )
 				{
-					$result = $user->writePasswordToDB($db); // BUGID 3396
+					$msgBody = lang_get('your_password_is') . "\n\n" . $newPassword . "\n\n" . lang_get('contact_admin');
+					$mail_op = @email_send(config_get('from_email'), 
+									       $user->emailAddress,lang_get('mail_passwd_subject'),$msgBody);
+				}
+				if ($mail_op->status_ok || ($passwordSendMethod == 'display_on_screen') )
+				{
+					$retval['status'] = $user->writePasswordToDB($db); // BUGID 3396
+					$retval['msg'] = 'ok';
 				}
 				else
 				{
-					$result = tl::ERROR;
-					$errorMsg = $mail_op->msg;
+					$retval['status'] = tl::ERROR;
+					$retval['msg'] = $mail_op->msg;
 				}
 			}
 		}
 	}
-	$errorMsg = ($errorMsg != "") ? $errorMsg : getUserErrorMessage($result) ;
-	return $result;
+	$retval['msg'] = ($retval['msg'] != "") ? $retval['msg'] : getUserErrorMessage($result['status']) ;
+	return $retval;
 }
 
 /*

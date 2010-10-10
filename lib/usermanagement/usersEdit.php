@@ -7,10 +7,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersEdit.php,v 1.39 2010/05/02 16:54:28 franciscom Exp $
+ * @version    	CVS: $Id: usersEdit.php,v 1.40 2010/10/10 15:52:12 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users
  *	20100502 - franciscom - BUGID 3417
  *
  */
@@ -24,6 +25,8 @@ testlinkInitPage($db,false,false,"checkRights");
 
 $templateCfg = templateConfiguration();
 $args = init_args();
+
+$passwordSendMethod = config_get('password_reset_send_method');
 
 $op = new stdClass();
 $op->user_feedback = '';
@@ -59,7 +62,7 @@ switch($args->doAction)
 		$highlight->edit_user = 1;
 		$user = new tlUser($args->user_id);
 		$user->readFromDB($db);
-		$op = createNewPassword($db,$args,$user);
+		$op = createNewPassword($db,$args,$user,$passwordSendMethod);
 		break;
 	
 	case "create":
@@ -199,10 +202,11 @@ function doUpdate(&$dbHandler,&$argsObj,$sessionUserID)
  * @internal revisions
  *	20100502 - franciscom - BUGID 3417
  */
-function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
+function createNewPassword(&$dbHandler,&$argsObj,&$userObj,$newPasswordSendMethod)
 {
 	$op = new stdClass();
 	$op->user_feedback = '';
+	$op->new_password = '';
 	
 	// Try to validate mail configuration
 	//
@@ -216,13 +220,23 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj)
 	// 
 	$validator = new Zend_Validate_Hostname(Zend_Validate_Hostname::ALLOW_ALL);
 	$smtp_host = config_get( 'smtp_host' );
-	if( $validator->isValid($smtp_host) )
+	
+	$password_on_screen = ($newPasswordSendMethod == 'display_on_screen');
+	if( $validator->isValid($smtp_host) || $password_on_screen )
 	{
-		$op->status = resetPassword($dbHandler,$argsObj->user_id,$op->user_feedback);
+		$dummy = resetPassword($dbHandler,$argsObj->user_id,$newPasswordSendMethod);
+
+		$op->user_feedback = $dummy['msg'];
+		$op->status = $dummy['status'];
+		$op->new_password = $dummy['password'];
 		if ($op->status >= tl::OK)
 		{
 			logAuditEvent(TLS("audit_pwd_reset_requested",$userObj->login),"PWD_RESET",$argsObj->user_id,"users");
 			$op->user_feedback = lang_get('password_reseted');
+			if( $password_on_screen )
+			{
+				$op->user_feedback = lang_get('your_password_is') . " -> " . $dummy['password'];			
+			}
 		}
 		else
 		{

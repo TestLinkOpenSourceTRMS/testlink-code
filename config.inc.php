@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.326 2010/10/07 08:18:43 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.327 2010/10/10 15:51:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users - $tlCfg->password_reset_send_method
  *  20100924 - asimon - added $tlCfg->enableTableExportButton
  *  20100915 - amitkhullar - BUGID 3639 - added $tlcfg->testcase_reorder_by for Reorder Test Cases
  *  20100915 - Julian - BUGID 3777 - added $tlCfg->req_cfg->allow_insertion_of_last_doc_id
@@ -344,6 +345,12 @@ $tlCfg->authentication['ldap_tls'] = false; // true -> use tls
 
 /** Enable/disable Users to create accounts on login page */
 $tlCfg->user_self_signup = TRUE;
+
+/** What happens when Administrator push the Reset Password Button 
+	'send_password_by_mail'
+	'display_on_screen'
+*/
+$tlCfg->password_reset_send_method = 'send_password_by_mail';
 
 /** Validating new user login names */
 $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \- .]+$/';

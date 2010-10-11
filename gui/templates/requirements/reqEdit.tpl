@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.31 2010/10/06 10:26:22 asimon83 Exp $
+$Id: reqEdit.tpl,v 1.32 2010/10/11 18:36:10 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20101011 - franciscom - BUGID 3886: CF Types validation
 20101006 - asimon - BUGID 3854
 20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
 20100808 - asimon - added logic to refresh filtered tree on changes
@@ -50,10 +51,12 @@ internal revision
     js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
   {/foreach}
 
-
-	{literal}
-	function validateForm(f,cfg)
+  {literal}
+	function validateForm(f,cfg,check_expected_coverage)
 	{
+	
+	 	var cf_designTime = document.getElementById('custom_field_container');
+
 		if (isWhitespace(f.reqDocId.value)) 
 	  {
 	    alert_message(alert_box_title,warning_empty_req_docid);
@@ -67,10 +70,9 @@ internal revision
 			selectField(f, 'req_title');
 			return false;
 	  }
-    {/literal}
-		
-    {if $gui->req_cfg->expected_coverage_management}
-		  {literal}
+	
+    if (check_expected_coverage)
+    {
 		  if( cfg['expected_coverage'][f.reqType.value] == 1 )
 		  {
 		    value = parseInt(f.expected_coverage.value);
@@ -91,21 +93,44 @@ internal revision
 		  {
 		    f.expected_coverage.value = 0;
 		  }
-		  {/literal}
-		{/if}
-		
-		{literal}
+	  }
+	  
+    /* Validation of a limited type of custom fields */
+	  if (cf_designTime)
+ 	  {
+ 	  	var cfields_container = cf_designTime.getElementsByTagName('input');
+ 	  	var cfieldsChecks = validateCustomFields(cfields_container);
+	  	if(!cfieldsChecks.status_ok)
+	    {
+	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	        return false;
+	  	}
+    
+      /* Text area needs a special access */
+ 	  	cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 	  	cfieldsChecks = validateCustomFields(cfields_container);
+	  	if(!cfieldsChecks.status_ok)
+	    {
+	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	        return false;
+	  	}
+	  }
+	  
 		return true;
 	}
+	{/literal}
 	
 	
 	/**
    * 
    *
    */
+  {literal} 
 	window.onload = function()
   {
-	 focusInputField('reqDocId');
+	   focusInputField('reqDocId');
      {/literal}
      {* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
      {if $gui->req_cfg->expected_coverage_management}
@@ -155,12 +180,18 @@ function configure_attr(oid_type,cfg)
   }
 } // configure_attr
 
-function insert_last_doc_id() {
+
+/**
+ * insert_last_doc_id
+ *
+ */
+function insert_last_doc_id() 
+{
 	var last_id = document.getElementById('last_doc_id').value;
 	var field = document.getElementById('reqDocId');
 	field.value = last_id;
 }
-	{/literal}
+{/literal}
 </script>
 </head>
 
@@ -174,7 +205,8 @@ function insert_last_doc_id() {
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 
 <div class="workBack">
-<form name="reqEdit" id="reqEdit" method="post" onSubmit="javascript:return validateForm(this,js_attr_cfg);">
+<form name="reqEdit" id="reqEdit" method="post" 
+      onSubmit="javascript:return validateForm(this,js_attr_cfg,{$gui->req_cfg->expected_coverage_management});">
 
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
@@ -195,8 +227,8 @@ function insert_last_doc_id() {
   				{include file="error_icon.tpl" field="reqDocId"}
   				
   				{* BUGID 3777 *}
-  				{if $gui->req_cfg->allow_insertion_of_last_doc_id && $gui->last_doc_id != null
-  				    && ($gui->doAction == 'create' || $gui->doAction == 'doCreate')}
+  				{if $gui->req_cfg->allow_insertion_of_last_doc_id && $gui->last_doc_id != null  && 
+  				    ($gui->doAction == 'create' || $gui->doAction == 'doCreate')}
 	  				<span onclick="javascript:insert_last_doc_id();" >
 	  				<img src="{$smarty.const.TL_THEME_IMG_DIR}/insert_step.png"
 	  				     title='{$labels.insert_last_req_doc_id}: "{$gui->last_doc_id|escape}"'/>
@@ -206,7 +238,7 @@ function insert_last_doc_id() {
   	</div>
  	<br />
  	<div class="labelHolder"> <label for="req_title">{$labels.title}</label></div>
-  	<div><input type="text" name="req_title"
+  	<div><input type="text" name="req_title" id="req_title"
   		        size="{#REQ_TITLE_SIZE#}" maxlength="{#REQ_TITLE_MAXLEN#}"
   		        value="{$gui->req.title|escape}" />
   		    {include file="error_icon.tpl" field="req_title"}
@@ -216,7 +248,7 @@ function insert_last_doc_id() {
 	<div>{$gui->scope}</div>
  	<br />
   	<div class="labelHolder"> <label for="reqStatus">{$labels.status}</label>
-     	<select name="reqStatus">
+     	<select name="reqStatus" id="reqStatus">
   			{html_options options=$gui->reqStatusDomain selected=$gui->req.status}
   		</select>
   	</div>
@@ -245,7 +277,7 @@ function insert_last_doc_id() {
  	{if $gui->req_cfg->expected_coverage_management}
   		<div class="labelHolder" id="expected_coverage_container"> <label for="expected_coverage">{$labels.expected_coverage}</label>
   	
-  		{if $gui->req.expected_coverage}
+  	{if $gui->req.expected_coverage}
 			{assign var="coverage_to_display" value=$gui->req.expected_coverage}
 		{else}
 			{assign var="coverage_to_display" value=$gui->expected_coverage}
@@ -263,7 +295,8 @@ function insert_last_doc_id() {
     
    	{* Custom fields *}
    	{if $gui->cfields != ""}
-    	<div class="custom_field_container">
+   	  {* ID is used on logic to validate CF contain according to CF type *}
+    	<div id="custom_field_container" class="custom_field_container">
     	{$gui->cfields}
      	</div>
      <br />

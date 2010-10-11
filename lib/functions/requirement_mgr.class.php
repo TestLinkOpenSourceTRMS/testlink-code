@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.109 $
- * @modified $Date: 2010/10/11 11:04:43 $ by $Author: mx-julian $
+ * @version $Revision: 1.110 $
+ * @modified $Date: 2010/10/11 18:35:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20101011 - franciscom - BUGID 3886: CF Types validation - changes in html_table_of_custom_field_inputs()
  *	20101011 - Julian - BUGID 3876: Values of custom fields are not displayed when editing requirement
  *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
  *							create_new_version() interface changed
@@ -1466,6 +1467,7 @@ function get_linked_cfields($id,$version_id,$parent_id=null)
 
 
   @internal revisions:
+  	20101011 - franciscom - BUGID 3886: CF Types validation 
     20101001 - asimon - extended to not lose entered custom field values on errors
 
 */
@@ -1504,9 +1506,10 @@ function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name
 
 	        if ($verbose_type == 'date') {
 		        // if cf is a date field, convert the three given values to unixtime format
-		        if (isset($request[$input_name . '_day'])
-		        && isset($request[$input_name . '_month'])
-		        && isset($request[$input_name . '_year'])) {
+		        if (isset($request[$input_name . '_day']) && 
+		        	isset($request[$input_name . '_month']) && 
+		        	isset($request[$input_name . '_year'])) 
+		        {
 			        $day = $request[$input_name . '_day'];
 			        $month = $request[$input_name . '_month'];
 			        $year = $request[$input_name . '_year'];
@@ -1519,7 +1522,16 @@ function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name
 	        }
 	        $cf_info['value'] = $value;
 
-    		$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
+	     	// IMPORTANT NOTICE
+	     	// assigning an ID with this format is CRITIC to Javascript logic used
+	     	// to validate input data filled by user according to CF type
+			// extract input html id
+			// Want to give an html id to <td> used as labelHolder, to use it in Javascript
+			// logic to validate CF content
+			$cf_html_string = $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix);
+			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+	     	$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
+    		$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
     			          $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
     					  "</td></tr>\n";
     	}

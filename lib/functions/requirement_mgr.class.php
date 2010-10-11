@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.108 $
- * @modified $Date: 2010/10/11 07:40:24 $ by $Author: mx-julian $
+ * @version $Revision: 1.109 $
+ * @modified $Date: 2010/10/11 11:04:43 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1489,8 +1489,17 @@ function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name
                                lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
             $input_name="{$prefix}{$cf_info['type']}_{$cf_info['id']}{$name_suffix}";
-            //BUGID 3876
-            $value = isset($request[$input_name]) ? $request[$input_name] : $cf_info['value'];
+            
+            // BUGID 3876
+            // Custom field value is taken from $_REQUEST if available - otherwise value is
+            // taken from database
+            $value = null;
+    		if (isset($request[$input_name])) {
+				$value = $request[$input_name];
+			} else if (isset($cf_info['value'])) {
+				$value = $cf_info['value'];
+			}
+			
 	        $verbose_type = trim($this->cfield_mgr->custom_field_types[$cf_info['type']]);
 
 	        if ($verbose_type == 'date') {

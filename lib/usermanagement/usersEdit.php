@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersEdit.php,v 1.40 2010/10/10 15:52:12 franciscom Exp $
+ * @version    	CVS: $Id: usersEdit.php,v 1.41 2010/10/11 18:06:53 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -235,7 +235,7 @@ function createNewPassword(&$dbHandler,&$argsObj,&$userObj,$newPasswordSendMetho
 			$op->user_feedback = lang_get('password_reseted');
 			if( $password_on_screen )
 			{
-				$op->user_feedback = lang_get('your_password_is') . " -> " . $dummy['password'];			
+				$op->user_feedback = lang_get('password_set') . $dummy['password'];			
 			}
 		}
 		else

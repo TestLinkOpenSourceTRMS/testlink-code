@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.126 $
- * @modified $Date: 2010/09/16 07:28:52 $ by $Author: mx-julian $
+ * @version $Revision: 1.127 $
+ * @modified $Date: 2010/10/11 08:35:16 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * @internal revisions
+ *  20101011 - asimon - BUGID 3875
  *  20100916 - franciscom - BUGID 3778, 3779 - Option to reorder ALL CHILDREN Test Suites
  *  20100916 - franciscom - BUGID 3639 - reworked
  *  20100914 - franciscom - BUGID 3639 - reorderTestCasesDictionary()
@@ -168,6 +169,8 @@ switch($action)
         	$msg = updateTestSuite($tsuite_mgr,$args,$c_data,$_REQUEST);
     	}
 		$guiObj = new stdClass();
+		// BUGID 3875
+		$guiObj->btn_reorder_testcases = $btn_reorder_testcases;
   	  	$guiObj->attachments = getAttachmentInfosFrom($tsuite_mgr,$args->testsuiteID);
 	  	$guiObj->id = $args->testsuiteID;
 		$guiObj->page_title = lang_get('container_title_testsuite');

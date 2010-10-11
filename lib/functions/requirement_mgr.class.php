@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.107 $
- * @modified $Date: 2010/10/04 20:13:32 $ by $Author: franciscom $
+ * @version $Revision: 1.108 $
+ * @modified $Date: 2010/10/11 07:40:24 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20101011 - Julian - BUGID 3876: Values of custom fields are not displayed when editing requirement
  *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
  *							create_new_version() interface changed
  *
@@ -1488,7 +1489,8 @@ function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name
                                lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
             $input_name="{$prefix}{$cf_info['type']}_{$cf_info['id']}{$name_suffix}";
-            $value = isset($request[$input_name]) ? $request[$input_name] : null;
+            //BUGID 3876
+            $value = isset($request[$input_name]) ? $request[$input_name] : $cf_info['value'];
 	        $verbose_type = trim($this->cfield_mgr->custom_field_types[$cf_info['type']]);
 
 	        if ($verbose_type == 'date') {

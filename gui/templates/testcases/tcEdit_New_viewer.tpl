@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.25 2010/10/10 13:35:33 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.26 2010/10/11 18:08:30 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 @internal Revisions:
+  20101011 - franciscom - equilizing ID for DIV that function as CF container
   20101010 - franciscom - refactoring of BUGID 3062 -> call to checkTCaseDuplicateName() without global coupling
 	20100306 - eloff - BUGID 3062 - Check for duplicate name via JAXA using checkTCaseDuplicateName()
 	20090831 - franciscom - preconditions
@@ -59,7 +60,12 @@ Purpose: smarty template - create new testcase
     <br />
 	  {if $gui->cf.before_steps_results neq ""}
 	       <br/>
-	       <div id="cfields_design_time_before" class="custom_field_container">
+	       {* ID is important because is used on validationForm to get custom field container
+	          that's how have to have SAME ID that other div below on page.
+	          NOTICE that only one of this div are active, if will not be the case we will
+	          have a problem because ID has to be UNIQUE
+	        *}
+	       <div id="cfields_design_time" class="custom_field_container">
 	       {$gui->cf.before_steps_results}
 	       </div>
 	       

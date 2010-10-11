@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.324 2010/10/11 18:34:02 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.325 2010/10/11 19:21:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -3957,9 +3957,7 @@ class testcase extends tlObjectWithAttachments
 	  
 		if(!is_null($cf_map))
 		{
-
 			$prefix = $this->cfield_mgr->get_name_prefix();
-
 			$cf_smarty = "<table>";
 			foreach($cf_map as $cf_id => $cf_info)
 			{
@@ -3967,20 +3965,17 @@ class testcase extends tlObjectWithAttachments
 	            $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
 
 	            // 20101001 - asimon - custom fields do not lose entered values on errors
-	            $input_name="{$prefix}{$cf_info['type']}_{$cf_info['id']}{$name_suffix}";
+	            $input_name = "{$prefix}{$cf_info['type']}_{$cf_info['id']}{$name_suffix}";
 				$value = isset($request[$input_name]) ? $request[$input_name] : null;
 				$verbose_type = trim($this->cfield_mgr->custom_field_types[$cf_info['type']]);
 
 				if ($verbose_type == 'date') {
 					// if cf is a date field, convert the three given values to unixtime format
-					if (isset($request[$input_name . '_day']) && 
-						isset($request[$input_name . '_month']) && 
+					if (isset($request[$input_name . '_day']) && isset($request[$input_name . '_month']) && 
 						isset($request[$input_name . '_year'])) 
 					{
-						$day = $request[$input_name . '_day'];
-						$month = $request[$input_name . '_month'];
-						$year = $request[$input_name . '_year'];
-						$value = mktime(0, 0, 0, $month, $day, $year);
+						$value = mktime(0, 0, 0, $request[$input_name . '_month'], 
+										$request[$input_name . '_day'], $request[$input_name . '_year']);
 					}
 				}
 

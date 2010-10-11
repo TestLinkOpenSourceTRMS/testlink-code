@@ -5,21 +5,23 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.110 $
- * @modified $Date: 2010/10/11 18:35:45 $ by $Author: franciscom $
+ * @version $Revision: 1.111 $
+ * @modified $Date: 2010/10/11 20:53:28 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20101011 - franciscom - get_linked_cfields() interface and logic changes to refactor
+ *							to not lose entered custom field values on errors.
+ *
  *	20101011 - franciscom - BUGID 3886: CF Types validation - changes in html_table_of_custom_field_inputs()
  *	20101011 - Julian - BUGID 3876: Values of custom fields are not displayed when editing requirement
  *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
  *							create_new_version() interface changed
  *
- *  20101001 - asimon - extended html_table_of_custom_field_inputs()
- *                      to not lose entered custom field values on errors
+ *  20101001 - asimon - extended html_table_of_custom_field_inputs() to not lose entered custom field values on errors.
  *  20100920 - franciscom - 3686: When importing requirements, provide the option to 'create new version'
  *  20100915 - Julian - BUGID 3777 - Added get_last_doc_id_for_testproject()
  *	20100914 - franciscom - createFromMap() - added new option 'skipFrozenReq'
@@ -1384,6 +1386,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
                      null -> use requirement_id as starting point.
                      !is_null -> use this value as testproject id
 
+		[name_suffix]: 
+		[input_values]: map, can be null	
 
   returns: map/hash
            key: custom field id
@@ -1410,13 +1414,14 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
             			node_id: requirement id
             			         null if for this requirement, custom field was never edited.
 
+	
 
   rev :
+	   20101011 - franciscom - refactoring for	
        20070302 - check for $id not null, is not enough, need to check is > 0
 
 */
-// function get_linked_cfields($id,$parent_id=null)
-function get_linked_cfields($id,$version_id,$parent_id=null)
+function get_linked_cfields($id,$version_id,$parent_id=null,$name_suffix='',$input_values=null)
 {
 	$enabled = 1;
 	if (!is_null($id) && $id > 0)
@@ -1429,14 +1434,55 @@ function get_linked_cfields($id,$version_id,$parent_id=null)
 	{
 	  	$tproject_id = $parent_id;
 	}
-	// BUGID ---
-	// $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,null,
-	//                                                           'requirement',$id);
-	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,null,
+	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::ENABLED,null,
 	                                                          'requirement',$version_id);
-       
-       
-       
+     
+    if( !is_null($input_values) )
+    {
+    	foreach($cf_map as &$cf_info)
+    	{
+    		$cf_info['html_input_name'] = $this->cfield_mgr->buildHTMLInputName($cf_info,$name_suffix);
+    		if (isset($input_values[$cf_info['html_input_name']])) 
+    		{
+				$value = $request[$input_name];
+			} 
+			else if (isset($cf_info['value'])) 
+			{
+				$value = $cf_info['value'];
+			}
+			$verbose_type = trim($this->cfield_mgr->custom_field_types[$cf_info['type']]);
+			if ($verbose_type == 'date') 
+			{
+			    // if cf is a date field, convert the three given values to unixtime format
+				$kd = array();
+				$kd['day'] = array('input' => $cf_info['html_input_name'] . '_day', 'value' => -1);
+				$kd['month'] = array('input' => $cf_info['html_input_name'] . '_month', 'value' => -1);
+				$kd['year'] = array('input' => $cf_info['html_input_name'] . '_year', 'value' => -1);
+				
+				$doIt = true;
+				foreach($kd as &$date_part)
+				{
+					if( !isset($input_values[$date_part['input']]) )
+					{
+						$doIt = false;
+						break;
+					}
+					$date_part['value'] = $input_values[$date_part['input']];
+
+				}
+			    if ($doIt)
+			    {
+			     	$value = mktime(0, 0, 0, $kd['month']['value'],$kd['day']['value'], $kd['year']['value']);
+			    }
+			}
+			
+			if (!is_null($value) && is_array($value)){
+			    $value = implode("|", $value);
+			}
+			
+			$cf_info['value'] = $value;
+		}
+    }
 	return $cf_map;
 }
 
@@ -1471,16 +1517,11 @@ function get_linked_cfields($id,$version_id,$parent_id=null)
     20101001 - asimon - extended to not lose entered custom field values on errors
 
 */
-// function html_table_of_custom_field_inputs($id,$parent_id=null,$name_suffix='')
-function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name_suffix='', $request = null)
-
+function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name_suffix='', $input_values = null)
 {
     $NO_WARNING_IF_MISSING=true;
     $cf_smarty = '';
-    // $cf_map = $this->get_linked_cfields($id,$parent_id);
-    $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id);
-
-    $prefix = $this->cfield_mgr->get_name_prefix();
+    $cf_map = $this->get_linked_cfields($id,$version_id,$parent_id,$name_suffix,$input_values);
 
     if(!is_null($cf_map))
     {
@@ -1490,37 +1531,6 @@ function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name
             $label=str_replace(TL_LOCALIZE_TAG,'',
                                lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
-            $input_name="{$prefix}{$cf_info['type']}_{$cf_info['id']}{$name_suffix}";
-            
-            // BUGID 3876
-            // Custom field value is taken from $_REQUEST if available - otherwise value is
-            // taken from database
-            $value = null;
-    		if (isset($request[$input_name])) {
-				$value = $request[$input_name];
-			} else if (isset($cf_info['value'])) {
-				$value = $cf_info['value'];
-			}
-			
-	        $verbose_type = trim($this->cfield_mgr->custom_field_types[$cf_info['type']]);
-
-	        if ($verbose_type == 'date') {
-		        // if cf is a date field, convert the three given values to unixtime format
-		        if (isset($request[$input_name . '_day']) && 
-		        	isset($request[$input_name . '_month']) && 
-		        	isset($request[$input_name . '_year'])) 
-		        {
-			        $day = $request[$input_name . '_day'];
-			        $month = $request[$input_name . '_month'];
-			        $year = $request[$input_name . '_year'];
-			        $value = mktime(0, 0, 0, $month, $day, $year);
-		        }
-	        }
-
-	        if (!is_null($value) && is_array($value)){
-		        $value = implode("|", $value);
-	        }
-	        $cf_info['value'] = $value;
 
 	     	// IMPORTANT NOTICE
 	     	// assigning an ID with this format is CRITIC to Javascript logic used
@@ -1561,7 +1571,6 @@ function html_table_of_custom_field_values($id,$version_id)
 	$PID_NO_NEEDED = null;
 	$cf_smarty = '';
 
-	// $cf_map = $this->get_linked_cfields($id,$PID_NO_NEEDED);
 	$cf_map = $this->get_linked_cfields($id,$version_id,$PID_NO_NEEDED);
 	
 	if(!is_null($cf_map))
@@ -1574,17 +1583,10 @@ function html_table_of_custom_field_values($id,$version_id)
 				$label = str_replace(TL_LOCALIZE_TAG,'',
 	                                 lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
 
-				// $cf_smarty .= '<tr><td class="labelHolder">' .
-				// 				htmlspecialchars($label) . ":</td><td>" .
-				// 				$this->cfield_mgr->string_custom_field_value($cf_info,$id) .
-				// 				"</td></tr>\n";
-				
 				$cf_smarty .= '<tr><td class="labelHolder">' .
 								htmlspecialchars($label) . ":</td><td>" .
 								$this->cfield_mgr->string_custom_field_value($cf_info,$version_id) .
 								"</td></tr>\n";
-				
-				
 			}
 		}
 
@@ -1640,7 +1642,6 @@ function html_table_of_custom_field_values($id,$version_id)
  function customFieldValuesAsXML($id,$version_id,$tproject_id)
  {
     $xml = null;
-    // $cfMap=$this->get_linked_cfields($id,$tproject_id);
     $cfMap=$this->get_linked_cfields($id,$version_id,$tproject_id);
 	if( !is_null($cfMap) && count($cfMap) > 0 )
 	{
@@ -1832,7 +1833,6 @@ function html_table_of_custom_field_values($id,$version_id)
 	// function copy_cfields($from_id,$to_id)
 	function copy_cfields($source,$destination)
 	{
-	  // $cfmap_from=$this->get_linked_cfields($from_id);
 	  $cfmap_from=$this->get_linked_cfields($source['id'],$source['version_id']);
 	  $cfield=null;
 	  if( !is_null($cfmap_from) )

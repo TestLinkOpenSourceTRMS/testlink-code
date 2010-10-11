@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.15 2010/10/10 13:35:33 franciscom Exp $
+$Id: tcNew.tpl,v 1.16 2010/10/11 17:43:24 franciscom Exp $
 Purpose: smarty template - create new testcase
 
+20101011 - franciscom - BUGID 3874 - custom fields type validation
 20101010 - franciscom - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
                         need to add input for testcase_id, to make checkTCaseDuplicateName() work OK
                         because edit and new test case are managed using common smarty template
@@ -46,12 +47,37 @@ var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 {literal}
 function validateForm(f)
 {
+ 	var cf_designTime = document.getElementById('cfields_design_time');
   if (isWhitespace(f.testcase_name.value)) 
   {
       alert_message(alert_box_title,warning_empty_testcase_name);
       selectField(f, 'testcase_name');
       return false;
   }
+  
+  /* BUGID 3874 - custom fields type validation */
+  /* Validation of a limited type of custom fields */
+	if (cf_designTime)
+ 	{
+ 		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  {
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      return false;
+		}
+
+ 		cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 		cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  {
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      return false;
+		}
+	}
+
   return true;
 }
 {/literal}

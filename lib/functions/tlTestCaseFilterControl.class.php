@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.27 2010/10/05 14:17:08 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.28 2010/10/11 14:57:00 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,8 @@
  *
  * @internal Revisions:
  *
+ * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
+ * 20101011 - asimon - BUGID 3884: added handling for datetime custom fields
  * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
  * 20100929 - asimon - BUGID 3817
  * 20100972 - asimon - additional fix to BUGID 3809
@@ -202,7 +204,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	 * Initialized not in constructor, only on first use to save resources.
 	 * @var exec_cf_mgr
 	 */
-	private $exec_cf_mgr = null;
+	private $cfield_mgr = null;
 	
 	/**
 	 * Testplan manager object.
@@ -347,7 +349,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		unset($this->tc_mgr);
 		unset($this->testplan_mgr);
 		unset($this->platform_mgr);
-		unset($this->exec_cf_mgr);
+		unset($this->cfield_mgr);
 	}
 
 	/**
@@ -1354,116 +1356,108 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	} // end of method
 
 	private function init_filter_custom_fields() {
-		
 		$key = 'filter_custom_fields';
-
+		$no_warning = true;
+		
+		// BUGID 3566: show/hide CF
+		$collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
+		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
+		$_SESSION['cf_filter_collapsed'] = $collapsed;	
+		$btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
+		
+		if (!$this->cfield_mgr) {
+			$this->cfield_mgr = new cfield_mgr($this->db, $this->args->testproject_id);
+		}
+		
+		$cfields = $this->cfield_mgr->get_linked_cfields_at_design($this->args->testproject_id, 1, null, 'testcase');
+		$cf_prefix = $this->cfield_mgr->name_prefix;
+		$cf_html_code = "";
+		$selection = array();
+		
 		$this->filters[$key] = false;
 		$this->active_filters[$key] = null;
 
-		if (!$this->exec_cf_mgr) {
-			$this->exec_cf_mgr = new exec_cfield_mgr($this->db, $this->args->testproject_id);
-		}
+		if (!is_null($cfields)) {
+			// display and compute only when custom fields are in use
+			foreach ($cfields as $cf_id => $cf) {
+				// has a value been selected?
+				$id = $cf['id'];
+				$type = $cf['type'];
+				$verbose_type = trim($this->cfield_mgr->custom_field_types[$type]);
+				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
 
-		$field_names = $this->exec_cf_mgr->field_names();
-		$menu = $this->exec_cf_mgr->html_table_of_custom_field_inputs(self::CF_INPUT_SIZE);
-		$selection = $this->exec_cf_mgr->get_set_values();
-		
-		// BUGID 3566: show/hide CF
-		$ses_string = $this->mode . "_cf_filter_collapsed";
-		$collapsed = isset($_SESSION[$ses_string]) ? $_SESSION[$ses_string] : 0;
-		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
-		$_SESSION[$ses_string] = $collapsed;	
-		$btn_label = $collapsed ? lang_get('btn_show_cf') : lang_get('btn_hide_cf');
+				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
+
+				// BUGID 3884: added filtering for datetime custom fields
+				if ($verbose_type == 'datetime') {
+					// if cf is a date field, convert the three given values to unixtime format
+					if (isset($_REQUEST[$cf_input_name . '_day']) && $_REQUEST[$cf_input_name . '_day'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_month']) && $_REQUEST[$cf_input_name . '_month'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_year']) && $_REQUEST[$cf_input_name . '_year'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != 0) {
+						$day = $_REQUEST[$cf_input_name . '_day'];
+						$month = $_REQUEST[$cf_input_name . '_month'];
+						$year = $_REQUEST[$cf_input_name . '_year'];
+						$hour = $_REQUEST[$cf_input_name . '_hour'];
+						$minute = $_REQUEST[$cf_input_name . '_minute'];
+						$second = $_REQUEST[$cf_input_name . '_second'];
+						$value = mktime($hour, $minute, $second, $month, $day, $year);
+					}
+				}
+
+				if ($verbose_type == 'date') {
+					// if cf is a date field, convert the three given values to unixtime format
+					// BUGID 3883: only set values if different from 0
+					if (isset($_REQUEST[$cf_input_name . '_day']) && $_REQUEST[$cf_input_name . '_day'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_month']) && $_REQUEST[$cf_input_name . '_month'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_year']) && $_REQUEST[$cf_input_name . '_year'] != 0) {
+						$day = $_REQUEST[$cf_input_name . '_day'];
+						$month = $_REQUEST[$cf_input_name . '_month'];
+						$year = $_REQUEST[$cf_input_name . '_year'];
+						$value = mktime(0, 0, 0, $month, $day, $year);
+					}
+				}
+
+				if ($this->args->reset_filters) {
+					$value = null;
+				}
+
+				$value2display = $value;
+				if (!is_null($value2display) && is_array($value2display)){
+					$value2display = implode("|", $value2display);
+				}
+				$cf['value'] = $value2display;
+
+				if ($value) {
+					$this->do_filtering = true;
+					$selection[$id] = $value;
+				}
+
+				$label = str_replace(TL_LOCALIZE_TAG, '', lang_get($cf['label'],
+				                                                   null, $no_warning));
+
+				$cf_size = self::CF_INPUT_SIZE;
+				// set special size for list inputs
+				if ($verbose_type == 'list' || $verbose_type == 'multiselection list') {
+					$cf_size = 3;
+				}
 				
-		// asimon - 20100713
-		// Fixed drag&drop error caused by this function. It always set $this->do_filtering
-		// to true here because of the missing $selection in the following if condition.
-		// This caused lazy loading and DD to be disabled later.		
-		// see: http://www.teamst.org/forum/viewtopic.php?f=11&t=3354&sid=70498c57842247114cc7233d0f4e5c51
-		if (!$selection || $this->args->reset_filters) {
-			// handle filter reset button
-			$selection = null;
-		} else {
-			$this->do_filtering = true;
+				// don't show textarea inputs here, they are too large for filterpanel
+				if ($verbose_type != 'text area') {
+					$cf_html_code .= '<tr class="cfRow"><td>' . htmlspecialchars($label) . '</td><td>' .
+					                 $this->cfield_mgr->string_custom_field_input($cf, '', $cf_size) .
+					                 '</td></tr>';
+				}
+			}
+
+			// BUGID 3566: show/hide CF
+			$this->filters[$key] = array('items' => $cf_html_code, 
+			                             'btn_label' => $btn_label, 
+			                             'collapsed' => $collapsed);
+			$this->active_filters[$key] = count($selection) ? $selection : null;
 		}
-		
-		if (isset($selection) && is_array($selection) && count($selection)) {
-			
-			// BUGID 3414:
-			// Insert values chosen by user into html select menu by regex.
-			// The $menu string contains lines of which each looks like this, e.g.:
-			// <tr><td class="labelHolder">cflabel</td><td><input type="text" name="custom_field_0_1" 
-			// id="custom_field_0_1" size="32"  maxlength="255" value=""></input></td></tr>
-			
-			// For each sent value, search the value="" part there and
-			// then insert the real value into the empty "". Depending on type, of course.
-			
-			// TODO this stuff could maybe fit better into cfield_mgr class?
-			
-			// no magic number: 1 because of course only one replacement per value shall be done
-			$limit = 1;
-
-			foreach ($selection as $cf_id => $value) {
-				
-				$cf_html_name = $field_names[$cf_id]['cf_name'];
-				
-				switch($field_names[$cf_id]['verbose_type']){
-	
-					case 'list':
-						// for single selection list, only one value has to be marked with "checked"
-						$pattern = '/(.*name="' . $cf_html_name . '".*value="' . $value . '")(.*)/';
-						// the numbers: 1 is the part before value, 2 after
-						$replacement = '${1} selected ${2}';
-						$menu = preg_replace($pattern, $replacement, $menu, $limit);
-					break;
-					
-					case 'checkbox':
-					case 'multiselection list':
-						// this is similar to single selection list, but a bit more complicated
-						// and needs an additional loop because the selection can have multiple values
-						$value_arr = explode('|', $value);
-						foreach ($value_arr as $single_value) {
-							$pattern = '/(.*id="' . $cf_html_name . '".*value="' . 
-							           $single_value . '")(.*)/';
-							// the numbers: 1 is the part before value, 2 after
-							$replacement = '${1} selected ${2}';
-							$menu = preg_replace($pattern, $replacement, $menu, $limit);
-						}
-					break;
-
-					// BUGID 3809
-					case 'radio':
-						$pattern = '/(.*name="' . $cf_html_name . '.*value="' . $value . '")(.*)/';
-						$replacement = '${1} checked="checked" ${2}';
-						$menu = preg_replace($pattern, $replacement, $menu, $limit);
-					break;
-
-					case 'numeric':
-					case 'float':
-					case 'email':
-					case 'string':
-						// for these types, replacement is simple, only replace value=""
-						$pattern = '/(.*name="' . $cf_html_name . '".*value=")(".*)/';
-						// 1 and 2 stand for the first and second pair of braces in above line
-						$replacement = '${1}' . $value . '${2}';
-						$menu = preg_replace($pattern, $replacement, $menu, $limit);
-					break;
-					
-					default:
-					break;
-				} // end of switch
-
-			} // end of foreach
-		}
-
-		// BUGID 3566: show/hide CF
-		if ($field_names) {
-			$this->filters[$key] = array('items' => $menu,
-										 'btn_label' => $btn_label,
-										 'collapsed' => $collapsed);
-		}
-		$this->active_filters[$key] = $selection;
-		
 	} // end of method
 
 	private function init_filter_result() {

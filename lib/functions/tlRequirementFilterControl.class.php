@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.14 2010/10/05 15:44:35 asimon83 Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.15 2010/10/11 14:57:00 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -16,6 +16,8 @@
  * 
  * @internal Revisions:
  *
+ * 20101011 - asimon - fixed handling of unset date custom field inputs
+ * 20101011 - asimon - added handling for datetime custom fields
  * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
  * 20101005 - asimon - BUGID 3852: filter requirements by status resets on apply
  * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Req version
@@ -451,8 +453,6 @@ class tlRequirementFilterControl extends tlFilterControl {
 	
 	private function init_filter_custom_fields() {
 		$key = 'filter_custom_fields';
-		$enabled = 1;
-		$filters = null;
 		$no_warning = true;
 		
 		// BUGID 3566: show/hide CF
@@ -485,20 +485,41 @@ class tlRequirementFilterControl extends tlFilterControl {
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
 
 				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
-				if ($this->args->reset_filters) {
-					$value = null;
+
+				// BUGID 3884: added filtering for datetime custom fields
+				if ($verbose_type == 'datetime') {
+					// if cf is a date field, convert the three given values to unixtime format
+					if (isset($_REQUEST[$cf_input_name . '_day']) && $_REQUEST[$cf_input_name . '_day'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_month']) && $_REQUEST[$cf_input_name . '_month'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_year']) && $_REQUEST[$cf_input_name . '_year'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != 0) {
+						$day = $_REQUEST[$cf_input_name . '_day'];
+						$month = $_REQUEST[$cf_input_name . '_month'];
+						$year = $_REQUEST[$cf_input_name . '_year'];
+						$hour = $_REQUEST[$cf_input_name . '_hour'];
+						$minute = $_REQUEST[$cf_input_name . '_minute'];
+						$second = $_REQUEST[$cf_input_name . '_second'];
+						$value = mktime($hour, $minute, $second, $month, $day, $year);
+					}
 				}
-				
+
 				if ($verbose_type == 'date') {
 					// if cf is a date field, convert the three given values to unixtime format
-					if (isset($_REQUEST[$cf_input_name . '_day'])
-					&& isset($_REQUEST[$cf_input_name . '_month'])
-					&& isset($_REQUEST[$cf_input_name . '_year'])) {
+					// BUGID 3883: only set values if different from 0
+					if (isset($_REQUEST[$cf_input_name . '_day']) && $_REQUEST[$cf_input_name . '_day'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_month']) && $_REQUEST[$cf_input_name . '_month'] != 0
+					&& isset($_REQUEST[$cf_input_name . '_year']) && $_REQUEST[$cf_input_name . '_year'] != 0) {
 						$day = $_REQUEST[$cf_input_name . '_day'];
 						$month = $_REQUEST[$cf_input_name . '_month'];
 						$year = $_REQUEST[$cf_input_name . '_year'];
 						$value = mktime(0, 0, 0, $month, $day, $year);
 					}
+				}
+
+				if ($this->args->reset_filters) {
+					$value = null;
 				}
 
 				$value2display = $value;

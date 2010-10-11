@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.16 2010/10/11 17:43:24 franciscom Exp $
+$Id: tcNew.tpl,v 1.17 2010/10/11 18:11:29 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20101011 - franciscom - BUGID 3874 - custom fields type validation
@@ -47,6 +47,7 @@ var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
 {literal}
 function validateForm(f)
 {
+  // get the div that contains the custom fields, accession by id
  	var cf_designTime = document.getElementById('cfields_design_time');
   if (isWhitespace(f.testcase_name.value)) 
   {

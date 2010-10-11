@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcEdit_New_viewer.tpl,v 1.26 2010/10/11 18:08:30 franciscom Exp $
+$Id: tcEdit_New_viewer.tpl,v 1.27 2010/10/11 18:11:29 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 @internal Revisions:
-  20101011 - franciscom - equilizing ID for DIV that function as CF container
+  20101011 - franciscom - equalizing ID for DIV that function as CF container
   20101010 - franciscom - refactoring of BUGID 3062 -> call to checkTCaseDuplicateName() without global coupling
 	20100306 - eloff - BUGID 3062 - Check for duplicate name via JAXA using checkTCaseDuplicateName()
 	20090831 - franciscom - preconditions

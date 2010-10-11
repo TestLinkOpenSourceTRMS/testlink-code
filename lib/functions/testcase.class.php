@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.323 2010/10/10 10:51:16 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.324 2010/10/11 18:34:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101011 - franciscom - html_table_of_custom_field_inputs() ADDED CRITIC DOCUMENTATION
  * 20101010 - franciscom - get_by_id() - added testsuite_id on output recordset
  * 20101009 - franciscom - exportTestCaseDataToXML() - better checks on $optExport
  * 20101009 - franciscom - BUGID 3868: Importing exported XML results - custom fields have unexpected NEW LINES		
@@ -3932,8 +3933,6 @@ class testcase extends tlObjectWithAttachments
 	{
 		$cf_smarty = '';
 	
-		// echo 'DEBUG' . __FUNCTION__ . '<br>';
-		// echo '<pre>';		debug_print_backtrace(); echo '</pre>';
 	  // BUGID 1650
 	  $cf_scope=trim($scope);
 	  $method_name='get_linked_cfields_at_' . $cf_scope;
@@ -3947,7 +3946,6 @@ class testcase extends tlObjectWithAttachments
 	      case 'design':
 	          // added $filters
 				// BUGID 3431 - 
-	      		// $cf_map = $this->$method_name($id,$parent_id,$filters,$tproject_id);    
 	      		$cf_map = $this->$method_name($id,$link_id,$parent_id,$filters,$tproject_id);    
 	      break;
 	      	
@@ -3975,9 +3973,10 @@ class testcase extends tlObjectWithAttachments
 
 				if ($verbose_type == 'date') {
 					// if cf is a date field, convert the three given values to unixtime format
-					if (isset($request[$input_name . '_day'])
-					&& isset($request[$input_name . '_month'])
-					&& isset($request[$input_name . '_year'])) {
+					if (isset($request[$input_name . '_day']) && 
+						isset($request[$input_name . '_month']) && 
+						isset($request[$input_name . '_year'])) 
+					{
 						$day = $request[$input_name . '_day'];
 						$month = $request[$input_name . '_month'];
 						$year = $request[$input_name . '_year'];
@@ -3999,6 +3998,10 @@ class testcase extends tlObjectWithAttachments
 				
 				// extract input html id
 				$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+	     	    
+	     	    // IMPORTANT NOTICE
+	     	    // assigning an ID with this format is CRITIC to Javascript logic used
+	     	    // to validate input data filled by user according to CF type
 	     	    $td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
 				$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . 
 				              ":</td><td>{$cf_html_string}</td></tr>\n";

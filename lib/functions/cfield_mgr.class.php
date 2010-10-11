@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.87 2010/09/30 13:53:34 mx-julian Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.89 2010/10/11 20:53:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101011 - franciscom - new method buildHTMLInputName()
  * 20100930 - asimon - added platform_id to get_linked_cfields_at_execution()
  * 20100908 - franciscom - exportValueAsXML() - removed \n placed in wrong place
  * 20100829 - franciscom - BUGID 3707,3708 usability issue + browser different behaviour
@@ -334,7 +335,7 @@ class cfield_mgr extends tlObject
 	 */
 	function get_name_prefix()
 	{
-		return($this->name_prefix);
+		return $this->name_prefix ;
 	}
 
 	/**
@@ -615,8 +616,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 	{
 
 		$str_out='';
-		$t_id = $p_field_def['id'];
-		$t_type = $p_field_def['type'];
+		// $t_id = $p_field_def['id'];
+		// $t_type = $p_field_def['type'];
+    	// $input_name = "{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
 
 	  	$t_custom_field_value = $p_field_def['default_value'];
 	  	if( isset($p_field_def['value']) )
@@ -624,11 +626,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		  $t_custom_field_value = $p_field_def['value'];
 		}
 
-
-    	$verbose_type=trim($this->custom_field_types[$t_type]);
+    	$verbose_type=trim($this->custom_field_types[$p_field_def['type']]);
   		$t_custom_field_value = htmlspecialchars( $t_custom_field_value );
-    	
-    	$input_name="{$this->name_prefix}{$t_type}_{$t_id}{$name_suffix}";
+    	$input_name = $this->buildHTMLInputName($p_field_def,$name_suffix);
     	$size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
     	
     	if( $field_size > 0)
@@ -2481,6 +2481,17 @@ function getByLinkID($linkID, $options=null)
 	
 	
     return $rs; 
+}
+
+
+
+/**
+ * buildHTMLInputName
+ *
+ */
+function buildHTMLInputName($cf,$name_suffix)
+{
+	return "{$this->name_prefix}{$cf['type']}_{$cf['id']}{$name_suffix}";
 }
 
 

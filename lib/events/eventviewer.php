@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.35 $
- * @modified $Date: 2010/10/10 00:33:58 $ by $Author: mx-julian $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/10/12 20:16:54 $ by $Author: mx-julian $
  *
  * rev: 
+ * 		20101008 - Julian - added html comment to properly sort by description column
  *		20101008 - Julian - BUGID 3871: use exttable for event viewer
  *		20100508 - franciscom - BUGID 3445: Ability to delete events from selected class from event logs 
  *		20091005 - amitkhullar - improved function getEventsFor() - BUG 2862
@@ -233,10 +234,11 @@ function buildExtTable($gui,$show_icon,$charset)
 			} else {
 				$rowData[] = lang_get("not_aplicable");
 			}
-			
-			$rowData[] = "<a onClick=\"showEventDetails({$event->dbID});\" style=\"cursor: hand; cursor: pointer;\">" . 
+			$description = htmlentities($event->description, ENT_QUOTES, $charset);
+			$rowData[] = "<!-- " . $description . " --!>" .
+			             "<a onClick=\"showEventDetails({$event->dbID});\" style=\"cursor: hand; cursor: pointer;\">" . 
 			             "<img title=\"" . lang_get("show_eventdetails") ."\" src=\"{$show_icon}\" /> </a>" .
-			             htmlentities($event->description, ENT_QUOTES, $charset);
+			             $description;
 			             
 			$rowData[] = $event->transactionID;
 			

@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.91 2010/10/12 05:49:58 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.92 2010/10/12 07:44:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2546,6 +2546,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
     {
 		foreach($cf_map as &$cf_info)
 		{
+			$value=null;
 			$cf_info['html_input_name'] = $this->buildHTMLInputName($cf_info,$name_suffix);
 			if (isset($input_values[$cf_info['html_input_name']])) 
 			{

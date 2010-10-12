@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.15 2010/10/11 14:57:00 asimon83 Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.16 2010/10/12 06:11:11 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -16,8 +16,8 @@
  * 
  * @internal Revisions:
  *
- * 20101011 - asimon - fixed handling of unset date custom field inputs
- * 20101011 - asimon - added handling for datetime custom fields
+ * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
+ * 20101011 - asimon - BUGID 3884: added handling for datetime custom fields
  * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
  * 20101005 - asimon - BUGID 3852: filter requirements by status resets on apply
  * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Req version

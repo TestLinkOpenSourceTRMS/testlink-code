@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.14 2010/10/12 18:15:57 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.15 2010/10/12 18:17:58 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
@@ -46,14 +46,14 @@
 		{assign var=tableID value=table_$idx}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
+	
+	<br />
+	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}
 	<div class="user_feedback">
     {$gui->warning_msg}
     </div>
 {/if}
-
-<br />
-{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 </div> 
 </body>
 </html>

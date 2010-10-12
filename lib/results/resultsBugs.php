@@ -4,11 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/10/05 07:40:41 $ by $Author: asimon83 $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
  * @author kevinlevy
  * 
  * rev :
+ *  20101012 - Julian - added html comment to properly sort by test case column
  *  20101005 - asimon - added linked icon for test case editing
  *	20100920 - Julian - use exttable
  *	20100616 - eloff - refactor out results class
@@ -70,7 +71,7 @@ foreach ($results as $execution) {
 			// add linked icon for editing
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$tc_id});\">" .
 						 "<img title=\"{$edit_label}\" src=\"{$edit_img}\" /></a> ";
-			$tc_name = $edit_link . $tc_name;
+			$tc_name = "<!-- " . sprintf("%010d", $execution['external_id']) . " -->" . $edit_link . $tc_name;
 
 			$testcase_bugs[$tc_id] = array($suiteName, $tc_name, array());
 		}

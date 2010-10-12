@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/09/30 13:42:43 $ by $Author: asimon83 $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
+ *  20101012 - Julian - added html comment to properly sort by test case column
  *  20100930 - asimon - added icons for testcase execution and editing
  *  20100901 - Julian - added execution notes column
  *	20100830 - franciscom - fixed warnings on eventviewer
@@ -71,7 +72,7 @@ if( $args->doIt )
 		$tcaseName = buildExternalIdString($gui->tcasePrefix, $item['tc_external_id']) .
 					 ' : ' . $item['tcase_name'];
 
-		$tcLink = $exec_link . $edit_link . $tcaseName;
+		$tcLink = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $exec_link . $edit_link . $tcaseName;
 		$rowData[] = $tcLink;
 
 		//$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $item['tcase_id'] . '">' .

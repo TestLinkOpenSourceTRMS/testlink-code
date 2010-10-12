@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testPlanWithCF.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/10/01 14:26:50 $ by $Author: asimon83 $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
  *
  * rev:
+ *      20101012 - Julian - added html comment to properly sort by test case column
  *      20101001 - asimon - added linked icon for testcase editing
  *      20100921 - Julian - BUGID 3797 - use exttable
  * 		20090504 - amitkhullar - BUGID 2465
@@ -140,7 +141,7 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$item['tcase_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_icon}\" /></a> ";
 
-		    $link = $edit_link . $name;
+		    $link = "<!-- " . sprintf("%010d", $item['tc_external_id']) . " -->" . $edit_link . $name;
 
 			$rowData[] = $link;
 //			$rowData[] = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' . $item['tcase_id'] . '">' .

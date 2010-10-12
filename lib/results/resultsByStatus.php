@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.101 2010/10/07 12:00:14 asimon83 Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.102 2010/10/12 19:54:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101012 - Julian - added html comment to properly sort by test case column
  *  20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
  *  20100927 - asimon - added mouseover information for the exec and edit icons
  *  20100923 - eloff - refactored to use improved table interface
@@ -190,7 +191,7 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			$tcaseName = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']). ':' . $testcase['name'];
 
 		    // 20101007 - asimon - BUGID 3857
-		    $image_link = $exec_link . $edit_link . $tcaseName;
+		    $image_link = "<!-- " . sprintf("%010d", $testcase['external_id']) . " -->" . $exec_link . $edit_link . $tcaseName;
 			$mail_link = "<a href=\"javascript:openTCEditWindow({$testcase['tc_id']});\">{$tcaseName}</a> ";
 			$tcLink = $args->format == FORMAT_MAIL_HTML ? $mail_link : $image_link;
 

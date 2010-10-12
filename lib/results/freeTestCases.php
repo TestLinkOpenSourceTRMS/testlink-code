@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/10/05 08:29:41 $ by $Author: asimon83 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
  * rev:
+ * 20101012 - Julian - added html comment to properly sort by test case column
  * 20101005 - asimon - added linked icon for testcase editing
  * 20100920 - Julian - use exttable
  *                   - added importance column
@@ -70,7 +71,7 @@ if(!is_null($gui->freeTestCases['items']))
 						 "<img title=\"{$edit_label}\" src=\"{$edit_img}\" /></a> ";
 			$tcaseName = $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
 			             strip_tags($tcases['name']);
-		    $tcLink = $edit_link . $tcaseName;
+		    $tcLink = "<!-- " . sprintf("%010d", $tcases['tc_external_id']) . " -->" . $edit_link . $tcaseName;
 			$rowData[] = $tcLink;
 
 //			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcases['id']}\">" .

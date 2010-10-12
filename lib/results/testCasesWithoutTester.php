@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.14 $
- * @modified $Date: 2010/10/01 14:26:50 $ by $Author: asimon83 $
+ * @version $Revision: 1.15 $
+ * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
+ * 20101012 - Julian - added html comment to properly sort by test case column
  * 20101001 - asimon - added linked icon for testcase editing
  * 20100830 - Julian - Added test case summary column
  * 20100830 - franciscom - refactoring
@@ -76,7 +77,7 @@ if($tplan_mgr->count_testcases($args->tplan_id) > 0)
 		    $edit_link = "<a href=\"javascript:openTCEditWindow({$item['tc_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 
-		    $link = $edit_link . $name;
+		    $link = "<!-- " . sprintf("%010d", $item['external_id']) . " -->" . $edit_link . $name;
 
 			$row = array($verbosePath,$link);
 			if ($args->show_platforms)

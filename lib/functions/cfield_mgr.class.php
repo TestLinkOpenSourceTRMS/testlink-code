@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.90 2010/10/12 05:43:10 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.91 2010/10/12 05:49:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -834,7 +834,6 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     }
     if( !is_null($cfield) )
     {
-      //new dBug($cfield);
       foreach($cfield as $field_id => $type_and_value)
       {
         $value = $type_and_value['cf_value'];
@@ -2507,7 +2506,6 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null)
     if(!is_null($cfields_map))
     {
 		$cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
-    	
     	$NO_WARNING_IF_MISSING=true;
     	$cf_smarty = "<table>";
     	foreach($cf_map as $cf_id => $cf_info)
@@ -2551,7 +2549,7 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
 			$cf_info['html_input_name'] = $this->buildHTMLInputName($cf_info,$name_suffix);
 			if (isset($input_values[$cf_info['html_input_name']])) 
 			{
-				$value = $input_values[$input_name];
+				$value = $input_values[$cf_info['html_input_name']];
 			} 
 			else if (isset($cf_info['value'])) 
 			{

@@ -8,11 +8,13 @@
  * @package 	TestLink
  * @author 		
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planEdit.php,v 1.55 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: planEdit.php,v 1.56 2010/10/12 19:58:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ * 20101012 - franciscom - html_table_of_custom_field_inputs() interface changes
+ *						   BUGID 3891: Do not lose Custom Field values if test plan can not be created due to duplicated name	
  * 20100602 - franciscom - BUGID 3485: "Create from existing Test Plan" always copies builds
  *
  **/
@@ -55,7 +57,9 @@ if($args->do_action == "do_create" || $args->do_action == "do_update")
 	                   $gui->tplans[$args->tplan_id]['name'] == $args->testplan_name);
 }
 
-$gui->cfields = $tplan_mgr->html_table_of_custom_field_inputs($args->tplan_id,$args->tproject_id);
+// 20101012 - franciscom
+// interface changes to be able to do not loose CF values if some problem arise on User Interface
+$gui->cfields = $tplan_mgr->html_table_of_custom_field_inputs($args->tplan_id,$args->tproject_id,'design','',$_REQUEST);
 switch($args->do_action)
 {
 	case 'edit':

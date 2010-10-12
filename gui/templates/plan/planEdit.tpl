@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.15 2010/05/01 19:39:55 franciscom Exp $
+$Id: planEdit.tpl,v 1.16 2010/10/12 20:11:37 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
+20101012 - franciscom - BUGID 3892: CF Types validation
 20090513 - franciscom - added is_public
 
 20070214 - franciscom -
@@ -30,16 +31,45 @@ var warning_empty_tp_name = "{$labels.warning_empty_tp_name}";
 {literal}
 function validateForm(f)
 {
+	var cf_designTime = document.getElementById('custom_field_container');
   if (isWhitespace(f.testplan_name.value))
   {
       alert_message(alert_box_title,warning_empty_tp_name);
       selectField(f, 'testplan_name');
       return false;
   }
+  
+  /* Validation of a limited type of custom fields */
+	if (cf_designTime)
+ 	{
+ 		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  {
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      return false;
+		}
+  
+    /* Text area needs a special access */
+ 		cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 		cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  {
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      return false;
+		}
+	}
+ 
+  
   return true;
 }
 
-
+/**
+ * manage_copy_ctrls
+ *
+ */
 function manage_copy_ctrls(container_id,display_control_value,hide_value)
 {
  o_container=document.getElementById(container_id);
@@ -132,7 +162,7 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
 	  {if $gui->cfields neq ''}
 	  <tr>
 	    <td  colspan="2">
-     <div class="custom_field_container">
+     <div id="custom_field_container" class="custom_field_container">
      {$gui->cfields}
      </div>
 	    </td>

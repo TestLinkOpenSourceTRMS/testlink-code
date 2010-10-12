@@ -1,9 +1,11 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.13 2010/10/04 15:41:19 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.14 2010/10/12 18:15:57 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
+  20101012 - Julian - show "show metrics only for active test plans" checkbox even if there is no resultset. 
+                      This is required if there are no active test plans at all
   20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
                                  - use of exttable
   20090919 - franciscom - added plaftorm information
@@ -30,16 +32,16 @@
 <h1 class="title">{$labels.testproject} {$smarty.const.TITLE_SEP} {$gui->tproject_name|escape}</h1>
 <div class="workBack">
 
-{if $gui->warning_msg == ''}
-	<p><form method="post">
-	<input type="checkbox" name="show_only_active" value="show_only_active"
-	       {if $gui->show_only_active} checked="checked" {/if}
-	       onclick="this.form.submit();" /> {$labels.show_only_active}
-	<input type="hidden"
-	       name="show_only_active_hidden"
-	       value="{$gui->show_only_active}" />
-	</form></p><br/>
-	
+<p><form method="post">
+<input type="checkbox" name="show_only_active" value="show_only_active"
+       {if $gui->show_only_active} checked="checked" {/if}
+       onclick="this.form.submit();" /> {$labels.show_only_active}
+<input type="hidden"
+       name="show_only_active_hidden"
+       value="{$gui->show_only_active}" />
+</form></p><br/>
+
+{if $gui->warning_msg == ''}	
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value=table_$idx}
    		{$matrix->renderBodySection($tableID)}

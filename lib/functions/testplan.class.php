@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.228 2010/10/09 18:58:16 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.229 2010/10/12 19:59:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  *	20101009 - franciscom - BUGID 3270: Export Test Plan in XML Format
  *	20101009 - franciscom - new method exportTestPlanDataToXML() (work in progress)
  *  20101007 - asimon - BUGID 3867
@@ -666,9 +667,6 @@ class testplan extends tlObjectWithAttachments
 		if (!is_null($my['filters']['exec_status'])) {
 			$my['filters']['exec_status'] = (array)$my['filters']['exec_status'];
 		}
-		// new dBug($my['filters']);
-		// new dBug($my['options']);
-
 		$groupByPlatform=($my['options']['output']=='mapOfMap' || 
 		                  $my['options']['output']=='mapOfMapExecPlatform') ? ',platform_id' : '';
 		$groupByBuild=($my['options']['execution_details'] == 'add_build') ? ',build_id' : '';
@@ -2380,47 +2378,33 @@ class testplan extends tlObjectWithAttachments
 		return($field_map);
 	}
 
-
 	/*
 	  function: html_table_of_custom_field_inputs
-	
+	            
+	            
 	  args: $id
 	        [$parent_id]: need when you call this method during the creation
 	                      of a test suite, because the $id will be 0 or null.
-	
+	                      
 	        [$scope]: 'design','execution'
-	
+	        
 	  returns: html string
+	  
 	*/
-	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design')
+	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',$input_values=null) 
 	{
 		$cf_smarty='';
+	  	$method_suffix = $scope=='design' ? $scope : 'execution';
+	  	$method_name = "get_linked_cfields_at_{$method_suffix}";
+	  	$cf_map=$this->$method_name($id,$parent_id);
+
+		new dBug($cf_map);
 		
-		if( $scope=='design' )
+		if(!is_null($cf_map))
 		{
-			$cf_map = $this->get_linked_cfields_at_design($id,$parent_id);
-		}
-		else
-		{
-			$cf_map=$this->get_linked_cfields_at_execution($id,$parent_id);
-		}
-		
-		if( !is_null($cf_map) )
-		{
-			foreach($cf_map as $cf_id => $cf_info)
-			{
-				$label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
-				$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-					$this->cfield_mgr->string_custom_field_input($cf_info) . "</td></tr>\n";
-			} //foreach($cf_map
-		}
-		
-		
-		if($cf_smarty != '')
-		{
-			$cf_smarty = "<table>" . $cf_smarty . "</table>";
-		}
-		return($cf_smarty);
+			$cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
+        }
+	  	return($cf_smarty);
 	}
 
 

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.111 $
- * @modified $Date: 2010/10/11 20:53:28 $ by $Author: franciscom $
+ * @version $Revision: 1.112 $
+ * @modified $Date: 2010/10/12 05:31:37 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1444,7 +1444,7 @@ function get_linked_cfields($id,$version_id,$parent_id=null,$name_suffix='',$inp
     		$cf_info['html_input_name'] = $this->cfield_mgr->buildHTMLInputName($cf_info,$name_suffix);
     		if (isset($input_values[$cf_info['html_input_name']])) 
     		{
-				$value = $request[$input_name];
+				$value = $input_values[$input_name];
 			} 
 			else if (isset($cf_info['value'])) 
 			{

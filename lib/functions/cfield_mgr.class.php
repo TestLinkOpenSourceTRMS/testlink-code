@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.89 2010/10/11 20:53:07 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.90 2010/10/12 05:43:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101012 - franciscom - new methods html_table_inputs(),getValuesFromUserInput();
  * 20101011 - franciscom - new method buildHTMLInputName()
  * 20100930 - asimon - added platform_id to get_linked_cfields_at_execution()
  * 20100908 - franciscom - exportValueAsXML() - removed \n placed in wrong place
@@ -2492,6 +2493,104 @@ function getByLinkID($linkID, $options=null)
 function buildHTMLInputName($cf,$name_suffix)
 {
 	return "{$this->name_prefix}{$cf['type']}_{$cf['id']}{$name_suffix}";
+}
+
+
+
+/**
+ * 
+ *
+ */
+function html_table_inputs($cfields_map,$name_suffix='',$input_values=null)
+{
+	$cf_smarty = '';
+    if(!is_null($cfields_map))
+    {
+		$cf_map = $this->getValuesFromUserInput($cfields_map,$name_suffix,$input_values);
+    	
+    	$NO_WARNING_IF_MISSING=true;
+    	$cf_smarty = "<table>";
+    	foreach($cf_map as $cf_id => $cf_info)
+    	{
+            $label=str_replace(TL_LOCALIZE_TAG,'',
+                               lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
+
+
+	     	// IMPORTANT NOTICE
+	     	// assigning an ID with this format is CRITIC to Javascript logic used
+	     	// to validate input data filled by user according to CF type
+			// extract input html id
+			// Want to give an html id to <td> used as labelHolder, to use it in Javascript
+			// logic to validate CF content
+			$cf_html_string = $this->string_custom_field_input($cf_info,$name_suffix);
+			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
+	     	$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
+    		$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
+    			          $this->string_custom_field_input($cf_info,$name_suffix) .
+    					  "</td></tr>\n";
+    	}
+    	$cf_smarty .= "</table>";
+    }
+    return $cf_smarty;
+
+	
+
+}
+
+
+/**
+ * 
+ *
+ */
+function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
+{
+ 	if( !is_null($input_values) )
+    {
+		foreach($cf_map as &$cf_info)
+		{
+			$cf_info['html_input_name'] = $this->buildHTMLInputName($cf_info,$name_suffix);
+			if (isset($input_values[$cf_info['html_input_name']])) 
+			{
+				$value = $input_values[$input_name];
+			} 
+			else if (isset($cf_info['value'])) 
+			{
+				$value = $cf_info['value'];
+			}
+			$verbose_type = trim($this->custom_field_types[$cf_info['type']]);
+			if ($verbose_type == 'date') 
+			{
+			    // if cf is a date field, convert the three given values to unixtime format
+				$kd = array();
+				$kd['day'] = array('input' => $cf_info['html_input_name'] . '_day', 'value' => -1);
+				$kd['month'] = array('input' => $cf_info['html_input_name'] . '_month', 'value' => -1);
+				$kd['year'] = array('input' => $cf_info['html_input_name'] . '_year', 'value' => -1);
+				
+				$doIt = true;
+				foreach($kd as &$date_part)
+				{
+					if( !isset($input_values[$date_part['input']]) )
+					{
+						$doIt = false;
+						break;
+					}
+					$date_part['value'] = $input_values[$date_part['input']];
+		
+				}
+			    if ($doIt)
+			    {
+			     	$value = mktime(0, 0, 0, $kd['month']['value'],$kd['day']['value'], $kd['year']['value']);
+			    }
+			}
+			
+			if (!is_null($value) && is_array($value)){
+			    $value = implode("|", $value);
+			}
+			
+			$cf_info['value'] = $value;
+		}
+    }
+    return $cf_map;
 }
 
 

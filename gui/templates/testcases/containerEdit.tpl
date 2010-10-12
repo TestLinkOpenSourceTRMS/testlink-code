@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.9 2010/05/01 19:10:47 franciscom Exp $
+$Id: containerEdit.tpl,v 1.10 2010/10/12 20:22:06 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
+20101012 - franciscom - BUGID 3887: CF Types validation
 20100315 - amitkhullar - Added Cancel button
 20091122 - franciscom - refactoring to use alert_message() and $labels
 
@@ -41,6 +42,33 @@ function validateForm(f)
       selectField(f, 'container_name');
       return false;
   }
+  
+  /* Validation of a limited type of custom fields */
+  var cf_designTime = document.getElementById('cfields_design_time');
+	if (cf_designTime)
+ 	{
+ 		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
+
+        // 20090421 - franciscom - BUGID 
+ 		cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 		cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
+	}
+
+  
+  
   return true;
 }
 </script>

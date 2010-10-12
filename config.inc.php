@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.327 2010/10/10 15:51:17 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.328 2010/10/12 19:05:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1399,17 +1399,6 @@ $g_ereg_forbidden = "/[|]/i";
 $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
 
 
-
-
-/**
- * martin: @TODO remove - $g_action_on_duplicate_name is enough to define behaviour
- * Check unique titles of Test Project, Test Suite and Test Case
- *  TRUE  => Check              [STANDARD BEHAVIOUR]
- *  FALSE => don't check
- **/
-// $g_check_names_for_duplicates = TRUE;
-
-
 /**
  * @TODO remove from TL - unfinished refactorization;
  * use $tlCfg instead of old variables and constants
@@ -1422,7 +1411,7 @@ define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);
 define('TITLE_SEP_TYPE3',$tlCfg->gui_title_separator_2); // obsolete: use type 1,2
 define('TL_FRMWORKAREA_LEFT_FRAME_WIDTH', $tlCfg->frame_workarea_default_width);
 define('TL_TEMP_PATH', $tlCfg->temp_dir);
-// $g_log_level=$tlCfg->log_level;
+
 
 $tlCfg->document_generator->company_logo = $tlCfg->company_logo;
 

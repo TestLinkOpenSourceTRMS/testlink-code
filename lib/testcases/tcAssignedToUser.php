@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.24 $
- * @modified $Date: 2010/10/04 15:03:18 $  $Author: asimon83 $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2010/10/12 19:15:35 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20101012 - Julian - added html comment to properly sort by test case column
  *  20101004 - asimon - BUGID 3824: added checkbox do display closed builds
  *  20100927 - asimon - added mouseover information for the exec and edit icons
  *  20100922 - asimon - removed testcase link, replaced by linked icons for editing and execution
@@ -158,17 +159,11 @@ if( $doIt )
 
 				$edit_link = "<a href=\"javascript:openTCEditWindow({$tcase_id});\">" .
 				             "<img title=\"{$l18n['design']}\" src=\"{$edit_img}\" /></a> ";
-
-				$current_row[] = $exec_link . $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] .
-				        		 ":" . htmlspecialchars($tcase['name']) .
+				
+				$current_row[] = "<!-- " . sprintf("%010d", $tcase['tc_external_id']) . " -->" . $exec_link .
+				                 $edit_link . htmlspecialchars($tcase['prefix']) . $gui->glueChar . 
+				                 $tcase['tc_external_id'] . " : " . htmlspecialchars($tcase['name']) .
 				        		 sprintf($l18n['tcversion_indicator'],$tcase['version']);
-
-//				$current_row[] = $link . " <a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcase_id}\" " .
-//				        		 " title=\"{$l18n['goto_testspec']}\">" .
-//				        		 htmlspecialchars($tcase['prefix']) . $gui->glueChar . $tcase['tc_external_id'] .
-//				        		 ":" . htmlspecialchars($tcase['name']) .
-//				        		 sprintf($l18n['tcversion_indicator'],$tcase['version'])
-//				        		  . "</a>";
 
 				if ($show_platforms)
 				{

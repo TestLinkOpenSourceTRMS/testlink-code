@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.127 $
- * @modified $Date: 2010/10/11 08:35:16 $ by $Author: asimon83 $
+ * @version $Revision: 1.129 $
+ * @modified $Date: 2010/10/12 19:07:09 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
+ *	20101012 - franciscom - BUGID 3890: Create Test Suite with same name that existent sibling - BLOCK
  *  20101011 - asimon - BUGID 3875
  *  20100916 - franciscom - BUGID 3778, 3779 - Option to reorder ALL CHILDREN Test Suites
  *  20100916 - franciscom - BUGID 3639 - reworked
@@ -489,7 +490,13 @@ function deleteTestSuite(&$smartyObj,&$argsObj,&$tsuiteMgr,&$treeMgr,&$tcaseMgr,
 
   returns: map with messages and status
   
-  revision: 20091206 - franciscom - new items are created as last element of tree branch
+  revision: 
+  			20101012 - franciscom - BUGID 3890
+  			when creating action on duplicate is setted to BLOCK without using 
+  			config_get('action_on_duplicate_name').
+  			This is because this config option has to be used ONLY when copying/moving not when creating.
+  									
+  			20091206 - franciscom - new items are created as last element of tree branch
 
 */
 function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
@@ -505,7 +512,7 @@ function addTestSuite(&$tsuiteMgr,&$argsObj,$container,&$hash)
     	$new_order = $dummy['node_order']+1;
     }
 	$ret = $tsuiteMgr->create($argsObj->containerID,$container['container_name'],$container['details'],
-	                         $new_order,config_get('check_names_for_duplicates'),config_get('action_on_duplicate_name'));
+	                         $new_order,config_get('check_names_for_duplicates'),'block');
 		                         
     $op['messages']= array('msg' => $ret['msg'], 'user_feedback' => '');
     $op['status']=$ret['status_ok'];

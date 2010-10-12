@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.9 2010/06/24 17:25:53 asimon83 Exp $
+$Id: containerNew.tpl,v 1.10 2010/10/12 20:24:27 franciscom Exp $
 Purpose: smarty template - create containers
 
+20101012 - franciscom - BUGID 3887: CF Types validation
 20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
                         removed use of smarty.template to get current directory to include other
                         templates. On 3.0 RC smarty.template do not contains current dir
@@ -46,6 +47,31 @@ function validateForm(f)
       selectField(f, 'container_name');
       return false;
   }
+  
+  /* Validation of a limited type of custom fields */
+  var cf_designTime = document.getElementById('cfields_design_time');
+	if (cf_designTime)
+ 	{
+ 		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
+
+ 		cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 		cfieldsChecks = validateCustomFields(cfields_container);
+		if(!cfieldsChecks.status_ok)
+	  	{
+	    	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	      	alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	      	return false;
+		}
+	}
+  
+  
   
   return true;
 }

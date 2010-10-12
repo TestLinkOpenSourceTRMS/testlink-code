@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.10 2010/10/12 20:22:06 franciscom Exp $
+$Id: containerEdit.tpl,v 1.11 2010/10/12 20:22:40 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
@@ -56,7 +56,6 @@ function validateForm(f)
 	      	return false;
 		}
 
-        // 20090421 - franciscom - BUGID 
  		cfields_container = cf_designTime.getElementsByTagName('textarea');
  		cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)

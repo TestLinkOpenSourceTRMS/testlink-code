@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.105 2010/10/09 18:37:15 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.106 2010/10/12 19:06:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  * 20101009 - franciscom - exportTestSuiteDataToXML() - better checks on $optExport
  * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
  * 20100904 - franciscom - BUGID 3571 - get_by_name() interface changes
@@ -558,8 +559,8 @@ class testsuite extends tlObjectWithAttachments
 	    	$webEditorData = $the_data;
 		}
 		
-	    // Custom fields
-	    $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id);
+	    // Custom fields - 20101012
+	    $cf_smarty = $this->html_table_of_custom_field_inputs($id,$parent_id,'design','',$userInput);
 		
 		// webeditor
 		// 20090503 - now templates will be also used after 'add_testsuite', when
@@ -1198,8 +1199,7 @@ class testsuite extends tlObjectWithAttachments
 	  $path_len=count($the_path);
 	  $tproject_id=($path_len > 0)? $the_path[$path_len-1]['parent_id'] : $parent_id;
 	
-	  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,
-	                                                          'testsuite',$id);
+	  $cf_map=$this->cfield_mgr->get_linked_cfields_at_design($tproject_id,$enabled,$filters,'testsuite',$id);
 	  return($cf_map);
 	}
 	
@@ -1218,36 +1218,18 @@ class testsuite extends tlObjectWithAttachments
 	  returns: html string
 	  
 	*/
-	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design') 
+	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',$input_values=null) 
 	{
-	  $cf_smarty='';
-	  if( $scope=='design' )
-	  {
-	    $cf_map=$this->get_linked_cfields_at_design($id,$parent_id);
-	  }
-	  else
-	  {
-	    $cf_map=$this->get_linked_cfields_at_execution($id,$parent_id);
-	  }
-	  
-	  if( !is_null($cf_map) )
-	  {
-	    foreach($cf_map as $cf_id => $cf_info)
-	    {
-	      // true => do not create input in audit log
-	      $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
-	      $cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . "</td><td>" .
-	                    $this->cfield_mgr->string_custom_field_input($cf_info) .
-	                    "</td></tr>\n";
-	    } //foreach($cf_map
-	  }
-	  
-	  if(trim($cf_smarty) != "")
-	  {
-	    $cf_smarty = "<table>" . $cf_smarty . "</table>";
-	  }
-	  
-	  return($cf_smarty);
+		$cf_smarty='';
+	  	$method_suffix = $scope=='design' ? $scope : 'execution';
+	  	$method_name = "get_linked_cfields_at_{$method_suffix}";
+	  	$cf_map=$this->$method_name($id,$parent_id);
+
+		if(!is_null($cf_map))
+		{
+			$cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
+        }
+	  	return($cf_smarty);
 	}
 	
 	
@@ -1291,9 +1273,8 @@ class testsuite extends tlObjectWithAttachments
 	    }
 	    else 
 	    {
-	      // Important: remember that for Test Suite, custom field value CAN NOT BE changed at execution time
-	      // just displayed.
-	      // @TODO: schlundus, can this be speed up with tprojectID?
+	      // Important: remember that for Test Suite, custom field value CAN NOT BE changed 
+	      // at execution time just displayed.
 	      $cf_map=$this->get_linked_cfields_at_execution($id);
 	    }
 	      

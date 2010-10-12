@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.325 2010/10/11 19:21:00 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.326 2010/10/12 07:44:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class	
  * 20101011 - franciscom - html_table_of_custom_field_inputs() ADDED CRITIC DOCUMENTATION
  * 20101010 - franciscom - get_by_id() - added testsuite_id on output recordset
  * 20101009 - franciscom - exportTestCaseDataToXML() - better checks on $optExport
@@ -3820,7 +3821,6 @@ class testcase extends tlObjectWithAttachments
 	
 	*/
 	// BUGID 3431
-	// function get_linked_cfields_at_design($id,$parent_id=null,$filters=null,$tproject_id = null)
 	function get_linked_cfields_at_design($id,$tcversion_id,$parent_id=null,$filters=null,$tproject_id = null)
 	{
 		// echo 'DEBUG' . __FUNCTION__ . '<br>';
@@ -3830,8 +3830,6 @@ class testcase extends tlObjectWithAttachments
 		}
 		
 		// BUGID 3431 - NEED CHANGE
-		// $cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
-		//                                                           self::ENABLED,$filters,'testcase',$id);
 		$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,
 		                                                          self::ENABLED,$filters,'testcase',$tcversion_id);
 		return $cf_map;
@@ -3929,82 +3927,35 @@ class testcase extends tlObjectWithAttachments
 	*/
 	function html_table_of_custom_field_inputs($id,$parent_id=null,$scope='design',$name_suffix='',
 	                                           $link_id=null,$tplan_id=null,
-	                                           $tproject_id = null,$filters=null, $request = null)
+	                                           $tproject_id = null,$filters=null, $input_values = null)
 	{
 		$cf_smarty = '';
 	
-	  // BUGID 1650
-	  $cf_scope=trim($scope);
-	  $method_name='get_linked_cfields_at_' . $cf_scope;
+	  	// BUGID 1650
+	  	$cf_scope=trim($scope);
+	  	$method_name='get_linked_cfields_at_' . $cf_scope;
 	  
-	  switch($cf_scope)
-	  {
-	      case 'testplan_design':
-	          $cf_map = $this->$method_name($id,$parent_id,null,$link_id,null,$tproject_id);    
-	      break;
-	
-	      case 'design':
-	          // added $filters
+	  	switch($cf_scope)
+	  	{
+	  	    case 'testplan_design':
+	  	        $cf_map = $this->$method_name($id,$parent_id,null,$link_id,null,$tproject_id);    
+	  	    break;
+	  	
+	  	    case 'design':
 				// BUGID 3431 - 
-	      		$cf_map = $this->$method_name($id,$link_id,$parent_id,$filters,$tproject_id);    
-	      break;
-	      	
-	      case 'execution':
-	          $cf_map = $this->$method_name($id,$parent_id,null,$link_id,$tplan_id,$tproject_id);    
-	      break;
-	        
-	  }
+	  	    	$cf_map = $this->$method_name($id,$link_id,$parent_id,$filters,$tproject_id);    
+	  	    break;
+	  	    	
+	  	    case 'execution':
+	  	        $cf_map = $this->$method_name($id,$parent_id,null,$link_id,$tplan_id,$tproject_id);    
+	  	    break;
+	  	      
+	  	}
 	  
 		if(!is_null($cf_map))
 		{
-			$prefix = $this->cfield_mgr->get_name_prefix();
-			$cf_smarty = "<table>";
-			foreach($cf_map as $cf_id => $cf_info)
-			{
-	            // true => do not create input in audit log
-	            $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));
-
-	            // 20101001 - asimon - custom fields do not lose entered values on errors
-	            $input_name = "{$prefix}{$cf_info['type']}_{$cf_info['id']}{$name_suffix}";
-				$value = isset($request[$input_name]) ? $request[$input_name] : null;
-				$verbose_type = trim($this->cfield_mgr->custom_field_types[$cf_info['type']]);
-
-				if ($verbose_type == 'date') {
-					// if cf is a date field, convert the three given values to unixtime format
-					if (isset($request[$input_name . '_day']) && isset($request[$input_name . '_month']) && 
-						isset($request[$input_name . '_year'])) 
-					{
-						$value = mktime(0, 0, 0, $request[$input_name . '_month'], 
-										$request[$input_name . '_day'], $request[$input_name . '_year']);
-					}
-				}
-
-				if (!is_null($value) && is_array($value)){
-					$value = implode("|", $value);
-				}
-
-	            if (!is_null($value)) {
-		            $cf_info['value'] = $value;
-	            }
-
-				// Want to give an html id to <td> used as labelHolder, to use it in Javascript
-				// logic to validate CF content
-				$cf_html_string = $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix);
-				
-				// extract input html id
-				$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-	     	    
-	     	    // IMPORTANT NOTICE
-	     	    // assigning an ID with this format is CRITIC to Javascript logic used
-	     	    // to validate input data filled by user according to CF type
-	     	    $td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
-				$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . 
-				              ":</td><td>{$cf_html_string}</td></tr>\n";
-			}
-			$cf_smarty .= "</table>";
-	
-		}
-	
+			$cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
+        }
 		return $cf_smarty;
 	}
 	
@@ -4110,7 +4061,6 @@ class testcase extends tlObjectWithAttachments
 	    {
 	        case 'design':
 	         	// BUGID 3431
-	            // $cf_map = $this->get_linked_cfields_at_design($id,null,$filters,$tproject_id);
 	            $cf_map = $this->get_linked_cfields_at_design($id,$link_id,null,$filters,$tproject_id);
 	        break;
 	    
@@ -4237,7 +4187,6 @@ class testcase extends tlObjectWithAttachments
 	  // Get all cfields linked to any testcase of this test project
 	  // with the values presents for $from_id, testcase we are using as
 	  // source for our copy
-	  // $cfmap_from=$this->get_linked_cfields_at_design($from_id);
 	  $cfmap_from = $this->get_linked_cfields_at_design($source['id'],$source['tcversion_id']);
 	
 	  $cfield=null;

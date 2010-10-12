@@ -1,8 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.19 2010/10/08 11:15:26 asimon83 Exp $
+$Id: tcAssignedToUser.tpl,v 1.20 2010/10/12 17:51:13 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 rev:
+20101012 - Julian - show "show also closed builds" checkbox even if there is no resultset. This is
+                    required if there are no open builds at all (not possible to show closed builds)
 20101008 - asimon - BUGID 3311
 20101004 - asimon - added checkbox to enable displaying of closed builds
 20100825 - eloff - remove redundant headers
@@ -38,17 +40,20 @@ rev:
 <h1 class="title">{$gui->pageTitle}</h1>
 <div class="workBack">
 
+<p>
+<form method="post">
+	<input type="checkbox" name="show_closed_builds" value="show_closed_builds"
+		   {if $gui->show_closed_builds} checked="checked" {/if}
+		   onclick="this.form.submit();" /> {$labels.show_closed_builds_btn}
+	<input type="hidden"
+		   name="show_closed_builds_hidden"
+		   value="{$gui->show_closed_builds}" />
+</form>
+</p>
+<br />
+
 {if $gui->warning_msg == ''}
 	{if $gui->resultSet}
-		<p><form method="post">
-		<input type="checkbox" name="show_closed_builds" value="show_closed_builds"
-			   {if $gui->show_closed_builds} checked="checked" {/if}
-			   onclick="this.form.submit();" /> {$labels.show_closed_builds_btn}
-		<input type="hidden"
-			   name="show_closed_builds_hidden"
-			   value="{$gui->show_closed_builds}" />
-		</form></p><br />
-
 		{foreach from=$gui->tableSet key=idx item=matrix}
 		
 			<p>
@@ -64,7 +69,9 @@ rev:
         	{$labels.no_records_found}
     {/if}
 {else}
+	<div class="user_feedback">
     {$gui->warning_msg}
+    </div>
 {/if}   
 </div>
 </body>

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/08/22 16:26:43 $ by $Author: asimon83 $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2010/10/13 12:29:16 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
  *
- * rev: 
+ * rev:
+ *  20101013 - asimon - if execution is wanted, check for open builds in testplan
  *  20100822 - asimon - BUGID 3697: Assign Test Case execution - problems 
  *                                  when no build is defined on test plan
  *  20100106 - asimon - contribution for 2976 req/reqspec search
@@ -87,8 +88,10 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
 	// Check if for test project selected at least a test plan exist (BUGID 623)
 	if( isset($_SESSION['testplanID']) )
 	{
+		// 20101013 - asimon - if execution is wanted, check for open builds
+		$open = ($showFeature == 'executeTest') ? true : false;
   		validateBuildAvailability($db,$_SESSION['testplanID'],
-	    		$_SESSION['testplanName'], $_SESSION['testprojectName']);
+	    		$_SESSION['testplanName'], $_SESSION['testprojectName'], $open);
 	}
   	else
 	{
@@ -120,16 +123,18 @@ else
  * 	validate that some build exists (for Test Plan related features).
  *  If no valid build is found give feedback to user and exit.
  *
- * 	@author Martin Havlat 
+ * 	@author Martin Havlat
+ *  20101013 - asimon - new parameter $open: if execution is wanted, check for open builds
  *  20060809 - franciscom - check if user can create builds,
  *                          then put a link on the message page
  *                          to create link feature
  *
  **/
-function validateBuildAvailability(&$db,$tpID, $tpName, $prodName)
+function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
 {
 	$tp = new testplan($db);
-	if (!$tp->getNumberOfBuilds($tpID))
+	// 20101013 - asimon - if execution is wanted, check for open builds
+	if (!$tp->getNumberOfBuilds($tpID, null, $open))
 	{	           
 		$message = '<p>'  . lang_get('no_build_warning_part1') . 
 	          "<b> " . htmlspecialchars($tpName) . "</b>";

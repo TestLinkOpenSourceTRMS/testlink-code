@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.202 2010/10/13 07:29:22 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.203 2010/10/13 11:07:48 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.717
+ * Last Update according to en_GB string file version 1.723
  *
  **/
 
@@ -116,6 +116,7 @@ $TLS_blocks_depends = 'blockiert oder hängt ab von';
 $TLS_related_to='ist verwandt mit';
 $TLS_unknown_code='unbekannter Code: %s';
 $TLS_in_percent = "[%]";
+$TLS_user_has_no_right_for_action = 'Benutzer hat nicht die benötigten Rechte um diese Aktion auszuführen';
 
 $TLS_file_size_exceeded = 'Dateigröße (%s) > zugelassene Größe (%s)';
 
@@ -383,6 +384,7 @@ $TLS_mail_problems = "Das Emailsystem wurde nicht korrekt installiert. Bitte inf
 $TLS_page_title_lost_passwd = "TestLink - Passwort vergessen";
 $TLS_your_info_for_passwd = "Geben Sie bitte Ihren Benutzernamen ein, damit Ihnen ein neues Passwort zugeschickt wird.";
 $TLS_your_password_is = "Ihr neues TestLink Passwort lautet:";
+$TLS_password_set = "Passwort wurde geändert: ";
 
 
 
@@ -621,6 +623,7 @@ $TLS_req_type = "Anforderungstyp";
 $TLS_req_spec_type = "Anf. Spez. Typ";
 $TLS_btn_hide_cf = "Benutzerdef. Felder ausblenden";
 $TLS_btn_show_cf = "Benutzerdef. Felder einblenden";
+$TLS_btn_export_testplan_tree = 'Testplan exportieren';
 
 
 // ----- gui/templates/execNavigator.tpl -----
@@ -2943,7 +2946,7 @@ $TLS_event_viewer = "Ereignisviewer";
 $TLS_th_session_info = "Sitzungsinformation";
 $TLS_th_sessionID = "SitzungsID";
 $TLS_th_source = "Quelle";
-$TLS_click_on_event_info = "Klicken Sie auf das Ereignis, um zur Detailansicht zu gelangen.";
+$TLS_click_on_event_info = "Klicken Sie auf das \"+\" des Ereignisses, um zur Detailansicht zu gelangen.";
 $TLS_th_activity_code = "Aktivität";
 $TLS_th_object_id = "ObjektID";
 $TLS_th_object_type = "Objekttyp";
@@ -2951,12 +2954,15 @@ $TLS_message_please_wait = "Bitte warten ...";
 $TLS_title_eventinfo = "Ereignisinformation";
 $TLS_title_eventdetails = "Ereignisdetails";
 $TLS_th_user = "Benutzer";
+$TLS_th_transaction = "Transaktion";
 $TLS_show_event_history = "Zeige die Ereignishistorie an";
 $TLS_btn_clear_all_events = "Alle Ereignisse löschen";
 $TLS_btn_clear_events = "Ereignisse löschen";
 $TLS_th_event_description = "Beschreibung";
 $TLS_select_user = "Benutzer (Default: Alle)";
 $TLS_clear_tip = "Events des/der gewählten Log Levels löschen oder löschen aller Events, falls kein Level gewählt wurde";
+$TLS_show_eventdetails = "Zeige Ereignisdetails";
+$TLS_no_events = "Keine Ereignisse verfügbar";
 
 
 // ----- int_mantis.php -----

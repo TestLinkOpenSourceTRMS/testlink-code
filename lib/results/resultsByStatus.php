@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.103 2010/10/13 09:13:52 asimon83 Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.104 2010/10/13 11:48:50 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -196,11 +196,11 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 		    $image_link = "<!-- " . sprintf("%010d", $testcase['external_id']) . " -->" . $exec_link . $edit_link . $tcaseName;
 
 		    // 20101013 - asimon - use linkto.php for emailed links
-		    $dl = $args->basehref . 'linkto.php?tprojectPrefix=' . urlencode($tproject_info['prefix']) .
+		    $dl = str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . urlencode($tproject_info['prefix']) .
 		          '&item=testcase&id=' . urlencode($ext_id);
-			$mail_link = "<a href=\"{$dl}\">{$tcaseName}</a> ";
-
-		    $tcLink = $args->format == FORMAT_MAIL_HTML ? $mail_link : $image_link;
+			$mail_link = "<a href='{$dl}'>{$tcaseName}</a>";
+			
+		    $tcLink = $args->format != FORMAT_HTML ? $mail_link : $image_link;
 
 		    //$tcLink = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' .
 			//          $testcase['tc_id'] . '">' . htmlspecialchars($tcaseName) . '</a>';

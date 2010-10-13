@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.76 2010/10/13 09:13:52 asimon83 Exp $ 
+* $Id: resultsTC.php,v 1.77 2010/10/13 11:48:50 mx-julian Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -161,16 +161,16 @@ if ($lastResultMap != null)
 			    // 20101007 - asimon - BUGID 3857
 
 				// 20101013 - asimon - use linkto.php for emailed links
-				$dl = $args->basehref . 'linkto.php?tprojectPrefix=' . urlencode($tproject_info['prefix']) .
+				$dl = str_replace(" ", "%20", $args->basehref) . 'linkto.php?tprojectPrefix=' . urlencode($tproject_info['prefix']) .
 					  '&item=testcase&id=' . urlencode($external_id);
-				$mail_link = "<a href=\"{$dl}\">{$tc_name}</a> ";
+				$mail_link = "<a href='{$dl}'>{$tc_name}</a> ";
 
 			    $tcLink = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" . $edit_link . $tc_name;
 
 				$rowArray = null;
 				$rowArray[$cols['tsuite']] = $suiteName;
 			    // 20101007 - asimon - BUGID 3857
-				$rowArray[$cols['link']] = $args->format == FORMAT_MAIL_HTML ? $mail_link : $tcLink;
+				$rowArray[$cols['link']] = $args->format != FORMAT_HTML ? $mail_link : $tcLink;
 				if ($show_platforms)
 				{
 					$rowArray[$cols['platform']] = $gui->platforms[$platformId];
@@ -213,10 +213,13 @@ if ($lastResultMap != null)
 					$qta_suites=sizeOf($suiteExecutions);
 
 					// build icon for execution link
-					$exec_link = "<a href=\"javascript:openExecutionWindow(" .
-					             "{$testCaseId}, {$tcase['tcversion_id']}, {$buildId}, " .
-					             "{$args->tplan_id}, {$platformId});\">" .
-					             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
+					$exec_link = "";
+					if ($args->format == FORMAT_HTML) {
+						$exec_link = "<a href=\"javascript:openExecutionWindow(" .
+						             "{$testCaseId}, {$tcase['tcversion_id']}, {$buildId}, " .
+						             "{$args->tplan_id}, {$platformId});\">" .
+						             "<img title=\"{$labels['execution']}\" src=\"{$exec_img}\" /></a> ";
+					}
 
 					for ($jdx = 0; $jdx < $qta_suites; $jdx++) 
 					{

@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/10/12 19:15:35 $  $Author: mx-julian $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/10/13 09:35:39 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
  *  20101012 - Julian - added html comment to properly sort by test case column
  *  20101004 - asimon - BUGID 3824: added checkbox do display closed builds
  *  20100927 - asimon - added mouseover information for the exec and edit icons
@@ -47,6 +48,8 @@ $tproject_info = $tproject_mgr->get_by_id($args->tproject_id);
 unset($tproject_mgr);
 
 $gui=new stdClass();
+//20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
+$gui->show_build_selector = ($args->build_id == 0);
 $gui->glueChar = config_get('testcase_cfg')->glue_character;
 $gui->tproject_name = $tproject_info['name'];
 $gui->warning_msg = '';

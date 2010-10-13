@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.20 2010/10/12 17:51:13 mx-julian Exp $
+$Id: tcAssignedToUser.tpl,v 1.21 2010/10/13 09:35:39 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 rev:
+20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
 20101012 - Julian - show "show also closed builds" checkbox even if there is no resultset. This is
                     required if there are no open builds at all (not possible to show closed builds)
 20101008 - asimon - BUGID 3311
@@ -40,6 +41,8 @@ rev:
 <h1 class="title">{$gui->pageTitle}</h1>
 <div class="workBack">
 
+{* 20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected *}
+{if $gui->show_build_selector}
 <p>
 <form method="post">
 	<input type="checkbox" name="show_closed_builds" value="show_closed_builds"
@@ -51,6 +54,7 @@ rev:
 </form>
 </p>
 <br />
+{/if}
 
 {if $gui->warning_msg == ''}
 	{if $gui->resultSet}

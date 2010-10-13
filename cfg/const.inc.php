@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.160 2010/10/09 09:42:34 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.161 2010/10/13 07:29:22 mx-julian Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -637,15 +637,17 @@ define('TL_REQ_STATUS_DRAFT','D');
 define('TL_REQ_STATUS_REVIEW','R');
 define('TL_REQ_STATUS_REWORK','W');
 define('TL_REQ_STATUS_FINISH','F');
+define('TL_REQ_STATUS_IMPLEMENTED','I');
 
 // key: status; value: text label
 $tlCfg->req_cfg = new stdClass();
-$tlCfg->req_cfg->status_labels = array(TL_REQ_STATUS_VALID => 'review_status_valid', 
-					                   TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
-					                   TL_REQ_STATUS_DRAFT => 'req_status_draft',
+$tlCfg->req_cfg->status_labels = array(TL_REQ_STATUS_DRAFT => 'req_status_draft',
 					                   TL_REQ_STATUS_REVIEW => 'req_status_review',
 					                   TL_REQ_STATUS_REWORK => 'req_status_rework',
-					                   TL_REQ_STATUS_FINISH => 'req_status_finish');
+					                   TL_REQ_STATUS_FINISH => 'req_status_finish',
+					                   TL_REQ_STATUS_IMPLEMENTED => 'req_status_implemented',
+					                   TL_REQ_STATUS_VALID => 'review_status_valid', 
+					                   TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable');
 
 /** 
  * Types of requirements (with respect to standards)

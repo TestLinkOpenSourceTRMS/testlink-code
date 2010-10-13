@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.75 2010/10/12 19:54:51 mx-julian Exp $ 
+* $Id: resultsTC.php,v 1.76 2010/10/13 09:13:52 asimon83 Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -9,6 +9,7 @@
 * Show Test Report by individual test case.
 *
 * @author
+* 20101013 - asimon - use linkto.php for emailed links
 * 20101012 - Julian - added html comment to properly sort by test case column
 * 20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
 * 20100930 - asimon - added icons for testcase editing and execution
@@ -158,7 +159,12 @@ if ($lastResultMap != null)
 				$edit_link = "<a href=\"javascript:openTCEditWindow({$testCaseId});\">" .
 							 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 			    // 20101007 - asimon - BUGID 3857
-			    $mail_link = "<a href=\"javascript:openTCEditWindow({$testCaseId});\">{$tc_name}</a> ";
+
+				// 20101013 - asimon - use linkto.php for emailed links
+				$dl = $args->basehref . 'linkto.php?tprojectPrefix=' . urlencode($tproject_info['prefix']) .
+					  '&item=testcase&id=' . urlencode($external_id);
+				$mail_link = "<a href=\"{$dl}\">{$tc_name}</a> ";
+
 			    $tcLink = "<!-- " . sprintf("%010d", $tcase['external_id']) . " -->" . $edit_link . $tc_name;
 
 				$rowArray = null;
@@ -290,6 +296,8 @@ function init_args()
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
     $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+	$args->basehref = $_SESSION['basehref'];
+	
     return $args;
 }
 

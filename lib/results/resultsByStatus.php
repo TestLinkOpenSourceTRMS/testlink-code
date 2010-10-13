@@ -12,11 +12,12 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.102 2010/10/12 19:54:51 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.103 2010/10/13 09:13:52 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101013 - asimon - use linkto.php for emailed links
  *  20101012 - Julian - added html comment to properly sort by test case column
  *  20101007 - asimon - BUGID 3857: Replace linked icons in reports if reports get sent by e-mail
  *  20100927 - asimon - added mouseover information for the exec and edit icons
@@ -188,12 +189,18 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 			$edit_link = "<a href=\"javascript:openTCEditWindow({$testcase['tc_id']});\">" .
 						 "<img title=\"{$labels['design']}\" src=\"{$edit_img}\" /></a> ";
 
-			$tcaseName = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']). ':' . $testcase['name'];
+		    $ext_id = buildExternalIdString($tproject_info['prefix'], $testcase['external_id']);
+			$tcaseName = $ext_id . ':' . $testcase['name'];
 
 		    // 20101007 - asimon - BUGID 3857
 		    $image_link = "<!-- " . sprintf("%010d", $testcase['external_id']) . " -->" . $exec_link . $edit_link . $tcaseName;
-			$mail_link = "<a href=\"javascript:openTCEditWindow({$testcase['tc_id']});\">{$tcaseName}</a> ";
-			$tcLink = $args->format == FORMAT_MAIL_HTML ? $mail_link : $image_link;
+
+		    // 20101013 - asimon - use linkto.php for emailed links
+		    $dl = $args->basehref . 'linkto.php?tprojectPrefix=' . urlencode($tproject_info['prefix']) .
+		          '&item=testcase&id=' . urlencode($ext_id);
+			$mail_link = "<a href=\"{$dl}\">{$tcaseName}</a> ";
+
+		    $tcLink = $args->format == FORMAT_MAIL_HTML ? $mail_link : $image_link;
 
 		    //$tcLink = '<a href="lib/testcases/archiveData.php?edit=testcase&id=' .
 			//          $testcase['tc_id'] . '">' . htmlspecialchars($tcaseName) . '</a>';
@@ -352,6 +359,7 @@ function init_args($statusCode)
 	
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->user = $_SESSION['currentUser'];
+	$args->basehref = $_SESSION['basehref'];
 
 	return $args;
 }

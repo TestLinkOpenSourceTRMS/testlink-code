@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2010/10/13 12:29:16 $ by $Author: asimon83 $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2010/10/14 06:51:58 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -89,7 +89,7 @@ if (in_array($showFeature,array('executeTest','showMetrics','tc_exec_assignment'
 	if( isset($_SESSION['testplanID']) )
 	{
 		// 20101013 - asimon - if execution is wanted, check for open builds
-		$open = ($showFeature == 'executeTest') ? true : false;
+		$open = ($showFeature == 'executeTest') ? true : null;
   		validateBuildAvailability($db,$_SESSION['testplanID'],
 	    		$_SESSION['testplanName'], $_SESSION['testprojectName'], $open);
 	}

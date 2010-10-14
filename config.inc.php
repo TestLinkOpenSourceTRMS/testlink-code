@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.329 2010/10/14 18:41:10 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.330 2010/10/14 19:33:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -577,6 +577,7 @@ $tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
 $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
 
 // Show all available status details for test plans on metrics dashboard 
+$tlCfg->metricsDashboardReport = new stdClass();
 $tlCfg->metricsDashboardReport->show_test_plan_status_details = false;
 
 

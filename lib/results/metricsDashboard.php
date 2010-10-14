@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2010/10/14 18:41:10 $ $Author: mx-julian $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2010/10/14 20:29:26 $ $Author: mx-julian $
  *
  * @author franciscom
  *
@@ -32,15 +32,20 @@ $gui->tproject_name = $args->tproject_name;
 $gui->show_only_active = $args->show_only_active;
 $gui->warning_msg = '';
 $result_cfg = config_get('results');
-$show_all_status_details = config_get('metricsDashboardReport')->show_test_plan_status_details;
+$show_all_status_details = config_get('metrics_dashboard')->show_test_plan_status;
 $round_precision = config_get('dashboard_precision');
 
-list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$args,$result_cfg);
+$labels = init_labels(array('overall_progress' => null, 'test_plan' => null, 'progress' => null,
+                            'href_metrics_dashboard' => null, 'progress_absolute' => null,
+                            'no_testplans_available' => null, 'not_aplicable' => null,
+                            'platform' => null, 'th_active_tc' => null, 'in_percent' => null));
+
+list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$args,$result_cfg, $labels);
 
 if(count($gui->tplan_metrics) > 0) {
 
 	// Create column headers
-	$columns = getColumnsDefinition($gui->show_platforms, $result_cfg);
+	$columns = getColumnsDefinition($gui->show_platforms, $result_cfg, $labels);
 
 	// Extract the relevant data and build a matrix
 	$matrixData = array();
@@ -67,7 +72,7 @@ if(count($gui->tplan_metrics) > 0) {
 				$tplan_string .= " - ";
 			}
 			
-			$tplan_string .= lang_get('overall_progress') . ": " . 
+			$tplan_string .= $labels['overall_progress'] . ": " . 
 			                 formatPercentage($tplan_metrics['overall']['executed'],
 			                                  $tplan_metrics['overall']['active'],
 			                                  $round_precision) . "%";
@@ -99,22 +104,22 @@ if(count($gui->tplan_metrics) > 0) {
 	// if platforms are to be shown -> group by test plan
 	// if no platforms are to be shown -> no grouping
 	if($gui->show_platforms) {
-		$table->setGroupByColumnName(lang_get('test_plan'));
+		$table->setGroupByColumnName($labels['test_plan']);
 	}
 
-	$table->setSortByColumnName(lang_get('progress'));
+	$table->setSortByColumnName($labels['progress']);
 	$table->sortDirection = 'DESC';
 
 	$table->showToolbar = true;
 	$table->toolbarExpandCollapseGroupsButton = true;
 	$table->toolbarShowAllColumnsButton = true;
-	$table->title = lang_get("href_metrics_dashboard");
+	$table->title = $labels['href_metrics_dashboard'];
 	$table->showGroupItemsCount = false;
 
 	$gui->tableSet = array($table);
 	
 	// collect test project metrics
-	$gui->project_metrics[lang_get('progress_absolute')] = getPercentage($gui->tplan_metrics['total']['executed'], 
+	$gui->project_metrics[$labels['progress_absolute']] = getPercentage($gui->tplan_metrics['total']['executed'], 
 	                                                 $gui->tplan_metrics['total']['active'], $round_precision);
 	foreach ($result_cfg['status_label'] as $key => $status)
 	{
@@ -122,14 +127,14 @@ if(count($gui->tplan_metrics) > 0) {
 	                                                $gui->tplan_metrics['total']['active'], $round_precision);
 	}
 } else {
-	$gui->warning_msg = lang_get('no_testplans_available');
+	$gui->warning_msg = $labels['no_testplans_available'];
 }
 
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-function getMetrics(&$db,$args, $result_cfg)
+function getMetrics(&$db,$args, $result_cfg, $labels)
 {
 	$user_id = $args->currentUserID;
 	$tproject_id = $args->tproject_id;
@@ -172,7 +177,7 @@ function getMetrics(&$db,$args, $result_cfg)
 		{
 			$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']]['tplan_name'] = $value['name'];
 			$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']]['platform_name'] = $platform_name['id'] == 0 ?
-			lang_get('not_aplicable') : $platform_name['name'];
+			$labels['not_aplicable'] : $platform_name['name'];
 			 
 			$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']]['active'] = 0;
 			$metrics['testplans'][$tplan_id]['overall']['active'] = 0;
@@ -232,6 +237,7 @@ function getMetrics(&$db,$args, $result_cfg)
 
 function formatPercentage($denominator, $numerator, $round_precision)
 {
+	// use html comment to be able to properly sort by percentage columns on exttable
 	$formatted_percentage = "<!-- 0 -->0";
 	if ($numerator > 0) {
 		$percentage = round(($denominator / $numerator) * 100,$round_precision);
@@ -252,27 +258,27 @@ function getPercentage($denominator, $numerator, $round_precision)
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition($showPlatforms, $result_cfg)
+function getColumnsDefinition($showPlatforms, $result_cfg, $labels)
 {
 	$colDef = array();
 
-	$colDef[] = array('title' => lang_get('test_plan'), 'width' => 60, 'type' => 'text');
+	$colDef[] = array('title' => $labels['test_plan'], 'width' => 60, 'type' => 'text');
 
 	if ($showPlatforms)
 	{
-		$colDef[] = array('title' => lang_get('platform'), 'width' => 60);
+		$colDef[] = array('title' => $labels['platform'], 'width' => 60);
 	}
 
-	$colDef[] = array('title' => lang_get('th_active_tc'), 'width' => 40);
+	$colDef[] = array('title' => $labels['th_active_tc'], 'width' => 40);
 	
 	// create 2 columns for each defined status
 	foreach ($result_cfg['status_label'] as $key => $status)
 	{
 		$colDef[] = array('title' => lang_get($status), 'width' => 40, 'hidden' => true);
-		$colDef[] = array('title' => lang_get($status) . " " . lang_get("in_percent"), 'width' => 40);
+		$colDef[] = array('title' => lang_get($status) . " " . $labels['in_percent'], 'width' => 40);
 	}
 	
-	$colDef[] = array('title' => lang_get("progress"), 'width' => 40);
+	$colDef[] = array('title' => $labels['progress'], 'width' => 40);
 
 	return $colDef;
 

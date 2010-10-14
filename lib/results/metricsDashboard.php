@@ -1,24 +1,25 @@
 <?php
 /**
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/10/04 15:41:51 $ $Author: mx-julian $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2010/10/14 18:41:10 $ $Author: mx-julian $
  *
  * @author franciscom
  *
  * @internal revisions
+ * 20101014 - Julian - BUGID 3893 - Extended metrics dashboard
  * 20100922 - Julian - Hide "Progress (Executed/Total)"-Column by default
  * 20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
- *                                - use of exttable 
+ *                                - use of exttable
  * 20100526 - Julian - fixed wrong access to platform array
  * 20100525 - Julian - added option 'step_info' => 0 to get_linked_tcversions call
  *                     to improve performance
  * 20090919 - franciscom - added platform info
  *
-**/
+ **/
 require('../../config.inc.php');
 require_once('common.php');
 require_once('exttable.class.php');
@@ -30,211 +31,261 @@ $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
 $gui->show_only_active = $args->show_only_active;
 $gui->warning_msg = '';
-list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$args);
+$result_cfg = config_get('results');
+$show_all_status_details = config_get('metricsDashboardReport')->show_test_plan_status_details;
+$round_precision = config_get('dashboard_precision');
+
+list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$args,$result_cfg);
 
 if(count($gui->tplan_metrics) > 0) {
 
 	// Create column headers
-	$columns = getColumnsDefinition($gui->show_platforms);
-	
+	$columns = getColumnsDefinition($gui->show_platforms, $result_cfg);
+
 	// Extract the relevant data and build a matrix
 	$matrixData = array();
 	
-	foreach ($gui->tplan_metrics as $tplan_metrics)
+	foreach ($gui->tplan_metrics['testplans'] as $tplan_metrics)
 	{
-		foreach($tplan_metrics as $platform_metric) {
+		foreach($tplan_metrics['platforms'] as $key => $platform_metric) {
 			$rowData = array();
-			$rowData[] = strip_tags($platform_metric['tplan_name']);
+			
+			// if test plan does not use platforms a overall status is not necessary
+			$tplan_string = strip_tags($platform_metric['tplan_name']);
+			
+			if ($show_all_status_details) {
+				// add information for all exec statuses
+				$tplan_string .= "<br>";
+				foreach ($result_cfg['status_label'] as $key => $status)
+				{
+					$tplan_string .= lang_get($status). ": " .$tplan_metrics['overall'][$key] .
+					                 " [" .formatPercentage($tplan_metrics['overall'][$key], 
+					                                        $tplan_metrics['overall']['active'],
+					                                        $round_precision) . "%], ";
+				}
+			} else {
+				$tplan_string .= " - ";
+			}
+			
+			$tplan_string .= lang_get('overall_progress') . ": " . 
+			                 formatPercentage($tplan_metrics['overall']['executed'],
+			                                  $tplan_metrics['overall']['active'],
+			                                  $round_precision) . "%";
+			
+			$rowData[] = $tplan_string;
+			
 			if ($gui->show_platforms) {
 				$rowData[] = strip_tags($platform_metric['platform_name']);
 			}
-			$rowData[] = $platform_metric['total'];
-			$rowData[] = $platform_metric['active'];
-			$rowData[] = $platform_metric['executed'];
-	
-			//to be able to properly sort by percentage add html comment
-			//show percentage for platforms/testplan with no executed test cases as 0
-			$executed_vs_active_string = "<!-- 0 -->0";
-			if ($platform_metric['executed_vs_active'] > 0) {
-				$percentage_comment = sprintf("%010d", $platform_metric['executed_vs_active']);
-				$executed_vs_active_string = "<!-- $percentage_comment -->" . $platform_metric['executed_vs_active'];
-			}
-			$rowData[] = $executed_vs_active_string;
-			              
-			$executed_vs_total_string = "<!-- 0 -->0";
-			if ($platform_metric['executed_vs_total'] > 0) {
-				$percentage_comment = sprintf("%010d", $platform_metric['executed_vs_total']);
-				$executed_vs_total_string = "<!-- $percentage_comment -->" . $platform_metric['executed_vs_total'];
-			}
-			$rowData[] = $executed_vs_total_string;
 			
+			$rowData[] = $platform_metric['active'];
+			
+			foreach ($result_cfg['status_label'] as $key => $status)
+			{
+				$rowData[] = $platform_metric[$key];
+				$rowData[] = formatPercentage($platform_metric[$key], $platform_metric['active'],
+				                              $round_precision);
+			}
+
+			$rowData[] = formatPercentage($platform_metric['executed'], $platform_metric['active'],
+			                              $round_precision);
+				
 			$matrixData[] = $rowData;
 		}
 	}
 	
 	$table = new tlExtTable($columns, $matrixData, 'tl_table_metrics_dashboard');
-	
-	//if platforms are to be shown -> group by test plan
+
+	// if platforms are to be shown -> group by test plan
 	// if no platforms are to be shown -> no grouping
 	if($gui->show_platforms) {
 		$table->setGroupByColumnName(lang_get('test_plan'));
 	}
-	
-	$table->setSortByColumnName(lang_get('th_executed_vs_active'));
+
+	$table->setSortByColumnName(lang_get('progress'));
 	$table->sortDirection = 'DESC';
-	
+
 	$table->showToolbar = true;
 	$table->toolbarExpandCollapseGroupsButton = true;
 	$table->toolbarShowAllColumnsButton = true;
 	$table->title = lang_get("href_metrics_dashboard");
-	
+	$table->showGroupItemsCount = false;
+
 	$gui->tableSet = array($table);
+	
+	// collect test project metrics
+	$gui->project_metrics[lang_get('progress_absolute')] = getPercentage($gui->tplan_metrics['total']['executed'], 
+	                                                 $gui->tplan_metrics['total']['active'], $round_precision);
+	foreach ($result_cfg['status_label'] as $key => $status)
+	{
+		$gui->project_metrics[lang_get($status)] = getPercentage($gui->tplan_metrics['total'][$key], 
+	                                                $gui->tplan_metrics['total']['active'], $round_precision);
+	}
 } else {
 	$gui->warning_msg = lang_get('no_testplans_available');
 }
 
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template); 
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-function getMetrics(&$db,$args)
+function getMetrics(&$db,$args, $result_cfg)
 {
 	$user_id = $args->currentUserID;
 	$tproject_id = $args->tproject_id;
 	$linked_tcversions = array();
 	$metrics = array();
 	$tplan_mgr = new testplan($db);
-    $show_platforms = false;
-  
+	$show_platforms = false;
+
 	// BUGID 1215
 	// get all tesplans accessibles  for user, for $tproject_id
-	
-    if($args->show_only_active) {
-    	$options = array('active' => ACTIVE);
-    } else {
-    	$options = array('active' => TP_ALL_STATUS);
-    }
-    
-	$test_plans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,null,$options);
+	if($args->show_only_active) {
+		$options = array('active' => ACTIVE);
+	} else {
+		$options = array('active' => TP_ALL_STATUS);
+	}
 
+	$test_plans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,null,$options);
 
 	// Get count of testcases linked to every testplan
 	foreach($test_plans as $key => $value)
 	{
-    	$tplan_id = $value['id'];
-    	$filters=null;
-    	$options = array('output' => 'mapOfMap', 'steps_info' => 0);
-    	$linked_tcversions[$tplan_id] = $tplan_mgr->get_linked_tcversions($tplan_id,$filters,$options);
-        $platformSet=$tplan_mgr->getPlatforms($tplan_id);
-        
-        if( is_null($platformSet) )
-        {
-        	//Julian: replaced array(0=>'')
-        	$platformSet=array(0=>array('id'=> 0));
-        }
-        else
-        {
-        	$show_platforms = true;
-        }
-        
-         
-        foreach($platformSet as $platform_id => $platform_name) 
-        {    
-			$metrics[$tplan_id][$platform_name['id']]['tplan_name'] = $value['name'];
-			$metrics[$tplan_id][$platform_name['id']]['platform_name'] = $platform_name['id'] == 0 ?
-			                                      lang_get('not_aplicable') : $platform_name['name'];
-			$metrics[$tplan_id][$platform_name['id']]['executed'] = 0;
-			$metrics[$tplan_id][$platform_name['id']]['active'] = 0;
-			$metrics[$tplan_id][$platform_name['id']]['total'] = 0;
-    		$metrics[$tplan_id][$platform_name['id']]['executed_vs_active'] = -1;
-    		$metrics[$tplan_id][$platform_name['id']]['executed_vs_total'] = -1;
-    		$metrics[$tplan_id][$platform_name['id']]['active_vs_total'] = -1;
+		$tplan_id = $value['id'];
+		$filters=null;
+		$options = array('output' => 'mapOfMap', 'steps_info' => 0);
+		$linked_tcversions[$tplan_id] = $tplan_mgr->get_linked_tcversions($tplan_id,$filters,$options);
+		$platformSet=$tplan_mgr->getPlatforms($tplan_id);
+
+		if( is_null($platformSet) )
+		{
+			// Julian: replaced array(0=>'')
+			$platformSet=array(0=>array('id'=> 0));
 		}
-    }
+		else
+		{
+			$show_platforms = true;
+		}
+
+		# initlialize counters
+		foreach($platformSet as $platform_id => $platform_name)
+		{
+			$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']]['tplan_name'] = $value['name'];
+			$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']]['platform_name'] = $platform_name['id'] == 0 ?
+			lang_get('not_aplicable') : $platform_name['name'];
+			 
+			$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']]['active'] = 0;
+			$metrics['testplans'][$tplan_id]['overall']['active'] = 0;
+			$metrics['total']['active'] = 0;
+
+			$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']]['executed'] = 0;
+			$metrics['testplans'][$tplan_id]['overall']['executed'] = 0;
+			$metrics['total']['executed'] = 0;
+			
+			foreach ($result_cfg['status_label'] as $key => $status)
+			{
+				$metrics['testplans'][$tplan_id]['platforms'][$platform_name['id']][$key] = 0;
+				$metrics['testplans'][$tplan_id]['overall'][$key] = 0;
+				$metrics['total'][$key] = 0;			
+			}
+		}
+	}
+	
 	// Get count of executed testcases
- 	foreach($linked_tcversions as $tplan_id => $tcinfo)
+	foreach($linked_tcversions as $tplan_id => $tcinfo)
 	{
-    	if(!is_null($tcinfo))
-    	{
-    		foreach($tcinfo as $tcase_id => $tc)
-    		{
-      			foreach($tc as $platform_id => $value)
-      			{
-        			if($value['exec_id'] > 0)
-        			{
-          				$metrics[$tplan_id][$platform_id]['executed']++;
-        			}
-        			if($value['active'])
-        			{
-          				$metrics[$tplan_id][$platform_id]['active']++;
-        			}
-        			$metrics[$tplan_id][$platform_id]['total']++;
-      			}
-      		}
-      		
-    	}
-  	}
-  
-	// Calculate percentages
-	$round_precision = config_get('dashboard_precision');
-	foreach($metrics as $tplan_id => $platform_metrics)
-	{
-		$platforms = array_keys($platform_metrics);
-        foreach($platforms as $platform_id)
-        {
-			$planMetrics = &$metrics[$tplan_id][$platform_id];
-			if($planMetrics['total'] > 0)
-    		{
-      			if($planMetrics['active'] > 0)
-      			{
-        			$planMetrics['executed_vs_active'] = $planMetrics['executed']/$planMetrics['active'];
-        			$planMetrics['executed_vs_active'] = round($planMetrics['executed_vs_active'] * 100,$round_precision);
-      			} 
-      			$planMetrics['executed_vs_total'] = $planMetrics['executed']/$planMetrics['total'];
-      			$planMetrics['executed_vs_total'] = round($planMetrics['executed_vs_total'] * 100,$round_precision);
-        	
-      			$planMetrics['active_vs_total'] = $planMetrics['active']/$planMetrics['total'];
-      			$planMetrics['active_vs_total'] = round($planMetrics['active_vs_total'] * 100,$round_precision);
-    		}
-    	}	
- 	}
+		if(!is_null($tcinfo))
+		{
+			foreach($tcinfo as $tcase_id => $tc)
+			{
+				foreach($tc as $platform_id => $value)
+				{
+					if($value['active'])
+					{
+						// count number of active test cases for each platform, each test plan and 
+						// the whole project
+						$metrics['testplans'][$tplan_id]['platforms'][$platform_id]['active']++;
+						$metrics['testplans'][$tplan_id]['overall']['active']++;
+						$metrics['total']['active']++;
+						
+						// count number of test cases depending on execution status (result) for
+						// each platform, each test plan and the whole project
+						$status_key = array_keys($result_cfg['status_code'], $value['exec_status']);
+						$metrics['testplans'][$tplan_id]['platforms'][$platform_id][$status_key[0]]++;
+						$metrics['testplans'][$tplan_id]['overall'][$status_key[0]]++;
+						$metrics['total'][$status_key[0]]++;
+						
+						// count number of executed test cases for each platform, each test plan and
+						// the whole project
+						if ($value['exec_id'] > 0) {
+							$metrics['testplans'][$tplan_id]['platforms'][$platform_id]['executed']++;
+							$metrics['testplans'][$tplan_id]['overall']['executed']++;
+							$metrics['total']['executed']++;
+						}
+					}
+				}
+			}
+		}
+	}
 	return array($metrics, $show_platforms);
 }
 
+function formatPercentage($denominator, $numerator, $round_precision)
+{
+	$formatted_percentage = "<!-- 0 -->0";
+	if ($numerator > 0) {
+		$percentage = round(($denominator / $numerator) * 100,$round_precision);
+		$percentage_comment = sprintf("%010.{$round_precision}f", $percentage);
+		$formatted_percentage = "<!-- $percentage_comment -->" . $percentage;
+	}
+
+	return($formatted_percentage);
+}
+
+function getPercentage($denominator, $numerator, $round_precision)
+{
+	$percentage = ($numerator > 0) ? (round(($denominator / $numerator) * 100,$round_precision)) : 0;
+
+	return($percentage);
+}
 /**
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition($showPlatforms)
+function getColumnsDefinition($showPlatforms, $result_cfg)
 {
 	$colDef = array();
-	
+
 	$colDef[] = array('title' => lang_get('test_plan'), 'width' => 60, 'type' => 'text');
-		
+
 	if ($showPlatforms)
 	{
 		$colDef[] = array('title' => lang_get('platform'), 'width' => 60);
 	}
-	
-	$colDef[] = array('title' => lang_get('th_total_tc'), 'width' => 40);
+
 	$colDef[] = array('title' => lang_get('th_active_tc'), 'width' => 40);
-	$colDef[] = array('title' => lang_get('th_executed_tc'), 'width' => 40);
-	$colDef[] = array('title' => lang_get('th_executed_vs_active'), 'width' => 40);
-	// hide progress related to total number of test cases by default
-	$colDef[] = array('title' => lang_get('th_executed_vs_total'), 'width' => 40, 'hidden' => true);
 	
+	// create 2 columns for each defined status
+	foreach ($result_cfg['status_label'] as $key => $status)
+	{
+		$colDef[] = array('title' => lang_get($status), 'width' => 40, 'hidden' => true);
+		$colDef[] = array('title' => lang_get($status) . " " . lang_get("in_percent"), 'width' => 40);
+	}
+	
+	$colDef[] = array('title' => lang_get("progress"), 'width' => 40);
+
 	return $colDef;
-	
+
 }
 
 function init_args()
 {
 	$args = new stdClass();
-	
+
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;
 	$args->currentUserID = $_SESSION['currentUser']->dbID;
-	
+
 	$show_only_active = isset($_REQUEST['show_only_active']) ? true : false;
 	$show_only_active_hidden = isset($_REQUEST['show_only_active_hidden']) ? true : false;
 	if ($show_only_active) {
@@ -247,7 +298,7 @@ function init_args()
 		$selection = true;
 	}
 	$args->show_only_active = $_SESSION['show_only_active'] = $selection;
-	
+
 	return $args;
 }
 

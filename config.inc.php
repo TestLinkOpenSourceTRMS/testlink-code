@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.328 2010/10/12 19:05:37 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.329 2010/10/14 18:41:10 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20101014 - Julian - BUGID 3893: added $tlCfg->metricsDashboardReport->show_test_plan_status_details
  *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users - $tlCfg->password_reset_send_method
  *  20100924 - asimon - added $tlCfg->enableTableExportButton
  *  20100915 - amitkhullar - BUGID 3639 - added $tlcfg->testcase_reorder_by for Reorder Test Cases
@@ -574,6 +575,9 @@ $tlCfg->resultMatrixReport->buildColumns['showStatusLastExecuted'] = true;
 
 // Show build columns in revers order. The latest build is to the left
 $tlCfg->resultMatrixReport->buildColumns['latestBuildOnLeft'] = false;
+
+// Show all available status details for test plans on metrics dashboard 
+$tlCfg->metricsDashboardReport->show_test_plan_status_details = false;
 
 
 // ----------------------------------------------------------------------------

@@ -1,9 +1,10 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.15 2010/10/12 18:17:58 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.16 2010/10/14 18:41:09 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
+  20101014 - Julian - BUGID 3893 - Extended metrics dashboard
   20101012 - Julian - show "show metrics only for active test plans" checkbox even if there is no resultset. 
                       This is required if there are no active test plans at all
   20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
@@ -11,8 +12,8 @@
   20090919 - franciscom - added plaftorm information
 *}
 {lang_get var="labels"
-          s="generated_by_TestLink_on,testproject,test_plan,th_total_tc,th_active_tc,th_executed_tc,
-             th_executed_vs_active,th_executed_vs_total,platform,show_only_active"}
+          s="generated_by_TestLink_on,testproject,test_plan,platform,show_only_active,
+             info_metrics_dashboard,test_plan_progress,project_progress"}
 {include file="inc_head.tpl" openHead='yes'}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
   {assign var=tableID value=$matrix->tableID}
@@ -25,6 +26,19 @@
   {/if}
   {$matrix->renderHeadSection()}
 {/foreach}
+
+<script type="text/javascript">
+Ext.onReady(function() {ldelim}
+	{foreach key=key item=value from=$gui->project_metrics}
+    new Ext.ProgressBar({ldelim}
+        text:'{$key}: {$value} %',
+        width:'400',
+        renderTo:'{$key}',
+        value:'{$value/100}'
+    {rdelim});
+    {/foreach}
+{rdelim});
+</script>
 
 </head>
 
@@ -41,12 +55,24 @@
        value="{$gui->show_only_active}" />
 </form></p><br/>
 
-{if $gui->warning_msg == ''}	
+{if $gui->warning_msg == ''}
+	<h2>{$labels.project_progress}</h2>
+	<br>
+	{foreach from=$gui->project_metrics key=key item=metric}
+		<div id="{$key}"></div>
+		{if $key == "Progress"}
+		<br />
+		{/if}
+	{/foreach}
+	<br />
+	<h2>{$labels.test_plan_progress}</h2>
+	<br />
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value=table_$idx}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
-	
+	<br />
+	<p class="italic">{$labels.info_metrics_dashboard}</p>
 	<br />
 	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
 {else}

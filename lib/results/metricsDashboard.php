@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.24 $
- * @modified $Date: 2010/10/15 07:16:43 $ $Author: mx-julian $
+ * @version $Revision: 1.25 $
+ * @modified $Date: 2010/10/15 09:00:12 $ $Author: mx-julian $
  *
  * @author franciscom
  *
  * @internal revisions
+ * 20101015 - Julian - refactored exttable column titles
  * 20101014 - Julian - BUGID 3893 - Extended metrics dashboard
  * 20100922 - Julian - Hide "Progress (Executed/Total)"-Column by default
  * 20100917 - Julian - BUGID 3724 - checkbox to show all/active test plans
@@ -263,23 +264,24 @@ function getColumnsDefinition($showPlatforms, $result_cfg, $labels)
 {
 	$colDef = array();
 
-	$colDef[] = array('title' => $labels['test_plan'], 'width' => 60, 'type' => 'text');
+	$colDef[] = array('title_key' => 'test_plan', 'width' => 60, 'type' => 'text');
 
 	if ($showPlatforms)
 	{
-		$colDef[] = array('title' => $labels['platform'], 'width' => 60);
+		$colDef[] = array('title_key' => 'platform', 'width' => 60);
 	}
 
-	$colDef[] = array('title' => $labels['th_active_tc'], 'width' => 40);
+	$colDef[] = array('title_key' => 'th_active_tc', 'width' => 40);
 	
 	// create 2 columns for each defined status
 	foreach ($result_cfg['status_label'] as $key => $status)
 	{
-		$colDef[] = array('title' => lang_get($status), 'width' => 40, 'hidden' => true);
-		$colDef[] = array('title' => lang_get($status) . " " . $labels['in_percent'], 'width' => 40);
+		$colDef[] = array('title_key' => $status, 'width' => 40, 'hidden' => true);
+		$colDef[] = array('title' => lang_get($status) . " " . $labels['in_percent'], 'width' => 40,
+		                  'col_id' => 'id_'.$status.'_percent');
 	}
 	
-	$colDef[] = array('title' => $labels['progress'], 'width' => 40);
+	$colDef[] = array('title_key' => 'progress', 'width' => 40);
 
 	return $colDef;
 

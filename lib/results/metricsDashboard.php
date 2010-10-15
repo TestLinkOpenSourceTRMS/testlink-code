@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2010/10/15 07:04:29 $ $Author: mx-julian $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/10/15 07:16:43 $ $Author: mx-julian $
  *
  * @author franciscom
  *
@@ -114,7 +114,7 @@ if(count($gui->tplan_metrics) > 0) {
 	$table->toolbarExpandCollapseGroupsButton = true;
 	$table->toolbarShowAllColumnsButton = true;
 	$table->title = $labels['href_metrics_dashboard'];
-	$table->showGroupItemsCount = false;
+	$table->showGroupItemsCount = true;
 
 	$gui->tableSet = array($table);
 	

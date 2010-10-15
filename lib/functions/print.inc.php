@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.118 2010/09/24 11:24:48 mx-julian Exp $
+ * @version $Id: print.inc.php,v 1.119 2010/10/15 18:12:36 franciscom Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20101015 - franciscom  - BUGID 3804 - contribution again
  *  20100923 - franciscom  - BUGID 3804 - contribution
  *	20100920 - franciscom -  renderTestCaseForPrinting() - changed key on $cfieldFormatting
  *  20100914 - franciscom - BUGID 437: TC version not visible in generated test specification
@@ -525,7 +526,7 @@ function renderFirstPage($doc_info)
 	{
 		// BUGID 3804 - contribution
 		$output .= '<p style="text-align: center;"><img alt="TestLink logo" ' .
-           		   'title="configure using $tlCfg->document_generator->company_logo" style="height: 53px;"'.
+           		   'title="configure using $tlCfg->document_generator->company_logo" height="53" '.
            		   ' src="' . $_SESSION['basehref'] . TL_THEME_IMG_DIR . $docCfg->company_logo . '" />';
 	}
 	$output .= "</div>\n";

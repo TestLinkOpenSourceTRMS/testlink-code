@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/10/15 09:00:12 $ $Author: mx-julian $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/10/15 17:53:48 $ $Author: franciscom $
  *
  * @author franciscom
  *
  * @internal revisions
+ * 20101015 - franciscom - code refactoring
  * 20101015 - Julian - refactored exttable column titles
  * 20101014 - Julian - BUGID 3893 - Extended metrics dashboard
  * 20100922 - Julian - Hide "Progress (Executed/Total)"-Column by default
@@ -31,7 +32,6 @@ $args = init_args();
 $gui = new stdClass();
 $gui->tproject_name = $args->tproject_name;
 $gui->show_only_active = $args->show_only_active;
-$gui->warning_msg = '';
 $result_cfg = config_get('results');
 $show_all_status_details = config_get('metrics_dashboard')->show_test_plan_status;
 $round_precision = config_get('dashboard_precision');
@@ -41,10 +41,13 @@ $labels = init_labels(array('overall_progress' => null, 'test_plan' => null, 'pr
                             'no_testplans_available' => null, 'not_aplicable' => null,
                             'platform' => null, 'th_active_tc' => null, 'in_percent' => null));
 
-list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$args,$result_cfg, $labels);
+list($gui->tplan_metrics,$gui->show_platforms) = getMetrics($db,$_SESSION['currentUser'],$args,$result_cfg, $labels);
 
+$gui->warning_msg = $labels['no_testplans_available'];
 if(count($gui->tplan_metrics) > 0) {
 
+	$gui->warning_msg = '';
+	
 	// Create column headers
 	$columns = getColumnsDefinition($gui->show_platforms, $result_cfg, $labels);
 
@@ -122,21 +125,24 @@ if(count($gui->tplan_metrics) > 0) {
 	// collect test project metrics
 	$gui->project_metrics = array();
 	$gui->project_metrics['progress_absolute'] = getPercentage($gui->tplan_metrics['total']['executed'], 
-	                                                 $gui->tplan_metrics['total']['active'], $round_precision);
+	                                                           $gui->tplan_metrics['total']['active'], $round_precision);
 	foreach ($result_cfg['status_label'] as $key => $status)
 	{
 		$gui->project_metrics[$status] = getPercentage($gui->tplan_metrics['total'][$key], 
-	                                                $gui->tplan_metrics['total']['active'], $round_precision);
+	                                                   $gui->tplan_metrics['total']['active'], $round_precision);
 	}
-} else {
-	$gui->warning_msg = $labels['no_testplans_available'];
 }
 
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
-function getMetrics(&$db,$args, $result_cfg, $labels)
+
+/**
+ * 
+ *
+ */
+function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
 {
 	$user_id = $args->currentUserID;
 	$tproject_id = $args->tproject_id;
@@ -147,13 +153,8 @@ function getMetrics(&$db,$args, $result_cfg, $labels)
 
 	// BUGID 1215
 	// get all tesplans accessibles  for user, for $tproject_id
-	if($args->show_only_active) {
-		$options = array('active' => ACTIVE);
-	} else {
-		$options = array('active' => TP_ALL_STATUS);
-	}
-
-	$test_plans = $_SESSION['currentUser']->getAccessibleTestPlans($db,$tproject_id,null,$options);
+	$options['active'] = $args->show_only_active ? ACTIVE : TP_ALL_STATUS; 
+	$test_plans = $userObj->getAccessibleTestPlans($db,$tproject_id,null,$options);
 
 	// Get count of testcases linked to every testplan
 	foreach($test_plans as $key => $value)
@@ -237,6 +238,10 @@ function getMetrics(&$db,$args, $result_cfg, $labels)
 	return array($metrics, $show_platforms);
 }
 
+/**
+ * 
+ *
+ */
 function formatPercentage($denominator, $numerator, $round_precision)
 {
 	// use html comment to be able to properly sort by percentage columns on exttable
@@ -247,15 +252,20 @@ function formatPercentage($denominator, $numerator, $round_precision)
 		$formatted_percentage = "<!-- $percentage_comment -->" . $percentage;
 	}
 
-	return($formatted_percentage);
+	return $formatted_percentage;
 }
 
+/**
+ * 
+ *
+ */
 function getPercentage($denominator, $numerator, $round_precision)
 {
 	$percentage = ($numerator > 0) ? (round(($denominator / $numerator) * 100,$round_precision)) : 0;
 
-	return($percentage);
+	return $percentage;
 }
+
 /**
  * get Columns definition for table to display
  *

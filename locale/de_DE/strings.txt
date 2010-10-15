@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.203 2010/10/13 11:07:48 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.204 2010/10/15 06:41:11 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.723
+ * Last Update according to en_GB string file version 1.724
  *
  **/
 
@@ -1998,6 +1998,14 @@ $TLS_title_test_case_suite = "Testplan Inhalt";
 $TLS_title_test_execution = "Test Ausführung";
 $TLS_title_test_plan_mgmt = "Testplan Verwaltung";
 
+
+// ----- gui/templates/metricsDashboard.tpl -----
+$TLS_info_metrics_dashboard = "Dieser Report zeigt den Fortschritt für das gesamte Projekt " .
+                              "und alle (oder nur aktive) Testpläne innerhalb des Projekts";
+$TLS_overall_progress = "Gesamtfortschritt";
+$TLS_progress_absolute = "Fortschritt";
+$TLS_test_plan_progress = "Testplan Fortschritt";
+$TLS_project_progress = "Testprojekt Fortschritt";
 
 
 // ----- lib/execute/bug_add.php -----

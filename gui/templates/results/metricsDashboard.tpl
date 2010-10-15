@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.17 2010/10/15 07:04:29 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.18 2010/10/15 18:18:06 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
@@ -33,6 +33,7 @@ Ext.onReady(function() {ldelim}
     new Ext.ProgressBar({ldelim}
         text:'{lang_get s=$key}: {$value} %',
         width:'400',
+        cls:'left-align',
         renderTo:'{$key}',
         value:'{$value/100}'
     {rdelim});

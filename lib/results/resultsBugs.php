@@ -4,11 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsBugs.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
  * @author kevinlevy
  * 
  * rev :
+ *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                      table state independent from localization
  *  20101012 - Julian - added html comment to properly sort by test case column
  *  20101005 - asimon - added linked icon for test case editing
  *	20100920 - Julian - use exttable
@@ -197,9 +199,9 @@ function getColumnsDefinition()
 {
 	$colDef = array();
 	
-	$colDef[] = array('title' => lang_get('title_test_suite_name'), 'width' => 30, 'type' => 'text');
-	$colDef[] = array('title' => lang_get('title_test_case_title'), 'width' => 30, 'type' => 'text');
-	$colDef[] = array('title' => lang_get('title_test_case_bugs'), 'width' => 40, 'type' => 'text');
+	$colDef[] = array('title_key' => 'title_test_suite_name', 'width' => 30, 'type' => 'text');
+	$colDef[] = array('title_key' => 'title_test_case_title', 'width' => 30, 'type' => 'text');
+	$colDef[] = array('title_key' => 'title_test_case_bugs', 'width' => 40, 'type' => 'text');
 
 	return $colDef;
 }

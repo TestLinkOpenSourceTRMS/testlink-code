@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
  * rev:
+ * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                     table state independent from localization
  * 20101012 - Julian - added html comment to properly sort by test case column
  * 20101005 - asimon - added linked icon for testcase editing
  * 20100920 - Julian - use exttable
@@ -128,9 +130,9 @@ function getColumnsDefinition()
 {
 	$colDef = array();
 	
-	$colDef[] = array('title' => lang_get('test_suite'), 'type' => 'text');
-	$colDef[] = array('title' => lang_get('test_case'), 'type' => 'text');
-	$colDef[] = array('title' => lang_get('importance'), 'width' => 20);
+	$colDef[] = array('title_key' => 'test_suite', 'type' => 'text');
+	$colDef[] = array('title_key' => 'test_case', 'type' => 'text');
+	$colDef[] = array('title_key' => 'importance', 'width' => 20);
 
 	return $colDef;
 }

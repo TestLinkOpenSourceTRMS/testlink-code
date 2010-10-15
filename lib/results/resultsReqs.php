@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.39 $
- * @modified $Date: 2010/10/07 13:27:58 $ by $Author: asimon83 $
+ * @version $Revision: 1.40 $
+ * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                     table state independent from localization
  * 20101007 - asimon - BUGID 3856: Requirement based report should regard platforms
  * 20101005 - asimon - added linked icon also for testcases linked to requirements
  * 20101001 - asimon - added icon for requirement editing
@@ -192,32 +194,33 @@ if(count($req_spec_map)) {
 if (count($req_spec_map)) {
 	// headers
 	$columns = array();
-	$columns[] = array('title' => lang_get('req_spec_short'),
+	$columns[] = array('title_key' => 'req_spec_short',
 	                   'groupable' => 'true', 'hideable' => 'false', 'hidden' => 'true');
-	$columns[] = array('title' => lang_get('title'), 'width' => 100,
+	$columns[] = array('title_key' => 'title', 'width' => 100,
 	                   'groupable' => 'false', 'type' => 'text');
-	$columns[] = array('title' => lang_get('version'), 'width' => 60, 'groupable' => 'false');
+	$columns[] = array('title_key' => 'version', 'width' => 60, 'groupable' => 'false');
 	
 	if ($coverage_enabled) {
-		$columns[] = array('title' => lang_get('th_coverage'), 'width' => 60, 'groupable' => 'false');
+		$columns[] = array('title_key' => 'th_coverage', 'width' => 60, 'groupable' => 'false');
 	}
 	
-	$columns[] = array('title' => lang_get('evaluation'), 'width' => 60, 'groupable' => 'false');
-	$columns[] = array('title' => lang_get('type'), 'width' => 60, 'groupable' => 'false');
+	$columns[] = array('title_key' => 'evaluation', 'width' => 60, 'groupable' => 'false');
+	$columns[] = array('title_key' => 'type', 'width' => 60, 'groupable' => 'false');
 	
 	// show status only if it was requested to show reqs with all statuses
 	if (!$args->show_only_finished) {
-		$columns[] = array('title' => lang_get('status'), 'width' => 60, 'groupable' => 'false');
+		$columns[] = array('title_key' => 'status', 'width' => 60, 'groupable' => 'false');
 	}
 	
-	foreach ($code_status_map as $code => $status) {
-		$columns[] = array('title' => $status['label'], 'width' => 60, 'groupable' => 'false');
+	foreach ($code_status_map as $status) {
+		$columns[] = array('title_key' => $results_cfg['status_label'][$status['status']], 
+		                   'width' => 60, 'groupable' => 'false');
 	}
 	
 	// complete progress
-	$columns[] = array('title' => lang_get('progress'), 'width' => 60, 'groupable' => 'false');
+	$columns[] = array('title_key' => 'progress', 'width' => 60, 'groupable' => 'false');
 	
-	$columns[] = array ('title' => $labels['linked_tcs'], 'groupable' => 'false', 'width' => 250, 
+	$columns[] = array('title_key' => 'linked_tcs', 'groupable' => 'false', 'width' => 250, 
 	             'hidden' => 'true', 'type' => 'text');
 	
 	// data for rows

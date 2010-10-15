@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
+ * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                     table state independent from localization
  * 20101012 - Julian - added html comment to properly sort by test case column
  * 20101001 - asimon - added linked icon for testcase editing
  * 20100830 - Julian - Added test case summary column
@@ -117,17 +119,17 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 	{
 		$labels[$key] = lang_get($key);
 	}				
-	$columns[] = array('title' => $labels['testsuite'], 'width' => 20);
+	$columns[] = array('title_key' => 'testsuite', 'width' => 20);
 	
-	$columns[] = array('title' => $labels['testcase'], 'width' => 25);
+	$columns[] = array('title_key' => 'testcase', 'width' => 25);
 	
 	if ($show_platforms)
 	{
-		$columns[] = array('title' => $labels['platform'], 'width' => 10);
+		$columns[] = array('title_key' => 'platform', 'width' => 10);
 	}
-	$columns[] = array('title' => $labels['priority'], 'type' => 'priority', 'width' => 5);
+	$columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 5);
 	
-	$columns[] = array('title' => $labels['summary'], 'type' => 'text', 'width' => 40);
+	$columns[] = array('title_key' => 'summary', 'type' => 'text', 'width' => 40);
 	
 	$matrix = new tlExtTable($columns, $data, 'tl_table_tc_without_tester');
 	

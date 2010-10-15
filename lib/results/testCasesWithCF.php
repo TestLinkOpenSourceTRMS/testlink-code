@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testCasesWithCF.php,v $
- * @version $Revision: 1.30 $
- * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list test cases with Execution Custom Field Data
  *
  * @internal Revisions:
+ *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                      table state independent from localization
  *  20101012 - Julian - added html comment to properly sort by test case column
  *  20100930 - asimon - added icons for testcase execution and editing
  *  20100901 - Julian - added execution notes column
@@ -283,27 +285,27 @@ function buildResultSet(&$dbHandler,&$guiObj,$tproject_id,$tplan_id)
 function getColumnsDefinition($showPlatforms,$customFields)
 {
 
-	$colDef = array(array('title' => lang_get('test_suite'), 'width' => 80, 'type' => 'text'),
-					array('title' => lang_get('test_case'), 'width' => 80, 'type' => 'text'),
-					array('title' => lang_get('version'), 'width' => 20));
+	$colDef = array(array('title_key' => 'test_suite', 'width' => 80, 'type' => 'text'),
+					array('title_key' => 'test_case', 'width' => 80, 'type' => 'text'),
+					array('title_key' => 'version', 'width' => 20));
 		
 	if ($showPlatforms)
 	{
-		$colDef[] = array('title' => lang_get('platform'), 'width' => 40);
+		$colDef[] = array('title_key' => 'platform', 'width' => 40);
 	}
 	array_push( $colDef,
-				array('title' => lang_get('build'), 'width' => 35),
-				array('title' => lang_get('th_owner'), 'width' => 60),
-				array('title' => lang_get('date'), 'width' => 60),
-				array('title' => lang_get('status'), 'type' => 'status', 'width' => 30));
+				array('title_key' => 'build', 'width' => 35),
+				array('title_key' => 'th_owner', 'width' => 60),
+				array('title_key' => 'date', 'width' => 60),
+				array('title_key' => 'status', 'type' => 'status', 'width' => 30));
 				
-	$colDef[] = array('title' => lang_get('title_execution_notes'), 'type' => 'text');
+	$colDef[] = array('title_key' => 'title_execution_notes', 'type' => 'text');
 
 
 	foreach ($customFields as $cfield)
 	{
 		// if custom field is time for computing execution time do not waste space
-		$dummy = array('title' => $cfield['label']);
+		$dummy = array('title' => $cfield['label'], 'col_id' => 'id_cf_' . $cfield['name']);
 		if($cfield['name'] == 'CF_EXEC_TIME') {
 			$dummy['width'] = 20;
 		} else {

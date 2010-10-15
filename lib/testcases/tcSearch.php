@@ -8,11 +8,13 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.22 2010/10/05 09:03:12 asimon83 Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.23 2010/10/15 11:43:26 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                      table state independent from localization
  *  20101005 - asimon - replaced linked test case title by linked icon for editing
  *	20100920 - Julian - BUGID 3793 - use exttable to display search results
  *	20100908 - Julian - BUGID 2877 - Custom Fields linked to TC versions
@@ -252,8 +254,8 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 		$labels = array('test_suite' => lang_get('test_suite'), 'test_case' => lang_get('test_case'));
 		$columns = array();
 		
-		$columns[] = array('title' => $labels['test_suite']);
-		$columns[] = array('title' => $labels['test_case'], 'type' => 'text');
+		$columns[] = array('title_key' => 'test_suite');
+		$columns[] = array('title_key' => 'test_case', 'type' => 'text');
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();

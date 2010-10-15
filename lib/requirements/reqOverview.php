@@ -8,13 +8,15 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.34 2010/09/21 20:53:59 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.35 2010/10/15 11:43:26 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  *
+ * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                     table state independent from localization
  * 20100921 - asimon - added datetime formatting and calendar week for date custom fields
  * 20100908 - Julian - BUGID 2877 -  Custom Fields linked to Req versions
  * 20100823 - Julian - table now uses a unique table id per test project
@@ -208,24 +210,25 @@ if(count($gui->reqIDs) > 0) {
     	 * 9. then all custom fields in order of $fields
     	 */
         $columns = array();
-        $columns[] = array('title' => $labels['req_spec_short'], 'width' => 200);
-        $columns[] = array('title' => $labels['title'], 'width' => 150);
-        $columns[] = array('title' => $labels['version'], 'width' => 40);
-        $columns[] = array('title' => $labels['frozen'], 'width' => 40);
+        $columns[] = array('title_key' => 'req_spec_short', 'width' => 200);
+        $columns[] = array('title_key' => 'title', 'width' => 150);
+        $columns[] = array('title_key' => 'version', 'width' => 40);
+        $columns[] = array('title_key' => 'frozen', 'width' => 40);
         
         if ($coverage_enabled) {
-	    	$columns[] = array('title' => $labels['th_coverage'], 'width' => 80);
+	    	$columns[] = array('title_key' => 'th_coverage', 'width' => 80);
 	    }
 	            
-        $columns[] = array('title' => $labels['type'], 'width' => 60);
-        $columns[] = array('title' => $labels['status'], 'width' => 60);
+        $columns[] = array('title_key' => 'type', 'width' => 60);
+        $columns[] = array('title_key' => 'status', 'width' => 60);
 	    
 		if ($relations_enabled) {
-	    	$columns[] = array('title' => $labels['th_relations'], 'width' => 50);
+	    	$columns[] = array('title_key' => 'th_relations', 'width' => 50);
 	    }
         
 	    foreach($gui->cfields4req as $cf) {
-	    	$columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $charset), 'type' => 'text');
+	    	$columns[] = array('title' => htmlentities($cf['label'], ENT_QUOTES, $charset), 'type' => 'text',
+	    	                   'col_id' => 'id_cf_' .$cf['name']);
 	    }
 
 	    // create table object, fill it with columns and row data and give it a title

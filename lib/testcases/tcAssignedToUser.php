@@ -3,11 +3,13 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.26 $
- * @modified $Date: 2010/10/13 09:35:39 $  $Author: asimon83 $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2010/10/15 11:43:26 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                      table state independent from localization
  *  20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
  *  20101012 - Julian - added html comment to properly sort by test case column
  *  20101004 - asimon - BUGID 3824: added checkbox do display closed builds
@@ -337,28 +339,28 @@ function getColumnsDefinition($optionalColumns, $show_platforms)
 	// user column is only shown for assignment overview
 	if ($optionalColumns['user']) 
 	{
-		$colDef[] = array('title' => $labels['user'], 'width' => 80);
+		$colDef[] = array('title_key' => 'user', 'width' => 80);
 		// for assignment overview sort by build
 		$sortByCol = $labels['build'];
 	}
 	
-	$colDef[] = array('title' => $labels['build'], 'width' => 80);
-	$colDef[] = array('title' => $labels['testsuite'], 'width' => 130);
-	$colDef[] = array('title' => $labels['testcase'], 'width' => 130);
+	$colDef[] = array('title_key' => 'build', 'width' => 80);
+	$colDef[] = array('title_key' => 'testsuite', 'width' => 130);
+	$colDef[] = array('title_key' => 'testcase', 'width' => 130);
 	if ($show_platforms)
 	{
-		$colDef[] = array('title' => $labels['platform'], 'width' => 50);
+		$colDef[] = array('title_key' => 'platform', 'width' => 50);
 	}
 	
 	// 20100816 - asimon - if priority is enabled, enable default sorting by that column
 	if ($optionalColumns['priority']) 
 	{
 	  	$sortByCol = $labels['priority'];
-		$colDef[] = array('title' => $labels['priority'], 'width' => 50);
+		$colDef[] = array('title_key' => 'priority', 'width' => 50);
 	}
 	
-	$colDef[] = array('title' => $labels['status'], 'width' => 50);
-	$colDef[] = array('title' => $labels['due_since'], 'width' => 100);
+	$colDef[] = array('title_key' => 'status', 'width' => 50);
+	$colDef[] = array('title_key' => 'due_since', 'width' => 100);
 
 	return array($colDef, $sortByCol);
 }

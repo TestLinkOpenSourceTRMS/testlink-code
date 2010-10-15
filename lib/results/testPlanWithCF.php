@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: testPlanWithCF.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/10/12 19:54:51 $ by $Author: mx-julian $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
  * @author Amit Khullar - amkhullar@gmail.com
  *
  * For a test plan, list associated Custom Field Data
  *
  * rev:
+ *      20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                          table state independent from localization
  *      20101012 - Julian - added html comment to properly sort by test case column
  *      20101001 - asimon - added linked icon for testcase editing
  *      20100921 - Julian - BUGID 3797 - use exttable
@@ -113,12 +115,12 @@ function buildExtTable($gui,$tcase_mgr,$tplan_mgr, $tplan_id, $gluechar,$charset
 	$table = null;
 	if(count($gui->resultSet) > 0) {
 		$columns = array();
-		$columns[] = array('title' => lang_get('test_suite'));
-		$columns[] = array('title' => lang_get('test_case'), 'width' => 80, 'type' => 'text');
+		$columns[] = array('title_key' => 'test_suite');
+		$columns[] = array('title_key' => 'test_case', 'width' => 80, 'type' => 'text');
 		
 		foreach ($gui->cfields as $cfield)
 		{
-			$dummy = array('title' => $cfield['label'], 'type' => 'text');
+			$dummy = array('title' => $cfield['label'], 'col_id' => 'id_cf_' . $cfield['name'], 'type' => 'text');
 			$columns[] = $dummy;
 		}
 	

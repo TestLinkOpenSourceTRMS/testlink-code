@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.36 $
- * @modified $Date: 2010/10/12 20:16:54 $ by $Author: mx-julian $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2010/10/15 11:43:26 $ by $Author: mx-julian $
  *
- * rev: 
+ * rev:
+ * 		20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                          table state independent from localization
  * 		20101008 - Julian - added html comment to properly sort by description column
  *		20101008 - Julian - BUGID 3871: use exttable for event viewer
  *		20100508 - franciscom - BUGID 3445: Ability to delete events from selected class from event logs 
@@ -206,11 +208,11 @@ function buildExtTable($gui,$show_icon,$charset)
 	$table = null;
 	if(count($gui->events) > 0) {
 		$columns = array();
-		$columns[] = array('title' => lang_get('th_timestamp'), 'width' => 15);
-		$columns[] = array('title' => lang_get('th_loglevel'), 'width' => 15);
-		$columns[] = array('title' => lang_get('th_user'), 'width' => 15);
-		$columns[] = array('title' => lang_get('th_event_description'),'type' => 'text');
-		$columns[] = array('title' => lang_get('th_transaction'), 'width' => 15, 'hidden' => 'true');
+		$columns[] = array('title_key' => 'th_timestamp', 'width' => 15);
+		$columns[] = array('title_key' => 'th_loglevel', 'width' => 15);
+		$columns[] = array('title_key' => 'th_user', 'width' => 15);
+		$columns[] = array('title_key' => 'th_event_description','type' => 'text');
+		$columns[] = array('title_key' => 'th_transaction', 'width' => 15, 'hidden' => 'true');
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
@@ -229,7 +231,7 @@ function buildExtTable($gui,$show_icon,$charset)
 			             
 			$rowData[] = $event->getlogLevel();
 			
-			if (isset($event->userID) && $event->userID != false) {
+			if (isset($event->userID) && $event->userID != false && isset($gui->users[$event->userID])) {
 				$rowData[] = $gui->users[$event->userID];
 			} else {
 				$rowData[] = lang_get("not_aplicable");

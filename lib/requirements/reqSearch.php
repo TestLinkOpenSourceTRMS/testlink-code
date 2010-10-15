@@ -7,12 +7,14 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.17 2010/10/05 09:03:13 asimon83 Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.18 2010/10/15 11:43:26 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
+ *                     table state independent from localization
  * 20101005 - asimon - replaced linked requirement title by linked icon
  * 20100929 - asimon - added req doc id to result table
  * 20100920 - Julian - BUGID 3793 - use exttable to display search results
@@ -218,8 +220,8 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 		$labels = array('req_spec' => lang_get('req_spec'), 'requirement' => lang_get('requirement'));
 		$columns = array();
 		
-		$columns[] = array('title' => $labels['req_spec']);
-		$columns[] = array('title' => $labels['requirement'], 'type' => 'text');
+		$columns[] = array('title_key' => 'req_spec');
+		$columns[] = array('title_key' => 'requirement', 'type' => 'text');
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();

@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2010/10/14 20:29:26 $ $Author: mx-julian $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2010/10/15 07:04:29 $ $Author: mx-julian $
  *
  * @author franciscom
  *
@@ -119,11 +119,12 @@ if(count($gui->tplan_metrics) > 0) {
 	$gui->tableSet = array($table);
 	
 	// collect test project metrics
-	$gui->project_metrics[$labels['progress_absolute']] = getPercentage($gui->tplan_metrics['total']['executed'], 
+	$gui->project_metrics = array();
+	$gui->project_metrics['progress_absolute'] = getPercentage($gui->tplan_metrics['total']['executed'], 
 	                                                 $gui->tplan_metrics['total']['active'], $round_precision);
 	foreach ($result_cfg['status_label'] as $key => $status)
 	{
-		$gui->project_metrics[lang_get($status)] = getPercentage($gui->tplan_metrics['total'][$key], 
+		$gui->project_metrics[$status] = getPercentage($gui->tplan_metrics['total'][$key], 
 	                                                $gui->tplan_metrics['total']['active'], $round_precision);
 	}
 } else {

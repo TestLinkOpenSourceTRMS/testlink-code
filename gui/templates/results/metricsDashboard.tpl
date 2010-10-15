@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.16 2010/10/14 18:41:09 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.17 2010/10/15 07:04:29 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
@@ -31,7 +31,7 @@
 Ext.onReady(function() {ldelim}
 	{foreach key=key item=value from=$gui->project_metrics}
     new Ext.ProgressBar({ldelim}
-        text:'{$key}: {$value} %',
+        text:'{lang_get s=$key}: {$value} %',
         width:'400',
         renderTo:'{$key}',
         value:'{$value/100}'
@@ -60,7 +60,7 @@ Ext.onReady(function() {ldelim}
 	<br>
 	{foreach from=$gui->project_metrics key=key item=metric}
 		<div id="{$key}"></div>
-		{if $key == "Progress"}
+		{if $key == "progress_absolute"}
 		<br />
 		{/if}
 	{/foreach}

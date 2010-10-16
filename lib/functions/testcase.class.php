@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.326 2010/10/12 07:44:58 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.327 2010/10/16 08:00:01 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101016 - franciscom - update_last_modified() refixed BUGID 3849
  * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class	
  * 20101011 - franciscom - html_table_of_custom_field_inputs() ADDED CRITIC DOCUMENTATION
  * 20101010 - franciscom - get_by_id() - added testsuite_id on output recordset
@@ -4838,8 +4839,8 @@ class testcase extends tlObjectWithAttachments
 	/**
 	 * update_last_modified
  	 *
- 	 * rev: 
- 	 * 	BUGID - 3849
+ 	 * @internal revision
+ 	 * 20101016 - franciscom - refixing of BUGID 3849
  	 */
 	function update_last_modified($tcversion_id,$user_id,$time_stamp=null)
 	{
@@ -4848,7 +4849,7 @@ class testcase extends tlObjectWithAttachments
 		$sql = " UPDATE {$this->tables['tcversions']} " .
 		       " SET updater_id=" . $this->db->prepare_int($user_id) . ", " .
 			   " modification_ts = " . $changed_ts . 
-		   	   " WHERE tcversions.id = " . $this->db->prepare_int($tcversion_id); 
+		   	   " WHERE id = " . $this->db->prepare_int($tcversion_id); 
 		$this->db->exec_query($sql);
 	}
 

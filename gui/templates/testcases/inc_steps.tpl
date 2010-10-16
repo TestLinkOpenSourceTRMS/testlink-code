@@ -1,16 +1,20 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_steps.tpl,v 1.1 2010/09/05 14:23:59 franciscom Exp $
+$Id: inc_steps.tpl,v 1.2 2010/10/16 08:34:21 franciscom Exp $
 Purpose: Show the steps for a testcase in vertical or horizontal layout
          Included from files tcView_viewer.tpl and inc_exec_test_spec.tpl
 Author : eloff, 2010
 
+
+@param $layout "horizontal" or "vertical"
+@param $steps Array of the steps
+@param $edit_enabled Steps links to edit page if true
+
+
 @internal revisions:
+  20101016 - franciscom - added id to table rows with step data 
 	20100621 - eloff - initial commit
 
-	@param $layout "horizontal" or "vertical"
-	@param $steps Array of the steps
-	@param $edit_enabled Steps links to edit page if true
 *}
 {lang_get var="inc_steps_labels" 
           s="show_hide_reorder, step_number, step_actions,expected_results, 
@@ -40,7 +44,7 @@ Author : eloff, 2010
 	</tr>
 	{* BUGID 3376 *}
 	{foreach from=$steps item=step_info}
-	<tr>
+	<tr id="step_row_{$step_info.step_number}">
 		<td style="text-align:left;">
 			<span class="order_info" style='display:none'>
 			<input type="text" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"

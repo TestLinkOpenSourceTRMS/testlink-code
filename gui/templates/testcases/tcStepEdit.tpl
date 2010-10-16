@@ -1,9 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.33 2010/09/05 14:25:07 franciscom Exp $ 
+$Id: tcStepEdit.tpl,v 1.34 2010/10/16 09:25:04 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
+  20101016 - franciscom - added id to table rows with step data 
+             BUGID 3901: Edit Test Case STEP - scroll window to show selected step
 	20100621 - eloff - BUGID 3241 - Implement vertical layout
   20100529 - franciscom - BUGID 3493 - using escape:'url'
 	20100403 - franciscom - added create step button while editing existent step
@@ -98,7 +100,8 @@ var tc_editor = "{$tlCfg->gui->text_editor.all.type}";
 {/if}
 </head>
 
-<body onLoad="focusInputField('step')">
+{* BUGID 3901: Edit Test Case STEP - scroll window to show selected step *}
+<body onLoad="scrollToShowMe('step_row_{$gui->step_number}')">
 <h1 class="title">{$gui->main_descr}</h1> 
 
 <div class="workBack" style="width:98.6%;">
@@ -178,7 +181,7 @@ DEBUG: $gui->action: {$gui->action} <br>
   
   {if $gui->tcaseSteps != ''}
    	{foreach from=$gui->tcaseSteps item=step_info}
-  	  <tr>
+  	  <tr id="step_row_{$step_info.step_number}">
       {if $step_info.step_number == $gui->step_number}
 		    <td style="text-align:left;">{$gui->step_number}</td>
   		  <td>{$steps}</td>

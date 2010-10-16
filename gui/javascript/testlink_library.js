@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.108 2010/10/08 12:33:28 asimon83 Exp $
+// $Id: testlink_library.js,v 1.109 2010/10/16 09:23:09 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20101016 - franciscom - BUGID 3901: Edit Test Case STEP - scroll window to show selected step 
 // 20101008 - asimon - BUGID 3311
 // 20100922 - asimon - added openExecutionWindow() und openTCEditWindow()
 // 20100811 - asimon - fixed IE JS error on openAssignmentOverviewWindow()
@@ -60,14 +61,16 @@
   returns:
 
 */
-function focusInputField(id,bSelect)
+function focusInputField(id,selectIt)
 {
 	var f = document.getElementById(id);
 	if (f)
 	{
 		f.focus();
-		if (bSelect)
+		if(selectIt)
+		{
 			f.select();
+		}	
 	}
 }
 
@@ -1255,3 +1258,17 @@ function storeWindowSize(windowname) {
 	document.cookie = windowname+'Width='+width+'; expires='+expires.toGMTString()+'; path=/';
 	document.cookie = windowname+'Height='+height+'; expires='+expires.toGMTString()+'; path=/';
 }
+
+/**
+ * Wrapper to native function to put an element ' on the face of user'
+ * @param oid: HTML element ID
+ *
+ * @internal Revisions
+ * 20101016 - franciscom - BUGID 3901: Edit Test Case STEP - scroll window to show selected step 
+ */
+function scrollToShowMe(oid) {
+	obj = document.getElementById(oid);
+	obj.scrollIntoView();
+	obj.focus();
+}
+

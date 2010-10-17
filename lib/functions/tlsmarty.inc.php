@@ -9,12 +9,14 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.28 2010/09/25 17:15:15 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.29 2010/10/17 09:09:40 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
  * @internal Revisions:
  *
+ * 	20101017 - franciscom - added new image -> import
+ *							reorder of image definition to remove duplicates and use only tlImages
  * 	20100901 - franciscom - added new image 
  *	20100621 - eloff - added guard_header_smarty() function
  * 	20100121 - franciscom - added show_help_icon to remove error on event viewer
@@ -232,9 +234,8 @@ class TLSmarty extends Smarty
         $this->assign('optLocale',config_get('locales'));
         
         $this->assign('gsmarty_href_keywordsView',
-        ' "lib/keywords/keywordsView.php" ' .
-        ' target="mainframe" class="bold" ' .
-        ' title="' . lang_get('menu_manage_keywords') . '"');
+        			  ' "lib/keywords/keywordsView.php" ' . ' target="mainframe" class="bold" ' .
+        			  ' title="' . lang_get('menu_manage_keywords') . '"');
         
         $this->assign('gsmarty_html_select_date_field_order',
                       $g_locales_html_select_date_field_order[$my_locale]);
@@ -243,38 +244,40 @@ class TLSmarty extends Smarty
         
         // -----------------------------------------------------------------------------
         // Images
-        $tlImages = array('info' => TL_THEME_IMG_DIR . "/question.gif",
-                          'reorder' => TL_THEME_IMG_DIR . "/arrow_switch.png",
-                          'sort' => TL_THEME_IMG_DIR . "/sort_hint.png",
-                          'api_info' => TL_THEME_IMG_DIR . "/brick.png",
-        	              'direct_link' => TL_THEME_IMG_DIR . "/world_link.png",
+        $tlImages = array('api_info' => TL_THEME_IMG_DIR . "/brick.png",
                           'checked' => TL_THEME_IMG_DIR . "/apply_f2_16.png",
-                          'export_import' =>TL_THEME_IMG_DIR . "/export_import.png",
-                          'export' =>TL_THEME_IMG_DIR . "/export.png",
-                          'import' =>TL_THEME_IMG_DIR . "/import.png",
-                          'delete' =>TL_THEME_IMG_DIR . "/trash.png");
+                          'delete' => TL_THEME_IMG_DIR . "/trash.png",
+        				  'direct_link' => TL_THEME_IMG_DIR . "/world_link.png",
+                          'export' => TL_THEME_IMG_DIR . "/export.png",
+                          'export_import' => TL_THEME_IMG_DIR . "/export_import.png",
+                          'import' => TL_THEME_IMG_DIR . "/door_in.png",
+        				  'info' => TL_THEME_IMG_DIR . "/question.gif",
+                          'insert_step' => TL_THEME_IMG_DIR . "/insert_step.png",
+                          'reorder' => TL_THEME_IMG_DIR . "/arrow_switch.png",
+                          'sort' => TL_THEME_IMG_DIR . "/sort_hint.png");
 
         $this->assign("tlImages",$tlImages);
+
+		// 20101017 - all these need to be refactored and REMOVED        
+        // $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
+        // $api_info_img = TL_THEME_IMG_DIR . "/brick.png";
+        // $direct_link_img = TL_THEME_IMG_DIR . "/world_link.png";
         
-        $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
-        $api_info_img = TL_THEME_IMG_DIR . "/brick.png";
-        $direct_link_img = TL_THEME_IMG_DIR . "/world_link.png";
-        
-        $this->assign("sort_img",$sort_img);
-        $this->assign("checked_img",TL_THEME_IMG_DIR . "/apply_f2_16.png");
-        $this->assign("delete_img",TL_THEME_IMG_DIR . "/trash.png");
-        $this->assign("insert_step_img",TL_THEME_IMG_DIR . "/insert_step.png");
+        $this->assign("sort_img",$tlImages['sort']);
+        $this->assign("checked_img",$tlImages['checked']);
+        $this->assign("delete_img",$tlImages['delete']);
+        $this->assign("insert_step_img",$tlImages['insert_step']);
         
         $msg = lang_get('show_hide_api_info');
-        $toggle_api_info_img="<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
-        " onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
-        " src=\"{$api_info_img}\" align=\"left\" />";
+        $toggle_api_info_img =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
+        						" onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
+        						" src=\"{$tlImages['api_info']}\" align=\"left\" />";
         $this->assign("toggle_api_info_img",$toggle_api_info_img);
 
         $msg = lang_get('show_hide_direct_link');
-        $toggle_direct_link_img="<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
-        " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
-        " src=\"{$direct_link_img}\" align=\"left\" />";
+        $toggle_direct_link_img = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
+        						  " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
+        						  " src=\"{$tlImages['direct_link']}\" align=\"left\" />";
         $this->assign("toggle_direct_link_img",$toggle_direct_link_img);
         
         // Some useful values for Sort Table Engine
@@ -284,7 +287,7 @@ class TLSmarty extends Smarty
                 $sort_table_by_column=lang_get('sort_table_by_column');
                 $sortHintIcon="<img title=\"{$sort_table_by_column}\" " .
                 " alt=\"{$sort_table_by_column}\" " .
-                " src=\"{$sort_img}\" align=\"left\" />";
+                " src=\"{$tlImages['sort']}\" align=\"left\" />";
                 
                 $this->assign("sortHintIcon",$sortHintIcon);
                 $this->assign("noSortableColumnClass","sorttable_nosort");

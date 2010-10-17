@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.229 2010/10/12 19:59:18 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.230 2010/10/17 10:24:10 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20101017 - franciscom - new method get_import_file_types() 
  *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  *	20101009 - franciscom - BUGID 3270: Export Test Plan in XML Format
  *	20101009 - franciscom - new method exportTestPlanDataToXML() (work in progress)
@@ -149,6 +150,8 @@ class testplan extends tlObjectWithAttachments
 
 	var $node_types_descr_id;
 	var $node_types_id_descr;
+
+	var $import_file_types = array("XML" => "XML"); // array("XML" => "XML", "XLS" => "XLS" );
 	
 	/**
 	 * testplan class constructor
@@ -173,6 +176,14 @@ class testplan extends tlObjectWithAttachments
 	    tlObjectWithAttachments::__construct($this->db,'testplans');
 	}
 
+	/**
+	 * getter for import types 
+ 	 * @return array key: import file type code, value: import file type verbose description
+ 	 */
+	function get_import_file_types()
+	{
+	    return $this->import_file_types;
+	}
 
 	/**
 	 * creates a tesplan on Database, for a testproject.

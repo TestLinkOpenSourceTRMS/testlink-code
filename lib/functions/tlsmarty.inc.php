@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.30 2010/10/17 09:46:37 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.31 2010/10/17 09:53:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -73,9 +73,8 @@ function translate_tc_status_smarty($params, &$smarty)
 }
 
 /**
- * This function should be used to prevent certain templates to only
- * get included once per page load. For example javascript includes, such
- * as ext-js.
+ * Should be used to prevent certain templates to only get included once per page load. 
+ * For example javascript includes, such as ext-js.
  *
  * Usage (in template):
  * <code>
@@ -88,16 +87,14 @@ function translate_tc_status_smarty($params, &$smarty)
 function guard_header_smarty($file)
 {
 	static $guarded = array();
-
+	$status_ok = false;
+	
 	if (!isset($guarded[$file]))
 	{
 		$guarded[$file] = true;
-		return true;
+		$status_ok = true;
 	}
-	else
-	{
-		return false;
-	}
+	return $status_ok;
 }
 
 /**
@@ -113,8 +110,6 @@ class TLSmarty extends Smarty
         global $g_locales_date_format;
         global $g_locales_timestamp_format;
         
-        
-        // $this->Smarty();
         parent::__construct();
         $this->template_dir = TL_ABS_PATH . 'gui/templates/';
         $this->compile_dir = TL_TEMP_PATH;
@@ -186,17 +181,14 @@ class TLSmarty extends Smarty
         // -----------------------------------------------------------------------------
         // load configuration
         $this->assign('session',isset($_SESSION) ? $_SESSION : null);
-        
-        // load configuration
         $this->assign('tlCfg',$tlCfg);
         $this->assign('gsmarty_gui',$tlCfg->gui);
         $this->assign('gsmarty_spec_cfg',config_get('spec_cfg'));
         $this->assign('gsmarty_attachments',config_get('attachments'));
-        
+        $this->assign('gsmarty_bugInterfaceOn',config_get('bugInterfaceOn'));
+
         $this->assign('pageCharset',$tlCfg->charset);
         $this->assign('tlVersion',TL_VERSION);
-        
-        $this->assign('gsmarty_bugInterfaceOn',config_get('bugInterfaceOn'));
         $this->assign('testproject_coloring',null);
         
         	
@@ -214,8 +206,7 @@ class TLSmarty extends Smarty
         // this allows unclosed <head> tag to add more information and link; see inc_head.tpl
         $this->assign('openHead', 'no');
         
-        // there are some variables which should not be assigned for template
-        // but must be initialized
+        // there are some variables which should not be assigned for template but must be initialized
         // inc_head.tpl
         $this->assign('jsValidate', null);
         $this->assign('jsTree', null);
@@ -258,17 +249,6 @@ class TLSmarty extends Smarty
                           'reorder' => TL_THEME_IMG_DIR . "/arrow_switch.png",
                           'sort' => TL_THEME_IMG_DIR . "/sort_hint.png");
 
-
-		// 20101017 - all these need to be refactored and REMOVED        
-        // $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
-        // $api_info_img = TL_THEME_IMG_DIR . "/brick.png";
-        // $direct_link_img = TL_THEME_IMG_DIR . "/world_link.png";
-        
-        // $this->assign("sort_img",$tlImages['sort']);
-        // $this->assign("checked_img",$tlImages['checked']);
-        // $this->assign("delete_img",$tlImages['delete']);
-        // $this->assign("insert_step_img",$tlImages['insert_step']);
-        
         $msg = lang_get('show_hide_api_info');
         $tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
         								" onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .

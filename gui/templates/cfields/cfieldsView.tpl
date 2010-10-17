@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsView.tpl,v 1.8 2010/03/15 20:25:00 franciscom Exp $ 
+$Id: cfieldsView.tpl,v 1.9 2010/10/17 09:46:37 franciscom Exp $ 
 
 rev :
+     20101017 - franciscom - image access refactored (tlImages)
      20100315 - franciscom - added management on goback_url for export action
      20090503 - franciscom - BUGID 2425 - commented show_on_design and show_on_testplan_design 
                                           till new implementation
@@ -49,10 +50,10 @@ rev :
    	                    title="{$labels.manage_cfield}">{$cf_def.name|escape}</a></td>
    	<td>{$cf_def.label|escape}</td>
    	<td>{$gui->cf_types[$cf_def.type]}</td>
-   	<td align="center">{if $cf_def.enable_on_design eq 1}<img src="{$checked_img}">{/if} </td>
-   	<td align="center">{if $cf_def.show_on_execution eq 1}<img src="{$checked_img}">{/if} </td>
-   	<td align="center">{if $cf_def.enable_on_execution eq 1}<img src="{$checked_img}">{/if} </td>
-   	<td align="center">{if $cf_def.enable_on_testplan_design eq 1}<img src="{$checked_img}">{/if} </td>
+   	<td align="center">{if $cf_def.enable_on_design eq 1}<img src="{$tlImages.checked}">{/if} </td>
+   	<td align="center">{if $cf_def.show_on_execution eq 1}<img src="{$tlImages.checked}">{/if} </td>
+   	<td align="center">{if $cf_def.enable_on_execution eq 1}<img src="{$tlImages.checked}">{/if} </td>
+   	<td align="center">{if $cf_def.enable_on_testplan_design eq 1}<img src="{$tlImages.checked}">{/if} </td>
    	<td>{lang_get s=$cf_def.node_description}</td>
    	
    	</tr>

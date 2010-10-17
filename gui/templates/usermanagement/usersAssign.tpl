@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.20 2010/10/08 14:26:48 mx-julian Exp $ 
+$Id: usersAssign.tpl,v 1.21 2010/10/17 09:46:37 franciscom Exp $ 
 
 rev:
     20100930 - franciscom - BUGID 2344: Private test project
@@ -176,9 +176,9 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
     <div id="usersRoleTable">
 	    <table class="common sortable" width="75%">
     	<tr>
-    		<th>{$sortHintIcon}{$labels.User}</th>
+    		<th>{$tlImages.sort_hint}{$labels.User}</th>
     		{assign var="featureVerbose" value=$gui->featureType}
-    		<th>{$sortHintIcon}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
+    		<th>{$tlImages.sort_hint}{lang_get s="th_roles_$featureVerbose"} ({$my_feature_name|escape})</th>
     	</tr>
     	{foreach from=$gui->users item=user}
     	    {assign var="globalRoleName" value=$user->globalRole->name}

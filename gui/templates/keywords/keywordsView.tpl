@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsView.tpl,v 1.16 2009/08/19 19:56:25 schlundus Exp $
+$Id: keywordsView.tpl,v 1.17 2010/10/17 09:46:37 franciscom Exp $
 Purpose: smarty template - View all keywords 
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
@@ -29,10 +29,10 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 	{if $keywords neq ''}
 	<table class="simple sortable" style="width:98%">
 		<tr>
-			<th width="30%">{$sortHintIcon}{$labels.th_keyword}</th>
-			<th>{$sortHintIcon}{$labels.th_notes}</th>
+			<th width="30%">{$tlImages.sort_hint}{$labels.th_keyword}</th>
+			<th>{$tlImages.sort_hint}{$labels.th_notes}</th>
 			{if $canManage != ""}
-				<th style="min-width:70px">{$sortHintIcon}{$labels.th_delete}</th>
+				<th style="min-width:70px">{$tlImages.sort_hint}{$labels.th_delete}</th>
 			{/if}
 		</tr>
 		{section name=myKeyword loop=$keywords}
@@ -50,10 +50,9 @@ var del_action=fRoot+'lib/keywords/keywordsEdit.php?doAction=do_delete&id=';
 			{if $canManage ne ""}
 				<td class="clickable_icon">
 			  		<img style="border:none;cursor: pointer;"
-			       		alt="{lang_get s='alt_delete_keyword'}"
-             			title="{lang_get s='alt_delete_keyword'}"   
-             			src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"			     
-				     	onclick="delete_confirmation({$keywords[myKeyword]->dbID},
+			       		alt="{lang_get s='alt_delete_keyword'}" title="{lang_get s='alt_delete_keyword'}"   
+             		src="{$tlImages.delete}"			     
+				     	 onclick="delete_confirmation({$keywords[myKeyword]->dbID},
 				              '{$keywords[myKeyword]->name|escape:'javascript'|escape}',
 				              '{$del_msgbox_title}','{$warning_msg}');" />
 				</td>

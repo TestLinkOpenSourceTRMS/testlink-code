@@ -1,13 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.22 2010/09/25 17:51:00 franciscom Exp $ 
+$Id: planView.tpl,v 1.23 2010/10/17 09:46:37 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
      some smarty and javascript variables are created on the inc_*.tpl files.
      
 Rev:
-    20100925 - franciscom - BUGID 3649 - test plan export/import
+    20101017 - franciscom - image access refactored (tlImages)
+    20100925 - franciscom - BUGID 3649 - test plan export/import -> EXPORT
     20080805 - franciscom - api config refactoring
     20080116 - franciscom - added option to show/hide id useful for API 
     20080109 - franciscom - added sort table by JS
@@ -23,6 +24,7 @@ Rev:
 {assign var="deleteAction" value="$managerURL?do_action=do_delete&tplan_id="}
 {assign var="createAction" value="$managerURL?do_action=create"}
 {assign var="exportAction" value="lib/plan/planExport.php?tplan_id="}
+{assign var="importAction" value="lib/plan/planImport.php?tplan_id="}
 
 
 {lang_get var="labels" 
@@ -30,7 +32,7 @@ Rev:
           testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
           testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,public,
           btn_testplan_create,th_id,error_no_testprojects_present,btn_export_import,
-          export_import,export'}
+          export_import,export,import,export_testplan_links,import_testlan_links'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg"}
@@ -64,12 +66,13 @@ var del_action=fRoot+'{$deleteAction}';
 {else}
 	<table id='item_view'class="simple sortable" width="95%">
 		<tr>
-			<th>{$toggle_api_info_img}{$sortHintIcon}{$labels.testplan_th_name}</th> 			
+			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.testplan_th_name}</th> 			
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_notes}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_active}</th>
 			<th class="{$noSortableColumnClass}">{$labels.public}</th>
 			<th class="{$noSortableColumnClass}">{$labels.testplan_th_delete}</th>
 			<th class="{$noSortableColumnClass}">{$labels.export}</th>
+			<th class="{$noSortableColumnClass}">{$labels.import}</th>
 		</tr>
 		{foreach item=testplan from=$gui->tplans}
 		<tr>
@@ -77,9 +80,8 @@ var del_action=fRoot+'{$deleteAction}';
 			    <a href="{$editAction}{$testplan.id}"> 
 				     {$testplan.name|escape} 
 				     {if $gsmarty_gui->show_icon_edit}
- 				         <img title="{$labels.testplan_alt_edit_tp}" 
- 				              alt="{$labels.testplan_alt_edit_tp}" 
- 				              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
+ 				         <img title="{$labels.testplan_alt_edit_tp}"  alt="{$labels.testplan_alt_edit_tp}" 
+ 				              src="{$tlImages.edit}"/>
  				     {/if}  
  				  </a>
 			</td>
@@ -88,18 +90,15 @@ var del_action=fRoot+'{$deleteAction}';
 			</td>
 			<td class="clickable_icon">
 				{if $testplan.active eq 1} 
-  					<img style="border:none" 
-  				            title="{$labels.alt_active_testplan}" 
-  				            alt="{$labels.alt_active_testplan}" 
-  				            src="{$checked_img}"/>
+  					<img style="border:none" title="{$labels.alt_active_testplan}" alt="{$labels.alt_active_testplan}" 
+  				       src="{$tlImages.checked}"/>
   				{else}
   					&nbsp;        
   				{/if}
 			</td>
 			<td class="clickable_icon">
 				{if $testplan.is_public eq 1} 
-  					<img style="border:none" title="{$labels.public}"  alt="{$labels.public}" 
-  				       src="{$checked_img}"/>
+  					<img style="border:none" title="{$labels.public}"  alt="{$labels.public}" src="{$tlImages.checked}"/>
   				{else}
   					&nbsp;        
   				{/if}
@@ -110,12 +109,18 @@ var del_action=fRoot+'{$deleteAction}';
 					   title="{$labels.testplan_alt_delete_tp}" 
 					   onclick="delete_confirmation({$testplan.id},'{$testplan.name|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title}','{$warning_msg}');"
-				     src="{$delete_img}"/>
+				     src="{$tlImages.delete}"/>
 			</td>
 			<td class="clickable_icon">
 			    <a href="{$exportAction}{$testplan.id}"> 
-				  <img style="border:none;cursor: pointer;" alt="{$labels.export}" title="{$labels.export}" 
-				       src="{$tlImages.export}"/>
+				  <img style="border:none;cursor: pointer;" alt="{$labels.export_testplan_links}" 
+				       title="{$labels.export_testplan_links}" src="{$tlImages.export}"/>
+				  </a>     
+			</td>
+			<td class="clickable_icon">
+			    <a href="{$importAction}{$testplan.id}"> 
+				  <img style="border:none;cursor: pointer;" alt="{$labels.import_testlan_links'}" 
+				       title="{$labels.import_testlan_links'}"  src="{$tlImages.import}"/>
 				  </a>     
 			</td>
 		</tr>

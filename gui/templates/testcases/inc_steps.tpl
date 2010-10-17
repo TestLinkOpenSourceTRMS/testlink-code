@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_steps.tpl,v 1.3 2010/10/17 09:08:35 franciscom Exp $
+$Id: inc_steps.tpl,v 1.4 2010/10/17 09:46:37 franciscom Exp $
 Purpose: Show the steps for a testcase in vertical or horizontal layout
          Included from files tcView_viewer.tpl and inc_exec_test_spec.tpl
 Author : eloff, 2010
@@ -67,7 +67,7 @@ Author : eloff, 2010
 			     alt="{$inc_steps_labels.delete_step}"
 			     onclick="delete_confirmation({$step_info.id},'{$step_info.step_number|escape:'javascript'|escape}',
 					                               '{$del_msgbox_title}','{$warning_msg}');"
-			     src="{$delete_img}"/>
+			     src="{$tlImages.delete}"/>
 		</td>
 		
 		<td class="clickable_icon">
@@ -121,7 +121,7 @@ Author : eloff, 2010
 			     onclick="delete_confirmation({$step_info.id},
 			             '{$step_info.step_number|escape:'javascript'|escape}',
 			             '{$del_msgbox_title}','{$warning_msg}');"
-			     src="{$delete_img}"/>
+			     src="{$tlImages.delete}"/>
 		</td>
 		{/if}
 	</tr>

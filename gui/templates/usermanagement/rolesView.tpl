@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesView.tpl,v 1.16 2010/10/08 14:28:13 mx-julian Exp $
+$Id: rolesView.tpl,v 1.17 2010/10/17 09:46:37 franciscom Exp $
 Purpose: smarty template - View defined roles
 
 rev:
@@ -73,7 +73,7 @@ var del_action=fRoot+'lib/usermanagement/rolesView.php?doAction=delete&roleid=';
 		{* data table *}
 		<table class="common sortable" width="50%">
 			<tr>
-				<th width="30%">{$sortHintIcon}{$labels.th_roles}</th>
+				<th width="30%">{$tlImages.sort_hint}{$labels.th_roles}</th>
 				<th class="{$noSortableColumnClass}">{$labels.th_role_description}</th>
 				<th class="{$noSortableColumnClass}">{$labels.th_delete}</th>
 			</tr>

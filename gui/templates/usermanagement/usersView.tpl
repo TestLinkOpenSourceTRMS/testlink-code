@@ -1,10 +1,11 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.25 2010/10/08 14:28:13 mx-julian Exp $
+$Id: usersView.tpl,v 1.26 2010/10/17 09:46:37 franciscom Exp $
 
 Purpose: smarty template - users overview
 
 rev:
+  20101017 - franciscom - image access refactored (tlImages)
   20100923 - Julian - BUGID 3802
   20100426 - asimon - removed forgotten comment end sign (template syntax error)
   20100419 - franciscom - BUGID 3355: A user can not be deleted from the list
@@ -145,19 +146,17 @@ function toggleRowByClass(oid,className,displayValue)
 				</td>
 				<td align="center">
 					{if $userObj->isActive eq 1}
-				  		<img style="border:none" title="{$labels.alt_active_user}"
-  				                             alt="{$labels.alt_active_user}"  src="{$checked_img}"/>
+				  		<img style="border:none" title="{$labels.alt_active_user}" alt="{$labels.alt_active_user}"  
+				  		     src="{$tlImages.checked}"/>
   			  {else}
   				    &nbsp;
         	{/if}
 				</td>
 				<td align="center">
-				  <img style="border:none;cursor: pointer;"
-               alt="{$labels.alt_disable_user}"
-					     title="{$labels.alt_disable_user}"
+				  <img style="border:none;cursor: pointer;" alt="{$labels.alt_disable_user}"
+					     title="{$labels.alt_disable_user}" src="{$tlImages.delete}"
 					     onclick="delete_confirmation({$userObj->dbID},'{$userObj->login|escape:'javascript'|escape}',
-					                                  '{$del_msgbox_title}','{$warning_msg}');"
-				       src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"/>
+					                                  '{$del_msgbox_title}','{$warning_msg}');" />
 				</td>
 			</tr>
 			{/foreach}

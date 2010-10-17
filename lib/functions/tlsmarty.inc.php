@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.29 2010/10/17 09:09:40 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.30 2010/10/17 09:46:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
@@ -247,7 +247,9 @@ class TLSmarty extends Smarty
         $tlImages = array('api_info' => TL_THEME_IMG_DIR . "/brick.png",
                           'checked' => TL_THEME_IMG_DIR . "/apply_f2_16.png",
                           'delete' => TL_THEME_IMG_DIR . "/trash.png",
+                          'delete_disabled' => TL_THEME_IMG_DIR . "/trash_greyed.png",
         				  'direct_link' => TL_THEME_IMG_DIR . "/world_link.png",
+        				  'edit' => TL_THEME_IMG_DIR . "/icon_edit.png",
                           'export' => TL_THEME_IMG_DIR . "/export.png",
                           'export_import' => TL_THEME_IMG_DIR . "/export_import.png",
                           'import' => TL_THEME_IMG_DIR . "/door_in.png",
@@ -256,48 +258,48 @@ class TLSmarty extends Smarty
                           'reorder' => TL_THEME_IMG_DIR . "/arrow_switch.png",
                           'sort' => TL_THEME_IMG_DIR . "/sort_hint.png");
 
-        $this->assign("tlImages",$tlImages);
 
 		// 20101017 - all these need to be refactored and REMOVED        
         // $sort_img = TL_THEME_IMG_DIR . "/sort_hint.png";
         // $api_info_img = TL_THEME_IMG_DIR . "/brick.png";
         // $direct_link_img = TL_THEME_IMG_DIR . "/world_link.png";
         
-        $this->assign("sort_img",$tlImages['sort']);
-        $this->assign("checked_img",$tlImages['checked']);
-        $this->assign("delete_img",$tlImages['delete']);
-        $this->assign("insert_step_img",$tlImages['insert_step']);
+        // $this->assign("sort_img",$tlImages['sort']);
+        // $this->assign("checked_img",$tlImages['checked']);
+        // $this->assign("delete_img",$tlImages['delete']);
+        // $this->assign("insert_step_img",$tlImages['insert_step']);
         
         $msg = lang_get('show_hide_api_info');
-        $toggle_api_info_img =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
-        						" onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
-        						" src=\"{$tlImages['api_info']}\" align=\"left\" />";
-        $this->assign("toggle_api_info_img",$toggle_api_info_img);
+        $tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
+        								" onclick=\"showHideByClass('span','api_info');event.stopPropagation();\" " .
+        								" src=\"{$tlImages['api_info']}\" align=\"left\" />";
 
         $msg = lang_get('show_hide_direct_link');
-        $toggle_direct_link_img = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
-        						  " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
-        						  " src=\"{$tlImages['direct_link']}\" align=\"left\" />";
-        $this->assign("toggle_direct_link_img",$toggle_direct_link_img);
-        
+        $tlImages['toggle_direct_link'] = "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .
+        						  		  " onclick=\"showHideByClass('div','direct_link');event.stopPropagation();\" " .
+        						  		  " src=\"{$tlImages['direct_link']}\" align=\"left\" />";
+
         // Some useful values for Sort Table Engine
+        $tlImages['sort_hint'] = '';
         switch (TL_SORT_TABLE_ENGINE)
         {
             case 'kryogenix.org':
-                $sort_table_by_column=lang_get('sort_table_by_column');
-                $sortHintIcon="<img title=\"{$sort_table_by_column}\" " .
-                " alt=\"{$sort_table_by_column}\" " .
-                " src=\"{$tlImages['sort']}\" align=\"left\" />";
+                $sort_table_by_column = lang_get('sort_table_by_column');
+                $tlImages['sort_hint'] = "<img title=\"{$sort_table_by_column}\" " .
+                						 " alt=\"{$sort_table_by_column}\" " .
+                						 " src=\"{$tlImages['sort']}\" align=\"left\" />";
                 
-                $this->assign("sortHintIcon",$sortHintIcon);
                 $this->assign("noSortableColumnClass","sorttable_nosort");
             break;
             
             default:
-                $this->assign("sortHintIcon",'');
                 $this->assign("noSortableColumnClass",'');
             break;
         }
+
+
+		// Do not move!!!
+        $this->assign("tlImages",$tlImages);
         
         // Register functions
         $this->register_function("lang_get", "lang_get_smarty");

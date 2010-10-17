@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: setInventory.php,v 1.6 2010/10/16 16:52:06 franciscom Exp $
+ * @version    	CVS: $Id: setInventory.php,v 1.7 2010/10/17 09:46:37 franciscom Exp $
  *
  * @internal Revisions:
  * None
@@ -39,20 +39,17 @@ else
 
 echo json_encode($data);
 
-/**
- * 
- *
- */
 function init_args()
 {
     $_REQUEST = strings_stripSlashes($_REQUEST);
 	$iParams = array("machineID" => array(tlInputParameter::INT_N),
-					 "machineOwner" => array(tlInputParameter::INT_N),
-			         "machineName" => array(tlInputParameter::STRING_N,0,255),
-			         "machineIp" => array(tlInputParameter::STRING_N,0,50),
-			         "machineNotes" => array(tlInputParameter::STRING_N,0,2000),
-			         "machinePurpose" => array(tlInputParameter::STRING_N,0,2000),
-			         "machineHw" => array(tlInputParameter::STRING_N,0,2000));
+					"machineOwner" => array(tlInputParameter::INT_N),
+			        "machineName" => array(tlInputParameter::STRING_N,0,255),
+			        "machineIp" => array(tlInputParameter::STRING_N,0,50),
+			        "machineNotes" => array(tlInputParameter::STRING_N,0,2000),
+			        "machinePurpose" => array(tlInputParameter::STRING_N,0,2000),
+			        "machineHw" => array(tlInputParameter::STRING_N,0,2000),
+	 				);
 
 	$args = new stdClass();
     R_PARAMS($iParams,$args);

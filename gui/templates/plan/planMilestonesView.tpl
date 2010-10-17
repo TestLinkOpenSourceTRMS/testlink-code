@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesView.tpl,v 1.10 2010/05/01 19:39:55 franciscom Exp $
+$Id: planMilestonesView.tpl,v 1.11 2010/10/17 09:46:37 franciscom Exp $
 
 Rev:
   20100427 - franciscom - BUGID 3402 - missing refactoring of test project options
@@ -81,7 +81,7 @@ var del_action=fRoot+'{$deleteAction}';
   				            alt="{$labels.alt_delete_milestone}" 
  					            onclick="delete_confirmation({$milestone.id},'{$milestone.name|escape:'javascript'|escape}',
  					                                         '{$del_msgbox_title}','{$warning_msg}');"
-  				            src="{$delete_img}"/>
+  				            src="{$tlImages.delete}"/>
   				</td>
 		</tr>
 		{/foreach}

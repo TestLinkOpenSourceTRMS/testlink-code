@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.83 2010/09/05 14:25:07 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.84 2010/10/17 09:46:37 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -358,8 +358,8 @@ function launchInsertStep(step_id)
 	  <span class="bold"> {$tcView_viewer_labels.testplan_usage} </span>
 		<table class="simple sortable">
     <th>{$tcView_viewer_labels.version}</th>
-    <th>{$sortHintIcon}{$tcView_viewer_labels.test_plan}</th>
-    <th>{$sortHintIcon}{$tcView_viewer_labels.platform}</th>
+    <th>{$tlImages.sort_hint}{$tcView_viewer_labels.test_plan}</th>
+    <th>{$tlImages.sort_hint}{$tcView_viewer_labels.platform}</th>
     {foreach from=$args_linked_versions item=link2tplan_platform}
       {foreach from=$link2tplan_platform item=link2platform key=tplan_id}
         {foreach from=$link2platform item=version_info}

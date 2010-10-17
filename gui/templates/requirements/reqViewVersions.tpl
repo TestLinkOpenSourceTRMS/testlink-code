@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.17 2010/09/08 13:21:53 mx-julian Exp $
+$Id: reqViewVersions.tpl,v 1.18 2010/10/17 09:46:37 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20101017 - franciscom - image access refactored (tlImages)
   20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
   20100319 - asimon - BUGID 1748, added requirement relations display
 *}
@@ -158,7 +159,7 @@ var pF_delete_req_relation = delete_req_relation;
     {/if}
   
     <h2 style="{$my_style}">
-	  {$toggle_direct_link_img} &nbsp;
+	  {$tlImages.toggle_direct_link} &nbsp;
 	  {if $gui->display_path}
 	      {foreach from=$gui->path_info[$reqID] item=path_part}
 	          {$path_part|escape} /

@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildView.tpl,v 1.17 2010/05/01 19:39:55 franciscom Exp $
+$Id: buildView.tpl,v 1.18 2010/10/17 09:46:37 franciscom Exp $
 
 Purpose: smarty template - Show existing builds
 
 Rev:
+    20101017 - franciscom - image access refactored (tlImages)
     20090509 - franciscom - BUGID - display release_date
     20070921 - franciscom - BUGID  - added strip_tags|strip to notes
 *}
@@ -49,7 +50,7 @@ var del_action=fRoot+'{$deleteAction}';
     {* table id MUST BE item_view to use show/hide API info *}
   	<table id="item_view" class="simple  sortable" style="width:80%">
   		<tr>
-  			<th>{$toggle_api_info_img}{$sortHintIcon}{$labels.th_title}</th>
+  			<th>{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_title}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_description}</th>
   			<th class="{$noSortableColumnClass}" style="width:90px;">{$labels.release_date}</th>
   			<th class="{$noSortableColumnClass}">{$labels.th_active}</th>
@@ -61,42 +62,35 @@ var del_action=fRoot+'{$deleteAction}';
   				<td><span class="api_info" style='display:none'>{$tlCfg->api->id_format|replace:"%s":$build.id}</span>
   				    <a href="{$editAction}{$build.id}" title="{$labels.alt_edit_build}">{$build.name|escape}
   					     {if $gsmarty_gui->show_icon_edit}
-  					         <img style="border:none"
-  					              alt="{$labels.alt_edit_build}" 
-  					              title="{$labels.alt_edit_build}"
-  					              src="{$smarty.const.TL_THEME_IMG_DIR}/icon_edit.png"/>
+  					         <img style="border:none" alt="{$labels.alt_edit_build}" title="{$labels.alt_edit_build}"
+  					              src="{$tlImages.edit}"/>
   					     {/if}    
   					  </a>   
   				</td>
   				<td>{$build.notes|strip_tags|strip|truncate:#BUILD_NOTES_TRUNCATE_LEN#}</td>
   				<td>{if $build.release_date != ''}{localize_date d=$build.release_date}{/if}</td>
   				<td class="clickable_icon">
-  				   {if $build.active eq 1} 
-  				     <img style="border:none" 
-  				            title="{$labels.alt_active_build}" 
-  				            alt="{$labels.alt_active_build}" 
-  				            src="{$checked_img}"/>
+  				   {if $build.active == 1} 
+  				     <img style="border:none"  title="{$labels.alt_active_build}"  alt="{$labels.alt_active_build}" 
+  				          src="{$tlImages.checked}"/>
   				    {else}
   				    &nbsp;        
   				    {/if}
   				</td>
   				<td class="clickable_icon">
-  				   {if $build.is_open eq 1} 
-  				     <img style="border:none" 
-  				            title="{$labels.alt_open_build}" 
-  				            alt="{$labels.alt_open_build}" 
-  				            src="{$checked_img}"/>
+  				   {if $build.is_open == 1} 
+  				     <img style="border:none"  title="{$labels.alt_open_build}"  alt="{$labels.alt_open_build}" 
+  				          src="{$tlImages.checked}"/>
   				    {else}
   				    &nbsp;        
   				    {/if}
   				</td>
   				<td class="clickable_icon">
-				       <img style="border:none;cursor: pointer;" 
-  				            title="{$labels.alt_delete_build}" 
+				       <img style="border:none;cursor: pointer;"  title="{$labels.alt_delete_build}" 
   				            alt="{$labels.alt_delete_build}" 
  					            onclick="delete_confirmation({$build.id},'{$build.name|escape:'javascript'|escape}',
  					                                         '{$del_msgbox_title}','{$warning_msg}');"
-  				            src="{$delete_img}"/>
+  				            src="{$tlImages.delete}"/>
   				</td>
   			</tr>
   		{/foreach}

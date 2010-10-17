@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.44 2010/09/05 15:55:30 franciscom Exp $
+$Id: tcView.tpl,v 1.45 2010/10/17 09:46:37 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
+    20101017 - franciscom - image access refactored (tlImages)
     20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
                             use of: $gui->cf_current_version, $gui->cf_other_versions
     20100814 - franciscom - improvement on user feecback when no record found.
@@ -130,7 +131,7 @@ function validateStepsReorder(formOID)
     {/if}
   
     <h2 style="{$my_style}">
-	  {$toggle_direct_link_img} &nbsp;
+	  {$tlImages.toggle_direct_link} &nbsp;
 	  {if $gui->display_testcase_path}
 	      {foreach from=$gui->path_info[$tcID] item=path_part}
 	          {$path_part|escape} /

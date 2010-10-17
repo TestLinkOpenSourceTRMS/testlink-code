@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.11 2010/06/24 17:25:56 asimon83 Exp $
+$Id: platformsView.tpl,v 1.12 2010/10/17 09:46:37 franciscom Exp $
 Purpose: smarty template - View all platforms
 
 20100119 - Eloff      - added ability to show/hide platform id for API
@@ -40,11 +40,11 @@ Purpose: smarty template - View all platforms
 <h1 class="title">{$labels.menu_manage_platforms}</h1>
 {include file="inc_feedback.tpl" user_feedback=$gui->user_feedback}
 <div class="workBack">
-{if $gui->platforms neq ''}
+{if $gui->platforms != ''}
 	<table class="simple sortable" style="width:95%">
 		<tr>
-			<th width="30%">{$toggle_api_info_img}{$sortHintIcon}{$labels.th_platform}</th>
-			<th>{$sortHintIcon}{$labels.th_notes}</th>
+			<th width="30%">{$tlImages.toggle_api_info}{$tlImages.sort_hint}{$labels.th_platform}</th>
+			<th>{$tlImages.sort_hint}{$labels.th_notes}</th>
 			{if $gui->canManage != ""}
 				<th>{$labels.th_delete}</th>
 			{/if}
@@ -65,20 +65,14 @@ Purpose: smarty template - View all platforms
 			{if $gui->canManage ne ""}
 			<td class="clickable_icon">
 				{if $gui->platforms[platform].linked_count eq 0}
-				<img style="border:none;cursor: pointer;"
-						alt="{$labels.alt_delete_platform}"
-						title="{$labels.alt_delete_platform}"
-						src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+				<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"
+						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete}"
 						onclick="delete_confirmation({$gui->platforms[platform].id},
-							'{$gui->platforms[platform].name|escape:'javascript'|escape}',
-				              '{$del_msgbox_title}','{$warning_msg}');" />
+							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$del_msgbox_title}','{$warning_msg}');" />
 				{else}
-					<img style="border:none;cursor: pointer;"
-						alt="{$labels.alt_delete_platform}"
-						title="{$labels.alt_delete_platform}"
-						src="{$smarty.const.TL_THEME_IMG_DIR}/trash_greyed.png"
-						onclick="alert_message_html(
-							'{$del_msgbox_title}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name}');" />
+					<img style="border:none;cursor: pointer;" 	alt="{$labels.alt_delete_platform}"
+						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete_disabled}"
+						onclick="alert_message_html('{$del_msgbox_title}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name}');" />
 				{/if}
 			</td>
 			{/if}
@@ -91,9 +85,8 @@ Purpose: smarty template - View all platforms
    		<form style="float:left" name="platform_view" id="platform_view" method="post" action="lib/platforms/platformsEdit.php">
 	  		<input type="hidden" name="doAction" value="" />
 		  	{if $gui->canManage ne ""}
-		    	<input type="submit" id="create_platform" name="create_platform"
-		        	value="{$labels.btn_create_platform}"
-		           	onclick="doAction.value='create'"/>
+		    	<input type="submit" id="create_platform" name="create_platform" 	value="{$labels.btn_create_platform}"
+		           	 onclick="doAction.value='create'"/>
 			  {/if}	
 		</form>
      	<form name="platformsExport" id="platformsExport" method="post" action="lib/platforms/platformsExport.php">
@@ -102,7 +95,7 @@ Purpose: smarty template - View all platforms
 		         style="margin-left: 3px;" value="{$labels.btn_export}" />
 		  	{if $gui->canManage ne ""}       
 		  		<input type="button" name="import_platforms" id="import_platforms" 
-		         	onclick="location='{$importAction}'" value="{$labels.btn_import}" />
+		         	   onclick="location='{$importAction}'" value="{$labels.btn_import}" />
        	  	{/if}
 	  	</form>
     </div>

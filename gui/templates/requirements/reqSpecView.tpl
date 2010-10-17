@@ -1,10 +1,11 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.43 2010/10/08 11:15:27 asimon83 Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.44 2010/10/17 09:46:37 franciscom Exp $ *}
 {*
    Purpose: view a requirement specification
    Author: Martin Havlat
 
    rev:
+        20101017 - franciscom - image access refactored (tlImages)
         20101008 - asimon - BUGID 3311
         20101006 - asimon - BUGID 3854
         20100810 - asimon - BUGID 3317: disabled total count of requirements by default
@@ -72,7 +73,7 @@
 <body {$body_onload} onUnload="storeWindowSize('ReqSpecPopup')" >
 <h1 class="title">
   {if isset($gui->direct_link)}
-  {$toggle_direct_link_img} &nbsp;
+    {$tlImages.toggle_direct_link} &nbsp;
   {/if}
 	{$gui->main_descr|escape}
 	{if $gui->req_spec.id}

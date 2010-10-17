@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuilds.tpl,v 1.2 2010/09/17 17:20:54 franciscom Exp $
+$Id: resultsMoreBuilds.tpl,v 1.3 2010/10/17 09:46:37 franciscom Exp $
 
 rev :
      20100917 - franciscom - BUGID 3789
@@ -112,14 +112,14 @@ progress();
 	{if !$gui->display->suite_summaries}
 		<table class="simple sortable" style="color:blue; width: 100%; margin-left: 0px;" border="0">
 			<tr>
-				<th>{$sortHintIcon}{$labels.th_test_case}</th>
+				<th>{$tlImages.sort_hint}{$labels.th_test_case}</th>
 				{if $gui->showPlatforms}
-					<th>{$sortHintIcon}{$labels.th_platform}</th>
+					<th>{$tlImages.sort_hint}{$labels.th_platform}</th>
 				{/if}
-				<th>{$sortHintIcon}{$labels.th_build}</th>
-				<th>{$sortHintIcon}{$labels.th_tester_id}</th>
-				<th>{$sortHintIcon}{$labels.th_execution_ts}</th>
-				<th>{$sortHintIcon}{$labels.th_status}</th>
+				<th>{$tlImages.sort_hint}{$labels.th_build}</th>
+				<th>{$tlImages.sort_hint}{$labels.th_tester_id}</th>
+				<th>{$tlImages.sort_hint}{$labels.th_execution_ts}</th>
+				<th>{$tlImages.sort_hint}{$labels.th_status}</th>
 				<th>{$labels.th_notes}</th>
 				<th>{$labels.th_bugs}</th>
 			</tr>
@@ -208,14 +208,14 @@ progress();
 			    
 			    		{if $gui->display->suite_summaries}
 			    		<tr>
-			    			<th>{$sortHintIcon}{$labels.th_test_case}</th>
+			    			<th>{$tlImages.sort_hint}{$labels.th_test_case}</th>
 			    			{if $gui->showPlatforms}
-			    			  <th>{$sortHintIcon}{$labels.th_platform}</th>
+			    			  <th>{$tlImages.sort_hint}{$labels.th_platform}</th>
 			    			{/if}
-			    			<th>{$sortHintIcon}{$labels.th_build}</th>
-			    			<th>{$sortHintIcon}{$labels.th_tester_id}</th>
+			    			<th>{$tlImages.sort_hint}{$labels.th_build}</th>
+			    			<th>{$tlImages.sort_hint}{$labels.th_tester_id}</th>
 			    			<th>{$labels.th_execution_ts}</th>
-			    			<th>{$sortHintIcon}{$labels.th_status}</th>
+			    			<th>{$tlImages.sort_hint}{$labels.th_status}</th>
 			    			<th>{$labels.th_notes}</th>
 			    			<th>{$labels.th_bugs}</th>
 			    		</tr>

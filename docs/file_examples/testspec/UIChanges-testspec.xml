@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="UI">
+<details><![CDATA[<p></p>]]></details>
+<testsuite name="GUI_Testing">
+<details><![CDATA[<p></p>]]></details>
+<testsuite name="t1">
+<details><![CDATA[<p></p>]]></details>
+<testcase name="UIChanges-1">
+<summary><![CDATA[Check the URL tab on the UI displays a new checkbox control for Enable URL filtering.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The URL filtering page should display a new checkbox control Enable URL filtering and download of URL definitions.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[Check the URL tab for changes.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-2">
+<summary><![CDATA[Check that the Enable URL filtering and download of URL definitions control on the page is functional.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The checbox control should be enabled. The user should be able to select /de-select the URL filtering option by clicking on the control.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[Check the Enable URL filtering and download of URL definitions checkbox control on the URL tab.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-3">
+<summary><![CDATA[Check the URL tab on the UI displays a radio-button control for Enable Audit Mode]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The URL filtering page should display the control for Enable Audit Mode.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[Check that the URL tab displays radio button control for Enable Audit Mode.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-4">
+<summary><![CDATA[Check the URL tab on the UI displays a radio-button control for Enable Filtering Mode]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The URL filtering page should display the control for Enable Filtering Mode.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[Check that the URL tab displays radio button control for Enable Filtering Mode.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-5">
+<summary><![CDATA[Check that if the Enable URL filtering and download of URL definitions control on the page is disabled, all the controls on the page are disabled.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[ The URL filtering should be disabled.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ The control options for Enable Audit Mode and Enable Fitlering Mode should be disabled, as the URL filtering has been disabled. ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ By default, the option for Enable Filtering Mode should be selected.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ All the controls on the page should be disabled.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[Un-Check the Enable URL filtering and download of URL definitions checkbox control on the URL tab.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-6">
+<summary><![CDATA[Check that if the Enable URL filtering and download of URL definitions control on the page is enabled, all the controls on the page are enabled.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[ Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[ The URL filtering should be enabled.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[ Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ The control options for Enable Audit Mode and Enable Fitlering Mode should be enabled, as the URL filtering has been enabled. ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[ Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ By default, the option for Enable Filtering Mode should be selected.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[ Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ All the controls on the page should be enabled.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[ Check/Select the Enable URL filtering and download of URL definitions checkbox control on the URL tab.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-7">
+<summary><![CDATA[Check that the section for Dynamic Document Review Filtering is not available on the UI.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[ Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The entire section for DDR Filtering should not be available on the page.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[ Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[The title Dynamic Document Review Filtering is not displayed.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[ Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[The line separator under the title Dynamic Document Review Filtering is not displayed.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[ Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[The checkbox option for Enable dynamic filtering is not displayed.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[ Check that the section Dynamic Document Review Filtering is removed from the UI.]]></actions>
+<expectedresults><![CDATA[The option for Threshold for incoming data along with the threshold value drop down is not displayed.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[6]]></step_number>
+<actions><![CDATA[]]></actions>
+<expectedresults><![CDATA[The option for Threshold for outgoing data along with the threshold value drop down is not displayed.]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-8">
+<summary><![CDATA[Check that the drop down for Locale is not available on the UI.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[ Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The drop down control option should be removed from the UI, as SSEv10 would not support multilple locales.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[ Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[ Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[ Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[ Check that the drop down control for Category Locale under the section Configure Symantec Categories is removed from the UI.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-9">
+<summary><![CDATA[Check that the title Configure Symantec Categories should be updated.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[ Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The title of the section should be updated, as SSE v10 no longer integrates Symantec URL filtering and its categories.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[ Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[ Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[ Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[ Check that the title for the section Configure Symantec Categories is updated.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-10">
+<summary><![CDATA[Check that there is only one text area under the section URL List Override]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[ Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[ The URL List Override section should now only display a single text box area.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[ Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ The ttiles Allow with DDR and Allow without DDR should be removed.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[ Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[ Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[ Check that the section URL List Override for controls.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-11">
+<summary><![CDATA[Check that all the <87> categories are displayed correctly under the Select Symantec Category section.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[ Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The list should display all the <87> categories along with a checkbox for each category. The user should be able to scroll up and down the list and select all the categories.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[ Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[ Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[ Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[ Check the category lists displayed under the section Configure Symantec Categories]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+<testcase name="UIChanges-12">
+<summary><![CDATA[Check if the user is able to add a local category that is already present in the vendor category list.]]></summary>
+<preconditions><![CDATA[NA]]></preconditions>
+<execution_type><![CDATA[2]]></execution_type>
+<steps>
+<step>
+<step_number><![CDATA[1]]></step_number>
+<actions><![CDATA[ Install SSE 10 on Windows / Unix machine.]]></actions>
+<expectedresults><![CDATA[The user should NOT be able to add a duplicate category name as a Local Category.]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[2]]></step_number>
+<actions><![CDATA[ Install appropriate AV and URL license.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[3]]></step_number>
+<actions><![CDATA[ Open a new browser instance and enter the SSE UI url.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[4]]></step_number>
+<actions><![CDATA[ Navigate to the SSE UI -> Policies -> Filtering -> URL tab page.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[5]]></step_number>
+<actions><![CDATA[Enter any existing catgeory name from the master category list into the Local Catgroy text area.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+<step>
+<step_number><![CDATA[6]]></step_number>
+<actions><![CDATA[ Save and Apply the settings and check behaviour.]]></actions>
+<expectedresults><![CDATA[ ]]></expectedresults>
+</step>
+</steps>
+<keywords>
+</keywords>
+</testcase>
+</testsuite>
+</testsuite>
+</testsuite>

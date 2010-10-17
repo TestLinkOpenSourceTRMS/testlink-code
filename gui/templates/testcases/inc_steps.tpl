@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_steps.tpl,v 1.2 2010/10/16 08:34:21 franciscom Exp $
+$Id: inc_steps.tpl,v 1.3 2010/10/17 09:08:35 franciscom Exp $
 Purpose: Show the steps for a testcase in vertical or horizontal layout
          Included from files tcView_viewer.tpl and inc_exec_test_spec.tpl
 Author : eloff, 2010
@@ -72,7 +72,7 @@ Author : eloff, 2010
 		
 		<td class="clickable_icon">
 			<img style="border:none;cursor: pointer;"  title="{$inc_steps_labels.insert_step}"    alt="{$inc_steps_labels.insert_step}"
-			     onclick="launchInsertStep({$step_info.id});"    src="{$insert_step_img}"/>
+			     onclick="launchInsertStep({$step_info.id});"    src="{$tlImages.insert_step}"/>
 		</td>
 		
 		{/if}

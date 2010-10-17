@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planView.tpl,v 1.23 2010/10/17 09:46:37 franciscom Exp $ 
+$Id: planView.tpl,v 1.24 2010/10/17 17:41:51 franciscom Exp $ 
 Purpose: smarty template - edit / delete Test Plan 
 
 Development hint:
@@ -32,7 +32,7 @@ Rev:
           testplan_th_name,testplan_th_notes,testplan_th_active,testplan_th_delete,
           testplan_alt_edit_tp,alt_active_testplan,testplan_alt_delete_tp,public,
           btn_testplan_create,th_id,error_no_testprojects_present,btn_export_import,
-          export_import,export,import,export_testplan_links,import_testlan_links'}
+          export_import,export,import,export_testplan_links,import_testplan_links'}
 
 
 {lang_get s='warning_delete_testplan' var="warning_msg"}
@@ -119,8 +119,8 @@ var del_action=fRoot+'{$deleteAction}';
 			</td>
 			<td class="clickable_icon">
 			    <a href="{$importAction}{$testplan.id}"> 
-				  <img style="border:none;cursor: pointer;" alt="{$labels.import_testlan_links'}" 
-				       title="{$labels.import_testlan_links'}"  src="{$tlImages.import}"/>
+				  <img style="border:none;cursor: pointer;" alt="{$labels.import_testplan_links}" 
+				       title="{$labels.import_testplan_links}"  src="{$tlImages.import}"/>
 				  </a>     
 			</td>
 		</tr>

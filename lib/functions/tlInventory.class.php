@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: tlInventory.class.php,v 1.10 2010/08/20 10:18:59 franciscom Exp $
+ * @version    	CVS: $Id: tlInventory.class.php,v 1.11 2010/10/17 08:33:41 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlInventory.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.9
@@ -16,6 +16,7 @@
  * @todo		ability to reserve machine for an user per dates
  *
  * @internal revisions
+ * 20101017 - franciscom - BUGID 3888: Inventory fields are erased if any line break is entered (MySQL ONLY)
  * 20100516 - franciscom - readDB(),getAll() - interface changes
  **/
 
@@ -140,7 +141,7 @@ class tlInventory extends tlObjectWithDB
 				$fields2get = ' * ';
 			break;
 		} 
-		$query = "/* $debugMsg */ SELECT {$fields2get} FROM {$this->tables['inventory']} " .
+		$sql = "/* $debugMsg */ SELECT {$fields2get} FROM {$this->tables['inventory']} " .
 				 " WHERE  testproject_id={$this->testProjectID}";
 		
 		$clauses = null;
@@ -157,17 +158,17 @@ class tlInventory extends tlObjectWithDB
 		}
 		if ($clauses)
 		{
-			$query .= " AND " . implode(" AND ",$clauses);
+			$sql .= " AND " . implode(" AND ",$clauses);
 		}
 		
 		
 		if( is_null($my['options']['accessKey']) )
 		{
-			$recordset = $this->db->get_recordset($query);
+			$recordset = $this->db->get_recordset($sql);
 		}
 		else
 		{
-			$recordset = $this->db->fetchRowsIntoMap($query,$my['options']['accessKey']);
+			$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['accessKey']);
 		}
 		
 		
@@ -176,11 +177,11 @@ class tlInventory extends tlObjectWithDB
 			// unserialize text parameters
 			foreach ($recordset as $key => $item)
 			{
-				$tmpArray = unserialize($recordset[$key]['content']);
-				$recordset[$key]['content'] = null;
-				$recordset[$key]['notes'] = isset($tmpArray['notes']) ? $tmpArray['notes'] : '';
-				$recordset[$key]['purpose'] = isset($tmpArray['purpose']) ? $tmpArray['purpose'] : '';
-				$recordset[$key]['hardware'] = isset($tmpArray['hardware']) ? $tmpArray['hardware'] : '';
+				$dummy = unserialize($recordset[$key]['content']);
+				$recordset[$key]['content'] = null;  // used for ? who knows?
+				$recordset[$key]['notes'] = isset($dummy['notes']) ? $dummy['notes'] : '';
+				$recordset[$key]['purpose'] = isset($dummy['purpose']) ? $dummy['purpose'] : '';
+				$recordset[$key]['hardware'] = isset($dummy['hardware']) ? $dummy['hardware'] : '';  
 			}
 		}
 		return $recordset;
@@ -193,6 +194,9 @@ class tlInventory extends tlObjectWithDB
 	 * 
 	 * @param integer $db [ref] the database connection
 	 * @return integer returns tl::OK on success, tl::E_DBERROR else
+	 *
+	 * @internal revisions
+	 * 20101017 - franciscom - BUGID 3888
 	 */
 	protected function writeToDB(&$db)
 	{
@@ -202,20 +206,16 @@ class tlInventory extends tlObjectWithDB
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$name = $db->prepare_string($this->name);
 		$ip = $db->prepare_string($this->ipAddress);
-		$this->inventoryContent['hardware'] = $db->prepare_string($this->inventoryContent['hardware']);
-		$this->inventoryContent['notes'] = $db->prepare_string($this->inventoryContent['notes']);
-		$this->inventoryContent['purpose'] = $db->prepare_string($this->inventoryContent['purpose']);
-		$data_serialized = serialize($this->inventoryContent);
-
+		$data_serialized = $db->prepare_string(serialize($this->inventoryContent)); // BUGID 3888
 		if (is_null($this->inventoryId) || ($this->inventoryId == 0))
 		{
-			$query = "/* $debugMsg */ INSERT INTO {$this->tables['inventory']} (name," .
+			$sql = "/* $debugMsg */ INSERT INTO {$this->tables['inventory']} (name," .
 					 " testproject_id,content,ipaddress,owner_id,creation_ts) " .
 					 " VALUES ('" . $name .	"'," . $this->testProjectID . ",'" . 
 					$data_serialized . "','" . $ip . "'," . $this->ownerId . "," . 
 					$this->db->db_now() . ")";
 				
-			$result = $this->db->exec_query($query);
+			$result = $this->db->exec_query($sql);
 			if ($result)
 			{
 				$this->inventoryId = $db->insert_id($this->tables['inventory']);
@@ -231,12 +231,12 @@ class tlInventory extends tlObjectWithDB
 		}
 		else
 		{
-			$query = "/* $debugMsg */UPDATE {$this->tables['inventory']} " .
+			$sql = "/* $debugMsg */UPDATE {$this->tables['inventory']} " .
 					 " SET name='{$name}', content='{$data_serialized}', " .
 				     " ipaddress='{$ip}', modification_ts=" . $this->db->db_now() .
 				     ", testproject_id={$this->testProjectID}, owner_id=" . $this->ownerId .
 					 " WHERE id={$this->inventoryId}";
-			$result = $this->db->exec_query($query);
+			$result = $this->db->exec_query($sql);
 			if ($result)
 			{
 				tLog('A device "'.$this->name.'" was not updated.', 'INFO');
@@ -367,16 +367,16 @@ class tlInventory extends tlObjectWithDB
 		if ($result == tl::OK)
 		{
 			
-			$query = "/* $debugMsg */ SELECT id FROM {$this->tables['inventory']} " .
+			$sql = "/* $debugMsg */ SELECT id FROM {$this->tables['inventory']} " .
 					 " WHERE name='" . $name.
 			         "' AND testproject_id={$this->testProjectID}";
 			         
 			if ($this->inventoryId > 0) // for update
 			{
-				$query .= ' AND NOT id='.$this->inventoryId;
+				$sql .= ' AND NOT id='.$this->inventoryId;
 			}
 
-			if ($this->db->fetchFirstRow($query))
+			if ($this->db->fetchFirstRow($sql))
 			{
 				$result = self::E_NAMEALREADYEXISTS;
 				$this->userFeedback = langGetFormated('inventory_name_exists',$this->name);
@@ -385,15 +385,15 @@ class tlInventory extends tlObjectWithDB
 
 		if ($result == tl::OK && !empty($ipAddress))
 		{
-			$query = "/* $debugMsg */ SELECT id FROM {$this->tables['inventory']} " .
+			$sql = "/* $debugMsg */ SELECT id FROM {$this->tables['inventory']} " .
 					 " WHERE ipaddress='" . $ipAddress . 
 		    	     "' AND testproject_id={$this->testProjectID}";
 
 			if ($this->inventoryId > 0) // for update
 			{
-				$query .= ' AND NOT id='.$this->inventoryId;
+				$sql .= ' AND NOT id='.$this->inventoryId;
 			}
-			if ($this->db->fetchFirstRow($query))
+			if ($this->db->fetchFirstRow($sql))
 			{
 				$result = self::E_IPALREADYEXISTS;
 				$this->userFeedback = langGetFormated('inventory_ip_exists',$ipAddress);

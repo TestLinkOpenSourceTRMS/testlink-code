@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.726 2010/10/17 09:57:46 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.727 2010/10/17 10:28:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -3105,6 +3105,9 @@ $TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZE
 
 // ----- lib/plan/planExport.php -----
 $TLS_export_test_plan = 'Export Test Plan';
+
+// ----- lib/plan/planImport.php -----
+$TLS_title_import_testplan_links = 'Import links to test cases and platforms';
 
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Export Execution Set';

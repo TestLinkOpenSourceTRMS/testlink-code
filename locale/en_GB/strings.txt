@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.724 2010/10/14 18:41:10 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.725 2010/10/17 08:51:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1931,6 +1931,8 @@ $TLS_testplan_title_list = "List of existing Test Plans";
 $TLS_testplan_txt_empty_list = "There are no Test Plans defined! Create one to allow test execution functionality";
 $TLS_alt_active_testplan = "Active testplan";
 $TLS_warning_delete_testplan = "<p>You are going to delete: %s </p><p>Are you sure?</p>";
+$TLS_export_testplan_links = "Export links to test cases and platforms";
+$TLS_import_testplan_links = "Import links to test cases and platforms";
 
 
 // ----- gui/templates/mainPage_left.tpl -----

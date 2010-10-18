@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuildsGUI.php,v 1.3 2010/05/18 05:08:41 amkhullar Exp $
+* $Id: resultsMoreBuildsGUI.php,v 1.4 2010/10/18 22:55:29 erikeloff Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -88,6 +88,7 @@ function initializeGui(&$dbHandler,$args)
     $gui->assigned_users = new stdClass();
     $gui->keywords = new stdClass();
     $gui->builds = new stdClass();
+    $gui->platforms = new stdClass();
     $gui->testsuites = new stdClass();
 
     // 20090107 - franciscom
@@ -113,10 +114,12 @@ function initializeGui(&$dbHandler,$args)
     }
        
     $gui->builds->items = $tplan_mgr->get_builds($gui->tplan_id,testplan::ACTIVE_BUILDS);
+    $gui->platforms->items = $tplan_mgr->getPlatforms($gui->tplan_id);
     $gui->testsuites->items = $re->getTopLevelSuites();
 
     $gui->keywords->qty = count($gui->keywords->items);
     $gui->builds->qty = count($gui->builds->items);
+    $gui->platforms->qty = count($gui->platforms->items);
     $gui->testsuites->qty = count($gui->testsuites->items);
     $gui->status_code_label = get_status_for_reports_html_options();
     $gui->report_type = $args->format;

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.161 2010/10/13 07:29:22 mx-julian Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.162 2010/10/18 22:55:29 erikeloff Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -133,6 +133,7 @@ define('NO_NODE_TYPE_TO_FILTER', null);
 define('ANY_OWNER', null);
 
 define('ALL_BUILDS', 'a');
+define('ALL_PLATFORMS', 'a');
 define('ALL_TEST_SUITES', 'all');
 
 /** @todo use consts ACTIVE || INACTIVE, OPEN || CLOSED*/

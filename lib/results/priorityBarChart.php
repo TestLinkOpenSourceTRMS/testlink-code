@@ -16,7 +16,7 @@ $tplan_info = $tplan_mgr->get_by_id($tplan_id);
 $tproject_info = $tproject_mgr->get_by_id($tproject_id);
 
 $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,
-                  ALL_TEST_SUITES,ALL_BUILDS);
+                  ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
 
 /**
 * KEYWORDS REPORT

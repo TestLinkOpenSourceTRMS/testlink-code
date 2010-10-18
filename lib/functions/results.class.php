@@ -6,13 +6,13 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.162 2010/08/21 15:36:11 asimon83 Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.163 2010/10/18 22:55:29 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
  * @internal Revisions:
- * 
+ * 20101019 - eloff - BUGID 3794 - added contribution by rtessier
  * 20100821 - asimon - BUGID 3682
  * 20100721 - asimon - BUGID 3406, 1508: changed for user assignments per build:
  *                                       results_overload(), tallyBuildResults(),
@@ -209,7 +209,7 @@ class results extends tlObjectWithDB
 	 **/    
 	public function results(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected = 'all',
-	                        $builds_to_query = -1, $lastResult = 'a', 
+	                        $builds_to_query = -1, $platforms_to_query = array(ALL_PLATFORMS), $lastResult = 'a', 
 	                        $keywordId = 0, $owner = null,
 							$startTime = null, $endTime = null,
 							$executor = null, $search_notes_string = null, $linkExecutionBuild = null, 
@@ -219,7 +219,7 @@ class results extends tlObjectWithDB
 
 		return $this->results_overload($db, $tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected ,
-	                        $builds_to_query , $lastResult,
+	                        $builds_to_query , $platforms_to_query, $lastResult,
 	                        $keywordId , $owner ,
 							$startTime , $endTime ,
 							$executor , $search_notes_string, $linkExecutionBuild , 
@@ -243,7 +243,7 @@ class results extends tlObjectWithDB
 	 */
 	public function results_overload(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected = 'all',
-	                        $builds_to_query = -1, $lastResult = 'a',
+	                        $builds_to_query = -1, $platforms_to_query = array(ALL_PLATFORMS), $lastResult = 'a',
 	                        $keywordId = 0, $owner = null,
 							$startTime = null, $endTime = null,
 							$executor = null, $search_notes_string = null, $linkExecutionBuild = null, 
@@ -325,7 +325,7 @@ class results extends tlObjectWithDB
 			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
 			$all_results = $this->latest_results;
-			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, 'a', $keywordId,
+			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, $platforms_to_query, 'a', $keywordId,
 			                                                 $owner, $startTime, $endTime, $executor,
 			                                                 $search_notes_string, $linkExecutionBuild,
 			                                                 $all_results);
@@ -1304,7 +1304,7 @@ class results extends tlObjectWithDB
 	 *	20070916 - franciscom - removed session coupling
 	 *				added node_order
 	 */
-	private function buildExecutionsMap($builds_to_query, $lastResult = 'a', $keyword = 0,
+	private function buildExecutionsMap($builds_to_query, $platforms_to_query, $lastResult = 'a', $keyword = 0,
 	                                    $owner = null, $startTime, $endTime, $executor,
 	                                    $search_notes_string, $executeLinkBuild, $all_results = 1)
 	{
@@ -1354,6 +1354,18 @@ class results extends tlObjectWithDB
 		{
 			foreach($tcase_info as $index => $info) 
 			{
+				// If no platforms added yet, size will be 0.
+				// In this case, check if platform_id is 0; if so,
+				// it means platforms haven't been added yet,
+				// so include all executions.
+				if (sizeof($platforms_to_query) == 0) {
+					if ($info['platform_id'] != 0) {
+						continue;
+					}
+				} else if ($platforms_to_query[0] != ALL_PLATFORMS &&
+							array_search($info['platform_id'], $platforms_to_query) === false) {
+					continue;
+				}
 				$testcaseID = $info['tc_id'];
 				$executionExists = true;
 				$currentSuite = null;
@@ -1410,9 +1422,11 @@ class results extends tlObjectWithDB
 					// TO-DO - this is where we can include the searching of results
 					// over multiple test plans - by modifying this select statement slightly
 					// to include multiple test plan ids
-					$sql = "SELECT * FROM {$this->tables['executions']} executions " .
-						   "WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID " .
-						   "AND platform_id = " . $info['platform_id'];
+					$sql = "SELECT * FROM {$this->tables['executions']} " .
+						   "WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID ";
+					if ($platforms_to_query[0] != ALL_PLATFORMS) {
+						$sql .= "AND platform_id = " . $info['platform_id'];
+					}
 					
 					$sql .= $sqlFilters;
 					
@@ -1945,9 +1959,9 @@ class newResults extends results
 {
 	public function newResults(&$db, &$tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected = 'all',
-	                        $builds_to_query = -1, $lastResult = 'a', $latest_results_arg = 1,
-	                        $keywordId = 0, $owner = null,
-							$startTime = null, $endTime = null,
+	                        $builds_to_query = -1, $platforms_to_query = array(ALL_PLATFORMS),
+							$lastResult = 'a', $latest_results_arg = 1, $keywordId = 0,
+							$owner = null, $startTime = null, $endTime = null,
 							$executor = null, $search_notes_string = null, $linkExecutionBuild = null, 
 							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
@@ -1955,7 +1969,7 @@ class newResults extends results
 		$this->latest_results = $latest_results_arg;
 		return $this->results_overload($db, $tplan_mgr,$tproject_info, $tplan_info,
 	                        $suitesSelected ,
-	                        $builds_to_query , $lastResult,
+	                        $builds_to_query , $platforms_to_query , $lastResult,
 	                        $keywordId , $owner ,
 							$startTime , $endTime ,
 							$executor , $search_notes_string, $linkExecutionBuild , 

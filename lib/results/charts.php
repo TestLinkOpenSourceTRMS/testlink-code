@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: charts.php,v 1.30 2010/07/16 23:50:24 erikeloff Exp $
+ * @version    	CVS: $Id: charts.php,v 1.31 2010/10/18 22:55:29 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -49,7 +49,7 @@ if($gui->can_use_charts == 'OK')
     // This data will be used in different *chart.php to generate on the fly image
     unset($_SESSION['statistics']);
     
-    $re=new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
+    $re=new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
     $_SESSION['statistics']['getTopLevelSuites'] = $re->getTopLevelSuites();
     $_SESSION['statistics']['getAggregateMap'] = $re->getAggregateMap();
     $_SESSION['statistics']['getAggregateOwnerResults'] = $re->getAggregateOwnerResults();

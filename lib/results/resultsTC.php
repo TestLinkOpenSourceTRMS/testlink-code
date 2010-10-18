@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.77 2010/10/13 11:48:50 mx-julian Exp $ 
+* $Id: resultsTC.php,v 1.78 2010/10/18 22:55:29 erikeloff Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -77,7 +77,7 @@ $getOpt = array('outputFormat' => 'map');
 $gui->platforms = $tplan_mgr->getPlatforms($args->tplan_id,$getOpt);
 
 $show_platforms = !is_null($gui->platforms);
-$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
 
 $gui->buildInfoSet = $tplan_mgr->get_builds($args->tplan_id, 1); //MHT: active builds only
 if ($gui->buildInfoSet)

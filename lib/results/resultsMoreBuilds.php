@@ -9,9 +9,10 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.72 2010/05/15 13:10:46 franciscom Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.73 2010/10/18 22:55:29 erikeloff Exp $
  *
  * @internal Revisions:
+ *	20101019 - eloff - BUGID 3794 - added contribution by rtessier
  *	20091027 - franciscom - BUGID 2500
  *	20090409 - amitkhullar- code refactor for results object
  *	20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report.
@@ -151,12 +152,27 @@ function initializeGui(&$dbHandler,&$argsObj)
     $tester = $argsObj->executorSelected > 0 ? $argsObj->executorSelected : TL_USER_ANYBODY  ;
     
     $re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
-                      	 $testsuiteIds, $buildsToQuery, $statusForClass, $latest_resultset,
-                      	 $argsObj->keywordSelected,$assignee, 
-                      	 $date_range->start->time, $date_range->end->time, 
-                      	 $tester, $argsObj->search_notes_string, null);
+                      	 $testsuiteIds, $buildsToQuery,
+                         $argsObj->platformsSelected, $statusForClass,
+                         $latest_resultset, $argsObj->keywordSelected,
+                         $assignee, $date_range->start->time,
+                         $date_range->end->time, $tester,
+                         $argsObj->search_notes_string, null);
                       
     $gui->suiteList = $re->getSuiteList();  // test executions results
+    // Filter test cases on selected platforms
+    foreach ($gui->suiteList as $suiteid => $tcases) {
+        $filtered = array();
+        foreach ($tcases as $index => $tcase) {
+            if ($tcase['platform_id'] == 0 ||
+                $argsObj->platformsSelected[0] == ALL_PLATFORMS ||
+                array_search($tcase['platform_id'], $argsObj->platformsSelected) !== false) {
+                array_push($filtered, $tcase);
+            }
+        }
+        unset($gui->suiteList[$suiteid]);
+        $gui->suiteList[$suiteid] = $filtered;
+    }
     $gui->flatArray = $re->getFlatArray();
     $gui->mapOfSuiteSummary =  $re->getAggregateMap();
     
@@ -188,6 +204,7 @@ function initializeGui(&$dbHandler,&$argsObj)
     $gui->executorSelected = $gui->users[$argsObj->executorSelected];
     $gui->testsuitesSelected = $testsuiteNames;
     $gui->buildsSelected = $argsObj->buildsSelected;
+    $gui->platformsSelected = $argsObj->platformsSelected;
     $gui->display = $argsObj->display;
 
     // init display rows attribute and some status localized labels
@@ -224,6 +241,7 @@ function init_args()
 		"report_type" => array(tlInputParameter::INT_N),
 		"tplan_id" => array(tlInputParameter::INT_N),
 		"build" => array(tlInputParameter::ARRAY_INT),
+		"platform" => array(tlInputParameter::ARRAY_INT),
 		"keyword" => array(tlInputParameter::INT_N),
 		"owner" => array(tlInputParameter::INT_N),
 		"executor" => array(tlInputParameter::INT_N),
@@ -259,6 +277,7 @@ function init_args()
     $args->ownerSelected = $pParams["owner"];
     $args->executorSelected = $pParams["executor"];
     $args->buildsSelected = $pParams["build"] ? $pParams["build"] : array();
+    $args->platformsSelected = $pParams["platform"] ? $pParams["platform"] : array();
     $args->testsuitesSelected = $pParams["testsuite"] ? $pParams["testsuite"] : array();
     $args->search_notes_string = $pParams['search_notes_string'];
 

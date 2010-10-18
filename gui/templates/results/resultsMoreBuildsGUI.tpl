@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuildsGUI.tpl,v 1.3 2010/05/18 05:06:16 amkhullar Exp $
+$Id: resultsMoreBuildsGUI.tpl,v 1.4 2010/10/18 22:55:29 erikeloff Exp $
 @author Francisco Mancardi
 
 rev :
+     20101019 - eloff - BUGID 3794 - added contribution by rtessier
      20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report. 
      20080524 - franciscom - layout changes
                              BUGID 1430
@@ -14,7 +15,7 @@ rev :
 *}
 {lang_get var="labels"
 			s='enter_start_time,enter_end_time,date,hour,Yes,submit_query,
-			   select_builds_header,select_components_header,report_display_options,
+			   select_builds_header,select_platforms_header,select_components_header,report_display_options,
 			   display_suite_summaries,display_test_cases,display_query_params,
 			   display_totals,display_results_tc,results_latest,results_all,
 			   search_in_notes,executor,No,query_metrics_report'}
@@ -36,6 +37,12 @@ rev :
   {assign var="build_qty" value=#BUILDS_COMBO_NUM_ITEMS#}
 {else}
   {assign var="build_qty" value=$gui->builds->qty}
+{/if}
+
+{if $gui->platforms->qty > #PLATFORMS_COMBO_NUM_ITEMS#}
+  {assign var="platform_qty" value=#PLATFORMS_COMBO_NUM_ITEMS#}
+{else}
+  {assign var="platform_qty" value=$gui->platforms->qty}
 {/if}
 
 {if $gui->testsuites->qty > #TSUITES_COMBO_NUM_ITEMS#}
@@ -70,7 +77,7 @@ franciscom - may be in the future - 20090107
 						<option value="{$gui->builds->items[$row].id}" selected="selected">{$gui->builds->items[$row].name|escape}</option>
 					{/foreach}
 				</select>
-			</td>
+                        </td>
 			<td>
        <select name="testsuite[]" size="{$testsuite_qty}" multiple="multiple">
 					{foreach key=row item=tsuite_name from=$gui->testsuites->items}
@@ -169,13 +176,25 @@ franciscom - may be in the future - 20090107
 			</tr>
   		<tr>
 				<th>{$labels.search_in_notes}</th>
-				<th>&nbsp;</th>
+                        {if $platform_qty > 0}
+			        <th>{$labels.select_platforms_header}</th>
+                        {else}
+                                <th>&nbsp;</th>
+                        {/if}
 			</tr>
 			<tr>
 				<td>
 					<input type="text" name="search_notes_string"/>
 				</td>
-				<td>&nbsp;</td>
+                        <td>
+                        {if $platform_qty > 0}
+				<select name="platform[]" size="{$platform_qty}" multiple="multiple">
+					{foreach key=row item=platformid from=$gui->platforms->items}
+						<option value="{$gui->platforms->items[$row].id}" selected="selected">{$gui->platforms->items[$row].name|escape}</option>
+					{/foreach}
+				</select>
+                        {/if}
+			</td>
 			</tr>
 	    </table>
     </div>

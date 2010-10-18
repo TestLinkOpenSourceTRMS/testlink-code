@@ -10,7 +10,7 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planMilestonesView.php,v 1.9 2010/04/27 18:22:48 franciscom Exp $
+ * @version    	CVS: $Id: planMilestonesView.php,v 1.10 2010/10/18 07:53:22 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -62,7 +62,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
     $gui = new stdClass();
     
     $gui->user_feedback = null;
-    $gui->main_descr = lang_get('title_milestones') . $argsObj->tplan_name;
+    $gui->main_descr = lang_get('title_milestones') . " " . $argsObj->tplan_name;
     $gui->action_descr = null;
     $gui->tplan_name = $argsObj->tplan_name;
     $gui->tplan_id = $argsObj->tplan_id;

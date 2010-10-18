@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.45 $
- * @modified $Date: 2010/07/22 14:14:46 $ $Author: asimon83 $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2010/10/18 21:30:51 $ $Author: mx-julian $
  *
  * @author Francisco Mancardi
  *
@@ -187,7 +187,7 @@ $TLS_tag_for_inactive_users = "*";
 
 $TLS_design = "Test Spec Design";
 $TLS_execution = "Test Execution";
-$TLS_testplan_design = "Test Plan Desing";
+$TLS_testplan_design = "Test Plan Design";
 $TLS_enable_on = "Enable on";
 $TLS_closed_on_date="Closed on ";
 

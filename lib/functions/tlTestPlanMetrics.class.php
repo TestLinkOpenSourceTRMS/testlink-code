@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.6 2010/10/18 14:54:43 mx-julian Exp $
+ * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.7 2010/10/18 14:55:36 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -217,7 +217,7 @@ class tlTestPlanMetrics extends testPlan
             
             foreach( $checks as $key => $item_key)
             {
-            	// add 2 decimal places to expected percentages
+            	// add 1 decimal places to expected percentages
             	$item[$checks[$key]] = number_format($item[$checks[$key]], 1);
             	
             	// check if target for each priority is reached

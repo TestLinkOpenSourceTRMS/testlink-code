@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.4 2010/10/18 12:45:24 mx-julian Exp $
+ * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.5 2010/10/18 13:34:02 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -15,6 +15,7 @@
  * 20101018 - Julian - BUGID 2236 - Milestones Report broken
  *                     BUGID 3830 - Milestone is not shown on Report more than one milestone
                                     have the same target date
+                       BUGID 2770 - Start date for milestones
  **/
 
 /**
@@ -72,10 +73,11 @@ class tlTestPlanMetrics extends testPlan
 	/**
 	 * Function returns prioritized test result counter
 	 * 
-	 * @param timestamp $milestoneDate - (optional) milestone deadline
+	 * @param timestamp $milestoneTargetDate - (optional) milestone deadline
+	 * @param timestamp $milestoneStartDate - (optional) milestone start date
 	 * @return array with three priority counters
 	 */
-	public function getPrioritizedResults($tplanID,$milestoneDate = null)
+	public function getPrioritizedResults($tplanID,$milestoneTargetDate = null, $milestoneStartDate = null)
 	{
 		$output = array (HIGH=>0,MEDIUM=>0,LOW=>0);
 		
@@ -95,10 +97,16 @@ class tlTestPlanMetrics extends testPlan
 					" AND NOT E.status = '{$this->map_tc_status['not_run']}' " . 
 					" AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
 				
-				if( !is_null($milestoneDate) )
+				if( !is_null($milestoneTargetDate) )
 				{
-					$sql .= " AND execution_ts < '{$milestoneDate}'";
+					$sql .= " AND execution_ts < '{$milestoneTargetDate}'";
 				}
+				
+				if( !is_null($milestoneStartDate) )
+				{
+					$sql .= " AND execution_ts > '{$milestoneStartDate}'";
+				}
+				
 				$tmpResult = $this->db->fetchOneValue($sql);
 				// parse results into three levels of priority
 				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
@@ -194,7 +202,7 @@ class tlTestPlanMetrics extends testPlan
             $item['tcs_priority'] = $priorityCounters;
 		    $item['tc_total'] = $planMetrics['total'];
 		    // get amount of executed test cases for each priority before target_date
-		    $item['results'] = $this->getPrioritizedResults($tplanID, $item['target_date']);
+		    $item['results'] = $this->getPrioritizedResults($tplanID, $item['target_date'], $item['start_date']);
             $item['tc_completed'] = 0;
             
             // calculate percentage of executed test cases for each priority

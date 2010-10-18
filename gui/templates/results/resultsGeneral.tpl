@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.23 2010/10/18 12:45:24 mx-julian Exp $
+$Id: resultsGeneral.tpl,v 1.24 2010/10/18 13:34:02 mx-julian Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
-    20100811 - Julian - added info for milestone progress how percentage is calculated
-                        BUGID 2236: Milestones Report is broken
+    20101018 - Julian - added info for milestone progress how percentage is calculated
+                        BUGID 2236 - Milestones Report is broken
+                        BUGID 2770 - Start date for milestones
     20100811 - asimon - removed "results by assigned testers" table,
                         was replaced by new report "results by tester per build"
     20100722 - asimon - BUGID 3406, 1508 - overall build status,
@@ -18,7 +19,7 @@ Revisions:
          title_report_tc_priorities,title_report_milestones,
          title_metrics_x_build,title_res_by_platform,th_platform,important_notice,
          report_tcase_platorm_relationship, th_tc_total, th_completed, th_goal,
-         th_build, th_tc_assigned, th_perc_completed'}
+         th_build, th_tc_assigned, th_perc_completed, from, until'}
 
 {include file="inc_head.tpl"}
 <body>
@@ -144,8 +145,11 @@ Revisions:
 			</tr>
  			{foreach item=res from=$gui->statistics->milestones}
   			<tr>
-  				<td>{$res.name|escape} {$tlCfg->gui_separator_open} 
-  						{$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
+  				<td>{$res.name|escape} {$tlCfg->gui_separator_open}
+  						{if $res.start_date|escape != "0000-00-00"}
+						{$labels.from} {$res.start_date|escape}
+						{/if}
+  						{$labels.until} {$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
 	  			<td class="{if $res.high_incomplete}failed{else}passed{/if}">
 	  					{$res.result_high_percentage} % {$tlCfg->gui_separator_open} 
 	  					{$res.results.3}/{$res.tcs_priority.3} {$tlCfg->gui_separator_close}</td>
@@ -180,7 +184,10 @@ Revisions:
  		{foreach item=res from=$gui->statistics->milestones}
   		<tr>
   			<td>{$res.name|escape} {$tlCfg->gui_separator_open}
-  					{$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
+  					{if $res.start_date|escape != "0000-00-00"}
+					{$labels.from} {$res.start_date|escape}
+					{/if}
+  					{$labels.until} {$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
   			<td>{$res.tc_total}</td>
   			<td>{$res.tc_completed}</td>
 			<td class="{if $res.medium_incomplete}failed{else}passed{/if}">
@@ -191,13 +198,13 @@ Revisions:
   		{/foreach}
 		</table>
 	{/if}
+	
+	<p>{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}</p>
 
 {else}
   	{$gui->do_report.msg}
 {/if}  
 </div>
-
-<p style="margin: 10px;">{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}</p>
 
 </body>
 </html>

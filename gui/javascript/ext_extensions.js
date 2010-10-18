@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.8 2010/10/18 21:34:22 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.9 2010/10/18 21:35:05 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
@@ -167,13 +167,18 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
 			table_id: null,
 			showExpandCollapseGroupsButton: true,
 			showAllColumnsButton: true,
-			labels: {
+			showDefaultStateButton: true,
+		});
+
+		Ext.ux.TableToolbar.superclass.constructor.apply(this, arguments);
+
+		Ext.applyIf(this.labels, {
+				default_state: "localize",
 				expand_collapse_groups: "localize",
 				show_all_columns: "localize",
 				show_all_columns_tooltip: "localize"
-			}
-		});
-		Ext.ux.TableToolbar.superclass.constructor.apply(this, arguments);
+			});
+
 
 		if (this.table_id === null) {
 			throw "table_id not set in config";

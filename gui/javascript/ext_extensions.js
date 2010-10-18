@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.9 2010/10/18 21:35:05 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.10 2010/10/18 21:35:24 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
@@ -149,6 +149,8 @@ Ext.ux.SlimGridPanel = Ext.extend(Ext.grid.GridPanel, {
  *
  * It will create the following buttons:
  *		- expand/collapse groups
+ *		- show all columns
+ *		- reset to default state
  *
  *
  *	<code>
@@ -219,6 +221,17 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
 							cm.setHidden(i, false);
 						}
 					}
+				}
+			});
+		}
+
+		if (this.showDefaultStateButton) {
+			this.add({
+				text: this.labels.default_state,
+				iconCls: 'tbar-default-state',
+				handler: function (button, state) {
+					Ext.state.Manager.clear(grid[table_id].getStateId());
+					window.location = window.location;
 				}
 			});
 		}

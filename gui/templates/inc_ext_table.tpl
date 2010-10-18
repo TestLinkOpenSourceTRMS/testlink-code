@@ -1,11 +1,12 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.46 2010/10/18 21:34:22 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.47 2010/10/18 21:35:24 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
 	 20101018 - eloff - Refactor export/collapse button
 	                             show all columns button
+	                             restore to default state
 	 20100828 - eloff - Refactored the rendering of status
 	 20100826 - eloff - BUGID 3714 - Use JsonCookieProvider
 	 20100826 - Julian - fixed multisort feature for multiple tables
@@ -170,7 +171,14 @@ Ext.onReady(function() {
 				table_id: '{$tableID}',
 				showExpandCollapseGroupsButton: {$matrix->toolbarExpandCollapseGroupsButton|@json_encode},
 				showAllColumnsButton: {$matrix->toolbarShowAllColumnsButton|@json_encode},
+				{if $matrix->toolbarDefaultStateButton && $matrix->showToolbar && $matrix->storeTableState}
+				showDefaultStateButton: true,
+				{else}
+				showDefaultStateButton: false,
+				{/if}
+
 				labels: {ldelim}
+					default_state:  '{$labels.default_state|escape:javascript}',
 					expand_collapse_groups: '{$labels.expand_collapse_groups|escape:javascript}',
 					show_all_columns: '{$labels.show_all_columns|escape:javascript}',
 					show_all_columns_tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}'
@@ -256,19 +264,6 @@ Ext.onReady(function() {
 			
 		{rdelim}); //END grid
 
-		//show reset to default state toolbar button
-		{if $matrix->toolbarDefaultStateButton && $matrix->showToolbar && $matrix->storeTableState}
-			tbar.add({ldelim}
-				text: '{$labels.default_state|escape:javascript}',
-				iconCls: 'tbar-default-state',
-				handler: function (button, state) {ldelim}
-					Ext.state.Manager.clear(grid['{$tableID}'].getStateId());
-					//window.location.reload(); replaced due to IE, FF problems
-					window.location = window.location;
-				{rdelim}
-			{rdelim});
-		{/if}
-		
 		//show refresh toolbar button
 		{if $matrix->toolbarRefreshButton && $matrix->showToolbar}
 			tbar.add({ldelim}

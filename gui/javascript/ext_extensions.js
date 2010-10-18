@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.11 2010/10/18 21:35:48 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.12 2010/10/18 21:36:05 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
@@ -17,6 +17,7 @@
  *
  * @internal revisions:
  * 20101018 - eloff - Create class TableToolbar
+ *                    Fixed issue that shows all column (including grouped by)
  * 20100921 - eloff - BUGID 3714 - Load cookie state even if referenced columns are missing
  * 20100826 - eloff - BUGID 3714 - Added JsonCookieProvider to use less size
  *                    Added SlimGridPanel
@@ -219,8 +220,9 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
 					var cm = my_grid.getColumnModel();
 					for (var i=0;i<cm.getColumnCount();i++) {
 						//do not show grouped column if hideGroupedColumn is true
+						var dataIndex = cm.config[i].dataIndex;
 						if (my_grid.getView().hideGroupedColumn === false ||
-							my_store.groupField != 'idx'+i) {
+							my_store.groupField != dataIndex) {
 							cm.setHidden(i, false);
 						}
 					}

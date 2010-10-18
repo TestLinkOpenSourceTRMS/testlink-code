@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.204 2010/10/15 06:41:11 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.205 2010/10/18 07:30:21 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.724
+ * Last Update according to en_GB string file version 1.729
  *
  **/
 
@@ -66,6 +66,7 @@ $TLS_filter_mode_and = 'Achtung: Filter Felder werden verUNDet';
 $TLS_goto_testspec = 'Testspezifikation öffnen';
 $TLS_help = "Hilfe";
 $TLS_hour = "Stunde";
+$TLS_import = "Import";
 $TLS_importance		= "Wichtigkeit";
 $TLS_imported = "Importiert";
 $TLS_important_notice = "Wichtiger Hinweis";
@@ -1928,6 +1929,8 @@ $TLS_testplan_title_list = "Liste der vorhandenen Testpläne";
 $TLS_testplan_txt_empty_list = "Es sind keine Testpläne vorhanden! Erstellen Sie einen, um die Testausführungsfunktionalitäten freizuschalten";
 $TLS_alt_active_testplan = "aktiver Testplan";
 $TLS_warning_delete_testplan = "Sie sind dabei %s zu löschen<br /><br /> Sind Sie sicher?";
+$TLS_export_testplan_links = "Exportiere Testfall- und Plattformverknüpfungen";
+$TLS_import_testplan_links = "Importiere Testfall- und Plattformverknüpfungen";
 
 
 // ----- gui/templates/mainPage_left.tpl -----
@@ -2001,7 +2004,11 @@ $TLS_title_test_plan_mgmt = "Testplan Verwaltung";
 
 // ----- gui/templates/metricsDashboard.tpl -----
 $TLS_info_metrics_dashboard = "Dieser Report zeigt den Fortschritt für das gesamte Projekt " .
-                              "und alle (oder nur aktive) Testpläne innerhalb des Projekts";
+                              "und alle (oder nur aktive) Testpläne innerhalb des Projekts<br />" .
+                              "Der Gesamtfortschritt der Testpläne wird basierend auf dem Fortschritt " .
+                              "der einzelnen Plattformenen (sofern in Verwendung) berechnet.<br />" .
+                              "Der Testprojekt-Fortschritt wird basierend auf dem Fortschritt aller " .
+                              "(oder nur der aktiven) Testpläne berechnet.";
 $TLS_overall_progress = "Gesamtfortschritt";
 $TLS_progress_absolute = "Fortschritt";
 $TLS_test_plan_progress = "Testplan Fortschritt";
@@ -3094,6 +3101,16 @@ $TLS_frozen_req_unable_to_import = 'Übersprungen - Anforderung - Dok. ID:%s - i
 
 // ----- lib/plan/planExport.php -----
 $TLS_export_test_plan = 'Testplan exportieren';
+
+// ----- lib/plan/planImport.php -----
+$TLS_title_import_testplan_links = 'Importiere Testfall- und Plattformverknüpfungen';
+$TLS_platform_not_linked = "Testfallverknüpfung #%s gehört zu Plattform (name=%s), aber diese Plattform ist nicht mit dem " .
+                           "Testplan verknüpft (Name:%s)";
+$TLS_link_without_required_platform = "Testfallverknüpfung #%s gehört zu keiner Plattform, die Testplan Konfiguration " .
+                                      "fordert aber eine Plattform";
+$TLS_link_with_platform_not_needed = "Testfallverknüpfung #%s gehört zu einer Plattform, dem Testplan wurden aber keine " .
+                                     "Plattformen zugewiesen";
+$TLS_link_without_platform_element = "Testfallverknüpfung #%s hat kein Plattform Element";
 
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Ausführungen exportieren';

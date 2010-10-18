@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.205 2010/10/18 07:30:21 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.206 2010/10/18 14:32:54 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.729
+ * Last Update according to en_GB string file version 1.730
  *
  **/
 
@@ -118,6 +118,8 @@ $TLS_related_to='ist verwandt mit';
 $TLS_unknown_code='unbekannter Code: %s';
 $TLS_in_percent = "[%]";
 $TLS_user_has_no_right_for_action = 'Benutzer hat nicht die benötigten Rechte um diese Aktion auszuführen';
+$TLS_from = "von";
+$TLS_until = "bis";
 
 $TLS_file_size_exceeded = 'Dateigröße (%s) > zugelassene Größe (%s)';
 

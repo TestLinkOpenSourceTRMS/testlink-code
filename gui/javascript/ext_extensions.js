@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.10 2010/10/18 21:35:24 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.11 2010/10/18 21:35:48 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
@@ -151,6 +151,7 @@ Ext.ux.SlimGridPanel = Ext.extend(Ext.grid.GridPanel, {
  *		- expand/collapse groups
  *		- show all columns
  *		- reset to default state
+ *		- refresh button (reloads page)
  *
  *
  *	<code>
@@ -170,11 +171,13 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
 			showExpandCollapseGroupsButton: true,
 			showAllColumnsButton: true,
 			showDefaultStateButton: true,
+			showRefreshButton: true
 		});
 
 		Ext.ux.TableToolbar.superclass.constructor.apply(this, arguments);
 
 		Ext.applyIf(this.labels, {
+				button_refresh: "localize",
 				default_state: "localize",
 				expand_collapse_groups: "localize",
 				show_all_columns: "localize",
@@ -231,6 +234,16 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
 				iconCls: 'tbar-default-state',
 				handler: function (button, state) {
 					Ext.state.Manager.clear(grid[table_id].getStateId());
+					window.location = window.location;
+				}
+			});
+		}
+
+		if (this.showRefreshButton) {
+			this.add({
+				text: this.labels.button_refresh,
+				iconCls: 'x-tbar-loading',
+				handler: function (button, state) {
 					window.location = window.location;
 				}
 			});

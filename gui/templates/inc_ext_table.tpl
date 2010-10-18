@@ -1,12 +1,13 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.47 2010/10/18 21:35:24 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.48 2010/10/18 21:35:48 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
 	 20101018 - eloff - Refactor export/collapse button
 	                             show all columns button
 	                             restore to default state
+	                             refresh button
 	 20100828 - eloff - Refactored the rendering of status
 	 20100826 - eloff - BUGID 3714 - Use JsonCookieProvider
 	 20100826 - Julian - fixed multisort feature for multiple tables
@@ -176,8 +177,10 @@ Ext.onReady(function() {
 				{else}
 				showDefaultStateButton: false,
 				{/if}
+				showRefreshButton: {$matrix->toolbarRefreshButton|@json_encode},
 
 				labels: {ldelim}
+					button_refresh: '{$labels.button_refresh|escape:javascript}',
 					default_state:  '{$labels.default_state|escape:javascript}',
 					expand_collapse_groups: '{$labels.expand_collapse_groups|escape:javascript}',
 					show_all_columns: '{$labels.show_all_columns|escape:javascript}',
@@ -264,17 +267,6 @@ Ext.onReady(function() {
 			
 		{rdelim}); //END grid
 
-		//show refresh toolbar button
-		{if $matrix->toolbarRefreshButton && $matrix->showToolbar}
-			tbar.add({ldelim}
-				text: '{$labels.button_refresh|escape:javascript}',
-				iconCls: 'x-tbar-loading',
-				handler: function (button, state) {ldelim}
-					window.location = window.location;
-				{rdelim}
-			{rdelim});
-		{/if}
-		
 		//Export Button
 		{if $matrix->showExportButton && $matrix->showToolbar}
 			tbar.add(new Ext.ux.Exporter.Button({ldelim}

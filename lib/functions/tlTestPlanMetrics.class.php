@@ -6,13 +6,15 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.3 2009/11/22 17:45:10 franciscom Exp $
+ * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.4 2010/10/18 12:45:24 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
  * @internal Revisions:
- * 
+ * 20101018 - Julian - BUGID 2236 - Milestones Report broken
+ *                     BUGID 3830 - Milestone is not shown on Report more than one milestone
+                                    have the same target date
  **/
 
 /**
@@ -87,15 +89,16 @@ class tlTestPlanMetrics extends testPlan
 					" TPTCV.tcversion_id = E.tcversion_id " .
 					" JOIN {$this->tables['tcversions']} TCV ON " .
 					" TPTCV.tcversion_id = TCV.id " .
-					" WHERE TPTCV.testplan_id = {$this->testPlanID} " .
+					" WHERE TPTCV.testplan_id = {$tplanID} " .
 					" AND TPTCV.platform_id = E.platform_id " .
 					" AND E.testplan_id = {$tplanID} " .
 					" AND NOT E.status = '{$this->map_tc_status['not_run']}' " . 
 					" AND TCV.importance={$importance} AND TPTCV.urgency={$urgency}";
 				
 				if( !is_null($milestoneDate) )
+				{
 					$sql .= " AND execution_ts < '{$milestoneDate}'";
-				
+				}
 				$tmpResult = $this->db->fetchOneValue($sql);
 				// parse results into three levels of priority
 				if (($urgency*$importance) >= $this->priorityLevelsCfg[HIGH])
@@ -168,14 +171,13 @@ class tlTestPlanMetrics extends testPlan
 	 * 
 	 */
 	function getMilestonesMetrics($tplanID, $milestoneSet=null)
-	{
-        // new dBug($tplanID);
-        
-		$results = null;
+	{        
+		$results = array();
+		// get amount of test cases for each execution result + total amount of test cases
         $planMetrics = $this->getStatusTotals($tplanID);
-		$milestones =  is_null($milestoneSet) ? $this->get_milestones($tplanID) : $milestoneSet;			
+		$milestones =  is_null($milestoneSet) ? $this->get_milestones($tplanID) : $milestoneSet;
+		// get amount of test cases for each priority for test plan			
 		$priorityCounters = $this->getPrioritizedTestCaseCounters($tplanID);
-
         $pc = array(LOW => 'result_low_percentage', MEDIUM => 'result_medium_percentage',
                     HIGH => 'result_high_percentage' );
         
@@ -189,35 +191,34 @@ class tlTestPlanMetrics extends testPlan
         // key already defined on item: high_percentage,medium_percentage,low_percentage
 		foreach($milestones as $item)
 		{
-            // new dBug($item);
+            $item['tcs_priority'] = $priorityCounters;
 		    $item['tc_total'] = $planMetrics['total'];
-		    $item['results'] = $this->getPrioritizedResults($item['target_date']);
+		    // get amount of executed test cases for each priority before target_date
+		    $item['results'] = $this->getPrioritizedResults($tplanID, $item['target_date']);
             $item['tc_completed'] = 0;
+            
+            // calculate percentage of executed test cases for each priority
             foreach( $pc as $key => $item_key)
             {
-            	$pc[$key] = $pc[$key] > 0 ?  ($item['results'][$key] / $pc[$key]) * 100 : 0;
-            	$item[$item_key] = number_format($pc[$key],1);
-            	$item['tc_completed'] = $item['results'][$key];
+            	$item[$item_key] = $item['results'][$key] > 0 ?  
+            	                   get_percentage($priorityCounters[$key], $item['results'][$key]) : 0;
+            	$item['tc_completed'] += $item['results'][$key];
             }
+            
+            // amount of all executed tc with any priority before target_date / all test cases
             $item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
-
-		    		    
-	    	$item['all_incomplete'] = OFF;
+            
             foreach( $checks as $key => $item_key)
             {
-            	$item[$on_off[$key]] = ($pc[$key] < $item[$checks[$key]]) ? ON : OFF; 
+            	// add 2 decimal places to expected percentages
+            	$item[$checks[$key]] = number_format($item[$checks[$key]], 1);
+            	
+            	// check if target for each priority is reached
+            	// show target as reached if expected percentage is greater than executed percentage
+            	$item[$on_off[$key]] = ($item[$checks[$key]] > $item[$pc[$key]]) ? ON : OFF;
             }
-
-		    if ($item['percentage_completed'] < $item['low_percentage'])
-		    {
-		    	$item['all_incomplete'] = ON;
-        	}
-        
-		    foreach( $checks as $key => $item_key)
-            {
-            	$item[$checks[$key]] = number_format($item[$checks[$key]], 2);
-            }	
-		    $results[$item['target_date']] = $item;
+            // BUGID 3820
+		    $results[$item['id']] = $item;
 	  	}
 		return $results;
 	}

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.69 $
- * @modified $Date: 2010/08/12 14:28:49 $ by $Author: asimon83 $
+ * @version $Revision: 1.70 $
+ * @modified $Date: 2010/10/18 12:45:24 $ by $Author: mx-julian $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
  *
  * Revisions:
+ *  20101018 - Julian - BUGID 2236 - Milestones Report broken - removed useless code
  *  20100811 - asimon - removed "results by assigned testers" table,
  *                      was replaced by new report "results by tester per build"
  *  20100621 - eloff - BUGID 3542 - fixed typo
@@ -230,6 +231,7 @@ else // do report
 
 	
   	/* MILESTONE & PRIORITY REPORT */
+	/* what is this ?
     $planMetrics = $tplan_mgr->getStatusTotals($args->tplan_id);
 
 	$filters=null;
@@ -244,6 +246,7 @@ else // do report
     
     $options=array('output' => 'array', 'only_executed' => true, 'execution_details' => 'add_build');
     $execResults = $tplan_mgr->get_linked_tcversions($args->tplan_id,$filters,$options);
+    */
    
 
 	$milestonesList = $tplan_mgr->get_milestones($args->tplan_id);

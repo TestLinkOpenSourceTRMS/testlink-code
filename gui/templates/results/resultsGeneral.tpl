@@ -1,8 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.22 2010/08/12 14:28:49 asimon83 Exp $
+$Id: resultsGeneral.tpl,v 1.23 2010/10/18 12:45:24 mx-julian Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
+    20100811 - Julian - added info for milestone progress how percentage is calculated
+                        BUGID 2236: Milestones Report is broken
     20100811 - asimon - removed "results by assigned testers" table,
                         was replaced by new report "results by tester per build"
     20100722 - asimon - BUGID 3406, 1508 - overall build status,
@@ -146,15 +148,15 @@ Revisions:
   						{$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
 	  			<td class="{if $res.high_incomplete}failed{else}passed{/if}">
 	  					{$res.result_high_percentage} % {$tlCfg->gui_separator_open} 
-	  					{$res.results.3} {$tlCfg->gui_separator_close}</td>
+	  					{$res.results.3}/{$res.tcs_priority.3} {$tlCfg->gui_separator_close}</td>
 	  			<td>{$res.high_percentage} %</td>
 	  			<td class="{if $res.medium_incomplete}failed{else}passed{/if}">
 	  					{$res.result_medium_percentage} % {$tlCfg->gui_separator_open} 
-	  					{$res.results.2} {$tlCfg->gui_separator_close}</td>
+	  					{$res.results.2}/{$res.tcs_priority.2} {$tlCfg->gui_separator_close}</td>
 	  			<td>{$res.medium_percentage} %</td>
 	  			<td class="{if $res.low_incomplete}failed{else}passed{/if}">
 	  					{$res.result_low_percentage} % {$tlCfg->gui_separator_open} 
-	  					{$res.results.1} {$tlCfg->gui_separator_close}</td>
+	  					{$res.results.1}/{$res.tcs_priority.1} {$tlCfg->gui_separator_close}</td>
 	  			<td>{$res.low_percentage} %</td>
 				<td>{$res.percentage_completed} %</td>
   			</tr>
@@ -181,9 +183,10 @@ Revisions:
   					{$res.target_date|escape} {$tlCfg->gui_separator_close}</td>
   			<td>{$res.tc_total}</td>
   			<td>{$res.tc_completed}</td>
-			<td class="{if $res.all_incomplete}failed{else}passed{/if}">
-					{$res.percentage_completed} %</td>
-			<td>{$res.B} %</td>
+			<td class="{if $res.medium_incomplete}failed{else}passed{/if}">
+					{$res.percentage_completed} % {$tlCfg->gui_separator_open} 
+					{$res.results.2}/{$res.tcs_priority.2} {$tlCfg->gui_separator_close}</td>
+			<td>{$res.medium_percentage} %</td>
   		</tr>
   		{/foreach}
 		</table>

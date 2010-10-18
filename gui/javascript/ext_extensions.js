@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.7 2010/10/18 21:33:44 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.8 2010/10/18 21:34:22 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
@@ -166,8 +166,11 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
 		Ext.apply(this, {
 			table_id: null,
 			showExpandCollapseGroupsButton: true,
+			showAllColumnsButton: true,
 			labels: {
 				expand_collapse_groups: "localize",
+				show_all_columns: "localize",
+				show_all_columns_tooltip: "localize"
 			}
 		});
 		Ext.ux.TableToolbar.superclass.constructor.apply(this, arguments);
@@ -189,6 +192,27 @@ Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
 					} else {
 						g.getView().expandAllGroups()
 						this.last_state = 'expanded';
+					}
+				}
+			});
+		}
+
+		if (this.showAllColumnsButton) {
+			this.add({
+				text: this.labels.show_all_columns,
+				tooltip: this.labels.show_all_columns_tooltip,
+				tooltipType: 'title',
+				iconCls: 'x-cols-icon',
+				handler: function (button, state) {
+					var my_grid = grid[table_id];
+					var my_store = store[table_id];
+					var cm = my_grid.getColumnModel();
+					for (var i=0;i<cm.getColumnCount();i++) {
+						//do not show grouped column if hideGroupedColumn is true
+						if (my_grid.getView().hideGroupedColumn === false ||
+							my_store.groupField != 'idx'+i) {
+							cm.setHidden(i, false);
+						}
 					}
 				}
 			});

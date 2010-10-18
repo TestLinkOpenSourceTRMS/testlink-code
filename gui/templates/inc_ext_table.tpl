@@ -1,10 +1,11 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.45 2010/10/18 21:33:44 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.46 2010/10/18 21:34:22 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
 	 20101018 - eloff - Refactor export/collapse button
+	                             show all columns button
 	 20100828 - eloff - Refactored the rendering of status
 	 20100826 - eloff - BUGID 3714 - Use JsonCookieProvider
 	 20100826 - Julian - fixed multisort feature for multiple tables
@@ -168,8 +169,11 @@ Ext.onReady(function() {
 			tbar: tbar = new Ext.ux.TableToolbar({ldelim}
 				table_id: '{$tableID}',
 				showExpandCollapseGroupsButton: {$matrix->toolbarExpandCollapseGroupsButton|@json_encode},
+				showAllColumnsButton: {$matrix->toolbarShowAllColumnsButton|@json_encode},
 				labels: {ldelim}
-					expand_collapse_groups: '{$labels.expand_collapse_groups|escape:javascript}'
+					expand_collapse_groups: '{$labels.expand_collapse_groups|escape:javascript}',
+					show_all_columns: '{$labels.show_all_columns|escape:javascript}',
+					show_all_columns_tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}'
 				{rdelim},
 				//init plugins for multisort
 				{if $matrix->allowMultiSort}
@@ -251,26 +255,6 @@ Ext.onReady(function() {
 			{$matrix->getGridSettings()}
 			
 		{rdelim}); //END grid
-	
-		//show all columns toolbar button
-		{if $matrix->toolbarShowAllColumnsButton && $matrix->showToolbar}
-			tbar.add({ldelim}
-				text: '{$labels.show_all_columns|escape:javascript}',
-				tooltip: '{$labels.show_all_columns_tooltip|escape:javascript}',
-				tooltipType: 'title',
-				iconCls: 'x-cols-icon',
-				handler: function (button, state) {ldelim}
-					var cm = grid['{$tableID}'].getColumnModel();
-					for (var i=0;i<cm.getColumnCount();i++) {ldelim}
-						//do not show grouped column if hideGroupedColumn is true
-						if (grid['{$tableID}'].getView().hideGroupedColumn == false ||
-							store['{$tableID}'].groupField != 'idx'+i) {ldelim}
-							cm.setHidden(i, false);
-						{rdelim}
-					{rdelim}
-				{rdelim}
-			{rdelim});
-		{/if}
 
 		//show reset to default state toolbar button
 		{if $matrix->toolbarDefaultStateButton && $matrix->showToolbar && $matrix->storeTableState}

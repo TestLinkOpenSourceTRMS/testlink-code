@@ -6,13 +6,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: table.class.php,v 1.12 2010/09/23 14:24:55 erikeloff Exp $
+ * @version CVS: $Id: table.class.php,v 1.13 2010/10/18 23:10:19 erikeloff Exp $
  *
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20101019 - eloff - Make sure column identifiers are unique per table only.
  *  20100922 - eloff - BUGID 3805 - allow duplicate column names by generating unique id
  *                     Added option to pass title_key when creating columns
  *  20100921 - eloff - added col_id value to columns
@@ -75,6 +76,11 @@ abstract class tlTable
 	 *       Default: true (height = height of content)
 	 */
 	public $autoHeight = true;
+
+	/*
+	 * Used by titleToColumnName() to create unique column identifiers.
+	 */
+	protected $usednames = array();
 
 	/**
 	 * @param $columns is either an array of column titles
@@ -165,7 +171,6 @@ abstract class tlTable
 	 * return different column ids. Only meant to be called from constructor.
 	 */
 	private function titleToColumnName($title) {
-		static $usedNames = array();
 		static $allowedChars = "_abcdefghijklmnopqrstuvwxyz0123456789";
 		// always start with this to avoid number in beginning
 		$js_safe = 'id_';

@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.6 2010/09/21 20:12:53 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.7 2010/10/18 21:33:44 erikeloff Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
@@ -16,6 +16,7 @@
  * @link http://www.extjs.com/learn/Extension:NameSpace
  *
  * @internal revisions:
+ * 20101018 - eloff - Create class TableToolbar
  * 20100921 - eloff - BUGID 3714 - Load cookie state even if referenced columns are missing
  * 20100826 - eloff - BUGID 3714 - Added JsonCookieProvider to use less size
  *                    Added SlimGridPanel
@@ -139,6 +140,59 @@ Ext.ux.SlimGridPanel = Ext.extend(Ext.grid.GridPanel, {
 			}
 		}
 		return obj;
+	}
+});
+
+/**
+ * TableToolbar is a class used to populate the toolbar for ext tables used
+ * in TestLink.
+ *
+ * It will create the following buttons:
+ *		- expand/collapse groups
+ *
+ *
+ *	<code>
+ *	tbar = new Ext.ux.Toolbar({
+ *		table_id: 'tc_table_results_tc',
+ *		showExpandCollapseGroupsButton: true,
+ *		labels: {
+ *			expand_collapse_groups: 'Expand/collapse groups'
+ *		}
+ *	});
+ *	</code>
+ */
+Ext.ux.TableToolbar = Ext.extend(Ext.Toolbar, {
+	constructor: function (config) {
+		Ext.apply(this, {
+			table_id: null,
+			showExpandCollapseGroupsButton: true,
+			labels: {
+				expand_collapse_groups: "localize",
+			}
+		});
+		Ext.ux.TableToolbar.superclass.constructor.apply(this, arguments);
+
+		if (this.table_id === null) {
+			throw "table_id not set in config";
+		}
+		var table_id = this.table_id;
+		if (this.showExpandCollapseGroupsButton) {
+			this.add({
+				text: this.labels.expand_collapse_groups,
+				last_state: 'expanded',
+				iconCls: 'x-group-by-icon',
+				handler: function () {
+					var g = grid[table_id];
+					if (this.last_state == 'expanded') {
+						g.getView().collapseAllGroups();
+						this.last_state = 'collapsed';
+					} else {
+						g.getView().expandAllGroups()
+						this.last_state = 'expanded';
+					}
+				}
+			});
+		}
 	}
 });
 

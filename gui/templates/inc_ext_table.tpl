@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.44 2010/09/24 11:12:00 asimon83 Exp $
+$Id: inc_ext_table.tpl,v 1.45 2010/10/18 21:33:44 erikeloff Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20101018 - eloff - Refactor export/collapse button
 	 20100828 - eloff - Refactored the rendering of status
 	 20100826 - eloff - BUGID 3714 - Use JsonCookieProvider
 	 20100826 - Julian - fixed multisort feature for multiple tables
@@ -164,7 +165,12 @@ Ext.onReady(function() {
 			
 			//show toolbar
 			{if $matrix->showToolbar}
-			tbar: tbar = new Ext.Toolbar({ldelim}
+			tbar: tbar = new Ext.ux.TableToolbar({ldelim}
+				table_id: '{$tableID}',
+				showExpandCollapseGroupsButton: {$matrix->toolbarExpandCollapseGroupsButton|@json_encode},
+				labels: {ldelim}
+					expand_collapse_groups: '{$labels.expand_collapse_groups|escape:javascript}'
+				{rdelim},
 				//init plugins for multisort
 				{if $matrix->allowMultiSort}
 					plugins: [
@@ -246,24 +252,6 @@ Ext.onReady(function() {
 			
 		{rdelim}); //END grid
 	
-		//show expand/collapse toolbar button
-		{if $matrix->toolbarExpandCollapseGroupsButton && $matrix->showToolbar}
-			tbar.add({ldelim}
-				text: '{$labels.expand_collapse_groups|escape:javascript}',
-				last_state: 'expanded',
-				iconCls: 'x-group-by-icon',
-				handler: function () {ldelim}
-					if (this.last_state == 'expanded') {ldelim}
-						grid['{$tableID}'].getView().collapseAllGroups();
-						this.last_state = 'collapsed';
-					{rdelim} else {ldelim}
-						grid['{$tableID}'].getView().expandAllGroups()
-						this.last_state = 'expanded';
-					{rdelim}
-				{rdelim}
-			{rdelim});
-		{/if}
-		
 		//show all columns toolbar button
 		{if $matrix->toolbarShowAllColumnsButton && $matrix->showToolbar}
 			tbar.add({ldelim}

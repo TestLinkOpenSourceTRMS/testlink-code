@@ -1,11 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.24 2010/10/18 13:34:02 mx-julian Exp $
+$Id: resultsGeneral.tpl,v 1.25 2010/10/18 15:24:51 mx-julian Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
     20101018 - Julian - added info for milestone progress how percentage is calculated
-                        BUGID 2236 - Milestones Report is broken
-                        BUGID 2770 - Start date for milestones
+                      - BUGID 2236 - Milestones Report is broken
+                      - BUGID 2770 - Start date for milestones
+                      - "Test results according to test priorities" was not shown if
+                        test plan does not use platforms
     20100811 - asimon - removed "results by assigned testers" table,
                         was replaced by new report "results by tester per build"
     20100722 - asimon - BUGID 3406, 1508 - overall build status,
@@ -108,7 +110,7 @@ Revisions:
              args_first_column_header=$labels.priority
              args_first_column_key='name'
              args_show_percentage=true
-             args_column_definition=$gui->columnsDefinition->platform
+             args_column_definition=$gui->columnsDefinition->priorities
              args_column_data=$gui->statistics->priorities}
     {/if}
   

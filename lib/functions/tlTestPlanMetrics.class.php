@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.5 2010/10/18 13:34:02 mx-julian Exp $
+ * @version    	CVS: $Id: tlTestPlanMetrics.class.php,v 1.6 2010/10/18 14:54:43 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -208,13 +208,12 @@ class tlTestPlanMetrics extends testPlan
             // calculate percentage of executed test cases for each priority
             foreach( $pc as $key => $item_key)
             {
-            	$item[$item_key] = $item['results'][$key] > 0 ?  
-            	                   get_percentage($priorityCounters[$key], $item['results'][$key]) : 0;
+            	$item[$item_key] = $this->get_percentage($priorityCounters[$key], $item['results'][$key]);
             	$item['tc_completed'] += $item['results'][$key];
             }
             
             // amount of all executed tc with any priority before target_date / all test cases
-            $item['percentage_completed'] = get_percentage($item['tc_total'], $item['tc_completed']);
+            $item['percentage_completed'] = $this->get_percentage($item['tc_total'], $item['tc_completed']);
             
             foreach( $checks as $key => $item_key)
             {
@@ -241,7 +240,7 @@ class tlTestPlanMetrics extends testPlan
 	 */
 	function get_percentage($total, $parameter)
 	{
-		$percentCompleted = $total > 0 ? (($parameter / $total) * 100) : 0;
+		$percentCompleted = $total > 0 ? (($parameter / $total) * 100) : 100;
 		return number_format($percentCompleted,1);
 	}
 

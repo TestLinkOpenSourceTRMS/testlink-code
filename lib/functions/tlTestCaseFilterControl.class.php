@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.28 2010/10/11 14:57:00 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.29 2010/10/19 12:37:03 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20101019 - asimon - BUGID 3910: show filter only if test priority management is enabled
  * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
  * 20101011 - asimon - BUGID 3884: added handling for datetime custom fields
  * 20101005 - asimon - BUGID 3853: show_filters disabled still shows panel
@@ -1239,17 +1240,30 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		// they are available as a global smarty variable. So the only thing to be managed
 		// here is the selection by user.
 		$key = 'filter_priority';
-
-		// default value and filter reset
-		$selection = $this->args->{$key};
-		if (!$selection || $this->args->reset_filters) {
-			$selection = null;
-		} else {
-			$this->do_filtering = true;
+		
+		if (!$this->testproject_mgr) {
+			$this->testproject_mgr = new testproject($this->db);
 		}
-
-		$this->filters[$key] = array('selected' => $selection);
-		$this->active_filters[$key] = $selection;
+		
+		$tp_info = $this->testproject_mgr->get_by_id($this->args->testproject_id);
+		$enabled = $tp_info['opt']->testPriorityEnabled;
+				
+		$this->active_filters[$key] = null;
+		$this->filters[$key] = false;
+		
+		// BUGID 3910: show filter only if test priority management is enabled
+		if ($enabled) {
+			// default value and filter reset
+			$selection = $this->args->{$key};
+			if (!$selection || $this->args->reset_filters) {
+				$selection = null;
+			} else {
+				$this->do_filtering = true;
+			}
+	
+			$this->filters[$key] = array('selected' => $selection);
+			$this->active_filters[$key] = $selection;
+		}		
 	} // end of method
 
 	private function init_filter_execution_type() {

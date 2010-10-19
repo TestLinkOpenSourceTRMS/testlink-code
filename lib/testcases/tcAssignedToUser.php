@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.27 $
- * @modified $Date: 2010/10/15 11:43:26 $  $Author: mx-julian $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2010/10/19 07:54:20 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20101019 - Julian - use different exttable_id for different reports
  *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                      table state independent from localization
  *  20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
@@ -203,8 +204,23 @@ if( $doIt )
 			}
 		}
 		
-		// tplan_id has to be part of table id as a single table for each tplan is created
-		$matrix = new tlExtTable($columns, $rows, "tl_table_tc_assigned_to_user_for_tplan_".$tplan_id);
+		/* different table id for different reports:
+		 * - Assignment Overview if $args->show_all_users is set
+		 * - Test Cases assigned to user if $args->build_id > 0
+		 * - Test Cases assigned to me else
+		 */
+		$table_id = "tl_table_tc_assigned_to_me_for_tplan_";
+		if($args->show_all_users) {
+			$table_id = "tl_table_tc_assignment_overview_for_tplan_";
+		}
+		if($args->build_id) {
+			$table_id = "tl_table_tc_assigned_to_user_for_tplan_";
+		}
+		
+		// add test plan id to table id
+		$table_id .= $tplan_id;
+		
+		$matrix = new tlExtTable($columns, $rows, $table_id);
 		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
 		
 		// default grouping by first column, which is user for overview, build otherwise

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: testCasesWithoutTester.php,v $
- * @version $Revision: 1.16 $
- * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
+ * @version $Revision: 1.17 $
+ * @modified $Date: 2010/10/19 09:05:06 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test plan, list test cases that has no tester assigned
  *
  * @internal Revisions:
+ * 20101019 - Julian - show priority column only if priority is enabled for project
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
  * 20101012 - Julian - added html comment to properly sort by test case column
@@ -123,11 +124,13 @@ function buildTable($data, $tproject_id, $show_platforms, $priorityMgmtEnabled)
 	
 	$columns[] = array('title_key' => 'testcase', 'width' => 25);
 	
-	if ($show_platforms)
-	{
+	if ($show_platforms){
 		$columns[] = array('title_key' => 'platform', 'width' => 10);
 	}
-	$columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 5);
+	
+	if ($priorityMgmtEnabled) {
+		$columns[] = array('title_key' => 'priority', 'type' => 'priority', 'width' => 5);
+	}
 	
 	$columns[] = array('title_key' => 'summary', 'type' => 'text', 'width' => 40);
 	

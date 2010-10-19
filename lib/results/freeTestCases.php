@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: freeTestCases.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/10/15 11:43:25 $ by $Author: mx-julian $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/10/19 09:05:06 $ by $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * For a test project, list FREE test cases, i.e. not assigned to a test plan.
  * 
  * rev:
+ * 20101019 - Julian - show importance column only if priority is enabled for project
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
  * 20101012 - Julian - added html comment to properly sort by test case column
@@ -32,6 +33,8 @@ $importance_levels = config_get('importance_levels');
 
 $args = init_args();
 $tproject_mgr = new testproject($db);
+
+$priorityMgmtEnabled = $_SESSION['testprojectOptions']->testPriorityEnabled;
 
 $msg_key = 'all_testcases_has_testplan';
 
@@ -58,7 +61,7 @@ if(!is_null($gui->freeTestCases['items']))
         $tsuites = $tproject_mgr->tree_manager->get_full_path_verbose($tcaseSet,$options);
         $titleSeperator = config_get('gui_title_separator_1');
   	    
-		$columns = getColumnsDefinition();
+		$columns = getColumnsDefinition($priorityMgmtEnabled);
 	
 		// Extract the relevant data and build a matrix
 		$matrixData = array();
@@ -75,21 +78,20 @@ if(!is_null($gui->freeTestCases['items']))
 			             strip_tags($tcases['name']);
 		    $tcLink = "<!-- " . sprintf("%010d", $tcases['tc_external_id']) . " -->" . $edit_link . $tcaseName;
 			$rowData[] = $tcLink;
-
-//			$rowData[] = "<a href=\"lib/testcases/archiveData.php?edit=testcase&id={$tcases['id']}\">" .
-//			             $tcasePrefix . $tcases['tc_external_id'] . $titleSeperator .
-//			             strip_tags($tcases['name']);
 			
-			switch ($tcases['importance']) {
-				case $importance_levels[LOW]:
-					$rowData[] = "<!-- 1 -->" . lang_get('low_importance');
-					break;
-				case $importance_levels[MEDIUM]:
-					$rowData[] = "<!-- 2 -->" . lang_get('medium_importance');
-					break;
-				case $importance_levels[HIGH]:
-					$rowData[] = "<!-- 3 -->" . lang_get('high_importance');
-					break;
+			// only add importance column if 
+			if($priorityMgmtEnabled){
+				switch ($tcases['importance']) {
+					case $importance_levels[LOW]:
+						$rowData[] = "<!-- 1 -->" . lang_get('low_importance');
+						break;
+					case $importance_levels[MEDIUM]:
+						$rowData[] = "<!-- 2 -->" . lang_get('medium_importance');
+						break;
+					case $importance_levels[HIGH]:
+						$rowData[] = "<!-- 3 -->" . lang_get('high_importance');
+						break;
+				}
 			}
 			
 			$matrixData[] = $rowData;
@@ -99,7 +101,9 @@ if(!is_null($gui->freeTestCases['items']))
 		
 		$table->setGroupByColumnName(lang_get('test_suite'));
 		
-		$table->setSortByColumnName(lang_get('importance'));
+		$sort_by_column = ($priorityMgmtEnabled) ? 'importance' : 'test_case';
+		
+		$table->setSortByColumnName(lang_get($sort_by_column));
 		$table->sortDirection = 'DESC';
 		
 		$table->showToolbar = true;
@@ -126,13 +130,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * get Columns definition for table to display
  *
  */
-function getColumnsDefinition()
+function getColumnsDefinition($priorityMgmtEnabled)
 {
 	$colDef = array();
 	
 	$colDef[] = array('title_key' => 'test_suite', 'type' => 'text');
 	$colDef[] = array('title_key' => 'test_case', 'type' => 'text');
-	$colDef[] = array('title_key' => 'importance', 'width' => 20);
+	if ($priorityMgmtEnabled) {
+		$colDef[] = array('title_key' => 'importance', 'width' => 20);
+	}
 
 	return $colDef;
 }

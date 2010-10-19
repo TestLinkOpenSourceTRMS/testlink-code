@@ -8,11 +8,12 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.15 2010/09/23 14:53:40 erikeloff Exp $
+ * @version CVS: $Id: resultsByTesterPerBuild.php,v 1.16 2010/10/19 13:48:38 asimon83 Exp $
  *
  * Lists results and progress by tester per build.
  * 
  * @internal revisions:
+ * 20101019 - asimon - BUGID 3911: show warning message instead of table if table is empty
  * 20100923 - eloff - refactored to use improved table interface
  * 20100923 - Julian - BUGID 3803
  *                   - added status label to status percentage column to be able to reorder columns
@@ -126,6 +127,9 @@ $matrix->toolbarExpandCollapseGroupsButton = true;
 $matrix->toolbarShowAllColumnsButton = true;
 
 $gui->tableSet = array($matrix);
+
+// BUGID 3911: show warning message instead of table if table is empty
+$gui->warning_message = (count($rows) > 0) ? '' : lang_get('no_testers_per_build');
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

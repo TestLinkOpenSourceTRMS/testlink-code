@@ -1,10 +1,11 @@
 {* 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: resultsByTesterPerBuild.tpl,v 1.2 2010/09/20 14:10:37 mx-julian Exp $
+ * $Id: resultsByTesterPerBuild.tpl,v 1.3 2010/10/19 13:48:38 asimon83 Exp $
  *
  * Lists results and progress by tester per build in a grouping ExtJS table.
  * 
  * revisions:
+ * 20101019 - asimon - BUGID 3911: show warning message instead of table if table is empty
  * 20100731 - asimon - initial commit
  *
  *}
@@ -34,15 +35,23 @@
 {include file="inc_result_tproject_tplan.tpl" 
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}
 
-{foreach from=$gui->tableSet key=idx item=matrix}
-	{assign var=tableID value=table_$idx}
-   	{$matrix->renderBodySection($tableID)}
-{/foreach}
+{* BUGID 3911: show warning message instead of table if table is empty *}
+{if $gui->warning_message == ''}
+	{foreach from=$gui->tableSet key=idx item=matrix}
+		{assign var=tableID value=table_$idx}
+   		{$matrix->renderBodySection($tableID)}
+	{/foreach}
+	
+	<br />
+		<p class="italic">{$labels.hlp_results_by_tester_per_build_table}</p>
+	<br />
 
-<br/>
-<p>{$labels.hlp_results_by_tester_per_build_table}</p>
-<br /><br />
-{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
+	{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}
+{else}
+	<div class="user_feedback">
+    {$gui->warning_message}
+    </div>
+{/if}
 
 </div>
 </body>

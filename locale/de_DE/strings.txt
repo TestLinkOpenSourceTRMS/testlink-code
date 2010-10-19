@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.206 2010/10/18 14:32:54 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.207 2010/10/19 08:04:49 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.730
+ * Last Update according to en_GB string file version 1.731
  *
  **/
 
@@ -1631,6 +1631,7 @@ $TLS_last_status_failed = $TLS_test_status_failed;
 $TLS_last_status_not_run = $TLS_test_status_not_run;
 $TLS_last_status_passed = $TLS_test_status_passed;
 $TLS_select_builds_header = "Build(s) wählen";
+$TLS_select_platforms_header = "Plattform(en) wählen";
 $TLS_select_components_header = "Testsuite(n) wählen";
 $TLS_select_keyword_header = "Stichwort wählen";
 $TLS_select_last_result_header = "Letztes Ergebnis wählen";

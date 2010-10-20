@@ -1,0 +1,42 @@
+<!-- 
+This example shows how to identify test cases by a custom field, instead of
+the internal/external ID. 
+Requirement: custom field values are unique within the project.
+
+Contributed by: sybren
+-->
+<?xml version='1.0' encoding='UTF-8'?>
+<results>
+    <testcase>
+        <linkby custom_field="checkmate_id" value="TEST-1" />
+        <result>p</result>
+        <notes />
+    </testcase>
+    <testcase>
+        <linkby custom_field="checkmate_id" value="TEST-2" />
+        <result>p</result>
+        <notes />
+    </testcase>
+    <testcase>
+        <linkby custom_field="checkmate_id" value="FAILME" />
+        <result>f</result>
+        <notes>Error running Selenium command "verifyTextPresent" with
+            parameters "onderbroekenlol": false</notes>
+    </testcase>
+    <testcase>
+        <linkby custom_field="checkmate_id" value="TEST-2-1" />
+        <result>p</result>
+        <notes />
+    </testcase>
+    <testcase>
+        <linkby custom_field="checkmate_id" value="TEST-2-2" />
+        <result>f</result>
+        <notes>Error running Selenium command "verifyTextPresent" with
+            parameters "Stüvel.eu": false</notes>
+    </testcase>
+    <testcase>
+        <linkby custom_field="checkmate_id" value="PAUSE" />
+        <result>p</result>
+        <notes />
+    </testcase>
+</results>

@@ -1,0 +1,110 @@
+<!-- 
+Test Specification Example
+This example shows how to identify test cases by a custom field, instead of
+the internal/external ID. 
+Requirement: custom field values are unique within the project.
+
+Contibution by: sybren
+-->
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuite name="">
+  <testsuite name="Automated tests">
+    <details>Automated tests</details>
+    <testsuite name="spreadsheet1.xls">
+      <node_order>0</node_order>
+      <details>Automated tests exported from spreadsheet1.xls
+      </details>
+      <testsuite name="Sheet1-1">
+        <node_order>1</node_order>
+        <details />
+        <testcase name="[TEST-1] Tests a test">
+          <linkby custom_field="checkmate_id" value="TEST-1" />
+          <node_order>0</node_order>
+          <summary>Tests a test</summary>
+          <execution_type>2</execution_type>
+          <steps />
+          <custom_fields>
+            <custom_field>
+              <name>checkmate_id</name>
+              <value>TEST-1</value>
+            </custom_field>
+          </custom_fields>
+        </testcase>
+        <testcase name="[TEST-2] Tests a test">
+          <linkby custom_field="checkmate_id" value="TEST-2" />
+          <node_order>1</node_order>
+          <summary>Tests a test</summary>
+          <execution_type>2</execution_type>
+          <steps />
+          <custom_fields>
+            <custom_field>
+              <name>checkmate_id</name>
+              <value>TEST-2</value>
+            </custom_field>
+          </custom_fields>
+        </testcase>
+        <testcase name="[FAILME] This test should fail">
+          <linkby custom_field="checkmate_id" value="FAILME" />
+          <node_order>2</node_order>
+          <summary>This test should fail</summary>
+          <execution_type>2</execution_type>
+          <steps />
+          <custom_fields>
+            <custom_field>
+              <name>checkmate_id</name>
+              <value>FAILME</value>
+            </custom_field>
+          </custom_fields>
+        </testcase>
+      </testsuite>
+    </testsuite>
+    <testsuite name="spreadsheet2.xls">
+      <node_order>2</node_order>
+      <details>Automated tests exported from spreadsheet2.xls
+      </details>
+      <testsuite name="Sheet2-1">
+        <node_order>3</node_order>
+        <details />
+        <testcase name="[TEST-2-1] Tests a test">
+          <linkby custom_field="checkmate_id" value="TEST-2-1" />
+          <node_order>0</node_order>
+          <summary>Tests a test</summary>
+          <execution_type>2</execution_type>
+          <steps />
+          <custom_fields>
+            <custom_field>
+              <name>checkmate_id</name>
+              <value>TEST-2-1</value>
+            </custom_field>
+          </custom_fields>
+        </testcase>
+        <testcase name="[TEST-2-2] Tests a test">
+          <linkby custom_field="checkmate_id" value="TEST-2-2" />
+          <node_order>1</node_order>
+          <summary>Tests a test</summary>
+          <execution_type>2</execution_type>
+          <steps />
+          <custom_fields>
+            <custom_field>
+              <name>checkmate_id</name>
+              <value>TEST-2-2</value>
+            </custom_field>
+          </custom_fields>
+        </testcase>
+        <testcase name="[PAUSE] Test the pause command">
+          <linkby custom_field="checkmate_id" value="PAUSE" />
+          <node_order>2</node_order>
+          <summary>Test the pause command</summary>
+          <execution_type>2</execution_type>
+          <steps />
+          <custom_fields>
+            <custom_field>
+              <name>checkmate_id</name>
+              <value>PAUSE</value>
+            </custom_field>
+          </custom_fields>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuite>

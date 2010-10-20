@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.733 2010/10/20 11:48:26 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.734 2010/10/20 11:49:56 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2715,8 +2715,8 @@ $TLS_notes_req_overview = "This Overview shows all requirements (last or all ver
                           "and all the related attributes. In addition all defined custom " .
                           "fields for requirements will be shown in a seperate column.";
 $TLS_calendar_week_short = "CW";
-$TLS_modified_on = "last modified";
-$TLS_created_on = "created";
+$TLS_modified_on = "Last modified";
+$TLS_created_on = "Created";
 $TLS_never = "never";
 
 

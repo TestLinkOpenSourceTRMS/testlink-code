@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.35 2010/10/15 11:43:26 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.36 2010/10/20 11:48:26 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  *
+ * 20101020 - Julian - added columns for creation and modification timestamp
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
  * 20100921 - asimon - added datetime formatting and calendar week for date custom fields
@@ -101,7 +102,7 @@ if(count($gui->reqIDs) > 0) {
 		$title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $charset) . $glue_char . 
 				 htmlentities($req[0]['title'], ENT_QUOTES, $charset);
 		
-		// add html comment with title for easier sorting 
+		// use html comment to sort properly by this columns (extjs)
 		$linked_title = '<!-- ' . $title . ' -->' . '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . 
 						$title . '</a>';
 		
@@ -139,7 +140,28 @@ if(count($gui->reqIDs) > 0) {
 	    	
 	    	// version number
 	    	$padded_data = sprintf("%010d", $version['version']);
+	    	// use html comment to sort properly by this columns (extjs)
 	    	$result[] = "<!-- $padded_data -->{$version['version']}";
+	    	
+	    	// $dummy necessary to avoid warnings on event viewer because localize_dateOrTimeStamp expects
+	    	// second parameter to be passed by reference
+	    	$dummy = null;
+	    	
+	    	// use html comment to sort properly by this columns (extjs)
+	    	$result[] = "<!--{$version['creation_ts']}-->" .
+	    	            localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']);
+			
+	    	// on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
+	    	$never_modified = "0000-00-00 00:00:00";
+	    	// use html comment to sort properly by this columns (extjs)
+	    	$modification_ts = "<!-- 0 -->" . lang_get('never');
+	    	if ($version['modification_ts'] != $never_modified) {
+	    		// use html comment to sort properly by this columns (extjs)
+	    		$modification_ts = "<!--{$version['modification_ts']}-->" .
+	    		                   localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', 
+	    		                                            $version['modification_ts']);
+	    	}
+	    	$result[] = $modification_ts;
 	    	
 			// is it frozen?
 			$result[] = ($version['is_open']) ? $labels['no'] : $labels['yes'];
@@ -147,10 +169,12 @@ if(count($gui->reqIDs) > 0) {
 			// coverage
 			if ($coverage_enabled) {
 		    	$expected = $version['expected_coverage'];
+		    	// use html comment to sort properly by this columns (extjs)
 		    	$coverage_string = "<!-- -1 -->" . $labels['not_aplicable'] . " ($tc_coverage/0)";
 		    	if ($expected > 0) {
 		    		$percentage = round(100 / $expected * $tc_coverage, 2);
 		    		$padded_data = sprintf("%010d", $percentage); //bring all percentages to same length
+		    		// use html comment to sort properly by this columns (extjs) 
 					$coverage_string = "<!-- $padded_data --> {$percentage}% ({$tc_coverage}/{$expected})";
 		    	}
 		    	$result[] = $coverage_string;
@@ -212,8 +236,10 @@ if(count($gui->reqIDs) > 0) {
         $columns = array();
         $columns[] = array('title_key' => 'req_spec_short', 'width' => 200);
         $columns[] = array('title_key' => 'title', 'width' => 150);
-        $columns[] = array('title_key' => 'version', 'width' => 40);
-        $columns[] = array('title_key' => 'frozen', 'width' => 40);
+        $columns[] = array('title_key' => 'version', 'width' => 30);
+        $columns[] = array('title_key' => 'created_on', 'width' => 55);
+        $columns[] = array('title_key' => 'modified_on','width' => 55);
+        $columns[] = array('title_key' => 'frozen', 'width' => 30);
         
         if ($coverage_enabled) {
 	    	$columns[] = array('title_key' => 'th_coverage', 'width' => 80);

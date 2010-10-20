@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.207 2010/10/19 08:04:49 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.208 2010/10/20 11:53:06 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.731
+ * Last Update according to en_GB string file version 1.735
  *
  **/
 
@@ -1596,6 +1596,7 @@ $TLS_caption_results_by_tester_per_build = "Ergebnisse nach Tester pro Build";
 $TLS_results_by_tester_per_build = "Ergebnisse nach Tester pro Build";
 $TLS_progress = "Fortschritt [%]";
 $TLS_executions_without_assignment = "Ausführungen ohne Testerzuweisung";
+$TLS_no_testers_per_build = "Es existieren keine Testerzuweisungen für diesen Testplan.";
 
 
 
@@ -2706,6 +2707,9 @@ $TLS_notes_req_overview = "Diese Übersicht zeigt alle Anforderungen (letzte ode
                           "und die dazugehörigen Attribute. Zusätzlich werden alle benutzerdefinierten " .
                           "Felder für Anforderungen in einer seperaten Spalte angezeigt.";
 $TLS_calendar_week_short = "KW";
+$TLS_modified_on = "Zuletzt geändert";
+$TLS_created_on = "Erstellt";
+$TLS_never = "Nie";
 
 
 // ----- reqSpecEdit.php -----

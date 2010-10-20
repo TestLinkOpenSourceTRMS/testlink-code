@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.33 $
- * @modified $Date: 2010/09/06 21:12:19 $ by $Author: franciscom $
+ * @version $Revision: 1.34 $
+ * @modified $Date: 2010/10/20 09:39:25 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
  *
  *	@internal revision
+ *	20101020 - franciscom - BUGID 3914 - typo error  
  *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select to requirement_mgr
  *                                   as it is now used from multiple files
@@ -71,14 +72,14 @@ function initialize_gui(&$dbHandler,$argsObj)
 {
     $tproject_mgr = new testproject($dbHandler);
     $req_mgr = new requirement_mgr($dbHandler);
-    $commandMgr = new reqCommands($db);
+    $commandMgr = new reqCommands($dbHandler);
 
     $gui = $commandMgr->initGuiBean();
     $gui->req_cfg = config_get('req_cfg');
     $gui->tproject_name = $argsObj->tproject_name;
 
     $gui->grants = new stdClass();
-    $gui->grants->req_mgmt = has_rights($db,"mgt_modify_req");
+    $gui->grants->req_mgmt = has_rights($dbHandler,"mgt_modify_req");
     
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($argsObj->tproject_id);
     $gui->glueChar = config_get('testcase_cfg')->glue_character;
@@ -138,11 +139,13 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->req_add_result_msg = isset($argsObj->relation_add_result_msg) ? 
     							     $argsObj->relation_add_result_msg : "";
     
-    if ($gui->req_cfg->relations->enable) {
+    if ($gui->req_cfg->relations->enable) 
+    {
     	$gui->req_relations = $req_mgr->get_relations($gui->req_id);
     	$gui->req_relation_select = $req_mgr->init_relation_type_select();
-    	if ($gui->req_cfg->relations->interproject_linking) {
-    		$gui->testproject_select = initTestprojectSelect($db, $argsObj, $tproject_mgr);
+    	if ($gui->req_cfg->relations->interproject_linking) 
+    	{
+    		$gui->testproject_select = initTestprojectSelect($argsObj->userID, $argsObj->tproject_id,$tproject_mgr);
     	}
     }
     
@@ -150,25 +153,26 @@ function initialize_gui(&$dbHandler,$argsObj)
 }
 
 
-function checkRights(&$db,&$user)
+/**
+ * 
+ *
+ */
+function checkRights(&$dbHandler,&$user)
 {
-	return $user->hasRight($db,'mgt_view_req');
+	return $user->hasRight($dbHandler,'mgt_view_req');
 }
 
 
 /**
  * Initializes the select field for the testprojects.
  * 
- * @param resource $db reference to database handler
- * @param array $args reference to user input data
- * 
  * @return array $htmlSelect array with info, needed to create testproject select box on template
  */
-function initTestprojectSelect(&$db, &$args, &$tprojectMgr) {
+function initTestprojectSelect($userID, $tprojectID, &$tprojectMgr) {
 	
-	$testprojects = $tprojectMgr->get_accessible_for_user($args->userID, 'map', 
+	$testprojects = $tprojectMgr->get_accessible_for_user($userID, 'map', 
 	                                                      config_get('gui')->tprojects_combo_order_by);	
-	$htmlSelect = array('items' => $testprojects, 'selected' => $args->tproject_id);
+	$htmlSelect = array('items' => $testprojects, 'selected' => $tprojectID);
 	
 	return $htmlSelect;
 }

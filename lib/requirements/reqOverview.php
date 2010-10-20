@@ -8,14 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.36 2010/10/20 11:48:26 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.37 2010/10/20 12:28:41 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  *
- * 20101020 - Julian - added columns for creation and modification timestamp
+ * 20101020 - Julian - BUGID 3915 - added columns for creation and modification timestamp
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
  * 20100921 - asimon - added datetime formatting and calendar week for date custom fields

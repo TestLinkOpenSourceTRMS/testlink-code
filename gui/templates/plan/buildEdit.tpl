@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.17 2010/08/20 13:39:41 franciscom Exp $
+$Id: buildEdit.tpl,v 1.18 2010/10/21 14:57:08 asimon83 Exp $
 
 Purpose: smarty template - Add new build and show existing
 
 Rev:
+    20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
     20100820 - franciscom - refactored to use only $gui as interface from php code
     20100707 - asimon - BUGID 3406: addition of items for copying user
                         assignments from other builds
@@ -28,6 +29,7 @@ Rev:
              copy_tester_assignments, assignment_source_build,show_event_history"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
 {include file="inc_del_onclick.tpl"}
 
 {literal}
@@ -102,11 +104,13 @@ function validateForm(f)
     <tr>
 		    <th style="background:none;">{$labels.release_date}</th>
 		    <td>
-		    {html_select_date prefix="release_date_"  time=$gui->release_date
-                  month_format='%m' end_year="+1"
-                  day_value_format="%02d"
-                  all_empty=' ' month_empty= ' '
-                  field_order=$gsmarty_html_select_date_field_order}
+		    {* BUGID 3716 *}
+                <input type="text" 
+                       name="release_date" id="release_date" 
+				       value="{$gui->release_date}" />
+				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				     onclick="showCal('release_date-cal','release_date');" >
+				<div id="release_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
         </td>
 		</tr>
 

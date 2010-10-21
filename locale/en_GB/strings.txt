@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.735 2010/10/20 11:52:47 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.736 2010/10/21 14:57:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -995,6 +995,8 @@ $TLS_title_search_tcs = "Search";
 $TLS_requirement_document_id = "Req. Doc. ID";
 $TLS_creation_date_from = 'Creation Date From:';
 $TLS_creation_date_to = 'Creation Date To:';
+$TLS_modification_date_from = 'Modification Date From:';
+$TLS_modification_date_to = 'Modification Date To:';
 
 
 
@@ -3109,7 +3111,7 @@ $TLS_import_done = 'Import done';
 $TLS_import_req_conflicts_other_branch = 'Doc ID conflicts with req in othe branch';
 $TLS_import_req_exists_here = 'Doc ID exists';
 
-$TLS_invalid_release_date = 'Release date is not a valid date';
+$TLS_invalid_release_date = 'Release date is not a valid date. Use format MM/DD/YYYY.';
 $TLS_insert_step = "Insert step";
 $TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZEN';
 

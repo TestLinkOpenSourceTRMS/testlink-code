@@ -8,10 +8,11 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearchForm.php,v 1.5 2010/06/24 17:25:53 asimon83 Exp $
+ * @version    	CVS: $Id: tcSearchForm.php,v 1.6 2010/10/21 14:57:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *	@internal revisions
+ *  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  *	20100609 - franciscom - BUGID 1627: Search Test Case by Date of Creation
  *	20100409 - franciscom - BUGID 3371 Search Test Cases based on Test Importance
  *	20090228 - franciscom - improvement on management of test case prefix
@@ -33,6 +34,12 @@ $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID) . config
 $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
 $gui->importance = config_get('testcase_importance_default');
 
+// BUGID 3716
+$gui->creation_date_from = null;
+$gui->creation_date_to = null;
+$gui->modification_date_from = null;
+$gui->modification_date_to = null;
+
 $enabled = 1;
 $no_filters = null;
 $gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tprojectID,$enabled,
@@ -48,9 +55,11 @@ $gui->filter_by['requirement_doc_id'] = !is_null($reqSpecSet);
 $gui->option_importance = array(0 => '',HIGH => lang_get('high_importance'),MEDIUM => lang_get('medium_importance'), 
                                 LOW => lang_get('low_importance'));
 
-
+// BUGID 3716
 $gui->creation_date_from = null;
 $gui->creation_date_to = null;
+$gui->modification_date_from = null;
+$gui->modification_date_to = null;
 
 $smarty = new TLSmarty();
 $smarty->assign('gui',$gui);

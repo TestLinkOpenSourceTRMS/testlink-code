@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSearchForm.tpl,v 1.3 2010/07/07 08:46:24 mx-julian Exp $
+$Id: reqSearchForm.tpl,v 1.4 2010/10/21 14:57:08 asimon83 Exp $
 Purpose: show form for requirement search.
 
 rev:
+  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
   20100707 - Julian - BUGID 3584: replaced cf names by cf labels
   20100323 - asimon - added searching for req relation types (BUGID 1748)
 *}
@@ -15,10 +16,13 @@ rev:
           s='caption_search_form, custom_field, search_type_like,
              custom_field_value,btn_find,requirement_document_id, req_expected_coverage,
              title_search_req, reqid, reqversion, caption_search_form_req, title, scope,
-             coverage, status, type, version, th_tcid, has_relation_type'}
+             coverage, status, type, version, th_tcid, has_relation_type,
+             modification_date_from,modification_date_to,creation_date_from,creation_date_to'}
 
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
+</head>
 <body>
 
 <h1 class="title">{$gui->mainCaption|escape}</h1>
@@ -85,6 +89,56 @@ rev:
 				</td>				
 			</tr>
 		{/if}
+		
+		<tr>
+			<td>{$labels.creation_date_from}</td>
+			<td>
+				{* BUGID 3716 *}
+                <input type="text" 
+                       name="creation_date_from" id="creation_date_from" 
+				       value="{$gui->creation_date_from}" />
+				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				     onclick="showCal('creation_date_from-cal','creation_date_from');" >
+				<div id="creation_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+		  </td>
+		</tr>
+		<tr>
+			<td>{$labels.creation_date_to}</td>
+			<td>
+				{* BUGID 3716 *}
+           	    <input type="text" 
+                       name="creation_date_to" id="creation_date_to" 
+				       value="{$gui->creation_date_to}" />
+				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				     onclick="showCal('creation_date_to-cal','creation_date_to');" >
+				<div id="creation_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+		  </td>
+		</tr>
+		
+		<tr>
+			<td>{$labels.modification_date_from}</td>
+			<td>
+				{* BUGID 3716 *}
+            	<input type="text" 
+                       name="modification_date_from" id="modification_date_from" 
+				       value="{$gui->modification_date_from}" />
+				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				     onclick="showCal('modification_date_from-cal','modification_date_from');" >
+				<div id="modification_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+		  </td>
+		</tr>
+		<tr>
+			<td>{$labels.modification_date_to}</td>
+			<td>
+				{* BUGID 3716 *}
+         	    <input type="text" 
+                       name="modification_date_to" id="modification_date_to" 
+				       value="{$gui->modification_date_to}" />
+				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				     onclick="showCal('modification_date_to-cal','modification_date_to');" >
+				<div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+		  </td>
+		</tr>
 		
 		{if $gui->filter_by.design_scope_custom_fields}
 		    <tr>

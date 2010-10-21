@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqSearchForm.php,v 1.3 2010/05/08 17:59:36 franciscom Exp $
+ * @version    	CVS: $Id: reqSearchForm.php,v 1.4 2010/10/21 14:57:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * This page presents the search formular for requirements.
  *
  * @internal Revisions:
+ * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  * 20100323 - asimon - added searching for req relation types (BUGID 1748)
  */
 
@@ -35,6 +36,12 @@ $gui->mainCaption = lang_get('testproject') . " " . $args->tprojectName;
 
 $enabled = 1;
 $no_filters = null;
+
+// BUGID 3716
+$gui->creation_date_from = null;
+$gui->creation_date_to = null;
+$gui->modification_date_from = null;
+$gui->modification_date_to = null;
 
 $gui->design_cf = $tproject_mgr->cfield_mgr->get_linked_cfields_at_design($args->tprojectID,$enabled,
                  $no_filters,'requirement');

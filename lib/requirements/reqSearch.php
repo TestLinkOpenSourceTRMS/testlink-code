@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.18 2010/10/15 11:43:26 mx-julian Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.19 2010/10/21 14:57:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
  * 20101005 - asimon - replaced linked requirement title by linked icon
@@ -102,6 +103,40 @@ if ($args->tprojectID)
 		$filter['by_coverage'] = " AND RV.expected_coverage={$coverage} ";
 	}
 	
+	// BUGID 3716	
+	// creation date
+    if($args->creation_date_from)
+    {
+    	$db_date = $db->db->DBdate($args->creation_date_from);
+        $filter['by_creation_date_from'] = " AND RV.creation_ts >= {$db_date} ";
+	}
+
+    if($args->creation_date_to)
+    {
+    	/*
+    	 * Attention: here one day is added to the given timestamp.
+    	 * If we check a timestamp with e.g. creation_ts <= '2010-10-22', then all
+    	 * results with a time on that given day, like '2010-10-22 15:30:00' are filtered out
+    	 * because '2010-10-22 15:30:00' is greater than '2010-10-22 00:00:00'.
+    	 * So we simply add 60*60*24 seconds to the given timestamp for correct filtering.
+    	 */
+    	$db_date = $db->db->DBdate($args->creation_date_to + 60*60*24);
+        $filter['by_creation_date_to'] = " AND RV.creation_ts <= {$db_date} ";
+	}
+	
+	// modification date
+    if($args->modification_date_from)
+    {
+    	$db_date = $db->db->DBdate($args->modification_date_from);
+        $filter['by_modification_date_from'] = " AND RV.modification_ts >= {$db_date} ";
+	}
+
+    if($args->modification_date_to)
+    {
+    	$db_date = $db->db->DBdate($args->modification_date_to + 60*60*24); // see comment above for numbers
+        $filter['by_modification_date_to'] = " AND RV.modification_ts <= {$db_date} ";
+	}
+	
 	if ($args->relation_type != "notype") {
 		
 		// search by relation type		
@@ -166,7 +201,7 @@ if ($args->tprojectID)
 		$sql .= implode("",$filter);
 	}
 	$map = $db->fetchRowsIntoMap($sql,'id');
-	
+
 	//dont show requirements from different testprojects than the selected one
 	if (count($map)) {
 		foreach ($map as $item) {
@@ -277,9 +312,12 @@ function init_args()
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 
+	// BUGID 3716
 	$strnull = array('requirement_document_id', 'name','scope', 'reqStatus',
-						'custom_field_value', 'targetRequirement',
-						'version', 'tcid', 'reqType', 'relation_type');
+	                 'custom_field_value', 'targetRequirement',
+	                 'version', 'tcid', 'reqType', 'relation_type',
+	                 'creation_date_from','creation_date_to',
+	                 'modification_date_from','modification_date_to');
 	
 	foreach($strnull as $keyvar) {
 		$args->$keyvar = isset($_REQUEST[$keyvar]) ? trim($_REQUEST[$keyvar]) : null;
@@ -292,6 +330,12 @@ function init_args()
 		$args->$keyvar = isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;
 	}
 
+	// BUGID 3716
+	$args->creation_date_from = strtotime($args->creation_date_from);
+	$args->creation_date_to = strtotime($args->creation_date_to);
+	$args->modification_date_from = strtotime($args->modification_date_from);
+	$args->modification_date_to = strtotime($args->modification_date_to);
+	
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 

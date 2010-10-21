@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcSearch.php,v 1.23 2010/10/15 11:43:26 mx-julian Exp $
+ * @version    	CVS: $Id: tcSearch.php,v 1.24 2010/10/21 14:57:07 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                      table state independent from localization
  *  20101005 - asimon - replaced linked test case title by linked icon for editing
@@ -62,25 +63,39 @@ if ($args->tprojectID)
     $filter = null;
 	$tcaseID = null;
     
-    // if Both dates exists check From >= To
-    if( !is_null($args->creation_date_from) &&  !is_null($args->creation_date_to) )
-    {
-    	$date_from = date_create_from_format('Y-n-j', $args->creation_date_from);
-    	$date_to = date_create_from_format('Y-n-j', $args->creation_date_to);
-    }
-    
-    if( !is_null($args->creation_date_from) )
+	// BUGID 3716	
+	// creation date
+    if($args->creation_date_from)
     {
     	$db_date = $db->db->DBdate($args->creation_date_from);
         $filter['by_creation_date_from'] = " AND TCV.creation_ts >= {$db_date} ";
 	}
 
-    if( !is_null($args->creation_date_to) )
+    if($args->creation_date_to)
     {
-    	$db_date = $db->db->DBdate($args->creation_date_to);
+    	/*
+    	 * Attention: here one day is added to the given timestamp.
+    	 * If we check a timestamp with e.g. creation_ts <= '2010-10-22', then all
+    	 * results with a time on that given day, like '2010-10-22 15:30:00' are filtered out
+    	 * because '2010-10-22 15:30:00' is greater than '2010-10-22 00:00:00'.
+    	 * So we simply add 60*60*24 seconds to the given timestamp for correct filtering.
+    	 */
+    	$db_date = $db->db->DBdate($args->creation_date_to + 60*60*24);
         $filter['by_creation_date_to'] = " AND TCV.creation_ts <= {$db_date} ";
 	}
-    
+	
+	// modification date
+    if($args->modification_date_from)
+    {
+    	$db_date = $db->db->DBdate($args->modification_date_from);
+        $filter['by_modification_date_from'] = " AND TCV.modification_ts >= {$db_date} ";
+	}
+
+    if($args->modification_date_to)
+    {
+    	$db_date = $db->db->DBdate($args->modification_date_to + 60*60*24); // see comment above for numbers
+        $filter['by_modification_date_to'] = " AND TCV.modification_ts <= {$db_date} ";
+	}
     
     if($args->targetTestCase != "" && strcmp($args->targetTestCase,$gui->tcasePrefix) != 0)
     {
@@ -198,9 +213,10 @@ if ($args->tprojectID)
     	{
     	    $sqlPart2 .= implode("",$filter);
     	}
-    	
+ 	
     	// Count results
     	$sql = $sqlCount . $sqlPart2;
+
     	$gui->row_qty = $db->fetchOneValue($sql); 
     	if ($gui->row_qty)
     	{
@@ -307,6 +323,8 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
 function init_args()
 {
 	$args = new stdClass();
+	
+	// BUGID 3716
 	$iParams = array("keyword_id" => array(tlInputParameter::INT_N),
 			         "version" => array(tlInputParameter::INT_N,999),
 					 "custom_field_id" => array(tlInputParameter::INT_N),
@@ -319,12 +337,10 @@ function init_args()
 					 "preconditions" => array(tlInputParameter::STRING_N,0,50),
 					 "requirement_doc_id" => array(tlInputParameter::STRING_N,0,32),
 					 "importance" => array(tlInputParameter::INT_N),
-					 "creation_date_from_Day" => array(tlInputParameter::INT_N),
-					 "creation_date_from_Month" => array(tlInputParameter::INT_N),
-					 "creation_date_from_Year" => array(tlInputParameter::INT_N),
-					 "creation_date_to_Day" => array(tlInputParameter::INT_N),
-					 "creation_date_to_Month" => array(tlInputParameter::INT_N),
-					 "creation_date_to_Year" => array(tlInputParameter::INT_N) );	
+					 "creation_date_from" => array(tlInputParameter::STRING_N),
+					 "creation_date_to" => array(tlInputParameter::STRING_N),
+	                 "modification_date_from" => array(tlInputParameter::STRING_N),
+					 "modification_date_to" => array(tlInputParameter::STRING_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -332,32 +348,12 @@ function init_args()
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
     $args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 
-
-	// special situation: dates
-	$date_vars = array('target_date_Year','target_date_Month','target_date_Day');
-  	$start_date_vars = array('start_date_Year','start_date_Month','start_date_Day');
-
-	$date_vars_prefix = array('creation_date_from','creation_date_to');
-	$date_pieces = array('_Year','_Month','_Day');
-	$create_date = array('creation_date_from' => true,'creation_date_to' => true);
-	
-	foreach($date_vars_prefix as $target)
-  	{
-  		$xx = array();
-  		$args->$target = null;
-  		foreach($date_pieces as $pk)
-  		{
-  			$accessKey = $target . $pk;
-  	    	$create_date[$target] = $create_date[$target] && !is_null($args->$accessKey) && trim($args->$accessKey) != '' && 
-  	    							intval($args->$accessKey) > 0;
-  	    	$xx[] = $args->$accessKey;
-  		}
-  		if($create_date[$target])
-  		{
-  			$args->$target = implode('-',$xx);
-  		}
-  	}
-
+    // BUGID 3716
+	$args->creation_date_from = strtotime($args->creation_date_from);
+	$args->creation_date_to = strtotime($args->creation_date_to);
+	$args->modification_date_from = strtotime($args->modification_date_from);
+	$args->modification_date_to = strtotime($args->modification_date_to);
+    
 	new dBug($args);
     return $args;
 }
@@ -384,8 +380,6 @@ function initializeGui(&$argsObj)
 	$gui->show_match_count = false;
 	$gui->tc_current_version = null;
 	$gui->row_qty = 0;
-	$gui->creation_date_from = $argsObj->creation_date_from;
-	$gui->creation_date_to = $argsObj->creation_date_to;
 	
     return $gui;
 }

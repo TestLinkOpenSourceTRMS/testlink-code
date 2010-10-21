@@ -6,13 +6,14 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: table.class.php,v 1.13 2010/10/18 23:10:19 erikeloff Exp $
+ * @version CVS: $Id: table.class.php,v 1.14 2010/10/21 08:59:41 mx-julian Exp $
  *
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/table.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20101019 - Julian - avoid warnings on event viewer
  *  20101019 - eloff - Make sure column identifiers are unique per table only.
  *  20100922 - eloff - BUGID 3805 - allow duplicate column names by generating unique id
  *                     Added option to pass title_key when creating columns
@@ -80,7 +81,7 @@ abstract class tlTable
 	/*
 	 * Used by titleToColumnName() to create unique column identifiers.
 	 */
-	protected $usednames = array();
+	protected $usedNames = array();
 
 	/**
 	 * @param $columns is either an array of column titles
@@ -181,15 +182,15 @@ abstract class tlTable
 			}
 		}
 		// If the name is already used append a number
-		if (in_array($js_safe, $usedNames)) {
+		if (in_array($js_safe, $this->usedNames)) {
 			$i = 1;
 			// Find next available number
-			while (in_array($js_safe . $i, $usedNames)) {
+			while (in_array($js_safe . $i, $this->usedNames)) {
 				$i++;
 			}
 			$js_safe .= $i;
 		}
-		$usedNames[] = $js_safe;
+		$this->usedNames[] = $js_safe;
 		return $js_safe;
 	}
 }

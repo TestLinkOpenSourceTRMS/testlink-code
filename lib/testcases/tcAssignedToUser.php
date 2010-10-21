@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2010/10/19 07:54:20 $  $Author: mx-julian $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2010/10/21 08:58:11 $  $Author: mx-julian $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
@@ -224,7 +224,7 @@ if( $doIt )
 		$matrix->title = $l18n['testplan'] . ": " . htmlspecialchars($gui->tplanNames[$tplan_id]['name']);
 		
 		// default grouping by first column, which is user for overview, build otherwise
-		$matrix->setGroupByColumnName($columns[0]['title']);
+		$matrix->setGroupByColumnName(lang_get($columns[0]['title_key']));
 		
 		// make table collapsible if more than 1 table is shown and surround by frame
 		if (count($tplanSet) > 1) {

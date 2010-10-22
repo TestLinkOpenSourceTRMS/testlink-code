@@ -1,9 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.45 2010/10/22 14:33:31 mx-julian Exp $
+$Id: testlink.css,v 1.46 2010/10/22 15:05:19 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
+20101022 - eloff - changed the new button style a little to show focus
 20101022 - Julian - changed main font to arial as 'Trebuchet MS' is only available on Windows machines
 20101022 - eloff - BUGID 3917 - work on buttons
 20101020 - eloff - added style for buttons
@@ -262,10 +263,13 @@ div.menu_bubble h3{
 	line-height:1.4em;
 }
 
-/** Buttons **/
-input[type="reset"],
-input[type="submit"],
-input[type="button"],
+/** Buttons
+ * Give buttons, submit, reset a gradient 3d look and other components
+ * text/password-input, textarea and select a flat appearance.
+ */
+input,
+select,
+textarea,
 button {
    background: url(../images/navbar.gif);
    background-position: 0 0;
@@ -278,6 +282,18 @@ button {
    border-radius: 3px;
 }
 
+/* Reset to flat background */
+input[type="checkbox"],
+input[type="password"],
+input[type="radio"],
+input[type="text"],
+select,
+textarea {
+	background: #f8f8f8;
+}
+
+
+/* Animate */
 input[type="reset"]:hover,
 input[type="submit"]:hover,
 input[type="button"]:hover,
@@ -289,8 +305,23 @@ button:hover {
 input[type="reset"]:active,
 input[type="submit"]:active,
 input[type="button"]:active,
-button:active {
+input[type="reset"]:focus,
+input[type="submit"]:focus,
+input[type="button"]:focus,
+button:active,
+button:focus {
    background-position: 0 -10px;
+   border: 1px solid #123;
+}
+
+input[type="checkbox"]:focus,
+input[type="password"]:focus,
+input[type="radio"]:focus,
+input[type="text"]:focus,
+select:focus,
+textarea:focus {
+	background: #fff;
+	border: 1px solid #123;
 }
 
 fieldset.groupBtn {
@@ -307,16 +338,6 @@ fieldset.groupBtn h2 {
 }
 fieldset.groupBtn form {
 	display: inline;
-}
-
-input[type="text"],
-input[type="password"],
-input[type="checkbox"],
-input[type="radio"],
-select,
-textarea {
-	border:1px solid #888;
-	font-size: 9pt;
 }
 
 /* ***** Help ***************************************************************************

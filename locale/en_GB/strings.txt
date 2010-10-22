@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.738 2010/10/22 13:14:33 erikeloff Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.739 2010/10/22 13:32:24 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -809,17 +809,19 @@ $TLS_comp_scope = "Scope";
 
 
 // gui/templates/reqSpecView.tpl
+$TLS_req_spec_operations = "Requirement Specification Operations";
+$TLS_req_operations = "Requirement Operations";
 $TLS_btn_analyse = "Analyse";
 $TLS_btn_check_all = "Check All";
 $TLS_btn_copy_requirements = "Copy Requirements";
 $TLS_btn_copy_req_spec = "Copy";
-$TLS_btn_delete_spec = "Delete document";
-$TLS_btn_edit_spec = "Edit document";
-$TLS_btn_export_reqs = "Export Child Requirements";
-$TLS_btn_export_req_spec = "Export Req. Spec.";
-$TLS_btn_import_reqs = "Import Requirements";
-$TLS_btn_import_req_spec = "Import Req. Spec.";
-$TLS_btn_req_create = "Create Requirement";
+$TLS_btn_delete_spec = "Delete";
+$TLS_btn_edit_spec = "Edit";
+$TLS_btn_export_reqs = "Export";
+$TLS_btn_export_req_spec = "Export";
+$TLS_btn_import_reqs = "Import";
+$TLS_btn_import_req_spec = "Import";
+$TLS_btn_req_create = "Create";
 $TLS_btn_spec_list = "List of all documents";
 $TLS_btn_uncheck_all = "Uncheck All";
 $TLS_cant_delete_req_nothing_sel = "Please select a requirement!";
@@ -2700,7 +2702,7 @@ $TLS_no_tplans_to_fix = "You currently have no Test Plans that are not associate
 
 
 // ----- lib/project/project_req_spec_mgmt.tpl -----
-$TLS_btn_new_req_spec = "New Requirement Specification";
+$TLS_btn_new_req_spec = "Create";
 $TLS_btn_reorder_req_spec = "Reorder Requirement Specifications";
 $TLS_btn_export_all_reqspec = "Export All Requirement Specifications";
 

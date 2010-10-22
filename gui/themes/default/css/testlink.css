@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.43 2010/10/22 13:52:35 erikeloff Exp $
+$Id: testlink.css,v 1.44 2010/10/22 14:17:40 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
@@ -44,7 +44,7 @@ assigned using name (example: white) instead of code (example: #FFF)
 /* ***** GLOBAL HTML ***************************************************************** */
 body, body.testlink {
 	background:  	#EEE; 
-	font-family: 	'Trebuchet MS', Verdana, Arial, sans-serif;
+	font-family: 	arial, tahoma, helvetica, sans-serif;
 	font-size: 		small;
 	margin:			0px;
 	padding:		0px;
@@ -66,7 +66,7 @@ img {
 
 pre
 {
-	font-family : 	Arial, Helvetica, sans-serif;
+	font-family : 	arial, tahoma, helvetica, sans-serif;
 }
 
 span, div {
@@ -306,6 +306,16 @@ fieldset.groupBtn h2 {
 }
 fieldset.groupBtn form {
 	display: inline;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="checkbox"],
+input[type="radio"],
+select,
+textarea {
+	border:1px solid #888;
+	font-size: 9pt;
 }
 
 /* ***** Help ***************************************************************************

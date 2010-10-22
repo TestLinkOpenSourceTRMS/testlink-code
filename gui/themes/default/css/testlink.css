@@ -1,9 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.44 2010/10/22 14:17:40 mx-julian Exp $
+$Id: testlink.css,v 1.45 2010/10/22 14:33:31 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
+20101022 - Julian - changed main font to arial as 'Trebuchet MS' is only available on Windows machines
 20101022 - eloff - BUGID 3917 - work on buttons
 20101020 - eloff - added style for buttons
 20100927 - franciscom - added comment explaining style used to mimic a fixed section on top of screen

@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.42 2010/10/22 13:33:32 erikeloff Exp $
+$Id: testlink.css,v 1.43 2010/10/22 13:52:35 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
@@ -262,11 +262,14 @@ div.menu_bubble h3{
 }
 
 /** Buttons **/
-input[type="reset"], input[type="submit"], input[type="button"] {
+input[type="reset"],
+input[type="submit"],
+input[type="button"],
+button {
    background: url(../images/navbar.gif);
    background-position: 0 0;
-   border:1px solid #888;
-   margin-top: 4px;
+   border: 1px solid #888;
+   margin: 4px 0 0 0;
    font-size: 9pt;
    color: black;
    -moz-border-radius: 3px;
@@ -304,31 +307,6 @@ fieldset.groupBtn h2 {
 fieldset.groupBtn form {
 	display: inline;
 }
-/** Buttons **/
-input[type="reset"],
-input[type="submit"],
-input[type="button"],
-button {
-   background: url(../images/navbar.gif);
-   background-position: 0 0;
-   border: 1px solid #888;
-   margin: 4px 0 0 0;
-   font-size: 9pt;
-   color: black;
-   -moz-border-radius: 3px;
-   -webkit-border-radius: 3px;
-   border-radius: 3px;
-}
-
-input[type="reset"]:hover, input[type="submit"]:hover, input[type="button"]:hover {
-   background-position: 0 -3px;
-   border-color: #444;
-}
-
-input[type="reset"]:active, input[type="submit"]:active, input[type="button"]:active {
-   background-position: 0 -10px;
-}
-
 
 /* ***** Help ***************************************************************************
  * This allows link help from text e.g. instruction

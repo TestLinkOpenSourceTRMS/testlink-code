@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.162 2010/10/18 22:55:29 erikeloff Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.163 2010/10/22 09:19:28 mx-julian Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -252,7 +252,8 @@ define('TL_LOCALIZE_TAG','LOCALIZE: ');
 
 /** 
  * @var array List of supported localizations (used in user preferences to choose one)
- * DEV: Mantain the alphabetical order when adding new locales.
+ * DEV: Mantain the alphabetical order when adding new locales. Also check inc.ext_js_tpl
+ *      to set localization for ExtJS Components.
  **/
 // 
 $g_locales = array(	

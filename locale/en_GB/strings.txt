@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.737 2010/10/22 11:24:02 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.738 2010/10/22 13:14:33 erikeloff Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -532,28 +532,30 @@ $TLS_node_type_dbtable_testcases = $TLS_testcase;
 
 
 // ----- gui/templates/containerView.tpl -----
+$TLS_testsuite_operations = "Test Suite Operations";
+$TLS_testcase_operations = "Test Case Operations";
 $TLS_alt_del_testsuite = "Delete this Test Suite with all children (Test Suites and Test Cases)";
 $TLS_alt_edit_testsuite = "Modify this Test Suite data and title";
 $TLS_alt_move_cp_testsuite = "Move or copy this Test Suite to another Test Project";
 $TLS_alt_move_cp_testcases = "Move/Copy Test Cases";
-$TLS_btn_del_testsuite = "Delete Test Suite";
+$TLS_btn_del_testsuite = "Delete";
 $TLS_btn_del_testsuites_bulk = "Delete Test Suites Bulk";
 $TLS_btn_edit_testsuite = $TLS_btn_edit;
 $TLS_btn_execute_automatic_testcases = "Execute All Automatic Test Cases";
 $TLS_btn_export_all_testsuites = "Export All Test Suites";
-$TLS_btn_export_tc = "Export child Test Cases";
-$TLS_btn_export_testsuite = "Export Test Suite";
-$TLS_btn_import_tc = "Import Test Cases";
-$TLS_btn_import_testsuite = "Import Test Suite";
+$TLS_btn_export_tc = "Export";
+$TLS_btn_export_testsuite = "Export";
+$TLS_btn_import_tc = "Import";
+$TLS_btn_import_testsuite = "Import";
 $TLS_btn_move_cp_testsuite = "Move/Copy";
-$TLS_btn_move_cp_testcases = "Move/Copy Test Cases";
-$TLS_btn_new_testsuite = "New child Test Suite";
-$TLS_btn_new_tc = "Create Test Cases";
+$TLS_btn_move_cp_testcases = "Move/Copy";
+$TLS_btn_new_testsuite = "Create";
+$TLS_btn_new_tc = "Create";
 $TLS_btn_reorder = "Reorder children";
-$TLS_btn_delete_testcases = "Delete Test Cases";
+$TLS_btn_delete_testcases = "Delete";
 $TLS_btn_reorder_testcases_alpha = "Reorder Test Cases (Dictionary)";
-$TLS_btn_reorder_testcases_externalid = "Reorder Test Cases (External ID ASC)";
-$TLS_btn_reorder_testsuites_alpha = "Reorder Children Test Suites (Dictionary)";
+$TLS_btn_reorder_testcases_externalid = "Sort by external ID";
+$TLS_btn_reorder_testsuites_alpha = "Sort alphabetically";
 $TLS_container_title_testproject = $TLS_testproject;
 $TLS_container_title_testplan = $TLS_testplan;
 $TLS_edit_testproject_basic_data = "Edit Test Project basic data";

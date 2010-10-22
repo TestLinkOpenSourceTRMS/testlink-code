@@ -1,9 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.40 2010/10/20 12:48:53 erikeloff Exp $
+$Id: testlink.css,v 1.41 2010/10/22 13:14:32 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
+20101022 - eloff - work on buttons
 20101020 - eloff - added style for buttons
 20100927 - franciscom - added comment explaining style used to mimic a fixed section on top of screen
                         added z-index attribute to header-wrap, to solve issue regaring content 
@@ -266,6 +267,52 @@ input[type="reset"], input[type="submit"], input[type="button"] {
    background-position: 0 0;
    border:1px solid #888;
    margin-top: 4px;
+   font-size: 9pt;
+   color: black;
+   -moz-border-radius: 3px;
+   -webkit-border-radius: 3px;
+   border-radius: 3px;
+}
+
+input[type="reset"]:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+button:hover {
+   background-position: 0 -3px;
+   border-color: #444;
+}
+
+input[type="reset"]:active,
+input[type="submit"]:active,
+input[type="button"]:active,
+button:active {
+   background-position: 0 -10px;
+}
+
+fieldset.groupBtn {
+	border: 0;
+	margin-left: 5px;
+	padding: 0 0 0.5em 1em;
+}
+
+fieldset.groupBtn h2 {
+	font-size: 10pt;
+	display: block;
+	margin: 0 0 0 -1em;
+	padding: 0;
+}
+fieldset.groupBtn form {
+	display: inline;
+}
+/** Buttons **/
+input[type="reset"],
+input[type="submit"],
+input[type="button"],
+button {
+   background: url(../images/navbar.gif);
+   background-position: 0 0;
+   border: 1px solid #888;
+   margin: 4px 0 0 0;
    font-size: 9pt;
    color: black;
    -moz-border-radius: 3px;

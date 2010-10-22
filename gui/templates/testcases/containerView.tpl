@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.37 2010/09/15 21:42:16 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.38 2010/10/22 13:14:32 erikeloff Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
+  20101022 - eloff - BUGID 3917 - Work on buttons
   20100914 - franciscom - BUGID 3639 Reoder Test Cases
   20100910 - franciscom - BUGID 3047: Deleting multiple TCs
   20010708 - asimon - BUGID 3406: removed buttons and labels for 3049 
@@ -30,7 +31,8 @@ rev :
 	           btn_del_testsuites_bulk,btn_delete_testcases,btn_reorder_testcases_alpha,
 	           btn_reorder_testcases_externalid,btn_reorder_testsuites_alpha,
 	           btn_export_testsuite, btn_export_all_testsuites, btn_import_testsuite, 
-	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name'}
+	           btn_new_tc,btn_move_cp_testcases, btn_import_tc, btn_export_tc, th_testplan_name,
+	           testsuite_operations, testcase_operations'}
 
 {assign var="container_id" value=$gui->container_data.id}
 {assign var="tcImportAction"
@@ -88,19 +90,21 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 	{if $gui->modify_tc_rights == 'yes'}
 		{assign var="bDownloadOnly" value=false}
 
-	<div>
+	<fieldset class="groupBtn">
+	<h2>{$labels.testsuite_operations}</h2>
 	<form method="post" action="lib/testcases/containerEdit.php">
 		<input type="hidden" name="doAction" id="doAction" value="" />
 		<input type="hidden" name="containerID" value="{$gui->container_data.id}" />
 		
 		<input type="submit" name="new_testsuite" value="{$labels.btn_new_testsuite}" />
 
+		<input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
+				     title="{$labels.btn_reorder_testsuites_alpha}" />
+
 		<input type="button" onclick="location='{$importToTProjectAction}'"
 			                       value="{$labels.btn_import_testsuite}" />
 		<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
 
-		<input type="submit" name="reorder_testproject_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
-				     title="{$labels.btn_reorder_testsuites_alpha}" />
 
     {* TO BE DEVELOPED  
 		<input type="submit" name="del_testsuites_bulk" id="del_testsuites_bulk"
@@ -112,7 +116,7 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 			        onclick="javascript: startExecution({$container_data.id},'testproject');" />
 			 *}
 	</form>
-	</div>
+	</fieldset>
 	{/if}
 
 	<table class="simple" >
@@ -209,8 +213,9 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 {elseif $gui->level == 'testsuite'}
 
 	{if $gui->modify_tc_rights == 'yes' || $gui->sqlResult neq ''}
-		<div class="groupBtn">
+		<fieldset class="groupBtn">
 
+		<h2>{$labels.testsuite_operations}</h2>
 		{* Add a new testsuite children for this parent *}
 		<span style="float: left; margin-right: 5px;">
 		<form method="post" action="lib/testcases/containerEdit.php">
@@ -224,30 +229,27 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 			<input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
 			<input type="submit" name="edit_testsuite" value="{$labels.btn_edit_testsuite}"
 				     title="{$labels.alt_edit_testsuite}" />
-			<input type="submit" name="delete_testsuite" value="{$labels.btn_del_testsuite}"
-				     title="{$labels.alt_del_testsuite}" />
 			<input type="submit" name="move_testsuite_viewer" value="{$labels.btn_move_cp_testsuite}"
 				     title="{$labels.alt_move_cp_testsuite}" />
+			<input type="submit" name="delete_testsuite" value="{$labels.btn_del_testsuite}"
+				     title="{$labels.alt_del_testsuite}" />
 		  <input type="submit" name="reorder_testsuites_alpha" value="{$labels.btn_reorder_testsuites_alpha}"
 				     title="{$labels.btn_reorder_testsuites_alpha}" />
 
-      <br />
 			<input type="button" onclick="location='{$importToTSuiteAction}'" value="{$labels.btn_import_testsuite}" />
 			<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_testsuite}" />
 
 		</form>
-	    </div>
+	    </fieldset>
 
 		{* ----- Work with test cases ----------------------------------------------- *}
-		<div class="groupBtn">
-		<span style="float: left; margin-right: 5px;">
+		<fieldset class="groupBtn">
+		<h2>{$labels.testcase_operations}</h2>
 		<form method="post" action="lib/testcases/tcEdit.php">
 		  <input type="hidden" name="containerID" value="{$gui->container_data.id}" />
 			<input type="submit" accesskey="t" id="create_tc" name="create_tc" value="{$labels.btn_new_tc}" />
-			<input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />
-			<input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />
 		</form>
-		</span>
+
 		<form method="post" action="lib/testcases/containerEdit.php">
 			<input type="hidden" name="testsuiteID" value="{$gui->container_data.id}" />
 			<input type="hidden" name="testsuiteName" value="{$gui->container_data.name|escape}" />
@@ -255,12 +257,16 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
          		 title="{$labels.alt_move_cp_testcases}" />
 			<input type="submit" name="delete_testcases" value="{$labels.btn_delete_testcases}"
 				     title="{$labels.btn_delete_testcases}" />
-			<br />
 			<input type="submit" name="reorder_testcases" value="{$gui->btn_reorder_testcases}"
 				     title="{$gui->btn_reorder_testcases}" />
 		</form>
 
-		</div>
+		<form method="post" action="lib/testcases/tcEdit.php">
+			<input type="button" onclick="location='{$importTestCasesAction}'" value="{$labels.btn_import_tc}" />
+			<input type="button" onclick="location='{$exportTestCasesAction}'" value="{$labels.btn_export_tc}" />
+		</form>
+
+		</fieldset>
 	{/if}
 	
 	{* ----- show Test Suite data --------------------------------------------- *}

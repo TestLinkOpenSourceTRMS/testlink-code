@@ -1,10 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.41 2010/10/22 13:14:32 erikeloff Exp $
+$Id: testlink.css,v 1.42 2010/10/22 13:33:32 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
-20101022 - eloff - work on buttons
+20101022 - eloff - BUGID 3917 - work on buttons
 20101020 - eloff - added style for buttons
 20100927 - franciscom - added comment explaining style used to mimic a fixed section on top of screen
                         added z-index attribute to header-wrap, to solve issue regaring content 

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.736 2010/10/21 14:57:07 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.737 2010/10/22 11:24:02 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1333,12 +1333,13 @@ $TLS_testplan_menu_list = "List";
 $TLS_alt_delete_milestone = "Delete milestone?";
 $TLS_btn_edit_milestone = "Edit";
 $TLS_btn_new_milestone = "Create";
-$TLS_info_milestones_date = "Milestones must be created at today's date or greater";
-$TLS_info_milestones_start_date='';
+$TLS_info_milestones_date = "Milestones must be created at today's date or greater.";
+$TLS_info_milestones_start_date = "Start date is optional.";
 $TLS_no_milestones = "There are no Milestones for this Test Plan!";
 $TLS_popup_delete_milestones = "Are you sure you want to delete milestone %NAME% ?";
 $TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
 $TLS_warning_empty_milestone_name="Milestone name cannot be empty!";
+$TLS_warning_invalid_date = "This date is not a valid date. Use format MM/DD/YYYY.";
 
 
 $TLS_th_date_format = "Target Date";

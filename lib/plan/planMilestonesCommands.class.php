@@ -4,11 +4,12 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/01/03 15:03:05 $ by $Author: franciscom $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/10/22 11:24:02 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * 
  * @internal revisions
+ *  20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  *	20090910 - franciscom - start_date
  */
 require_once("testplan.class.php");  // needed because milestone_mgr is inside
@@ -104,6 +105,17 @@ class planMilestonesCommands
           	$op_ok=0;
       	}
 
+      	// BUGID 3716
+      	// are the dates valid?
+      	if ($op_ok) {
+      		// start date is optional
+      		$op_ok = is_valid_date($argsObj->target_date_original) && 
+      		         ($argsObj->start_date_original == '' || is_valid_date($argsObj->start_date_original));
+      		if (!$op_ok) {
+      			$guiObj->user_feedback = sprintf(lang_get('warning_invalid_date'));
+      		}
+      	}
+      	
       	// check target date 
 		if($op_ok)
 		{
@@ -168,6 +180,17 @@ class planMilestonesCommands
           $op_ok=0;
       }
 
+		// BUGID 3716
+		// are the dates valid?
+      	if ($op_ok) {
+      		// start date is optional
+      		$op_ok = is_valid_date($argsObj->target_date_original) && 
+      		         ($argsObj->start_date_original == '' || is_valid_date($argsObj->start_date_original));
+      		if (!$op_ok) {
+      			$guiObj->user_feedback = sprintf(lang_get('warning_invalid_date'));
+      		}
+      	}
+      
       	// target date changed ?
 		if($op_ok)
 		{

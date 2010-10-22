@@ -13,11 +13,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.197 2010/09/17 18:14:28 franciscom Exp $
+ * @version    	CVS: $Id: common.php,v 1.198 2010/10/22 11:24:02 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
+ *  20101022 - asimon - BUGID 3716: added is_valid_date()
  *	20100904 - eloff - BUGID 3740 - redirect to destination after login
  * 	20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
  *	20100616 - eloff - config_get: log warning when requested option does not exist
@@ -899,6 +900,33 @@ function isValidISODateTime($ISODateTime)
        $status_ok=checkdate($matches[$dateParts['MONTH']],$matches[$dateParts['DAY']],$matches[$dateParts['YEAR']]);
    }
    return $status_ok;
+}
+
+/**
+ * Check if a string is a valid date.
+ * The accepted formats of the string are MM/DD/YYYY or YYYY-MM-DD
+ *
+ * @param string $date_to_check
+ */
+function is_valid_date($date_to_check) {
+	$matches=null;
+	$status_ok=false;
+	
+	if (preg_match("#^(\d{2})/(\d{2})/(\d{4})$#", $date_to_check, $matches)) {
+		$dateParts=array('MONTH' => 1, 'DAY' => 2 , 'YEAR' => 3);
+		$status_ok = checkdate($matches[$dateParts['MONTH']], 
+		                       $matches[$dateParts['DAY']], 
+		                       $matches[$dateParts['YEAR']]);
+	}
+	
+	if (preg_match("/^(\d{4})-(\d{2})-(\d{2})$/", $date_to_check, $matches)) {
+		$dateParts=array('YEAR' => 1, 'MONTH' => 2 , 'DAY' => 3);
+		$status_ok = checkdate($matches[$dateParts['MONTH']], 
+		                       $matches[$dateParts['DAY']], 
+		                       $matches[$dateParts['YEAR']]);
+	}
+	
+	return $status_ok;
 }
 
 

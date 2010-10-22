@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.8 2010/05/01 19:39:55 franciscom Exp $
+$Id: planMilestonesEdit.tpl,v 1.9 2010/10/22 11:24:02 asimon83 Exp $
 
 Rev:
+    20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
 *}
 {lang_get var='labels' s='show_event_history,warning_empty_milestone_name,
                           warning_empty_low_priority_tcases,warning_empty_medium_priority_tcases,
@@ -23,6 +24,7 @@ Rev:
 
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
+{include file="inc_ext_js.tpl" bResetEXTCss=1}
 {include file="inc_del_onclick.tpl"}
 
 {literal}
@@ -139,30 +141,27 @@ function validateForm(f)
  	    		<tr>
 			    <th style="background:none;">{$labels.th_date_format}</th>
 			        <td>
-	           {assign var="selected_date" value=""}
-             {if $gui->milestone != null}
-              {assign var="selected_date" value=$gui->milestone.target_date}
-             {/if}
-             {html_select_date prefix="target_date_"  time=$selected_date
-                               month_format='%m' end_year="+1"
-                               day_value_format="%02d"
-                               field_order=$gsmarty_html_select_date_field_order}
+		         	{* BUGID 3716 *}
+	                <input type="text" 
+	                       name="target_date" id="target_date" 
+					       value="{$gui->milestone.target_date}" />
+					<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+					     onclick="showCal('target_date-cal','target_date');" >
+					<div id="target_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
              		<span class="italic">{$labels.info_milestones_date}</span>
 		      	</td>
-		      </tr>
- 	    		<tr>
+			    </tr>
+	 	    	<tr>
 
 			    <th style="background:none;">{$labels.start_date}</th>
 			        <td>
-	           {assign var="selected_start_date" value="0000-00-00"}
-             {if $gui->milestone != null && $gui->milestone.start_date != '' }
-              {assign var="selected_start_date" value=$gui->milestone.start_date}
-             {/if}
-             {html_select_date prefix="start_date_"  time=$selected_start_date
-                               month_format='%m' end_year="+1"
-                               day_value_format="%02d"
-                               all_empty=' '
-                               field_order=$gsmarty_html_select_date_field_order}
+			        {* BUGID 3716 *}
+	                <input type="text" 
+	                       name="start_date" id="start_date" 
+					       value="{$gui->milestone.start_date}" />
+					<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+					     onclick="showCal('start_date-cal','start_date');" >
+					<div id="start_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
              		<span class="italic">{$labels.info_milestones_start_date}</span>
 		      	</td>
 		      </tr>

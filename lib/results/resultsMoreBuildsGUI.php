@@ -1,7 +1,7 @@
 <?php
 /**
 * TestLink Open Source Project - http://testlink.sourceforge.net/
-* $Id: resultsMoreBuildsGUI.php,v 1.4 2010/10/18 22:55:29 erikeloff Exp $
+* $Id: resultsMoreBuildsGUI.php,v 1.5 2010/10/22 14:27:36 asimon83 Exp $
 *
 * @author	Kevin Levy <kevinlevy@users.sourceforge.net>
 *
@@ -9,6 +9,7 @@
 * the builds they would like to query results against.
 *
 * rev:
+*   20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
 *	20090912 - franciscom - BUGID 2796 - configuration start_time
 *	20090122 - franciscom - BUGID 2012 
 **/
@@ -125,11 +126,13 @@ function initializeGui(&$dbHandler,$args)
     $gui->report_type = $args->format;
 
     $reports_cfg = config_get('reportsCfg');
-    $startDate = time() - ($reports_cfg->start_date_offset);
+    // BUGID 3716
+    $startDate = strftime("%m/%d/%Y", time() - ($reports_cfg->start_date_offset));
     $gui->selected_start_date = $startDate;
     $gui->selected_start_time = $reports_cfg->start_time;
 
-    $gui->selected_end_date = null;
+    // BUGID 3716
+    $gui->selected_end_date = strftime("%m/%d/%Y", time());
     $gui->selected_end_time = null;
     return $gui;
 }

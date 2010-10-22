@@ -9,9 +9,10 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.73 2010/10/18 22:55:29 erikeloff Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.74 2010/10/22 14:27:36 asimon83 Exp $
  *
  * @internal Revisions:
+ *  20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  *	20101019 - eloff - BUGID 3794 - added contribution by rtessier
  *	20091027 - franciscom - BUGID 2500
  *	20090409 - amitkhullar- code refactor for results object
@@ -43,39 +44,6 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 
 
 /**
- * @TODO describe get_date_range()
- */
-function get_date_range($hash)
-{
-    $date_range = new stdClass();
-    $date_range->start = new stdClass();    
-    $date_range->end = new stdClass();
-    
-    $date_range->start->day = isset($hash['start_Day']) ? $hash['start_Day'] : "01";
-    $date_range->start->month = isset($hash['start_Month']) ? $hash['start_Month'] : "01";
-    $date_range->start->year = isset($hash['start_Year']) ? $hash['start_Year'] : "2000";
-    $date_range->start->hour = isset($hash['start_Hour']) ? $hash['start_Hour'] : "00";
-    
-    $mm=sprintf("%02d",$date_range->start->month);
-    $dd=sprintf("%02d",$date_range->start->day);
-    $date_range->start->date = $date_range->start->year . "-" . $mm . "-" . $dd;
-    $date_range->start->time = $date_range->start->date . " " . $date_range->start->hour . ":00:00";
-    
-    $date_range->end->day = isset($hash['end_Day']) ? $hash['end_Day'] : "01";
-    $date_range->end->month = isset($hash['end_Month']) ? $hash['end_Month'] : "01";
-    $date_range->end->year = isset($hash['end_Year']) ? $hash['end_Year'] : "2050";
-    $date_range->end->hour = isset($hash['end_Hour']) ? $hash['end_Hour'] : "00";
-    
-    $mm=sprintf("%02d",$date_range->end->month);
-    $dd=sprintf("%02d",$date_range->end->day);
-    $date_range->end->date = $date_range->end->year . "-" . $mm . "-" . $dd;
-    $date_range->end->time = $date_range->end->date . " " . $date_range->end->hour . ":59:59";
-    
-    return $date_range;
-}
-
-
-/**
  * initialize Gui
  */
 function initializeGui(&$dbHandler,&$argsObj)
@@ -98,14 +66,19 @@ function initializeGui(&$dbHandler,&$argsObj)
 		$gui->platformSet = array('');
 		$gui->showPlatforms=false;
 	}
-
    
     $gui->resultsCfg = config_get('results');
 
-    $date_range = get_date_range($_REQUEST);
-    $gui->startTime = $date_range->start->time;
-    $gui->endTime = $date_range->end->time;
-    
+    // BUGID 3716
+    $gui->startTime = isset($_REQUEST['selected_start_date']) && $_REQUEST['selected_start_date'] != '' ? 
+	                  strftime("%Y-%m-%d", strtotime($_REQUEST['selected_start_date'])) : '';
+	$gui->endTime = isset($_REQUEST['selected_end_date']) && $_REQUEST['selected_end_date'] != '' ? 
+	                strftime("%Y-%m-%d", strtotime($_REQUEST['selected_end_date'])) : '';
+	$start_hour = isset($_REQUEST['start_Hour']) ? $_REQUEST['start_Hour'] : "00";
+	$gui->startTime = $gui->startTime . " " . $start_hour . ":00:00";
+	$end_hour = isset($_REQUEST['end_Hour']) ? $_REQUEST['end_Hour'] : "00";
+	$gui->endTime = $gui->endTime . " " . $end_hour . ":59:59";
+	   
     $gui_open = config_get('gui_separator_open');
     $gui_close = config_get('gui_separator_close');
     $gui->str_option_any = $gui_open . lang_get('any') . $gui_close;
@@ -228,6 +201,7 @@ function initializeGui(&$dbHandler,&$argsObj)
 		$lastStatus_localized[] = lang_get($gui->resultsCfg['status_label'][$verbose]);
     }	
     $gui->lastStatus = $lastStatus_localized;
+    
     return $gui;
 }
 

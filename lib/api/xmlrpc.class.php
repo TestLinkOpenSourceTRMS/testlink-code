@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.22 $
- * @modified $Date: 2010/10/23 07:57:57 $ by $Author: franciscom $
+ * @version $Revision: 1.23 $
+ * @modified $Date: 2010/10/23 09:45:34 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -24,6 +24,9 @@
  * rev : 
  *	20101023 - franciscom - BUGID 3916: getTestCaseCustomFieldDesignValue() - missing refactoring regarding
  *										custom field values linked to test case version
+ *
+ *							BUGID 3920: createTestProject() missing refactoring
+ *
  * 	20100918 - franciscom - BUGID 1890 - uploadAttachment(), upload*Attachment - contribution by kinow	
  *  20100731 - asimon - BUGID 3644 (additional fix for BUGID 2607)
  *	20100715 - franciscom - BUGID 3604 - getTestCasesForTestPlan()
@@ -173,71 +176,89 @@ class TestlinkXMLRPCServer extends IXR_Server
 	
 	/**#@+
 	 * string for parameter names are all defined statically
+	 * PLEASE define in DICTIONARY ORDER
 	 * @static
  	 */
-	public static $devKeyParamName = "devKey";
-	public static $testCaseIDParamName = "testcaseid";
-	public static $testCaseExternalIDParamName = "testcaseexternalid";
-	public static $testPlanIDParamName = "testplanid";
-	public static $testProjectIDParamName = "testprojectid";
-	public static $testSuiteIDParamName = "testsuiteid";
-	public static $statusParamName = "status";
+    public static $actionOnDuplicatedNameParamName = "actiononduplicatedname";
+	public static $activeParamName = "active";
+	public static $assignedToParamName = "assignedto";
+	public static $automatedParamName = "automated";
+    public static $authorLoginParamName = "authorlogin";
+
+	public static $bugIDParamName = "bugid";		
 	public static $buildIDParamName = "buildid";
-	public static $noteParamName = "notes";
-	public static $timeStampParamName = "timestamp";
-	public static $guessParamName = "guess";
-	public static $deepParamName = "deep";
-	public static $testModeParamName = "testmode";
 	public static $buildNameParamName = "buildname";
 	public static $buildNotesParamName = "buildnotes";
-	public static $automatedParamName = "automated";
-	public static $testCaseNameParamName = "testcasename";
-	public static $keywordIDParamName = "keywordid";
-	public static $executedParamName = "executed";
-	public static $assignedToParamName = "assignedto";
-	public static $executeStatusParamName = "executestatus";
-	public static $testSuiteNameParamName = "testsuitename";
-	public static $testProjectNameParamName = "testprojectname";
-	public static $testCasePrefixParamName = "testcaseprefix";
-	public static $customFieldNameParamName = "customfieldname";
-	public static $summaryParamName = "summary";
-	public static $stepsParamName = "steps";
-    public static $expectedResultsParamName = "expectedresults";
-    public static $authorLoginParamName = "authorlogin";
-    public static $executionTypeParamName = "executiontype";
-    public static $importanceParamName = "importance";
-    public static $orderParamName = "order";
-    public static $internalIDParamName = "internalid";
+
     public static $checkDuplicatedNameParamName = "checkduplicatedname";
-    public static $actionOnDuplicatedNameParamName = "actiononduplicatedname";
-    public static $keywordNameParamName = "keywords";
-    public static $versionNumberParamName = "version";
-    public static $executionOrderParamName = "executionorder";
-    public static $urgencyParamName = "urgency";
-    public static $requirementsParamName = "requirements";
-    public static $detailsParamName = "details";
-	public static $bugIDParamName = "bugid";		
-	public static $parentIDParamName = "parentid";		
-	public static $testPlanNameParamName = "testplanname";
-	public static $activeParamName = "active";
-    public static $publicParamName = "public";
-    public static $nodeIDParamName = "nodeid";
+    public static $contentParamName = "content";
+	public static $customFieldNameParamName = "customfieldname";
     public static $customFieldsParamName = "customfields";
-    public static $executionIDParamName = "executionid";
-    public static $preconditionsParamName = "preconditions";
-    public static $platformNameParamName = "platformname";
-    public static $platformIDParamName = "platformid";
-	public static $overwriteParamName = "overwrite";
-	public static $testCasePathNameParamName = "testcasepathname";
-    public static $userParamName = "user";
-    public static $getStepsInfoParamName = "getstepsinfo";
-    public static $foreignKeyIdParamName = "fkid";
-    public static $foreignKeyTableNameParamName = "fktable";
-    public static $titleParamName = "title";
+
+	public static $deepParamName = "deep";
     public static $descriptionParamName = "description";
+    public static $detailsParamName = "details";
+	public static $devKeyParamName = "devKey";
+
+    public static $executionIDParamName = "executionid";
+    public static $executionOrderParamName = "executionorder";
+	public static $executedParamName = "executed";
+	public static $executeStatusParamName = "executestatus";
+    public static $executionTypeParamName = "executiontype";
+    public static $expectedResultsParamName = "expectedresults";
+
     public static $fileNameParamName = "filename";
     public static $fileTypeParamName = "filetype";
-    public static $contentParamName = "content";
+    public static $foreignKeyIdParamName = "fkid";
+    public static $foreignKeyTableNameParamName = "fktable";
+
+	public static $guessParamName = "guess";
+    public static $getStepsInfoParamName = "getstepsinfo";
+    public static $importanceParamName = "importance";
+    public static $internalIDParamName = "internalid";
+	public static $keywordIDParamName = "keywordid";
+    public static $keywordNameParamName = "keywords";
+
+    public static $nodeIDParamName = "nodeid";
+	public static $noteParamName = "notes";
+
+    public static $optionsParamName = "options";
+    public static $orderParamName = "order";
+	public static $overwriteParamName = "overwrite";
+	public static $parentIDParamName = "parentid";		
+    public static $platformNameParamName = "platformname";
+    public static $platformIDParamName = "platformid";
+    public static $preconditionsParamName = "preconditions";
+    public static $publicParamName = "public";
+
+    public static $requirementsParamName = "requirements";
+
+	public static $summaryParamName = "summary";
+	public static $statusParamName = "status";
+	public static $stepsParamName = "steps";
+
+	public static $testCaseIDParamName = "testcaseid";
+	public static $testCaseExternalIDParamName = "testcaseexternalid";
+	public static $testCaseNameParamName = "testcasename";
+	public static $testCasePathNameParamName = "testcasepathname";
+	public static $testCasePrefixParamName = "testcaseprefix";
+	public static $testModeParamName = "testmode";
+	public static $testPlanIDParamName = "testplanid";
+	public static $testPlanNameParamName = "testplanname";
+	public static $testProjectIDParamName = "testprojectid";
+	public static $testProjectNameParamName = "testprojectname";
+	public static $testSuiteIDParamName = "testsuiteid";
+	public static $testSuiteNameParamName = "testsuitename";
+	public static $timeStampParamName = "timestamp";
+    public static $titleParamName = "title";
+
+
+    public static $urgencyParamName = "urgency";
+    public static $userParamName = "user";
+
+
+    public static $versionNumberParamName = "version";
+    
 
 
 	// public static $executionRunTypeParamName		= "executionruntype";
@@ -1625,9 +1646,14 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * 
 	 * @param struct $args
 	 * @param string $args["devKey"]
-	 * @param int $args["testprojectname"]
-	 * @param int $args["testcaseprefix"]
-	 * @param int $args["notes"]
+	 * @param string $args["testprojectname"]
+	 * @param string $args["testcaseprefix"]
+	 * @param string $args["notes"] OPTIONAL
+	 * @param map $args["options"] OPTIONAL ALL int treated as boolean
+	 *				keys  requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
+	 *
+	 * @param int $args["active"]  OPTIONAL
+     * @param int $args["public"]  OPTIONAL
      *	 
 	 * @return mixed $resultInfo
 	 */
@@ -1640,16 +1666,48 @@ class TestlinkXMLRPCServer extends IXR_Server
 	    if( $this->$checkRequestMethod($msg_prefix) && $this->userHasRight("mgt_modify_product"))
 	    {
 	        // function create($name,$color,$options,$notes,$active=1,$tcasePrefix='')
+	        
+	        // Now go for options (is any)
+			// all enabled by DEFAULT
 	        $options = new stdClass();
-	        $options->requirement_mgmt=1;
-	        $options->priority_mgmt=1;
-	        $options->automated_execution=1;
-		     
-	        $name=htmlspecialchars($this->args[self::$testProjectNameParamName]);
-            $prefix=htmlspecialchars($this->args[self::$testCasePrefixParamName]);
-            $notes=htmlspecialchars($this->args[self::$noteParamName]);
+			$options->requirementsEnabled = 1;
+			$options->testPriorityEnabled = 1;
+			$options->automationEnabled = 1;
+			$options->inventoryEnabled = 1;
+
+			if( $this->_isParamPresent(self::$optionsParamName,$messagePrefix) )
+			{
+				// has to be an array ?
+				$dummy = $this->args[self::$optionsParamName];
+				if( is_array($dummy) )
+				{
+					foreach($dummy as $key => $value)
+					{
+						$options->$key = $value > 0 ? 1 : 0;
+					}
+				}
+			}
+
+			// other optional parameters (not of complex type)
+            // key 2 check with default value is parameter is missing
+            $keys2check = array(self::$activeParamName => 1,self::$publicParamName => 1,
+                                self::$noteParamName => '');
+  		    foreach($keys2check as $key => $value)
+  		    {
+  		        $optional[$key]=$this->_isParamPresent($key) ? trim($this->args[$key]) : $value;
+  		    }
+
+	        $name = htmlspecialchars($this->args[self::$testProjectNameParamName]);
+            $prefix = htmlspecialchars($this->args[self::$testCasePrefixParamName]);
+
+            $notes = htmlspecialchars($optional[self::$noteParamName]);
+            $active = $optional[self::$activeParamName];
+            $public = $optional[self::$publicParamName];
       
-	        $info=$this->tprojectMgr->create($name,'',$options,$notes,1,$prefix);
+            $active = $active > 0 ? 1 : 0;
+      		$public = $public > 0 ? 1 : 0;
+      
+	        $info=$this->tprojectMgr->create($name,'',$options,$notes,$active,$prefix,$public);
 		    $resultInfo = array();
 		    $resultInfo[]= array("operation" => __FUNCTION__,
 			                    "additionalInfo" => null,

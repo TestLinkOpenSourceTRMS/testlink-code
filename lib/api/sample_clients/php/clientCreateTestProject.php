@@ -5,27 +5,245 @@
  *
  * Filename $RCSfile: clientCreateTestProject.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/05/01 20:36:56 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/10/23 09:44:59 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
- * rev: 
+ * @internal revisions
+ * now more parameters on interface
+ * 
  */
 require_once 'util.php';
 require_once 'sample.inc.php';
 show_api_db_sample_msg();
 
 $method='createTestProject';
-$unitTestDescription="Test - {$method}";
+$test_num = 0;
+
+// ------------------------------------------------------------------------------------
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}() ::: ";
+$prefix = 'AXECX';
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testprojectname"]='API Methods Test Project 2';
-$args["testcaseprefix"]="APIMT 2";
-$args["notes"]="test project created using XML-RPC-API";
+$args["testcaseprefix"] = $prefix . $test_num;
+$args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
+
+$dummy = '';
+$additionalInfo = $dummy;
+$args["notes"]="test project created using XML-RPC-API - <br> {$additionalInfo}";
+
+echo $unitTestDescription . ' ' . $additionalInfo;
 
 $debug=true;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+// ------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}() ::: ";
+
+
+$args=array();
+// requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
+$args["options"] = array('requirementsEnabled' => 0);
+$dummy = 'Options[';
+foreach($args["options"] as $key => $value)
+{
+	$dummy .= $key . ' -> ' . $value . ' ';
+}
+$dummy .= "] ";
+
+$args["devKey"]=DEV_KEY;
+$args["testcaseprefix"] = $prefix . $test_num;
+$args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
+$args["active"] = 0;
+$args["public"] = 0;
+
+$additionalInfo = $dummy . " active -> {$args['active']}, public -> {$args['public']}";
+$args["notes"]="test project created using XML-RPC-API - <br> {$additionalInfo}";
+
+
+echo $unitTestDescription . ' ' . $additionalInfo;
+
+$debug = true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// ------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}() ::: ";
+
+$args=array();
+// requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
+$args["options"] = array('requirementsEnabled' => 0, 'testPriorityEnabled' => 0);
+$dummy = 'Options[';
+foreach($args["options"] as $key => $value)
+{
+	$dummy .= $key . ' -> ' . $value . ' ';
+}
+$dummy .= "] ";
+
+$args["devKey"]=DEV_KEY;
+$args["testcaseprefix"] = $prefix . $test_num;
+$args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
+$args["active"] = 0;
+$args["public"] = 0;
+
+$additionalInfo = $dummy . " active -> {$args['active']}, public -> {$args['public']}";
+$args["notes"]="test project created using XML-RPC-API - <br> {$additionalInfo}";
+
+echo $unitTestDescription . ' ' . $additionalInfo;
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// ------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}() ::: ";
+
+$args=array();
+
+// requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
+$args["options"] = array('requirementsEnabled' => 0, 'testPriorityEnabled' => 0,
+						 'automationEnabled' => 0 ,'inventoryEnabled' => 0 );
+$dummy = 'Options[';
+foreach($args["options"] as $key => $value)
+{
+	$dummy .= $key . ' -> ' . $value . ' ';
+}
+$dummy .= "] ";
+
+
+$args["devKey"]=DEV_KEY;
+$args["testcaseprefix"] = $prefix . $test_num;
+$args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
+$args["active"] = 0;
+$args["public"] = 0;
+
+$additionalInfo = $dummy . " active -> {$args['active']}, public -> {$args['public']}";
+$args["notes"]="test project created using XML-RPC-API - <br> {$additionalInfo}";
+
+
+echo $unitTestDescription . ' ' . $additionalInfo;
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// ------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}() ::: ";
+
+$args=array();
+
+// requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
+$args["options"] = array('requirementsEnabled' => 0, 'testPriorityEnabled' => 0,
+						 'automationEnabled' => 0 ,'inventoryEnabled' => 0 );
+$dummy = 'Options[';
+foreach($args["options"] as $key => $value)
+{
+	$dummy .= $key . ' -> ' . $value . ' ';
+}
+$dummy .= "] ";
+
+
+$args["devKey"]=DEV_KEY;
+$args["testcaseprefix"] = $prefix . $test_num;
+$args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
+$args["active"] = 0;
+$args["public"] = 1;
+
+$additionalInfo = $dummy . " active -> {$args['active']}, public -> {$args['public']}";
+$args["notes"]="test project created using XML-RPC-API - <br> {$additionalInfo}";
+
+
+echo $unitTestDescription . ' ' . $additionalInfo;
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// ------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}() ::: ";
+
+$args=array();
+
+// requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
+$args["options"] = array('requirementsEnabled' => 0, 'testPriorityEnabled' => 0,
+						 'automationEnabled' => 0 ,'inventoryEnabled' => 0 );
+$dummy = 'Options[';
+foreach($args["options"] as $key => $value)
+{
+	$dummy .= $key . ' -> ' . $value . ' ';
+}
+$dummy .= "] ";
+
+
+$args["devKey"]=DEV_KEY;
+$args["testcaseprefix"] = $prefix . $test_num;
+$args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
+$args["active"] = 1;
+$args["public"] = 0;
+
+$additionalInfo = $dummy . " active -> {$args['active']}, public -> {$args['public']}";
+$args["notes"]="test project created using XML-RPC-API - <br> {$additionalInfo}";
+
+
+echo $unitTestDescription . ' ' . $additionalInfo;
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// ------------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------------
+$test_num++;
+$unitTestDescription="Test {$test_num} - {$method}() ::: ";
+
+$args=array();
+
+// requirementsEnabled,testPriorityEnabled,automationEnabled,inventoryEnabled
+$args["options"] = array('requirementsEnabled' => 0, 'testPriorityEnabled' => 0,
+						 'automationEnabled' => 0 ,'inventoryEnabled' => 0 );
+$dummy = 'Options[';
+foreach($args["options"] as $key => $value)
+{
+	$dummy .= $key . ' -> ' . $value . ' ';
+}
+$dummy .= "] ";
+
+
+$args["devKey"]=DEV_KEY;
+$args["testcaseprefix"] = $prefix . $test_num;
+$args["testprojectname"] = "API Methods Test Project {$args['testcaseprefix']}";
+$args["active"] = 1;
+$args["public"] = 1;
+
+$additionalInfo = $dummy . " active -> {$args['active']}, public -> {$args['public']}";
+$args["notes"]="test project created using XML-RPC-API - <br> {$additionalInfo}";
+
+
+echo $unitTestDescription . ' ' . $additionalInfo;
+
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+// ------------------------------------------------------------------------------------
+
 ?>

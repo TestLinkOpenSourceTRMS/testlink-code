@@ -1,9 +1,11 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.46 2010/10/22 15:05:19 erikeloff Exp $
+$Id: testlink.css,v 1.47 2010/10/23 09:21:57 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
+20101023 - Julian - changed sencondary font to arial as 'Verdana' is pretty space consuming
+                  - reverted primary font to 'Trebuchet MS' on Franciscos wish
 20101022 - eloff - changed the new button style a little to show focus
 20101022 - Julian - changed main font to arial as 'Trebuchet MS' is only available on Windows machines
 20101022 - eloff - BUGID 3917 - work on buttons
@@ -46,7 +48,7 @@ assigned using name (example: white) instead of code (example: #FFF)
 /* ***** GLOBAL HTML ***************************************************************** */
 body, body.testlink {
 	background:  	#EEE; 
-	font-family: 	arial, tahoma, helvetica, sans-serif;
+	font-family: 	'Trebuchet MS', Arial, Verdana, sans-serif;
 	font-size: 		small;
 	margin:			0px;
 	padding:		0px;
@@ -68,7 +70,7 @@ img {
 
 pre
 {
-	font-family : 	arial, tahoma, helvetica, sans-serif;
+	font-family : 	Arial, Helvetica, sans-serif;
 }
 
 span, div {

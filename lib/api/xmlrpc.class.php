@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.21 $
- * @modified $Date: 2010/09/18 14:45:46 $ by $Author: franciscom $
+ * @version $Revision: 1.22 $
+ * @modified $Date: 2010/10/23 07:57:57 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,8 @@
  * 
  *
  * rev : 
+ *	20101023 - franciscom - BUGID 3916: getTestCaseCustomFieldDesignValue() - missing refactoring regarding
+ *										custom field values linked to test case version
  * 	20100918 - franciscom - BUGID 1890 - uploadAttachment(), upload*Attachment - contribution by kinow	
  *  20100731 - asimon - BUGID 3644 (additional fix for BUGID 2607)
  *	20100715 - franciscom - BUGID 3604 - getTestCasesForTestPlan()
@@ -2257,8 +2259,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 			return $this->errors;
 		}
 		
-		$tplanid=$this->args[self::$testPlanIDParamName];
-		$tplanInfo=$this->tplanMgr->tree_manager->get_node_hierarchy_info($tplanid);
+		$tplanid = $this->args[self::$testPlanIDParamName];
+		$tplanInfo = $this->tplanMgr->tree_manager->get_node_hierarchy_info($tplanid);
 		
 		foreach($opt as $key => $value)
 		{
@@ -2328,6 +2330,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 *                                if devKey is not valid => abort.
 	 *
 	 * @param string $args["testcaseexternalid"]:  
+	 * @param string $args["version"]: version number  
 	 * @param string $args["testprojectid"]: 
 	 * @param string $args["customfieldname"]: custom field name
 	 * @param string $args["details"] optional, changes output information
@@ -2343,8 +2346,11 @@ class TestlinkXMLRPCServer extends IXR_Server
     public function getTestCaseCustomFieldDesignValue($args)
 	{
         $msg_prefix="(" .__FUNCTION__ . ") - ";
-		$this->_setArgs($args);		
-        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity');
+		$this->_setArgs($args);	
+		
+		// 20101020 - franciscom - added checkTestCaseVersionNumber	
+        $checkFunctions = array('authenticate','checkTestProjectID','checkTestCaseIdentity',
+        						'checkTestCaseVersionNumber');
         $status_ok=$this->_runChecks($checkFunctions,$msg_prefix);       
 
         if( $status_ok )
@@ -2356,7 +2362,14 @@ class TestlinkXMLRPCServer extends IXR_Server
         if($status_ok)
 		{
             $ret = $this->checkTestCaseAncestry();
-            $status_ok=$ret['status_ok'];
+            $status_ok = $ret['status_ok'];
+            if( $status_ok )
+            {
+            	// Check if version number exists for Test Case
+            	$ret = $this->checkTestCaseVersionNumberAncestry();
+            	$status_ok = $ret['status_ok'];
+            }
+            
             if($status_ok )
             {
                 $status_ok=$this->_checkGetTestCaseCustomFieldDesignValueRequest($msg_prefix);
@@ -2380,12 +2393,11 @@ class TestlinkXMLRPCServer extends IXR_Server
             $tproject_id=$this->args[self::$testProjectIDParamName];
             $tcase_id=$this->args[self::$testCaseIDParamName];
             
-		    $cfield_mgr=$this->tprojectMgr->cfield_mgr;
-            $cfinfo=$cfield_mgr->get_by_name($cf_name);
-            $cfield=current($cfinfo);
-            $filters=array('cfield_id' => $cfield['id']);
-            $cfieldSpec=$this->tcaseMgr->get_linked_cfields_at_design($tcase_id,null,$filters,$tproject_id);
-            // $cf_map=$cfield_mgr->string_custom_field_value($cfieldSpec[$cfield['id']],$tcase_id);
+		    $cfield_mgr = $this->tprojectMgr->cfield_mgr;
+            $cfinfo = $cfield_mgr->get_by_name($cf_name);
+            $cfield = current($cfinfo);
+            $filters = array('cfield_id' => $cfield['id']);
+            $cfieldSpec = $this->tcaseMgr->get_linked_cfields_at_design($tcase_id,$this->tcVersionID,null,$filters,$tproject_id);
             
             switch($details)
             {
@@ -2443,15 +2455,13 @@ class TestlinkXMLRPCServer extends IXR_Server
         //
  
         // - Custom Field exists ?
-        $cfield_mgr=$this->tprojectMgr->cfield_mgr; // ($this->dbObj);
+        $cfield_mgr=$this->tprojectMgr->cfield_mgr; 
         $cfinfo=$cfield_mgr->get_by_name($cf_name);
         if( !($status_ok=!is_null($cfinfo)) )
         {
 	         $msg = sprintf(NO_CUSTOMFIELD_BY_THIS_NAME_STR,$cf_name);
 	         $this->errors[] = new IXR_Error(NO_CUSTOMFIELD_BY_THIS_NAME, $messagePrefix . $msg);
         }
-        // $this->errors[] = current($cfinfo);
-        // $status_ok=false;
       
         // - Can be used on a test case ?
         if( $status_ok )
@@ -2666,6 +2676,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 		$operation=__FUNCTION__;
 		$messagePrefix="({$operation}) - ";
 		$this->_setArgs($args);
+		
 		$op_result=null;
 		$additional_fields='';
 		$doDeleteLinks = false;
@@ -2681,8 +2692,8 @@ class TestlinkXMLRPCServer extends IXR_Server
 		// Test Plan belongs to test project ?
 		if( $status_ok )
 		{
-		   $tproject_id=$this->args[self::$testProjectIDParamName];
-		   $tplan_id=$this->args[self::$testPlanIDParamName];
+		   $tproject_id = $this->args[self::$testProjectIDParamName];
+		   $tplan_id = $this->args[self::$testPlanIDParamName];
 		   $tplan_info = $this->tplanMgr->get_by_id($tplan_id);
 		   
 		   $sql=" SELECT id FROM {$this->tables['testplans']}" .
@@ -4558,6 +4569,52 @@ protected function createAttachmentTempFile()
 }
 
 
+
+	/**
+	 * checks if a test case version number is defined for a test case
+	 *
+	 * @param string $messagePrefix used to be prepended to error message
+	 * 
+	 * @return map with following keys
+	 *             boolean map['status_ok']
+	 *             string map['error_msg']
+	 *             int map['error_code']
+	 */
+	protected function checkTestCaseVersionNumberAncestry($messagePrefix='')
+	{
+	    $ret=array('status_ok' => true, 'error_msg' => '' , 'error_code' => 0);
+	
+	    $tcase_id = $this->args[self::$testCaseIDParamName];
+	    $version_number = $this->args[self::$versionNumberParamName];
+	    
+	    $sql = " SELECT TCV.version,TCV.id " . 
+	           " FROM {$this->tables['nodes_hierarchy']} NH, {$this->tables['tcversions']} TCV " .
+	           " WHERE NH.parent_id = {$tcase_id} " .
+	           " AND TCV.version = {$version_number} " .
+	           " AND TCV.id = NH.id ";
+	
+	    $target_tcversion = $this->dbObj->fetchRowsIntoMap($sql,'version');
+	    // $xx = "tcase_id:$tcase_id - version_number:$version_number";
+	    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx);                            
+	    
+	    if( !is_null($target_tcversion) && count($target_tcversion) == 1 )
+	    {
+	    	$dummy = current($target_tcversion);
+			$this->tcVersionID = $dummy['id'];
+	    }
+	    else
+	    {
+			$status_ok=false;
+            $tcase_info = $this->tcaseMgr->tree_manager->get_node_hierarchy_info($tcase_id);
+			$msg = sprintf(TCASE_VERSION_NUMBER_KO_STR,$version_number,$this->args[self::$testCaseExternalIDParamName],
+						   $tcase_info['name']);  
+			$ret = array('status_ok' => false, 'error_msg' => $msg , 'error_code' => TCASE_VERSION_NUMBER_KO);                                               
+	    }  
+	                    
+	    // $xx = "this->tcVersionID:$this->tcVersionID";
+	    // file_put_contents('c:\checkTestCaseVersionNumberAncestry.php.xmlrpc', $xx,FILE_APPEND); 
+	    return $ret;
+	} // function end
 
 } // class end
 ?>

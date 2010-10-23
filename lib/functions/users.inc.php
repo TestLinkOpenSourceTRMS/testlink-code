@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: users.inc.php,v 1.110 2010/10/10 15:55:58 franciscom Exp $
+ * @version    	CVS: $Id: users.inc.php,v 1.111 2010/10/23 16:13:34 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revision:
  * 
+ *  20101023 - franciscom - BUGID 3931 getTestersForHtmlOptions()
  *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users 
  *							resetPassword() - interface changes and logic changes
  *	20100502 - franciscom - resetPassword() - fixed bad comparison to set $errorMsg
@@ -369,6 +370,9 @@ function getAllUsersRoles(&$db,$order_by = null)
  * @param string $activeStatus. values: 'active','inactive','any'
  * 
  * @return array TBD  
+ * @internal revisions
+ * 20101023 - franciscom - BUGID 3931: Assign test case to test project fails for 
+ *						   PRIVATE TEST PROJECT (tested with admin user)
  */
 function getTestersForHtmlOptions(&$db,$tplanID,$tproject,$users = null, 
                                   $additional_testers = null,$activeStatus = 'active')
@@ -391,14 +395,19 @@ function getTestersForHtmlOptions(&$db,$tplanID,$tproject,$users = null,
     }
 
     $users_roles = get_tplan_effective_role($db,$tplanID,$tproject,null,$users);
+
     $userFilter = array();
     foreach($users_roles as $keyUserID => $roleInfo)
     {
-        if($roleInfo['effective_role']->hasRight('testplan_execute') && 
-           ($orOperand || $roleInfo['user']->isActive == $activeTarget) )
-        {
-            
-             $userFilter[$keyUserID] = $roleInfo['user'];
+    	// BUGID 3931: Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user)
+    	if( is_object($roleInfo['effective_role']) )
+    	{
+        	if( $roleInfo['effective_role']->hasRight('testplan_execute') && 
+        	    ($orOperand || $roleInfo['user']->isActive == $activeTarget) )
+        	{
+        	    
+        	     $userFilter[$keyUserID] = $roleInfo['user'];
+        	}
         }   
     }
 	return buildUserMap($userFilter,true,$additional_testers);

@@ -5,11 +5,15 @@
  *
  * Filename $RCSfile: clientGetTestCaseCustomFieldDesignValue.php,v $
  *
- * @version $Revision: 1.3 $
- * @modified $Date: 2009/05/01 20:36:56 $ by $Author: franciscom $
+ * @version $Revision: 1.4 $
+ * @modified $Date: 2010/10/23 07:57:51 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
+ * @internal revisions
+ * 20101023 - franciscom - added version number on call.
+ * 			
+ *
  */
  
 require_once 'util.php';
@@ -22,11 +26,13 @@ $unitTestDescription="Test {$test_num} - {$method}";
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testcaseexternalid"]='FMAN-4';
-$args["testprojectid"]=1420;
+$args["testcaseexternalid"]='QAZ-1';
+$args["testprojectid"]=455;
 $args["customfieldname"]='M LIST';
 $args["details"]='simple';
-$additionalInfo='';
+$args["version"]=3;
+
+$additionalInfo = ' -> Ask for NON EXISTENT VERSION';
 
 $debug=true;
 echo $unitTestDescription;
@@ -35,4 +41,43 @@ echo $additionalInfo;
 $client = new IXR_Client($server_url);
 $client->debug=$debug;
 runTest($client,$method,$args);
+
+// -----------------------------------------------------------------------
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testcaseexternalid"]='QAZ-1';
+$args["testprojectid"]=455;
+$args["customfieldname"]='M LIST';
+$args["details"]='simple';
+$args["version"]= 2;
+
+$additionalInfo = ' -> Must be GOOD call';
+
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+
+// -----------------------------------------------------------------------
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testcaseexternalid"]='QAZ-1';
+$args["testprojectid"]=455;
+$args["customfieldname"]='M LIST';
+$args["details"]='simple';
+$args["version"]= 1;
+
+$additionalInfo = ' -> Another GOOD call  but for a DIFFERENT Version ';
+
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args);
+
 ?>

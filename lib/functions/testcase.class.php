@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.327 2010/10/16 08:00:01 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.328 2010/10/24 16:49:58 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101024 - franciscom - new method filter_tcversions_by_cfields()	
  * 20101016 - franciscom - update_last_modified() refixed BUGID 3849
  * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class	
  * 20101011 - franciscom - html_table_of_custom_field_inputs() ADDED CRITIC DOCUMENTATION
@@ -4791,7 +4792,7 @@ class testcase extends tlObjectWithAttachments
 			{
 				if( !is_null($value) )
 				{	   
-					$sql .= " AND TCV.{$key}={$value} ";
+					$sql .= " AND TCV.{$key}={$value} "; // Hmmm some problems coming with strings
 				}	  
 			}
 		}
@@ -4852,6 +4853,76 @@ class testcase extends tlObjectWithAttachments
 		   	   " WHERE id = " . $this->db->prepare_int($tcversion_id); 
 		$this->db->exec_query($sql);
 	}
+
+
+	/**
+	 * Given a tcversion set, returns a modified set, where only tcversion id
+	 * that has requested values on Custom fields are returned.
+	 *
+	 * @param mixed tcversion_id: can be a single value or an array
+	 * @param map cf_hash: custom fields id plus values
+	 * @param map options: OPTIONAL 
+	 *
+	 * @return map key: tcversion_id , element: array numerical index with as much element as custom fields
+	 *
+	 *
+	 */
+	function filter_tcversions_by_cfields($tcversion_id,$cf_hash,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	    $recordset = null;
+	    $itemSet = implode(',',(array)$tcversion_id);
+
+	    $my['options'] = array( 'access_key' => 'tcversion_id');
+	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
+	    $or_clause = '';
+		$cf_query = '';
+		$cf_qty = count($cf_hash);
+		
+		// do not worry!! it seems that filter criteria is OR, but really is an AND,
+		// OR is needed to do a simple query.
+		// with processing on recordset becomes an AND
+		foreach ($cf_hash as $cf_id => $cf_value)
+		{
+		    $cf_query .= $or_clause . " (CFDV.field_id=" . $cf_id . " AND CFDV.value='" . $cf_value . "') ";
+			$or_clause = ' OR ';			
+		}
+	    
+		$sql = "/* $debugMsg */ " . 	    
+			   " SELECT TCV.id AS tcversion_id, NH_TCVERSION.parent_id AS testcase_id, TCV.version," .
+			   " CFDV.field_id,CFDV.value " .
+			   " FROM {$this->tables['tcversions']} TCV " .
+			   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION ON NH_TCVERSION.id = TCV.id " .
+			   " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.node_id = TCV.id " .
+			   " AND NH_TCVERSION.id IN ({$itemSet}) AND ({$cf_query}) ";
+
+		$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key'],database::CUMULATIVE);
+
+		// now loop over result, entries whose count() < number of custom fields has to be removed
+		if( !is_null($recordset) )
+		{
+			$key2loop = array_keys($recordset);
+			foreach($key2loop as $key)
+			{
+				if( count($recordset[$key]) < $cf_qty)
+				{
+					// remove
+					unset($recordset[$key]);
+				}
+			}
+			if( count($recordset) <= 0 )
+			{
+				$recordset = null;
+			}
+		}
+	    return $recordset;
+	}
+
+
+
+
+
 
 
 

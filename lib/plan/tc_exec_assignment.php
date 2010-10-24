@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.57 2010/10/04 13:22:25 asimon83 Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.58 2010/10/24 14:29:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
+ * 20101024 - franciscom - method renamed to getFilteredSpecView() + changes in interface
  * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
  * 20100721 - asimon - BUGID 3406 - testcase execution assignment per build
  * 20100326 - amitkhullar - BUGID 3346: Update the date on updating test case asssigments
@@ -157,19 +158,16 @@ switch($args->level)
         $tsuite_data['name'] = $xx[$tsuite_data['id']]['value']; 
 		
 		// 20100228 - franciscom - BUGID 3226: Assignment of single test case not possible
+        // BUGID 3406
         $getFilters = array('tcase_id' => $args->id);
-        
-        // 3406
-        //$getOptions = array('output' => 'mapOfArray');
         $getOptions = array('output' => 'mapOfArray', 'user_assignments_per_build' => $args->build_id);
 		$linked_items = $tplan_mgr->get_linked_tcversions($args->tplan_id,$getFilters,$getOptions);
 
-		$filters = array('keywords' => $keywordsFilter->items );	
 		
-		// 3406
-		//$opt = array('write_button_only_if_linked' => 1);
+		// BUGID 3406
 		$opt = array('write_button_only_if_linked' => 1, 'user_assignments_per_build' => $args->build_id);
 		
+		$filters = array('keywords' => $keywordsFilter->items );	
 		$my_out = gen_spec_view($db,'testplan',$args->tplan_id,$tsuite_data['id'],$tsuite_data['name'],
 						        $linked_items,null,$filters,$opt);
 		
@@ -183,12 +181,15 @@ switch($args->level)
 	case 'testsuite':
 		// BUGID 3026
 		// BUGID 3516
-		$tcaseFilter = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
+		$filters = array();
+		$filters['keywordsFilter'] = $keywordsFilter;
+		$filters['tcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
+		$filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
 		
-		// 3406
+		
+		// BUGID 3406
 		$opt = array('user_assignments_per_build' => $args->build_id);
-		$out = keywordFilteredSpecView($db, $args, $keywordsFilter, $tplan_mgr,
-		                               $tcase_mgr, $tcaseFilter, $opt);
+		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
 				
 		break;
 

@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.164 2010/10/22 17:56:07 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.165 2010/10/24 09:23:15 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -21,6 +21,7 @@
 /* [GLOBAL SETTINGS] */
 
 /** TestLink Release version (MUST BE changed before the release day) */
+define('TL_FACE_DIR', 'prague'); 
 define('TL_VERSION', '1.9 (GA - Development - Prague)'); 
 
 // needed to avoid problems in install scripts that do not include config.inc.php

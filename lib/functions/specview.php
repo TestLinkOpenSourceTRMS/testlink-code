@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.63 2010/09/11 16:06:35 asimon83 Exp $
+ * @version    	CVS: $Id: specview.php,v 1.64 2010/10/24 13:56:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ *	20101024 - franciscom - getTestSpecFromNode() refactoring
  *  20100911 - asimon - BUGID 3768
  *  20100726 - asimon - BUGID 3628: in addLinkedVersionsInfo(), a missing [0] in condition 
  *                                  caused missing priority
@@ -224,7 +225,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 		               'execution_type' => $my['filters']['exec_type'],
 		               'importance' => $my['filters']['importance'] );
 		             
-	// $test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$filters);
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 	
 	$platforms = getPlatforms($db,$tproject_id,$testplan_id);
@@ -493,8 +493,26 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	$key2loop = null;
 	$useAllowed = false;
 	
+	
+//	new dBug($filters);
+//	die();
+	
 	// 20100411 - BUGID 2797 - filter by test case execution type
-	$useFilter=array('keyword_id' => false, 'tcase_id' => false, 'exec_type' => false);
+	$nullCheckFilter = array('tcase_id' => false, 'execution_type' => false, 'importance' => false);
+	$useFilter = array('keyword_id' => false) + $nullCheckFilter;
+
+	$applyFilters = false;
+	foreach($nullCheckFilter as $key => $value)
+	{
+		$useFilter[$key] = !is_null($filters[$key]);
+		$applyFilters =	$applyFilters || $useFilter[$key];
+	}
+	if( $useFilter['tcase_id'] )
+	{
+		$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
+	}
+
+
 
 	// BUGID 3768
 	if(!is_array($filters['keyword_id']) ) {
@@ -514,22 +532,22 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	}  
 	
 	
-	if( ($useFilter['tcase_id']=!is_null($filters['tcase_id']) ))
-	{
-		$applyFilters = true;
-		$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
-	}
-
-	if( ($useFilter['execution_type'] = !is_null($filters['execution_type']) ))
-	{
-		$applyFilters = true;
-	}
-	
-	// BUGID 
-	if( ($useFilter['importance'] = !is_null($filters['importance']) ))
-	{
-		$applyFilters = true;
-	}
+	// if( ($useFilter['tcase_id']=!is_null($filters['tcase_id']) ))
+	// {
+	// 	$applyFilters = true;
+	// 	$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
+	// }
+    // 
+	// if( ($useFilter['execution_type'] = !is_null($filters['execution_type']) ))
+	// {
+	// 	$applyFilters = true;
+	// }
+	// 
+	// // BUGID 
+	// if( ($useFilter['importance'] = !is_null($filters['importance']) ))
+	// {
+	// 	$applyFilters = true;
+	// }
 	
 	if( $applyFilters )
 	{

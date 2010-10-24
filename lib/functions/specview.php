@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.64 2010/10/24 13:56:06 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.65 2010/10/24 14:22:28 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  *	20101024 - franciscom - getTestSpecFromNode() refactoring
+ *							BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
  *  20100911 - asimon - BUGID 3768
  *  20100726 - asimon - BUGID 3628: in addLinkedVersionsInfo(), a missing [0] in condition 
  *                                  caused missing priority
@@ -480,6 +481,7 @@ function keywordFilteredSpecView(&$dbHandler, &$argsObj, $keywordsFilter, &$tpla
  * @return array map with view (test cases subtree)
  * 
  * @internal revisions
+ * 20101024 - franciscom - BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
  * 20100417 - franciscom - BUGID 2498 - added logic to filter by importance (defined on test case spec)
  * 20100411 - franciscom - added logic to filter by execution type
  */
@@ -493,26 +495,30 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	$key2loop = null;
 	$useAllowed = false;
 	
-	
-//	new dBug($filters);
-//	die();
-	
 	// 20100411 - BUGID 2797 - filter by test case execution type
-	$nullCheckFilter = array('tcase_id' => false, 'execution_type' => false, 'importance' => false);
-	$useFilter = array('keyword_id' => false) + $nullCheckFilter;
+	$nullCheckFilter = array('tcase_id' => false, 'importance' => false);
+	$zeroNullCheckFilter = array('execution_type' => false);
+	$useFilter = array('keyword_id' => false) + $nullCheckFilter + $zeroNullCheckFilter;
 
 	$applyFilters = false;
 	foreach($nullCheckFilter as $key => $value)
 	{
 		$useFilter[$key] = !is_null($filters[$key]);
+		
 		$applyFilters =	$applyFilters || $useFilter[$key];
 	}
+	foreach($zeroNullCheckFilter as $key => $value)
+	{
+		// need to check for > 0, because for some items 0 has same meaning that null -> no filter
+		$useFilter[$key] = (!is_null($filters[$key]) && ($filters[$key] > 0));
+		$applyFilters =	$applyFilters || $useFilter[$key];
+	}
+	
+	
 	if( $useFilter['tcase_id'] )
 	{
 		$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
 	}
-
-
 
 	// BUGID 3768
 	if(!is_array($filters['keyword_id']) ) {
@@ -601,7 +607,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 						}
 						if( !is_null($item) )
 						{
-							if( $useFilter['exec_type'] && ($item['execution_type'] != $filters['exec_type']) || 
+							if( $useFilter['execution_type'] && ($item['execution_type'] != $filters['execution_type']) || 
 							    $useFilter['importance'] && ($item['importance'] != $filters['importance']) )
 							{
 								$tspecKey = $itemSet[$targetTestCase]; 	
@@ -613,9 +619,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 				
 				default:
 					$tcvidSet = array_keys($tcversionSet);
-					// $options = array('access_key' => 'testcase_id');
 					$options = null;
-					// $allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['exec_type'],$options);
 					$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters,$options);
 					if( !is_null($allowedSet) &&  count($allowedSet) > 0 )
 					{

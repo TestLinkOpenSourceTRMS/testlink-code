@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_tcbody.tpl,v 1.1 2010/09/05 14:23:59 franciscom Exp $
+$Id: inc_tcbody.tpl,v 1.2 2010/10/24 07:21:23 mx-julian Exp $
 viewer for test case in test specification
 
 rev:
+    20101024 - Julian - BUGID 3928 - Custom fields before steps not using complete width of table
     20100901 - franciscom - display test case body 
 *}
 <table class="simple">
@@ -55,9 +56,10 @@ rev:
 	{* 20090718 - franciscom *}
 	{if $inc_tcbody_cf.before_steps_results neq ''}
 	<tr>
-	  <td>
-    {$inc_tcbody_cf.before_steps_results}
-    </td>
+	  {* 20101024 - BUGID 3928 *}
+	  <td colspan="{$inc_tcbody_tableColspan}">
+        {$inc_tcbody_cf.before_steps_results}
+      </td>
 	</tr>
 	{/if}
 {if $inc_tcbody_close_table}	

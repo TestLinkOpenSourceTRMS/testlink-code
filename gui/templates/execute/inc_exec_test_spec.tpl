@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_test_spec.tpl,v 1.21 2010/09/17 10:47:15 amkhullar Exp $
+$Id: inc_exec_test_spec.tpl,v 1.22 2010/10/24 07:21:23 mx-julian Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev:
+    20101024 - Julian - BUGID 3928 - Custom fields before steps not using complete width of table
     20100917 - amitkhullar - BUGID 3780
 	20100802 - amitkhullar - Moved the Design time Custom Fields before Exec CF. 
     20100621 - eloff - BUGID 3241 - Implement vertical layout
@@ -70,7 +71,8 @@ Rev:
 		{* 20090718 - franciscom - CF location management*}
     {if $args_design_time_cf[$testcase_id].before_steps_results != ''}
 		<tr>
-      <td> {$args_design_time_cf[$testcase_id].before_steps_results}</td>
+			{* 20101024 - BUGID 3928 *}
+        	<td colspan="{$tableColspan}"> {$args_design_time_cf[$testcase_id].before_steps_results}</td>
 		</tr>
 		{/if}
 

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.66 2010/10/24 14:31:08 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.67 2010/10/24 15:01:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -15,6 +15,7 @@
  *							BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
  *
  *							method renamed to getFilteredSpecView()
+ *							BUGID 3934: Assign Test Case Execution - Execution type filter does not affect right pane
  *
  *  20100911 - asimon - BUGID 3768
  *  20100726 - asimon - BUGID 3628: in addLinkedVersionsInfo(), a missing [0] in condition 
@@ -191,10 +192,8 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	$result = array('spec_view'=>array(), 'num_tc' => 0, 'has_linked_items' => 0);
 
 	$my = array();
-	$my['options'] = array('write_button_only_if_linked' => 0,
-	                       'prune_unlinked_tcversions' => 0,
-	                       'add_custom_fields' => 0)
-	               + (array)$options;
+	$my['options'] = array('write_button_only_if_linked' => 0,'prune_unlinked_tcversions' => 0,
+	                       'add_custom_fields' => 0) + (array)$options;
 
 	// BUGID 2797 - filter by test case execution type
 	$my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 'importance' => null);
@@ -388,7 +387,7 @@ function getFilteredLinkedVersions(&$argsObj, &$tplanMgr, &$tcaseMgr, $options =
  * @param obj $argsObj: user input
  * @param obj $tplanMgr: test plan manager
  * @param obj $tcaseMgr: test case manager
- * @param map $filters:  keys 'keywordsFilter', 'testcaseFilter', 'assignedToFilter'
+ * @param map $filters:  keys keywordsFilter, testcaseFilter,assignedToFilter,executionTypeFilter
  *						 IMPORTANT NOTICE: not all filters are here, other arrive via argsObj
  * @param map $options:  keys  ??
  *						 USED TO PASS options to other method called here -> see these method docs.
@@ -410,7 +409,8 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	$tsuite_data = $tcaseMgr->tree_manager->get_node_hierarchy_info($argsObj->id);    
 	
 	$my = array();  // some sort of local scope
-	$my['filters'] = array('keywordsFilter' => null, 'testcaseFilter' => null, 'assignedToFilter' => null);
+	$my['filters'] = array('keywordsFilter' => null, 'testcaseFilter' => null,
+						   'assignedToFilter' => null,'executionTypeFilter' => null);
 	$my['filters'] = array_merge($my['filters'], (array)$filters);
 
 	$my['options'] = array('write_button_only_if_linked' => 1, 'prune_unlinked_tcversions' => 1);
@@ -448,7 +448,9 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	$testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
 	
     // BUGID 3406 
-	$genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet);
+	$genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet,
+							'exec_type' => $my['filters']['executionTypeFilter'] );
+							
 	$out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
 		                 $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
 
@@ -541,24 +543,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		$tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
 	}  
 	
-	
-	// if( ($useFilter['tcase_id']=!is_null($filters['tcase_id']) ))
-	// {
-	// 	$applyFilters = true;
-	// 	$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
-	// }
-    // 
-	// if( ($useFilter['execution_type'] = !is_null($filters['execution_type']) ))
-	// {
-	// 	$applyFilters = true;
-	// }
-	// 
-	// // BUGID 
-	// if( ($useFilter['importance'] = !is_null($filters['importance']) ))
-	// {
-	// 	$applyFilters = true;
-	// }
-	
 	if( $applyFilters )
 	{
 		$key2loop = array_keys($test_spec);
@@ -624,7 +608,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 				default:
 					$tcvidSet = array_keys($tcversionSet);
 					$options = null;
-					$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters,$options);
+					// BUGID 3934
+					$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['execution_type'],$options);
 					if( !is_null($allowedSet) &&  count($allowedSet) > 0 )
 					{
 						$useAllowed = true;

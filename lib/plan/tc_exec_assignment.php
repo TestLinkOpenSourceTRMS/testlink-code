@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.58 2010/10/24 14:29:27 franciscom Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.59 2010/10/24 15:00:19 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
  * 20101024 - franciscom - method renamed to getFilteredSpecView() + changes in interface
+ *						   BUGID 3934: Assign Test Case Execution - Execution type filter does not affect right pane	
  * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
  * 20100721 - asimon - BUGID 3406 - testcase execution assignment per build
  * 20100326 - amitkhullar - BUGID 3346: Update the date on updating test case asssigments
@@ -179,18 +180,18 @@ switch($args->level)
 		break;
 		
 	case 'testsuite':
+		// BUGID 3934
 		// BUGID 3026
 		// BUGID 3516
+		// BUGID 3406
 		$filters = array();
 		$filters['keywordsFilter'] = $keywordsFilter;
 		$filters['tcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
 		$filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
+		$filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
 		
-		
-		// BUGID 3406
 		$opt = array('user_assignments_per_build' => $args->build_id);
-		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);
-				
+		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);  
 		break;
 
 	default:
@@ -232,10 +233,6 @@ function init_args()
 	  $args->tproject_id = $_SESSION['testprojectID'];
 	  $args->tproject_name = $_SESSION['testprojectName'];
       
-//	  $args->tplan_id = isset($_REQUEST['tplan_id']) ? $_REQUEST['tplan_id'] : $_SESSION['testplanID'];
-//	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
-//	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
-//	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0, 'filter_assigned_to' => null);
 	  $key2loop = array('doAction' => null,'level' => null , 'achecked_tc' => null, 
 	    	              'version_id' => 0, 'has_prev_assignment' => null, 'send_mail' => false,
 	    	              'tester_for_tcid' => null, 'feature_id' => null, 'id' => 0);
@@ -245,35 +242,24 @@ function init_args()
 	  	$args->$key = isset($_REQUEST[$key]) ? $_REQUEST[$key] : $value;
 	  }
     
-    // Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
-//    $keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-//    $args->keyword_id = is_null($keywordSet) ? 0 : explode(',',$keywordSet); 
-//    $args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
-//    
-//    if( !is_null($args->filter_assigned_to) )
-//    {
-//        $args->filter_assigned_to = (array)$args->filter_assigned_to;  
-//    }
-    
- 	// BUGID 2455, BUGID 3026
-//	if (isset($_REQUEST['show_only_tcs']) && isset($_REQUEST['show_only_tcs']) != '') 
-//	{
-//		$args->tcids_to_show = explode(",", $_REQUEST['show_only_tcs']);
-//	}
 	
 	// BUGID 3516
-	
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	
 	$mode = 'plan_mode';
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
+
+	$args->control_panel = $session_data;  // BUGID 3934
+		
+	$key2loop = array('refreshTree' => array('key' => setting_refresh_tree_on_action, 'value' => 0),
+					  'filter_assigned_to' => array('key' => filter_assigned_user, 'value' => null));
 	
-	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
-	                ? $_SESSION[$mode][$form_token] : null;
+	foreach($key2loop as $key => $info)
+	{
+		$args->$key = isset($session_data[$info['key']]) ? $session_data[$info['key']] : $info['value']; 
+	}
 	
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
-                         $session_data['setting_refresh_tree_on_action'] : 0;
     
     $args->keyword_id = 0;
 	$fk = 'filter_keywords';
@@ -285,13 +271,11 @@ function init_args()
 	}
 	
 	$args->keywordsFilterType = null;
-	$ft = 'filter_keywords_filter_type';
-	if (isset($session_data[$ft])) {
-		$args->keywordsFilterType = $session_data[$ft];
+	$fk = 'filter_keywords_filter_type';
+	if (isset($session_data[$fk])) {
+		$args->keywordsFilterType = $session_data[$fk];
 	}
 	
-	$args->filter_assigned_to = isset($session_data['filter_assigned_user']) ? 
-	                            $session_data['filter_assigned_user'] : null;
 	
 	$args->testcases_to_show = null;
 	if (isset($session_data['testcases_to_show'])) {

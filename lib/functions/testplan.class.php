@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.230 2010/10/17 10:24:10 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.231 2010/10/24 16:49:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20101024 - franciscom - filter_cf_selection() - fixed event viewer warning + refactoring 	
  *	20101017 - franciscom - new method get_import_file_types() 
  *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  *	20101009 - franciscom - BUGID 3270: Export Test Plan in XML Format
@@ -2509,35 +2510,29 @@ class testplan extends tlObjectWithAttachments
 	{
 		$new_tp_tcs = null;
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		
 		// BUGID 3809 - Radio button based Custom Fields not working		
+		$or_clause = '';
+		$cf_query = '';
 		foreach ($cf_hash as $cf_id => $cf_value)
 		{
-			if (!is_null($cf_query))
-			{
-				$cf_query = $cf_query . " or " . " (CFD.field_id=" . $cf_id . " AND CFD.value='" . $cf_value . "') ";
-			}
-			else
-			{
-				$cf_query = "(CFD.field_id=" . $cf_id . " AND CFD.value='" . $cf_value . "') ";
-			} 
+		    $cf_query .= $or_clause . " (CFD.field_id=" . $cf_id . " AND CFD.value='" . $cf_value . "') ";
+			$or_clause = ' or ';			
 		}
-		
+		                              
+        $cf_qty = count($cf_hash);		                              		
 		foreach ($tp_tcs as $tc_id => $tc_value)
 		{
-			$passed = false;
-			//BUGID 2877 - Custom Fields linked to TC versions
+			// BUGID 2877 - Custom Fields linked to TC versions
 			$sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
 				   " {$this->tables['nodes_hierarchy']} NH" .
 				   " WHERE CFD.node_id = NH.id " .
 				   " AND NH.parent_id = {$tc_value['tc_id']} AND ({$cf_query})";
 			
 			$rows = $this->db->fetchRowsIntoMap($sql,'value');
-			
-			//if there exist as many rows as custom fields to be filtered by
-			//the tc does meet the criteria
-			$passed = (count($rows) == count($cf_hash)) ? true : false;
-			
-			if ($passed) {
+			// if there exist as many rows as custom fields to be filtered by => tc does meet the criteria
+			if(count($rows) == $cf_qty) 
+			{
 				$new_tp_tcs[$tc_id] = $tp_tcs[$tc_id];
 			}
 		}

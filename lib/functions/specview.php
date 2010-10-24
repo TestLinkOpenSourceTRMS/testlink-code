@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.67 2010/10/24 15:01:23 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.68 2010/10/24 17:00:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -16,6 +16,8 @@
  *
  *							method renamed to getFilteredSpecView()
  *							BUGID 3934: Assign Test Case Execution - Execution type filter does not affect right pane
+ *							BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
+ *
  *
  *  20100911 - asimon - BUGID 3768
  *  20100726 - asimon - BUGID 3628: in addLinkedVersionsInfo(), a missing [0] in condition 
@@ -196,7 +198,8 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	                       'add_custom_fields' => 0) + (array)$options;
 
 	// BUGID 2797 - filter by test case execution type
-	$my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 'importance' => null);
+	$my['filters'] = array('keywords' => 0, 'testcases' => null ,'exec_type' => null, 
+						   'importance' => null, 'cfields' => null);
 	foreach( $my as $key => $settings)
 	{
 		if( !is_null($$key) && is_array($$key) )
@@ -226,7 +229,8 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	                   'tcase_id' => $my['filters']['testcases'], 
 		               'tcase_node_type_id' => $hash_descr_id['testcase'],
 		               'execution_type' => $my['filters']['exec_type'],
-		               'importance' => $my['filters']['importance'] );
+		               'importance' => $my['filters']['importance'],
+		               'cfields' => $my['filters']['cfields']);
 		             
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 	
@@ -387,7 +391,9 @@ function getFilteredLinkedVersions(&$argsObj, &$tplanMgr, &$tcaseMgr, $options =
  * @param obj $argsObj: user input
  * @param obj $tplanMgr: test plan manager
  * @param obj $tcaseMgr: test case manager
- * @param map $filters:  keys keywordsFilter, testcaseFilter,assignedToFilter,executionTypeFilter
+ * @param map $filters:  keys keywordsFilter, testcaseFilter,assignedToFilter,
+ *							  executionTypeFilter, cfieldsFilter
+ *
  *						 IMPORTANT NOTICE: not all filters are here, other arrive via argsObj
  * @param map $options:  keys  ??
  *						 USED TO PASS options to other method called here -> see these method docs.
@@ -448,8 +454,10 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
 	$testCaseSet = !is_null($testCaseSet) ? array_combine($testCaseSet, $testCaseSet) : null;
 	
     // BUGID 3406 
+	// BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
 	$genSpecFilters = array('keywords' => $argsObj->keyword_id, 'testcases' => $testCaseSet,
-							'exec_type' => $my['filters']['executionTypeFilter'] );
+							'exec_type' => $my['filters']['executionTypeFilter'],
+							'cfields' =>  $my['filters']['cfieldsFilter']);
 							
 	$out = gen_spec_view($dbHandler, 'testplan', $argsObj->tplan_id, $argsObj->id, $tsuite_data['name'],
 		                 $tplan_linked_tcversions, null, $genSpecFilters, $my['options']);
@@ -481,13 +489,18 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  * @param string $specViewType: type of view requested
  *
  * @param array $filters
- *	  			filters['keyword_id']: array of keywords 
+ *	  			filters['keyword_id']: array of keywords  
+ *	  			filters['tcase_id']: 
+ *	  			filters['execution_type']: 
+ *	  			filters['importance']: 
  *
  * 
  * @return array map with view (test cases subtree)
  * 
  * @internal revisions
  * 20101024 - franciscom - BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
+ *						   BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
+ *
  * 20100417 - franciscom - BUGID 2498 - added logic to filter by importance (defined on test case spec)
  * 20100411 - franciscom - added logic to filter by execution type
  */
@@ -504,7 +517,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	// 20100411 - BUGID 2797 - filter by test case execution type
 	$nullCheckFilter = array('tcase_id' => false, 'importance' => false);
 	$zeroNullCheckFilter = array('execution_type' => false);
-	$useFilter = array('keyword_id' => false) + $nullCheckFilter + $zeroNullCheckFilter;
+	$useFilter = array('keyword_id' => false, 'cfields' => false) + $nullCheckFilter + $zeroNullCheckFilter;
 
 	$applyFilters = false;
 	foreach($nullCheckFilter as $key => $value)
@@ -543,6 +556,12 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		$tck_map = $tobj_mgr->get_keywords_tcases($masterContainerId,$filters['keyword_id']);
 	}  
 	
+	// BUGID 3936 - Design Time Custom Field Filter
+	if(($useFilter['cfields'] = !is_null($filters['cfields'])))
+	{
+		$applyFilters = true;
+	}
+	
 	if( $applyFilters )
 	{
 		$key2loop = array_keys($test_spec);
@@ -567,7 +586,9 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 				unset($itemSet[$key]);
 			}
 		}
-		if( count($itemSet) > 0 && ($useFilter['execution_type'] || $useFilter['importance']) )
+		
+		if( count($itemSet) > 0 && 
+			($useFilter['execution_type'] || $useFilter['importance'] || $useFilter['cfields']) )
 		{
 			$targetSet = array_keys($itemSet);
 			$options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
@@ -608,13 +629,45 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 				default:
 					$tcvidSet = array_keys($tcversionSet);
 					$options = null;
+					
 					// BUGID 3934
-					$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['execution_type'],$options);
+					$doFilter = true;
+					$allowedSet = null;
+					if( $useFilter['execution_type'] )
+					{
+						$allowedSet = $tcaseMgr->filter_tcversions_by_exec_type($tcvidSet,$filters['execution_type'],$options);
+						$doFilter = (!is_null($allowedSet) &&  count($allowedSet) > 0);
+					}
+					
+					if( $doFilter )
+					{
+						// Add another filter on cascade mode
+						// BUGID 3936: Assign Test Case Execution - Right pane does not reflect custom field filter.
+						if( $useFilter['cfields'] )
+						{
+							$filteredSet = (!is_null($allowedSet) &&  count($allowedSet) > 0) ? array_keys($allowedSet) : $tcvidSet;
+							$dummySet = $tcaseMgr->filter_tcversions_by_cfields($filteredSet,$filters['cfields'],$options);
+
+							// transform to make compatible with filter_tcversions_by_exec_type() return type
+							if( !is_null($dummySet) &&  count($dummySet) > 0 )
+							{
+								$allowedSet = null;
+								$work2do = array_keys($dummySet);
+								foreach($work2do as $wkey)
+								{
+									$allowedSet[$wkey] = $dummySet[$wkey][0];
+								}
+								unset($dummySet);
+							}
+						}
+					}
+					
 					if( !is_null($allowedSet) &&  count($allowedSet) > 0 )
 					{
 						$useAllowed = true;
 						foreach($allowedSet as $key => $value)
 						{
+							
 							$tspecKey = $itemSet[$value['testcase_id']]; 	
 							$test_spec[$tspecKey]['version']=$value['version']; 
 						}

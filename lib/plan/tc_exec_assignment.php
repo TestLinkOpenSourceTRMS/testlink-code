@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.59 2010/10/24 15:00:19 franciscom Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.60 2010/10/24 16:48:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
@@ -189,6 +189,10 @@ switch($args->level)
 		$filters['tcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
 		$filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
 		$filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
+		$filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];
+		
+		// new dBug($filters);
+		// die();
 		
 		$opt = array('user_assignments_per_build' => $args->build_id);
 		$out = getFilteredSpecView($db, $args, $tplan_mgr, $tcase_mgr, $filters, $opt);  
@@ -252,8 +256,8 @@ function init_args()
 
 	$args->control_panel = $session_data;  // BUGID 3934
 		
-	$key2loop = array('refreshTree' => array('key' => setting_refresh_tree_on_action, 'value' => 0),
-					  'filter_assigned_to' => array('key' => filter_assigned_user, 'value' => null));
+	$key2loop = array('refreshTree' => array('key' => 'setting_refresh_tree_on_action', 'value' => 0),
+					  'filter_assigned_to' => array('key' => 'filter_assigned_user', 'value' => null));
 	
 	foreach($key2loop as $key => $info)
 	{

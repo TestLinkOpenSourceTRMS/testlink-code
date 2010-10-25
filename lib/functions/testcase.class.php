@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.329 2010/10/25 20:38:07 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.330 2010/10/25 20:40:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -719,7 +719,6 @@ class testcase extends tlObjectWithAttachments
 	              $viewer_args = null,$path_info=null,$mode=null)
 	{
 
-		// echo 'DEBUG' . __FUNCTION__ . '<br>';
 	    $status_ok = 1;
 	
 	    $gui = is_null($guiObj) ? new stdClass() : $guiObj;
@@ -903,8 +902,6 @@ class testcase extends tlObjectWithAttachments
 					
 					// BUGID 3431
 					$loop2do = count($tc_other_versions[$target_idx]);
-					// echo 'count($tc_other_versions):' . count($tc_other_versions) . '<br>';
-					// echo '$loop2do:' . $loop2do . '<br>';
 					for($qdx=0; $qdx < $loop2do; $qdx++)
 					{
 						$target_tcversion = $tc_other_versions[$target_idx][$qdx]['id'];
@@ -3827,7 +3824,6 @@ class testcase extends tlObjectWithAttachments
 	// BUGID 3431
 	function get_linked_cfields_at_design($id,$tcversion_id,$parent_id=null,$filters=null,$tproject_id = null)
 	{
-		// echo 'DEBUG' . __FUNCTION__ . '<br>';
 		if (!$tproject_id)
 		{
 			$tproject_id = $this->getTestProjectFromTestCase($id,$parent_id);
@@ -4779,10 +4775,7 @@ class testcase extends tlObjectWithAttachments
 				   " ON NH_TCVERSION.id = TCV.id {$cfJoin} " .
 				   " AND NH_TCVERSION.id IN ({$keySet}) {$cfQuery}";
 
-
-			// new dBug
 			$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key'],database::CUMULATIVE);
-			new dBug($recordset);
 
 			// now loop over result, entries whose count() < number of custom fields has to be removed
 			if( !is_null($recordset) && $cfQty > 0)
@@ -4806,9 +4799,6 @@ class testcase extends tlObjectWithAttachments
 					$recordset = null;
 				}
 			}
-
-			// new dBug($recordset);
-			// die();
 		}
 	    return $recordset;
 	}

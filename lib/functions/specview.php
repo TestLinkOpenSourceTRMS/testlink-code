@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.69 2010/10/25 20:38:15 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.70 2010/10/25 20:40:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -507,8 +507,6 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  */
 function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContainerId,$nodeId,$specViewType,$filters)
 {
-	echo __FUNCTION__;
-	// die();
 	
 	$applyFilters = false;
 	$testCaseSet = null;
@@ -601,15 +599,11 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			$getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
 			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
 		
-			// new dBug($tcversionSet);
-			// die();
-			
 			switch($specViewType)
 			{
 			
 				case 'testPlanLinking':
 					// We need to analise linked items and spec
-					// new dBug($targetSet);
 					foreach($targetSet as $idx => $key)
 					{
 						$targetTestCase = isset($tcversionSet[$key]) ? $tcversionSet[$key]['testcase_id'] : null;			
@@ -624,22 +618,18 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 						{
 							if( isset($linkedItems[$targetTestCase]) )
 							{
-								echo 'got<br>';
-								echo $targetTestCase . '<br>';;
 								$item = current($linkedItems[$targetTestCase]);
 							}
 							else
 							{
 								// hmmm, does not understand this logic.
 								$item = null;
-								echo 'else:' . $itemSet[$targetTestCase];
 								if( isset($test_spec[$itemSet[$targetTestCase]]) )
 								{
 									$item = $tcversionSet[$targetTestCase];
 								}
 							}
 						}
-						// echo $targetTestCase;
 						
 						if( !is_null($item) )
 						{
@@ -651,8 +641,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 							}
 						}						
 					}
-					// new dBug($test_spec);
-					// die();
 				break;
 				
 				default:

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.68 2010/10/24 17:00:47 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.69 2010/10/25 20:38:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ *	20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
  *	20101024 - franciscom - getTestSpecFromNode() refactoring
  *							BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
  *
@@ -506,6 +507,9 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  */
 function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContainerId,$nodeId,$specViewType,$filters)
 {
+	echo __FUNCTION__;
+	// die();
+	
 	$applyFilters = false;
 	$testCaseSet = null;
 	$tck_map = null;
@@ -592,28 +596,51 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		{
 			$targetSet = array_keys($itemSet);
 			$options = ($specViewType == 'testPlanLinking') ? array( 'access_key' => 'testcase_id') : null;
-			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$options);
+			
+			// BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
+			$getFilters = $useFilter['cfields'] ? array('cfields' => $filters['cfields']) : null;
+			$tcversionSet = $tcaseMgr->get_last_active_version($targetSet,$getFilters,$options);
 		
+			// new dBug($tcversionSet);
+			// die();
+			
 			switch($specViewType)
 			{
 			
 				case 'testPlanLinking':
 					// We need to analise linked items and spec
+					// new dBug($targetSet);
 					foreach($targetSet as $idx => $key)
 					{
-						$targetTestCase = $tcversionSet[$key]['testcase_id'];			
-						if( isset($linkedItems[$targetTestCase]) )
+						$targetTestCase = isset($tcversionSet[$key]) ? $tcversionSet[$key]['testcase_id'] : null;			
+
+						// BUGID 3936 - Design Time Custom Field Filter
+						if( is_null($targetTestCase) )
 						{
-							$item = current($linkedItems[$targetTestCase]);
-						}
-						else
-						{
+							$test_spec[$idx]=null;
 							$item = null;
-							if( isset($test_spec[$itemSet[$targetTestCase]]) )
+						}
+						else 
+						{
+							if( isset($linkedItems[$targetTestCase]) )
 							{
-								$item = $tcversionSet[$targetTestCase];
+								echo 'got<br>';
+								echo $targetTestCase . '<br>';;
+								$item = current($linkedItems[$targetTestCase]);
+							}
+							else
+							{
+								// hmmm, does not understand this logic.
+								$item = null;
+								echo 'else:' . $itemSet[$targetTestCase];
+								if( isset($test_spec[$itemSet[$targetTestCase]]) )
+								{
+									$item = $tcversionSet[$targetTestCase];
+								}
 							}
 						}
+						// echo $targetTestCase;
+						
 						if( !is_null($item) )
 						{
 							if( $useFilter['execution_type'] && ($item['execution_type'] != $filters['execution_type']) || 
@@ -624,6 +651,8 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 							}
 						}						
 					}
+					// new dBug($test_spec);
+					// die();
 				break;
 				
 				default:

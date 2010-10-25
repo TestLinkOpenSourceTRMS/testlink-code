@@ -7,11 +7,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.106 2010/10/09 08:47:40 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.107 2010/10/25 20:37:50 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20101025 - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
  * 20101009 - franciscom - fixing event viewer warnings created for missing initialization of required
  *						   properties of gui object
  *	
@@ -248,9 +249,11 @@ if($do_display)
     $opt = array('write_button_only_if_linked' => 0, 'add_custom_fields' => 0);
     $opt['add_custom_fields'] = count($cfields) > 0 ? 1 : 0;
 
+	// 20101025 - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
 	// 20100411 - BUGID 2797 - filter by test case execution type
     $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 
-                     'exec_type' => $args->executionType, 'importance' => $args->importance);
+                     'exec_type' => $args->executionType, 'importance' => $args->importance,
+                     'cfields' => $args->control_panel['filter_custom_fields']);
 
 	$out = gen_spec_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$filters,$opt);
@@ -349,35 +352,46 @@ function init_args()
 	// For more information about the data accessed in session here, see the comment
 	// in the file header of lib/functions/tlTestCaseFilterControl.class.php.
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
-	
 	$mode = 'plan_add_mode';
+	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
+
+    // to be able to pass filters to functions present on specview.php
+	$args->control_panel = $session_data;
 	
-	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token])
-	                ? $_SESSION[$mode][$form_token] : null;
-	
-	$args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
-                         $session_data['setting_refresh_tree_on_action'] : 0;    
-    
-	$args->executionType = isset($session_data['filter_execution_type']) ? 
-	                       $session_data['filter_execution_type'] : 0;
-	
-	$args->importance = isset($session_data['filter_priority']) ? 
-	                    $session_data['filter_priority'] : 0;
+	// $args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
+    //                      $session_data['setting_refresh_tree_on_action'] : 0;    
+    // 
+	// $args->executionType = isset($session_data['filter_execution_type']) ? 
+	//                        $session_data['filter_execution_type'] : 0;
+	// 
+	// $args->importance = isset($session_data['filter_priority']) ? $session_data['filter_priority'] : 0;
+    // 
+    // 
+	// $args->importance = ($args->importance > 0) ? $args->importance : null;
+
+	$getFromSession = !is_null($session_data);
+	$booleankeys = array('refreshTree' => 'setting_refresh_tree_on_action','importance' => 'filter_priority',
+						 'executionType' => 'filter_execution_type');
+    foreach($booleankeys as $key => $value)
+    {
+    	$args->$key = ($getFromSession && isset($session_data[$key])) ? $session_data[$key] : 0;
+    }						 
 	$args->importance = ($args->importance > 0) ? $args->importance : null;
-	
+
+
 	$args->keyword_id = 0;
-	$fk = 'filter_keywords';
-	if (isset($session_data[$fk])) {
-		$args->keyword_id = $session_data[$fk];
+	$ak = 'filter_keywords';
+	if (isset($session_data[$ak])) {
+		$args->keyword_id = $session_data[$ak];
 		if (is_array($args->keyword_id) && count($args->keyword_id) == 1) {
 			$args->keyword_id = $args->keyword_id[0];
 		}
 	}
 	
 	$args->keywordsFilterType = null;
-	$ft = 'filter_keywords_filter_type';
-	if (isset($session_data[$ft])) {
-		$args->keywordsFilterType = $session_data[$ft];
+	$ak = 'filter_keywords_filter_type';
+	if (isset($session_data[$ak])) {
+		$args->keywordsFilterType = $session_data[$ak];
 	}
 	
 	// BUGID 3406

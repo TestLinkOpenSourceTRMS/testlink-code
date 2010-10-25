@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.328 2010/10/24 16:49:58 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.329 2010/10/25 20:38:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101025 - franciscom - get_last_active_version() - interface changes
+ *						   BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
  * 20101024 - franciscom - new method filter_tcversions_by_cfields()	
  * 20101016 - franciscom - update_last_modified() refixed BUGID 3849
  * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class	
@@ -4688,17 +4690,29 @@ class testcase extends tlObjectWithAttachments
 	 * for a given set of test cases, search on the ACTIVE version set, and returns for each test case, 
 	 * an map with: the corresponding MAX(version number), oher info
 	 *
+	 * @param mixed $id: test case id can be an array
+	 * @param map $filters OPTIONAL - now only 'cfields' key is supported
+	 * @param map $options OPTIONAL
+	 *
 	 * @internal Revisions
+	 *
+	 * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
 	 * 20100417 - franciscom - added importance on output data
 	 */
-	function get_last_active_version($id,$options=null)
+	function get_last_active_version($id,$filters=null,$options=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $recordset = null;
 	    $itemSet = implode(',',(array)$id);
 
+		$my = array();
+	    $my['filters'] = array( 'cfields' => null);
+	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+
 	    $my['options'] = array( 'max_field' => 'tcversion_id', 'access_key' => 'tcversion_id');
 	    $my['options'] = array_merge($my['options'], (array)$options);
+	    
+	    
 	    
 	    switch($my['options']['max_field'])
 	    {
@@ -4726,17 +4740,75 @@ class testcase extends tlObjectWithAttachments
 		// $recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
 		// HERE FIXED access keys
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcversion_id');
+
+		$cfSelect = '';
+		$cfJoin = '';
+		$cfQuery = '';
+		$cfQty = 0;
+
 		if( !is_null($recordset) )
 		{
-			
+			$or_clause = '';
+			$cf_query = '';
+			if( !is_null($my['filters']['cfields']) )
+			{
+				$cf_hash = &$my['filters']['cfields'];
+				$cfQty = count($cf_hash);
+				
+				// 20101025 - build custom fields filter
+				// do not worry!! it seems that filter criteria is OR, but really is an AND,
+				// OR is needed to do a simple query.
+				// with processing on recordset becomes an AND
+				foreach ($cf_hash as $cf_id => $cf_value)
+				{
+		    		$cfQuery .= $or_clause . " (CFDV.field_id=" . $cf_id . " AND CFDV.value='" . $cf_value . "') ";
+					$or_clause = ' OR ';			
+				}
+				$cfSelect = ", CFDV.field_id, CFDV.value ";
+				$cfJoin = " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.node_id = TCV.id ";
+				$cfQuery = " AND ({$cfQuery}) ";
+
+			}
+
 			$keySet = implode(',',array_keys($recordset));
 			$sql = "/* $debugMsg */ " . 	    
 				   " {$selectClause}, NH_TCVERSION.parent_id AS testcase_id, " .
-				   " TCV.version,TCV.execution_type,TCV.importance " .
+				   " TCV.version,TCV.execution_type,TCV.importance {$cfSelect} " .
 				   " FROM {$this->tables['tcversions']} TCV " .
 				   " JOIN {$this->tables['nodes_hierarchy']} NH_TCVERSION " .
-				   " ON NH_TCVERSION.id = TCV.id AND NH_TCVERSION.id IN ({$keySet}) ";
-			$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key']);
+				   " ON NH_TCVERSION.id = TCV.id {$cfJoin} " .
+				   " AND NH_TCVERSION.id IN ({$keySet}) {$cfQuery}";
+
+
+			// new dBug
+			$recordset = $this->db->fetchRowsIntoMap($sql,$my['options']['access_key'],database::CUMULATIVE);
+			new dBug($recordset);
+
+			// now loop over result, entries whose count() < number of custom fields has to be removed
+			if( !is_null($recordset) && $cfQty > 0)
+			{
+				$key2loop = array_keys($recordset);
+				foreach($key2loop as $key)
+				{
+					if( count($recordset[$key]) < $cfQty)
+					{
+						unset($recordset[$key]); // remove
+					}
+					else
+					{
+						$recordset[$key] = $recordset[$key][0]; 
+						unset($recordset[$key]['value']);
+						unset($recordset[$key]['field_id']);
+					}
+				}
+				if( count($recordset) <= 0 )
+				{
+					$recordset = null;
+				}
+			}
+
+			// new dBug($recordset);
+			// die();
 		}
 	    return $recordset;
 	}
@@ -4918,13 +4990,5 @@ class testcase extends tlObjectWithAttachments
 		}
 	    return $recordset;
 	}
-
-
-
-
-
-
-
-
 } // end class
 ?>

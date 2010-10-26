@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.208 2010/10/20 11:53:06 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.209 2010/10/26 07:11:29 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.735
+ * Last Update according to en_GB string file version 1.740
  *
  **/
 
@@ -534,6 +534,8 @@ $TLS_node_type_dbtable_testcases = $TLS_testcase;
 
 
 // ----- gui/templates/containerView.tpl -----
+$TLS_testsuite_operations = "Testsuite Operationen";
+$TLS_testcase_operations = "Testfall Operationen";
 $TLS_alt_del_testsuite = "Diese Testsuite löschen";
 $TLS_alt_edit_testsuite = "Daten und Titel dieser Testsuite bearbeiten";
 $TLS_alt_move_cp_testsuite = "Diese Testsuite zu einem anderen Testprojekt verschieben oder kopieren";
@@ -543,19 +545,19 @@ $TLS_btn_del_testsuites_bulk = "Delete Test Suites Bulk";
 $TLS_btn_edit_testsuite = $TLS_btn_edit;
 $TLS_btn_execute_automatic_testcases = "Alle automatischen Testfälle ausführen";
 $TLS_btn_export_all_testsuites = "Alle Testsuites exportieren";
-$TLS_btn_export_tc = "Testfälle exportieren";
-$TLS_btn_export_testsuite = "Testsuite exportieren";
-$TLS_btn_import_tc = "Testfälle importieren";
-$TLS_btn_import_testsuite = "Testsuite importieren";
-$TLS_btn_move_cp_testsuite = "Verschiebe/Kopiere";
-$TLS_btn_move_cp_testcases = "Verschiebe/Kopiere Testfälle";
-$TLS_btn_new_testsuite = "Neue Testsuite";
-$TLS_btn_new_tc = "Testfälle erstellen";
+$TLS_btn_export_tc = "Exportieren";
+$TLS_btn_export_testsuite = "Exportieren";
+$TLS_btn_import_tc = "Importieren";
+$TLS_btn_import_testsuite = "Importieren";
+$TLS_btn_move_cp_testsuite = "Verschieben/Kopieren";
+$TLS_btn_move_cp_testcases = "Verschieben/Kopieren";
+$TLS_btn_new_testsuite = "Erstellen";
+$TLS_btn_new_tc = "Erstellen";
 $TLS_btn_reorder = "Testsuites umordnen";
-$TLS_btn_delete_testcases = "Testfälle löschen";
-$TLS_btn_reorder_testcases_alpha = "Testfälle neu ordnen (lexikographisch)";
-$TLS_btn_reorder_testcases_externalid = "Testfälle neu ordnen (ID absteigend)";
-$TLS_btn_reorder_testsuites_alpha = "Untergeordnete Testsuiten neu ordnen (lexikographisch)";
+$TLS_btn_delete_testcases = "Löschen";
+$TLS_btn_reorder_testcases_alpha = "Neu ordnen (lexikographisch)";
+$TLS_btn_reorder_testcases_externalid = "Neu ordnen (ID absteigend)";
+$TLS_btn_reorder_testsuites_alpha = "Neu ordnen (lexikographisch)";
 $TLS_container_title_testproject = $TLS_testproject;
 $TLS_container_title_testplan = $TLS_testplan;
 $TLS_edit_testproject_basic_data = "Testprojekt Basis-Daten ändern";
@@ -810,17 +812,19 @@ $TLS_comp_scope = "Themenbereich";
 
 
 // gui/templates/reqSpecView.tpl
+$TLS_req_spec_operations = "Anforderungsspezifikation Operationen";
+$TLS_req_operations = "Anforderung Operationen";
 $TLS_btn_analyse = "Analysieren";
 $TLS_btn_check_all = "Alle auswählen";
-$TLS_btn_copy_requirements = "Anforderungen kopieren";
+$TLS_btn_copy_requirements = "Kopieren";
 $TLS_btn_copy_req_spec = "Kopieren";
-$TLS_btn_delete_spec = "Spezifikation löschen";
-$TLS_btn_edit_spec = "Spezifikation editieren";
-$TLS_btn_export_reqs = "Anforderungen exportieren";
-$TLS_btn_export_req_spec = "Req. Spec. exportieren";
-$TLS_btn_import_reqs = "Anforderungen importieren";
-$TLS_btn_import_req_spec = "Req. Spec. importieren";
-$TLS_btn_req_create = "Neue Anforderungen erstellen";
+$TLS_btn_delete_spec = "Löschen";
+$TLS_btn_edit_spec = "Editieren";
+$TLS_btn_export_reqs = "Exportieren";
+$TLS_btn_export_req_spec = "Exportieren";
+$TLS_btn_import_reqs = "Importieren";
+$TLS_btn_import_req_spec = "Importieren";
+$TLS_btn_req_create = "Erstellen";
 $TLS_btn_spec_list = "Liste der Spezifikation";
 $TLS_btn_uncheck_all = "Keine auswählen";
 $TLS_cant_delete_req_nothing_sel = "Bitte wählen Sie eine Anforderung!";
@@ -998,6 +1002,8 @@ $TLS_title_search_tcs = "Navigation - Testfälle suchen";
 $TLS_requirement_document_id = "Anf. Dok. ID";
 $TLS_creation_date_from = 'Erstellungsdatum von:';
 $TLS_creation_date_to = 'Erstellungsdatum bis:';
+$TLS_modification_date_from = 'Bearbeitungsdatum von:';
+$TLS_modification_date_to = 'Bearbeitungsdatum bis:';
 
 
 // ----- gui/templates/testcases/searchData.tpl -----
@@ -1335,11 +1341,12 @@ $TLS_alt_delete_milestone = "Meilenstein löschen?";
 $TLS_btn_edit_milestone = "Ändern";
 $TLS_btn_new_milestone = "Erstellen";
 $TLS_info_milestones_date = "Das Datum des Meilensteins muss größer gleich dem aktuellen Datum sein.";
-$TLS_info_milestones_start_date='';
+$TLS_info_milestones_start_date='Anfangsdatum ist optional';
 $TLS_no_milestones = "Für diesen TestPlan gibt es keine Meilensteine!";
 $TLS_popup_delete_milestones = "Wollen Sie wirklich den Meilenstein %NAME% löschen?";
 $TLS_warning_delete_milestone = "Wollen Sie wirklich den Meilenstein %s löschen?";
 $TLS_warning_empty_milestone_name = "Sie müssen einen Namen für den Meilenstein eingeben!";
+$TLS_warning_invalid_date = "Das Datum ist ungültig.";
 
 
 $TLS_th_date_format = "Datum";
@@ -2687,7 +2694,7 @@ $TLS_no_tplans_to_fix = "Es existieren keine Testpläne, die nicht mit einem Tes
 
 
 // ----- lib/project/project_req_spec_mgmt.tpl -----
-$TLS_btn_new_req_spec = "Neue Anforderungsspezifikation";
+$TLS_btn_new_req_spec = "Erstellen";
 $TLS_btn_reorder_req_spec = "Anforderungsspezifikationen neu ordnen";
 $TLS_btn_export_all_reqspec = "Alle Anforderungsspezifikationen exportieren";
 
@@ -3102,7 +3109,7 @@ $TLS_import_done = 'Import erledigt';
 $TLS_import_req_conflicts_other_branch = 'Dok ID steht in Konflikt mit Anforderung im anderem Zweig';
 $TLS_import_req_exists_here = 'Dok ID existiert';
 
-$TLS_invalid_release_date = 'Ungültiges Release Datum';
+$TLS_invalid_release_date = 'Ungültiges Release Datum.';
 $TLS_insert_step = "Schritt einfügen";
 $TLS_frozen_req_unable_to_import = 'Übersprungen - Anforderung - Dok. ID:%s - ist EINGEFROREN';
 

@@ -1,13 +1,14 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: attachmentupload.tpl,v 1.13 2010/01/02 18:03:41 franciscom Exp $ *}
+{* $Id: attachmentupload.tpl,v 1.14 2010/10/26 20:11:42 franciscom Exp $ *}
 {* Purpose: smarty template - template for attachment upload dialog 
 
    rev :
+         20101026 - BUGID 3943: Escape all messages (string) that has to be used on Javascript code
          20070310 - BUGID 732 
 
 *}
 {lang_get var='labels'
-          s='title_upload_attachment,enter_attachment_title,btn_upload_file,
+          s='title_upload_attachment,enter_attachment_title,btn_upload_file,warning,enter_attachment_title,
              local_file,attachment_upload_ok,title_choose_local_file,btn_cancel,max_size_file_upload'}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
@@ -15,8 +16,8 @@
 
 
 <script type="text/javascript">
-var alert_box_title = "{lang_get s='warning'}";
-var warning_empty_title = "{lang_get s='enter_attachment_title'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_title = "{$labels.enter_attachment_title|escape:'javascript'}";
 </script>
 <body onunload="attachmentDlg_onUnload()" onload="attachmentDlg_onLoad()">
 {config_load file="input_dimensions.conf" section="attachmentupload"}

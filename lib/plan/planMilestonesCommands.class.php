@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.10 $
- * @modified $Date: 2010/10/26 08:52:01 $ by $Author: mx-julian $
+ * @version $Revision: 1.11 $
+ * @modified $Date: 2010/10/26 08:56:53 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  * 
  * @internal revisions
@@ -226,7 +226,7 @@ class planMilestonesCommands
 		if($op_ok)
 		{
 			// BUGID 3907 - start date is optional -> if empty set to default date
-			if ($argsObj->start_date == "") {
+			if (!isset($argsObj->start_date) || $argsObj->start_date == "") {
 				$argsObj->start_date = "0000-00-00";
 			}
 			

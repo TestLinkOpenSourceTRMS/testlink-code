@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/10/26 08:10:25 $ $Author: mx-julian $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2010/10/26 14:04:00 $ $Author: mx-julian $
  *
  * @internal revision
  *  20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
@@ -83,7 +83,7 @@ switch($args->do_action)
 
 // BUGID 3716
 $dummy = null;
-$gui->release_date = ($op->status_ok) ? 
+$gui->release_date = ($op->status_ok && $args->release_date != "") ? 
                       localize_dateOrTimeStamp(null, $dummy, 'date_format',$args->release_date) : 
                       $args->release_date_original;
 $gui->operation_descr = $op->operation_descr;

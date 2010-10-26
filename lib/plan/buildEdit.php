@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.30 $
- * @modified $Date: 2010/10/26 14:04:00 $ $Author: mx-julian $
+ * @version $Revision: 1.31 $
+ * @modified $Date: 2010/10/26 14:16:32 $ $Author: mx-julian $
  *
  * @internal revision
  *  20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
@@ -83,9 +83,10 @@ switch($args->do_action)
 
 // BUGID 3716
 $dummy = null;
-$gui->release_date = ($op->status_ok && $args->release_date != "") ? 
+$gui->release_date = (isset($op->status_ok) && $op->status_ok && $args->release_date != "") ? 
                       localize_dateOrTimeStamp(null, $dummy, 'date_format',$args->release_date) : 
                       $args->release_date_original;
+$gui->closed_on_date = $args->closed_on_date;
 $gui->operation_descr = $op->operation_descr;
 $gui->user_feedback = $op->user_feedback;
 $gui->buttonCfg = $op->buttonCfg;
@@ -134,7 +135,8 @@ function init_args($request_hash, $session_hash,$date_format)
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
 	}
 
-	// TODO comment
+	// convert start date to iso format to write to db
+	$args->release_date = null;
 	if (isset($request_hash['release_date']) && $request_hash['release_date'] != '') {
 		$date_array = split_localized_date($request_hash['release_date'], $date_format);
 		if ($date_array != null) {

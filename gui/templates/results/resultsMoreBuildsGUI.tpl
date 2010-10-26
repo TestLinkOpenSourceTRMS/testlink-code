@@ -1,10 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuildsGUI.tpl,v 1.7 2010/10/26 11:27:11 asimon83 Exp $
+$Id: resultsMoreBuildsGUI.tpl,v 1.8 2010/10/26 11:31:21 mx-julian Exp $
 @author Francisco Mancardi
 
 rev :
-     20101026 - asimon - BUGID 3930
+     20101026 - asimon - no validation for dates -> no manual input - input only via datepicker
      20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
      20101019 - eloff - BUGID 3794 - added contribution by rtessier
      20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report. 

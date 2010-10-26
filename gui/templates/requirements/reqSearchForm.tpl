@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSearchForm.tpl,v 1.5 2010/10/26 10:19:18 mx-julian Exp $
+$Id: reqSearchForm.tpl,v 1.6 2010/10/26 11:31:21 mx-julian Exp $
 Purpose: show form for requirement search.
 
 rev:
+  20101026 - Julian - no validation for dates -> no manual input - input only via datepicker
   20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
   20100707 - Julian - BUGID 3584: replaced cf names by cf labels
   20100323 - asimon - added searching for req relation types (BUGID 1748)
@@ -97,9 +98,11 @@ rev:
 				{* BUGID 3716 *}
                 <input type="text" 
                        name="creation_date_from" id="creation_date_from" 
-				       value="{$gui->creation_date_from}" />
+				       value="{$gui->creation_date_from}" 
+				       onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" 
+				       readonly />
 				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-				     onclick="showCal('creation_date_from-cal','creation_date_from');" >
+				     onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" >
 				<div id="creation_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>
@@ -109,9 +112,11 @@ rev:
 				{* BUGID 3716 *}
            	    <input type="text" 
                        name="creation_date_to" id="creation_date_to" 
-				       value="{$gui->creation_date_to}" />
+				       value="{$gui->creation_date_to}" 
+				       onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');"
+				       readonly />
 				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-				     onclick="showCal('creation_date_to-cal','creation_date_to');" >
+				     onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');" >
 				<div id="creation_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>
@@ -122,9 +127,11 @@ rev:
 				{* BUGID 3716 *}
             	<input type="text" 
                        name="modification_date_from" id="modification_date_from" 
-				       value="{$gui->modification_date_from}" />
+				       value="{$gui->modification_date_from}" 
+				       onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');"
+				       readonly />
 				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-				     onclick="showCal('modification_date_from-cal','modification_date_from');" >
+				     onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');" >
 				<div id="modification_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>
@@ -134,9 +141,11 @@ rev:
 				{* BUGID 3716 *}
          	    <input type="text" 
                        name="modification_date_to" id="modification_date_to" 
-				       value="{$gui->modification_date_to}" />
+				       value="{$gui->modification_date_to}" 
+				       onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');"
+				       readonly />
 				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-				     onclick="showCal('modification_date_to-cal','modification_date_to');" >
+				     onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');" >
 				<div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>

@@ -9,11 +9,12 @@
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.10 2010/10/26 13:11:33 mx-julian Exp $
+ * @version    	CVS: $Id: date_api.php,v 1.11 2010/10/26 13:57:45 mx-julian Exp $
  * @link 		http://www.teamst.org/
  *
  * @internal Revisions:
  *  
+ *  20101026 - asimon - clear hour,minute,second for datetime custom field with quick date delete button
  *  20101026 - Julian - no validation for date and datetime custom field
  *                      -> no manual input - input only via datepicker
  *  20101026 - asimon - BUGID 3930: changing date format according to given locale
@@ -175,13 +176,16 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 	$time = mktime(0, 0, 0, $m, $d, $y);
 	$formatted_date = $time != 0 ? strftime($date_format, $time) : '';
 	
-	$str_out .= '<input type="text" name="' . $p_name.'_input" size="12" id="' . $p_name.'_input" ' .
+	$str_out .= '<input type="text" name="' . $p_name.'_input" size="10" id="' . $p_name.'_input" ' .
                 'value="' . $formatted_date . 
                 '" onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); READONLY/>' .
                 '<img title="' . lang_get('show_calender') . '" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' .
                 'onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); > ' .
 	            '<img title="' . lang_get('clear_date') . '" src="' . TL_THEME_IMG_DIR . '/trash.png" ' .
-	            'onclick="javascript:var x = document.getElementById(\'' . $p_name . '_input\'); x.value = \'\';" > ' .
+	            'onclick="javascript:var x = document.getElementById(\'' . $p_name . '_input\'); x.value = \'\';'.
+	            'var xh = document.getElementById(\'' . $p_name . '_hour\'); if(xh!=null) xh.selectedIndex=-1;' .
+	            'var xm = document.getElementById(\'' . $p_name . '_minute\'); if(xm!=null) xm.selectedIndex=-1;' .
+	            'var xs = document.getElementById(\'' . $p_name . '_second\'); if(xs!=null) xs.selectedIndex=-1;" > ' .
                 '<div id="' . $p_name . '" style="position:' . $calender_div_position . ';z-index:1;"></div>';
 	
 	foreach( $t_chars as $t_char ) {
@@ -216,19 +220,19 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 		
 		// -----------------------------------------------------------------
 		if (strcasecmp( $t_char, "H") == 0) {
-			$str_out .= "<select name=\"" . $p_name . "_hour\" $t_disable>" ;
+			$str_out .= "<select name=\"" . $p_name . "_hour\" id=\"" . $p_name . "_hour\" $t_disable>" ;
 			$str_out .= $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[3], 0, 23); 
 			$str_out .= "</select>\n" ;
 		}
 		if (strcasecmp( $t_char, "i") == 0) {
-			$str_out .= "<select name=\"" . $p_name . "_minute\" $t_disable>" ;
+			$str_out .= "<select name=\"" . $p_name . "_minute\" id=\"" . $p_name . "_minute\" $t_disable>" ;
 			$str_out .= $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[4], 0, 59); 
 			$str_out .= "</select>\n" ;
 		}
 		if (strcasecmp( $t_char, "s") == 0) {
-			$str_out .= "<select name=\"" . $p_name . "_second\" $t_disable>" ;
+			$str_out .= "<select name=\"" . $p_name . "_second\" id=\"" . $p_name . "_second\" $t_disable>" ;
 			$str_out .= $t_blank_line_time ;
 			$str_out .= create_range_option_list($t_date[5], 0, 59); 
 			$str_out .= "</select>\n" ;

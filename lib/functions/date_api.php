@@ -9,11 +9,13 @@
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.8 2010/10/26 10:19:17 mx-julian Exp $
+ * @version    	CVS: $Id: date_api.php,v 1.9 2010/10/26 11:18:22 mx-julian Exp $
  * @link 		http://www.teamst.org/
  *
  * @internal Revisions:
- * 
+ *  
+ *  20101026 - Julian - no validation for date and datetime custom field
+ *                      -> no manual input - input only via datepicker
  *  20101026 - asimon - BUGID 3930: changing date format according to given locale
  *  20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
  *	20100405 - franciscom - fixed problems found while trying to solve BUGID 3295
@@ -173,8 +175,9 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 	$time = mktime(0, 0, 0, $m, $d, $y);
 	$formatted_date = $time != 0 ? strftime($date_format, $time) : '';
 	
-	$str_out .= '<input type="text" name="' . $p_name.'_input" size="10" id="' . $p_name.'_input" ' .
-                'value="' . $formatted_date . '"/>' .
+	$str_out .= '<input type="text" name="' . $p_name.'_input" size="12" id="' . $p_name.'_input" ' .
+                'value="' . $formatted_date . 
+                '" onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); READONLY/>' .
                 '<img title="' . lang_get('show_calender') . '" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' .
                 'onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); > ' .
                 '<div id="' . $p_name . '" style="position:' . $calender_div_position . ';z-index:1;"></div>';

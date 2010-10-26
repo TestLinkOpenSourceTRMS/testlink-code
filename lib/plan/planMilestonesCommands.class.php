@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.9 $
- * @modified $Date: 2010/10/26 08:10:25 $ by $Author: mx-julian $
+ * @version $Revision: 1.10 $
+ * @modified $Date: 2010/10/26 08:52:01 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  * 
  * @internal revisions
@@ -76,9 +76,7 @@ class planMilestonesCommands
 	    
 	    // $dummyy necessary because localize_dateOrTimeStamp wants second parameter to be passed by reference
 	    $dummy = null;
-	    // localize date
-	    echo $guiObj->milestone['target_date'];
-	    echo $guiObj->milestone['start_date'];
+	    // localize target date (is always set on edit)
 	    $guiObj->milestone['target_date'] = localize_dateOrTimeStamp(null, $dummy, 'date_format',$guiObj->milestone['target_date']);
 	    
 	    // as start date is optional it can be "0000-00-00" (default timestamp)

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.33 2010/10/26 10:19:18 mx-julian Exp $
+$Id: eventviewer.tpl,v 1.34 2010/10/26 11:10:38 mx-julian Exp $
 
 Event Viewer
 20101026 - Julian - Localized dateformat for datepicker
@@ -147,12 +147,16 @@ fieldset
 			<fieldset class="x-fieldset"><legend>{$labels.th_timestamp}</legend>
 				<div id="release_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 				
-			{$labels.label_startdate}:&nbsp;<input type="text" name="startDate" id="startDate" value="{$gui->startDate}" />
+			{$labels.label_startdate}:&nbsp;
+			<input type="text" name="startDate" id="startDate" value="{$gui->startDate}" 
+			       onclick="showCal('startDate-cal','startDate','{$gsmarty_datepicker_format}');" readonly/>
 			<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 			     onclick="showCal('startDate-cal','startDate','{$gsmarty_datepicker_format}');" >
 			<div id="startDate-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 			
-			{$labels.label_enddate}:&nbsp;<input type="text" name="endDate" id="endDate" value="{$gui->endDate}" />
+			{$labels.label_enddate}:&nbsp;
+			<input type="text" name="endDate" id="endDate" value="{$gui->endDate}" 
+			       onclick="showCal('endDate-cal','endDate','{$gsmarty_datepicker_format}');" readonly/>
 			<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 			     onclick="showCal('endDate-cal','endDate','{$gsmarty_datepicker_format}');" >
 			<div id="endDate-cal" style="position:absolute;width:240px;left:540px;z-index:1;"></div>

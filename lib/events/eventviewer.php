@@ -5,11 +5,13 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/10/26 09:59:29 $ by $Author: mx-julian $
+ * @version $Revision: 1.39 $
+ * @modified $Date: 2010/10/26 14:27:39 $ by $Author: mx-julian $
  *
  * rev:
- *      20101026 - Julian - Localized dateformat for datepicker - validation MISSING 
+ *
+ *      20101026 - Julian - Localized dateformat for datepicker - validation MISSING
+ *                        - BUGID 3908: reset filters after clearing events
  * 		20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                          table state independent from localization
  * 		20101008 - Julian - added html comment to properly sort by description column
@@ -52,6 +54,14 @@ switch($args->doAction)
 	    	$logLevelVerbose = implode(',',$logLevelVerbose);
 	    	logAuditEvent(TLS("audit_events_with_level_deleted",$args->currentUser->login,$logLevelVerbose),"DELETE",null,"events");
 	    }
+	    
+	    // BUGID 3908: reset filters after clearing events
+	    $args->logLevel = null;
+	    $gui->selectedLogLevels = array();
+	    $gui->selectedTesters = array();
+	    $gui->startDate = null;
+	    $gui->endDate = null;
+	    
 	    break;
     
     case 'filter':

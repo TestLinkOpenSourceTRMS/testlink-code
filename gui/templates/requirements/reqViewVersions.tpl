@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.18 2010/10/17 09:46:37 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.19 2010/10/26 20:09:18 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20101026 - franciscom - BUGID 3927: Requirement can’t be deleted due to JS error -> label has to be escaped
   20101017 - franciscom - image access refactored (tlImages)
   20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
   20100319 - asimon - BUGID 1748, added requirement relations display
@@ -66,10 +67,12 @@ function freeze_req_version(btn, text, o_id)
 
 // BUGID 1748
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg}';
-var delete_rel_msgbox_title = '{$delete_rel_msgbox_title}';
-var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id}';
+
+// BUGID 3927: Requirement can’t be deleted due to JS error -> label has to be escaped
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
+var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
+var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id|escape:'javascript'}';
 {literal}
 
 function validate_req_docid_input(input_id, original_value) {

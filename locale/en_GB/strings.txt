@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.739 2010/10/22 13:32:24 erikeloff Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.740 2010/10/26 07:10:31 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1343,7 +1343,7 @@ $TLS_no_milestones = "There are no Milestones for this Test Plan!";
 $TLS_popup_delete_milestones = "Are you sure you want to delete milestone %NAME% ?";
 $TLS_warning_delete_milestone = "You are going to delete: %s <br /> <br /> Are you sure?";
 $TLS_warning_empty_milestone_name="Milestone name cannot be empty!";
-$TLS_warning_invalid_date = "This date is not a valid date. Use format MM/DD/YYYY.";
+$TLS_warning_invalid_date = "This date is not a valid date.";
 
 
 $TLS_th_date_format = "Target Date";
@@ -3116,7 +3116,7 @@ $TLS_import_done = 'Import done';
 $TLS_import_req_conflicts_other_branch = 'Doc ID conflicts with req in othe branch';
 $TLS_import_req_exists_here = 'Doc ID exists';
 
-$TLS_invalid_release_date = 'Release date is not a valid date. Use format MM/DD/YYYY.';
+$TLS_invalid_release_date = 'Release date is not a valid date.';
 $TLS_insert_step = "Insert step";
 $TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZEN';
 

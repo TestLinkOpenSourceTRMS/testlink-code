@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.70 2010/10/25 20:40:09 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.71 2010/10/26 18:27:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ *	20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and 
+ *										test case name filters.
  *	20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
  *	20101024 - franciscom - getTestSpecFromNode() refactoring
  *							BUGID 3932: Add test case to test plan - Execution type filter does not affect right pane
@@ -231,7 +233,7 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 		               'tcase_node_type_id' => $hash_descr_id['testcase'],
 		               'execution_type' => $my['filters']['exec_type'],
 		               'importance' => $my['filters']['importance'],
-		               'cfields' => $my['filters']['cfields']);
+		               'cfields' => $my['filters']['cfields'],'tcase_name' => $my['filters']['tcase_name'] );
 		             
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 	
@@ -494,6 +496,8 @@ function getFilteredSpecView(&$dbHandler, &$argsObj, &$tplanMgr, &$tcaseMgr, $fi
  *	  			filters['tcase_id']: 
  *	  			filters['execution_type']: 
  *	  			filters['importance']: 
+ *	  			filters['cfields']: 
+ *	  			filters['tcase_name']: 
  *
  * 
  * @return array map with view (test cases subtree)
@@ -517,9 +521,10 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	$useAllowed = false;
 	
 	// 20100411 - BUGID 2797 - filter by test case execution type
-	$nullCheckFilter = array('tcase_id' => false, 'importance' => false);
+	$nullCheckFilter = array('tcase_id' => false, 'importance' => false, 
+							 'tcase_name' => false, 'cfields' => false);
 	$zeroNullCheckFilter = array('execution_type' => false);
-	$useFilter = array('keyword_id' => false, 'cfields' => false) + $nullCheckFilter + $zeroNullCheckFilter;
+	$useFilter = array('keyword_id' => false) + $nullCheckFilter + $zeroNullCheckFilter;
 
 	$applyFilters = false;
 	foreach($nullCheckFilter as $key => $value)
@@ -559,10 +564,16 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	}  
 	
 	// BUGID 3936 - Design Time Custom Field Filter
-	if(($useFilter['cfields'] = !is_null($filters['cfields'])))
-	{
-		$applyFilters = true;
-	}
+	// if(($useFilter['cfields'] = !is_null($filters['cfields'])))
+	// {
+	// 	$applyFilters = true;
+	// }
+    // 
+	// if(($useFilter['tcase_name'] = !is_null($filters['tcase_name'])))
+	// {
+	// 	$applyFilters = true;
+	// }
+
 	
 	if( $applyFilters )
 	{
@@ -578,17 +589,19 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			}
 		}
 		$itemKeys = $itemSet;
+		
 		foreach($itemKeys as $key => $tspecKey)
 		{
 			if( ($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) ||
-				($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet))
+				($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) ||
+				($useFilter['tcase_name'] && (strpos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))				
 			  )	
 			{
 				$test_spec[$tspecKey]=null; 
 				unset($itemSet[$key]);
 			}
 		}
-		
+
 		if( count($itemSet) > 0 && 
 			($useFilter['execution_type'] || $useFilter['importance'] || $useFilter['cfields']) )
 		{

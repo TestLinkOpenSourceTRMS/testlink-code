@@ -7,12 +7,13 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.107 2010/10/25 20:37:50 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.108 2010/10/26 18:28:08 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * 20101025 - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
+ * 20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and test case name filters.
+ * 20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
  * 20101009 - franciscom - fixing event viewer warnings created for missing initialization of required
  *						   properties of gui object
  *	
@@ -229,7 +230,9 @@ if($do_display)
 	// 
 	
 	$tplan_linked_tcversions = getFilteredLinkedVersions($args,$tplan_mgr,$tcase_mgr);
-	$testCaseSet = null;
+	
+	// BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
+	$testCaseSet = $args->control_panel['filter_tc_id'];   
 	if(!is_null($keywordsFilter) )
 	{ 
 	    // With this pieces we implement the AND type of keyword filter.
@@ -242,7 +245,6 @@ if($do_display)
 		}
 	}
 	
-	
 	// Choose enable/disable display of custom fields, analysing if this kind of custom fields
 	// exists on this test project.
 	$cfields=$tsuite_mgr->cfield_mgr->get_linked_cfields_at_testplan_design($args->tproject_id,1,'testcase');
@@ -253,7 +255,8 @@ if($do_display)
 	// 20100411 - BUGID 2797 - filter by test case execution type
     $filters = array('keywords' => $args->keyword_id, 'testcases' => $testCaseSet, 
                      'exec_type' => $args->executionType, 'importance' => $args->importance,
-                     'cfields' => $args->control_panel['filter_custom_fields']);
+                     'cfields' => $args->control_panel['filter_custom_fields'],
+                     'tcase_name' => $args->control_panel['filter_testcase_name']);
 
 	$out = gen_spec_view($db,'testPlanLinking',$args->tproject_id,$args->object_id,$tsuite_data['name'],
 	                     $tplan_linked_tcversions,null,$filters,$opt);

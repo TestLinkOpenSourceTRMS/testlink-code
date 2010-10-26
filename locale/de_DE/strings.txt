@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.209 2010/10/26 07:11:29 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.210 2010/10/26 10:20:55 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.740
+ * Last Update according to en_GB string file version 1.741
  *
  **/
 
@@ -120,15 +120,14 @@ $TLS_in_percent = "[%]";
 $TLS_user_has_no_right_for_action = 'Benutzer hat nicht die benötigten Rechte um diese Aktion auszuführen';
 $TLS_from = "von";
 $TLS_until = "bis";
-
 $TLS_file_size_exceeded = 'Dateigröße (%s) > zugelassene Größe (%s)';
-
 $TLS_total = "Gesamt";
 $TLS_Unknown = "Unbekannt";
 $TLS_urgency = "Dringlichkeit";
 $TLS_weeks = "Wochen";
 $TLS_container = "Container";
 $TLS_platform = "Plattform";
+$TLS_show_calender = "Kalender anzeigen";
 
 // Actions (used wide) 
 $TLS_add = "Hinzufügen";

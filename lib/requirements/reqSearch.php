@@ -7,12 +7,13 @@
  * @package 	TestLink
  * @author		Andreas Simon
  * @copyright 	2005-2010, TestLink community 
- * @version    	CVS: $Id: reqSearch.php,v 1.19 2010/10/21 14:57:07 asimon83 Exp $
+ * @version    	CVS: $Id: reqSearch.php,v 1.20 2010/10/26 12:21:25 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Search results for requirements.
  *
  * @internal Revisions:
+ * 20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
  * 20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
@@ -30,6 +31,7 @@ require_once("common.php");
 require_once("requirements.inc.php");
 require_once('exttable.class.php');
 testlinkInitPage($db);
+$date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
 $tpl = 'reqSearchResults.tpl';
@@ -53,7 +55,7 @@ $edit_label = lang_get('requirement');
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $map = null;
-$args = init_args();
+$args = init_args($date_format_cfg);
 
 $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($args->tprojectID);
 $gui->tcasePrefix .= $tcase_cfg->glue_character;
@@ -107,34 +109,23 @@ if ($args->tprojectID)
 	// creation date
     if($args->creation_date_from)
     {
-    	$db_date = $db->db->DBdate($args->creation_date_from);
-        $filter['by_creation_date_from'] = " AND RV.creation_ts >= {$db_date} ";
+        $filter['by_creation_date_from'] = " AND RV.creation_ts >= '{$args->creation_date_from}' ";
 	}
 
     if($args->creation_date_to)
     {
-    	/*
-    	 * Attention: here one day is added to the given timestamp.
-    	 * If we check a timestamp with e.g. creation_ts <= '2010-10-22', then all
-    	 * results with a time on that given day, like '2010-10-22 15:30:00' are filtered out
-    	 * because '2010-10-22 15:30:00' is greater than '2010-10-22 00:00:00'.
-    	 * So we simply add 60*60*24 seconds to the given timestamp for correct filtering.
-    	 */
-    	$db_date = $db->db->DBdate($args->creation_date_to + 60*60*24);
-        $filter['by_creation_date_to'] = " AND RV.creation_ts <= {$db_date} ";
+        $filter['by_creation_date_to'] = " AND RV.creation_ts <= '{$args->creation_date_to}' ";
 	}
 	
 	// modification date
     if($args->modification_date_from)
     {
-    	$db_date = $db->db->DBdate($args->modification_date_from);
-        $filter['by_modification_date_from'] = " AND RV.modification_ts >= {$db_date} ";
+        $filter['by_modification_date_from'] = " AND RV.modification_ts >= '{$args->modification_date_from}' ";
 	}
 
     if($args->modification_date_to)
     {
-    	$db_date = $db->db->DBdate($args->modification_date_to + 60*60*24); // see comment above for numbers
-        $filter['by_modification_date_to'] = " AND RV.modification_ts <= {$db_date} ";
+        $filter['by_modification_date_to'] = " AND RV.modification_ts <= '{$args->modification_date_to}' ";
 	}
 	
 	if ($args->relation_type != "notype") {
@@ -200,6 +191,7 @@ if ($args->tprojectID)
 	{
 		$sql .= implode("",$filter);
 	}
+	
 	$map = $db->fetchRowsIntoMap($sql,'id');
 
 	//dont show requirements from different testprojects than the selected one
@@ -307,7 +299,7 @@ function buildExtTable($gui, $charset, $edit_icon, $edit_label) {
  returns:
 
  */
-function init_args()
+function init_args($dateFormat)
 {
 	$args = new stdClass();
 	$_REQUEST = strings_stripSlashes($_REQUEST);
@@ -329,12 +321,48 @@ function init_args()
 	{
 		$args->$keyvar = isset($_REQUEST[$keyvar]) ? intval($_REQUEST[$keyvar]) : 0;
 	}
-
+	
 	// BUGID 3716
-	$args->creation_date_from = strtotime($args->creation_date_from);
-	$args->creation_date_to = strtotime($args->creation_date_to);
-	$args->modification_date_from = strtotime($args->modification_date_from);
-	$args->modification_date_to = strtotime($args->modification_date_to);
+	// convert "creation date from" to iso format for database usage
+    if (isset($args->creation_date_from) && $args->creation_date_from != '') {
+		$date_array = split_localized_date($args->creation_date_from, $dateFormat);
+		if ($date_array != null) {
+			// set date in iso format
+			$args->creation_date_from = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
+		}
+	}
+	
+	// convert "creation date to" to iso format for database usage
+    if (isset($args->creation_date_to) && $args->creation_date_to != '') {
+		$date_array = split_localized_date($args->creation_date_to, $dateFormat);
+		if ($date_array != null) {
+			// set date in iso format
+			// date to means end of selected day -> add 23:59:59 to selected date
+			$args->creation_date_to = $date_array['year'] . "-" . $date_array['month'] . "-" .
+			                          $date_array['day'] . " 23:59:59";
+		}
+	}
+	
+	// convert "modification date from" to iso format for database usage
+    if (isset($args->modification_date_from) && $args->modification_date_from != '') {
+		$date_array = split_localized_date($args->modification_date_from, $dateFormat);
+		if ($date_array != null) {
+			// set date in iso format
+			$args->modification_date_from= $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
+		}
+	}
+	
+	//$args->modification_date_to = strtotime($args->modification_date_to);
+	// convert "creation date to" to iso format for database usage
+    if (isset($args->modification_date_to) && $args->modification_date_to != '') {
+		$date_array = split_localized_date($args->modification_date_to, $dateFormat);
+		if ($date_array != null) {
+			// set date in iso format
+			// date to means end of selected day -> add 23:59:59 to selected date
+			$args->modification_date_to = $date_array['year'] . "-" . $date_array['month'] . "-" .
+			                          $date_array['day'] . " 23:59:59";
+		}
+	}
 	
 	$args->userID = isset($_SESSION['userID']) ? $_SESSION['userID'] : 0;
 	$args->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;

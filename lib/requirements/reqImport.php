@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqImport.php,v $
- * @version $Revision: 1.28 $
- * @modified $Date: 2010/09/19 17:43:52 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2010/10/26 20:03:30 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Import ONLY requirements to a req specification. 
  * Supported: simple CSV, Doors CSV, XML, DocBook
  *
+ * 20101026 - franciscom - fixed missing variable definitions that creates warnings on event viewer
  * 20100914 - franciscom - manage option skip frozen requirements
  * 20100908 - asimon -  BUGID 3761: requirement tree refresh after requirement import
  * 20100321 - franciscom - work on import child requirements XML format - not finished
@@ -187,12 +188,14 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr,&$reqMgr)
     $gui->items=null;
 	$gui->try_upload = $argsObj->bUpload;
 	$gui->importResult = null;
+	$gui->refreshTree = false;
 
     $gui->doAction=$argsObj->doAction;
 	$gui->scope = $argsObj->scope;
 	$gui->req_spec = null;
 	$gui->req_spec_id = $argsObj->req_spec_id;
-
+	$gui->hitCriteria = $argsObj->hitCriteria;
+	$gui->actionOnHit = $argsObj->actionOnHit;  
 	
     switch($gui->scope)
     {
@@ -240,7 +243,6 @@ function initializeGui(&$dbHandler,&$argsObj,$session,&$reqSpecMgr,&$reqMgr)
         $gui->importFileGui->return_to_url .= "lib/requirements/reqSpecView.php?req_spec_id=$argsObj->req_spec_id";
     } 
     
-    //'generate_new' => lang_get('generate_new_requirement'),
     $gui->actionOptions=array('update_last_version' => lang_get('update_last_requirement_version'),
                               'create_new_version' => lang_get('create_new_requirement_version'));
 	

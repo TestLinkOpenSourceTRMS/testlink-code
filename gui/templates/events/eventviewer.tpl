@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.31 2010/10/26 09:59:29 mx-julian Exp $
+$Id: eventviewer.tpl,v 1.32 2010/10/26 09:59:50 mx-julian Exp $
 
 Event Viewer
+20101026 - Julian - Localized dateformat for datepicker
 20101009 - Julian - endDate and startDate fields are now readonly. onClick opens Calender
 20101008 - Julian - Show Calender in foreground, added second div for endDate Cal
                   - BUGID 3871 - use exttable for event viewer

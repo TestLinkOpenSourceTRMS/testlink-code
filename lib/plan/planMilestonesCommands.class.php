@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.11 $
- * @modified $Date: 2010/10/26 08:56:53 $ by $Author: mx-julian $
+ * @version $Revision: 1.12 $
+ * @modified $Date: 2010/10/26 09:02:48 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  * 
  * @internal revisions
@@ -147,6 +147,10 @@ class planMilestonesCommands
 
 		if($op_ok)
 		{
+			// avoid warning on event viewer
+			if (!isset($argsObj->start_date)) {
+				$argsObj->start_date = "";
+			}
 	        $argsObj->id = $this->milestone_mgr->create($argsObj->tplan_id,$argsObj->name,
 	                                                    $argsObj->target_date,$argsObj->start_date,
 	                                                    $argsObj->low_priority_tcases,

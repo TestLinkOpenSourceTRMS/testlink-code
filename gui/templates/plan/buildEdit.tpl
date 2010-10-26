@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.19 2010/10/26 08:10:25 mx-julian Exp $
+$Id: buildEdit.tpl,v 1.20 2010/10/26 10:19:17 mx-julian Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -27,7 +27,8 @@ Rev:
 {lang_get var="labels"
           s="warning,warning_empty_build_name,enter_build,enter_build_notes,active,
              open,builds_description,cancel,release_date,closure_date,closed_on_date,
-             copy_tester_assignments, assignment_source_build,show_event_history"}
+             copy_tester_assignments, assignment_source_build,show_event_history,
+             show_calender"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
@@ -109,7 +110,7 @@ function validateForm(f)
                 <input type="text" 
                        name="release_date" id="release_date" 
 				       value="{$gui->release_date}" />
-				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('release_date-cal','release_date','{$gsmarty_datepicker_format}');" >
 				<div id="release_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
         </td>

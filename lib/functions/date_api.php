@@ -9,7 +9,7 @@
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.7 2010/10/26 08:22:27 asimon83 Exp $
+ * @version    	CVS: $Id: date_api.php,v 1.8 2010/10/26 10:19:17 mx-julian Exp $
  * @link 		http://www.teamst.org/
  *
  * @internal Revisions:
@@ -175,7 +175,7 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 	
 	$str_out .= '<input type="text" name="' . $p_name.'_input" size="10" id="' . $p_name.'_input" ' .
                 'value="' . $formatted_date . '"/>' .
-                '<img alt="show calendar" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' .
+                '<img title="' . lang_get('show_calender') . '" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' .
                 'onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); > ' .
                 '<div id="' . $p_name . '" style="position:' . $calender_div_position . ';z-index:1;"></div>';
 	

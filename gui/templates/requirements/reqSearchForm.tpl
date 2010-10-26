@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSearchForm.tpl,v 1.4 2010/10/21 14:57:08 asimon83 Exp $
+$Id: reqSearchForm.tpl,v 1.5 2010/10/26 10:19:18 mx-julian Exp $
 Purpose: show form for requirement search.
 
 rev:
@@ -17,7 +17,8 @@ rev:
              custom_field_value,btn_find,requirement_document_id, req_expected_coverage,
              title_search_req, reqid, reqversion, caption_search_form_req, title, scope,
              coverage, status, type, version, th_tcid, has_relation_type,
-             modification_date_from,modification_date_to,creation_date_from,creation_date_to'}
+             modification_date_from,modification_date_to,creation_date_from,creation_date_to,
+             show_calender'}
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -97,7 +98,7 @@ rev:
                 <input type="text" 
                        name="creation_date_from" id="creation_date_from" 
 				       value="{$gui->creation_date_from}" />
-				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('creation_date_from-cal','creation_date_from');" >
 				<div id="creation_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
@@ -109,7 +110,7 @@ rev:
            	    <input type="text" 
                        name="creation_date_to" id="creation_date_to" 
 				       value="{$gui->creation_date_to}" />
-				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('creation_date_to-cal','creation_date_to');" >
 				<div id="creation_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
@@ -122,7 +123,7 @@ rev:
             	<input type="text" 
                        name="modification_date_from" id="modification_date_from" 
 				       value="{$gui->modification_date_from}" />
-				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('modification_date_from-cal','modification_date_from');" >
 				<div id="modification_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
@@ -134,7 +135,7 @@ rev:
          	    <input type="text" 
                        name="modification_date_to" id="modification_date_to" 
 				       value="{$gui->modification_date_to}" />
-				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('modification_date_to-cal','modification_date_to');" >
 				<div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.10 2010/10/26 08:10:25 mx-julian Exp $
+$Id: planMilestonesEdit.tpl,v 1.11 2010/10/26 10:19:17 mx-julian Exp $
 
 Rev:
     20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
@@ -12,7 +12,7 @@ Rev:
                           warning_invalid_percentage_value,warning_must_be_number,
                           btn_cancel,warning,start_date,info_milestones_start_date,
                           th_name,th_date_format,th_perc_a_prio,th_perc_b_prio,th_perc_c_prio,
-                          th_perc_testcases,th_delete,alt_delete_milestone'}
+                          th_perc_testcases,th_delete,alt_delete_milestone,show_calender'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -146,7 +146,7 @@ function validateForm(f)
 	                <input type="text" 
 	                       name="target_date" id="target_date" 
 					       value="{$gui->milestone.target_date}" />
-					<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+					<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 					     onclick="showCal('target_date-cal','target_date','{$gsmarty_datepicker_format}');" >
 					<div id="target_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
              		<span class="italic">{$labels.info_milestones_date}</span>
@@ -160,7 +160,7 @@ function validateForm(f)
 	                <input type="text" 
 	                       name="start_date" id="start_date" 
 					       value="{$gui->milestone.start_date}" />
-					<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+					<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 					     onclick="showCal('start_date-cal','start_date','{$gsmarty_datepicker_format}');" >
 					<div id="start_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
              		<span class="italic">{$labels.info_milestones_start_date}</span>

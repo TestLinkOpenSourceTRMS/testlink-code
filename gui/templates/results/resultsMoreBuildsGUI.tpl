@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuildsGUI.tpl,v 1.5 2010/10/22 14:27:37 asimon83 Exp $
+$Id: resultsMoreBuildsGUI.tpl,v 1.6 2010/10/26 10:19:17 mx-julian Exp $
 @author Francisco Mancardi
 
 rev :
@@ -19,7 +19,7 @@ rev :
 			   select_builds_header,select_platforms_header,select_components_header,report_display_options,
 			   display_suite_summaries,display_test_cases,display_query_params,
 			   display_totals,display_results_tc,results_latest,results_all,
-			   search_in_notes,executor,No,query_metrics_report'}
+			   search_in_notes,executor,No,query_metrics_report,show_calender'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -126,7 +126,7 @@ franciscom - may be in the future - 20090107
            <input type="text" 
                   name="selected_start_date" id="selected_start_date" 
 		          value="{$gui->selected_start_date}" />
-		   <img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+		   <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 		        onclick="showCal('selected_start_date-cal','selected_start_date');" >
 		   <div id="selected_start_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
        </td>
@@ -149,7 +149,7 @@ franciscom - may be in the future - 20090107
             <input type="text" 
                    name="selected_end_date" id="selected_end_date" 
 			       value="{$gui->selected_end_date}" />
-			<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+			<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 			     onclick="showCal('selected_end_date-cal','selected_end_date');" >
 			<div id="selected_end_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
        </td>

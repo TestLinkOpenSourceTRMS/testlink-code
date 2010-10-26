@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.93 2010/10/26 08:22:27 asimon83 Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.94 2010/10/26 08:42:53 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1832,7 +1832,7 @@ function name_is_unique($id,$name)
             }
             else
             {
-				$parsed_value = date_parse_from_format($date_format, $value['input']);
+				$parsed_value = split_localized_date($value['input'], $date_format);
 				$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
 				$cfield[$field_id]['cf_value'] = $parsed_value;
 			}
@@ -1845,7 +1845,7 @@ function name_is_unique($id,$name)
             }
             else
             {
-            	$parsed_value = date_parse_from_format($date_format, $value['input']);
+            	$parsed_value = split_localized_date($value['input'], $date_format);
             	$cfield[$field_id]['cf_value'] = mktime($value['hour'], $value['minute'], $value['second'],
             	                                        $parsed_value['month'], $parsed_value['day'], 
             	                                        $parsed_value['year']);

@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.30 2010/10/26 08:22:27 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.31 2010/10/26 08:42:53 mx-julian Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -1423,7 +1423,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 						$minute = $_REQUEST[$cf_input_name . '_minute'];
 						$second = $_REQUEST[$cf_input_name . '_second'];
 
-						$date_array = date_parse_from_format($date_format, $date);
+						$date_array = split_localized_date($date, $date_format);
 						$value = mktime($hour, $minute, $second, $date_array['month'], $date_array['day'], $date_array['year']);
 					}
 				}
@@ -1433,7 +1433,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 					// BUGID 3883: only set values if different from 0
 					if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') {
 						$date = $_REQUEST[$cf_input_name . '_input'];						
-						$date_array = date_parse_from_format($date_format, $date);
+						$date_array = split_localized_date($date, $date_format);
 						$value = mktime(0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
 					}
 				}

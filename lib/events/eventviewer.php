@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.37 $
- * @modified $Date: 2010/10/15 11:43:26 $ by $Author: mx-julian $
+ * @version $Revision: 1.38 $
+ * @modified $Date: 2010/10/26 09:59:29 $ by $Author: mx-julian $
  *
  * rev:
+ *      20101026 - Julian - Localized dateformat for datepicker - validation MISSING 
  * 		20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                          table state independent from localization
  * 		20101008 - Julian - added html comment to properly sort by description column
@@ -23,6 +24,7 @@ require_once("common.php");
 require_once("users.inc.php");
 require_once('exttable.class.php');
 testlinkInitPage($db,false,false,"checkRights");
+$date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
 $args = init_args();
@@ -54,9 +56,11 @@ switch($args->doAction)
     
     case 'filter':
 	default:
-	    $filters = getFilters($args);
+	    $filters = getFilters($args,$date_format_cfg);
     	break;
 }
+
+//print_r($filters);
 
 $gui->events = $g_tlLogger->getEventsFor($args->logLevel,$args->object_id ? $args->object_id : null,
 										 $args->object_type ? $args->object_type : null,null,500,$filters->startTime,
@@ -160,7 +164,7 @@ function initializeGui(&$dbHandler,&$argsObj)
  * 
  *
  */
-function getFilters(&$argsObj=null)
+function getFilters(&$argsObj=null,$dateFormat=null)
 {
 	$filters = new stdClass();
 	$filters->startTime = null;
@@ -171,8 +175,12 @@ function getFilters(&$argsObj=null)
     {
 		if ($argsObj->startDate != "")
 		{
-			$filters->startTime = strToTime($argsObj->startDate);
-			if (!$filters->startTime)
+			$date_array = split_localized_date($argsObj->startDate, $dateFormat);
+			if ($date_array != null) {
+				// convert localized date to date that strtotime understands -> en_US: m/d/Y: 
+				$filters->startTime = strToTime($date_array['month'] . "/" . $date_array['day']. "/" .$date_array['year']);
+			}
+			if ($filters->startTime == "")
 			{
 				$filters->startTime = null;
 			}
@@ -180,7 +188,13 @@ function getFilters(&$argsObj=null)
 		
 		if ($argsObj->endDate != "")
 		{
-			$filters->endTime = strToTime($argsObj->endDate) + (24*60*60-1);
+			$date_array = split_localized_date($argsObj->endDate, $dateFormat);
+			if ($date_array != null) {
+				// convert localized date to date that strtotime understands -> en_US: m/d/Y:
+				// end time must end at selected day at 23:59:59
+				$filters->endTime = strToTime($date_array['month'] . "/" . $date_array['day']. "/" . 
+				                              $date_array['year'] . ", 23:59:59");
+			}
 			if (!$filters->endTime)
 			{
 				$filters->endTime = null;
@@ -195,7 +209,8 @@ function getFilters(&$argsObj=null)
 				$filters->users = null;
 			}	
 		}
-	}	
+	}
+	
 	return $filters;
 }
 

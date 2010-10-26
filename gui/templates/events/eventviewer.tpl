@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.30 2010/10/09 12:03:12 mx-julian Exp $
+$Id: eventviewer.tpl,v 1.31 2010/10/26 09:59:29 mx-julian Exp $
 
 Event Viewer
 20101009 - Julian - endDate and startDate fields are now readonly. onClick opens Calender
@@ -143,12 +143,18 @@ fieldset
 			</fieldset>
 
 			<fieldset class="x-fieldset"><legend>{$labels.th_timestamp}</legend>
-			{$labels.label_startdate}:&nbsp;<input type="text" onclick="showCal('startDate-cal','startDate');"
-				                             name="startDate" id="startDate" value="{$gui->startDate}" readonly />
+				<div id="release_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
+				
+			{$labels.label_startdate}:&nbsp;<input type="text" name="startDate" id="startDate" value="{$gui->startDate}" />
+			<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+			     onclick="showCal('startDate-cal','startDate','{$gsmarty_datepicker_format}');" >
 			<div id="startDate-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
-			{$labels.label_enddate}:&nbsp;<input type="text" onclick="showCal('endDate-cal','endDate');"
-				                           name="endDate" id="endDate" value="{$gui->endDate}" readonly />
+			
+			{$labels.label_enddate}:&nbsp;<input type="text" name="endDate" id="endDate" value="{$gui->endDate}" />
+			<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
+			     onclick="showCal('endDate-cal','endDate','{$gsmarty_datepicker_format}');" >
 			<div id="endDate-cal" style="position:absolute;width:240px;left:540px;z-index:1;"></div>
+			
 			<input type="submit" value="{$labels.btn_apply}" onclick="doAction.value='filter'" />
 			<br />
 			{if $gui->canDelete}

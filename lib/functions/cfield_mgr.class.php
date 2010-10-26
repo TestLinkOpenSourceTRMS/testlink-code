@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.94 2010/10/26 08:42:53 mx-julian Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.95 2010/10/26 12:57:49 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1833,8 +1833,12 @@ function name_is_unique($id,$name)
             else
             {
 				$parsed_value = split_localized_date($value['input'], $date_format);
-				$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
-				$cfield[$field_id]['cf_value'] = $parsed_value;
+				if($parsed_value != null) {
+					$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
+					$cfield[$field_id]['cf_value'] = $parsed_value;
+				} else {
+					$cfield[$field_id]['cf_value']='';
+				}
 			}
           break;
           
@@ -1846,9 +1850,16 @@ function name_is_unique($id,$name)
             else
             {
             	$parsed_value = split_localized_date($value['input'], $date_format);
-            	$cfield[$field_id]['cf_value'] = mktime($value['hour'], $value['minute'], $value['second'],
-            	                                        $parsed_value['month'], $parsed_value['day'], 
-            	                                        $parsed_value['year']);
+            	if($parsed_value != null) {
+            		if($value['hour'] == -1 || $value['minute'] == -1 || $value['second'] == -1) {
+            			$value['hour'] = $value['minute'] = $value['second'] = 0;
+            		}
+            		$cfield[$field_id]['cf_value'] = mktime($value['hour'], $value['minute'], $value['second'],
+            	                                            $parsed_value['month'], $parsed_value['day'], 
+            	                                            $parsed_value['year']);
+            	} else {
+            		$cfield[$field_id]['cf_value']='';
+            	}
             }
           break;         
 

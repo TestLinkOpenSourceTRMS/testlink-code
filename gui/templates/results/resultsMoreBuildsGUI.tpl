@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsMoreBuildsGUI.tpl,v 1.6 2010/10/26 10:19:17 mx-julian Exp $
+$Id: resultsMoreBuildsGUI.tpl,v 1.7 2010/10/26 11:27:11 asimon83 Exp $
 @author Francisco Mancardi
 
 rev :
+     20101026 - asimon - BUGID 3930
      20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
      20101019 - eloff - BUGID 3794 - added contribution by rtessier
      20090327 - amitkhullar- BUGID 2156 - added option to get latest/all results in Query metrics report. 
@@ -125,9 +126,10 @@ franciscom - may be in the future - 20090107
            {* BUGID 3716 *}
            <input type="text" 
                   name="selected_start_date" id="selected_start_date" 
-		          value="{$gui->selected_start_date}" />
+		          value="{$gui->selected_start_date}" 
+		          onclick="showCal('selected_start_date-cal','selected_start_date','{$gsmarty_datepicker_format}');" readonly />
 		   <img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-		        onclick="showCal('selected_start_date-cal','selected_start_date');" >
+		        onclick="showCal('selected_start_date-cal','selected_start_date','{$gsmarty_datepicker_format}');" >
 		   <div id="selected_start_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
        </td>
        </tr>
@@ -148,9 +150,10 @@ franciscom - may be in the future - 20090107
        		{* BUGID 3716 *}
             <input type="text" 
                    name="selected_end_date" id="selected_end_date" 
-			       value="{$gui->selected_end_date}" />
+			       value="{$gui->selected_end_date}" 
+			       onclick="showCal('selected_end_date-cal','selected_end_date','{$gsmarty_datepicker_format}');" readonly />
 			<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-			     onclick="showCal('selected_end_date-cal','selected_end_date');" >
+			     onclick="showCal('selected_end_date-cal','selected_end_date','{$gsmarty_datepicker_format}');" >
 			<div id="selected_end_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
        </td>
                                    </td>

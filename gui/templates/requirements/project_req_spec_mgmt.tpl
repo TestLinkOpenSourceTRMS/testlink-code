@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.15 2010/02/20 14:08:06 franciscom Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.16 2010/10/26 13:11:34 mx-julian Exp $
 
 rev: 20080415 - franciscom - refactoring
 *}
@@ -12,7 +12,7 @@ rev: 20080415 - franciscom - refactoring
 {assign var="req_spec_new_url" value="$basehref$req_module$url_args"}
 
 {assign var="url_args" value="reqSpecEdit.php?doAction=reorder&amp;tproject_id="}
-{assign var="req_spec_reorder_url" value="$basehref$req_module$url_args}
+{assign var="req_spec_reorder_url" value="$basehref$req_module$url_args"}
 
 {assign var="url_args" value="reqExport.php?scope=tree&tproject_id="}
 {assign var="req_export_url"  value="$basehref$req_module$url_args"}
@@ -20,6 +20,8 @@ rev: 20080415 - franciscom - refactoring
 {assign var="url_args" value="reqImport.php?scope=tree&tproject_id="}
 {assign var="req_import_url"  value="$basehref$req_module$url_args"}
 
+{assign var="url_args" value="relationExportGraph.php?tproject_id="}
+{assign var="rel_export_url"  value="$basehref$req_module$url_args"}
 
 {include file="inc_head.tpl"}
 
@@ -40,6 +42,10 @@ rev: 20080415 - franciscom - refactoring
 			<input type="button" id="import_all" name="import_all"
 			       value="{$labels.btn_import}"
 			       onclick="location='{$req_import_url}{$gui->tproject_id}'" />
+
+			<input type="button" id="export_relation_graph" name="export_relation_graph"
+			       value="Relations Graph Definition"
+			       onclick="location='{$rel_export_url}{$gui->tproject_id}'" />
 		</form>
 	</div>
 </div>

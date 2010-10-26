@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.34 2010/10/26 11:10:38 mx-julian Exp $
+$Id: eventviewer.tpl,v 1.35 2010/10/26 13:11:34 mx-julian Exp $
 
 Event Viewer
 20101026 - Julian - Localized dateformat for datepicker
@@ -17,7 +17,7 @@ Event Viewer
              title_eventinfo,label_startdate,label_enddate,btn_apply,click_on_event_info,
              btn_clear_events,btn_clear_all_events,th_event_description,select_user,clear_tip,
              message_please_wait,btn_close,th_role_description,th_user,generated_by_TestLink_on,
-             show_calender'}
+             show_calender,clear_date'}
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -152,6 +152,8 @@ fieldset
 			       onclick="showCal('startDate-cal','startDate','{$gsmarty_datepicker_format}');" readonly/>
 			<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 			     onclick="showCal('startDate-cal','startDate','{$gsmarty_datepicker_format}');" >
+			<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+			     onclick="javascript:var x = document.getElementById('startDate'); x.value = '';" >
 			<div id="startDate-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 			
 			{$labels.label_enddate}:&nbsp;
@@ -159,6 +161,8 @@ fieldset
 			       onclick="showCal('endDate-cal','endDate','{$gsmarty_datepicker_format}');" readonly/>
 			<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 			     onclick="showCal('endDate-cal','endDate','{$gsmarty_datepicker_format}');" >
+			<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+			     onclick="javascript:var x = document.getElementById('endDate'); x.value = '';" >
 			<div id="endDate-cal" style="position:absolute;width:240px;left:540px;z-index:1;"></div>
 			
 			<input type="submit" value="{$labels.btn_apply}" onclick="doAction.value='filter'" />

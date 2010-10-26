@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.741 2010/10/26 10:19:18 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.742 2010/10/26 13:11:34 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -128,6 +128,7 @@ $TLS_weeks = "weeks";
 $TLS_container = "container";
 $TLS_platform = "Platform";
 $TLS_show_calender = "Show Calender";
+$TLS_clear_date = "Clear Date";
 
 // Actions (used wide)
 $TLS_add = "add";

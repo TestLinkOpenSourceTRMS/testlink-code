@@ -9,7 +9,7 @@
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.9 2010/10/26 11:18:22 mx-julian Exp $
+ * @version    	CVS: $Id: date_api.php,v 1.10 2010/10/26 13:11:33 mx-julian Exp $
  * @link 		http://www.teamst.org/
  *
  * @internal Revisions:
@@ -180,6 +180,8 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
                 '" onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); READONLY/>' .
                 '<img title="' . lang_get('show_calender') . '" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' .
                 'onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); > ' .
+	            '<img title="' . lang_get('clear_date') . '" src="' . TL_THEME_IMG_DIR . '/trash.png" ' .
+	            'onclick="javascript:var x = document.getElementById(\'' . $p_name . '_input\'); x.value = \'\';" > ' .
                 '<div id="' . $p_name . '" style="position:' . $calender_div_position . ';z-index:1;"></div>';
 	
 	foreach( $t_chars as $t_char ) {

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcSearchForm.tpl,v 1.20 2010/10/26 11:31:21 mx-julian Exp $
+$Id: tcSearchForm.tpl,v 1.21 2010/10/26 13:11:34 mx-julian Exp $
 Purpose: show form for search through test cases in test specification
 
 rev :
@@ -20,7 +20,7 @@ rev :
              th_title,summary,steps,expected_results,keyword,custom_field,
              search_type_like,preconditions,filter_mode_and,test_importance,
              creation_date_from,creation_date_to,modification_date_from,modification_date_to,
-             custom_field_value,btn_find,requirement_document_id,show_calender'}
+             custom_field_value,btn_find,requirement_document_id,show_calender,clear_date'}
 
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
@@ -81,6 +81,8 @@ rev :
 				       onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" readonly />
 				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('creation_date_from-cal','creation_date_from','{$gsmarty_datepicker_format}');" >
+				<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+			         onclick="javascript:var x = document.getElementById('creation_date_from'); x.value = '';" >
 				<div id="creation_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>
@@ -94,6 +96,8 @@ rev :
 				       onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');" readonly />
 				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('creation_date_to-cal','creation_date_to','{$gsmarty_datepicker_format}');" >
+				<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+			         onclick="javascript:var x = document.getElementById('creation_date_to'); x.value = '';" >
 				<div id="creation_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>		
@@ -107,6 +111,8 @@ rev :
 				       onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');" readonly />
 				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('modification_date_from-cal','modification_date_from','{$gsmarty_datepicker_format}');" >
+				<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+			         onclick="javascript:var x = document.getElementById('modification_date_from'); x.value = '';" >
 				<div id="modification_date_from-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>
@@ -120,6 +126,8 @@ rev :
 				       onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');" readonly />
 				<img title="{$labels.show_calender}" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
 				     onclick="showCal('modification_date_to-cal','modification_date_to','{$gsmarty_datepicker_format}');" >
+				<img title="{$labels.clear_date}" src="{$smarty.const.TL_THEME_IMG_DIR}/trash.png"
+			         onclick="javascript:var x = document.getElementById('modification_date_to'); x.value = '';" >
 				<div id="modification_date_to-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
 		  </td>
 		</tr>

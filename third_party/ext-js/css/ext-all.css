@@ -4,7 +4,27 @@
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
-html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}ol,ul {list-style:none;}caption,th {text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;}q:before,q:after{content:'';}
+ /*
+ * TestLink Open Source Project - http://testlink.sourceforge.net/
+ * This script is distributed under the GNU General Public License 2 or later.
+ *
+ * @package 	TestLink
+ * @version    	CVS: $Id: ext-all.css,v 1.11 2010/10/26 16:57:06 franciscom Exp $
+ *
+ * Changed by TestLink Dev Team.
+ * With these definitions Test Case Formatting is broken
+ * Unable to understand who is the developer that found this solution.
+ * Applied change found on version 1.4 of Test Link CVS
+ *
+ * 
+ *
+ * html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,
+ * td{margin:0;padding:0;}img,body,html{border:0;}address,caption,cite,code,dfn,em,strong,
+ * th,var{font-style:normal;font-weight:normal;}ol,ul {list-style:none;}caption,
+ * th {text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;}q:before,q:after{content:'';}
+ *
+ * }
+*/
 
 .ext-forced-border-box, .ext-forced-border-box * {
     -moz-box-sizing: border-box;

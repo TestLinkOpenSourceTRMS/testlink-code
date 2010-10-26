@@ -13,11 +13,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.198 2010/10/22 11:24:02 asimon83 Exp $
+ * @version    	CVS: $Id: common.php,v 1.199 2010/10/26 08:10:25 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
+ *  20101025 - Julian - BUGID 3930 - added function split_localized_date()
+ *                                 - simplified function is_valid_date()
  *  20101022 - asimon - BUGID 3716: added is_valid_date()
  *	20100904 - eloff - BUGID 3740 - redirect to destination after login
  * 	20100714 - asimon - BUGID 3601: show req spec link only when req mgmt is enabled
@@ -903,30 +905,66 @@ function isValidISODateTime($ISODateTime)
 }
 
 /**
- * Check if a string is a valid date.
- * The accepted formats of the string are MM/DD/YYYY or YYYY-MM-DD
+ * Check if a localized timestamp is valid
+ * uses split_localized_date()
  *
- * @param string $date_to_check
  */
-function is_valid_date($date_to_check) {
-	$matches=null;
-	$status_ok=false;
+function is_valid_date($timestamp, $dateFormat) {
+	$date_array = split_localized_date($timestamp,$dateFormat);
 	
-	if (preg_match("#^(\d{2})/(\d{2})/(\d{4})$#", $date_to_check, $matches)) {
-		$dateParts=array('MONTH' => 1, 'DAY' => 2 , 'YEAR' => 3);
-		$status_ok = checkdate($matches[$dateParts['MONTH']], 
-		                       $matches[$dateParts['DAY']], 
-		                       $matches[$dateParts['YEAR']]);
-	}
-	
-	if (preg_match("/^(\d{4})-(\d{2})-(\d{2})$/", $date_to_check, $matches)) {
-		$dateParts=array('YEAR' => 1, 'MONTH' => 2 , 'DAY' => 3);
-		$status_ok = checkdate($matches[$dateParts['MONTH']], 
-		                       $matches[$dateParts['DAY']], 
-		                       $matches[$dateParts['YEAR']]);
+	$status_ok = false;
+	if ($date_array != null) {
+		$status_ok = checkdate($date_array['month'],$date_array['day'],$date_array['year']);
 	}
 	
 	return $status_ok;
+}
+
+/**
+ * Returns array containing date pieces for a given timestamp according to dateFormat
+ */
+
+function split_localized_date($timestamp,$dateFormat) {
+	
+	$splitChar = ".";
+	if (strpos($timestamp,"-") !== false) {
+		$splitChar = "-";
+	} 
+	if (strpos($timestamp,"/") !== false) {
+		$splitChar = "/";
+	}
+	
+	// strip splitchar
+	$strippedDateFormat = str_replace($splitChar,"",$dateFormat);
+	// strip %
+	$strippedDateFormat = str_replace("%","",$strippedDateFormat);
+	
+	// put each char of strippedDateFormat into an Array Element
+	$dateFormatArray = preg_split('//', $strippedDateFormat, -1, PREG_SPLIT_NO_EMPTY);
+	
+	// cut timestamp in pieces
+    $date_pieces = explode($splitChar,$timestamp);
+    
+    $ok_pieces_qty = 3;
+	$date_array = array();
+    if( count($date_pieces) == $ok_pieces_qty ) {
+    
+		foreach ($dateFormatArray as $key => $char) {
+			switch ($char) {
+				case "Y":
+					$date_array['year'] = $date_pieces[$key];
+					break;
+				case "m":
+					$date_array['month'] = $date_pieces[$key];
+					break;
+				case "d":
+					$date_array['day'] = $date_pieces[$key];
+					break;					
+			}
+		}
+    }
+    
+    return $date_array;
 }
 
 

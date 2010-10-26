@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.165 2010/10/24 09:23:15 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.166 2010/10/26 08:10:25 mx-julian Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -329,7 +329,8 @@ $g_locales_timestamp_format = array(
 	'zh_CN' => '%Y-%m-%d %H:%M:%S'
 ); 
 
-/** @var array localized date format for smarty templates (html_select_date function) */
+/** @var array localized date format for smarty templates (html_select_date function) 
+ * deprecated since use of datepicker */
 $g_locales_html_select_date_field_order = array(
 	'cs_CZ' => 'dmY',
 	'de_DE' => 'dmY',

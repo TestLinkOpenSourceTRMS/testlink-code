@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.9 2010/10/22 11:24:02 asimon83 Exp $
+$Id: planMilestonesEdit.tpl,v 1.10 2010/10/26 08:10:25 mx-julian Exp $
 
 Rev:
+    20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
     20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
 *}
 {lang_get var='labels' s='show_event_history,warning_empty_milestone_name,
@@ -146,7 +147,7 @@ function validateForm(f)
 	                       name="target_date" id="target_date" 
 					       value="{$gui->milestone.target_date}" />
 					<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-					     onclick="showCal('target_date-cal','target_date');" >
+					     onclick="showCal('target_date-cal','target_date','{$gsmarty_datepicker_format}');" >
 					<div id="target_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
              		<span class="italic">{$labels.info_milestones_date}</span>
 		      	</td>
@@ -160,7 +161,7 @@ function validateForm(f)
 	                       name="start_date" id="start_date" 
 					       value="{$gui->milestone.start_date}" />
 					<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-					     onclick="showCal('start_date-cal','start_date');" >
+					     onclick="showCal('start_date-cal','start_date','{$gsmarty_datepicker_format}');" >
 					<div id="start_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
              		<span class="italic">{$labels.info_milestones_start_date}</span>
 		      	</td>

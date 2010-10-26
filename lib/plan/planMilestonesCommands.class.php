@@ -4,11 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: planMilestonesCommands.class.php,v $
- * @version $Revision: 1.8 $
- * @modified $Date: 2010/10/22 11:24:02 $ by $Author: asimon83 $
+ * @version $Revision: 1.9 $
+ * @modified $Date: 2010/10/26 08:10:25 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  * 
  * @internal revisions
+ *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
+ *  20101026 - Julian - BUGID 3907 - unset start date on edit did not work
  *  20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  *	20090910 - franciscom - start_date
  */
@@ -71,6 +73,21 @@ class planMilestonesCommands
 	    $guiObj = new stdClass();
 	    $dummy = $this->milestone_mgr->get_by_id($argsObj->id);
 	    $guiObj->milestone = $dummy[$argsObj->id];
+	    
+	    // $dummyy necessary because localize_dateOrTimeStamp wants second parameter to be passed by reference
+	    $dummy = null;
+	    // localize date
+	    echo $guiObj->milestone['target_date'];
+	    echo $guiObj->milestone['start_date'];
+	    $guiObj->milestone['target_date'] = localize_dateOrTimeStamp(null, $dummy, 'date_format',$guiObj->milestone['target_date']);
+	    
+	    // as start date is optional it can be "0000-00-00" (default timestamp)
+	    if ($guiObj->milestone['start_date'] != "0000-00-00") {
+	    	$guiObj->milestone['start_date'] = localize_dateOrTimeStamp(null, $dummy, 'date_format',$guiObj->milestone['start_date']);
+	    } else {
+	    	$guiObj->milestone['start_date'] = "";
+	    }
+	    
 	    $guiObj->main_descr = lang_get('testplan') . TITLE_SEP;
 	    $guiObj->action_descr = sprintf(lang_get('edit_milestone'),$guiObj->milestone['name']);
       	$guiObj->template = $this->defaultTemplate;
@@ -89,7 +106,7 @@ class planMilestonesCommands
   */
 	function doCreate(&$argsObj,$basehref)
 	{
-	
+		$date_format_cfg = config_get('date_format');
 		$guiObj = new stdClass();
 		$guiObj->main_descr = lang_get('Milestone') . TITLE_SEP;
 		$guiObj->action_descr = lang_get('create_milestone');
@@ -109,8 +126,8 @@ class planMilestonesCommands
       	// are the dates valid?
       	if ($op_ok) {
       		// start date is optional
-      		$op_ok = is_valid_date($argsObj->target_date_original) && 
-      		         ($argsObj->start_date_original == '' || is_valid_date($argsObj->start_date_original));
+      		$op_ok = is_valid_date($argsObj->target_date_original, $date_format_cfg) && 
+      		         ($argsObj->start_date_original == '' || is_valid_date($argsObj->start_date_original, $date_format_cfg));
       		if (!$op_ok) {
       			$guiObj->user_feedback = sprintf(lang_get('warning_invalid_date'));
       		}
@@ -161,75 +178,80 @@ class planMilestonesCommands
   */
 	function doUpdate(&$argsObj,$basehref)
 	{
-      	$obj=new stdClass();
-	    $descr_prefix = lang_get('Milestone') . TITLE_SEP;
-	    $obj=$this->edit($argsObj);
-      	$obj->user_feedback = 'ok';
+		$date_format_cfg = config_get('date_format');
+		$obj=new stdClass();
+		$descr_prefix = lang_get('Milestone') . TITLE_SEP;
+		$obj=$this->edit($argsObj);
+		$obj->user_feedback = 'ok';
 		$obj->template = null;
-      	$dummy = $this->milestone_mgr->get_by_id($argsObj->id);
-	    $originalMilestone = $dummy[$argsObj->id];
-	 
-      	$op_ok=1;
+		$dummy = $this->milestone_mgr->get_by_id($argsObj->id);
+		$originalMilestone = $dummy[$argsObj->id];
 
-      	// Check name do not exists
-      	$name_exists = $this->milestone_mgr->check_name_existence($originalMilestone['testplan_id'],
-                                                                  $argsObj->name,$argsObj->id);
-		  if($name_exists)
-		  {
-			    $obj->user_feedback = sprintf(lang_get('milestone_name_already_exists'),$argsObj->name);
-          $op_ok=0;
-      }
+		$op_ok=1;
+
+		// Check name do not exists
+		$name_exists = $this->milestone_mgr->check_name_existence($originalMilestone['testplan_id'],
+		$argsObj->name,$argsObj->id);
+		if($name_exists)
+		{
+			$obj->user_feedback = sprintf(lang_get('milestone_name_already_exists'),$argsObj->name);
+			$op_ok=0;
+		}
 
 		// BUGID 3716
 		// are the dates valid?
-      	if ($op_ok) {
-      		// start date is optional
-      		$op_ok = is_valid_date($argsObj->target_date_original) && 
-      		         ($argsObj->start_date_original == '' || is_valid_date($argsObj->start_date_original));
-      		if (!$op_ok) {
-      			$guiObj->user_feedback = sprintf(lang_get('warning_invalid_date'));
-      		}
-      	}
-      
-      	// target date changed ?
+		if ($op_ok) {
+			// start date is optional
+			$op_ok = is_valid_date($argsObj->target_date_original, $date_format_cfg) &&
+			($argsObj->start_date_original == '' || is_valid_date($argsObj->start_date_original, $date_format_cfg));
+			
+			if (!$op_ok) {
+				$obj->user_feedback = lang_get('warning_invalid_date');
+			}
+		}
+		
+		// target date changed ?
 		if($op_ok)
 		{
 			$timestamp=array();
 			$timestamp['target'] = strtotime($argsObj->target_date ." 23:59:59");
 			$timestamp['original_target'] = strtotime($originalMilestone['target_date'] ." 23:59:59");
 			$timestamp['now'] = strtotime("now");
-          
+
 			if( ($timestamp['target'] != $timestamp['original_target']) && $timestamp['target'] < $timestamp['now'] )
 			{
-			      $op_ok=0;
-			    	$obj->user_feedback = lang_get('warning_milestone_date');
-          	}
-      	}
-      
-		  if($op_ok)
-		  {
-		  
-          $op_ok = $this->milestone_mgr->update($argsObj->id,$argsObj->name,$argsObj->target_date,
-                                                $argsObj->start_date,
-                                                $argsObj->low_priority_tcases,$argsObj->medium_priority_tcases,
-                                                $argsObj->high_priority_tcases);
-		  }
+				$op_ok=0;
+				$obj->user_feedback = lang_get('warning_milestone_date');
+			}
+		}
 
-		  if($op_ok)
-		  {
-          	$obj->main_descr = '';
-		  	$obj->action_descr='';
-          	$obj->template = "planMilestonesView.php";
-		  	logAuditEvent(TLS("audit_milestone_saved",$argsObj->tplan_name,$argsObj->name),
-		  	                    "SAVE",$argsObj->id,"milestones");
-		  }
-		  else
-		  {
-		      // Action has failed => no change done on DB.
-			$obj->main_descr = $descr_prefix . $originalMilestone[$argsObj->id]['name'];
-		  }
-      return $obj;	
-  }
+		if($op_ok)
+		{
+			// BUGID 3907 - start date is optional -> if empty set to default date
+			if ($argsObj->start_date == "") {
+				$argsObj->start_date = "0000-00-00";
+			}
+			
+			$op_ok = $this->milestone_mgr->update($argsObj->id,$argsObj->name,$argsObj->target_date,
+			         $argsObj->start_date,$argsObj->low_priority_tcases,$argsObj->medium_priority_tcases,
+			         $argsObj->high_priority_tcases);
+		}
+		if($op_ok)
+		{
+			$obj->main_descr = '';
+			$obj->action_descr='';
+			$obj->template = "planMilestonesView.php";
+			logAuditEvent(TLS("audit_milestone_saved",$argsObj->tplan_name,$argsObj->name),
+			                    "SAVE",$argsObj->id,"milestones");
+		}
+		else
+		{
+			// Action has failed => no change done on DB.
+			$obj->main_descr = $descr_prefix . $originalMilestone['name'];
+		}
+		
+		return $obj;
+	}
 
 
   /*

@@ -4,20 +4,22 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: planMilestonesEdit.php,v $
- * @version $Revision: 1.7 $
- * @modified $Date: 2010/10/22 11:24:02 $ by $Author: asimon83 $
+ * @version $Revision: 1.8 $
+ * @modified $Date: 2010/10/26 08:10:25 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  *
- * rev: 
- *     20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+ * rev:
+ *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
+ *  20101022 - asimon - BUGID 3716 - replaced old separated inputs for day/month/year by ext js calendar
  *
  */
 require_once("../../config.inc.php");
 require_once("common.php");
 testlinkInitPage($db,false,false,"checkRights");
+$date_format_cfg = config_get('date_format');
 
 $templateCfg = templateConfiguration();
-$args = init_args($db);
+$args = init_args($db,$date_format_cfg);
 $gui = initialize_gui($db,$args);
 $commandMgr = new planMilestonesCommands($db);
 
@@ -39,18 +41,32 @@ renderGui($args,$gui,$op,$templateCfg);
   returns: 
 
 */
-function init_args(&$dbHandler)
+function init_args(&$dbHandler,$dateFormat)
 {
 	$_REQUEST = strings_stripSlashes($_REQUEST);
 	$args = new stdClass();
-	
+
 	// BUGID 3716
 	$args->target_date_original = isset($_REQUEST['target_date']) ? $_REQUEST['target_date'] : null;
 	$args->start_date_original = isset($_REQUEST['start_date']) ? $_REQUEST['start_date'] : null;
-  	$args->target_date = isset($_REQUEST['target_date']) && $_REQUEST['target_date'] != '' ? 
-  	                     strftime("%Y-%m-%d", strtotime($_REQUEST['target_date'])) : null;
-    $args->start_date = isset($_REQUEST['start_date']) && $_REQUEST['start_date'] != '' ? 
-                        strftime("%Y-%m-%d",strtotime($_REQUEST['start_date'])) : null;    
+	
+	// convert target date to iso format to write to db
+    if (isset($_REQUEST['target_date']) && $_REQUEST['target_date'] != '') {
+		$date_array = split_localized_date($_REQUEST['target_date'], $dateFormat);
+		if ($date_array != null) {
+			// set date in iso format
+			$args->target_date = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
+		}
+	}
+	
+	// convert start date to iso format to write to db
+    if (isset($_REQUEST['start_date']) && $_REQUEST['start_date'] != '') {
+		$date_array = split_localized_date($_REQUEST['start_date'], $dateFormat);
+		if ($date_array != null) {
+			// set date in iso format
+			$args->start_date = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
+		}
+	}
  	
   	$key2loop = array('low_priority_tcases','medium_priority_tcases','high_priority_tcases');
   	foreach($key2loop as $key)
@@ -176,6 +192,7 @@ function initialize_gui(&$dbHandler,&$argsObj)
     $gui->grants = new stdClass();
     $gui->grants->milestone_mgmt = has_rights($dbHandler,"testplan_planning");
 	$gui->grants->mgt_view_events = has_rights($dbHandler,"mgt_view_events");
+	
 	return $gui;
 }
 

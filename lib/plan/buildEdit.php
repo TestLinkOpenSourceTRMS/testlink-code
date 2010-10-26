@@ -5,10 +5,11 @@
  *
  * Filename $RCSfile: buildEdit.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2010/10/21 14:57:08 $ $Author: asimon83 $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2010/10/26 08:10:25 $ $Author: mx-julian $
  *
  * @internal revision
+ *  20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
  *  20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
  *	20100820 - franciscom - init_source_build_selector() - refactoring
  *							refactoring to use only one variable ($gui) in interface to smarty
@@ -29,6 +30,7 @@ require_once(require_web_editor($editorCfg['type']));
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
 
+$date_format_cfg = config_get('date_format');
 
 $op = new stdClass();
 $op->user_feedback = '';
@@ -40,7 +42,7 @@ $smarty = new TLSmarty();
 $tplan_mgr = new testplan($db);
 $build_mgr = new build_mgr($db);
 
-$args = init_args($_REQUEST,$_SESSION);
+$args = init_args($_REQUEST,$_SESSION,$date_format_cfg);
 $gui = new stdClass();
 $gui->main_descr = lang_get('title_build_2') . config_get('gui_title_separator_2') . 
                    lang_get('test_plan') . config_get('gui_title_separator_1') . $args->tplan_name;
@@ -48,12 +50,10 @@ $gui->main_descr = lang_get('title_build_2') . config_get('gui_title_separator_2
 $of = web_editor('notes',$_SESSION['basehref'],$editorCfg);
 $of->Value = getItemTemplateContents('build_template', $of->InstanceName, $args->notes);
 
-
-
 switch($args->do_action)
 {
 	case 'edit':
-	  	$op = edit($args,$build_mgr);
+	  	$op = edit($args,$build_mgr,$date_format_cfg);
         $gui->closed_on_date = $args->closed_on_date;
 		$of->Value = $op->notes;
 		break;
@@ -68,13 +68,13 @@ switch($args->do_action)
 		break;
 
 	case 'do_update':
-	  	$op = doUpdate($args,$build_mgr,$tplan_mgr);
+	  	$op = doUpdate($args,$build_mgr,$tplan_mgr,$date_format_cfg);
 		$of->Value = $op->notes;
 		$templateCfg->template = $op->template;
 		break;
 
 	case 'do_create':
-	  	$op = doCreate($args,$build_mgr,$tplan_mgr);
+	  	$op = doCreate($args,$build_mgr,$tplan_mgr,$date_format_cfg);
 		$of->Value = $op->notes;
 		$templateCfg->template = $op->template;
 		break;
@@ -82,7 +82,10 @@ switch($args->do_action)
 }
 
 // BUGID 3716
-$gui->release_date = $args->release_date_original;
+$dummy = null;
+$gui->release_date = ($op->status_ok) ? 
+                      localize_dateOrTimeStamp(null, $dummy, 'date_format',$args->release_date) : 
+                      $args->release_date_original;
 $gui->operation_descr = $op->operation_descr;
 $gui->user_feedback = $op->user_feedback;
 $gui->buttonCfg = $op->buttonCfg;
@@ -105,7 +108,7 @@ renderGui($smarty,$args,$tplan_mgr,$templateCfg,$of,$gui);
  * @internal revisions:
  *   20100707 - asimon - BUGID 3406 - added source_build_id and copy_tester_assignments
 */
-function init_args($request_hash, $session_hash)
+function init_args($request_hash, $session_hash,$date_format)
 {
 	$args = new stdClass();
 	$request_hash = strings_stripSlashes($request_hash);
@@ -131,9 +134,15 @@ function init_args($request_hash, $session_hash)
 		$args->$key = isset($request_hash[$key]) ? 1 : $value;
 	}
 
-	// BUGID 3716
-    $args->release_date = isset($request_hash['release_date']) && $request_hash['release_date'] != '' ? 
-                          strftime("%Y-%m-%d", strtotime($request_hash['release_date'])) : '';
+	// TODO comment
+	if (isset($request_hash['release_date']) && $request_hash['release_date'] != '') {
+		$date_array = split_localized_date($request_hash['release_date'], $date_format);
+		if ($date_array != null) {
+			// set date in iso format
+			$args->release_date = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
+		}
+	}
+	
     $args->release_date_original = isset($request_hash['release_date']) && $request_hash['release_date'] != '' ?
                                    $request_hash['release_date'] : null;
     
@@ -158,7 +167,7 @@ function init_args($request_hash, $session_hash)
   returns:
 
 */
-function edit(&$argsObj,&$buildMgr)
+function edit(&$argsObj,&$buildMgr,$dateFormat)
 {
 	$binfo = $buildMgr->get_by_id($argsObj->build_id);
 	$op = new stdClass();
@@ -167,6 +176,7 @@ function edit(&$argsObj,&$buildMgr)
 	$op->buttonCfg->value = lang_get('btn_save');
 	$op->notes = $binfo['notes'];
 	$op->user_feedback = '';
+	$op->status_ok = 1;
 
 	$argsObj->build_name = $binfo['name'];
 	$argsObj->is_active = $binfo['active'];
@@ -304,17 +314,16 @@ function renderGui(&$smartyObj,&$argsObj,&$tplanMgr,$templateCfg,$owebeditor,&$g
     20100722 - asimon - BUGID 3406 - using assignment_mgr of tplan_mgr instead of new one
     20100707 - asimon - BUGID 3406 - added assignment_mgr to copy assignments
 */
-function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
+function doCreate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat) //,&$smartyObj)
 {
 	$op = new stdClass();
 	$op->operation_descr = '';
 	$op->user_feedback = '';
 	$op->template = "buildEdit.tpl";
 	$op->notes = $argsObj->notes;
-	$op->status_ok = false;
+	$op->status_ok = 0;
 	$op->buttonCfg = null;
-
-	$check = crossChecks($argsObj,$tplanMgr);
+	$check = crossChecks($argsObj,$tplanMgr,$dateFormat);
     $targetDate=null;
 	if($check->status_ok)
 	{
@@ -341,7 +350,7 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
 			$op->user_feedback = '';
 			$op->notes = '';
 			$op->template = null;
-			$op->status_ok = true;
+			$op->status_ok = 1;
 			logAuditEvent(TLS("audit_build_created",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
 							"CREATE",$buildID,"builds");
 		}
@@ -369,20 +378,20 @@ function doCreate(&$argsObj,&$buildMgr,&$tplanMgr) //,&$smartyObj)
   returns:
 
 */
-function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
+function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr,$dateFormat)
 {
 	$op = new stdClass();
 	$op->operation_descr = '';
 	$op->user_feedback = '';
 	$op->template = "buildEdit.tpl";
 	$op->notes = $argsObj->notes;
-	$op->status_ok = false;
+	$op->status_ok = 0;
 	$op->buttonCfg = null;
 
     $oldObjData = $buildMgr->get_by_id($argsObj->build_id);
     $oldname = $oldObjData['name'];
 
-	$check = crossChecks($argsObj,$tplanMgr);
+	$check = crossChecks($argsObj,$tplanMgr,$dateFormat);
 	if($check->status_ok)
 	{
 		$user_feedback = lang_get("cannot_update_build");
@@ -410,7 +419,7 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
 			$op->user_feedback = '';
 			$op->notes = '';
 			$op->template = null;
-			$op->status_ok = true;
+			$op->status_ok = 1;
 			logAuditEvent(TLS("audit_build_saved",$argsObj->testprojectName,$argsObj->tplan_name,$argsObj->build_name),
 			              "SAVE",$argsObj->build_id,"builds");
 		}
@@ -438,7 +447,7 @@ function doUpdate(&$argsObj,&$buildMgr,&$tplanMgr)
   @internal revision
   20100706 - franciscom - BUGID 3581		
 */
-function crossChecks($argsObj,&$tplanMgr)
+function crossChecks($argsObj,&$tplanMgr,$dateFormat)
 {
 	$op = new stdClass();
 	$op->user_feedback = '';
@@ -453,31 +462,25 @@ function crossChecks($argsObj,&$tplanMgr)
 	// check is date is valid
 	if( $op->status_ok )
 	{
-		$datestring = 'YYYY-MM-DD';
-		$ok_len = strlen($datestring);
-		$ok_pieces_qty = 3;
 		
 		// BUGID 3716
 		$rdate = trim($argsObj->release_date_original);
-		$rdate_len = strlen($rdate) ;
-		if( $rdate_len != 0 && $rdate_len != $ok_len )
-		{
-	    	$op->status_ok = 0;
-		}
-	    else if ($rdate_len == $ok_len )
-	    {
-	    	// cut in pieces
-	    	// BUGID 3716
-	    	$idx_year = 2;
-	    	$idx_month = 0;
-	    	$idx_day = 1;
-	    	$date_pieces = explode('/',$rdate);
-	    	if( count($date_pieces) == $ok_pieces_qty )
-	    	{
-	    		$status_ok = checkdate($date_pieces[$idx_month],$date_pieces[$idx_day],$date_pieces[$idx_year]);	
-	    		$op->status_ok = $status_ok ? 1 : 0;	
-	    	}
-	    }
+		
+		// TODO: comment
+		$date_array = split_localized_date($rdate,$dateFormat);
+
+    	if( $date_array != null )
+    	{
+    		$status_ok = checkdate($date_array['month'],$date_array['day'],$date_array['year']);
+    		$op->status_ok = $status_ok ? 1 : 0;
+    	} else {
+    		$op->status_ok = 0;
+    	}
+    	
+    	// release date is optional
+    	if ( $rdate == "") {
+    		$op->status_ok = 1;
+    	}
 	    
 	    if( $op->status_ok == 0 )
 	    {

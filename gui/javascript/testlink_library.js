@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.109 2010/10/16 09:23:09 franciscom Exp $
+// $Id: testlink_library.js,v 1.110 2010/10/26 08:10:25 mx-julian Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,9 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20101025 - Julian - BUGID 3930: added new parameter dateFormat to showCal() to be able to use
+//                                 localized date formats. Preselecting datepicker with existing
+//                                 date works for all localized date formats
 // 20101016 - franciscom - BUGID 3901: Edit Test Case STEP - scroll window to show selected step 
 // 20101008 - asimon - BUGID 3311
 // 20100922 - asimon - added openExecutionWindow() und openTCEditWindow()
@@ -1017,16 +1020,81 @@ function showHideByClass(tagName,className)
     }
 }
 
-function showCal(id,dateField)
+/*
+function: showCal
+          used to display extjs datepicker
+
+args:
+
+returns:
+
+*/
+
+function showCal(id,dateField,dateFormat)
 {
+	// set default dateFormat if no dateFormat is passed
+	if(dateFormat == null) {
+		dateFormat = "m/d/Y";
+	}
 	var x = document.getElementById(id);
 	x.innerHTML = '';
-	var dp = new Ext.DatePicker({ renderTo:id, format:"m/d/y", idField:dateField });
-	//get the element
+	var dp = new Ext.DatePicker({ renderTo:id, format:dateFormat, idField:dateField });
+	// read value of date input field
 	var el = document.getElementById(dateField);
+	
+	// if value on input field exists use it to preselect datepicker
 	if(el.value != "")
 	{
-		selectedDate = new Date(el.value);
+		/* now we have to convert localized timestamp to a format that "Date" understands
+		 * because datepicker needs Date Object to be able to preselect date according to
+		 * value on input field
+		 */
+		
+		// get char that splits date pieces on localized timestamp ( ".", "/" or "-" )
+		splitChar = ".";
+		if (el.value.indexOf("-") != -1) {
+			splitChar = "-";
+		} 
+		if (el.value.indexOf("/") != -1) {
+			splitChar = "/";
+		}
+		
+		// split the date from input field with splitChar
+		var splitDate = el.value.split(splitChar);
+		
+		// prepare variables for date "pieces"
+		var year = null;
+		var month = null;
+		var day = null;
+		
+		// remove all splitChars (max 2)
+		// TODO do not call replace twice use reg exp
+		dateFormat = dateFormat.replace(splitChar, "");
+		dateFormat = dateFormat.replace(splitChar, "");
+		
+		// get date "pieces" according to dateFormat
+		for(i=0; i < dateFormat.length; i++) {
+			switch (dateFormat.charAt(i)) {
+				case "Y":
+					year = splitDate[i];
+					break;
+				// not necessary right now as all localized timestamps use "Y" -> four digit year
+				//case "y":
+				//	year = splitDate[i];
+				//	break;
+				case "m": 
+					month = splitDate[i];
+					break;
+				case "d": 
+					day = splitDate[i];
+					break;
+			}
+		}
+		
+		// finally create Date object to preselect date on datepicker
+		// subtract 1 from month as january has value 0
+		selectedDate = new Date(year,(month-1),day);
+		
 		if (isNaN(selectedDate.getTime()))
 		{
 			 selectedDate = '';
@@ -1038,10 +1106,21 @@ function showCal(id,dateField)
 	dp.addListener("select", onSelect);
 }
 
+/*
+function: onSelect
+          used by showCal (only) to handle date select event
+
+args:
+
+returns:
+
+*/
+
 function onSelect(datePicker,date)
 {
 	var dt = new Date(date);
-	document.getElementById(datePicker.idField).value = dt.format("m/d/Y");
+	// use the same output dateformat as datepicker uses
+	document.getElementById(datePicker.idField).value = dt.format(datePicker.format);
 	datePicker.destroy();
 }
 

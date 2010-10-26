@@ -9,12 +9,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.31 2010/10/17 09:53:03 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.32 2010/10/26 08:10:25 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
  * @internal Revisions:
- *
+ *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker 
  * 	20101017 - franciscom - added new image -> import
  *							reorder of image definition to remove duplicates and use only tlImages
  * 	20100901 - franciscom - added new image 
@@ -230,7 +230,13 @@ class TLSmarty extends Smarty
         
         $this->assign('gsmarty_html_select_date_field_order',
                       $g_locales_html_select_date_field_order[$my_locale]);
+                      
         $this->assign('gsmarty_date_format',$g_locales_date_format[$my_locale]);
+        
+        // add smarty variable to be able to set localized date format on datepicker
+        $this->assign('gsmarty_datepicker_format',
+                      str_replace('%','',$g_locales_date_format[$my_locale]));
+                      
         $this->assign('gsmarty_timestamp_format',$g_locales_timestamp_format[$my_locale]);
         
         // -----------------------------------------------------------------------------

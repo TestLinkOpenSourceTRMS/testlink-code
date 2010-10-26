@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.18 2010/10/21 14:57:08 asimon83 Exp $
+$Id: buildEdit.tpl,v 1.19 2010/10/26 08:10:25 mx-julian Exp $
 
 Purpose: smarty template - Add new build and show existing
 
 Rev:
+    20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
     20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
     20100820 - franciscom - refactored to use only $gui as interface from php code
     20100707 - asimon - BUGID 3406: addition of items for copying user
@@ -104,12 +105,12 @@ function validateForm(f)
     <tr>
 		    <th style="background:none;">{$labels.release_date}</th>
 		    <td>
-		    {* BUGID 3716 *}
+		    {* BUGID 3716, BUGID 3930 *}
                 <input type="text" 
                        name="release_date" id="release_date" 
 				       value="{$gui->release_date}" />
 				<img alt="show calendar" src="{$smarty.const.TL_THEME_IMG_DIR}/calendar.gif"
-				     onclick="showCal('release_date-cal','release_date');" >
+				     onclick="showCal('release_date-cal','release_date','{$gsmarty_datepicker_format}');" >
 				<div id="release_date-cal" style="position:absolute;width:240px;left:300px;z-index:1;"></div>
         </td>
 		</tr>

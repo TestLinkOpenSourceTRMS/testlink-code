@@ -9,10 +9,11 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.74 2010/10/22 14:27:36 asimon83 Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.75 2010/10/26 11:47:53 mx-julian Exp $
  *
  * @internal Revisions:
- *  20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
+ *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
+ *  20101022 - asimon - BUGID 3716 - replaced old separated inputs for day/month/year by ext js calendar
  *	20101019 - eloff - BUGID 3794 - added contribution by rtessier
  *	20091027 - franciscom - BUGID 2500
  *	20090409 - amitkhullar- code refactor for results object
@@ -29,9 +30,10 @@ require_once('users.inc.php');
 require_once('displayMgr.php');
 testlinkInitPage($db,false,false,"checkRights");
 $templateCfg = templateConfiguration();
+$date_format_cfg = config_get('date_format');
 
 $args = init_args();
-$gui = initializeGui($db,$args);
+$gui = initializeGui($db,$args,$date_format_cfg);
 $mailCfg = buildMailCfg($gui);
 
 $smarty = new TLSmarty();
@@ -46,7 +48,7 @@ displayReport($templateCfg->template_dir . $templateCfg->default_template, $smar
 /**
  * initialize Gui
  */
-function initializeGui(&$dbHandler,&$argsObj)
+function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
 {
     $reports_cfg = config_get('reportsCfg');
     
@@ -69,11 +71,25 @@ function initializeGui(&$dbHandler,&$argsObj)
    
     $gui->resultsCfg = config_get('results');
 
-    // BUGID 3716
-    $gui->startTime = isset($_REQUEST['selected_start_date']) && $_REQUEST['selected_start_date'] != '' ? 
-	                  strftime("%Y-%m-%d", strtotime($_REQUEST['selected_start_date'])) : '';
-	$gui->endTime = isset($_REQUEST['selected_end_date']) && $_REQUEST['selected_end_date'] != '' ? 
-	                strftime("%Y-%m-%d", strtotime($_REQUEST['selected_end_date'])) : '';
+    // BUGID 3716, BUGID 3930
+	// convert starttime to iso format for database usage
+    if (isset($_REQUEST['selected_start_date']) && $_REQUEST['selected_start_date'] != '') {
+		$date_array = split_localized_date($_REQUEST['selected_start_date'], $dateFormat);
+		if ($date_array != null) {
+			// set date in iso format
+			$gui->startTime = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
+		}
+	}
+	
+	// convert starttime to iso format for database usage
+    if (isset($_REQUEST['selected_end_date']) && $_REQUEST['selected_end_date'] != '') {
+		$date_array = split_localized_date($_REQUEST['selected_end_date'], $dateFormat);
+		if ($date_array != null) {
+			// set date in iso format
+			$gui->endTime = $date_array['year'] . "-" . $date_array['month'] . "-" . $date_array['day'];
+		}
+	}
+	
 	$start_hour = isset($_REQUEST['start_Hour']) ? $_REQUEST['start_Hour'] : "00";
 	$gui->startTime = $gui->startTime . " " . $start_hour . ":00:00";
 	$end_hour = isset($_REQUEST['end_Hour']) ? $_REQUEST['end_Hour'] : "00";

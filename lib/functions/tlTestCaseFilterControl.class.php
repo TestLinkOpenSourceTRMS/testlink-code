@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.29 2010/10/19 12:37:03 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.30 2010/10/26 08:22:27 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,8 @@
  *
  * @internal Revisions:
  *
+ * 20101026 - asimon - BUGID 3930: changing date format according to given locale
+ * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
  * 20101019 - asimon - BUGID 3910: show filter only if test priority management is enabled
  * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
  * 20101011 - asimon - BUGID 3884: added handling for datetime custom fields
@@ -1373,6 +1375,11 @@ class tlTestCaseFilterControl extends tlFilterControl {
 		$key = 'filter_custom_fields';
 		$no_warning = true;
 		
+		// BUGID 3930
+		global $g_locales_date_format;
+		$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+		$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
+		
 		// BUGID 3566: show/hide CF
 		$collapsed = isset($_SESSION['cf_filter_collapsed']) ? $_SESSION['cf_filter_collapsed'] : 0;
 		$collapsed = isset($_REQUEST['btn_toggle_cf']) ? !$collapsed : $collapsed;
@@ -1399,38 +1406,35 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$type = $cf['type'];
 				$verbose_type = trim($this->cfield_mgr->custom_field_types[$type]);
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
-
-				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
+				
+				// BUGID 3716
+				$value = isset($_REQUEST[$cf_input_name . '_input']) ? $_REQUEST[$cf_input_name . '_input'] : null;
 
 				// BUGID 3884: added filtering for datetime custom fields
 				if ($verbose_type == 'datetime') {
 					// if cf is a date field, convert the three given values to unixtime format
-					if (isset($_REQUEST[$cf_input_name . '_day']) && $_REQUEST[$cf_input_name . '_day'] != 0
-					&& isset($_REQUEST[$cf_input_name . '_month']) && $_REQUEST[$cf_input_name . '_month'] != 0
-					&& isset($_REQUEST[$cf_input_name . '_year']) && $_REQUEST[$cf_input_name . '_year'] != 0
-					&& isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != 0
-					&& isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != 0
-					&& isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != 0) {
-						$day = $_REQUEST[$cf_input_name . '_day'];
-						$month = $_REQUEST[$cf_input_name . '_month'];
-						$year = $_REQUEST[$cf_input_name . '_year'];
+					if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != ''
+					&& isset($_REQUEST[$cf_input_name . '_hour']) && $_REQUEST[$cf_input_name . '_hour'] != ''
+					&& isset($_REQUEST[$cf_input_name . '_minute']) && $_REQUEST[$cf_input_name . '_minute'] != ''
+					&& isset($_REQUEST[$cf_input_name . '_second']) && $_REQUEST[$cf_input_name . '_second'] != '') {
+						$date = $_REQUEST[$cf_input_name . '_input'];
+						
 						$hour = $_REQUEST[$cf_input_name . '_hour'];
 						$minute = $_REQUEST[$cf_input_name . '_minute'];
 						$second = $_REQUEST[$cf_input_name . '_second'];
-						$value = mktime($hour, $minute, $second, $month, $day, $year);
+
+						$date_array = date_parse_from_format($date_format, $date);
+						$value = mktime($hour, $minute, $second, $date_array['month'], $date_array['day'], $date_array['year']);
 					}
 				}
 
 				if ($verbose_type == 'date') {
 					// if cf is a date field, convert the three given values to unixtime format
 					// BUGID 3883: only set values if different from 0
-					if (isset($_REQUEST[$cf_input_name . '_day']) && $_REQUEST[$cf_input_name . '_day'] != 0
-					&& isset($_REQUEST[$cf_input_name . '_month']) && $_REQUEST[$cf_input_name . '_month'] != 0
-					&& isset($_REQUEST[$cf_input_name . '_year']) && $_REQUEST[$cf_input_name . '_year'] != 0) {
-						$day = $_REQUEST[$cf_input_name . '_day'];
-						$month = $_REQUEST[$cf_input_name . '_month'];
-						$year = $_REQUEST[$cf_input_name . '_year'];
-						$value = mktime(0, 0, 0, $month, $day, $year);
+					if (isset($_REQUEST[$cf_input_name . '_input']) && $_REQUEST[$cf_input_name . '_input'] != '') {
+						$date = $_REQUEST[$cf_input_name . '_input'];						
+						$date_array = date_parse_from_format($date_format, $date);
+						$value = mktime(0, 0, 0, $date_array['month'], $date_array['day'], $date_array['year']);
 					}
 				}
 
@@ -1461,7 +1465,7 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				// don't show textarea inputs here, they are too large for filterpanel
 				if ($verbose_type != 'text area') {
 					$cf_html_code .= '<tr class="cfRow"><td>' . htmlspecialchars($label) . '</td><td>' .
-					                 $this->cfield_mgr->string_custom_field_input($cf, '', $cf_size) .
+					                 $this->cfield_mgr->string_custom_field_input($cf, '', $cf_size, true) .
 					                 '</td></tr>';
 				}
 			}

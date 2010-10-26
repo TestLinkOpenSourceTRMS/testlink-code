@@ -9,11 +9,13 @@
  * @author 		franciscom; Piece copied form Mantis and adapted to TestLink needs
  * @copyright 	2002 - 2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: date_api.php,v 1.6 2010/04/09 19:47:09 franciscom Exp $
+ * @version    	CVS: $Id: date_api.php,v 1.7 2010/10/26 08:22:27 asimon83 Exp $
  * @link 		http://www.teamst.org/
  *
  * @internal Revisions:
  * 
+ *  20101026 - asimon - BUGID 3930: changing date format according to given locale
+ *  20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
  *	20100405 - franciscom - fixed problems found while trying to solve BUGID 3295
  *							some logic on create_range_option_list() was not clear
  *							and may be has never worked ok !!!.
@@ -88,7 +90,9 @@ function create_year_option_list( $p_year = 0 )
 	return $year_option;
 }
 
-	
+
+/* deprecated as calender is now used to select date on create_date_selection_set
+
 function create_year_range_option_list( $p_year = 0, $p_start = 0, $p_end = 0) 
 {
 	$year_option='';
@@ -121,27 +125,37 @@ function create_year_range_option_list( $p_year = 0, $p_start = 0, $p_end = 0)
 	}
 	return $year_option;
 }
+*/
 
 
 // Added contribution (done on mantis) to manage datetime
-/** used in cfield_mgr.class.php only */
+/** used in cfield_mgr.class.php only 
+20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface*/
 function create_date_selection_set( $p_name, $p_format, $p_date=0, 
                                     $p_default_disable=false, $p_allow_blank=false, 
-                                    $p_year_start=0, $p_year_end=0) 
+                                    $show_on_filters=false)
 {
+	// BUGID 3930
+	global $g_locales_date_format;
+	$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+	$date_format = $g_locales_date_format[$locale];
+	$date_format_without_percent = str_replace('%', '', $g_locales_date_format[$locale]);
+	
+	// if calender shall be shown on filter position has to be fixed to fully display
+	$calender_div_position = ($show_on_filters) ? "fixed" : "absolute";
+	
 	$str_out='';
 	$t_chars = preg_split('//', $p_format, -1, PREG_SPLIT_NO_EMPTY) ;
 	if ( $p_date != 0 ) {
 		// 20080816 - $t_date = preg_split('/-/', date( 'Y-m-d', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
-		$t_date = preg_split('/-| |:/', date( 'Y-m-d H:i:s', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
-		
+		$t_date = preg_split('/-| |:/', date('Y-m-d H:i:s', $p_date), -1, PREG_SPLIT_NO_EMPTY) ;
 	} else {
 		// 20080816 -  $t_date = array( 0, 0, 0 );
 		// 20100405 - think is WRONG use valid value (0) for time
 		// $t_date = array( 0, 0, 0, 0, 0, 0 );
-		$t_date = array( 0, 0, 0, -1, -1, -1 );
+		$t_date = array(-1, -1, -1, -1, -1, -1);
 	}
-	
+	//$t_date = $p_date;
 	$t_disable = '' ;
 	if ( $p_default_disable == true ) {
 		$t_disable = 'disabled' ;
@@ -153,7 +167,22 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 		$t_blank_line_time = "<option value=\"-1\"></option>" ;
 	}
 	
+	$m = $t_date[1];
+	$d = $t_date[2];
+	$y = $t_date[0];
+	$time = mktime(0, 0, 0, $m, $d, $y);
+	$formatted_date = $time != 0 ? strftime($date_format, $time) : '';
+	
+	$str_out .= '<input type="text" name="' . $p_name.'_input" size="10" id="' . $p_name.'_input" ' .
+                'value="' . $formatted_date . '"/>' .
+                '<img alt="show calendar" src="' . TL_THEME_IMG_DIR . '/calendar.gif" ' .
+                'onclick=showCal(\'' . $p_name . '\',\'' . $p_name.'_input\',\'' . $date_format_without_percent . '\'); > ' .
+                '<div id="' . $p_name . '" style="position:' . $calender_div_position . ';z-index:1;"></div>';
+	
 	foreach( $t_chars as $t_char ) {
+
+		/* not needed anymore - calender does this
+
 		if (strcmp( $t_char, "M") == 0) {
 			$str_out .= "<select name=\"" . $p_name . "_month\" $t_disable>" ;
 			$str_out .=  $t_blank_line_date ;
@@ -178,6 +207,7 @@ function create_date_selection_set( $p_name, $p_format, $p_date=0,
 			$str_out .= create_year_range_option_list( $t_date[0], $p_year_start, $p_year_end ) ;
 			$str_out .= "</select>\n" ;
 		}
+		*/
 		
 		// -----------------------------------------------------------------
 		if (strcasecmp( $t_char, "H") == 0) {

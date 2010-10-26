@@ -7,11 +7,13 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.92 2010/10/12 07:44:35 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.93 2010/10/26 08:22:27 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101026 - asimon - BUGID 3930: changing date format according to given locale
+ * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
  * 20101012 - franciscom - new methods html_table_inputs(),getValuesFromUserInput();
  * 20101011 - franciscom - new method buildHTMLInputName()
  * 20100930 - asimon - added platform_id to get_linked_cfields_at_execution()
@@ -603,6 +605,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     returns: html string
 
     rev :
+         20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
          20080816 - franciscom
          added code to manange user defined (and code developed) Custom Fields.
          Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
@@ -613,7 +616,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
          20070104 - franciscom - added 'multiselection list'
 
   */
-	function string_custom_field_input($p_field_def,$name_suffix='',$field_size=0)
+	function string_custom_field_input($p_field_def,$name_suffix='',$field_size=0,$show_on_filters=false)
 	{
 
 		$str_out='';
@@ -747,7 +750,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
 		case 'date':
       		$str_out .= create_date_selection_set($input_name,config_get('date_format'),
-                                                  $t_custom_field_value, false, true) ;
+                                                  $t_custom_field_value, false, true, $show_on_filters) ;
 		break;
       
       case 'datetime':
@@ -760,7 +763,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
       // on date() calls (that are used in create_date_selection_set() ).
       $datetime_format=config_get('date_format') . " " .$cfg->custom_fields->time_format;
       $str_out .=create_date_selection_set($input_name,$datetime_format,
-                                           $t_custom_field_value, false, true,date( "Y" )-1) ;
+                                           $t_custom_field_value, false, true, $show_on_filters) ;
       break;
       
 
@@ -1715,17 +1718,22 @@ function name_is_unique($id,$name)
              value: hash ('type_id'  => field_type_id,
                           'cf_value' => value)
 
-    rev: 20080816 - franciscom
+    rev: 
+		20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
+		20080816 - franciscom
          - added code to manange user defined (and code developed) Custom Fields.
            Important: solution is a mix of own ideas and Mantis 1.2.0a1 approach
          - added logic to manage datetime custom field type.  
   */
   function _build_cfield($hash,$cf_map)
   {
+  	// BUGID 3930
+	global $g_locales_date_format;
+	$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+	$date_format = str_replace('%', '', $g_locales_date_format[$locale]);
+  	
     // carved in the stone
-    $html_date_input_suffix = array('day' => true,
-                                    'month' => true,
-                                    'year' => true,
+    $html_date_input_suffix = array('input' => true,
                                     'hour' => true,
                                     'minute' => true,
                                     'second' => true);
@@ -1776,7 +1784,7 @@ function name_is_unique($id,$name)
           // When using Custom Fields on Testplan Design 
           // another piece is added (testplan_tcversion.id) then for a date CF, 
           // date part indicator is Position 5, instead of 4
-          //
+          //        	
           $dummy=explode('_',$key);
           $last_idx=count($dummy)-1;
           $the_value=$value;
@@ -1812,48 +1820,37 @@ function name_is_unique($id,$name)
             }
             else
             {
-              $value=is_array($value) ? $value[0] :$value;
+              $value=is_array($value) ? $value[0] : $value;
             }
             $cfield[$field_id]['cf_value']=$value;
           break;
 
           case 'date':
-            if (($value['year'] == 0) || ($value['month'] == 0) || ($value['day'] == 0))
+          	if (($value == 0) || ($value == ''))
             {
               $cfield[$field_id]['cf_value']='';
             }
             else
             {
-              $cfield[$field_id]['cf_value']=strtotime($value['year'] . "-" .
-                                                       $value['month'] . "-" . $value['day']);
-            }
+				$parsed_value = date_parse_from_format($date_format, $value['input']);
+				$parsed_value = mktime(0, 0, 0, $parsed_value['month'], $parsed_value['day'], $parsed_value['year']);
+				$cfield[$field_id]['cf_value'] = $parsed_value;
+			}
           break;
           
           case 'datetime':
-            if (($value['year'] == 0) || ($value['month'] == 0) || ($value['day'] == 0))
-            {
+          	
+			if ($value['input'] == '') {
               $cfield[$field_id]['cf_value']='';
             }
             else
             {
-              // mktime(int hour, int minute, int second, int month, int day, int year); 
-              // to avoid problems with date formats on strtotime().
-              // I've used this PHP manual user's note:
-              // thalesjacobi at thalesjacobi dot net (06-Nov-2007 09:50)
-              // strtotime() reads the timestamp in en_US format if you want to change 
-              // the date format with this number, you should previously know the format 
-              // of the date you are trying to parse. Let's say you want to do this :
-              // strftime("%Y-%m-%d",strtotime("05/11/2007"));
-              // It will understand the date as 11th of may 2007, and not 5th of november 2007. 
-              // In this case I would use: 
-              // $date = explode("/","05/11/2007");
-              // strftime("%Y-%m-%d",mktime(0,0,0,$date[1],$date[0],$date[2]));
-              // Much reliable but you must know the date format before. 
-              $cfield[$field_id]['cf_value']=mktime($value['hour'],$value['minute'],$value['second'],
-                                                    $value['month'],$value['day'],$value['year']);
+            	$parsed_value = date_parse_from_format($date_format, $value['input']);
+            	$cfield[$field_id]['cf_value'] = mktime($value['hour'], $value['minute'], $value['second'],
+            	                                        $parsed_value['month'], $parsed_value['day'], 
+            	                                        $parsed_value['year']);
             }
-          break;
-         
+          break;         
 
           default:
             $dynamic_call='build_cfield_' . str_replace(' ', '_', $verbose_type);

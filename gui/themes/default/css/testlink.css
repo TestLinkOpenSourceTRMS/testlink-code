@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.49 2010/10/27 00:11:02 erikeloff Exp $
+$Id: testlink.css,v 1.50 2010/10/27 06:41:09 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
@@ -289,6 +289,10 @@ button {
 /** Fix for buttons in date picker */
 .x-date-mp-btns button {
     background: inherit;
+}
+
+.x-date-middle button {
+	background: transparent;
 }
 
 /* Reset to flat background */

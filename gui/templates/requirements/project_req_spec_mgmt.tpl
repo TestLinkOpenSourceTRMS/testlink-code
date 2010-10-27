@@ -1,8 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: project_req_spec_mgmt.tpl,v 1.16 2010/10/26 13:11:34 mx-julian Exp $
+$Id: project_req_spec_mgmt.tpl,v 1.17 2010/10/27 09:40:20 mx-julian Exp $
 
-rev: 20080415 - franciscom - refactoring
+rev: 
+  20101027 - Julian - reverted accidentally commited experimental code
+  20080415 - franciscom - refactoring
 *}
 {* ------------------------------------------------------------------------- *}
 
@@ -20,8 +22,6 @@ rev: 20080415 - franciscom - refactoring
 {assign var="url_args" value="reqImport.php?scope=tree&tproject_id="}
 {assign var="req_import_url"  value="$basehref$req_module$url_args"}
 
-{assign var="url_args" value="relationExportGraph.php?tproject_id="}
-{assign var="rel_export_url"  value="$basehref$req_module$url_args"}
 
 {include file="inc_head.tpl"}
 
@@ -42,10 +42,6 @@ rev: 20080415 - franciscom - refactoring
 			<input type="button" id="import_all" name="import_all"
 			       value="{$labels.btn_import}"
 			       onclick="location='{$req_import_url}{$gui->tproject_id}'" />
-
-			<input type="button" id="export_relation_graph" name="export_relation_graph"
-			       value="Relations Graph Definition"
-			       onclick="location='{$rel_export_url}{$gui->tproject_id}'" />
 		</form>
 	</div>
 </div>

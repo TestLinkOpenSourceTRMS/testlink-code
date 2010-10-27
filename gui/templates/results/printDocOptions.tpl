@@ -1,9 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.18 2010/04/08 15:11:32 asimon83 Exp $ 
+$Id: printDocOptions.tpl,v 1.19 2010/10/27 13:45:16 asimon83 Exp $ 
 Purpose: show tree on print feature
 
-rev: 20080820 - franciscom - added code to manage EXTJS tree component
+rev: 
+	20101027 - asimon - BUGID 3946: reqirement specification tree size
+	20080820 - franciscom - added code to manage EXTJS tree component
 
 *}
 {lang_get var="labels"
@@ -98,7 +100,7 @@ rev: 20080820 - franciscom - added code to manage EXTJS tree component
 </form>
 </div>
 
-<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
+<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 </body>
 </html>

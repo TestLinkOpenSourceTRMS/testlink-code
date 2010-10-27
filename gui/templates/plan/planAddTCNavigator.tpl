@@ -1,11 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.25 2010/06/24 17:25:52 asimon83 Exp $
+$Id: planAddTCNavigator.tpl,v 1.26 2010/10/27 13:45:16 asimon83 Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
-Revisions:          
+Revisions:     
+  20101027 - asimon - BUGID 3946: reqirement specification tree size     
   20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
                       them with new included template inc_tc_filter_panel.tpl
   20100417 - franciscom - BUGID 2498 - filter by test case spec importance
@@ -113,7 +114,7 @@ function pre_submit()
 {* BUGID 3301 *}
 {include file='inc_filter_panel.tpl'}
 
-<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
+<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 {* 20061030 - update the right pane *}
 <script type="text/javascript">

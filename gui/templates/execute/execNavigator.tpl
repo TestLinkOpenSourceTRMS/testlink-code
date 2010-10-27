@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.49 2010/10/07 19:52:50 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.50 2010/10/27 13:45:16 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20101027 - asimon - BUGID 3946: reqirement specification tree size
   20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
   20100625 - asimon - removed old ext js constant
   20100610 - asimon - BUGID 3301 - new included template inc_filter_panel.tpl
@@ -114,7 +115,7 @@ function openExportTestPlan(windows_title,tplan_id,platform_id)
 
 
 {* ===================================================================== *}
-<div id="tree" style="overflow:auto; height:380px;border:1px solid #c3daf9;"></div>
+<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 {*if $gui->src_workframe != ''}
 <script type="text/javascript">

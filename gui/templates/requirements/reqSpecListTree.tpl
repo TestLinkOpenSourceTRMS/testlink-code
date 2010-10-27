@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.10 2010/08/11 23:08:13 asimon83 Exp $ 
+$Id: reqSpecListTree.tpl,v 1.11 2010/10/27 13:45:16 asimon83 Exp $ 
 show requirement specifications tree menu
 
 rev: 
+  20101027 - asimon - BUGID 3946: reqirement specification tree size
   20100808 - asimon - first implementation of requirement filtering,
                       included filter panel template
   20080831 - franciscom - treeCfg
@@ -86,6 +87,6 @@ var req_manager_url = '{$gui->req_manager_url}';
 {* include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
 
-<div id="tree" style="overflow:auto; height:400px;border:1px solid #c3daf9;"></div>
+<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 </body>
 </html>

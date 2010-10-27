@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.48 2010/10/27 00:09:42 erikeloff Exp $
+$Id: testlink.css,v 1.49 2010/10/27 00:11:02 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
@@ -284,6 +284,11 @@ button {
    -moz-border-radius: 3px;
    -webkit-border-radius: 3px;
    border-radius: 3px;
+}
+
+/** Fix for buttons in date picker */
+.x-date-mp-btns button {
+    background: inherit;
 }
 
 /* Reset to flat background */

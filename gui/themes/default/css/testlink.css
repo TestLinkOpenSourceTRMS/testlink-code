@@ -1,10 +1,12 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.52 2010/10/28 14:34:40 erikeloff Exp $
+$Id: testlink.css,v 1.53 2010/10/28 16:27:35 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
 20101028 - eloff - reverted to strict table changes and added workaround for date picker
+                   BUGID 3944 - do not style file uploads fields
+                   use standard radio and checkboxes style
 20101023 - Julian - changed sencondary font to arial as 'Verdana' is pretty space consuming
                   - reverted primary font to 'Trebuchet MS' on Franciscos wish
 20101022 - eloff - changed the new button style a little to show focus
@@ -270,7 +272,11 @@ div.menu_bubble h3{
  * Give buttons, submit, reset a gradient 3d look and other components
  * text/password-input, textarea and select a flat appearance.
  */
-input,
+input[type="button"],
+input[type="password"],
+input[type="reset"],
+input[type="submit"],
+input[type="text"],
 select,
 textarea,
 button {
@@ -286,9 +292,7 @@ button {
 }
 
 /* Reset to flat background */
-input[type="checkbox"],
 input[type="password"],
-input[type="radio"],
 input[type="text"],
 select,
 textarea {
@@ -317,9 +321,7 @@ button:focus {
    border: 1px solid #123;
 }
 
-input[type="checkbox"]:focus,
 input[type="password"]:focus,
-input[type="radio"]:focus,
 input[type="text"]:focus,
 select:focus,
 textarea:focus {

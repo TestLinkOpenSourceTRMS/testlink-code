@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.21 2010/10/28 12:44:03 asimon83 Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.22 2010/10/28 13:32:28 mx-julian Exp $
 
 rev:
      20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze requirements
@@ -48,7 +48,8 @@ rev:
             {* BUGID 3954 *}
             <input type="button" name="freeze_req_spec" value="{$labels.btn_freeze_req_spec}"
                    onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'|escape}',
-                   '{$freeze_msgbox_title}', '{$freeze_warning_msg}',pF_freeze_req_spec);"	/>
+                   '{$freeze_msgbox_title|escape:'javascript'|escape}', '{$freeze_warning_msg|escape:'javascript'|escape}',
+                   pF_freeze_req_spec);"	/>
 
   		{/if}
 

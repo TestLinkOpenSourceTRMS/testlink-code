@@ -1,11 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.50 2010/10/27 06:41:09 mx-julian Exp $
+$Id: testlink.css,v 1.51 2010/10/28 14:34:06 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
-20101027 - eloff - BUGID 3917 - refactoring of buttons
-                   more strict styles on nested tables
+20101028 - eloff - reverted to strict table changes and added workaround for date picker
 20101023 - Julian - changed sencondary font to arial as 'Verdana' is pretty space consuming
                   - reverted primary font to 'Trebuchet MS' on Franciscos wish
 20101022 - eloff - changed the new button style a little to show focus
@@ -483,8 +482,7 @@ table.common {
 	min-width:		50%;
 }
 
-/** Note: use direct child selector (>) to not influence nested tables */
-table.common > th, table.simple > th{
+table.common th, table.simple th{
   	overflow:		hidden;
   	color:			#15428b;
   	font:			bold 11px tahoma,arial,verdana,sans-serif;
@@ -494,15 +492,11 @@ table.common > th, table.simple > th{
   	background:		transparent url(../images/white-top-bottom.gif) repeat-x 0 -1px;
 }
 
-table.common > td,
-table.common > th{
+table.common td,th{
 	padding:		3px;
 }
 
-table.common > td,
-table.common > th,
-table.simple > td,
-table.simple > th {
+table.common td, table.simple td, th{
 	vertical-align: top;
 }
 

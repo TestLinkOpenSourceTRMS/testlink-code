@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.742 2010/10/26 13:11:34 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.743 2010/10/28 06:40:14 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1207,8 +1207,8 @@ $TLS_home = "Project";
 $TLS_link_logout = "Logout";
 $TLS_product = "Test Project";
 $TLS_product_role = "Test Project role ";
-$TLS_search_testcase = "Search";
-$TLS_title_edit_personal_data = "Personal";
+$TLS_search_testcase = "Search Test Case by ID";
+$TLS_title_edit_personal_data = "My Settings";
 $TLS_title_admin = "User Management";
 $TLS_title_events = "Events";
 $TLS_title_execute = "Test Execution";

@@ -4,12 +4,14 @@
  *
  * Filename $RCSfile: navBar.php,v $
  *
- * @version $Revision: 1.53 $
- * @modified $Date: 2009/11/11 14:10:29 $ $Author: havlat $
+ * @version $Revision: 1.54 $
+ * @modified $Date: 2010/10/28 06:40:14 $ $Author: mx-julian $
  *
  * This file manages the navigation bar. 
  *
  * rev :
+ *       20101028 - Julian - BUGID 3950 - use config parameter to dynamically set input size
+                                          of quick tc search
  *       20090404 - franciscom - adjust size of test case input using len of tcase prefix
  *       20080504 - franciscom - add code based on contribution by Eugenia Drosdezki
  *                               get files present on docs directory, and pass to template.
@@ -24,16 +26,20 @@ testlinkInitPage($db,true);
 $tproject_mgr = new testproject($db);
 $args = init_args();
 $gui = new stdClass();
+$gui_cfg = config_get("gui");
 
 $gui->tprojectID = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
 $gui->tcasePrefix = '';
-$gui->searchSize = 8; // magic default
+// Julian: left magic here - do think this value will never be used as a project with a prefix
+//         has to be created after first login -> searchSize should be set dynamically.
+//         If any reviewer agrees on that feel free to change it.
+$gui->searchSize = 8;
 if($gui->tprojectID > 0)
 {
     $gui->tcasePrefix = $tproject_mgr->getTestCasePrefix($gui->tprojectID) . 
                         config_get('testcase_cfg')->glue_character;
                         
-    $gui->searchSize = tlStringLen($gui->tcasePrefix) + 7; // magic again
+    $gui->searchSize = tlStringLen($gui->tcasePrefix) + $gui_cfg->dynamic_quick_tcase_search_input_size;
 }
 
 $user = $_SESSION['currentUser'];

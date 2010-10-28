@@ -18,18 +18,19 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.331 2010/10/14 20:29:26 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.332 2010/10/28 06:40:14 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *  20101014 - Julian - BUGID 3893: added $tlCfg->metrics_dashboard->show_test_plan_status
- *	20101010 - franciscom - BUGID 3872: Admin should be able to set a new password for users - $tlCfg->password_reset_send_method
+ *  20101028 - Julian - BUGID 3950 - added $tlCfg->gui->dynamic_quick_tcase_search_input_size
+ *  20101014 - Julian - BUGID 3893 - added $tlCfg->metrics_dashboard->show_test_plan_status
+ *	20101010 - franciscom - BUGID 3872 - Admin should be able to set a new password for users - $tlCfg->password_reset_send_method
  *  20100924 - asimon - added $tlCfg->enableTableExportButton
  *  20100915 - amitkhullar - BUGID 3639 - added $tlcfg->testcase_reorder_by for Reorder Test Cases
  *  20100915 - Julian - BUGID 3777 - added $tlCfg->req_cfg->allow_insertion_of_last_doc_id
  *  20100901 - asimon - re-enabled filter for assigned user when assigning testcases
  *	20100814 - franciscom - BUGID 3681 - new BTS youtrack (www.jetbrains.com)	
- *  20100810 - asimon - BUGID 3317: added $tlCfg->req_cfg->external_req_management
+ *  20100810 - asimon - BUGID 3317 - added $tlCfg->req_cfg->external_req_management
  *  20100810 - asimon - added TC ID filter for Test Cases to $tlCfg->tree_filter_cfg
  *  20100809 - asimon - BUGID 3662 - disabled advanced filter mode choice for TC editing mode
  *  20100808 - asimon - added requirement filtering options to $tlCfg->tree_filter_cfg
@@ -445,6 +446,14 @@ $tlCfg->gui->show_icon_edit = false;
  * 		'ORDER_BY nodes_hierarchy.id DESC' -> similar effect to order last created firts
  **/
 $tlCfg->gui->tprojects_combo_order_by = 'ORDER BY nodes_hierarchy.id DESC';
+
+/** Configure the input size of test case search by id on navigation bar.
+ *  This value will be added to the length of the prefix to dynamically set input size.
+ *  Example: prefix is "projectA-" -> length of prefix is 9
+ *  Now the here defined value (default: 6) will be added to the prefix length
+ *  -> Input field will have an input size of 15
+ **/
+$tlCfg->gui->dynamic_quick_tcase_search_input_size = 6;
 
 // used to round percentages on metricsDashboard.php
 $tlCfg->dashboard_precision = 2;

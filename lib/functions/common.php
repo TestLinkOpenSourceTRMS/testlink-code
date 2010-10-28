@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.199 2010/10/26 08:10:25 mx-julian Exp $
+ * @version    	CVS: $Id: common.php,v 1.200 2010/10/28 06:40:15 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
@@ -286,7 +286,7 @@ function initTopMenu(&$db)
 				{
 					$_SESSION['testprojectTopMenu'] .= "<a href='{$element['url']}' " .
 						"target='{$element['target']}' accesskey='{$element['shortcut']}'" .
-	     				"tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> |";
+	     				"tabindex=''" . $idx++ . "''>" . lang_get($element['label'])."</a> | ";
 				}
 			}
 		}

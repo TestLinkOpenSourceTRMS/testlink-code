@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tc_exec_assignment.php,v 1.60 2010/10/24 16:48:32 franciscom Exp $
+ * @version    	CVS: $Id: tc_exec_assignment.php,v 1.61 2010/10/28 15:05:23 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal revisions:
+ * 20101028 - asimon - BUGID 3945: Assign Test Case Execution to a build shows all the test cases on applied filters
  * 20101024 - franciscom - method renamed to getFilteredSpecView() + changes in interface
  *						   BUGID 3934: Assign Test Case Execution - Execution type filter does not affect right pane	
  * 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
@@ -186,7 +187,8 @@ switch($args->level)
 		// BUGID 3406
 		$filters = array();
 		$filters['keywordsFilter'] = $keywordsFilter;
-		$filters['tcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
+		// BUGID 3945: tcaseFilter --> testcaseFilter
+		$filters['testcaseFilter'] = (isset($args->testcases_to_show)) ? $args->testcases_to_show : null;
 		$filters['assignedToFilter'] = property_exists($args,'filter_assigned_to') ? $args->filter_assigned_to : null;
 		$filters['executionTypeFilter'] = $args->control_panel['filter_execution_type'];
 		$filters['cfieldsFilter'] = $args->control_panel['filter_custom_fields'];

@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.51 2010/10/28 14:34:06 erikeloff Exp $
+$Id: testlink.css,v 1.52 2010/10/28 14:34:40 erikeloff Exp $
 
 Purpose: Default TestLink CSS
 
@@ -283,15 +283,6 @@ button {
    -moz-border-radius: 3px;
    -webkit-border-radius: 3px;
    border-radius: 3px;
-}
-
-/** Fix for buttons in date picker */
-.x-date-mp-btns button {
-    background: inherit;
-}
-
-.x-date-middle button {
-	background: transparent;
 }
 
 /* Reset to flat background */
@@ -907,6 +898,22 @@ th.testlink, td.testlink, tr.testlink td {
 	cursor:pointer;
 }
 
+
+/** Fix for buttons in date picker */
+.x-date-mp-btns button {
+    background: inherit;
+}
+
+.x-date-middle button {
+	background: transparent;
+}
+
+.x-date-picker table th,
+.x-date-picker table td {
+    border: inherit;
+    padding: inherit;
+	vertical-align: center;
+}
 
 /* *********************************************************************************** */
 /* Taken from Ext JS, and adapted */

@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.51 2010/10/09 08:36:10 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.52 2010/10/28 08:51:25 asimon83 Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20101028 - asimon - avoided a warning on event log
     20100721 - asimon - BUGID 3406: added build selector to assign users to chosen build 
                                     on addition of testcases to testplan
     20100227 - franciscom - changed logic to hide diwv with buttons when test suite has not test cases
@@ -352,7 +353,8 @@ Ext.onReady(function(){
   	   				        <td>
   	   				          <input type='checkbox' name='{$rm_cb}[{$tcID}][{$platform.id}]' id='{$rm_cb}{$tcID}[{$platform.id}]' 
   	      			  		         value='{$linked_version_id}' />
-                        {if $tcase.executed[$platform.id] eq 'yes'}&nbsp;&nbsp;&nbsp;
+  	      			    {* added isset() on next line to avoid warning on event log *}
+                        {if isset($tcase.executed[$platform.id]) && $tcase.executed[$platform.id] eq 'yes'}&nbsp;&nbsp;&nbsp;
    				                  <img src="{$smarty.const.TL_THEME_IMG_DIR}/lightning.png" 
                             title="{$gui->warning_msg->executed}" />
                         {/if}

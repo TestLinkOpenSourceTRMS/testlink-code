@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.31 2010/10/26 08:42:53 mx-julian Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.32 2010/10/28 08:51:26 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,8 @@
  *
  * @internal Revisions:
  *
+ * 20101028 - asimon - BUGID 3933: Add test case to test plan - Left Pane filter uses 
+ *                     priority concept to filter test spec where priority does not exist
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
  * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
  * 20101019 - asimon - BUGID 3910: show filter only if test priority management is enabled
@@ -275,7 +277,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 	                                                              'filter_testcase_name',
 	                                                              'filter_toplevel_testsuite',
 	                                                              'filter_keywords',
-	                                                              'filter_priority',
+	                                                              // BUGID 3933 - no priority here
+		                                                          //'filter_priority',
 	                                                              'filter_execution_type',
 	                                                              'filter_custom_fields'));
 

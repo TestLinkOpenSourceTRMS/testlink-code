@@ -1,10 +1,12 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.44 2010/10/17 09:46:37 franciscom Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.45 2010/10/28 12:44:03 asimon83 Exp $ *}
 {*
    Purpose: view a requirement specification
    Author: Martin Havlat
 
    rev:
+        20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
+                                        inside a req spec (recursively)
         20101017 - franciscom - image access refactored (tlImages)
         20101008 - asimon - BUGID 3311
         20101006 - asimon - BUGID 3854
@@ -59,6 +61,8 @@
 {* used on inc_btn_reqSpecView.tpl *}
 {lang_get s='warning_delete_req_spec' var="warning_msg" }
 {lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_freeze_spec' var="freeze_warning_msg" }
+{lang_get s='freeze' var="freeze_msgbox_title" }
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -66,6 +70,19 @@
 <script type="text/javascript">
 	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 	var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id=';
+
+    {* BUGID 3954: added contribution by Vincent *}
+	{literal}
+	function freeze_req_spec(btn, text, o_id) {
+		var my_action=fRoot+'lib/requirements/reqSpecEdit.php?doAction=doFreeze&req_spec_id=';
+		if( btn == 'yes' ) {
+			my_action = my_action+o_id;
+			window.location=my_action;
+		}
+	}
+	{/literal}
+
+	var pF_freeze_req_spec = freeze_req_spec;
 </script>
 </head>
 

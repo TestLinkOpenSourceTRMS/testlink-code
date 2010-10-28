@@ -3,14 +3,16 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/09/08 09:52:57 $ $Author: asimon83 $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/10/28 12:44:03 $ $Author: asimon83 $
  *
  * @author Martin Havlat
  *
  * View existing and create a new req. specification.
  *
  * rev:
+ *  20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
+ *                                  inside a req spec (recursively)
  *  20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
  *  20100810 - asimon - BUGID 3317: disabled total count of requirements by default
  *  20100808 - aismon - added logic to refresh filtered tree on action
@@ -107,6 +109,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
                              'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
                              'createChild' => 'doCreate', 'copy' => 'doCopy',
                              'doCopy' => 'doCopy',
+	                         'doFreeze' => 'doFreeze',
                              'copyRequirements' => 'doCopyRequirements',
                              'doCopyRequirements' => 'doCopyRequirements');
 
@@ -132,6 +135,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
 	    case "doUpdate": 
         case "doCopyRequirements":
         case "doCopy":
+        case "doFreeze":
         case "doDelete":
     		$guiObj->refreshTree = $argsObj->refreshTree;
     	break;
@@ -151,6 +155,7 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg)
         case "doCopyRequirements":
         case "copy":
         case "doCopy":
+        case "doFreeze":
         	$renderType = 'template';
             $key2loop = get_object_vars($opObj);
             foreach($key2loop as $key => $value)

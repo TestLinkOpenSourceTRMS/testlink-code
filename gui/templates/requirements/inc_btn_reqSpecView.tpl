@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.20 2010/10/22 13:32:24 erikeloff Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.21 2010/10/28 12:44:03 asimon83 Exp $
 
 rev:
+     20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze requirements
      20101022 - eloff - BUGID 3918 - work on buttons
      20101007 - asimon - BUGID 3866 - removed analyse button
      20100326 - asimon - removed print button
@@ -15,7 +16,7 @@ rev:
              req_select_create_tc,btn_import_req_spec,btn_import_reqs,
              btn_export_reqs,btn_edit_spec,btn_delete_spec,
              btn_show_direct_link,btn_copy_requirements,btn_copy_req_spec,
-             req_spec_operations, req_operations'}
+             req_spec_operations, req_operations, btn_freeze_req_spec'}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -44,6 +45,10 @@ rev:
 		           onclick="location='{$req_spec_import_url}'" />
  		    <input type="button" name="exportReq" value="{$labels.btn_export_req_spec}"
 		           onclick="location='{$req_spec_export_url}'" />
+            {* BUGID 3954 *}
+            <input type="button" name="freeze_req_spec" value="{$labels.btn_freeze_req_spec}"
+                   onclick="delete_confirmation({$gui->req_spec.id},'{$gui->req_spec.title|escape:'javascript'|escape}',
+                   '{$freeze_msgbox_title}', '{$freeze_warning_msg}',pF_freeze_req_spec);"	/>
 
   		{/if}
 

@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqSpecCommands.class.php,v $
- * @version $Revision: 1.20 $
- * @modified $Date: 2010/10/06 10:26:21 $ by $Author: asimon83 $
+ * @version $Revision: 1.21 $
+ * @modified $Date: 2010/10/28 12:44:03 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  * web command experiment
  *
  * 
  *	@internal revisions
+ *  20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze all requirements
+ *                                  inside a req spec (recursively)
  *  20101006 - asimon - BUGID 3854
  *	20091223 - franciscom - new feature copy requirements
  *	20091207 - franciscom - logic to get order when creating new item 
@@ -23,6 +25,7 @@ class reqSpecCommands
 	private $db;
 	private $reqSpecMgr;
 	private $reqMgr;
+	private $commandMgr;
 	private $defaultTemplate='reqSpecEdit.tpl';
 	private $submit_button_label;
 	private $auditContext;
@@ -36,7 +39,7 @@ class reqSpecCommands
 	    $this->reqMgr = new requirement_mgr($db);
 	    $req_spec_cfg = config_get('req_spec_cfg');
         $this->reqSpecTypeDomain = init_labels($req_spec_cfg->type_labels);
-
+		$this->commandMgr = new reqCommands($db);
 		$this->submit_button_label=lang_get('btn_save');
 		$this->getRequirementsOptions = array('order_by' => " ORDER BY NH_REQ.node_order ");
 		
@@ -536,6 +539,42 @@ class reqSpecCommands
 		{
 		  $obj->containers = $this->reqMgr->tree_mgr->createHierarchyMap($subtree);
         }
+		return $obj;
+	}
+	
+	// BUGID 3954: contribution by Vincent
+	public function doFreeze(&$argsObj,$request) {
+		$req_spec_id = $request["req_spec_id"];		
+		$req_spec = $this->reqSpecMgr->getReqTree($req_spec_id);
+		$req_spec_info = $this->reqSpecMgr->get_by_id($req_spec_id);
+		
+		$childNodes = isset($req_spec['childNodes']) ? $req_spec['childNodes'] : null ;
+		if( !is_null($childNodes)) {
+		    $loop_qty=sizeof($childNodes); 
+		    for($idx = 0;$idx < $loop_qty;$idx++) {
+		    	$cNode = $childNodes[$idx];
+		    	$nTable = $cNode['node_table'];
+		    	if($cNode['node_table'] == 'req_specs') {
+					$request["req_spec_id"]=$cNode['id'];
+					$this->doFreeze($argsObj,$request);
+		    	}
+		    	else if ($cNode['node_table'] == 'requirements') {
+					$req = $this->reqMgr->get_by_id($cNode['id'],requirement_mgr::LATEST_VERSION);
+					$req_freeze_version = new stdClass();
+					$req_freeze_version->req_version_id = $req[0]['version_id'];
+					$this->commandMgr->doFreezeVersion($req_freeze_version);
+		    	}
+		    }
+		}  
+		
+		$obj = $this->initGuiBean(); 
+		$obj->template = 'show_message.tpl';
+		$obj->template_dir = '';
+		$obj->user_feedback = lang_get('req_frozen');
+		$obj->main_descr=lang_get('req_spec') . TITLE_SEP . $req_spec_info['title'];
+		$obj->title=lang_get('freeze_req');
+		$obj->refreshTree = 0;
+		$obj->result = 'ok';  // needed to enable refresh_tree logic
 		return $obj;
 	}
 

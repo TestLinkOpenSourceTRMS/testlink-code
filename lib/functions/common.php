@@ -13,11 +13,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.200 2010/10/28 06:40:15 mx-julian Exp $
+ * @version    	CVS: $Id: common.php,v 1.201 2010/10/28 09:54:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
  * @internal Revisions:
+ *  20101028 - asimon - BUGID 3951: Status and Type for requirements are not saved
  *  20101025 - Julian - BUGID 3930 - added function split_localized_date()
  *                                 - simplified function is_valid_date()
  *  20101022 - asimon - BUGID 3716: added is_valid_date()
@@ -1016,7 +1017,8 @@ function tlSubStr($str,$start,$length = null)
 	{
 		$length = iconv_strlen($str,$charset);
 	}	
-	return iconv_substr($str,$start,$length,$charset);
+	// BUGID 3951: replaced iconv_substr() by mb_substr()
+	return mb_substr($str,$start,$length,$charset);
 }
 
 /**

@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2005, TestLink community 
- * @version    	CVS: $Id: common.php,v 1.201 2010/10/28 09:54:03 asimon83 Exp $
+ * @version    	CVS: $Id: common.php,v 1.202 2010/10/28 13:51:13 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @since 		TestLink 1.5
  *
@@ -1018,7 +1018,11 @@ function tlSubStr($str,$start,$length = null)
 		$length = iconv_strlen($str,$charset);
 	}	
 	// BUGID 3951: replaced iconv_substr() by mb_substr()
-	return mb_substr($str,$start,$length,$charset);
+	$function_call = "mb_substr";
+	if (function_exists('iconv_substr') && version_compare(PHP_VERSION, '5.2.0') >= 0) {
+		$function_call = "iconv_substr";
+	}
+	return $function_call($str,$start,$length,$charset);
 }
 
 /**

@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.212 2010/10/28 06:47:38 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.213 2010/10/28 13:55:28 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.743
+ * Last Update according to en_GB string file version 1.745
  *
  **/
 
@@ -878,10 +878,14 @@ $TLS_last_edit = "Zuletzt geändert durch ";
 $TLS_warning_delete_requirement = "Sind Sie sicher, dass Sie die Anforderung: %s löschen wollen?";
 $TLS_btn_freeze_this_version = "Version einfrieren";
 $TLS_warning_freeze_requirement = "Sie möchten %s einfrieren <br /><br /> Sind Sie sicher?";
+$TLS_warning_freeze_spec = "Sie möchten alle der Anforderungsspezifikation \"%s\" untergeordneten " .
+                           "Anforderungen einfrieren.<br /><br />Sind Sie sicher?";
+$TLS_btn_freeze_req_spec = "Alle Anforderungen einfrieren";
 $TLS_freeze = "Einfrieren";
 $TLS_can_not_edit_req = "Sie können diese Version nicht editieren, weil sie eingefroren wurde.";
 $TLS_req_version_frozen = "Version der Anforderung wurde eingefroren.";
 $TLS_freeze_req = "Anforderung einfrieren";
+$TLS_req_frozen = "Anforderungen wurden eingefroren.";
 
 
 // gui/templates/inc_res_by_comp.tpl

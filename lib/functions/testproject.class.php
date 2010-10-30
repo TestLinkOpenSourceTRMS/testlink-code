@@ -6,13 +6,15 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.179 2010/10/30 08:52:47 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.180 2010/10/30 15:19:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
  * 20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
  *						  method for activating a test project was renamed	
+ *						  get_all_testcases_id() - new options
+ *
  * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
  * 20100930 - franciscom - BUGID 2344: Private test project
  * 20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
@@ -1750,21 +1752,41 @@ function setPublicStatus($id,$status)
            null is nothing found
 
 */
-	function get_all_testcases_id($idList,&$tcIDs)
+	function get_all_testcases_id($idList,&$tcIDs,$options = null)
 	{
 		static $tcNodeTypeID;
 		static $tsuiteNodeTypeID;
 		static $debugMsg;
 		if (!$tcNodeTypeID)
 		{
+
 			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 			$tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
 			$tsuiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
 		}
+
+		$my = array();
+		$my['options'] = array('output' => 'just_id');
+		$my['options'] = array_merge($my['options'], (array)$options);
+	
+		switch($my['options']['output']) 
+		{
+			case 'external_id':
+				$use_array = true;
+			break;
+			
+			case 'just_id':
+			default:
+				$use_array = false;
+			break;
+		}
+		
 		$sql = "/* $debugMsg */  SELECT id,node_type_id from {$this->tables['nodes_hierarchy']} " .
-		       " WHERE parent_id IN ({$idList})";
+			   " WHERE parent_id IN ({$idList})";
 		$sql .= " AND node_type_id IN ({$tcNodeTypeID},{$tsuiteNodeTypeID}) "; 
 		
+  		// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
 		$result = $this->db->exec_query($sql);
 		if ($result)
 		{
@@ -1773,14 +1795,33 @@ function setPublicStatus($id,$status)
 			{
 				if ($row['node_type_id'] == $tcNodeTypeID)
 				{
-					$tcIDs[] = $row['id'];
+					if( $use_array )
+					{
+						$sql = " SELECT DISTINCT NH.parent_id, TCV.tc_external_id " . 
+							   " FROM {$this->tables['nodes_hierarchy']} NH " .
+							   " JOIN  {$this->tables['tcversions']} TCV ON TCV.id = NH.id " .
+							   " WHERE NH.parent_id = {$row['id']} ";
+						
+  						// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+						$rs = $this->db->fetchRowsIntoMap($sql,'parent_id');
+						$tcIDs[$row['id']] = $rs[$row['id']]['tc_external_id'];
+					}
+					else
+					{
+						$tcIDs[] = $row['id'];
+					}
 				}
-				$suiteIDs[] = $row['id'];
+				else
+				{
+					// 20101030	
+					$suiteIDs[] = $row['id'];
+				}
 			}
 			if (sizeof($suiteIDs))
 			{
 				$suiteIDs  = implode(",",$suiteIDs);
-				$this->get_all_testcases_id($suiteIDs,$tcIDs);
+				$this->get_all_testcases_id($suiteIDs,$tcIDs,$options);
 			}
 		}	
 	}

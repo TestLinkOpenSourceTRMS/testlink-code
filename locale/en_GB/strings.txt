@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.746 2010/10/30 08:21:11 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.747 2010/10/30 15:15:22 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -3134,8 +3134,11 @@ $TLS_link_without_required_platform = "Test case link #%s has no platform but Te
 $TLS_link_with_platform_not_needed = "Test case link #%s has platform but Test Plan has no linked platforms";
 $TLS_link_without_platform_element = "Test case link #%s has no platform element";
 $TLS_tproject_has_zero_testcases = "Test Project %s has no test cases defined, unable to continue";
-
-
+$TLS_tcase_doesnot_exist = "Test Case with external id %s does not exist on Test Project %s";
+$TLS_tcversion_doesnot_exist = "Test Case with external id %s version %s does not exist on Test Project %s";
+$TLS_link_2_tplan_feedback = "Test Case with external id %s version %s has been linked to Test Plan";
+$TLS_link_2_platform = " for Platform %s";
+                                                                                                        
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Export Execution Set';
 // ----- END ------------------------------------------------------------------

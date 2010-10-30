@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2010, TestLink community 
- * @version    	CVS: $Id: planImport.php,v 1.4 2010/10/30 15:22:09 franciscom Exp $
+ * @version    	CVS: $Id: planImport.php,v 1.5 2010/10/30 16:02:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -330,20 +330,51 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 					$execOrder = (int)$xmlLinks[$idx]->testcase->execution_order;
 					$version = (int)$xmlLinks[$idx]->testcase->version;
 
-					if( isset( $tcaseSet[$externalID] ) )
+					if( isset($tcaseSet[$externalID] ) )
 					{
 						// now need to check if requested version exists
 						$dummy = $tcaseMgr->get_basic_info($tcaseSet[$externalID],$version);
 						if( count($dummy) > 0 )
 						{
-							// Now need to understand if is already linked
-							$sql = " SELECT * FROM {$tables['testplan_tcversions']} " .
-								   " WHERE testplan_id = {$contextObj->tplan_id} " .
-								   " AND tcversion_id = {$dummy[0]['tcversion_id']} " .
-								   " AND platform_id = {$platformID} ";
-								   
-							$isLinked = $dbHandler->get_recordset($sql);	   
-							if( count($isLinked) <= 0 )
+							// Check :
+							// for same test plan there is a different version already linked ?
+							// if YES => error.
+							//
+							$linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],'ALL','ALL',$contextObj->tplan_id);
+							$createLink = is_null($linkedVersions);
+							$updateLink = false;  
+							if( !($createLink = is_null($linkedVersions)) )
+							{
+								// Now need to understand if is already linked with this signature.
+								if( !isset($linkedVersions[$dummy[0]['tcversion_id']]) )
+								{
+									$createLink = true;
+								}
+								else
+								{
+									echo 'UPDATE';
+									// linked platforms
+									$createLink = false;
+									$updateLink = false;
+									$plat_keys = array_keys($linkedVersions[$dummy[0]['tcversion_id']][$contextObj->tplan_id]);
+									
+									new dBug($plat_keys);
+									if( isset($plat_keys[$platformID]) )
+									{
+										$updateLink = true;
+									}
+									else if ($platformID == 0 )
+									{
+										// User request to add without platform, but platforms exist => SKIP
+										$msg[] = array('platform 0');
+									}
+									else
+									{
+										$createLink = true;
+									}
+								}
+							}
+							if( $createlink )
 							{
 								// Create link
 								// function link_tcversions($id,&$items_to_link,$userId)
@@ -357,7 +388,12 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 									$dummy_msg .= spritnf($labels['link_2_platform'],$targetName);
 								}
 								$msg[] = array($dummy_msg);
-							}							
+							}
+							if( $updateLink )
+							{
+								$newOrder = array( $dummy[0]['tcversion_id'] => $execOrder);
+								$tplanMgr->setExecutionOrder($contextObj->tplan_id,$newOrder);
+							}
 						}
 						else
 						{

@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.180 2010/10/30 15:19:08 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.181 2010/10/30 18:27:05 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *
+ * 20101030 - amitkhullar - BUGID 3966 Added importance field in the query
  * 20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
  *						  method for activating a test project was renamed	
  *						  get_all_testcases_id() - new options
@@ -1759,7 +1759,6 @@ function setPublicStatus($id,$status)
 		static $debugMsg;
 		if (!$tcNodeTypeID)
 		{
-
 			$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 			$tcNodeTypeID = $this->tree_manager->node_descr_id['testcase'];
 			$tsuiteNodeTypeID = $this->tree_manager->node_descr_id['testsuite'];
@@ -2102,6 +2101,7 @@ function getTCasesLinkedToAnyTPlan($id)
  */
 function getFreeTestCases($id,$options=null)
 {
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     $retval['items']=null;
     $retval['allfree']=false;
     
@@ -2121,14 +2121,14 @@ function getFreeTestCases($id,$options=null)
     if( !is_null($free) && count($free) > 0)
     {
         $in_clause=implode(',',array_keys($free));
-   	    $sql = " SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
+   	    $sql = " /* $debugMsg */ SELECT MAX(TCV.version) AS version, TCV.tc_external_id, " .
    	           " TCV.importance AS importance, NHA.parent_id AS id, NHB.name " .
    	           " FROM {$this->tables['tcversions']} TCV,{$this->tables['nodes_hierarchy']} NHA, " .
 	           "      {$this->tables['nodes_hierarchy']} NHB " .
 	           " WHERE NHA.parent_id IN ({$in_clause}) " .
    	           " AND TCV.id = NHA.id " .
    	           " AND NHB.id = NHA.parent_id " .
-	           " GROUP BY NHB.name,NHA.parent_id,TCV.tc_external_id " .
+	           " GROUP BY NHB.name,NHA.parent_id,TCV.tc_external_id,TCV.importance " .  // BUGID 3966
 	           " ORDER BY NHA.parent_id";
 	    $retval['items']=$this->db->fetchRowsIntoMap($sql,'id');       
     }

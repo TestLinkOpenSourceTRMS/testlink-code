@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: planAddTC.php,v 1.108 2010/10/26 18:28:08 franciscom Exp $
+ * @version    	CVS: $Id: planAddTC.php,v 1.109 2010/10/30 16:01:56 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -320,17 +320,6 @@ function init_args()
 	$args->tcversion_for_tcid = isset($_REQUEST['tcversion_for_tcid']) ? $_REQUEST['tcversion_for_tcid'] : null;
 	$args->testcases2remove = isset($_REQUEST['remove_checked_tc']) ? $_REQUEST['remove_checked_tc'] : null;
 
-	// BUGID 3516
-	//	// Can be a list (string with , (comma) has item separator), that will be trasformed in an array.
-	//	$keywordSet = isset($_REQUEST['keyword_id']) ? $_REQUEST['keyword_id'] : null;
-	//	
-	//	$args->keyword_id = 0;  
-	//	if(!is_null($keywordSet))
-	//	{
-	//		$args->keyword_id = explode(',',$keywordSet);  
-	//	}
-	//	$args->keywordsFilterType = isset($_REQUEST['keywordsFilterType']) ? $_REQUEST['keywordsFilterType'] : 'OR';
-
 	$args->testcases2order = isset($_REQUEST['exec_order']) ? $_REQUEST['exec_order'] : null;
 	$args->linkedOrder = isset($_REQUEST['linked_exec_order']) ? $_REQUEST['linked_exec_order'] : null;
 	$args->linkedVersion = isset($_REQUEST['linked_version']) ? $_REQUEST['linked_version'] : null;
@@ -361,17 +350,6 @@ function init_args()
     // to be able to pass filters to functions present on specview.php
 	$args->control_panel = $session_data;
 	
-	// $args->refreshTree = isset($session_data['setting_refresh_tree_on_action']) ?
-    //                      $session_data['setting_refresh_tree_on_action'] : 0;    
-    // 
-	// $args->executionType = isset($session_data['filter_execution_type']) ? 
-	//                        $session_data['filter_execution_type'] : 0;
-	// 
-	// $args->importance = isset($session_data['filter_priority']) ? $session_data['filter_priority'] : 0;
-    // 
-    // 
-	// $args->importance = ($args->importance > 0) ? $args->importance : null;
-
 	$getFromSession = !is_null($session_data);
 	$booleankeys = array('refreshTree' => 'setting_refresh_tree_on_action','importance' => 'filter_priority',
 						 'executionType' => 'filter_execution_type');
@@ -453,7 +431,6 @@ function doReorder(&$argsObj,&$tplanMgr)
             else if( isset($argsObj->linkedVersion[$tcid]) && 
                      !isset($mapo[$argsObj->linkedVersion[$tcid]]))
             {
-            	// $mapo[$argsObj->linkedVersion[$tcid]]=$argsObj->testcases2order[$tcid];
             	$tcversion_id = $argsObj->linkedVersion[$tcid];
             }
             if( !is_null($tcversion_id))

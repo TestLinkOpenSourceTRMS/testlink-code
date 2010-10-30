@@ -6,11 +6,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.330 2010/10/25 20:40:59 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.331 2010/10/30 15:17:29 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101030 - franciscom - get_by_external() interface changes
+ *						   get_basic_info()  interface changes
+ *	
  * 20101025 - franciscom - get_last_active_version() - interface changes
  *						   BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
  * 20101024 - franciscom - new method filter_tcversions_by_cfields()	
@@ -4451,21 +4454,23 @@ class testcase extends tlObjectWithAttachments
 	 * this info is normally enough for user feednack.
  	 *
  	 * @param int $id test case id
- 	 * @param int $version_id test case version id
+ 	 * @param int $version test case version number
  	 * 
  	 * @return array with one element with keys: name,version,tc_external_id
      */
-	function get_basic_info($id,$version_id)
+	function get_basic_info($id,$version)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 		$sql = "/* $debugMsg */ " .
-		  	   " SELECT NH_TCASE.id, NH_TCASE.name, TCV.version, TCV.tc_external_id " .
+		  	   " SELECT NH_TCASE.id, NH_TCASE.name, TCV.version, TCV.tc_external_id, TCV.id AS tcversion_id " .
 		       " FROM {$this->tables['nodes_hierarchy']} NH_TCASE " .
 		       " JOIN {$this->tables['nodes_hierarchy']} NH_TCV ON NH_TCV.parent_id = NH_TCASE.id" .
 		       " JOIN {$this->tables['tcversions']} TCV ON  TCV.id = NH_TCV.id ";
+
+	    $where_clause = " WHERE TCV.version = {$version} AND NH_TCASE .id = {$id} ";
 		       
-	    $where_clause = " WHERE TCV.id = {$version_id} ";
-	    $where_clause .= (!is_null($id) && $id > 0) ? " AND NH_TCASE .id = {$id} " :  "";
+	    // $where_clause = " WHERE TCV.id = {$version_id} ";
+	    // $where_clause .= (!is_null($id) && $id > 0) ? " AND NH_TCASE .id = {$id} " :  "";
         $sql .= $where_clause;
        
         $result = $this->db->get_recordset($sql);
@@ -4658,11 +4663,17 @@ class testcase extends tlObjectWithAttachments
 	/**
 	 * get by external id
 	 *
+	 * @param mixed filters: 
 	 */
-	function get_by_external($external_id, $parent_id)
+	function get_by_external($external_id, $parent_id,$filters=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	    $recordset = null;
+	    
+	    $my = array();
+	    $my['filters'] = array('version' => null);
+	    $my['filters'] = array_merge($my['filters'], (array)$filters);
+	    
 		$sql = "/* $debugMsg */ " . 	    
 	           " SELECT DISTINCT NH_TCASE.id,NH_TCASE.name,NH_TCASE_PARENT.id AS parent_id," .
 	           " NH_TCASE_PARENT.name AS tsuite_name, TCV.tc_external_id " .
@@ -4675,7 +4686,21 @@ class testcase extends tlObjectWithAttachments
 			   " AND NH_TCASE_PARENT.id=NH_TCASE.parent_id " .
 			   " AND NH_TCASE.node_type_id = {$this->my_node_type} " .
 			   " AND TCV.tc_external_id=$external_id ";
+
+		$add_filters = ' ';
+		foreach($my['filters'] as $field => $value)
+		{
+			switch($my['filters'])
+			{
+				case 'version':
+				if( !is_null($value) )
+				{
+					$add_filters .= ' AND TCV.version = intval($value) ';
+				}
+			}
+		}
 	   
+		$sql .= $add_filters;
 		$sql .= " AND NH_TCASE_PARENT.id = {$parent_id}" ;
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id');
 	    return $recordset;
@@ -4980,5 +5005,11 @@ class testcase extends tlObjectWithAttachments
 		}
 	    return $recordset;
 	}
+
+	/**
+	 *
+	 *
+	 */
+	 
 } // end class
 ?>

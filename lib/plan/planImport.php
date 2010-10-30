@@ -13,10 +13,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2010, TestLink community 
- * @version    	CVS: $Id: planImport.php,v 1.3 2010/10/30 15:21:33 franciscom Exp $
+ * @version    	CVS: $Id: planImport.php,v 1.4 2010/10/30 15:22:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20101030 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  * 20101017 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  *
  **/

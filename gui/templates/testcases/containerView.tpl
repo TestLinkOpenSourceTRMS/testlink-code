@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.38 2010/10/22 13:14:32 erikeloff Exp $ *}
+{* $Id: containerView.tpl,v 1.39 2010/10/30 08:53:36 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
+  20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
   20101022 - eloff - BUGID 3917 - Work on buttons
   20100914 - franciscom - BUGID 3639 Reoder Test Cases
   20100910 - franciscom - BUGID 3047: Deleting multiple TCs
@@ -103,13 +104,12 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 
 		<input type="button" onclick="location='{$importToTProjectAction}'"
 			                       value="{$labels.btn_import_testsuite}" />
+
+    {* BUGID 3937 *}
+    {if $gui->canDoExport}
 		<input type="button" onclick="location='{$tsuiteExportAction}'" value="{$labels.btn_export_all_testsuites}" />
+    {/if}
 
-
-    {* TO BE DEVELOPED  
-		<input type="submit" name="del_testsuites_bulk" id="del_testsuites_bulk"
-		       onclick="doAction.value='deleteBulk'" value="{$labels.btn_del_testsuites_bulk}" />
-    *}
 
 			{*
 			 <input type="button" name="execButton" value="{$labels.btn_execute_automatic_testcases}"

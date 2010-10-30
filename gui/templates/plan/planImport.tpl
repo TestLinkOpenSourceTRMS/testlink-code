@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planImport.tpl,v 1.1 2010/10/30 07:58:25 franciscom Exp $
+$Id: planImport.tpl,v 1.2 2010/10/30 08:28:54 franciscom Exp $
 Purpose: manage import of test plan links (test cases and platforms)
 
 rev:
@@ -55,7 +55,7 @@ rev:
 </form>
 {else}
 	{foreach item=result from=$gui->resultMap}
-		{$labels.title_imp_tc_data} : <b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
+		<b>{$result[0]|escape}</b> : {$result[1]|escape}<br />
 	{/foreach}
   {include file="inc_refreshTree.tpl"}
 {/if}

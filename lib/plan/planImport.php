@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2010, TestLink community 
- * @version    	CVS: $Id: planImport.php,v 1.1 2010/10/17 17:40:45 franciscom Exp $
+ * @version    	CVS: $Id: planImport.php,v 1.2 2010/10/30 08:28:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -41,6 +41,17 @@ if(!is_null($args->importType))
 
 $gui->file_check = array('status_ok' => 1, 'msg' => 'ok');
 $gui->import_title = lang_get('title_import_testplan_links');
+
+// This check is done againg, also on importTestPlanLinksFromXML(), just to avoid surprises
+$tproject_mgr = new testproject($db);
+$dummy = $tproject_mgr->get_by_id($args->tproject_id);
+$tprojectHasTC = $tproject_mgr->count_testcases($args->tproject_id) > 0; 
+if(!$tprojectHasTC)
+{
+	$gui->resultMap[] = array('',sprintf(lang_get('tproject_has_zero_testcases'),$dummy['name']));
+}
+
+
 if ($args->do_upload)
 {
   
@@ -75,6 +86,7 @@ if ($args->do_upload)
 		if($gui->file_check['status_ok'] && $pimport_fn)
 		{
 			$context = new stdClass();
+			$context->tproject_id = $args->tproject_id;
 			$context->tplan_id = $args->tplan_id;
 			$context->userID = $args->userID;
 			$gui->resultMap = $pimport_fn($db,$tplan_mgr,$input_file,$context);
@@ -192,10 +204,24 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 	//   </testplan>	 
 	// </xml>
 	
+
+	// Double Check
+	// Check if Test Plan Parent (Test Project) has testcases, if not abort
+	$tprojectMgr = new testproject($dbHandler);
+	$dummy = $tprojectMgr->get_by_id($contextObj->tproject_id);
+	$tprojectHasTC = $tprojectMgr->count_testcases($contextObj->tproject_id) > 0; 
+	unset($tprojectMgr);
+	
+	if(!$tprojectHasTC)
+	{
+		$msg[] = array('',sprintf(lang_get('tproject_has_zero_testcases'),$dummy['name']));
+		return $msg;  // >>>-----> Bye
+	}
 	
 	$xml = @simplexml_load_file($targetFile);
 	if($xml !== FALSE)
     {
+
     	// Test Plan name will not be used
     	// <testplan>  <name></name>
     	//
@@ -207,8 +233,6 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 										'link_without_platform_element' => null,
 										'link_with_platform_not_needed' => null,
 										'platform_not_linked' => null));
-			new dBug($labels);
-			
 			// new dBug($contextObj);
 			$platformSet = $tplanMgr->getPlatforms($contextObj->tplan_id,array('outputFormat' => 'mapAccessByName'));
 			$hasPlatforms = (count($platformSet) > 0);
@@ -224,8 +248,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 			$msg = array();
 			for($idx = 0; $idx < $loops2do; $idx++)
 			{
-				// if Target Test Plan has platforms and importing file NO
-				// => Fatal Error
+				// if Target Test Plan has platforms and importing file NO => Fatal Error
 				
 				echo "Element #$idx<br>";
 				// echo '<pre><xmp>';
@@ -306,5 +329,6 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 		}
 			
 	}
+	return $msg;
 }
 ?>

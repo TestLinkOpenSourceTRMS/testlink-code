@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.63 2010/10/01 11:46:21 asimon83 Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.64 2010/10/30 13:26:54 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -743,7 +743,6 @@ class testcaseCommands
 		$guiObj->action = __FUNCTION__;
 		$guiObj->operation = 'doUpdateStep';
 		
-		// $tcaseInfo = $this->tcaseMgr->get_basic_info($argsObj->tcase_id,$argsObj->tcversion_id);
 		$this->initTestCaseBasicInfo($argsObj,$guiObj);
 		$guiObj->main_descr = sprintf(lang_get('edit_step_number_x'),$argsObj->step_number,
 									  $guiObj->testcase['tc_external_id'] . ':' . 

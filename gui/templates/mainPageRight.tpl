@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.24 2010/08/25 11:57:03 mx-julian Exp $
+ $Id: mainPageRight.tpl,v 1.25 2010/10/30 07:49:48 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -150,25 +150,25 @@
     <div id='test_plan_mgmt_topics'>
     
       {if $gui->grants.mgt_testplan_create == "yes"}
-	    	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	    	<img src="{$tlImages.bullet}" />
        		<a href="lib/plan/planView.php">{$labels.href_plan_management}</a>
 	    {/if}
 	    
 	    {if $gui->grants.testplan_create_build == "yes" and $gui->countPlans > 0}
 	    	<br />
-	    	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	    	<img src="{$tlImages.bullet}" />
            	<a href="lib/plan/buildView.php">{$labels.href_build_new}</a>
       {/if} {* testplan_create_build *}
 	    
 	    {if $gui->grants.testplan_user_role_assignment == "yes" && $gui->countPlans > 0}
 	    	<br />
-	    	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+	    	<img src="{$tlImages.bullet}" />
        	    <a href="lib/usermanagement/usersAssign.php?featureType=testplan&amp;featureID={$gui->testplanID}">{$labels.href_assign_user_roles}</a>
 	    {/if}
       
 	    {if $gui->grants.testplan_planning == "yes" and $gui->countPlans > 0}
             <br />
-        	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+        	<img src="{$tlImages.bullet}" />
            	<a href="lib/plan/planMilestonesView.php">{$labels.href_plan_mstones}</a>
 	    {/if}
 	    
@@ -180,20 +180,20 @@
 	{if $display_right_block_2}
     <div id='test_execution_topics'>
 		  {if $gui->grants.testplan_execute == "yes"}
-		  	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		  	<img src="{$tlImages.bullet}" />
 	          <a href="{$gui->launcher}?feature=executeTest">{$labels.href_execute_test}</a>
 		  {/if} 
       
   	  {if $gui->grants.testplan_metrics == "yes"}
 	          <br />
-		  	<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		  	<img src="{$tlImages.bullet}" />
 	          <a href="{$gui->launcher}?feature=showMetrics">{$labels.href_rep_and_metrics}</a>
 		  {/if} 
  	    <br />
- 		  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+ 		  <img src="{$tlImages.bullet}" />
 	         <a href="{$gui->url.metrics_dashboard}">{$labels.href_metrics_dashboard}</a>
  	    <br />
- 		  <img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+ 		  <img src="{$tlImages.bullet}" />
 	         <a href="{$gui->url.testcase_assignments}">{$labels.href_my_testcase_assignments}</a>
     </div>
 	{/if}
@@ -202,28 +202,28 @@
   {* ------------------------------------------------------------------------------------------ *}
 	{if $display_right_block_3}
     <div id='testplan_contents_topics'>
-		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		<img src="{$tlImages.bullet}" />
 	    <a href="lib/platforms/platformsAssign.php?tplan_id={$gui->testplanID}">{$labels.href_platform_assign}</a>
 		  <br />
 		
-		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		<img src="{$tlImages.bullet}" />
 	    <a href="{$gui->launcher}?feature=planAddTC">{$labels.href_add_remove_test_cases}</a>
 	    <br />
 		
-		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		<img src="{$tlImages.bullet}" />
 	   	<a href="{$gui->launcher}?feature=planUpdateTC">{$labels.href_update_tplan}</a>
 	    <br />
 
-		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		<img src="{$tlImages.bullet}" />
 	   	<a href="{$gui->launcher}?feature=newest_tcversions">{$labels.href_newest_tcversions}</a>
 	    <br />
 
-		<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+		<img src="{$tlImages.bullet}" />
 	   	<a href="{$gui->launcher}?feature=tc_exec_assignment">{$labels.href_tc_exec_assignment}</a>
 	    <br />
 
 		{if $session['testprojectOptions']->testPriorityEnabled}
-			<img src="{$smarty.const.TL_ITEM_BULLET_IMG}" />
+			<img src="{$tlImages.bullet}" />
 	   		<a href="{$gui->launcher}?feature=test_urgency">{$labels.href_plan_assign_urgency}</a>
 		    <br />
 		{/if}

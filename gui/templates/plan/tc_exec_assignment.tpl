@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.33 2010/10/30 08:54:32 amkhullar Exp $
+$Id: tc_exec_assignment.tpl,v 1.34 2010/10/30 21:59:37 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
-	 20101030 - amitkhullar - Adjusted the Checkbox column width
+	   20101030 - amitkhullar - Adjusted the Checkbox column width
      20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
                              BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
                              <div id="header-wrap" -> added height:110px;

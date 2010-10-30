@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.32 2010/10/26 08:10:25 mx-julian Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.33 2010/10/30 07:50:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
  * @internal Revisions:
+ *	20101030 - franciscom - BUGID 3948: Every image link contain a double /
  *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker 
  * 	20101017 - franciscom - added new image -> import
  *							reorder of image definition to remove duplicates and use only tlImages
@@ -241,19 +242,20 @@ class TLSmarty extends Smarty
         
         // -----------------------------------------------------------------------------
         // Images
-        $tlImages = array('api_info' => TL_THEME_IMG_DIR . "/brick.png",
-                          'checked' => TL_THEME_IMG_DIR . "/apply_f2_16.png",
-                          'delete' => TL_THEME_IMG_DIR . "/trash.png",
-                          'delete_disabled' => TL_THEME_IMG_DIR . "/trash_greyed.png",
-        				  'direct_link' => TL_THEME_IMG_DIR . "/world_link.png",
-        				  'edit' => TL_THEME_IMG_DIR . "/icon_edit.png",
-                          'export' => TL_THEME_IMG_DIR . "/export.png",
-                          'export_import' => TL_THEME_IMG_DIR . "/export_import.png",
-                          'import' => TL_THEME_IMG_DIR . "/door_in.png",
-        				  'info' => TL_THEME_IMG_DIR . "/question.gif",
-                          'insert_step' => TL_THEME_IMG_DIR . "/insert_step.png",
-                          'reorder' => TL_THEME_IMG_DIR . "/arrow_switch.png",
-                          'sort' => TL_THEME_IMG_DIR . "/sort_hint.png");
+        $tlImages = array('api_info' => TL_THEME_IMG_DIR . "brick.png",
+                          'checked' => TL_THEME_IMG_DIR . "apply_f2_16.png",
+                          'delete' => TL_THEME_IMG_DIR . "trash.png",
+                          'delete_disabled' => TL_THEME_IMG_DIR . "trash_greyed.png",
+        				  'direct_link' => TL_THEME_IMG_DIR . "world_link.png",
+        				  'edit' => TL_THEME_IMG_DIR . "icon_edit.png",
+                          'export' => TL_THEME_IMG_DIR . "export.png",
+                          'export_import' => TL_THEME_IMG_DIR . "export_import.png",
+                          'import' => TL_THEME_IMG_DIR . "door_in.png",
+        				  'info' => TL_THEME_IMG_DIR . "question.gif",
+                          'insert_step' => TL_THEME_IMG_DIR . "insert_step.png",
+                          'reorder' => TL_THEME_IMG_DIR . "arrow_switch.png",
+                          'sort' => TL_THEME_IMG_DIR . "sort_hint.png",
+                          'bullet' => TL_THEME_IMG_DIR . "slide_gripper.gif");
 
         $msg = lang_get('show_hide_api_info');
         $tlImages['toggle_api_info'] =  "<img class=\"clickable\" title=\"{$msg}\" alt=\"{$msg}\" " .

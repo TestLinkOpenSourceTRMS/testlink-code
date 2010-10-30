@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.51 2010/08/21 17:17:55 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.52 2010/10/30 08:51:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
@@ -325,7 +325,7 @@ function doUpdate($argsObj,&$tprojectMgr,$sessionTprojectID)
         						 $argsObj->tcasePrefix, $argsObj->is_public) )
         {
         	$op->msg = '';
-        	$tprojectMgr->activateTestProject($argsObj->tprojectID,$argsObj->active);
+        	$tprojectMgr->activate($argsObj->tprojectID,$argsObj->active);
         	logAuditEvent(TLS("audit_testproject_saved",$argsObj->tprojectName),"UPDATE",$argsObj->tprojectID,"testprojects");
         }
         else

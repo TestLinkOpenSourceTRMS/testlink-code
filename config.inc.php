@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.332 2010/10/28 06:40:14 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.333 2010/10/30 07:50:43 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20101030 - franciscom - bullet image config removed
  *  20101028 - Julian - BUGID 3950 - added $tlCfg->gui->dynamic_quick_tcase_search_input_size
  *  20101014 - Julian - BUGID 3893 - added $tlCfg->metrics_dashboard->show_test_plan_status
  *	20101010 - franciscom - BUGID 3872 - Admin should be able to set a new password for users - $tlCfg->password_reset_send_method
@@ -396,9 +397,6 @@ $tlCfg->company_logo = 'company_logo.png';
 
 /** Login page could show an informational text */
 $tlCfg->login_info = ''; // Empty by default
-
-/** Image for main menu item bullet (just filename) */
-$tlCfg->bullet_image = 'slide_gripper.gif';  // = [arrow_org.gif, slide_gripper.gif]
 
 /**
  * @var string Availability of Test Project specific background colour
@@ -1418,7 +1416,7 @@ $g_prefix_name_for_copy = strftime("%Y%m%d-%H:%M:%S", time());
  * use $tlCfg instead of old variables and constants
  */
 define('TL_IMPORT_ROW_MAX', $tlCfg->import_max_row);
-define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
+// define('TL_ITEM_BULLET_IMG', TL_THEME_IMG_DIR . $tlCfg->bullet_image);
 define('TL_TPL_CHARSET', $tlCfg->charset);
 define('TITLE_SEP',$tlCfg->gui_title_separator_1);
 define('TITLE_SEP_TYPE2',$tlCfg->gui_title_separator_2);

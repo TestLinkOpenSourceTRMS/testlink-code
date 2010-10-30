@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.32 2010/09/27 20:01:02 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.33 2010/10/30 08:54:32 amkhullar Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+	 20101030 - amitkhullar - Adjusted the Checkbox column width
      20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
                              BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
                              <div id="header-wrap" -> added height:110px;
@@ -139,7 +140,7 @@ Ext.onReady(function()
 			      {* Heading *}
 			      <thead>
 			      <tr style="background-color:#059; font-weight:bold; color:white">
-			      	<th width="5" align="center">
+			      	<th width="35px" align="center">
 			          <img class="clickable" src="{$smarty.const.TL_THEME_IMG_DIR}/toggle_all.gif"
 			               onclick='cs_all_checkbox_in_div("{$div_id}","{$add_cb}_{$ts_id}_","add_value_{$ts_id}");'
                      title="{$labels.check_uncheck_all_checkboxes}" />

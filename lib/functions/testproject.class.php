@@ -6,11 +6,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testproject.class.php,v 1.178 2010/10/03 17:51:17 franciscom Exp $
+ * @version    	CVS: $Id: testproject.class.php,v 1.179 2010/10/30 08:52:47 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
+ *						  method for activating a test project was renamed	
  * 20101003 - franciscom - and_not_in_clause -> additionalWhereClause
  * 20100930 - franciscom - BUGID 2344: Private test project
  * 20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
@@ -634,8 +636,10 @@ function get_subtree($id,$recursive_mode=false,$exclude_testcases=false,
  * @param type $sqlResult [default = '']
  * @param type $action [default = 'update']
  * @param type $modded_item_id [default = 0]
- * 
- * @todo havlatm (20100214): smarty should not be in this class - move code to appropariate page
+ *
+ * @internal revision
+ * 20101030 - francisco - BUGID 3937: No information when exporting all test suites when no test suites exists 	
+ *
  **/
 function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'update',$modded_item_id = 0)
 {
@@ -657,6 +661,9 @@ function show(&$smarty,$guiObj,$template_dir,$id,$sqlResult='', $action = 'updat
 	$gui->refreshTree = property_exists($gui,'refreshTree') ? $gui->refreshTree : false;
     $gui->attachmentInfos = getAttachmentInfosFrom($this,$id);
  	
+	// BUGID 3937: No information when exporting all test suites when no test suites exists 	
+ 	$exclusion = array( 'testcase', 'me', 'testplan' => 'me', 'requirement_spec' => 'me');
+ 	$gui->canDoExport = count($this->tree_manager->get_children($id,$exclusion)) > 0;
 	if ($modded_item_id)
 	{
 		$gui->moddedItem = $this->get_by_id($modded_item_id);
@@ -845,7 +852,7 @@ function count_testcases($id)
 	 * @param integer $id test project ID
 	 * @param integer $status 1=active || 0=inactive
 	 */
-	function activateTestProject($id, $status)
+	function activate($id, $status)
 	{
 		$sql = "UPDATE {$this->tables['testprojects']} SET active=" . $status . " WHERE id=" . $id;
 		$result = $this->db->exec_query($sql);

@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsByStatus.tpl,v 1.19 2010/08/31 19:40:14 mx-julian Exp $
+$Id: resultsByStatus.tpl,v 1.20 2010/10/31 08:24:33 mx-julian Exp $
 Purpose: show Test Results and Metrics
 
 rev:
+    20101031 - Julian - table did not show
 	20100719 - Eloff - Implement extTable for this report
 	20100527 - BUGID 3492 - show only test case summary for not run test cases
 	                        else show exec notes
@@ -17,7 +18,19 @@ rev:
           th_assigned_to,th_platform,platform,info_failed_tc_report,
           info_blocked_tc_report,info_notrun_tc_report'}
 
-{include file="inc_head.tpl"}
+{include file="inc_head.tpl" openHead="yes"}
+{foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
+  {assign var=tableID value=$matrix->tableID}
+  {if $smarty.foreach.initializer.first}
+    {$matrix->renderCommonGlobals()}
+    {if $matrix instanceof tlExtTable}
+        {include file="inc_ext_js.tpl" bResetEXTCss=1}
+        {include file="inc_ext_table.tpl"}
+    {/if}
+  {/if}
+  {$matrix->renderHeadSection()}
+{/foreach}
+</head>
 <body>
 <h1 class="title">{$gui->title|escape}</h1>
 <div class="workBack">
@@ -25,14 +38,10 @@ rev:
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}
 
 {if $gui->warning_msg == ''}
-	{$gui->tableSet[0]->renderCommonGlobals()}
-	{if $gui->tableSet[0] instanceof tlExtTable}
-		{include file="inc_ext_js.tpl" bResetEXTCss=1}
-		{include file="inc_ext_table.tpl"}
-	{/if}
-	{$gui->tableSet[0]->renderHeadSection()}
-	
-	{$gui->tableSet[0]->renderBodySection()}
+	{foreach from=$gui->tableSet key=idx item=matrix}
+		{assign var=tableID value=table_$idx}
+   		{$matrix->renderBodySection($tableID)}
+	{/foreach}
 	<br />
 	
 	{if $gui->bugInterfaceOn && $gui->type != 'n'}

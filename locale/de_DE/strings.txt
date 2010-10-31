@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.213 2010/10/28 13:55:28 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.214 2010/10/31 08:48:00 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.745
+ * Last Update according to en_GB string file version 1.747
  *
  **/
 
@@ -3129,6 +3129,11 @@ $TLS_link_without_required_platform = "Testfallverknüpfung #%s gehört zu keine
 $TLS_link_with_platform_not_needed = "Testfallverknüpfung #%s gehört zu einer Plattform, dem Testplan wurden aber keine " .
                                      "Plattformen zugewiesen";
 $TLS_link_without_platform_element = "Testfallverknüpfung #%s hat kein Plattform Element";
+$TLS_tproject_has_zero_testcases = "Für das Testprojekt %s sind keine Testfälle definiert.";
+$TLS_tcase_doesnot_exist = "Der Testfall mit der ID %s existiert nicht für das Testprojekt %s";
+$TLS_tcversion_doesnot_exist = "Der Testfall mit der ID %s in der Version %s existiert nicht für das Testprojekt %s";
+$TLS_link_2_tplan_feedback = "Der Testfall mit der ID %s in der Version %s wurde dem Testplan hinzugefügt";
+$TLS_link_2_platform = " für Plattform %s";
 
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Ausführungen exportieren';

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+	<testplan>
+		<name><![CDATA[PLAN-TRES]]></name>
+		<platforms>
+	<platform>		<name><![CDATA[Assault Ships]]></name>		<internal_id><![CDATA[1]]></internal_id>
+	</platform>
+	<platform>		<name><![CDATA[Battleships]]></name>		<internal_id><![CDATA[2]]></internal_id>
+	</platform>
+	<platform>		<name><![CDATA[Couriers]]></name>		<internal_id><![CDATA[3]]></internal_id>
+	</platform>
+</platforms>
+		
+<executables>
+	<link>
+		<platform>
+			<name><![CDATA[Assault Ships]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[set exec result - test plan WITHOUT PLATFORMS]]></name>
+			<externalid><![CDATA[4]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1000]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[Couriers]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[set exec result - test plan WITHOUT PLATFORMS]]></name>
+			<externalid><![CDATA[4]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1000]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[Battleships]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[set exec result - test plan WITH WRONG PLATFORM NAME]]></name>
+			<externalid><![CDATA[5]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1010]]></execution_order>
+		</testcase>
+</link>
+
+	<link>
+		<platform>
+			<name><![CDATA[Couriers]]></name>
+		</platform>
+		<testcase>
+			<name><![CDATA[set exec result - test plan WITH WRONG PLATFORM ID]]></name>
+			<externalid><![CDATA[6]]></externalid>
+			<version><![CDATA[1]]></version>
+			<execution_order><![CDATA[1020]]></execution_order>
+		</testcase>
+</link>
+
+</executables>
+
+	</testplan>

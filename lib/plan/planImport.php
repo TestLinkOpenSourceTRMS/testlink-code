@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2010, TestLink community 
- * @version    	CVS: $Id: planImport.php,v 1.6 2010/10/31 08:51:32 franciscom Exp $
+ * @version    	CVS: $Id: planImport.php,v 1.7 2010/10/31 17:36:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -205,61 +205,77 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 	//     </executables>
 	//   </testplan>	 
 	// </xml>
-	
+	$mgs = array();	
+	$labels = init_labels(array('link_without_required_platform' => null, 'ok' => null,
+								'link_without_platform_element' => null,
+								'no_platforms_on_tproject' => null, 'tcase_link_updated' => null,
+								'link_with_platform_not_needed' => null,
+								'tproject_has_zero_testcases' => null,
+								'platform_not_on_tproject' => null, 'platform_linked' => null,
+								'platform_not_linked' => null, 'tcase_doesnot_exist' => null,
+								'tcversion_doesnot_exist' => null, 'not_imported' => null,
+								'link_2_tplan_feedback' => null, 'link_2_platform' => null ));
 
 	// Double Check
 	// Check if Test Plan Parent (Test Project) has testcases, if not abort
 	$tprojectMgr = new testproject($dbHandler);
 	$tprojectInfo = $tprojectMgr->get_by_id($contextObj->tproject_id);
+	$tcasePrefix = $tprojectInfo['prefix'] . config_get('testcase_cfg')->glue_character;
+	
 	$tprojectHasTC = $tprojectMgr->count_testcases($contextObj->tproject_id) > 0; 
 	if(!$tprojectHasTC)
 	{
-		$msg[] = array('',sprintf(lang_get('tproject_has_zero_testcases'),$tprojectInfo['name']));
+		$msg[] = array(sprintf($labels['tproject_has_zero_testcases'],$tprojectInfo['name']),$labels['not_imported']);
 		return $msg;  // >>>-----> Bye
 	}
 	
 	$xml = @simplexml_load_file($targetFile);
 	if($xml !== FALSE)
     {
-
 		$tcaseMgr = new testcase($dbHandler);
-		$tcXML['elements'] = array('string' => array("name"),  
-								   'integer' => array("node_order","externalid"));
 		$tcaseSet = array(); 
 		$tprojectMgr->get_all_testcases_id($contextObj->tproject_id,$tcaseSet,array('output' => 'external_id'));
 		$tcaseSet = array_flip($tcaseSet);
-        // $linkedSet = $tplanMgr->get_linked_tcversions($contextObj->tplan_id);
 
     	// Test Plan name will not be used
     	// <testplan>  <name></name>
     	//
 		// Platform definition info will not be used 
 		//
-		if( $xml->xpath('//executables') )
+		// I will try to link the platforms if are defined
+		$status_ok = true;
+		if( property_exists($xml,'platforms') )
+		{
+			$platformMgr = new tlPlatform($dbHandler,$contextObj->tproject_id); 
+			$platformUniverse = $platformMgr->getAllAsMap();
+			if( is_null($platformUniverse) )
+			{
+				$status_ok = false;
+				$msg[] = array($labels['no_platforms_on_tproject'],$labels['not_imported']);
+			}
+			else
+			{
+				$platformUniverse = array_flip($platformUniverse);
+				$op = processPlatforms($platformMgr,$tplanMgr,$platformUniverse,$xml->platforms,
+									   $labels,$contextObj->tplan_id);
+				$status_ok = $op['status_ok']; 
+				$msg = $op['msg'];
+			}
+		}
+		
+		if( $status_ok && $xml->xpath('//executables') )
 		{
 			$tables = tlObjectWithDB::getDBTables(array('testplan_tcversions'));
-			
-			$labels = init_labels(array('link_without_required_platform' => null, 'ok' => null,
-										'link_without_platform_element' => null,
-										'link_with_platform_not_needed' => null,
-										'platform_not_linked' => null, 'tcase_doesnot_exist' => null,
-										'tcversion_doesnot_exist' => null, 'not_imported' => null,
-										'link_2_tplan_feedback' => null, 'link_2_platform' => null ));
-										
 			$platformSet = $tplanMgr->getPlatforms($contextObj->tplan_id,array('outputFormat' => 'mapAccessByName'));
 			$targetHasPlatforms = (count($platformSet) > 0);
 			
 			$xmlLinks = $xml->executables->children();
-			// echo '<pre><xmp>';
-			// var_dump($xmlLinks);			
-			// echo '</xmp></pre>';
-			
 			$loops2do = count($xmlLinks);
-			$msg = array();
+
+			// new dBug($platformSet);
 			for($idx = 0; $idx < $loops2do; $idx++)
 			{
 				// if Target Test Plan has platforms and importing file NO => Fatal Error
-				// echo '<pre><xmp>';
 				$targetName = null;
 				$platformID = -1;
 				$linkWithPlatform = false;
@@ -267,7 +283,6 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 				$dummy_msg = null;
 				$import_status = $labels['ok'];;
 
-				// $useCase = $targetHasPlatforms ? 'targetHasPlatforms' : 'none';
 				if( ($platformElementExists = property_exists($xmlLinks[$idx],'platform')) )
 				{
 					$targetName = trim((string)$xmlLinks[$idx]->platform->name);
@@ -301,7 +316,6 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 				    		$dummy_msg = sprintf($labels['platform_not_linked'],$idx+1,$targetName,$contextObj->tplan_name);
 				    	}
 				    } 
-				    
 				}
 				else
 				{
@@ -321,13 +335,14 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 					$msg[] = array($dummy_msg,$import_status);
 				}
 				
+				// echo '$status_ok' . $status_ok . ' ' . __LINE__ . '<br>' ;
 				if( $status_ok )
 				{
-				
-					// Link passed ok check on password
+					$createLink = false;
+					$updateLink = false;  
+					
+					// Link passed ok check on platform
 					// Now we need to understand if requested Test case is present on Test Project
-        			// $dummy = getItemsFromSimpleXMLObj(array($xmlTCs[$idx]),$tcXML);
-        			// $tc = $dummy[0]; 
 					$externalID = (int)$xmlLinks[$idx]->testcase->externalid;
 					$tcaseName = (string)$xmlLinks[$idx]->testcase->name;
 					$execOrder = (int)$xmlLinks[$idx]->testcase->execution_order;
@@ -337,6 +352,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 					{
 						// now need to check if requested version exists
 						$dummy = $tcaseMgr->get_basic_info($tcaseSet[$externalID],$version);
+						// new dBug($dummy);
 						if( count($dummy) > 0 )
 						{
 							// Check :
@@ -344,24 +360,24 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 							// if YES => error.
 							//
 							$linkedVersions = $tcaseMgr->get_linked_versions($dummy[0]['id'],'ALL','ALL',$contextObj->tplan_id);
-							$createLink = is_null($linkedVersions);
-							$updateLink = false;  
+							$updateLink = false;
+							
+							// new dBug($linkedVersions);   
 							if( !($createLink = is_null($linkedVersions)) )
 							{
 								// Now need to understand if is already linked with this signature.
 								if( !isset($linkedVersions[$dummy[0]['tcversion_id']]) )
 								{
+									//echo 'CREATE';
 									$createLink = true;
 								}
 								else
 								{
-									echo 'UPDATE';
 									// linked platforms
 									$createLink = false;
 									$updateLink = false;
 									$plat_keys = array_keys($linkedVersions[$dummy[0]['tcversion_id']][$contextObj->tplan_id]);
-									
-									new dBug($plat_keys);
+									$plat_keys = array_flip($plat_keys);
 									if( isset($plat_keys[$platformID]) )
 									{
 										$updateLink = true;
@@ -369,7 +385,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 									else if ($platformID == 0 )
 									{
 										// User request to add without platform, but platforms exist => SKIP
-										$msg[] = array('platform 0');
+										$msg[] = array('platform 0 missing messages',$labels['not_imported']);
 									}
 									else
 									{
@@ -377,7 +393,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 									}
 								}
 							}
-							if( $createlink )
+							if( $createLink )
 							{
 								// Create link
 								// function link_tcversions($id,&$items_to_link,$userId)
@@ -388,14 +404,17 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 								
 								if( $platformID > 0 )
 								{
-									$dummy_msg .= spritnf($labels['link_2_platform'],$targetName);
+									$dummy_msg .= sprintf($labels['link_2_platform'],$targetName);
 								}
-								$msg[] = array($dummy_msg);
+								$msg[] = array($dummy_msg,$labels['ok']);
 							}
 							if( $updateLink )
 							{
 								$newOrder = array( $dummy[0]['tcversion_id'] => $execOrder);
 								$tplanMgr->setExecutionOrder($contextObj->tplan_id,$newOrder);
+								$dummy_msg = sprintf($labels['tcase_link_updated'],$tcasePrefix . $externalID . ' ' . 
+													$tcaseName,$version);
+								$msg[] = array($dummy_msg,$labels['ok']);
 							}
 						}
 						else
@@ -416,12 +435,58 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 				}
 			
 			}	
-
-		
-		
 		}
-			
 	}
 	return $msg;
 }
+
+/**
+ *
+ *
+ * 
+ *
+ * @internal Revisions
+ * 20101031 - franciscom - creation
+ */
+ function processPlatforms(&$platMgr,&$tplanMgr,$universe,$xmlSubset,$lbl,$tplanID)
+ {
+ 	$ret = array('status_ok' => true, 'msg' => null);
+ 	$children = $xmlSubset->children();
+	$msg_ok = array();
+	$loops2do = count($children);
+	$status_ok = true;
+	$idSet = null;
+	for($idx = 0; $idx < $loops2do; $idx++)
+	{
+		$targetName = trim((string)$children[$idx]->name);
+		if( isset($universe[$targetName]) )
+		{
+			$status_ok = $status_ok && true;
+			// $msg_ok[] = array(sprintf($lbl['platform_linked'],$targetName),$lbl['ok']);
+			$idSet[$universe[$targetName]] = $targetName;
+		}
+		else
+		{
+			$status_ok = false;
+			$ret['msg'][] = array(sprintf($lbl['platform_not_on_tproject'],$targetName),$lbl['not_imported']);
+			
+		}
+	}
+	if( $status_ok )
+	{
+
+		// Now Link only if Platform is not already linked to test plan 
+		$currentPlatformSet = $tplanMgr->getPlatforms($tplanID,array('outputFormat' => 'mapAccessByID'));
+		foreach($idSet as $platformID => $platformName)
+		{
+			if( !isset($currentPlatformSet[$platformID]) )
+			{
+				$platMgr->linkToTestplan($platformID, $tplanID);
+				$msg_ok[] = array(sprintf($lbl['platform_linked'],$platformName),$lbl['ok']);
+			}	
+		}
+		$ret['msg'] = $msg_ok;
+	}
+	return $ret;
+ }
 ?>

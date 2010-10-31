@@ -13,10 +13,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2010, TestLink community 
- * @version    	CVS: $Id: planImport.php,v 1.5 2010/10/30 16:02:18 franciscom Exp $
+ * @version    	CVS: $Id: planImport.php,v 1.6 2010/10/31 08:51:32 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20101031 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  * 20101030 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  * 20101017 - franciscom - BUGID 3649: Export/Import Test Plan links to test cases and platforms
  *
@@ -238,15 +239,15 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 		{
 			$tables = tlObjectWithDB::getDBTables(array('testplan_tcversions'));
 			
-			$labels = init_labels(array('link_without_required_platform' => null,
+			$labels = init_labels(array('link_without_required_platform' => null, 'ok' => null,
 										'link_without_platform_element' => null,
 										'link_with_platform_not_needed' => null,
 										'platform_not_linked' => null, 'tcase_doesnot_exist' => null,
-										'tcversion_doesnot_exist' => null,
+										'tcversion_doesnot_exist' => null, 'not_imported' => null,
 										'link_2_tplan_feedback' => null, 'link_2_platform' => null ));
 										
 			$platformSet = $tplanMgr->getPlatforms($contextObj->tplan_id,array('outputFormat' => 'mapAccessByName'));
-			$hasPlatforms = (count($platformSet) > 0);
+			$targetHasPlatforms = (count($platformSet) > 0);
 			
 			$xmlLinks = $xml->executables->children();
 			// echo '<pre><xmp>';
@@ -264,20 +265,20 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 				$linkWithPlatform = false;
 				$status_ok = false;
 				$dummy_msg = null;
+				$import_status = $labels['ok'];;
 
-				// $useCase = $hasPlatforms ? 'hasPlatforms' : 'none';
+				// $useCase = $targetHasPlatforms ? 'targetHasPlatforms' : 'none';
 				if( ($platformElementExists = property_exists($xmlLinks[$idx],'platform')) )
 				{
 					$targetName = trim((string)$xmlLinks[$idx]->platform->name);
 					$linkWithPlatform = ($targetName != '');
 				}
 
-				// echo "\$hasPlatforms:$hasPlatforms<br>";
+				// echo "\$targetHasPlatforms:$targetHasPlatforms<br>";
 				// echo "\$linkWithPlatform:$linkWithPlatform<br>";
-				if($hasPlatforms)
+				if($targetHasPlatforms)
 				{
 					// each link need to have platform or will not be imported
-				    // if( $platformElementExists && $linkWithPlatform && isset($platformSet[$targetName]))
 				    if( $linkWithPlatform && isset($platformSet[$targetName]))
 				    {
 						$platformID = $platformSet[$targetName]['id'];
@@ -286,6 +287,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 				    }
 				    else
 				    {
+				    	$import_status = $labels['not_imported'];
 				    	if( !$platformElementExists )
 				    	{
 							$dummy_msg = sprintf($labels['link_without_platform_element'],$idx+1);				
@@ -305,6 +307,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 				{
 					if( $linkWithPlatform )
 					{
+						$import_status = $labels['not_imported'];
 						$dummy_msg = sprintf($labels['link_with_platform_not_needed'],$idx+1);				
 					}
 					else
@@ -315,7 +318,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 				}				
 				if( !is_null($dummy_msg) )
 				{
-					$msg[] = array($dummy_msg);
+					$msg[] = array($dummy_msg,$import_status);
 				}
 				
 				if( $status_ok )

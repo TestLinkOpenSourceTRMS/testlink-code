@@ -13,7 +13,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2010, TestLink community 
- * @version    	CVS: $Id: planImport.php,v 1.7 2010/10/31 17:36:49 franciscom Exp $
+ * @version    	CVS: $Id: planImport.php,v 1.8 2010/10/31 18:36:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -214,7 +214,7 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 								'platform_not_on_tproject' => null, 'platform_linked' => null,
 								'platform_not_linked' => null, 'tcase_doesnot_exist' => null,
 								'tcversion_doesnot_exist' => null, 'not_imported' => null,
-								'link_2_tplan_feedback' => null, 'link_2_platform' => null ));
+								'link_to_tplan_feedback' => null, 'link_to_platform' => null ));
 
 	// Double Check
 	// Check if Test Plan Parent (Test Project) has testcases, if not abort
@@ -400,11 +400,11 @@ function importTestPlanLinksFromXML(&$dbHandler,&$tplanMgr,$targetFile,$contextO
 								$item2link['items'] = array($dummy[0]['id'] => array($platformID => $dummy[0]['tcversion_id']));
 								$item2link['tcversion'] = array($dummy[0]['id'] => $dummy[0]['tcversion_id']);
 								$tplanMgr->link_tcversions($contextObj->tplan_id,$item2link,$contextObj->userID);
-								$dummy_msg = sprintf($labels['link_2_tplan_feedback'], $externalID, $version);
+								$dummy_msg = sprintf($labels['link_to_tplan_feedback'], $externalID, $version);
 								
 								if( $platformID > 0 )
 								{
-									$dummy_msg .= sprintf($labels['link_2_platform'],$targetName);
+									$dummy_msg .= sprintf($labels['link_to_platform'],$targetName);
 								}
 								$msg[] = array($dummy_msg,$labels['ok']);
 							}

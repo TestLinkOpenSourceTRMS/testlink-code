@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.748 2010/10/31 17:33:12 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.749 2010/10/31 18:35:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -3136,8 +3136,8 @@ $TLS_link_without_platform_element = "Test case link #%s has no platform element
 $TLS_tproject_has_zero_testcases = "Test Project %s has no test cases defined, unable to continue";
 $TLS_tcase_doesnot_exist = "Test Case with external id %s does not exist on Test Project %s";
 $TLS_tcversion_doesnot_exist = "Test Case with external id %s version %s does not exist on Test Project %s";
-$TLS_link_2_tplan_feedback = "Test Case with external id %s version %s has been linked to Test Plan";
-$TLS_link_2_platform = " for Platform %s";
+$TLS_link_to_tplan_feedback = "Test Case with external id %s version %s has been linked to Test Plan";
+$TLS_link_to_platform = " for Platform %s";
 $TLS_no_platforms_on_tproject = "Input file provide Plaftorms links, but target Test Project has no platforms.";
 $TLS_platform_not_on_tproject = "Input file request Plaftorm %s be linked to test plan, but does not exist on target Test Project.";
 $TLS_platform_linked = "Plaftorm %s has been linked to test plan.";

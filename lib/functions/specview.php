@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.71 2010/10/26 18:27:07 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.72 2010/11/01 15:33:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ *	20101101 - franciscom - improved $pfFilters contruction to avoid warning in event viewer
  *	20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and 
  *										test case name filters.
  *	20101025 - franciscom - BUGID 3889: Add Test Cases to Test plan - Right pane does not honor custom field filter
@@ -228,12 +229,22 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 	$hash_id_descr = array_flip($hash_descr_id);
 
 	// BUGID 2797 - filter by test case execution type
-	$pfFilters = array('keyword_id' => $my['filters']['keywords'], 
-	                   'tcase_id' => $my['filters']['testcases'], 
-		               'tcase_node_type_id' => $hash_descr_id['testcase'],
-		               'execution_type' => $my['filters']['exec_type'],
-		               'importance' => $my['filters']['importance'],
-		               'cfields' => $my['filters']['cfields'],'tcase_name' => $my['filters']['tcase_name'] );
+	$key2map = array('keyword_id' => 'keywords', 'tcase_id' => 'testcases', 
+	                 'execution_type' => 'exec_type', 'importance' => 'importance',
+		             'cfields' => 'cfields','tcase_name' => 'tcase_name' );
+
+	$pfFilters = array('tcase_node_type_id' => $hash_descr_id['testcase']);
+	foreach($key2map as $tk => $fk)
+	{
+		$pfFilters[$tk] = isset($my['filters'][$fk]) ? $my['filters'][$fk] : null;
+	}
+	
+	// $pfFilters = array('keyword_id' => $my['filters']['keywords'], 
+	//                    'tcase_id' => $my['filters']['testcases'], 
+	// 	               'tcase_node_type_id' => $hash_descr_id['testcase'],
+	// 	               'execution_type' => $my['filters']['exec_type'],
+	// 	               'importance' => $my['filters']['importance'],
+	// 	               'cfields' => $my['filters']['cfields'],'tcase_name' => $my['filters']['tcase_name'] );
 		             
 	$test_spec = getTestSpecFromNode($db,$tcase_mgr,$linked_items,$tobj_id,$id,$spec_view_type,$pfFilters);
 	

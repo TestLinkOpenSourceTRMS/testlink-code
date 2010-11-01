@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.234 2010/11/01 11:26:02 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.235 2010/11/01 11:43:00 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -2036,13 +2036,15 @@ class testplan extends tlObjectWithAttachments
 	                  release_date
 	
 	  rev :
+	  20101101 - franciscom - added closed_on_date
 	*/
 	function get_builds($id,$active=null,$open=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
-		$sql = " /* $debugMsg */ SELECT id,testplan_id, name, notes, active, is_open,release_date " .
-			" FROM {$this->tables['builds']} WHERE testplan_id = {$id} " ;
+		$sql = " /* $debugMsg */ " . 
+			   " SELECT id,testplan_id, name, notes, active, is_open,release_date,closed_on_date " .
+			   " FROM {$this->tables['builds']} WHERE testplan_id = {$id} " ;
 		
 		if( !is_null($active) )
 		{
@@ -3816,7 +3818,6 @@ class testplan extends tlObjectWithAttachments
 	 *						 build_id: OPTIONAL
 	 *						 tproject_id: OPTIONAL
 	 */
-	// function exportTestPlanDataToXML($id,$platform_id,$optExport = array(),$tproject_id=null)
 	function exportTestPlanDataToXML($id,$context,$optExport = array())
 	{
 		$platform_id = $context['platform_id'];
@@ -3859,7 +3860,8 @@ class testplan extends tlObjectWithAttachments
  		$my['filters'] = array('exclude_node_types' => $nt2exclude,'exclude_children_of' => $nt2exclude_children);
     	$tplan_spec = $this->tree_manager->get_subtree($context['tproject_id'],$my['filters'],$my['options']);
 
-		// 
+		// -----------------------------------------------------------------------------------------------------
+		// Generate test project info 
 		$tproject_mgr = new testproject($this->db);
 		$tproject_info = $tproject_mgr->get_by_id($context['tproject_id']);
 
@@ -3881,7 +3883,9 @@ class testplan extends tlObjectWithAttachments
 		$mm[$context['tproject_id']] = array('name' => $tproject_info['name'], 'id' => $context['tproject_id']);
 		$item_info['testproject'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
 					   									('noXMLHeader'=='noXMLHeader'));
-
+		// -----------------------------------------------------------------------------------------------------
+		
+		// -----------------------------------------------------------------------------------------------------
 		// get target platform (if exists)
 		$target_platform = '';
 		if( $context['platform_id'] > 0)
@@ -3908,7 +3912,40 @@ class testplan extends tlObjectWithAttachments
 		    			   									('noXMLHeader'=='noXMLHeader'));
 		    $target_platform = "\t\t||TARGET_PLATFORM||\n";
 		}
+		// -----------------------------------------------------------------------------------------------------
 
+		// -----------------------------------------------------------------------------------------------------
+		// get Build info (if possible)
+		$target_build = '';
+		if( isset($context['build_id']) &&  $context['build_id'] > 0)
+		{
+			$dummy = $this->get_builds($id);
+			$info = $dummy[$context['build_id']];
+			
+			// ||yyy||-> tags,  {{xxx}} -> attribute 
+			// tags and attributes receive different treatment on exportDataToXML()
+			//
+			// each UPPER CASE word in this map is a KEY, that MUST HAVE AN OCCURENCE on $elemTpl
+			//
+			$xml_template = "\n\t" . 
+							"<build>" . 
+        					"\t\t" . "<name><![CDATA[||BUILDNAME||]]></name>" .
+        					"\t\t" . "<internal_id><![CDATA[||BUILDID||]]></internal_id>" .
+      						"\n\t" . "</build>";
+    						
+    		$xml_root = "{{XMLCODE}}";					
+			$xml_mapping = null;
+			$xml_mapping = array("||BUILDNAME||" => "name", "||BUILDID||" => 'id');
+
+			$mm = array();
+			$mm[$context['build_id']] = array('name' => $info['name'], 'id' => $context['build_id']);
+		    $item_info['target_build'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
+		    			   									('noXMLHeader'=='noXMLHeader'));
+		    $target_build = "\t\t||TARGET_BUILD||\n";
+		}
+		// -----------------------------------------------------------------------------------------------------
+
+		// -----------------------------------------------------------------------------------------------------
 		// get test plan contents (test suites and test cases)
 		$item_info['testsuites'] = null;
 		if( !is_null($tplan_spec) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
@@ -3919,16 +3956,13 @@ class testplan extends tlObjectWithAttachments
 		
 		$xml_root = "\n\t<testplan>{{XMLCODE}}\n\t</testplan>";
 		$xml_template = "\n\t\t" . "<name><![CDATA[||TESTPLANNAME||]]></name>" . "\n" .
-						"\t\t||TESTPROJECT||\n" . $target_platform  . "\t\t||TESTSUITES||\n";
+						"\t\t||TESTPROJECT||\n" . $target_platform  . $target_build  . "\t\t||TESTSUITES||\n";
 
 		$xml_mapping = null;
 		$xml_mapping = array("||TESTPLANNAME||" => "name", "||TESTPROJECT||" => "testproject",
-							 "||TARGET_PLATFORM||" => "target_platform",							
+							 "||TARGET_PLATFORM||" => "target_platform","||TARGET_BUILD||" => "target_build",
 							 "||TESTSUITES||" => "testsuites");
 
-		// new dBug($item_info);
-		// die();
-		
 		$zorba = exportDataToXML(array($item_info),$xml_root,$xml_template,$xml_mapping);
 		
 		return $zorba;

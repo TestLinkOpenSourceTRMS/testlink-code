@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.78 2010/10/18 22:55:29 erikeloff Exp $ 
+* $Id: resultsTC.php,v 1.79 2010/11/01 17:14:48 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -280,8 +280,6 @@ if ($lastResultMap != null)
 } // end if
 
 $gui->tableSet[] =  buildMatrix($gui->buildInfoSet, $gui->matrix, $args->format, $show_platforms, $args);
-
-new dBug($gui);
 $smarty = new TLSmarty;
 $smarty->assign('gui',$gui);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->format, $mailCfg);

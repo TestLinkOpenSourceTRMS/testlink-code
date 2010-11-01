@@ -9,11 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.233 2010/11/01 10:13:17 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.234 2010/11/01 11:26:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *	20101101 - franciscom - exportTestPlanDataToXML() interface changes + changes in output (more info added)
+ *							
  *  20101030 - amitkhullar - BUGID 3845 delete() - Reordered deletion of tables due to error generated
  *							 when using this method as part of Test Project delete.
  *							 (Postgres complains due to use of Foreing Keys).
@@ -3809,16 +3811,28 @@ class testplan extends tlObjectWithAttachments
 	 *
 	 *	<?xml version="1.0" encoding="UTF-8"?>
 	 *	
+	 * @param mixed context: map with following keys 
+	 *						 platform_id: MANDATORY
+	 *						 build_id: OPTIONAL
+	 *						 tproject_id: OPTIONAL
 	 */
-	function exportTestPlanDataToXML($id,$platform_id,$optExport = array(),$tproject_id=null)
+	// function exportTestPlanDataToXML($id,$platform_id,$optExport = array(),$tproject_id=null)
+	function exportTestPlanDataToXML($id,$context,$optExport = array())
 	{
-		if( is_null($tproject_id) )
+		$platform_id = $context['platform_id'];
+		if( !isset($context['tproject_id']) || is_null($context['tproject_id']) )
 		{
 			$dummy = $this->tree_manager->get_node_hierarchy_info($id);
-			$tproject_id = $dummy['parent_id'];
+			$context['tproject_id'] = $dummy['parent_id'];
 		}
+		$context['tproject_id'] = intval($context['tproject_id']);
 		
 		$xmlTC = null;
+
+
+		// CRITIC - this has to be firt population of item_info.
+		// Other processes adds info to this map.
+		$item_info = $this->get_by_id($id);
 		
 		// Need to get family
 		// $tplan_spec = $this->tree_manager->get_subtree($id,tree::USE_RECURSIVE_MODE);
@@ -3836,24 +3850,43 @@ class testplan extends tlObjectWithAttachments
 		// a filtered view of tree.
 		//
 		$order_cfg = array("type" =>'exec_order',"tplan_id" => $id);
-		if( $platform_id > 0 )
+		if( $context['platform_id'] > 0 )
 		{
-			$order_cfg['platform_id'] = $platform_id;
+			$order_cfg['platform_id'] = $context['platform_id'];
 		}
 		$my['options']=array('recursive' => true, 'order_cfg' => $order_cfg,
 							 'remove_empty_nodes_of_type' => $this->tree_manager->node_descr_id['testsuite']);
  		$my['filters'] = array('exclude_node_types' => $nt2exclude,'exclude_children_of' => $nt2exclude_children);
-    	$tplan_spec = $this->tree_manager->get_subtree($tproject_id,$my['filters'],$my['options']);
+    	$tplan_spec = $this->tree_manager->get_subtree($context['tproject_id'],$my['filters'],$my['options']);
 
-		
-		// get Test Plan data
-		$item_info = $this->get_by_id($id);
+		// 
+		$tproject_mgr = new testproject($this->db);
+		$tproject_info = $tproject_mgr->get_by_id($context['tproject_id']);
+
+		// ||yyy||-> tags,  {{xxx}} -> attribute 
+		// tags and attributes receive different treatment on exportDataToXML()
+		//
+		// each UPPER CASE word in this map is a KEY, that MUST HAVE AN OCCURENCE on $elemTpl
+		//
+		$xml_template = "\n\t" . 
+						"<testproject>" . 
+        				"\t\t" . "<name><![CDATA[||TESTPROJECTNAME||]]></name>" .
+        				"\t\t" . "<internal_id><![CDATA[||TESTPROJECTID||]]></internal_id>" .
+      					"\n\t" . "</testproject>";
+    					
+    	$xml_root = "{{XMLCODE}}";					
+		$xml_mapping = null;
+		$xml_mapping = array("||TESTPROJECTNAME||" => "name", "||TESTPROJECTID||" => 'id');
+		$mm = array();
+		$mm[$context['tproject_id']] = array('name' => $tproject_info['name'], 'id' => $context['tproject_id']);
+		$item_info['testproject'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
+					   									('noXMLHeader'=='noXMLHeader'));
 
 		// get target platform (if exists)
 		$target_platform = '';
-		if( $platform_id > 0)
+		if( $context['platform_id'] > 0)
 		{
-			$info = $this->platform_mgr->getByID($platform_id);
+			$info = $this->platform_mgr->getByID($context['platform_id']);
 			// ||yyy||-> tags,  {{xxx}} -> attribute 
 			// tags and attributes receive different treatment on exportDataToXML()
 			//
@@ -3870,32 +3903,32 @@ class testplan extends tlObjectWithAttachments
 			$xml_mapping = array("||PLATFORMNAME||" => "platform_name", "||PLATFORMID||" => 'id');
 
 			$mm = array();
-			$mm[$platform_id] = array('platform_name' => $info['name'], 'id' => $platform_id);
+			$mm[$context['platform_id']] = array('platform_name' => $info['name'], 'id' => $context['platform_id']);
 		    $item_info['target_platform'] = exportDataToXML($mm,$xml_root,$xml_template,$xml_mapping,
 		    			   									('noXMLHeader'=='noXMLHeader'));
 		    $target_platform = "\t\t||TARGET_PLATFORM||\n";
-		    // echo 'dfdfdf';
-			// echo '<pre><xmp>';
-			// echo $platform_chunk;	
-			// echo '</xmp></pre>';
 		}
 
 		// get test plan contents (test suites and test cases)
 		$item_info['testsuites'] = null;
 		if( !is_null($tplan_spec) && ($loop2do = count($tplan_spec['childNodes'])) > 0)
 		{
-			$item_info['testsuites'] = '<testsuites>' . $this->exportTestSuiteDataToXML($tplan_spec,$tproject_id) . 
+			$item_info['testsuites'] = '<testsuites>' . $this->exportTestSuiteDataToXML($tplan_spec,$context['tproject_id']) . 
 									   '</testsuites>';
 		} 
 		
 		$xml_root = "\n\t<testplan>{{XMLCODE}}\n\t</testplan>";
 		$xml_template = "\n\t\t" . "<name><![CDATA[||TESTPLANNAME||]]></name>" . "\n" .
-						$target_platform  . "\t\t||TESTSUITES||\n";
+						"\t\t||TESTPROJECT||\n" . $target_platform  . "\t\t||TESTSUITES||\n";
 
 		$xml_mapping = null;
-		$xml_mapping = array("||TESTPLANNAME||" => "name","||TARGET_PLATFORM||" => "target_platform",							
+		$xml_mapping = array("||TESTPLANNAME||" => "name", "||TESTPROJECT||" => "testproject",
+							 "||TARGET_PLATFORM||" => "target_platform",							
 							 "||TESTSUITES||" => "testsuites");
 
+		// new dBug($item_info);
+		// die();
+		
 		$zorba = exportDataToXML(array($item_info),$xml_root,$xml_template,$xml_mapping);
 		
 		return $zorba;

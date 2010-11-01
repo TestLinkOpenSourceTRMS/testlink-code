@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.75 2010/10/26 11:47:53 mx-julian Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.76 2010/11/01 17:15:37 franciscom Exp $
  *
  * @internal Revisions:
  *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
@@ -40,8 +40,6 @@ $smarty = new TLSmarty();
 
 $smarty->assign('gui', $gui);
 $smarty->assign('report_type', $args->report_type);
-
-new dBug($templateCfg);
 displayReport($templateCfg->template_dir . $templateCfg->default_template, $smarty, $args->report_type,$mailCfg);
 
 

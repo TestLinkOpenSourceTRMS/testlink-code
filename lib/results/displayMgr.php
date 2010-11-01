@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: displayMgr.php,v $
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/05/15 11:13:46 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/11/01 17:15:37 $ by $Author: franciscom $
  * @author	Kevin Levy
  * 
  * Revision:
@@ -75,9 +75,6 @@ function displayReport($template_file, &$smarty, $doc_format, $mailCfg = null)
 
 	    case FORMAT_MAIL_HTML:
 		  	$op = generateHtmlEmail($smarty, $template_file,  $mailCfg);
-		  	
-		  	new dBug($op);
-		  	
 		  	$message = $op->status_ok ? '' : lang_get('send_mail_ko');	
 			$smarty = new TLSmarty();
 			$smarty->assign('message', $message . ' ' . $op->msg);

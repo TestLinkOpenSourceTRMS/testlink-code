@@ -12,7 +12,7 @@
  * @author 		kevyn levy
  *
  * @copyright 	2007-2010, TestLink community 
- * @version    	CVS: $Id: resultsByStatus.php,v 1.104 2010/10/13 11:48:50 mx-julian Exp $
+ * @version    	CVS: $Id: resultsByStatus.php,v 1.105 2010/11/01 17:15:37 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -313,8 +313,6 @@ if( !is_null($myRBB) and count($myRBB) > 0 )
 		$gui->warning_msg = lang_get('no_blocked');
 	}
 }	
-
-//new dBug($gui->dataSet);
 
 $gui->tableSet[] = buildMatrix($gui->dataSet, $args, array(
 		'status_not_run' => ($args->type == $statusCode['not_run']),

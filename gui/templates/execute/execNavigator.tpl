@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.51 2010/11/01 11:13:32 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.52 2010/11/01 15:22:53 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -72,7 +72,7 @@ rev :
  */
 function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id) 
 {
-  args = "tprojectID=" + tproject_id + "&tplanID=" + tplan_id + "&platformID=" + platform_id + "&buildID=" + build_id;  
+  args = "tproject_id=" + tproject_id + "&tplan_id=" + tplan_id + "&platform_id=" + platform_id + "&build_id=" + build_id;  
   args = args + "&exportContent=tree";
 	wref = window.open(fRoot+"lib/plan/planExport.php?"+args,
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");

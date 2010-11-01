@@ -16,7 +16,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planExport.php,v 1.10 2010/11/01 11:26:52 franciscom Exp $
+ * @version    	CVS: $Id: planExport.php,v 1.11 2010/11/01 15:22:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -74,30 +74,25 @@ function init_args()
     $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
 
+	// ------------------------------------------------------------------------------------------------
+	// IMPORTANT NOTICE - 20101101 - franciscom
+	// This page is called (@20101101) from two places
+	//
+	// From test plan management to export linked test cases & platforms
+	// From execution to export test plan contents
+	// I've found problems when using in 'execution feature' when I've choose to name hidden inputs
+	// on tpl with a name different to that used on execSetResults.php.
+	// This resulted on weird effects on execNavigator.tpl
+	// Propably one option can be to save 'form_token'.
+	// I've used a simple (and may be more suggest to new bugs in future):
+	// maintain same names -> build_id instead of buildID, and so on.
+	// A change was also needed on JS support function openExportTestPlan().
+	// ------------------------------------------------------------------------------------------------
     $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
-    if( $args->tproject_id == 0 )
-    {
-    	$args->tproject_id = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : 0;
-	}
-	
     $args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
-    if( $args->build_id == 0 )
-    {
-    	$args->build_id = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
-    }
-
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
-    if( $args->tplan_id == 0 )
-    {
-    	$args->tplan_id = isset($_REQUEST['tplanID']) ? intval($_REQUEST['tplanID']) : 0;
-    }
-
     $args->platform_id = isset($_REQUEST['platform_id']) ? intval($_REQUEST['platform_id']) : 0;
-    if( $args->platform_id == 0 )
-    {
-    	$args->platform_id = isset($_REQUEST['platformID']) ? intval($_REQUEST['platformID']) : 0;
-	}
-    
+
     $args->export_filename=isset($_REQUEST['export_filename']) ? $_REQUEST['export_filename'] : null;
     $args->export_filename = trim($args->export_filename);
     

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planExport.tpl,v 1.5 2010/10/09 08:55:11 franciscom Exp $ 
+$Id: planExport.tpl,v 1.6 2010/11/01 11:27:11 franciscom Exp $ 
 
 test plan export
 
@@ -45,8 +45,10 @@ function validateForm(f)
   <form method="post" id="export_xml" enctype="multipart/form-data" 
         action="lib/plan/planExport.php"
         onSubmit="javascript:return validateForm(this);">
+    <input type="hidden" name="tproject_id" id="tproject_id" value="{$gui->tproject_id}">
     <input type="hidden" name="tplan_id" id="tplan_id" value="{$gui->tplan_id}">
     <input type="hidden" name="platform_id" id="platform_id" value="{$gui->platform_id}">
+    <input type="hidden" name="build_id" id="build_id" value="{$gui->build_id}">
     <input type="hidden" name="exportContent" id="exportContent" value="{$gui->exportContent}">
     <table>
     <tr>

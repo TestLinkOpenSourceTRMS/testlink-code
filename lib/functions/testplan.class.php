@@ -9,12 +9,14 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.232 2010/10/31 08:12:39 amkhullar Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.233 2010/11/01 10:13:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
- *  20101030 - amitkhullar - BUGID 3845 Reordered deletion of tables on project delete (Err on Postgres)
+ *  20101030 - amitkhullar - BUGID 3845 delete() - Reordered deletion of tables due to error generated
+ *							 when using this method as part of Test Project delete.
+ *							 (Postgres complains due to use of Foreing Keys).
  *	20101024 - franciscom - filter_cf_selection() - fixed event viewer warning + refactoring 	
  *	20101017 - franciscom - new method get_import_file_types() 
  *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class

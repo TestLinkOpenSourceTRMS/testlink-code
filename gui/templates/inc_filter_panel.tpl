@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.11 2010/10/09 09:43:41 franciscom Exp $
+ * $Id: inc_filter_panel.tpl,v 1.12 2010/11/01 11:13:42 franciscom Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,6 +12,7 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20101101 - franciscom - openExportTestPlan() interface changes
  *  20101009 - franciscom - fixed error viewer warning
  *  20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
  *  20100811 - asimon - BUGID 3566: show/hide CF
@@ -141,8 +142,9 @@
 				<tr>
 		   			<td colspan="2">
 	          <input type="button" id="doTestPlanExport" name="doTestPlanExport" value="{$labels.btn_export_testplan_tree}"
-         	         onclick="javascript: openExportTestPlan('export_testplan','{$control->settings.setting_testplan.selected}',
-         	                                                 '{$platformID}');" />
+         	         onclick="javascript: openExportTestPlan('export_testplan','{$session.testprojectID}',
+         	                                                 '{$control->settings.setting_testplan.selected}','{$platformID}',
+         	                                                 '{$control->settings.setting_build.selected}');" />
             </td>
 		  		</tr>
 			{/if}

@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.50 2010/10/27 13:45:16 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.51 2010/11/01 11:13:32 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20101101 - franciscom - openExportTestPlan() interface changes
   20101027 - asimon - BUGID 3946: reqirement specification tree size
   20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
   20100625 - asimon - removed old ext js constant
@@ -69,9 +70,10 @@ rev :
  * internal revisions
  * BUGID 3270 - Export Test Plan in XML Format
  */
-function openExportTestPlan(windows_title,tplan_id,platform_id) 
+function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build_id) 
 {
-  args = "tplanID=" + tplan_id + "&platformID=" + platform_id + "&exportContent=tree";
+  args = "tprojectID=" + tproject_id + "&tplanID=" + tplan_id + "&platformID=" + platform_id + "&buildID=" + build_id;  
+  args = args + "&exportContent=tree";
 	wref = window.open(fRoot+"lib/plan/planExport.php?"+args,
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
 	wref.focus();

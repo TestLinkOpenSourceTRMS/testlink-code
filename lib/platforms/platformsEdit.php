@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: platformsEdit.php,v $
  *
- * @version $Revision: 1.15 $
- * @modified $Date: 2010/06/24 17:25:57 $ by $Author: asimon83 $
+ * @version $Revision: 1.16 $
+ * @modified $Date: 2010/11/01 16:18:48 $ by $Author: franciscom $
  *
  * allows users to manage platforms. 
  *
@@ -14,6 +14,7 @@
  * pages of this kind, and how we need to refactor old pages.
  *
  * @internal Revision:
+ * 20101101 - franciscom - refactoring to remove event viewer warnings
  * 20091201 - franciscom - minor code layout and standard coding changes 
  *
 **/
@@ -54,15 +55,12 @@ switch ($action)
 if($op->status == 1)
 {
 	$default_template = $op->template;
-	if ($op->user_feedback)
-	{
-		$gui->user_feedback['message'] = $op->user_feedback;
-	}
+	$gui->user_feedback['message'] = $op->user_feedback;
 }
 else
 {
 	$gui->user_feedback['message'] = getErrorMessage($op->status, $args->name);
-	$gui->user_feedback['type'] = ERROR;
+	$gui->user_feedback['type'] = 'ERROR';
 }
 $gui->platforms = $platform_mgr->getAll(array('include_linked_count' => true));
 
@@ -70,6 +68,11 @@ $smarty->assign('gui',$gui);
 $smarty->display($templateCfg->template_dir . $default_template);
 
 
+
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$args = new stdClass();
@@ -119,6 +122,7 @@ function create(&$args,&$gui)
 	$ret = new stdClass();
 	$ret->template = 'platformsEdit.tpl';
 	$ret->status = 1;
+	$ret->user_feedback = '';
 	$gui->submit_button_label = lang_get('btn_save');
 	$gui->submit_button_action = 'do_create';
 	$gui->action_descr = lang_get('create_platform');
@@ -142,6 +146,7 @@ function edit(&$args,&$gui,&$platform_mgr)
 	$ret = new stdClass();
 	$ret->template = 'platformsEdit.tpl';
 	$ret->status = 1;
+	$ret->user_feedback = '';
 
 	$gui->action_descr = lang_get('edit_platform');
 	$platform = $platform_mgr->getById($args->platform_id);
@@ -277,7 +282,7 @@ function init_gui(&$db,&$args)
 	$gui = new stdClass();
 	$gui->canManage = $args->currentUser->hasRight($db,"platform_management");
     $gui->mgt_view_events = $args->currentUser->hasRight($db,"mgt_view_events");
-	$gui->user_feedback = array('type' => INFO, 'message' => '');
+	$gui->user_feedback = array('type' => 'INFO', 'message' => '');
     $gui->name = $args->name;
     $gui->notes = $args->notes;
     $gui->platformID = $args->platform_id;

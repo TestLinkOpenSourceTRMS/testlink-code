@@ -16,10 +16,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: planExport.php,v 1.9 2010/10/09 18:59:51 franciscom Exp $
+ * @version    	CVS: $Id: planExport.php,v 1.10 2010/11/01 11:26:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
+ * 20101101	 - franciscom - BUGID 3270 - improve file name.
  * 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
  *						   added management of exportContent	
  *
@@ -44,7 +45,9 @@ if ($args->doExport)
 		break;
 		
 		case 'tree':
-		$content = $tplan_mgr->exportTestPlanDataToXML($args->tplan_id,$args->platform_id);
+		$context = array('platform_id' => $args->platform_id, 'build_id' => $args->build_id,
+						 'tproject_id' => $args->tproject_id);
+		$content = $tplan_mgr->exportTestPlanDataToXML($args->tplan_id,$context);
 		break;
 	}
 	downloadContentsToFile($content,$gui->export_filename);
@@ -70,7 +73,18 @@ function init_args()
     $args = new stdClass();
     $args->doExport = isset($_REQUEST['export']) ? $_REQUEST['export'] : null;
     $args->exportType = isset($_REQUEST['exportType']) ? $_REQUEST['exportType'] : null;
+
     $args->tproject_id = isset($_REQUEST['tproject_id']) ? intval($_REQUEST['tproject_id']) : 0;
+    if( $args->tproject_id == 0 )
+    {
+    	$args->tproject_id = isset($_REQUEST['tprojectID']) ? intval($_REQUEST['tprojectID']) : 0;
+	}
+	
+    $args->build_id = isset($_REQUEST['build_id']) ? intval($_REQUEST['build_id']) : 0;
+    if( $args->build_id == 0 )
+    {
+    	$args->build_id = isset($_REQUEST['buildID']) ? intval($_REQUEST['buildID']) : 0;
+    }
 
     $args->tplan_id = isset($_REQUEST['tplan_id']) ? intval($_REQUEST['tplan_id']) : 0;
     if( $args->tplan_id == 0 )
@@ -108,18 +122,28 @@ function init_args()
 function initializeGui(&$argsObj,&$tplanMgr)
 {
 	$info = $tplanMgr->get_by_id($argsObj->tplan_id);
-
+	$add2name = '';
+	
 	$guiObj = new stdClass();
 	$guiObj->do_it = 1;
 	$guiObj->nothing_todo_msg = '';
-	// $guiObj->export_filename = 'export_' . str_replace(' ','_',$info['name']) . '.xml';
-	$guiObj->export_filename = $argsObj->exportContent . '_' . str_replace(' ','_',$info['name']) . '.xml';
+	
+	// If there is a platform setted -> use in name.
+	if( $argsObj->platform_id > 0 )
+	{
+		$dummy = $tplanMgr->getPlatforms($argsObj->tplan_id,array('outputFormat' => 'mapAccessByID'));
+		$add2name = '_' . str_replace(' ','_',$dummy[$argsObj->platform_id]['name']);
+	}
+	$guiObj->export_filename = $argsObj->exportContent . '_' . str_replace(' ','_',$info['name']) . $add2name . '.xml';
 	$guiObj->exportTypes = array('XML' => 'XML');
 	$guiObj->page_title = lang_get('export_test_plan');
 	$guiObj->object_name = $info['name'];
 	$guiObj->goback_url = !is_null($argsObj->goback_url) ? $argsObj->goback_url : ''; 
+
     $guiObj->tplan_id = intval($argsObj->tplan_id);
+    $guiObj->tproject_id = intval($argsObj->tproject_id);
     $guiObj->platform_id = intval($argsObj->platform_id);
+    $guiObj->build_id = intval($argsObj->build_id);
     $guiObj->exportContent = $argsObj->exportContent;
 
 	return $guiObj;

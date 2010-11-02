@@ -4,13 +4,15 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/11/01 17:14:14 $ by $Author: franciscom $
+ * @version $Revision: 1.42 $
+ * @modified $Date: 2010/11/02 09:21:50 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20101102 - asimon - BUGID 3964: Evaluation of requirement is set to "Passed" 
+ *                     even though all linked test cases aren't passed
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
  * 20101007 - asimon - BUGID 3856: Requirement based report should regard platforms
@@ -161,6 +163,10 @@ if(count($req_spec_map)) {
 			
 			foreach ($req_info['linked_testcases'] as $key => $tc_info) {
 				$tc_id = $tc_info['id'];
+				
+				// BUGID 3964
+				$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
+				
 				if (isset($testcases[$tc_id]['exec_status'])) {
 					$status = $testcases[$tc_id]['exec_status'];
 					
@@ -170,7 +176,9 @@ if(count($req_spec_map)) {
 					}
 					
 					$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters'][$status] ++;
-					$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
+					
+					// BUGID 3964
+					//$req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']['total'] ++;
 				}
 			}
 			
@@ -441,7 +449,8 @@ function evaluate_req(&$status_code_map, &$algorithm_cfg, &$counters) {
 	$evaluation = 'partially_passed';
 	$break = false;
 	
-	if ($counters['total'] == 0) {
+	// BUGID 3964
+	if ($counters['total'] == 0 || count($counters) == 1) {
 		$evaluation = 'uncovered';
 		$break = true;
 	}

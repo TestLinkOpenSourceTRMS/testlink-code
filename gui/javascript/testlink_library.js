@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.110 2010/10/26 08:10:25 mx-julian Exp $
+// $Id: testlink_library.js,v 1.111 2010/11/02 09:33:03 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -25,6 +25,7 @@
 //
 // ------ Revisions ---------------------------------------------------------------------
 //
+// 20101102 - asimon - BUGID 2864: commented out old open_top(), replaced by openLinkedReqWindow()
 // 20101025 - Julian - BUGID 3930: added new parameter dateFormat to showCal() to be able to use
 //                                 localized date formats. Preselecting datepicker with existing
 //                                 date works for all localized date formats
@@ -141,16 +142,17 @@ function open_popup(page)
 	return true;
 }
 
+// BUGID 2684: not needed anymore
 // middle window (information, TC)
-function open_top(page)
-{
-  var windowCfg="left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes," + 
-                "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no," +
-                "width=600,height=400";
-  
-	window.open(page, "_blank", windowCfg);
-	return true;
-}
+//function open_top(page)
+//{
+//  var windowCfg="left=350,top=50,screenX=350,screenY=50,fullscreen=no,resizable=yes," + 
+//                "toolbar=no,status=no,menubar=no,scrollbars=yes,directories=no,location=no," +
+//                "width=600,height=400";
+//  
+//	window.open(page, "_blank", windowCfg);
+//	return true;
+//}
 
 
 // test specification related functions

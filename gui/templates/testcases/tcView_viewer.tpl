@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.84 2010/10/17 09:46:37 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.85 2010/11/02 09:33:02 asimon83 Exp $
 viewer for test case in test specification
 
 rev:
+    20101102 - asimon - BUGID 2864: replaced old open_top() by openLinkedReqWindow()
     20100901 - franciscom - refactoring using inc_tcbody.tpl
                             added launchInsertStep()
     20100621 - eloff - BUGID 3241 - Implement vertical layout
@@ -339,7 +340,8 @@ function launchInsertStep(step_id)
       			  </td>
       			  <td>
       				{section name=item loop=$args_reqs}
-      					<span onclick="javascript: open_top('{$hrefReqMgmt}{$args_reqs[item].id}');"
+      					{* BUGID 2684 *}
+      					<span onclick="javascript: openLinkedReqWindow({$args_reqs[item].id});"
       					style="cursor:  pointer;  color: #059; ">[{$args_reqs[item].req_spec_title|escape}]&nbsp;{$args_reqs[item].req_doc_id|escape}:{$args_reqs[item].title|escape}</span>
       					{if !$smarty.section.item.last}<br />{/if}
       				{sectionelse}

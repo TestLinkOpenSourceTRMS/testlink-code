@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.32 2010/10/28 08:51:26 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.33 2010/11/03 08:06:16 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20101103 - asimon - custom fields on test spec did not retain value after apply
  * 20101028 - asimon - BUGID 3933: Add test case to test plan - Left Pane filter uses 
  *                     priority concept to filter test spec where priority does not exist
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
@@ -1411,7 +1412,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
 				
 				// BUGID 3716
-				$value = isset($_REQUEST[$cf_input_name . '_input']) ? $_REQUEST[$cf_input_name . '_input'] : null;
+				// custom fields on test spec did not retain value after apply
+				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
 
 				// BUGID 3884: added filtering for datetime custom fields
 				if ($verbose_type == 'datetime') {

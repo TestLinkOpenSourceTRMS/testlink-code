@@ -7,7 +7,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.18 2010/10/26 08:42:53 mx-julian Exp $
+ * @version    CVS: $Id: tlRequirementFilterControl.class.php,v 1.19 2010/11/03 08:06:16 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlRequirementFilterControl.class.php?view=markup
  *
@@ -16,6 +16,7 @@
  * 
  * @internal Revisions:
  *
+ * 20101103 - asimon - custom fields on requirement filtering did not retain value after apply
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
  * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
  * 20101011 - asimon - BUGID 3883: fixed handling of unset date custom field inputs
@@ -492,7 +493,8 @@ class tlRequirementFilterControl extends tlFilterControl {
 				$cf_input_name = "{$cf_prefix}{$type}_{$id}";
 
 				// BUGID 3716
-				$value = isset($_REQUEST[$cf_input_name . '_input']) ? $_REQUEST[$cf_input_name . '_input'] : null;
+				// custom fields did not retain value after apply
+				$value = isset($_REQUEST[$cf_input_name]) ? $_REQUEST[$cf_input_name] : null;
 
 				// BUGID 3884: added filtering for datetime custom fields
 				if ($verbose_type == 'datetime') {

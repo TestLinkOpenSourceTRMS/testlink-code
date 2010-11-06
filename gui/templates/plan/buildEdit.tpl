@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.21 2010/10/26 13:11:34 mx-julian Exp $
+$Id: buildEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
 
 Purpose: smarty template - Add new build and show existing
 
@@ -37,8 +37,9 @@ Rev:
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_build_name = "{$labels.warning_empty_build_name}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_build_name = "{$labels.warning_empty_build_name|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

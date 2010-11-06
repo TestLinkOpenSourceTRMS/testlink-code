@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.17 2010/10/11 18:11:29 franciscom Exp $
+$Id: tcNew.tpl,v 1.18 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - create new testcase
 
 20101011 - franciscom - BUGID 3874 - custom fields type validation
@@ -42,8 +42,9 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
+//BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

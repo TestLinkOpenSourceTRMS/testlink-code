@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerDeleteTC.tpl,v 1.3 2010/09/10 19:32:18 franciscom Exp $
+$Id: containerDeleteTC.tpl,v 1.4 2010/11/06 11:42:47 amkhullar Exp $
 
 Purpose:
 
@@ -11,7 +11,7 @@ rev :
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
              check_uncheck_all_checkboxes,btn_delete,th_linked_to_tplan,th_version,
-             platform,th_executed,choose_target,copy_keywords,btn_move,btn_cp'}
+             platform,th_executed,choose_target,copy_keywords,btn_move,warning,btn_cp'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
 
@@ -22,7 +22,8 @@ rev :
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{lang_get s='warning'}";
+//BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 /*
   function: check_action_precondition

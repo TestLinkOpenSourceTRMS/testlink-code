@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.21 2010/05/01 19:45:41 franciscom Exp $
+$Id: rolesEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -32,11 +32,12 @@ rev :
              th_product_rights,th_user_rights,th_kw_rights,th_cf_rights,th_system_rights,
              th_platform_rights,
              th_rolename,th_tp_rights,btn_cancel'}
-
-var alert_box_title = "{$labels.warning}";
-var warning_modify_role = "{$labels.warning_modify_role}";
-var warning_empty_role_name = "{$labels.warning_empty_role_name}";
-var warning_error_role_no_rights = "{$labels.error_role_no_rights}";
+             
+//BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_modify_role = "{$labels.warning_modify_role|escape:'javascript'}";
+var warning_empty_role_name = "{$labels.warning_empty_role_name|escape:'javascript'}";
+var warning_error_role_no_rights = "{$labels.error_role_no_rights|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

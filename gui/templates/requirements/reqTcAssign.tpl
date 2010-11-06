@@ -30,8 +30,9 @@ Purpose: smarty template - assign REQ to one test case
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-	var please_select_a_req="{$labels.please_select_a_req}";
-	var alert_box_title = "{$labels.warning}";
+//BUGID 3943: Escape all messages (string)
+	var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 
 function check_action_precondition(form_id,action)

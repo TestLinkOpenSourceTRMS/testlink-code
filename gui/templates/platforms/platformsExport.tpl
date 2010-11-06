@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsExport.tpl,v 1.2 2009/11/19 20:05:39 schlundus Exp $ 
+$Id: platformsExport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $ 
 Purpose: smarty template - platforms export
 rev:
 
@@ -12,13 +12,14 @@ rev:
 
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,
-             view_file_format_doc'}
+             view_file_format_doc,warning_empty_filename'}
 
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_filename = "{lang_get s='warning_empty_filename'}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

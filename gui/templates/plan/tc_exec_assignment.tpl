@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.34 2010/10/30 21:59:37 franciscom Exp $
+$Id: tc_exec_assignment.tpl,v 1.35 2010/11/06 11:42:47 amkhullar Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -32,8 +32,9 @@ rev :
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-	var check_msg="{$labels.exec_assign_no_testcase}";
-	var alert_box_title = "{$labels.warning}";
+// BUGID 3943: Escape all messages (string)
+	var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 
 loop2do=0;   // needed for the convert grid logic

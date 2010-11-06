@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMoveTC.tpl,v 1.7 2010/06/24 17:25:53 asimon83 Exp $
+$Id: containerMoveTC.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $
 Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
@@ -15,7 +15,7 @@ rev :
 *}
 {lang_get var='labels'
           s='th_test_case,th_id,title_move_cp,title_move_cp_testcases,sorry_further,
-             check_uncheck_all_checkboxes,
+             check_uncheck_all_checkboxes,warning,
              choose_target,copy_keywords,btn_move,btn_cp'}
 
 {lang_get s='select_at_least_one_testcase' var="check_msg"}
@@ -27,7 +27,8 @@ rev :
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{lang_get s='warning'}";
+//BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 /*
   function: check_action_precondition

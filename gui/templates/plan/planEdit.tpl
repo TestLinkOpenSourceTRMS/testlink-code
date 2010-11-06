@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.16 2010/10/12 20:11:37 franciscom Exp $
+$Id: planEdit.tpl,v 1.17 2010/11/06 11:42:47 amkhullar Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
@@ -26,8 +26,9 @@ Bug confirmed on IE
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_tp_name = "{$labels.warning_empty_tp_name}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_tp_name = "{$labels.warning_empty_tp_name|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

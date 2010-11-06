@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.14 2010/07/13 07:36:46 asimon83 Exp $
+$Id: planUpdateTC.tpl,v 1.15 2010/11/06 11:42:47 amkhullar Exp $
 
 Author: franciscom
 
@@ -28,9 +28,9 @@ rev:
 {literal}
 <script type="text/javascript">
 {/literal}
-
-var alert_box_title = "{$labels.warning}";
-var warning_no_testcase_checked = "{$labels.no_testcase_checked}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_no_testcase_checked = "{$labels.no_testcase_checked|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

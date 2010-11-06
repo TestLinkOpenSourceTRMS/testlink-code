@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planImport.tpl,v 1.2 2010/10/30 08:28:54 franciscom Exp $
+$Id: planImport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: manage import of test plan links (test cases and platforms)
 
 rev:
@@ -66,7 +66,8 @@ rev:
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-  alert_message("{$labels.warning}","{$gui->file_check.msg}");
+//  BUGID 3943: Escape all messages (string)
+  alert_message("{$labels.warning}","{$gui->file_check.msg|escape:'javascript'}");
   // alert("{$gui->file_check.msg}");
   </script>
 {/if}  

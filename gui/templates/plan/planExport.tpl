@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planExport.tpl,v 1.6 2010/11/01 11:27:11 franciscom Exp $ 
+$Id: planExport.tpl,v 1.7 2010/11/06 11:42:47 amkhullar Exp $ 
 
 test plan export
 
@@ -19,8 +19,9 @@ Revisions:
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-var alert_box_title = "{$labels.warning}";
-var warning_empty_filename = "{$labels.warning_empty_filename}";
+//BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

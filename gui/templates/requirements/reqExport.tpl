@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqExport.tpl,v 1.7 2010/02/18 21:29:20 franciscom Exp $ *}
+{* $Id: reqExport.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $ *}
 {* Purpose: smarty template - req export initial page *}
 {* revisions:
 *}
@@ -23,7 +23,8 @@
 {literal}
 <script type="text/javascript">
 {/literal}
-var warning_empty_filename = "{$labels.warning_empty_filename}";
+// BUGID 3943: Escape all messages (string)
+var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 var alert_box_title = "{$labels.warning}";
 {literal}
 function validateForm(f)

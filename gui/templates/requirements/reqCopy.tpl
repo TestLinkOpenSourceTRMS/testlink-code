@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCopy.tpl,v 1.9 2010/10/06 10:26:22 asimon83 Exp $
+$Id: reqCopy.tpl,v 1.10 2010/11/06 11:42:47 amkhullar Exp $
 Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
@@ -14,7 +14,7 @@ rev :
 {lang_get var='labels'
           s='title_move_cp,title_move_cp_testcases,sorry_further,req_doc_id,
              check_uncheck_all_checkboxes,title,copy_testcase_assignments,
-             choose_target,btn_cp'}
+             choose_target,btn_cp,warning'}
 
 {lang_get s='select_at_least_one_req' var="check_msg"}
 
@@ -25,7 +25,8 @@ rev :
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{lang_get s='warning'}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 /*
   function: check_action_precondition

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsImport.tpl,v 1.3 2010/02/21 17:07:22 franciscom Exp $
+$Id: platformsImport.tpl,v 1.4 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - manage import of platforms
 
 rev: 
@@ -9,7 +9,7 @@ rev:
 {lang_get var="labels"
           s='file_type,view_file_format_doc,local_file,warning,
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
-             btn_goback,not_imported,imported,btn_cancel'}
+             btn_goback,not_imported,warning_empty_filename,imported,btn_cancel'}
 
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -19,8 +19,9 @@ rev:
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_filename = "{lang_get s='warning_empty_filename'}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {
@@ -95,7 +96,7 @@ function validateForm(f)
 
 {if $gui->file_check.status_ok eq 0}
     <script>
-    alert_message(alert_box_title,"{$gui->file_check.msg}");
+    alert_message(alert_box_title,"{$gui->file_check.msg|escape:'javascript'}");
     </script>
 {/if}  
 </div>

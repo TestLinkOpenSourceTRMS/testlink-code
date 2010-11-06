@@ -17,13 +17,13 @@ Purpose: smarty template - compare testcase versions
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
 
 <script type="text/javascript">
-
-var alert_box_title = "{$labels.warning}";
-var warning_empty_context = "{$labels.warning_empty_context}";
-var warning_context_range = "{$labels.warning_context_range}";
-var warning_selected_versions = "{$labels.warning_selected_versions}";
-var warning_same_selected_versions = "{$labels.warning_same_selected_versions}";
-var warning_context = "{$labels.warning_context}";
+//BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_context = "{$labels.warning_empty_context|escape:'javascript'}";
+var warning_context_range = "{$labels.warning_context_range|escape:'javascript'}";
+var warning_selected_versions = "{$labels.warning_selected_versions|escape:'javascript'}";
+var warning_same_selected_versions = "{$labels.warning_same_selected_versions|escape:'javascript'}";
+var warning_context = "{$labels.warning_context|escape:'javascript'}";
 
 {literal}
 

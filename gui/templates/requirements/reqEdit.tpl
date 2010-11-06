@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.32 2010/10/11 18:36:10 franciscom Exp $
+$Id: reqEdit.tpl,v 1.33 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20101011 - franciscom - BUGID 3886: CF Types validation
@@ -28,11 +28,12 @@ internal revision
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-	var alert_box_title = "{$labels.warning}";
-	var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id}";
-	var warning_empty_req_title = "{$labels.warning_empty_req_title}";
-	var warning_expected_coverage = "{$labels.warning_expected_coverage}";
-	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range}";
+//BUGID 3943: Escape all messages (string)
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+	var warning_empty_req_docid = "{$labels.warning_empty_reqdoc_id|escape:'javascript'}";
+	var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
+	var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
+	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
 
   // To manage hide/show expected coverage logic, depending of req type
   var js_expected_coverage_cfg = new Array();

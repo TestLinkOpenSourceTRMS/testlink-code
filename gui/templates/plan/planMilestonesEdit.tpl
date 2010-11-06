@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.12 2010/10/26 13:11:33 mx-julian Exp $
+$Id: planMilestonesEdit.tpl,v 1.13 2010/11/06 11:42:47 amkhullar Exp $
 
 Rev:
     20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
@@ -32,15 +32,16 @@ Rev:
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_invalid_percentage_value = "{$labels.warning_invalid_percentage_value}";
-var warning_must_be_number = "{$labels.warning_must_be_number}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_invalid_percentage_value = "{$labels.warning_invalid_percentage_value|escape:'javascript'}";
+var warning_must_be_number = "{$labels.warning_must_be_number|escape:'javascript'}";
 
 var warning_empty = new Object;
-warning_empty.milestone_name  = "{$labels.warning_empty_milestone_name}";
-warning_empty.low_priority_tcases = "{$labels.warning_empty_low_priority_tcases}";
-warning_empty.medium_priority_tcases = "{$labels.warning_empty_medium_priority_tcases}";
-warning_empty.high_priority_tcases = "{$labels.warning_empty_high_priority_tcases}";
+warning_empty.milestone_name  = "{$labels.warning_empty_milestone_name|escape:'javascript'}";
+warning_empty.low_priority_tcases = "{$labels.warning_empty_low_priority_tcases|escape:'javascript'}";
+warning_empty.medium_priority_tcases = "{$labels.warning_empty_medium_priority_tcases|escape:'javascript'}";
+warning_empty.high_priority_tcases = "{$labels.warning_empty_high_priority_tcases|escape:'javascript'}";
 
 
 

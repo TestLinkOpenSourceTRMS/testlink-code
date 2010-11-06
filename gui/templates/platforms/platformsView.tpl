@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.12 2010/10/17 09:46:37 franciscom Exp $
+$Id: platformsView.tpl,v 1.13 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - View all platforms
 
 20100119 - Eloff      - added ability to show/hide platform id for API
@@ -13,7 +13,8 @@ Purpose: smarty template - View all platforms
 
 {lang_get var='labels'
           s='th_notes,th_platform,th_delete,btn_import,btn_export,
-             menu_manage_platforms,alt_delete_platform,
+             menu_manage_platforms,alt_delete_platform,warning_delete_platform,
+             warning_cannot_delete_platform,delete,
              menu_assign_kw_to_tc,btn_create_platform'}
 
 {lang_get s='warning_delete_platform' var="warning_msg" }
@@ -68,11 +69,11 @@ Purpose: smarty template - View all platforms
 				<img style="border:none;cursor: pointer;"	alt="{$labels.alt_delete_platform}"
 						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete}"
 						onclick="delete_confirmation({$gui->platforms[platform].id},
-							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$del_msgbox_title}','{$warning_msg}');" />
+							      '{$gui->platforms[platform].name|escape:'javascript'|escape}', '{$del_msgbox_title|escape:'javascript'}','{$warning_msg|escape:'javascript'}');" />
 				{else}
 					<img style="border:none;cursor: pointer;" 	alt="{$labels.alt_delete_platform}"
 						title="{$labels.alt_delete_platform}"	src="{$tlImages.delete_disabled}"
-						onclick="alert_message_html('{$del_msgbox_title}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name}');" />
+						onclick="alert_message_html('{$del_msgbox_title|escape:'javascript'}','{$warning_msg_cannot_del|replace:'%s':$gui->platforms[platform].name|escape:'javascript'}');" />
 				{/if}
 			</td>
 			{/if}

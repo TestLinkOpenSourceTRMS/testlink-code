@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.20 2010/05/01 19:45:41 franciscom Exp $
+$Id: userInfo.tpl,v 1.21 2010/11/06 11:42:47 amkhullar Exp $
 
 rev: 20080908 - franciscom - email validity check
 *}
@@ -26,20 +26,21 @@ rev: 20080908 - franciscom - email validity check
 {literal}
 <script type="text/javascript">
 {/literal}
-var warning_empty_pwd = "{$labels.warning_empty_pwd}";
-var warning_different_pwd = "{$labels.warning_different_pwd}";
-var warning_enter_less1 = "{$labels.warning_enter_less1}";
-var warning_enter_at_least1 = "{$labels.warning_enter_at_least1}";
-var warning_enter_at_least2 = "{$labels.warning_enter_at_least2}";
-var warning_enter_less2 = "{$labels.warning_enter_less2}";
+//BUGID 3943: Escape all messages (string)
+var warning_empty_pwd = "{$labels.warning_empty_pwd|escape:'javascript'}";
+var warning_different_pwd = "{$labels.warning_different_pwd|escape:'javascript'}";
+var warning_enter_less1 = "{$labels.warning_enter_less1|escape:'javascript'}";
+var warning_enter_at_least1 = "{$labels.warning_enter_at_least1|escape:'javascript'}";
+var warning_enter_at_least2 = "{$labels.warning_enter_at_least2|escape:'javascript'}";
+var warning_enter_less2 = "{$labels.warning_enter_less2|escape:'javascript'}";
 var names_max_len={#NAMES_MAXLEN#};
-var alert_box_title = "{$labels.warning}";
-var warning_empty_name = "{$labels.warning_empty_first_name}";
-var warning_empty_last = "{$labels.warning_empty_last_name}";
-var warning_passwd_dont_match = "{$labels.passwd_dont_match}";
-var warning_empty_old_password = "{$labels.empty_old_passwd}";
-var warning_empty_email_address = "{$labels.empty_email_address}";
-var warning_no_good_email_address = "{$labels.no_good_email_address}"; 
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_name = "{$labels.warning_empty_first_name|escape:'javascript'}";
+var warning_empty_last = "{$labels.warning_empty_last_name|escape:'javascript'}";
+var warning_passwd_dont_match = "{$labels.passwd_dont_match|escape:'javascript'}";
+var warning_empty_old_password = "{$labels.empty_old_passwd|escape:'javascript'}";
+var warning_empty_email_address = "{$labels.empty_email_address|escape:'javascript'}";
+var warning_no_good_email_address = "{$labels.no_good_email_address|escape:'javascript'}"; 
 
 {literal}
 function validatePersonalData(f)

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsExport.tpl,v 1.3 2010/03/15 20:25:00 franciscom Exp $ 
+$Id: cfieldsExport.tpl,v 1.4 2010/11/06 11:42:47 amkhullar Exp $ 
 Purpose: smarty template - custom fields export
 rev:
   20100315 - franciscom - improvement on goback management
@@ -12,13 +12,14 @@ rev:
 
 {lang_get var="labels" 
           s='btn_export,btn_cancel,warning,export_filename,file_type,
-             view_file_format_doc,export_with_keywords'}
+             view_file_format_doc,export_with_keywords,warning_empty_filename'}
 
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_filename = "{lang_get s='warning_empty_filename'}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

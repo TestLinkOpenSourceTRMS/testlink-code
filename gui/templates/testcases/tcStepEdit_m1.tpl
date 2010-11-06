@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit_m1.tpl,v 1.2 2010/05/01 19:15:20 franciscom Exp $ 
+$Id: tcStepEdit_m1.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -38,9 +38,10 @@ rev:
 
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
-var warning_step_number = "{$labels.warning_step_number}";
-var alert_box_title = "{$labels.warning}";
-var warning_step_number_already_exists = "{$labels.warning_step_number_already_exists}";
+//BUGID 3943: Escape all messages (string)
+var warning_step_number = "{$labels.warning_step_number|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_step_number_already_exists = "{$labels.warning_step_number_already_exists|escape:'javascript'}";
 
 {literal}
 function validateForm(the_form,step_set,step_number_on_edit)

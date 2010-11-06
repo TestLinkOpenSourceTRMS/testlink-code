@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsEdit.tpl,v 1.8 2010/06/24 17:25:56 asimon83 Exp $
+$Id: platformsEdit.tpl,v 1.9 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - View all platforms
 
 rev:
@@ -20,8 +20,9 @@ rev:
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_platform = "{$labels.warning_empty_platform}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_platform = "{$labels.warning_empty_platform|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

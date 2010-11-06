@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcImport.tpl,v 1.14 2010/08/21 11:54:45 franciscom Exp $
+$Id: tcImport.tpl,v 1.15 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - manage import of test cases and test suites
 
 rev:
@@ -86,7 +86,8 @@ rev:
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-  alert_message("{$labels.warning}","{$gui->file_check.msg}");
+//BUGID 3943: Escape all messages (string)
+  alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
   // alert("{$gui->file_check.msg}");
   </script>
 {/if}  

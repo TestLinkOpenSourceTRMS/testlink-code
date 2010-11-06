@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqImport.tpl,v 1.21 2010/09/19 13:49:49 franciscom Exp $
+$Id: reqImport.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
 
 rev:
 *}
@@ -62,7 +62,8 @@ rev:
 
 {if $gui->file_check.status_ok eq 0}
   <script type="text/javascript">
-  alert_message("{$labels.warning}","{$gui->file_check.msg}");
+//BUGID 3943: Escape all messages (string)
+  alert_message("{$labels.warning|escape:'javascript'}","{$gui->file_check.msg|escape:'javascript'}");
   </script>
 {/if}  
 

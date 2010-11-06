@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.23 2010/10/06 10:26:22 asimon83 Exp $
+$Id: reqSpecEdit.tpl,v 1.24 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - create a new req document
 
 rev:
@@ -21,10 +21,11 @@ rev:
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-	var alert_box_title = "{$labels.warning}";
-	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title}";
-	var warning_empty_doc_id = "{$labels.warning_empty_doc_id}";
-	var warning_countreq_numeric = "{$labels.warning_countreq_numeric}";
+//BUGID 3943: Escape all messages (string)
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape:'javascript'}";
+	var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
+	var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
 	{literal}
 	function validateForm(f)
 	{

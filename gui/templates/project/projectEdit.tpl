@@ -3,7 +3,7 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.30 2010/09/30 18:04:14 franciscom Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.31 2010/11/06 11:42:48 amkhullar Exp $
  *
  * Revisions:
  *  20100930 - franciscom - BUGID 2344: Private test project
@@ -34,7 +34,8 @@
 	title_testproject_management,testproject_enable_priority, testproject_enable_automation,
     public,testproject_color,testproject_alt_color,testproject_enable_requirements,
     testproject_enable_inventory,testproject_features,testproject_description,
-    testproject_prefix,availability,mandatory'}
+    testproject_prefix,availability,mandatory,warning,warning_empty_tcase_prefix,
+    warning_empty_tproject_name'}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$editorType}
 {include file="inc_del_onclick.tpl"}
@@ -44,9 +45,10 @@
 {/if}
 
 <script type="text/javascript">
-	var alert_box_title = "{lang_get s='warning'}";
-	var warning_empty_tcase_prefix = "{lang_get s='warning_empty_tcase_prefix'}";
-	var warning_empty_tproject_name = "{lang_get s='warning_empty_tproject_name'}";
+//   BUGID 3943: Escape all messages (string)
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
+	var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
+	var warning_empty_tproject_name = "{$labels.warning_empty_tproject_name|escape:'javascript'}";
 	{literal}
 	function validateForm(f)
 	{

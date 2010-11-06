@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.62 2010/10/08 11:15:26 asimon83 Exp $
+$Id: execSetResults.tpl,v 1.63 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20101008 - asimon - BUGID 3311
@@ -117,8 +117,9 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title="{$labels.warning}";
-var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title="{$labels.warning|escape:'javascript'}";
+var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

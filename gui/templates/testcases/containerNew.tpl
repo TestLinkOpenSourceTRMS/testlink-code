@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.10 2010/10/12 20:24:27 franciscom Exp $
+$Id: containerNew.tpl,v 1.11 2010/11/06 11:42:47 amkhullar Exp $
 Purpose: smarty template - create containers
 
 20101012 - franciscom - BUGID 3887: CF Types validation
@@ -36,8 +36,9 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_container_name = "{$labels.warning_empty_testsuite_name}";
+//BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_container_name = "{$labels.warning_empty_testsuite_name|escape:'javascript'}";
 {literal}
 function validateForm(f)
 {

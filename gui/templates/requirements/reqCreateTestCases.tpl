@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.17 2010/04/03 08:40:58 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.18 2010/11/06 11:42:47 amkhullar Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -15,7 +15,7 @@ $Id: reqCreateTestCases.tpl,v 1.17 2010/04/03 08:40:58 franciscom Exp $
 
 {lang_get s='select_at_least_one_req' var="check_msg"}
 {lang_get var='labels' 
-          s="req_doc_id,title,scope,coverage_number,expected_coverage,needed,
+          s="req_doc_id,title,scope,coverage_number,expected_coverage,needed,warning,
              current_coverage,coverage,req_msg_norequirement,req_select_create_tc"} 
 
 
@@ -26,7 +26,8 @@ $Id: reqCreateTestCases.tpl,v 1.17 2010/04/03 08:40:58 franciscom Exp $
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{lang_get s='warning'}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 /*
   function: check_action_precondition

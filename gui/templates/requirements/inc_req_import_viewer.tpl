@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.8 2010/09/17 17:45:43 franciscom Exp $
+$Id: inc_req_import_viewer.tpl,v 1.9 2010/11/06 11:42:47 amkhullar Exp $
 
 
 rev :
@@ -11,8 +11,9 @@ rev :
                           title,version,assigned_to,assign_to,note_keyword_filter, priority'}
 
 <script type="text/javascript">
+//BUGID 3943: Escape all messages (string)
 	var check_msg="";
-	var alert_box_title = "{$labels.warning}";
+	var alert_box_title = "{$labels.warning|escape:'javascript'}";
 {literal}
 
 function check_action_precondition(container_id,action)

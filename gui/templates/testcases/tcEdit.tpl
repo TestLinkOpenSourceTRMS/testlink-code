@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.32 2010/10/10 13:35:33 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.33 2010/11/06 11:42:47 amkhullar Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
@@ -39,8 +39,9 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 </script>
 
 <script type="text/javascript">
-var warning_empty_testcase_name = "{$labels.warning_empty_tc_title}";
-var alert_box_title = "{$labels.warning}";
+//BUGID 3943: Escape all messages (string)
+var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
 {literal}        
 /**

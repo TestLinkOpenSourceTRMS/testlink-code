@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.24 2010/08/29 17:52:26 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.25 2010/11/06 11:42:47 amkhullar Exp $
 
 
 Important Development note:
@@ -64,9 +64,10 @@ var del_action=fRoot+'{$managerURL}'+'?do_action=do_delete&cfield_id=';
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_cfield_name = "{$labels.warning_empty_cfield_name}";
-var warning_empty_cfield_label = "{$labels.warning_empty_cfield_label}";
+// BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_cfield_name = "{$labels.warning_empty_cfield_name|escape:'javascript'}";
+var warning_empty_cfield_label = "{$labels.warning_empty_cfield_label|escape:'javascript'}";
 
 // -------------------------------------------------------------------------------
 // To manage hide/show combo logic, depending of node type

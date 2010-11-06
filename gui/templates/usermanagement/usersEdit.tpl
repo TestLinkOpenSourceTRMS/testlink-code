@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.28 2010/06/24 17:25:56 asimon83 Exp $
+$Id: usersEdit.tpl,v 1.29 2010/11/06 11:42:47 amkhullar Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -25,14 +25,15 @@ $Id: usersEdit.tpl,v 1.28 2010/06/24 17:25:56 asimon83 Exp $
 {literal}
 <script type="text/javascript">
 {/literal}
-var alert_box_title = "{$labels.warning}";
-var warning_empty_login      = "{$labels.warning_empty_login}";
-var warning_empty_first_name = "{$labels.warning_empty_first_name}";
-var warning_empty_last_name  = "{$labels.warning_empty_last_name}";
-var warning_empty_pwd = "{$labels.warning_empty_pwd}";
-var warning_different_pwd = "{$labels.warning_different_pwd}";
-var warning_empty_email_address = "{$labels.empty_email_address}";
-var warning_no_good_email_address = "{$labels.no_good_email_address}"; 
+//BUGID 3943: Escape all messages (string)
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_empty_login      = "{$labels.warning_empty_login|escape:'javascript'}";
+var warning_empty_first_name = "{$labels.warning_empty_first_name|escape:'javascript'}";
+var warning_empty_last_name  = "{$labels.warning_empty_last_name|escape:'javascript'}";
+var warning_empty_pwd = "{$labels.warning_empty_pwd|escape:'javascript'}";
+var warning_different_pwd = "{$labels.warning_different_pwd|escape:'javascript'}";
+var warning_empty_email_address = "{$labels.empty_email_address|escape:'javascript'}";
+var warning_no_good_email_address = "{$labels.no_good_email_address|escape:'javascript'}"; 
 
 
 {literal}

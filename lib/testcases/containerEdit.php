@@ -3,11 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.129 $
- * @modified $Date: 2010/10/12 19:07:09 $ by $Author: franciscom $
+ * @version $Revision: 1.130 $
+ * @modified $Date: 2010/11/06 11:42:06 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
+ *	20101106 - franciscom - added check on $guiObj->testCaseSet to avoid event viewer warnings	
+ *							when deleting test case in test suite that has ONLY one test case.
+ *
  *	20101012 - franciscom - BUGID 3890: Create Test Suite with same name that existent sibling - BLOCK
  *  20101011 - asimon - BUGID 3875
  *  20100916 - franciscom - BUGID 3778, 3779 - Option to reorder ALL CHILDREN Test Suites
@@ -908,17 +911,19 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	$guiObj->exec_status_quo = null;
 	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID);
 
-	foreach($guiObj->testCaseSet as &$child)
+	if( !is_null($guiObj->testCaseSet) )
 	{
-		$external = $tcaseMgr->getExternalID($child['id'],null,$tcasePrefix);
-		$child['external_id'] = $external[0];
-		
-		// key level 1 : Test Case Version ID
-		// key level 2 : Test Plan  ID
-		// key level 3 : Platform ID
-		$guiObj->exec_status_quo[] = $tcaseMgr->get_exec_status($child['id']);	
-	} 
-
+		foreach($guiObj->testCaseSet as &$child)
+		{
+			$external = $tcaseMgr->getExternalID($child['id'],null,$tcasePrefix);
+			$child['external_id'] = $external[0];
+			
+			// key level 1 : Test Case Version ID
+			// key level 2 : Test Plan  ID
+			// key level 3 : Platform ID
+			$guiObj->exec_status_quo[] = $tcaseMgr->get_exec_status($child['id']);	
+		} 
+	}
 	
 	// Need to understand if platform column has to be displayed on GUI
 	if( !is_null($guiObj->exec_status_quo) )             

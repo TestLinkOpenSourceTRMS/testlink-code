@@ -4,12 +4,13 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.82 $
- * @modified $Date: 2010/10/02 17:52:11 $ by $Author: franciscom $
+ * @version $Revision: 1.83 $
+ * @modified $Date: 2010/11/06 10:26:28 $ by $Author: franciscom $
  * 
  * Scope: control test specification import
  * 
  * Revision:
+ *	20101106 - franciscom - fixed warning on event viewer when there are no keywords defined on test project
  *	20101002 - franciscom - BUGID 3801
  *  20100911 - amitkhullar - BUGID 3764 - Req Mapping Error while import of Test cases.
  *	20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
@@ -237,7 +238,7 @@ function importTestCaseDataFromXML(&$db,$fileName,$parentID,$tproject_id,$userID
 					$tproject->importKeywordsFromSimpleXML($tproject_id,$xmlKeywords[$idx]);
 				}
 				$kwMap = $tproject->get_keywords_map($tproject_id);
-				$kwMap = array_flip($kwMap);
+				$kwMap = is_null($kwMap) ? null : array_flip($kwMap);
 			}
 
 			if (!$useRecursion &&  ($xml->getName() == 'testcases') )

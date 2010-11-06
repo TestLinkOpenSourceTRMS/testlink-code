@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.114 2010/09/19 15:56:20 franciscom Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.115 2010/11/06 18:46:33 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -32,7 +32,7 @@
  */
 
 /** inlude basic functions for printing Test Specification document */
-require_once("print.inc.php"); //TODO is this needed here anymore after removal of render functions?
+//require_once("print.inc.php"); //TODO is this needed here anymore after removal of render functions?
 
 
 /**

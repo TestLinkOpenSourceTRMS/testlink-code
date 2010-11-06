@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: printDocOptions.tpl,v 1.19 2010/10/27 13:45:16 asimon83 Exp $ 
+$Id: printDocOptions.tpl,v 1.20 2010/11/06 18:46:33 amkhullar Exp $ 
 Purpose: show tree on print feature
 
 rev: 
+	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
 	20101027 - asimon - BUGID 3946: reqirement specification tree size
 	20080820 - franciscom - added code to manage EXTJS tree component
 

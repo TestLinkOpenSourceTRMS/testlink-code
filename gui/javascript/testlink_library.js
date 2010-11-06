@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.111 2010/11/02 09:33:03 asimon83 Exp $
+// $Id: testlink_library.js,v 1.112 2010/11/06 18:46:33 amkhullar Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -24,7 +24,7 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // ------ Revisions ---------------------------------------------------------------------
-//
+// 20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
 // 20101102 - asimon - BUGID 2864: commented out old open_top(), replaced by openLinkedReqWindow()
 // 20101025 - Julian - BUGID 3930: added new parameter dateFormat to showCal() to be able to use
 //                                 localized date formats. Preselecting datepicker with existing
@@ -543,7 +543,7 @@ function tree_getPrintPreferences()
 {
 	var params = [];
 	var fields = ['header','summary','toc','body','passfail', 'cfields','testplan', 'metrics', 
-	              'author','requirement','keyword',
+	              'author','requirement','keyword','notes',
 	              'req_spec_scope','req_spec_author','req_spec_overwritten_count_reqs',
 	              'req_spec_type','req_spec_cf','req_scope','req_author','req_status',
 	              'req_type','req_cf','req_relations','req_linked_tcs','req_coverage', 

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *  
  * @filesource $RCSfile: printDocOptions.php,v $
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/10/03 15:49:49 $ by $Author: franciscom $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/11/06 18:46:33 $ by $Author: amkhullar $
  * @author 	Martin Havlat
  * 
  *  Settings for generated documents
@@ -14,6 +14,7 @@
  *		Test specification/ Test plan.
  *
  * rev :
+ * 		20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
  *		20101003 - franciscom - init_checkboxes() refactored used common pattern
  *		20100723 - BUGID 3451 and related
  *  	20100326 - asimon - refactored to include requirement documents
@@ -303,6 +304,7 @@ function init_checkboxes(&$args) {
 			} 
 			else if ($args->doc_type == 'testreport')	
 			{
+				$arrCheckboxes[] = array('value' => 'notes', 'description' => 'opt_show_tc_notes',	'checked' => 'n');
 				$arrCheckboxes[] = array( 'value' => 'passfail','description' => 'opt_show_passfail','checked' => 'y');
 				$arrCheckboxes[] = array( 'value' => 'metrics','description' => 'opt_show_metrics','checked' => 'n');
 			}

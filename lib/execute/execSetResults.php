@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.171 $
- * @modified $Date: 2010/11/01 15:22:53 $ $Author: franciscom $
+ * @version $Revision: 1.172 $
+ * @modified $Date: 2010/11/06 18:46:33 $ $Author: amkhullar $
  *
  * rev:
  *  20100927 - asimon - avoid warning in event log
@@ -84,8 +84,6 @@ $templateCfg = templateConfiguration();
 $tcversion_id = null;
 $submitResult = null;
 $args = init_args($cfg);
-
-// new dBug($args);
 
 $smarty = new TLSmarty();
 $tree_mgr = new tree($db);
@@ -382,10 +380,6 @@ function init_args($cfgObj)
 	$mode = 'execution_mode';
 	$form_token = isset($_REQUEST['form_token']) ? $_REQUEST['form_token'] : 0;
 	$session_data = isset($_SESSION[$mode]) && isset($_SESSION[$mode][$form_token]) ? $_SESSION[$mode][$form_token] : null;
-	
-	// new dBug($_REQUEST);
-	// new dBug($session_data);
-	
 	
 	$args->doExec = isset($_REQUEST['execute_cases']) ? 1 : 0;
 	$args->doDelete = isset($_REQUEST['do_delete']) ? $_REQUEST['do_delete'] : 0;

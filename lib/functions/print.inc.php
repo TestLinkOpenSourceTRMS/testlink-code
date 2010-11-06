@@ -8,13 +8,14 @@
  * @package TestLink
  * @author	Martin Havlat <havlat@users.sourceforge.net>
  * @copyright 2007-2009, TestLink community 
- * @version $Id: print.inc.php,v 1.119 2010/10/15 18:12:36 franciscom Exp $
+ * @version $Id: print.inc.php,v 1.120 2010/11/06 18:46:33 amkhullar Exp $
  * @uses printDocument.php
  *
  *
  * @internal 
  *
  * Revisions:
+ *  20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
  *  20101015 - franciscom  - BUGID 3804 - contribution again
  *  20100923 - franciscom  - BUGID 3804 - contribution
  *	20100920 - franciscom -  renderTestCaseForPrinting() - changed key on $cfieldFormatting
@@ -944,7 +945,15 @@ function renderTestCaseForPrinting(&$db, &$node, &$printingOptions, $level, $tpl
 	{
 		if ($exec_info) 
 		{
-			$code .= buildTestExecResults($db,$cfg,$labels,$exec_info,$cfg['tableColspan']-1);
+			if ($printingOptions['notes'])
+			{
+				$code .= buildTestExecResults($db,$cfg,$labels,$exec_info,$cfg['tableColspan']-1,1);
+			}
+			else
+			{
+				$code .= buildTestExecResults($db,$cfg,$labels,$exec_info,$cfg['tableColspan']-1);
+			}
+			
 		}
 		else
 		{
@@ -1252,12 +1261,13 @@ function initRenderTestCaseCfg(&$tcaseMgr)
  * 
  *
  */
-function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan)
+function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan,$exec_notes = null)
 {
 	$out='';
 	$testStatus = $cfg['status_labels'][$exec_info[0]['status']];
 	$testerName = gendocGetUserName($dbHandler, $exec_info[0]['tester_id']);
-	$executionNotes = $exec_info[0]['notes'];
+	
+	$executionNotes = isset($exec_notes)?$exec_info[0]['notes']:'';
 
 	$td_colspan = '';
 	if( !is_null($colspan) ) {
@@ -1278,8 +1288,8 @@ function buildTestExecResults(&$dbHandler,$cfg,$labels,$exec_info,$colspan)
 			    '<td '  .$td_colspan . '>' . nl2br($executionNotes)  . "</td></tr>\n"; 
     }
 
-	$bug_interface = config_get('bugInterface');
-	if ($bug_interface != 'NO') 
+	$bug_interface = config_get('bugInterfaceOn'); //BUGFIX for error logs.
+	if ($bug_interface) 
 	{
     	// amitkhullar-BUGID 2207 - Code to Display linked bugs to a TC in Test Report
 		$bugs = get_bugs_for_exec($dbHandler,$bug_interface,$exec_info[0]['execution_id']);

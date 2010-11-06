@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: strings.txt,v $
  *
- * @version $Revision: 1.46 $
- * @modified $Date: 2010/10/18 21:30:51 $ $Author: mx-julian $
+ * @version $Revision: 1.47 $
+ * @modified $Date: 2010/11/06 18:46:33 $ $Author: amkhullar $
  *
  * @author Francisco Mancardi
  *
@@ -1925,6 +1925,7 @@ $TLS_opt_show_tplan_txt 	= "Test Plan description";
 $TLS_opt_show_tc_body 		= "Test Case Scenario";
 $TLS_opt_show_tc_summary 	= "Test Case Summary";
 $TLS_opt_show_tc_author 	= "Test Case Author";
+$TLS_opt_show_tc_notes 		= "Test Case Notes";
 $TLS_opt_show_tc_reqs 		= "Test Case related Requirements";
 $TLS_opt_show_tc_keys 		= "Test Case keywords";
 $TLS_opt_show_passfail 		= "Test results";

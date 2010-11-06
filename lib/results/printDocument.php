@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: printDocument.php,v $
  *
- * @version $Revision: 1.44 $
- * @modified $Date: 2010/09/05 17:40:51 $ by $Author: franciscom $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2010/11/06 18:46:33 $ by $Author: amkhullar $
  * @author Martin Havlat
  *
  * SCOPE:
  * Generate documentation Test report based on Test plan data.
  *
  * Revisions :
+ * 	20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
  *  20100723 - asimon - BUGID 3459 - added platform ID to calls of 
  *                                   renderTestPlanForPrinting() and renderTestSpecTreeForPrinting()
  *	20100520 - franciscom - BUGID 3451 - In the "Test reports and Metrics" 
@@ -46,7 +47,7 @@ $doc_info->content_range = $args->level;
 
 // Elements in this array must be updated if $arrCheckboxes, in printDocOptions.php is changed.
 $printingOptions = array ( 'toc' => 0,'body' => 0,'summary' => 0, 'header' => 0,'headerNumbering' => 1,
-		                   'passfail' => 0, 'author' => 0, 'requirement' => 0, 'keyword' => 0, 
+		                   'passfail' => 0, 'author' => 0, 'notes' => 0, 'requirement' => 0, 'keyword' => 0, 
 		                   'cfields' => 0, 'testplan' => 0, 'metrics' => 0,
 		                    'req_spec_scope' => 0,'req_spec_author' => 0,
 		                    'req_spec_overwritten_count_reqs' => 0,'req_spec_type' => 0,

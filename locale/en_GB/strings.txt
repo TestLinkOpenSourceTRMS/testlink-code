@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.750 2010/11/06 14:29:26 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.751 2010/11/06 18:46:33 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2359,6 +2359,7 @@ $TLS_opt_show_tplan_txt = "Test Plan description";
 $TLS_opt_show_tc_body = "Test Case Scenario";
 $TLS_opt_show_tc_summary 	= "Test Case Summary";
 $TLS_opt_show_tc_author = "Test Case Author";
+$TLS_opt_show_tc_notes 	= "Test Case Notes";
 $TLS_opt_show_tc_reqs = "Test Case related Requirements";
 $TLS_opt_show_tc_keys = "Test Case keywords";
 $TLS_opt_show_cfields	= "Test Case Custom Fields";

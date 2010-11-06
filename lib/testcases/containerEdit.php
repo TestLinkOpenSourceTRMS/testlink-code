@@ -3,13 +3,14 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.130 $
- * @modified $Date: 2010/11/06 11:42:06 $ by $Author: franciscom $
+ * @version $Revision: 1.131 $
+ * @modified $Date: 2010/11/06 14:04:05 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * @internal revisions
- *	20101106 - franciscom - added check on $guiObj->testCaseSet to avoid event viewer warnings	
- *							when deleting test case in test suite that has ONLY one test case.
+ *	20101106 - franciscom - added check on $guiObj->testCaseSet and other variables that can be null
+ *							to avoid event viewer warnings	when deleting test case in test suite 
+ *							that has ONLY one test case.
  *
  *	20101012 - franciscom - BUGID 3890: Create Test Suite with same name that existent sibling - BLOCK
  *  20101011 - asimon - BUGID 3875
@@ -911,7 +912,7 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 	$guiObj->exec_status_quo = null;
 	$tcasePrefix = $tprojectMgr->getTestCasePrefix($argsObj->tprojectID);
 
-	if( !is_null($guiObj->testCaseSet) )
+	if( !is_null($guiObj->testCaseSet) && count($guiObj->testCaseSet) > 0)
 	{
 		foreach($guiObj->testCaseSet as &$child)
 		{
@@ -936,23 +937,25 @@ function deleteTestCasesViewer(&$dbHandler,&$smartyObj,&$tprojectMgr,&$treeMgr,&
 		foreach($itemSet as $mainKey)
 		{
 			$guiObj->display_platform[$mainKey] = false;
-			$versionSet = array_keys($guiObj->exec_status_quo[$mainKey]);
-			$stop = false;
-			
-			foreach($versionSet as $version_id)
+			if(!is_null($guiObj->exec_status_quo[$mainKey]) )
 			{
-				$tplanSet = array_keys($guiObj->exec_status_quo[$mainKey][$version_id]);
-				foreach($tplanSet as $tplan_id)
+				$versionSet = array_keys($guiObj->exec_status_quo[$mainKey]);
+				$stop = false;
+				foreach($versionSet as $version_id)
 				{
-					if( ($guiObj->display_platform[$mainKey] = !isset($guiObj->exec_status_quo[$mainKey][$version_id][$tplan_id][0])) )
+					$tplanSet = array_keys($guiObj->exec_status_quo[$mainKey][$version_id]);
+					foreach($tplanSet as $tplan_id)
 					{
-						$stop = true;
+						if( ($guiObj->display_platform[$mainKey] = !isset($guiObj->exec_status_quo[$mainKey][$version_id][$tplan_id][0])) )
+						{
+							$stop = true;
+							break;
+						}
+					}
+					if($stop)
+					{
 						break;
 					}
-				}
-				if($stop)
-				{
-					break;
 				}
 			}
 		}	

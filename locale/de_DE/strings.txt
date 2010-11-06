@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.214 2010/10/31 08:48:00 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.215 2010/11/06 14:30:33 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.747
+ * Last Update according to en_GB string file version 1.750
  *
  **/
 
@@ -3132,8 +3132,14 @@ $TLS_link_without_platform_element = "Testfallverknüpfung #%s hat kein Plattfor
 $TLS_tproject_has_zero_testcases = "Für das Testprojekt %s sind keine Testfälle definiert.";
 $TLS_tcase_doesnot_exist = "Der Testfall mit der ID %s existiert nicht für das Testprojekt %s";
 $TLS_tcversion_doesnot_exist = "Der Testfall mit der ID %s in der Version %s existiert nicht für das Testprojekt %s";
-$TLS_link_2_tplan_feedback = "Der Testfall mit der ID %s in der Version %s wurde dem Testplan hinzugefügt";
-$TLS_link_2_platform = " für Plattform %s";
+$TLS_link_to_tplan_feedback = "Der Testfall mit der ID %s in der Version %s wurde dem Testplan hinzugefügt";
+$TLS_link_to_platform = " für Plattform %s";
+$TLS_no_platforms_on_tproject = "Die Datei beinhaltet Plattformverknüpfungen. Für das Ziel-Projekt wurden aber keine Plattformen definiert.";
+$TLS_platform_not_on_tproject = "Die Datei verlangt, dass die Plattform %s mit dem Testplan verknüpft wird. Diese Plattform existiert " .
+                                "nicht für das Ziel-Projekt.";
+$TLS_platform_linked = "Plattform %s wurde mit dem Testplan verknüpft.";
+$TLS_tcase_link_updated = "Testfall (%s) - Version (%s) war bereits mit dem Testplan verknüpft, nur die Ausführungsreihenfolge " .
+                          "wurde aktualisiert.";
 
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Ausführungen exportieren';

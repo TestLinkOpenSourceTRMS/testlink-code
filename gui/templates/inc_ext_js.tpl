@@ -1,12 +1,13 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_js.tpl,v 1.15 2010/10/22 09:19:28 mx-julian Exp $
+$Id: inc_ext_js.tpl,v 1.16 2010/11/06 14:12:52 mx-julian Exp $
 Purpose: include files for:
          Ext JS Library - Copyright(c) 2006-2007, Ext JS, LLC.
          licensing@extjs.com - http://www.extjs.com/license
 
 
 rev :
+     20101106 - Julian - BUGID 3979 - Use grid filters for exttables
      20101022 - Julian - BUGID 3924 - Localization of ExtJS Components
      20100927 - franciscom - added new ext-js extension TableGrid.js
      20100621 - eloff - BUGID 3523 - refactor to remove smarty deprecated {php}
@@ -70,6 +71,8 @@ rev :
   	<link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/reset-min.css" />
   {/if}
   <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
+  <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/ux/gridfilters/css/GridFilters.css" />
+  <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/ux/gridfilters/css/RangeMenu.css" />
   
   {if $css_only == 0}
       {*
@@ -84,6 +87,19 @@ rev :
       <script type="text/javascript" src="{$basehref}{$ext_location}/ux/ToolbarReorderer.js" language="javascript"></script>
       <script type="text/javascript" src="{$basehref}{$ext_location}/ux/ToolbarDroppable.js" language="javascript"></script>
       <script type="text/javascript" src="{$basehref}{$ext_location}/ux/Exporter-all.js" language="javascript"></script>
+      
+      {* Grid Filters *}
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/menu/RangeMenu.js" language="javascript"></script>
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/menu/ListMenu.js" language="javascript"></script>
+      
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/GridFilters.js" language="javascript"></script>
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/filter/Filter.js" language="javascript"></script>
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/filter/StringFilter.js" language="javascript"></script>
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/filter/DateFilter.js" language="javascript"></script>
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/filter/ListFilter.js" language="javascript"></script>
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/filter/NumericFilter.js" language="javascript"></script>
+      <script type="text/javascript" src="{$basehref}{$ext_location}/ux/gridfilters/filter/BooleanFilter.js" language="javascript"></script>
+      
       
       {* BUGID 3924 - Localization of ExtJS Components *}
       <script type="text/javascript" src="{$basehref}{$ext_location}/src/locale/ext-lang-{$ext_lang}.js" language="javascript"></script>

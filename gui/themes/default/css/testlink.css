@@ -1,6 +1,6 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.53 2010/10/28 16:27:35 erikeloff Exp $
+$Id: testlink.css,v 1.54 2010/11/06 14:12:52 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
@@ -967,6 +967,9 @@ th.testlink, td.testlink, tr.testlink td {
 }
 .tbar-info{
 	background-image: url("../images/question16_16.gif") !important;
+}
+.tbar-reset-filters{
+	background-image: url("../images/reset_filter.png") !important;
 }
 .x-progress-wrap.left-align .x-progress-text {
     text-align:left;

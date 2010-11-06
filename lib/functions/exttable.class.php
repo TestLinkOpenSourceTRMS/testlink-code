@@ -6,12 +6,13 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.39 2010/09/24 11:12:01 asimon83 Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.40 2010/11/06 14:12:52 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
  *
  * @internal Revision:
+ *  20101022 - Julian - BUGID 3979 - Use grid filters for exttables
  *  20100924 - asimon - made export ("download") button configurable
  *  20100921 - Julian - added stripeRows setting to getGridSettings(), default: enabled
  *	20100921 - eloff - refactor column index names
@@ -136,6 +137,11 @@ class tlExtTable extends tlTable
 	 * If true show "refresh" button
 	 */
 	public $toolbarRefreshButton = true;
+	
+	/**
+	 * If true show "Reset Filters" button
+	 */
+	public $toolbarResetFiltersButton = true;
 
 	/**
 	 * If true, show export button in table toolbar.
@@ -222,6 +228,21 @@ class tlExtTable extends tlTable
 			$column = $this->columns[$i];
 			$s .= "{header: \"{$column['title']}\", dataIndex: '{$column['col_id']}'";
 			
+			// filter is set, but no filterOptions
+			if (isset($column['filter']) && !isset($column['filterOptions'])) {
+				$s .= ",filter: {type: '{$column['filter']}'}";
+			} else if (isset($column['filter']) && isset($column['filterOptions'])) {
+				// filter and filterOptions is set
+				// for example list filter needs options
+				$s .= ",filter: {type: '{$column['filter']}',options: ['";
+				$s .= implode("','",$column['filterOptions']);
+				$s .= "']}";
+			} else {
+				// if no filter is specified use string filter
+				// string filter is the most "basic" filter
+				$s .= ",filter: {type: 'string'}"; 
+			}
+			
             foreach($options as $opt_str)
             {
 				if (isset($column[$opt_str])) {
@@ -269,6 +290,10 @@ class tlExtTable extends tlTable
 				isset($this->customBehaviour[$column['type']]['sort']) )
 			{
 				$s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
+			}
+			// TODO Eloff: this needs to be "merged" or seperated with a better if statement
+			if(	isset($column['sortType'])) {
+				$s .= ", sortType: '{$column['sortType']}'";
 			}
 			
 			$s .= "},\n";

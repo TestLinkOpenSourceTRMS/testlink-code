@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.48 2010/10/18 21:35:48 erikeloff Exp $
+$Id: inc_ext_table.tpl,v 1.49 2010/11/06 14:12:52 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
 	 20101018 - eloff - Refactor export/collapse button
 	                             show all columns button
 	                             restore to default state
@@ -44,7 +45,7 @@ Purpose: rendering of Ext Js table
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
 	show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
-	multisort_button_tooltip, button_refresh"}
+	multisort_button_tooltip, button_refresh, btn_reset_filters"}
 {literal}
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
@@ -165,6 +166,16 @@ Ext.onReady(function() {
 			{if !$matrix->storeTableState}
 				stateful: false,
 			{/if}
+
+			// init grid plugins
+			plugins: [
+				//init filter plugin
+				filters = new Ext.ux.grid.GridFilters({ldelim}
+					// set to local filtering (on client side)
+					local: true,
+					showMenu: true
+				{rdelim})
+			],
 			
 			//show toolbar
 			{if $matrix->showToolbar}
@@ -273,6 +284,18 @@ Ext.onReady(function() {
 				component: grid['{$tableID}'],
 				store: store['{$tableID}']
 			{rdelim}));
+		{/if}
+		
+		// add button to reset filters
+		// TODO : show only as active if at least 1 column is filtered
+		{if $matrix->toolbarResetFiltersButton && $matrix->showToolbar}
+			tbar.add({ldelim}
+				text: '{$labels.btn_reset_filters|escape:javascript}',
+				iconCls: 'tbar-reset-filters',
+				handler: function() {ldelim}
+					grid['{$tableID}'].filters.clearFilters();
+				{rdelim}
+			{rdelim});
 		{/if}
 
 		//MULTISORT

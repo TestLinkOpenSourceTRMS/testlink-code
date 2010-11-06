@@ -4,12 +4,13 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.26 $
- * @modified $Date: 2010/10/15 17:53:48 $ $Author: franciscom $
+ * @version $Revision: 1.27 $
+ * @modified $Date: 2010/11/06 14:12:52 $ $Author: mx-julian $
  *
  * @author franciscom
  *
  * @internal revisions
+ * 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
  * 20101015 - franciscom - code refactoring
  * 20101015 - Julian - refactored exttable column titles
  * 20101014 - Julian - BUGID 3893 - Extended metrics dashboard
@@ -68,7 +69,7 @@ if(count($gui->tplan_metrics) > 0) {
 				foreach ($result_cfg['status_label'] as $key => $status)
 				{
 					$tplan_string .= lang_get($status). ": " .$tplan_metrics['overall'][$key] .
-					                 " [" .formatPercentage($tplan_metrics['overall'][$key], 
+					                 " [" .getPercentage($tplan_metrics['overall'][$key], 
 					                                        $tplan_metrics['overall']['active'],
 					                                        $round_precision) . "%], ";
 				}
@@ -77,7 +78,7 @@ if(count($gui->tplan_metrics) > 0) {
 			}
 			
 			$tplan_string .= $labels['overall_progress'] . ": " . 
-			                 formatPercentage($tplan_metrics['overall']['executed'],
+			                 getPercentage($tplan_metrics['overall']['executed'],
 			                                  $tplan_metrics['overall']['active'],
 			                                  $round_precision) . "%";
 			
@@ -92,11 +93,11 @@ if(count($gui->tplan_metrics) > 0) {
 			foreach ($result_cfg['status_label'] as $key => $status)
 			{
 				$rowData[] = $platform_metric[$key];
-				$rowData[] = formatPercentage($platform_metric[$key], $platform_metric['active'],
+				$rowData[] = getPercentage($platform_metric[$key], $platform_metric['active'],
 				                              $round_precision);
 			}
 
-			$rowData[] = formatPercentage($platform_metric['executed'], $platform_metric['active'],
+			$rowData[] = getPercentage($platform_metric['executed'], $platform_metric['active'],
 			                              $round_precision);
 				
 			$matrixData[] = $rowData;
@@ -117,6 +118,7 @@ if(count($gui->tplan_metrics) > 0) {
 	$table->showToolbar = true;
 	$table->toolbarExpandCollapseGroupsButton = true;
 	$table->toolbarShowAllColumnsButton = true;
+	$table->toolbarResetFiltersButton = true;
 	$table->title = $labels['href_metrics_dashboard'];
 	$table->showGroupItemsCount = true;
 
@@ -242,23 +244,6 @@ function getMetrics(&$db,$userObj,$args, $result_cfg, $labels)
  * 
  *
  */
-function formatPercentage($denominator, $numerator, $round_precision)
-{
-	// use html comment to be able to properly sort by percentage columns on exttable
-	$formatted_percentage = "<!-- 0 -->0";
-	if ($numerator > 0) {
-		$percentage = round(($denominator / $numerator) * 100,$round_precision);
-		$percentage_comment = sprintf("%010.{$round_precision}f", $percentage);
-		$formatted_percentage = "<!-- $percentage_comment -->" . $percentage;
-	}
-
-	return $formatted_percentage;
-}
-
-/**
- * 
- *
- */
 function getPercentage($denominator, $numerator, $round_precision)
 {
 	$percentage = ($numerator > 0) ? (round(($denominator / $numerator) * 100,$round_precision)) : 0;
@@ -274,24 +259,30 @@ function getColumnsDefinition($showPlatforms, $result_cfg, $labels)
 {
 	$colDef = array();
 
-	$colDef[] = array('title_key' => 'test_plan', 'width' => 60, 'type' => 'text');
+	$colDef[] = array('title_key' => 'test_plan', 'width' => 60, 'type' => 'text', 'sortType' => 'asText',
+	                  'filter' => 'string');
 
 	if ($showPlatforms)
 	{
-		$colDef[] = array('title_key' => 'platform', 'width' => 60);
+		$colDef[] = array('title_key' => 'platform', 'width' => 60, 'sortType' => 'asText',
+		                  'filter' => 'string');
 	}
 
-	$colDef[] = array('title_key' => 'th_active_tc', 'width' => 40);
+	$colDef[] = array('title_key' => 'th_active_tc', 'width' => 40, 'sortType' => 'asInt',
+	                  'filter' => 'numeric');
 	
 	// create 2 columns for each defined status
 	foreach ($result_cfg['status_label'] as $key => $status)
 	{
-		$colDef[] = array('title_key' => $status, 'width' => 40, 'hidden' => true);
+		$colDef[] = array('title_key' => $status, 'width' => 40, 'hidden' => true, 'type' => 'int',
+		                  'sortType' => 'asInt', 'filter' => 'numeric');
+		
 		$colDef[] = array('title' => lang_get($status) . " " . $labels['in_percent'], 'width' => 40,
-		                  'col_id' => 'id_'.$status.'_percent');
+		                  'col_id' => 'id_'.$status.'_percent', 'type' => 'float', 'sortType' => 'asFloat',
+		                  'filter' => 'numeric');
 	}
 	
-	$colDef[] = array('title_key' => 'progress', 'width' => 40);
+	$colDef[] = array('title_key' => 'progress', 'width' => 40, 'sortType' => 'asFloat', 'filter' => 'numeric');
 
 	return $colDef;
 

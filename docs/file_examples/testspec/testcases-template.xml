@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!---
+Created using TestLink export feature.
+
+When will be imported attributes and properties will be used on different ways
+according scenario:
+
+1. importing on same place to udpdate data
+2. importing to create new test case on different test suite
+--->
+<testcases>
+<testcase internalid="980" name="GB1">
+	<node_order><![CDATA[100]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;This is summary for GB1</p>]]></summary>
+	<preconditions><![CDATA[<p>&nbsp;<a id="fck_paste_padding">﻿</a>&nbsp;Preconditions for GB1</p>]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+<steps>
+<step>
+	<step_number><![CDATA[1]]></step_number>
+	<actions><![CDATA[<p>&nbsp;A1</p>]]></actions>
+	<expectedresults><![CDATA[<p>&nbsp;EXC1</p>]]></expectedresults>
+	<execution_type><![CDATA[1]]></execution_type>
+</step>
+
+<step>
+	<step_number><![CDATA[2]]></step_number>
+	<actions><![CDATA[<p>&nbsp;A2</p>]]></actions>
+	<expectedresults><![CDATA[<p>&nbsp;EXC2</p>]]></expectedresults>
+	<execution_type><![CDATA[2]]></execution_type>
+</step>
+</steps>
+</testcase>
+</testcases>

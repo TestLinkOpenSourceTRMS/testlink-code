@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!---
+Minimal example (bare bones skeleton) of test spec file
+Example data taken from:
+http://www.ixiacom.com/library/test_plans/display?skey=bgp
+--->
+<testsuite name="" > 
+  <testsuite name="10 Gigabit Ethernet Testing"></testsuite>
+  <testsuite name="Broadband Testing"></testsuite>
+  <testsuite name="DHCPv4 Testing"></testsuite>
+  <testsuite name="IPSec VPN Testing"></testsuite>
+  <testsuite name="IPv6 Testing"></testsuite>
+  <testsuite name="IPTV Channel Change Performance Testing"></testsuite>
+  <testsuite name="ISIS Testing"></testsuite>
+  <testsuite name="MPLS L2 VPN Testing"></testsuite>
+  <testsuite name="MPLS L3 VPN Testing"></testsuite>
+  <testsuite name="MPLS Testing"></testsuite>
+  <testsuite name="Multicast Testing"></testsuite>
+  <testsuite name="OSPF Testing"></testsuite>
+  <testsuite name="PoE Testing"></testsuite>
+  <testsuite name="QoS Testing"></testsuite>
+  <testsuite name="RIP Testing"></testsuite>
+  <testsuite name="STP/RSTP Testing"></testsuite>
+  <testsuite name="VPLS Testing"></testsuite>
+  <testsuite name="Broadband PPPoX and L2TP Testing"></testsuite>
+  <testsuite name="IPTV - Video Server Testing"></testsuite>
+  <testsuite name="DHCP Server Testing"></testsuite>
+  <testsuite name="Server Load Balancing (SLB)"></testsuite>
+  <testsuite name="Mail Gateway Testing"></testsuite>
+</testsuite>

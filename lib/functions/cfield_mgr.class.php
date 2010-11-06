@@ -7,11 +7,11 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.95 2010/10/26 12:57:49 mx-julian Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96 2010/11/06 11:43:09 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *
+ * 20101104 - amitkhullar - Updated Order By Clause in  get_linked_to_testproject()
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
  * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
  * 20101012 - franciscom - new methods html_table_inputs(),getValuesFromUserInput();
@@ -975,7 +975,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     }
     //$sql .= " ORDER BY display_order, CF.name";
     // BUGID 3555
-   $sql .= " ORDER BY CF.enable_on_design desc, " .
+   $sql .= " ORDER BY NT.description,CF.enable_on_design desc, " .
             "CF.enable_on_execution desc, " .
                 "CF.enable_on_testplan_design desc,".
                 "CFTP.display_order, CF.name";

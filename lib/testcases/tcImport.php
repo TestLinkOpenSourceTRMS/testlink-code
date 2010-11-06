@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: tcImport.php,v $
- * @version $Revision: 1.83 $
- * @modified $Date: 2010/11/06 10:26:28 $ by $Author: franciscom $
+ * @version $Revision: 1.84 $
+ * @modified $Date: 2010/11/06 11:43:10 $ by $Author: amkhullar $
  * 
  * Scope: control test specification import
  * 
@@ -465,7 +465,7 @@ function saveImportedTCData(&$db,$tcData,$tproject_id,$container_id,
 		$hasCustomFieldsInfo = (isset($tc['customfields']) && !is_null($tc['customfields']));
 		if($hasCustomFieldsInfo)
 		{
-			new dBug($ret);
+			//new dBug($ret);
 			
 		    if($tprojectHas['customFields'])
 		    {                         

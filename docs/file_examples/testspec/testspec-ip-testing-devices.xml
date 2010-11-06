@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!---
+Minimal example (bare bones skeleton) of test spec file
+Example data taken from:
+http://www.ixiacom.com/library/test_plans/display?skey=bgp
+--->
+<testsuite name="" > 
+  <testsuite name="IPTV - Video Server"></testsuite>
+  <testsuite name="DHCP Server"></testsuite>
+  <testsuite name="Edge Router"></testsuite>
+  <testsuite name="Firewall"></testsuite>
+  <testsuite name="Mail Gateway"></testsuite>
+</testsuite>

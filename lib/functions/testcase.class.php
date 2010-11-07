@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.331 2010/10/30 15:17:29 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.332 2010/11/07 20:11:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101107 - franciscom - BUGID 3843 - get_id_by_custom_field() (WIP)
  * 20101030 - franciscom - get_by_external() interface changes
  *						   get_basic_info()  interface changes
  *	
@@ -5010,6 +5011,46 @@ class testcase extends tlObjectWithAttachments
 	 *
 	 *
 	 */
+	function get_id_by_custom_field($cf_name, $cf_value, $tproject_id)
+	{
+		static $lbl;
+		if( is_null($lbl) )
+		{
+			$lbl = array();
+			$lbl['no_linked_cfields_for_testcase'] = lang_get('no_linked_cfields_for_testcase');
+			$lbl['no_cfield_with_this_name'] = lang_get('no_cfield_with_this_name');
+		}
+		$ret = array('status_ok' => false, 'msg' => '', 'id' => 0);
+    	
+    	
+    	// check if custom field is linked to test project 
+    	$cfields_set = $this->tproject_mgr->get_linked_custom_fields($tproject_id,'testcase','name'); 
+    	$ret['status_ok'] = !is_null($cfields_set);
+    	if(!$ret['status_ok'])
+    	{
+			$ret['msg'] = $lbl['no_linked_cfields_for_testcase'];
+    	
+    	}
+    	    	
+    	if($ret['status_ok'])
+    	{
+    		if( ($ret['status_ok'] = isset($cfields_set[$cf_name])) )
+    		{
+    			$cfield_id = $cfields_set[$cf_name]['id'];
+    		}
+    		else
+    		{
+    			$ret['msg'] = sprintf($lbl['no_cfield_with_this_name'],$cf_name);
+    		}
+    	}
+
+    	if($ret['status_ok'])
+    	{
+			// go for the test case
+		}
+
+		return $ret;    	
+	}
 	 
 } // end class
 ?>

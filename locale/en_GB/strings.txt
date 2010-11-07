@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.751 2010/11/06 18:46:33 amkhullar Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.752 2010/11/07 20:06:57 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -3124,6 +3124,9 @@ $TLS_invalid_release_date = 'Release date is not a valid date.';
 $TLS_insert_step = "Insert step";
 $TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZEN';
 
+
+$TLS_no_linked_cfields_for_testcase = 'There are no custom fields applicable to Test Cases, linked to Test Project';
+$TLS_no_cfield_with_this_name = 'There is no custom field with requested name (%s)';
 
 // ----- lib/plan/planExport.php -----
 $TLS_export_test_plan = 'Export Test Plan';

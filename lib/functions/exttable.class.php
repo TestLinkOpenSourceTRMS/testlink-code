@@ -6,7 +6,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community 
- * @version CVS: $Id: exttable.class.php,v 1.40 2010/11/06 14:12:52 mx-julian Exp $
+ * @version CVS: $Id: exttable.class.php,v 1.41 2010/11/07 09:44:59 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/exttable.class.php?view=markup
  * @link http://www.teamst.org
  * @since 1.9
@@ -290,9 +290,7 @@ class tlExtTable extends tlTable
 				isset($this->customBehaviour[$column['type']]['sort']) )
 			{
 				$s .= ", sortType: {$this->customBehaviour[$column['type']]['sort']}";
-			}
-			// TODO Eloff: this needs to be "merged" or seperated with a better if statement
-			if(	isset($column['sortType'])) {
+			} else if (isset($column['sortType'])) {
 				$s .= ", sortType: '{$column['sortType']}'";
 			}
 			

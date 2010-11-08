@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: requirements.inc.php,v 1.115 2010/11/06 18:46:33 amkhullar Exp $
+ * @version    	CVS: $Id: requirements.inc.php,v 1.116 2010/11/08 11:30:44 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101106 - amitkhullar - BUGID 3978: BTS integration Code getting triggered 
  * 20100919 - franciscom - importReqDataFromCSV() refactoring
  *						   importReqDataFromDocBook() added missing keys on generated map	
  * 20100904 - franciscom - BUGID 0003745: CSV Requirements Import Updates Frozen Requirement
@@ -33,7 +34,7 @@
 
 /** inlude basic functions for printing Test Specification document */
 //require_once("print.inc.php"); //TODO is this needed here anymore after removal of render functions?
-
+// BUGID 3978
 
 /**
  * exportReqDataToXML

@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.333 2010/10/30 07:50:43 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.333.2.1 2010/11/09 11:11:09 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20101109 - asimon - added $tlCfg->custom_fields->show_custom_fields_without_value
  *	20101030 - franciscom - bullet image config removed
  *  20101028 - Julian - BUGID 3950 - added $tlCfg->gui->dynamic_quick_tcase_search_input_size
  *  20101014 - Julian - BUGID 3893 - added $tlCfg->metrics_dashboard->show_test_plan_status
@@ -1209,6 +1210,8 @@ $tlCfg->import_max_row = '10000'; // in chars
 // - created using user management features
 $tlCfg->default_roleid = TL_ROLES_GUEST;
 
+// only show custom fields if their value isn't empty
+$tlCfg->custom_fields->show_custom_fields_without_value = true;
 
 /** used to check size in char for TEXT AREA type custom fields */
 // can not be greater that column definition on DB

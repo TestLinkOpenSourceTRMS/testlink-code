@@ -7,10 +7,11 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96 2010/11/06 11:43:09 amkhullar Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.1 2010/11/09 11:11:09 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101109 - asimon - BUGID 3989: save custom field values only to db if they are not empty
  * 20101104 - amitkhullar - Updated Order By Clause in  get_linked_to_testproject()
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
  * 20101025 - asimon - BUGID 3716: date pull downs changed to calendar interface
@@ -854,14 +855,16 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         }
 
         $safe_value=$this->db->prepare_string($value);
-        if($this->db->num_rows( $result ) > 0 )
+        // BUGID 3989
+        if($this->db->num_rows( $result ) > 0 && $value != "")
         {
 
           $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_design_values']} " .
                  " SET value='{$safe_value}' " .
     	         " WHERE field_id={$field_id} AND	node_id={$node_id}";
         }
-        else
+        // BUGID 3989
+        else if ($value != "")
         {
           # Remark got from Mantis code:
   		    # Always store the value, even if it's the dafault value
@@ -870,7 +873,11 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		    $sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_design_values']} " .
   				   " ( field_id, node_id, value ) " .
   				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
-  		  }
+  		// BUGID 3989
+        } else {
+  			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} " .
+  				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
+  		}
         $this->db->exec_query($sql);
       } //foreach($cfield
     } //if( !is_null($cfield) )
@@ -1654,14 +1661,16 @@ function name_is_unique($id,$name)
         $safe_value=$this->db->prepare_string($value);
 
         // file_put_contents('c:\sql-count.txt',$this->db->num_rows( $result ));
-        if( count($rs) > 0 )   //$this->db->num_rows($result) > 0 )
+        // BUGID 3989
+        if( count($rs) > 0 && $value != "")   //$this->db->num_rows($result) > 0 )
         {
           $sql = "UPDATE {$this->tables['cfield_execution_values']} " .
                  " SET value='{$safe_value}' " .
     	         $where_clause;
     	    // file_put_contents('c:\update.txt',$sql);         
         }
-        else
+        // BUGID 3989
+        else if ($value != "")
         {
 
           # Remark got from Mantis code:
@@ -1673,7 +1682,11 @@ function name_is_unique($id,$name)
   			     " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
           // file_put_contents('c:\insert.txt',$sql);  
         
-        }
+  		// BUGID 3989
+        } else {
+  			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
+  				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
+  		}
                                
         $this->db->exec_query($sql);
       } //foreach($cfield
@@ -2100,14 +2113,16 @@ function getXMLServerParams($node_id)
 	    }
 	
 	    $safe_value=$this->db->prepare_string($value);
-	    if($this->db->num_rows( $result ) > 0 )
+	    // BUGID 3989
+	    if($this->db->num_rows( $result ) > 0 && $value != "")
 	    {
 	
 	      $sql = "UPDATE {$this->tables['cfield_testplan_design_values']} " .
 	             " SET value='{$safe_value}' " .
 			     " WHERE field_id={$field_id} AND	link_id={$link_id}";
 	    }
-	    else
+	    // BUGID 3989
+	    else if ($value != "")
 	    {
 	      # Remark got from Mantis code:
 		    # Always store the value, even if it's the dafault value
@@ -2116,7 +2131,11 @@ function getXMLServerParams($node_id)
 		    $sql = "INSERT INTO {$this->tables['cfield_testplan_design_values']} " .
 				   " ( field_id, link_id, value ) " .
 				   " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
-		  }
+	    // BUGID 3989
+        } else {
+  			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testplan_design_values']} " .
+  				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
+  		}
 	    $this->db->exec_query($sql);
 	  } //foreach($cfield
 	} //if( !is_null($cfield) )

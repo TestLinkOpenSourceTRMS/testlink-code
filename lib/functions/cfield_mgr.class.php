@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.2 2010/11/09 14:38:00 mx-julian Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.96.2.3 2010/11/09 15:27:15 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -1647,14 +1647,13 @@ function name_is_unique($id,$name)
         $where_clause = " WHERE field_id={$field_id} AND tcversion_id={$node_id} " .
  			            " AND execution_id={$execution_id} AND testplan_id={$testplan_id}" ;
 
+        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
         // do I need to update or insert this value?
         $sql = " SELECT value,field_id,execution_id " .
                " FROM {$this->tables['cfield_execution_values']} " . $where_clause;
-        // file_put_contents('c:\sql.txt',$sql);
 
         $rs = $this->db->get_recordset($sql); 			   
-        // file_put_contents('c:\sql-dd.txt',serialize($rs));
 
         // max_length_value = 0 => no limit
         if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
@@ -1663,8 +1662,7 @@ function name_is_unique($id,$name)
         }
         $safe_value=$this->db->prepare_string($value);
 
-        // file_put_contents('c:\sql-count.txt',$this->db->num_rows( $result ));
-        // BUGID 3989
+		// BUGID 3989
         if( count($rs) > 0 && $value != "")   //$this->db->num_rows($result) > 0 )
         {
           $sql = "UPDATE {$this->tables['cfield_execution_values']} " .
@@ -1694,8 +1692,6 @@ function name_is_unique($id,$name)
         
       } //foreach($cfield
     } //if( !is_null($cfield) )
-          // file_put_contents('c:\bye.txt','bye');
-
   } //function end
 
 
@@ -2094,7 +2090,7 @@ function getXMLServerParams($node_id)
 	{
 	   return;
 	}
-
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	$cfield = is_null($hash_type) ? $this->_build_cfield($hash,$cf_map) : $hash;
 	if( !is_null($cfield) )
 	{

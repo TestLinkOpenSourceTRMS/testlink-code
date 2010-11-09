@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.97 2010/11/09 11:11:28 asimon83 Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.98 2010/11/09 14:58:41 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -862,6 +862,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
           $sql = "/* $debugMsg */ UPDATE {$this->tables['cfield_design_values']} " .
                  " SET value='{$safe_value}' " .
     	         " WHERE field_id={$field_id} AND	node_id={$node_id}";
+	      $this->db->exec_query($sql);
         }
 	    // BUGID 3989
 	    else if ($value != "")
@@ -873,12 +874,14 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   		    $sql = "/* $debugMsg */ INSERT INTO {$this->tables['cfield_design_values']} " .
   				   " ( field_id, node_id, value ) " .
   				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
+		    $this->db->exec_query($sql);
   		  // BUGID 3989
         } else {
   			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} " .
   				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
+		    $this->db->exec_query($sql);
   		}
-        $this->db->exec_query($sql);
+        
       } //foreach($cfield
     } //if( !is_null($cfield) )
 
@@ -1644,14 +1647,13 @@ function name_is_unique($id,$name)
         $where_clause = " WHERE field_id={$field_id} AND tcversion_id={$node_id} " .
  			            " AND execution_id={$execution_id} AND testplan_id={$testplan_id}" ;
 
+        $debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
         // do I need to update or insert this value?
         $sql = " SELECT value,field_id,execution_id " .
                " FROM {$this->tables['cfield_execution_values']} " . $where_clause;
-        // file_put_contents('c:\sql.txt',$sql);
 
         $rs = $this->db->get_recordset($sql); 			   
-        // file_put_contents('c:\sql-dd.txt',serialize($rs));
 
         // max_length_value = 0 => no limit
         if( $this->max_length_value > 0 && tlStringLen($value) > $this->max_length_value)
@@ -1660,17 +1662,16 @@ function name_is_unique($id,$name)
         }
         $safe_value=$this->db->prepare_string($value);
 
-        // file_put_contents('c:\sql-count.txt',$this->db->num_rows( $result ));
 		// BUGID 3989
         if( count($rs) > 0 && $value != "")   //$this->db->num_rows($result) > 0 )
         {
           $sql = "UPDATE {$this->tables['cfield_execution_values']} " .
                  " SET value='{$safe_value}' " .
     	         $where_clause;
-    	    // file_put_contents('c:\update.txt',$sql);         
+	      $this->db->exec_query($sql);
         }
         // BUGID 3989
-        else if ($value != "")
+        else if (count($rs) == 0 && $value != "")
         {
 
           # Remark got from Mantis code:
@@ -1680,19 +1681,17 @@ function name_is_unique($id,$name)
   		  $sql = "INSERT INTO {$this->tables['cfield_execution_values']} " .
   				 " ( field_id, tcversion_id, execution_id,testplan_id,value ) " .
   			     " VALUES	( {$field_id}, {$node_id}, {$execution_id}, {$testplan_id}, '{$safe_value}' )";
-          // file_put_contents('c:\insert.txt',$sql);  
-        
+		  $this->db->exec_query($sql);
+
         // BUGID 3989
-        } else {
+        } else if (count($rs) > 0 && $value == "") {
   			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_execution_values']} " .
-  				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
+  				   $where_clause;
+	        $this->db->exec_query($sql);
   		}
-                               
-        $this->db->exec_query($sql);
+
       } //foreach($cfield
     } //if( !is_null($cfield) )
-          // file_put_contents('c:\bye.txt','bye');
-
   } //function end
 
 
@@ -2091,7 +2090,7 @@ function getXMLServerParams($node_id)
 	{
 	   return;
 	}
-
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	$cfield = is_null($hash_type) ? $this->_build_cfield($hash,$cf_map) : $hash;
 	if( !is_null($cfield) )
 	{
@@ -2120,9 +2119,10 @@ function getXMLServerParams($node_id)
 	      $sql = "UPDATE {$this->tables['cfield_testplan_design_values']} " .
 	             " SET value='{$safe_value}' " .
 			     " WHERE field_id={$field_id} AND	link_id={$link_id}";
+		    $this->db->exec_query($sql);
 	    }
 	    // BUGID 3989
-	    else if ($value != "")
+	    else if ($this->db->num_rows( $result ) == 0 && $value != "")
 	    {
 	      # Remark got from Mantis code:
 		    # Always store the value, even if it's the dafault value
@@ -2131,12 +2131,14 @@ function getXMLServerParams($node_id)
 		    $sql = "INSERT INTO {$this->tables['cfield_testplan_design_values']} " .
 				   " ( field_id, link_id, value ) " .
 				   " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
+		    $this->db->exec_query($sql);
 		// BUGID 3989
-		} else {
+		} else if ($this->db->num_rows( $result ) > 0 && $value == "") {
 		    $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testplan_design_values']} " .
 		           " WHERE field_id={$field_id} AND	node_id={$node_id}";
+		    $this->db->exec_query($sql);
   		}
-	    $this->db->exec_query($sql);
+
 	  } //foreach($cfield
 	} //if( !is_null($cfield) )
 

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.332 2010/11/07 20:11:20 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.333 2010/11/09 11:11:28 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown 
  * 20101107 - franciscom - BUGID 3843 - get_id_by_custom_field() (WIP)
  * 20101030 - franciscom - get_by_external() interface changes
  *						   get_basic_info()  interface changes
@@ -4078,13 +4079,17 @@ class testcase extends tlObjectWithAttachments
 	                                                             $testplan_id,$tproject_id,$location);
 	        break;
 	    }   
-	       
+
+		// BUGID 3989
+	    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+
 		if(!is_null($cf_map))
 		{
 			foreach($cf_map as $cf_id => $cf_info)
 			{
 				// if user has assigned a value, then node_id is not null
-				if(isset($cf_info['node_id']) )
+				// BUGID 3989
+				if(isset($cf_info['node_id']) || $show_cf)
 				{
 	                // true => do not create input in audit log
 	                $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));

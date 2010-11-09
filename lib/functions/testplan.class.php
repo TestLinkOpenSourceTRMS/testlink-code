@@ -9,13 +9,13 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.235 2010/11/01 11:43:00 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.236 2010/11/09 11:11:28 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20101101 - franciscom - exportTestPlanDataToXML() interface changes + changes in output (more info added)
- *							
  *  20101030 - amitkhullar - BUGID 3845 delete() - Reordered deletion of tables due to error generated
  *							 when using this method as part of Test Project delete.
  *							 (Postgres complains due to use of Foreing Keys).
@@ -2467,8 +2467,10 @@ class testplan extends tlObjectWithAttachments
 			$add_table=isset($formatOptions['add_table']) ? $formatOptions['add_table'] : true;
 			$table_style=isset($formatOptions['table_css_style']) ? $formatOptions['table_css_style'] : $table_style;
 		} 
-		
-		
+
+		// BUGID 3989
+	    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+
 		if( $scope=='design' )
 		{
 			$cf_map=$this->get_linked_cfields_at_design($id,$parent_id,$filters);
@@ -2483,7 +2485,8 @@ class testplan extends tlObjectWithAttachments
 			foreach($cf_map as $cf_id => $cf_info)
 			{
 				// if user has assigned a value, then node_id is not null
-				if(isset($cf_info['node_id']) && $cf_info['node_id'])
+				// BUGID 3989
+				if(isset($cf_info['node_id']) || $cf_info['node_id'] || $show_cf)
 				{
 					// true => do not create input in audit log
 					$label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testsuite.class.php,v 1.106 2010/10/12 19:06:20 franciscom Exp $
+ * @version    	CVS: $Id: testsuite.class.php,v 1.107 2010/11/09 11:11:28 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  * 20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  * 20101009 - franciscom - exportTestSuiteDataToXML() - better checks on $optExport
  * 20100920 - franciscom - html_table_of_custom_field_values() changed keys on $formatOptions
@@ -1266,7 +1267,10 @@ class testsuite extends tlObjectWithAttachments
 	
 	    $cf_smarty='';
 	    $parent_id=null;
-	    
+
+		// BUGID 3989
+	    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+
 	    if( $scope=='design' )
 	    {
 	      $cf_map = $this->get_linked_cfields_at_design($id,$parent_id,$filters,$tproject_id);
@@ -1283,7 +1287,8 @@ class testsuite extends tlObjectWithAttachments
 	      foreach($cf_map as $cf_id => $cf_info)
 	      {
 	        // if user has assigned a value, then node_id is not null
-	        if($cf_info['node_id'])
+	        // BUGID 3989
+	        if($cf_info['node_id'] || $show_cf)
 	        {
 	          // true => do not create input in audit log
 	          $label=str_replace(TL_LOCALIZE_TAG,'',lang_get($cf_info['label'],null,true));

@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114 $
- * @modified $Date: 2010/10/12 05:52:38 $ by $Author: franciscom $
+ * @version $Revision: 1.115 $
+ * @modified $Date: 2010/11/09 11:11:28 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  *	20101011 - franciscom - BUGID 3886: CF Types validation - changes in html_table_of_custom_field_inputs()
  *	20101011 - Julian - BUGID 3876: Values of custom fields are not displayed when editing requirement
@@ -1496,12 +1497,16 @@ function html_table_of_custom_field_values($id,$version_id)
 
 	$cf_map = $this->get_linked_cfields($id,$version_id,$PID_NO_NEEDED);
 	
+    // BUGID 3989
+    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+
 	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)
 		{
 			// if user has assigned a value, then node_id is not null
-			if($cf_info['node_id'])
+			// BUGID 3989
+			if($cf_info['node_id'] || $show_cf)
 			{
 				$label = str_replace(TL_LOCALIZE_TAG,'',
 	                                 lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));

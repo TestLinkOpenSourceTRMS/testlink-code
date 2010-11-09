@@ -5,16 +5,16 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.87 $
- * @modified $Date: 2010/09/19 17:43:52 $ by $Author: franciscom $
+ * @version $Revision: 1.88 $
+ * @modified $Date: 2010/11/09 11:11:28 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
- * @internal revision:  
+ * @internal revision:
+ *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20100908 - franciscom - BUGID 3762 Import Req Spec - custom fields values are ignored
  *							createFromXML()
- * 
  *	20100320 - franciscom - xmlToMapReqSpec() added attributes: type,total_req 
  *	20100311 - franciscom - fixed bug due to missed isset() control
  *  20100307 - amitkhullar - small bug fix for Requirements based report.
@@ -1258,12 +1258,17 @@ function html_table_of_custom_field_values($id,$tproject_id)
     $NO_WARNING_IF_MISSING=true;    
 	$cf_smarty = '';
   	$cf_map = $this->get_linked_cfields($id,$tproject_id);
-	if(!is_null($cf_map))
+
+    // BUGID 3989
+    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+
+  	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)
 		{
 			// if user has assigned a value, then node_id is not null
-			if($cf_info['node_id'])
+			// BUGID 3989
+			if($cf_info['node_id'] || $show_cf)
 			{
         		$label = str_replace(TL_LOCALIZE_TAG,'',
         		                     lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));

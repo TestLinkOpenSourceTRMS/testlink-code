@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.98 2010/11/09 14:58:41 asimon83 Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.99 2010/11/09 15:27:19 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -2132,11 +2132,11 @@ function getXMLServerParams($node_id)
 				   " ( field_id, link_id, value ) " .
 				   " VALUES	( {$field_id}, {$link_id}, '{$safe_value}' )";
 		    $this->db->exec_query($sql);
-		// BUGID 3989
-		} else if ($this->db->num_rows( $result ) > 0 && $value == "") {
-		    $sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testplan_design_values']} " .
-		           " WHERE field_id={$field_id} AND	node_id={$node_id}";
-		    $this->db->exec_query($sql);
+	    // BUGID 3989
+        } else if ($this->db->num_rows( $result ) > 0 && $value == "") {
+  			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_testplan_design_values']} " .
+  				   " WHERE field_id={$field_id} AND	link_id={$link_id}";
+  			$this->db->exec_query($sql);
   		}
 
 	  } //foreach($cfield

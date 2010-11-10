@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: clientGetTestCasesForTestPlan.php,v $
  *
- * @version $Revision: 1.5 $
- * @modified $Date: 2010/07/15 16:27:25 $ by $Author: franciscom $
+ * @version $Revision: 1.6 $
+ * @modified $Date: 2010/11/10 15:09:00 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
@@ -21,9 +21,10 @@ $method='getTestCasesForTestPlan';
 $test_num=1;
 $unitTestDescription="Test {$test_num} - {$method}";
 
+$tplan_id = 3020;
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testplanid"]=227;
+$args["testplanid"]=$tplan_id;
 $args["executiontype"]=2;
 $additionalInfo='';
 
@@ -42,9 +43,9 @@ $test_num++;
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testplanid"]=227;
-$args["keywords"]='KU,UOL';
-$additionalInfo='Filter by Keyword name';
+$args["testplanid"]=$tplan_id;
+$args["keywords"]='Key Feature';
+$additionalInfo='Filter by Keyword name - JUST ONE KEYWORD';
 
 $debug=true;
 echo $unitTestDescription;
@@ -61,7 +62,27 @@ $test_num++;
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testplanid"]=227;
+$args["testplanid"]=$tplan_id;
+$args["keywords"]='Key Feature,Must have,Obsolete,Performance,System wide,Usability';
+$additionalInfo='Filter by Keyword name - Multiple Keywords - ONLY OR Search';
+
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+$answer = runTest($client,$method,$args,$test_num);
+// ---------------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------------
+$test_num++;
+
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testplanid"]=$tplan_id;
 $args["getstepsinfo"]=false;
 
 $additionalInfo='get steps info: -> false';
@@ -81,7 +102,7 @@ $test_num++;
 
 $args=array();
 $args["devKey"]=DEV_KEY;
-$args["testplanid"]=227;
+$args["testplanid"]=$tplan_id;
 $args["getstepsinfo"]=true;
 
 $additionalInfo='get steps info: -> true';

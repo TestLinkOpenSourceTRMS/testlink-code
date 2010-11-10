@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2010/10/23 09:45:34 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/11/10 15:09:00 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,8 @@
  * 
  *
  * rev : 
+ *	20101110 - franciscom - BUGID 3992 - getTestCasesForTestPlan() keywords issue	 
+ *							BUGID 3991 - getValidKeywordSetById() missing $this in return 
  *	20101023 - franciscom - BUGID 3916: getTestCaseCustomFieldDesignValue() - missing refactoring regarding
  *										custom field values linked to test case version
  *
@@ -2280,7 +2282,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * @param int $args["testplanid"]
 	 * @param int $args["testcaseid"] - optional
 	 * @param int $args["buildid"] - optional
-	 * @param int $args["keywordid"] - optional mutual exclusive with $args["keywordname"]
+	 * @param int $args["keywordid"] - optional mutual exclusive with $args["keywords"]
 	 * @param int $args["keywords"] - optional  mutual exclusive with $args["keywordid"]
 	 *
 	 * @param boolean $args["executed"] - optional
@@ -2328,24 +2330,31 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    }   
 		}
 		
-		$keywordSet = null;
-        $keywordList=$this->getKeywordSet($tplanInfo['parent_id']);
-        if( !is_null($keywordList) )
-        {
-        	$keywordSet = explode(",",$keywordList);
-        }
-		
+		// 20101110 - franciscom
+		// honors what has been written in documentation
+		$keywordSet = $opt[self::$keywordIDParamName];
+		if( is_null($keywordSet) )
+		{
+			$keywordSet = null;
+        	$keywordList=$this->getKeywordSet($tplanInfo['parent_id']);
+        	if( !is_null($keywordList) )
+        	{
+        		$keywordSet = explode(",",$keywordList);
+        	}
+		}
 		// BUGID 3604
         $options = array('executed_only' => $opt[self::$executedParamName], 
         				 'steps_info' => $opt[self::$getStepsInfoParamName],
         				 'details' => 'full');
         				 
+        // BUGID 3992				 
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
-			             'keyword_id' => $opt[self::$keywordIDParamName],
+			             'keyword_id' => $keywordSet,
 			             'assigned_to' => $opt[self::$assignedToParamName],
 			             'exec_status' => $opt[self::$executeStatusParamName],
 			             'build_id' => $opt[self::$buildIDParamName],
 			             'exec_type' => $opt[self::$executionTypeParamName]);
+		
 		
 		$recordset=$this->tplanMgr->get_linked_tcversions($tplanid,$filters,$options);
 		return $recordset;
@@ -2676,7 +2685,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 */
     protected function  getValidKeywordSetById($tproject_id,$keywords)
     {
-		return getValidKeywordSet($tproject_id,$keywords,false);
+		return $this->getValidKeywordSet($tproject_id,$keywords,false);
     }
 
 

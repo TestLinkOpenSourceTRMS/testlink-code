@@ -8,10 +8,11 @@
  * @package 	TestLink
  * @author 		Kevin Levy
  * @copyright 	2010, TestLink community 
- * @version    	CVS: $Id: resultsImport.php,v 1.22 2010/10/04 19:48:00 franciscom Exp $
+ * @version    	CVS: $Id: resultsImport.php,v 1.23 2010/11/10 18:10:59 franciscom Exp $
  *
  * @internal Revisions:
  *
+ * 20101107 - franciscom - BUGID 3843 - Contribution - Match testcases on custom fields when importing test results
  * 20101004 - franciscom - added new checks other than	if( isset($tcase_exec['bug_id']) )
  *						   to avoid warnings on event viewer.	
  * 20100926 - franciscom - BUGID 3751: New attribute "execution type" makes old XML import files incompatible
@@ -190,6 +191,7 @@ function importResults(&$db,&$xml,$context)
   returns: 
 
   rev: 
+  		20101107 - franciscom - BUGID 3843 - Contribution
  		20100823 - franciscom - BUGID 3543 - added execution_type          		
 		20100328 - franciscom - BUGID 3331 manage bug id	
 */
@@ -204,7 +206,8 @@ function saveImportedResultData(&$db,$resultData,$context)
 	
 	
 	$l18n = array('import_results_tc_not_found' => '' ,'import_results_invalid_result' => '',
-				  'tproject_id_not_found' => '', 'import_results_ok' => '');
+				  'tproject_id_not_found' => '', 'import_results_ok' => '',
+				  'internal_id' => '', 'external_id' => '');
 	foreach($l18n as $key => $value)
 	{
 		$l18n[$key] = lang_get($key);
@@ -233,11 +236,15 @@ function saveImportedResultData(&$db,$resultData,$context)
 	$resultMap=array();
 	$tplan_mgr=null;
 	$tc_qty=sizeof($resultData);
-
+	$cfields = null;
+	
 	if($tc_qty)
 	{
-		$tplan_mgr=new testplan($db);
-		$tproject_mgr=new testproject($db);
+		$tplan_mgr = new testplan($db);
+		$tproject_mgr = new testproject($db);
+		
+		// BUGID 3843
+		$cfields = $tproject_mgr->get_linked_custom_fields($context->tprojectID,'testcase','name'); 
 	}
 	
 	// Need to do checks on common settings
@@ -278,6 +285,7 @@ function saveImportedResultData(&$db,$resultData,$context)
     
 	// --------------------------------------------------------------------	
 	
+	
 	for($idx=0; $doIt && $idx < $tc_qty;$idx++)
 	{
 		$tester_id = 0;
@@ -291,7 +299,9 @@ function saveImportedResultData(&$db,$resultData,$context)
 		// Important NOTICE:
 		// tcase_exec is passed BY REFERENCE to allow check_exec_values()change execution type if needed
 		//
-		$checks = check_exec_values($db,$tcase_mgr,$user_mgr,$tcaseCfg,$tcase_exec,$columnDef['execution_bugs']);
+		
+		$checks = check_exec_values($db,$context->tprojectID,$cfields,$tcase_mgr,$user_mgr,$tcaseCfg,
+									$tcase_exec,$columnDef['execution_bugs']);
     	$status_ok = $checks['status_ok'];		
 		if($status_ok)
 		{
@@ -312,7 +322,10 @@ function saveImportedResultData(&$db,$resultData,$context)
    		
 	  	if( $status_ok) 
 	  	{
-	  		$tcase_identity=$using_external_id ? $tcase_external_id : $tcase_id; 
+	  		$tcase_identity = $using_external_id ? $tcase_external_id : $tcase_id; 
+		    $verbose_identity = $using_external_id ? $l18n['external_id'] : $l18n['internal_id'];
+		    $verbose_identity = sprintf($verbose_identity,$tcase_identity);
+		    
 		    $result_code=strtolower($tcase_exec['result']);
 		    $result_is_acceptable=isset($resulstCfg['code_status'][$result_code]) ? true : false;
 		    		
@@ -323,14 +336,14 @@ function saveImportedResultData(&$db,$resultData,$context)
 
 		    $linked_cases=$tplan_mgr->get_linked_tcversions($context->tplanID,$filters);
 		    $info_on_case=$linked_cases[$tcase_id];
-
+			
 		    if (!$linked_cases)
 		    {
-		    	$message=sprintf($l18n['import_results_tc_not_found'],$tcase_identity);
+		    	$message=sprintf($l18n['import_results_tc_not_found'],$verbose_identity);
   	    	}
 		    else if (!$result_is_acceptable) 
 		    {
-		    	$message=sprintf($l18n['import_results_invalid_result'],$tcase_identity,$tcase_exec['result']);
+		    	$message=sprintf($l18n['import_results_invalid_result'],$verbose_identity,$tcase_exec['result']);
 		    } 
 		    else 
 		    {
@@ -382,9 +395,10 @@ function saveImportedResultData(&$db,$resultData,$context)
 	          			}
 	          		}
 				}
-		    	$message=sprintf($l18n['import_results_ok'],$tcase_identity,$version,$tester_name,
-		    	                 $resulstCfg['code_status'][$result_code],$execution_ts);
-
+				
+				// Improvements on feedback
+		    	$message=sprintf($l18n['import_results_ok'],($info_on_case['name'] . " - " . $verbose_identity),
+		    					 $version,$tester_name,$resulstCfg['code_status'][$result_code],$execution_ts);
 		    }
 		}
 	
@@ -454,7 +468,6 @@ function importExecutionFromXML(&$xmlTCExec)
   	$execInfo['tester'] = (string) trim($xmlTCExec->tester);
   	$execInfo['execution_type'] = intval((int) trim($xmlTCExec->execution_type)); //BUGID 3543
 
-
 	$bugQty = count($xmlTCExec->bug_id);
 	if( ($bugQty = count($xmlTCExec->bug_id)) > 0 )
 	{
@@ -463,6 +476,18 @@ function importExecutionFromXML(&$xmlTCExec)
 			$execInfo['bug_id'][] = (string) $bug; // BUGID 3331  
 		}
 	}
+	
+	// BUGID 3843 - Contribution 
+	// Can get link to test case using Custom Field
+	$execInfo['link_by_cf_name'] = null;
+	$execInfo['link_by_cf_value'] = null;
+	$link_attrs = $xmlTCExec->linkby->attributes();
+	if ($link_attrs) 
+	{
+	    $execInfo['link_by_cf_name'] = (string) $link_attrs->custom_field;
+	    $execInfo['link_by_cf_value'] = (string) $link_attrs->value;
+	}
+	
 	return $execInfo; 		
 }
 
@@ -546,40 +571,65 @@ function init_args(&$dbHandler)
            msg -> array with localized messages  
 
   @internal revisions:
+  20101107 - franciscom - BUGID 3843
   20100926 - franciscom - BUGID 3751: New attribute "execution type" makes old XML import files incompatible
   						  Passed $execValues BY REFERENCE to allow change of execution type if needed	
 */
-function check_exec_values(&$db,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$columnDef)
+function check_exec_values(&$db,$tproject_id,$cfields,&$tcase_mgr,&$user_mgr,$tcaseCfg,&$execValues,&$columnDef)
 {
 	$tables = tlObjectWithDB::getDBTables(array('users','execution_bugs'));
 
-    $checks=array('status_ok' => false, 'tcase_id' => 0, 'tester_id' => 0, 'msg' => array()); 
+    $checks=array('status_ok' => true, 'tcase_id' => 0, 'tester_id' => 0, 'msg' => array()); 
 	
-	$tcase_id=$execValues['tcase_id'];
-	$tcase_external_id=trim($execValues['tcase_external_id']);
+	$tcase_id = $execValues['tcase_id'];
+	$tcase_external_id = trim($execValues['tcase_external_id']);
 		
     // external_id has precedence over internal id
     $using_external_id = ($tcase_external_id != "");
-    if($using_external_id)
-    {
-        // need to get internal id  
-        $checks['tcase_id']=$tcase_mgr->getInternalID($tcase_external_id,$tcaseCfg->glue_character);
-        $checks['status_ok']=intval($checks['tcase_id']) > 0 ? true : false;
-        if(!$checks['status_ok'])
-        {
-           $checks['msg'][]=sprintf(lang_get('tcase_external_id_do_not_exists'),$tcase_external_id); 
-        }
+
+    // BUGID 3843 - Contribution
+	// Possibly using custom fields to identify test cases.
+	if( $tcase_id <= 0 && !$using_external_id) 
+	{
+	    $cf_name = $execValues['link_by_cf_name'];
+	    if( !is_null($cf_name) )
+	    {
+	    	$cf_value = $execValues['link_by_cf_value'];
+	    	$ret = $tcase_mgr->get_id_by_custom_field($cf_name,$cf_value,$tproject_id);
+
+	        $checks['status_ok'] = $ret['status_ok'];
+	        $checks['msg'][] = $ret['msg'];
+	    	if( $ret['status_ok'])
+	    	{
+	    		$tcase_id = key($ret['id']);
+	    	} 
+	    }
+	}
+
+	if( $checks['status_ok'] )
+	{
+    	if($using_external_id)
+    	{
+    	    // need to get internal id  
+    	    $checks['tcase_id']=$tcase_mgr->getInternalID($tcase_external_id,$tcaseCfg->glue_character);
+    	    $checks['status_ok']=intval($checks['tcase_id']) > 0 ? true : false;
+    	    if(!$checks['status_ok'])
+    	    {
+    	       $checks['msg'][]=sprintf(lang_get('tcase_external_id_do_not_exists'),$tcase_external_id); 
+    	    }
+    	}
+    	else
+    	{
+    	   // before using internal id, I want to check it's a number  
+    	   $checks['tcase_id']=$tcase_id;
+    	   $checks['status_ok']=intval($checks['tcase_id']) > 0 ? true : false;
+    	   if(!$checks['status_ok'])
+    	   {
+    	       $checks['msg'][]=sprintf(lang_get('tcase_id_is_not_number'),$tcase_id); 
+    	   }          
+    	}
     }
-    else
-    {
-       // before using internal id, I want to check it's a number  
-       $checks['tcase_id']=$tcase_id;
-       $checks['status_ok']=intval($checks['tcase_id']) > 0 ? true : false;
-       if(!$checks['status_ok'])
-       {
-           $checks['msg'][]=sprintf(lang_get('tcase_id_is_not_number'),$tcase_id); 
-       }          
-    }
+    
     if($checks['status_ok'])
     {
         // useful for user feedback 

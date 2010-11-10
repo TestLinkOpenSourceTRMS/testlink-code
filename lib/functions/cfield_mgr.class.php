@@ -7,10 +7,11 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.101 2010/11/10 09:52:51 mx-julian Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.102 2010/11/10 16:51:35 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101110 - franciscom - BUGID 3843 -> get_linked_items_at_design() new method
  * 20101109 - asimon - BUGID 3989: save custom field values only to db if they are not empty 
  * 20101104 - amitkhullar - Updated Order By Clause in  get_linked_to_testproject()
  * 20101026 - asimon - BUGID 3930: changing date format according to given locale
@@ -2621,6 +2622,46 @@ function getValuesFromUserInput($cf_map,$name_suffix='',$input_values=null)
     return $cf_map;
 }
 
+
+/**
+ * given a CF id and value, returns all node_id that has requested node type
+ *
+ * Important Notice: for Test Cases and Requirements (where CF are saved at Version level)
+ *					 we have to understand that we use 'testcase' but the real type of node_id
+ *					 will be tcversion.
+ *
+ * @param int $id Custom Field ID
+ * @param string $value Custom Field Value
+ * @param string $node_type verbose node type (see tree.class.php)
+ *
+ * @return map key: node_id 
+ *
+ * @internal revision
+ * 20101110 - franciscom - created as part of refactoring related to BUGID 3843	
+ *
+ */
+function get_linked_items_at_design($id,$value,$node_type)
+{
+	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+  	
+    $hash_descr_id = $this->tree_manager->get_available_node_types();
+    $node_type_id=$hash_descr_id[$node_type];
+
+    $safe_value = $this->db->prepare_string($value);
+
+    $sql="/* $debugMsg */ SELECT CF.name,CFDV.value,CFDV.node_id AS node_id,NH.parent_id" .
+         " FROM {$this->object_table} CF " .
+		 " JOIN {$this->tables['cfield_node_types']} CFNT ON CFNT.field_id=CF.id " .
+      	 " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.field_id=CF.id " .
+      	 " JOIN {$this->tables['nodes_hierarchy']} NH ON NH.id=CFDV.node_id " .
+         " WHERE CFNT.node_type_id={$node_type_id} " .
+         " AND CFDV.value = '{$safe_value}' ";
+  	// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+	
+    $rs = $this->db->fetchRowsIntoMap($sql,'node_id');
+    return($rs);
+}
 
 
 } // end class

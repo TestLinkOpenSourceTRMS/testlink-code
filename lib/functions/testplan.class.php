@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.235.2.1 2010/11/09 11:11:09 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.235.2.2 2010/11/10 11:22:04 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101110 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20101101 - franciscom - exportTestPlanDataToXML() interface changes + changes in output (more info added)
  *  20101030 - amitkhullar - BUGID 3845 delete() - Reordered deletion of tables due to error generated
@@ -2524,10 +2525,28 @@ class testplan extends tlObjectWithAttachments
 		// BUGID 3809 - Radio button based Custom Fields not working		
 		$or_clause = '';
 		$cf_query = '';
-		foreach ($cf_hash as $cf_id => $cf_value)
-		{
-		    $cf_query .= $or_clause . " (CFD.field_id=" . $cf_id . " AND CFD.value='" . $cf_value . "') ";
-			$or_clause = ' or ';			
+		//BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
+		if (isset($cf_hash)) {
+		$suffix = 1;
+		
+		foreach ($cf_hash as $cf_id => $cf_value) {
+			// single value or array?
+			if (is_array($cf_value)) {
+				$cf_query .= " AND ( ";
+				$count = 1;
+				foreach ($cf_value as $value) {
+					if ($count > 1) {
+						$cf_query .= " AND ";
+					}
+					$cf_query .= " ( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
+					$count++;
+				}
+				$cf_query .= " ) ";
+			} else {
+				$cf_query .= " AND CFD.value LIKE '%{$cf_value}%' ";
+			}
+				$suffix ++;
+			}
 		}
 		                              
         $cf_qty = count($cf_hash);		                              		
@@ -2537,7 +2556,8 @@ class testplan extends tlObjectWithAttachments
 			$sql = " /* $debugMsg */ SELECT CFD.value FROM {$this->tables['cfield_design_values']} CFD," .
 				   " {$this->tables['nodes_hierarchy']} NH" .
 				   " WHERE CFD.node_id = NH.id " .
-				   " AND NH.parent_id = {$tc_value['tc_id']} AND ({$cf_query})";
+				   " AND NH.parent_id = {$tc_value['tc_id']} " .
+				   " {$cf_query} ";
 			
 			$rows = $this->db->fetchRowsIntoMap($sql,'value');
 			// if there exist as many rows as custom fields to be filtered by => tc does meet the criteria

@@ -8,22 +8,23 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.154 2010/10/10 14:45:20 franciscom Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.154.2.1 2010/11/10 11:22:04 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *	20101010 - franciscom - added testlink_node_name as new attribute to be accessed while working with EXT-JS tree
- *	20101003 - franciscom - generateExecTree() - added option remove_empty_nodes_of_type on get_subtree() call
+ *  20101110 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
+ *  20101010 - franciscom - added testlink_node_name as new attribute to be accessed while working with EXT-JS tree
+ *  20101003 - franciscom - generateExecTree() - added option remove_empty_nodes_of_type on get_subtree() call
  *  20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
  *  20100926 - amitkhullar - BUGID 3806 - Filter not working in tree menu for Assign TC Execution
- *	20100912 - franciscom - BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
- *	20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
+ *  20100912 - franciscom - BUGID 3772: MS SQL - LIMIT CLAUSE can not be used
+ *  20100908 - Julian - BUGID 2877 - Custom Fields linked to Req versions
  *                                 - Custom Fields linked to TC versions
- *	20100908 - franciscom - extjs_renderExecTreeNodeOnOpen() - 'tlNodeType' -> testlink_node_type				 	 
+ *  20100908 - franciscom - extjs_renderExecTreeNodeOnOpen() - 'tlNodeType' -> testlink_node_type				 	 
  *  20100820 - asimon - refactoring for less redundant checks and better readibility of code
  *                      in generateExecTree()
- *	20100812 - franciscom - get_filtered_req_map() - BUGID 3671
+ *  20100812 - franciscom - get_filtered_req_map() - BUGID 3671
  *  20100810 - asimon - added filtering by TC ID on prepareNode() and generateTestSpecTree()
  *  20100808 - asimon - generate_reqspec_tree() implemented to generate statically filtered
  *                      requirement specification tree, plus additional functions
@@ -40,7 +41,7 @@
  *  20100622 - asimon - refactoring of following functions for new filter classes:
  *                      generateExecTree, renderExecTreeNode(), prepareNode(), 
  *                      generateTestSpecTree, renderTreeNode(), filter_by_*()
- *	20100611 - franciscom - renderExecTreeNode(), renderTreeNode() interface changes
+ *  20100611 - franciscom - renderExecTreeNode(), renderTreeNode() interface changes
  *							generateExecTree() - interface changes and output changes
  *  20100602 - franciscom - extjs_renderExecTreeNodeOnOpen() - added 'tlNodeType' 	
  *  20100428 - asimon - BUGID 3301 and related: 
@@ -49,18 +50,18 @@
  *                      "undefined" error in event log,
  *                      added function filter_by_cfield_values() 
  *                      which is used from generateTestSpecTree()
- *	20100417 - franciscom - BUGID 2498 - spec tree  - filter by test case spec importance
- *	20100417 - franciscom - BUGID 3380 - execution tree - filter by test case execution type
- *	20100415 - franciscom - BUGID 2797 - filter by test case execution type
- *	20100202 - asimon - changes for filtering, BUGID 2455, BUGID 3026
+ *  20100417 - franciscom - BUGID 2498 - spec tree  - filter by test case spec importance
+ *  20100417 - franciscom - BUGID 3380 - execution tree - filter by test case execution type
+ *  20100415 - franciscom - BUGID 2797 - filter by test case execution type
+ *  20100202 - asimon - changes for filtering, BUGID 2455, BUGID 3026
  *						added filter_by_* - functions, changed generateExecTree()
- *	20091212 - franciscom - prepareNode(), generateTestSpecTree() interface changes
+ *  20091212 - franciscom - prepareNode(), generateTestSpecTree() interface changes
  *                          added logic to do filtering on test spec for execution type
  *
- *	20090815 - franciscom - get_last_execution() call changes
+ *  20090815 - franciscom - get_last_execution() call changes
  *  20090801 - franciscom - table prefix missed
- *	20090716 - franciscom - BUGID 2692
- * 	20090328 - franciscom - BUGID 2299 - introduced on 20090308.
+ *  20090716 - franciscom - BUGID 2692
+ *  20090328 - franciscom - BUGID 2299 - introduced on 20090308.
  *                          Added logic to remove Empty Top level test suites 
  *                          (have neither test cases nor test suites inside) when applying 
  *                          test case keyword filtering.
@@ -1500,7 +1501,31 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 			$sql = " /* $debugMsg */ SELECT CFD.value FROM {$tables['cfield_design_values']} CFD," .
 				   " {$tables['nodes_hierarchy']} NH" .
 				   " WHERE CFD.node_id = NH.id" .
-				   " AND NH.parent_id = {$node['id']} AND value in ('" . implode("' , '",$cf_hash) . "')";
+				   " AND NH.parent_id = {$node['id']} ";
+			// AND value in ('" . implode("' , '",$cf_hash) . "')";
+		//BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
+		if (isset($cf_hash)) {
+		$suffix = 1;
+		
+		foreach ($cf_hash as $cf_id => $cf_value) {
+			// single value or array?
+			if (is_array($cf_value)) {
+				$sql .= " AND ( ";
+				$count = 1;
+				foreach ($cf_value as $value) {
+					if ($count > 1) {
+						$sql .= " AND ";
+					}
+					$sql .= " ( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
+					$count++;
+				}
+				$sql .= " ) ";
+			} else {
+				$sql .= " AND CFD.value LIKE '%{$cf_value}%' ";
+			}
+				$suffix ++;
+			}
+		}
 			
 			$rows = $db->fetchRowsIntoMap($sql,'value');
 			

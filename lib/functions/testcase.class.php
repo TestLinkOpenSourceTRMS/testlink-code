@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.334 2010/11/10 15:30:13 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.335 2010/11/10 17:34:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -5029,7 +5029,7 @@ class testcase extends tlObjectWithAttachments
 			$lbl['no_linked_cfields_for_testcase'] = lang_get('no_linked_cfields_for_testcase');
 			$lbl['no_cfield_with_this_name'] = lang_get('no_cfield_with_this_name');
 		}
-		$ret = array('status_ok' => false, 'msg' => '', 'id' => 0);
+		$ret = array('status_ok' => false, 'msg' => '', 'id' => null);
     	
     	
     	// check if custom field is linked to test project 
@@ -5059,11 +5059,35 @@ class testcase extends tlObjectWithAttachments
 			// Need to get all node id (will be test case VERSION ID), that has cf with requested value
 			// After this I need to get ONLY ID of test case that belong to Test Project
 			// If more than one Test Case exists -> we have a problem ?
-			// If this method has to be generica, then will be possible 
+			// If this method has to be generic, then will be possible 
 			// Check test cases that have a certain value on custom field
 			// (We alredy are doing this may be in a different way when applying filters on  CF values).
 			//  
+			$cfget_opt = array('access_key' => 'parent_id', 'secondary_access_key' => 'node_id');
 			
+			// map key: test case id
+			// map value: map indexed by test case version id
+			$itemSet = $this->cfield_mgr->get_linked_items_at_design($cfield_id,$cf_value,'testcase',$cfget_opt);
+			
+			// // Now filter result
+			if( !is_null($itemSet) )
+			{
+				$tcaseSet = array_keys($itemSet);
+				$cache = array('tproject_id' => array());
+								
+				foreach($tcaseSet as $tcase_id)
+				{
+					if( !isset($cache['tproject_id'][$tcase_id]) )
+					{
+						$cache['tproject_id'][$tcase_id] = $this->tree_manager->getTreeRoot($tcase_id);
+					}
+					if( $tproject_id == $cache['tproject_id'][$tcase_id] )
+					{
+						$ret['id'] = array($tcase_id => $itemSet[$tcase_id]);
+						break;
+					}
+				}
+			}
 		}
 
 		return $ret;    	

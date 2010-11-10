@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.100 2010/11/10 09:48:37 mx-julian Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.101 2010/11/10 09:52:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -876,7 +876,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
   				   " VALUES	( {$field_id}, {$node_id}, '{$safe_value}' )";
 		    $this->db->exec_query($sql);
   		  // BUGID 3989
-        } else if ($this->db->num_rows( $result ) > 0 && $value == 0) {
+        } else if ($this->db->num_rows( $result ) > 0 && $value == "") {
   			$sql = "/* $debugMsg */ DELETE FROM {$this->tables['cfield_design_values']} " .
   				   " WHERE field_id={$field_id} AND	node_id={$node_id}";
 		    $this->db->exec_query($sql);

@@ -6,7 +6,7 @@
  * @package    TestLink
  * @author     Andreas Simon
  * @copyright  2006-2010, TestLink community
- * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.33 2010/11/03 08:06:16 asimon83 Exp $
+ * @version    CVS: $Id: tlTestCaseFilterControl.class.php,v 1.34 2010/11/10 17:46:07 asimon83 Exp $
  * @link       http://www.teamst.org/index.php
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/tlTestCaseFilterControl.class.php?view=markup
  *
@@ -35,6 +35,7 @@
  *
  * @internal Revisions:
  *
+ * 20101110 - asimon - BUGID 3822: Keywords combobox is absent on the Filters pane of 'Add / Remove Test Cases'
  * 20101103 - asimon - custom fields on test spec did not retain value after apply
  * 20101028 - asimon - BUGID 3933: Add test case to test plan - Left Pane filter uses 
  *                     priority concept to filter test spec where priority does not exist
@@ -1185,6 +1186,8 @@ class tlTestCaseFilterControl extends tlFilterControl {
 
 		switch ($this->mode) {
 			case 'edit_mode':
+			// BUGID 3822
+			case 'plan_add_mode':
 				// we need the keywords for the whole testproject
 				if (!$this->testproject_mgr) {
 					$this->testproject_mgr = new testproject($this->db);

@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.333 2010/11/09 11:11:28 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.334 2010/11/10 15:30:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101110 - franciscom - BUGID 3843 - get_id_by_custom_field() (WIP)
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown 
  * 20101107 - franciscom - BUGID 3843 - get_id_by_custom_field() (WIP)
  * 20101030 - franciscom - get_by_external() interface changes
@@ -5013,6 +5014,9 @@ class testcase extends tlObjectWithAttachments
 	}
 
 	/**
+	 * Attention:
+	 * has limited scope i.e.: used to do search on custom fields that hold simple values 
+	 * example: strings and numbers.
 	 *
 	 *
 	 */
@@ -5052,6 +5056,14 @@ class testcase extends tlObjectWithAttachments
     	if($ret['status_ok'])
     	{
 			// go for the test case
+			// Need to get all node id (will be test case VERSION ID), that has cf with requested value
+			// After this I need to get ONLY ID of test case that belong to Test Project
+			// If more than one Test Case exists -> we have a problem ?
+			// If this method has to be generica, then will be possible 
+			// Check test cases that have a certain value on custom field
+			// (We alredy are doing this may be in a different way when applying filters on  CF values).
+			//  
+			
 		}
 
 		return $ret;    	

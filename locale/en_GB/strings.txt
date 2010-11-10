@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.752 2010/11/07 20:06:57 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.753 2010/11/10 18:10:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2072,6 +2072,9 @@ $TLS_bug_id_invalid_len = "BUG ID length is invalid [%s > %s] " . $TLS_imp_resul
 $TLS_tproject_id_not_found = "Test Project ID not found [%s] " . $TLS_imp_result_ko;
 $TLS_invalid_exec_type = "Execution type code [%s] is not valid" . $TLS_imp_result_ko;
 $TLS_missing_exec_type = "Execution type code was not provided - using (%s => %s)";
+$TLS_internal_id = "Internal ID:%s";
+$TLS_external_id = "External ID:%s";
+
 
 // ----- lib/functions/results.inc.php -----
 $TLS_trep_failing = "Failing";

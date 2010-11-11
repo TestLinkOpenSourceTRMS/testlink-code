@@ -5,12 +5,13 @@
  * 
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlUser.class.php,v 1.13 2010/09/17 18:27:49 franciscom Exp $
+ * @version    	CVS: $Id: tlUser.class.php,v 1.14 2010/11/11 19:50:30 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/user.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *	
+ *	20101111 - franciscom - BUGID 4006 - test plan is_public
  *	20100917 - Julian - getAccessibleTestPlans() - BUGID 3724 - new option "active"
  *	20100704 - franciscom - getAccessibleTestPlans() - BUGID 3526
  *	20100522 - franciscom - getAccessibleTestPlans() - added arguments options
@@ -804,6 +805,9 @@ class tlUser extends tlDBObject
      *									 => TP_ALL_STATUS (get all test plans)
      *
      * @return array if 0 accessible test plans => null
+     *
+     * @internal Revisions
+     * 20101111 - franciscom - BUGID 4006 test plan is_public
      */
 	function getAccessibleTestPlans(&$db,$testprojectID,$testplanID=null, $options=null)
 	{
@@ -812,7 +816,7 @@ class tlUser extends tlDBObject
 		$my['options'] = array( 'output' => null, 'active' => ACTIVE);
 	    $my['options'] = array_merge($my['options'], (array)$options);
 		
-		$fields2get = ' NH.id, NH.name ';
+		$fields2get = ' NH.id, NH.name, TPLAN.is_public, COALESCE(USER_TPLAN_ROLES.testplan_id,0) AS has_role';
 		if( $my['options']['output'] != 'combo' )
 		{
 			$fields2get .= ' ,TPLAN.active, 0 AS selected ';
@@ -870,6 +874,7 @@ class tlUser extends tlDBObject
 	  	}
 			
 		$sql .= " ORDER BY name";
+		$numericIndex = false;
 		switch($my['options']['output'])
 		{
 			case 'map':
@@ -882,8 +887,28 @@ class tlUser extends tlDBObject
 			
 			default:
 				$testPlanSet = $db->get_recordset($sql);
+				$numericIndex = true;
 			break;
 		}
+
+		// BUGID 4006 - test plan is_public
+		// Admin exception		
+		if( $this->globalRoleID != TL_ROLES_ADMIN && count($testPlanSet) > 0 )
+		{
+			$doReindex = false;
+			foreach($testPlanSet as $idx => $item)
+			{
+				if( $item['is_public'] == 0 && $item['has_role'] == 0 )
+				{
+					unset($testPlanSet[$idx]);
+					$doReindex = true;
+				} 				
+			}
+			if( $doReindex && $numericIndex)
+			{
+				$testPlanSet = array_values($testPlanSet);
+			}
+		} 
 		
 		return $testPlanSet;
 	}

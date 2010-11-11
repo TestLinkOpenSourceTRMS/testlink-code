@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.12 2010/03/19 15:04:09 asimon83 Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.13 2010/11/11 17:21:29 asimon83 Exp $
 viewer for requirement
 
 rev:
+20101111 - asimon - replaced openTCaseWindow() by openTCEditWindow() to save popup size
 *}
 {lang_get var="labels"
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
@@ -136,7 +137,8 @@ rev:
 	  {if $args_req_coverage != ''}
 	  {section name=row loop=$args_req_coverage}
 	    <span> {* BUGID 2521 *}
-	    <a href="javascript:openTCaseWindow({$args_req_coverage[row].id})">
+	    {* replaced openTCaseWindow() by openTCEditWindow() to save popup size *}
+	    <a href="javascript:openTCEditWindow({$args_req_coverage[row].id})">
 	    {$args_gui->tcasePrefix|escape}{$args_gui->glueChar}{$args_req_coverage[row].tc_external_id}{$args_gui->pieceSep}{$args_req_coverage[row].name|escape}</a>
 	    </span><br />
 	   {sectionelse}

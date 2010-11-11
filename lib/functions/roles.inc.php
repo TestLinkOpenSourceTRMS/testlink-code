@@ -33,10 +33,11 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.61 2010/10/04 13:22:24 asimon83 Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.61.2.1 2010/11/11 19:39:40 franciscom Exp $
  * 
  *
  * @internal rev: 
+ *	20101111 - franciscom - BUGID 4006: test plan is_public
  *	20100930 - franciscom - BUGID 2344: Private test project
  *	20100307 - franciscom - removed wrong right due to copy/paste BUGID 3249
  *	20100220 - franciscom - added inventory rights
@@ -297,7 +298,10 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
                   uplayer_is_inherited 1 -> uplayer role is inherited 
                                        0 -> uplayer role is written in table
                   effective_role_id    user role for test plan
-                  is_inherited       
+                  is_inherited   
+                  
+  @internal revisions
+  20101111 - franciscom - BUGID 4006: test plan is_public                    
  */
 function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$users = null)
 {
@@ -310,6 +314,16 @@ function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$user
 		$isInherited = 1;
 		$effective_role[$user_id]['uplayer_role_id'] = $effective_role[$user_id]['effective_role_id'];
 		$effective_role[$user_id]['uplayer_is_inherited'] = $effective_role[$user_id]['is_inherited'];
+		
+		// BUGID 4006 
+		// Manage administrator exception
+		if( ($user->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
+		{
+				$isInherited = $tproject['is_public'];
+				$effectiveRoleID = TL_ROLES_NO_RIGHTS;
+				$effectiveRole = '<no rights>';
+		}
+		// ---------------------------------------------------------------------------
 		
 		if(isset($row['user']->tplanRoles[$tplan_id]))
 		{

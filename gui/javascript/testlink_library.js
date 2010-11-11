@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.112 2010/11/06 18:46:33 amkhullar Exp $
+// $Id: testlink_library.js,v 1.113 2010/11/11 18:00:44 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -24,6 +24,7 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // ------ Revisions ---------------------------------------------------------------------
+// 20101111 - asimon - now openTCaseWindow() also remembers popup size like other functions do
 // 20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
 // 20101102 - asimon - BUGID 2864: commented out old open_top(), replaced by openLinkedReqWindow()
 // 20101025 - Julian - BUGID 3930: added new parameter dateFormat to showCal() to be able to use
@@ -818,23 +819,38 @@ function open_help_window(help_page,locale)
   returns:
 
   rev :
+  	   20101111 - asimon - now also remembers popup size like other functions do
        20090715 - franciscom - added documentation
        20070930 - franciscom - REQ - BUGID 1078
 
 */
 function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 {
-	  //@TODO schlundus, what is show_mode? not used in archiveData.php
-	  //You are right: problem fixed see documentation added on header (franciscom)
-	  // 
-    var windowCfg='';
-	  var feature_url = "lib/testcases/archiveData.php";
-	  feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
-                    tcase_id+"&tcversion_id="+tcversion_id;
-    
-    // second parameter(window name) with spaces caused bug on IE
-	  windowCfg="width=510,height=300,resizable=yes,scrollbars=yes,dependent=yes";
-	  window.open(fRoot+feature_url,"TestCaseSpec",windowCfg);
+	//@TODO schlundus, what is show_mode? not used in archiveData.php
+	//You are right: problem fixed see documentation added on header (franciscom)
+	// 
+	var feature_url = "lib/testcases/archiveData.php";
+	feature_url +="?allow_edit=0&show_mode="+show_mode+"&edit=testcase&id="+
+	tcase_id+"&tcversion_id="+tcversion_id;
+
+	// 20101111 - asimon - now also remembers popup size
+	var width = getCookie("TCEditPopupWidth");
+	var height = getCookie("TCEditPopupWidth");
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+
+	// second parameter(window name) with spaces caused bug on IE
+	window.open(fRoot+feature_url,"TestCaseSpec",windowCfg);
 }
 
 

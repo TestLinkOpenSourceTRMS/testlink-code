@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.112.2.1 2010/11/11 18:00:47 asimon83 Exp $
+// $Id: testlink_library.js,v 1.112.2.2 2010/11/12 15:23:45 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -835,7 +835,7 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 
 	// 20101111 - asimon - now also remembers popup size
 	var width = getCookie("TCEditPopupWidth");
-	var height = getCookie("TCEditPopupWidth");
+	var height = getCookie("TCEditPopupHeight");
 
 	if (width == null)
 	{

@@ -33,10 +33,11 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.62 2010/11/11 19:50:30 franciscom Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.63 2010/11/12 20:29:58 franciscom Exp $
  * 
  *
  * @internal rev: 
+ *	20101112 - franciscom - BUGID 4006: get_tplan_effective_role() fixed bad variable usage -> error on event viewer
  *	20101111 - franciscom - BUGID 4006: test plan is_public
  *	20100930 - franciscom - BUGID 2344: Private test project
  *	20100307 - franciscom - removed wrong right due to copy/paste BUGID 3249
@@ -305,10 +306,11 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
  */
 function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$users = null)
 {
-	// the "1" in parameters caused the user menus to only display one user instead of all 
-	//$effective_role = get_tproject_effective_role($db,$tproject,1,$user_id,$users);
+	$tplan_mgr = new testplan($db);
+	$tplan = $tplan_mgr->get_by_id($tplan_id);
+	unset($tplan_mgr);
+	
 	$effective_role = get_tproject_effective_role($db,$tproject,$user_id,$users);
-
 	foreach($effective_role as $user_id => $row)
 	{
 		$isInherited = 1;
@@ -317,7 +319,7 @@ function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$user
 		
 		// BUGID 4006 
 		// Manage administrator exception
-		if( ($user->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
+		if( ($row['user']->globalRoleID != TL_ROLES_ADMIN) && !$tplan['is_public'])
 		{
 				$isInherited = $tproject['is_public'];
 				$effectiveRoleID = TL_ROLES_NO_RIGHTS;

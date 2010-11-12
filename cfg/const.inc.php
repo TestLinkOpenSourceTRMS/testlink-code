@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.167 2010/11/07 10:20:21 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.167.2.1 2010/11/12 13:07:36 mx-julian Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -642,6 +642,7 @@ define('TL_REQ_STATUS_REVIEW','R');
 define('TL_REQ_STATUS_REWORK','W');
 define('TL_REQ_STATUS_FINISH','F');
 define('TL_REQ_STATUS_IMPLEMENTED','I');
+define('TL_REQ_STATUS_OBSOLETE','O');
 
 // key: status; value: text label
 $tlCfg->req_cfg = new stdClass();
@@ -651,7 +652,8 @@ $tlCfg->req_cfg->status_labels = array(TL_REQ_STATUS_DRAFT => 'req_status_draft'
 					                   TL_REQ_STATUS_FINISH => 'req_status_finish',
 					                   TL_REQ_STATUS_IMPLEMENTED => 'req_status_implemented',
 					                   TL_REQ_STATUS_VALID => 'review_status_valid', 
-					                   TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable');
+					                   TL_REQ_STATUS_NOT_TESTABLE => 'req_status_not_testable',
+					                   TL_REQ_STATUS_OBSOLETE => 'req_status_obsolete');
 
 /** 
  * Types of requirements (with respect to standards)

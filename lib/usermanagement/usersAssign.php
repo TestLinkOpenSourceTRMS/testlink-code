@@ -11,10 +11,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.32 2010/10/04 13:22:25 asimon83 Exp $
+ * @version    	CVS: $Id: usersAssign.php,v 1.32.2.1 2010/11/12 19:36:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20101112 - franciscom - getTestPlanEffectiveRoles() fixed typo error -> errors on event viewer
  *  20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
  *  20100930 - franciscom - BUGID 2344: Private test project
  *	20100313 - erikeloff - BUGID 3271 - show only active users on assign to project/test plan
@@ -309,6 +310,8 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
  */
 function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,&$users)
 {
+	new dBug($argsObj);
+	
 	$features = array();
 	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->testprojectID, array('plan_status' => 1));
 	if(!is_null($activeTestplans))
@@ -365,7 +368,7 @@ function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj
 	}
 
 	// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
-	$tproject_info = $tprojectMgr->get_by_id($argsObj->tproject_id);
+	$tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
 
 	$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
  	return array($effectiveRoles,$features,$argsObj->featureID);

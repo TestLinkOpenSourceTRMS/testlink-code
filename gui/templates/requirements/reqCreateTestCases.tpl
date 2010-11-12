@@ -1,13 +1,14 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.18 2010/11/06 11:42:47 amkhullar Exp $
+$Id: reqCreateTestCases.tpl,v 1.18.2.1 2010/11/12 07:45:43 mx-julian Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
 
-   rev: 
+   rev:
+   20101111 - Julian - BUGID 4003 - Minor Improvements to table layout
    20100403 - francisco - adding #SCOPE_TRUNCATE#
-   20091209 - asimon     - contrib for testcase creation, BUGID 2996
+   20091209 - asimon - contrib for testcase creation, BUGID 2996
 *}
 {assign var="req_module" value='lib/requirements/'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
@@ -16,7 +17,8 @@ $Id: reqCreateTestCases.tpl,v 1.18 2010/11/06 11:42:47 amkhullar Exp $
 {lang_get s='select_at_least_one_req' var="check_msg"}
 {lang_get var='labels' 
           s="req_doc_id,title,scope,coverage_number,expected_coverage,needed,warning,
-             current_coverage,coverage,req_msg_norequirement,req_select_create_tc"} 
+             current_coverage,coverage,req_msg_norequirement,req_select_create_tc,
+             requirement,status,type"} 
 
 
 {include file="inc_head.tpl" openHead="yes"}
@@ -97,7 +99,7 @@ function check_action_precondition(form_id,action,msg)
         <input type="hidden" name="toggle_req"  id="toggle_req"  value="0" />
      
 
-     <table class="simple">
+     <table class="simple" style="width:99%">
     	 <tr>
     		{if $gui->grants->req_mgmt == "yes"}
     		<th style="width: 15px;">
@@ -106,9 +108,9 @@ function check_action_precondition(form_id,action,msg)
                          title="{lang_get s='check_uncheck_all_checkboxes'}" class="clickable"/></th>
         {/if}
     		
-    		<th>{$labels.req_doc_id}</th>
-    		<th>{$labels.title}</th>
-    		<th>{$labels.scope}</th>
+    		<th>{$labels.requirement}</th>
+    		<th>{$labels.status}</th>
+    		<th>{$labels.type}</th>
     		
     		{* contribution for testcase creation, BUGID 2996 *}
     		<th>{$labels.coverage_number}</th>
@@ -126,17 +128,22 @@ function check_action_precondition(form_id,action,msg)
     		<td style="padding:2px;"><input type="checkbox" id="req_id_cbox{$gui->all_reqs[row].id}"
     		           name="req_id_cbox[{$gui->all_reqs[row].id}]" 
     		                                           value="{$gui->all_reqs[row].id}"/></td>{/if}
-    		<td style="padding:2px;"><span class="bold">{$gui->all_reqs[row].req_doc_id|escape}</span></td>
-    		<td style="padding:2px;"><span class="bold">{$gui->all_reqs[row].title|escape}</a></span></td>
-    		<td style="padding:2px;">{$gui->all_reqs[row].scope|strip_tags|strip|truncate:#SCOPE_TRUNCATE#}</td>
-    		
-    		{* contribution for testcase creation, BUGID 2996 *}
+    		<td style="padding:2px;">
+    			<span onclick="javascript: openLinkedReqWindow({$gui->all_reqs[row].id});"
+      			      style="cursor:  pointer;  color: #059;" >
+					{$gui->all_reqs[row].req_doc_id|escape} : {$gui->all_reqs[row].title|escape}
+				</span>
+			</td>
+    		{assign var="req_status" value=$gui->all_reqs[row].status }
+    		<td style="padding:2px;">{$gui->reqStatusDomain.$req_status|escape}</td>
+    		{assign var="req_type" value=$gui->all_reqs[row].type }
+    		<td style="padding:2px;">{$gui->reqTypeDomain.$req_type|escape}</td>
     		<td style="padding:2px;"><input name="testcase_count[{$gui->all_reqs[row].id}]" type="text" size="3" maxlength="3" value="1"></td>
     		{if $gui->req_cfg->expected_coverage_management}
-  				<td align="center" style="padding:2px;"><span class="bold">{$gui->all_reqs[row].expected_coverage}</span></td>
+  				<td align="center" style="padding:2px;">{$gui->all_reqs[row].expected_coverage}</td>
     		{/if}  	
-    		<td align="center" style="padding:2px;"><span class="bold">{$gui->all_reqs[row].coverage}</span></td>
-    		<td align="center" style="padding:2px;"><span class="bold">{$gui->all_reqs[row].coverage_percent}%</span></td>
+    		<td align="center" style="padding:2px;">{$gui->all_reqs[row].coverage}</td>
+    		<td align="center" style="padding:2px;">{$gui->all_reqs[row].coverage_percent}%</td>
     		
     	</tr>
     	{sectionelse}

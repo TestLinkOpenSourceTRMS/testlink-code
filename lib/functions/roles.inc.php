@@ -33,7 +33,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Chad Rosen
  * @copyright 	2006-2009, TestLink community 
- * @version    	CVS: $Id: roles.inc.php,v 1.61.2.2 2010/11/12 19:42:40 franciscom Exp $
+ * @version    	CVS: $Id: roles.inc.php,v 1.61.2.3 2010/11/12 19:52:37 franciscom Exp $
  * 
  *
  * @internal rev: 
@@ -306,6 +306,10 @@ function get_tproject_effective_role(&$db,$tproject,$user_id = null,$users = nul
  */
 function get_tplan_effective_role(&$db,$tplan_id,$tproject,$user_id = null,$users = null)
 {
+	$tplan_mgr = new testplan($db);
+	$tplan = $tplan_mgr->get_by_id($tplan_id);
+	unset($tplan_mgr);
+	
 	$effective_role = get_tproject_effective_role($db,$tproject,$user_id,$users);
 	foreach($effective_role as $user_id => $row)
 	{

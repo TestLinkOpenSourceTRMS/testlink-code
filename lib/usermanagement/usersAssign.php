@@ -11,7 +11,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.32.2.1 2010/11/12 19:36:49 franciscom Exp $
+ * @version    	CVS: $Id: usersAssign.php,v 1.32.2.2 2010/11/12 19:53:08 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -310,8 +310,6 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
  */
 function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,&$users)
 {
-	new dBug($argsObj);
-	
 	$features = array();
 	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->testprojectID, array('plan_status' => 1));
 	if(!is_null($activeTestplans))

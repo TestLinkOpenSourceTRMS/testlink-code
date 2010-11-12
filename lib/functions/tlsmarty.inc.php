@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tlsmarty.inc.php,v 1.33 2010/10/30 07:50:20 franciscom Exp $
+ * @version    	CVS: $Id: tlsmarty.inc.php,v 1.34 2010/11/12 21:24:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @link 		http://www.smarty.net/ 
  *
  * @internal Revisions:
+ *	20101112 - franciscom - work started to migrate to Smarty 3.0.1
  *	20101030 - franciscom - BUGID 3948: Every image link contain a double /
  *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker 
  * 	20101017 - franciscom - added new image -> import
@@ -290,13 +291,23 @@ class TLSmarty extends Smarty
         $this->assign("tlImages",$tlImages);
         
         // Register functions
-        $this->register_function("lang_get", "lang_get_smarty");
-        $this->register_function("localize_date", "localize_date_smarty");
-        $this->register_function("localize_timestamp", "localize_timestamp_smarty");
-        $this->register_function("localize_tc_status","translate_tc_status_smarty");
+        // $this->register_function("lang_get", "lang_get_smarty");
+        // $this->register_function("localize_date", "localize_date_smarty");
+        // $this->register_function("localize_timestamp", "localize_timestamp_smarty");
+        // $this->register_function("localize_tc_status","translate_tc_status_smarty");
+        // 
+        // $this->register_modifier("basename","basename");
+        // $this->register_modifier("dirname","dirname");
         
-        $this->register_modifier("basename","basename");
-        $this->register_modifier("dirname","dirname");
+        $this->registerPlugin("function","lang_get", "lang_get_smarty");
+        $this->registerPlugin("function","localize_date", "localize_date_smarty");
+        $this->registerPlugin("function","localize_timestamp", "localize_timestamp_smarty");
+        $this->registerPlugin("function","localize_tc_status","translate_tc_status_smarty");
+        
+        $this->registerPlugin("modifier","basename","basename");
+        $this->registerPlugin("modifier","dirname","dirname");
+        
+        
     
     } // end of function TLSmarty()
 

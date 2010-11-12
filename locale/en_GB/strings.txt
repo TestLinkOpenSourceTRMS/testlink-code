@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.755 2010/11/12 13:07:45 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.756 2010/11/12 20:31:53 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2574,7 +2574,7 @@ $TLS_warning_create_build_first = "You must create builds or import data at firs
 
 // ----- lib/results/displayMgr.php -----
 $TLS_error_sendreport_no_email_credentials = "Email for this user is not specified, ".
-		                                         "please edit email credentials in 'Personal' tab";
+		                                         "please edit email credentials using 'My Settings' feature";
 
 $TLS_mail_sent_to = 'mail sent to %s';
 $TLS_send_mail_ko = 'Warning: Problems sending mail - details: ';

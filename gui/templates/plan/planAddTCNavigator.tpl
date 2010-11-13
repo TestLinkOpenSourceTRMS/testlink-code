@@ -1,11 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.26 2010/10/27 13:45:16 asimon83 Exp $
+$Id: planAddTCNavigator.tpl,v 1.27 2010/11/13 09:53:07 franciscom Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
-Revisions:     
+Revisions:    
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
+                          BEFORE Closing curly Bracket and AFTER opening curly Bracket
   20101027 - asimon - BUGID 3946: reqirement specification tree size     
   20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
                       them with new included template inc_tc_filter_panel.tpl
@@ -26,10 +28,9 @@ Revisions:
 {* BUGID 3301 *}
 {* includes Ext.ux.CollapsiblePanel *}
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
-{literal}
 <script type="text/javascript">
-	treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-	           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+	treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",loader:"", 
+	            enableDD:false, dragDropBackEndUrl:"",children:"" };
 	Ext.onReady(function() {
 		Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
@@ -51,15 +52,12 @@ Revisions:
 		});
 	});
 </script>
-{/literal}
 
     {if $gui->ajaxTree->loader == ''}
-        {literal}
         <script type="text/javascript">
-        treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-                   loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+        treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+                    loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
         </script>
-        {/literal}
 
         <script type="text/javascript">
         treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
@@ -69,13 +67,11 @@ Revisions:
         </script>
         <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     {else}
-        {literal}
         <script type="text/javascript">
-        treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-                   root_testlink_node_type:'',useBeforeMoveNode:false,
-                   loader:"", enableDD:false, dragDropBackEndUrl:''};
+        treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+                    root_testlink_node_type:'',useBeforeMoveNode:false,
+                    loader:"", enableDD:false, dragDropBackEndUrl:'' };
         </script>
-        {/literal}
         
         <script type="text/javascript">
         treeCfg.loader = "{$gui->ajaxTree->loader}";
@@ -88,7 +84,6 @@ Revisions:
         <script type="text/javascript" src="gui/javascript/treebyloader.js">
         </script>
    {/if}
-{literal}
 <script type="text/javascript">
 function pre_submit()
 {
@@ -96,7 +91,6 @@ function pre_submit()
 	return true;
 }
 </script>
-{/literal}
 
 
 {* BUGID 3301 - js include file for simpler code, filter refactoring/redesign *}

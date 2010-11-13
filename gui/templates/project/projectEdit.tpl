@@ -3,9 +3,10 @@
  *
  * Smarty template - Edit existing Test project
  *
- * CVS: $Id: projectEdit.tpl,v 1.31 2010/11/06 11:42:48 amkhullar Exp $
+ * CVS: $Id: projectEdit.tpl,v 1.32 2010/11/13 08:48:21 franciscom Exp $
  *
  * Revisions:
+ *  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *  20100930 - franciscom - BUGID 2344: Private test project
  *  20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
  *	20100212 - havlatm - inventory support
@@ -49,7 +50,6 @@
 	var alert_box_title = "{$labels.warning|escape:'javascript'}";
 	var warning_empty_tcase_prefix = "{$labels.warning_empty_tcase_prefix|escape:'javascript'}";
 	var warning_empty_tproject_name = "{$labels.warning_empty_tproject_name|escape:'javascript'}";
-	{literal}
 	function validateForm(f)
 	{
 	  if (isWhitespace(f.tprojectName.value))
@@ -67,7 +67,6 @@
 	
 	  return true;
 	}
-	{/literal}
 	</script>
 </head>
 

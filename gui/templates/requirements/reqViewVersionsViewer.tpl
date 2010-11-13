@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.13 2010/11/11 17:21:29 asimon83 Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.14 2010/11/13 10:39:10 franciscom Exp $
 viewer for requirement
 
 rev:
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101111 - asimon - replaced openTCaseWindow() by openTCEditWindow() to save popup size
 *}
 {lang_get var="labels"
@@ -14,16 +15,16 @@ rev:
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
-{assign var="hrefReqSpecMgmt" value=$basehref$hrefReqSpecMgmt}
+{assign var="hrefReqSpecMgmt" value="$basehref$hrefReqSpecMgmt"}
 
 {assign var="hrefReqMgmt" value="lib/requirements/reqView.php?showReqSpecTitle=1&requirement_id="}
-{assign var="hrefReqMgmt" value=$basehref$hrefReqMgmt}
+{assign var="hrefReqMgmt" value="$basehref$hrefReqMgmt"}
 
 {assign var="module" value='lib/requirements/'}
 {assign var="req_id" value=$args_req.id}
 {assign var="req_version_id" value=$args_req.version_id}
 
-{if $args_show_title }
+{if $args_show_title}
     {if $args_tproject_name != ''}
      <h2>{$labels.testproject} {$args_tproject_name|escape} </h2>
     {/if}
@@ -155,7 +156,7 @@ rev:
 
 	<tr class="time_stamp_creation">
   		<td >
-      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_req.creation_ts }&nbsp;
+      		{$labels.title_created}&nbsp;{localize_timestamp ts=$args_req.creation_ts}&nbsp;
       		{$labels.by}&nbsp;{$args_req.author|escape}
   		</td>
   </tr>

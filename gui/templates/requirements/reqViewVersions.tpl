@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.20 2010/11/13 10:26:36 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.21 2010/11/13 10:43:56 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -322,11 +322,11 @@ var pF_delete_req_relation = delete_req_relation;
         
   	    {foreach from=$gui->other_versions[idx] item=my_req key=rdx}
             {assign var="version_num" value=$my_req.version}
-            {assign var="title" value="$labels.version}
+            {assign var="title" value="$labels.version"}
             {assign var="title" value="$title $version_num"}
             
             {assign var="div_id" value="v_$vid_"}
-            {assign var="div_id" value=$div_id$version_num}
+            {assign var="div_id" value="$div_id$version_num"}
             {assign var="memstatus_id" value="mem_$div_id"}
            
            	{* is this version frozen? *}

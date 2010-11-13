@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.11 2010/10/30 07:55:00 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.12 2010/11/13 11:17:27 franciscom Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
         20100410 - franciscom - BUGID 3370
@@ -15,7 +15,6 @@
 
 
 
-{literal}
 <script type="text/javascript">
 function reportPrint(){
 	parent["workframe"].focus();
@@ -28,7 +27,6 @@ function pre_submit()
  return true;
 }
 </script>
-{/literal}
 </head>
 
 <body>

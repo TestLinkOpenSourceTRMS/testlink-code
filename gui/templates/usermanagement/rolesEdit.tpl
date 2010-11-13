@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: rolesEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
+$Id: rolesEdit.tpl,v 1.23 2010/11/13 11:17:27 franciscom Exp $
 Purpose: smarty template - create/edit user role
 
 rev :
@@ -22,9 +22,7 @@ rev :
 {include file="inc_del_onclick.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 {lang_get var="labels"
           s='btn_save,warning,warning_modify_role,warning_empty_role_name,th_rights,
              error_role_no_rights,caption_possible_affected_users,enter_role_notes,
@@ -38,7 +36,7 @@ var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_modify_role = "{$labels.warning_modify_role|escape:'javascript'}";
 var warning_empty_role_name = "{$labels.warning_empty_role_name|escape:'javascript'}";
 var warning_error_role_no_rights = "{$labels.error_role_no_rights|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.rolename.value))
@@ -57,7 +55,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 

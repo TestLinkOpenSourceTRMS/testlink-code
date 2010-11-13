@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPageLeft.tpl,v 1.32 2010/10/30 07:49:48 franciscom Exp $     
+ $Id: mainPageLeft.tpl,v 1.33 2010/11/13 11:17:27 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :
@@ -34,22 +34,20 @@
     {assign var="display_left_block_1" value=true}
 
     <script  type="text/javascript">
-    {literal}
     function display_left_block_1()
     {
         var p1 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_product_mgmt}'{literal},
+                                title: '{$labels.title_product_mgmt}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'testproject_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.testProject}'{literal},
+                                renderTo: 'menu_left_block_{$menuLayout.testProject}',
                                 width:'100%'
                                 });
      }
-    {/literal}
     </script>
 {/if}
 
@@ -58,22 +56,20 @@
     {assign var="display_left_block_2" value=true}
 
     <script type="text/javascript">
-    {literal}
     function display_left_block_2()
     {
         var p1 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_user_mgmt}'{literal},
+                                title: '{$labels.title_user_mgmt}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'usermanagement_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.userAdministration}'{literal},
+                                renderTo: 'menu_left_block_{$menuLayout.userAdministration}',
                                 width:'100%'
                                 });
      }
-    {/literal}
     </script>
 
 {/if}
@@ -82,22 +78,20 @@
     {assign var="display_left_block_3" value=true}
 
     <script type="text/javascript">
-    {literal}
     function display_left_block_3()
     {
         var p3 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_requirements}'{literal},
+                                title: '{$labels.title_requirements}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'requirements_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.requirements}'{literal},
+                                renderTo: 'menu_left_block_{$menuLayout.requirements}',
                                 width:'100%'
                                 });
      }
-    {/literal}
     </script>
 {/if}
 
@@ -105,42 +99,38 @@
     {assign var="display_left_block_4" value=true}
 
     <script type="text/javascript">
-    {literal}
     function display_left_block_4()
     {
         var p4 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_test_spec}'{literal},
+                                title: '{$labels.title_test_spec}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'testspecification_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.testSpecification}'{literal},
+                                renderTo: 'menu_left_block_{$menuLayout.testSpecification}',
                                 width:'100%'
                                 });
      }
-    {/literal}
     </script>
 {/if}
 
     <script type="text/javascript">
-    {literal}
     function display_left_block_5()
     {
         var p5 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_documentation}'{literal},
+                                title: '{$labels.title_documentation}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'testlink_application',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_left_block_{$menuLayout.general}'{literal},
+                                renderTo: 'menu_left_block_{$menuLayout.general}',
                                 width:'100%'
                                 });
 	}
-    {/literal}
     </script>
 
 <div class="vertical_menu" style="float: left">

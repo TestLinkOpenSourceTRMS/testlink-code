@@ -1,6 +1,6 @@
 {*
 Testlink: smarty template -
-$Id: usersEdit.tpl,v 1.29 2010/11/06 11:42:47 amkhullar Exp $
+$Id: usersEdit.tpl,v 1.30 2010/11/13 11:17:27 franciscom Exp $
 
 20080419 - franciscom - BUGID 1496
          -  bug 1000  - Testplan User Role Assignments
@@ -22,9 +22,8 @@ $Id: usersEdit.tpl,v 1.29 2010/11/06 11:42:47 amkhullar Exp $
              th_role,th_locale,th_active,password_mgmt_is_external,
              btn_upd_user_data,btn_add,btn_cancel,button_reset_password'}
 
-{literal}
 <script type="text/javascript">
-{/literal}
+
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_login      = "{$labels.warning_empty_login|escape:'javascript'}";
@@ -36,13 +35,9 @@ var warning_empty_email_address = "{$labels.empty_email_address|escape:'javascri
 var warning_no_good_email_address = "{$labels.no_good_email_address|escape:'javascript'}"; 
 
 
-{literal}
 function validateForm(f,check_password)
 {
-  {/literal}
    var email_check = {$tlCfg->validation_cfg->user_email_valid_regex_js};
-
-  {literal}
   var email_warning;
   var show_email_warning=false;
 
@@ -101,7 +96,6 @@ function validateForm(f,check_password)
   return true;
 }
 </script>
-{/literal}
 {assign var="ext_location" value=$smarty.const.TL_EXTJS_RELATIVE_PATH}
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 </head>

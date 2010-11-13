@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.52 2010/11/01 15:22:53 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.53 2010/11/13 11:17:27 franciscom Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -39,11 +39,10 @@ rev :
 
 {* includes Ext.ux.CollapsiblePanel *}
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
-{literal}
 <script type="text/javascript">
-	treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-	           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
-	Ext.onReady(function() {
+	  treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+	              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+	  Ext.onReady(function() {
 		Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
 		// Use a collapsible panel for filter settings
@@ -78,11 +77,7 @@ function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build
 	                   windows_title,"menubar=no,width=650,height=500,toolbar=no,scrollbars=yes");
 	wref.focus();
 }
-</script>
-{/literal}
 
-
-<script type="text/javascript">
 	treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
 	treeCfg.root_id={$gui->ajaxTree->root_node->id};
 	treeCfg.root_href='{$gui->ajaxTree->root_node->href}';

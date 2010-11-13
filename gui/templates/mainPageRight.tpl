@@ -1,6 +1,6 @@
 {*
  Testlink Open Source Project - http://testlink.sourceforge.net/
- $Id: mainPageRight.tpl,v 1.25 2010/10/30 07:49:48 franciscom Exp $
+ $Id: mainPageRight.tpl,v 1.26 2010/11/13 11:17:27 franciscom Exp $
  Purpose: smarty template - main page / site map
 
  rev :
@@ -33,22 +33,20 @@
    {assign var="display_right_block_1" value=true}
 
     <script  type="text/javascript">
-    {literal}
     function display_right_block_1()
     {
         var rp1 = new Ext.Panel({
-                                title: {/literal}'{$labels.title_test_plan_mgmt}'{literal},
+                                title: '{$labels.title_test_plan_mgmt}',
                                 collapsible:false,
                                 collapsed: false,
                                 draggable: false,
                                 contentEl: 'test_plan_mgmt_topics',
                                 baseCls: 'x-tl-panel',
                                 bodyStyle: "background:#c8dce8;padding:3px;",
-                                renderTo: {/literal}'menu_right_block_{$menuLayout.testPlan}'{literal},
+                                renderTo: 'menu_right_block_{$menuLayout.testPlan}',
                                 width:'100%'
                                 });
      }
-    {/literal}
     </script>
 
 {/if}
@@ -57,22 +55,20 @@
    {assign var="display_right_block_2" value=true}
 
     <script  type="text/javascript">
-    {literal}
     function display_right_block_2()
     {
         var rp2 = new Ext.Panel({
-                                 title: {/literal}'{$labels.title_test_execution}'{literal},
+                                 title: '{$labels.title_test_execution}',
                                  collapsible:false,
                                  collapsed: false,
                                  draggable: false,
                                  contentEl: 'test_execution_topics',
                                  baseCls: 'x-tl-panel',
                                  bodyStyle: "background:#c8dce8;padding:3px;",
-                                 renderTo: {/literal}'menu_right_block_{$menuLayout.testExecution}'{literal},
+                                 renderTo: 'menu_right_block_{$menuLayout.testExecution}',
                                  width:'100%'
                                 });
      }
-    {/literal}
     </script>
 {/if}
 
@@ -80,22 +76,20 @@
    {assign var="display_right_block_3" value=true}
 
     <script  type="text/javascript">
-    {literal}
     function display_right_block_3()
     {
         var rp3 = new Ext.Panel({
-                            title: {/literal}'{$labels.title_test_case_suite}'{literal},
+                            title: '{$labels.title_test_case_suite}',
                             collapsible:false,
                             collapsed: false,
                             draggable: false,
                             contentEl: 'testplan_contents_topics',
                             baseCls: 'x-tl-panel',
                             bodyStyle: "background:#c8dce8;padding:3px;",
-                            renderTo: {/literal}'menu_right_block_{$menuLayout.testPlanContents}'{literal},
+                            renderTo: 'menu_right_block_{$menuLayout.testPlanContents}',
                             width:'100%'
                                 });
      }
-    {/literal}
     </script>
 
 {/if}

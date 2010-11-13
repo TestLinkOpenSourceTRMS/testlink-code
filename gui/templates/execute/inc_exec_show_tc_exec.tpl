@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.29 2010/11/13 09:39:45 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.30 2010/11/13 11:17:27 franciscom Exp $
 Purpose: 
 Author: franciscom
 
@@ -320,28 +320,28 @@ Rev:
   			</tr>
  			  {if $tc_old_exec.execution_notes neq ""}
   			<script>
-		{*  BUGID 3522
-		Initialize panel if notes exists. There might be multiple note panels
-		visible at the same time, so we need to collect those init functions in
-		an array and execute them from Ext.onReady(). See execSetResults.tpl *}
-        {literal}
+		    {* --------------------------------------------------------------------------------- *} 
+		    {*  BUGID 3522                                                                       *} 
+		    {*  Initialize panel if notes exists. There might be multiple note panels            *}
+		    {*  visible at the same time, so we need to collect those init functions in          *}
+		    {*  an array and execute them from Ext.onReady(). See execSetResults.tpl             *}
+		    {* --------------------------------------------------------------------------------- *}
         var panel_init = function(){
             var p = new Ext.Panel({
-            title: {/literal}'{$labels.exec_notes}'{literal},
+            title: '{$labels.exec_notes}',
             collapsible:true,
             collapsed: true,
             baseCls: 'x-tl-panel',
-            renderTo: {/literal}'exec_notes_container_{$tc_old_exec.execution_id}'{literal},
+            renderTo: 'exec_notes_container_{$tc_old_exec.execution_id}',
             width:'100%',
             html:''
             });
 
-            p.on({'expand' : function(){load_notes(this,{/literal}{$tc_old_exec.execution_id}{literal});}});
+            p.on({'expand' : function(){load_notes(this,{$tc_old_exec.execution_id});}});
         };
         panel_init_functions.push(panel_init);
-        {/literal}
-
   			</script>
+
 			<tr style="background-color: {$bg_color}">
   			 <td colspan="{$my_colspan}" id="exec_notes_container_{$tc_old_exec.execution_id}"
   			     style="padding:5px 5px 5px 5px;">

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.21 2010/11/06 11:42:47 amkhullar Exp $
+$Id: userInfo.tpl,v 1.22 2010/11/13 11:17:27 franciscom Exp $
 
 rev: 20080908 - franciscom - email validity check
 *}
@@ -23,9 +23,8 @@ rev: 20080908 - franciscom - email validity check
 {include file="inc_del_onclick.tpl"}
 
 
-{literal}
 <script type="text/javascript">
-{/literal}
+
 //BUGID 3943: Escape all messages (string)
 var warning_empty_pwd = "{$labels.warning_empty_pwd|escape:'javascript'}";
 var warning_different_pwd = "{$labels.warning_different_pwd|escape:'javascript'}";
@@ -42,7 +41,6 @@ var warning_empty_old_password = "{$labels.empty_old_passwd|escape:'javascript'}
 var warning_empty_email_address = "{$labels.empty_email_address|escape:'javascript'}";
 var warning_no_good_email_address = "{$labels.no_good_email_address|escape:'javascript'}"; 
 
-{literal}
 function validatePersonalData(f)
 {
   var email_warning;
@@ -107,7 +105,6 @@ function checkPasswords(oldp,newp,newp_check)
 
 
 </script>
-{/literal}
 </head>
 
 <body>
@@ -242,11 +239,9 @@ function checkPasswords(oldp,newp,newp_check)
 
 </div>
 {if $update_title_bar == 1}
-{literal}
 <script type="text/javascript">
 	parent.titlebar.location.reload();
 </script>
-{/literal}
 {/if}
 </body>
 </html>

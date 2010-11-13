@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesView.tpl,v 1.11 2010/10/17 09:46:37 franciscom Exp $
+$Id: planMilestonesView.tpl,v 1.12 2010/11/13 10:00:38 franciscom Exp $
 
 Rev:
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
   20100427 - franciscom - BUGID 3402 - missing refactoring of test project options
   20090910 - franciscom - added start_date
 *}
@@ -20,8 +21,8 @@ Rev:
 {assign var="deleteAction" value="$managerURL?doAction=doDelete&id="}
 {assign var="createAction" value="$managerURL?doAction=create&tplan_id="}
 
-{lang_get s='warning_delete_milestone' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_delete_milestone' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" enableTableSorting="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -64,7 +65,7 @@ var del_action=fRoot+'{$deleteAction}';
 				{$milestone.target_date|date_format:$gsmarty_date_format}
 			</td>
 			<td>
-			  {if $milestone.start_date != '' && $milestone.start_date != '0000-00-00' }
+			  {if $milestone.start_date != '' && $milestone.start_date != '0000-00-00'}
 				  {$milestone.start_date|date_format:$gsmarty_date_format}
 				{/if}
 			</td>

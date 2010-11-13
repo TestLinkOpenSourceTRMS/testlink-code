@@ -1,10 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_unassign_all.tpl,v 1.3 2010/07/26 19:01:13 asimon83 Exp $
+$Id: tc_exec_unassign_all.tpl,v 1.4 2010/11/13 09:58:50 franciscom Exp $
 Purpose: show a confirmation before unassigning all testers from the test cases in a build.
 
 rev :
-
+    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 *}
 
 {lang_get var="labels" s='btn_remove_all_tester_assignments'}
@@ -16,7 +16,6 @@ rev :
 {include file="inc_del_onclick.tpl" openHead="yes"}
 
 <script type="text/javascript">
-{literal}
 
 /**
  * submit the form to confirm deletion of all tester assignments
@@ -40,7 +39,6 @@ function warn_remove_testers(msgbox_title, msgbox_content) {
 	});
 }					
 
-{/literal}
 </script>
 
 </head>

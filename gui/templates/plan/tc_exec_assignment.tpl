@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.35 2010/11/06 11:42:47 amkhullar Exp $
+$Id: tc_exec_assignment.tpl,v 1.36 2010/11/13 09:58:50 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
+     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 	   20101030 - amitkhullar - Adjusted the Checkbox column width
      20100927 - franciscom - Added ext-js extension to transform tables in ext-js grid
                              BUGID 3668: Test Case EXECUTION Assignment Page not displayed properly
@@ -32,10 +33,9 @@ rev :
 {include file="inc_del_onclick.tpl"}
 
 <script type="text/javascript">
-// BUGID 3943: Escape all messages (string)
+  // BUGID 3943: Escape all messages (string)
 	var check_msg="{$labels.exec_assign_no_testcase|escape:'javascript'}";
 	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
 
 loop2do=0;   // needed for the convert grid logic
 function check_action_precondition(container_id,action)
@@ -63,7 +63,6 @@ Ext.onReady(function()
   }
 });
 
-{/literal}
 </script>
 
 </head>

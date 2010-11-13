@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.15 2010/11/06 11:42:47 amkhullar Exp $
+$Id: planUpdateTC.tpl,v 1.16 2010/11/13 09:58:50 franciscom Exp $
 
 Author: franciscom
 
@@ -8,7 +8,8 @@ Purpose: generate a list of Test Cases linked to Test Plan
          that have a newer available version.
          
 rev:
-	20100724 - asimon - added closing ">" for "<td class="clickable_icon">"
+    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+	  20100724 - asimon - added closing ">" for "<td class="clickable_icon">"
     20091212 - franciscom - BUGID 2652 - contribution refactored
     20080528 - franciscom - BUGID 1504 
 *}
@@ -25,13 +26,11 @@ rev:
 {include file="inc_del_onclick.tpl"}
 {include file="inc_jsCheckboxes.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_no_testcase_checked = "{$labels.no_testcase_checked|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if( checkbox_count_checked(f.id) == 0)
@@ -43,7 +42,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 
 </head>
 

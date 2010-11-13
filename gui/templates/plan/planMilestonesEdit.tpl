@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planMilestonesEdit.tpl,v 1.13 2010/11/06 11:42:47 amkhullar Exp $
+$Id: planMilestonesEdit.tpl,v 1.14 2010/11/13 09:58:50 franciscom Exp $
 
 Rev:
+    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
     20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
     20101022 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
 *}
@@ -29,9 +30,8 @@ Rev:
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
+
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_invalid_percentage_value = "{$labels.warning_invalid_percentage_value|escape:'javascript'}";
@@ -46,7 +46,6 @@ warning_empty.high_priority_tcases = "{$labels.warning_empty_high_priority_tcase
 
 
 var warning_nonumeric_low_priority_tcases = 'no numeric';
-{literal}
 
 /*
   function: validateForm
@@ -107,7 +106,6 @@ function validateForm(f)
   }
 
 }
-{/literal}
 </script>
 
 </head>

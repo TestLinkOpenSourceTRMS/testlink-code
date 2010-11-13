@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.36 2010/11/13 08:53:15 franciscom Exp $
+$Id: eventviewer.tpl,v 1.37 2010/11/13 09:11:11 franciscom Exp $
 
 Event Viewer
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -38,7 +38,6 @@ Event Viewer
 <script type="text/javascript">
 var strPleaseWait = "{$labels.message_please_wait|escape:javascript}";
 var strCloseButton = "{$labels.btn_close|escape:javascript}";
-{literal}
 var progressBar = null;
 
 function showEventDetails(id)
@@ -108,7 +107,6 @@ fieldset
 
 }
 </style>
-{/literal}
 
 </head>
 <body {$body_onload}>

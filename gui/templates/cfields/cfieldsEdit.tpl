@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.25 2010/11/06 11:42:47 amkhullar Exp $
+$Id: cfieldsEdit.tpl,v 1.26 2010/11/13 09:09:36 franciscom Exp $
 
 
 Important Development note:
@@ -23,6 +23,7 @@ This is done to simplify logic.
 
 
 rev :
+     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
      20100829 - franciscom - BUGID 3707 - Things that works with Firefox, 
                                           BUT NOT with Chrome and Internet Explorer
                                           added body on load event, to initialize when
@@ -37,14 +38,14 @@ rev :
      20080810 - franciscom - BUGID 1650 (REQ)
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {assign var="managerURL" value="lib/cfields/cfieldsEdit.php"}
 {assign var="viewAction" value="lib/cfields/cfieldsView.php"}
 
-{lang_get s='warning_delete_cf' var="warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_delete_cf' var="warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 {lang_get var="labels"
           s="btn_ok,title_cfields_mgmt,warning_is_in_use,warning,name,label,type,possible_values,
@@ -61,9 +62,7 @@ rev :
 var del_action=fRoot+'{$managerURL}'+'?do_action=do_delete&cfield_id=';
 </script>
 
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_cfield_name = "{$labels.warning_empty_cfield_name|escape:'javascript'}";
@@ -134,7 +133,6 @@ var js_possible_values_cfg = new Array();
 
 
 
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.cf_name.value))
@@ -311,10 +309,8 @@ function initShowOnExec(id_master,show_on_cfg)
   }
 }
 </script>
-{/literal}
 </head>
 
-{* <body {$body_onload}> *}
 <body onload="configure_cf_attr('combo_cf_node_type_id',js_enable_on_cfg,js_show_on_cfg);">
 
 <h1 class="title">
@@ -368,7 +364,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			  {if $gui->cfield_is_used} {* Type CAN NOT BE CHANGED *}
 			    {assign var="idx" value=$gui->cfield.node_type_id}
 			    {$gui->cfieldCfg->cf_allowed_nodes.$idx}
-			    {hidden_cf_node_type_id}
+			    {$hidden_cf_node_type_id}
 			    <input type="hidden" id="combo_cf_node_type_id"
 			           value={$gui->cfield.node_type_id} name="cf_node_type_id" />
 			  {else}
@@ -403,7 +399,7 @@ function initShowOnExec(id_master,show_on_cfg)
 			</td>
 		</tr>
 
-    {if $gui->show_possible_values }
+    {if $gui->show_possible_values}
       {assign var="display_style" value=""}
     {else}
       {assign var="display_style" value="none"}

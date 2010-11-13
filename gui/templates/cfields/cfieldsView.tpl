@@ -1,15 +1,16 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsView.tpl,v 1.9 2010/10/17 09:46:37 franciscom Exp $ 
+$Id: cfieldsView.tpl,v 1.10 2010/11/13 09:09:36 franciscom Exp $ 
 
 rev :
+     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility 
      20101017 - franciscom - image access refactored (tlImages)
      20100315 - franciscom - added management on goback_url for export action
      20090503 - franciscom - BUGID 2425 - commented show_on_design and show_on_testplan_design 
                                           till new implementation
      20080810 - franciscom - BUGID 1650 (REQ)
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {assign var="cfViewAction" value="lib/cfields/cfieldsView.php"}
@@ -31,7 +32,7 @@ rev :
 <body>
 <h1 class="title">{$labels.title_cfields_mgmt}</h1>
 <div class="workBack">
-{if $gui->cf_map != '' }
+{if $gui->cf_map != ''}
   <table class="simple" style="width: 90%">
   	<tr>
   		<th>{$labels.name}</th>

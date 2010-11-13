@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: cfieldsImport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $
+$Id: cfieldsImport.tpl,v 1.4 2010/11/13 09:09:36 franciscom Exp $
 Purpose: smarty template - manage import of custom fields
 
 rev: 
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 *}
 
 {lang_get var="labels"
@@ -11,18 +12,15 @@ rev:
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
              btn_goback,not_imported,imported,btn_cancel,title_imp_tc_data'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.targetFilename.value)) 
@@ -34,7 +32,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 

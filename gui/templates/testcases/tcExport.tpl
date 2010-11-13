@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcExport.tpl,v 1.14 2010/11/06 11:42:47 amkhullar Exp $ 
+$Id: tcExport.tpl,v 1.15 2010/11/13 11:07:58 franciscom Exp $ 
 
 test case export initial page 
 
@@ -23,7 +23,7 @@ Revisions:
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -34,7 +34,6 @@ function validateForm(f)
   }
   return true;
 }
-{/literal}
 </script>
 </head>
 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.11 2010/11/06 11:42:47 amkhullar Exp $
+$Id: containerNew.tpl,v 1.12 2010/11/13 11:07:58 franciscom Exp $
 Purpose: smarty template - create containers
 
 20101012 - franciscom - BUGID 3887: CF Types validation
@@ -33,13 +33,11 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_container_name = "{$labels.warning_empty_testsuite_name|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.container_name.value)) 
@@ -77,8 +75,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
-
 </head>
 
 <body onLoad="{$opt_cfg->js_ot_name}.init(document.forms[0]);focusInputField('name')">

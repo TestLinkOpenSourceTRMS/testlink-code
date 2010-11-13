@@ -25,7 +25,6 @@ var warning_selected_versions = "{$labels.warning_selected_versions|escape:'java
 var warning_same_selected_versions = "{$labels.warning_same_selected_versions|escape:'javascript'}";
 var warning_context = "{$labels.warning_context|escape:'javascript'}";
 
-{literal}
 
 function triggerTextfield(field)
 {
@@ -83,11 +82,9 @@ function validateForm() {
 }
 
 </script>
-{/literal}
-
 </head>
-<body>
 
+<body>
 {if $gui->compare_selected_versions}
 
 	<h1 class="title">{$labels.title_compare_versions_tc}</h1> 

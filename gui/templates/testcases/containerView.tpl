@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.39 2010/10/30 08:53:36 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.40 2010/11/13 11:07:58 franciscom Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
@@ -51,27 +51,6 @@ rev :
 <link rel="stylesheet" type="text/css" href="{$basehref}{$ext_location}/css/ext-all.css" />
 
 {include file="inc_del_onclick.tpl" openHead="yes"}
-
-{* removed for BUGID 3406
-<script type="text/javascript">
-{literal}
-
-function unassign_tcs(btn) {
-	if (btn == "yes") {
-		document.getElementById("tc_unassign_from_tp").submit();
-	}
-}
-
-function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
-	Ext.Msg.confirm(msgbox_title, msgbox_content, function(btn) {
-		unassign_tcs(btn);
-	});
-}					
-
-{/literal}
-</script>
-*}
-
 </head>
 
 <body>

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerDeleteTC.tpl,v 1.4 2010/11/06 11:42:47 amkhullar Exp $
+$Id: containerDeleteTC.tpl,v 1.5 2010/11/13 11:07:57 franciscom Exp $
 
 Purpose:
 
@@ -19,12 +19,11 @@ rev :
 {include file="inc_jsCheckboxes.tpl"}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
+
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
+
 /*
   function: check_action_precondition
 
@@ -47,7 +46,6 @@ function check_action_precondition(container_id,action,msg)
 	}
 }
 </script>
-{/literal}
 </head>
 
 <body>

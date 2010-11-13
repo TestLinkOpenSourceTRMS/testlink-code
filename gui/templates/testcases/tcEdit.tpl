@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.33 2010/11/06 11:42:47 amkhullar Exp $ 
+$Id: tcEdit.tpl,v 1.34 2010/11/13 11:07:58 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
@@ -43,7 +43,6 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 
-{literal}        
 /**
  * validate certain form controls before submitting
  *
@@ -83,7 +82,6 @@ function validateForm(the_form)
 	show_modified_warning=false;
 	return Ext.ux.requireSessionAndSubmit(the_form);
 }
-{/literal}
 </script>
 
 {if $tlCfg->gui->checkNotSaved}

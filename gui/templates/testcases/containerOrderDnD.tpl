@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerOrderDnD.tpl,v 1.2 2008/05/06 06:26:12 franciscom Exp $ 
+$Id: containerOrderDnD.tpl,v 1.3 2010/11/13 11:07:58 franciscom Exp $ 
 Purpose: smarty template - reorder container contents using JS Drag and drop
 
 rev :
@@ -8,7 +8,6 @@ rev :
 {include file="inc_head.tpl" openHead="Yes"}
 {include file="drag_drop.inc.tpl"}
 
-{literal}
 <script type="text/javascript">
 /*
   function: 
@@ -40,10 +39,9 @@ function saveMyTree_byForm()
 	document.containerOrder.submit();		
 }
 </script>
-{/literal}
 </head>
 
-{config_load file="input_dimensions.conf" section="containerOrder"} {* Constant definitions *}
+{config_load file="input_dimensions.conf" section="containerOrder"} 
 {assign var="tree_id" value="tproject_tree"}
 {lang_get s="drag_and_drop_to_reorder" var="hint_drag_and_drop"}
 

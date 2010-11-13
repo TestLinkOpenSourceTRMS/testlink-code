@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.25 2010/08/09 19:52:52 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.26 2010/11/13 11:07:58 franciscom Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -25,10 +25,9 @@ rev:
 	{* BUGID 3301 *}
 	{* Ext Collapsible Panel *}
 	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
-	{literal}
 	<script type="text/javascript">
-		treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-		           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+		treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+		            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 		Ext.onReady(function() {
 			Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 	
@@ -50,17 +49,12 @@ rev:
 			});
 		});
 	</script>
-	{/literal}	
-	
-    {if $gui->ajaxTree->loader == ''}
-        {literal}
-        <script type="text/javascript">
-        treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-                   loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
-        </script>
-        {/literal}
 
+    {if $gui->ajaxTree->loader == ''}
         <script type="text/javascript">
+        treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+                    loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+
         treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
         treeCfg.root_id={$gui->ajaxTree->root_node->id};
         treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
@@ -71,15 +65,11 @@ rev:
         <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     
     {else}
-        {literal}
         <script type="text/javascript">
-        treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-                   root_testlink_node_type:'',useBeforeMoveNode:false,
-                   loader:"", enableDD:false, dragDropBackEndUrl:''};
-        </script>
-        {/literal}
-        
-        <script type="text/javascript">
+          treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+                      root_testlink_node_type:'',useBeforeMoveNode:false,
+                      loader:"", enableDD:false, dragDropBackEndUrl:'' };
+
 	        treeCfg.loader='{$gui->ajaxTree->loader}';
 	        treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
 	        treeCfg.root_id={$gui->ajaxTree->root_node->id};

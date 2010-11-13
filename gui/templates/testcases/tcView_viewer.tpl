@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.85 2010/11/02 09:33:02 asimon83 Exp $
+$Id: tcView_viewer.tpl,v 1.86 2010/11/13 11:07:58 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -222,7 +222,6 @@ rev:
  	    <br /><div class="messages" align="center">{$warning_edit_msg}</div>
  	{/if}
 
-{literal}
 <script type="text/javascript">
 /**
  * used instead of window.open().
@@ -248,7 +247,6 @@ function launchInsertStep(step_id)
 
 
 </script>
-{/literal}
 
 <form id="stepsControls" name="stepsControls" method="post" action="lib/testcases/tcEdit.php">
   <input type="hidden" name="goback_url" value="{$goBackAction}" />

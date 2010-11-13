@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcStepEdit.tpl,v 1.35 2010/11/06 11:42:47 amkhullar Exp $ 
+$Id: tcStepEdit.tpl,v 1.36 2010/11/13 11:07:58 franciscom Exp $ 
 Purpose: create/edit test case step
 
 rev:
@@ -53,7 +53,6 @@ var warning_step_number = "{$labels.warning_step_number|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_step_number_already_exists = "{$labels.warning_step_number_already_exists|escape:'javascript'}";
 
-{literal}
 function validateForm(the_form,step_set,step_number_on_edit)
 {
 	var value = '';
@@ -90,8 +89,8 @@ function validateForm(the_form,step_set,step_number_on_edit)
 	show_modified_warning=false;
 	return Ext.ux.requireSessionAndSubmit(the_form);
 }
-{/literal}
 </script>
+
 {if $tlCfg->gui->checkNotSaved}
 <script type="text/javascript">
 var unload_msg = "{$labels.warning_unsaved}";

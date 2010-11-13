@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerMoveTC.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $
+$Id: containerMoveTC.tpl,v 1.9 2010/11/13 11:07:57 franciscom Exp $
 Purpose:
         Allow user to choose testcases inside the choosen testsuite,
         to copy or move.
@@ -24,12 +24,10 @@ rev :
 {include file="inc_jsCheckboxes.tpl"}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
+
 /*
   function: check_action_precondition
 
@@ -52,7 +50,6 @@ function check_action_precondition(container_id,action,msg)
 	}
 }
 </script>
-{/literal}
 </head>
 
 <body>

@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.12 2010/11/06 11:42:47 amkhullar Exp $
+$Id: containerEdit.tpl,v 1.13 2010/11/13 11:02:52 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101012 - franciscom - BUGID 3887: CF Types validation
 20100315 - amitkhullar - Added Cancel button
 20091122 - franciscom - refactoring to use alert_message() and $labels
@@ -28,13 +29,11 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 {$opt_cfg->js_ot_name}.saveNewRightOptions("{$opt_cfg->js_ot_name}_newRight");
 </script>
 
-{literal}
 <script type="text/javascript">
-{/literal}
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_container_name = "{$labels.warning_empty_testsuite_name|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.container_name.value)) 
@@ -72,7 +71,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 
 </head>
 

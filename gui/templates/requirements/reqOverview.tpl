@@ -1,6 +1,6 @@
 {* 
  * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: reqOverview.tpl,v 1.9 2010/11/13 10:18:41 franciscom Exp $
+ * $Id: reqOverview.tpl,v 1.10 2010/11/13 10:58:41 franciscom Exp $
  *
  * Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -32,45 +32,9 @@
 	{/if}
 	{$matrix->renderHeadSection($tableID)}
 {/foreach}
-
-
-{*****************************************************************************
- * this code could be used later, when I have figured out how to use this tooltip in combination with table.
- * for the moment it doesn't work, so it's commented out.
-
-<script type="text/javascript">
-
-function tTip(reqID)
-{
-	var fUrl = fRoot+'lib/ajax/gettestcasesummary.php?tcase_id=';
-	new Ext.ToolTip({
-		target: 'tooltip-'+reqID,
-       width: 200,
-        autoLoad: { url: fUrl+39+'&tcversion_id=1' }
-	});
-}
-
-function showTT(e)
-{
-	alert(e);
-}
-
-Ext.onReady(function(){ 
-	{/literal}
-	{foreach from=$gui->reqIDs key=idx item=reqID}
-		tTip({$reqID});
-	{/foreach}  
-	{literal}
-});
-
-</script>
-{/literal}
-*****************************************************************************}
-
 </head>
 
 <body>
-
 <h1 class="title">{$gui->pageTitle|escape}</h1>
 
 <div class="workBack" style="overflow-y: auto;">

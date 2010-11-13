@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.21 2010/11/13 10:43:56 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.22 2010/11/13 10:58:41 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -364,16 +364,12 @@ var pF_delete_req_relation = delete_req_relation;
   
       	{* ---------------------------------------------------------------- *}
       	{* Force the div of every old version to show closed as first state *}
-      	{literal}
       	<script type="text/javascript">
-      	{/literal}
  	  	      viewElement(document.getElementById('vers_{$vid}'),false);
     	  		{foreach from=$gui->other_versions[idx] item=my_req}
   	  	      viewElement(document.getElementById('v_{$vid}_{$my_req.version}'),false);
 			      {/foreach}
-      	{literal}
       	</script>
-      	{/literal}
       	{* ---------------------------------------------------------------- *}
     {/if}
     <br>

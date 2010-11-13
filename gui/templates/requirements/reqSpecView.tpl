@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqSpecView.tpl,v 1.45 2010/10/28 12:44:03 asimon83 Exp $ *}
+{* $Id: reqSpecView.tpl,v 1.46 2010/11/13 09:21:54 franciscom Exp $ *}
 {*
    Purpose: view a requirement specification
    Author: Martin Havlat
@@ -19,7 +19,7 @@
 {lang_get var="labels" s="type_not_configured,type,scope,req_total,by,title,
 							            title_last_mod,title_created,no_records_found"}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {assign var="bn" value=$smarty.template|basename}
@@ -71,8 +71,7 @@
 	/* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 	var del_action=fRoot+'{$req_module}reqSpecEdit.php?doAction=doDelete&req_spec_id=';
 
-    {* BUGID 3954: added contribution by Vincent *}
-	{literal}
+  {* BUGID 3954: added contribution by Vincent *}
 	function freeze_req_spec(btn, text, o_id) {
 		var my_action=fRoot+'lib/requirements/reqSpecEdit.php?doAction=doFreeze&req_spec_id=';
 		if( btn == 'yes' ) {
@@ -80,8 +79,6 @@
 			window.location=my_action;
 		}
 	}
-	{/literal}
-
 	var pF_freeze_req_spec = freeze_req_spec;
 </script>
 </head>

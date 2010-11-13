@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_btn_reqSpecView.tpl,v 1.22 2010/10/28 13:32:28 mx-julian Exp $
+$Id: inc_btn_reqSpecView.tpl,v 1.23 2010/11/13 09:21:54 franciscom Exp $
 
 rev:
      20101028 - asimon - BUGID 3954: added contribution by Vincent to freeze requirements
@@ -18,7 +18,7 @@ rev:
              btn_show_direct_link,btn_copy_requirements,btn_copy_req_spec,
              req_spec_operations, req_operations, btn_freeze_req_spec'}
              
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <!--- inc_btn_reqSpecView.tpl -->

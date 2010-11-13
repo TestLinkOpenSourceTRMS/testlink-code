@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsImport.tpl,v 1.4 2010/11/06 11:42:47 amkhullar Exp $
+$Id: platformsImport.tpl,v 1.5 2010/11/13 09:21:54 franciscom Exp $
 Purpose: smarty template - manage import of platforms
 
 rev: 
@@ -11,18 +11,16 @@ rev:
              max_size_cvs_file1,max_size_cvs_file2,btn_upload_file,
              btn_goback,not_imported,warning_empty_filename,imported,btn_cancel'}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
 	if (isWhitespace(f.targetFilename.value)) 
@@ -34,7 +32,6 @@ function validateForm(f)
 	return true;
 }
 </script>
-{/literal}
 </head>
 <body>
 <h1 class="title">{$gui->page_title|escape}</h1>

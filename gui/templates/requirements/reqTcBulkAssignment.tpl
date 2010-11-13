@@ -11,7 +11,7 @@ rev:
     20100403 - franciscom - added config_load
     20081130 - franciscom - BUGID 1852 - Bulk Assignment Feature         
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
@@ -30,7 +30,6 @@ rev:
 //BUGID 3943: Escape all messages (string)
 	var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
 	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
 
 function check_action_precondition(form_id,action)
 {
@@ -42,7 +41,6 @@ function check_action_precondition(form_id,action)
 	return true;
 }
 </script>
-{/literal}
 </head>
 <body>
 <h1 class="title">

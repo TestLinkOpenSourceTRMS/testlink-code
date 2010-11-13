@@ -1,17 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: keywordsEdit.tpl,v 1.8 2009/04/07 18:55:29 schlundus Exp $
+$Id: keywordsEdit.tpl,v 1.9 2010/11/13 09:21:54 franciscom Exp $
 Purpose: smarty template - View all keywords 
 *}
 {assign var="url_args" value="lib/keywords/keywordsEdit.php"}
 {assign var="keyword_edit_url" value="$basehref$url_args"}
 
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes"}
-{literal}
 <script type="text/javascript">
-{/literal}
 var warning_empty_keyword = "{lang_get s='warning_empty_keyword'}";
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.keyword.value))
@@ -23,11 +20,10 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 <body>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$main_descr|escape}</h1>

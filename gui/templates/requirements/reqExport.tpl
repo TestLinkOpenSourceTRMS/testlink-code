@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: reqExport.tpl,v 1.8 2010/11/06 11:42:47 amkhullar Exp $ *}
+{* $Id: reqExport.tpl,v 1.9 2010/11/13 09:21:54 franciscom Exp $ *}
 {* Purpose: smarty template - req export initial page *}
 {* revisions:
 *}
@@ -7,7 +7,7 @@
           s="warning_empty_filename,title_req_export,warning,btn_export,btn_cancel,
              view_file_format_doc,req_spec,export_filename,file_type"}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {assign var="req_module" value='lib/requirements/'}
@@ -20,13 +20,11 @@
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
 var alert_box_title = "{$labels.warning}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -38,7 +36,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 <body>

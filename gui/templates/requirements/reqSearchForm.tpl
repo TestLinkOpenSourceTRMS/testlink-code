@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSearchForm.tpl,v 1.7 2010/10/26 13:11:34 mx-julian Exp $
+$Id: reqSearchForm.tpl,v 1.8 2010/11/13 09:21:54 franciscom Exp $
 Purpose: show form for requirement search.
 
 rev:
@@ -10,7 +10,7 @@ rev:
   20100323 - asimon - added searching for req relation types (BUGID 1748)
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.19 2010/11/12 07:45:46 mx-julian Exp $
+$Id: reqCreateTestCases.tpl,v 1.20 2010/11/13 09:21:54 franciscom Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -11,7 +11,7 @@ $Id: reqCreateTestCases.tpl,v 1.19 2010/11/12 07:45:46 mx-julian Exp $
    20091209 - asimon - contrib for testcase creation, BUGID 2996
 *}
 {assign var="req_module" value='lib/requirements/'}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get s='select_at_least_one_req' var="check_msg"}
@@ -25,12 +25,10 @@ $Id: reqCreateTestCases.tpl,v 1.19 2010/11/12 07:45:46 mx-julian Exp $
 {include file="inc_jsCheckboxes.tpl"}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
+
 /*
   function: check_action_precondition
 
@@ -62,7 +60,6 @@ function check_action_precondition(form_id,action,msg)
  }  
 }
 </script>
-{/literal}
 </head>
 
 <body>

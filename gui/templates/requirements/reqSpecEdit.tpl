@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.24 2010/11/06 11:42:47 amkhullar Exp $
+$Id: reqSpecEdit.tpl,v 1.25 2010/11/13 09:21:54 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev:
@@ -14,7 +14,7 @@ rev:
 {lang_get var="labels"
           s='warning,warning_empty_req_spec_title,title,scope,req_total,type,
              doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric'}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
@@ -26,7 +26,6 @@ rev:
 	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape:'javascript'}";
 	var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
 	var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
-	{literal}
 	function validateForm(f)
 	{
    
@@ -43,23 +42,16 @@ rev:
 			selectField(f,'title');
 			return false;
 		}
-
-		{/literal}
 		{if $gui->external_req_management}
-		{literal}
 		if (isNaN(parseInt(f.countReq.value)))
 		{
 			alert_message(alert_box_title,warning_countreq_numeric);
 			selectField(f,'countReq');
 			return false;
 		}
-		{/literal}
 		{/if}
-		{literal}
-		
 		return true;
 	}
-	{/literal}
 	</script>
 </head>
 

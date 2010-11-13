@@ -15,7 +15,7 @@ Purpose: smarty template - assign REQ to one test case
 2. added control via javascrit on quantity of checked checkboxes
 
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels"
@@ -33,7 +33,6 @@ Purpose: smarty template - assign REQ to one test case
 //BUGID 3943: Escape all messages (string)
 	var please_select_a_req="{$labels.please_select_a_req|escape:'javascript'}";
 	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
 
 function check_action_precondition(form_id,action)
 {
@@ -45,7 +44,6 @@ function check_action_precondition(form_id,action)
 	return true;
 }
 </script>
-{/literal}
 </head>
 
 <body>

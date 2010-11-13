@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqReorder.tpl,v 1.6 2008/09/25 10:33:11 franciscom Exp $
+$Id: reqReorder.tpl,v 1.7 2010/11/13 09:21:54 franciscom Exp $
 
 rev: 20080924 - franciscom
      BUGID 1728
@@ -9,7 +9,7 @@ rev: 20080924 - franciscom
 {lang_get var="labels"
           s="req_spec,title_change_req_order,btn_save"}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {lang_get s="drag_and_drop_to_reorder" var="hint_drag_and_drop"}
 

@@ -1,13 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecSearchForm.tpl,v 1.2 2010/07/07 08:46:24 mx-julian Exp $
+$Id: reqSpecSearchForm.tpl,v 1.3 2010/11/13 09:21:54 franciscom Exp $
 Purpose: show form for search through requirement specifications.
 
 rev :
   20100707 - Julian - BUGID 3584: replaced cf names by cf labels
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {lang_get var="labels" 

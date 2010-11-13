@@ -1,11 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecReorder.tpl,v 1.7 2008/05/06 06:26:10 franciscom Exp $
+$Id: reqSpecReorder.tpl,v 1.8 2010/11/13 09:21:54 franciscom Exp $
 
 rev: 20080419 - franciscom - interface refactoring
 *}
 
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {lang_get s="drag_and_drop_to_reorder" var="hint_drag_and_drop"}
 

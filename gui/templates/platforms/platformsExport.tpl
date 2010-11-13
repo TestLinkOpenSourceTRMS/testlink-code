@@ -1,11 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: platformsExport.tpl,v 1.3 2010/11/06 11:42:47 amkhullar Exp $ 
+$Id: platformsExport.tpl,v 1.4 2010/11/13 09:21:54 franciscom Exp $ 
 Purpose: smarty template - platforms export
 rev:
 
 *}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes"}
 {include file="inc_del_onclick.tpl"}
@@ -14,13 +14,10 @@ rev:
           s='btn_export,btn_cancel,warning,export_filename,file_type,
              view_file_format_doc,warning_empty_filename'}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-{literal}
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -32,7 +29,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 

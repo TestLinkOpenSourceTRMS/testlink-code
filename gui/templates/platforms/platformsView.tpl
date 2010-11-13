@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.13 2010/11/06 11:42:47 amkhullar Exp $
+$Id: platformsView.tpl,v 1.14 2010/11/13 09:21:54 franciscom Exp $
 Purpose: smarty template - View all platforms
 
 20100119 - Eloff      - added ability to show/hide platform id for API
@@ -35,7 +35,7 @@ Purpose: smarty template - View all platforms
  
 </head>
 <body {$body_onload}>
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 <h1 class="title">{$labels.menu_manage_platforms}</h1>

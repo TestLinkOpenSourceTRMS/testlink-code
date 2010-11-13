@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.33 2010/11/06 11:42:47 amkhullar Exp $
+$Id: reqEdit.tpl,v 1.34 2010/11/13 09:21:54 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20101011 - franciscom - BUGID 3886: CF Types validation
@@ -21,7 +21,7 @@ internal revision
              title,warning_expected_coverage,type,warning_expected_coverage_range,
              warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title,
              insert_last_req_doc_id'}
-{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":"" }
+{assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
@@ -52,7 +52,6 @@ internal revision
     js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
   {/foreach}
 
-  {literal}
 	function validateForm(f,cfg,check_expected_coverage)
 	{
 	
@@ -121,23 +120,18 @@ internal revision
 	  
 		return true;
 	}
-	{/literal}
-	
 	
 	/**
    * 
    *
    */
-  {literal} 
 	window.onload = function()
   {
 	   focusInputField('reqDocId');
-     {/literal}
      {* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
      {if $gui->req_cfg->expected_coverage_management}
       configure_attr('reqType',js_attr_cfg);
      {/if}
-     {literal}
   }
  
   
@@ -192,7 +186,6 @@ function insert_last_doc_id()
 	var field = document.getElementById('reqDocId');
 	field.value = last_id;
 }
-{/literal}
 </script>
 </head>
 

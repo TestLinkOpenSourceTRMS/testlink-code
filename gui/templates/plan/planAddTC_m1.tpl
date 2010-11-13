@@ -1,9 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.52 2010/10/28 08:51:25 asimon83 Exp $
+$Id: planAddTC_m1.tpl,v 1.53 2010/11/13 09:54:57 franciscom Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
+                            On JS expressions SPACE is NEED BEFORE Closing curly Bracket and 
+                            AFTER opening curly Bracket
     20101028 - asimon - avoided a warning on event log
     20100721 - asimon - BUGID 3406: added build selector to assign users to chosen build 
                                     on addition of testcases to testplan
@@ -40,7 +43,6 @@ rev:
 
 {* BUGID 0002937 *}
 {include file="inc_ext_js.tpl"}
-{literal}
 <script type="text/javascript">
 <!--
 function tTip(tcID,vID)
@@ -50,7 +52,7 @@ function tTip(tcID,vID)
         target: 'tooltip-'+tcID,
         width: 200,
         autoLoad: 
-        {url: fUrl+tcID+'&tcversion_id='+vID},
+        { url: fUrl+tcID+'&tcversion_id='+vID },
     });
 }
 
@@ -60,18 +62,15 @@ function showTT(e)
 }
 
 Ext.onReady(function(){ 
-{/literal}
 {foreach from=$gui->items key=idx item=info}
   {foreach from=$info.testcases key=tcidx item=tcversionInfo}
    {assign var=tcversionLinked value=$tcversionInfo.linked_version_id}
 	   tTip({$tcidx},{$tcversionLinked});
   {/foreach}  
 {/foreach}
-{literal}
 });
 //-->
 </script>
-{/literal}
 
 </head>
 <body class="fixedheader">

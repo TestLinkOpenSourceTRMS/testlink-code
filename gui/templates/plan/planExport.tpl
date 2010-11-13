@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planExport.tpl,v 1.7 2010/11/06 11:42:47 amkhullar Exp $ 
+$Id: planExport.tpl,v 1.8 2010/11/13 09:57:54 franciscom Exp $ 
 
 test plan export
 
 Revisions:
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101009 - franciscom - BUGID 3270 - improvements to avoid event viewer warnings
 20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
 
@@ -22,7 +23,7 @@ Revisions:
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_filename = "{$labels.warning_empty_filename|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.export_filename.value)) 
@@ -33,7 +34,6 @@ function validateForm(f)
   }
   return true;
 }
-{/literal}
 </script>
 </head>
 

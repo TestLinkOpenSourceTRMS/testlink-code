@@ -1,12 +1,14 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.32 2010/10/27 13:45:16 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.33 2010/11/13 09:57:21 franciscom Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
+                          BEFORE Closing curly Bracket and AFTER opening curly Bracket
 
 	20101027 - asimon - BUGID 3946: reqirement specification tree size
-    20100708 - aismon - BUGDI 3406 - removed functionality and labels from 3049
+  20100708 - aismon - BUGDI 3406 - removed functionality and labels from 3049
 	20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
 	                    them with new included template inc_tc_filter_panel.tpl
 	20100412 - asimon - BUGID 3379, changed displaying of some filters
@@ -30,11 +32,10 @@ Revisions :
 	{* includes Ext.ux.CollapsiblePanel *}
 	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 	{* BUGID 3301 *}
-	{literal}
 	<script type="text/javascript">
-		treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-		           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
-		Ext.onReady(function() {
+		  treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+		              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+		  Ext.onReady(function() {
 			Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 	
 			// Use a collapsible panel for filter settings
@@ -57,10 +58,9 @@ Revisions :
 	</script>
 
     <script type="text/javascript">
-    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-               loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+    treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+                loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
     </script>
-    {/literal}
     
     <script type="text/javascript">
 	    treeCfg.root_name = '{$gui->ajaxTree->root_node->name}';
@@ -76,7 +76,6 @@ Revisions :
     </script>
 
 <script type="text/javascript">
-{literal}
 function pre_submit()
 {
 	document.getElementById('called_url').value = parent.workframe.location;
@@ -93,20 +92,6 @@ function update2latest(id)
 	var action_url = fRoot+'/'+menuUrl+"?doAction=doBulkUpdateToLatest&level=testplan&id="+id+args;
 	parent.workframe.location = action_url;
 }
-
-// BUGID 3406
-///**
-// * open page to unassign all testcases in workframe
-// *
-// * @param id Testplan ID
-// */
-//function goToUnassignPage(id)
-//{
-//	var action_url = fRoot + 'lib/testcases/containerEdit.php?doAction=doUnassignFromPlan&tplan_id=' + id;
-//	parent.workframe.location = action_url;
-//}
-
-{/literal}
 </script>
 
 

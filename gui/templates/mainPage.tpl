@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: mainPage.tpl,v 1.45 2009/12/07 20:12:18 franciscom Exp $     
+ $Id: mainPage.tpl,v 1.46 2010/11/13 11:24:25 franciscom Exp $     
  Purpose: smarty template - main page / site map                 
                                                                  
  rev :                                                 
@@ -21,7 +21,6 @@
 {include file="inc_ext_js.tpl"}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
-{literal}
 <script type="text/javascript">
 window.onload=function()
 {
@@ -65,7 +64,6 @@ window.onload=function()
    
 }
 </script>
-{/literal}
 </head>
 
 <body>

@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: usersView.tpl,v 1.26 2010/10/17 09:46:37 franciscom Exp $
+$Id: usersView.tpl,v 1.27 2010/11/13 11:24:25 franciscom Exp $
 
 Purpose: smarty template - users overview
 
@@ -22,11 +22,8 @@ rev:
 {lang_get s='disable' var="del_msgbox_title"}
 
 <script type="text/javascript">
-	var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
-</script>
+var del_action=fRoot+"lib/usermanagement/usersView.php?operation=disable&user=";
 
-{literal}
-<script type="text/javascript">
 function toggleRowByClass(oid,className,displayValue)
 {
   var trTags = document.getElementsByTagName("tr");
@@ -56,8 +53,6 @@ function toggleRowByClass(oid,className,displayValue)
 
 }
 </script>
-{/literal}
-
 </head>
 
 
@@ -172,18 +167,14 @@ function toggleRowByClass(oid,className,displayValue)
 	
 	{*  BUGID 0000103: Localization is changed but not strings *}
 	{if $update_title_bar == 1}
-	{literal}
 	<script type="text/javascript">
 		parent.titlebar.location.reload();
 	</script>
-	{/literal}
 	{/if}
 	{if $reload == 1}
-	{literal}
 	<script type="text/javascript">
 		top.location.reload();
 	</script>
-	{/literal}
 	{/if}
 {else}
 	{$labels.no_permissions_for_action}<br />

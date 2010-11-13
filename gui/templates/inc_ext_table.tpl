@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.49 2010/11/06 14:12:52 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.50 2010/11/13 11:24:25 franciscom Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
@@ -46,7 +46,6 @@ Purpose: rendering of Ext Js table
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
 	show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
 	multisort_button_tooltip, button_refresh, btn_reset_filters"}
-{literal}
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
 /*
@@ -103,7 +102,7 @@ function createSorterButton(config, table) {
 			}
 		},
 		iconCls: 'tbar-sort-' + config.sortData.direction.toLowerCase(),
-		{/literal}tooltip: '{$labels.multisort_button_tooltip|escape:javascript}',{literal}
+		tooltip: '{$labels.multisort_button_tooltip|escape:javascript}',
 		tooltipType: 'title',
 		multisort: 'yes',
 		reorderable: true
@@ -142,7 +141,6 @@ var sorters = [];
 //End Functions for MultiSort
 
 Ext.onReady(function() {
-{/literal}
 	Ext.state.Manager.setProvider(new Ext.ux.JsonCookieProvider());
 	{foreach from=$gui->tableSet key=idx item=matrix}
 		{assign var=tableID value=$matrix->tableID}

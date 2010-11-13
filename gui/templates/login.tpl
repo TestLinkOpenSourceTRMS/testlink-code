@@ -1,15 +1,15 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: login.tpl,v 1.28 2010/09/04 20:22:51 erikeloff Exp $
+$Id: login.tpl,v 1.29 2010/11/13 11:24:25 franciscom Exp $
 Purpose: smarty template - login page 
--------------------------------------------------------------------------------------- *}
+
+*}
 {lang_get var='labels' s='login_name,password,btn_login,new_user_q,lost_password_q'}
 {config_load file="input_dimensions.conf" section="login"}
 {include file="inc_head.tpl" title="TestLink - Login" openHead='yes'}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" 
 		type="text/javascript"></script>
-{literal}
 <script type="text/javascript">
 window.onload=function()
 {
@@ -20,9 +20,8 @@ window.onload=function()
 	focusInputField('login');
 }
 </script>
-{/literal}
-
 </head>
+
 <body>
 {include file="inc_login_title.tpl"}
 

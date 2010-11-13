@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: drag_drop.inc.tpl,v 1.3 2008/03/12 21:27:37 schlundus Exp $
+$Id: drag_drop.inc.tpl,v 1.4 2010/11/13 11:24:25 franciscom Exp $
 
 Drag & drop CSS and JS pieces.
 
@@ -32,7 +32,6 @@ include order of these JS files is very important:
 <script type="text/javascript" src="{$basehref}{$smarty.const.TL_DRAG_DROP_JS_DIR}context-menu.js"></script>
 <script type="text/javascript" src="{$basehref}{$smarty.const.TL_DRAG_DROP_JS_DIR}drag-drop-folder-tree.js"></script>
 
-{literal}
 <script type="text/javascript">
 /*
   function:
@@ -73,7 +72,5 @@ function dnd_save_tree(form_id,order_container_name,elem_name)
 	f.elements[elem_name].disabled = '';
 	f.elements[elem_name].value = 1;
 	f.submit();
-
 }
 </script>
-{/literal}

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - 
-$Id: usersAssign.tpl,v 1.21 2010/10/17 09:46:37 franciscom Exp $ 
+$Id: usersAssign.tpl,v 1.22 2010/11/13 11:24:25 franciscom Exp $ 
 
 rev:
     20100930 - franciscom - BUGID 2344: Private test project
@@ -23,7 +23,6 @@ rev:
 {include file="inc_ext_js.tpl" css_only=1}
 
 <script language="JavaScript" type="text/javascript">
-{literal}
 /*
 Set value for a group of combo (have same prefix).
 MUST TO BE PLACED IN COMMON LIBRARY
@@ -46,10 +45,8 @@ function set_combo_group(container_id,combo_id_prefix,value_to_assign)
 		}	
 	}
 }
-{/literal}
 </script>
 
-{literal}
 <script type="text/javascript">
 function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayValue)
 {
@@ -80,13 +77,9 @@ function toggleRowByClass(oid,className,displayCheckOn,displayCheckOff,displayVa
 
 }
 </script>
-{/literal}
-
-
-
 </head>
-<body>
 
+<body>
 <h1 class="title">{$labels.title_user_mgmt} - {$labels.title_assign_roles}</h1>
 {assign var="umgmt" value="lib/usermanagement"}
 {assign var="my_feature_name" value=''}

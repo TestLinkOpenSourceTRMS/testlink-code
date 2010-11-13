@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: lostPassword.tpl,v 1.2 2009/04/21 09:29:42 franciscom Exp $ 
+$Id: lostPassword.tpl,v 1.3 2010/11/13 11:24:25 franciscom Exp $ 
 Purpose: lost password page 
 
 rev :
@@ -13,14 +13,12 @@ rev :
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
 <script type="text/javascript">
-	{literal}
 	window.onload=function(){
  		Nifty("div#login_div","big");
  		Nifty("div.messages","normal");
  		// set focus on login text box
 		focusInputField('login');
 	}
-	{/literal}
 </script>
 
 </head>

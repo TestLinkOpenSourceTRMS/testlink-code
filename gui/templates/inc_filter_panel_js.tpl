@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel_js.tpl,v 1.4 2010/07/26 19:01:08 asimon83 Exp $
+ * $Id: inc_filter_panel_js.tpl,v 1.5 2010/11/13 11:24:25 franciscom Exp $
  *
  * This file is included by the *navigator templates.
  * It contains and handles the javascript functions which switch some filters on and off,
@@ -19,7 +19,6 @@
 <script type="text/javascript">
 
 {if $control->filters.filter_assigned_user}
-	{literal}
 		/**
 		 * Used to disable the "include unassigned testcases" checkbox when anything else 
 		 * but a username is selected in "assigned to" select box.
@@ -47,11 +46,9 @@
 				include_unassigned.checked = false;
 			} 
 		}
-	{/literal}
 {/if}
 
 {if $control->filters.filter_result}
-	{literal}
 		/**
 		 * If filter method ("filter on...") selection is set to "specific build",
 		 * enable build selector, otherwise disable it.
@@ -99,12 +96,10 @@
 			
 			filter_method_combo.disabled = true;
 		}
-	{/literal}
 {/if}
 
 {* BUGID 3406 *}
 {if $control->draw_tc_unassign_button}
-{literal}
 /**
  * Open the tc_exec_assignment page in workframe to delete
  * all tester assignments for a build. 
@@ -114,7 +109,6 @@ function delete_testers_from_build(id) {
 	                 '?confirmed=no&build_id=' + id;
 	parent.workframe.location = action_url;
 }
-{/literal}
 {/if}
 
 </script>

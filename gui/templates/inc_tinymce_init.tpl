@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_tinymce_init.tpl,v 1.1 2007/12/02 17:36:30 franciscom Exp $
+$Id: inc_tinymce_init.tpl,v 1.2 2010/11/13 11:24:25 franciscom Exp $
 Purpose: include files for:
          Ext JS Library - Copyright(c) 2006-2007, Ext JS, LLC.
          licensing@extjs.com - http://www.extjs.com/license
@@ -9,7 +9,6 @@ Purpose: include files for:
 rev :
      20071201 - franciscom - 
 *}
-{literal}
 <script language="javascript" type="text/javascript">
 
 tinyMCE.init({
@@ -50,4 +49,3 @@ tinyMCE.init({
 */
 
 </script>
-{/literal}

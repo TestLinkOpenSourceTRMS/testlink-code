@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: firstLogin.tpl,v 1.2 2010/10/02 14:01:39 franciscom Exp $
+$Id: firstLogin.tpl,v 1.3 2010/11/13 11:24:25 franciscom Exp $
 Purpose: smarty template - first login
 
 20101002 - franciscom - BUGID 3828: TL19RC1 - User self signup - Too many warnings in event log.
@@ -12,7 +12,6 @@ Purpose: smarty template - first login
              password_mgmt_is_external,btn_add_user_data,link_back_to_login'}
 
 <script language="JavaScript" src="{$basehref}gui/niftycube/niftycube.js" type="text/javascript"></script>
-{literal}
 <script type="text/javascript">
 window.onload=function(){
  Nifty("div#login_div","big");
@@ -21,7 +20,6 @@ window.onload=function(){
  focusInputField('login');
 }
 </script>
-{/literal}
 </head>
 
 <body>

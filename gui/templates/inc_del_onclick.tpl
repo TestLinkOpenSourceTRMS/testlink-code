@@ -1,6 +1,6 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_del_onclick.tpl,v 1.13 2010/06/24 17:25:52 asimon83 Exp $
+$Id: inc_del_onclick.tpl,v 1.14 2010/11/13 11:24:25 franciscom Exp $
 Purpose: include files for:
 
 rev :
@@ -14,7 +14,6 @@ rev :
 {assign var="body_onload" 
         value="onload=\"init_yes_no_buttons('$yes_b','$no_b');\""}
 <script type="text/javascript">
- {literal}
  
 /*
   function: delete_confirmation
@@ -103,5 +102,4 @@ function alert_message_html(title,msg)
 {
   Ext.MessageBox.alert(title, msg);
 }
-{/literal}
 </script>

@@ -1,10 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.28 2010/10/08 07:17:48 mx-julian Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.29 2010/11/13 09:39:45 franciscom Exp $
 Purpose: 
 Author: franciscom
 
 Rev:
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  - {literal} {/literal} REMOVED
+
 	20101008 - Julian - avoid warnings on event viewer
 	20100708 - Julian - BUGID 3587 - executions of closed builds cannot be deleted anymore
 	                               - bugs cannot be added or deleted if build is closed
@@ -44,8 +46,8 @@ Rev:
 
     {* ------------------------------------------------------------------------------------ *}
     {lang_get s='th_testsuite' var='container_title'}
-    {assign var="div_id" value=tsdetails_$tc_id}
-    {assign var="memstatus_id" value=tsdetails_view_status_$tc_id}
+    {assign var="div_id" value="tsdetails_$tc_id"}
+    {assign var="memstatus_id" value="tsdetails_view_status_$tc_id"}
     {assign var="ts_name"  value=$tsuite_info[$tc_id].tsuite_name}
     {assign var="container_title" value="$container_title$title_sep$ts_name"}
 
@@ -288,7 +290,7 @@ Rev:
           		{/if}
 
 				{*BUGID 3587*}
-    			{if $gui->grants->delete_execution && $tc_old_exec.build_is_open }
+    			{if $gui->grants->delete_execution && $tc_old_exec.build_is_open}
        		  	<td align="center">
              	<a href="javascript:confirm_and_submit(msg,'execSetResults','exec_to_delete',
              	                                       {$tc_old_exec.execution_id},'do_delete',1);">

@@ -1,8 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.63 2010/11/06 11:42:47 amkhullar Exp $
+$Id: execSetResults.tpl,v 1.64 2010/11/13 09:39:45 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  - {literal} {/literal} REMOVED
+                          on JS section space is needed on {}
+                          panel.load({url:url2load}); ->   panel.load({ url:url2load });
+
   20101008 - asimon - BUGID 3311
   20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
   20100614 - eloff - BUGID 3522 - fix issue with multiple note panels
@@ -75,19 +79,15 @@ var import_xml_results="{$labels.import_xml_results}";
 {include file="inc_del_onclick.tpl"}
 
 <script language="JavaScript" type="text/javascript">
-{literal}
-
 function load_notes(panel,exec_id)
 {
   // 20100129 - BUGID 3113 - franciscom   -  solved ONLY for  $webeditorType == 'none'
   var url2load=fRoot+'lib/execute/getExecNotes.php?readonly=1&exec_id=' + exec_id;
-  panel.load({url:url2load});
+  panel.load({ url:url2load });
 }
-{/literal}
 </script>
 
 <script language="JavaScript" type="text/javascript">
-{literal}
 /*
 Set value for a group of combo (have same prefix).
 */
@@ -109,18 +109,13 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 		}	
 	}
 }
-{/literal}
 </script>
 
-
-
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title="{$labels.warning|escape:'javascript'}";
 var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   var status_ok=true;
@@ -196,24 +191,16 @@ function openExportTestCases(windows_title,tsuite_id,tproject_id,tplan_id,build_
 	wref.focus();
 }
 </script>
-{/literal}
-
-
-
-
 
 {* Initialize note panels. The array panel_init_functions is filled with init
 functions from inc_exec_show_tc_exec.tpl and executed from onReady below *}
 <script>
-{literal}
 panel_init_functions = new Array();
 Ext.onReady(function() {
-	for(var i=0;i<panel_init_functions.length;i++) {
-		panel_init_functions[i]();
+	for(var idx=0;idx<panel_init_functions.length;idx++) {
+		panel_init_functions[idx]();
 	}
 });
-{/literal}
-
 </script>
 
 

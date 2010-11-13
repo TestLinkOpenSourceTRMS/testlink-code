@@ -1,10 +1,11 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.54 2010/11/13 08:37:27 franciscom Exp $
+	$Id: navBar.tpl,v 1.55 2010/11/13 08:40:23 franciscom Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
     20101113 - franciscom - removed useless keys on call to lang_get
+                            Smarty 3.0.x -> remove literal
 		20100212 - asimon - BUGID 3950 - changed navbar design -  test project selector
 		                                 was put more into user focus. no multiple lines
 		                                 on smaller screens (1280px) with large project names
@@ -78,11 +79,9 @@
 </div>
 
 {if $gui->updateMainPage == 1}
-{literal}
 <script type="text/javascript">
-	parent.mainframe.location = "{/literal}{$basehref}{literal}lib/general/mainPage.php";
+	parent.mainframe.location = "{$basehref}lib/general/mainPage.php";
 </script>
-{/literal}
 {/if}
 
 </body>

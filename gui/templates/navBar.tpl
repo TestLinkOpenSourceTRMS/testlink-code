@@ -1,9 +1,10 @@
 {*
 	Testlink Open Source Project - http://testlink.sourceforge.net/
-	$Id: navBar.tpl,v 1.53 2010/10/28 06:40:14 mx-julian Exp $
+	$Id: navBar.tpl,v 1.54 2010/11/13 08:37:27 franciscom Exp $
 	Purpose: smarty template - title bar + menu
 
 	rev :
+    20101113 - franciscom - removed useless keys on call to lang_get
 		20100212 - asimon - BUGID 3950 - changed navbar design -  test project selector
 		                                 was put more into user focus. no multiple lines
 		                                 on smaller screens (1280px) with large project names
@@ -15,12 +16,9 @@
 		20070331 - BUGID 760 - added truncate to fix
 *}
 {lang_get var="labels"
-          s="title_events,event_viewer,home,testproject,title_specification,title_execute,
-             title_edit_personal_data,th_tcid,link_logout,title_admin,
-             search_testcase,title_results,title_user_mgmt"}
+          s="testproject,title_edit_personal_data,link_logout,search_testcase"}
 {assign var="cfg_section" value=$smarty.template|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
-
 {include file="inc_head.tpl" openHead="yes"}
 </head>
 <body style="min-width: 800px;">

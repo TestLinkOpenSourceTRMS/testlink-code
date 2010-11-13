@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: buildEdit.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
+$Id: buildEdit.tpl,v 1.23 2010/11/13 09:43:37 franciscom Exp $
 
 Purpose: smarty template - Add new build and show existing
 
 Rev:
+    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility 
     20101025 - Julian - BUGID 3930 - Localized dateformat for datepicker including date validation
     20101021 - asimon - BUGID 3716: replaced old separated inputs for day/month/year by ext js calendar
     20100820 - franciscom - refactored to use only $gui as interface from php code
@@ -34,13 +35,11 @@ Rev:
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_build_name = "{$labels.warning_empty_build_name|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
   if (isWhitespace(f.build_name.value)) 
@@ -52,7 +51,6 @@ function validateForm(f)
   return true;
 }
 </script>
-{/literal}
 </head>
 
 

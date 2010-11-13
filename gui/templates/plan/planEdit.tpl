@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.17 2010/11/06 11:42:47 amkhullar Exp $
+$Id: planEdit.tpl,v 1.18 2010/11/13 09:43:37 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
+20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101012 - franciscom - BUGID 3892: CF Types validation
 20090513 - franciscom - added is_public
 
@@ -23,13 +24,11 @@ Bug confirmed on IE
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_tp_name = "{$labels.warning_empty_tp_name|escape:'javascript'}";
-{literal}
+
 function validateForm(f)
 {
 	var cf_designTime = document.getElementById('custom_field_container');
@@ -85,7 +84,6 @@ function manage_copy_ctrls(container_id,display_control_value,hide_value)
  }
 }
 </script>
-{/literal}
 </head>
 
 <body>

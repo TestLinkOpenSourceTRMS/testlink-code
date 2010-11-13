@@ -1,11 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCopy.tpl,v 1.10 2010/11/06 11:42:47 amkhullar Exp $
+$Id: reqCopy.tpl,v 1.11 2010/11/13 10:18:41 franciscom Exp $
 Purpose:
         Allow user to choose requirements inside a req spec to copy.
         Will be used also to implement copy from requirement view feature.
 
 rev :
+     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
      20101006 - asimon - BUGID 3854
      20100919 - franciscom -BUGID 3787 
      20100908 - asimon - BUGID 3755: tree not refreshed when copying requirements
@@ -22,12 +23,10 @@ rev :
 {include file="inc_jsCheckboxes.tpl"}
 {include file="inc_del_onclick.tpl"}
 
-{literal}
 <script type="text/javascript">
-{/literal}
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
+
 /*
   function: check_action_precondition
 
@@ -50,7 +49,6 @@ function check_action_precondition(container_id,action,msg)
 	}
 }
 </script>
-{/literal}
 </head>
 
 <body>

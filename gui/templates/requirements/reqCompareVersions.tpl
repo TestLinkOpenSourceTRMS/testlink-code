@@ -4,6 +4,9 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
  
 Purpose: smarty template - compare requirement versions
 
+revisions
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
+
 *}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -25,7 +28,6 @@ var warning_selected_versions = "{$labels.warning_selected_versions|escape:'java
 var warning_same_selected_versions = "{$labels.warning_same_selected_versions|escape:'javascript'}";
 var warning_context = "{$labels.warning_context|escape:'javascript'}";
 
-{literal}
 
 function triggerTextfield(field)
 {
@@ -83,7 +85,6 @@ function validateForm() {
 }
 
 </script>
-{/literal}
 
 </head>
 <body>

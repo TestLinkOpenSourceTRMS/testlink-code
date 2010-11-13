@@ -1,9 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.11 2010/10/27 13:45:16 asimon83 Exp $ 
+$Id: reqSpecListTree.tpl,v 1.12 2010/11/13 10:18:41 franciscom Exp $ 
 show requirement specifications tree menu
 
 rev: 
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
+                          On JS expression SPACE is NEED 
+                          BEFORE Closing curly Bracket and AFTER opening curly Bracket
+
   20101027 - asimon - BUGID 3946: reqirement specification tree size
   20100808 - asimon - first implementation of requirement filtering,
                       included filter panel template
@@ -17,7 +21,6 @@ rev:
 
 {* Ext Collapsible Panel *}
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
-{literal}
 <script type="text/javascript">
 Ext.onReady(function() {
 	Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
@@ -33,17 +36,12 @@ Ext.onReady(function() {
 	});
 });
 </script>
-{/literal}	
 
 {if $gui->ajaxTree->loader == ''}
-	{literal}
 	<script type="text/javascript">
-		treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-		           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
-	</script>
-	{/literal}
-	
-	<script type="text/javascript">
+		treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+		            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+
 		treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
 		treeCfg.root_id={$gui->ajaxTree->root_node->id};
 		treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
@@ -52,15 +50,11 @@ Ext.onReady(function() {
 	<script type="text/javascript" src='gui/javascript/execTree.js'></script>
 
 {else}
-	{literal}
 	<script type="text/javascript">
-		treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-		           root_testlink_node_type:'',useBeforeMoveNode:false,
-		           loader:"", enableDD:false, dragDropBackEndUrl:''};
-	</script>
-	{/literal}
-	
-	<script type="text/javascript">
+		treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+		            root_testlink_node_type:'',useBeforeMoveNode:false,
+		            loader:"", enableDD:false, dragDropBackEndUrl:'' };
+
 		treeCfg.loader='{$gui->ajaxTree->loader}';
 		treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape}';
 		treeCfg.root_id={$gui->ajaxTree->root_node->id};

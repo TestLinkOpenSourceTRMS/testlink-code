@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_req_import_viewer.tpl,v 1.9 2010/11/06 11:42:47 amkhullar Exp $
+$Id: inc_req_import_viewer.tpl,v 1.10 2010/11/13 10:18:41 franciscom Exp $
 
 
 rev :
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 
 *}
 {lang_get var="labels" s='btn_do,check_uncheck_all_checkboxes,th_id,
@@ -14,7 +15,6 @@ rev :
 //BUGID 3943: Escape all messages (string)
 	var check_msg="";
 	var alert_box_title = "{$labels.warning|escape:'javascript'}";
-{literal}
 
 function check_action_precondition(container_id,action)
 {
@@ -26,7 +26,6 @@ function check_action_precondition(container_id,action)
 	return true;
 }
 </script>
-{/literal}
 
 {* prefix for checkbox name ADD*}   
 {assign var="add_cb" value="achecked_req"}

@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.45 2010/10/17 09:46:37 franciscom Exp $
+$Id: tcView.tpl,v 1.46 2010/11/13 10:17:42 franciscom Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
+    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
     20101017 - franciscom - image access refactored (tlImages)
     20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
                             use of: $gui->cf_current_version, $gui->cf_other_versions
@@ -44,7 +45,6 @@ var del_action=fRoot+'{$deleteStepAction}';
 {/if}
 
 
-{literal}
 <script language="JavaScript">
 function validateStepsReorder(formOID)
 {
@@ -99,7 +99,6 @@ function validateStepsReorder(formOID)
 //         }
 // }
 </script>  
-{/literal}
 
 </head>
 
@@ -245,22 +244,18 @@ function validateStepsReorder(formOID)
   
       	{* ---------------------------------------------------------------- *}
       	{* Force the div of every old version to show closed as first state *}
-      	{literal}
       	<script type="text/javascript">
-      	{/literal}
  	  	      viewElement(document.getElementById('vers_{$vid}'),false);
     	  		{foreach item=my_testcase from=$gui->testcase_other_versions[idx]}
   	  	      viewElement(document.getElementById('v_{$vid}_{$my_testcase.version}'),false);
 			      {/foreach}
-      	{literal}
       	</script>
-      	{/literal}
       	{* ---------------------------------------------------------------- *}
     {/if}
     <br>
 {/section}
 {else}
-  {if isset($gui->warning_msg) }
+  {if isset($gui->warning_msg)}
 	  {$gui->warning_msg}
 	{else}
 	  {$labels.no_records_found}
@@ -271,7 +266,6 @@ function validateStepsReorder(formOID)
 {* 20100315 - franciscom *}
 {if $gui->refreshTree}
 	{include file="inc_refreshTreeWithFilters.tpl"}
-	{*include file="inc_refreshTree.tpl"*}
 {/if}
 </body>
 </html>

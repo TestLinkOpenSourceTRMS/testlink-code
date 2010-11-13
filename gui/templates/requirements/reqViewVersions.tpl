@@ -1,20 +1,21 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.19 2010/10/26 20:09:18 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.20 2010/11/13 10:26:36 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
   20101026 - franciscom - BUGID 3927: Requirement can’t be deleted due to JS error -> label has to be escaped
   20101017 - franciscom - image access refactored (tlImages)
   20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
   20100319 - asimon - BUGID 1748, added requirement relations display
 *}
 
-{lang_get s='warning_delete_requirement' var="warning_msg" }
-{lang_get s='warning_freeze_requirement' var="freeze_warning_msg" }
-{lang_get s='delete' var="del_msgbox_title" }
-{lang_get s='freeze' var="freeze_msgbox_title" }
+{lang_get s='warning_delete_requirement' var="warning_msg"}
+{lang_get s='warning_freeze_requirement' var="freeze_warning_msg"}
+{lang_get s='delete' var="del_msgbox_title"}
+{lang_get s='freeze' var="freeze_msgbox_title"}
 
 {lang_get s='delete_rel_msgbox_msg' var='delete_rel_msgbox_msg'}
 {lang_get s='delete_rel_msgbox_title' var='delete_rel_msgbox_title'}
@@ -33,7 +34,6 @@ rev:
 {config_load file="input_dimensions.conf"}
 
 <script type="text/javascript">
-{literal}
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 function delete_req(btn, text, o_id)
 { 
@@ -66,14 +66,11 @@ function freeze_req_version(btn, text, o_id)
 }
 
 // BUGID 1748
-{/literal}
-
 // BUGID 3927: Requirement can’t be deleted due to JS error -> label has to be escaped
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
 var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
 var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id|escape:'javascript'}';
-{literal}
 
 function validate_req_docid_input(input_id, original_value) {
 
@@ -112,13 +109,12 @@ var pF_delete_req = delete_req;
 var pF_delete_req_version = delete_req_version; 
 var pF_freeze_req_version = freeze_req_version;
 var pF_delete_req_relation = delete_req_relation;
-{/literal}
 </script>
 
 <script language="JavaScript" src="gui/javascript/expandAndCollapseFunctions.js" type="text/javascript"></script>
 
 {* need by refresh on upload logic used when this template is called while executing *}
-{if $gui->bodyOnLoad != '' }
+{if $gui->bodyOnLoad != ''}
 <script language="JavaScript">
   var {$gui->dialogName} = new std_dialog('&refreshTree');
 </script>  
@@ -136,7 +132,7 @@ var pF_delete_req_relation = delete_req_relation;
 {* fixed a little bug, here $gui->pageTitle was called instead of $gui->main_descr *}
 <h1 class="title">{$gui->main_descr|escape}{if isset($gui->show_match_count)} - {$labels.match_count}: {$gui->match_count}{/if}
 </h1>
-{if !isset($refresh_tree) }
+{if !isset($refresh_tree)}
   {assign var="refresh_tree" value=false}
 {/if}
 {include file="inc_update.tpl" user_feedback=$user_feedback refresh=$refresh_tree}
@@ -168,7 +164,7 @@ var pF_delete_req_relation = delete_req_relation;
 	          {$path_part|escape} /
 	      {/foreach}
 	  {/if}
-    {if !$gui->show_title }
+    {if !$gui->show_title}
 	    {$gui->current_version[idx][0].req_doc_id|escape}:{$gui->current_version[idx][0].title|escape}</h2>
     {/if}
     <div class="direct_link" style='display:none'><a href="{$gui->direct_link}" target="_blank">{$gui->direct_link}</a></div>
@@ -312,8 +308,8 @@ var pF_delete_req_relation = delete_req_relation;
 	{* Other Versions *}
     {if $gui->other_versions[idx] neq null}
         {assign var="vid" value=$gui->current_version[idx][0].id}
-        {assign var="div_id" value=vers_$vid}
-        {assign var="memstatus_id" value=mem_$div_id}
+        {assign var="div_id" value="vers_$vid"}
+        {assign var="memstatus_id" value="mem_$div_id"}
   
         {include file="inc_show_hide_mgmt.tpl" 
                  show_hide_container_title=$labels.other_versions
@@ -329,10 +325,9 @@ var pF_delete_req_relation = delete_req_relation;
             {assign var="title" value="$labels.version}
             {assign var="title" value="$title $version_num"}
             
-            {assign var="div_id" value=v_$vid}
-            {assign var="sep" value="_"}
-            {assign var="div_id" value=$div_id$sep$version_num}
-            {assign var="memstatus_id" value=mem_$div_id}
+            {assign var="div_id" value="v_$vid_"}
+            {assign var="div_id" value=$div_id$version_num}
+            {assign var="memstatus_id" value="mem_$div_id"}
            
            	{* is this version frozen? *}
     		    {if $my_req.is_open}

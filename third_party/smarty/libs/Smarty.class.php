@@ -3,7 +3,7 @@
 /**
  * Project:     Smarty: the PHP compiling template engine
  * File:        Smarty.class.php
- * SVN:         $Id: Smarty.class.php,v 1.6 2010/11/13 08:33:47 franciscom Exp $
+ * SVN:         $Id: Smarty.class.php,v 1.7 2010/11/14 10:37:37 franciscom Exp $
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@
  * @author Monte Ohrt <monte at ohrt dot com> 
  * @author Uwe Tews 
  * @package Smarty
- * @version 3.0.2
+ * @version 3.0.4
  */
 
 /**
@@ -87,7 +87,7 @@ class Smarty extends Smarty_Internal_Data {
 	* constant definitions
 	*/
     // smarty version
-    const SMARTY_VERSION = 'Smarty-3.0.2'; 
+    const SMARTY_VERSION = 'Smarty-3.0.4'; 
   	//define variable scopes
 	const SCOPE_LOCAL = 0;
 	const SCOPE_PARENT = 1;
@@ -196,8 +196,6 @@ class Smarty extends Smarty_Internal_Data {
     public $caching_type = 'file'; 
     // internal cache resource types
     public $cache_resource_types = array('file'); 
-    // internal cache resource objects
-    public $cache_resource_objects = array(); 
     // internal config properties
     public $properties = array(); 
     // config type
@@ -387,12 +385,16 @@ class Smarty extends Smarty_Internal_Data {
      * @param string $ |object $template the resource handle of the template file or template object
      * @param mixed $cache_id cache id to be used with this template
      * @param mixed $compile_id compile id to be used with this template
+     * @param object $parent next higher level of Smarty variables
      * @return boolean cache status
      */
-    public function isCached($template, $cache_id = null, $compile_id = null)
+    public function isCached($template, $cache_id = null, $compile_id = null, $parent = null)
     {
+    	if ($parent === null) {
+    		$parent = $this;
+    	}
         if (!($template instanceof $this->template_class)) {
-            $template = $this->createTemplate ($template, $cache_id, $compile_id, $this);
+            $template = $this->createTemplate ($template, $cache_id, $compile_id, $parent);
         } 
         // return cache status of template
         return $template->isCached();
@@ -564,19 +566,15 @@ class Smarty extends Smarty_Internal_Data {
         if (!isset($type)) {
             $type = $this->caching_type;
         } 
-        // already loaded?
-        if (isset($this->cache_resource_objects[$type])) {
-            return $this->cache_resource_objects[$type];
-        } 
         if (in_array($type, $this->cache_resource_types)) {
             $cache_resource_class = 'Smarty_Internal_CacheResource_' . ucfirst($type);
-            return $this->cache_resource_objects[$type] = new $cache_resource_class($this);
+            return new $cache_resource_class($this);
         } 
         else {
             // try plugins dir
             $cache_resource_class = 'Smarty_CacheResource_' . ucfirst($type);
-            if (Smarty_Internal_Plugin_Loader::loadPlugin($cache_resource_class, $this->plugins_dir)) {
-                return $this->cache_resource_objects[$type] = new $cache_resource_class($this);
+            if ($this->loadPlugin($cache_resource_class)) {
+                return new $cache_resource_class($this);
             } 
             else {
                 throw new SmartyException("Unable to load cache resource '{$type}'");
@@ -658,6 +656,54 @@ class Smarty extends Smarty_Internal_Data {
     function setDebugTemplate($tpl_name)
     {
         return $this->debug_tpl = $tpl_name;
+    } 
+
+    /**
+     * Takes unknown classes and loads plugin files for them
+     * class name format: Smarty_PluginType_PluginName
+     * plugin filename format: plugintype.pluginname.php
+     * 
+     * @param string $plugin_name class plugin name to load
+     * @return string |boolean filepath of loaded file or false
+     */
+    public function loadPlugin($plugin_name, $check = true)
+    { 
+        // if function or class exists, exit silently (already loaded)
+        if ($check && (is_callable($plugin_name) || class_exists($plugin_name, false)))
+            return true; 
+        // Plugin name is expected to be: Smarty_[Type]_[Name]
+        $_plugin_name = strtolower($plugin_name);
+        $_name_parts = explode('_', $_plugin_name, 3); 
+        // class name must have three parts to be valid plugin
+        if (count($_name_parts) < 3 || $_name_parts[0] !== 'smarty') {
+            throw new SmartyException("plugin {$plugin_name} is not a valid name format");
+            return false;
+        } 
+        // if type is "internal", get plugin from sysplugins
+        if ($_name_parts[1] == 'internal') {
+            $file = SMARTY_SYSPLUGINS_DIR . $_plugin_name . '.php';
+            if (file_exists($file)) {
+                require_once($file);
+                return $file;
+            } else {
+                return false;
+            } 
+        } 
+        // plugin filename is expected to be: [type].[name].php
+        $_plugin_filename = "{$_name_parts[1]}.{$_name_parts[2]}.php"; 
+        // loop through plugin dirs and find the plugin
+        foreach((array)$this->plugins_dir as $_plugin_dir) {
+            if (strpos('/\\', substr($_plugin_dir, -1)) === false) {
+                $_plugin_dir .= DS;
+            } 
+            $file = $_plugin_dir . $_plugin_filename;
+            if (file_exists($file)) {
+                require_once($file);
+                return $file;
+            } 
+        } 
+        // no plugin loaded
+        return false;
     } 
 
     /**

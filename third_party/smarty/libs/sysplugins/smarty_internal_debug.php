@@ -73,18 +73,27 @@ class Smarty_Internal_Debug extends Smarty_Internal_Data {
     /**
      * Opens a window for the Smarty Debugging Consol and display the data
      */
-    public static function display_debug($smarty)
+    public static function display_debug($obj)
     { 
         // prepare information of assigned variables
-        $_assigned_vars = $smarty->tpl_vars;
+        $ptr = $obj;
+        while (isset($ptr->parent)) {
+        	$ptr = $ptr->parent;
+        }
+        if ($obj instanceof Smarty) {
+        	$smarty = $obj;
+        } else {
+       		$smarty = $obj->smarty;
+ 		}        	
+        $_assigned_vars = $ptr->tpl_vars;
         ksort($_assigned_vars);
-        $_config_vars = $smarty->config_vars;
+        $_config_vars = $ptr->config_vars;
         ksort($_config_vars);
         $ldelim = $smarty->left_delimiter;
         $rdelim = $smarty->right_delimiter;
         $smarty->left_delimiter = '{';
         $smarty->right_delimiter = '}';
-        $_template = new Smarty_Template ($smarty->debug_tpl, $smarty);
+        $_template = new Smarty_Internal_Template ($smarty->debug_tpl, $smarty);
         $_template->caching = false;
         $_template->force_compile = false;
         $_template->disableSecurity();

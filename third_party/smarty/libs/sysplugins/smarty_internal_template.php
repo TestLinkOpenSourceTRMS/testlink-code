@@ -95,7 +95,7 @@ class Smarty_Internal_Template extends Smarty_Internal_Data {
         // Template resource
         $this->template_resource = $template_resource; 
         // copy block data of template inheritance
-        if ($this->parent instanceof Smarty_Template or $this->parent instanceof Smarty_Internal_Template) {
+        if ($this->parent instanceof Smarty_Internal_Template) {
         	$this->block_data = $this->parent->block_data;
         }
  
@@ -245,7 +245,7 @@ class Smarty_Internal_Template extends Smarty_Internal_Data {
         // compile template
         if (!is_object($this->compiler_object)) {
             // load compiler
-            Smarty_Internal_Plugin_Loader::loadPlugin($this->resource_object->compiler_class,$this->smarty->plugins_dir);
+            $this->smarty->loadPlugin($this->resource_object->compiler_class);
             $this->compiler_object = new $this->resource_object->compiler_class($this->resource_object->template_lexer_class, $this->resource_object->template_parser_class, $this->smarty);
         } 
         // compile locking
@@ -335,8 +335,18 @@ class Smarty_Internal_Template extends Smarty_Internal_Data {
      * 
      * @return boolean true if cache is valid
      */
-    public function isCached ($no_render = true)
+    public function isCached ($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
+    	if ($template === null) {    		
+ 			$no_render = true;
+ 		} elseif ($template === false) {
+			$no_render = false;
+  		} else {
+  			if ($parent === null) {
+  				$parent = $this;
+  			}
+			$this->smarty->isCached ($template, $cache_id, $compile_id, $parent);
+  		}
         if ($this->isCached === null) {
             $this->isCached = false;
             if (($this->caching == Smarty::CACHING_LIFETIME_CURRENT || $this->caching == Smarty::CACHING_LIFETIME_SAVED) && !$this->resource_object->isEvaluated) {
@@ -455,7 +465,7 @@ class Smarty_Internal_Template extends Smarty_Internal_Data {
         if (!$this->resource_object->isEvaluated && empty($this->properties['file_dependency'][$this->templateUid])) {
             $this->properties['file_dependency'][$this->templateUid] = array($this->getTemplateFilepath(), $this->getTemplateTimestamp(),$this->resource_type);
         } 
-        if ($this->parent instanceof Smarty_Template or $this->parent instanceof Smarty_Internal_Template) {
+        if ($this->parent instanceof Smarty_Internal_Template) {
             $this->parent->properties['file_dependency'] = array_merge($this->parent->properties['file_dependency'], $this->properties['file_dependency']);
             foreach($this->required_plugins as $code => $tmp1) {
                 foreach($tmp1 as $name => $tmp) {
@@ -705,7 +715,7 @@ class Smarty_Internal_Template extends Smarty_Internal_Data {
             } else {
                 // try plugins dir
                 $_resource_class = 'Smarty_Resource_' . ucfirst($resource_type);
-                if (Smarty_Internal_Plugin_Loader::loadPlugin($_resource_class,$this->smarty->plugins_dir)) {
+                if ($this->smarty->loadPlugin($_resource_class)) {
                     if (class_exists($_resource_class, false)) {
                         return new $_resource_class($this->smarty);
                     } else {
@@ -818,13 +828,6 @@ class Smarty_Internal_Template extends Smarty_Internal_Data {
             settype($this->tpl_vars[$tpl_var]->value, 'array');
         } 
     } 
-    /**
-     * wrapper for display
-     */
-    public function display ()
-    {
-        return $this->smarty->display($this);
-    } 
 
     /**
      * [util function] counts an array, arrayaccess/traversable or PDOStatement object
@@ -861,10 +864,35 @@ class Smarty_Internal_Template extends Smarty_Internal_Data {
     /**
      * wrapper for fetch
      */
-    public function fetch ()
+    public function fetch ($template = null, $cache_id = null, $compile_id = null, $parent = null, $display = false)
     {
-        return $this->smarty->fetch($this);
+ 		if ($template == null) {
+        	return $this->smarty->fetch($this);
+        } else {
+        	if (!isset($parent)) {
+        		$parent = $this;
+        	}
+         	return $this->smarty->fetch($template, $cache_id, $compile_id, $parent, $display);
+        }
+        
     } 
+ 
+     /**
+     * wrapper for display
+     */
+    public function display ($template = null, $cache_id = null, $compile_id = null, $parent = null)
+    {
+ 		if ($template == null) {
+        	return $this->smarty->display($this);
+        } else {
+        	if (!isset($parent)) {
+        		$parent = $this;
+        	}
+       		return $this->smarty->display($template, $cache_id, $compile_id, $parent);
+        }
+       
+    } 
+
     /**
      * set Smarty property in template context      
      * @param string $property_name property name
@@ -941,10 +969,4 @@ class Smarty_Internal_Template extends Smarty_Internal_Data {
     } 
 
 }
-/**
- * wrapper for template class
- */
-class Smarty_Template extends Smarty_Internal_Template {
-} 
-
 ?>

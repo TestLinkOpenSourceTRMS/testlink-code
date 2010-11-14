@@ -9,11 +9,14 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.237 2010/11/10 07:05:16 amkhullar Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.238 2010/11/14 11:05:59 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101114 - franciscom - Important Design Notes added on copy_as().	
+ *                          BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
+ *
  *  20101110 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20101101 - franciscom - exportTestPlanDataToXML() interface changes + changes in output (more info added)
@@ -1368,6 +1371,13 @@ class testplan extends tlObjectWithAttachments
                                                
        [mappings]: need to be documented                                        
   	returns: N/A
+  	
+  	
+  	20101114 - franciscom - Because user assignment is done at BUILD Level, we will force
+  							BUILD COPY no matter user choice if user choose to copy
+  							Test Case assignment.
+  							
+  							
 	*/
 	function copy_as($id,$new_tplan_id,$tplan_name=null,$tproject_id=null,$user_id=null,
                      $options=null,$mappings=null)
@@ -1378,7 +1388,6 @@ class testplan extends tlObjectWithAttachments
 		$cp_methods = array('copy_milestones' => 'copy_milestones',
 			                'copy_user_roles' => 'copy_user_roles',
 			                'copy_platforms_links' => 'copy_platforms_links');
-			                //'copy_builds' => 'copy_builds');
 
 		$mapping_methods = array('copy_platforms_links' => 'platforms');
 
@@ -1504,6 +1513,9 @@ class testplan extends tlObjectWithAttachments
   	returns:
   
  	 Note: test urgency is set to default in the new Test plan (not copied)
+ 	 
+ 	 @internal revisions
+ 	 20101114 - franciscom - BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
 	*/
 	private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping)
 	{
@@ -1570,14 +1582,18 @@ class testplan extends tlObjectWithAttachments
 					}
 				}
 				
-				
+				// BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
 				$sql = "/* $debugMsg */ " . 
 				       " INSERT INTO {$this->tables['testplan_tcversions']} " .
-					   " (testplan_id,tcversion_id,platform_id,node_order,urgency) " .
-					   " VALUES({$new_tplan_id},{$tcversion_id},{$platform_id}," .
-					   " {$elem['node_order']},{$elem['urgency']})";
-					   
- 				 //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+					   " (testplan_id,tcversion_id,platform_id,node_order ";
+				$sql_values	= " VALUES({$new_tplan_id},{$tcversion_id},{$platform_id}," .
+					          " {$elem['node_order']} ";
+				if( $my['options']['items2copy']['copy_priorities'] )
+				{
+					$sql .= ",urgency ";
+					$sql_values	.= ",{$elem['urgency']}";
+				}
+				$sql .= " ) " . $sql_values . " ) ";  
 
 				// BUGID 3846
 				if (!in_array($tcversion_id, $already_linked_versions)) {

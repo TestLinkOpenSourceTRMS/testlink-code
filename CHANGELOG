@@ -3,6 +3,139 @@
    TestLink  Change-log
 *******************************************************************************
 
+TestLink - 1.9 (Prague) (Released 2010-11-14)
+=============================================
+- 0000365: [Test Execute] Search in executed test notes (Julian) - closed.
+- 0003892: [Custom fields] Check CF Combinations ON TEST PLANS - Types validation (fman) - closed.
+- 0003891: [Test Plan (builds, milestones, test assign)] Do not lose Custom Field values if test plan can not be created due to duplicated name (fman) - closed.
+- 0003890: [Test Specification] Create Test Suite with same name that existent sibling - BLOCK (fman) - closed.
+- 0003887: [Custom fields] Check CF Combinations ON TEST SUITES - Types validation (fman) - closed.
+- 0003886: [Custom fields] Check CF Combinations ON Requirements - Types validation (fman) - closed.
+- 0003884: [Custom fields] Filtering by datetime custom field is not possible (asimon) - closed.
+- 0003883: [Custom fields] date custom field gets set to random value when user does not enter anything and hits apply (asimon) - closed.
+- 0003875: [Custom fields] TL19RC1 - Check CF Combinations - Button (asimon) - closed.
+- 0003872: [Users and Rights] Admin should be able to set a new password for users (fman) - closed.
+- 0000954: [Test Specification] Nice to be able to filter further than one level in the test case tree. (asimon) - closed.
+- 0003876: [Custom fields] Values of custom fields are not displayed when editing requirement (Julian) - closed.
+- 0002770: [Test Plan (builds, milestones, test assign)] Milestones - ability to set starting date (do not count previous testing) (Julian) - closed.
+- 0003893: [Reports] Overview Metric Report for all Test Plans in a project (Julian) - closed.
+- 0003804: [Reports] company logo not resized by document generator (fman) - closed.
+- 0003830: [Test Plan (builds, milestones, test assign)] TL19RC1 - Milestones management - Check Milestone Status - Missing milestone status. (Julian) - closed.
+- 0003794: [Reports] Query Metrics report should allow filtering by platform (Eloff) - closed.
+- 0003909: [Custom fields] Typo: Test Plan Desing (Julian) - closed.
+- 0003934: [Test Plan (builds, milestones, test assign)] Assign Test Case Execution - Execution type filter does not affect right pane (fman) - closed.
+- 0003901: [Test Specification] Edit Test Case STEP - scroll window to show selected step (fman) - closed.
+- 0003910: [Test Execute] show priority filter only if test priority management is enabled (asimon) - closed.
+- 0003911: [Reports] Report "results by tester per build" shows table even if the table is empty (asimon) - closed.
+- 0003915: [Requirement Management] Add creation and modification timestamp to requirement overview (Julian) - closed.
+- 0003916: [TL API] xmlrpc api method 'getTestCaseCustomFieldDesignValue' is not behaving correctly in TL 1.9 RC1 (fman) - closed.
+- 0003917: [User Interface General] Test Specification: clean up buttons (Eloff) - closed.
+- 0003918: [User Interface General] Requirement Specification: clean up buttons (Eloff) - closed.
+- 0003920: [TL API] xmlrpc api method 'createTestProject' doesn't allow to enable requirements, test priority/automation or inventory (fman) - closed.
+- 0003924: [Localization] Localization of ExtJS components (Julian) - closed.
+- 0003928: [Test Specification] Custom fields are not well displayed (Julian) - closed.
+- 0003932: [Test Plan (builds, milestones, test assign)] Add test case to test plan - Execution type filter does not affect right pane (fman) - closed.
+- 0003936: [Test Plan (builds, milestones, test assign)] Assign Test Case Execution - Right pane does not reflect custom field filter. (fman) - closed.
+- 0003902: [Reports] Dashboard metrics - Documentation regarding Test Project Progress (Julian) - closed.
+- 0003907: [Reports] Milestone edit with problems because of start date (Julian) - closed.
+- 0003947: [User Interface General] Missing edit icon in default theme in both 1.8.5 and 1.9 rc1 (fman) - closed.
+- 0003888: [Inventory / Platforms] Inventory fields are erased if any line break is entered (MySQL) (fman) - closed.
+- 0003946: [Requirement Management] reqirement specification tree size (asimon) - closed.
+- 0003908: [Event viewer] Reset filters on event viewer after deleting only special event types (Julian) - closed.
+- 0003927: [Requirement Management] Requirement can’t be deleted due to JS error -> label has to be escaped (fman) - closed.
+- 0003716: [User Interface General] Dates pull downs should be changed to calendar interface everywhere, for exampl in filters etc. (asimon) - closed.
+ - 0003930: [Event viewer] Date picker display date in MM/DD/YYYY format (Julian) - closed.
+- 0003945: [Test Plan (builds, milestones, test assign)] Assign Test Case Execution to a build shows all the test cases on applied filters (asimon) - closed.
+- 0003950: [User Interface General] Navigation bar design should be optimized (asimon) - closed.
+- 0003951: [Requirement Management] Status and Type for requirements are not saved (asimon) - closed.
+- 0003954: [Requirement Management] Allowed to freeze all requirements from a requirement specification (asimon) - closed.
+- 0003933: [Test Plan (builds, milestones, test assign)] Add test case to test plan - Left Pane filter use priority concept to filter test spec where priority does not exist (asimon) - closed.
+- 0003949: [Export/Import] XSL - XML Generator Utility for Test Cases. (amitkhullar) - closed.
+- 0003801: [Export/Import] Crash when updating test case with custom field using Import TC function (fman) - closed.
+- 0003674: [Charts] Charts was generated and now is not (fman) - closed.
+- 0003966: [Reports] Test Cases not Assigned to any test plan is running empty (amitkhullar) - closed.
+- 0003956: [Test Plan (builds, milestones, test assign)] Filter drop down disabled by default (asimon) - closed.
+- 0003944: [User Interface General] req spec - file upload control problems with different browsers (Eloff) - closed.
+- 0003948: [User Interface General] Every image link contain a double / (fman) - closed.
+- 0003937: [User Interface General] No information when exporting all test suites when no test suites exists (fman) - closed.
+- 0003845: [Test Project Management] TL-43 Delete Test Project creates DB backtrace (amitkhullar) - closed.
+- 0000385: [New Feature] Test Documents Tree: Filter test documents by build and by Test Plan. (fman) - closed.
+- 0003649: [Test Plan (builds, milestones, test assign)] Export/Import Test Plan links to test cases and platforms (fman) - closed.
+- 0001349: [Test Specification] Import **and/or update** test cases via spreadsheet or API (fman) - closed.
+- 0003373: [Test Specification] Data after test case creation isn't removed (fman) - closed.
+- 0003179: [User Interface General] On Home page, the current text plan box can exceed page when a test plan name is too long (fman) - closed.
+- 0002920: [Reports] Legend blurred in Charts report (fman) - closed.
+- 0002874: [General] Invalid argument supplied for foreach() (fman) - closed.
+- 0003544: [TL API] TL API - deleteExecution doesn't handle missing execution id (fman) - closed.
+- 0002983: [Event viewer] Errors in Event Log (fman) - closed.
+- 0003027: [User Interface General] Text Formatting missing in Test Cases (fman) - closed.
+- 0002867: [Installer] TL 1.9 - migration from 1.8.x (fman) - closed.
+- 0002873: [General] Some "undefined index: tsd_..." messages in event log (fman) - closed.
+- 0001908: [Users and Rights] Generate the error "Request-URI Too Large" when assign Role to User (fman) - closed.
+- 0002590: [Internal issue] Remove Localization logic from smarty (fman) - closed.
+- 0001823: [Custom fields] Custom fields are shown only in first test case in "Search Test Case(s)" (fman) - closed.
+- 0002556: [Requirement Management] Requirement registration form is not re-populated after save failure (fman) - closed.
+- 0001874: [Requirement Management] Import status field (fman) - closed.
+- 0002838: [Test Execute] Add config option to add custom Result to execution. (fman) - closed.
+- 0003964: [Reports] Evaluation of requirement is set to "Passed" even though all linked test cases aren't passed. (asimon) - closed.
+- 0002684: [User Interface General] Requirement pop up view does not displayed properly (asimon) - closed.
+- 0002698: [General] In execution and reports cannot filter out testcase failed in previous build (asimon) - closed.
+- 0002236: [Reports] Incorrect 'Status of milestones' in the 'General Test plan metrics' (Julian) - closed.
+- 0003943: [General] Escape all messages (string) that has to be used on Javascript code (amitkhullar) - closed.
+- 0003931: [Test Plan (builds, milestones, test assign)] Assign test case to test project fails for PRIVATE TEST PROJECT (tested with admin user) (fman) - closed.
+- 0003978: [Bug Tracking Systems Integration] BTS integration Code getting triggered when opening the Req Spec Page (amitkhullar) - closed.
+- 0003977: [Database MySQL] If a user has a table prefix set for the databases, when they try to save a test step, a db access error is thrown (fman) - closed.
+- 0003627: [Reports] Error in the counter of report Test Cases with Fail (amitkhullar) - closed.
+- 0001051: [Custom fields] Search by Custom Fields on execution (asimon) - closed.
+- 0003889: [Test Plan (builds, milestones, test assign)] Add Test Cases to Test plan - Right pane shows all test cases of a test suite and does not consider test cases of filtered tree (fman) - closed.
+- 0003894: [Export/Import] ???? (fman) - closed.
+- 0001289: [Export/Import] Request for test plan export in XML (fman) - closed.
+- 0003874: [Custom fields] Check CF Combinations ON TEST CASES - Types validation (fman) - closed.
+- 0003421: [Test Execute] Test Case Execution feature - Add Export All test Case in TEST SUITE button (fman) - closed.
+- 0001381: [Export/Import] Exporting Testplan/ selected Testcases (fman) - closed.
+- 0003653: [Export/Import] Import Test Results with external ID (fman) - closed.
+- 0003366: [Export/Import] Import Results - add information regarding execution context (fman) - closed.
+- 0001243: [Database MS-SQL] MS-SQL 2005 Support (toshi) - closed.
+- 0003961: [Reports] General Test plan metrics: the first row of a table isn't displayed correct (Julian) - closed.
+- 0003759: [Test Plan (builds, milestones, test assign)] Add testcase and Keywords filter problem (fman) - closed.
+- 0002025: [Reports] Query Metrics: display Custom Fields (amitkhullar) - closed.
+- 0002602: [Internal issue] Remove obsolete file(s) (fman) - closed.
+- 0003822: [Test Plan (builds, milestones, test assign)] 'Keywords' comboobx is absent on the Filters pane of 'Add / Remove Test Cases' (asimon) - closed.
+- 0003984: [Test Plan (builds, milestones, test assign)] Add testcase - Keywords filter displayed ONLY AFTER adding test case with keyword (asimon) - closed.
+- 0003765: [Requirement Management] Req. Spec Doc ID disappears when you filter requirements (fman) - closed.
+- 0003991: [TL API] getTestCasesForTestPlan() fails (fman) - closed.
+- 0001942: [Reports] Inactive builds are still used when computing test plan metrics (Julian) - closed.
+- 0003992: [TL API] getTestCasesForTestPlan ignores keywords (fman) - closed.
+- 0002738: [Reports] Contribution: option to include notes/descriptions in test report (amitkhullar) - closed.
+- 0004003: [Requirement Management] Minor Improvements for "Create Test Cases from Requirements" Page (Julian) - closed.
+- 0003979: [Third party components] Apply grid filters to exttables (Julian) - closed.
+- 0004011: [Export/Import] XLSTOXML Utility for Generating XML for Requirement Specs (amitkhullar) - closed.
+- 0002402: [Custom fields] Empty Custom Fields of type "STRING" are saved as a record (Julian) - closed.
+- 0002855: [Reports] Cannot view Report for "Failed Testcases" (Julian) - closed.
+- 0004009: [Reports] "Test Case Assignment Overview" doesn't shows assignments in some situations (asimon) - closed.
+- 0003989: [Custom fields] Save value for custom field only if a value is set (Julian) - closed.
+- 0004014: [User Interface General] Typo to display message of sending mail problem (fman) - closed.
+- 0004017: [Test Plan (builds, milestones, test assign)] TL-34 Create plan as copy - Priorities are ALWAYS COPIED (fman) - closed.
+- 0002960: [Test Plan (builds, milestones, test assign)] Not able to add TestCases to TestPlan in Bulk when number of test cases > 48 (fman) - closed.
+- 0002296: [Test Execute] Cannot filter the execution list based on 'ANY' keywords. (fman) - closed.
+- 0002711: [General] The default value within the text fields have double line spacing when creating a test case (fman) - closed.
+- 0003914: [Requirement Management] error variable name (fman) - closed.
+- 0003305: [Installer] Data migration from 1.7.5 to 1.8.5 fails with error reported in apace log (fman) - closed.
+- 0003711: [Reports] Test Cases assigned to me table does always show platform column (Eloff) - closed.
+- 0003713: [Reports] Test Cases with Custom Fields Info table needs "test suite" and "platform" column" (Eloff) - closed.
+- 0003206: [Documentation (Install, User Manual, help)] Provide User documentation for 1.9 release (mhavlat) - closed.
+- 0001755: [New Feature] Feature: Testing infrastructure control (mhavlat) - closed.
+- 0001772: [Reports] Incorrest Test Case Count in the Report General Test Plan Metrics (amitkhullar) - closed.
+- 0003184: [General] Coherence bewteen menu feature and feature title (mhavlat) - closed.
+- 0003188: [Inventory / Platforms] Infrastructure defined in project A is visible in project B (mhavlat) - closed.
+- 0003185: [Inventory / Platforms] too many different terms (mhavlat) - closed.
+- 0000752: [Reports] Print test case - Some images are not visible in MS Word. (mhavlat) - closed.
+- 0001557: [User Interface General] Top menu and navigation enhancement (mhavlat) - closed.
+- 0003264: [Test Specification] The tree does not update itself when I copy a Testcase (fman) - closed.
+- 0003195: [Integration with Other Systems] integration of MantisBT custom issue status (fman) - closed.
+- 0002193: [Reports] General Test Plan Metrics - Test results according to test priorities (Eloff) - closed.
+[129 issues]
+
 
 TestLink - 1.9 RC 1 (Released 2010-10-09) 
 =============================================================

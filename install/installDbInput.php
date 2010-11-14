@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.7 2010/10/02 18:02:30 franciscom Exp $
+ * @version    	CVS: $Id: installDbInput.php,v 1.7.2.1 2010/11/14 14:53:49 franciscom Exp $
  *
  * @internal Revisions:
  * 20101002 - franciscom - BUGID 3083	
@@ -140,10 +140,7 @@ include 'installHead.inc';
 		<select id="databasetype" name="databasetype">
 			<option value="mysql" selected>MySQL (5.0 and later)</option>
 			<option value="postgres" >Postgres (8.0 and later)</option>
-			<option value="mssql" >Microsoft SQL Server 2000/2500</option>
-			<!--- 
-			20100124 - franciscom - Not ready => disabled
-			<option value="mssql" >Microsoft SQL Server 2000/2500</option> --->
+			<option value="mssql" >Microsoft SQL Server 2000/2005(Experimental)</option>
 		</select>	
 		</p>
 		<p>

@@ -1,0 +1,60 @@
+
+Test Plan 
+- Platforms
+  Allows you some kind sub testplan inside a main test plan.
+  Have you ever wanted to execute a similar test plan on a different
+  platform (hardware, operating system, browser etc)? 
+  This featureallows you to assign and execute test cases on different platforms.
+  You can have different set of test cases for each platform
+
+- XML export/import of test cases and platforms links 
+- XML export of testplan contents
+- Private Test plans
+
+Test Specification
+- Test cases version comparison
+- Private Test projects
+- Inventory
+- URL Links from external sites
+- Individual test case steps and expected results
+- Test case import more options for manage duplicate situations
+
+Execution
+- XML export of test cases sets
+- Test Case execution tester assignment at build level
+- Improvement on XML import
+- Search by Custom Fields
+
+Requirements
+- Fully support of N-level nested tree of requirements specifications.
+- Requirements relations
+- Requirements versioning
+- Requirements version comparison
+- Requirement freeze
+- URL Links from external sites
+- Allow use on notes of Links bewteeen Requirements 
+- Allow use on notes of Links bewteeen Requirement Specs
+
+User Interface 
+- Interactive tables
+  Many features allows you to customize the data by sorting, reordering,
+  grouping and filtering. 
+  This mean that you easily can adapt the views to better suit you.
+
+- Filter improvements
+
+Custom fields
+- for test cases and requirements values are managed at version level.
+
+Technology
+- PHP 5.3 support
+- Ext-JS intensive use
+
+User management
+- Administrator can set user passwords without sending it by email.
+
+Utilities (extra system)
+- XLS to XML generator for Test Cases and Requirements
+
+API
+- new methods

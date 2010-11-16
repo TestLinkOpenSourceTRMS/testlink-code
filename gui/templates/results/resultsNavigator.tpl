@@ -1,7 +1,8 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsNavigator.tpl,v 1.11 2010/10/30 07:55:00 franciscom Exp $ *}
+{* $Id: resultsNavigator.tpl,v 1.11.2.1 2010/11/16 09:49:07 asimon83 Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Rev :
+        20101116 - asimon - BUGID 4009: "Test Case Assignment Overview" did not show assignments in some situations
         20100410 - franciscom - BUGID 3370
         20081109 - franciscom - refactoring 
         20070113 - franciscom - use of smarty config file
@@ -73,7 +74,9 @@ function pre_submit()
 {if $gui->do_report.status_ok}
   {foreach from=$gui->menuItems item=menu}
     <span><img src="{$tlImages.bullet}" />
-	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}" 
+        {* BUGID 4009 *}
+	    <a href="{$menu.href}format={$selectedReportType}&amp;tplan_id={$gui->tplan_id}
+	             {if $gui->checked_show_inactive_tplans}&amp;show_inactive_tplans=1{/if}" 
 	       target="workframe">{$menu.name}</a></span><br />
   
   {/foreach}

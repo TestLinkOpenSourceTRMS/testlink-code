@@ -1,9 +1,10 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_ext_table.tpl,v 1.49 2010/11/06 14:12:52 mx-julian Exp $
+$Id: inc_ext_table.tpl,v 1.49.2.1 2010/11/16 14:29:33 mx-julian Exp $
 Purpose: rendering of Ext Js table
 
 @internal Revisions:
+	 20101116 - Julian - Localized Menu Item for GridFilters
 	 20101022 - Julian - BUGID 3979 - Use grid filters for exttables
 	 20101018 - eloff - Refactor export/collapse button
 	                             show all columns button
@@ -45,7 +46,7 @@ Purpose: rendering of Ext Js table
 *}
 {lang_get var="labels" s="expand_collapse_groups, show_all_columns,
 	show_all_columns_tooltip, default_state, multisort, multisort_tooltip,
-	multisort_button_tooltip, button_refresh, btn_reset_filters"}
+	multisort_button_tooltip, button_refresh, btn_reset_filters, caption_nav_filters"}
 {literal}
 <script type="text/javascript" src="gui/javascript/ext_extensions.js" language="javascript"></script>
 <script type="text/javascript">
@@ -173,7 +174,8 @@ Ext.onReady(function() {
 				filters = new Ext.ux.grid.GridFilters({ldelim}
 					// set to local filtering (on client side)
 					local: true,
-					showMenu: true
+					showMenu: true,
+					menuFilterText: '{$labels.caption_nav_filters|escape:javascript}'
 				{rdelim})
 			],
 			

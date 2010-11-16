@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.37 2010/10/20 12:28:41 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.38 2010/11/16 14:15:14 mx-julian Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  *
+ * 20101116 - Julian - Added Author to Created column and Modifier to Last modified column
  * 20101020 - Julian - BUGID 3915 - added columns for creation and modification timestamp
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                     table state independent from localization
@@ -149,7 +150,8 @@ if(count($gui->reqIDs) > 0) {
 	    	
 	    	// use html comment to sort properly by this columns (extjs)
 	    	$result[] = "<!--{$version['creation_ts']}-->" .
-	    	            localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']);
+	    	            localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']) .
+	    	            " ({$version['author']})";
 			
 	    	// on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
 	    	$never_modified = "0000-00-00 00:00:00";
@@ -159,7 +161,8 @@ if(count($gui->reqIDs) > 0) {
 	    		// use html comment to sort properly by this columns (extjs)
 	    		$modification_ts = "<!--{$version['modification_ts']}-->" .
 	    		                   localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', 
-	    		                                            $version['modification_ts']);
+	    		                                            $version['modification_ts']) . 
+	    		                   " ({$version['modifier']})";
 	    	}
 	    	$result[] = $modification_ts;
 	    	

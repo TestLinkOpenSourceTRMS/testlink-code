@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.44 $
- * @modified $Date: 2010/10/14 06:51:58 $ by $Author: asimon83 $
+ * @version $Revision: 1.45 $
+ * @modified $Date: 2010/11/16 12:35:29 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
  *
  * rev:
+ *  20101116 - asimon - BUGID 4007: Strange empty TestPlan combo boxes in same navigator panes
  *  20101013 - asimon - if execution is wanted, check for open builds in testplan
  *  20100822 - asimon - BUGID 3697: Assign Test Case execution - problems 
  *                                  when no build is defined on test plan
@@ -134,7 +135,8 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
 {
 	$tp = new testplan($db);
 	// 20101013 - asimon - if execution is wanted, check for open builds
-	if (!$tp->getNumberOfBuilds($tpID, null, $open))
+	// BUGID 4007 - use open parameter also for active check
+	if (!$tp->getNumberOfBuilds($tpID, $open, $open))
 	{	           
 		$message = '<p>'  . lang_get('no_build_warning_part1') . 
 	          "<b> " . htmlspecialchars($tpName) . "</b>";

@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: tcAssignedToUser.php,v $
- * @version $Revision: 1.29 $
- * @modified $Date: 2010/10/21 08:58:11 $  $Author: mx-julian $
+ * @version $Revision: 1.30 $
+ * @modified $Date: 2010/11/16 09:49:04 $  $Author: asimon83 $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  * 
  * @internal revisions:
+ *  20101116 - asimon - BUGID 4009: "Test Case Assignment Overview" did not show assignments in some situations
  *  20101019 - Julian - use different exttable_id for different reports
  *  20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
  *                      table state independent from localization
@@ -105,13 +106,16 @@ $filters = array();
 
 $filters['tplan_status'] = 'active';
 
+// BUGID 4009
+if ($args->show_inactive_tplans) {
+	$filters['tplan_status'] = 'all';
+}
+
 if ($args->show_closed_builds) {
 	$filters['build_status'] = 'all';
 } else {
 	$filters['build_status'] = 'open';
 }
-
-
 
 // BUGID 3647
 if ($args->build_id) {
@@ -294,6 +298,9 @@ function init_args()
 	$args->build_id = isset($_REQUEST['build_id']) && is_numeric($_REQUEST['build_id']) ? 
 	                  $_REQUEST['build_id'] : 0;
 
+	// BUGID 4009
+	$args->show_inactive_tplans = isset($_REQUEST['show_inactive_tplans']) ? true : false;
+	                  
 	// $args->show_all_users = isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0 ? true : false;
 	$args->show_all_users = (isset($_REQUEST['show_all_users']) && $_REQUEST['show_all_users'] =! 0);
 	$args->show_user_column = $args->show_all_users; 

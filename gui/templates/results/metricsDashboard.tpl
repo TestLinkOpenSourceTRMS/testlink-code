@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.19 2010/10/17 17:44:24 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.20 2010/11/17 08:52:39 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
@@ -16,7 +16,7 @@
              info_metrics_dashboard,test_plan_progress,project_progress"}
 {include file="inc_head.tpl" openHead='yes'}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
+  {assign var="tableID" value=$matrix->tableID}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -28,17 +28,17 @@
 {/foreach}
 
 <script type="text/javascript">
-Ext.onReady(function() {ldelim}
+Ext.onReady(function() {
 	{foreach key=key item=value from=$gui->project_metrics}
-    new Ext.ProgressBar({ldelim}
+    new Ext.ProgressBar({
         text:'&nbsp;&nbsp;{lang_get s=$key}: {$value} %',
         width:'400',
         cls:'left-align',
         renderTo:'{$key}',
         value:'{$value/100}'
-    {rdelim});
+    });
     {/foreach}
-{rdelim});
+});
 </script>
 
 </head>
@@ -69,7 +69,7 @@ Ext.onReady(function() {ldelim}
 	<h2>{$labels.test_plan_progress}</h2>
 	<br />
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var="tableID" value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	<br />

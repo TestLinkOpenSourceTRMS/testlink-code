@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_show_tc_exec.tpl,v 1.30 2010/11/13 11:17:27 franciscom Exp $
+$Id: inc_exec_show_tc_exec.tpl,v 1.31 2010/11/17 08:52:39 mx-julian Exp $
 Purpose: 
 Author: franciscom
 
@@ -337,7 +337,7 @@ Rev:
             html:''
             });
 
-            p.on({'expand' : function(){load_notes(this,{$tc_old_exec.execution_id});}});
+            p.on({ 'expand':function(){ load_notes(this,{$tc_old_exec.execution_id}); } });
         };
         panel_init_functions.push(panel_init);
   			</script>

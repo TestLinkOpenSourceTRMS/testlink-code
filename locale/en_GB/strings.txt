@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.751.2.5 2010/11/17 20:38:48 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.751.2.6 2010/11/17 21:53:52 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -87,6 +87,7 @@ $TLS_priority	= "Priority";
 $TLS_project = "Project";
 $TLS_public = "Public";
 $TLS_requirement = "Requirement";
+$TLS_req_monitoring = "Requirement Monitoring";
 $TLS_req_short = "Req.";
 $TLS_reqs = "Requirements";
 $TLS_req_spec = "Requirements Specification Document";
@@ -2954,6 +2955,8 @@ $TLS_audit_req_assignment_removed_tc = "Requirement with title '{%1}' was unassi
 $TLS_audit_requirement_copy = "Req 'DOCID:{%1}' was created as a copy of Req 'DOCID:{%2}'";
 $TLS_audit_req_version_deleted = " Version {%1} of Req 'DOCID:{%2}' - {%3} was deleted.";
 $TLS_audit_req_version_frozen = " Version {%1} of Req 'DOCID:{%2}' - {%3} was frozen.";
+$TLS_audit_req_monitoring_started = "Req 'DOCID:{%1}' - {%2} monitoring for user {%3} started.";
+
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was created";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' was saved";

@@ -1,6 +1,6 @@
 {* 
  Testlink Open Source Project - http://testlink.sourceforge.net/ 
- $Id: metricsDashboard.tpl,v 1.20 2010/11/17 08:52:39 mx-julian Exp $     
+ $Id: metricsDashboard.tpl,v 1.21 2010/11/17 09:06:13 mx-julian Exp $     
  Purpose: smarty template - main page / site map                 
 
  rev:
@@ -16,7 +16,7 @@
              info_metrics_dashboard,test_plan_progress,project_progress"}
 {include file="inc_head.tpl" openHead='yes'}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var="tableID" value=$matrix->tableID}
+  {assign var="tableID" value="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}

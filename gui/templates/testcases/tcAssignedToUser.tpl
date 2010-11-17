@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcAssignedToUser.tpl,v 1.21 2010/10/13 09:35:39 asimon83 Exp $
+$Id: tcAssignedToUser.tpl,v 1.22 2010/11/17 09:06:13 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 rev:
 20101013 - asimon - disable "show also closed builds" checkbox when a specific build is selected
@@ -20,7 +20,7 @@ rev:
 {include file="inc_head.tpl" openHead='yes'}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-	{assign var=tableID value=table_$idx}
+	{assign var="tableID" value="table_$idx"}
 	{if $smarty.foreach.initializer.first}
 		{$matrix->renderCommonGlobals()}
 		{include file="inc_ext_js.tpl" bResetEXTCss=1}
@@ -61,7 +61,7 @@ rev:
 		{foreach from=$gui->tableSet key=idx item=matrix}
 		
 			<p>
-			{assign var=tableID value=table_$idx}
+			{assign var="tableID" value="table_$idx"}
 			{$matrix->renderBodySection($tableID)}
 			<br /></p>
 		

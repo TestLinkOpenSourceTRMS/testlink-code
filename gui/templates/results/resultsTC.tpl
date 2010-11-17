@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsTC.tpl,v 1.14 2010/09/20 13:57:37 mx-julian Exp $ *}
+{* $Id: resultsTC.tpl,v 1.15 2010/11/17 09:06:13 mx-julian Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
     20100719 - eloff - Update due to changes in tlExtTable
@@ -15,7 +15,7 @@
 
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
+  {assign var="tableID" value="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -45,7 +45,7 @@
          arg_tproject_name=$gui->tproject_name arg_tplan_name=$gui->tplan_name}	
 
 {foreach from=$gui->tableSet key=idx item=matrix}
-  {assign var=tableID value="table_$idx"}
+  {assign var="tableID" value="table_$idx"}
   {if $idx != 0}
   <h2>{$labels.platform}: {$gui->platforms[$idx]|escape}</h2>
   {/if}

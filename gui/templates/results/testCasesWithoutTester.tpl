@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: testCasesWithoutTester.tpl,v 1.5 2010/11/06 14:07:57 mx-julian Exp $
+$Id: testCasesWithoutTester.tpl,v 1.6 2010/11/17 09:06:13 mx-julian Exp $
 
 Purpose: For a test plan, list test cases that has no tester assigned
 
@@ -15,7 +15,7 @@ rev:
              testCasesWithoutTester_info'}
 {include file="inc_head.tpl" openHead="yes"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
+  {assign var="tableID" value="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -36,7 +36,7 @@ rev:
 {if $gui->warning_msg == ''}
 	{if $gui->tableSet}
 		{foreach from=$gui->tableSet key=idx item=matrix}
-			{assign var=tableID value=table_$idx}
+			{assign var="tableID" value="table_$idx"}
    			{$matrix->renderBodySection($tableID)}
 		{/foreach}
 		

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: eventviewer.tpl,v 1.37 2010/11/13 09:11:11 franciscom Exp $
+$Id: eventviewer.tpl,v 1.38 2010/11/17 09:06:13 mx-julian Exp $
 
 Event Viewer
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -25,7 +25,7 @@ Event Viewer
 {include file="inc_ext_js.tpl" bResetEXTCss=1}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var="tableID" value=$matrix->tableID}
+  {assign var="tableID" value="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}

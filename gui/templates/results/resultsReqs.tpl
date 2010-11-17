@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsReqs.tpl,v 1.25 2010/10/07 13:27:59 asimon83 Exp $
+$Id: resultsReqs.tpl,v 1.26 2010/11/17 09:06:13 mx-julian Exp $
 Purpose: report REQ coverage 
 Author : Martin Havlat 
 
@@ -23,7 +23,7 @@ rev:
 {include file="inc_head.tpl" openHead="yes"}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-	{assign var=tableID value=table_$idx}
+	{assign var="tableID" value="table_$idx"}
 	{if $smarty.foreach.initializer.first}
 		{$matrix->renderCommonGlobals()}
 		{if $matrix instanceof tlExtTable}
@@ -60,7 +60,7 @@ rev:
 
 {if $gui->warning_msg == ''}
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var="tableID" value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	

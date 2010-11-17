@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: resultsBugs.tpl,v 1.6 2010/09/20 13:33:33 mx-julian Exp $ *}
+{* $Id: resultsBugs.tpl,v 1.7 2010/11/17 09:06:13 mx-julian Exp $ *}
 {* Purpose: smarty template - show Test Results and Metrics *}
 {* Revisions:
    20100920 - Julian - use exttable
@@ -13,7 +13,7 @@
 
 {include file="inc_head.tpl"}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
+  {assign var="tableID" value="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -61,7 +61,7 @@
 	<br />
 	
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var="tableID" value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	

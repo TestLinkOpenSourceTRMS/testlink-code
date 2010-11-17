@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcSearchResults.tpl,v 1.6 2010/09/21 10:03:18 mx-julian Exp $
+$Id: tcSearchResults.tpl,v 1.7 2010/11/17 09:12:23 mx-julian Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -10,7 +10,7 @@ rev:
 
 {include file="inc_head.tpl" openHead='yes'}
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-  {assign var=tableID value=$matrix->tableID}
+  {assign var="tableID" value="$matrix->tableID"}
   {if $smarty.foreach.initializer.first}
     {$matrix->renderCommonGlobals()}
     {if $matrix instanceof tlExtTable}
@@ -28,7 +28,7 @@ rev:
 <div class="workBack">
 {if $gui->warning_msg == ''}
   {foreach from=$gui->tableSet key=idx item=matrix}
-    {assign var=tableID value=table_$idx}
+    {assign var="tableID" value="table_$idx"}
     {$matrix->renderBodySection($tableID)}
   {/foreach}
   <br />

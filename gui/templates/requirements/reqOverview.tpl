@@ -1,17 +1,17 @@
 {* 
- * TestLink Open Source Project - http://testlink.sourceforge.net/ 
- * $Id: reqOverview.tpl,v 1.10 2010/11/13 10:58:41 franciscom Exp $
- *
- * Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
- * See BUGID 3227 for a more detailed description of this feature.
- * 
- * revisions:
- * 20100823 - asimon - replaced "onchange" in form by "onclick" to get
- *                     it working in IE too
- * 20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
- * 20100310 - asimon - refactoring
- * 20100309 - asimon - initial commit
- *
+   TestLink Open Source Project - http://testlink.sourceforge.net/ 
+   $Id: reqOverview.tpl,v 1.11 2010/11/17 09:12:23 mx-julian Exp $
+   
+   Purpose: List requirements with (or without) Custom Fields Data in an ExtJS Table.
+   See BUGID 3227 for a more detailed description of this feature.
+   
+   revisions:
+   20100823 - asimon - replaced "onchange" in form by "onclick" to get
+                       it working in IE too
+   20100821 - asimon - replaced "show all versions" button by checkbox as requested per e-mail
+   20100310 - asimon - refactoring
+   20100309 - asimon - initial commit
+   
  *}
 
 {lang_get var="labels" 
@@ -22,7 +22,7 @@
 {include file="inc_head.tpl" openHead="yes"}
 
 {foreach from=$gui->tableSet key=idx item=matrix name="initializer"}
-	{assign var=tableID value=table_$idx}
+	{assign var="tableID" value="table_$idx"}
 	{if $smarty.foreach.initializer.first}
 		{$matrix->renderCommonGlobals()}
 		{if $matrix instanceof tlExtTable}
@@ -51,7 +51,7 @@
 	</form></p><br/>
 	
 	{foreach from=$gui->tableSet key=idx item=matrix}
-		{assign var=tableID value=table_$idx}
+		{assign var="tableID" value="table_$idx"}
    		{$matrix->renderBodySection($tableID)}
 	{/foreach}
 	

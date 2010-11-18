@@ -8,12 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.155 2010/11/10 07:05:16 amkhullar Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.156 2010/11/18 11:40:15 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
- *  20101110 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
+ *  20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  *  20101010 - franciscom - added testlink_node_name as new attribute to be accessed while working with EXT-JS tree
  *  20101003 - franciscom - generateExecTree() - added option remove_empty_nodes_of_type on get_subtree() call
  *  20100929 - asimon - BUGID 3814: fixed keyword filtering with "and" selected as type
@@ -1503,27 +1503,38 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 				   " AND NH.parent_id = {$node['id']} ";
 			// AND value in ('" . implode("' , '",$cf_hash) . "')";
 		//BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
-		if (isset($cf_hash)) {
-		$suffix = 1;
-		
-		foreach ($cf_hash as $cf_id => $cf_value) {
-			// single value or array?
-			if (is_array($cf_value)) {
-				$sql .= " AND ( ";
-				$count = 1;
-				foreach ($cf_value as $value) {
-					if ($count > 1) {
-						$sql .= " AND ";
-					}
-					$sql .= " ( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
-					$count++;
+		if (isset($cf_hash)) 
+		{	
+			$countmain = 1;
+			$cf_sql = '';
+			foreach ($cf_hash as $cf_id => $cf_value) 
+			{
+				
+				if ( $countmain != 1 ) 
+				{
+					$cf_sql .= " OR ";
 				}
-				$sql .= " ) ";
-			} else {
-				$sql .= " AND CFD.value LIKE '%{$cf_value}%' ";
+				// single value or array?
+				if (is_array($cf_value)) 
+				{
+					$count = 1;
+					foreach ($cf_value as $value) 
+					{
+						if ($count > 1) 
+						{
+							$cf_sql .= " AND ";
+						}
+						$cf_sql .= "( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
+						$count++;
+						//print_r($count);
+					}
+				} else 
+				{
+					$cf_sql .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
+				}
+				$countmain++;
 			}
-				$suffix ++;
-			}
+			$sql .=  " AND ({$cf_sql}) ";
 		}
 			
 			$rows = $db->fetchRowsIntoMap($sql,'value');

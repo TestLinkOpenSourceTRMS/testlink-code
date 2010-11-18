@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2010/02/03 20:22:13 $ by $Author: franciscom $
+ * @version $Revision: 1.32.6.1 $
+ * @modified $Date: 2010/11/18 11:41:34 $ by $Author: amkhullar $
  *
  * allows users to manage keywords. 
  *
@@ -48,13 +48,18 @@ switch ($action)
 	break;
 }
 if($op->status == 1)
+{
 	$default_template = $op->template;
+}
 else
+{
 	$msg = getKeywordErrorMessage($op->status);
-
+}
 $keywords = null;
 if ($default_template == 'keywordsView.tpl')
+{
 	$keywords = $tprojectMgr->getKeywords($args->testproject_id);
+}
 
 $smarty->assign('user_feedback',$msg);
 $smarty->assign('canManage',$canManage);

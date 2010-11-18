@@ -1,12 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.22 2010/11/13 10:58:41 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.23 2010/11/18 13:04:09 mx-julian Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-  20101026 - franciscom - BUGID 3927: Requirement can’t be deleted due to JS error -> label has to be escaped
+  20101026 - franciscom - BUGID 3927: Requirement canï¿½t be deleted due to JS error -> label has to be escaped
   20101017 - franciscom - image access refactored (tlImages)
   20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
   20100319 - asimon - BUGID 1748, added requirement relations display
@@ -66,7 +66,7 @@ function freeze_req_version(btn, text, o_id)
 }
 
 // BUGID 1748
-// BUGID 3927: Requirement can’t be deleted due to JS error -> label has to be escaped
+// BUGID 3927: Requirement canï¿½t be deleted due to JS error -> label has to be escaped
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
 var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
@@ -241,8 +241,8 @@ var pF_delete_req_relation = delete_req_relation;
 		{if $gui->req_relations.num_relations}
 			
 			<tr>
-				<th>{$labels.relation_id}</th>
-				<th>{$labels.relation_type}</th>
+				<th><nobr>{$labels.relation_id}</nobr></th>
+				<th><nobr>{$labels.relation_type}</nobr></th>
 				
 				{if $gui->req_cfg->relations->interproject_linking}
 				  {assign var=colspan value=1}
@@ -251,33 +251,33 @@ var pF_delete_req_relation = delete_req_relation;
 				{/if}
 				
 				<th colspan="{$colspan}">{$labels.relation_document}</th>
-				<th>{$labels.relation_status}</th>
+				<th><nobr>{$labels.relation_status}</nobr></th>
 				
 				{if $gui->req_cfg->relations->interproject_linking}
-					<th>{$labels.relation_project}</th>
+					<th><nobr>{$labels.relation_project}</nobr></th>
 				{/if}
 				
-				<th>{$labels.relation_set_by}</th>
-				<th>{$labels.relation_delete}</th>
+				<th><nobr>{$labels.relation_set_by}</nobr></th>
+				<th><nobr>{$labels.relation_delete}</nobr></th>
 			</tr>
 			
 			{foreach item=relation from=$gui->req_relations.relations}
 			{assign var=status value=$relation.related_req.status}
 				<tr>
 					<td>{$relation.id}</td>
-					<td class="bold">{$relation.type_localized|escape}</td>
+					<td class="bold"><nobr>{$relation.type_localized|escape}</nobr></td>
 					<td colspan="{$colspan}"><a href="javascript:openLinkedReqWindow({$relation.related_req.id})">
-						{$relation.related_req.req_doc_id|escape|truncate:#REQ_DOCID_SIZE#}:
-						{$relation.related_req.title|escape|truncate:#REQ_DOCID_SIZE#}</a></td>
-					<td>{$gui->reqStatus.$status|escape}</td>
+						{$relation.related_req.req_doc_id|escape}:
+						{$relation.related_req.title|escape}</a></td>
+					<td><nobr>{$gui->reqStatus.$status|escape}</nobr></td>
 					
 					{* show related testproject name only if cross-project linking is enabled *}
 					{if $gui->req_cfg->relations->interproject_linking}
-						<td>{$relation.related_req.testproject_name|escape}</td>
+						<td><nobr>{$relation.related_req.testproject_name|escape}</nobr></td>
 					{/if}
 					
-					<td><span title="{$labels.title_created} {$relation.creation_ts} {$labels.by} {$relation.author|escape}">
-						{$relation.author|escape}</span></td>
+					<td><nobr><span title="{$labels.title_created} {$relation.creation_ts} {$labels.by} {$relation.author|escape}">
+						{$relation.author|escape}</span></nobr></td>
 
 					<td align="center">
 	             	<a href="javascript:relation_delete_confirmation({$gui->req_relations.req.id}, {$relation.id}, 

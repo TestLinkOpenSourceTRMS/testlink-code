@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.235.2.3 2010/11/14 11:04:09 franciscom Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.235.2.4 2010/11/18 11:41:09 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101110 - amitkhullar - BUGID 3995 Refix->Custom Field Filters not working properly since the cf_hash is array
  *  20101114 - franciscom - Important Design Notes added on copy_as().	
  *                          BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
  *
@@ -2542,27 +2543,35 @@ class testplan extends tlObjectWithAttachments
 		$or_clause = '';
 		$cf_query = '';
 		//BUGID 3995 Custom Field Filters not working properly since the cf_hash is array	
-		if (isset($cf_hash)) {
-		$suffix = 1;
-		
-		foreach ($cf_hash as $cf_id => $cf_value) {
-			// single value or array?
-			if (is_array($cf_value)) {
-				$cf_query .= " AND ( ";
-				$count = 1;
-				foreach ($cf_value as $value) {
-					if ($count > 1) {
-						$cf_query .= " AND ";
-					}
-					$cf_query .= " ( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
-					$count++;
+		if (isset($cf_hash)) 
+		{
+			$countmain = 1;
+			foreach ($cf_hash as $cf_id => $cf_value) 
+			{
+				if ( $countmain != 1 ) 
+				{
+					$cf_query .= " OR ";
 				}
-				$cf_query .= " ) ";
-			} else {
-				$cf_query .= " AND CFD.value LIKE '%{$cf_value}%' ";
+				// single value or array?
+				if (is_array($cf_value)) 
+				{
+					$count = 1;
+					foreach ($cf_value as $value) 
+					{
+						if ($count > 1) 
+						{
+							$cf_query .= " AND ";
+						}
+						$cf_query .= " ( CFD.value LIKE '%{$value}%' AND CFD.field_id = {$cf_id} )";
+						$count++;
+					}
+				} else 
+				{
+					$cf_query .= " ( CFD.value LIKE '%{$cf_value}%' ) ";
+				}
+					$countmain++;
 			}
-				$suffix ++;
-			}
+					$cf_query =  " AND ({$cf_query}) ";
 		}
 		                              
         $cf_qty = count($cf_hash);		                              		

@@ -6,11 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.331.2.1 2010/11/09 11:11:09 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.331.2.2 2010/11/18 11:41:09 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
- *
+ * 20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  * 20101030 - franciscom - get_by_external() interface changes
  *						   get_basic_info()  interface changes
@@ -4714,7 +4714,7 @@ class testcase extends tlObjectWithAttachments
 
 	/**
 	 * for a given set of test cases, search on the ACTIVE version set, and returns for each test case, 
-	 * an map with: the corresponding MAX(version number), oher info
+	 * an map with: the corresponding MAX(version number), other info
 	 *
 	 * @param mixed $id: test case id can be an array
 	 * @param map $filters OPTIONAL - now only 'cfields' key is supported
@@ -4780,15 +4780,38 @@ class testcase extends tlObjectWithAttachments
 			{
 				$cf_hash = &$my['filters']['cfields'];
 				$cfQty = count($cf_hash);
-				
+				$countmain = 1;
 				// 20101025 - build custom fields filter
 				// do not worry!! it seems that filter criteria is OR, but really is an AND,
 				// OR is needed to do a simple query.
 				// with processing on recordset becomes an AND
+				// BUGID 3995
 				foreach ($cf_hash as $cf_id => $cf_value)
 				{
-		    		$cfQuery .= $or_clause . " (CFDV.field_id=" . $cf_id . " AND CFDV.value='" . $cf_value . "') ";
-					$or_clause = ' OR ';			
+					if ( $countmain != 1 ) 
+					{
+						$cfQuery .= " OR ";
+					}
+					if (is_array($cf_value)) 
+					{
+						$count = 1;
+
+						foreach ($cf_value as $value) 
+						{
+
+							if ($count > 1) 
+							{
+								$cfQuery .= " AND ";
+							}
+							$cfQuery .=  " ( CFDV.value LIKE '%{$value}%' AND CFDV.field_id = {$cf_id} )";
+							$count++;
+						}
+					} 
+					else
+					{
+		    			$cfQuery .=  " ( CFDV.value LIKE '%{$cf_value}%' ) ";
+					}
+					$countmain++;			
 				}
 				$cfSelect = ", CFDV.field_id, CFDV.value ";
 				$cfJoin = " JOIN {$this->tables['cfield_design_values']} CFDV ON CFDV.node_id = TCV.id ";

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqCreateTestCases.tpl,v 1.20 2010/11/13 09:21:54 franciscom Exp $
+$Id: reqCreateTestCases.tpl,v 1.21 2010/11/18 15:16:19 mx-julian Exp $
 
    Purpose: smarty template - view a requirement specification
    Author: Martin Havlat 
@@ -131,9 +131,9 @@ function check_action_precondition(form_id,action,msg)
 					{$gui->all_reqs[row].req_doc_id|escape} : {$gui->all_reqs[row].title|escape}
 				</span>
 			</td>
-    		{assign var="req_status" value=$gui->all_reqs[row].status }
+    		{assign var="req_status" value="$gui->all_reqs[row].status"}
     		<td style="padding:2px;">{$gui->reqStatusDomain.$req_status|escape}</td>
-    		{assign var="req_type" value=$gui->all_reqs[row].type }
+    		{assign var="req_type" value="$gui->all_reqs[row].type"}
     		<td style="padding:2px;">{$gui->reqTypeDomain.$req_type|escape}</td>
     		<td style="padding:2px;"><input name="testcase_count[{$gui->all_reqs[row].id}]" type="text" size="3" maxlength="3" value="1"></td>
     		{if $gui->req_cfg->expected_coverage_management}

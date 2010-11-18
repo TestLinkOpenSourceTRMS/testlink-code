@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_steps.tpl,v 1.4 2010/10/17 09:46:37 franciscom Exp $
+$Id: inc_steps.tpl,v 1.4.2.1 2010/11/18 16:27:52 mx-julian Exp $
 Purpose: Show the steps for a testcase in vertical or horizontal layout
          Included from files tcView_viewer.tpl and inc_exec_test_spec.tpl
 Author : eloff, 2010
@@ -24,14 +24,14 @@ Author : eloff, 2010
 
 {if $layout == 'horizontal'}
 	<tr>
-		<th>
+		<th width="25px"><nobr>
 		{if $edit_enabled && $steps != ''}
 			<img class="clickable" src="{$tlImages.reorder}" align="left"
 			     title="{$inc_steps_labels.show_hide_reorder}"
 			     onclick="showHideByClass('span','order_info');">
 		{/if}
 			{$inc_steps_labels.step_number}
-		</th>
+		</nobr></th>
 		<th>{$inc_steps_labels.step_actions}</th>
 		<th>{$inc_steps_labels.expected_results}</th>
 		{if $session['testprojectOptions']->automationEnabled}
@@ -89,14 +89,14 @@ Author : eloff, 2010
 	{/if}
 	{foreach from=$steps item=step_info}
 	<tr>
-		<th width="20">{$inc_steps_labels.step_number}
+		<th width="25px"><nobr>{$inc_steps_labels.step_number}
 		<span class="order_info" style='display:none'>
 		<input type="text" name="step_set[{$step_info.id}]" id="step_set_{$step_info.id}"
 		       value="{$step_info.step_number}"
 		       size="{#STEP_NUMBER_SIZE#}"
 		       maxlength="{#STEP_NUMBER_MAXLEN#}">
 		{include file="error_icon.tpl" field="step_number"}
-		</span>{$step_info.step_number}</th>
+		</span>{$step_info.step_number}</nobr></th>
 		<th>{$inc_steps_labels.step_actions}</th>
 		{if $session['testprojectOptions']->automationEnabled}
 		<th>{$inc_steps_labels.execution_type_short_descr}:

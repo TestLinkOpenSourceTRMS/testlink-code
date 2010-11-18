@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.72 2010/11/01 15:33:33 franciscom Exp $
+ * @version    	CVS: $Id: specview.php,v 1.72.2.1 2010/11/18 11:40:34 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ *	20101118 - amitkhullar - BUGID 4024 Filtering issue 
  *	20101101 - franciscom - improved $pfFilters contruction to avoid warning in event viewer
  *	20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and 
  *										test case name filters.
@@ -288,7 +289,6 @@ function gen_spec_view(&$db, $spec_view_type='testproject', $tobj_id, $id, $name
 		$tcaseSet = $tcase_mgr->get_by_id($a_tcid,testcase::ALL_VERSIONS);
 		$result = addLinkedVersionsInfo($tcaseSet,$a_tsuite_idx,$out,$linked_items);
 	}
-	
 	
 	// Try to prune empty test suites, to reduce memory usage and to remove elements
 	// that do not need to be displayed on user interface.
@@ -625,7 +625,6 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		
 			switch($specViewType)
 			{
-			
 				case 'testPlanLinking':
 					// We need to analise linked items and spec
 					foreach($targetSet as $idx => $key)
@@ -635,7 +634,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 						// BUGID 3936 - Design Time Custom Field Filter
 						if( is_null($targetTestCase) )
 						{
-							$test_spec[$idx]=null;
+							$test_spec[$itemSet[$key]]=null; //BUGID 4024
 							$item = null;
 						}
 						else 
@@ -915,8 +914,7 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 	$the_level = $out[0]['level']+1;
 	$idx++;
 	$tsuite_tcqty=array($id => 0);
-	$parent_idx=-1;
-	
+
 	foreach ($test_spec as $current)
 	{
 		if(is_null($current))
@@ -931,7 +929,6 @@ function buildSkeleton($id,$name,$config,&$test_spec,&$platforms)
 			$tc_id = $current['id'];
 			$parent_idx = $hash_id_pos[$current['parent_id']];
 			$a_tsuite_idx[$tc_id] = $parent_idx;
-	
 			$out[$parent_idx]['testcases'][$tc_id] = array('id' => $tc_id,'name' => $current['name']);
 	
 	        // Reference to make code reading more human friendly				

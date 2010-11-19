@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.46 2010/11/13 10:17:42 franciscom Exp $
+$Id: tcView.tpl,v 1.47 2010/11/19 12:13:26 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
@@ -110,9 +110,6 @@ function validateStepsReorder(formOID)
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
-{if !isset($gui->refresh_tree)}
-  {assign var="refresh_tree" value=false}
-{/if}
 
 {include file="inc_update.tpl" user_feedback=$gui->user_feedback}
 <div class="workBack">

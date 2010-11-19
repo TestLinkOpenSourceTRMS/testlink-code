@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.335 2010/11/19 12:13:25 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.336 2010/11/19 16:47:55 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -949,12 +949,12 @@ $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from 
 $tlCfg->req_cfg->use_testcase_summary_prefix_with_title_and_version = ENABLED;
 
 // If above option is enabled, the following string will be used as a template for the tc summary prefix.
-// It has to include three variables in the form of "%s". The first one will be used internally by the system.
-// The second one will then be replaced by the title of the originating Requirement,
-// the third one by its version number.
+// It has to include four variables in the form of "%s". The first and second one will be used internally by the system.
+// The third one will then be replaced by the title of the originating Requirement,
+// the fourth one by its version number.
 // Attention: If there aren't exactly three variables in it, the operation will fail.
 $tlCfg->req_cfg->testcase_summary_prefix_with_title_and_version = "<b>The Test Case was generated from the assigned" .
-    " requirement <a href=\"javascript:openLinkedReqWindow(%s)\">\"%s\" (version %s)</a>.</b><br />";
+    " requirement <a href=\"javascript:openLinkedReqVersionWindow(%s,%s)\">\"%s\" (version %s)</a>.</b><br />";
 
 /**
  * ENABLED: When generating Test Cases from Requirements, copy the scope of the Requirement

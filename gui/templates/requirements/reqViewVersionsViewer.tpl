@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.14 2010/11/13 10:39:10 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.15 2010/11/19 16:47:55 asimon83 Exp $
 viewer for requirement
 
 rev:
+20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101111 - asimon - replaced openTCaseWindow() by openTCEditWindow() to save popup size
 *}
@@ -11,7 +12,7 @@ rev:
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
-             testproject,title_last_mod,title_created,by,btn_compare_versions"}
+             testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -93,6 +94,12 @@ rev:
 {* warning message when req is frozen *}
 {if $args_frozen_version neq null}
 <div class="messages" align="center">{$labels.can_not_edit_req}</div>
+{/if}
+
+{* BUGID 4038 *}
+{* notification message if we display a specific version *}
+{if $gui->version_option > 0}
+<div class="messages" align="center">{$labels.showing_version} {$args_req.version}</div>
 {/if}
 
 <table class="simple">

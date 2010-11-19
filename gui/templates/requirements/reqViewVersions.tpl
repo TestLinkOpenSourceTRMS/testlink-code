@@ -1,12 +1,13 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.23 2010/11/18 13:04:09 mx-julian Exp $
+$Id: reqViewVersions.tpl,v 1.24 2010/11/19 16:47:55 asimon83 Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
-  20101026 - franciscom - BUGID 3927: Requirement can�t be deleted due to JS error -> label has to be escaped
+  20101026 - franciscom - BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
   20101017 - franciscom - image access refactored (tlImages)
   20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
   20100319 - asimon - BUGID 1748, added requirement relations display
@@ -66,7 +67,7 @@ function freeze_req_version(btn, text, o_id)
 }
 
 // BUGID 1748
-// BUGID 3927: Requirement can�t be deleted due to JS error -> label has to be escaped
+// BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
 var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';

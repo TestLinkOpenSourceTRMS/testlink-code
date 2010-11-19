@@ -8,13 +8,14 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.38 2010/11/16 14:15:14 mx-julian Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.39 2010/11/19 16:47:55 asimon83 Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
  * 
  * rev:
  *
+ * 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
  * 20101116 - Julian - Added Author to Created column and Modifier to Last modified column
  * 20101020 - Julian - BUGID 3915 - added columns for creation and modification timestamp
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
@@ -103,10 +104,6 @@ if(count($gui->reqIDs) > 0) {
 		$title = htmlentities($req[0]['req_doc_id'], ENT_QUOTES, $charset) . $glue_char . 
 				 htmlentities($req[0]['title'], ENT_QUOTES, $charset);
 		
-		// use html comment to sort properly by this columns (extjs)
-		$linked_title = '<!-- ' . $title . ' -->' . '<a href="javascript:openLinkedReqWindow(' . $id . ')">' . 
-						$title . '</a>';
-		
 		// reqspec-"path" to requirement
 		$path = $req_mgr->tree_mgr->get_path($req[0]['srs_id']);
 		foreach ($path as $key => $p) {
@@ -137,6 +134,12 @@ if(count($gui->reqIDs) > 0) {
 	    	 */
 	    	
 	    	$result[] = $path;
+	    	
+	    	// use html comment to sort properly by this columns (extjs)
+			// BUGID 4038
+	    	$linked_title = '<!-- ' . $title . ' -->' . '<a href="javascript:openLinkedReqVersionWindow(' . $id . ',' . $version['version_id'] . ')">' . 
+			                $title . '</a>';
+	    	
 	    	$result[] = $linked_title;
 	    	
 	    	// version number

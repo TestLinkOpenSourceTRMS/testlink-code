@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.34 $
- * @modified $Date: 2010/10/20 09:39:25 $ by $Author: franciscom $
+ * @version $Revision: 1.35 $
+ * @modified $Date: 2010/11/19 16:47:55 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
  *
  *	@internal revision
+ *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
  *	20101020 - franciscom - BUGID 3914 - typo error  
  *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
  *  20100324 - asimon - BUGID 1748 - Moved init_relation_type_select to requirement_mgr
@@ -48,7 +49,9 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
 function init_args()
 {
 	// BUGID 1748
+	// BUGID 4038
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
+	                 "req_version_id" => array(tlInputParameter::INT_N),
 			         "showReqSpecTitle" => array(tlInputParameter::INT_N),
 			         "relation_add_result_msg" => array(tlInputParameter::STRING_N));	
 		
@@ -86,7 +89,12 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->pieceSep = config_get('gui_title_separator_1');
     
     $gui->req_id = $argsObj->req_id;
-    $gui->req_versions = $req_mgr->get_by_id($gui->req_id);
+        
+    // BUGID 4038
+    /* if wanted, show only the given version */
+    $gui->version_option = ($argsObj->req_version_id) ? $argsObj->req_version_id : requirement_mgr::ALL_VERSIONS;
+        
+    $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option);
     $gui->req = current($gui->req_versions);
     $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);
     

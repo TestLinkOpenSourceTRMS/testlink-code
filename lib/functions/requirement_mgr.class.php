@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.1 $
- * @modified $Date: 2010/11/09 11:11:09 $ by $Author: asimon83 $
+ * @version $Revision: 1.114.2.2 $
+ * @modified $Date: 2010/11/19 12:37:59 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20101118 - asimon - BUGID 4031: Prevent copying of req scope to test case summary when creating test cases from requirement
  *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  *	20101011 - franciscom - BUGID 3886: CF Types validation - changes in html_table_of_custom_field_inputs()
@@ -827,7 +828,14 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
             
             // 20100106 - franciscom - multiple test case steps feature - removed expected_results
 	        // Julian - BUGID 2995
-	  	    $tcase = $tcase_mgr->create($tsuite_id,$tcase_name,$req_cfg->testcase_summary_prefix . $reqData['scope'] ,
+	        
+            // BUGID 4031 - copying of scope now is configurable
+            $prefix = ($req_cfg->use_testcase_summary_prefix_with_title_and_version)
+                    ? sprintf($req_cfg->testcase_summary_prefix_with_title_and_version, $reqID, $reqData['title'], $reqData['version'])
+                    : $req_cfg->testcase_summary_prefix;
+            $content = ($req_cfg->copy_req_scope_to_tc_summary) ? $prefix . $reqData['scope'] : $prefix;
+            
+	  	    $tcase = $tcase_mgr->create($tsuite_id,$tcase_name,$content,
 						                $empty_preconditions, $empty_steps,$user_id,null,
 						                $testcase_order,testcase::AUTOMATIC_ID,TESTCASE_EXECUTION_TYPE_MANUAL,
 						                $testcase_importance_default,$createOptions);

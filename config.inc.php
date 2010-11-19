@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.333.2.1 2010/11/09 11:11:09 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.333.2.2 2010/11/19 12:37:59 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
  *  20101109 - asimon - added $tlCfg->custom_fields->show_custom_fields_without_value
  *	20101030 - franciscom - bullet image config removed
  *  20101028 - Julian - BUGID 3950 - added $tlCfg->gui->dynamic_quick_tcase_search_input_size
@@ -941,6 +942,25 @@ $tlCfg->req_cfg->default_testsuite_name = "Auto-created Test cases";
 $tlCfg->req_cfg->testsuite_details = "Test Cases in the Test Suite are generated from Requirements. " .
 		                            "A refinement of test scenario is highly recommended.";
 $tlCfg->req_cfg->testcase_summary_prefix = "<b>The Test Case was generated from the assigned requirement.</b><br />";
+
+
+// If the following value is enabled, then the summary prefix string will include the
+// title and version number of the assigned requirement.
+$tlCfg->req_cfg->use_testcase_summary_prefix_with_title_and_version = ENABLED;
+
+// If above option is enabled, the following string will be used as a template for the tc summary prefix.
+// It has to include three variables in the form of "%s". The first one will be used internally by the system.
+// The second one will then be replaced by the title of the originating Requirement,
+// the third one by its version number.
+// Attention: If there aren't exactly three variables in it, the operation will fail.
+$tlCfg->req_cfg->testcase_summary_prefix_with_title_and_version = "<b>The Test Case was generated from the assigned" .
+    " requirement <a href=\"javascript:openLinkedReqWindow(%s)\">\"%s\" (version %s)</a>.</b><br />";
+
+/**
+ * ENABLED: When generating Test Cases from Requirements, copy the scope of the Requirement
+ * to the summary of the newly created Test Case.
+ */
+$tlCfg->req_cfg->copy_req_scope_to_tc_summary = DISABLED;
 
 
 // To avoid perfomance problems on search Requirements feature,

@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.2 $
- * @modified $Date: 2010/11/19 12:37:59 $ by $Author: asimon83 $
+ * @version $Revision: 1.114.2.3 $
+ * @modified $Date: 2010/11/19 16:47:47 $ by $Author: asimon83 $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
  *  20101118 - asimon - BUGID 4031: Prevent copying of req scope to test case summary when creating test cases from requirement
  *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
@@ -831,7 +832,8 @@ function create_tc_from_requirement($mixIdReq,$srs_id, $user_id, $tproject_id = 
 	        
             // BUGID 4031 - copying of scope now is configurable
             $prefix = ($req_cfg->use_testcase_summary_prefix_with_title_and_version)
-                    ? sprintf($req_cfg->testcase_summary_prefix_with_title_and_version, $reqID, $reqData['title'], $reqData['version'])
+                    ? sprintf($req_cfg->testcase_summary_prefix_with_title_and_version, 
+                              $reqID, $reqData['version_id'], $reqData['title'], $reqData['version'])
                     : $req_cfg->testcase_summary_prefix;
             $content = ($req_cfg->copy_req_scope_to_tc_summary) ? $prefix . $reqData['scope'] : $prefix;
             

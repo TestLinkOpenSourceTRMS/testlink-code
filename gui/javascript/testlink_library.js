@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.112.2.2 2010/11/12 15:23:45 asimon83 Exp $
+// $Id: testlink_library.js,v 1.112.2.3 2010/11/19 16:47:47 asimon83 Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -24,6 +24,7 @@
 //                 on I.E. => generates a bug - BE CAREFUL
 //
 // ------ Revisions ---------------------------------------------------------------------
+// 20101119 - asimon - added openLinkedReqVersionWindow()
 // 20101111 - asimon - now openTCaseWindow() also remembers popup size like other functions do
 // 20101106 - amitkhullar - BUGID 2738: Contribution: option to include TC Exec notes in test report
 // 20101102 - asimon - BUGID 2864: commented out old open_top(), replaced by openLinkedReqWindow()
@@ -851,6 +852,44 @@ function openTCaseWindow(tcase_id,tcversion_id,show_mode)
 
 	// second parameter(window name) with spaces caused bug on IE
 	window.open(fRoot+feature_url,"TestCaseSpec",windowCfg);
+}
+
+
+/**
+ * open a specific version of a requirement in a popup window
+ * 
+ * @param req_id Requirement ID
+ * @param req_version_id Requirement Version ID
+ * @param anchor string with anchor name
+ */
+function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
+{
+	if (anchor == null) {
+		anchor = '';
+	} else {
+		anchor = '#' + anchor;
+	}
+	
+	var windowCfg='';
+	var feature_url = "lib/requirements/reqView.php";
+	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + "&req_version_id=" + req_version_id + anchor;
+
+	// 20101008 - asimon - BUGID 3311
+	var width = getCookie("ReqPopupWidth");
+	var height = getCookie("ReqPopupHeight");
+
+	if (width == null)
+	{
+		var width = "800";
+	}
+
+	if (height == null)
+	{
+		var height = "600";
+	}
+
+	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+	window.open(fRoot+feature_url,"Requirement",windowCfg);
 }
 
 

@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.12.6.1 2010/11/11 17:21:32 asimon83 Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.12.6.2 2010/11/19 16:47:47 asimon83 Exp $
 viewer for requirement
 
 rev:
+20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
 20101111 - asimon - replaced openTCaseWindow() by openTCEditWindow() to save popup size
 *}
 {lang_get var="labels"
@@ -92,6 +93,12 @@ rev:
 {* warning message when req is frozen *}
 {if $args_frozen_version neq null}
 <div class="messages" align="center">{$labels.can_not_edit_req}</div>
+{/if}
+
+{*  BUGID 4038 *}
+{* notification message if we display a specific version *}
+{if $gui->version_option > 0}
+<div class="messages" align="center">{$labels.showing_version} {$args_req.version}</div>
 {/if}
 
 <table class="simple">

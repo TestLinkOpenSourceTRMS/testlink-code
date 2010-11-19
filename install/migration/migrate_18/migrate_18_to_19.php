@@ -15,10 +15,11 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10 2010/09/11 08:19:25 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.1 2010/11/19 21:26:39 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
+ *	20101119 - franciscom - fixed DROP COLUMN syntax for SQL SERVER
  *	20100911 - franciscom - migrate_cfield_links()
  *  20100707 - asimon - req spec type set to "1" like done for requirements
  *  20100705 - asimon - added migrate_user_assignments()
@@ -106,7 +107,7 @@ function migrate_requirements(&$dbHandler,$tableSet)
         	}
         	else
         	{
-        		$cols2drop[$colname] = " DROP $colname ";
+        		$cols2drop[$colname] = " DROP COLUMN $colname ";
         	}
         }
         $drop_clause = implode(",", $cols2drop);
@@ -151,7 +152,7 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 		}
 		else
 		{
-			$cols2drop[$colname] = " DROP $colname ";
+			$cols2drop[$colname] = " DROP COLUMN $colname ";
 		}
 	}
 	$drop_clause = implode(",", $cols2drop);
@@ -191,6 +192,11 @@ function migrate_project_options(&$dbHandler,$tableSet)
 	} 
 	
 	// STEP 3 - Remove fields from project
+	// Critic - we have CONSTRAINTS => we will not be able to delete columns
+	//          if CONSTRAINTS exists.
+	//
+	// To avoid complex code we will inform user that 
+	// he/she had to do this manually
 	$adodbObj = $dbHandler->get_dbmgr_object();
 	$colNames = $adodbObj->MetaColumnNames($tableSet['testprojects']);
 	$cols2drop = array('option_reqs','option_priority','option_automation');
@@ -203,12 +209,13 @@ function migrate_project_options(&$dbHandler,$tableSet)
 		}
 		else
 		{
-			$cols2drop[$colname] = " DROP $colname ";
+			$cols2drop[$colname] = " DROP COLUMN $colname ";
 		}
 	}
-	$drop_clause = implode(",", $cols2drop);
-	$sql = "ALTER TABLE {$tableSet['testprojects']} {$drop_clause} ";
-	$dbHandler->exec_query($sql);
+	echo "Please DROP Manually COLUMNS with it's constraints (I'm sorry )<b> ";
+	// $drop_clause = implode(",", $cols2drop);
+	// $sql = "ALTER TABLE {$tableSet['testprojects']} {$drop_clause} ";
+	// $dbHandler->exec_query($sql);
 }
 
 
@@ -315,7 +322,7 @@ function migrate_testcases(&$dbHandler,$tableSet)
 
         // STEP 3 - Remove fields from tcversions
         $sql = "ALTER TABLE {$tableSet['tcversions']} " .
-               "DROP steps, DROP expected_results ";
+               "DROP COLUMN steps, DROP COLUMN expected_results ";
         $dbHandler->exec_query($sql);
 	} 
 }
@@ -414,7 +421,7 @@ function migrate_cfield_links(&$dbHandler, $tableSet)
 	
 	$workingSet = $dbHandler->get_recordset($sql);
 	
-	echo 'Records to process: count($workingSet)<br>';
+	echo "Records to process: count($workingSet)<br>";
 	if( !is_null($workingSet) )
 	{
 		foreach($workingSet as $target)

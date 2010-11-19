@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.12.6.2 2010/11/19 16:47:47 asimon83 Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.12.6.3 2010/11/19 16:50:04 asimon83 Exp $
 viewer for requirement
 
 rev:
@@ -11,7 +11,7 @@ rev:
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
-             testproject,title_last_mod,title_created,by,btn_compare_versions"}
+             testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}

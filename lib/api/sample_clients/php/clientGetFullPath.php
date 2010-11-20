@@ -5,10 +5,12 @@
  *
  * Filename $RCSfile: clientGetFullPath.php,v $
  *
- * @version $Revision: 1.1 $
- * @modified $Date: 2009/07/27 07:23:19 $ by $Author: franciscom $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/11/20 16:12:43 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
+ * @internal Revision
+ * 20101120 - franciscom - test with nodeID -> Array
  */
 require_once 'util.php';
 require_once 'sample.inc.php';
@@ -18,6 +20,41 @@ $method='getFullPath';
 $unitTestDescription="Test - {$method}";
 $idx=1;
 
+// --------------------------------------------------------------------------
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["nodeid"]=3312;
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args,$idx);
+$idx++;
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["nodeid"]=array(3312,3314,3316);
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args,$idx);
+$idx++;
+
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["nodeid"]=array(3333312,3314,3316);
+$debug=true;
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+runTest($client,$method,$args,$idx);
+$idx++;
+// --------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------
 $args=array();
 $args["devKey"]=DEV_KEY;
 $args["nodeid"]='A';

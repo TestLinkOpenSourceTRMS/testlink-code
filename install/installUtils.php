@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: installUtils.php,v $
- * @version $Revision: 1.38.6.2 $
- * @modified $Date: 2010/11/20 11:44:51 $ by $Author: franciscom $
+ * @version $Revision: 1.38.6.3 $
+ * @modified $Date: 2010/11/20 11:48:19 $ by $Author: franciscom $
  * 
  * Functions for installation process
  *
@@ -576,6 +576,8 @@ function check_db_loaded_extension($db_type)
 // 20060514 - franciscom
 function _mysql_make_user($dbhandler,$db_host,$db_name,$login,$passwd)
 {
+
+$op = new stdclass();
 
 $op->status_ok=true;
 $op->msg = 'ok - new user';     

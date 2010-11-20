@@ -1,7 +1,7 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: resultsTC.php,v 1.79 2010/11/01 17:14:48 franciscom Exp $ 
+* $Id: resultsTC.php,v 1.80 2010/11/20 15:01:51 franciscom Exp $ 
 *
 * @author	Martin Havlat <havlat@users.sourceforge.net>
 * @author 	Chad Rosen
@@ -175,8 +175,6 @@ if ($lastResultMap != null)
 				{
 					$rowArray[$cols['platform']] = $gui->platforms[$platformId];
 				}
-				// $rowArray[$cols['tcversion']] = $testCaseVersion;
-
 			
 				if($_SESSION['testprojectOptions']->testPriorityEnabled) 
 				{

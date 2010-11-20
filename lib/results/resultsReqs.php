@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/11/02 09:21:50 $ by $Author: asimon83 $
+ * @version $Revision: 1.42.2.1 $
+ * @modified $Date: 2010/11/20 12:16:56 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20101120 - franciscom - BUGID 4034
  * 20101102 - asimon - BUGID 3964: Evaluation of requirement is set to "Passed" 
  *                     even though all linked test cases aren't passed
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
@@ -67,6 +68,7 @@ $labels = array('requirement' => lang_get('requirement'),
                 'no_linked_tcs' => lang_get('no_linked_tcs'),
                 'goto_testspec' => lang_get('goto_testspec'),
                 'design' => null);
+                
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $status_code_map = array();
@@ -295,7 +297,8 @@ if (count($req_spec_map)) {
 			                $eval_status_map[$eval]['label'] . '</span>';
 			$single_row[] = $colored_eval;
 			
-			$single_row[] = $req_type_labels[$req_info['type']];
+			// BUGID 4034
+			$single_row[] = isset($req_type_labels[$req_info['type']]) ? $req_type_labels[$req_info['type']] : 'BAD TYPE?;
 			
 			// show status only if it was requested to show reqs with all statuses
 			if (!$args->show_only_finished) {

@@ -4,12 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: installUtils.php,v $
- * @version $Revision: 1.38 $
- * @modified $Date: 2010/05/02 14:30:13 $ by $Author: franciscom $
+ * @version $Revision: 1.38.6.1 $
+ * @modified $Date: 2010/11/20 08:20:30 $ by $Author: franciscom $
  * 
  * Functions for installation process
  *
  * Revisions :
+ *	 20101120 - franciscom - check_mysql_version() minimun version increased
+ *
  *   20090120 - havlatm - some functions moved to checkConfig.php. 
  *                         fixed reader
  *   20090101 - franciscom - check_php_version() - minimun version 5.2.0.
@@ -374,7 +376,7 @@ exit;
 */
 function check_mysql_version($conn=null)
 {
-$min_ver = "4.1.0";
+$min_ver = "5.0.3";  // 20101120 - franciscom - seems ti be first with size(varchar) > 255 
 
 $errors=0;	
 $final_msg = "</b><br/>Checking MySQL version:<b> ";

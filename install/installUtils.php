@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * Filename $RCSfile: installUtils.php,v $
- * @version $Revision: 1.38.6.1 $
- * @modified $Date: 2010/11/20 08:20:30 $ by $Author: franciscom $
+ * @version $Revision: 1.38.6.2 $
+ * @modified $Date: 2010/11/20 11:44:51 $ by $Author: franciscom $
  * 
  * Functions for installation process
  *
@@ -983,7 +983,8 @@ function _mssql_assign_grants($db,$the_host,$db_name,$login,$passwd)
   $result=$db->db->Execute($stmt); 
   mssql_free_statement($stmt[1]);
   
-  
+
+  $op = new stdClass();	  
   $op->status_ok=true;  
   $op->msg = 'ok - grant assignment';     
   

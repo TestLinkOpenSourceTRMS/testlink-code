@@ -1,11 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: platformsView.tpl,v 1.14 2010/11/13 09:21:54 franciscom Exp $
+$Id: platformsView.tpl,v 1.15 2010/11/20 16:30:55 franciscom Exp $
 Purpose: smarty template - View all platforms
 
-20100119 - Eloff      - added ability to show/hide platform id for API
-20091201 - Eloff      - show grey trash icon on platforms that use used
-                        and show warning when deleting platforms
+20101120 - franciscom - 3410: Smarty 3.0 compatibility 
+20100119 - Eloff - added ability to show/hide platform id for API
+20091201 - Eloff - show grey trash icon on platforms that use used
+                   and show warning when deleting platforms
 20091010 - franciscom - export XML feature
 *}
 {include file="inc_head.tpl" jsValidate="yes" openHead="yes" enableTableSorting="yes"}
@@ -17,9 +18,9 @@ Purpose: smarty template - View all platforms
              warning_cannot_delete_platform,delete,
              menu_assign_kw_to_tc,btn_create_platform'}
 
-{lang_get s='warning_delete_platform' var="warning_msg" }
-{lang_get s='warning_cannot_delete_platform' var="warning_msg_cannot_del" }
-{lang_get s='delete' var="del_msgbox_title" }
+{lang_get s='warning_delete_platform' var="warning_msg"}
+{lang_get s='warning_cannot_delete_platform' var="warning_msg_cannot_del"}
+{lang_get s='delete' var="del_msgbox_title"}
 
 {assign var="viewAction" value="lib/platforms/platformsView.php"}
 {assign var="dummy" value="lib/platforms/platformsImport.php?goback_url="}

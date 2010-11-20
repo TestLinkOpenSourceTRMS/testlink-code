@@ -9,9 +9,10 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installCheck.php,v 1.3 2010/10/02 18:02:06 franciscom Exp $
+ * @version    	CVS: $Id: installCheck.php,v 1.3.2.1 2010/11/20 10:37:38 franciscom Exp $
  *
  * @internal Revisions:
+ * 20101120 - franciscom - BUGID 4030 - fixed Typo error
  * 20080914 - franciscom - check_php_resource_settings() 
  * 20080219 - franciscom - fixed dir permission checking
  * 
@@ -37,7 +38,7 @@ include 'installHead.inc';
 
 <?php
 // Check before DB installation
-$inst_type = $_GET['installationType'];
+$inst_type = $_GET['type']; // BUGID 4030
 $errors = 0;
 reportCheckingSystem($errors);
 reportCheckingWeb($errors);

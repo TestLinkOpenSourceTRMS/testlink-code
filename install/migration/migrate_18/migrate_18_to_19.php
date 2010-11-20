@@ -15,7 +15,7 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.1 2010/11/19 21:26:39 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.2 2010/11/20 09:58:45 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -42,6 +42,7 @@ define('DBVERSION4MIG', 'DB 1.2');
  */
 function migrate_18_to_19(&$dbHandler,$tableSet)
 {
+	// Need To Add Some Feedback
     migrate_requirements($dbHandler,$tableSet);
     migrate_req_specs($dbHandler,$tableSet);
     migrate_testcases($dbHandler,$tableSet);
@@ -59,9 +60,10 @@ function migrate_requirements(&$dbHandler,$tableSet)
 	// do requirements exist?
 	$sql = "SELECT id FROM {$tableSet['requirements']}";
  	$reqSet = $dbHandler->get_recordset($sql);
-    
+    echo 'Step - Requirements Migration - STARTED <br> ';
 	if( !is_null($reqSet) && count($reqSet) > 0)
 	{
+		echo 'Working - Requirements Migration <br> ';
 		$tree_mgr = new tree($dbHandler);
 		$node_types_descr_id= $tree_mgr->get_available_node_types();
     	$node_types_id_descr=array_flip($node_types_descr_id);
@@ -114,6 +116,8 @@ function migrate_requirements(&$dbHandler,$tableSet)
         $sql = "ALTER TABLE {$tableSet['requirements']} {$drop_clause} ";
         $dbHandler->exec_query($sql);
 	} 
+    echo 'Step - Requirements Migration - Finished !!! <br> ';
+
 }
 
 
@@ -122,6 +126,7 @@ function migrate_requirements(&$dbHandler,$tableSet)
  */
 function migrate_req_specs(&$dbHandler,$tableSet)
 {
+	echo 'Step - Requirements Specification Migration - STARTED<br> ';
 	// get all requirements in system
 	$sql = "SELECT * FROM {$tableSet['req_specs']}";
 	$rs = $dbHandler->get_recordset($sql);
@@ -130,6 +135,7 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 	// Set req spec type to '1' as it was set to n/N on 1.8 but has never been used
 	if( !is_null($rs) && count($rs) > 0)
 	{
+		echo 'Working - Requirements Specification Migration<br> ';
 		$keyset = array_keys($rs);
 		foreach($keyset as $id)
 		{
@@ -158,6 +164,7 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 	$drop_clause = implode(",", $cols2drop);
 	$sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
 	$dbHandler->exec_query($sql);
+    echo 'Step - Requirements Migration - Finished !!! <br> ';
 }
 
 
@@ -166,6 +173,7 @@ function migrate_req_specs(&$dbHandler,$tableSet)
  */
 function migrate_project_options(&$dbHandler,$tableSet)
 {
+	echo 'Step - Test Project Options Migration -  STARTED<br> ';
 	// get all projects in system
 	$sql = "SELECT * FROM {$tableSet['testprojects']}";
 	$rs = $dbHandler->get_recordset($sql);
@@ -173,6 +181,7 @@ function migrate_project_options(&$dbHandler,$tableSet)
 	// Set new parameter
 	if( !is_null($rs) && count($rs) > 0)
 	{
+		echo 'Working - Test Project Options Migration <br> ';
 		$keyset = array_keys($rs);
 		foreach($keyset as $id)
 		{
@@ -212,10 +221,11 @@ function migrate_project_options(&$dbHandler,$tableSet)
 			$cols2drop[$colname] = " DROP COLUMN $colname ";
 		}
 	}
-	echo "Please DROP Manually COLUMNS with it's constraints (I'm sorry )<b> ";
+	echo "******* ATTENTION!!!! *** ==> Please DROP Manually COLUMNS with it's constraints (I'm sorry )<b> ";
 	// $drop_clause = implode(",", $cols2drop);
 	// $sql = "ALTER TABLE {$tableSet['testprojects']} {$drop_clause} ";
 	// $dbHandler->exec_query($sql);
+    echo 'Step - Test Project Options Migration - Finished !!! <br> ';
 }
 
 
@@ -283,14 +293,16 @@ function migrate_testcases(&$dbHandler,$tableSet)
 //   "execution_type" INT2 NOT NULL DEFAULT '1',
 //   PRIMARY KEY ("id")
 // ); 
-	echo __FUNCTION__;
+
 	
+	echo 'Step - Test Case Migration - STARTED <br> ';
 	// do test cases exist?
 	$sql = "SELECT id FROM {$tableSet['tcversions']}";
  	$itemSet = $dbHandler->get_recordset($sql);
 
 	if( !is_null($itemSet) && count($itemSet) > 0)
 	{
+		echo 'Working - Test Case Migration <br> ';
 		$tree_mgr = new tree($dbHandler);
 		$node_types_descr_id= $tree_mgr->get_available_node_types();
     	$node_types_id_descr=array_flip($node_types_descr_id);
@@ -325,6 +337,7 @@ function migrate_testcases(&$dbHandler,$tableSet)
                "DROP COLUMN steps, DROP COLUMN expected_results ";
         $dbHandler->exec_query($sql);
 	} 
+	echo 'Step - Test Case Migration - Finished !! <br> ';
 }
 
 
@@ -340,6 +353,10 @@ function migrate_testcases(&$dbHandler,$tableSet)
  */
 function migrate_user_assignments(&$dbHandler, $tableSet) {
 	//$starttime = microtime(true);
+
+	echo 'Step - User Execution Assignment Migration - STARTED <br> ';
+	echo 'Working - User Execution Assignment Migration <br> ';
+
 	$testplan_mgr = new testplan($dbHandler);
 	
 	// get assignment type for execution
@@ -394,6 +411,7 @@ function migrate_user_assignments(&$dbHandler, $tableSet) {
 	// check how long the function is running on huge databases...
 	//$endtime = microtime(true) - $starttime;
 	//echo "<br/>migrate_user_assignments() needed $endtime seconds to finish<br/>";
+	echo 'Step - User Execution Assignment Migration - Finished <br> ';
 }
 
 /**
@@ -410,7 +428,6 @@ function migrate_cfield_links(&$dbHandler, $tableSet)
 {
 	$treeMgr = new tree($dbHandler);
 	$nodeTypes = $treeMgr->get_available_node_types();
-	echo $nodesTypes['testcase'];
 	unset($treeMgr);
 	
 	$sql = " SELECT CFDV.*, NHITEM.node_type_id, NHVERSION.id AS version_node_id" .
@@ -421,25 +438,39 @@ function migrate_cfield_links(&$dbHandler, $tableSet)
 	
 	$workingSet = $dbHandler->get_recordset($sql);
 	
-	echo "Records to process: count($workingSet)<br>";
+	echo 'Step - Custom Fields Migration - STARTED <br> ';
 	if( !is_null($workingSet) )
 	{
+		echo "Working - Custom Fields Migration - Records to process: count($workingSet)<br>";
 		foreach($workingSet as $target)
 		{
-			$values[] = "( {$target['field_id']}, {$target['version_node_id']}, '{$target['value']}' )";
+			// $values[] = "( {$target['field_id']}, {$target['version_node_id']}, '{$target['value']}' )";
 			$victims[$target['node_id']] = $target['node_type_id'];
+			
+			// Ay!, I've forgot to escape target value
+			$sql = " INSERT INTO {$tableSet['cfield_design_values']} (field_id,node_id,value) VALUES " . 
+			       "( {$target['field_id']}, {$target['version_node_id']}," .
+			       "'" . $dbHandler->prepare_string($target['value']) . "' )";
+			$dbHandler->exec_query($sql);
 		}
 	
-		$sql = " INSERT INTO {$tableSet['cfield_design_values']} (field_id,node_id,value) VALUES ";
-		$vSet = implode(',',$values);
+		// depending amount of data on db this can create an statement with too many characters
+		// and can fail.
+		// change to slower but safer strategy: one by one insert
+		// $sql = " INSERT INTO {$tableSet['cfield_design_values']} (field_id,node_id,value) VALUES ";
+		// $vSet = implode(',',$values);
+		// $sql .= $vSet;
+		// $dbHandler->exec_query($sql);
 		
-		$sql .= $vSet;
-		$dbHandler->exec_query($sql);
+		
+		
 		foreach($victims as $node_id => $node_type_id)
 		{
 			$sql = " DELETE FROM {$tableSet['cfield_design_values']} WHERE node_id = $node_id "; 
 		    $dbHandler->exec_query($sql);
 		}
 	}
+	echo 'Step - Custom Fields Migration - Finished !! <br> ';
+
 }
 ?>

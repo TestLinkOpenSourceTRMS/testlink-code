@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *
  * @filesource $RCSfile: sysinfo.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/04/16 11:11:59 $ by $Author: havlat $
+ * @version $Revision: 1.4.6.1 $
+ * @modified $Date: 2010/11/20 08:22:39 $ by $Author: franciscom $
  *
  * @author	Martin Havlat 
  * 
@@ -157,88 +157,6 @@ else
 <div>
 	<input type="button" name="Re-check" value="Re-check" onClick="reload();" tabindex="1">
 </div>
-
-<!---
-<h2>Web server Check</h2>
-<div id="content">
-
-        <table cellpadding="0" cellspacing="0" border="0" class="table">
-          <tr>
-            <th align="left" class="th">Component</th>
-
-            <th class="th" style="text-align: right;">Status</th>
-          </tr>
-
-		<tr>
-            <td class="tdComponent">PHP version</td>
-
-            <td align="right" class="tdValues"><strong>
-            <?php
-
-            	$error_found = false;
-
-            	$php_version = constant('PHP_VERSION');
-            	$check_php_version_result = check_php_version2($php_version);
-            	switch($check_php_version_result)
-            	{
-            		case -1:
-	                  echo "<b><font color='red'>Invalid version, ($php_version) Installed</font></b>";
-   	               $error_found = true;
-            			break;
-            		case 0:
-      	            echo "<b><font color='red'>Unsupported (ver $php_version)</font></b>";
-            			break;
-            		case 1:
-      	            echo "<b><font color='green'>OK (ver $php_version)</font></b>";
-            			break;
-               }
-            ?>
-            </strong></td>
-          </tr>
-          <tr>
-            <td class="tdComponent">MySQL Client</td>
-
-            <td align="right" class="tdValues"><strong>
-            <?php
-
-            	$mysqlClient = mysql_get_client_info();
-
-               if(function_exists('mysql_connect')) {
-
-                  if(intval(substr($mysqlClient,0,1)) < 4 || substr($mysqlClient,0,3) == '4.0') {
-	                  echo "<b><font color='#C4C781'>ver 4.1.x or later recommended (reported ver " .$mysqlClient. ')</font></b>';
-                  } else echo "<b><font color='green'>OK (ver " .$mysqlClient. ')</font></b>';
-               } else {
-                  echo "<b><font color='red'>Not Available</font></b>";
-                  $error_found = true;
-               }
-            ?>
-            </strong></td>
-          </tr>
-          <tr>
-            <td class="tdComponent">Configuration File Writable</td>
-
-            <td align="right" class="tdValues"><strong>
-            <?php
-               if(is_writable(TL_ABS_PATH . 'custom_config.inc.php')) {
-                  echo "<b><font color='green'>OK</font></b>";
-				} else {
-                  echo "<b><font color='red'>Not Writeable</font></b>";
-                  $error_found = true;
-               }
-            ?>
-            </strong></td>
-          </tr>
-		  <tr>
-            <td class="tdComponent">Memory allocated for PHP script</td>
-            <td align="right" class="tdValues"><?php echo chk_memory(9, 16)?></td>
-          </tr>
-		</table>
-		<br />
-</div>
- -->
-
-
 <div>
 <?php
 $errors = 0;

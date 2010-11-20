@@ -5,11 +5,12 @@
  *
  * Filename $RCSfile: clientGetTestCasesForTestPlan.php,v $
  *
- * @version $Revision: 1.6 $
- * @modified $Date: 2010/11/10 15:09:00 $ by $Author: franciscom $
+ * @version $Revision: 1.7 $
+ * @modified $Date: 2010/11/20 16:38:40 $ by $Author: franciscom $
  * @Author: francisco.mancardi@gmail.com
  *
  * rev: 
+ *		20101120 - franciscom - test with platforms
  *		20100715 - franciscom - new argument getstepinfo
  */
  
@@ -21,7 +22,41 @@ $method='getTestCasesForTestPlan';
 $test_num=1;
 $unitTestDescription="Test {$test_num} - {$method}";
 
-$tplan_id = 3020;
+
+// ---------------------------------------------------------------------------------
+$tplan_id = 3742;
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testplanid"]=$tplan_id;
+$additionalInfo='';
+
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+$answer = runTest($client,$method,$args,$test_num);
+// ---------------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------------
+$tplan_id = 3741;
+$args=array();
+$args["devKey"]=DEV_KEY;
+$args["testplanid"]=$tplan_id;
+$additionalInfo='';
+
+$debug=true;
+echo $unitTestDescription;
+echo $additionalInfo;
+
+$client = new IXR_Client($server_url);
+$client->debug=$debug;
+
+$answer = runTest($client,$method,$args,$test_num);
+// ---------------------------------------------------------------------------------
+
 $args=array();
 $args["devKey"]=DEV_KEY;
 $args["testplanid"]=$tplan_id;

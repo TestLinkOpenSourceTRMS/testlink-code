@@ -15,7 +15,7 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.3 2010/11/20 10:02:56 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.4 2010/11/20 10:08:22 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -449,7 +449,7 @@ function migrate_cfield_links(&$dbHandler, $tableSet)
 	echo 'Step - Custom Fields (DESIGN TIME) Migration - STARTED <br> ';
 	if( !is_null($workingSet) )
 	{
-		echo "Working - Custom Fields Migration - Records to process: count($workingSet)<br>";
+		echo "Working - Custom Fields Migration - Records to process:" .  count($workingSet) . "<br>";
 		foreach($workingSet as $target)
 		{
 			// $values[] = "( {$target['field_id']}, {$target['version_node_id']}, '{$target['value']}' )";

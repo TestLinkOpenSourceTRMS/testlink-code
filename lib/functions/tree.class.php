@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author Francisco Mancardi
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: tree.class.php,v 1.93 2010/10/09 18:58:05 franciscom Exp $
+ * @version    	CVS: $Id: tree.class.php,v 1.93.2.1 2010/11/20 17:00:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101120 - franciscom - get_full_path_verbose() refactoring return when error
  * 20101009 - franciscom - order_cfg config options, added filtering by platform_id when 
  *						   order done by exec_order on _get_subtree_rec()
  *
@@ -1092,6 +1093,10 @@ class tree extends tlObject
 	  
 	  returns: 
 	
+		@internal Revisions
+		20101120 - franciscom - when path can not be found instead of null, 
+								anyway a map will be returned, with key=itemID value=NULL
+			
 	*/
 	function get_full_path_verbose(&$items,$options=null)
 	{
@@ -1101,6 +1106,7 @@ class tree extends tlObject
 	    $all_nodes=array();
 	    $path_format = 'simple';
 	    $output_format = 'simple';
+	    
 	    if( !is_null($options) )
 	    {
 	        $path_format = isset($options['include_starting_point']) ? 'points' : $path_format;
@@ -1110,11 +1116,12 @@ class tree extends tlObject
 	    foreach((array)$items as $item_id)
 	    {
 	        $path_to[$item_id]['name']=$this->get_path($item_id,$goto_root,$path_format);
-	        $all_nodes = array_merge($all_nodes,$path_to[$item_id]['name']);
+	        $all_nodes = array_merge($all_nodes,(array)$path_to[$item_id]['name']);
 	    }
 	    
 	    // BUGID 2728 - added check to avoid crash
-        if( !is_null($all_nodes) && count($all_nodes) > 0)
+	    $status_ok = (!is_null($all_nodes) && count($all_nodes) > 0);
+        if( $status_ok )
         { 
 	        // get only different items, to get descriptions
 	    	$unique_nodes=implode(',',array_unique($all_nodes));
@@ -1149,6 +1156,7 @@ class tree extends tlObject
 				}
 				$path_to = $flat_path;
         		break;
+        		
         		case 'id_name':
         		break;
         		

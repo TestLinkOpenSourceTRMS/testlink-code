@@ -1,7 +1,7 @@
 <?php
 /*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: APIErrors.php,v 1.35 2010/09/18 13:47:00 franciscom Exp $
+ * $Id: APIErrors.php,v 1.35.2.1 2010/11/20 16:55:53 franciscom Exp $
  */
 
 /** 
@@ -101,6 +101,9 @@ define('CFG_DELETE_EXEC_DISABLED_STR',lang_get('API_CFG_DELETE_EXEC_DISABLED',nu
 define('NO_PLATFORMID', 233);
 define('NO_PLATFORMID_STR', lang_get('API_NO_PLATFORMID',null,1));
 
+
+define('NODEID_INVALID_DATA_TYPE', 234);
+define('NODEID_INVALID_DATA_TYPE_STR', lang_get('API_NODEID_INVALID_DATA_TYPE',null,1));
 
 
 /**

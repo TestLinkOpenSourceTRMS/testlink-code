@@ -9,9 +9,11 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: installDbInput.php,v 1.7.2.1 2010/11/14 14:53:49 franciscom Exp $
+ * @version    	CVS: $Id: installDbInput.php,v 1.7.2.2 2010/11/20 08:17:57 franciscom Exp $
  *
  * @internal Revisions:
+ * 20101120 - franciscom - requesting MySQL 5.0.3 minimal because seems to be first with	
+ *						   varchar size > 255.	
  * 20101002 - franciscom - BUGID 3083	
  * 20100705 - asimon - added warning regarding user assignments migration
  * 20090603 - franciscom - added table prefix management
@@ -138,7 +140,7 @@ include 'installHead.inc';
 			<label for="databasetype">Database Type</label>
 		</div>
 		<select id="databasetype" name="databasetype">
-			<option value="mysql" selected>MySQL (5.0 and later)</option>
+			<option value="mysql" selected>MySQL (5.0.3 and later)</option>
 			<option value="postgres" >Postgres (8.0 and later)</option>
 			<option value="mssql" >Microsoft SQL Server 2000/2005(Experimental)</option>
 		</select>	

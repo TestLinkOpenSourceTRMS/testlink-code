@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.751.2.8 2010/11/20 14:48:10 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.751.2.9 2010/11/20 17:01:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -2077,6 +2077,9 @@ $TLS_bug_id_invalid_len = "BUG ID length is invalid [%s > %s] " . $TLS_imp_resul
 $TLS_tproject_id_not_found = "Test Project ID not found [%s] " . $TLS_imp_result_ko;
 $TLS_invalid_exec_type = "Execution type code [%s] is not valid" . $TLS_imp_result_ko;
 $TLS_missing_exec_type = "Execution type code was not provided - using (%s => %s)";
+$TLS_internal_id = "Internal ID:%s";
+$TLS_external_id = "External ID:%s";
+
 
 // ----- lib/functions/results.inc.php -----
 $TLS_trep_failing = "Failing";
@@ -2860,7 +2863,7 @@ $TLS_API_INVALID_PARENT_TESTSUITEID = "Test Suite ID (%s) provided as PARENT for
 $TLS_API_NO_TESTCASE_FOUND = "No Test Case found for search criteria.";
 $TLS_API_TESTPLANNAME_ALREADY_EXISTS="Test Plan (name:%s) Already EXITS on Test Project (name:%s).";
 
-$TLS_API_NODEID_IS_NOT_INTEGER = "Node id is not an positive interger value.";
+$TLS_API_NODEID_IS_NOT_INTEGER = "Node id (%s) is not an positive interger value.";
 $TLS_API_NODEID_DOESNOT_EXIST="Node with id (%s) does not exist on system.";
 
 $TLS_API_CFG_DELETE_EXEC_DISABLED = "Configuration does not allow delete executions";
@@ -2889,6 +2892,8 @@ $TLS_API_ATTACH_DB_WRITE_ERROR = 'Error inserting attachment on DB';
 $TLS_API_ATTACH_FEATURE_DISABLED = 'Attachment feature is disabled';
 $TLS_API_ATTACH_INVALID_FK = "Invalid Foreign Key ID[%s] Table[%s]";
 $TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_NAME [%s] CONTENT_SIZE [%s]";
+
+$TLS_NODEID_INVALID_DATA_TYPE_STR = "Invalid Data Type - Node ID can be Array of positive Integer, or Positive Integer";
 
 
 // ----- audit log entries -----
@@ -3131,6 +3136,9 @@ $TLS_invalid_release_date = 'Release date is not a valid date.';
 $TLS_insert_step = "Insert step";
 $TLS_frozen_req_unable_to_import = 'Skipped - Requirement - Doc ID:%s - is FROZEN';
 
+
+$TLS_no_linked_cfields_for_testcase = 'There are no custom fields applicable to Test Cases, linked to Test Project';
+$TLS_no_cfield_with_this_name = 'There is no custom field with requested name (%s)';
 
 // ----- lib/plan/planExport.php -----
 $TLS_export_test_plan = 'Export Test Plan';

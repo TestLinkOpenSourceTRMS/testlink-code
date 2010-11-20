@@ -9,7 +9,7 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.55 2010/08/31 12:18:16 mx-julian Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.55.2.1 2010/11/20 11:50:48 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -268,16 +268,19 @@ class database
 
 	/** Check is the database is PostgreSQL */
 	function db_is_pgsql() {
-		$t_db_type = DB_TYPE;
-
-		switch( $t_db_type ) {
-			case 'postgres':
-			// case 'postgres64': - 20060523
-			case 'postgres7':
-			case 'pgsql':
-				return true;
+		if( defined(DB_TYPE) )
+		{
+			$t_db_type = DB_TYPE;
+        	
+			switch( $t_db_type ) {
+				case 'postgres':
+				// case 'postgres64': - 20060523
+				case 'postgres7':
+				case 'pgsql':
+					return true;
+				break;	
+			}
 		}
-
 		return false;
 	}
 

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.42 $
- * @modified $Date: 2010/11/02 09:21:50 $ by $Author: asimon83 $
+ * @version $Revision: 1.43 $
+ * @modified $Date: 2010/11/20 14:55:48 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20101120 - franciscom - BUGID 4034 + a little bit of refactoring
  * 20101102 - asimon - BUGID 3964: Evaluation of requirement is set to "Passed" 
  *                     even though all linked test cases aren't passed
  * 20101015 - Julian - used title_key for exttable columns instead of title to be able to use 
@@ -52,21 +53,18 @@ $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
 $req_spec_cfg = config_get('req_spec_cfg');
 $results_cfg = config_get('results');
-$coverage_algorithm = $req_cfg->coverageStatusAlgorithm;
-$coverage_enabled = $req_cfg->expected_coverage_management;
-$external_req_mgmt = $req_cfg->external_req_management;
+
 $req_type_labels = init_labels($req_cfg->type_labels);
 $req_spec_type_labels = init_labels($req_spec_cfg->type_labels);
 $status_labels = init_labels($req_cfg->status_labels);
-$labels = array('requirement' => lang_get('requirement'),
-	            'requirements' => lang_get('requirements'),
-                'type' => lang_get('type'),
-                'na' => lang_get('not_aplicable'),
-                'req_availability' => lang_get('req_availability'),
-                'linked_tcs' => lang_get('linked_tcs'),
-                'no_linked_tcs' => lang_get('no_linked_tcs'),
-                'goto_testspec' => lang_get('goto_testspec'),
-                'design' => null);
+$labels = init_labels( array('requirement' => null,'requirements' => null,
+                			 'type' => null,'req_availability' => null,
+      			          	 'linked_tcs' => null,'no_linked_tcs' => null,
+                			 'goto_testspec' => null,'design' => null,
+                			 'no_label_for_req_type'  => null,
+                			 'na' => 'not_aplicable'));
+                
+               
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $status_code_map = array();
@@ -183,7 +181,7 @@ if(count($req_spec_map)) {
 			}
 			
 			// evaluate this requirement by configured coverage algorithm
-			$eval = evaluate_req($status_code_map, $coverage_algorithm,
+			$eval = evaluate_req($status_code_map, $req_cfg->coverageStatusAlgorithm,
 			                     $req_spec_map[$req_spec_id]['requirements'][$req_id]['tc_counters']);
 			$req_spec_map[$req_spec_id]['requirements'][$req_id]['evaluation'] = $eval;
 			
@@ -208,7 +206,7 @@ if (count($req_spec_map)) {
 	                   'groupable' => 'false', 'type' => 'text');
 	$columns[] = array('title_key' => 'version', 'width' => 60, 'groupable' => 'false');
 	
-	if ($coverage_enabled) {
+	if ($req_cfg->expected_coverage_management) {
 		$columns[] = array('title_key' => 'th_coverage', 'width' => 60, 'groupable' => 'false');
 	}
 	
@@ -238,7 +236,7 @@ if (count($req_spec_map)) {
 		
 		// build the evaluation data string and attache it to req spec name for table group feature
 		$req_spec_description = build_req_spec_description($eval_status_map, $req_spec_info,
-		                                                   $external_req_mgmt, $labels,
+		                                                   $req_cfg->external_req_management, $labels,
 		                                                   $req_spec_type_labels);
 				
 		foreach ($req_spec_info['requirements'] as $req_id => $req_info) {
@@ -273,7 +271,7 @@ if (count($req_spec_map)) {
 			$single_row[] = $version_str;
 	    	
 			// coverage
-			if ($coverage_enabled) {
+			if ($req_cfg->expected_coverage_management) {
 				$expected_coverage = $req_info['expected_coverage'];
 				$current = count($req_info['linked_testcases']);
 		    	if ($expected_coverage) {
@@ -295,7 +293,9 @@ if (count($req_spec_map)) {
 			                $eval_status_map[$eval]['label'] . '</span>';
 			$single_row[] = $colored_eval;
 			
-			$single_row[] = $req_type_labels[$req_info['type']];
+			// BUGID 4034
+			$single_row[] = isset($req_type_labels[$req_info['type']]) ? $req_type_labels[$req_info['type']] : 
+							sprintf($labels['no_label_for_req_type'],$req_info['type']);
 			
 			// show status only if it was requested to show reqs with all statuses
 			if (!$args->show_only_finished) {
@@ -305,7 +305,7 @@ if (count($req_spec_map)) {
 			// add count and percentage for each possible status and progress
 			$progress_percentage = 0;
 			
-			$total_count = ($coverage_enabled && $expected_coverage > 0) ?
+			$total_count = ($req_cfg->expected_coverage_management && $expected_coverage > 0) ?
 			               $expected_coverage : $req_info['tc_counters']['total'];
 			
 			foreach ($status_code_map as $status => $code) {

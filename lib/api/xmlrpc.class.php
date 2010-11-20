@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.25 $
- * @modified $Date: 2010/11/20 16:13:13 $ by $Author: franciscom $
+ * @version $Revision: 1.26 $
+ * @modified $Date: 2010/11/20 16:47:00 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -24,6 +24,7 @@
  * rev : 
  *	20101120 - franciscom - getFullPath() - make user happy allowing array or simple value
  *							BUGID 3993: getFullPath can receive a list of node ids instead of one node
+ *							BUGID 4041: API - getTestCasesForTestPlan() -Platform Information not provided
  *	20101110 - franciscom - BUGID 3992 - getTestCasesForTestPlan() keywords issue	 
  *							BUGID 3991 - getValidKeywordSetById() missing $this in return 
  *	20101023 - franciscom - BUGID 3916: getTestCaseCustomFieldDesignValue() - missing refactoring regarding
@@ -2344,10 +2345,11 @@ class TestlinkXMLRPCServer extends IXR_Server
         		$keywordSet = explode(",",$keywordList);
         	}
 		}
+		// BUGID 4041
 		// BUGID 3604
         $options = array('executed_only' => $opt[self::$executedParamName], 
         				 'steps_info' => $opt[self::$getStepsInfoParamName],
-        				 'details' => 'full');
+        				 'details' => 'full','output' => 'mapOfMap' );
         				 
         // BUGID 3992				 
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],

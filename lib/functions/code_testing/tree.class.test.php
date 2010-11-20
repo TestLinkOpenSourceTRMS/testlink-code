@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: tree.class.test.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/01/02 16:54:34 $ by $Author: franciscom $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2010/11/20 16:06:04 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * 
@@ -25,6 +25,21 @@ echo "<pre> tree - constructor - tree(&\$db)";echo "</pre>";
 $tree_mgr=new tree($db);
 new dBug($tree_mgr);
 
+$args = array(3312,3314,3316);
+$dummy = $tree_mgr->get_full_path_verbose($args,array('error_behaivour' => 'soft'));
+new dBug($dummy);
+
+
+$args = array(3312,3314,33333316);
+$dummy = $tree_mgr->get_full_path_verbose($args,array('error_behaivour' => 'soft'));
+new dBug($dummy);
+
+$args = array(3312,3314,33333316);
+$dummy = $tree_mgr->get_full_path_verbose($args);
+new dBug($dummy);
+die();
+
+
 echo "<pre> tree - get_available_node_types()";echo "</pre>";
 $available_node_types = $tree_mgr->get_available_node_types();
 new dBug($available_node_types);
@@ -39,6 +54,10 @@ echo "<pre> tree - get_subtree(\$node_id)";echo "</pre>";
 echo "<pre> get_subtree($node_id)";echo "</pre>";
 $subtree = $tree_mgr->get_subtree($node_id);
 new dBug($subtree);
+
+
+
+
 
 
 echo "<pre> tree - get_subtree(\$node_id,\$exclude_node_types=null," . "<br>" .

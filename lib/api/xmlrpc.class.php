@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.23.2.1 $
- * @modified $Date: 2010/11/10 15:01:01 $ by $Author: franciscom $
+ * @version $Revision: 1.23.2.2 $
+ * @modified $Date: 2010/11/20 16:55:28 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,9 @@
  * 
  *
  * rev : 
+ *	20101120 - franciscom - getFullPath() - make user happy allowing array or simple value
+ *							BUGID 3993: getFullPath can receive a list of node ids instead of one node
+ *							BUGID 4041: API - getTestCasesForTestPlan() -Platform Information not provided
  *	20101110 - franciscom - BUGID 3992 - getTestCasesForTestPlan() keywords issue	 
  *							BUGID 3991 - getValidKeywordSetById() missing $this in return 
  *	20101023 - franciscom - BUGID 3916: getTestCaseCustomFieldDesignValue() - missing refactoring regarding
@@ -2342,19 +2345,13 @@ class TestlinkXMLRPCServer extends IXR_Server
         		$keywordSet = explode(",",$keywordList);
         	}
 		}
+		// BUGID 4041
 		// BUGID 3604
         $options = array('executed_only' => $opt[self::$executedParamName], 
         				 'steps_info' => $opt[self::$getStepsInfoParamName],
-        				 'details' => 'full');
+        				 'details' => 'full','output' => 'mapOfMap' );
         	
         // BUGID 3992				 
-		// $filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
-		// 	             'keyword_id' => $opt[self::$keywordIDParamName],
-		// 	             'assigned_to' => $opt[self::$assignedToParamName],
-		// 	             'exec_status' => $opt[self::$executeStatusParamName],
-		// 	             'build_id' => $opt[self::$buildIDParamName],
-		// 	             'exec_type' => $opt[self::$executionTypeParamName]);
-		
 		$filters = array('tcase_id' => $opt[self::$testCaseIDParamName],
 			             'keyword_id' => $keywordSet,
 			             'assigned_to' => $opt[self::$assignedToParamName],
@@ -3717,9 +3714,16 @@ public function getTestCase($args)
 	 *
 	 * @param struct $args
 	 * @param string $args["devKey"]
-	 * @param mixed $args["nodeID"] node id      
+	 * @param mixed $args["nodeID"] can be just a single node or an array of INTERNAL (DB) ID
 	 * @return mixed $resultInfo			
 	 * @access public
+	 *
+	 * @internal revision
+	 * BUGID 3993
+	 * $args["nodeID"] can be just a single node or an array
+	 * when path can not be found same date structure will be returned, that on situations
+	 * where all is ok, but content for KEY(nodeID) will be NULL instead of rising ERROR  
+	 *
 	 */		
 	public function getFullPath($args)
 	{
@@ -3732,24 +3736,41 @@ public function getTestCase($args)
 	  
 	    if( $status_ok )
 	    {
-	        $nodeID=$this->args[self::$nodeIDParamName];
-	    	if( !is_int($nodeID) || $nodeID <= 0 )
+	        $nodeIDSet = $this->args[self::$nodeIDParamName];
+	        
+	        // if is array => OK
+	        if( !($workOnSet = is_array($nodeIDSet)) && (!is_int($nodeIDSet) || $nodeIDSet <= 0) )
 	    	{
-	            $msg = $msg_prefix . sprintf(NODEID_IS_NOT_INTEGER_STR);
+	            $msg = $msg_prefix . sprintf(NODEID_INVALID_DATA_TYPE);
+	            $this->errors[] = new IXR_Error(NODEID_INVALID_DATA_TYPE, $msg);
+	            $status_ok=false;
+	        } 
+	        
+	        if( $status_ok && $workOnSet)
+	        {
+	        	// do check on each item on set
+	        	foreach($nodeIDSet as $itemID)
+	        	{
+	        		if(!is_int($itemID) || $itemID <= 0) 
+	    	{
+	            		$msg = $msg_prefix . sprintf(NODEID_IS_NOT_INTEGER_STR,$itemID);
 	            $this->errors[] = new IXR_Error(NODEID_IS_NOT_INTEGER, $msg);
 	            $status_ok=false;
 	        } 
 	    }
+	        }
+	        
+	    }
 	    
 	    if( $status_ok )
 	    {
-	        $full_path = $this->tprojectMgr->tree_manager->get_full_path_verbose($nodeID);
-	        if(is_null($full_path))
-	        {
-	            $msg = $msg_prefix . sprintf(NODEID_DOESNOT_EXIST_STR,$nodeID);
-	            $this->errors[] = new IXR_Error(NODEID_DOESNOT_EXIST, $msg);
-	            $status_ok=false;
-	        }
+	    	// IMPORTANT NOTICE:
+	    	// (may be a design problem but ..)
+	    	// If $nodeIDSet is an array and for one of items path can not be found
+	    	// get_full_path_verbose() returns null, no matter if for other items
+	    	// information is available
+	    	// 
+	        $full_path = $this->tprojectMgr->tree_manager->get_full_path_verbose($nodeIDSet);
 		}
 	    return $status_ok ? $full_path : $this->errors;
 	}

@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.757 2010/11/19 16:47:55 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.758 2010/11/20 13:56:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -3155,5 +3155,8 @@ $TLS_tcase_link_updated = "Test Case (%s) - Version (%s) was already linked to T
                                                                                                         
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Export Execution Set';
+
+// ----- lib/results/resultsReqs.php -----
+$TLS_no_label_for_req_type = 'No req_type_labels configuration for type: %s';
 // ----- END ------------------------------------------------------------------
 ?>

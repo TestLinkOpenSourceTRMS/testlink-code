@@ -9,7 +9,7 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.56 2010/11/20 11:54:25 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.57 2010/11/20 14:37:27 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -63,6 +63,8 @@ class database
 	var $is_connected=false;
 	var $nQuery = 0;
 	var $overallDuration = 0;
+	var $dbType;
+	
 	private $logEnabled=0;
 	private $logQueries=0;
   
@@ -95,11 +97,12 @@ class database
   
 	function database($db_type)
 	{
+		$this->dbType = $db_type;
 		$fetch_mode = ADODB_FETCH_ASSOC;
-		$this->db = NewADOConnection($db_type);
+		$this->db = NewADOConnection($this->dbType);
 		
 		// added to reduce memory usage (before this setting we used ADODB_FETCH_BOTH)
-		if($db_type == 'mssql')
+		if($this->dbType == 'mssql')
 		{
 			$fetch_mode = ADODB_FETCH_BOTH;
 		}
@@ -267,21 +270,18 @@ class database
 
 
 	/** Check is the database is PostgreSQL */
-	function db_is_pgsql() {
-		if( defined(DB_TYPE) )
+	function db_is_pgsql() 
+	{
+		$status_ok = false;
+		switch( $this->dbType ) 
 		{
-		$t_db_type = DB_TYPE;
-
-		switch( $t_db_type ) {
 			case 'postgres':
-			// case 'postgres64': - 20060523
 			case 'postgres7':
 			case 'pgsql':
-				return true;
+				$status_ok = true;
 				break;	
 			}
-		}
-		return false;
+		return $status_ok;
 	}
 
 

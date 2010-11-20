@@ -2,11 +2,14 @@
 /** TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: migrate_cf_links.php,v $
- * @version $Revision: 1.4 $
- * @modified $Date: 2010/09/17 18:26:09 $  $Author: franciscom $
+ * @version $Revision: 1.4.2.1 $
+ * @modified $Date: 2010/11/20 10:15:17 $  $Author: franciscom $
  * @author Francisco Mancardi - francisco.mancardi@gmail.com
  *
  * Migrate Custom field data from item to item version (1.9 RC1 and up)
+ * 
+ * @internal revision
+ * 20101120 - franciscom - refactored as done on migrate_18_to_19.php	
 */
 
 require_once("../../config.inc.php");
@@ -41,17 +44,19 @@ $workingSet = $db->get_recordset($sql);
 echo 'Records to process: '.count($workingSet).'<br>';
 if( !is_null($workingSet) )
 {
+	echo "Working - Custom Fields Migration - Records to process:" .  count($workingSet) . "<br>";
 	foreach($workingSet as $target)
 	{
-		$values[] = "( {$target['field_id']}, {$target['version_node_id']}, '{$target['value']}' )";
+		// $values[] = "( {$target['field_id']}, {$target['version_node_id']}, '{$target['value']}' )";
 		$victims[$target['node_id']] = $target['node_type_id'];
+		
+		// Ay!, I've forgot to escape target value
+		$sql = " INSERT INTO {$tableSet['cfield_design_values']} (field_id,node_id,value) VALUES " . 
+		       "( {$target['field_id']}, {$target['version_node_id']}," .
+		       "'" . $db->prepare_string($target['value']) . "' )";
+		$db->exec_query($sql);
 	}
 
-	$sql = " INSERT INTO {$tables['cfield_design_values']} (field_id,node_id,value) VALUES ";
-	$vSet = implode(',',$values);
-	
-	$sql .= $vSet;
-	$db->exec_query($sql);
 	foreach($victims as $node_id => $node_type_id)
 	{
 		$sql = " DELETE FROM {$tables['cfield_design_values']} WHERE node_id = $node_id "; 

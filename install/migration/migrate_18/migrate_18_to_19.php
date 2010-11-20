@@ -15,7 +15,7 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.2 2010/11/20 09:58:45 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.3 2010/11/20 10:02:56 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -43,12 +43,20 @@ define('DBVERSION4MIG', 'DB 1.2');
 function migrate_18_to_19(&$dbHandler,$tableSet)
 {
 	// Need To Add Some Feedback
+	echo '<br>------------------------------<br>'; 
+	echo 'Data Migration Process STARTED<br>'; 
+	echo '------------------------------<br>'; 
+	
     migrate_requirements($dbHandler,$tableSet);
     migrate_req_specs($dbHandler,$tableSet);
     migrate_testcases($dbHandler,$tableSet);
     migrate_project_options($dbHandler,$tableSet);
     migrate_user_assignments($dbHandler, $tableSet);
     migrate_cfield_links($dbHandler, $tableSet);
+
+	echo '<br>------------------------------<br>'; 
+	echo 'Data Migration Process Finished<br>'; 
+	echo '------------------------------<br>'; 
 }
 
 
@@ -116,7 +124,7 @@ function migrate_requirements(&$dbHandler,$tableSet)
         $sql = "ALTER TABLE {$tableSet['requirements']} {$drop_clause} ";
         $dbHandler->exec_query($sql);
 	} 
-    echo 'Step - Requirements Migration - Finished !!! <br> ';
+    echo 'Step - Requirements Migration - Finished !!! <br><br> ';
 
 }
 
@@ -164,7 +172,7 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 	$drop_clause = implode(",", $cols2drop);
 	$sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
 	$dbHandler->exec_query($sql);
-    echo 'Step - Requirements Migration - Finished !!! <br> ';
+    echo 'Step - Requirements Migration - Finished !!! <br><br> ';
 }
 
 
@@ -221,11 +229,11 @@ function migrate_project_options(&$dbHandler,$tableSet)
 			$cols2drop[$colname] = " DROP COLUMN $colname ";
 		}
 	}
-	echo "******* ATTENTION!!!! *** ==> Please DROP Manually COLUMNS with it's constraints (I'm sorry )<b> ";
+	echo "******* ATTENTION!!!! *** ==> Please DROP Manually COLUMNS with it's constraints (I'm sorry )<br> ";
 	// $drop_clause = implode(",", $cols2drop);
 	// $sql = "ALTER TABLE {$tableSet['testprojects']} {$drop_clause} ";
 	// $dbHandler->exec_query($sql);
-    echo 'Step - Test Project Options Migration - Finished !!! <br> ';
+    echo 'Step - Test Project Options Migration - Finished !!! <br><br> ';
 }
 
 
@@ -337,7 +345,7 @@ function migrate_testcases(&$dbHandler,$tableSet)
                "DROP COLUMN steps, DROP COLUMN expected_results ";
         $dbHandler->exec_query($sql);
 	} 
-	echo 'Step - Test Case Migration - Finished !! <br> ';
+	echo 'Step - Test Case Migration - Finished !! <br><br> ';
 }
 
 
@@ -411,7 +419,7 @@ function migrate_user_assignments(&$dbHandler, $tableSet) {
 	// check how long the function is running on huge databases...
 	//$endtime = microtime(true) - $starttime;
 	//echo "<br/>migrate_user_assignments() needed $endtime seconds to finish<br/>";
-	echo 'Step - User Execution Assignment Migration - Finished <br> ';
+	echo 'Step - User Execution Assignment Migration - Finished <br><br> ';
 }
 
 /**
@@ -438,7 +446,7 @@ function migrate_cfield_links(&$dbHandler, $tableSet)
 	
 	$workingSet = $dbHandler->get_recordset($sql);
 	
-	echo 'Step - Custom Fields Migration - STARTED <br> ';
+	echo 'Step - Custom Fields (DESIGN TIME) Migration - STARTED <br> ';
 	if( !is_null($workingSet) )
 	{
 		echo "Working - Custom Fields Migration - Records to process: count($workingSet)<br>";
@@ -470,7 +478,7 @@ function migrate_cfield_links(&$dbHandler, $tableSet)
 		    $dbHandler->exec_query($sql);
 		}
 	}
-	echo 'Step - Custom Fields Migration - Finished !! <br> ';
+	echo 'Step - Custom Fields (DESIGN TIME) Migration - Finished !! <br><br> ';
 
 }
 ?>

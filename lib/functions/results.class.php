@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.163 2010/10/18 22:55:29 erikeloff Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.163.2.1 2010/11/20 15:00:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -1358,8 +1358,10 @@ class results extends tlObjectWithDB
 				// In this case, check if platform_id is 0; if so,
 				// it means platforms haven't been added yet,
 				// so include all executions.
-				if (sizeof($platforms_to_query) == 0) {
-					if ($info['platform_id'] != 0) {
+				if (sizeof($platforms_to_query) == 0) 
+				{
+					if ($info['platform_id'] != 0) 
+					{
 						continue;
 					}
 				} else if ($platforms_to_query[0] != ALL_PLATFORMS &&
@@ -1424,7 +1426,8 @@ class results extends tlObjectWithDB
 					// to include multiple test plan ids
 					$sql = "SELECT * FROM {$this->tables['executions']} " .
 						   "WHERE tcversion_id = " . $info['executed'] . " AND testplan_id = $this->testPlanID ";
-					if ($platforms_to_query[0] != ALL_PLATFORMS) {
+					if( isset($platforms_to_query[0]) && $platforms_to_query[0] != ALL_PLATFORMS) 
+					{
 						$sql .= "AND platform_id = " . $info['platform_id'];
 					}
 					

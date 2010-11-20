@@ -15,7 +15,7 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.4 2010/11/20 10:08:22 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.5 2010/11/20 11:46:57 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -387,30 +387,33 @@ function migrate_user_assignments(&$dbHandler, $tableSet) {
 	// In $testplan_builds, we then have an array consisting of testplan_id => max_build_id
 	// If no build for a test plan is found, its assignments will not be changed (build_id=0).
 	$testplan_builds = array();
-	foreach ($testplans as $key => $tp_id) {
-		// first we try to get an active build
-		$max_build_id = $testplan_mgr->get_max_build_id($tp_id, testplan::GET_ACTIVE_BUILD);
-		// if there is no active build, we get the max id no matter if it is active or not
-		if ($max_build_id == 0) {
-			$max_build_id = $testplan_mgr->get_max_build_id($tp_id);
-		}
+	if( !is_null($testplans) )
+	{
+		foreach ($testplans as $key => $tp_id) {
+			// first we try to get an active build
+			$max_build_id = $testplan_mgr->get_max_build_id($tp_id, testplan::GET_ACTIVE_BUILD);
+			// if there is no active build, we get the max id no matter if it is active or not
+			if ($max_build_id == 0) {
+				$max_build_id = $testplan_mgr->get_max_build_id($tp_id);
+			}
+			
+			if ($max_build_id > 0) {
+				$testplan_builds[$tp_id] = $max_build_id;
+			}
+		}	
 		
-		if ($max_build_id > 0) {
-			$testplan_builds[$tp_id] = $max_build_id;
+		// now update all assignments for these test plans
+		foreach ($testplan_builds as $testplan_id => $build_id) {
+			$subquery = " SELECT id as feature_id FROM {$tp_tcv} " .
+			            " WHERE testplan_id = {$testplan_id} ";
+    	
+			$sql = " UPDATE {$ua} UA " .
+			       " SET UA.build_id = {$build_id} " .
+			       " WHERE UA.feature_id IN($subquery) " .
+			       " AND (UA.type={$execution} OR UA.type IS NULL) ";
+			
+			$dbHandler->exec_query($sql);
 		}
-	}	
-	
-	// now update all assignments for these test plans
-	foreach ($testplan_builds as $testplan_id => $build_id) {
-		$subquery = " SELECT id as feature_id FROM {$tp_tcv} " .
-		            " WHERE testplan_id = {$testplan_id} ";
-
-		$sql = " UPDATE {$ua} UA " .
-		       " SET UA.build_id = {$build_id} " .
-		       " WHERE UA.feature_id IN($subquery) " .
-		       " AND (UA.type={$execution} OR UA.type IS NULL) ";
-		
-		$dbHandler->exec_query($sql);
 	}
 	
 	// delete objects

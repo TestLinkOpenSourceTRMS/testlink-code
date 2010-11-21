@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcTree.js,v 1.9 2009/07/30 17:21:37 franciscom Exp $
+$Id: tcTree.js,v 1.10 2010/11/21 16:54:51 asimon83 Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -19,6 +19,7 @@ This code has been used in following TL features
 Author: franciscom - 20080525
 
 rev:
+    20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
     20080628 - franciscom - unclosed comment bug
     20080607 - franciscom -
     20080603 - franciscom - drag & drop disabled
@@ -164,7 +165,7 @@ Ext.onReady(function(){
     // shorthand
     var Tree = Ext.tree;
     
-    var tree = new Tree.TreePanel({
+    tree = new Tree.TreePanel({
         el:treeCfg.tree_div_id,
         useArrows:true,
         autoScroll:true,

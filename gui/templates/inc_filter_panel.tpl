@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.12 2010/11/01 11:13:42 franciscom Exp $
+ * $Id: inc_filter_panel.tpl,v 1.13 2010/11/21 16:54:51 asimon83 Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -12,6 +12,7 @@
  *
  * @author Andreas Simon
  * @internal revision
+ *  20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
  *  20101101 - franciscom - openExportTestPlan() interface changes
  *  20101009 - franciscom - fixed error viewer warning
  *  20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
@@ -33,7 +34,8 @@
                         btn_bulk_update_to_latest_version, priority, tc_title,
                         custom_field, search_type_like,
                         document_id, req_expected_coverage, title,
-                        status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree'}
+                        status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree,
+                        expand_tree, collapse_tree'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -371,6 +373,20 @@
 				     value="{$control->filter_mode_button_label}"
 				     style="font-size: 90%;"  />
       		{/if}
+      		
+      		<br/> 
+      		{* BUGID 4042 *}
+      		<input type="button" value="{$labels.expand_tree}" 
+      		       id="expand_tree"
+                   name="expand_tree"
+                   onclick="tree.expandAll();"
+                   style="font-size: 90%;" />
+
+			<input type="button" value="{$labels.collapse_tree}" 
+			       id="collapse_tree"
+                   name="collapse_tree"
+                   onclick="tree.collapseAll();"
+                   style="font-size: 90%;" />
 		</div>
 
 	</div> {* filters *}
@@ -585,6 +601,20 @@
 			     value="{$control->filter_mode_button_label}"
 			     style="font-size: 90%;"  />
       	{/if}
+      	
+      	<br/> 
+      	{* BUGID 4042 *}	
+      	<input type="button" value="{$labels.expand_tree}" 
+      	       id="expand_tree"
+               name="expand_tree"
+               onclick="tree.expandAll();"
+               style="font-size: 90%;" />
+
+		<input type="button" value="{$labels.collapse_tree}" 
+		       id="collapse_tree"
+               name="collapse_tree"
+               onclick="tree.collapseAll();"
+               style="font-size: 90%;" />
 	</div>
 	
 	</div> {* filters *}

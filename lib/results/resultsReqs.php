@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: resultsReqs.php,v $
- * @version $Revision: 1.43 $
- * @modified $Date: 2010/11/20 14:55:48 $ by $Author: franciscom $
+ * @version $Revision: 1.44 $
+ * @modified $Date: 2010/11/21 16:35:28 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Report requirement based results
  * 
  * rev:
+ * 20101121 - asimon - refactorization
  * 20101120 - franciscom - BUGID 4034 + a little bit of refactoring
  * 20101102 - asimon - BUGID 3964: Evaluation of requirement is set to "Passed" 
  *                     even though all linked test cases aren't passed
@@ -46,25 +47,27 @@ $platform_mgr = new tlPlatform($db);
 
 $glue_char = config_get('gui_title_separator_1');
 $glue_char_tc = config_get('testcase_cfg')->glue_character;
+
 // BUGID 3439
-$no_srs_msg_key = 'no_srs_defined';
-$no_finished_reqs_msg_key = 'no_finished_reqs';
 $charset = config_get('charset');
 $req_cfg = config_get('req_cfg');
 $req_spec_cfg = config_get('req_spec_cfg');
 $results_cfg = config_get('results');
 
-$req_type_labels = init_labels($req_cfg->type_labels);
-$req_spec_type_labels = init_labels($req_spec_cfg->type_labels);
-$status_labels = init_labels($req_cfg->status_labels);
+
 $labels = init_labels( array('requirement' => null,'requirements' => null,
                 			 'type' => null,'req_availability' => null,
       			          	 'linked_tcs' => null,'no_linked_tcs' => null,
                 			 'goto_testspec' => null,'design' => null,
                 			 'no_label_for_req_type'  => null,
-                			 'na' => 'not_aplicable'));
-                
+                			 'na' => 'not_aplicable',
+                             'no_srs' => 'no_srs_defined', 'no_finished_reqs' => null));
+
+$labels['req_types'] = init_labels($req_cfg->type_labels);
+$labels['req_spec_types'] = init_labels($req_spec_cfg->type_labels);
+$labels['status'] = init_labels($req_cfg->status_labels);                
                
+
 $edit_icon = TL_THEME_IMG_DIR . "edit_icon.png";
 
 $status_code_map = array();
@@ -90,57 +93,102 @@ $eval_status_map['uncovered'] = array('label' => lang_get('uncovered'),
 
 $args = init_args($tproject_mgr);
 $gui = init_gui($args);
+
 // BUGID 3856
 $gui_open = config_get('gui_separator_open');
 $gui_close = config_get('gui_separator_close');
 $platforms = $platform_mgr->getLinkedToTestplanAsMap($args->tplan_id);
 $gui->platforms = $platforms ? array(0 => $gui_open . lang_get('any') . $gui_close) + $platforms : null;
 
-$req_ids = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
-$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
-$req_spec_map = array();
-$tc_ids = array();
-$testcases = array();
 
-// first step: get the requirements and linked testcases with which we have to work,
-// order them into $req_spec_map by spec
-if (count($req_ids)) {		
-	foreach($req_ids as $id) {
-		// get the information for this requirement
-		$req = $req_mgr->get_by_id($id, requirement_mgr::LATEST_VERSION);
-		$req_info = $req[0];
-		$spec_id = $req_info['srs_id'];
-				
-		// if req is "usable" (either finished status or all requested) add it
-		if (!$args->show_only_finished || $req_info['status'] == TL_REQ_STATUS_FINISH) {
-			// coverage data
-			$linked_tcs = (array) $req_mgr->get_coverage($id);
-			$req_info['linked_testcases'] = $linked_tcs;
-			
-			if (!isset($req_spec_map[$spec_id])) {
-				$spec_info = $req_spec_mgr->get_by_id($spec_id);
-				$req_spec_map[$spec_id] = $spec_info;
-				$req_spec_map[$spec_id]['requirements'] = array();
-			}
-			$req_spec_map[$spec_id]['requirements'][$id] = $req_info;
+list($req_spec_map, $tc_ids) = get_req_info($tproject_mgr, $args, $req_mgr, $req_spec_mgr, $gui, $labels);
 
-			foreach ($linked_tcs as $tc) {
-				$tc_ids[] = $tc['id'];
-			}
-		}
-	}
-	// BUGID 3439
-	if (!count($req_spec_map)) {
-		$gui->warning_msg = lang_get($no_finished_reqs_msg_key);
-	}
-} else {
-	$gui->warning_msg = lang_get($no_srs_msg_key);
+
+if(count($req_spec_map)) {
+	list($req_spec_map, $testcases) = calculate($req_spec_map, $args, $tplan_mgr, $tc_ids, $status_code_map, $req_cfg);
 }
 
 
-// second step: walk through req spec map, count/calculate, store results
-if(count($req_spec_map)) {
+if (count($req_spec_map)) {
+
+	$columns = build_columns($args, $code_status_map, $req_cfg, $results_cfg);
+	$rows = build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_mgr, $edit_icon,
+	                   $glue_char, $charset, $req_cfg, $labels, $eval_status_map, 
+	                   $glue_char, $glue_char_tc, $testcases);
 	
+	// create table object
+	$matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
+	$matrix->title = $gui->pageTitle;
+	
+	// group by Req Spec and hide that column
+	$matrix->setGroupByColumnName(lang_get('req_spec_short'));
+	
+	// sort descending by progress percentage
+	$matrix->setSortByColumnName(lang_get('progress'));
+	$matrix->sortDirection = 'DESC';
+	
+	//show long text content in multiple lines
+	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
+	
+	//define toolbar
+	$matrix->toolbarShowAllColumnsButton = true;
+	$matrix->showGroupItemsCount = false;
+	
+	$gui->tableSet = array($matrix);
+}
+
+
+$smarty = new TLSmarty();
+$smarty->assign('gui',$gui);
+$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+
+
+function get_req_info($tproject_mgr, $args, $req_mgr, $req_spec_mgr, &$gui, $labels) {
+	$req_ids = $tproject_mgr->get_all_requirement_ids($args->tproject_id);
+		
+	$req_spec_map = array();
+	$tc_ids = array();
+
+	// first step: get the requirements and linked testcases with which we have to work,
+	// order them into $req_spec_map by spec
+	if (count($req_ids)) {
+		foreach($req_ids as $id) {
+			// get the information for this requirement
+			$req = $req_mgr->get_by_id($id, requirement_mgr::LATEST_VERSION);
+			$req_info = $req[0];
+			$spec_id = $req_info['srs_id'];
+
+			// if req is "usable" (either finished status or all requested) add it
+			if (!$args->show_only_finished || $req_info['status'] == TL_REQ_STATUS_FINISH) {
+				// coverage data
+				$linked_tcs = (array) $req_mgr->get_coverage($id);
+				$req_info['linked_testcases'] = $linked_tcs;
+					
+				if (!isset($req_spec_map[$spec_id])) {
+					$spec_info = $req_spec_mgr->get_by_id($spec_id);
+					$req_spec_map[$spec_id] = $spec_info;
+					$req_spec_map[$spec_id]['requirements'] = array();
+				}
+				$req_spec_map[$spec_id]['requirements'][$id] = $req_info;
+
+				foreach ($linked_tcs as $tc) {
+					$tc_ids[] = $tc['id'];
+				}
+			}
+		}
+		// BUGID 3439
+		if (!count($req_spec_map)) {
+			$gui->warning_msg = $labels['no_finished_reqs'];
+		}
+	} else {
+		$gui->warning_msg = $labels['no_srs'];
+	}
+	
+	return array($req_spec_map, $tc_ids);
+}
+
+
+function calculate($req_spec_map, $args, $tplan_mgr, $tc_ids, $status_code_map, $req_cfg) {
 	// BUGID 3439
 	$testcases = array();
 	if (count($tc_ids)) {
@@ -193,51 +241,21 @@ if(count($req_spec_map)) {
 			$req_spec_map[$req_spec_id]['req_counters']['total'] ++;
 		}
 	}
-}
+	
+	return array($req_spec_map, $testcases);
+} 
 
 
-// last step: build the table
-if (count($req_spec_map)) {
-	// headers
-	$columns = array();
-	$columns[] = array('title_key' => 'req_spec_short',
-	                   'groupable' => 'true', 'hideable' => 'false', 'hidden' => 'true');
-	$columns[] = array('title_key' => 'title', 'width' => 100,
-	                   'groupable' => 'false', 'type' => 'text');
-	$columns[] = array('title_key' => 'version', 'width' => 60, 'groupable' => 'false');
-	
-	if ($req_cfg->expected_coverage_management) {
-		$columns[] = array('title_key' => 'th_coverage', 'width' => 60, 'groupable' => 'false');
-	}
-	
-	$columns[] = array('title_key' => 'evaluation', 'width' => 60, 'groupable' => 'false');
-	$columns[] = array('title_key' => 'type', 'width' => 60, 'groupable' => 'false');
-	
-	// show status only if it was requested to show reqs with all statuses
-	if (!$args->show_only_finished) {
-		$columns[] = array('title_key' => 'status', 'width' => 60, 'groupable' => 'false');
-	}
-	
-	foreach ($code_status_map as $status) {
-		$columns[] = array('title_key' => $results_cfg['status_label'][$status['status']], 
-		                   'width' => 60, 'groupable' => 'false');
-	}
-	
-	// complete progress
-	$columns[] = array('title_key' => 'progress', 'width' => 60, 'groupable' => 'false');
-	
-	$columns[] = array('title_key' => 'linked_tcs', 'groupable' => 'false', 'width' => 250, 
-	             'hidden' => 'true', 'type' => 'text');
-	
+function build_rows($args, $status_code_map, $tproject_mgr, $req_spec_map, $req_mgr, $edit_icon, $glue_char, 
+                    $charset, $req_cfg, $labels, $eval_status_map, $glue_char, $glue_char_tc, $testcases) {
 	// data for rows
 	$rows = array();
+	$prefix = $tproject_mgr->getTestCasePrefix($args->tproject_id);
 	
-	foreach ($req_spec_map as $req_spec_id => $req_spec_info) {
-		
+	foreach ($req_spec_map as $req_spec_id => $req_spec_info) {		
 		// build the evaluation data string and attache it to req spec name for table group feature
 		$req_spec_description = build_req_spec_description($eval_status_map, $req_spec_info,
-		                                                   $req_cfg->external_req_management, $labels,
-		                                                   $req_spec_type_labels);
+		                                                   $req_cfg->external_req_management, $labels);
 				
 		foreach ($req_spec_info['requirements'] as $req_id => $req_info) {
 			$single_row = array();
@@ -253,10 +271,7 @@ if (count($req_spec_map)) {
 			// create the linked title to display
 			$title = htmlentities($req_info['req_doc_id'], ENT_QUOTES, $charset) . $glue_char . 
 			         htmlentities($req_info['title'], ENT_QUOTES, $charset);
-			//$linked_title = '<!-- ' . $title . ' -->' .
-			//                '<a href="javascript:openLinkedReqWindow(' . $req_id . ')">' .
-			//                $title . '</a>';
-
+			
 			$edit_link = "<a href=\"javascript:openLinkedReqWindow(" . $req_id . ")\">" .
 						 "<img title=\"{$labels['requirement']}\" src=\"{$edit_icon}\" /></a> ";
 
@@ -275,7 +290,7 @@ if (count($req_spec_map)) {
 				$expected_coverage = $req_info['expected_coverage'];
 				$current = count($req_info['linked_testcases']);
 		    	if ($expected_coverage) {
-					$coverage_string = "<!-- -1 -->" . lang_get('not_aplicable') . " ($current/0)";
+					$coverage_string = "<!-- -1 -->" . $labels['na'] . " ($current/0)";
 			    	if ($expected_coverage) {
 			    		$percentage = 100 / $expected_coverage * $current;
 			    		$coverage_string = comment_percentage($percentage) .
@@ -294,12 +309,12 @@ if (count($req_spec_map)) {
 			$single_row[] = $colored_eval;
 			
 			// BUGID 4034
-			$single_row[] = isset($req_type_labels[$req_info['type']]) ? $req_type_labels[$req_info['type']] : 
+			$single_row[] = isset($labels['req_types'][$req_info['type']]) ? $labels['req_types'][$req_info['type']] : 
 							sprintf($labels['no_label_for_req_type'],$req_info['type']);
 			
 			// show status only if it was requested to show reqs with all statuses
 			if (!$args->show_only_finished) {
-				$single_row[] = $status_labels[$req_info['status']];
+				$single_row[] = $labels['status'][$req_info['status']];
 			}
 			
 			// add count and percentage for each possible status and progress
@@ -367,31 +382,44 @@ if (count($req_spec_map)) {
 		}
 	}
 	
-	// create table object
-	$matrix = new tlExtTable($columns, $rows, 'tl_table_results_reqs');
-	$matrix->title = $gui->pageTitle;
-	
-	// group by Req Spec and hide that column
-	$matrix->setGroupByColumnName(lang_get('req_spec_short'));
-	
-	// sort descending by progress percentage
-	$matrix->setSortByColumnName(lang_get('progress'));
-	$matrix->sortDirection = 'DESC';
-	
-	//show long text content in multiple lines
-	$matrix->addCustomBehaviour('text', array('render' => 'columnWrap'));
-	
-	//define toolbar
-	$matrix->toolbarShowAllColumnsButton = true;
-	$matrix->showGroupItemsCount = false;
-	
-	$gui->tableSet = array($matrix);
+	return $rows;
 }
 
 
-$smarty = new TLSmarty();
-$smarty->assign('gui',$gui);
-$smarty->display($templateCfg->template_dir . $templateCfg->default_template);
+function build_columns($args, $code_status_map, $req_cfg, $results_cfg) {
+	// headers
+	$columns = array();
+	$columns[] = array('title_key' => 'req_spec_short',
+	                   'groupable' => 'true', 'hideable' => 'false', 'hidden' => 'true');
+	$columns[] = array('title_key' => 'title', 'width' => 100,
+	                   'groupable' => 'false', 'type' => 'text');
+	$columns[] = array('title_key' => 'version', 'width' => 60, 'groupable' => 'false');
+	
+	if ($req_cfg->expected_coverage_management) {
+		$columns[] = array('title_key' => 'th_coverage', 'width' => 60, 'groupable' => 'false');
+	}
+	
+	$columns[] = array('title_key' => 'evaluation', 'width' => 60, 'groupable' => 'false');
+	$columns[] = array('title_key' => 'type', 'width' => 60, 'groupable' => 'false');
+	
+	// show status only if it was requested to show reqs with all statuses
+	if (!$args->show_only_finished) {
+		$columns[] = array('title_key' => 'status', 'width' => 60, 'groupable' => 'false');
+	}
+	
+	foreach ($code_status_map as $status) {
+		$columns[] = array('title_key' => $results_cfg['status_label'][$status['status']], 
+		                   'width' => 60, 'groupable' => 'false');
+	}
+	
+	// complete progress
+	$columns[] = array('title_key' => 'progress', 'width' => 60, 'groupable' => 'false');
+	
+	$columns[] = array('title_key' => 'linked_tcs', 'groupable' => 'false', 'width' => 250, 
+	             'hidden' => 'true', 'type' => 'text');
+	
+	return $columns;
+}
 
 
 /**
@@ -406,16 +434,15 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
  * @param array $spec_types
  * @return string description
  */
-function build_req_spec_description(&$evalcode_status_map, &$spec_info, $ext_mgmt_enabled, 
-                                    &$labels, &$spec_types) {
+function build_req_spec_description(&$evalcode_status_map, &$spec_info, $ext_mgmt_enabled, $labels) {
 	$description = "";
 	$space = "&nbsp;&nbsp;&nbsp;&nbsp;";
 	
 	$req_count = $spec_info['req_counters']['total'];
 	$external_count = isset($spec_info['total_req']) ? $spec_info['total_req'] : 0;
 	
-	$description .= "<br/>" . $space . $labels['type'] . ": " . $spec_types[$spec_info['type']];
-	
+	$description .= "<br/>" . $space . $labels['type'] . ": " . $labels['req_spec_types'][$spec_info['type']];
+		
 	if ($ext_mgmt_enabled && $external_count) {
 		$description .= "<br/>{$space}{$labels['req_availability']}: " . 
 		                "({$req_count}/{$external_count})";
@@ -476,6 +503,7 @@ function evaluate_req(&$status_code_map, &$algorithm_cfg, &$counters) {
 			}
 		}
 	}
+	
 	return $evaluation;
 }
 

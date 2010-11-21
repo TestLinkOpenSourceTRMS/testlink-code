@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execTreeWithMenu.js,v 1.4 2010/06/24 17:25:57 asimon83 Exp $
+$Id: execTreeWithMenu.js,v 1.4.4.1 2010/11/21 16:54:44 asimon83 Exp $
 
 
 Created using EXT JS examples.
@@ -24,6 +24,7 @@ Author: franciscom - 20080525
        Need to find a way to create common library
 
 rev:
+    20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
     20080620 - franciscom - added code to save/restore tree state
                             using example found on Ext JS forum
     Ext JS Forums > Ext JS General Forums > Ext: Examples and Extras > Saving tree state example
@@ -129,7 +130,7 @@ Ext.onReady(function(){
     // shorthand
     var Tree = Ext.tree;
     
-    var tree = new Tree.TreePanel({
+    tree = new Tree.TreePanel({
         el:treeCfg.tree_div_id,
         useArrows:true,
         autoScroll:true,

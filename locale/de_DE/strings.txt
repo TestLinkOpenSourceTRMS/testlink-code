@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.216.2.1 2010/11/12 13:07:36 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.216.2.2 2010/11/21 16:54:44 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -630,6 +630,8 @@ $TLS_req_spec_type = "Anf. Spez. Typ";
 $TLS_btn_hide_cf = "Benutzerdef. Felder ausblenden";
 $TLS_btn_show_cf = "Benutzerdef. Felder einblenden";
 $TLS_btn_export_testplan_tree = 'Testplan exportieren';
+$TLS_expand_tree = "Baum aufklappen";
+$TLS_collapse_tree = "Baum zuklappen";
 
 
 // ----- gui/templates/execNavigator.tpl -----

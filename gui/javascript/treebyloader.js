@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: treebyloader.js,v 1.9 2010/09/17 17:26:33 franciscom Exp $
+$Id: treebyloader.js,v 1.9.2.1 2010/11/21 16:54:44 asimon83 Exp $
 
 Created using EXT JS examples.
 This code has following features:
@@ -24,6 +24,7 @@ Ext.ux.tree.RemoteTreePanel by Saki - ver.: 1.0
 Author: franciscom - 20080525
 
 rev:
+    20101121 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
     20100908 - franciscom - work on CTRL+Drag&Drop for copy (just started)
     20100603 - franciscom - added context menu logic to solve partially 
                BUGID 2408: Relation between internal testcaseid,testplanid,...
@@ -342,7 +343,7 @@ Ext.onReady(function(){
     // added config option copyOrMove, can be used (RW) with this access path
     // .initialConfig.copyOrMove
     //
-    var tree = new Tree.TreePanel({
+    tree = new Tree.TreePanel({
         el:treeCfg.tree_div_id,
         useArrows:true,
         autoScroll:true,

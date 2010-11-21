@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.24 2010/11/19 16:47:55 asimon83 Exp $
+$Id: reqViewVersions.tpl,v 1.25 2010/11/21 18:10:10 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20101113 - franciscom - BUGID 4045: Smarty 3.0 compatibility - Requirement Versions
   20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
   20101026 - franciscom - BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
@@ -143,7 +144,7 @@ var pF_delete_req_relation = delete_req_relation;
 {if isset($gui->current_version)}
 {section name=idx loop=$gui->current_version}
 
-	{assign var="reqID" value=$gui->current_version[idx][0].id}
+	  {assign var="reqID" value=$gui->current_version[idx][0].id}
     {* Current active version *}
     {if $gui->other_versions[idx] neq null}
         {assign var="my_delete_version" value=true}
@@ -311,7 +312,7 @@ var pF_delete_req_relation = delete_req_relation;
         {assign var="vid" value=$gui->current_version[idx][0].id}
         {assign var="div_id" value="vers_$vid"}
         {assign var="memstatus_id" value="mem_$div_id"}
-  
+
         {include file="inc_show_hide_mgmt.tpl" 
                  show_hide_container_title=$labels.other_versions
                  show_hide_container_id=$div_id
@@ -323,13 +324,12 @@ var pF_delete_req_relation = delete_req_relation;
         
   	    {foreach from=$gui->other_versions[idx] item=my_req key=rdx}
             {assign var="version_num" value=$my_req.version}
-            {assign var="title" value="$labels.version"}
+            {assign var="title" value=$labels.version}
             {assign var="title" value="$title $version_num"}
-            
             {assign var="div_id" value="v_$vid_"}
             {assign var="div_id" value="$div_id$version_num"}
             {assign var="memstatus_id" value="mem_$div_id"}
-           
+
            	{* is this version frozen? *}
     		    {if $my_req.is_open}
         		  {assign var="frozen_version" value=false}

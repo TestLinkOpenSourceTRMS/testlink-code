@@ -1,13 +1,13 @@
 {* 
 Testlink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: inc_gui_import_file.tpl,v 1.2 2010/09/19 17:39:40 franciscom Exp $
+$Id: inc_gui_import_file.tpl,v 1.3 2010/11/21 17:50:59 franciscom Exp $
 
 rev :
+20101121 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 *}
 {lang_get var="local_labels" 
           s='file_type,view_file_format_doc,local_file,btn_cancel,btn_upload_file,
-             action_for_duplicates,skip_frozen_req'
-}
+             action_for_duplicates,skip_frozen_req'}
 
 <table>
 <tr>

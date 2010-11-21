@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: reqImport.tpl,v 1.22 2010/11/06 11:42:47 amkhullar Exp $
+$Id: reqImport.tpl,v 1.23 2010/11/21 17:50:01 franciscom Exp $
 
 rev:
+20101121 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 *}
 
 {lang_get var="labels" 
@@ -33,7 +34,7 @@ rev:
     {include file="inc_gui_import_file.tpl" args=$gui->importFileGui}
   </form>
 {else}
-  {if $gui->importResult != '' && $gui->file_check.status_ok }
+  {if $gui->importResult != '' && $gui->file_check.status_ok}
   	<p class="info">{$gui->importResult}</p>
   	<table class="simple">
   	<tr>

@@ -1,6 +1,6 @@
 {* 
 Testlink: smarty template - Edit own account 
-$Id: userInfo.tpl,v 1.22 2010/11/13 11:17:27 franciscom Exp $
+$Id: userInfo.tpl,v 1.23 2010/11/22 21:34:13 mx-julian Exp $
 
 rev: 20080908 - franciscom - email validity check
 *}
@@ -67,7 +67,7 @@ function validatePersonalData(f)
   }
   else 
   { 
-      if (!/\w{1,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/.test(f.emailAddress.value))
+      if (!/\w{ldelim}1,{rdelim}[@][\w\-]{ldelim}1,{rdelim}([.]([\w\-]{ldelim}1,{rdelim})){ldelim}1,3{rdelim}$/.test(f.emailAddress.value))
       {
           show_email_warning=true;
           email_warning=warning_no_good_email_address;

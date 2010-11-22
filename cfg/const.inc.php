@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.169 2010/11/12 13:07:45 mx-julian Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.170 2010/11/22 22:13:39 mx-julian Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -254,7 +254,8 @@ define('TL_LOCALIZE_TAG','LOCALIZE: ');
 /** 
  * @var array List of supported localizations (used in user preferences to choose one)
  * DEV: Mantain the alphabetical order when adding new locales. Also check inc.ext_js_tpl
- *      to set localization for ExtJS Components.
+ *      to set localization for ExtJS Components and web_editor.php to set localization for
+ *      CKEditor
  **/
 // 
 $g_locales = array(	

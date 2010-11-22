@@ -7,12 +7,13 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: web_editor.php,v 1.14 2010/11/22 21:14:17 mx-julian Exp $
+ * @version    	CVS: $Id: web_editor.php,v 1.15 2010/11/22 22:13:39 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  * @uses 		common.php
  *
  * @internal Revisions:
+ *  20101122 - Julian - BUGID 4047 - CKEditor Language according to chosen Testlink language
  *	20101122 - amitkhullar - BUGID 3998 Added ckeditor 
  * 	20080826 - franciscom - BUGID 1692
  *      refactoring to allow use of different editor type in different TL features/areas
@@ -111,9 +112,37 @@ function web_editor($html_input_id,$base_path,$editor_cfg=null)
 		break;
 
 		case 'ckeditor':
+			
+			// BUGID 4047: CKEditor Language according to chosen Testlink language
+			$locale = (isset($_SESSION['locale'])) ? $_SESSION['locale'] : 'en_GB';
+			
+			$ckeditorLang;
+			switch($locale)
+			{
+				case 'cs_CZ': $ckeditorLang = 'cs'; break;
+				case 'de_DE': $ckeditorLang = 'de'; break;
+				case 'en_GB': $ckeditorLang = 'en-gb'; break;
+				case 'en_US': $ckeditorLang = 'en'; break;
+				case 'es_AR': $ckeditorLang = 'es'; break;
+				case 'es_ES': $ckeditorLang = 'es'; break;
+				case 'fi_FI': $ckeditorLang = 'fi'; break;
+				case 'fr_FR': $ckeditorLang = 'fr'; break;
+				case 'id_ID': $ckeditorLang = 'en-gb'; break;
+				case 'it_IT': $ckeditorLang = 'it'; break;
+				case 'ja_JP': $ckeditorLang = 'ja'; break;
+				case 'ko_KR': $ckeditorLang = 'ko'; break;
+				case 'nl_NL': $ckeditorLang = 'nl'; break;
+				case 'pl_PL': $ckeditorLang = 'pl'; break;
+				case 'pt_BR': $ckeditorLang = 'pt-br'; break;
+				case 'ru_RU': $ckeditorLang = 'ru'; break;
+				case 'zh_CN': $ckeditorLang = 'zh-cn'; break;
+				default: $ckeditorLang = 'en-gb'; break;
+			}
+			
 			$of = new ckeditorInterface($html_input_id) ;
 			$of->Editor->config['customConfig'] = $base_path . $webEditorCfg['configFile'];
 			$of->Editor->config['toolbar'] = $webEditorCfg['toolbar'];
+			$of->Editor->config['language'] = $ckeditorLang;
 			if (isset($webEditorCfg['height']))
 				$of->Editor->config['height'] = $webEditorCfg['height'];
 			if (isset($webEditorCfg['width']))

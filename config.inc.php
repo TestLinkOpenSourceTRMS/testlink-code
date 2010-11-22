@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.336 2010/11/19 16:47:55 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.337 2010/11/22 11:58:26 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20101122 - amitkhullar - BUGID 3998: added ckeditor option instead of fckeditor.
  *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
  *  20101109 - asimon - added $tlCfg->custom_fields->show_custom_fields_without_value
  *	20101030 - franciscom - bullet image config removed
@@ -501,9 +502,14 @@ $tlCfg->dashboard_precision = 2;
  * Hint: After doing configuration changes, clean you Browser's cookies and cache
  */
 $tlCfg->gui->text_editor = array();
-$tlCfg->gui->text_editor['all'] = array('type' => 'fckeditor',
+/* $tlCfg->gui->text_editor['all'] = array('type' => 'fckeditor',
                                     	'toolbar' => 'tl_default',
-                                    	'configFile' => 'cfg/tl_fckeditor_config.js',);
+                                    	'configFile' => 'cfg/tl_fckeditor_config.js',); */
+// Enabled the line below to switch to the ckeditor and disabled the line above.
+$tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor',
+                                    	'toolbar' => 'Testlink',
+                                    	'configFile' => 'cfg/tl_ckeditor_config.js',);
+					
 $tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
 
 /** User can choose order of menu areas */

@@ -7,13 +7,13 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: web_editor.php,v 1.12 2010/03/28 17:17:34 franciscom Exp $
+ * @version    	CVS: $Id: web_editor.php,v 1.13 2010/11/22 11:58:34 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  * @uses 		common.php
  *
  * @internal Revisions:
- *
+ *	20101122 - amitkhullar - BUGID 3998 Added ckeditor 
  * 	20080826 - franciscom - BUGID 1692
  *      refactoring to allow use of different editor type in different TL features/areas
  **/
@@ -69,6 +69,10 @@ function require_web_editor($editor_type=null)
     	case 'fckeditor':
     		return "../../third_party/fckeditor/fckeditor.php";
     		break;
+
+		case 'ckeditor':
+    		return "../../third_party/ckeditor/ckeditor.class.php";
+    		break;
    
     	case 'tinymce':
     		return "tinymce.class.php";
@@ -104,6 +108,17 @@ function web_editor($html_input_id,$base_path,$editor_cfg=null)
 				$of->Height = $webEditorCfg['height'];
 			if (isset($webEditorCfg['width']))
 				$of->Width = $webEditorCfg['width'];
+		break;
+
+		case 'ckeditor':
+			$of = new ckeditorInterface($html_input_id) ;
+			$of->Editor->config['customConfig'] = $base_path . $webEditorCfg['configFile'];
+			$of->Editor->config['toolbar'] = $webEditorCfg['toolbar'];
+			if (isset($webEditorCfg['height']))
+				$of->Editor->Height = $webEditorCfg['height'];
+			if (isset($webEditorCfg['width']))
+				$of->Editor->Width = $webEditorCfg['width'];
+
 		break;
 		    
 		case 'tinymce':

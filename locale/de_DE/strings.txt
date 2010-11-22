@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.216.2.2 2010/11/21 16:54:44 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.216.2.3 2010/11/22 20:57:33 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.751
+ * Last Update according to en_GB string file version 1.751.2.10
  *
  **/
 
@@ -75,6 +75,7 @@ $TLS_mandatory = "Pflichtfelder";
 $TLS_manual = "Manuell";
 $TLS_Milestone = "Meilenstein";
 $TLS_months	= "Monate";
+$TLS_monitor = "Beobachten";
 $TLS_name = "Name";
 $TLS_needed = "Benötigt";
 $TLS_not_aplicable = "N/A";
@@ -86,6 +87,7 @@ $TLS_priority		= "Priorität";
 $TLS_project		= "Projekt";
 $TLS_public = "Öffentlich";
 $TLS_requirement = "Anforderung";
+$TLS_req_monitoring = "Anforderungen beobachten";
 $TLS_req_short = "Anf.";
 $TLS_reqs = "Anforderungen";
 $TLS_req_spec = "Anforderungsspezifikation";
@@ -163,6 +165,7 @@ $TLS_btn_find = "Suchen";
 $TLS_btn_goback = "zurück";
 $TLS_btn_generate_doc = "Dokument erstellen";
 $TLS_btn_import = "Importieren";
+$TLS_btn_monitor = "Beobachten";
 $TLS_btn_move = "Verschieben";
 $TLS_btn_no = "Nein";
 $TLS_btn_ok = "Ok";
@@ -889,6 +892,7 @@ $TLS_can_not_edit_req = "Sie können diese Version nicht editieren, weil sie ein
 $TLS_req_version_frozen = "Version der Anforderung wurde eingefroren.";
 $TLS_freeze_req = "Anforderung einfrieren";
 $TLS_req_frozen = "Anforderungen wurden eingefroren.";
+$TLS_showing_version = "Zeigt Version ";
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -2073,6 +2077,8 @@ $TLS_bug_id_invalid_len = "Länge der BUG ID ist unngültig [%s > %s] " . $TLS_i
 $TLS_tproject_id_not_found = "Testprojekt ID nicht gefunden [%s] " . $TLS_imp_result_ko;
 $TLS_invalid_exec_type = "Ausführungstyp [%s] ist ungültig" . $TLS_imp_result_ko;
 $TLS_missing_exec_type = "Ausführungstyp wurde nicht angegeben - benutze (%s => %s)";
+$TLS_internal_id = "Interne ID:%s";
+$TLS_external_id = "Externe ID:%s";
 
 
 // ----- lib/functions/results.inc.php -----
@@ -2851,7 +2857,7 @@ $TLS_API_INVALID_PARENT_TESTSUITEID = "Test Suite ID (%s) provided as PARENT for
 $TLS_API_NO_TESTCASE_FOUND = "No Test Case found for search criteria.";
 $TLS_API_TESTPLANNAME_ALREADY_EXISTS="Test Plan (name:%s) Already EXITS on Test Project (name:%s).";
 
-$TLS_API_NODEID_IS_NOT_INTEGER = "Node id is not an positive interger value.";
+$TLS_API_NODEID_IS_NOT_INTEGER = "Node id (%s) is not an positive interger value.";
 $TLS_API_NODEID_DOESNOT_EXIST="Node with id (%s) does not exist on system.";
 
 $TLS_API_CFG_DELETE_EXEC_DISABLED = "Configuration does not allow delete executions";
@@ -2881,6 +2887,7 @@ $TLS_API_ATTACH_FEATURE_DISABLED = 'Attachment feature is disabled';
 $TLS_API_ATTACH_INVALID_FK = "Invalid Foreign Key ID[%s] Table[%s]";
 $TLS_API_ATTACH_INVALID_ATTACHMENT = "Invalid attachment info parameters: FILE_NAME [%s] CONTENT_SIZE [%s]";
 
+$TLS_NODEID_INVALID_DATA_TYPE_STR = "Invalid Data Type - Node ID can be Array of positive Integer, or Positive Integer";
 
 // ----- audit log entries -----
 $TLS_audit_login_succeeded = "Login für '{%1}' von '{%2}' erfolgreich";
@@ -2947,6 +2954,7 @@ $TLS_audit_req_assignment_removed_tc = "Die Zuweisung der Anforderung '{%1}' zum
 $TLS_audit_requirement_copy = "Anf 'DOCID:{%1}' wurde als Kopie von Anf. 'DOCID:{%2}' erstellt";
 $TLS_audit_req_version_deleted = " Version {%1} der Anf. 'DOCID:{%2}' - {%2} wurde gelöscht."; 
 $TLS_audit_req_version_frozen = " Version {%1} der Anf. 'DOCID:{%2}' - {%3} wurde eingefroren.";
+$TLS_audit_req_monitoring_started = "Anforderung 'DOCID:{%1}' - {%2} Nutzer {%3} beobachtet nun.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' wurde erstellt";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' wurde gespeichert";
@@ -3121,6 +3129,10 @@ $TLS_invalid_release_date = 'Ungültiges Release Datum.';
 $TLS_insert_step = "Schritt einfügen";
 $TLS_frozen_req_unable_to_import = 'Übersprungen - Anforderung - Dok. ID:%s - ist EINGEFROREN';
 
+$TLS_no_linked_cfields_for_testcase = 'Es existieren keine passenden benutzerdefinierten Felder für Testfälle, ' .
+                                      'die dem Test Plan zugewiesen wurden';
+$TLS_no_cfield_with_this_name = 'Es existiert kein benutzerdefiniertes Feld mit dem Namen (%s)';
+
 // ----- lib/plan/planExport.php -----
 $TLS_export_test_plan = 'Testplan exportieren';
 
@@ -3147,5 +3159,8 @@ $TLS_tcase_link_updated = "Testfall (%s) - Version (%s) war bereits mit dem Test
 
 // ----- lib/execute/execExport.php -----
 $TLS_export_execution_set = 'Ausführungen exportieren';
+
+// ----- lib/results/resultsReqs.php -----
+$TLS_no_label_for_req_type = 'Keine req_type_labels Konfiguration für den Typ: %s';
 // ----- END ------------------------------------------------------------------
 ?>

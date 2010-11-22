@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_tree_control.tpl,v 1.1 2010/11/22 09:15:57 asimon83 Exp $
+ * $Id: inc_tree_control.tpl,v 1.2 2010/11/22 09:46:23 asimon83 Exp $
  *
  * Shows some buttons which perform actions on the displayed tree.
  * Is included from filter panel template.
@@ -11,7 +11,7 @@
 
 {lang_get var=labels s='expand_tree, collapse_tree'}
 
-<div>
+<div class="x-panel-body exec_additional_info" style="padding:3px; padding-left: 9px;border:1px solid #99BBE8;">
 
 <input type="button"
        value="{$labels.expand_tree}" 

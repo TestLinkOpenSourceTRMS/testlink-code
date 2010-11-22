@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.337 2010/11/22 11:58:26 amkhullar Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.338 2010/11/22 21:14:17 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -465,16 +465,18 @@ $tlCfg->dashboard_precision = 2;
  * Every element is a mp with this configuration keys:
  *
  * 'type':
+ *        'ckeditor'
  *        'fckeditor'
  *        'tinymce'
  *        'none' -> use plain text area input field
- * 'toolbar': only applicable for type = 'fckeditor'
- *			name of ToolbarSet  (See: http://docs.fckeditor.net/ for more information about ToolbarSets)
- * 			TestLink stores own definitions in <testlink_dir>/cfg/tl_fckeditor_config.js
- * 'configFile': only applicable for type = 'fckeditor'
- * 			See: http://docs.fckeditor.net/ for more information about CustomConfigurationsPath
- * 'height': the height in px for FCKEditor
- * 'width': the width in px for FCKEditor
+ * 'toolbar': only applicable for type 'fckeditor' and 'ckeditor'
+ * 			TestLink stores toolbar definitions in <testlink_dir>/cfg/tl_fckeditor_config.js for fckeditor
+ * 			TestLink stores toolbar definitions in <testlink_dir>/cfg/tl_ckeditor_config.js for ckeditor
+ * 'configFile': only applicable for type 'fckeditor' and 'ckeditor'
+ *          default for fckeditor: 'cfg/tl_fckeditor_config.js'
+ *          default for ckeditor: 'cfg/tl_ckeditor_config.js'
+ * 'height': the height in px for fckeditor and ckeditor
+ * 'width': the width in px for FCKEditor and ckeditor
  * 'cols': the number of cols for tinymce and none
  * 'rows': the number of rows for tinymce and none
  *
@@ -499,25 +501,25 @@ $tlCfg->dashboard_precision = 2;
  * $tlCfg->gui->text_editor['requirement_spec'] = array( 'type' => 'none');
  * </code>
  *
- * Hint: After doing configuration changes, clean you Browser's cookies and cache
+ * Hint: After doing configuration changes, clean you Browser's cookies and cache!
  */
 $tlCfg->gui->text_editor = array();
 /* $tlCfg->gui->text_editor['all'] = array('type' => 'fckeditor',
                                     	'toolbar' => 'tl_default',
-                                    	'configFile' => 'cfg/tl_fckeditor_config.js',); */
+                                    	'configFile' => 'cfg/tl_fckeditor_config.js'); */
 // Enabled the line below to switch to the ckeditor and disabled the line above.
 $tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor',
                                     	'toolbar' => 'Testlink',
-                                    	'configFile' => 'cfg/tl_ckeditor_config.js',);
+                                    	'configFile' => 'cfg/tl_ckeditor_config.js');
 					
-$tlCfg->gui->text_editor['execution'] = array( 'type' => 'none');
+$tlCfg->gui->text_editor['execution'] = array('type' => 'none');
 
 /** User can choose order of menu areas */
-$tlCfg->gui->layoutMainPageLeft = array( 'testProject' => 1, 'userAdministration' => 2 ,
-                                         'requirements' => 3, 'testSpecification' => 4,
-                                         'general' => 5);
-$tlCfg->gui->layoutMainPageRight = array( 'testPlan' => 1, 'testExecution' => 2 ,
-                                          'testPlanContents' => 3);
+$tlCfg->gui->layoutMainPageLeft = array('testProject' => 1, 'userAdministration' => 2,
+                                        'requirements' => 3, 'testSpecification' => 4,
+                                        'general' => 5);
+$tlCfg->gui->layoutMainPageRight = array('testPlan' => 1, 'testExecution' => 2,
+                                         'testPlanContents' => 3);
 
 /**
  * Enable warning on a changed content before an user leave a page.

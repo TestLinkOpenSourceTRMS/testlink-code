@@ -7,7 +7,7 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: web_editor.php,v 1.13 2010/11/22 11:58:34 amkhullar Exp $
+ * @version    	CVS: $Id: web_editor.php,v 1.14 2010/11/22 21:14:17 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  * @uses 		common.php
@@ -115,9 +115,9 @@ function web_editor($html_input_id,$base_path,$editor_cfg=null)
 			$of->Editor->config['customConfig'] = $base_path . $webEditorCfg['configFile'];
 			$of->Editor->config['toolbar'] = $webEditorCfg['toolbar'];
 			if (isset($webEditorCfg['height']))
-				$of->Editor->Height = $webEditorCfg['height'];
+				$of->Editor->config['height'] = $webEditorCfg['height'];
 			if (isset($webEditorCfg['width']))
-				$of->Editor->Width = $webEditorCfg['width'];
+				$of->Editor->config['width'] = $webEditorCfg['width'];
 
 		break;
 		    

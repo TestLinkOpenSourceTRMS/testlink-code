@@ -1,9 +1,10 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.26 2010/11/13 11:07:58 franciscom Exp $ 
+   $Id: tcTree.tpl,v 1.27 2010/11/22 09:15:57 asimon83 Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
+  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20100809 - franciscom - BUGID 0003664 -  treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
 
   20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
@@ -98,6 +99,9 @@ rev:
 
 {* BUGID 3301: include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
+
+{* BUGID 4042 *}
+{include file="inc_tree_control.tpl"}
 
 <div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 

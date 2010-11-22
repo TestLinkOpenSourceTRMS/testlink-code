@@ -1,11 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.27 2010/11/13 09:53:07 franciscom Exp $
+$Id: planAddTCNavigator.tpl,v 1.28 2010/11/22 09:15:57 asimon83 Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
 Revisions:    
+  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
                           BEFORE Closing curly Bracket and AFTER opening curly Bracket
   20101027 - asimon - BUGID 3946: reqirement specification tree size     
@@ -13,7 +14,7 @@ Revisions:
                       them with new included template inc_tc_filter_panel.tpl
   20100417 - franciscom - BUGID 2498 - filter by test case spec importance
   20100410 - franciscom - BUGID 2797 - filter by test case execution type
-	20080629 - franciscom - fixed missed variable bug
+  20080629 - franciscom - fixed missed variable bug
   20080622 - franciscom - ext js tree support
   20080429 - franciscom - keyword filter multiselect
 * ------------------------------------------------------------------------ *}
@@ -107,6 +108,9 @@ function pre_submit()
 
 {* BUGID 3301 *}
 {include file='inc_filter_panel.tpl'}
+
+{* BUGID 4042 *}
+{include file="inc_tree_control.tpl"}
 
 <div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 

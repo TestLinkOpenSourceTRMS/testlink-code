@@ -1,14 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.33 2010/11/13 09:57:21 franciscom Exp $
+$Id: planTCNavigator.tpl,v 1.34 2010/11/22 09:15:57 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
-  20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
+    20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
+    20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
                           BEFORE Closing curly Bracket and AFTER opening curly Bracket
 
 	20101027 - asimon - BUGID 3946: reqirement specification tree size
-  20100708 - aismon - BUGDI 3406 - removed functionality and labels from 3049
+    20100708 - aismon - BUGDI 3406 - removed functionality and labels from 3049
 	20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
 	                    them with new included template inc_tc_filter_panel.tpl
 	20100412 - asimon - BUGID 3379, changed displaying of some filters
@@ -118,6 +119,9 @@ function update2latest(id)
 
 {* BUGID 3301: include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
+
+{* BUGID 4042 *}
+{include file="inc_tree_control.tpl"}
 
 <div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 

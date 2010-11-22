@@ -1,6 +1,6 @@
 {*
  * TestLink Open Source Project - http://testlink.sourceforge.net/
- * $Id: inc_filter_panel.tpl,v 1.13 2010/11/21 16:54:51 asimon83 Exp $
+ * $Id: inc_filter_panel.tpl,v 1.14 2010/11/22 09:15:57 asimon83 Exp $
  *
  * Shows the filter panel. Included by some other templates.
  * At the moment: planTCNavigator, execNavigator, planAddTCNavigator, tcTree.
@@ -34,8 +34,7 @@
                         btn_bulk_update_to_latest_version, priority, tc_title,
                         custom_field, search_type_like,
                         document_id, req_expected_coverage, title,
-                        status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree,
-                        expand_tree, collapse_tree'}
+                        status, req_type, req_spec_type, th_tcid, has_relation_type,btn_export_testplan_tree'}
 
 {config_load file="input_dimensions.conf" section="treeFilterForm"}
 
@@ -374,19 +373,6 @@
 				     style="font-size: 90%;"  />
       		{/if}
       		
-      		<br/> 
-      		{* BUGID 4042 *}
-      		<input type="button" value="{$labels.expand_tree}" 
-      		       id="expand_tree"
-                   name="expand_tree"
-                   onclick="tree.expandAll();"
-                   style="font-size: 90%;" />
-
-			<input type="button" value="{$labels.collapse_tree}" 
-			       id="collapse_tree"
-                   name="collapse_tree"
-                   onclick="tree.collapseAll();"
-                   style="font-size: 90%;" />
 		</div>
 
 	</div> {* filters *}
@@ -602,19 +588,6 @@
 			     style="font-size: 90%;"  />
       	{/if}
       	
-      	<br/> 
-      	{* BUGID 4042 *}	
-      	<input type="button" value="{$labels.expand_tree}" 
-      	       id="expand_tree"
-               name="expand_tree"
-               onclick="tree.expandAll();"
-               style="font-size: 90%;" />
-
-		<input type="button" value="{$labels.collapse_tree}" 
-		       id="collapse_tree"
-               name="collapse_tree"
-               onclick="tree.collapseAll();"
-               style="font-size: 90%;" />
 	</div>
 	
 	</div> {* filters *}

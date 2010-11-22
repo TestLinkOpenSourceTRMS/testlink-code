@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.12 2010/11/13 10:18:41 franciscom Exp $ 
+$Id: reqSpecListTree.tpl,v 1.13 2010/11/22 09:15:57 asimon83 Exp $ 
 show requirement specifications tree menu
 
 rev: 
+  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
                           On JS expression SPACE is NEED 
                           BEFORE Closing curly Bracket and AFTER opening curly Bracket
@@ -80,6 +81,9 @@ var req_manager_url = '{$gui->req_manager_url}';
 
 {* include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
+
+{* BUGID 4042 *}
+{include file="inc_tree_control.tpl"}
 
 <div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 </body>

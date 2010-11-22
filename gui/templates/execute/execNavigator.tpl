@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.53 2010/11/13 11:17:27 franciscom Exp $ *}
+{* $Id: execNavigator.tpl,v 1.54 2010/11/22 09:15:57 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101101 - franciscom - openExportTestPlan() interface changes
   20101027 - asimon - BUGID 3946: reqirement specification tree size
   20101007 - franciscom - BUGID 3270 - Export Test Plan in XML Format
@@ -109,6 +110,9 @@ function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build
 
 {* BUGID 3301: include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
+
+{* BUGID 4042 *}
+{include file="inc_tree_control.tpl"}
 
 
 {* ===================================================================== *}

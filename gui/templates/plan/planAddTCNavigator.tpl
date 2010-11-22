@@ -1,11 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.26 2010/10/27 13:45:16 asimon83 Exp $
+$Id: planAddTCNavigator.tpl,v 1.26.2.1 2010/11/22 09:16:00 asimon83 Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
 Revisions:     
+  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101027 - asimon - BUGID 3946: reqirement specification tree size     
   20100428 - asimon - BUGID 3301 - removed old filter/settings form/panel and replaced
                       them with new included template inc_tc_filter_panel.tpl
@@ -113,6 +114,9 @@ function pre_submit()
 
 {* BUGID 3301 *}
 {include file='inc_filter_panel.tpl'}
+
+{* BUGID 4042 *}
+{include file="inc_tree_control.tpl"}
 
 <div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 

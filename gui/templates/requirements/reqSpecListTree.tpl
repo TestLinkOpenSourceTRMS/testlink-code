@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.11 2010/10/27 13:45:16 asimon83 Exp $ 
+$Id: reqSpecListTree.tpl,v 1.11.2.1 2010/11/22 09:16:00 asimon83 Exp $ 
 show requirement specifications tree menu
 
 rev: 
+  20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101027 - asimon - BUGID 3946: reqirement specification tree size
   20100808 - asimon - first implementation of requirement filtering,
                       included filter panel template
@@ -86,6 +87,9 @@ var req_manager_url = '{$gui->req_manager_url}';
 
 {* include file for filter panel *}
 {include file='inc_filter_panel.tpl'}
+
+{* BUGID 4042 *}
+{include file="inc_tree_control.tpl"}
 
 <div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 </body>

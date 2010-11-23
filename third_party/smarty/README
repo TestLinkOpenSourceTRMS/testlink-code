@@ -1,9 +1,15 @@
-Smarty 3.0.4
+Smarty 3.0.5
 
 Author: Monte Ohrt <monte at ohrt dot com >
 Author: Uwe Tews
 
 AN INTRODUCTION TO SMARTY 3
+
+NOTICE for 3.0.5 release:
+
+Smarty now follows the PHP error_reporting level by default. If PHP does not mask E_NOTICE and you try to access an unset template variable, you will now get an E_NOTICE warning. To revert to the old behavior:
+
+$smarty->error_reporting = E_ALL & ~E_NOTICE;
 
 NOTICE for 3.0 release:
 

@@ -3,7 +3,7 @@
 /**
  * Project:     Smarty: the PHP compiling template engine
  * File:        smarty_internal_wrapper.php
- * SVN:         $Id: smarty_internal_wrapper.php,v 1.3 2010/11/14 10:37:37 franciscom Exp $
+ * SVN:         $Id: smarty_internal_wrapper.php,v 1.5 2010/12/13 21:28:46 franciscom Exp $
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -106,7 +106,12 @@ class Smarty_Internal_Wrapper {
            case 'trigger':
            switch($name_parts[1]) {
               case 'error':
-                 return call_user_func_array(array($this,'trigger_error'),$args);
+                 return call_user_func_array('trigger_error',$args);
+           }
+           case 'load':
+           switch($name_parts[1]) {
+              case 'filter':
+                 return call_user_func_array(array($this->smarty,'loadFilter'),$args);
            }
        }
        throw new SmartyException("unknown method '$name'");

@@ -1,14 +1,15 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.33 2010/11/06 11:42:47 amkhullar Exp $
+$Id: reqEdit.tpl,v 1.33.2.1 2010/11/24 17:09:44 mx-julian Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20101124 - Julian - BUGID 4049: Ajax login on timeout for requirements to avoid data loss
 20101011 - franciscom - BUGID 3886: CF Types validation
 20101006 - asimon - BUGID 3854
-20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
+20100915 - Julian - BUGID 3777: Allow to insert last req doc id when creating requirement
 20100808 - asimon - added logic to refresh filtered tree on changes
 20100502 - franciscom - BUGID 3413: removed debug info
-20100319 - asimon - BUGID 1748 - added logic to add and remove requirement relations
+20100319 - asimon - BUGID 1748: added logic to add and remove requirement relations
 20091231 - franciscom - added logic to display and check expected coverage
                         attribute based on req type, with configuration
                         managed using $tlCfg->req_cfg->type_expected_coverage
@@ -26,6 +27,7 @@ internal revision
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
+<script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 //BUGID 3943: Escape all messages (string)
@@ -119,7 +121,7 @@ internal revision
 	  	}
 	  }
 	  
-		return true;
+	  return Ext.ux.requireSessionAndSubmit(f);
 	}
 	{/literal}
 	
@@ -307,7 +309,7 @@ function insert_last_doc_id()
 	<div class="groupBtn">
 		<input type="hidden" name="doAction" value="" />
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
-	         onclick="doAction.value='{$gui->operation}';parent.frames['treeframe'].document.forms['filter_panel_form'].submit();"/>
+	         onclick="doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 			onclick="javascript: history.back();"/>
 	</div>

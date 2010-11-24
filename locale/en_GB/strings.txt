@@ -24,7 +24,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.760 2010/11/21 16:54:51 asimon83 Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.761 2010/11/24 08:06:02 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1100,6 +1100,8 @@ $TLS_login_name = "Login Name";
 $TLS_lost_password_q = "Lost Password?";
 $TLS_new_user_q = "New User?";
 $TLS_password = "Password";
+$TLS_timeout_info = "Your session has expired.<br><br>Please log in again to not loose " .
+                    "recent changes.";
 
 
 

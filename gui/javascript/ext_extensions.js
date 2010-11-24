@@ -5,7 +5,7 @@
  * @package TestLink
  * @author Erik Eloff
  * @copyright 2009, TestLink community
- * @version CVS: $Id: ext_extensions.js,v 1.12 2010/10/18 21:36:05 erikeloff Exp $
+ * @version CVS: $Id: ext_extensions.js,v 1.12.2.1 2010/11/24 08:05:58 mx-julian Exp $
  * @filesource http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/gui/javascript/ext_extensions.js
  * @link http://www.teamst.org
  * @since 1.9
@@ -283,6 +283,7 @@ Ext.ux.requireSessionAndSubmit = function(form) {
 			// This makes translation easier from scripts using this function
 			username_label = obj['username_label'];
 			password_label = obj['password_label'];
+			timeout_info = obj['timeout_info'];
 			login_label = obj['login_label'];
 			if (obj["validSession"] == true) {
 				form.submit();
@@ -310,7 +311,7 @@ Ext.ux.requireSessionAndSubmit = function(form) {
 				}]
 		});
 		var win = new Ext.Window({
-			title: login_label,
+			title: timeout_info + '<br>&nbsp;',
 			layout: 'form',
 			width: 300,
 			modal: true,

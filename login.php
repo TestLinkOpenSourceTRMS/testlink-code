@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2006, TestLink community 
- * @version    	CVS: $Id: login.php,v 1.58 2010/09/28 08:58:23 mx-julian Exp $
+ * @version    	CVS: $Id: login.php,v 1.58.2.1 2010/11/24 08:05:58 mx-julian Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/login.php?view=markup
  * @link 		http://www.teamst.org/index.php
  * 
@@ -94,7 +94,8 @@ switch($args->action)
 		 echo json_encode(array('validSession' => $validSession,
 		 	                    'username_label' => lang_get('login_name'),
 		 	                    'password_label' => lang_get('password'),
-		 	                    'login_label' => lang_get('btn_login')));
+		 	                    'login_label' => lang_get('btn_login'),
+		                        'timeout_info' => lang_get('timeout_info')));
 		 break;
 	
 	case 'loginform':

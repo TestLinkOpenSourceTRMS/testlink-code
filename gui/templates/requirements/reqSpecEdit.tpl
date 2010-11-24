@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.24 2010/11/06 11:42:47 amkhullar Exp $
+$Id: reqSpecEdit.tpl,v 1.24.2.1 2010/11/24 17:11:21 mx-julian Exp $
 Purpose: smarty template - create a new req document
 
 rev:
+  20101124 - Julian - BUGID 4051: Ajax login on timeout for requirement specifications to avoid data loss
   20101006 - asimon - BUGID 3854
   20100810 - asimon - BUGID 3317: disabled total count of requirements by default
   20100808 - asimon - added logic to refresh filtered tree on changes
@@ -19,6 +20,7 @@ rev:
 
 {include file="inc_head.tpl" openHead="yes" jsValidate="yes" editorType=$gui->editorType}
 {include file="inc_del_onclick.tpl"}
+<script language="javascript" src="gui/javascript/ext_extensions.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 //BUGID 3943: Escape all messages (string)
@@ -57,7 +59,7 @@ rev:
 		{/if}
 		{literal}
 		
-		return true;
+		return Ext.ux.requireSessionAndSubmit(f);
 	}
 	{/literal}
 	</script>
@@ -134,7 +136,7 @@ rev:
 		<div class="groupBtn">
 			<input type="hidden" name="doAction" value="" />
 			<input type="submit" name="createSRS" value="{$gui->submit_button_label}"
-		       onclick="doAction.value='{$gui->operation}';parent.frames['treeframe'].document.forms['filter_panel_form'].submit();" />
+		       onclick="doAction.value='{$gui->operation}';" />
 			<input type="button" name="go_back" value="{$labels.cancel}" 
 				onclick="javascript: history.back();"/>
 		</div>

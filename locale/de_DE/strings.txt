@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.220 2010/11/22 21:02:53 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.221 2010/11/24 17:08:51 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -1099,10 +1099,10 @@ $TLS_hide_inactive_users = "Verstecke deaktivierte Benutzer";
 
 // ----- gui/templates/login.tpl -----
 $TLS_btn_login = "Anmelden";
-$TLS_login_name = "Benutzername:";
+$TLS_login_name = "Benutzername";
 $TLS_lost_password_q = "Passwort vergessen?";
 $TLS_new_user_q = "Neuer Benutzer?";
-$TLS_password = "Passwort:";
+$TLS_password = "Passwort";
 
 
 

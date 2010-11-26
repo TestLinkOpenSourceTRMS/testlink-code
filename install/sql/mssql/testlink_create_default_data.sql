@@ -1,6 +1,6 @@
 --  -----------------------------------------------------------------------------------
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.24 2010/09/11 17:10:17 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.25 2010/11/26 06:49:47 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --  
 -- IMPORTANT NOTE:
@@ -8,6 +8,8 @@
 --
 --  Database Type: Microsoft SQL Server
 --
+--  20101126 - franciscom - DB version increased
+--                          added requirement_revision node type
 --  20090426 - franciscom - new right testproject_user_role_assignment
 --  20090126 - havlatm - role definition update
 --  20080102 - franciscom - added note on db_version
@@ -19,7 +21,7 @@
 --  -----------------------------------------------------------------------------------
 
 --  Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.3','Test Link 1.9',GETDATE());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES ('DB 1.4','Test Link 2.0',GETDATE());
 
 --  Node types -
 SET IDENTITY_INSERT /*prefix*/node_types ON
@@ -32,6 +34,7 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (6,'requirement_spec');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (7,'requirement');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
 SET IDENTITY_INSERT /*prefix*/node_types OFF
 
 --  Roles -

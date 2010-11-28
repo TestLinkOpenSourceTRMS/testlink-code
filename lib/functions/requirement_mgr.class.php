@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.3 $
- * @modified $Date: 2010/11/19 16:47:47 $ by $Author: asimon83 $
+ * @version $Revision: 1.114.2.4 $
+ * @modified $Date: 2010/11/28 11:24:08 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -486,6 +486,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
   */
 	function delete($id,$version_id = self::ALL_VERSIONS)
  	{
+ 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
  		$children = null;
 		$where_clause_coverage = '';
 	  	$where_clause_this = '';

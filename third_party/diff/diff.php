@@ -1,4 +1,14 @@
 <?php
+/** TestLink Open Source Project - http://testlink.sourceforge.net/
+ *
+ * @filesource $RCSfile: diff.php,v $
+ * @version $Revision: 1.2 $
+ * @modified $Date: 2010/11/28 16:08:38 $  $Author: franciscom $
+ * 
+ * @internal revision
+ * 20101128 - franciscom - declare missing $maxlen variable
+*/
+
 /*
 	Ross Scrivener http://scrivna.com
 	PHP file diff implementation
@@ -20,7 +30,8 @@ class diff {
 	function doDiff($old, $new){
 		if (!is_array($old)) $old = file($old);
 		if (!is_array($new)) $new = file($new);
-	
+
+		$maxlen = 0;
 		foreach($old as $oindex => $ovalue){
 			$nkeys = array_keys($new, $ovalue);
 			foreach($nkeys as $nindex){

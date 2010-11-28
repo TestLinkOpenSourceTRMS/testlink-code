@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.5 2010/08/31 09:31:51 mx-julian Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.5.2.1 2010/11/28 10:52:39 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
  *
  * @internal Revisions:
+ * 20101128 - franciscom - init_args() adding code to remove event viewer warnings
  * 20100831 - Julian - added requirement title to page heading
  */
 
@@ -90,8 +91,8 @@ function init_args()
 
 	$args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : 0;
 	$args->compare_selected_versions = isset($_REQUEST['compare_selected_versions']);
-	$args->version_left = $_REQUEST['version_left'];
-	$args->version_right = $_REQUEST['version_right'];
+	$args->version_left = isset($_REQUEST['version_left']) ? $_REQUEST['version_left'] : null;
+	$args->version_right = isset($_REQUEST['version_right']) ? $_REQUEST['version_right'] : null;
 
 	$diffEngineCfg = config_get("diffEngine");
 	if (isset($_REQUEST['context_show_all'])) {

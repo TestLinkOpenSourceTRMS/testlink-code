@@ -1,7 +1,7 @@
 // TestLink Open Source Project - http://testlink.sourceforge.net/
 // This script is distributed under the GNU General Public License 2 or later.
 //
-// $Id: testlink_library.js,v 1.115 2010/11/19 16:47:55 asimon83 Exp $
+// $Id: testlink_library.js,v 1.116 2010/11/28 16:25:54 franciscom Exp $
 //
 // Javascript functions commonly used through the GUI
 // Rule: DO NOT ADD FUNCTIONS FOR ONE USING
@@ -901,31 +901,31 @@ function openLinkedReqVersionWindow(req_id, req_version_id, anchor)
  */
 function openLinkedReqWindow(req_id, anchor)
 {
+	// 20101008 - asimon - BUGID 3311
+	var width = getCookie("ReqPopupWidth");
+	var height = getCookie("ReqPopupHeight");
+	var windowCfg='';
+	var feature_url = "lib/requirements/reqView.php";
+
+
 	if (anchor == null) {
 		anchor = '';
 	} else {
 		anchor = '#' + anchor;
 	}
-	
-	var windowCfg='';
-	var feature_url = "lib/requirements/reqView.php";
-	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + anchor;
-
-	// 20101008 - asimon - BUGID 3311
-	var width = getCookie("ReqPopupWidth");
-	var height = getCookie("ReqPopupHeight");
 
 	if (width == null)
 	{
-		var width = "800";
+		width = "800";
 	}
 
 	if (height == null)
 	{
-		var height = "600";
+		height = "600";
 	}
 
-	var windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
+	feature_url += "?showReqSpecTitle=1&requirement_id=" + req_id + anchor;
+	windowCfg = "width="+width+",height="+height+",resizable=yes,scrollbars=yes,dependent=yes";
 	window.open(fRoot+feature_url,"Requirement",windowCfg);
 }
 

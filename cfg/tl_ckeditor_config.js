@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tl_ckeditor_config.js,v 1.5 2010/11/30 08:39:52 mx-julian Exp $
+$Id: tl_ckeditor_config.js,v 1.6 2010/11/30 08:49:37 mx-julian Exp $
 
 Configure CKEditor
 See: http://docs.cksource.com/ for more information
@@ -24,6 +24,9 @@ CKEDITOR.editorConfig = function( config )
 	// choose your prefered ckedtior skin
 	// available skins: kama, office2003, v2
 	config.skin = 'office2003';
+	
+	// do not check "Replace actual contents" checkbox as default
+	config.templates_replaceContent = false;
 	
 	// default Toolbar
 	config.toolbar_Testlink = 

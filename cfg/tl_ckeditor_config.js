@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tl_ckeditor_config.js,v 1.10 2010/11/30 10:07:32 mx-julian Exp $
+$Id: tl_ckeditor_config.js,v 1.11 2010/11/30 10:09:11 mx-julian Exp $
 
 Configure CKEditor
 See: http://docs.cksource.com/ for more information
@@ -11,19 +11,6 @@ http://docs.cksource.com/ckeditor_api/symbols/CKEDITOR.config.html
 
 CKEDITOR.editorConfig = function( config )
 {
-	/* Configuration of File Browser
-	   You can use theses definitions if you buy ckfinder
-	   more informations on http://ckfinder.com/
-	   download ckfinder and put into third party folder
-	*/
-	//config.filebrowserBrowseUrl = '/third_party/ckfinder/ckfinder.html';
-	//config.filebrowserImageBrowseUrl = '/third_party/ckfinder/ckfinder.html?Type=Images';
-	//config.filebrowserFlashBrowseUrl = '/third_party/ckfinder/ckfinder.html?Type=Flash';
-	// uncomment these lines only if you want to allow quick upload
-	//config.filebrowserUploadUrl = '/third_party/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files';
-	//config.filebrowserImageUploadUrl = '/third_party/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images';
-	//config.filebrowserFlashUploadUrl = '/third_party/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash';
-	
 	// choose your prefered ckedtior skin
 	// available skins: kama, office2003, v2
 	config.skin = 'office2003';
@@ -70,4 +57,17 @@ CKEDITOR.editorConfig = function( config )
 	    ['TextColor','BGColor'],
 	    ['Maximize','ShowBlocks','-','About']
 	];
+	
+	/* Configuration of File Browser
+	   You can use theses definitions if you buy ckfinder
+	   more informations on http://ckfinder.com/
+	   download ckfinder and put into third party folder
+	*/
+	//config.filebrowserBrowseUrl = '/third_party/ckfinder/ckfinder.html';
+	//config.filebrowserImageBrowseUrl = '/third_party/ckfinder/ckfinder.html?Type=Images';
+	//config.filebrowserFlashBrowseUrl = '/third_party/ckfinder/ckfinder.html?Type=Flash';
+	// uncomment these lines only if you want to allow quick upload
+	//config.filebrowserUploadUrl = '/third_party/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files';
+	//config.filebrowserImageUploadUrl = '/third_party/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images';
+	//config.filebrowserFlashUploadUrl = '/third_party/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash';
 };

@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.33.2.2 2010/11/30 10:41:47 mx-julian Exp $
+$Id: reqEdit.tpl,v 1.33.2.3 2010/11/30 10:44:32 mx-julian Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20101130 - Julian - BUGID 4063: "Save" and "Cancel" Button at the top of the page
 20101124 - Julian - BUGID 4049: Ajax login on timeout for requirements to avoid data loss
 20101011 - franciscom - BUGID 3886: CF Types validation
 20101006 - asimon - BUGID 3854

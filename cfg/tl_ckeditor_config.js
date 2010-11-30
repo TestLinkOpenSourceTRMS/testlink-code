@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tl_ckeditor_config.js,v 1.8 2010/11/30 09:21:30 mx-julian Exp $
+$Id: tl_ckeditor_config.js,v 1.9 2010/11/30 09:33:09 mx-julian Exp $
 
 Configure CKEditor
 See: http://docs.cksource.com/ for more information
@@ -13,6 +13,7 @@ CKEDITOR.editorConfig = function( config )
 {
 	// You can use theses definitions if you buy ckfinder
 	// more informations on http://ckfinder.com/
+	// download ckfinder and put into third party folder
 	
 	//config.filebrowserBrowseUrl = '/third_party/ckfinder/ckfinder.html';
 	//config.filebrowserImageBrowseUrl = '/third_party/ckfinder/ckfinder.html?Type=Images';

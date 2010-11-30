@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tl_ckeditor_config.js,v 1.4 2010/11/30 08:36:14 mx-julian Exp $
+$Id: tl_ckeditor_config.js,v 1.5 2010/11/30 08:39:52 mx-julian Exp $
 
 Configure CKEditor
 See: http://docs.cksource.com/ for more information
@@ -35,7 +35,7 @@ CKEDITOR.editorConfig = function( config )
 		 'Table','HorizontalRule',],
 		 '/',
 		 ['Format','Bold','Italic','Underline','Strike','-',
-		  'Subscript','Superscript','TextColor','BGColor','RemoveFormat','-',
+		  'Subscript','Superscript','-','TextColor','BGColor','RemoveFormat','-',
 		  'Link','Image','Anchor','SpecialChar']
 	];
 	

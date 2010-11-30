@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.338 2010/11/22 21:14:17 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.339 2010/11/30 09:16:22 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *  20101130 - Julian - BUGID 4027: set default height of ckeditor to 300
  *  20101122 - amitkhullar - BUGID 3998: added ckeditor option instead of fckeditor.
  *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
  *  20101109 - asimon - added $tlCfg->custom_fields->show_custom_fields_without_value
@@ -510,7 +511,8 @@ $tlCfg->gui->text_editor = array();
 // Enabled the line below to switch to the ckeditor and disabled the line above.
 $tlCfg->gui->text_editor['all'] = array('type' => 'ckeditor',
                                     	'toolbar' => 'Testlink',
-                                    	'configFile' => 'cfg/tl_ckeditor_config.js');
+                                    	'configFile' => 'cfg/tl_ckeditor_config.js',
+                                        'height' => 300);
 					
 $tlCfg->gui->text_editor['execution'] = array('type' => 'none');
 

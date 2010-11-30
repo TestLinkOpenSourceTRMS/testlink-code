@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.35 2010/11/24 17:09:41 mx-julian Exp $
+$Id: reqEdit.tpl,v 1.36 2010/11/30 10:43:04 mx-julian Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20101130 - Julian - BUGID 4063: "Save" and "Cancel" Button at the top of the page
 20101124 - Julian - BUGID 4049: Ajax login on timeout for requirements to avoid data loss
 20101011 - franciscom - BUGID 3886: CF Types validation
 20101006 - asimon - BUGID 3854
@@ -208,6 +209,15 @@ function insert_last_doc_id()
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 	<input type="hidden" name="req_version_id" value="{$gui->req_version_id}" />
 	<input type="hidden" name="last_doc_id" id="last_doc_id" value="{$gui->last_doc_id|escape}" />
+	
+	{* BUGID 4063 *}
+	<div class="groupBtn">
+		<input type="submit" name="create_req" value="{$labels.btn_save}"
+	         onclick="doAction.value='{$gui->operation}';"/>
+		<input type="button" name="go_back" value="{$labels.cancel}" 
+			onclick="javascript: history.back();"/>
+	</div>
+	<br />
 	
   	<div class="labelHolder"><label for="reqDocId">{$labels.req_doc_id}</label>
   	   		{if $gui->grants->mgt_view_events eq "yes" and $gui->req_id}

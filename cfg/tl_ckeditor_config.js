@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tl_ckeditor_config.js,v 1.7 2010/11/30 08:53:51 mx-julian Exp $
+$Id: tl_ckeditor_config.js,v 1.8 2010/11/30 09:21:30 mx-julian Exp $
 
 Configure CKEditor
 See: http://docs.cksource.com/ for more information
@@ -27,7 +27,6 @@ CKEDITOR.editorConfig = function( config )
 	
 	// set css of ckeditor content to testlink.css
 	config.contentsCss = 'gui/themes/default/css/testlink.css';
-
 	
 	// do not check "Replace actual contents" checkbox as default
 	config.templates_replaceContent = false;
@@ -52,18 +51,20 @@ CKEDITOR.editorConfig = function( config )
 	// [...] defines sub-toolbars
 	config.toolbar_Full =
 	[
-		['Source','-','NewPage','Preview','-','Templates'],
-		['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print','SpellChecker'],
-		['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-		'/',
-		['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
-		['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],
-		['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-		['Link','Unlink','Anchor'],
-		['Image','Table','HorizontalRule','PageBreak'],
-		'/',
-		['Style','Format','Font','FontSize'],
-		['TextColor','BGColor'],
-		['Maximize','ShowBlocks','-','About']
+	 	['Source','-','Save','NewPage','Preview','-','Templates'],
+	    ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print', 'SpellChecker', 'Scayt'],
+	    ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
+	    ['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'],
+	    '/',
+	    ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
+	    ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','CreateDiv'],
+	    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+	    ['BidiLtr', 'BidiRtl' ],
+	    ['Link','Unlink','Anchor'],
+	    ['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak'],
+	    '/',
+	    ['Styles','Format','Font','FontSize'],
+	    ['TextColor','BGColor'],
+	    ['Maximize','ShowBlocks','-','About']
 	];
 };

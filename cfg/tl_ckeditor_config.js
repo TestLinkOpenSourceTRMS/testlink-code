@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tl_ckeditor_config.js,v 1.3 2010/11/30 08:33:07 mx-julian Exp $
+$Id: tl_ckeditor_config.js,v 1.4 2010/11/30 08:36:14 mx-julian Exp $
 
 Configure CKEditor
 See: http://docs.cksource.com/ for more information
@@ -32,11 +32,11 @@ CKEDITOR.editorConfig = function( config )
 		 'NumberedList','BulletedList','-',
 		 'JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-',
 		 'Outdent','Indent','-',
-		 'Table','HorizontalRule','-',
-		 'Link','Image','Anchor','SpecialChar'],
+		 'Table','HorizontalRule',],
 		 '/',
 		 ['Format','Bold','Italic','Underline','Strike','-',
-		  'Subscript','Superscript','TextColor','BGColor','RemoveFormat']
+		  'Subscript','Superscript','TextColor','BGColor','RemoveFormat','-',
+		  'Link','Image','Anchor','SpecialChar']
 	];
 	
 	// Toolbar with all available features - can be used as template for custom toolbars

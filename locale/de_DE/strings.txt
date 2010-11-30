@@ -23,7 +23,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.222 2010/11/25 11:07:39 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.223 2010/11/30 08:03:16 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -430,7 +430,7 @@ $TLS_report_tplan_has_no_tcases = "Testplan hat keine verlinkten Testfälle, <br
 // ----- tcEdit.php -----
 $TLS_copy_keyword_assignments = "Zugewiesene Stichwörter kopieren";
 $TLS_copy_requirement_assignments = "Zugewiesene Anforderungen kopieren";
-$TLS_tc_copied = "Testfall %s wurde erfolgreich in <br> Test Suite %s kopiert";
+$TLS_tc_copied = "Testfall %s wurde erfolgreich in Test Suite %s kopiert";
 $TLS_tc_created = "Testfall %s wurde erfolgreich erstellt.";
 $TLS_tc_deleted = "Testfall %s wurde erfolgreich gelöscht.";
 $TLS_tc_new_version = "Testfall-Version %d wurde erfolgreich erstellt";

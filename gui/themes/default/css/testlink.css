@@ -1,9 +1,10 @@
 /*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: testlink.css,v 1.54 2010/11/06 14:12:52 mx-julian Exp $
+$Id: testlink.css,v 1.55 2010/12/01 12:34:17 mx-julian Exp $
 
 Purpose: Default TestLink CSS
 
+20101131 - Julian - added background color for "table.simple th"
 20101028 - eloff - reverted to strict table changes and added workaround for date picker
                    BUGID 3944 - do not style file uploads fields
                    use standard radio and checkboxes style
@@ -483,6 +484,7 @@ table.common th, table.simple th{
   	border:			1px solid #99bbe8;
   	line-height:	15px;
   	background:		transparent url(../images/white-top-bottom.gif) repeat-x 0 -1px;
+  	background-color: #CDDEF3;
 }
 
 table.common td,th{

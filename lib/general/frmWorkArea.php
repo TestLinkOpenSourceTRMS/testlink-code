@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * Filename $RCSfile: frmWorkArea.php,v $
- * @version $Revision: 1.45 $
- * @modified $Date: 2010/11/16 12:35:29 $ by $Author: asimon83 $
+ * @version $Revision: 1.46 $
+ * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * This page is window for navigation and working area (eg tree + edit page).
@@ -167,6 +167,9 @@ function validateBuildAvailability(&$db,$tpID, $tpName, $prodName, $open)
 
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array(
 		"feature" => array(tlInputParameter::STRING_N),
 	);

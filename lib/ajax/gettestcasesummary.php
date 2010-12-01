@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettestcasesummary.php,v 1.1 2009/11/09 07:22:15 franciscom Exp $
+* 	@version 	$Id: gettestcasesummary.php,v 1.2 2010/12/01 14:37:08 asimon83 Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   Used on Add/Remove test case to test plan feature, to display summary via ExtJS tooltip
@@ -14,6 +14,9 @@
 require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
+
+// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+$_REQUEST=strings_stripSlashes($_REQUEST);
 
 $tcase_mgr = new testcase($db);
 $tcase_id = isset($_REQUEST['tcase_id']) ? $_REQUEST['tcase_id']: null;

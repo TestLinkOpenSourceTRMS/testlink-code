@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: getExecNotes.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/06/24 17:25:57 $ by $Author: asimon83 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
  *
  *
  * rev:	
@@ -74,6 +74,9 @@ function createExecNotesWebEditor($id,$basehref,$editorCfg,$content=null)
 
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
     $iParams = array("exec_id" => array(tlInputParameter::INT_N),
                      "readonly" => array(tlInputParameter::INT_N));
 	$args = new stdClass();

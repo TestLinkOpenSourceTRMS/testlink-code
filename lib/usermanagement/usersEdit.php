@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersEdit.php,v 1.41 2010/10/11 18:06:53 mx-julian Exp $
+ * @version    	CVS: $Id: usersEdit.php,v 1.42 2010/12/01 14:37:08 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -94,6 +94,9 @@ renderGui($smarty,$args,$templateCfg);
  */
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array(
 			"delete" => array(tlInputParameter::INT_N),
 			"user" => array(tlInputParameter::INT_N),

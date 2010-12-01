@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getrequirementnodes.php,v 1.15 2010/10/10 14:47:57 franciscom Exp $
+* 	@version 	$Id: getrequirementnodes.php,v 1.16 2010/12/01 14:37:08 asimon83 Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   **** IMPORTANT *****   
@@ -31,6 +31,8 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 
+// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+$_REQUEST=strings_stripSlashes($_REQUEST);
 
 $root_node=isset($_REQUEST['root_node']) ? $_REQUEST['root_node']: null;
 $node=isset($_REQUEST['node']) ? $_REQUEST['node'] : $root_node;

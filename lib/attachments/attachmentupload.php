@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: attachmentupload.php,v $
  *
- * @version $Revision: 1.23 $
- * @modified $Date: 2009/12/28 08:52:06 $ by $Author: franciscom $
+ * @version $Revision: 1.24 $
+ * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
  *
  * Upload dialog for attachments
  *
@@ -64,6 +64,9 @@ $smarty->display('attachmentupload.tpl');
  */
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array(
 		//the id (attachments.fk_id) of the object, to which the attachment belongs to 
 		"id" => array("GET",tlInputParameter::INT_N),

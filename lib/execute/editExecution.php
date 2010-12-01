@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: editExecution.php,v $
  *
- * @version $Revision: 1.4 $
- * @modified $Date: 2009/09/04 19:22:37 $ by $Author: schlundus $
+ * @version $Revision: 1.5 $
+ * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
  *
  * Edit an execution notes and custom fields
  *
@@ -64,6 +64,9 @@ function doUpdate(&$db,&$args,&$tcaseMgr,&$request)
 
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array("exec_id" => array(tlInputParameter::INT_N),
 		             "doAction" => array(tlInputParameter::STRING_N,0,100),
    		             "notes" => array(tlInputParameter::STRING_N),

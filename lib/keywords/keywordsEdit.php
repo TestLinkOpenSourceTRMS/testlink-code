@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: keywordsEdit.php,v $
  *
- * @version $Revision: 1.32 $
- * @modified $Date: 2010/02/03 20:22:13 $ by $Author: franciscom $
+ * @version $Revision: 1.33 $
+ * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
  *
  * allows users to manage keywords. 
  *
@@ -72,6 +72,9 @@ $smarty->display($template_dir . $default_template);
  */
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args = new stdClass();
 	
 	$bPostBack = sizeof($_POST);

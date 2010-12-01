@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsExport.php,v 1.4 2010/02/27 09:02:05 franciscom Exp $
+ * @version    	CVS: $Id: platformsExport.php,v 1.5 2010/12/01 14:37:08 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
@@ -51,6 +51,9 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args = new stdClass();
 	$iParams = array("doAction" => array(tlInputParameter::STRING_N,0,50),
 			         "export_filename" => array(tlInputParameter::STRING_N,0,255),

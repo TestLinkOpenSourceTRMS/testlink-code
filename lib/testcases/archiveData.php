@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.78 2010/10/08 11:15:27 asimon83 Exp $
+ * 	@version 	$Id: archiveData.php,v 1.79 2010/12/01 14:37:08 asimon83 Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -115,6 +115,9 @@ switch($args->feature)
  */
 function init_args(&$viewerCfg)
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array("edit" => array(tlInputParameter::STRING_N,0,50),
 			         "id" => array(tlInputParameter::INT_N),
 			         "tcase_id" => array(tlInputParameter::INT_N),

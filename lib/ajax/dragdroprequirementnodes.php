@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: dragdroprequirementnodes.php,v 1.3 2009/12/08 14:41:57 franciscom Exp $
+* 	@version 	$Id: dragdroprequirementnodes.php,v 1.4 2010/12/01 14:37:08 asimon83 Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   manage drag and drop on test project tree
@@ -46,6 +46,9 @@ switch($args->doAction)
 
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
     $args=new stdClass();
     
     $key2loop=array('nodeid','newparentid','doAction',

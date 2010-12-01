@@ -4,8 +4,8 @@
  *
  * Filename $RCSfile: metricsDashboard.php,v $
  *
- * @version $Revision: 1.27 $
- * @modified $Date: 2010/11/06 14:12:52 $ $Author: mx-julian $
+ * @version $Revision: 1.28 $
+ * @modified $Date: 2010/12/01 14:37:08 $ $Author: asimon83 $
  *
  * @author franciscom
  *
@@ -291,6 +291,9 @@ function getColumnsDefinition($showPlatforms, $result_cfg, $labels)
 function init_args()
 {
 	$args = new stdClass();
+
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
 
 	$args->tproject_id = isset($_SESSION['testprojectID']) ? intval($_SESSION['testprojectID']) : 0;
 	$args->tproject_name = isset($_SESSION['testprojectName']) ? $_SESSION['testprojectName'] : null;

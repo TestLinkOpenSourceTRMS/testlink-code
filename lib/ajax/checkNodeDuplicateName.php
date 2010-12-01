@@ -12,7 +12,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2010, TestLink community
- * @version    	CVS: $Id: checkNodeDuplicateName.php,v 1.2 2010/10/10 14:15:56 franciscom Exp $
+ * @version    	CVS: $Id: checkNodeDuplicateName.php,v 1.3 2010/12/01 14:37:08 asimon83 Exp $
  *
  * @internal Revisions:
  * 20101010 - franciscom - created using as starting point checkDuplicateName.php by eloff
@@ -23,6 +23,9 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 $data = array('success' => true, 'message' => '');
+
+// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+$_REQUEST=strings_stripSlashes($_REQUEST);
 
 $iParams = array("node_name" => array(tlInputParameter::STRING_N,0,100),
 	             "node_id" => array(tlInputParameter::INT),

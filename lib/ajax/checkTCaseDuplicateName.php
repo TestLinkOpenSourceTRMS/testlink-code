@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Erik Eloff
  * @copyright 	2010, TestLink community
- * @version    	CVS: $Id: checkTCaseDuplicateName.php,v 1.3 2010/10/10 13:41:13 franciscom Exp $
+ * @version    	CVS: $Id: checkTCaseDuplicateName.php,v 1.4 2010/12/01 14:37:08 asimon83 Exp $
  *
  * @internal Revisions:
  * 20101010 - franciscom - added testsuite_id as parameter, needed to do checks when creating test case
@@ -21,6 +21,9 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 $data = array('success' => true, 'message' => '');
+
+// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+$_REQUEST=strings_stripSlashes($_REQUEST);
 
 $iParams = array("name" => array(tlInputParameter::STRING_N,0,100),
 	             "testcase_id" => array(tlInputParameter::INT),

@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.35 $
- * @modified $Date: 2010/11/19 16:47:55 $ by $Author: asimon83 $
+ * @version $Revision: 1.36 $
+ * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
@@ -48,6 +48,9 @@ $smarty->display($templateCfg->template_dir . 'reqViewVersions.tpl');
  */
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	// BUGID 1748
 	// BUGID 4038
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),

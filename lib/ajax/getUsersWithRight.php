@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: getUsersWithRight.php,v 1.1 2010/02/12 00:20:12 havlat Exp $
+ * @version    	CVS: $Id: getUsersWithRight.php,v 1.2 2010/12/01 14:37:08 asimon83 Exp $
  *
  * @internal Revisions:
  * None
@@ -19,6 +19,9 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 $data = array();
+
+// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+$_REQUEST=strings_stripSlashes($_REQUEST);
 
 $iParams = array(
 		"right" => array(tlInputParameter::STRING_N,0,100,'/^[a-z0-9_]+$/')

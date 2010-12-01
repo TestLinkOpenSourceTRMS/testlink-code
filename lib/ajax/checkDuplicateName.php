@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Erik Eloff
  * @copyright 	2010, TestLink community
- * @version    	CVS: $Id: checkDuplicateName.php,v 1.1 2010/03/06 16:43:14 erikeloff Exp $
+ * @version    	CVS: $Id: checkDuplicateName.php,v 1.2 2010/12/01 14:37:08 asimon83 Exp $
  *
  * @internal Revisions:
  * 20100225 - eloff - initial commit
@@ -20,6 +20,9 @@ require_once('../../config.inc.php');
 require_once('common.php');
 testlinkInitPage($db);
 $data = array('success' => true, 'message' => '');
+
+// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+$_REQUEST=strings_stripSlashes($_REQUEST);
 
 $iParams = array(
 	"name" => array(tlInputParameter::STRING_N,0,100),

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: bugDelete.php,v $
  *
- * @version $Revision: 1.12 $
- * @modified $Date: 2010/06/24 17:25:57 $ by $Author: asimon83 $
+ * @version $Revision: 1.13 $
+ * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
 **/
 require_once('../../config.inc.php');
 require_once('../functions/common.php');
@@ -44,7 +44,10 @@ $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 function init_args()
 {
 	global $g_bugInterface;
-	
+
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$iParams = array(
 		"exec_id" => array("GET",tlInputParameter::INT_N),
 		"bug_id" => array("GET",tlInputParameter::STRING_N,0,$g_bugInterface->getBugIDMaxLength()),

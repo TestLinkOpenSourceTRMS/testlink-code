@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		eloff
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: platformsAssign.php,v 1.11 2010/02/11 19:22:35 franciscom Exp $
+ * @version    	CVS: $Id: platformsAssign.php,v 1.12 2010/12/01 14:37:08 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -134,6 +134,9 @@ function init_option_panels(&$tplan_mgr, &$platform_mgr, &$opt_cfg, &$args)
  */
 function init_args(&$opt_cfg)
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
     $added = $opt_cfg->js_ot_name . "_addedRight";
     $removed = $opt_cfg->js_ot_name . "_removedRight";
 

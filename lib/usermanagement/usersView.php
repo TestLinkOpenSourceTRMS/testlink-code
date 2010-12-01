@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		-
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: usersView.php,v 1.35 2010/04/19 20:59:39 franciscom Exp $
+ * @version    	CVS: $Id: usersView.php,v 1.35.6.1 2010/12/01 14:37:03 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -174,6 +174,9 @@ function get_order_by_clause($order)
 */
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	// input from GET['HelloString3'], 
 	// type: string,  
 	// minLen: 1, 

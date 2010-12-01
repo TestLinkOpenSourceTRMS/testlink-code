@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.55 $
- * @modified $Date: 2010/09/15 18:47:59 $ by $Author: franciscom $
+ * @version $Revision: 1.55.2.1 $
+ * @modified $Date: 2010/12/01 14:37:05 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
@@ -63,6 +63,9 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg,$db);
  */
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	// BUGID 1748
 	$iParams = array("requirement_id" => array(tlInputParameter::INT_N),
 					 "req_spec_id" => array(tlInputParameter::INT_N),

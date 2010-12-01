@@ -3,8 +3,8 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  *
  * @filesource $RCSfile: reqSpecEdit.php,v $
- * @version $Revision: 1.41 $
- * @modified $Date: 2010/10/28 12:44:03 $ $Author: asimon83 $
+ * @version $Revision: 1.41.2.1 $
+ * @modified $Date: 2010/12/01 14:37:05 $ $Author: asimon83 $
  *
  * @author Martin Havlat
  *
@@ -59,6 +59,9 @@ renderGui($args,$gui,$op,$templateCfg,$editorCfg);
  */
 function init_args()
 {
+	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
+	$_REQUEST=strings_stripSlashes($_REQUEST);
+
 	$args = new stdClass();
 	$iParams = array("countReq" => array(tlInputParameter::INT_N,99999),
 			         "req_spec_id" => array(tlInputParameter::INT_N),

@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.239 2010/11/18 11:40:15 amkhullar Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.240 2010/12/02 15:49:04 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101202 - asimon - fixed filtering issues when filtering for multiple statuses
  *  20101110 - amitkhullar - BUGID 3995 Refix->Custom Field Filters not working properly since the cf_hash is array
  *  20101114 - franciscom - Important Design Notes added on copy_as().	
  *                          BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
@@ -2797,6 +2798,9 @@ class testplan extends tlObjectWithAttachments
 		$build_in = implode(",", $buildSet);
 		$status_in = implode("',", (array)$status);
 		
+		// 20101202 - asimon - fixed filtering issues when filtering for multiple statuses
+		$first_results = null;
+		
 		if( in_array($resultsCfg['status_code']['not_run'], (array)$status) )
 		{
 			
@@ -2807,23 +2811,29 @@ class testplan extends tlObjectWithAttachments
 				" LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id " .
 				" AND T.testplan_id=E.testplan_id AND E.build_id IN ({$build_in}) " .
 				" WHERE T.testplan_id={$id} AND E.build_id IS NULL ";
-		}
-		else
-		{
-			$sql = " SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS tcase_id, COUNT(EE.status) AS exec_qty " .
-				" FROM {$this->tables['executions']} EE, {$this->tables['nodes_hierarchy']} NH," .
-				" (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS last_exec_id " .
-				" FROM {$this->tables['executions']} E " .
-				" WHERE E.build_id IN ({$build_in}) " .
-				" GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
-				" WHERE EE.build_id IN ({$build_in}) " .
-				" AND EE.status IN ('" . $status . "') AND NH.node_type_id={$node_types['testcase_version']} " .
-				" AND SQ1.last_exec_id=EE.id AND SQ1.tcversion_id=NH.id " .
-				" GROUP BY status,SQ1.tcversion_id,NH.parent_id" .
-				" HAVING count(EE.status)= {$num_exec} " ;
+			
+			$first_results = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		}
 		
+		$sql = " SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS tcase_id, COUNT(EE.status) AS exec_qty " .
+			" FROM {$this->tables['executions']} EE, {$this->tables['nodes_hierarchy']} NH," .
+			" (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS last_exec_id " .
+			" FROM {$this->tables['executions']} E " .
+			" WHERE E.build_id IN ({$build_in}) " .
+			" GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
+			" WHERE EE.build_id IN ({$build_in}) " .
+			" AND EE.status IN ('" . $status . "') AND NH.node_type_id={$node_types['testcase_version']} " .
+			" AND SQ1.last_exec_id=EE.id AND SQ1.tcversion_id=NH.id " .
+			" GROUP BY status,SQ1.tcversion_id,NH.parent_id" .
+			" HAVING count(EE.status)= {$num_exec} " ;
+		
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		
+		if (count($first_results)) {
+			foreach ($first_results as $key => $value) {
+				$recordset[$key] = $value;
+			}
+		}
 		return $recordset;
 	}
 
@@ -2848,6 +2858,9 @@ class testplan extends tlObjectWithAttachments
 		$build_in = implode(",", $buildSet);
 		$status_in = implode("','", (array)$status);
 
+		// 20101202 - asimon - fixed filtering issues when filtering for multiple statuses
+		$first_results = null;
+		
 		if( in_array($resultsCfg['status_code']['not_run'], (array)$status) ) {
 			//not run status
 			$sql = "/* $debugMsg */ SELECT distinct T.tcversion_id,E.build_id,NH.parent_id AS tcase_id " .
@@ -2857,21 +2870,30 @@ class testplan extends tlObjectWithAttachments
 				   " LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id " .
 				   " AND T.testplan_id=E.testplan_id AND E.build_id IN ({$build_in}) " .
 				   " WHERE T.testplan_id={$id} AND E.build_id IS NULL ";
-		} else {
-			//anything else
-			$sql = "/* $debugMsg */ SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS tcase_id," .
-			       " COUNT(EE.status) AS exec_qty " .
-				   " FROM {$this->tables['executions']} EE, {$this->tables['nodes_hierarchy']} NH," .
-				   " (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS last_exec_id " .
-				   "  FROM {$this->tables['executions']} E " .
-				   "  WHERE E.build_id IN ({$build_in}) GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
-				   " WHERE EE.build_id IN ({$build_in}) " .
-				   " AND EE.status IN ('" . $status_in . "') AND NH.node_type_id={$node_types['testcase_version']} " .
-				   " AND SQ1.last_exec_id=EE.id AND SQ1.tcversion_id=NH.id " .
-				   " GROUP BY status,SQ1.tcversion_id,NH.parent_id";
-		}
-
+			
+			$first_results = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		} 
+		
+		//anything else
+		$sql = "/* $debugMsg */ SELECT EE.status,SQ1.tcversion_id, NH.parent_id AS tcase_id," .
+		       " COUNT(EE.status) AS exec_qty " .
+			   " FROM {$this->tables['executions']} EE, {$this->tables['nodes_hierarchy']} NH," .
+			   " (SELECT E.tcversion_id,E.build_id,MAX(E.id) AS last_exec_id " .
+			   "  FROM {$this->tables['executions']} E " .
+			   "  WHERE E.build_id IN ({$build_in}) GROUP BY E.tcversion_id,E.build_id) AS SQ1 " .
+			   " WHERE EE.build_id IN ({$build_in}) " .
+			   " AND EE.status IN ('" . $status_in . "') AND NH.node_type_id={$node_types['testcase_version']} " .
+			   " AND SQ1.last_exec_id=EE.id AND SQ1.tcversion_id=NH.id " .
+			   " GROUP BY status,SQ1.tcversion_id,NH.parent_id";
+		
 		$recordset = $this->db->fetchRowsIntoMap($sql,'tcase_id');
+		
+		if (count($first_results)) {
+			foreach ($first_results as $key => $value) {
+				$recordset[$key] = $value;
+			}
+		}
+		
 		return $recordset;
 	}
 

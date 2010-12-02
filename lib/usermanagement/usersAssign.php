@@ -11,10 +11,11 @@
  * 
  * @package 	TestLink
  * @copyright 	2005-2010, TestLink community
- * @version    	CVS: $Id: usersAssign.php,v 1.32.2.2 2010/11/12 19:53:08 franciscom Exp $
+ * @version    	CVS: $Id: usersAssign.php,v 1.32.2.3 2010/12/02 06:42:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20101202 - franciscom - BUGID 4065
  *	20101112 - franciscom - getTestPlanEffectiveRoles() fixed typo error -> errors on event viewer
  *  20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
  *  20100930 - franciscom - BUGID 2344: Private test project
@@ -87,7 +88,10 @@ if ($args->featureID && $args->doUpdate && $featureMgr)
     if(checkRightsForUpdate($db,$args->user,$args->testprojectID,$args->featureType,$args->featureID))
     {
         doUpdate($db,$args,$featureMgr);
-        $gui->user_feedback = $gui->roles_updated;
+        if( $gui->user_feedback == '' )
+        {
+        	$gui->user_feedback = $gui->roles_updated;
+    	}
     }
 }
 // --------------------------------------------------------------------------
@@ -108,6 +112,12 @@ switch($assignRolesFor)
         
     case 'testplan':
         $info = getTestPlanEffectiveRoles($db,$tplanMgr,$tprojectMgr,$args,$gui->users);
+
+		// 20101202 - franciscom - BUGID 4065
+		if( is_null($info) )
+		{
+			$gui->user_feedback = lang_get('no_test_plans_available');
+		}
         list($gui->userFeatureRoles,$gui->features,$gui->featureID)=$info;
     break;
 
@@ -117,7 +127,11 @@ $gui->grants = getGrantsForUserMgmt($db,$args->user,$target->testprojectID,-1);
 if(is_null($gui->features) || count($gui->features) == 0)
 {
     $gui->features = null;
-	$gui->user_feedback = $gui->not_for_you;
+	// 20101202 - franciscom - BUGID 4065
+	if( $gui->user_feedback == '' )
+	{
+		$gui->user_feedback = $gui->not_for_you;
+	}
 }
 
 $smarty = new TLSmarty();
@@ -307,69 +321,74 @@ function getTestProjectEffectiveRoles($dbHandler,&$objMgr,&$argsObj,$users)
 /**
  * getTestPlanEffectiveRoles
  *
+ * 20101202 - franciscom - BUGID 4065
  */
 function getTestPlanEffectiveRoles(&$dbHandler,&$tplanMgr,$tprojectMgr,&$argsObj,&$users)
 {
 	$features = array();
 	$activeTestplans = $tprojectMgr->get_all_testplans($argsObj->testprojectID, array('plan_status' => 1));
-	if(!is_null($activeTestplans))
+	
+	$ret = null;
+	$status_ok = !is_null($activeTestplans);
+	if($status_ok)
 	{
         // we want to change map key, from testplan id to a sequential index
         // to maintain old logic
 	    $activeTestplans = array_values($activeTestplans);
-	}
     
-	if($argsObj->user->hasRight($dbHandler,"mgt_users"))
-	{
-		$features = $activeTestplans;
-	}
-	else
-	{
-	    $loop2do = sizeof($activeTestplans);
-		for($idx = 0; $idx < $loop2do; $idx++)
+		if($argsObj->user->hasRight($dbHandler,"mgt_users"))
 		{
-		    // Humm!!, think we need to check testplan_user_role_assignment and not
-		    // "testplan_planning"
-			if($argsObj->user->hasRight($dbHandler,"testplan_user_role_assignment",null,$activeTestplans[$idx]['id']) == "yes")
-			{
-				$features[] = $activeTestplans[$idx];
-			}	
+			$features = $activeTestplans;
 		}
-	}
-
-	//if nothing special was selected, use the one in the session or the first
-	if (!$argsObj->featureID)
-	{
-		if (sizeof($features))
+		else
 		{
-			if ($argsObj->testplanID)
+		    $loop2do = sizeof($activeTestplans);
+			for($idx = 0; $idx < $loop2do; $idx++)
 			{
-			    $loop2do = sizeof($features);
-				for($idx = 0; $idx < $loop2do; $idx++)
+			    // Humm!!, think we need to check testplan_user_role_assignment and not
+			    // "testplan_planning"
+				if($argsObj->user->hasRight($dbHandler,"testplan_user_role_assignment",null,$activeTestplans[$idx]['id']) == "yes")
 				{
-					if ($argsObj->testplanID == $features[$idx]['id'])
-					{
-						$argsObj->featureID = $argsObj->testplanID;
-					}	
-				}
+					$features[] = $activeTestplans[$idx];
+				}	
 			}
-			if (!$argsObj->featureID)
-			{
-				$argsObj->featureID = $features[0]['id'];
-			}	
 		}
+    	
+		//if nothing special was selected, use the one in the session or the first
+		if (!$argsObj->featureID)
+		{
+			if (sizeof($features))
+			{
+				if ($argsObj->testplanID)
+				{
+				    $loop2do = sizeof($features);
+					for($idx = 0; $idx < $loop2do; $idx++)
+					{
+						if ($argsObj->testplanID == $features[$idx]['id'])
+						{
+							$argsObj->featureID = $argsObj->testplanID;
+						}	
+					}
+				}
+				if (!$argsObj->featureID)
+				{
+					$argsObj->featureID = $features[0]['id'];
+				}	
+			}
+		}
+		foreach($users as &$user)
+		{
+			$user->readTestProjectRoles($dbHandler,$argsObj->testprojectID);
+			$user->readTestPlanRoles($dbHandler,$argsObj->featureID);
+		}
+    	
+		// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
+		$tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
+    	
+		$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
+ 		$ret = array($effectiveRoles,$features,$argsObj->featureID);
 	}
-	foreach($users as &$user)
-	{
-		$user->readTestProjectRoles($dbHandler,$argsObj->testprojectID);
-		$user->readTestPlanRoles($dbHandler,$argsObj->featureID);
-	}
-
-	// 20101004 - asimon - adapted to new interface of getTestersForHtmlOptions
-	$tproject_info = $tprojectMgr->get_by_id($argsObj->testprojectID);
-
-	$effectiveRoles = get_tplan_effective_role($dbHandler,$argsObj->featureID,$tproject_info,null,$users);
- 	return array($effectiveRoles,$features,$argsObj->featureID);
+	return $ret;
 }
 
 

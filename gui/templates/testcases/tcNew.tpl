@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.18 2010/11/06 11:42:47 amkhullar Exp $
+$Id: tcNew.tpl,v 1.18.2.1 2010/12/02 10:23:41 asimon83 Exp $
 Purpose: smarty template - create new testcase
 
+20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification when update tree is disabled
 20101011 - franciscom - BUGID 3874 - custom fields type validation
 20101010 - franciscom - BUGID 3062 - Check for duplicate name via AJAX call - checkTCaseDuplicateName()
                         need to add input for testcase_id, to make checkTCaseDuplicateName() work OK
@@ -92,7 +93,8 @@ function validateForm(f)
 <h1 class="title">{$gui->main_descr|escape}</h1>
 <div class="workBack">
 
-{include file="inc_update.tpl" result=$gui->sqlResult item="testcase" name=$gui->name user_feedback=$gui->user_feedback}
+{* BUGID 4067 *}
+{include file="inc_update.tpl" result=$gui->sqlResult item="testcase" name=$gui->name user_feedback=$gui->user_feedback refresh=$smarty.session.setting_refresh_tree_on_action}
 
 <form method="post" action="lib/testcases/tcEdit.php?containerID={$gui->containerID}"
       name="tc_new" id="tc_new"
@@ -142,8 +144,9 @@ function validateForm(f)
 </form>
 </div>
 
+{* BUGID 4067 *}
 {if $gui->sqlResult eq 'ok'}
-	{if ($smarty.session.setting_refresh_tree_on_action)}
+	{if isset($gui->refreshTree) && $gui->refreshTree}
 		{include file="inc_refreshTreeWithFilters.tpl"}
 	{/if}
 {/if}

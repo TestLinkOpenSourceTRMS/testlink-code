@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.47 2010/11/19 12:13:26 asimon83 Exp $
+$Id: tcView.tpl,v 1.48 2010/12/02 17:58:58 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
+    20101202 - asimon - BUGID 4067: refresh tree problems
     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
     20101017 - franciscom - image access refactored (tlImages)
     20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
@@ -111,7 +112,8 @@ function validateStepsReorder(formOID)
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
 
-{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
+{* 4067 *}
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
 <div class="workBack">
 
 {if $gui->tc_current_version}

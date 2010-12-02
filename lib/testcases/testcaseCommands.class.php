@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.64 2010/10/30 13:26:54 franciscom Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.65 2010/12/02 17:58:58 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  *	@internal revisions
+ *  20101202 - asimon - BUGID 4067: refresh tree problems
  *  20101001 - asimon - custom fields do not lose entered values on errors
  *	20100927 - franciscom - BUGID 3810: Steps are manual by default, even when added to automatic test case
  *	20100905 - franciscom -	BUGID 3431 - Custom Field values at Test Case VERSION Level
@@ -290,8 +291,11 @@ class testcaseCommands
         $viewer_args=array();
 
     	$guiObj = $this->initGuiBean($argsObj);
-   	    $guiObj->refreshTree=$argsObj->refreshTree ? 1 : 0;
-        $guiObj->has_been_executed = $argsObj->has_been_executed;
+    	
+    	// BUGID 4067
+   	    $guiObj->refreshTree= $argsObj->refreshTree && $ret['status_ok'] ? 1 : 0;
+        
+   	    $guiObj->has_been_executed = $argsObj->has_been_executed;
 		// BUGID 3610
 		$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
 
@@ -306,7 +310,7 @@ class testcaseCommands
 
         if($ret['status_ok'])
 		{
-		    $guiObj->refreshTree=1;
+		    //$guiObj->refreshTree=1;
 		    $guiObj->user_feedback = '';
   			$ENABLED = 1;
 	  		$NO_FILTERS = null;
@@ -323,7 +327,7 @@ class testcaseCommands
 		}
 		else
 		{
-		    $guiObj->refreshTree=0;
+		    //$guiObj->refreshTree=0;
 		    $guiObj->user_feedback = $ret['msg'];
 		}
 	
@@ -680,7 +684,8 @@ class testcaseCommands
 		// 20100403
 		// Want to remain on same screen till user choose to cancel => go away
 		// BUGID 3441
-		$guiObj = $this->editStep($argsObj,$request);  
+		$guiObj = $this->editStep($argsObj,$request);
+
 		return $guiObj;
 	}
 

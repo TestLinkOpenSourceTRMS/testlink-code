@@ -1,9 +1,10 @@
 {* 
 	TestLink Open Source Project - http://testlink.sourceforge.net/
-	$Id: containerDelete.tpl,v 1.6 2010/06/24 17:25:53 asimon83 Exp $ 
+	$Id: containerDelete.tpl,v 1.7 2010/12/02 17:58:58 asimon83 Exp $ 
 	Purpose: smarty template - delete containers in test specification
 
 rev : 
+     20101202 - asimon - BUGID 4067: refresh tree problems
      20070218 - franciscom - changed refresh management
      20070213 - franciscom - BUGID 0000629: Test Case/Suite - Delete confirmation without Cancel or No option
 *}
@@ -12,8 +13,9 @@ rev :
 <body>
 <h1 class="title">{$page_title}{$smarty.const.TITLE_SEP}{$objectName|escape}</h1> 
 
+{* BUGID 4067 *}
 {include file="inc_update.tpl" result=$sqlResult item=$level action='delete' 
-         refresh=$smarty.session.setting_refresh_tree_on_action}
+         refresh=$gui->refreshTree}
 
 <div class="workBack">
 

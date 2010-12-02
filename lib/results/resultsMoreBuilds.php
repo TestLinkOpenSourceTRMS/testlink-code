@@ -9,9 +9,10 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.76 2010/11/01 17:15:37 franciscom Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.76.2.1 2010/12/02 18:04:55 asimon83 Exp $
  *
  * @internal Revisions:
+ *  20101202 - asimon - BUGID 4027: Query metrics start date and end date are not working - getting all results
  *  20101026 - Julian - BUGID 3930 - Localized dateformat for datepicker
  *  20101022 - asimon - BUGID 3716 - replaced old separated inputs for day/month/year by ext js calendar
  *	20101019 - eloff - BUGID 3794 - added contribution by rtessier
@@ -137,6 +138,10 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     // $tester = $argsObj->executorSelected ? TL_USER_ANYBODY : null;
     $assignee = $argsObj->ownerSelected > 0 ? $argsObj->ownerSelected : TL_USER_ANYBODY;
     $tester = $argsObj->executorSelected > 0 ? $argsObj->executorSelected : TL_USER_ANYBODY  ;
+    
+    // BUGID 4027
+	$date_range->start->time = $gui->startTime;
+	$date_range->end->time = $gui->endTime;
     
     $re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
                       	 $testsuiteIds, $buildsToQuery,

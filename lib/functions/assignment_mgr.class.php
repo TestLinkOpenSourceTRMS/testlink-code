@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.15 2010/09/27 12:30:13 asimon83 Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.15.2.1 2010/12/04 09:28:46 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions:
@@ -239,16 +239,29 @@ class assignment_mgr extends tlObjectWithDB
 		 * WHERE UA.build_id = 91 AND E.status IS NULL AND UA.type = 1
 		 */
 		
+		// $sql = " SELECT COUNT(UA.id) " .
+		//        " FROM {$this->tables['user_assignments']} UA " .
+		//        " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+		//        "     ON UA.feature_id = TPTCV.id " .
+		//        " LEFT OUTER JOIN {$this->tables['executions']} E " .
+		//        "     ON TPTCV.tcversion_id = E.tcversion_id " .
+		//        "     AND UA.build_id = E.build_id " .
+		//        "     AND TPTCV.platform_id = E.platform_id " .
+		//        " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
+		   
+		// 20101204 - BUGID 4070
 		$sql = " SELECT COUNT(UA.id) " .
 		       " FROM {$this->tables['user_assignments']} UA " .
 		       " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} TPTCV " .
-		       "     ON UA.feature_id = TPTCV.id " .
+		       "     ON TPTCV.id = UA.feature_id " .
 		       " LEFT OUTER JOIN {$this->tables['executions']} E " .
-		       "     ON TPTCV.tcversion_id = E.tcversion_id " .
-		       "     AND UA.build_id = E.build_id " .
-		       "     AND TPTCV.platform_id = E.platform_id " .
+		       "     ON E.testplan_id = TPTCV.testplan_id " .      
+		       "     AND E.tcversion_id = TPTCV.tcversion_id " .
+		       "     AND E.platform_id = TPTCV.platform_id " .
+		       "     AND E.build_id = UA.build_id " .
 		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
-		
+   
+		   
 		if (isset($build_id) && is_numeric($build_id)) {
 			$count = $this->db->fetchOneValue($sql);
 		}

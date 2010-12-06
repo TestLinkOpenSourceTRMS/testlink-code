@@ -1,9 +1,10 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.27 2010/11/22 09:15:57 asimon83 Exp $ 
+   $Id: tcTree.tpl,v 1.28 2010/12/06 12:07:45 asimon83 Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
+  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
   20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20100809 - franciscom - BUGID 0003664 -  treeCfg.enableDD='{$gui->ajaxTree->dragDrop->enabled}';
 
@@ -27,7 +28,8 @@ rev:
 	{* Ext Collapsible Panel *}
 	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 	<script type="text/javascript">
-		treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+	{* BUGID 4077 *}
+		treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 		            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 		Ext.onReady(function() {
 			Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
@@ -53,7 +55,8 @@ rev:
 
     {if $gui->ajaxTree->loader == ''}
         <script type="text/javascript">
-        treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+        {* BUGID 4077 *}
+        treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                     loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 
         treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
@@ -67,7 +70,8 @@ rev:
     
     {else}
         <script type="text/javascript">
-          treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+        {* BUGID 4077 *}
+          treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                       root_testlink_node_type:'',useBeforeMoveNode:false,
                       loader:"", enableDD:false, dragDropBackEndUrl:'' };
 
@@ -103,7 +107,8 @@ rev:
 {* BUGID 4042 *}
 {include file="inc_tree_control.tpl"}
 
-<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
+{* BUGID 4077 *}
+<div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 </body>
 </html>

@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.54 2010/11/22 09:15:57 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.55 2010/12/06 12:07:44 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
   20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101101 - franciscom - openExportTestPlan() interface changes
   20101027 - asimon - BUGID 3946: reqirement specification tree size
@@ -41,7 +42,8 @@ rev :
 {* includes Ext.ux.CollapsiblePanel *}
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 <script type="text/javascript">
-	  treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+		{* BUGID 4077 *}
+	  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 	              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 	  Ext.onReady(function() {
 		Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
@@ -116,7 +118,8 @@ function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build
 
 
 {* ===================================================================== *}
-<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
+{* BUGID 4077 *}
+<div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 {*if $gui->src_workframe != ''}
 <script type="text/javascript">

@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.34 2010/11/22 09:15:57 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.35 2010/12/06 12:07:45 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
+    20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
     20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
                           BEFORE Closing curly Bracket and AFTER opening curly Bracket
@@ -34,7 +35,8 @@ Revisions :
 	<script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 	{* BUGID 3301 *}
 	<script type="text/javascript">
-		  treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+	{* BUGID 4077 *}
+		  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 		              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 		  Ext.onReady(function() {
 			Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
@@ -59,7 +61,8 @@ Revisions :
 	</script>
 
     <script type="text/javascript">
-    treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+    {* BUGID 4077 *}
+    treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                 loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
     </script>
     
@@ -123,7 +126,8 @@ function update2latest(id)
 {* BUGID 4042 *}
 {include file="inc_tree_control.tpl"}
 
-<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
+{* BUGID 4077 *}
+<div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 <script type="text/javascript">
 {if $gui->src_workframe != ''}

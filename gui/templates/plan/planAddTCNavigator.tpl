@@ -1,11 +1,12 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.28 2010/11/22 09:15:57 asimon83 Exp $
+$Id: planAddTCNavigator.tpl,v 1.29 2010/12/06 12:07:45 asimon83 Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
 
 Revisions:    
+  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
   20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  On JS expression SPACE is NEED 
                           BEFORE Closing curly Bracket and AFTER opening curly Bracket
@@ -30,7 +31,8 @@ Revisions:
 {* includes Ext.ux.CollapsiblePanel *}
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 <script type="text/javascript">
-	treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",loader:"", 
+    {* BUGID 4077 *}
+	treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",loader:"", 
 	            enableDD:false, dragDropBackEndUrl:"",children:"" };
 	Ext.onReady(function() {
 		Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
@@ -56,7 +58,8 @@ Revisions:
 
     {if $gui->ajaxTree->loader == ''}
         <script type="text/javascript">
-        treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+        {* BUGID 4077 *}
+        treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                     loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
         </script>
 
@@ -69,7 +72,8 @@ Revisions:
         <script type="text/javascript" src='gui/javascript/execTree.js'></script>
     {else}
         <script type="text/javascript">
-        treeCfg = { tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+        {* BUGID 4077 *}
+        treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                     root_testlink_node_type:'',useBeforeMoveNode:false,
                     loader:"", enableDD:false, dragDropBackEndUrl:'' };
         </script>
@@ -112,7 +116,8 @@ function pre_submit()
 {* BUGID 4042 *}
 {include file="inc_tree_control.tpl"}
 
-<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
+{* BUGID 4077 *}
+<div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 {* 20061030 - update the right pane *}
 <script type="text/javascript">

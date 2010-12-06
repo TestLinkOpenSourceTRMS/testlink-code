@@ -1,5 +1,5 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.52.2.2 2010/12/06 12:07:48 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.52.2.3 2010/12/06 15:49:21 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
@@ -43,7 +43,7 @@ rev :
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 {literal}
 <script type="text/javascript">
-		{* BUGID 4077 *}
+	  // BUGID 4077
 	  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 	              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 	  Ext.onReady(function() {

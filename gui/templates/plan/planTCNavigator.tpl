@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.32.2.2 2010/12/06 12:07:48 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.32.2.3 2010/12/06 15:49:22 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
@@ -33,7 +33,7 @@ Revisions :
 	{* BUGID 3301 *}
 	{literal}
 	<script type="text/javascript">
-	{* BUGID 4077 *}
+	// BUGID 4077
 		  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 		              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
 		  Ext.onReady(function() {
@@ -59,7 +59,7 @@ Revisions :
 	</script>
 
     <script type="text/javascript">
-    {* BUGID 4077 *}
+    // BUGID 4077
     treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                 loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
     </script>

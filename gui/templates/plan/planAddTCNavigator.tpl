@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planAddTCNavigator.tpl,v 1.26.2.2 2010/12/06 12:07:48 asimon83 Exp $
+$Id: planAddTCNavigator.tpl,v 1.26.2.3 2010/12/06 15:49:22 asimon83 Exp $
 f
 Scope: show test specification tree for Test Plan related features
 		(the name of scripts is not correct; used more)
@@ -30,7 +30,7 @@ Revisions:
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 {literal}
 <script type="text/javascript">
-    {* BUGID 4077 *}
+    // BUGID 4077
 	treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",loader:"", 
 	            enableDD:false, dragDropBackEndUrl:"",children:"" };
 	Ext.onReady(function() {
@@ -59,7 +59,7 @@ Revisions:
     {if $gui->ajaxTree->loader == ''}
         {literal}
         <script type="text/javascript">
-        {* BUGID 4077 *}
+        // BUGID 4077
         treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                     loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
         </script>
@@ -75,7 +75,7 @@ Revisions:
     {else}
         {literal}
         <script type="text/javascript">
-        {* BUGID 4077 *}
+        // BUGID 4077
         treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                     root_testlink_node_type:'',useBeforeMoveNode:false,
                     loader:"", enableDD:false, dragDropBackEndUrl:'' };

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: eventviewer.php,v $
  *
- * @version $Revision: 1.40 $
- * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
+ * @version $Revision: 1.41 $
+ * @modified $Date: 2010/12/06 10:03:12 $ by $Author: mx-julian $
  *
  * rev:
  *
@@ -265,7 +265,7 @@ function buildExtTable($gui,$show_icon,$charset)
 				$rowData[] = lang_get("not_aplicable");
 			}
 			$description = htmlentities($event->description, ENT_QUOTES, $charset);
-			$rowData[] = "<!-- " . $description . " --!>" .
+			$rowData[] = "<!--" . $description . "-->" .
 			             "<a onClick=\"showEventDetails({$event->dbID});\" style=\"cursor: hand; cursor: pointer;\">" . 
 			             "<img title=\"" . lang_get("show_eventdetails") ."\" src=\"{$show_icon}\" /> </a>" .
 			             $description;

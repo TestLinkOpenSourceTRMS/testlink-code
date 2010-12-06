@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.331.2.2 2010/11/18 11:41:09 amkhullar Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.331.2.3 2010/12/06 08:21:00 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101202 - asimon - BUGID 4067: refresh tree problems
  * 20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  * 20101030 - franciscom - get_by_external() interface changes
@@ -947,7 +948,7 @@ class testcase extends tlObjectWithAttachments
 		$gui->cf = null; // $cf_current_version; // $cf_smarty;
 		$gui->cf_current_version = $cf_current_version; // $cf_smarty;
 		$gui->cf_other_versions = $cf_other_versions; // $cf_smarty;
-		$gui->refreshTree = $viewer_defaults['refreshTree'];
+		$gui->refreshTree = isset($gui->refreshTree) ? $gui->refreshTree : $viewer_defaults['refreshTree'];
 		$gui->sqlResult = $viewer_defaults['msg_result'];
 		$gui->action = $viewer_defaults['action'];
 		$gui->user_feedback = $viewer_defaults['user_feedback'];

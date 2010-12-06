@@ -1,9 +1,10 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: containerView.tpl,v 1.39 2010/10/30 08:53:36 franciscom Exp $ *}
+{* $Id: containerView.tpl,v 1.39.2.1 2010/12/06 08:20:59 asimon83 Exp $ *}
 {*
 Purpose: smarty template - view test specification containers
 
 rev :
+  20101202 - asimon - BUGID 4067: refresh tree problems
   20101030 - francisco - show() BUGID 3937: No information when exporting all test suites when no test suites exists 
   20101022 - eloff - BUGID 3917 - Work on buttons
   20100914 - franciscom - BUGID 3639 Reoder Test Cases
@@ -79,8 +80,9 @@ function warn_unassign_tcs(tp_id, tp_name, msgbox_title, msgbox_content) {
 
 <div class="workBack">
 
+{* BUGID 4067 *}
 {include file="inc_update.tpl" result=$gui->sqlResult item=$gui->level
-         name=$gui->moddedItem.name refresh=$smarty.session.setting_refresh_tree_on_action}
+         name=$gui->moddedItem.name refresh=$gui->refreshTree}
 
 {assign var="bDownloadOnly" value=true}
 {assign var="drawReorderButton" value=true}

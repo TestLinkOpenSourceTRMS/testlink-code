@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView.tpl,v 1.45 2010/10/17 09:46:37 franciscom Exp $
+$Id: tcView.tpl,v 1.45.2.1 2010/12/06 08:20:59 asimon83 Exp $
 Purpose: smarty template - view test case in test specification
 
 rev:
+    20101202 - asimon - BUGID 4067: refresh tree problems
     20101017 - franciscom - image access refactored (tlImages)
     20100905 - franciscom - BUGID 3431 - Custom Field values at Test Case VERSION Level
                             use of: $gui->cf_current_version, $gui->cf_other_versions
@@ -111,11 +112,9 @@ function validateStepsReorder(formOID)
 <body onLoad="viewElement(document.getElementById('other_versions'),false);{$gui->bodyOnLoad}" onUnload="{$gui->bodyOnUnload}">
 <h1 class="title">{$gui->pageTitle}{if $gui->show_match_count} - {$labels.match_count}:{$gui->match_count}{/if}
 </h1>
-{if !isset($gui->refresh_tree)}
-  {assign var="refresh_tree" value=false}
-{/if}
 
-{include file="inc_update.tpl" user_feedback=$gui->user_feedback}
+{* 4067 *}
+{include file="inc_update.tpl" user_feedback=$gui->user_feedback refresh=$gui->refreshTree}
 <div class="workBack">
 
 {if $gui->tc_current_version}
@@ -271,7 +270,6 @@ function validateStepsReorder(formOID)
 {* 20100315 - franciscom *}
 {if $gui->refreshTree}
 	{include file="inc_refreshTreeWithFilters.tpl"}
-	{*include file="inc_refreshTree.tpl"*}
 {/if}
 </body>
 </html>

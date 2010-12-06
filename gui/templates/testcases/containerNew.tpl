@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.11 2010/11/06 11:42:47 amkhullar Exp $
+$Id: containerNew.tpl,v 1.11.2.1 2010/12/06 08:20:59 asimon83 Exp $
 Purpose: smarty template - create containers
 
+20101202 - asimon - BUGID 4067: refresh tree problems 
 20101012 - franciscom - BUGID 3887: CF Types validation
 20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
                         removed use of smarty.template to get current directory to include other
@@ -89,10 +90,11 @@ function validateForm(f)
 <div class="workBack">
 <h1 class="title">{$labels.title_create} {lang_get s=$level}</h1>
 	
+{* BUGID 4067 *}
 {include file="inc_update.tpl" result=$sqlResult 
                                user_feedback=$user_feedback
                                item=$level action="add" name=$name
-                               refresh=$smarty.session.setting_refresh_tree_on_action}
+                               refresh=$gui->refreshTree}
 
 
 <form method="post" action="lib/testcases/containerEdit.php?containerID={$containerID}"

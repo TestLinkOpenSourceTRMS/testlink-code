@@ -8,11 +8,13 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.16 2010/12/04 09:39:45 franciscom Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.17 2010/12/06 09:48:52 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions:
  * 
+ * 20101206 - asimon - introduced new query for get_not_run_tc_count_per_build(), 
+ *                     proposed by Francisco per mail
  * 20101204 - franciscom - BUGID 4070 get_not_run_tc_count_per_build()
  * 20100722 - asimon - BUGID 3406 - added copy_assignments(), delete_by_build_id(),
  *                                  get_not_run_tc_count_per_build() and
@@ -192,7 +194,7 @@ class assignment_mgr extends tlObjectWithDB
 	}
 	
 	/**
-	 * Get assigned testcases
+	 * Get count of assigned, but not run testcases per build (and optionally user).
 	 * @param int $build_id
 	 * @param bool $all_types
 	 * @param int $user_id if set and != 0, counts only the assignments for the given user 
@@ -256,21 +258,38 @@ class assignment_mgr extends tlObjectWithDB
 		   
 		// IMPORTANT NOTICE   
 		// JOIN with EXECUTIONS TABLE done using fields on SAME ORDER that INDEX
-		$sql = " SELECT COUNT(UA.id) " .
+//		$sql = " SELECT COUNT(UA.id) " .
+//	       " FROM {$this->tables['user_assignments']} UA " .
+//	       " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+//	       "     ON TPTCV.id = UA.feature_id " .
+//	       " LEFT OUTER JOIN {$this->tables['executions']} E " .
+//	       "     ON E.testplan_id = TPTCV.testplan_id " . 
+//	       "     AND E.tcversion_id = TPTCV.tcversion_id " .
+//	       "     AND E.platform_id = TPTCV.platform_id " .
+//	       "     AND E.build_id = UA.build_id " .
+//	       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
+
+//		if (isset($build_id) && is_numeric($build_id)) {
+//			$count = $this->db->fetchOneValue($sql);
+//		}
+
+		// 20101206 - asimon - introduced new query, proposed by Francisco per mail
+		$sql = " SELECT UA.id as assignment_id,UA.user_id,TPTCV.testplan_id," .
+		       " TPTCV.platform_id,BU.id AS BUILD_ID,E.id AS EXECID, E.status " .
 		       " FROM {$this->tables['user_assignments']} UA " .
-		       " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} TPTCV " .
-		       "     ON TPTCV.id = UA.feature_id " .
+		       " JOIN builds BU ON UA.build_id = BU.id " .
+		       " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+		       "     ON TPTCV.testplan_id = BU.testplan_id " .
+		       "     AND TPTCV.id = UA.feature_id " .
 		       " LEFT OUTER JOIN {$this->tables['executions']} E " .
 		       "     ON E.testplan_id = TPTCV.testplan_id " . 
 		       "     AND E.tcversion_id = TPTCV.tcversion_id " .
 		       "     AND E.platform_id = TPTCV.platform_id " .
 		       "     AND E.build_id = UA.build_id " .
-		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
-   
-		   
+		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";		   
 		   
 		if (isset($build_id) && is_numeric($build_id)) {
-			$count = $this->db->fetchOneValue($sql);
+			$count = count($this->db->fetchRowsIntoMap($sql, 'assignment_id'));
 		}
 		
 		return $count;

@@ -1,8 +1,9 @@
 {* TestLink Open Source Project - http://testlink.sourceforge.net/ *}
-{* $Id: execNavigator.tpl,v 1.52.2.1 2010/11/22 09:16:00 asimon83 Exp $ *}
+{* $Id: execNavigator.tpl,v 1.52.2.2 2010/12/06 12:07:48 asimon83 Exp $ *}
 {* Purpose: smarty template - show test set tree *}
 {*
 rev :
+  20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
   20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
   20101101 - franciscom - openExportTestPlan() interface changes
   20101027 - asimon - BUGID 3946: reqirement specification tree size
@@ -42,9 +43,10 @@ rev :
 <script type="text/javascript" src='gui/javascript/ext_extensions.js'></script>
 {literal}
 <script type="text/javascript">
-	treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-	           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
-	Ext.onReady(function() {
+		{* BUGID 4077 *}
+	  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+	              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+	  Ext.onReady(function() {
 		Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
 		// Use a collapsible panel for filter settings
@@ -120,7 +122,8 @@ function openExportTestPlan(windows_title,tproject_id,tplan_id,platform_id,build
 {include file="inc_tree_control.tpl"}
 
 {* ===================================================================== *}
-<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
+{* BUGID 4077 *}
+<div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 {*if $gui->src_workframe != ''}
 <script type="text/javascript">

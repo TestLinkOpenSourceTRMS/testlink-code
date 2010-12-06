@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planTCNavigator.tpl,v 1.32.2.1 2010/11/22 09:16:00 asimon83 Exp $
+$Id: planTCNavigator.tpl,v 1.32.2.2 2010/12/06 12:07:48 asimon83 Exp $
 Scope: show test plan tree for execution
 
 Revisions : 
+    20101206 - asimon - BUGID 4077: Trees do not work on Internet Explorer
     20101122 - asimon - BUGID 4042: "Expand/Collapse" Button for Trees
 	20101027 - asimon - BUGID 3946: reqirement specification tree size
     20100708 - aismon - BUGDI 3406 - removed functionality and labels from 3049
@@ -32,9 +33,10 @@ Revisions :
 	{* BUGID 3301 *}
 	{literal}
 	<script type="text/javascript">
-		treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-		           loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
-		Ext.onReady(function() {
+	{* BUGID 4077 *}
+		  treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+		              loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
+		  Ext.onReady(function() {
 			Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 	
 			// Use a collapsible panel for filter settings
@@ -57,8 +59,9 @@ Revisions :
 	</script>
 
     <script type="text/javascript">
-    treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
-               loader:"", enableDD:false, dragDropBackEndUrl:'',children:""};
+    {* BUGID 4077 *}
+    treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
+                loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
     </script>
     {/literal}
     
@@ -137,7 +140,8 @@ function update2latest(id)
 {* BUGID 4042 *}
 {include file="inc_tree_control.tpl"}
 
-<div id="tree" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
+{* BUGID 4077 *}
+<div id="tree_div" style="overflow:auto; height:100%;border:1px solid #c3daf9;"></div>
 
 <script type="text/javascript">
 {if $gui->src_workframe != ''}

@@ -8,11 +8,14 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: assignment_mgr.class.php,v 1.15.2.1 2010/12/04 09:28:46 franciscom Exp $
+ * @version    	CVS: $Id: assignment_mgr.class.php,v 1.15.2.2 2010/12/06 09:48:54 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal revisions:
  * 
+ * 20101206 - asimon - introduced new query for get_not_run_tc_count_per_build(), 
+ *                     proposed by Francisco per mail
+ * 20101204 - franciscom - BUGID 4070 get_not_run_tc_count_per_build()
  * 20100722 - asimon - BUGID 3406 - added copy_assignments(), delete_by_build_id(),
  *                                  get_not_run_tc_count_per_build() and
  *                                  get_count_of_assignments_per_build_id(),
@@ -191,10 +194,13 @@ class assignment_mgr extends tlObjectWithDB
 	}
 	
 	/**
-	 * Get assigned testcases
+	 * Get count of assigned, but not run testcases per build (and optionally user).
 	 * @param int $build_id
 	 * @param bool $all_types
 	 * @param int $user_id if set and != 0, counts only the assignments for the given user 
+	 *
+	 * @internal revisions
+	 * 20101204 - franciscom - BUGID 4070
 	 */
 	function get_not_run_tc_count_per_build($build_id, $all_types = false, $user_id = 0) {
 		$count = 0;
@@ -204,41 +210,42 @@ class assignment_mgr extends tlObjectWithDB
 		$type_sql = ($all_types) ? "" : " AND UA.type = {$tc_execution_type} ";
 		$user_sql = ($user_id && is_numeric($user_id)) ? "AND UA.user_id = {$user_id} " : "";
 		
-		/*
-		 * Statement magic explanation:
-		 * 
-		 * This gets all assigned tcversions with NULL as status when they were not run per build:
-		 * 
-		 * SELECT UA.id AS id, UA.build_id AS build_id, UA.feature_id AS feature_id,
-		 *        TPTCV.testplan_id AS testplan_id, TPTCV.tcversion_id AS tcversion_id,
-		 *        TPTCV.platform_id AS platform_id, E.status AS status
-		 * FROM user_assignments UA
-		 * LEFT OUTER JOIN testplan_tcversions TPTCV 
-		 *     ON UA.feature_id = TPTCV.id
-		 * LEFT OUTER JOIN executions E 
-		 *     ON TPTCV.tcversion_id = E.tcversion_id 
-		 *     AND UA.build_id = E.build_id
-		 *     AND TPTCV.platform_id = E.platform_id
-		 * WHERE UA.type = 1 AND UA.build_id = 91
-		 * GROUP BY id
-		 * 
-		 * Without the GROUP BY, there may be multiple executions for each ID.
-		 * With the GROUP BY you get only one row per ID,
-		 * but the result does not have to be the last one, so
-		 * you can only rely on the count of "not run" here, not any other status.
-		 * So, to count only those which have not been run we use a statement like:
-		 * 
-		 * SELECT COUNT(UA.id)
-		 * FROM user_assignments UA
-		 * LEFT OUTER JOIN testplan_tcversions TPTCV 
-		 *     ON UA.feature_id = TPTCV.id
-		 * LEFT OUTER JOIN executions E 
-		 *     ON TPTCV.tcversion_id = E.tcversion_id 
-		 *     AND UA.build_id = E.build_id
-		 *     AND TPTCV.platform_id = E.platform_id
-		 * WHERE UA.build_id = 91 AND E.status IS NULL AND UA.type = 1
-		 */
+		//
+		// Statement magic explanation:
+		// 
+		// This gets all assigned tcversions with NULL as status when they were not run per build:
+		// 
+		// SELECT UA.id AS id, UA.build_id AS build_id, UA.feature_id AS feature_id,
+		//        TPTCV.testplan_id AS testplan_id, TPTCV.tcversion_id AS tcversion_id,
+		//        TPTCV.platform_id AS platform_id, E.status AS status
+		// FROM user_assignments UA
+		// LEFT OUTER JOIN testplan_tcversions TPTCV 
+		//     ON UA.feature_id = TPTCV.id
+		// LEFT OUTER JOIN executions E 
+		//     ON TPTCV.tcversion_id = E.tcversion_id 
+		//     AND UA.build_id = E.build_id
+		//     AND TPTCV.platform_id = E.platform_id
+		// WHERE UA.type = 1 AND UA.build_id = 91
+		// GROUP BY id
+		// 
+		// Without the GROUP BY, there may be multiple executions for each ID.
+		// With the GROUP BY you get only one row per ID,
+		// but the result does not have to be the last one, so
+		// you can only rely on the count of "not run" here, not any other status.
+		// So, to count only those which have not been run we use a statement like:
+		// 
+		// SELECT COUNT(UA.id)
+		// FROM user_assignments UA
+		// LEFT OUTER JOIN testplan_tcversions TPTCV 
+		//     ON UA.feature_id = TPTCV.id
+		// LEFT OUTER JOIN executions E 
+		//     ON TPTCV.tcversion_id = E.tcversion_id 
+		//     AND UA.build_id = E.build_id
+		//     AND TPTCV.platform_id = E.platform_id
+		// WHERE UA.build_id = 91 AND E.status IS NULL AND UA.type = 1
+		//
 		
+		// 20101204 - franciscom
 		// $sql = " SELECT COUNT(UA.id) " .
 		//        " FROM {$this->tables['user_assignments']} UA " .
 		//        " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} TPTCV " .
@@ -249,21 +256,40 @@ class assignment_mgr extends tlObjectWithDB
 		//        "     AND TPTCV.platform_id = E.platform_id " .
 		//        " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
 		   
-		// 20101204 - BUGID 4070
-		$sql = " SELECT COUNT(UA.id) " .
+		// IMPORTANT NOTICE   
+		// JOIN with EXECUTIONS TABLE done using fields on SAME ORDER that INDEX
+//		$sql = " SELECT COUNT(UA.id) " .
+//	       " FROM {$this->tables['user_assignments']} UA " .
+//	       " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+//	       "     ON TPTCV.id = UA.feature_id " .
+//	       " LEFT OUTER JOIN {$this->tables['executions']} E " .
+//	       "     ON E.testplan_id = TPTCV.testplan_id " . 
+//	       "     AND E.tcversion_id = TPTCV.tcversion_id " .
+//	       "     AND E.platform_id = TPTCV.platform_id " .
+//	       "     AND E.build_id = UA.build_id " .
+//	       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
+
+//		if (isset($build_id) && is_numeric($build_id)) {
+//			$count = $this->db->fetchOneValue($sql);
+//		}
+
+		// 20101206 - asimon - introduced new query, proposed by Francisco per mail
+		$sql = " SELECT UA.id as assignment_id,UA.user_id,TPTCV.testplan_id," .
+		       " TPTCV.platform_id,BU.id AS BUILD_ID,E.id AS EXECID, E.status " .
 		       " FROM {$this->tables['user_assignments']} UA " .
-		       " LEFT OUTER JOIN {$this->tables['testplan_tcversions']} TPTCV " .
-		       "     ON TPTCV.id = UA.feature_id " .
+		       " JOIN builds BU ON UA.build_id = BU.id " .
+		       " JOIN {$this->tables['testplan_tcversions']} TPTCV " .
+		       "     ON TPTCV.testplan_id = BU.testplan_id " .
+		       "     AND TPTCV.id = UA.feature_id " .
 		       " LEFT OUTER JOIN {$this->tables['executions']} E " .
-		       "     ON E.testplan_id = TPTCV.testplan_id " .      
+		       "     ON E.testplan_id = TPTCV.testplan_id " . 
 		       "     AND E.tcversion_id = TPTCV.tcversion_id " .
 		       "     AND E.platform_id = TPTCV.platform_id " .
 		       "     AND E.build_id = UA.build_id " .
-		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";
-   
+		       " WHERE UA.build_id = {$build_id} AND E.status IS NULL {$type_sql} {$user_sql} ";		   
 		   
 		if (isset($build_id) && is_numeric($build_id)) {
-			$count = $this->db->fetchOneValue($sql);
+			$count = count($this->db->fetchRowsIntoMap($sql, 'assignment_id'));
 		}
 		
 		return $count;

@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecListTree.tpl,v 1.11.2.3 2010/12/06 15:49:21 asimon83 Exp $ 
+$Id: reqSpecListTree.tpl,v 1.11.2.4 2010/12/06 16:05:45 asimon83 Exp $ 
 show requirement specifications tree menu
 
 rev: 
@@ -43,10 +43,10 @@ Ext.onReady(function() {
 	// BUGID 4077
 		treeCfg = { tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 		            loader:"", enableDD:false, dragDropBackEndUrl:'',children:"" };
-
+        </script>
         {/literal}
 	
-	    <script type="text/javascript">
+	<script type="text/javascript">
 		treeCfg.root_name='{$gui->ajaxTree->root_node->name|escape:'javascript'}';
 		treeCfg.root_id={$gui->ajaxTree->root_node->id};
 		treeCfg.root_href='{$gui->ajaxTree->root_node->href}';
@@ -57,7 +57,7 @@ Ext.onReady(function() {
 {else}
 	{literal}
 	<script type="text/javascript">
-		treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+		treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
 		           root_testlink_node_type:'',useBeforeMoveNode:false,
 		           loader:"", enableDD:false, dragDropBackEndUrl:''};
 	</script>

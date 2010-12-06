@@ -1,6 +1,6 @@
 {* 
    TestLink Open Source Project - http://testlink.sourceforge.net/ 
-   $Id: tcTree.tpl,v 1.25.2.3 2010/12/06 15:49:21 asimon83 Exp $ 
+   $Id: tcTree.tpl,v 1.25.2.4 2010/12/06 16:05:45 asimon83 Exp $ 
    Purpose: smarty template - show test specification tree menu 
 
 rev: 
@@ -77,7 +77,7 @@ rev:
     {else}
         {literal}
         <script type="text/javascript">
-        treeCfg = {tree_div_id:'tree',root_name:"",root_id:0,root_href:"",
+        treeCfg = {tree_div_id:'tree_div',root_name:"",root_id:0,root_href:"",
                    root_testlink_node_type:'',useBeforeMoveNode:false,
                    loader:"", enableDD:false, dragDropBackEndUrl:''};
         </script>

@@ -8,12 +8,13 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: projectEdit.php,v 1.52 2010/10/30 08:51:59 franciscom Exp $
+ * @version    	CVS: $Id: projectEdit.php,v 1.52.2.1 2010/12/07 17:32:04 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @todo Verify dependency before delete testplan
  *
  * @internal revision
+ * 20101207 - franciscom - BUGID 3999: Test Project list does not refresh after deleted
  * 20100313 - franciscom - reduced interface 'width' with smarty
  * 20100217 - franciscom - fixed errors showed on event viewer due to missing properties
  * 20100119 - franciscom - BUGID 3048
@@ -473,10 +474,12 @@ function doDelete($argsObj,&$tprojectMgr,$sessionTprojectID)
 
 	if ($ope_status['status_ok'])
 	{
-		if($sessionTprojectID == $argsObj->tprojectID)
-		{
-			$op->reloadType = 'reloadNavBar';
-        }
+        // BUGID 3999: Test Project list does not refresh after deleted
+		// if($sessionTprojectID == $argsObj->tprojectID)
+		// {
+		// 	$op->reloadType = 'reloadNavBar';
+        // }
+		$op->reloadType = 'reloadNavBar';
 		$op->msg = sprintf(lang_get('test_project_deleted'),$argsObj->tprojectName);
 		logAuditEvent(TLS("audit_testproject_deleted",$argsObj->tprojectName),"DELETE",$argsObj->tprojectID,"testprojects");
 	}

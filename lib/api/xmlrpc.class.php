@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.23.2.2 $
- * @modified $Date: 2010/11/20 16:55:28 $ by $Author: franciscom $
+ * @version $Revision: 1.23.2.3 $
+ * @modified $Date: 2010/12/07 16:57:55 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -317,6 +317,7 @@ class TestlinkXMLRPCServer extends IXR_Server
 	                            'tl.createTestPlan' => 'this:createTestPlan',
 	                            'tl.createTestProject' => 'this:createTestProject',
 	                            'tl.createTestSuite' => 'this:createTestSuite',
+	                            'tl.uploadExecutionAttachment' => 'this::uploadExecutionAttachment',
 	                            'tl.uploadRequirementSpecificationAttachment' => 'this:uploadRequirementSpecificationAttachment',
 	                            'tl.uploadRequirementAttachment' => 'this:uploadRequirementAttachment',
 	                            'tl.uploadTestProjectAttachment' => 'this:uploadTestProjectAttachment',

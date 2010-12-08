@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.6 2010/09/18 09:21:14 franciscom Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.7 2010/12/08 09:18:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
+ * 20101208 - franciscom - BUGID 4085: Attachment Repository on Database - Can not get file after upload
  * 20100918 - franciscom - BUGID 1890 - storeFileInFSRepository() - contribution by kinow	
  * 20091220 - franciscom - new method copyAttachments()
  *
@@ -324,6 +325,9 @@ class tlAttachmentRepository extends tlObjectWithDB
 	 * @param $id integer the database identifier of the attachment
 	 * @param $attachmentInfo array, optional information about the attachment
 	 * @return string the contents of the attachment or null on error
+	 *
+	 * @internal revision
+	 * 20101208 - franciscom - BUGID 4085
 	 */
 	public function getAttachmentContent($id,$attachmentInfo = null)
 	{
@@ -335,9 +339,8 @@ class tlAttachmentRepository extends tlObjectWithDB
 		
 		if ($attachmentInfo)
 		{
-			//for DB-repository the filename is null
 			$fname = 'getAttachmentContentFrom';
-			$fname .= ($attachmentInfo['file_path'] == "") ? 'DB' : 'FS';
+			$fname .= ($this->repositoryType == TL_REPOSITORY_TYPE_FS) ? 'FS' : 'DB';
 			$content = $this->$fname($id);
 		}
 		return $content;

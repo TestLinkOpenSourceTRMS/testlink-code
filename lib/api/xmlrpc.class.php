@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.23.2.3 $
- * @modified $Date: 2010/12/07 16:57:55 $ by $Author: franciscom $
+ * @version $Revision: 1.23.2.4 $
+ * @modified $Date: 2010/12/08 09:14:20 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,7 @@
  * 
  *
  * rev : 
+ *	20101208 - franciscom - BUGID 4082 - reportTCResult() - no check on overwrite value
  *	20101120 - franciscom - getFullPath() - make user happy allowing array or simple value
  *							BUGID 3993: getFullPath can receive a list of node ids instead of one node
  *							BUGID 4041: API - getTestCasesForTestPlan() -Platform Information not provided
@@ -2095,6 +2096,10 @@ class TestlinkXMLRPCServer extends IXR_Server
 	 * 				[id]		  => result id or error code
 	 * 				[message]	=> optional message for error message string
 	 * @access public
+	 *
+	 * @internal revisions
+	 * 20101208 - franciscom - BUGID 4082 - no check on overwrite value
+	 *
 	 */
 	public function reportTCResult($args)
 	{		
@@ -2136,10 +2141,11 @@ class TestlinkXMLRPCServer extends IXR_Server
 		    $resultInfo[0]["status"] = true;
 			$resultInfo[0]["message"] = GENERAL_SUCCESS_STR;
 
-    	    if($this->_isParamPresent(self::$overwriteParamName))
+			// BUGID 4082 - no check on overwrite value
+    	    if($this->_isParamPresent(self::$overwriteParamName) && $this->args[self::$overwriteParamName])
     	    {
-    	    	$executionID = $this->_updateResult();
-    	    	$resultInfo[0]["overwrite"] = true;			
+    	    		$executionID = $this->_updateResult();
+    	    		$resultInfo[0]["overwrite"] = true;			
     	    }
     	    if($executionID == 0)
             {

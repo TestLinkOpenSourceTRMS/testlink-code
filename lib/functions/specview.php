@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.72.2.1 2010/11/18 11:40:34 amkhullar Exp $
+ * @version    	CVS: $Id: specview.php,v 1.72.2.2 2010/12/09 15:25:30 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ *  20101209 - asimon - exchanged strpos by stripos to make search case insensitive
  *	20101118 - amitkhullar - BUGID 4024 Filtering issue 
  *	20101101 - franciscom - improved $pfFilters contruction to avoid warning in event viewer
  *	20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and 
@@ -556,7 +557,7 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 	{
 		$testCaseSet = is_array($filters['tcase_id']) ? $filters['tcase_id'] : array($filters['tcase_id']);
 	}
-
+	
 	// BUGID 3768
 	if(!is_array($filters['keyword_id']) ) {
 		$filters['keyword_id'] = array($filters['keyword_id']);
@@ -600,12 +601,13 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 			}
 		}
 		$itemKeys = $itemSet;
-		
+
 		foreach($itemKeys as $key => $tspecKey)
 		{
+			// 20101209 - asimon - exchanged strpos by stripos to make search case insensitive
 			if( ($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) ||
 				($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) ||
-				($useFilter['tcase_name'] && (strpos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))				
+				($useFilter['tcase_name'] && (stripos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))				
 			  )	
 			{
 				$test_spec[$tspecKey]=null; 

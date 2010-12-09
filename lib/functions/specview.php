@@ -6,11 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: specview.php,v 1.73 2010/11/18 11:39:45 amkhullar Exp $
+ * @version    	CVS: $Id: specview.php,v 1.74 2010/12/09 15:25:33 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ *  20101209 - asimon - exchanged strpos by stripos to make search case insensitive
  *	20101118 - amitkhullar - BUGID 4024 Filtering issue 
  *	20101101 - franciscom - improved $pfFilters contruction to avoid warning in event viewer
  *	20101026 - franciscom - BUGID 3889: Add Test Cases to Test plan - checks with test case id and 
@@ -603,9 +604,10 @@ function getTestSpecFromNode(&$dbHandler,&$tcaseMgr,&$linkedItems,$masterContain
 		
 		foreach($itemKeys as $key => $tspecKey)
 		{
+			// 20101209 - asimon - exchanged strpos by stripos to make search case insensitive
 			if( ($useFilter['keyword_id'] && !isset($tck_map[$test_spec[$tspecKey]['id']]) ) ||
 				($useFilter['tcase_id'] && !in_array($test_spec[$tspecKey]['id'],$testCaseSet)) ||
-				($useFilter['tcase_name'] && (strpos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))				
+				($useFilter['tcase_name'] && (stripos($test_spec[$tspecKey]['name'],$filters['tcase_name']) === false))				
 			  )	
 			{
 				$test_spec[$tspecKey]=null; 

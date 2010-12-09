@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.156 2010/11/18 11:40:15 amkhullar Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.157 2010/12/09 16:31:04 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20101209 - asimon - allow correct filtering of test case name and other attributes also for right frame
  *  20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  *  20101010 - franciscom - added testlink_node_name as new attribute to be accessed while working with EXT-JS tree
  *  20101003 - franciscom - generateExecTree() - added option remove_empty_nodes_of_type on get_subtree() call
@@ -378,7 +379,7 @@ function generateTestSpecTree(&$db,$tproject_id, $tproject_name,$linkto,$filters
  * 20100415 - franciscom -  BUGID 2797 - filter by test case execution type
  */
 function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = null,
-                     $tplan_tcases = null,$filters=null, $options=null)
+                     &$tplan_tcases = null,$filters=null, $options=null)
 {
 	
 	static $hash_id_descr;
@@ -467,6 +468,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		{
 			if (!isset($tck_map[$node['id']]))
 			{
+				// 20101209 - asimon - allow correct filtering also for right frame
+				unset($tplan_tcases[$node['id']]);
 				$node = null;
 			}	
 		}
@@ -479,6 +482,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			// is found at position 0, if clause would then evaluate wrong because 
 			// 0 would be casted to false and we only want to delete node if it really is false
 			if (stripos($node['name'], $filter_name) === FALSE) {
+				// 20101209 - asimon - allow correct filtering also for right frame
+				unset($tplan_tcases[$node['id']]);
 				$node = null;
 			}
 		}
@@ -487,6 +492,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 		if ($node && $enabledFiltersOn['testcase_id']) {
 			$filter_id = $my['filters']['filter_tc_id'];
 			if ($node['id'] != $filter_id) {
+				// 20101209 - asimon - allow correct filtering also for right frame
+				unset($tplan_tcases[$node['id']]);
 				$node = null;
 			}
 		}
@@ -535,6 +542,8 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 			               || $somebody_wanted_but_nobody_there;
 			
 			if (!$tpNode || $delete_node) {
+				// 20101209 - asimon - allow correct filtering also for right frame
+				unset($tplan_tcases[$node['id']]);
 				$node = null;
 			} else {
 				$externalID='';
@@ -559,7 +568,7 @@ function prepareNode(&$db,&$node,&$decoding_info,&$map_node_tccount,$tck_map = n
 					}	
 				}
 				$node['external_id'] = $externalID;
-				unset($tplan_tcases[$node['id']]);
+				//unset($tplan_tcases[$node['id']]);
 			}
 		}
 		

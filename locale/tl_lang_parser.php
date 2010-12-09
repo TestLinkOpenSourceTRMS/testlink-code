@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: tl_lang_parser.php,v 1.2.6.1 2010/12/09 11:59:35 mx-julian Exp $
+ * @version    	CVS: $Id: tl_lang_parser.php,v 1.2.6.2 2010/12/09 12:10:50 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -90,8 +90,7 @@ echo "File to update lines = ".($lines_old_count+1)."\n";
 for( $i = 0; $i < $lines_eng_count; $i++ )
 {
 	// parse revision of master file
-	// Example: $Id: tl_lang_parser.php,v 1.2.6.1 2010/12/09 11:59:35 mx-julian Exp $
-    if (preg_match('/\$Id: tl_lang_parser.php,v 1.2.6.1 2010/12/09 11:59:35 mx-julian Exp $lines_eng[$i], $eng_revision) )
+    if (preg_match('/\$Id.+v\s(\S+)\s.*/', $lines_eng[$i], $eng_revision) )
     {
         $revision_comment = $eng_revision[1];
         echo "Master file revision: ".$revision_comment."\n";

@@ -1,6 +1,6 @@
 {*
 Testlink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_attachments.tpl,v 1.26 2010/11/13 11:24:25 franciscom Exp $
+$Id: inc_attachments.tpl,v 1.27 2010/12/09 14:04:41 mx-julian Exp $
 Generic attachment management
 
 Input:
@@ -68,7 +68,7 @@ var warning_delete_attachment = "{lang_get s='warning_delete_attachment'}";
 			<td style="vertical-align:middle;"><a href="lib/attachments/attachmentdownload.php?id={$info.id}" target="_blank" class="bold">
 			{$my_link}</a> - <span class="italic">{$info.file_name|escape} ({$info.file_size|escape} bytes, {$info.file_type|escape}) {localize_date d=$info.date_added|escape}</span>
 				{if !$attach_downloadOnly}
-				<a href="javascript:delete_confirmation({$info.id},'{$info.title|escape:'javascript'|escape}',
+				<a href="javascript:delete_confirmation({$info.id},'{$info.file_name|escape:'javascript'|escape}',
 					                                '{$del_msgbox_title|escape:'javascript'|escape}','{$warning_msg|escape:'javascript'|escape}',deleteAttachment_onClick);">
 					<img style="border:none;" alt="{lang_get s='alt_delete_attachment'}"
 				                         title="{lang_get s='alt_delete_attachment'}"

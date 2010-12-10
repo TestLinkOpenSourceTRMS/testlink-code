@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.6.2.1 2010/12/08 09:19:20 franciscom Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.6.2.2 2010/12/10 11:05:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
+ * 20101210 - franciscom - added trim on attachemnt title, because '' is used on template logic.
  * 20101208 - franciscom - BUGID 4085: Attachment Repository on Database - Can not get file after upload
  * 20100918 - franciscom - BUGID 1890 - storeFileInFSRepository() - contribution by kinow	
  * 20091220 - franciscom - new method copyAttachments()
@@ -474,6 +475,11 @@ class tlAttachmentRepository extends tlObjectWithDB
 			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$idx]);
 			if ($attachmentInfo)
 			{
+				// needed because on inc_attachments.tpl this test:
+				// {if $info.title eq ""}
+				// is used to undertand if icon or other handle is needed to access
+				// file content
+				$attachmentInfo['title'] = trim($attachmentInfo['title']);
 				$attachmentInfos[] = $attachmentInfo;
 			}
 		}

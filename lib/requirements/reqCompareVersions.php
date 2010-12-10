@@ -6,12 +6,13 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.6 2010/11/28 10:48:50 franciscom Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.7 2010/12/10 20:16:07 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
  *
  * @internal Revisions:
+ * 20101128 - franciscom 	
  * 20100831 - Julian - added requirement title to page heading
  */
 
@@ -23,84 +24,276 @@ $templateCfg = templateConfiguration();
 testlinkInitPage($db);
 $smarty = new TLSmarty();
 
-$differ = new diff();
-$args = init_args();
-$gui = new stdClass();
+$labels = init_labels(array("num_changes" => null,"no_changes" => null, 
+					  		"diff_subtitle_req" => null, "version_short" => null,
+					  		"diff_details_req" => null,"type" => null, "status" => null,
+					  		"expected_coverage" => null,
+					  		"revision_short" => null, "version_revision" => null) );
 
 $reqMgr = new requirement_mgr($db);
-$reqSet = $reqMgr->get_by_id($args->req_id);
+$differ = new diff();
+$args = init_args();
+$gui = initializeGui($db,$args,$labels,$reqMgr);
 
-$gui->req_versions = $reqSet;
-$gui->req_id = $args->req_id;
-$gui->compare_selected_versions = $args->compare_selected_versions;
-$gui->context = $args->context;
-$gui->version_short = lang_get('version_short');
+new dBug($gui);
 
-$labels = array();
-$labels["num_changes"] = lang_get("num_changes");
-$labels["no_changes"] = lang_get("no_changes");
-
-//if already two versions are selected, display diff
-//else display template with versions to select
-if ($args->compare_selected_versions) {
-	$diff_array = array("scope" => array());
-
-	foreach($reqSet as $req) {
-		if ($req['version'] == $args->version_left) {
-			$left = $req;
-		}
-		if ($req['version'] == $args->version_right) {
-			$right = $req;
-		}
+// if already two versions are selected, display diff
+// else display template with versions to select
+if ($args->compare_selected_versions) 
+{
+	// Side By Side
+	$sbs = getItemsToCompare($args->left_item_id,$args->right_item_id,$gui->items);
+	prepareUserFeedback($db,$gui,$args->req_id,$labels,$sbs);
+	
+	$gui->attrDiff = getAttrDiff($sbs['left_item'],$sbs['right_item'],$labels);
+	
+	$cfields = getCFToCompare($sbs,$args->tproject_id,$reqMgr);
+	$gui->cfieldsDiff = null;
+	if( !is_null($cfields) )
+	{
+		$gui->cfieldsDiff = getCFDiff($cfields,$reqMgr);
 	}
 
-	foreach($diff_array as $key => $val) {
+	$gui->diff = array("scope" => array());
+	foreach($gui->diff as $key => $val) 
+	{
 		// insert line endings so diff is better readable and makes sense (not everything in one line)
 		// then cast to array with \n as separating character, differ needs that
-		$diff_array[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $left[$key]));
-		$diff_array[$key]["right"] = explode("\n", str_replace("</p>", "</p>\n", $right[$key]));
-		$diff_array[$key]["diff"] = $differ->inline($diff_array[$key]["left"], $gui->version_short . $args->version_left, 
-		                                            $diff_array[$key]["right"], $gui->version_short . $args->version_right, $args->context);
-		$diff_array[$key]["count"] = count($differ->changes);
-		$diff_array[$key]["heading"] = lang_get($key);
+		$gui->diff[$key]["left"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['left_item'][$key]));
+		$gui->diff[$key]["right"] = explode("\n", str_replace("</p>", "</p>\n", $sbs['right_item'][$key]));
+		$gui->diff[$key]["diff"] = $differ->inline($gui->diff[$key]["left"], $gui->leftID, 
+		                                            $gui->diff[$key]["right"], $gui->rightID,$args->context);
+
+		$gui->diff[$key]["count"] = count($differ->changes);
+		$gui->diff[$key]["heading"] = lang_get($key);
 	
-		//are there any changes? then display! if not, nothing to show here
-		if ($diff_array[$key]["count"] > 0) {
-			$diff_array[$key]["message"] = sprintf($labels["num_changes"], $key, $diff_array[$key]["count"]);
-		} else {
-			$diff_array[$key]["message"] = sprintf($labels["no_changes"], $key);
-		}
+		// are there any changes? then display! if not, nothing to show here
+		$additional = '';
+		$msg_key = "no_changes";
+		if ($gui->diff[$key]["count"] > 0) 
+		{
+			$msg_key = "num_changes";
+			$additional = $gui->diff[$key]["count"];
+		}		
+		$gui->diff[$key]["message"] = sprintf($labels[$msg_key], $key, $additional);
 	}
 
-	$gui->diff_array = $diff_array;
-	$glue_char = config_get('gui_title_separator_1');   
-	$gui->subtitle = sprintf(lang_get('diff_subtitle_req'), $args->version_left, $args->version_left, 
-	                         $args->version_right, $args->version_right, 
-	                         $reqSet[0]['req_doc_id'] . $glue_char . $reqSet[0]['title']);
 }
 
 $smarty->assign('gui', $gui);
 $smarty->display($templateCfg->template_dir . $templateCfg->default_template);
 
 
+/**
+ * 
+ *
+ */
+function getBareBonesReq($dbHandler,$reqID)
+{
+	$debugMsg = ' Function: ' . __FUNCTION__;
+	$tables = tlObjectWithDB::getDBTables(array('requirements','nodes_hierarchy'));
+	$sql = 	" /* $debugMsg */ SELECT REQ.req_doc_id, NH_REQ.name " .
+			" FROM {$tables['requirements']} REQ " .
+			" JOIN {$tables['nodes_hierarchy']} NH_REQ	ON  NH_REQ.id = REQ.id " .
+			" WHERE REQ.id = " . intval($reqID);
+			
+	$bones = $dbHandler->get_recordset($sql);		
 
+	return $bones[0];
+}
+
+/**
+ * 
+ *
+ */
+function getItemsToCompare($leftSideID,$rightSideID,&$itemSet)
+{
+
+	$ret = array();
+	foreach($itemSet as $item) 
+	{
+		if ($item['item_id'] == $leftSideID) 
+		{
+			$ret['left_item'] = $item;
+		}
+		if ($item['item_id'] == $rightSideID) 
+		{
+			$ret['right_item'] = $item;
+		}
+		
+		if( count($ret) == 2 )
+		{
+			break;
+		}
+	}
+	return $ret;
+}
+
+
+/**
+ * 
+ *
+ */
+function getCFToCompare($sides,$tprojectID,&$reqMgr)
+{
+	$cfields = array('left_side' => array('key' => 'left_item', 'value' => null), 
+					 'right_side' => array('key' => 'right_item', 'value' => null));
+
+	foreach($cfields as $item_side => $dummy)
+	{
+		$target_id = $sides[$dummy['key']];
+		$target_id = $target_id['item_id'];
+		$cfields[$item_side]['value'] = $reqMgr->get_linked_cfields(null,$target_id,$tprojectID);
+	}
+	return $cfields;	
+}
+
+
+/**
+ * 
+ *
+ */
+function getCFDiff($cfields,&$reqMgr)
+{
+	// echo __FUNCTION__;
+	$cmp = null;
+	
+	// Development Note
+	// All versions + revisions (i.e. child items) have the same qty of linked CF
+	// => both arrays will have same size()
+	//
+	// This is because to get cfields we look only to CF enabled for node type.
+	$cfieldsLeft = $cfields['left_side']['value'];
+	$cfieldsRight = $cfields['right_side']['value'];
+	if( !is_null($cfieldsLeft) )
+	{
+		$key2loop = array_keys($cfieldsLeft);
+		$cmp = array();
+		$type_code = $reqMgr->cfield_mgr->get_available_types();
+		$key2convert = array('lvalue','rvalue');
+		
+		$formats = array('date' => config_get( 'date_format'));
+		$cfg = config_get('gui');
+		foreach($key2loop as $cf_key)
+		{
+			$cmp[$cf_key] = array('label' => htmlspecialchars($cfieldsLeft[$cf_key]['label']),
+			                      'lvalue' => $cfieldsLeft[$cf_key]['value'],
+			                      'rvalue' => !is_null($cfieldsRight) ? $cfieldsRight[$cf_key]['value'] : null,
+			                      'changed' => $cfieldsLeft[$cf_key]['value'] != $cfieldsRight[$cf_key]['value']);
+			
+			
+			if($type_code[$cfieldsLeft[$cf_key]['type']] == 'date' ||
+			   $type_code[$cfieldsLeft[$cf_key]['type']] == 'datetime') 
+			{
+				$t_date_format = str_replace("%","",$formats['date']); // must remove %
+				foreach($key2convert as $fx)
+				{
+					if( ($doIt = ($cmp[$cf_key][$fx] != null)) )
+					{
+						switch($type_code[$cfieldsLeft[$cf_key]['type']])
+						{
+							case 'datetime':
+    	    			            $t_date_format .= " " . $cfg->custom_fields->time_format;
+							break ;
+						}
+					}	                       
+					if( $doIt )
+					{
+					  	$cmp[$cf_key][$fx] = date($t_date_format,$cmp[$cf_key][$fx]);
+					}
+				}
+			} 
+		}		
+	}
+	return $cmp;	
+}
+
+
+
+/**
+ * 
+ *
+ */
 function init_args()
 {
 	$args = new stdClass();
 
 	$args->req_id = isset($_REQUEST['requirement_id']) ? $_REQUEST['requirement_id'] : 0;
 	$args->compare_selected_versions = isset($_REQUEST['compare_selected_versions']);
-	$args->version_left = isset($_REQUEST['version_left']) ? $_REQUEST['version_left'] : null;
-	$args->version_right = isset($_REQUEST['version_right']) ? $_REQUEST['version_right'] : null;
+	$args->left_item_id = isset($_REQUEST['left_item_id']) ? intval($_REQUEST['left_item_id']) : -1;
+	$args->right_item_id = isset($_REQUEST['right_item_id']) ? intval($_REQUEST['right_item_id']) :  -1;
+    $args->tproject_id = isset($_SESSION['testprojectID']) ? $_SESSION['testprojectID'] : 0;
+
 
 	$diffEngineCfg = config_get("diffEngine");
-	if (isset($_REQUEST['context_show_all'])) {
-		$args->context = null;
-	} else {
+	$args->context = null;
+	if( !isset($_REQUEST['context_show_all'])) 
+	{
 		$args->context = (isset($_REQUEST['context']) && is_numeric($_REQUEST['context'])) ? $_REQUEST['context'] : $diffEngineCfg->context;
 	}
 
 	return $args;
 }
 
+/**
+ * 
+ *
+ */
+function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
+{
+	$guiObj = new stdClass();
+
+    $guiObj->items = $reqMgr->get_history($argsObj->req_id,array('output' => 'array','decode_user' => true));
+	$guiObj->req_id = $argsObj->req_id;
+	$guiObj->compare_selected_versions = $argsObj->compare_selected_versions;
+	$guiObj->context = $argsObj->context;
+	$guiObj->version_short = $lbl['version_short'];
+	$guiObj->diff = null;
+	return $guiObj;
+}
+
+/**
+ * 
+ *
+ */
+function prepareUserFeedback(&$dbHandler,&$guiObj,$reqID,$labels,$sbs)
+{	
+	$guiObj->leftID = sprintf($labels['version_revision'],$sbs['left_item']['version'],$sbs['left_item']['revision']);
+	$guiObj->rightID = sprintf($labels['version_revision'],$sbs['right_item']['version'],$sbs['right_item']['revision']);
+	$mini_me = getBareBonesReq($dbHandler,$reqID);
+	$guiObj->subtitle = sprintf($labels['diff_details_req'], 
+							 	$sbs['left_item']['version'],$sbs['left_item']['revision'],
+							 	$sbs['left_item']['version'],$sbs['left_item']['revision'],  
+							 	$sbs['right_item']['version'],$sbs['right_item']['revision'],
+							 	$sbs['right_item']['version'],$sbs['right_item']['revision'],  
+	                         	$mini_me['req_doc_id'] . config_get('gui_title_separator_1') . $mini_me['name']);
+}
+
+
+
+/**
+ * 
+ *
+ */
+function getAttrDiff($leftSide,$rightSide,$labels)
+{
+	$req_cfg = config_get('req_cfg'); 
+	$key2loop = array('status' => 'status_labels','type' => 'type_labels','expected_coverage' => null);
+	foreach($key2loop as $fkey => $lkey)
+	{
+		// Need to decode
+		$cmp[$fkey] = array('label' => htmlspecialchars($labels[$fkey]),
+		                   'lvalue' => $leftSide[$fkey],'rvalue' => $rightSide[$fkey],
+		                   'changed' => $leftSide[$fkey] != $rightSide[$fkey]);
+		             
+		if( !is_null($lkey) )
+		{
+			$decode = $req_cfg->$lkey;
+			
+			$cmp[$fkey]['lvalue'] = lang_get($decode[$cmp[$fkey]['lvalue']]);
+			$cmp[$fkey]['rvalue'] = lang_get($decode[$cmp[$fkey]['rvalue']]);
+		}                   
+	}		
+	return $cmp;	
+}
 ?>

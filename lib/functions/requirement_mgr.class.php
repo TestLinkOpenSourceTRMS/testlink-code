@@ -5,16 +5,17 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.117 $
- * @modified $Date: 2010/11/19 16:47:55 $ by $Author: asimon83 $
+ * @version $Revision: 1.118 $
+ * @modified $Date: 2010/12/10 20:25:16 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20101126 - franciscom - BUGID get_last_version_info() -> get_last_child_info();
  *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
- *  20101118 - asimon - 4031: Prevent copying of req scope to test case summary when creating test cases from requirement
+ *  20101118 - asimon - BUGID 4031: Prevent copying of req scope to test case summary when creating test cases from requirement
  *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20101012 - franciscom - html_table_of_custom_field_inputs() refactoring to use new method on cfield_mgr class
  *	20101011 - franciscom - BUGID 3886: CF Types validation - changes in html_table_of_custom_field_inputs()
@@ -103,6 +104,8 @@ class requirement_mgr extends tlObjectWithAttachments
     const AUTOMATIC_ID=0;
     const ALL_VERSIONS=0;
     const LATEST_VERSION=-1;
+    const NO_REVISION=-1;
+    
 
 
   /*
@@ -240,7 +243,7 @@ function get_by_id($id,$version_id=self::ALL_VERSIONS,$version_number=1,$options
 		   " REQV.scope,REQV.status,REQV.type,REQV.active," . 
            " REQV.is_open,REQV.author_id,REQV.version,REQV.id AS version_id," .
            " REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
-           " REQV.modification_ts,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+           " REQV.modification_ts,REQV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
 	       " NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
 	       " FROM {$this->object_table} REQ " .
 	       " JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
@@ -391,7 +394,8 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
   */
 
 function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $type,
-                $expected_coverage,$node_order=null,$tproject_id=null,$skip_controls=0)
+                $expected_coverage,$node_order=null,$tproject_id=null,$skip_controls=0,
+                $create_revision=false,$log_msg=null)
 {
 	$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
     
@@ -402,26 +406,29 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
     $field_size=config_get('field_size');
     
     // get SRSid, needed to do controls
-    $rs=$this->get_by_id($id,$version_id);
+    $rs = $this->get_by_id($id,$version_id);
     $req = $rs[0];
-    $srs_id=$req['srs_id'];
+    $srs_id = $req['srs_id'];
     
     // try to avoid function calls when data is available on caller
 	$tproject_id = is_null($tproject_id) ? $this->tree_mgr->getTreeRoot($srs_id): $tproject_id;
 
-    /* contribution by asimon83/mx-julian */
 	if (config_get('internal_links')->enable ) 
 	{
 		$scope = req_link_replace($this->db, $scope, $tproject_id);
 	}
-	/* end contribution by asimon83/mx-julian */
     
-	$reqdoc_id=trim_and_limit($reqdoc_id,$field_size->req_docid);
-	$title=trim_and_limit($title,$field_size->req_title);
-    $chk=$this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id);
+	$reqdoc_id = trim_and_limit($reqdoc_id,$field_size->req_docid);
+	$title = trim_and_limit($title,$field_size->req_title);
+    $chk = $this->check_basic_data($srs_id,$tproject_id,$title,$reqdoc_id,$id);
 
     if($chk['status_ok'] || $skip_controls)
 	{
+		if( $create_revision )
+		{	
+			$this->create_new_revision($version_id,$user_id,$tproject_id,$req,$log_msg);
+		}
+		
  		$sql = array();
 
   		$q = "/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
@@ -482,10 +489,12 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 
 
 	@internal revisions
+	20101127 - franciscom - req_revisions table
 	20100907 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions 
   */
 	function delete($id,$version_id = self::ALL_VERSIONS)
  	{
+ 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
  		$children = null;
 		$where_clause_coverage = '';
 	  	$where_clause_this = '';
@@ -547,10 +556,31 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
         // Delete version info
 	  	if( $doIt )
 	  	{
+
+			$implosion = implode(',',$children);
+
+			// ------------------------------------------------------------------------------------------	
+			// 20101127 - franciscom - BUGID 
+		  	$sql = "/* $debugMsg */ SELECT id from {$this->tables['nodes_hierarchy']} " .
+	  	       	   " WHERE parent_id IN ( {$implosion} ) ";
+			$revisionSet = $this->db->fetchRowsIntoMap($sql,'id');
+			if( !is_null($revisionSet) )
+			{
+	  			$this->cfield_mgr->remove_all_design_values_from_node(array_keys($revisionSet));
+            	
+	  			$sql = "DELETE FROM {$this->tables['req_revisions']} WHERE parent_id IN ( {$implosion} ) ";
+	  			$result = $this->db->exec_query($sql);
+            	
+	  			$sql = "DELETE FROM {$this->tables['nodes_hierarchy']} WHERE parent_id IN ( {$implosion} ) ";
+	  			$result = $this->db->exec_query($sql);
+			}
+			// ------------------------------------------------------------------------------------------
+
+
 	  		// BUGID 2877 - Custom Fields linked to Requirement Versions                    
 	  		$this->cfield_mgr->remove_all_design_values_from_node((array)$children);
-	  		
-	  		$where_clause_children = " WHERE id IN (" .implode(',',$children) . ") ";
+
+	  		$where_clause_children = " WHERE id IN ( {$implosion} ) ";
 	  		$sql = "DELETE FROM {$this->tables['req_versions']} " . $where_clause_children;
 	  		$result = $this->db->exec_query($sql);
         	
@@ -1314,7 +1344,8 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     {
 		// Need to get Last Version no matter active or not.
 		$reqID = key($check_in_reqspec);
-		$last_version = $this->get_last_version_info($reqID);
+		// $last_version = $this->get_last_version_info($reqID);
+		$last_version = $this->get_last_child_info($reqID);
 		$msgID = 'frozen_req_unable_to_import';
 		$status_ok = false;
 		if( $last_version['is_open'] == 1 || !$my['options']['skipFrozenReq'])
@@ -1390,7 +1421,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 
 
   args: id: requirement id
-		version_id: requirement version id
+		$child_id: requirement version id or requirement revision id
         [parent_id]:
                      this information is vital, to get the linked custom fields.
                      null -> use requirement_id as starting point.
@@ -1428,7 +1459,7 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
        20070302 - check for $id not null, is not enough, need to check is > 0
 
 */
-function get_linked_cfields($id,$version_id,$parent_id=null)
+function get_linked_cfields($id,$child_id,$parent_id=null)
 {
 	$enabled = 1;
 	if (!is_null($id) && $id > 0)
@@ -1441,8 +1472,9 @@ function get_linked_cfields($id,$version_id,$parent_id=null)
 	{
 	  	$tproject_id = $parent_id;
 	}
+	
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::ENABLED,null,
-	                                                          'requirement',$version_id);
+	                                                          'requirement',$child_id);
 	return $cf_map;
 }
 
@@ -1494,22 +1526,25 @@ function html_table_of_custom_field_inputs($id,$version_id,$parent_id=null,$name
 
 
   args: $id
+		$child_id: req version or req revision ID
 
   returns: html string
+  
+  revision:
+  BUGID 4056
 
 */
-// function html_table_of_custom_field_values($id)
-function html_table_of_custom_field_values($id,$version_id)
+function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 {
     $NO_WARNING_IF_MISSING=true;
-	$PID_NO_NEEDED = null;
 	$cf_smarty = '';
 
-	$cf_map = $this->get_linked_cfields($id,$version_id,$PID_NO_NEEDED);
-	
-    // BUGID 3989
-    $show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+	$root_id = is_null($id) ? $tproject_id : null;  
+	$cf_map = $this->get_linked_cfields($id,$child_id,$root_id);
 
+	// BUGID 3989
+	$show_cf = config_get('custom_fields')->show_custom_fields_without_value;
+	
 	if(!is_null($cf_map))
 	{
 		foreach($cf_map as $cf_id => $cf_info)
@@ -1523,11 +1558,13 @@ function html_table_of_custom_field_values($id,$version_id)
 
 				$cf_smarty .= '<tr><td class="labelHolder">' .
 								htmlspecialchars($label) . ":</td><td>" .
-								$this->cfield_mgr->string_custom_field_value($cf_info,$version_id) .
+								$this->cfield_mgr->string_custom_field_value($cf_info,$child_id) .
 								"</td></tr>\n";
 			}
 		}
 
+		// new dBug($cf_smarty);
+		
 		if(trim($cf_smarty) != "")
 		{
 			$cf_smarty = "<table>" . $cf_smarty . "</table>";
@@ -1768,10 +1805,9 @@ function html_table_of_custom_field_values($id,$version_id)
 	  returns: -
 	
 	*/
-	// function copy_cfields($from_id,$to_id)
-	function copy_cfields($source,$destination)
+	function copy_cfields($source,$destination,$tproject_id=null)
 	{
-	  $cfmap_from=$this->get_linked_cfields($source['id'],$source['version_id']);
+	  $cfmap_from=$this->get_linked_cfields($source['id'],$source['version_id'],$tproject_id);
 	  $cfield=null;
 	  if( !is_null($cfmap_from) )
 	  {
@@ -1895,26 +1931,37 @@ function html_table_of_custom_field_values($id,$version_id)
 	  @internal revisions
 	  20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used. 
 	*/
-	function create_new_version($id,$user_id,$reqVersionID=null)
+	function create_new_version($id,$user_id,$reqVersionID=null,$log_msg=null)
 	{
-	  // get a new id
-	  $version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
-	  
-	  // Needed to get higher version NUMBER, to generata new VERSION NUMBER
-	  $sourceVersionInfo =  $this->get_last_version_info($id);
-	  $newVersionNumber = $sourceVersionInfo['version']+1; 
-
-	  $ret = array();
-	  $ret['id'] = $version_id;
-	  $ret['version'] = $newVersionNumber;
-	  $ret['msg'] = 'ok';
-
-	  $sourceVersionID = is_null($reqVersionID) ? $sourceVersionInfo['id'] : $reqVersionID;
-
-	  // BUGID 2877 - Custom Fields linked to Requirement Versions
-	  $this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	
-	  return $ret;
+	  	// get a new id
+	  	$version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
+	  	
+	  	// Needed to get higher version NUMBER, to generata new VERSION NUMBER
+	  	// $sourceVersionInfo =  $this->get_last_version_info($id);
+	  	$sourceVersionInfo =  $this->get_last_child_info($id);
+	  	$newVersionNumber = $sourceVersionInfo['version']+1; 
+      	
+	  	$ret = array();
+	  	$ret['id'] = $version_id;
+	  	$ret['version'] = $newVersionNumber;
+	  	$ret['msg'] = 'ok';
+      	
+	  	$sourceVersionID = is_null($reqVersionID) ? $sourceVersionInfo['id'] : $reqVersionID;
+      	
+	  	// BUGID 2877 - Custom Fields linked to Requirement Versions
+	  	$this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
+	  	
+	  	// need to update log message in new created version
+	  	$sql = 	"/* $debugMsg */ " .
+	  			" UPDATE {$this->tables['req_versions']} " .
+	  			" SET log_message = '" . $this->db->prepare_string($log_msg) . "'" .
+	  			" WHERE id={$version_id}";
+	  	$this->db->exec_query($sql);		
+	  	
+	  	
+	  	return $ret;
 	}
 
 
@@ -1975,7 +2022,6 @@ function html_table_of_custom_field_values($id,$version_id)
  	 * @internal revisions
  	 * 20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions 
      */
-	// function copy_version($from_version_id,$to_version_id,$as_version_number,$user_id)
 	function copy_version($id,$from_version_id,$to_version_id,$as_version_number,$user_id)
 	{
 		
@@ -1993,9 +2039,6 @@ function html_table_of_custom_field_values($id,$version_id)
 	    // BUGID 2877 - Custom Fields linked to Requirement Versions     
 	    $this->copy_cfields(array('id' => $id, 'version_id' => $from_version_id),
 						  	array('id' => $id, 'version_id' => $to_version_id));
-
-
-	         
 	}
 
     /**
@@ -2355,6 +2398,334 @@ function html_table_of_custom_field_values($id,$version_id)
   		return $output;
   	}
 
+	/**
+	 *	@param id: parent id: can be REQ ID or REQ VERSION ID depending of $child_type 
+ 	 *	@param child_type: 'req_versions', 'req_revisions'
+ 	 *
+ 	 *	@return  
+     */
+	function get_last_child_info($id, $child_type='version')
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$info = null;
+		$target_cfg = array('version' => array('table' => 'req_versions', 'field' => 'version'), 
+							'revision' => array('table'=> 'req_revisions', 'field' => 'revision'));
+
+		$table = $target_cfg[$child_type]['table'];
+		$field = $target_cfg[$child_type]['field'];
+		
+		$sql = " /* $debugMsg */ SELECT COALESCE(MAX($field),-1) AS $field " .
+		       " FROM {$this->tables[$table]} CHILD," .
+		       " {$this->tables['nodes_hierarchy']} NH WHERE ".
+		       " NH.id = CHILD.id ".
+		       " AND NH.parent_id = {$id} ";
+
+		$max_verbose = $this->db->fetchFirstRowSingleColumn($sql,$field);
+		if ($max_verbose >= 0)
+		{
+			$sql = "/* $debugMsg */ SELECT CHILD.* FROM {$this->tables[$table]} CHILD," .
+			       " {$this->tables['nodes_hierarchy']} NH ".
+			       " WHERE $field = {$max_verbose} AND NH.id = CHILD.id AND NH.parent_id = {$id}";
+	
+			$info = $this->db->fetchFirstRow($sql);
+		}
+		return $info;
+	}
+
+	
+	
+	/**
+	 * 
+ 	 *
+ 	 */
+	function create_new_revision($parent_id,$user_id,$tproject_id,$req = null,$log_msg = null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+	  	$item_id = $this->tree_mgr->new_node($parent_id,$this->node_types_descr_id['requirement_revision']);
+	  	
+	  	// Needed to get higher revision NUMBER, to generata new NUMBER      
+	  	$source_info =  $this->get_last_child_info($parent_id,'revision');
+	  	$current_rev = 0;
+	  	if( !is_null($source_info) )
+	  	{
+	  		$current_rev = $source_info['revision']; 
+	  	}
+	  	$current_rev++;
+	  	
+	  	// Info regarding new record created on req_revisions table
+	  	$ret = array();
+	  	$ret['id'] = $item_id;
+	  	$ret['revision'] = $current_rev;
+	  	$ret['msg'] = 'ok';
+      	
+	  	$this->copy_version_as_revision($parent_id,$item_id,$current_rev,$user_id,$tproject_id);
+	  	$sql = 	"/* $debugMsg */ " .
+	  			" UPDATE {$this->tables['req_revisions']} " .
+	  			" SET name ='" . $this->db->prepare_string($req['title']) . "'," .
+	  			"     req_doc_id ='" . $this->db->prepare_string($req['req_doc_id']) . "'" .
+	  			" WHERE id = {$item_id} ";
+	  	$this->db->exec_query($sql);
+	  	
+	  	$new_rev = $current_rev+1;
+	  	$sql = 	'/* $debugMsg */' .
+	  			" UPDATE {$this->tables['req_versions']} " .
+	  			" SET revision = {$new_rev}, log_message=' " . $this->db->prepare_string($log_msg) . "'" .
+	  			" WHERE id = {$parent_id} ";
+	  	$this->db->exec_query($sql);
+	  	return $ret;
+	}
+
+	
+	/**
+	 * 
+ 	 *
+ 	 */
+	function copy_version_as_revision($parent_id,$item_id,$revision,$user_id,$tproject_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = 	'/* $debugMsg */' .
+				" INSERT INTO {$this->tables['req_revisions']} " .
+				" (parent_id,id,revision,scope,status,type,active,is_open, " .
+  				"  expected_coverage,author_id,creation_ts,modifier_id,modification_ts,log_message) " .
+  				" SELECT REQV.id, {$item_id}, {$revision}, " .
+				" REQV.scope,REQV.status,REQV.type,REQV.active,REQV.is_open, " .
+  				" REQV.expected_coverage,REQV.author_id,REQV.creation_ts,REQV.modifier_id," .
+  				" REQV.modification_ts,REQV.log_message" .
+  				" FROM {$this->tables['req_versions']} REQV " .
+  				" WHERE REQV.id = {$parent_id} ";
+  		$this->db->exec_query($sql);
+  		
+  		// need to copy Custom Fields ALSO
+  		// BAD NAME -> version_id is REALLY NODE ID
+  		$source = array('id' => 0, 'version_id' =>  $parent_id);
+  		$dest = array('id' => 0, 'version_id' =>  $item_id);
+	    $this->copy_cfields($source,$dest,$tproject_id);
+  		
+	} 
+	
+	
+	/**
+	 * used to create overwiew of changes between revisions
+ 	 *
+ 	 */
+	function get_history($id,$options=null)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$my['options'] = array('output' => "map", 'decode_user' => false);
+    	$my['options'] = array_merge($my['options'], (array)$options);
+
+		// 
+		// Why can I use these common fields ?
+		// explain better
+		$common_fields = " REQV.id AS version_id, REQV.version,REQV.creation_ts, REQV.author_id, " .
+						 " REQV.modification_ts, REQV.modifier_id ";
+						 
+		// needs a double coalesce not too elegant but...		
+		
+		// Two steps algorithm
+		// First understand is we already have a revision
+		$sql = 	" /* $debugMsg */" . 
+				" SELECT COUNT(0) AS qta_rev " . 
+				" FROM {$this->tables['req_revisions']} REQRV " .
+				" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQRV.parent_id " .
+				" WHERE NH_REQV.parent_id = {$id} ";
+				
+		$rs = $this->db->get_recordset($sql);
+		$sql = 	"/* $debugMsg */" .
+    			" SELECT REQV.id AS version_id, REQV.version," .
+    			"		 REQV.creation_ts, REQV.author_id, " .
+				"		 REQV.modification_ts, REQV.modifier_id, " . 
+    					 self::NO_REVISION . " AS revision_id, " .
+    			" 		 REQV.revision, REQV.scope, " .
+    			" 		 REQV.status,REQV.type,REQV.expected_coverage,NH_REQ.name, REQ.req_doc_id, " .
+    			" COALESCE(REQV.log_message,'') AS log_message" .
+    			" FROM {$this->tables['req_versions']}  REQV " .
+				" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+				" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+				" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+				" WHERE NH_REQV.parent_id = {$id} ";
+				
+		if( $rs[0]['qta_rev'] > 0 )
+		{		
+			$sql .=	" UNION ( " .
+    				" SELECT REQV.id AS version_id, REQV.version, " .
+    				"		 REQRV.creation_ts, REQRV.author_id, " .
+					"		 REQRV.modification_ts, REQRV.modifier_id, " . 
+					"		 REQRV.id AS revision_id, " .
+					"		 REQRV.revision,REQRV.scope,REQRV.status,REQRV.type, " .
+    				"		 REQRV.expected_coverage,REQRV.name,REQRV.req_doc_id, " .
+    				"		 COALESCE(REQRV.log_message,'') as log_message" .
+					" FROM {$this->tables['req_versions']} REQV " .
+					" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQV.id " .
+					" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+					" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+					" JOIN {$this->tables['req_revisions']} REQRV " .
+					" ON REQRV.parent_id = REQV.id " . 
+					" WHERE NH_REQV.parent_id = {$id} " .
+					" ) " .
+					" ORDER BY version_id DESC,version DESC,revision DESC ";
+		}
+		
+  		// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+
+		switch($my['options']['output'])
+		{
+			case 'map':
+    			$rs = $this->db->fetchRowsIntoMap($sql,'version_id');
+			break;
+			
+			case 'array':
+				$rs = $this->db->get_recordset($sql);
+			break;
+		}
+  		
+  		// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+  		new dBug($rs);
+  		
+  		if( !is_null($rs) )
+  		{
+  			$key2loop = array_keys($rs);
+  			foreach($key2loop as $ap)
+  			{
+  				$rs[$ap]['item_id'] = ($rs[$ap]['revision_id'] > 0) ? $rs[$ap]['revision_id'] : $rs[$ap]['version_id'];
+  				$rs[$ap]['timestamp'] = ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') ? $rs[$ap]['modification_ts'] :
+  										$rs[$ap]['creation_ts'];	
+  			}
+  		}
+  		
+  		$history = $rs;
+  		if( $my['options']['decode_user'] && !is_null($history) )
+  		{
+  			$this->decode_users($history);
+  			// $userCache = null;  // key: user id, value: display name
+  			// $key2loop = array_keys($history);
+  			// $labels['undefined'] = lang_get('undefined');
+  			// $user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
+  			// foreach( $key2loop as $key )
+  			// {
+  			// 	foreach( $user_keys as $ukey => $userid_field)
+  			// 	{
+  			// 		$history[$key][$ukey] = '';
+  			// 		if(trim($history[$key][$userid_field]) != "")
+  			// 		{
+  			// 			if( !isset($userCache[$history[$key][$userid_field]]) )
+  			// 			{
+  			// 				$user = tlUser::getByID($this->db,$history[$key][$userid_field]);
+  			// 				$history[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+  			// 				$userCache[$history[$key][$userid_field]] = $history[$key][$ukey];
+  			// 			}
+  			// 			else
+  			// 			{
+  			// 				$history[$key][$ukey] = $userCache[$history[$key][$userid_field]];
+  			// 			}
+  			// 		}
+  			// 	}	
+  			// }
+		}
+ 
+    	return $history;
+	}
+	
+	
+	/**
+	 * 
+	 *
+ 	 */
+	function get_version($version_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$sql = 	" /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+		   		" REQV.scope,REQV.status,REQV.type,REQV.active," . 
+           		" REQV.is_open,REQV.author_id,REQV.version,REQV.revision,REQV.id AS version_id," .
+           		" REQV.expected_coverage,REQV.creation_ts,REQV.modifier_id," .
+           		" REQV.modification_ts,REQV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+	       		" NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+	       		" FROM {$this->object_table} REQ " .
+	       		" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = REQ.id " .
+	       		" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.parent_id = NH_REQ.id ".
+	       		" JOIN  {$this->tables['req_versions']} REQV ON REQV.id = NH_REQV.id " .  
+	       		" JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+	       		" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+				" WHERE REQV.id = " . intval($version_id);
+
+		$dummy = $this->db->get_recordset($sql);
+		
+		if( !is_null($dummy) )
+		{
+ 			$this->decode_users($dummy);		
+			$dummy = $dummy[0];
+		}
+		return is_null($dummy) ? null : $dummy;	
+	}	
+
+
+
+	/**
+	 * 
+	 *
+ 	 */
+	function get_revision($revision_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+
+		$sql = 	" /* $debugMsg */ SELECT REQ.id,REQ.srs_id,REQ.req_doc_id," . 
+		   		" REQRV.scope,REQRV.status,REQRV.type,REQRV.active," . 
+           		" REQRV.is_open,REQRV.author_id,REQV.version,REQRV.id AS version_id," .
+           		" REQRV.expected_coverage,REQRV.creation_ts,REQRV.modifier_id," .
+           		" REQRV.modification_ts,REQRV.revision,NH_REQ.name AS title, REQ_SPEC.testproject_id, " .
+	       		" NH_RSPEC.name AS req_spec_title, REQ_SPEC.doc_id AS req_spec_doc_id, NH_REQ.node_order " .
+	       		" FROM {$this->tables['req_revisions']} REQRV " .
+	       		" JOIN {$this->tables['req_versions']} REQV ON REQV.id = REQRV.parent_id ".
+	       		" JOIN {$this->tables['nodes_hierarchy']} NH_REQV ON NH_REQV.id = REQRV.parent_id ".
+	       		" JOIN {$this->tables['nodes_hierarchy']} NH_REQ ON NH_REQ.id = NH_REQV.parent_id " .
+	       		" JOIN {$this->tables['requirements']} REQ ON REQ.id = NH_REQ.id " .
+	       		" JOIN {$this->tables['req_specs']} REQ_SPEC ON REQ_SPEC.id = REQ.srs_id " .
+	       		" JOIN {$this->tables['nodes_hierarchy']} NH_RSPEC ON NH_RSPEC.id = REQ_SPEC.id " .
+				" WHERE REQRV.id = " . intval($revision_id);
+		$dummy = $this->db->get_recordset($sql);
+		
+		if( !is_null($dummy) )
+		{
+ 			$this->decode_users($dummy);		
+			$dummy = $dummy[0];
+		}
+		return is_null($dummy) ? null : $dummy;	
+	}	
+
+	
+	
+	/**
+	 * 
+ 	 *
+ 	 */
+	function decode_users(&$rs)
+	{
+  		$userCache = null;  // key: user id, value: display name
+  		$key2loop = array_keys($rs);
+  		$labels['undefined'] = lang_get('undefined');
+  		$user_keys = array('author' => 'author_id', 'modifier' => 'modifier_id');
+  		foreach( $key2loop as $key )
+  		{
+  			foreach( $user_keys as $ukey => $userid_field)
+  			{
+  				$rs[$key][$ukey] = '';
+  				if(trim($rs[$key][$userid_field]) != "")
+  				{
+  					if( !isset($userCache[$rs[$key][$userid_field]]) )
+  					{
+  						$user = tlUser::getByID($this->db,$rs[$key][$userid_field]);
+  						$rs[$key][$ukey] = $user ? $user->getDisplayName() : $labels['undefined'];
+  						$userCache[$rs[$key][$userid_field]] = $rs[$key][$ukey];
+  					}
+  					else
+  					{
+  						$rs[$key][$ukey] = $userCache[$rs[$key][$userid_field]];
+  					}
+  				}
+  			}	
+  		}
+	}
 	
 	
 } // class end

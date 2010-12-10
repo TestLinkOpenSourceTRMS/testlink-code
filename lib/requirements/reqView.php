@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqView.php,v $
- * @version $Revision: 1.36 $
- * @modified $Date: 2010/12/01 14:37:08 $ by $Author: asimon83 $
+ * @version $Revision: 1.37 $
+ * @modified $Date: 2010/12/10 20:18:06 $ by $Author: franciscom $
  * @author Martin Havlat
  * 
  * Screen to view content of requirement.
  *
  *	@internal revision
+ *  20101210 - franciscom - BUGID 4056 - Req. Revisioning
  *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
  *	20101020 - franciscom - BUGID 3914 - typo error  
  *	20100906 - franciscom - BUGID 2877 - Custom Fields linked to Requirement Versions
@@ -98,6 +99,10 @@ function initialize_gui(&$dbHandler,$argsObj)
     $gui->version_option = ($argsObj->req_version_id) ? $argsObj->req_version_id : requirement_mgr::ALL_VERSIONS;
         
     $gui->req_versions = $req_mgr->get_by_id($gui->req_id, $gui->version_option);
+
+	// 20101128 - BUGID 4056    
+    $gui->req_has_history = count($req_mgr->get_history($gui->req_id, array('output' => 'array'))) > 1; 
+    
     $gui->req = current($gui->req_versions);
     $gui->req_coverage = $req_mgr->get_coverage($gui->req_id);
     

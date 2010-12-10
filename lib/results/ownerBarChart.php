@@ -1,12 +1,14 @@
 <?php
 /** 
 * TestLink Open Source Project - http://testlink.sourceforge.net/ 
-* $Id: ownerBarChart.php,v 1.15 2010/09/12 17:09:17 franciscom Exp $ 
+* $Id: ownerBarChart.php,v 1.15.2.1 2010/12/10 15:52:23 franciscom Exp $ 
 *
 * @author	Kevin Levy
 *
-* rev: 20081116 - franciscom - refactored to display X axis ordered (alphabetical).
-*      20081113 - franciscom - BUGID 1848
+* rev:
+* 	20101210 - franciscom - BUGID 4090 
+*	20081116 - franciscom - refactored to display X axis ordered (alphabetical).
+*   20081113 - franciscom - BUGID 1848
 * 
 */
 require_once('../../config.inc.php');
@@ -80,7 +82,11 @@ function getDataAndScale(&$dbHandler)
         {
             $obj->chart_data[] = $values;
             $obj->series_label[] = lang_get($resultsCfg['status_label'][$status]);
-            $obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
+   	        // BUGID 4090
+	        if( isset($resultsCfg['charts']['status_colour'][$status]) )
+            {	
+            	$obj->series_color[] = $resultsCfg['charts']['status_colour'][$status];
+            }	
         }
     }
     return $obj;

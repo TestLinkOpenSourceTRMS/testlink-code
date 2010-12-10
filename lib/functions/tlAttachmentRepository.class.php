@@ -6,10 +6,11 @@
  * @package 	TestLink
  * @author 		Andreas Morsing
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.7 2010/12/08 09:18:18 franciscom Exp $
+ * @version    	CVS: $Id: tlAttachmentRepository.class.php,v 1.8 2010/12/10 11:21:03 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal
+ * 20101210 - franciscom - added trim on attachemnt title, because '' is used on template logic.
  * 20101208 - franciscom - BUGID 4085: Attachment Repository on Database - Can not get file after upload
  * 20100918 - franciscom - BUGID 1890 - storeFileInFSRepository() - contribution by kinow	
  * 20091220 - franciscom - new method copyAttachments()
@@ -204,8 +205,9 @@ class tlAttachmentRepository extends tlObjectWithDB
 		$fContents = getFileContents($fTmpName);
 		//delete the dummy file if present
 		if (!is_null($tmpGZName))
+		{
 			unlink($tmpGZName);
-
+		}
 		return $fContents;
 	}
 
@@ -308,12 +310,24 @@ class tlAttachmentRepository extends tlObjectWithDB
 	{
 		$bResult = tl::ERROR;
 		if (is_null($attachmentInfo))
+		{
 			$attachmentInfo = $this->getAttachmentInfo($id);
+		}
 		if ($attachmentInfo)
 		{
 			$bResult = tl::OK;
+
+			// 20101210 - franciscom		
+			// does not understand Why need to do both deletes
+			//
+			// if (trim($attachmentInfo['file_path']) != "")
+			// 	$bResult = $this->deleteAttachmentFromFS($id,$attachmentInfo);
+			// $bResult = $this->deleteAttachmentFromDB($id,null) && $bResult;
+		
 			if (trim($attachmentInfo['file_path']) != "")
+			{
 				$bResult = $this->deleteAttachmentFromFS($id,$attachmentInfo);
+			}
 			$bResult = $this->deleteAttachmentFromDB($id,null) && $bResult;
 		}
 		return $bResult ? tl::OK : tl::ERROR;
@@ -474,6 +488,11 @@ class tlAttachmentRepository extends tlObjectWithDB
 			$attachmentInfo = $this->getAttachmentInfo($attachmentIDs[$idx]);
 			if ($attachmentInfo)
 			{
+				// needed because on inc_attachments.tpl this test:
+				// {if $info.title eq ""}
+				// is used to undertand if icon or other handle is needed to access
+				// file content
+				$attachmentInfo['title'] = trim($attachmentInfo['title']);
 				$attachmentInfos[] = $attachmentInfo;
 			}
 		}

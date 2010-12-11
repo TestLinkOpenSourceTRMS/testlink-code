@@ -1,9 +1,11 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.30 2010/02/20 08:48:59 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.30.6.1 2010/12/11 17:25:21 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
 --
+--  20101126 - franciscom - DB version increased
+--                          added requirement_revision node type
 --  20100106 - franciscom - added testcase_step node type
 --  20091228 - franciscom - added new rights for project 
 --  20091010 - franciscom - platform feature
@@ -23,7 +25,7 @@
 
 
 --  Database version -
-INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.3',now(),'TestLink 1.9');
+INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 2.0',now(),'TestLink 2.0');
 
 
 --  Node types -
@@ -36,6 +38,8 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (6,'requirement_spec');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (7,'requirement');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
+
 
 --  Roles -
 INSERT INTO /*prefix*/roles (id,description) VALUES (3, '<no rights>');

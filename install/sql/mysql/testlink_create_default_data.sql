@@ -1,9 +1,11 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
-# $Id: testlink_create_default_data.sql,v 1.37 2010/02/20 08:49:29 franciscom Exp $
+# $Id: testlink_create_default_data.sql,v 1.37.6.1 2010/12/11 17:25:44 franciscom Exp $
 # SQL script - create default data (rights & admin account)
 #
 # Database Type: MySQL 
 #
+# 20101126 - franciscom - DB version increased
+#                         added requirement_revision node type
 # 20100106 - franciscom - added testcase_step node type
 # 20090426 - franciscom - new right testproject_user_role_assignment
 # 20090126 - havlatm - role definition update
@@ -16,7 +18,7 @@
 # ---------------------------------------------------------------------------------
 
 # Database version
-INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 1.3', 'TestLink 1.9',CURRENT_TIMESTAMP());
+INSERT INTO /*prefix*/db_version (version,notes,upgrade_ts) VALUES('DB 2.0', 'TestLink 2.0',CURRENT_TIMESTAMP());
 
 # Node types -
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (1,'testproject');
@@ -28,6 +30,7 @@ INSERT INTO /*prefix*/node_types  (id,description) VALUES (6,'requirement_spec')
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (7,'requirement');
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types  (id,description) VALUES (9,'testcase_step');
+INSERT INTO /*prefix*/node_types  (id,description) VALUES (10,'requirement_revision');
 
 
 # Roles -

@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.63.2.1 2010/12/04 09:19:17 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.63.2.2 2010/12/11 17:25:21 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -23,9 +23,9 @@
 --
 -- 
 --  Rev :
---
 --  20101204 - franciscom - BUGID 4070 - changed executions_idx1
 --                          ("testplan_id","tcversion_id","platform_id","build_id");
+--
 --  20100912 - franciscom - requirements index ("srs_id","req_doc_id") changed to UNIQUE
 --  20100705 - asimon - added column build_id to user_assignments
 --  20100308 - franciscom - req_relations table added
@@ -540,6 +540,7 @@ CREATE UNIQUE INDEX /*prefix*/requirements_idx1 ON /*prefix*/requirements ("srs_
 CREATE TABLE /*prefix*/req_versions(  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "version" INTEGER NOT NULL DEFAULT '1',
+  "revision" INTEGER NOT NULL DEFAULT '1',   --- BUGID 4056
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
@@ -550,7 +551,9 @@ CREATE TABLE /*prefix*/req_versions(
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "modifier_id" BIGINT NULL DEFAULT NULL,
   "modification_ts" TIMESTAMP NULL,
-  PRIMARY KEY ("id","version")
+  "log_message" TEXT NULL DEFAULT NULL,
+  ---- PRIMARY KEY ("id","version")  <<<<--- NEED TO CHANGE in order to add simple FK on req_revisions
+  PRIMARY KEY ("id")
 ); 
 
 --
@@ -731,3 +734,27 @@ CREATE TABLE /*prefix*/req_relations (
 	creation_ts TIMESTAMP NOT NULL DEFAULT now(),
 	PRIMARY KEY (id)
 );
+
+
+
+--- BUGID 4056
+CREATE TABLE /*prefix*/req_revisions(  
+  "parent_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_versions (id),
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "revision" INTEGER NOT NULL DEFAULT '1',   
+  "req_doc_id" VARCHAR(64) NULL,  --- fman - it's OK to allow a simple update query on code ?
+  "name" VARCHAR(100) NULL DEFAULT NULL,
+  "scope" TEXT NULL DEFAULT NULL,
+  "status" CHAR(1) NOT NULL DEFAULT 'V',
+  "type" CHAR(1) NULL DEFAULT NULL,
+  "active" INT2 NOT NULL DEFAULT '1',   --- fman - Need To understand use i.e. just as memory ?
+  "is_open" INT2 NOT NULL DEFAULT '1',  --- fman - Need To understand use i.e. just as memory ?
+  "expected_coverage" INTEGER NOT NULL DEFAULT 1,
+  "log_message" TEXT NULL DEFAULT NULL,
+  "author_id" BIGINT NULL DEFAULT NULL,
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "modifier_id" BIGINT NULL DEFAULT NULL,
+  "modification_ts" TIMESTAMP NULL,
+  PRIMARY KEY ("id")
+); 
+CREATE UNIQUE INDEX /*prefix*/req_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");

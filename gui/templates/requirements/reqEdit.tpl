@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.36 2010/11/30 10:43:04 mx-julian Exp $
+$Id: reqEdit.tpl,v 1.37 2010/12/11 11:06:30 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20101130 - Julian - BUGID 4063: "Save" and "Cancel" Button at the top of the page
@@ -22,7 +22,9 @@ internal revision
           s='show_event_history,btn_save,cancel,status,scope,warning,req_doc_id,
              title,warning_expected_coverage,type,warning_expected_coverage_range,
              warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title,
-             insert_last_req_doc_id'}
+             insert_last_req_doc_id,suggest_create_revision,revision_log_title,
+             please_add_revision_log,suggest_create_revision_html,warning_suggest_create_revision'}
+             
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -37,6 +39,11 @@ internal revision
 	var warning_empty_req_title = "{$labels.warning_empty_req_title|escape:'javascript'}";
 	var warning_expected_coverage = "{$labels.warning_expected_coverage|escape:'javascript'}";
 	var warning_expected_coverage_range = "{$labels.warning_expected_coverage_range|escape:'javascript'}";
+  var log_box_title = "{$labels.revision_log_title|escape:'javascript'}";
+  var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+  // var confirm_title = "{$labels.warning|escape:'javascript'}";
+  var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
+  var confirm_text = "{$labels.suggest_create_revision_html}";
 
   // To manage hide/show expected coverage logic, depending of req type
   var js_expected_coverage_cfg = new Array();
@@ -55,6 +62,7 @@ internal revision
     js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
   {/foreach}
 
+  {literal}
 	function validateForm(f,cfg,check_expected_coverage)
 	{
 	
@@ -120,21 +128,65 @@ internal revision
 	        return false;
 	  	}
 	  }
-	  
+    if(f.prompt4log.value == 1)
+    {
+      Ext.Msg.prompt(log_box_title, log_box_text, function(btn, text){
+        if (btn == 'ok'){
+            f.goaway.value=1;
+            f.prompt4log.value=0;
+            f.do_save.value=1;
+            f.save_rev.value=1;
+            f.log_message.value=text;
+            f.submit();
+        }
+      },this,true);    
+      return false;    
+    }
+    else if(f.prompt4revision.value == 1)
+    {
+      Ext.Msg.prompt(confirm_title, confirm_text, function(btn, text){
+        if (btn == 'ok'){
+            f.goaway.value=1;
+            f.prompt4log.value=0;
+            f.do_save.value=1;
+            f.save_rev.value=1;
+            f.log_message.value=text;
+            f.submit();
+        }
+        else
+        {
+            f.goaway.value=1;
+            f.prompt4log.value=0;
+            f.do_save.value=1;
+            f.save_rev.value=0;
+            f.log_message.value='';
+            f.submit();
+        }
+      },this,true);    
+      return false;    
+    }
+    // Warning!!!!
+    // no idea if all these how the require session and submit 
+    // will work with the other propmts.    
 	  return Ext.ux.requireSessionAndSubmit(f);
 	}
+	{/literal}
+	
 	
 	/**
    * 
    *
    */
+  {literal} 
 	window.onload = function()
   {
 	   focusInputField('reqDocId');
+     {/literal}
      {* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
      {if $gui->req_cfg->expected_coverage_management}
       configure_attr('reqType',js_attr_cfg);
      {/if}
+     {literal}
   }
  
   
@@ -189,6 +241,7 @@ function insert_last_doc_id()
 	var field = document.getElementById('reqDocId');
 	field.value = last_id;
 }
+{/literal}
 </script>
 </head>
 
@@ -203,12 +256,19 @@ function insert_last_doc_id()
 
 <div class="workBack">
 <form name="reqEdit" id="reqEdit" method="post" 
+      action="lib/requirements/reqEdit.php" 
       onSubmit="javascript:return validateForm(this,js_attr_cfg,{$gui->req_cfg->expected_coverage_management});">
 
 	<input type="hidden" name="req_spec_id" value="{$gui->req_spec_id}" />
 	<input type="hidden" name="requirement_id" value="{$gui->req_id}" />
 	<input type="hidden" name="req_version_id" value="{$gui->req_version_id}" />
 	<input type="hidden" name="last_doc_id" id="last_doc_id" value="{$gui->last_doc_id|escape}" />
+	<input type="hidden" name="save_rev" id="save_rev" value="0" />
+	<input type="hidden" name="log_message" id="log_message" value="" />
+	<input type="hidden" name="goaway" id="goaway" value="0" />
+	<input type="hidden" name="prompt4log" id="prompt4log" value="{$gui->askForLog}" />
+	<input type="hidden" name="do_save" id="do_save" value="{$gui->askForRevision}" />
+	<input type="hidden" name="prompt4revision" id="prompt4revision" value="{$gui->askForRevision}" />
 	
 	{* BUGID 4063 *}
 	<div class="groupBtn">
@@ -310,12 +370,36 @@ function insert_last_doc_id()
 
 	{* BUGID 3854 *}
 	<div class="groupBtn">
-		<input type="hidden" name="doAction" value="" />
+		<input type="hidden" name="doAction" id="doAction" value="{$gui->operation}" />
 		<input type="submit" name="create_req" value="{$labels.btn_save}"
 	         onclick="doAction.value='{$gui->operation}';"/>
 		<input type="button" name="go_back" value="{$labels.cancel}" 
 			onclick="javascript: history.back();"/>
 	</div>
+
+  {if isset($gui->askForLog) && $gui->askForLog}
+    <script>
+    var ddd = '{$gui->req_cfg->expected_coverage_management}';
+    {literal}
+    if( document.getElementById('prompt4log').value == 1 )
+    {
+      validateForm(document.forms['reqEdit'],js_attr_cfg,ddd);
+    }
+    </script>
+    {/literal}
+  {/if}
+  
+  {if isset($gui->askForRevision) && $gui->askForRevision}
+    <script>
+    var ddd = '{$gui->req_cfg->expected_coverage_management}';
+    {literal}
+    if( document.getElementById('prompt4revision').value == 1 )
+    {
+      validateForm(document.forms['reqEdit'],js_attr_cfg,ddd);
+    }
+    {/literal}
+    </script>
+  {/if}
 </form>
 </div>
 

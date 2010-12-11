@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.7 2010/12/10 20:16:07 franciscom Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.8 2010/12/11 17:01:09 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
@@ -34,8 +34,6 @@ $reqMgr = new requirement_mgr($db);
 $differ = new diff();
 $args = init_args();
 $gui = initializeGui($db,$args,$labels,$reqMgr);
-
-new dBug($gui);
 
 // if already two versions are selected, display diff
 // else display template with versions to select
@@ -152,6 +150,8 @@ function getCFToCompare($sides,$tprojectID,&$reqMgr)
 /**
  * 
  *
+ * @internal revisions
+ * 20101211 - franciscom -  use show_custom_fields_without_value
  */
 function getCFDiff($cfields,&$reqMgr)
 {
@@ -174,38 +174,50 @@ function getCFDiff($cfields,&$reqMgr)
 		
 		$formats = array('date' => config_get( 'date_format'));
 		$cfg = config_get('gui');
+		$cfCfg = config_get('custom_fields');
 		foreach($key2loop as $cf_key)
 		{
-			$cmp[$cf_key] = array('label' => htmlspecialchars($cfieldsLeft[$cf_key]['label']),
-			                      'lvalue' => $cfieldsLeft[$cf_key]['value'],
-			                      'rvalue' => !is_null($cfieldsRight) ? $cfieldsRight[$cf_key]['value'] : null,
-			                      'changed' => $cfieldsLeft[$cf_key]['value'] != $cfieldsRight[$cf_key]['value']);
+			// $cfg->show_custom_fields_without_value 
+			// false => At least one value has to be <> NULL to include on comparsion results
+			// 
+		    if( $cfCfg->show_custom_fields_without_value == true ||
+		    	($cfCfg->show_custom_fields_without_value == false &&
+		    	 ( (!is_null($cfieldsRight) && !is_null($cfieldsRight[$cf_key]['value'])) ||
+		    	   (!is_null($cfieldsLeft) && !is_null($cfieldsLeftt[$cf_key]['value'])) )
+		      	) 
+		      )		 
+		    {	  
+				$cmp[$cf_key] = array('label' => htmlspecialchars($cfieldsLeft[$cf_key]['label']),
+				                      'lvalue' => $cfieldsLeft[$cf_key]['value'],
+				                      'rvalue' => !is_null($cfieldsRight) ? $cfieldsRight[$cf_key]['value'] : null,
+				                      'changed' => $cfieldsLeft[$cf_key]['value'] != $cfieldsRight[$cf_key]['value']);
 			
-			
-			if($type_code[$cfieldsLeft[$cf_key]['type']] == 'date' ||
-			   $type_code[$cfieldsLeft[$cf_key]['type']] == 'datetime') 
-			{
-				$t_date_format = str_replace("%","",$formats['date']); // must remove %
-				foreach($key2convert as $fx)
+				if($type_code[$cfieldsLeft[$cf_key]['type']] == 'date' ||
+				   $type_code[$cfieldsLeft[$cf_key]['type']] == 'datetime') 
 				{
-					if( ($doIt = ($cmp[$cf_key][$fx] != null)) )
+					$t_date_format = str_replace("%","",$formats['date']); // must remove %
+					foreach($key2convert as $fx)
 					{
-						switch($type_code[$cfieldsLeft[$cf_key]['type']])
+						if( ($doIt = ($cmp[$cf_key][$fx] != null)) )
 						{
-							case 'datetime':
-    	    			            $t_date_format .= " " . $cfg->custom_fields->time_format;
-							break ;
+							switch($type_code[$cfieldsLeft[$cf_key]['type']])
+							{
+								case 'datetime':
+    	    				            $t_date_format .= " " . $cfg->custom_fields->time_format;
+								break ;
+							}
+						}	                       
+						if( $doIt )
+						{
+						  	$cmp[$cf_key][$fx] = date($t_date_format,$cmp[$cf_key][$fx]);
 						}
-					}	                       
-					if( $doIt )
-					{
-					  	$cmp[$cf_key][$fx] = date($t_date_format,$cmp[$cf_key][$fx]);
 					}
-				}
-			} 
-		}		
+				} 
+			} // mega if
+		}  // foraeach		
 	}
-	return $cmp;	
+	new dbug($cmp);
+	return count($cmp) > 0 ? $cmp : null;	
 }
 
 

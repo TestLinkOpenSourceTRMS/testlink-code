@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.26 2010/12/11 11:19:00 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.27 2010/12/11 11:19:59 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
 rev:
+  20101211 - franciscom - BUGID 4056: Requirement Revisioning
   20101113 - franciscom - BUGID 4045: Smarty 3.0 compatibility - Requirement Versions
   20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -46,8 +47,6 @@ var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id|escape:'javascript'}';
 var log_box_title = "{$labels.commit_title|escape:'javascript'}";
 var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
 
-
-{literal}
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 function delete_req(btn, text, o_id)
 { 
@@ -146,7 +145,6 @@ function ask4log(fid_prefix,tid_prefix,idx)
   },this,true);    
   return false;    
 } 
-{/literal}
 
 // **************************************************************************
 // VERY IMPORTANT:

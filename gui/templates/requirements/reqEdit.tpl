@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.38 2010/12/11 11:15:24 franciscom Exp $
+$Id: reqEdit.tpl,v 1.39 2010/12/11 11:21:13 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
 20101211 - franciscom - BUGID 4056: Requirement Revisioning
@@ -63,7 +63,10 @@ internal revision
     js_attr_cfg['expected_coverage'][{$req_type}]={$cfg_def};
   {/foreach}
 
-  {literal}
+  /**
+   * 
+   *
+   */
 	function validateForm(f,cfg,check_expected_coverage)
 	{
 	
@@ -171,23 +174,18 @@ internal revision
     // will work with the other propmts.    
 	  return Ext.ux.requireSessionAndSubmit(f);
 	}
-	{/literal}
-	
 	
 	/**
    * 
    *
    */
-  {literal} 
 	window.onload = function()
   {
 	   focusInputField('reqDocId');
-     {/literal}
      {* BUGID 3307 - disable this check if coverage management is disabled, to avoid javascript errors *}
      {if $gui->req_cfg->expected_coverage_management}
-      configure_attr('reqType',js_attr_cfg);
+        configure_attr('reqType',js_attr_cfg);
      {/if}
-     {literal}
   }
  
   
@@ -242,7 +240,6 @@ function insert_last_doc_id()
 	var field = document.getElementById('reqDocId');
 	field.value = last_id;
 }
-{/literal}
 </script>
 </head>
 
@@ -381,24 +378,20 @@ function insert_last_doc_id()
   {if isset($gui->askForLog) && $gui->askForLog}
     <script>
     var ddd = '{$gui->req_cfg->expected_coverage_management}';
-    {literal}
     if( document.getElementById('prompt4log').value == 1 )
     {
       validateForm(document.forms['reqEdit'],js_attr_cfg,ddd);
     }
     </script>
-    {/literal}
   {/if}
   
   {if isset($gui->askForRevision) && $gui->askForRevision}
     <script>
     var ddd = '{$gui->req_cfg->expected_coverage_management}';
-    {literal}
     if( document.getElementById('prompt4revision').value == 1 )
     {
       validateForm(document.forms['reqEdit'],js_attr_cfg,ddd);
     }
-    {/literal}
     </script>
   {/if}
 </form>

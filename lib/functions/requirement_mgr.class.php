@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.118 $
- * @modified $Date: 2010/12/10 20:25:16 $ by $Author: franciscom $
+ * @version $Revision: 1.119 $
+ * @modified $Date: 2010/12/11 11:55:08 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *  20101211 - franciscom - get_history() fixed code to check for NULL dates
  *	20101126 - franciscom - BUGID get_last_version_info() -> get_last_child_info();
  *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
  *  20101118 - asimon - BUGID 4031: Prevent copying of req scope to test case summary when creating test cases from requirement
@@ -2580,7 +2581,7 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 		}
   		
   		// echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
-  		new dBug($rs);
+  		// new dBug($rs);
   		
   		if( !is_null($rs) )
   		{
@@ -2588,8 +2589,20 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
   			foreach($key2loop as $ap)
   			{
   				$rs[$ap]['item_id'] = ($rs[$ap]['revision_id'] > 0) ? $rs[$ap]['revision_id'] : $rs[$ap]['version_id'];
-  				$rs[$ap]['timestamp'] = ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') ? $rs[$ap]['modification_ts'] :
-  										$rs[$ap]['creation_ts'];	
+  				
+  				// IMPORTANT NOTICE
+  				// each DBMS uses a different (unfortunatelly) way to signal NULL DATE
+  				//
+  				// We need to Check with ALL DB types
+				// MySQL    NULL DATE -> "0000-00-00 00:00:00" 
+				// Postgres NULL DATE -> NULL
+				// MSSQL    NULL DATE - ???
+				$key4date = 'creation_ts';
+				if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
+				{
+					$key4date = 'modification_ts';
+				}
+  				$rs[$ap]['timestamp'] = $rs[$ap][$key4date];	
   			}
   		}
   		

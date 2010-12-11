@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.65 2010/12/11 10:44:20 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.66 2010/12/11 11:01:22 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -552,8 +552,8 @@ CREATE TABLE /*prefix*/req_versions(
   "modifier_id" BIGINT NULL DEFAULT NULL,
   "modification_ts" TIMESTAMP NULL,
   "log_message" TEXT NULL DEFAULT NULL,
-  PRIMARY KEY ("id","version")
-  ----- PRIMARY KEY ("id")
+  ---- PRIMARY KEY ("id","version")  <<<<--- NEED TO CHANGE in order to add simple FK on req_revisions
+  PRIMARY KEY ("id")
 ); 
 
 --

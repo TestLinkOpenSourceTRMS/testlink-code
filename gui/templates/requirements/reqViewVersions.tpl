@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersions.tpl,v 1.25 2010/11/21 18:10:10 franciscom Exp $
+$Id: reqViewVersions.tpl,v 1.26 2010/12/11 11:19:00 franciscom Exp $
 Purpose: view requirement with version management
          Based on work tcViewer.tpl
 
@@ -27,7 +27,8 @@ rev:
           s='relation_id, relation_type, relation_document, relation_status, relation_project,
              relation_set_by, relation_delete, relations, new_relation, by, title_created,
              relation_destination_doc_id, in, btn_add, img_title_delete_relation, current_req,
-             no_records_found,other_versions,version,title_test_case,match_count, warning'}
+             no_records_found,other_versions,version,title_test_case,match_count,warning,
+             revision_log_title,please_add_revision_log,commit_title'}
 
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -36,6 +37,17 @@ rev:
 {config_load file="input_dimensions.conf"}
 
 <script type="text/javascript">
+
+// BUGID 3927: Requirement can not be deleted due to JS error -> label has to be escaped
+var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
+var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
+var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id|escape:'javascript'}';
+var log_box_title = "{$labels.commit_title|escape:'javascript'}";
+var log_box_text = "{$labels.please_add_revision_log|escape:'javascript'}";
+
+
+{literal}
 /* All this stuff is needed for logic contained in inc_del_onclick.tpl */
 function delete_req(btn, text, o_id)
 { 
@@ -47,6 +59,10 @@ function delete_req(btn, text, o_id)
 	}
 }					
 
+/**
+ * 
+ *
+ */
 function delete_req_version(btn, text, o_id)
 { 
 	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doDeleteVersion&req_version_id=';
@@ -57,6 +73,10 @@ function delete_req_version(btn, text, o_id)
 	}
 }					
 
+/**
+ * 
+ *
+ */
 function freeze_req_version(btn, text, o_id)
 {
 	var my_action=fRoot+'lib/requirements/reqEdit.php?doAction=doFreezeVersion&req_version_id=';
@@ -67,13 +87,10 @@ function freeze_req_version(btn, text, o_id)
 	}
 }
 
-// BUGID 1748
-// BUGID 3927: Requirement can't be deleted due to JS error -> label has to be escaped
-var alert_box_title = "{$labels.warning|escape:'javascript'}";
-var delete_rel_msgbox_msg = '{$delete_rel_msgbox_msg|escape:'javascript'}';
-var delete_rel_msgbox_title = '{$delete_rel_msgbox_title|escape:'javascript'}';
-var warning_empty_reqdoc_id = '{$warning_empty_reqdoc_id|escape:'javascript'}';
-
+/**
+ * 
+ *
+ */
 function validate_req_docid_input(input_id, original_value) {
 
 	var input = document.getElementById(input_id);
@@ -86,6 +103,10 @@ function validate_req_docid_input(input_id, original_value) {
 	return true;
 }
 
+/**
+ * 
+ *
+ */
 function delete_req_relation(btn, text, req_id, relation_id) {
 	var my_action=fRoot + 'lib/requirements/reqEdit.php?doAction=doDeleteRelation&requirement_id='
 	                   + req_id + '&relation_id=' + relation_id;
@@ -94,6 +115,10 @@ function delete_req_relation(btn, text, req_id, relation_id) {
 	}
 }
 
+/**
+ * 
+ *
+ */
 function relation_delete_confirmation(requirement_id, relation_id, title, msg, pFunction) {
 	var my_msg = msg.replace('%i',relation_id);
 	var safe_title = title.escapeHTML();
@@ -104,9 +129,30 @@ function relation_delete_confirmation(requirement_id, relation_id, title, msg, p
 }
 
 
+/**
+ * 
+ *
+ */
+function ask4log(fid_prefix,tid_prefix,idx)
+{
+  var target = document.getElementById(tid_prefix+'_'+idx);
+  var my_form = document.getElementById(fid_prefix+'_'+idx);
+  Ext.Msg.prompt(log_box_title, log_box_text, function(btn, text){
+      if (btn == 'ok')
+      {
+          target.value=text;
+          my_form.submit();
+      }
+  },this,true);    
+  return false;    
+} 
+{/literal}
+
+// **************************************************************************
 // VERY IMPORTANT:
 // needed to make delete_confirmation() understand we are using a function.
 // if I pass delete_req as argument javascript complains.
+// **************************************************************************
 var pF_delete_req = delete_req;
 var pF_delete_req_version = delete_req_version; 
 var pF_freeze_req_version = freeze_req_version;

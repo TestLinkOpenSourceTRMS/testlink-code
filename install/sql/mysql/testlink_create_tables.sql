@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.79 2010/12/04 09:21:30 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.80 2010/12/11 12:27:43 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
 # tables are in alphabetic order  
@@ -37,6 +37,10 @@
 # 
 # ---------------------------------------------------------------------------------------
 # Revisions:
+#
+# 20101211 - franciscom - BUGID 4056: Requirement Revisioning
+#            req_versions removed version from index to allow easy creation of FK
+#            (in future) from req_revisions
 #
 # 20101204 - franciscom - BUGID 4070 executions index
 # 20100705 - asimon - added new column build_id to user_assignments
@@ -393,6 +397,7 @@ CREATE TABLE /*prefix*/requirements (
 CREATE TABLE /*prefix*/req_versions (
   `id` int(10) unsigned NOT NULL,
   `version` smallint(5) unsigned NOT NULL default '1',
+  `revision` smallint(5) unsigned NOT NULL default '1', 
   `scope` text,
   `status` char(1) NOT NULL default 'V',
   `type` char(1) default NULL,
@@ -403,7 +408,8 @@ CREATE TABLE /*prefix*/req_versions (
   `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modifier_id` int(10) unsigned default NULL,
   `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`,`version`)
+  `log_message` text,
+  PRIMARY KEY  (`id`)
 ) DEFAULT CHARSET=utf8;
 
 CREATE TABLE /*prefix*/req_relations (
@@ -637,3 +643,28 @@ CREATE TABLE /*prefix*/user_group_assign (
 ) DEFAULT CHARSET=utf8;
 
 
+
+
+# ----------------------------------------------------------------------------------
+# BUGID 4056
+# ----------------------------------------------------------------------------------
+CREATE TABLE /*prefix*/req_revisions (
+  `parent_id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `revision` smallint(5) unsigned NOT NULL default '1',
+  `req_doc_id` varchar(64) NULL,   /* it's OK to allow a simple update query on code */
+  `name` varchar(100) NOT NULL,
+  `scope` text,
+  `status` char(1) NOT NULL default 'V',
+  `type` char(1) default NULL,
+  `active` tinyint(1) NOT NULL default '1',
+  `is_open` tinyint(1) NOT NULL default '1',
+  `expected_coverage` int(10) NOT NULL default '1',
+  `log_message` text,
+  `author_id` int(10) unsigned default NULL,
+  `creation_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modifier_id` int(10) unsigned default NULL,
+  `modification_ts` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY /*prefix*/req_revisions_uidx1 (`parent_id`,`revision`)
+) DEFAULT CHARSET=utf8;

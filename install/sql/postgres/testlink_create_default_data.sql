@@ -1,5 +1,5 @@
 --  TestLink Open Source Project - http://testlink.sourceforge.net/
---  $Id: testlink_create_default_data.sql,v 1.30.6.1 2010/12/11 17:25:21 franciscom Exp $
+--  $Id: testlink_create_default_data.sql,v 1.30.6.2 2010/12/11 17:33:09 franciscom Exp $
 --  SQL script - create default data (rights & admin account)
 --
 --  Database Type: Postgres 
@@ -25,7 +25,7 @@
 
 
 --  Database version -
-INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 2.0',now(),'TestLink 2.0');
+INSERT INTO /*prefix*/db_version ("version","upgrade_ts","notes") VALUES ('DB 1.4',now(),'TestLink 1.9.1');
 
 
 --  Node types -

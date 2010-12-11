@@ -8,7 +8,7 @@
  * @package TestLink
  * @author Andreas Simon
  * @copyright 2010, TestLink community
- * @version CVS: $Id: reqOverview.php,v 1.40 2010/12/01 14:37:08 asimon83 Exp $
+ * @version CVS: $Id: reqOverview.php,v 1.41 2010/12/11 11:42:32 franciscom Exp $
  *
  * List requirements with (or without) Custom Field Data in an ExtJS Table.
  * See BUGID 3227 for a more detailed description of this feature.
@@ -155,7 +155,14 @@ if(count($gui->reqIDs) > 0) {
 	    	$result[] = "<!--{$version['creation_ts']}-->" .
 	    	            localize_dateOrTimeStamp(null, $dummy, 'timestamp_format', $version['creation_ts']) .
 	    	            " ({$version['author']})";
-			
+			                                                                               
+			// ATTENTION!!!!
+			//
+			// We need to Check with ALL DB types
+			// MySQL    NULL DATE -> "0000-00-00 00:00:00" 
+			// Postgres NULL DATE -> NULL
+			// MSSQL    NULL DATE - ???
+			//
 	    	// on requirement creation motification timestamp is set to default value "0000-00-00 00:00:00"
 	    	$never_modified = "0000-00-00 00:00:00";
 	    	// use html comment to sort properly by this columns (extjs)

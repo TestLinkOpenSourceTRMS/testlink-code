@@ -5,6 +5,7 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - compare requirement versions
 
 revisions
+  20101211 - franciscom - BUGID 4056: Requirement Revisioning
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
 
 *}
@@ -14,8 +15,10 @@ revisions
 
 {lang_get var="labels"
           s="select_versions,title_compare_versions_req,version,compare,modified,modified_by,
-          btn_compare_selected_versions, context, show_all,
-          warning_context, warning_context_range, warning_empty_context, warning, warning_selected_versions, warning_same_selected_versions"}
+          btn_compare_selected_versions, context, show_all,author,timestamp,
+          warning_context, warning_context_range, warning_empty_context,warning,custom_field, 
+          warning_selected_versions, warning_same_selected_versions,revision,attribute,
+          custom_fields,attributes,log_message"}
 
 <link rel="stylesheet" type="text/css" href="{$basehref}third_party/diff/diff.css">
 
@@ -93,28 +96,62 @@ function validateForm() {
 
 	<h1 class="title">{$labels.title_compare_versions_req}</h1> 
 			
-	<h2>{$gui->subtitle}</h2>
-	
-	{foreach item=diff from=$gui->diff_array}
-	{assign var="diff" value=$diff}
-		
 		<div class="workBack" style="width:99%; overflow:auto;">	
+	{$gui->subtitle}
+    {if $gui->attrDiff != ''}
+      <h2>{$labels.attributes}</h2>
+      <table border="1" cellspacing="0" cellpadding="2" style="width:60%" class="code">
+        <thead>
+          <tr>
+            <th style="text-align:left;">{$labels.attribute}</th>
+            <th style="text-align:left;">{$gui->leftID}</th>
+            <th style="text-align:left;">{$gui->rightID}</th>
+          </tr>
+        </thead>
+        <tbody>
+	      {foreach item=attrDiff from=$gui->attrDiff}
+          <tr>
+            <td class="{if $attrDiff.changed}del{else}ins{/if}"; style="font-weight:bold">{$attrDiff.label}</td>
+            <td class="{if $attrDiff.changed}del{else}ins{/if}";>{$attrDiff.lvalue}</td>
+            <td class="{if $attrDiff.changed}del{else}ins{/if}";>{$attrDiff.rvalue}</td>
+          </tr>
+        {/foreach}
+        </tbody>
+      </table>
+      <p />
+    {/if}
 		
+	  {foreach item=diff from=$gui->diff}
 		<h2>{$diff.heading}</h2>
-		
 		<fieldset class="x-fieldset x-form-label-left" >
-		
 		<legend class="legend_container" >{$diff.message}</legend>
-		
-		{if $diff.count > 0}
-			{$diff.diff}
+	  	  {if $diff.count > 0}{$diff.diff}{/if}
+	  	  </fieldset>
+	  {/foreach}
+    {if $gui->cfieldsDiff != ''}
+      <p />
+      <h2>{$labels.custom_fields}</h2>
+      <table border="1" cellspacing="0" cellpadding="2" style="width:60%" class="code">
+        <thead>
+        <tr>
+          <th style="text-align:left;">{$labels.custom_field}</th>
+          <th style="text-align:left;">{$gui->leftID}</th>
+          <th style="text-align:left;">{$gui->rightID}</th>
+        </tr>
+        </thead>
+        <tbody>
+	      {foreach item=cfDiff from=$gui->cfieldsDiff}
+          <tr>
+            <td class="{if $cfDiff.changed}del{else}ins{/if}"; style="font-weight:bold">{$cfDiff.label}</td>
+            <td class="{if $cfDiff.changed}del{else}ins{/if}";>{$cfDiff.lvalue}</td>
+            <td class="{if $cfDiff.changed}del{else}ins{/if}";>{$cfDiff.rvalue}</td>
+          </tr>
+        {/foreach}
+        </tbody>
+      </table>
 		{/if}
-		
-		</fieldset>
 		</div>
 		
-	{/foreach}
-	</div>	
 {else}
 
 	<h1 class="title">{$labels.title_compare_versions_req}</h1> 
@@ -130,36 +167,28 @@ function validateForm() {
 	
 	    <tr style="background-color:blue;font-weight:bold;color:white">
 	        <th width="12px" style="font-weight: bold; text-align: center;">{$labels.version}</td>
+	        <th width="12px" style="font-weight: bold; text-align: center;">{$labels.revision}</td>
 	        <th width="12px" style="font-weight: bold; text-align: center;">&nbsp;{$labels.compare}</td>
-	        <th style="font-weight: bold; text-align: center;">{$labels.modified}</td>
-	        <th style="font-weight: bold; text-align: center;">{$labels.modified_by}</td>
+	        <th style="font-weight: bold; text-align: center;">{$labels.log_message}</td>
+	        <th style="font-weight: bold; text-align: center;">{$labels.timestamp}</td>
+	        <th style="font-weight: bold; text-align: center;">{$labels.author}</td>
 	    </tr>
 	
 	{counter assign="mycount"}
-	{foreach item=req from=$gui->req_versions}
-		{assign var="req" value=$req}
-	
+	{foreach item=req from=$gui->items}
 	   <tr>
 	        <td style="text-align: center;">{$req.version}</td>
-	        <td style="text-align: center;"><input type="radio" name="version_left" value="{$req.version}" 
-	        	{if $mycount == 2}
-	        	 checked="checked"
-	        {/if}
-	        />
-	        		<input type="radio" name="version_right" value="{$req.version}" 
-	        		{if $mycount == 1}
-	        		 checked="checked"
-	        		{/if}
-	        		/></td>
-	        {if $req.modification_ts != "0000-00-00 00:00:00"}
-	        	<td style="text-align: center;">{$req.modification_ts}</td>
+	        <td style="text-align: center;">{$req.revision}</td>
+	        <td style="text-align: center;"><input type="radio" name="left_item_id" value="{$req.item_id}" 
+	            {if $mycount == 2} 	 checked="checked"  {/if} />
+	            <input type="radio" name="right_item_id" value="{$req.item_id}" {if $mycount == 1} checked="checked"	{/if}/>
+	        </td>
+        	<td>{$req.log_message|escape}</td>
+        	<td style="text-align: center; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
+	            {$req.timestamp}
+	        </td>
 	        	<td style="text-align: center;">{$req.author}</td>
-	        {else}
-	        	<td style="text-align: center;">{$req.creation_ts}</td>
-	        	<td style="text-align: center;">{$req.author}</td>
-	        {/if}
 	    </tr>
-	
 	{counter}
 	{/foreach}
 	

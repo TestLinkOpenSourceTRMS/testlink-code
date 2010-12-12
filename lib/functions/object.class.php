@@ -5,11 +5,12 @@
  *
  * @package 	TestLink
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: object.class.php,v 1.50 2010/03/14 08:53:56 franciscom Exp $
+ * @version    	CVS: $Id: object.class.php,v 1.50.6.1 2010/12/12 09:57:23 franciscom Exp $
  * @filesource	http://testlink.cvs.sourceforge.net/viewvc/testlink/testlink/lib/functions/object.class.php?view=markup
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101127 - franciscom - added req_revisions in getDBTables()
  * 20100314 - franciscom - added req_relations in getDBTables()
  * 20091227 - franciscom - new method getAttachmentTableName()
  * 20090806 - franciscom - platforms feature
@@ -239,6 +240,7 @@ abstract class tlObject implements iSerialization
                         'req_suites' => DB_TABLE_PREFIX . 'req_suites',
                         'requirements' => DB_TABLE_PREFIX . 'requirements',
                         'req_versions' => DB_TABLE_PREFIX . 'req_versions',
+                        'req_revisions' => DB_TABLE_PREFIX . 'req_revisions',
                         'rights' => DB_TABLE_PREFIX . 'rights',
                         'risk_assignments' => DB_TABLE_PREFIX . 'risk_assignments',
                         'role_rights' => DB_TABLE_PREFIX . 'role_rights',

@@ -20,8 +20,97 @@ $tcaseStatusCode['failed']='f';
 $tcaseStatusCode['wrong']='w';
 $tcaseStatusCode['departed']='d';
 
+$doIt=false;
+if( $doIt )
+{
+	$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
+	$testPlanID=11;
+	$buildID=3;
+	$testCaseExternalID='AA-2';
+	$testCaseID=null;
+	$status=$tcaseStatusCode['blocked'];
+	$exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
+	$overwrite=false;
+	
+	$debug=false;
+	echo $unitTestDescription;
+	$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
+	                         $buildID,null,$status,$exec_notes,$bug_id,$customfields,
+	                         $platformName,$overwrite,$debug);
+	
+	echo "<br> Result was: ";
+	new dBug($response);
+	echo "<br>";
+	
+	$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
+	$testPlanID=11;
+	$buildID=3;
+	$testCaseExternalID='AA-3';
+	$testCaseID=null;
+	$status=$tcaseStatusCode['passed'];
+	$exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
+	$overwrite=false;
+	
+	$debug=false;
+	echo $unitTestDescription;
+	$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
+	                         $buildID,null,$status,$exec_notes,$bug_id,$customfields,
+	                         $platformName,$overwrite,$debug);
+	
+	echo "<br> Result was: ";
+	new dBug($response);
+	echo "<br>";
+	
+	die();
+}
+
+$doIt=true;
+if( $doIt )
+{
+	
+	$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
+	$testPlanID=11;
+	$buildID=3;
+	$testCaseExternalID='AA-3';
+	$testCaseID=null;
+	$status=$tcaseStatusCode['blocked'];
+	$exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
+	$overwrite=true;
+	
+	$debug=false;
+	echo $unitTestDescription;
+	$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
+	                         $buildID,null,$status,$exec_notes,$bug_id,$customfields,
+	                         $platformName,$overwrite,$debug);
+	
+	echo "<br> Result was: ";
+	new dBug($response);
+	echo "<br>";
+
+	$unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
+	$testPlanID=11;
+	$buildID=3;
+	$testCaseExternalID='AA-2';
+	$testCaseID=null;
+	$status=$tcaseStatusCode['failed'];
+	$exec_notes="Call using all EXTERNAL ID ({$testCaseExternalID}) - status={$status}";
+	$overwrite=true;
+	
+	$debug=false;
+	echo $unitTestDescription;
+	$response = reportResult($server_url,$testCaseID,$testCaseExternalID,$testPlanID,
+	                         $buildID,null,$status,$exec_notes,$bug_id,$customfields,
+	                         $platformName,$overwrite,$debug);
+	
+	echo "<br> Result was: ";
+	new dBug($response);
+	echo "<br>";
+	
+	die();
+}
 
 
+// --------------------------------------------------------------------------------------------------
 // Substitute for tcid and tpid that apply to your project
 $unitTestDescription="Test - Call with valid parameters: testPlanID,testCaseID,buildID";
 $testPlanID=389;

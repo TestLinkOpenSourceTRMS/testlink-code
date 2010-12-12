@@ -7,7 +7,7 @@
  *
  * @package 	TestLink
  * @copyright 	2007, TestLink community
- * @version    	CVS: $Id: index.php,v 1.17 2010/03/25 08:57:02 amkhullar Exp $
+ * @version    	CVS: $Id: index.php,v 1.18 2010/12/12 13:45:47 franciscom Exp $
  *
  * @internal Revisions:
  *  20091103 - havlatm - Total GUI redesign
@@ -49,8 +49,11 @@ $_SESSION['testlink_version'] = TL_VERSION;
 		</p>
 		<p><ul>
 		<li><a href="installIntro.php?type=new">New installation</a></li>
-   		<li><a href="installIntro.php?type=upgrade_1.8_to_1.9">Upgrade from 1.8.x
-   		versions to 1.9.x </a>. Older releases should be migrated to 1.8 version at first.</li>
+   		<!--
+   		Removed till time when will be avilable
+   		<li><a href="installIntro.php?type=upgrade_1.9_to_2.0">Upgrade from 1.9.0
+   		versions to 2.0 </a>. Older releases should be migrated to 1.9.0 version at first.</li>
+   		-->
 		</ul></p>
 </div>
 <div class="tlLiner">&nbsp;</div>

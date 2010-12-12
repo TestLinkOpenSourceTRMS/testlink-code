@@ -6,10 +6,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.331.2.3 2010/12/06 08:21:00 asimon83 Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.331.2.4 2010/12/12 09:13:41 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101212 - franciscom - internal bug get_last_execution() empty where clause -> do not use $id
+ +						   added new options getSteps	
  * 20101202 - asimon - BUGID 4067: refresh tree problems
  * 20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  * 20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
@@ -2961,6 +2963,10 @@ class testcase extends tlObjectWithAttachments
 	            			build_is_open
 	
 	   rev:
+	   	   20101212 - franciscom - internal bug get_last_execution() empty where clause -> do not use $id
+	   	   						   this bug seems to AFFECT ONLY API CALLS
+	   	   						   added new options getSteps
+	   	   						   		
 	       20090815 - franciscom - added platform_id argument
 	       20090716 - franciscom - added options argument, removed get_no_executions
 	       20080103 - franciscom - added execution_type
@@ -3000,7 +3006,7 @@ class testcase extends tlObjectWithAttachments
 		//               1 -> get last execution on EACH BUILD.
 		//                    GROUP BY must be done BY tcversion_id,build_id
 		//   
-		$localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0);
+		$localOptions=array('getNoExecutions' => 0, 'groupByBuild' => 0, 'getSteps' => 1);
         if(!is_null($options) && is_array($options))
         {
         	$localOptions=array_merge($localOptions,$options);		
@@ -3060,6 +3066,11 @@ class testcase extends tlObjectWithAttachments
       	// a) one record for each tcversion_id (ignoring build)
       	// b) one record for each tcversion_id,build
       	//
+
+		// 20101212 - franciscom - may be not the best logic but ...      	
+	    $where_clause_1 = ($where_clause_1 == '') ? $where_clause : $where_clause_1;
+	    $where_clause_2 = ($where_clause_2 == '') ? $where_clause : $where_clause_2;
+
 	  	$sql="/* $debugMsg */ " . 
 	  	     " SELECT COALESCE(MAX(e.id),0) AS execution_id {$add_fields}" .
 	  		 " FROM {$this->tables['nodes_hierarchy']} NHA " .
@@ -3142,7 +3153,7 @@ class testcase extends tlObjectWithAttachments
 		$recordset = $this->db->fetchRowsIntoMap($sql,'id',$cumulativeMode);
 	  
 	  	// Multiple Test Case Steps Feature
-	  	if( !is_null($recordset) )
+	  	if( !is_null($recordset) && $localOptions['getSteps'] )
 	  	{
 	  	   	$itemSet = array_keys($recordset);
 	  		foreach( $itemSet as $sdx)

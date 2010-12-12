@@ -1,5 +1,5 @@
--- $Revision: 1.11 $
--- $Date: 2010/10/05 10:22:45 $
+-- $Revision: 1.11.2.1 $
+-- $Date: 2010/12/12 17:39:38 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -121,8 +121,8 @@ CREATE TABLE /*prefix*/inventory (
 	"modification_ts" TIMESTAMP NULL,
 	PRIMARY KEY (id)
 );
-CREATE INDEX /*prefix*/inventory_idx1 ON /*prefix*/infrastructure (testproject_id);
-CREATE UNIQUE INDEX /*prefix*/inventory_uidx1 ON /*prefix*/infrastructure (name,testproject_id);
+CREATE INDEX /*prefix*/inventory_idx1 ON /*prefix*/inventory (testproject_id);
+CREATE UNIQUE INDEX /*prefix*/inventory_uidx1 ON /*prefix*/inventory (name,testproject_id);
 
 
 CREATE TABLE /*prefix*/req_relations (

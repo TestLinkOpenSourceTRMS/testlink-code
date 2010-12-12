@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.5.2.3 2010/12/12 13:48:02 franciscom Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.5.2.4 2010/12/12 14:47:31 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
@@ -29,6 +29,8 @@ $labels = init_labels(array("num_changes" => null,"no_changes" => null,
 					  		"diff_details_req" => null,"type" => null, "status" => null,
 					  		"expected_coverage" => null,
 					  		"revision_short" => null, "version_revision" => null) );
+
+
 
 $reqMgr = new requirement_mgr($db);
 $differ = new diff();
@@ -253,9 +255,24 @@ function init_args()
  */
 function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
 {
+	$reqCfg = config_get('req_cfg');
 	$guiObj = new stdClass();
 
     $guiObj->items = $reqMgr->get_history($argsObj->req_id,array('output' => 'array','decode_user' => true));
+	
+	// Truncate log message
+	if( $reqCfg->log_message_len > 0 )
+	{	
+		$loop2do = count($guiObj->items);
+		for($idx=0; $idx < $loop2do; $idx++)
+		{
+			if( strlen($guiObj->items[$idx]['log_message']) > $reqCfg->log_message_len )
+			{
+				$guiObj->items[$idx]['log_message'] = substr($guiObj->items[$idx]['log_message'],0,$reqCfg->log_message_len) . '...';
+			}
+			$guiObj->items[$idx]['log_message'] = nl2br($guiObj->items[$idx]['log_message']);
+		}
+	} 
 	$guiObj->req_id = $argsObj->req_id;
 	$guiObj->compare_selected_versions = $argsObj->compare_selected_versions;
 	$guiObj->context = $argsObj->context;

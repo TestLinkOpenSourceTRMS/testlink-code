@@ -30,6 +30,25 @@ var warning_same_selected_versions = "{$labels.warning_same_selected_versions|es
 var warning_context = "{$labels.warning_context|escape:'javascript'}";
 
 {literal}
+function tip4log(itemID)
+{
+  //         width: 500,
+	var fUrl = fRoot+'lib/ajax/getreqlog.php?item_id=';
+	new Ext.ToolTip({
+        target: 'tooltip-'+itemID,
+        autoWidth: true,
+        autoHeigth: true,
+        autoLoad:{url: fUrl+itemID},
+    });
+}
+
+Ext.onReady(function(){ 
+{/literal}
+{foreach from=$gui->items key=idx item=info}
+  tip4log({$info.item_id});
+{/foreach}
+{literal}
+});
 
 function triggerTextfield(field)
 {
@@ -183,7 +202,10 @@ function validateForm() {
 	            {if $mycount == 2} 	 checked="checked"  {/if} />
 	            <input type="radio" name="right_item_id" value="{$req.item_id}" {if $mycount == 1} checked="checked"	{/if}/>
 	        </td>
-        	<td>{$req.log_message|escape}</td>
+        	{* using EXT-JS logic to open div to show info when mouse over *}
+	        <td id="tooltip-{$req.item_id}">
+        	{$req.log_message|escape}
+        	</td>
         	<td style="text-align: center; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
 	            {$req.timestamp}
 	        </td>

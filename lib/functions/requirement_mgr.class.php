@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.119 $
- * @modified $Date: 2010/12/11 11:55:08 $ by $Author: franciscom $
+ * @version $Revision: 1.120 $
+ * @modified $Date: 2010/12/12 14:11:29 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -337,6 +337,7 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
                 $status = TL_REQ_STATUS_VALID, $type = TL_REQ_TYPE_INFO,
                 $expected_coverage=1,$node_order=0)
 {
+	$log_message = lang_get('req_created_automatic_log');
     $result = array( 'id' => 0, 'status_ok' => 0, 'msg' => 'ko');
 	$field_size = config_get('field_size');
 
@@ -364,6 +365,17 @@ function create($srs_id,$reqdoc_id,$title, $scope, $user_id,
 
 			// BUGID 2877 - Custom Fields linked to Requirement Versions
 			$result['version_id'] = $op['status_ok'] ? $op['id'] : -1;
+
+			if( $op['status_ok'] )
+			{
+				$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+				$sql = 	"/* $debugMsg */ " .
+						"UPDATE {$this->tables['req_versions']} " .
+						" SET log_message='" . $this->db->prepare_string($log_message) . "'" .
+						" WHERE id = " . intval($op['id']) ;
+				$this->db->exec_query($sql);
+			}
+
 		}	
 	}
 	return $result;

@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.333.2.3 2010/11/19 16:47:47 asimon83 Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.333.2.4 2010/12/12 14:45:17 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20101212 - franciscom - req_cfg->log_message_len
  *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
  *  20101109 - asimon - added $tlCfg->custom_fields->show_custom_fields_without_value
  *	20101030 - franciscom - bullet image config removed
@@ -930,6 +931,9 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 // true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
 // false: you want req_doc_id UNIQUE INSIDE a SRS
 // $tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
+
+// 20101212 - truncate log message to this amount of chars for reqCompareVersions
+$tlCfg->req_cfg->log_message_len = 200;
 
 /**
  * Test Case generation from Requirements - use_req_spec_as_testsuite_name

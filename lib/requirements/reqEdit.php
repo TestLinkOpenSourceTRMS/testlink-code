@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  *
  * @filesource $RCSfile: reqEdit.php,v $
- * @version $Revision: 1.55.2.1 $
- * @modified $Date: 2010/12/01 14:37:05 $ by $Author: asimon83 $
+ * @version $Revision: 1.55.2.2 $
+ * @modified $Date: 2010/12/12 09:48:34 $ by $Author: franciscom $
  * @author Martin Havlat
  *
  * Screen to view existing requirements within a req. specification.
  *
  * @internal revision
+ *	20101210 - franciscom - BUGID 4056 - Req. Revisioning
  *  20100915 - Julian - BUGID 3777 - Allow to insert last req doc id when creating requirement
  *  20100811 - asimon - fixed two warnings because of undefined variables in template
  *  20100808 - aismon - added logic to refresh filtered tree on action
@@ -87,7 +88,10 @@ function init_args()
 					 "relation_source_req_id" => array(tlInputParameter::INT_N),
 					 "relation_type" => array(tlInputParameter::STRING_N),
 					 "relation_destination_req_doc_id" => array(tlInputParameter::STRING_N,0,64),
-					 "relation_destination_testproject_id" => array(tlInputParameter::INT_N));
+					 "relation_destination_testproject_id" => array(tlInputParameter::INT_N),
+					 "save_rev" => array(tlInputParameter::INT_N),
+					 "do_save" => array(tlInputParameter::INT_N),
+					 "log_message" => array(tlInputParameter::STRING_N));
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);
@@ -128,9 +132,8 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
                              'doCreateTestCases' => 'doCreateTestCases',
                              'doCreate' => 'doCreate', 'doUpdate' => 'doUpdate',
                              'copy' => 'doCopy', 'doCopy' => 'doCopy',
-                             'doCreateVersion' => 'doCreateVersion',
+                             'doCreateVersion' => 'doCreateVersion','doCreateRevision' => 'doCreateRevision',
                              'doDeleteVersion' => '', 'doFreezeVersion' => 'doFreezeVersion',
-                             // BUGID 1748
                              'doAddRelation' => 'doAddRelation', 'doDeleteRelation' => 'doDeleteRelation');
 
     $owebEditor = web_editor('scope',$argsObj->basehref,$editorCfg) ;
@@ -142,10 +145,20 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
         break;
 
         default:
+		if($opObj->suggest_revision || $opObj->prompt_for_log) 
+		{
+			$owebEditor->Value = $argsObj->scope;
+		}
+		else
+		{
     	$owebEditor->Value = getItemTemplateContents('requirement_template',$owebEditor->InstanceName, 
     	                                             $argsObj->scope);
+        }
         break;
     }
+
+	$guiObj->askForRevision = $opObj->suggest_revision ? 1 : 0;
+	$guiObj->askForLog = $opObj->prompt_for_log ? 1 : 0;
 
 
 	$guiObj->scope = $owebEditor->CreateHTML();
@@ -178,12 +191,16 @@ function renderGui(&$argsObj,$guiObj,$opObj,$templateCfg,$editorCfg,&$dbHandler)
         // BUGID 1748
         case "doAddRelation":
         case "doDeleteRelation":
+        case "doCreateRevision":
             $renderType = 'template';
             $key2loop = get_object_vars($opObj);
             foreach($key2loop as $key => $value)
             {
                 $guiObj->$key = $value;
             }
+			// exceptions
+			$guiObj->askForRevision = $opObj->suggest_revision ? 1 : 0;
+			$guiObj->askForLog = $opObj->prompt_for_log ? 1 : 0;
             $guiObj->operation = $actionOperation[$argsObj->doAction];
             
             $tplDir = (!isset($opObj->template_dir)  || is_null($opObj->template_dir)) ? $templateCfg->template_dir : $opObj->template_dir;

@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqCommands.class.php,v $
- * @version $Revision: 1.46 $
- * @modified $Date: 2010/10/08 11:15:26 $ by $Author: asimon83 $
+ * @version $Revision: 1.46.2.1 $
+ * @modified $Date: 2010/12/12 09:48:34 $ by $Author: franciscom $
  * @author Francisco Mancardi
  * 
  * web command experiment
  * @internal revision
  *
+ *	20101210 - franciscom - BUGID 4056: Requirement Revisioning
  *  20101008 - asimon - BUGID 3311
  *  20101006 - asimon - BUGID 3854
  *	20101003 - franciscom - BUGID 3834: Create version source <>1 - Bad content used.
@@ -36,6 +37,8 @@ class reqCommands
 	private $reqTypeDomain;
 	private $attrCfg;
 
+	const OVERWRITESCOPE=true;
+	
 	function __construct(&$db)
 	{
 	    $this->db=$db;
@@ -89,6 +92,11 @@ class reqCommands
 		// BUGID 3307 - set default to 0 instead of null to avoid DB errors
 		$obj->expected_coverage = 0;
  
+		$obj->suggest_revision = false;
+		$obj->prompt_for_log = false;
+		// do not do this -> will desctroy webeditor		
+		// $obj->scope = '';
+ 
         return $obj;
     }
 
@@ -100,7 +108,7 @@ class reqCommands
     returns: 
 
   */
-	function create(&$argsObj)
+	function create(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
 		$req_spec = $this->reqSpecMgr->get_by_id($argsObj->req_spec_id);
@@ -137,10 +145,12 @@ class reqCommands
 
     args:
     
+   	@param boolean $overwriteArgs
+   	
     returns: 
 
   */
-	function edit(&$argsObj)
+	function edit(&$argsObj,$request,$overwriteArgs=true)
 	{
 		$obj = $this->initGuiBean();
 		$obj->display_path = false;
@@ -148,16 +158,19 @@ class reqCommands
 		// ATENCION!!!!
 		$obj->req = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
 		$obj->req = $obj->req[0];
+		if( $overwriteArgs )
+		{
 		$argsObj->scope = $obj->req['scope'];
+		}
 		    
-		$obj->main_descr = lang_get('req_short') . TITLE_SEP . $obj->req['req_doc_id'] . 
-		                   " (" . lang_get('version') . ' ' . $obj->req['version'] . ")" . TITLE_SEP . 
-		                   TITLE_SEP .  $obj->req['title'];
+		$obj->main_descr = lang_get('req_short') . TITLE_SEP . $obj->req['req_doc_id'] . " (" . 
+						   lang_get('version') . ' ' . $obj->req['version'] . " " . 
+		                   lang_get('revision') . ' ' . $obj->req['revision'] . 
+		                   ")" . TITLE_SEP . TITLE_SEP .  $obj->req['title'];
 		                   
 		$obj->action_descr = lang_get('edit_req');
 		
 		// BUGID 2877 -  Custom Fields linked to Req versions 
-		// $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->tproject_id);
 		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs($argsObj->req_id,$argsObj->req_version_id,
 																		 $argsObj->tproject_id);
 
@@ -192,10 +205,7 @@ class reqCommands
 		$obj->action_descr = lang_get('create_req');
 
 		// BUGID 2877 -  Custom Fields linked to Req versions 
-		// $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,$argsObj->tproject_id);
-
 		// 20101001 - asimon - custom fields do not lose entered values on errors
-		// $obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id);
 		$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, null, $request);
 
 		$obj->submit_button_label=lang_get('btn_save');
@@ -265,12 +275,60 @@ class reqCommands
 	{
 		$obj = $this->initGuiBean();
 	    $descr_prefix = lang_get('req') . TITLE_SEP;
+		$ret['msg'] = null;
+	    
+	    // Before Update want to understand what has changed regarding previous version/revision
+		$oldData = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
+		$oldCFields = $this->reqMgr->get_linked_cfields(null,$argsObj->req_version_id,$argsObj->tproject_id);
+		
+		$cf_map = $this->reqMgr->get_linked_cfields(null,null,$argsObj->tproject_id);
+		$newCFields = $this->reqMgr->cfield_mgr->_build_cfield($request,$cf_map);
+ 
+		$diff = $this->simpleCompare($oldData[0],$argsObj,$oldCFields,$newCFields);
+
+      	$obj = $this->edit($argsObj,null,!self::OVERWRITESCOPE);
+      	$obj->user_feedback = '';
+		$obj->template = null;
+		$obj->suggest_revision = false;	    
+
+	    $createRev = false;
+	    // new dBug($argsObj);
+	    if($diff['force'] && !$argsObj->do_save)
+	    {
+	    	$obj->prompt_for_log = true;
+	    	
+	    	// Need Change several values with user input data, to match logic on 
+	    	// reqEdit.php - renderGui()
+	    	$map = array('status' => 'reqStatus', 'type' => 'reqType','scope' => 'scope',
+                         'expected_coverage' => 'expected_coverage', 	
+                         'req_doc_id'=> 'reqDocId', 'title' => 'title');
+
+	    	foreach($map as $k => $w)
+	    	{
+	    		$obj->req[$k] = $argsObj->$w;
+	    	}
+
+			// Need to preserve Custom Fields values filled in by user
+			$obj->cfields = $this->reqMgr->html_table_of_custom_field_inputs(null,null,$argsObj->tproject_id, null, $request);
+			
+
+	    }
+	    else if( $diff['nochange'] || ( ($createRev = $diff['force'] && !$obj->prompt_for_log) || $argsObj->do_save ) )
+	    {
+	    	if( $argsObj->do_save == 1)
+	    	{
+	    		$createRev = ($argsObj->save_rev == 1);
+	    	}
+	    
+	    	// echo 'INSIDE WRITE';
+	    	// new dBug($argsObj);	
+	    	// die();
 		$ret = $this->reqMgr->update($argsObj->req_id,$argsObj->req_version_id,
 		                             trim($argsObj->reqDocId),$argsObj->title,
 	  				                 $argsObj->scope,$argsObj->user_id,$argsObj->reqStatus,
-	  				                 $argsObj->reqType,$argsObj->expected_coverage);
+	  					                 $argsObj->reqType,$argsObj->expected_coverage,
+	  					                 null,null,0,$createRev,$argsObj->log_message);
 
-      	$obj = $this->edit($argsObj);
       	$obj->user_feedback = $ret['msg'];
 		$obj->template = null;
 
@@ -281,11 +339,6 @@ class reqCommands
           	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
 
 	        // BUGID 2877 -  Custom Fields linked to Req versions 
-		  	// $cf_map = $this->reqMgr->get_linked_cfields(null,$argsObj->tproject_id);
-		  	$cf_map = $this->reqMgr->get_linked_cfields(null,null,$argsObj->tproject_id);
-		  	
-	        // BUGID 2877 -  Custom Fields linked to Req versions 
-		  	// $this->reqMgr->values_to_db($request,$argsObj->req_id,$cf_map);
 		  	$this->reqMgr->values_to_db($request,$argsObj->req_version_id,$cf_map);
 
 		  	logAuditEvent(TLS("audit_requirement_saved",$argsObj->reqDocId),"SAVE",$argsObj->req_id,"requirements");
@@ -297,11 +350,15 @@ class reqCommands
 	        $obj->main_descr = $descr_prefix . $old['title'];
 	        
 	        // BUGID 2877 -  Custom Fields linked to Req versions 
-          	// $obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->tproject_id);
 			$obj->cfields = $this->reqMgr->html_table_of_custom_field_values($argsObj->req_id,$argsObj->req_version_id,
 																			 $argsObj->tproject_id);
 
 		}
+	    }
+	    else if( $diff['suggest'] )
+	    {
+			$obj->suggest_revision = true;	    
+	    }
 		return $obj;	
 	}
 
@@ -309,7 +366,7 @@ class reqCommands
 	 * 
  	 * 
      */
-	function doDelete(&$argsObj)
+	function doDelete(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
 		$obj->display_path = false;
@@ -334,7 +391,7 @@ class reqCommands
 	 * 
  	 * 
      */
-	function doFreezeVersion(&$argsObj)
+	function doFreezeVersion(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
 		$node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
@@ -362,7 +419,7 @@ class reqCommands
   	}
 
   	
-	function reorder(&$argsObj)
+	function reorder(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
 		  
@@ -378,7 +435,7 @@ class reqCommands
 	    return $obj;
   }
 
-	function doReorder(&$argsObj)
+	function doReorder(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
   		$obj->template = 'reqSpecView.tpl';
@@ -398,7 +455,7 @@ class reqCommands
 	 * 
 	 *
 	 */
-	function createTestCases(&$argsObj)
+	function createTestCases(&$argsObj,$request)
 	{
 		$guiObj = $this->initGuiBean();
 		$guiObj->template = 'reqCreateTestCases.tpl';
@@ -426,7 +483,7 @@ class reqCommands
      * 
      *
      */
-	function doCreateTestCases(&$argsObj)
+	function doCreateTestCases(&$argsObj,$request)
 	{
 		$guiObj = $this->initGuiBean();
 		$guiObj = $this->createTestCases($argsObj);
@@ -444,7 +501,7 @@ class reqCommands
      * 
      *
      */
-	function copy(&$argsObj)
+	function copy(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
 		$reqVersionSet = $this->reqMgr->get_by_id($argsObj->req_id);
@@ -476,7 +533,7 @@ class reqCommands
      * 
      *
      */
-	function doCopy(&$argsObj)
+	function doCopy(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
 
@@ -528,8 +585,8 @@ class reqCommands
   */
 	function doCreateVersion(&$argsObj,$request)
 	{
-		// added $argsObj->req_version_id
-		$ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,$argsObj->req_version_id);
+		$ret = $this->reqMgr->create_new_version($argsObj->req_id,$argsObj->user_id,
+												 $argsObj->req_version_id,$argsObj->log_message);
 		$obj = $this->initGuiBean();
 		$obj->user_feedback = $ret['msg'];
        	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
@@ -543,7 +600,7 @@ class reqCommands
 	 * 
  	 * 
      */
-	function doDeleteVersion(&$argsObj)
+	function doDeleteVersion(&$argsObj,$request)
 	{
 		$obj = $this->initGuiBean();
 		$node = $this->reqMgr->tree_mgr->get_node_hierarchy_info($argsObj->req_version_id);
@@ -575,7 +632,8 @@ class reqCommands
 	 * @param stdClass $argsObj input parameters
 	 * @return stdClass $obj 
 	 */
-	public function doAddRelation($argsObj) {
+	public function doAddRelation($argsObj,$request) 
+	{
 		
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
 		// $ok_msg = '<div class="info">' . lang_get('new_rel_add_success') . '</div>';
@@ -650,7 +708,8 @@ class reqCommands
 	 * 
 	 * @return stdClass $object data for template to display
 	 */
-	public function doDeleteRelation($argsObj) {
+	public function doDeleteRelation($argsObj,$request) 
+	{
 		
 		$debugMsg = '/* Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__ . ' */';
 		$ok_msg = '<div class="info">' . lang_get('delete_rel_success') . '</div>';
@@ -674,6 +733,94 @@ class reqCommands
 		
 		return $obj;
 	}
+
+  /*
+    function: doCreateRevision
+
+    args:
+    
+    returns: 
+
+   	@internal revisions
+
+  */
+	function doCreateRevision(&$argsObj,$request)
+	{
+		$req = $this->reqMgr->get_by_id($argsObj->req_id,$argsObj->req_version_id);
+		$req = $req[0];
+		$ret = $this->reqMgr->create_new_revision($argsObj->req_version_id,$argsObj->user_id,
+												  $argsObj->tproject_id,$req,$argsObj->log_message);
+		
+		$obj = $this->initGuiBean();
+		$obj->user_feedback = $ret['msg'];
+       	$obj->template = "reqView.php?requirement_id={$argsObj->req_id}";
+      	$obj->req = null;
+		$obj->req_id = $argsObj->req_id;
+		return $obj;	
+	}
+
+
+
+	
+	
+	/**
+	 * 
+	 *
+ 	 */
+	function simpleCompare($old,$new,$oldCF,$newCF)
+	{
+	
+		$suggest_revision = array('scope' => 'scope'); 
+
+		$force_revision = array('status' => 'reqStatus', 'type' => 'reqType',
+                        		'expected_coverage' => 'expected_coverage', 	
+                        		'req_doc_id'=> 'reqDocId', 'title' => 'title');
+
+
+		// new dBug($old);
+		// new dBug($new);
+		$ret = array('force' =>  false, 'suggest' => false, 'nochange' => false, 'changeon' => null);
+		foreach($force_revision as $access_key => $access_prop)
+		{
+			if( $ret['force'] = ($old[$access_key] != $new->$access_prop) )
+			{
+				$ret['changeon'] = 'attribute:' . $access_key;
+				break;
+			}
+		}
+
+		if( !$ret['force'] )
+		{
+			if( !is_null($newCF) )
+			{
+				foreach($newCF as $cf_key => $cf)
+				{
+					if( $ret['force'] = ($oldCF[$cf_key]['value'] != $cf['cf_value']) )
+					{
+						$ret['changeon'] = 'custom field:' . $oldCF[$cf_key]['name'];
+						break;
+					}
+				}
+			}		
+		}
+		
+		if( !$ret['force'] )
+		{
+		
+			foreach($suggest_revision as $access_key => $access_prop)
+			{
+				if( $ret['suggest'] = ($old[$access_key] != $new->$access_prop) )
+				{
+					$ret['changeon'] = 'attribute:' . $access_key;
+					break;
+				}
+			}
+		
+		}
+		$ret['nochange'] = ($ret['force'] == false && $ret['suggest'] == false);
+		return $ret;
+	}
+	
 }
 
 ?>

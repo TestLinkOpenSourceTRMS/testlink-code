@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.12.6.3 2010/11/19 16:50:04 asimon83 Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.12.6.4 2010/12/12 09:40:12 franciscom Exp $
 viewer for requirement
 
 rev:
+20101127 - franciscom - BUGID 4056: Requirement Revisioning
 20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
 20101111 - asimon - replaced openTCaseWindow() by openTCEditWindow() to save popup size
 *}
@@ -11,7 +12,8 @@ rev:
           s="requirement_spec,Requirements,scope,status,type,expected_coverage,  
              coverage,btn_delete,btn_cp,btn_edit,btn_del_this_version,btn_new_version,
              btn_del_this_version, btn_freeze_this_version, version, can_not_edit_req,
-             testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version"}
+             testproject,title_last_mod,title_created,by,btn_compare_versions,showing_version,
+             revision,btn_view_history,btn_new_revision,"}
 
              
 {assign var="hrefReqSpecMgmt" value="lib/general/frmWorkArea.php?feature=reqSpecMgmt"}
@@ -38,10 +40,15 @@ rev:
 {if $args_grants->req_mgmt == "yes"}
   <div class="groupBtn">
   <div style="margin-bottom: 5px;">
-	  <form id="req" name="req" action="lib/requirements/reqEdit.php" method="post">
+	  <form id="reqViewF_{$req_version_id}" name="reqViewF_{$req_version_id}" 
+	        action="lib/requirements/reqEdit.php" method="post">
 	  	<input type="hidden" name="requirement_id" value="{$args_req.id}" />
 	  	<input type="hidden" name="req_version_id" value="{$args_req.version_id}" />
 	  	<input type="hidden" name="doAction" value="" />
+	  	
+	  	{* IMPORTANT NOTICE: name can not be dynamic becasue PHP uses name not ID *}
+	  	<input type="hidden" name="log_message" id="log_message_{$req_version_id}" value="" />
+	  	
 	  	
 	  	{if $args_frozen_version eq null}
 	  	<input type="submit" name="edit_req" value="{$labels.btn_edit}" onclick="doAction.value='edit'"/>
@@ -74,16 +81,19 @@ rev:
 	    {if $args_can_copy}  				                                
 	  	<input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>
 	  	{/if}
-	  	<input type="submit" name="new_version" value="{$labels.btn_new_version}" onclick="doAction.value='doCreateVersion'"/>
+	  	<input type="button" name="new_version" id="new_version" value="{$labels.btn_new_version}" 
+	  	       onclick="doAction.value='doCreateVersion';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
+	  	<input type="button" name="new_revision" id="new_revision" value="{$labels.btn_new_revision}" 
+	  	       onclick="doAction.value='doCreateRevision';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
 	  </form>
 	</div>
 	
 	<div>
 	{* compare versions *}
-	{if $gui->req_versions|@count > 1}
+	{if $gui->req_has_history}
 		<form method="post" action="lib/requirements/reqCompareVersions.php" name="version_compare">
 			<input type="hidden" name="requirement_id" value="{$args_req.id}" />
-			<input type="submit" name="compare_versions" value="{$labels.btn_compare_versions}" />
+			<input type="submit" name="compare_versions" value="{$labels.btn_view_history}" />
 		</form>
 	{/if}
 
@@ -115,7 +125,7 @@ rev:
   {if $args_show_version}
 	  <tr>
 	  	<td class="bold" colspan="2">{$labels.version}
-	  	{$args_req.version}
+	  	{$args_req.version} {$labels.revision} {$args_req.revision}
 	  	</td>
 	  </tr>
 	{/if}

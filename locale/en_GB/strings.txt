@@ -30,7 +30,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.751.2.13 2010/12/02 06:37:11 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.751.2.14 2010/12/12 09:44:56 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -49,6 +49,9 @@ $TLS_actions = "Actions";
 $TLS_asc = "Ascending";
 $TLS_any = "Any";
 $TLS_all = "All";
+$TLS_attribute = "Attribute";
+$TLS_attributes = "Attributes";
+$TLS_custom_fields = "Custom Fields";
 $TLS_author	= "Author";
 $TLS_automated = "Automated";
 $TLS_automatic = "Automatic";
@@ -77,6 +80,7 @@ $TLS_importance	= "Importance";
 $TLS_imported = "Imported";
 $TLS_important_notice = "Important Notice";
 $TLS_keyword = "Keyword";
+$TLS_log_message = "Log message";
 $TLS_mandatory = "Mandatory fields";
 $TLS_manual = "Manual";
 $TLS_Milestone = "Milestone";
@@ -178,6 +182,7 @@ $TLS_btn_import = "Import";
 $TLS_btn_monitor 	= "Monitor";
 $TLS_btn_move = "Move";
 $TLS_btn_no = "No";
+$TLS_btn_new_revision = "Create a new revision";
 $TLS_btn_ok = "Ok";
 $TLS_btn_print = "Print";
 $TLS_btn_save = "Save";
@@ -793,6 +798,18 @@ $TLS_suggest_create_revision = "Do you want to create a new revision?\\n" .
                                "Click on Cancel if you want update but without\\n" .
                                "creating a new revision";
                             
+$TLS_suggest_create_revision_html = "You changed ONLY the scope. " .
+                                    "It is recommended to create a new revision only <br>" .
+                                    "if you made major changes. In this situation please add a log message<br>" .
+                                    "<br>Click on Cancel if you want update but without " .
+                                    "creating a new revision<p><b>Log message</b>";
+
+$TLS_warning_suggest_create_revision = "Attention!! - Do you want to create a new revision?";
+                            
+$TLS_revision_log_title = "Revision Log";
+$TLS_please_add_revision_log = "Please add a revision log";
+$TLS_commit_title = "Log message";
+$TLS_please_add_reason_log = "Please add reason for changes";
 
 
 

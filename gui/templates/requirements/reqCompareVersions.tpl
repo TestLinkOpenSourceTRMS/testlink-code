@@ -204,7 +204,7 @@ function validateForm() {
 	        </td>
         	{* using EXT-JS logic to open div to show info when mouse over *}
 	        <td id="tooltip-{$req.item_id}">
-        	{$req.log_message|escape}
+        	{$req.log_message}
         	</td>
         	<td style="text-align: center; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
 	            {$req.timestamp}

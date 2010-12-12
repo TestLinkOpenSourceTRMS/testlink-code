@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getreqlog.php,v 1.1.2.2 2010/12/12 14:20:03 franciscom Exp $
+* 	@version 	$Id: getreqlog.php,v 1.1.2.3 2010/12/12 14:49:43 franciscom Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   Used on Add/Remove test case to test plan feature, to display summary via ExtJS tooltip
@@ -32,6 +32,6 @@ if( !is_null($item_id) )
 	}
 	$sql = "SELECT log_message FROM {$tables[$target_table]} WHERE id=" . intval($item_id);
 	$info = $db->get_recordset($sql);
-    $info = $info[0]['log_message']; 
+    $info = nl2br($info[0]['log_message']); 
 }
 echo $info;

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.5.2.5 2010/12/12 14:48:48 franciscom Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.5.2.6 2010/12/12 14:54:23 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
@@ -218,7 +218,6 @@ function getCFDiff($cfields,&$reqMgr)
 			} // mega if
 		}  // foraeach		
 	}
-	new dbug($cmp);
 	return count($cmp) > 0 ? $cmp : null;	
 }
 
@@ -270,7 +269,7 @@ function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
 			{
 				$guiObj->items[$idx]['log_message'] = substr($guiObj->items[$idx]['log_message'],0,$reqCfg->log_message_len) . '...';
 			}
-			// $guiObj->items[$idx]['log_message'] = nl2br($guiObj->items[$idx]['log_message']);
+			$guiObj->items[$idx]['log_message'] = nl2br(htmlspecialchars($guiObj->items[$idx]['log_message']));
 		}
 	} 
 	$guiObj->req_id = $argsObj->req_id;

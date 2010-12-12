@@ -9,11 +9,12 @@
  * @copyright 	2006 TestLink community 
  * @copyright 	2002-2004  Mantis Team   - mantisbt-dev@lists.sourceforge.net
  * 				(Parts of code has been adapted from Mantis BT)
- * @version    	CVS: $Id: database.class.php,v 1.57 2010/11/20 14:37:27 franciscom Exp $
+ * @version    	CVS: $Id: database.class.php,v 1.58 2010/12/12 08:20:15 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  *
+ * 20101212 - franciscom - BUGID 4093: MSSQL - Problems on fetch_array()
  * 20100111 - franciscon - BUGID - display debug_print_backtrace() when query fails
  * 20090720 - franciscom - fetchRowsIntoMap() - added some error management code 
  * 20090202 - franciscom - BUGID 1318 - fetchFirstRowSingleColumn() added new control
@@ -64,7 +65,7 @@ class database
 	var $nQuery = 0;
 	var $overallDuration = 0;
 	var $dbType;
-	
+
 	private $logEnabled=0;
 	private $logQueries=0;
   
@@ -212,14 +213,17 @@ class database
 			return false;
 		}		
 		
+		// BUGID 4093: MSSQL - Problems on fetch_array()
 		// mysql obeys FETCH_MODE_BOTH, hence ->fields works, other drivers do not support this
 		// 20090713 - pmo - add oci8po
 		switch ($this->db->databaseType) 
 		{
 			case "mysql":
 			case "oci8po":
+			case "mssql":
 				$t_array = $p_result->fields;
 				break;
+				
 			default:
 				$t_array = $p_result->GetRowAssoc(false);
 		}
@@ -809,6 +813,27 @@ class database
 		}
 		return ($sql);
 	}
+
+	/**
+	 * DocBlock with nested lists
+	 *
+	 */
+	// function isNullDate($dateAsString)
+	// {
+	// 	switch( $this->dbType ) 
+	// 	{
+	// 		case 'postgres':
+	// 		case 'postgres7':
+	// 		case 'pgsql':
+	// 			$retval = is_null($dateAsString);
+	// 		break;	
+	// 		
+	// 		
+	// 		
+	// 	}
+    // 
+	// 
+	// }
 
 } // end of database class
 ?>

@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.5 $
- * @modified $Date: 2010/12/12 09:54:52 $ by $Author: franciscom $
+ * @version $Revision: 1.114.2.6 $
+ * @modified $Date: 2010/12/12 10:08:06 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -1476,7 +1476,7 @@ function get_linked_cfields($id,$child_id,$parent_id=null)
 	  	$tproject_id = $parent_id;
 	}
 	$cf_map = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::ENABLED,null,
-	                                                          'requirement',$version_id);
+	                                                          'requirement',$child_id);
 	return $cf_map;
 }
 

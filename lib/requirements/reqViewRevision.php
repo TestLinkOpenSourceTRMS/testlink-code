@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later. 
  *  
  * @filesource $RCSfile: reqViewRevision.php,v $
- * @version $Revision: 1.2.2.2 $
- * @modified $Date: 2010/12/12 09:48:34 $ by $Author: franciscom $
+ * @version $Revision: 1.2.2.3 $
+ * @modified $Date: 2010/12/12 10:18:40 $ by $Author: franciscom $
  * @author francisco.mancardi@gmail.com
  * 
  *
@@ -33,7 +33,8 @@ $smarty->display($templateCfg->template_dir . 'reqViewRevisionRO.tpl');
  */
 function init_args()
 {
-	$iParams = array("item_id" => array(tlInputParameter::INT_N));	
+	$iParams = array("item_id" => array(tlInputParameter::INT_N),
+			         "showReqSpecTitle" => array(tlInputParameter::INT_N));	
 		
 	$args = new stdClass();
 	R_PARAMS($iParams,$args);

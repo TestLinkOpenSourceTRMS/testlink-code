@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.54 2010/12/04 09:35:53 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.55 2010/12/12 09:31:35 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -12,6 +12,7 @@
 -- 
 -- Rev :
 --
+--  20101211 - franciscom - updated to 2.0
 --  20100911 - franciscom - updated schema to Test Link 1.9 DB
 --  20100705 - asimon - added column build_id to user_assignments
 --  20100123 - franciscom - is_open,active added to req_versions table
@@ -493,6 +494,7 @@ CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX_requirements ON  /*prefix*/require
 CREATE TABLE /*prefix*/req_versions(  
 	id int NOT NULL,
   version INTEGER NOT NULL DEFAULT '1',
+  revision INTEGER NOT NULL DEFAULT '1',
   scope TEXT NULL DEFAULT NULL,
   status CHAR(1) NOT NULL DEFAULT 'V',
   type CHAR(1) NULL DEFAULT NULL,
@@ -503,9 +505,10 @@ CREATE TABLE /*prefix*/req_versions(
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_versions_creation_ts DEFAULT (getdate()),
   modifier_id INT NULL DEFAULT NULL,
 	modification_ts datetime NULL,
+  log_message TEXT NULL DEFAULT NULL,
   CONSTRAINT /*prefix*/PK_req_versions PRIMARY KEY CLUSTERED 
   (
-	  id,version 
+	  id
   ) ON [PRIMARY]
 ) ON [PRIMARY];
 
@@ -839,4 +842,34 @@ CREATE TABLE /*prefix*/req_relations (
 	(
 		id
 	)  ON [PRIMARY]
+) ON [PRIMARY];
+
+--- 1.9.1 and 2.0
+CREATE TABLE /*prefix*/req_revisions(  
+	parent_id int NOT NULL,
+	id int NOT NULL,
+  version INTEGER NOT NULL DEFAULT '1',
+  revision INTEGER NOT NULL DEFAULT '1',
+	name varchar(100)  NULL,
+	req_doc_id varchar(64)  NULL,
+  scope TEXT NULL DEFAULT NULL,
+  status CHAR(1) NOT NULL DEFAULT 'V',
+  type CHAR(1) NULL DEFAULT NULL,
+  active INT NOT NULL DEFAULT '1',
+  is_open INT NOT NULL DEFAULT '1',
+  expected_coverage INT NOT NULL DEFAULT 1,
+  author_id  INT NULL DEFAULT NULL,
+	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_versions_creation_ts DEFAULT (getdate()),
+  modifier_id INT NULL DEFAULT NULL,
+	modification_ts datetime NULL,
+  log_message TEXT NULL DEFAULT NULL,
+  CONSTRAINT /*prefix*/PK_req_revisions PRIMARY KEY CLUSTERED 
+  (
+	  id
+  ) ON [PRIMARY]
+) ON [PRIMARY];
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/UIX1_req_revisions ON  /*prefix*/req_revisions 
+(
+	parent_id ASC,
+	revision ASC
 ) ON [PRIMARY];

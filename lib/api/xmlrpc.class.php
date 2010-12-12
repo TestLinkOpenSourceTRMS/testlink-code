@@ -5,8 +5,8 @@
  *  
  * Filename $RCSfile: xmlrpc.class.php,v $
  *
- * @version $Revision: 1.28 $
- * @modified $Date: 2010/12/08 09:15:29 $ by $Author: franciscom $
+ * @version $Revision: 1.29 $
+ * @modified $Date: 2010/12/12 09:25:16 $ by $Author: franciscom $
  * @author 		Asiel Brumfield <asielb@users.sourceforge.net>
  * @package 	TestlinkAPI
  * 
@@ -22,6 +22,8 @@
  * 
  *
  * rev : 
+ *	20101212 - franciscom - BUGID 4086: Unexpected result when overwriting reportTCResult
+ *							This bug is caused by an issue on get_last_execution()
  *	20101208 - franciscom - BUGID 4082 - reportTCResult() - no check on overwrite value
  *	20101120 - franciscom - getFullPath() - make user happy allowing array or simple value
  *							BUGID 3993: getFullPath can receive a list of node ids instead of one node
@@ -4036,8 +4038,10 @@ public function getTestCase($args)
 			$platform_id = $this->args[self::$platformIDParamName]; 	
 		}
 
+		// Here steps and expected results are not needed => do not request => less data on network
+		$options = array('getSteps' => 0);
 		$last_exec = $this->tcaseMgr->get_last_execution($tcase_id,testcase::ALL_VERSIONS,
-		                                                 $testplan_id,$build_id,$platform_id);
+		                                                 $testplan_id,$build_id,$platform_id,$options);
     	
     	if( !is_null($last_exec) )
     	{

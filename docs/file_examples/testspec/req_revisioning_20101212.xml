@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="" >
+<node_order><![CDATA[]]></node_order>
+<details><![CDATA[]]> 
+</details><testsuite name="Req Versioning" >
+<node_order><![CDATA[1]]></node_order>
+<details><![CDATA[ ]]> 
+</details>
+<testcase internalid="42" name="COMPARE revisions Access Revision DATA Read ONLY">
+	<node_order><![CDATA[0]]></node_order>
+	<externalid><![CDATA[15]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[ ]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="40" name="COMPARE revisions from DIFFERENT VERSIONS">
+	<node_order><![CDATA[1]]></node_order>
+	<externalid><![CDATA[14]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[ ]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="38" name="COMPARE revisions from SAME VERSION">
+	<node_order><![CDATA[2]]></node_order>
+	<externalid><![CDATA[13]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[ ]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="36" name="DELETE Req without Custom Fields AND REVISIONS">
+	<node_order><![CDATA[3]]></node_order>
+	<externalid><![CDATA[12]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[ ]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="34" name="DELETE Req  WITH Custom Fields AND REVISIONS">
+	<node_order><![CDATA[4]]></node_order>
+	<externalid><![CDATA[11]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[ ]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="32" name="EDIT  Req  WITH Custom Fields - CHANGE CUSTOM FIELD">
+	<node_order><![CDATA[5]]></node_order>
+	<externalid><![CDATA[10]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>System Ask for LOG MESSAGE</p>
+<p>new record on req_revisions TABLE</p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="30" name="EDIT  Req  WITH Custom Fields - CHANGE SCOPE - ACCEPT NEW   REVISION">
+	<node_order><![CDATA[6]]></node_order>
+	<externalid><![CDATA[9]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>System Ask for Authorization to CREATE OR NOT A NEW REVISION&nbsp;</p>
+<p>new record on req_revisions TABLE</p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="28" name="EDIT  Req  WITH Custom Fields - CHANGE SCOPE - NO NEW REVISION">
+	<node_order><![CDATA[7]]></node_order>
+	<externalid><![CDATA[8]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>System Ask for Authorization to CREATE OR NOT A NEW REVISION&nbsp;</p>
+<p>new record on req_revisions TABLE</p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="26" name="Create Requirement - WITH Custom Fields">
+	<node_order><![CDATA[8]]></node_order>
+	<externalid><![CDATA[7]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>ON DB NO RECORDS on req_revisions table</p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="24" name="BUTTON Create New Req REVISION - without Custom Fields">
+	<node_order><![CDATA[9]]></node_order>
+	<externalid><![CDATA[6]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>ON DB NEW&nbsp;RECORD on req_revisions table</p>
+<p>System Ask For LOG MESSAGE</p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="22" name="BUTTON Create New Req REVISION - WITH Custom Fields">
+	<node_order><![CDATA[10]]></node_order>
+	<externalid><![CDATA[5]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>ON DB NEW&nbsp;RECORD on req_revisions table</p>
+<p>System Ask For LOG MESSAGE</p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="20" name="BUTTON Create New Req VERSION - without Custom Fields">
+	<node_order><![CDATA[11]]></node_order>
+	<externalid><![CDATA[4]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>ON DB NO NEW&nbsp;RECORD on req_revisions table</p>
+<p><span class="Apple-style-span" style="font-family: 'Trebuchet MS', Arial, Verdana, sans-serif; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertical-spacing: 2px; ">System Ask For LOG MESSAGE</span></p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="18" name="BUTTON Create New Req VERSION - WITH Custom Fields">
+	<node_order><![CDATA[12]]></node_order>
+	<externalid><![CDATA[3]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>ON DB NO NEW&nbsp;RECORD on req_revisions table</p>
+<p><span class="Apple-style-span" style="font-family: 'Trebuchet MS', Arial, Verdana, sans-serif; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertical-spacing: 2px; ">System Ask For LOG MESSAGE</span></p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="16" name="EDIT  Req  WITH Custom Fields - CHANGE STATUS">
+	<node_order><![CDATA[13]]></node_order>
+	<externalid><![CDATA[2]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p><span class="Apple-style-span" style="font-family: 'Trebuchet MS', Arial, Verdana, sans-serif; -webkit-border-horizontal-spacing: 2px; -webkit-border-vertical-spacing: 2px; ">System Ask For LOG MESSAGE</span></p>
+<p>new record on req_revisions TABLE</p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+
+<testcase internalid="14" name="Create Requirement - Without Custom Fields">
+	<node_order><![CDATA[14]]></node_order>
+	<externalid><![CDATA[1]]></externalid>
+	<version><![CDATA[1]]></version>
+	<summary><![CDATA[<p>&nbsp;Create a Requirement</p>
+<p>ON DB NO RECORDS on req_revisions table</p>]]></summary>
+	<preconditions><![CDATA[ ]]></preconditions>
+	<execution_type><![CDATA[1]]></execution_type>
+	<importance><![CDATA[2]]></importance>
+
+</testcase>
+</testsuite></testsuite>

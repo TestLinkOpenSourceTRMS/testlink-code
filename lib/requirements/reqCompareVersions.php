@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.8 2010/12/11 17:01:09 franciscom Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.9 2010/12/12 13:48:25 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
@@ -183,7 +183,7 @@ function getCFDiff($cfields,&$reqMgr)
 		    if( $cfCfg->show_custom_fields_without_value == true ||
 		    	($cfCfg->show_custom_fields_without_value == false &&
 		    	 ( (!is_null($cfieldsRight) && !is_null($cfieldsRight[$cf_key]['value'])) ||
-		    	   (!is_null($cfieldsLeft) && !is_null($cfieldsLeftt[$cf_key]['value'])) )
+		    	   (!is_null($cfieldsLeft) && !is_null($cfieldsLeft[$cf_key]['value'])) )
 		      	) 
 		      )		 
 		    {	  

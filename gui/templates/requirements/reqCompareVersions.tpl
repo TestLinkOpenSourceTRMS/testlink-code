@@ -13,7 +13,7 @@ Purpose: smarty template - compare requirement versions
 
 {lang_get var="labels"
           s="select_versions,title_compare_versions_req,version,compare,modified,modified_by,
-          btn_compare_selected_versions, context, show_all,author,timestamp,
+          btn_compare_selected_versions, context, show_all,author,timestamp,timestamp_lastchange,
           warning_context, warning_context_range, warning_empty_context,warning,custom_field, 
           warning_selected_versions, warning_same_selected_versions,revision,attribute,
           custom_fields,attributes,log_message"}
@@ -170,7 +170,7 @@ function validateForm() {
 	        <th width="12px" style="font-weight: bold; text-align: center;">{$labels.revision}</td>
 	        <th width="12px" style="font-weight: bold; text-align: center;">&nbsp;{$labels.compare}</td>
 	        <th style="font-weight: bold; text-align: center;">{$labels.log_message}</td>
-	        <th style="font-weight: bold; text-align: center;">{$labels.timestamp}</td>
+	        <th style="font-weight: bold; text-align: center;">{$labels.timestamp_lastchange}</td>
 	        <th style="font-weight: bold; text-align: center;">{$labels.author}</td>
 	    </tr>
 	

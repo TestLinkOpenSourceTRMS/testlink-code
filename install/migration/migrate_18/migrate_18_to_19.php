@@ -15,10 +15,11 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.5 2010/11/20 11:46:57 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.6 2010/12/12 18:21:17 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
+ *	20101212 - franciscom - BUGID 4040
  *	20101119 - franciscom - fixed DROP COLUMN syntax for SQL SERVER
  *	20100911 - franciscom - migrate_cfield_links()
  *  20100707 - asimon - req spec type set to "1" like done for requirements
@@ -302,11 +303,13 @@ function migrate_testcases(&$dbHandler,$tableSet)
 //   PRIMARY KEY ("id")
 // ); 
 
+	// do test cases exist?
+	$sql = " SELECT TCV.id,NHTC.name AS name FROM {$tableSet['tcversions']} TCV " .
+		   " JOIN {$tableSet['nodes_hierarchy']} NHV ON NHV.id=TCV.id " .
+		   " JOIN {$tableSet['nodes_hierarchy']} NHTC ON NHTC.id=NHV.parent_id ";
 	
 	echo 'Step - Test Case Migration - STARTED <br> ';
-	// do test cases exist?
-	$sql = "SELECT id FROM {$tableSet['tcversions']}";
- 	$itemSet = $dbHandler->get_recordset($sql);
+	$itemSet = $dbHandler->get_recordset($sql);
 
 	if( !is_null($itemSet) && count($itemSet) > 0)
 	{
@@ -334,6 +337,8 @@ function migrate_testcases(&$dbHandler,$tableSet)
         // STEP 2 - Create nodes for tcsteps on nodes_hierarchy table
 	    foreach($itemSet as $dummy => $item_info)
 	    {
+        	echo "Test Case:" . $item_info['name'] . '<br>';
+	    	
 	    	$item_id = $tree_mgr->new_node($item_info['id'],$node_types_descr_id['testcase_step']);
 	    	$sql = " UPDATE {$tableSet['tcsteps']} " .
 	    	       " SET id = {$item_id} WHERE id={$item_info['id']}";
@@ -407,10 +412,28 @@ function migrate_user_assignments(&$dbHandler, $tableSet) {
 			$subquery = " SELECT id as feature_id FROM {$tp_tcv} " .
 			            " WHERE testplan_id = {$testplan_id} ";
     	
-			$sql = " UPDATE {$ua} UA " .
-			       " SET UA.build_id = {$build_id} " .
-			       " WHERE UA.feature_id IN($subquery) " .
-			       " AND (UA.type={$execution} OR UA.type IS NULL) ";
+		// This update with ALIAS is not LIKED by Postgres
+		//
+		// OK
+		// UPDATE user_assignments UA  
+		// SET build_id = 2  WHERE UA.feature_id IN 
+		// ( SELECT id AS feature_id FROM testplan_tcversions  WHERE testplan_id = 70)
+		//
+		// if used UA.build_id -> problems on Postgre 8.4
+		// Message:
+		// ERROR:  column "ua" of relation "user_assignments" does not exist
+		// LINE 2: SET UA.build_id = 2  WHERE UA.feature_id IN              
+		
+		// $sql = " UPDATE {$ua} UA " .
+		//        " SET UA.build_id = {$build_id} " .
+		//        " WHERE UA.feature_id IN($subquery) " .
+		//        " AND (UA.type={$execution} OR UA.type IS NULL) ";
+		// 
+		// 20101212 - franciscom		
+		$sql = " UPDATE {$ua} " .
+		       " SET build_id = {$build_id} " .
+		       " WHERE feature_id IN($subquery) " .
+		       " AND (type={$execution} OR type IS NULL) ";
 			
 			$dbHandler->exec_query($sql);
 		}

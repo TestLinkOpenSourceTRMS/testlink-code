@@ -22,7 +22,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat, Julian Krien
  * @copyright 	2003, TestLink community 
- * @version    	CVS: $Id: tl_lang_parser.php,v 1.4 2010/12/09 12:10:47 mx-julian Exp $
+ * @version    	CVS: $Id: tl_lang_parser.php,v 1.5 2010/12/12 10:34:11 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
@@ -139,7 +139,7 @@ for( $i = $begin_line; $i < $lines_eng_count; $i++ )
     elseif (preg_match('/^([\s\t]*)$/', $lines_eng[$i]))
     {
         echo "\n\n=line ".($i+1)."=\nCopy empty line to file to be updated\n";
-        $out .= "\n";
+        $out .= "\r\n";
     }
 
 	// parse a line with variable definition

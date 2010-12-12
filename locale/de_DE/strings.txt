@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.223 2010/11/30 08:03:16 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.224 2010/12/12 09:17:09 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.761
+ * Last Update according to en_GB string file version 1.764
  *
  **/
 
@@ -43,6 +43,9 @@ $TLS_actions = "Aktionen";
 $TLS_asc = "aufsteigend";
 $TLS_any = "beliebig";
 $TLS_all = "Alle";
+$TLS_attribute = "Attribut";
+$TLS_attributes = "Attribute";
+$TLS_custom_fields = "Benutzerdefinierte Felder";
 $TLS_author = "Autor";
 $TLS_automated = "Automatisch";
 $TLS_automatic = "Automatisch";
@@ -71,10 +74,12 @@ $TLS_importance		= "Wichtigkeit";
 $TLS_imported = "Importiert";
 $TLS_important_notice = "Wichtiger Hinweis";
 $TLS_keyword = "Stichwort";
+$TLS_log_message = "Änderungsprotokoll";
 $TLS_mandatory = "Pflichtfelder";
 $TLS_manual = "Manuell";
 $TLS_Milestone = "Meilenstein";
 $TLS_months	= "Monate";
+$TLS_monitor	= "Beobachten";
 $TLS_name = "Name";
 $TLS_needed = "Benötigt";
 $TLS_not_aplicable = "N/A";
@@ -86,9 +91,13 @@ $TLS_priority		= "Priorität";
 $TLS_project		= "Projekt";
 $TLS_public = "Öffentlich";
 $TLS_requirement = "Anforderung";
+$TLS_req_monitoring = "Anforderungsbeobachtung";
 $TLS_req_short = "Anf.";
 $TLS_reqs = "Anforderungen";
 $TLS_req_spec = "Anforderungsspezifikation";
+$TLS_revision = "revision";
+$TLS_revision_short = "rev";
+
 $TLS_req_spec_short = "Anf. Spez.";
 $TLS_requirements_spec = "Anforderungsspez.";
 $TLS_req_specification = "Anf. Spezifikation";
@@ -108,6 +117,7 @@ $TLS_test_report 	= "Testreport";
 $TLS_test_suite = "Testsuite";
 $TLS_testsuite_created = "Testsuite erstellt";
 $TLS_type = "Typ";
+$TLS_timestamp	= "Zeitstempel";
 $TLS_title = "Titel";
 $TLS_warning = "Warnung!!";
 $TLS_max_size_file_msg = "Max. Dateigröße:  %s KB";
@@ -163,8 +173,10 @@ $TLS_btn_find = "Suchen";
 $TLS_btn_goback = "zurück";
 $TLS_btn_generate_doc = "Dokument erstellen";
 $TLS_btn_import = "Importieren";
+$TLS_btn_monitor 	= "Beobachten";
 $TLS_btn_move = "Verschieben";
 $TLS_btn_no = "Nein";
+$TLS_btn_new_revision = "Neue Revision erstellen";
 $TLS_btn_ok = "Ok";
 $TLS_btn_print = "Drucken";
 $TLS_btn_save = "Speichern";
@@ -176,6 +188,8 @@ $TLS_btn_upload = "Hochladen";
 $TLS_btn_advanced_filters = "Erweiterte Filter";
 $TLS_btn_simple_filters = "Einfache Filter";
 $TLS_btn_reorder_steps = "Schritte neu ordnen";
+$TLS_btn_view_history = "Verlauf anzeigen";
+
 
 // Status (used wide)
 $TLS_test_status_all = "Alle";
@@ -770,8 +784,30 @@ $TLS_warning_expected_coverage_range = $TLS_expected_coverage . " muss größer 
 
 $TLS_current_coverage = "Verknüpft";
 $TLS_coverage_number = "Erstellen";
-$TLS_testsuite_title_addition = "automatisch aus ReqSpec generiert";
-$TLS_testcase_title_addition = "automatisch aus Req generiert";
+$TLS_testsuite_title_addition = "automatisch aus Anf. Spez. generiert";
+$TLS_testcase_title_addition = "automatisch aus Anf. generiert";
+
+$TLS_suggest_create_revision = "Möchten Sie eine neue Revision erstellen?\\n" .
+                               "Sie haben nur den Inhalt geändert\\n" .
+                               "Es wird empfohlen eine neue Revision nur nach \\n" .
+                               "größeren Änderungen zu erstellen.\\n" .
+                               "Klicken Sie auf Abbrechen um die aktuelle Revision \\n" .
+                               "zu ändern (Es wird keine neue Revision erstellt).";
+
+$TLS_suggest_create_revision_html = "Sie haben nur den Inhalt geändert. " .
+                                    "Es wird empfohlen eine neue Revision nur nach <br>" .
+                                    "größeren Änderungen zu erstellen. Für den Fall protokollieren " .
+                                    "Sie bitte die Änderung.<br>" .
+                                    "<br>Klicken Sie auf Abbrechen um die aktuelle Revision " .
+                                    "zu ändern (Es wird keine neue Revision erstellt)." .
+                                    "<p><b>Änderungsprotokoll</b>";
+
+$TLS_warning_suggest_create_revision = "Achtung!! - Möchten Sie eine neue Revision erstellen?";
+                            
+$TLS_revision_log_title = "Änderungsprotokoll";
+$TLS_please_add_revision_log = "Bitte protokollieren Sie die Änderung.";
+$TLS_commit_title = "Änderungsprotokoll";
+$TLS_please_add_reason_log = "Bitte geben Sie einen Grund für Änderung an.";
 
 
 
@@ -890,6 +926,8 @@ $TLS_req_version_frozen = "Version der Anforderung wurde eingefroren.";
 $TLS_freeze_req = "Anforderung einfrieren";
 $TLS_req_frozen = "Anforderungen wurden eingefroren.";
 $TLS_showing_version = "Zeigt Version ";
+$TLS_btn_revisions = "Revisionen";
+
 
 
 // gui/templates/inc_res_by_comp.tpl
@@ -1880,6 +1918,7 @@ $TLS_set_roles_to = "Rollen setzen";
 $TLS_testproject_roles_assign_disabled = "Ihre Rolle erlaubt es ihnen nicht Rollen für dieses Testprojekt zuzuweisen";
 $TLS_testplan_roles_assign_disabled = "Ihre Rolle erlaubt es ihnen nicht Rollen für Testpläne zuzuweisen";
 $TLS_show_only_authorized_users = 'Zeige nur autorisierte Benutzer';
+$TLS_no_test_plans_available = "Es existieren keine benutzbaren Testpläne in diesem Testprojekt";
 
 
 // ----- gui/templates/usersedit.tpl -----
@@ -2954,6 +2993,7 @@ $TLS_audit_req_assignment_removed_tc = "Die Zuweisung der Anforderung '{%1}' zum
 $TLS_audit_requirement_copy = "Anf 'DOCID:{%1}' wurde als Kopie von Anf. 'DOCID:{%2}' erstellt";
 $TLS_audit_req_version_deleted = " Version {%1} der Anf. 'DOCID:{%2}' - {%2} wurde gelöscht."; 
 $TLS_audit_req_version_frozen = " Version {%1} der Anf. 'DOCID:{%2}' - {%3} wurde eingefroren.";
+$TLS_audit_req_monitoring_started = "Anf 'DOCID:{%1}' - {%2} Beobachtung durch Benutzer {%3} eingerichtet.";
 
 $TLS_audit_build_created = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' wurde erstellt";
 $TLS_audit_build_saved = $TLS_testproject . " '{%1}' - " . $TLS_testplan . " '{%2}' - Build '{%3}' wurde gespeichert";
@@ -3082,8 +3122,12 @@ $TLS_no_changes = "Keine Änderungen in %s.";
 $TLS_context = "Kontext (Anzahl Zeilen):";
 $TLS_show_all = "Zeige Alles";
 $TLS_version_short = "v";
+$TLS_version_revision = "v%s r%s";
+
 $TLS_diff_subtitle_tc = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) des Testfalls %s"; 
 $TLS_diff_subtitle_req = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) der Anforderung %s";
+$TLS_diff_details_req = "Unterschiede zwischen Version %s Revision %s (v%s r%s) und " . 
+                        "Version %s Revision %s (v%s r%s) der Anforderung %s";
 $TLS_warning_context = "Kontext (Zeilen) muss numerisch sein.";
 $TLS_warning_context_range = "Kontext ist außerhalb des zulässigen Bereichts (muss eine positive Zahl sein).";
 $TLS_warning_empty_context = "Kontext (Zeilen) darf nicht leer sein.";

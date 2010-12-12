@@ -15,7 +15,7 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.6 2010/12/12 18:21:17 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.7 2010/12/12 18:37:22 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -337,12 +337,19 @@ function migrate_testcases(&$dbHandler,$tableSet)
         // STEP 2 - Create nodes for tcsteps on nodes_hierarchy table
 	    foreach($itemSet as $dummy => $item_info)
 	    {
-        	echo "Test Case:" . $item_info['name'] . '<br>';
+        	echo "Test Case:" . $item_info['name'] . " Version DBID: {$item_info['id']} <br>";
 	    	
 	    	$item_id = $tree_mgr->new_node($item_info['id'],$node_types_descr_id['testcase_step']);
-	    	$sql = " UPDATE {$tableSet['tcsteps']} " .
-	    	       " SET id = {$item_id} WHERE id={$item_info['id']}";
-            $dbHandler->exec_query($sql);
+	    	if( $item_id > 0 )
+	    	{
+	    		$sql = " UPDATE {$tableSet['tcsteps']} " .
+	    	       	   " SET id = {$item_id} WHERE id={$item_info['id']}";
+            	$dbHandler->exec_query($sql);
+            }
+            else
+            {
+            	echo "MIGRATION FAILURE - Unable to create Test Case Step NODE on nodes hierarchy <br>";
+            }
 	    }
 
         // STEP 3 - Remove fields from tcversions

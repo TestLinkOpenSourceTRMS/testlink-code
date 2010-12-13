@@ -1,6 +1,6 @@
 {*
-
-TestLink Open Source Project - http://testlink.sourceforge.net/ 
+TestLink Open Source Project - http://testlink.sourceforge.net/
+$Id: reqCompareVersions.tpl,v 1.8 2010/12/13 21:13:44 franciscom Exp $
  
 Purpose: smarty template - compare requirement versions
 

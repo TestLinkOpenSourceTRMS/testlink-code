@@ -207,9 +207,9 @@ function validateForm() {
         	{$req.log_message}
         	</td>
         	<td style="text-align: center; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
-	            {$req.timestamp}
+	            <nobr>{$req.timestamp}</nobr>
 	        </td>
-	        	<td style="text-align: center;">{$req.author}</td>
+	        	<td style="text-align: center;"><nobr>{$req.author}</nobr></td>
 	    </tr>
 	{counter}
 	{/foreach}

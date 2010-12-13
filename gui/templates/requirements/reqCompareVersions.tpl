@@ -1,10 +1,11 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCompareVersions.tpl,v 1.8 2010/12/13 21:13:44 franciscom Exp $
+$Id: reqCompareVersions.tpl,v 1.9 2010/12/13 21:22:36 franciscom Exp $
  
 Purpose: smarty template - compare requirement versions
 
 revisions
+  20101213 - franciscom - BUGID 4056: Requirement Revisioning - tooltip added
   20101211 - franciscom - BUGID 4056: Requirement Revisioning
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
 
@@ -31,6 +32,27 @@ var warning_selected_versions = "{$labels.warning_selected_versions|escape:'java
 var warning_same_selected_versions = "{$labels.warning_same_selected_versions|escape:'javascript'}";
 var warning_context = "{$labels.warning_context|escape:'javascript'}";
 
+/**
+ * 
+ *
+ */
+function tip4log(itemID)
+{
+  //         width: 500,
+	var fUrl = fRoot+'lib/ajax/getreqlog.php?item_id=';
+	new Ext.ToolTip({
+        target: 'tooltip-'+itemID,
+        autoWidth: true,
+        autoHeigth: true,
+        autoLoad:{url: fUrl+itemID},
+    });
+}
+
+Ext.onReady(function(){ 
+{foreach from=$gui->items key=idx item=info}
+  tip4log({$info.item_id});
+{/foreach}
+});
 
 function triggerTextfield(field)
 {
@@ -183,7 +205,10 @@ function validateForm() {
 	            {if $mycount == 2} 	 checked="checked"  {/if} />
 	            <input type="radio" name="right_item_id" value="{$req.item_id}" {if $mycount == 1} checked="checked"	{/if}/>
 	        </td>
-        	<td>{$req.log_message|escape}</td>
+        	{* using EXT-JS logic to open div to show info when mouse over *}
+	        <td id="tooltip-{$req.item_id}">
+        	{$req.log_message}
+        	</td>
         	<td style="text-align: center; cursor: pointer; color: rgb(0, 85, 153);" onclick="javascript:openReqRevisionWindow({$req.item_id});">
 	            <nobr>{$req.timestamp}</nobr>
 	        </td>

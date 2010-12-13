@@ -6,13 +6,13 @@
  * @package 	TestLink
  * @author asimon
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: reqCompareVersions.php,v 1.9 2010/12/12 13:48:25 franciscom Exp $
+ * @version    	CVS: $Id: reqCompareVersions.php,v 1.10 2010/12/13 21:25:20 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * Compares selected requirements versions with each other.
  *
  * @internal Revisions:
- * 20101128 - franciscom 	
+ * 20101212 - franciscom - BUGID 4056: Requirement Revisioning
  * 20100831 - Julian - added requirement title to page heading
  */
 
@@ -216,7 +216,6 @@ function getCFDiff($cfields,&$reqMgr)
 			} // mega if
 		}  // foraeach		
 	}
-	new dbug($cmp);
 	return count($cmp) > 0 ? $cmp : null;	
 }
 
@@ -253,9 +252,24 @@ function init_args()
  */
 function initializeGui(&$dbHandler,&$argsObj,$lbl,&$reqMgr)
 {
+	$reqCfg = config_get('req_cfg');
 	$guiObj = new stdClass();
 
     $guiObj->items = $reqMgr->get_history($argsObj->req_id,array('output' => 'array','decode_user' => true));
+	
+	// Truncate log message
+	if( $reqCfg->log_message_len > 0 )
+	{	
+		$loop2do = count($guiObj->items);
+		for($idx=0; $idx < $loop2do; $idx++)
+		{
+			if( strlen($guiObj->items[$idx]['log_message']) > $reqCfg->log_message_len )
+			{
+				$guiObj->items[$idx]['log_message'] = substr($guiObj->items[$idx]['log_message'],0,$reqCfg->log_message_len) . '...';
+			}
+			$guiObj->items[$idx]['log_message'] = nl2br(htmlspecialchars($guiObj->items[$idx]['log_message']));
+		}
+	} 
 	$guiObj->req_id = $argsObj->req_id;
 	$guiObj->compare_selected_versions = $argsObj->compare_selected_versions;
 	$guiObj->context = $argsObj->context;

@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqViewVersionsViewer.tpl,v 1.12.6.4 2010/12/12 09:40:12 franciscom Exp $
+$Id: reqViewVersionsViewer.tpl,v 1.12.6.5 2010/12/13 08:27:07 mx-julian Exp $
 viewer for requirement
 
 rev:
@@ -81,10 +81,10 @@ rev:
 	    {if $args_can_copy}  				                                
 	  	<input type="submit" name="copy_req" value="{$labels.btn_cp}" onclick="doAction.value='copy'"/>
 	  	{/if}
-	  	<input type="button" name="new_version" id="new_version" value="{$labels.btn_new_version}" 
-	  	       onclick="doAction.value='doCreateVersion';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
 	  	<input type="button" name="new_revision" id="new_revision" value="{$labels.btn_new_revision}" 
 	  	       onclick="doAction.value='doCreateRevision';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
+	  	<input type="button" name="new_version" id="new_version" value="{$labels.btn_new_version}" 
+	  	       onclick="doAction.value='doCreateVersion';javascript:ask4log('reqViewF','log_message','{$req_version_id}');"/>
 	  </form>
 	</div>
 	

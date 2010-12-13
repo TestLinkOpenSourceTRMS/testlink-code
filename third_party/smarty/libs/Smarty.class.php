@@ -3,7 +3,7 @@
 /**
  * Project:     Smarty: the PHP compiling template engine
  * File:        Smarty.class.php
- * SVN:         $Id: Smarty.class.php,v 1.8 2010/11/23 21:18:23 franciscom Exp $
+ * SVN:         $Id: Smarty.class.php,v 1.9 2010/12/13 21:28:46 franciscom Exp $
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@
  * @author Monte Ohrt <monte at ohrt dot com> 
  * @author Uwe Tews 
  * @package Smarty
- * @version 3.0.5
+ * @version 3.0.6
  */
 
 /**
@@ -87,7 +87,7 @@ class Smarty extends Smarty_Internal_Data {
 	* constant definitions
 	*/
     // smarty version
-    const SMARTY_VERSION = 'Smarty-3.0.5'; 
+    const SMARTY_VERSION = 'Smarty-3.0.6'; 
   	//define variable scopes
 	const SCOPE_LOCAL = 0;
 	const SCOPE_PARENT = 1;
@@ -238,6 +238,8 @@ class Smarty extends Smarty_Internal_Data {
     public $deprecation_notices = true;
     // Smarty 2 BC
     public $_version = self::SMARTY_VERSION;
+    // self pointer to Smarty object
+    public $smarty;
 
     /**
      * Class constructor, initializes basic smarty properties
@@ -329,7 +331,7 @@ class Smarty extends Smarty_Internal_Data {
             } 
         } 
         // return redered template
-        if (isset($this->autoload_filters['output']) || isset($this->registered_filters['output'])) {
+        if ((!$this->caching || $_template->resource_object->isEvaluated) && (isset($this->autoload_filters['output']) || isset($this->registered_filters['output']))) {
             $_output = Smarty_Internal_Filter_Handler::runFilter('output', $_template->getRenderedTemplate(), $_template);
         } else {
             $_output = $_template->getRenderedTemplate();

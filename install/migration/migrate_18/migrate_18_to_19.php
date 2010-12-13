@@ -15,7 +15,7 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.7 2010/12/12 18:37:22 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.8 2010/12/13 20:56:56 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -348,6 +348,7 @@ function migrate_testcases(&$dbHandler,$tableSet)
             }
             else
             {
+            	echo " **** <br> CRITIC ***** <br>";
             	echo "MIGRATION FAILURE - Unable to create Test Case Step NODE on nodes hierarchy <br>";
             }
 	    }

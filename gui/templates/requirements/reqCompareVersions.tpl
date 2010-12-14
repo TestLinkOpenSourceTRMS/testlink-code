@@ -39,6 +39,8 @@ function tip4log(itemID)
         autoWidth: true,
         autoHeigth: true,
         autoLoad:{url: fUrl+itemID},
+        dismissDelay: 0,
+        trackMouse: true
     });
 }
 

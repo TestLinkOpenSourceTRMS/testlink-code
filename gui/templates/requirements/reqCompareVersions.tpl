@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCompareVersions.tpl,v 1.9 2010/12/13 21:22:36 franciscom Exp $
+$Id: reqCompareVersions.tpl,v 1.10 2010/12/14 08:38:12 mx-julian Exp $
  
 Purpose: smarty template - compare requirement versions
 
@@ -44,7 +44,9 @@ function tip4log(itemID)
         target: 'tooltip-'+itemID,
         autoWidth: true,
         autoHeigth: true,
-        autoLoad:{url: fUrl+itemID},
+        autoLoad:{ url: fUrl+itemID },
+        dismissDelay: 0,
+        trackMouse: true
     });
 }
 

@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.339 2010/11/30 09:16:22 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.340 2010/12/14 08:48:17 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20101212 - franciscom - req_cfg->log_message_len
  *  20101130 - Julian - BUGID 4027: set default height of ckeditor to 300
  *  20101122 - amitkhullar - BUGID 3998: added ckeditor option instead of fckeditor.
  *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
@@ -940,6 +941,9 @@ $g_attachments->order_by = " ORDER BY date_added DESC ";
 // true : you want req_doc_id UNIQUE IN THE WHOLE DB (system_wide)
 // false: you want req_doc_id UNIQUE INSIDE a SRS
 // $tlCfg->req_cfg->reqdoc_id->is_system_wide = FALSE;
+
+// 20101212 - truncate log message to this amount of chars for reqCompareVersions
+$tlCfg->req_cfg->log_message_len = 200;
 
 /**
  * Test Case generation from Requirements - use_req_spec_as_testsuite_name

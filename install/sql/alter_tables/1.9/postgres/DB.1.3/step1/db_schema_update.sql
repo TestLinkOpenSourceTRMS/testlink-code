@@ -1,5 +1,5 @@
--- $Revision: 1.11.2.1 $
--- $Date: 2010/12/12 17:39:38 $
+-- $Revision: 1.11.2.2 $
+-- $Date: 2010/12/14 19:28:36 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -50,6 +50,7 @@
 --
 --
 -- internal revision:
+--  20101214 - franciscom - update to 1.9.1 DB 1.4
 --  20101005 - franciscom - BUGID 3855: Upgrading from 1.8 to 1.9 does not work with PostgreSQL
 --                          ALTER TABLE /*prefix*/builds ADD COLUMN release_date DATE NULL;
 --  20100705 - asimon - added new column build_id to user_assignments
@@ -62,6 +63,7 @@
 -- update some config data
 INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
 
 -- Step 1 - Drops if needed
 
@@ -69,6 +71,7 @@ INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
 CREATE TABLE /*prefix*/req_versions(  
   "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
   "version" INTEGER NOT NULL DEFAULT '1',
+  "revision" INTEGER NOT NULL DEFAULT '1',
   "scope" TEXT NULL DEFAULT NULL,
   "status" CHAR(1) NOT NULL DEFAULT 'V',
   "type" CHAR(1) NULL DEFAULT NULL,
@@ -79,7 +82,8 @@ CREATE TABLE /*prefix*/req_versions(
   "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
   "modifier_id" BIGINT NULL DEFAULT NULL,
   "modification_ts" TIMESTAMP NULL,
-  PRIMARY KEY ("id","version")
+  "log_message" TEXT NULL DEFAULT NULL,
+  PRIMARY KEY ("id")
 ); 
 
 CREATE TABLE /*prefix*/"tcsteps" (  
@@ -136,11 +140,34 @@ CREATE TABLE /*prefix*/req_relations (
 );
 
 
+--- BUGID 4056
+CREATE TABLE /*prefix*/req_revisions(  
+  "parent_id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/req_versions (id),
+  "id" BIGINT NOT NULL DEFAULT '0' REFERENCES  /*prefix*/nodes_hierarchy (id),
+  "revision" INTEGER NOT NULL DEFAULT '1',   
+  "req_doc_id" VARCHAR(64) NULL,  --- fman - it's OK to allow a simple update query on code ?
+  "name" VARCHAR(100) NULL DEFAULT NULL,
+  "scope" TEXT NULL DEFAULT NULL,
+  "status" CHAR(1) NOT NULL DEFAULT 'V',
+  "type" CHAR(1) NULL DEFAULT NULL,
+  "active" INT2 NOT NULL DEFAULT '1',   --- fman - Need To understand use i.e. just as memory ?
+  "is_open" INT2 NOT NULL DEFAULT '1',  --- fman - Need To understand use i.e. just as memory ?
+  "expected_coverage" INTEGER NOT NULL DEFAULT 1,
+  "log_message" TEXT NULL DEFAULT NULL,
+  "author_id" BIGINT NULL DEFAULT NULL,
+  "creation_ts" TIMESTAMP NOT NULL DEFAULT now(),
+  "modifier_id" BIGINT NULL DEFAULT NULL,
+  "modification_ts" TIMESTAMP NULL,
+  PRIMARY KEY ("id")
+); 
+CREATE UNIQUE INDEX /*prefix*/req_revisions_uidx1 ON /*prefix*/req_revisions ("parent_id","revision");
+
+
 -- Step 3 - simple structure updates
 
 -- user_assigments
 ALTER TABLE /*prefix*/user_assignments ADD COLUMN build_id BIGINT NULL DEFAULT NULL;
-COMMENT ON TABLE /*prefix*/user_assignments IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/user_assignments IS 'Updated to TL 1.9.1 - DB 1.4';
 
 -- builds
 ALTER TABLE /*prefix*/builds ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
@@ -149,63 +176,65 @@ ALTER TABLE /*prefix*/builds ADD COLUMN release_date DATE NULL;
 ALTER TABLE /*prefix*/builds ADD COLUMN closed_on_date DATE NULL;
 --- TO BE CHECKED
 --- CREATE INDEX /*prefix*/builds_testplan_id ON /*prefix*/builds ("testplan_id");
-COMMENT ON TABLE /*prefix*/builds IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/builds IS 'Updated to TL 1.9.1 - DB 1.4';
 
 -- cfield_testprojects
 ALTER TABLE /*prefix*/cfield_testprojects  ADD COLUMN location INT2 NOT NULL DEFAULT '1';
-COMMENT ON TABLE /*prefix*/cfield_testprojects IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/cfield_testprojects IS 'Updated to TL 1.9.1 - DB 1.4';
 
 ALTER TABLE /*prefix*/cfield_design_values ALTER COLUMN value TYPE varchar(4000);
-COMMENT ON TABLE /*prefix*/cfield_design_values IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/cfield_design_values IS 'Updated to TL 1.9.1 - DB 1.4';
 
 ALTER TABLE /*prefix*/cfield_execution_values ALTER COLUMN value TYPE varchar(4000);
-COMMENT ON TABLE /*prefix*/cfield_execution_values IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/cfield_execution_values IS 'Updated to TL 1.9.1 - DB 1.4';
 
 ALTER TABLE /*prefix*/cfield_testplan_design_values ALTER COLUMN value TYPE varchar(4000);
-COMMENT ON TABLE /*prefix*/cfield_testplan_design_values IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/cfield_testplan_design_values IS 'Updated to TL 1.9.1 - DB 1.4';
   
 ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values TYPE varchar(4000);
 ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value TYPE varchar(4000);
-COMMENT ON TABLE /*prefix*/custom_fields IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/custom_fields IS 'Updated to TL 1.9.1 - DB 1.4';
 
 
 -- testprojects
 ALTER TABLE /*prefix*/testprojects ADD COLUMN is_public INT2 NOT NULL DEFAULT '1';
 ALTER TABLE /*prefix*/testprojects ADD COLUMN options TEXT;
-COMMENT ON TABLE /*prefix*/testprojects IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/testprojects IS 'Updated to TL 1.9.1 - DB 1.4';
 
 -- testplans
 ALTER TABLE /*prefix*/testplans ADD COLUMN is_public INT2 NOT NULL DEFAULT '1';
-COMMENT ON TABLE /*prefix*/testplans IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/testplans IS 'Updated to TL 1.9.1 - DB 1.4';
 
 -- tcversions
 ALTER TABLE /*prefix*/tcversions ADD COLUMN layout INTEGER NOT NULL DEFAULT '1';
 ALTER TABLE /*prefix*/tcversions ADD COLUMN status INTEGER NOT NULL DEFAULT '1';
 ALTER TABLE /*prefix*/tcversions ADD COLUMN preconditions TEXT NULL DEFAULT NULL;
-COMMENT ON TABLE /*prefix*/tcversions IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/tcversions IS 'Updated to TL 1.9.1 - DB 1.4';
 
 
 -- testplan_tcversions
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN author_id BIGINT NULL DEFAULT NULL;
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN creation_ts TIMESTAMP NOT NULL DEFAULT now();
 ALTER TABLE /*prefix*/testplan_tcversions ADD COLUMN platform_id BIGINT NOT NULL DEFAULT '0';
-COMMENT ON TABLE /*prefix*/testplan_tcversions IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/testplan_tcversions IS 'Updated to TL 1.9.1 - DB 1.4';
 
 -- executions
 ALTER TABLE /*prefix*/executions ADD COLUMN platform_id BIGINT NOT NULL DEFAULT '0';
-COMMENT ON TABLE /*prefix*/executions IS 'Updated to TL 1.9.0 - DB 1.3';
+CREATE INDEX /*prefix*/executions_idx1 ON /*prefix*/executions (testplan_id, tcversion_id, platform_id, build_id);
+COMMENT ON TABLE /*prefix*/executions IS 'Updated to TL 1.9.1 - DB 1.4';
+
 
 -- req_spec
 ALTER TABLE /*prefix*/req_specs ADD COLUMN doc_id VARCHAR(64) NOT NULL DEFAULT 'RS_DOC_ID';
-COMMENT ON TABLE /*prefix*/req_specs IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/req_specs IS 'Updated to TL 1.9.1 - DB 1.4';
 
 -- requirements
 ALTER TABLE /*prefix*/requirements ALTER COLUMN req_doc_id TYPE VARCHAR(64);
-COMMENT ON TABLE /*prefix*/requirements IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/requirements IS 'Updated to TL 1.9.1 - DB 1.4';
 
 -- milestones
 ALTER TABLE /*prefix*/milestones ADD COLUMN start_date DATE NULL;
-COMMENT ON TABLE /*prefix*/milestones IS 'Updated to TL 1.9.0 - DB 1.3';
+COMMENT ON TABLE /*prefix*/milestones IS 'Updated to TL 1.9.1 - DB 1.4';
 
 --
 ALTER TABLE /*prefix*/testplan_tcversions DROP CONSTRAINT /*prefix*/testplan_tcversions_testplan_id_key;

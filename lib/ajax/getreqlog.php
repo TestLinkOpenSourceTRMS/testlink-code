@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getreqlog.php,v 1.1.2.4 2010/12/15 08:23:43 mx-julian Exp $
+* 	@version 	$Id: getreqlog.php,v 1.1.2.5 2010/12/15 21:48:13 mx-julian Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   Used on Add/Remove test case to test plan feature, to display summary via ExtJS tooltip
@@ -38,5 +38,10 @@ if( !is_null($item_id) )
     // errors -> remove them and add <br> to get a similar effect
     $info = str_replace("<p>","",$info);
     $info = str_replace("</p>","<br>",$info);
+    
+    // if log message is empty show this information
+    if ($info == "") {
+    	$info = lang_get("empty_log_message");
+    }
 }
 echo $info;

@@ -5,6 +5,8 @@ TestLink Open Source Project - http://testlink.sourceforge.net/
 Purpose: smarty template - compare requirement versions
 
 @internal revision
+20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
+                    visualization errors
 20101212 - franciscom - BUGID 4056: Requirement Revisioning
 *}
 
@@ -32,12 +34,10 @@ var warning_context = "{$labels.warning_context|escape:'javascript'}";
 {literal}
 function tip4log(itemID)
 {
-  //         width: 500,
 	var fUrl = fRoot+'lib/ajax/getreqlog.php?item_id=';
 	new Ext.ToolTip({
         target: 'tooltip-'+itemID,
-        autoWidth: true,
-        autoHeigth: true,
+        width: 500,
         autoLoad:{url: fUrl+itemID},
         dismissDelay: 0,
         trackMouse: true

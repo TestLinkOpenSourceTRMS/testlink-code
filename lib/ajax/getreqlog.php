@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: getreqlog.php,v 1.1.2.3 2010/12/12 14:49:43 franciscom Exp $
+* 	@version 	$Id: getreqlog.php,v 1.1.2.4 2010/12/15 08:23:43 mx-julian Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   Used on Add/Remove test case to test plan feature, to display summary via ExtJS tooltip
@@ -32,6 +32,11 @@ if( !is_null($item_id) )
 	}
 	$sql = "SELECT log_message FROM {$tables[$target_table]} WHERE id=" . intval($item_id);
 	$info = $db->get_recordset($sql);
-    $info = nl2br($info[0]['log_message']); 
+    $info = nl2br($info[0]['log_message']);
+    
+    // <p> and </p> tag at the beginning and the end of summary cause visualization
+    // errors -> remove them and add <br> to get a similar effect
+    $info = str_replace("<p>","",$info);
+    $info = str_replace("</p>","<br>",$info);
 }
 echo $info;

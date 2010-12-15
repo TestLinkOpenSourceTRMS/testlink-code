@@ -30,7 +30,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.767 2010/12/12 14:11:29 franciscom Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.768 2010/12/15 21:47:59 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -1281,6 +1281,7 @@ $TLS_adding_tc = "adding";
 $TLS_removal_tc = "removal";
 $TLS_added_on_date = "Added on date";
 $TLS_info_added_on_date = "Date when Test case was added to test plan";
+$TLS_empty_tc_summary = "<i>Test Case Summary is empty</i>";
 
 $TLS_add_remove_selected_tc_hint = "Operation will be applied to ALL Test suites";
 $TLS_btn_add_remove_selected_tc = "Add / Remove selected";
@@ -3137,6 +3138,7 @@ $TLS_context = "Context (number of lines):";
 $TLS_show_all = "show all";
 $TLS_version_short = "v";
 $TLS_version_revision = "v%s r%s";
+$TLS_empty_log_message = "<i>Log Message is empty</i>";
 
 $TLS_diff_subtitle_tc = "Differences between version %s (v%s) and version %s (v%s) of testcase %s";
 $TLS_diff_subtitle_req = "Differences between version %s (v%s) and version %s (v%s) of requirement %s";

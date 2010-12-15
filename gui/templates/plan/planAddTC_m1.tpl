@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.52 2010/10/28 08:51:25 asimon83 Exp $
+$Id: planAddTC_m1.tpl,v 1.52.2.1 2010/12/15 08:22:43 mx-julian Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20101215 - Julian - changed tc summary tooltip configuration
     20101028 - asimon - avoided a warning on event log
     20100721 - asimon - BUGID 3406: added build selector to assign users to chosen build 
                                     on addition of testcases to testplan
@@ -48,9 +49,10 @@ function tTip(tcID,vID)
 	var fUrl = fRoot+'lib/ajax/gettestcasesummary.php?tcase_id=';
 	new Ext.ToolTip({
         target: 'tooltip-'+tcID,
-        width: 200,
-        autoLoad: 
-        {url: fUrl+tcID+'&tcversion_id='+vID},
+        width: 500,
+        autoLoad: {url: fUrl+tcID+'&tcversion_id='+vID},
+        dismissDelay: 0,
+        trackMouse: true
     });
 }
 

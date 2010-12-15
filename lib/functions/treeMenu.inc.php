@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.154.2.3 2010/12/09 16:31:01 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.154.2.4 2010/12/15 15:11:53 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20101215 - asimon - BUGID 4023: correct filtering also for platforms
  *  20101209 - asimon - allow correct filtering of test case name and other attributes also for right frame
  *  20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  *  20101010 - franciscom - added testlink_node_name as new attribute to be accessed while working with EXT-JS tree
@@ -987,7 +988,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		
 		$requested_filter_method = isset($filters->filter_result_method) ? $filters->filter_result_method : null;
 		$requested_filter_result = isset($filters->filter_result_result) ? $filters->filter_result_result : null;
-		
+
 		// if "any" was selected as filtering status, don't filter by status
 		$requested_filter_result = (array)$requested_filter_result;
 		if (in_array($resultsCfg['status_code']['all'], $requested_filter_result)) {
@@ -1005,7 +1006,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			if ($requested_filter_method == $filter_methods['status_code']['current_build']) {
 				$filters->filter_result_build = $filters->setting_build;
 			}
-			
+
 			// call the filter function and do the filtering
 			$tplan_tcases = $ffn[$requested_filter_method]($tplan_mgr, $tplan_tcases, $tplan_id, $filters);
 
@@ -1015,7 +1016,7 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 			}
 		}
 		// end 20100820 refactoring
-		
+
 		// BUGID 3450 - Change colors/counters in exec tree.
 		// Means: replace exec status in filtered array $tplan_tcases 
 		// by the one of last execution of selected build.
@@ -1086,7 +1087,6 @@ function generateExecTree(&$db,&$menuUrl,$tproject_id,$tproject_name,$tplan_id,
 		$menustring = renderExecTreeNode(1,$test_spec,$tplan_tcases,
 			                             $hash_id_descr,1,$menuUrl,$bHideTCs,$useCounters,$useColors,
 			                             $showTestCaseID,$tcase_prefix,$show_testsuite_contents);
-        
 	}  // if($test_spec)
 	
 		
@@ -1589,8 +1589,9 @@ function filter_by_status_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 	$status = 'filter_result_result';
 	
 	if( !is_null($buildSet) ) {
+		// BUGID 4023
 		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,
-		                                   array_keys($buildSet),$filters->{$status});  
+		                                   array_keys($buildSet),$filters->{$status}, $filters->setting_platform);  
 		                                                             
 		if( is_null($tcase_build_set) ) {
 			$tcase_set = array();
@@ -1629,9 +1630,10 @@ function filter_by_same_status_for_all_builds(&$tplan_mgr,&$tcase_set,$tplan_id,
 	$status = 'filter_result_result';
 	
 	if( !is_null($buildSet) ) {
+		// BUGID 4023
 		$tcase_build_set = $tplan_mgr->get_same_status_for_build_set($tplan_id,
-		                                                             array_keys($buildSet),$filters->{$status});  
-		                                                             
+		                                                             array_keys($buildSet),$filters->{$status},$filters->setting_platform);  
+		                               
 		if( is_null($tcase_build_set) ) {
 			$tcase_set = array();
 		} else {
@@ -1670,9 +1672,10 @@ function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 	
 	$buildSet = array($filters->$build_key => $tplan_mgr->get_build_by_id($tplan_id,$filters->$build_key));
 	
+	// BUGID 4023
 	if( !is_null($buildSet) ) {
 		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,
-		                                                array_keys($buildSet),$filters->$result_key);  
+		                                                array_keys($buildSet),$filters->$result_key, $filters->setting_platform);  
 		if( is_null($tcase_build_set) ) {
 			$tcase_set = array();
 		} else {
@@ -1751,7 +1754,8 @@ function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters
 	$buildSet = $tplan_mgr->get_builds($tplan_id);
 	
 	if( !is_null($buildSet) ) {
-		$tcase_build_set = $tplan_mgr->get_not_run_for_any_build($tplan_id, array_keys($buildSet));  
+		// BUGID 4023
+		$tcase_build_set = $tplan_mgr->get_not_run_for_any_build($tplan_id, array_keys($buildSet), $filters->setting_platform);  
 		                                                             
 		if( is_null($tcase_build_set) ) {
 			$tcase_set = array();

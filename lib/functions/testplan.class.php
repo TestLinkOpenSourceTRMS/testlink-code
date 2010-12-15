@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.240 2010/12/02 15:49:04 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.241 2010/12/15 15:11:50 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
  *  20101202 - asimon - fixed filtering issues when filtering for multiple statuses
  *  20101110 - amitkhullar - BUGID 3995 Refix->Custom Field Filters not working properly since the cf_hash is array
  *  20101114 - franciscom - Important Design Notes added on copy_as().	
@@ -1043,7 +1044,6 @@ class testplan extends tlObjectWithAttachments
 			}
         }
 
-		
 		return $recordset;
 	}
 
@@ -2786,8 +2786,10 @@ class testplan extends tlObjectWithAttachments
 	  args: id: testplan id
 	        buildSet: builds to analise.
 	        status: status code
+	revisions:
+		20101215 - asimon - BUGID 4023: correct filtering also with platforms
 	*/
-	function get_same_status_for_build_set($id,$buildSet,$status)
+	function get_same_status_for_build_set($id, $buildSet, $status, $platformid=NULL)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -2798,6 +2800,15 @@ class testplan extends tlObjectWithAttachments
 		$build_in = implode(",", $buildSet);
 		$status_in = implode("',", (array)$status);
 		
+		// BUGID 4023
+		$tcversionPlatformString = "";
+		$executionPlatformString = "";
+		
+		if($platformid) {
+			$tcversionPlatformString = "AND T.platform_id=$platformid";
+			$executionPlatformString = "AND E.platform_id=$platformid";
+		}	
+				
 		// 20101202 - asimon - fixed filtering issues when filtering for multiple statuses
 		$first_results = null;
 		
@@ -2834,6 +2845,7 @@ class testplan extends tlObjectWithAttachments
 				$recordset[$key] = $value;
 			}
 		}
+		
 		return $recordset;
 	}
 
@@ -2847,8 +2859,10 @@ class testplan extends tlObjectWithAttachments
 	 * @param array $buildSet build set to check
 	 * @param array $status status to look for
 	 * @return array $recordset set of builds which match the search criterium
+	 * @internal revisions:
+	 *		20101215 - asimon - BUGID 4023: correct filtering also with platforms
 	 */
-	function get_status_for_any_build($id,$buildSet,$status) 
+	function get_status_for_any_build($id, $buildSet, $status, $platformid=NULL) 
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
@@ -2857,20 +2871,29 @@ class testplan extends tlObjectWithAttachments
 
 		$build_in = implode(",", $buildSet);
 		$status_in = implode("','", (array)$status);
+		
+		// BUGID 4023
+		$tcversionPlatformString = "";
+		$executionPlatformString = "";
+		
+		if($platformid) {
+			$tcversionPlatformString = "AND T.platform_id=$platformid";
+			$executionPlatformString = "AND E.platform_id=$platformid";
+		}	
 
 		// 20101202 - asimon - fixed filtering issues when filtering for multiple statuses
 		$first_results = null;
 		
 		if( in_array($resultsCfg['status_code']['not_run'], (array)$status) ) {
 			//not run status
+			// BUGID 4023
 			$sql = "/* $debugMsg */ SELECT distinct T.tcversion_id,E.build_id,NH.parent_id AS tcase_id " .
 				   " FROM {$this->tables['testplan_tcversions']}  T " .
 				   " JOIN {$this->tables['nodes_hierarchy']}  NH ON T.tcversion_id=NH.id " .
 				   " AND NH.node_type_id={$node_types['testcase_version']} " .
-				   " LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id " .
+				   " LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id $executionPlatformString " .
 				   " AND T.testplan_id=E.testplan_id AND E.build_id IN ({$build_in}) " .
-				   " WHERE T.testplan_id={$id} AND E.build_id IS NULL ";
-			
+				   " WHERE T.testplan_id={$id} $tcversionPlatformString AND E.build_id IS NULL ";
 			$first_results = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		} 
 		
@@ -2906,23 +2929,35 @@ class testplan extends tlObjectWithAttachments
 	 * @param integer $id Build ID
 	 * @param array $buildSet build set to check
 	 * @return array $new_set set of builds which match the search criterium
+	 * @internal revisions:
+	 *		20101215 - asimon - BUGID 4023: correct filtering also with platforms
 	 */
-	function get_not_run_for_any_build($id,$buildSet) {
+	function get_not_run_for_any_build($id, $buildSet, $platformid=NULL) {
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 
 		$node_types=$this->tree_manager->get_available_node_types();
 		
 		$results = array();
 		
+		// BUGID 4023
+		$tcversionPlatformString = "";
+		$executionPlatformString = "";
+		
+		if($platformid) {
+			$tcversionPlatformString = "AND T.platform_id=$platformid";
+			$executionPlatformString = "AND E.platform_id=$platformid";
+		}
+	
 		foreach ($buildSet as $build) {
 			$sql = "/* $debugMsg */ SELECT distinct T.tcversion_id, E.build_id, E.status, NH.parent_id AS tcase_id " .
 				   " FROM {$this->tables['testplan_tcversions']} T " .
 				   " JOIN {$this->tables['nodes_hierarchy']} NH ON T.tcversion_id=NH.id  AND NH.node_type_id=4 " .
 				   " LEFT OUTER JOIN {$this->tables['executions']} E ON T.tcversion_id = E.tcversion_id " .
-				   " AND T.testplan_id=E.testplan_id AND E.build_id=$build " .
-				   " WHERE T.testplan_id={$id} AND E.status IS NULL ";
+				   " AND T.testplan_id=E.testplan_id AND E.build_id=$build $executionPlatformString" .
+				   " WHERE T.testplan_id={$id} AND E.status IS NULL $tcversionPlatformString";
 			$results[] = $this->db->fetchRowsIntoMap($sql,'tcase_id');
 		}
+		
 		$recordset = array();
 		foreach ($results as $result) 
 		{

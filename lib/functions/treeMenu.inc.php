@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.157 2010/12/09 16:31:04 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.158 2010/12/15 15:11:50 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20101215 - asimon - BUGID 4023: correct filtering also for platforms
  *  20101209 - asimon - allow correct filtering of test case name and other attributes also for right frame
  *  20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
  *  20101010 - franciscom - added testlink_node_name as new attribute to be accessed while working with EXT-JS tree
@@ -1589,8 +1590,9 @@ function filter_by_status_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filte
 	$status = 'filter_result_result';
 	
 	if( !is_null($buildSet) ) {
+		// BUGID 4023
 		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,
-		                                   array_keys($buildSet),$filters->{$status});  
+		                                   array_keys($buildSet),$filters->{$status}, $filters->setting_platform);  
 		                                                             
 		if( is_null($tcase_build_set) ) {
 			$tcase_set = array();
@@ -1629,9 +1631,10 @@ function filter_by_same_status_for_all_builds(&$tplan_mgr,&$tcase_set,$tplan_id,
 	$status = 'filter_result_result';
 	
 	if( !is_null($buildSet) ) {
+		// BUGID 4023
 		$tcase_build_set = $tplan_mgr->get_same_status_for_build_set($tplan_id,
-		                                                             array_keys($buildSet),$filters->{$status});  
-		                                                             
+		                                                             array_keys($buildSet),$filters->{$status},$filters->setting_platform);  
+		                               
 		if( is_null($tcase_build_set) ) {
 			$tcase_set = array();
 		} else {
@@ -1670,9 +1673,10 @@ function filter_by_status_for_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters) 
 	
 	$buildSet = array($filters->$build_key => $tplan_mgr->get_build_by_id($tplan_id,$filters->$build_key));
 	
+	// BUGID 4023
 	if( !is_null($buildSet) ) {
 		$tcase_build_set = $tplan_mgr->get_status_for_any_build($tplan_id,
-		                                                array_keys($buildSet),$filters->$result_key);  
+		                                                array_keys($buildSet),$filters->$result_key, $filters->setting_platform);  
 		if( is_null($tcase_build_set) ) {
 			$tcase_set = array();
 		} else {
@@ -1751,7 +1755,8 @@ function filter_not_run_for_any_build(&$tplan_mgr,&$tcase_set,$tplan_id,$filters
 	$buildSet = $tplan_mgr->get_builds($tplan_id);
 	
 	if( !is_null($buildSet) ) {
-		$tcase_build_set = $tplan_mgr->get_not_run_for_any_build($tplan_id, array_keys($buildSet));  
+		// BUGID 4023
+		$tcase_build_set = $tplan_mgr->get_not_run_for_any_build($tplan_id, array_keys($buildSet), $filters->setting_platform);  
 		                                                             
 		if( is_null($tcase_build_set) ) {
 			$tcase_set = array();

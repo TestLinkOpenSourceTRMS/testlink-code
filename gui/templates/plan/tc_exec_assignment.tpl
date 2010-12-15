@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tc_exec_assignment.tpl,v 1.35 2010/11/06 11:42:47 amkhullar Exp $
+$Id: tc_exec_assignment.tpl,v 1.35.2.1 2010/12/15 21:17:05 franciscom Exp $
 generate the list of TC that can be removed from a Test Plan 
 
 rev :
@@ -49,19 +49,19 @@ function check_action_precondition(container_id,action)
 }
 
 // 20100927 - franciscom
-Ext.onReady(function()
-{
-  // create the grid
-  var idx=0;
-  var gridSet = new Array();
-  for(idx=1; idx <= loop2do; idx++)
-  {
-    gridSet[idx] = new Ext.ux.grid.TableGrid("the-table-"+idx, {
-                       stripeRows: true // stripe alternate rows
-                   });
-    gridSet[idx].render();
-  }
-});
+// Ext.onReady(function()
+// {
+//   // create the grid
+//   var idx=0;
+//   var gridSet = new Array();
+//   for(idx=1; idx <= loop2do; idx++)
+//   {
+//     gridSet[idx] = new Ext.ux.grid.TableGrid("the-table-"+idx, {
+//                        stripeRows: true // stripe alternate rows
+//                    });
+//     gridSet[idx].render();
+//   }
+// });
 
 {/literal}
 </script>

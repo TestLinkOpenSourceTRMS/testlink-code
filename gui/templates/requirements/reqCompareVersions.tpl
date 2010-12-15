@@ -1,10 +1,12 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqCompareVersions.tpl,v 1.10 2010/12/14 08:38:12 mx-julian Exp $
+$Id: reqCompareVersions.tpl,v 1.11 2010/12/15 08:23:40 mx-julian Exp $
  
 Purpose: smarty template - compare requirement versions
 
 revisions
+  20101215 - Julian - Changed log message tooltip width to 500 (maximum) to avoid
+                      visualization errors
   20101213 - franciscom - BUGID 4056: Requirement Revisioning - tooltip added
   20101211 - franciscom - BUGID 4056: Requirement Revisioning
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  
@@ -38,12 +40,10 @@ var warning_context = "{$labels.warning_context|escape:'javascript'}";
  */
 function tip4log(itemID)
 {
-  //         width: 500,
 	var fUrl = fRoot+'lib/ajax/getreqlog.php?item_id=';
 	new Ext.ToolTip({
         target: 'tooltip-'+itemID,
-        autoWidth: true,
-        autoHeigth: true,
+        width: 500,
         autoLoad:{ url: fUrl+itemID },
         dismissDelay: 0,
         trackMouse: true

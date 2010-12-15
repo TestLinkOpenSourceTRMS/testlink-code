@@ -2,7 +2,7 @@
 /** 
 * 	TestLink Open Source Project - http://testlink.sourceforge.net/
 * 
-* 	@version 	$Id: gettestcasesummary.php,v 1.2 2010/12/01 14:37:08 asimon83 Exp $
+* 	@version 	$Id: gettestcasesummary.php,v 1.3 2010/12/15 08:22:40 mx-julian Exp $
 * 	@author 	Francisco Mancardi
 * 
 *   Used on Add/Remove test case to test plan feature, to display summary via ExtJS tooltip
@@ -37,5 +37,10 @@ if( !is_null($tcase_id) )
 		$tcase = $tcase_mgr->get_last_version_info($tcase_id);
 	}	
     $info = $tcase['summary'];
+    
+    // <p> and </p> tag at the beginning and the end of summary cause visualization
+    // errors -> remove them and add <br> to get a similar effect
+    $info = str_replace("<p>","",$info);
+    $info = str_replace("</p>","<br>",$info);
 }
 echo $info;

@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planAddTC_m1.tpl,v 1.53 2010/11/13 09:54:57 franciscom Exp $
+$Id: planAddTC_m1.tpl,v 1.54 2010/12/15 08:22:40 mx-julian Exp $
 Purpose: smarty template - generate a list of TC for adding to Test Plan 
 
 rev:
+    20101215 - Julian - changed tc summary tooltip configuration
     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
                             On JS expressions SPACE is NEED BEFORE Closing curly Bracket and 
                             AFTER opening curly Bracket
@@ -50,9 +51,10 @@ function tTip(tcID,vID)
 	var fUrl = fRoot+'lib/ajax/gettestcasesummary.php?tcase_id=';
 	new Ext.ToolTip({
         target: 'tooltip-'+tcID,
-        width: 200,
-        autoLoad: 
-        { url: fUrl+tcID+'&tcversion_id='+vID },
+        width: 500,
+        autoLoad: { url: fUrl+tcID+'&tcversion_id='+vID },
+        dismissDelay: 0,
+        trackMouse: true
     });
 }
 

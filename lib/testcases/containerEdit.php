@@ -3,11 +3,12 @@
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
  *
- * @version $Revision: 1.131 $
- * @modified $Date: 2010/11/06 14:04:05 $ by $Author: franciscom $
+ * @version $Revision: 1.132 $
+ * @modified $Date: 2010/12/16 08:12:54 $ by $Author: asimon83 $
  * @author Martin Havlat
  *
  * @internal revisions
+ *  20101216 - asimon - refresh tree when creating new testsuite
  *	20101106 - franciscom - added check on $guiObj->testCaseSet and other variables that can be null
  *							to avoid event viewer warnings	when deleting test case in test suite 
  *							that has ONLY one test case.
@@ -198,6 +199,10 @@ switch($action)
         $assignedKeywords = $op['status'] ? "" : $args->assigned_keyword_list;
         keywords_opt_transf_cfg($opt_cfg, $assignedKeywords);
       	$smarty->assign('opt_cfg', $opt_cfg);
+  	    // 20101216 - asimon: refresh tree when creating new testsuite
+      	$gui = new stdClass();
+      	$gui->refreshTree = $args->refreshTree;
+      	$smarty->assign('gui', $gui);
   	    $tsuite_mgr->viewer_edit_new($smarty,$template_dir,$webEditorHtmlNames, $oWebEditor, $action,
 	                                 $args->containerID, null,$messages,
 	                                 $webEditorTemplateKey,$userInput);

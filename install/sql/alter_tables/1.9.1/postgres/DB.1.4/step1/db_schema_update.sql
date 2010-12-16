@@ -1,5 +1,5 @@
--- $Revision: 1.1.2.1 $
--- $Date: 2010/12/15 22:01:57 $
+-- $Revision: 1.1.2.2 $
+-- $Date: 2010/12/16 20:45:54 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -240,3 +240,4 @@ COMMENT ON TABLE /*prefix*/milestones IS 'Updated to TL 1.9.1 - DB 1.4';
 ALTER TABLE /*prefix*/testplan_tcversions DROP CONSTRAINT /*prefix*/testplan_tcversions_testplan_id_key;
 CREATE UNIQUE INDEX /*prefix*/testplan_tcversions_uidx1 ON /*prefix*/testplan_tcversions (testplan_id,tcversion_id,platform_id);
 
+UPDATE /*prefix*/req_versions SET log_message='Requirement version migrated from Testlink 1.9.0'; 

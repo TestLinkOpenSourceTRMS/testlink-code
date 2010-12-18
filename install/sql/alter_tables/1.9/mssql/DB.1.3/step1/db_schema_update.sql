@@ -1,5 +1,5 @@
--- $Revision: 1.2.2.6 $
--- $Date: 2010/12/18 16:11:18 $
+-- $Revision: 1.2.2.7 $
+-- $Date: 2010/12/18 16:18:59 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
@@ -181,6 +181,15 @@ ALTER TABLE /*prefix*/user_assignments ADD build_id INT NULL DEFAULT NULL;
 
 -- cfield_testprojects
 ALTER TABLE /*prefix*/cfield_testprojects  ADD location tinyint NOT NULL DEFAULT '1';
+
+-- milestones
+ALTER TABLE /*prefix*/milestones ADD COLUMN start_date DATE NULL;
+
+-- req_spec
+ALTER TABLE /*prefix*/req_specs ADD doc_id VARCHAR(64) NOT NULL DEFAULT 'RS_DOC_ID';
+
+-- requirements
+ALTER TABLE /*prefix*/requirements ALTER req_doc_id VARCHAR(64);
 
 -- tcversions
 

@@ -1,5 +1,5 @@
--- $Revision: 1.2.2.5 $
--- $Date: 2010/12/18 14:21:33 $
+-- $Revision: 1.2.2.6 $
+-- $Date: 2010/12/18 16:11:18 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
@@ -155,7 +155,7 @@ CREATE TABLE /*prefix*/req_revisions(
 
 CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX1_req_revisions ON  /*prefix*/req_revisions 
 (
-	parenet_id,revision
+	parent_id,revision
 ) ON [PRIMARY];
 
 
@@ -165,6 +165,8 @@ CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX1_req_revisions ON  /*prefix*/req_r
 
 -- testprojects
 ALTER TABLE /*prefix*/testprojects ADD is_public tinyint NOT NULL DEFAULT '1';
+ALTER TABLE /*prefix*/testprojects ADD options TEXT;
+
 
 -- testplans
 ALTER TABLE /*prefix*/testplans ADD is_public tinyint NOT NULL DEFAULT '1';
@@ -187,11 +189,10 @@ ALTER TABLE testplan_tcversions ADD author_id INT NULL DEFAULT NULL;
 ALTER TABLE testplan_tcversions ADD creation_ts DATETIME NOT NULL DEFAULT GETDATE();
 
 --- 
-ALTER TABLE /*prefix*/cfield_design_values ALTER COLUMN value TYPE varchar(4000);
-ALTER TABLE /*prefix*/cfield_execution_values ALTER COLUMN value TYPE varchar(4000);
-ALTER TABLE /*prefix*/cfield_testplan_design_values ALTER COLUMN value TYPE varchar(4000);
-ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values TYPE varchar(4000);
-ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value TYPE varchar(4000);
-
+ALTER TABLE /*prefix*/cfield_design_values ALTER COLUMN value varchar(4000);
+ALTER TABLE /*prefix*/cfield_execution_values ALTER COLUMN value varchar(4000);
+ALTER TABLE /*prefix*/cfield_testplan_design_values ALTER COLUMN value varchar(4000);
+ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values varchar(4000);
+ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value varchar(4000);
 
 UPDATE /*prefix*/req_versions SET log_message='Requirement migrated from Testlink 1.8.x'; 

@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.120 $
- * @modified $Date: 2010/12/12 14:11:29 $ by $Author: franciscom $
+ * @version $Revision: 1.121 $
+ * @modified $Date: 2010/12/18 11:39:16 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20101218 - franciscom - BUGID 4100 createFromMap() - missing update of Req Title when creating new version
  *  20101211 - franciscom - get_history() fixed code to check for NULL dates
  *	20101126 - franciscom - BUGID get_last_version_info() -> get_last_child_info();
  *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
@@ -1278,6 +1279,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
  * expected_coverage => 0
  *
  * @internal revisions
+ * 20101218 - BUGID 4100 - franciscom
  * 20100908 - franciscom - created
  */
 function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
@@ -1287,10 +1289,15 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	static $linkedCF;
 	static $messages;
 	static $labels;
+	static $fieldSize;
 	static $doProcessCF = false;
+	static $debugMsg;
 
     if(is_null($linkedCF) )
     {
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$fieldSize = config_get('field_size');
+    	
     	$linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
     															 	'requirement',null,'name');
 		$doProcessCF = true;
@@ -1357,7 +1364,6 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     {
 		// Need to get Last Version no matter active or not.
 		$reqID = key($check_in_reqspec);
-		// $last_version = $this->get_last_version_info($reqID);
 		$last_version = $this->get_last_child_info($reqID);
 		$msgID = 'frozen_req_unable_to_import';
 		$status_ok = false;
@@ -1378,6 +1384,15 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
         	        	
 						// Set always new version to NOT Frozen
 						$this->updateOpen($newItem['id'],1);				
+					
+					// BUGID 4100 - 20101218 - franciscom
+					// Need to update TITLE
+					$title = trim_and_limit($req['title'],$fieldSize->req_title);
+			  		$sql = 	"/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+  		  	 				" SET name='" . $this->db->prepare_string($title) . "'" . 
+							" WHERE id={$reqID}";
+					$this->db->exec_query($sql);
+					
 						$newReq['version_id'] = $newItem['id']; 
 						$msgID = 'import_req_new_version_created';
 						$status_ok = true;

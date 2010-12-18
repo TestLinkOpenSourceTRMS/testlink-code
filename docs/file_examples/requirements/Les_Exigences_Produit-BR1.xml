@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Les Exigences Produit"  doc_id="BR" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[0]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<p>Les exigences produit pour la release 1.8.0.</p>
+<p>Ce chapitre contient les exigences de haut niveau qui seront prise en compte pour la livraison 2.8.0.</p>
+<p>Le d&eacute;tail de ces fonctionnalit&eacute;es sera fait dans le chapitre &quot;Exigences Fonctionnelles&quot;.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>]]> 
+</scope>	
+<requirement>
+		<docid><![CDATA[REQ-BR-1]]></docid>
+		<title><![CDATA[Gestion des Roles Predefinis NovaForge new version try]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+<p>Update new version Liste de r&ocirc;les pr&eacute;d&eacute;finis qui sont int&eacute;gr&eacute;s &agrave; NovaForge et cr&eacute;&eacute;s <br />
+&nbsp;&nbsp;&nbsp;&nbsp; lors de l'installation</p>
+<p>En fichier attach&eacute; la liste des nouveaux r&ocirc;les et le mapping par default pour les outils (Mantis, Svn, TestLink, ...).</p>
+]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+high
+]]></value></custom_field>
+</custom_fields>
+</requirement>
+</req_spec>
+</requirement-specification>

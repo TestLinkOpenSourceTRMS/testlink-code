@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Les Exigences Produit"  doc_id="BR" >
+<type><![CDATA[1]]></type>
+
+<node_order><![CDATA[0]]></node_order>
+
+<total_req><![CDATA[0]]></total_req>
+<scope><![CDATA[<p>Les exigences produit pour la release 1.8.0.</p>
+<p>Ce chapitre contient les exigences de haut niveau qui seront prise en compte pour la livraison 2.8.0.</p>
+<p>Le d&eacute;tail de ces fonctionnalit&eacute;es sera fait dans le chapitre &quot;Exigences Fonctionnelles&quot;.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>]]> 
+</scope>	
+<requirement>
+		<docid><![CDATA[REQ-BR-1]]></docid>
+		<title><![CDATA[Gestion des Rôles Prédéfinis NovaForge]]></title>
+		<node_order><![CDATA[0]]></node_order>
+		<description><![CDATA[
+<p>Liste de r&ocirc;les pr&eacute;d&eacute;finis qui sont int&eacute;gr&eacute;s &agrave; NovaForge et cr&eacute;&eacute;s <br />
+&nbsp;&nbsp;&nbsp;&nbsp; lors de l'installation</p>
+<p>En fichier attach&eacute; la liste des nouveaux r&ocirc;les et le mapping par default pour les outils (Mantis, Svn, TestLink, ...).</p>
+]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+high
+]]></value></custom_field>
+</custom_fields>
+</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-2]]></docid>
+		<title><![CDATA[Upgrade de versions des Composants]]></title>
+		<node_order><![CDATA[1]]></node_order>
+		<description><![CDATA[
+<p>L'upgrade de versions des composants (SVN, TestLink, Hudson et Sonar).</p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+high
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-3]]></docid>
+		<title><![CDATA[Passerelle Obeo-TestLink]]></title>
+		<node_order><![CDATA[2]]></node_order>
+		<description><![CDATA[
+<p>Passerelle d'export/import des exigences entre le modeleur Obeo update for new version et <br />
+&nbsp;&nbsp;&nbsp;&nbsp; TestLink</p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+medium
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-4]]></docid>
+		<title><![CDATA[Paramétrage Mantis-TestLink]]></title>
+		<node_order><![CDATA[3]]></node_order>
+		<description><![CDATA[
+<p>Param&eacute;trage entre Mantis et testLink pour cr&eacute;er des bugs <br />
+&nbsp;&nbsp;&nbsp;&nbsp; automatiquement sur Mantis &agrave; partir de TestLink</p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+medium
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-5]]></docid>
+		<title><![CDATA[Ged default arborescence de répertoires]]></title>
+		<node_order><![CDATA[4]]></node_order>
+		<description><![CDATA[
+<p>Arborescence de r&eacute;pertoires cr&eacute;&eacute;e par d&eacute;faut lors de la cr&eacute;ation d'un projet.</p>
+<p>L'arborescence contient les repertoires suivantes:</p>
+<p># Analyse des exigences<br />
+# Architecture et conception<br />
+# Assurance qualit&eacute;<br />
+# Conduite du changement<br />
+# Gestion de la configuration<br />
+# Gestion de projet<br />
+# Impl&eacute;mentation<br />
+# Mod&eacute;lisation m&eacute;tier<br />
+# Recette<br />
+# S&eacute;curit&eacute; des Syst&egrave;mes d&rsquo;Information</p>
+<p>Une contrainte technique &agrave; &eacute;t&eacute; identifi&eacute;e li&eacute;e &agrave; la JCR de la GEG, qui fait que le caract&egrave;re apostrophe(') ne peut pas etre pris en compte.</p>
+<p><font size="3" face="Times New Roman" color="black"><span style="font-size: 12pt;">On propose l'une de ces options pour le nom de ce dossier. </span></font></p>
+<ul type="disc">
+    <li style="" class="MsoNormal"><font size="3" face="Times New Roman" color="black"><span style="font-size: 12pt;">&quot;S&eacute;curit&eacute; des SI&quot;</span></font></li>
+    <li style="" class="MsoNormal"><font size="3" face="Times New Roman" color="black"><span style="font-size: 12pt;">&quot;S&eacute;curit&eacute; des Syst&egrave;mes Informatique&quot;</span></font></li>
+    <li style="" class="MsoNormal"><font size="3" face="Times New Roman" color="black"><span style="font-size: 12pt;">&quot;S&eacute;curit&eacute; des Syst&egrave;mes Information&quot;</span></font></li>
+</ul>
+<p>L'option <strong>&quot;S&eacute;curit&eacute; des SI&quot;</strong> a &eacute;t&eacute; valid&eacute;.</p>
+<p>&nbsp;</p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+high
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-6]]></docid>
+		<title><![CDATA[Refontes Pilotage Projet]]></title>
+		<node_order><![CDATA[5]]></node_order>
+		<description><![CDATA[
+<p>Refontes des actions, d&eacute;cisions, risques, t&acirc;ches en GWT bas&eacute; sur le p&eacute;rim&egrave;tre d&eacute;fini pour la 2.8.0.</p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+low
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-7]]></docid>
+		<title><![CDATA[Industrialisation Recette Packaging]]></title>
+		<node_order><![CDATA[6]]></node_order>
+		<description><![CDATA[
+<p>D&eacute;finition des processus et des documents &agrave; fournir pour ces processus</p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+high
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-8]]></docid>
+		<title><![CDATA[Les documents à fournir]]></title>
+		<node_order><![CDATA[7]]></node_order>
+		<description><![CDATA[
+<p>Documents d'installation, d'exploitation et d'architecture, <br />
+&nbsp;&nbsp;&nbsp;&nbsp; utilisateurs</p>
+<p>La documentation pour la livraison n'inclue pas la <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; documentation de d&eacute;veloppement sur NovaForge</p>
+]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+high
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-INF1]]></docid>
+		<title><![CDATA[Rapport d'anomalie et qualités]]></title>
+		<node_order><![CDATA[8]]></node_order>
+		<description><![CDATA[
+<p>La mise en place de rapports d'anomalies et de qualit&eacute;s n'est pas dans le scope de la livraison <br />
+La mise en place de rapports d'indicateurs qualit&eacute;s bas&eacute; sur les r&eacute;sultats Sonar n'est pas dans le scope de la livraison</p>
+]]></description>
+		<status><![CDATA[N]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+medium
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-9]]></docid>
+		<title><![CDATA[Le format de la livraison]]></title>
+		<node_order><![CDATA[9]]></node_order>
+		<description><![CDATA[
+<p>La livraison du 13 d&eacute;cembre se fera sous la forme d'un fichier archive  contenant :</p>
+<ul>
+    <li>le packaging maven n&eacute;cessaire &agrave; l'installation</li>
+    <li>le fichier xml permettant l'installation</li>
+    <li>les documents pr&eacute;vus pour la livraisons</li>
+</ul>
+<ol>
+    <li>document d'installation,</li>
+    <li>document d'exploitation/architecture et</li>
+    <li>documentation utilisateur</li>
+    <li>cahier de recette</li>
+</ol>
+<p>&nbsp;</p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+high
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-10]]></docid>
+		<title><![CDATA[Activation module graphique PHP]]></title>
+		<node_order><![CDATA[10]]></node_order>
+		<description><![CDATA[
+<ul>
+    <li>activation du module graphique PHP, exploitable dans TestLink pour les rapports graphiques</li>
+    <li>pouvoir choisir le francais au niveau du Forum NovaForge; actuellement on dispose que du EN&nbsp;comme langue.</li>
+</ul>
+<p>&nbsp;</p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+medium
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-11]]></docid>
+		<title><![CDATA[La méthode Phare dans NovaForge-Nice to Have]]></title>
+		<node_order><![CDATA[11]]></node_order>
+		<description><![CDATA[
+<p>Un plus serait d'acc&eacute;der &agrave; la documentation Phare &agrave; partir de NovaForge.</p>
+<p>La solution propos&eacute;e est qu'&agrave; la suite de l'installation, l'administrateur NovaForge configure un hyper lien vers l'intranet qui permet l'acc&egrave;s http &agrave; cette documentation (solution &agrave; valider)</p>
+<p><font size="3" face="Times New Roman" color="black"><span style="font-size: 12pt;">La solution choisi est d'ajouter au niveau de la wiki de la forge un lien nomm&eacute; </span></font><font size="3" face="Times New Roman" color="black"><span style="font-size: 12pt;">&laquo;&nbsp;Site PHARE&nbsp;&raquo;</span></font><font size="3" face="Times New Roman" color="black"><span style="font-size: 12pt;"> vers l'URL suivant:&nbsp;</span></font></p>
+<p><font size="3" face="Times New Roman" color="black"><span style="font-size: 12pt;">&nbsp;<a href="http://www.cpsiat.terre.defense.gouv.fr/phare">http://www.cpsiat.terre.defense.gouv.fr/phare</a> </span></font></p>
+]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+low
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+	<requirement>
+		<docid><![CDATA[REQ-BR-12]]></docid>
+		<title><![CDATA[Correction des bugs]]></title>
+		<node_order><![CDATA[12]]></node_order>
+		<description><![CDATA[
+<p>Possibilit&eacute; de prendre en compte une &eacute;tape de correction de bugs pour la release de 13 d&eacute;cembre.</p>
+<p>Liste des&nbsp; bug &agrave; corriger: 1332, 1329, 1315, 1330, 1316, 1327, 1333, 1320, 1319, 1317, 1323, 1323, 1322, 1324, 1331, 1318, 1329, 1326, 1325, 1321, 1318.</p>
+<p>&nbsp;</p>
+]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[1]]></type>
+		<expected_coverage><![CDATA[0]]></expected_coverage>
+		<custom_fields>	<custom_field><name><![CDATA[
+priority
+]]></name><value><![CDATA[
+high
+]]></value></custom_field>
+</custom_fields>
+	</requirement>
+</req_spec></requirement-specification>

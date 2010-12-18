@@ -15,10 +15,11 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.8 2010/12/13 20:56:56 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.9 2010/12/18 16:09:47 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
+ *	20101218 - franciscom - BUGID 4040 - changed drop column strategy
  *	20101212 - franciscom - BUGID 4040
  *	20101119 - franciscom - fixed DROP COLUMN syntax for SQL SERVER
  *	20100911 - franciscom - migrate_cfield_links()
@@ -121,9 +122,12 @@ function migrate_requirements(&$dbHandler,$tableSet)
         		$cols2drop[$colname] = " DROP COLUMN $colname ";
         	}
         }
-        $drop_clause = implode(",", $cols2drop);
-        $sql = "ALTER TABLE {$tableSet['requirements']} {$drop_clause} ";
-        $dbHandler->exec_query($sql);
+        // $drop_clause = implode(",", $cols2drop);
+		foreach($cols2drop as $stm)
+		{
+			$sql = "ALTER TABLE {$tableSet['requirements']} {$stm} ";
+        	$dbHandler->exec_query($sql);
+		}
 	} 
     echo 'Step - Requirements Migration - Finished !!! <br><br> ';
 
@@ -170,9 +174,16 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 			$cols2drop[$colname] = " DROP COLUMN $colname ";
 		}
 	}
-	$drop_clause = implode(",", $cols2drop);
-	$sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
-	$dbHandler->exec_query($sql);
+	// $drop_clause = implode(",", $cols2drop);
+	// $sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
+	// $dbHandler->exec_query($sql);
+	foreach($cols2drop as $stm)
+	{
+		$sql = "ALTER TABLE {$tableSet['req_specs']} {$stm} ";
+    	$dbHandler->exec_query($sql);
+	}
+
+
     echo 'Step - Requirements Migration - Finished !!! <br><br> ';
 }
 
@@ -215,22 +226,24 @@ function migrate_project_options(&$dbHandler,$tableSet)
 	//
 	// To avoid complex code we will inform user that 
 	// he/she had to do this manually
-	$adodbObj = $dbHandler->get_dbmgr_object();
-	$colNames = $adodbObj->MetaColumnNames($tableSet['testprojects']);
-	$cols2drop = array('option_reqs','option_priority','option_automation');
-	$cols2drop = array_flip($cols2drop);
-	foreach($cols2drop as $colname => $dummy)
-	{
-		if( !isset($colNames[strtoupper($colname)]) )
-		{
-			unset($cols2drop[$colname]);
-		}
-		else
-		{
-			$cols2drop[$colname] = " DROP COLUMN $colname ";
-		}
-	}
+	// $adodbObj = $dbHandler->get_dbmgr_object();
+	// $colNames = $adodbObj->MetaColumnNames($tableSet['testprojects']);
+	// $cols2drop = array('option_reqs','option_priority','option_automation');
+	// $cols2drop = array_flip($cols2drop);
+	// foreach($cols2drop as $colname => $dummy)
+	// {
+	// 	if( !isset($colNames[strtoupper($colname)]) )
+	// 	{
+	// 		unset($cols2drop[$colname]);
+	// 	}
+	// 	else
+	// 	{
+	// 		$cols2drop[$colname] = " DROP COLUMN $colname ";
+	// 	}
+	// }
 	echo "******* ATTENTION!!!! *** ==> Please DROP Manually COLUMNS with it's constraints (I'm sorry )<br> ";
+	echo "'option_reqs','option_priority','option_automation'<br> ";
+	
 	// $drop_clause = implode(",", $cols2drop);
 	// $sql = "ALTER TABLE {$tableSet['testprojects']} {$drop_clause} ";
 	// $dbHandler->exec_query($sql);
@@ -354,9 +367,12 @@ function migrate_testcases(&$dbHandler,$tableSet)
 	    }
 
         // STEP 3 - Remove fields from tcversions
-        $sql = "ALTER TABLE {$tableSet['tcversions']} " .
-               "DROP COLUMN steps, DROP COLUMN expected_results ";
+        $sql = "ALTER TABLE {$tableSet['tcversions']} DROP COLUMN steps";
         $dbHandler->exec_query($sql);
+
+        $sql = "ALTER TABLE {$tableSet['tcversions']} DROP COLUMN expected_results ";
+        $dbHandler->exec_query($sql);
+
 	} 
 	echo 'Step - Test Case Migration - Finished !! <br><br> ';
 }

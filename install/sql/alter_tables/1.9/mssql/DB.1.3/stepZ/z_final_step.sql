@@ -1,6 +1,6 @@
 /* 
-$Revision: 1.2.6.1 $
-$Date: 2010/11/19 19:41:40 $
+$Revision: 1.2.6.2 $
+$Date: 2010/12/18 14:21:50 $
 $Author: franciscom $
 $Name:  $
 
@@ -24,4 +24,4 @@ INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (9,27);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,25);
 INSERT INTO /*prefix*/role_rights (role_id,right_id) VALUES (6,27);
 
-INSERT INTO /*prefix*/db_version (version,upgrade_ts,notes) VALUES ('DB 1.3',GETDATE(),'');
+INSERT INTO /*prefix*/db_version (version,upgrade_ts,notes) VALUES ('DB 1.4',GETDATE(),'');

@@ -1,5 +1,5 @@
--- $Revision: 1.2.2.4 $
--- $Date: 2010/12/16 20:44:30 $
+-- $Revision: 1.2.2.5 $
+-- $Date: 2010/12/18 14:21:33 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
@@ -11,6 +11,7 @@
 --
 --
 -- rev: 
+-- 20101214 - franciscom - update to 1.9.1 DB 1.4
 -- 20101123 - franciscom - fixed errors on builds ADD release_date 
 -- 20101119 - franciscom - bad default for date (now() -> getdate())
 -- 20100705 - asimon - added new column build_id to user_assignments
@@ -20,6 +21,7 @@
 SET IDENTITY_INSERT /*prefix*/node_types ON
 INSERT INTO /*prefix*/node_types (id,description) VALUES (8,'requirement_version');
 INSERT INTO /*prefix*/node_types (id,description) VALUES (9,'testcase_step');
+INSERT INTO /*prefix*/node_types (id,description) VALUES (10,'requirement_revision');
 SET IDENTITY_INSERT /*prefix*/node_types OFF
 
 -- Step 1 - Drops if needed
@@ -29,6 +31,7 @@ SET IDENTITY_INSERT /*prefix*/node_types OFF
 CREATE TABLE /*prefix*/req_versions(  
 	id int NOT NULL,
   version INTEGER NOT NULL DEFAULT '1',
+  revision INTEGER NOT NULL DEFAULT '1',
   scope TEXT NULL DEFAULT NULL,
   status CHAR(1) NOT NULL DEFAULT 'V',
   type CHAR(1) NULL DEFAULT NULL,
@@ -39,9 +42,10 @@ CREATE TABLE /*prefix*/req_versions(
 	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_versions_creation_ts DEFAULT (getdate()),
   modifier_id INT NULL DEFAULT NULL,
 	modification_ts datetime NULL,
+  log_message TEXT NULL DEFAULT NULL,
   CONSTRAINT /*prefix*/PK_req_versions PRIMARY KEY CLUSTERED 
   (
-	  id,version 
+	  id
   ) ON [PRIMARY]
 ) ON [PRIMARY];
 
@@ -123,6 +127,35 @@ CREATE TABLE /*prefix*/req_relations (
 	(
 		id
 	)  ON [PRIMARY]
+) ON [PRIMARY];
+
+
+CREATE TABLE /*prefix*/req_revisions(  
+  parent_id int NOT NULL,
+	id int NOT NULL,
+  revision INTEGER NOT NULL DEFAULT '1',
+	req_doc_id varchar(64)  NULL,
+	name varchar(100) NULL,
+  scope TEXT NULL DEFAULT NULL,
+  status CHAR(1) NOT NULL DEFAULT 'V',
+  type CHAR(1) NULL DEFAULT NULL,
+  active INT NOT NULL DEFAULT '1',
+  is_open INT NOT NULL DEFAULT '1',
+  expected_coverage INT NOT NULL DEFAULT 1,
+  log_message TEXT NULL DEFAULT NULL,
+  author_id  INT NULL DEFAULT NULL,
+	creation_ts datetime NOT NULL CONSTRAINT /*prefix*/DF_req_revisions_creation_ts DEFAULT (getdate()),
+  modifier_id INT NULL DEFAULT NULL,
+	modification_ts datetime NULL,
+  CONSTRAINT /*prefix*/PK_req_revisions PRIMARY KEY CLUSTERED 
+  (
+	  id
+  ) ON [PRIMARY]
+) ON [PRIMARY];
+
+CREATE UNIQUE NONCLUSTERED INDEX /*prefix*/IX1_req_revisions ON  /*prefix*/req_revisions 
+(
+	parenet_id,revision
 ) ON [PRIMARY];
 
 

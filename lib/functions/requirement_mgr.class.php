@@ -5,14 +5,15 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.7 $
- * @modified $Date: 2010/12/12 14:06:20 $ by $Author: franciscom $
+ * @version $Revision: 1.114.2.8 $
+ * @modified $Date: 2010/12/18 11:28:46 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20101218 - franciscom - BUGID 4100 createFromMap() - missing update of Req Title when creating new version
  *  20101211 - franciscom - get_history() fixed code to check for NULL dates
  *	20101126 - franciscom - BUGID get_last_version_info() -> get_last_child_info();
  *  20101119 - asimon - BUGID 4038: clicking requirement link does not open req version
@@ -452,6 +453,7 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
   			$q .= ', node_order= ' . abs(intval($node_order));  	     
 	  	}
  	  	$sql[] = $q . " WHERE id={$id}";
+ 	  	
 
 	  	$sql[] = "/* $debugMsg */ UPDATE {$this->tables['requirements']} " .
 	  	         " SET req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'" .
@@ -464,6 +466,8 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	  	         " modifier_id={$user_id}, modification_ts={$db_now}, " . 
 	  	         " expected_coverage={$expected_coverage} " . 
 	  	         " WHERE id={$version_id}";
+
+ 	  	new dBug($sql);
 
 		foreach($sql as $stm)
 		{
@@ -1279,6 +1283,7 @@ function createFromXML($xml,$tproject_id,$parent_id,$author_id,$filters = null,$
  * expected_coverage => 0
  *
  * @internal revisions
+ * 20101218 - BUGID 4100 - franciscom
  * 20100908 - franciscom - created
  */
 function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$options=null)
@@ -1288,10 +1293,15 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
 	static $linkedCF;
 	static $messages;
 	static $labels;
+	static $fieldSize;
 	static $doProcessCF = false;
-
+	static $debugMsg;
+	
     if(is_null($linkedCF) )
     {
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$fieldSize = config_get('field_size');
+    	
     	$linkedCF = $this->cfield_mgr->get_linked_cfields_at_design($tproject_id,cfield_mgr::CF_ENABLED,null,
     															 	'requirement',null,'name');
 		$doProcessCF = true;
@@ -1358,7 +1368,6 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     {
 		// Need to get Last Version no matter active or not.
 		$reqID = key($check_in_reqspec);
-		// $last_version = $this->get_last_version_info($reqID);
 		$last_version = $this->get_last_child_info($reqID);
 		$msgID = 'frozen_req_unable_to_import';
 		$status_ok = false;
@@ -1367,21 +1376,30 @@ function createFromMap($req,$tproject_id,$parent_id,$author_id,$filters = null,$
     		switch($my['options']['actionOnHit'])
 			{
 				case 'update_last_version':
-						$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
-											    $author_id,$req['status'],$req['type'],$req['expected_coverage'],
-											    $req['node_order']);
-						$msgID = 'import_req_updated';
-						$status_ok = true;
+					$result = $this->update($reqID,$last_version['id'],$req['docid'],$req['title'],$req['description'],
+										    $author_id,$req['status'],$req['type'],$req['expected_coverage'],
+										    $req['node_order']);
+					$msgID = 'import_req_updated';
+					$status_ok = true;
 				break;
 				
 				case 'create_new_version':
-						$newItem = $this->create_new_version($reqID,$author_id);
-        	        	
-						// Set always new version to NOT Frozen
-						$this->updateOpen($newItem['id'],1);				
-						$newReq['version_id'] = $newItem['id']; 
-						$msgID = 'import_req_new_version_created';
-						$status_ok = true;
+					$newItem = $this->create_new_version($reqID,$author_id);
+        	    	
+					// Set always new version to NOT Frozen
+					$this->updateOpen($newItem['id'],1);				
+					
+					// BUGID 4100 - 20101218 - franciscom
+					// Need to update TITLE
+					$title = trim_and_limit($req['title'],$fieldSize->req_title);
+			  		$sql = 	"/* $debugMsg */ UPDATE {$this->tables['nodes_hierarchy']} " .
+  		  	 				" SET name='" . $this->db->prepare_string($title) . "'" . 
+							" WHERE id={$reqID}";
+					$this->db->exec_query($sql);
+					
+					$newReq['version_id'] = $newItem['id']; 
+					$msgID = 'import_req_new_version_created';
+					$status_ok = true;
 				break;	
 			}
 		}		
@@ -1946,33 +1964,32 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 	{
 		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
 	
-	  // get a new id
-	  $version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
+		// get a new id
+	  	$version_id = $this->tree_mgr->new_node($id,$this->node_types_descr_id['requirement_version']);
 	  
-	  // Needed to get higher version NUMBER, to generata new VERSION NUMBER
+	  	// Needed to get higher version NUMBER, to generata new VERSION NUMBER
 	  	// $sourceVersionInfo =  $this->get_last_version_info($id);
 	  	$sourceVersionInfo =  $this->get_last_child_info($id);
-	  $newVersionNumber = $sourceVersionInfo['version']+1; 
+	  	$newVersionNumber = $sourceVersionInfo['version']+1; 
 
-	  $ret = array();
-	  $ret['id'] = $version_id;
-	  $ret['version'] = $newVersionNumber;
-	  $ret['msg'] = 'ok';
-
-	  $sourceVersionID = is_null($reqVersionID) ? $sourceVersionInfo['id'] : $reqVersionID;
-
-	  // BUGID 2877 - Custom Fields linked to Requirement Versions
-	  $this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
-	
+	  	$ret = array();
+	  	$ret['id'] = $version_id;
+	  	$ret['version'] = $newVersionNumber;
+	  	$ret['msg'] = 'ok';
+      	
+	  	$sourceVersionID = is_null($reqVersionID) ? $sourceVersionInfo['id'] : $reqVersionID;
+      	
+	  	// BUGID 2877 - Custom Fields linked to Requirement Versions
+	  	$this->copy_version($id,$sourceVersionID,$version_id,$newVersionNumber,$user_id);
+	  	
 	  	// need to update log message in new created version
 	  	$sql = 	"/* $debugMsg */ " .
 	  			" UPDATE {$this->tables['req_versions']} " .
 	  			" SET log_message = '" . $this->db->prepare_string($log_msg) . "'" .
 	  			" WHERE id={$version_id}";
 	  	$this->db->exec_query($sql);		
-	  	
-	  	
-	  return $ret;
+	  		
+	  	return $ret;
 	}
 
 

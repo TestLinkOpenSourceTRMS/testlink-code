@@ -5,8 +5,8 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.114.2.8 $
- * @modified $Date: 2010/12/18 11:28:46 $ by $Author: franciscom $
+ * @version $Revision: 1.114.2.9 $
+ * @modified $Date: 2010/12/18 11:39:45 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
@@ -466,8 +466,6 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	  	         " modifier_id={$user_id}, modification_ts={$db_now}, " . 
 	  	         " expected_coverage={$expected_coverage} " . 
 	  	         " WHERE id={$version_id}";
-
- 	  	new dBug($sql);
 
 		foreach($sql as $stm)
 		{

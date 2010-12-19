@@ -1,5 +1,5 @@
--- $Revision: 1.1 $
--- $Date: 2010/12/19 17:26:00 $
+-- $Revision: 1.2 $
+-- $Date: 2010/12/19 17:51:39 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: Postgres
@@ -64,6 +64,11 @@
 -- user_assigments
 -- builds
 -- cfield_testprojects
-ALTER TABLE /*prefix*/cfield_testprojects ADD COLUMN required INT2 NOT NULL DEFAULT '0';
+ALTER TABLE /*prefix*/cfield_testprojects DROP COLUMN required_on_design;
+ALTER TABLE /*prefix*/cfield_testprojects DROP COLUMN required_on_execution;
 COMMENT ON TABLE /*prefix*/cfield_testprojects IS 'Updated to TL 2.0.0 - DB 2.0';
+
+-- custom_fields
+ALTER TABLE /*prefix*/custom_fields ADD COLUMN required INT2 NOT NULL DEFAULT '0';
+COMMENT ON TABLE /*prefix*/custom_fields IS 'Updated to TL 2.0.0 - DB 2.0';
 

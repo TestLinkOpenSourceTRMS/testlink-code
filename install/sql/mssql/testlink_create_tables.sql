@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.56 2010/12/19 17:13:19 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.57 2010/12/19 17:50:26 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -161,7 +161,6 @@ CREATE TABLE /*prefix*/cfield_testprojects (
 	display_order smallint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_display_order DEFAULT ((1)),
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_active DEFAULT ((1)),
 	location tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_location DEFAULT ((1)),
-	required_on tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_design DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_cfield_testprojects PRIMARY KEY CLUSTERED 
 (
 	field_id ASC,
@@ -197,6 +196,7 @@ CREATE TABLE /*prefix*/custom_fields (
 	enable_on_execution tinyint NOT NULL CONSTRAINT /*prefix*/DF_custom_fields_enable_on_execution DEFAULT ((0)),
 	show_on_testplan_design tinyint NOT NULL CONSTRAINT /*prefix*/DF_custom_fields_show_on_testplan_design DEFAULT ((0)),
 	enable_on_testplan_design tinyint NOT NULL CONSTRAINT /*prefix*/DF_custom_fields_enable_on_testplan_design DEFAULT ((0)),
+	required_on tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_design DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_custom_fields PRIMARY KEY CLUSTERED 
 (
 	id ASC

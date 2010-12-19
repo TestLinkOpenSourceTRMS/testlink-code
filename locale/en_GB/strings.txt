@@ -30,7 +30,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat
  * @copyright 	2003, TestLink community
- * @version    	CVS: $Id: strings.txt,v 1.768 2010/12/15 21:47:59 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.769 2010/12/19 17:38:49 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions: Not listed - check repository history
@@ -103,6 +103,7 @@ $TLS_reqs = "Requirements";
 $TLS_req_spec = "Requirements Specification Document";
 $TLS_req_spec_short = "Req. Spec.";
 $TLS_requirements_spec = "Requirements Spec.";
+$TLS_required = "Required";
 $TLS_req_specification = "Req. Specification";
 $TLS_revision = "revision";
 $TLS_revision_short = "rev";

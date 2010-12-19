@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsEdit.tpl,v 1.26 2010/11/13 09:09:36 franciscom Exp $
+$Id: cfieldsEdit.tpl,v 1.27 2010/12/19 17:38:20 franciscom Exp $
 
 
 Important Development note:
@@ -50,7 +50,7 @@ rev :
 {lang_get var="labels"
           s="btn_ok,title_cfields_mgmt,warning_is_in_use,warning,name,label,type,possible_values,
              warning_empty_cfield_name,warning_empty_cfield_label,testproject,assigned_to_testprojects,
-             enable_on_design,show_on_exec,enable_on_exec,enable_on_testplan_design,
+             enable_on_design,show_on_exec,enable_on_exec,enable_on_testplan_design,Yes,No,required,
              available_on,btn_upd,btn_delete,warning_no_type_change,enable_on,
              btn_add,btn_cancel,show_on_design,show_on_testplan_design"}
 
@@ -450,6 +450,19 @@ function initShowOnExec(id_master,show_on_cfg)
 				</select>
 			</td>
 		</tr>
+
+    <tr>
+ 		  <th style="background:none;">{$labels.required}</th>
+      <td>
+        <label for="required_radio_no">
+          <input type="radio" name="cf_required" id="cf_required_no" 
+                 {if $gui->cfield.required == 0} checked="checked" {/if} value="0">{$labels.No}</label>
+        <label for="required_radio_yes">
+          <input type="radio" name="cf_required" id="cf_required_yes" 
+                 {if $gui->cfield.required == 1} checked="checked" {/if} value="1">{$labels.Yes}</label>
+      </td>    
+    </tr>
+
 
 	</table>
 

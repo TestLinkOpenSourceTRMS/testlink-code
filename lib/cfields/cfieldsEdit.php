@@ -5,18 +5,21 @@
  *
  * Filename $RCSfile: cfieldsEdit.php,v $
  *
- * @version $Revision: 1.19 $
- * @modified $Date: 2009/05/31 17:11:51 $ by $Author: franciscom $
+ * @version $Revision: 1.20 $
+ * @modified $Date: 2010/12/19 17:38:49 $ by $Author: franciscom $
  *
- * rev: 20090531 - franciscom - minor bug additional first char ' ' on name and label
- *                              while creating new custom field
- *      20090524 - franciscom - logic changes to give user a better understanding
- *                              of TL application areas where CF will be managed
- *                              request2cf() changed
- *  
- *      20090503 - franciscom - BUGID 2425
- *      20090408 - franciscom - BUGID 2352, BUGID 2359
- *      20080810 - franciscom - BUGID 1650 
+ * @internal revisions
+ *
+ * 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
+ * 20090531 - franciscom - minor bug additional first char ' ' on name and label
+ *                         while creating new custom field
+ * 20090524 - franciscom - logic changes to give user a better understanding
+ *                         of TL application areas where CF will be managed
+ *                         request2cf() changed
+ * 
+ * 20090503 - franciscom - BUGID 2425
+ * 20090408 - franciscom - BUGID 2352, BUGID 2359
+ * 20080810 - franciscom - BUGID 1650 
  *
  */
 require_once(dirname(__FILE__) . "/../../config.inc.php");
@@ -37,13 +40,14 @@ $gui->cfield_types=$cfield_mgr->get_available_types();
 $result_msg = null;
 $do_control_combo_display = 1;
 
-$cfieldCfg=cfieldCfgInit($cfield_mgr);
+$cfieldCfg = cfieldCfgInit($cfield_mgr);
 $emptyCF = array('id' => $args->cfield_id,
 		         'name' => '','label' => '',
 				 'type' => 0,'possible_values' => '',
 		         'show_on_design' => 1,'enable_on_design' => 1,
 		         'show_on_execution' => 1,'enable_on_execution' => 1,
 		         'show_on_testplan_design' => 1,'enable_on_testplan_design' => 1,
+		         'required' => 0,
 		         'node_type_id' => $cfieldCfg->allowed_nodes['testcase']);
 
 $gui->cfield = $emptyCF;
@@ -99,13 +103,6 @@ if( $do_control_combo_display )
 
 	foreach( $keys2loop as $ui_mode)
 	{
-        // 20090524 - this must be removed useless in future
-		//if(!$cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
-		//{
-		//	$cfieldCfg->disabled_cf_enable_on[$ui_mode]=' disabled="disabled" ';
-        //}
-
-        // 20090524 - franciscom - refactoring
         if($cfieldCfg->enable_on_cfg[$ui_mode][$gui->cfield['node_type_id']])
 		{
 		    $cfieldCfg->cf_enable_on[$ui_mode]['value']=1;
@@ -156,6 +153,7 @@ renderGui($smarty,$args,$gui,$cfield_mgr,$templateCfg);
            in this new hash prefix on key is removed.
            
   rev: 
+  	  20101219 - franciscom - BUGID 4088: Required parameter for custom fields	
       20090524 - franciscom - changes due to User Interface changes
       20080811 - franciscom - added new values on missing_keys         
 
@@ -230,6 +228,7 @@ function request2cf($hash)
             $cf['show_on_' . $key] = 1;    
         }          
     }
+    
 	return $cf;
 }
 
@@ -248,6 +247,8 @@ function init_args()
     $args->do_action = isset($_REQUEST['do_action']) ? $_REQUEST['do_action']:null;
     $args->cfield_id = isset($_REQUEST['cfield_id']) ? $_REQUEST['cfield_id']:0;
     $args->cf_name = isset($_REQUEST['cf_name']) ? $_REQUEST['cf_name']:null;
+    $args->cf_required = isset($_REQUEST['cf_required']) ? intval($_REQUEST['cf_required']) : 0;
+    
     return $args;
 }
 
@@ -272,6 +273,9 @@ function edit(&$argsObj,&$cfieldMgr)
     $op->linked_tprojects = null;
 
 	$cfinfo = $cfieldMgr->get_by_id($argsObj->cfield_id);
+	
+	new dBug($cfinfo);
+	
 	if ($cfinfo)
 	{
 		$op->cf = $cfinfo[$argsObj->cfield_id];
@@ -300,6 +304,8 @@ function doCreate(&$hash_request,&$cfieldMgr)
     $op->user_feedback='';
 	$op->cf = request2cf($hash_request);
 
+	new dBug($op->cf);
+	
 	$keys2trim=array('name','label','possible_values');
 	foreach($keys2trim as $key)
 	{
@@ -421,7 +427,7 @@ function doDelete(&$argsObj,&$cfieldMgr)
 function cfieldCfgInit($cfieldMgr)
 {
     $cfg = new stdClass();
-    $cfAppAreas=$cfieldMgr->get_application_areas();     // 20080810 - BUGID 1650 - Start
+    $cfAppAreas=$cfieldMgr->get_application_areas();
     foreach($cfAppAreas as $area)
     {
         $cfg->disabled_cf_enable_on[$area]='';
@@ -436,10 +442,7 @@ function cfieldCfgInit($cfieldMgr)
     	$cfg->enable_on_cfg[$area] = $cfieldMgr->get_enable_on_cfg($area);
     	$cfg->show_on_cfg[$area] = $cfieldMgr->get_show_on_cfg($area);
     	
-    	// $cfg->enable_on['app_areas'][$area] = $cfieldMgr->get_enable_on_cfg($area);
-    	// $cfg->enable_on['style_display'][$area] = $cfg->enable_on['app_areas'][$area];
-    	
-    }// 20080810 - BUGID 1650 - End
+    }
 
     $cfg->possible_values_cfg = $cfieldMgr->get_possible_values_cfg();
     $cfg->allowed_nodes = $cfieldMgr->get_allowed_nodes();

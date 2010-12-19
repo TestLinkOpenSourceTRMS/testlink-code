@@ -15,7 +15,7 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.10 2010/12/19 11:13:44 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.11 2010/12/19 14:34:19 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
@@ -48,9 +48,9 @@ define('DBVERSION4MIG', 'DB 1.2');
 function migrate_18_to_19(&$dbHandler,$tableSet)
 {
 	// Need To Add Some Feedback
-	echo '<br>-------------------------------------<br>'; 
+	echo '<b><br>-------------------------------------<br>'; 
 	echo 'Data Migration Process STARTED<br>'; 
-	echo '-------------------------------------<br>'; 
+	echo '-------------------------------------<br></b>'; 
 
     migrate_requirements($dbHandler,$tableSet);
     migrate_req_specs($dbHandler,$tableSet);
@@ -62,7 +62,7 @@ function migrate_18_to_19(&$dbHandler,$tableSet)
 
 	if( $dbHandler->dbType == 'mssql')
 	{
-		echo "<br>**********************************************************************************<br>";
+		echo "<b><br>**********************************************************************************<br>";
 		echo "IMPORTANT NOTICE FOR MSSQL USERS<br>";
 		echo "**********************************************************************************<br>";
 		echo "Some updates to DB SCHEMA HAS TO BE DONE manually due to <br>";
@@ -70,7 +70,7 @@ function migrate_18_to_19(&$dbHandler,$tableSet)
 		echo "ALTER TABLE /*prefix*/requirements ALTER req_doc_id VARCHAR(64)<br>";
 		echo "ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values varchar(4000)<br>";
 		echo "ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value varchar(4000)<br>";
-		echo "**********************************************************************************<br>";
+		echo "**********************************************************************************<br></b>";
 	}
 	echo '<br>-------------------------------------<br>'; 
 	echo 'Data Migration Process Finished<br>'; 
@@ -125,7 +125,8 @@ function migrate_requirements(&$dbHandler,$tableSet)
         $adodbObj = $dbHandler->get_dbmgr_object();
         $colNames = $adodbObj->MetaColumnNames($tableSet['requirements']);
 
-		$warning = 'For MSSQL You NEED TO DROP THESE COLUMNS manually: status,node_order,creation_ts';
+		$warning = "<b>{$tableSet['requirements']} - For MSSQL You NEED TO DROP " .  
+		           "THESE COLUMNS manually: status,node_order,creation_ts</b>";
 		if($dbHandler->dbType == 'mssql')
 		{
         	$cols2drop = array("scope", "type", "author_id","modifier_id","modification_ts","title");
@@ -206,16 +207,11 @@ function migrate_req_specs(&$dbHandler,$tableSet)
 			$cols2drop[$colname] = " DROP COLUMN $colname ";
 		}
 	}
-	// $drop_clause = implode(",", $cols2drop);
-	// $sql = "ALTER TABLE {$tableSet['req_specs']} {$drop_clause} ";
-	// $dbHandler->exec_query($sql);
 	foreach($cols2drop as $stm)
 	{
 		$sql = "ALTER TABLE {$tableSet['req_specs']} {$stm} ";
     	$dbHandler->exec_query($sql);
 	}
-
-
     echo 'Step - Requirements Migration - Finished !!! <br><br> ';
 }
 
@@ -273,15 +269,12 @@ function migrate_project_options(&$dbHandler,$tableSet)
 	// 		$cols2drop[$colname] = " DROP COLUMN $colname ";
 	// 	}
 	// }
-	echo "<br><br>";
+	echo "<b><br><br>";
 	echo "**********************************************************************************<br>";
-	echo "******* ATTENTION!!!! *** ==> Please DROP Manually COLUMNS with it's constraints (I'm sorry )<br> ";
+	echo "******* ATTENTION!!!! *** <br> {$tableSet['testprojects']} <br> ";
+	echo "Please DROP Manually COLUMNS with it's constraints (I'm sorry )<br> ";
 	echo "'option_reqs','option_priority','option_automation'<br> ";
-	echo "**********************************************************************************<br>";
-	
-	// $drop_clause = implode(",", $cols2drop);
-	// $sql = "ALTER TABLE {$tableSet['testprojects']} {$drop_clause} ";
-	// $dbHandler->exec_query($sql);
+	echo "**********************************************************************************<br></b>";
     echo 'Step - Test Project Options Migration - Finished !!! <br><br> ';
 }
 
@@ -396,8 +389,8 @@ function migrate_testcases(&$dbHandler,$tableSet)
             }
             else
             {
-            	echo " **** <br> CRITIC ***** <br>";
-            	echo "MIGRATION FAILURE - Unable to create Test Case Step NODE on nodes hierarchy <br>";
+            	echo "<b> **** <br> CRITIC ***** <br>";
+            	echo "MIGRATION FAILURE - Unable to create Test Case Step NODE on nodes hierarchy <br></b>";
             }
 	    }
 

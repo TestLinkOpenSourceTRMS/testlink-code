@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfieldsView.tpl,v 1.10 2010/11/13 09:09:36 franciscom Exp $ 
+$Id: cfieldsView.tpl,v 1.11 2010/12/19 18:04:25 franciscom Exp $ 
 
 rev :
      20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility 
@@ -25,7 +25,7 @@ rev :
 {lang_get var="labels"
           s="name,label,type,title_cfields_mgmt,manage_cfield,btn_cfields_create,
              show_on_design,enable_on_design,show_on_exec,enable_on_exec,btn_export,
-             btn_import,btn_goback,
+             btn_import,btn_goback,required,
              show_on_testplan_design,enable_on_testplan_design,available_on"}
 
 {include file="inc_head.tpl"}
@@ -38,6 +38,7 @@ rev :
   		<th>{$labels.name}</th>
   		<th>{$labels.label}</th>
   		<th>{$labels.type}</th>
+  		<th>{$labels.required}</th>
   		<th>{$labels.enable_on_design}</th>
   		<th>{$labels.show_on_exec}</th>
   		<th>{$labels.enable_on_exec}</th>
@@ -51,6 +52,7 @@ rev :
    	                    title="{$labels.manage_cfield}">{$cf_def.name|escape}</a></td>
    	<td>{$cf_def.label|escape}</td>
    	<td>{$gui->cf_types[$cf_def.type]}</td>
+   	<td align="center">{if $cf_def.required == 1}<img src="{$tlImages.checked}">{/if} </td>
    	<td align="center">{if $cf_def.enable_on_design eq 1}<img src="{$tlImages.checked}">{/if} </td>
    	<td align="center">{if $cf_def.show_on_execution eq 1}<img src="{$tlImages.checked}">{/if} </td>
    	<td align="center">{if $cf_def.enable_on_execution eq 1}<img src="{$tlImages.checked}">{/if} </td>

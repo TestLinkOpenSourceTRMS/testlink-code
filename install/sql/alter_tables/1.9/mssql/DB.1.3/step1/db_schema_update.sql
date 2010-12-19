@@ -1,5 +1,5 @@
--- $Revision: 1.2.2.8 $
--- $Date: 2010/12/18 18:08:16 $
+-- $Revision: 1.2.2.9 $
+-- $Date: 2010/12/19 10:35:01 $
 -- $Author: franciscom $
 -- $RCSfile: db_schema_update.sql,v $
 -- DB: MSSQL
@@ -11,6 +11,9 @@
 --
 --
 -- rev: 
+-- 20101219 - franciscom - MARKED operations THAT NEED TO BE DONE MANUALLY DUE TO MSSQL LIMITATION
+--                         (search for string NEED TO BE DONE MANUALLY to FIND IT)
+--
 -- 20101214 - franciscom - update to 1.9.1 DB 1.4
 -- 20101123 - franciscom - fixed errors on builds ADD release_date 
 -- 20101119 - franciscom - bad default for date (now() -> getdate())
@@ -189,7 +192,8 @@ ALTER TABLE /*prefix*/milestones ADD start_date DATETIME NULL;
 ALTER TABLE /*prefix*/req_specs ADD doc_id VARCHAR(64) NOT NULL DEFAULT 'RS_DOC_ID';
 
 -- requirements
-ALTER TABLE /*prefix*/requirements ALTER req_doc_id VARCHAR(64);
+-- For MSSQL - NEED TO BE DONE MANUALLY
+-- ALTER TABLE /*prefix*/requirements ALTER req_doc_id VARCHAR(64);
 
 -- tcversions
 
@@ -201,7 +205,9 @@ ALTER TABLE testplan_tcversions ADD creation_ts DATETIME NOT NULL DEFAULT GETDAT
 ALTER TABLE /*prefix*/cfield_design_values ALTER COLUMN value varchar(4000);
 ALTER TABLE /*prefix*/cfield_execution_values ALTER COLUMN value varchar(4000);
 ALTER TABLE /*prefix*/cfield_testplan_design_values ALTER COLUMN value varchar(4000);
-ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values varchar(4000);
-ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value varchar(4000);
+
+-- For MSSQL - NEED TO BE DONE MANUALLY
+-- ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values varchar(4000);
+-- ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value varchar(4000);
 
 UPDATE /*prefix*/req_versions SET log_message='Requirement migrated from Testlink 1.8.x'; 

@@ -1,6 +1,6 @@
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.67 2010/12/19 17:11:57 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.68 2010/12/19 17:48:27 franciscom Exp $
 --
 -- SQL script - create db tables for TL on Postgres   
 -- 
@@ -303,6 +303,7 @@ CREATE TABLE /*prefix*/custom_fields(
   "enable_on_execution" SMALLINT NOT NULL DEFAULT '0',
   "show_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
   "enable_on_testplan_design" SMALLINT NOT NULL DEFAULT '0',
+  "required" INT2 NOT NULL default '0',
   PRIMARY KEY ("id")
 ); 
 CREATE UNIQUE INDEX /*prefix*/custom_fields_uidx1 ON /*prefix*/custom_fields ("name");
@@ -337,7 +338,6 @@ CREATE TABLE /*prefix*/cfield_testprojects(
   "display_order" INTEGER NOT NULL default '1',
   "active" INT2 NOT NULL default '1',
   "location" INT2 NOT NULL default '1',
-  "required" INT2 NOT NULL default '0',
   PRIMARY KEY ("field_id","testproject_id")
 ); 
 

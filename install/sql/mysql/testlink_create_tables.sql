@@ -1,7 +1,7 @@
 # TestLink Open Source Project - http://testlink.sourceforge.net/
 # This script is distributed under the GNU General Public License 2 or later.
 # ---------------------------------------------------------------------------------------
-# $Id: testlink_create_tables.sql,v 1.82 2010/12/19 17:12:38 franciscom Exp $
+# $Id: testlink_create_tables.sql,v 1.83 2010/12/19 17:47:19 franciscom Exp $
 #
 # SQL script - create all DB tables for MySQL
 # tables are in alphabetic order  
@@ -38,7 +38,7 @@
 # ---------------------------------------------------------------------------------------
 # Revisions:
 #
-# 20101219 - franciscom - BUGID 4111: cfield_testprojects ALTER
+# 20101219 - franciscom - BUGID 4111: cfield_testprojects ALTER,custom_fields
 # 20101211 - franciscom - BUGID 4056: Requirement Revisioning
 #            req_versions removed version from index to allow easy creation of FK
 #            (in future) from req_revisions
@@ -209,7 +209,6 @@ CREATE TABLE /*prefix*/cfield_testprojects (
   `display_order` smallint(5) unsigned NOT NULL default '1',
   `location` smallint(5) unsigned NOT NULL default '1',
   `active` tinyint(1) NOT NULL default '1',
-  `required` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`field_id`,`testproject_id`)
 ) DEFAULT CHARSET=utf8;
 
@@ -241,6 +240,7 @@ CREATE TABLE /*prefix*/custom_fields (
   `enable_on_execution` tinyint(3) unsigned NOT NULL default '0' COMMENT '1=> user can write/manage it during test case execution',
   `show_on_testplan_design` tinyint(3) unsigned NOT NULL default '0' ,
   `enable_on_testplan_design` tinyint(3) unsigned NOT NULL default '0' ,
+  `required` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY /*prefix*/idx_custom_fields_name (`name`)
 ) DEFAULT CHARSET=utf8;

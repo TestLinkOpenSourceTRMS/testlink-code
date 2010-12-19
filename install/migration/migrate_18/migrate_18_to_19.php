@@ -15,10 +15,13 @@
  *  
  * Included on installNewDB.php
  *
- * $Id: migrate_18_to_19.php,v 1.10.2.9 2010/12/18 16:09:47 franciscom Exp $
+ * $Id: migrate_18_to_19.php,v 1.10.2.10 2010/12/19 11:13:44 franciscom Exp $
  * Author: franciscom
  * 
  * @internal rev:
+ *	20101219 - franciscom - BUGID 4040 - Check for MSSQL to skip some operations THAT HAVE
+ *										 to be done MANUALLY
+ *
  *	20101218 - franciscom - BUGID 4040 - changed drop column strategy
  *	20101212 - franciscom - BUGID 4040
  *	20101119 - franciscom - fixed DROP COLUMN syntax for SQL SERVER
@@ -45,10 +48,10 @@ define('DBVERSION4MIG', 'DB 1.2');
 function migrate_18_to_19(&$dbHandler,$tableSet)
 {
 	// Need To Add Some Feedback
-	echo '<br>------------------------------<br>'; 
+	echo '<br>-------------------------------------<br>'; 
 	echo 'Data Migration Process STARTED<br>'; 
-	echo '------------------------------<br>'; 
-	
+	echo '-------------------------------------<br>'; 
+
     migrate_requirements($dbHandler,$tableSet);
     migrate_req_specs($dbHandler,$tableSet);
     migrate_testcases($dbHandler,$tableSet);
@@ -56,9 +59,22 @@ function migrate_18_to_19(&$dbHandler,$tableSet)
     migrate_user_assignments($dbHandler, $tableSet);
     migrate_cfield_links($dbHandler, $tableSet);
 
-	echo '<br>------------------------------<br>'; 
+
+	if( $dbHandler->dbType == 'mssql')
+	{
+		echo "<br>**********************************************************************************<br>";
+		echo "IMPORTANT NOTICE FOR MSSQL USERS<br>";
+		echo "**********************************************************************************<br>";
+		echo "Some updates to DB SCHEMA HAS TO BE DONE manually due to <br>";
+		echo "MSSQL Restrictions<br>";
+		echo "ALTER TABLE /*prefix*/requirements ALTER req_doc_id VARCHAR(64)<br>";
+		echo "ALTER TABLE /*prefix*/custom_fields ALTER COLUMN possible_values varchar(4000)<br>";
+		echo "ALTER TABLE /*prefix*/custom_fields ALTER COLUMN default_value varchar(4000)<br>";
+		echo "**********************************************************************************<br>";
+	}
+	echo '<br>-------------------------------------<br>'; 
 	echo 'Data Migration Process Finished<br>'; 
-	echo '------------------------------<br>'; 
+	echo '-------------------------------------<br><br><br>'; 
 }
 
 
@@ -108,8 +124,20 @@ function migrate_requirements(&$dbHandler,$tableSet)
         // STEP 3 - Remove fields from requirements
         $adodbObj = $dbHandler->get_dbmgr_object();
         $colNames = $adodbObj->MetaColumnNames($tableSet['requirements']);
-        $cols2drop = array("scope", "status", "type", "author_id","creation_ts",
-                           "modifier_id","modification_ts","node_order","title");
+
+		$warning = 'For MSSQL You NEED TO DROP THESE COLUMNS manually: status,node_order,creation_ts';
+		if($dbHandler->dbType == 'mssql')
+		{
+        	$cols2drop = array("scope", "type", "author_id","modifier_id","modification_ts","title");
+		}
+		else
+		{
+			$warning = '';
+        	$cols2drop = array("scope", "status", "type", "author_id","creation_ts",
+            	               "modifier_id","modification_ts","node_order","title");
+		}
+
+
         $cols2drop = array_flip($cols2drop);
         foreach($cols2drop as $colname => $dummy)
         {
@@ -129,6 +157,10 @@ function migrate_requirements(&$dbHandler,$tableSet)
         	$dbHandler->exec_query($sql);
 		}
 	} 
+	if( !is_null($warning) )
+	{
+		echo "$warning<br><br>";
+	}
     echo 'Step - Requirements Migration - Finished !!! <br><br> ';
 
 }
@@ -241,8 +273,11 @@ function migrate_project_options(&$dbHandler,$tableSet)
 	// 		$cols2drop[$colname] = " DROP COLUMN $colname ";
 	// 	}
 	// }
+	echo "<br><br>";
+	echo "**********************************************************************************<br>";
 	echo "******* ATTENTION!!!! *** ==> Please DROP Manually COLUMNS with it's constraints (I'm sorry )<br> ";
 	echo "'option_reqs','option_priority','option_automation'<br> ";
+	echo "**********************************************************************************<br>";
 	
 	// $drop_clause = implode(",", $cols2drop);
 	// $sql = "ALTER TABLE {$tableSet['testprojects']} {$drop_clause} ";

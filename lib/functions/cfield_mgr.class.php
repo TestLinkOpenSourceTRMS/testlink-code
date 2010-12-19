@@ -7,10 +7,11 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.103 2010/11/10 17:21:13 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.104 2010/12/19 17:55:21 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
  * 20101110 - franciscom - BUGID 3843 -> get_linked_items_at_design() new method
  * 20101109 - asimon - BUGID 3989: save custom field values only to db if they are not empty 
  * 20101104 - amitkhullar - Updated Order By Clause in  get_linked_to_testproject()
@@ -1196,7 +1197,9 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 
     returns: -
 
-    rev: 20080810 - franciscom - BUGID 1650
+    rev: 
+    	 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
+    	 20080810 - franciscom - BUGID 1650
 
   */
 	function create($cf)
@@ -1207,16 +1210,15 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     $my_label=$this->db->prepare_string($cf['label']);
     $my_pvalues=$this->db->prepare_string($cf['possible_values']);
 
-
     $sql="INSERT INTO {$this->object_table} " .
          " (name,label,type,possible_values, " .
          "  show_on_design,enable_on_design, " .
          "  show_on_testplan_design,enable_on_testplan_design, " .
-         "  show_on_execution,enable_on_execution) " .
+         "  show_on_execution,enable_on_execution,required) " .
          " VALUES('{$my_name}','{$my_label}',{$cf['type']},'{$my_pvalues}', " .
          "        {$cf['show_on_design']},{$cf['enable_on_design']}," .
          "        {$cf['show_on_testplan_design']},{$cf['enable_on_testplan_design']}," .
-         "        {$cf['show_on_execution']},{$cf['enable_on_execution']})";
+         "        {$cf['show_on_execution']},{$cf['enable_on_execution']},{$cf['required']})";
     $result=$this->db->exec_query($sql);
 
    	if ($result)

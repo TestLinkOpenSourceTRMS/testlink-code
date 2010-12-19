@@ -10,7 +10,7 @@
  * @copyright 	2008, TestLink community
  * @copyright 	inspired by
  * 				Etomite Content Management System, 2003, 2004 Alexander Andrew Butter 
- * @version    	CVS: $Id: installNewDB.php,v 1.61 2010/09/11 16:41:25 franciscom Exp $
+ * @version    	CVS: $Id: installNewDB.php,v 1.62 2010/12/19 14:51:41 franciscom Exp $
  *
  * @internal Revisions:
  *	20100911 - franciscom - drop_tables() - MS SQL does not like 'CASCADE'
@@ -93,9 +93,6 @@ $a_sql_data[]   = $sql_default_data;
 
 global $g_tlLogger;
 $g_tlLogger->disableLogging('db');
-
-
-$msg_process_data = "</b><br />Importing StartUp data<b> ";
 $inst_type_verbose=" Installation ";
 
 $install = $_SESSION['isNew'];
@@ -103,7 +100,6 @@ $upgrade = !$install;
 if ($upgrade)
 {
 	$inst_type_verbose=" Upgrade ";
-	$msg_process_data = "</b><br />Updating Database Contents<b> ";
   	$a_sql_data   = array();
 }
 $the_title = $_SESSION['title'];
@@ -158,15 +154,12 @@ $adminpass = '';
 
 
 // do some database checks
-echo "</b><br />Creating connection to Database Server:<b> ";
+echo "<br /><b>Creating connection to Database Server:</b>";
 
 // ------------------------------------------------------------------------------------------------
 // Connect to DB Server without choosing an specific database
 $db = new database($db_type);
 define('NO_DSN',FALSE);
-// 
-// echo 'DDD';
-// echo $db_server, $db_admin_name, $db_admin_pass;
 @$conn_result = $db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass); 
 
 if( $conn_result['status'] == 0 ) 
@@ -192,7 +185,7 @@ $db = new database($db_type);
 if( $conn_result['status'] == 0 ) 
 {
 	$db->close();
-	echo "</b><br>Database $db_name does not exist. <br>";
+	echo "<br>Database $db_name does not exist. <br>";
 	
 	if( $upgrade )
 	{
@@ -209,7 +202,7 @@ if( $conn_result['status'] == 0 )
 } 
 else 
 {
-	echo "</b><br />Connecting to database `" . $db_name . "`:<b> ";
+	echo "<br />Connecting to database `" . $db_name . "`:";
 	echo "<span class='ok'>OK!</span>";
 }
 // ------------------------------------------------------------------------------------------------
@@ -224,7 +217,7 @@ if($create)
 	
 	$db = New database($db_type);
 	$conn_result=$db->connect(NO_DSN,$db_server, $db_admin_name, $db_admin_pass);
-	echo "</b><br />Creating database `" . $db_name . "`:<b> ";
+	echo "<br /><b>Creating database `" . $db_name . "`</b>:";
 	
 	// 20060214 - franciscom - from MySQL Manual
 	// 9.2. Database, Table, Index, Column, and Alias Names
@@ -372,7 +365,7 @@ $user_host = explode('@',$tl_db_login);
 $msg = create_user_for_db($db_type,$db_name, $db_server, $db_admin_name, $db_admin_pass, 
                           $tl_db_login, $tl_db_passwd);
   
-echo "</b><br />Creating Testlink DB user `" . $user_host[0] . "`:<b> ";
+echo "<br /><b>Creating Testlink DB user `" . $user_host[0] . "`</b>:";
 if ( strpos($msg,'ok -') === FALSE )
 {
 	echo "<span class='notok'>Failed!</span></b> - Could not create user: $tl_db_login!";
@@ -445,7 +438,6 @@ if ( count($a_sql_data > 0) )
 	{
 		if ( count($sql_data > 0) )
 		{
-			// echo $msg_process_data;
 			foreach ($sql_data as $sql_file) 
 			{
 				$sqlParser->process($sql_file);
@@ -487,7 +479,7 @@ else
 }
 
 // -----------------------------------------------------------------------------
-echo "</b><br />Writing configuration file:<b> ";
+echo "<br />Writing configuration file:";
 $data['db_host']=$db_server;
 $data['db_login'] = $user_host[0];
 $data['db_passwd'] = $tl_db_passwd;

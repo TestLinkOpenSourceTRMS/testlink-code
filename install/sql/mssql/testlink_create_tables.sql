@@ -1,7 +1,7 @@
 --  -----------------------------------------------------------------------------------
 -- TestLink Open Source Project - http://testlink.sourceforge.net/
 -- This script is distributed under the GNU General Public License 2 or later.
--- $Id: testlink_create_tables.sql,v 1.55 2010/12/12 09:31:35 franciscom Exp $
+-- $Id: testlink_create_tables.sql,v 1.56 2010/12/19 17:13:19 franciscom Exp $
 --
 -- SQL script - create db tables for TL
 -- Database Type: Microsoft SQL Server
@@ -12,6 +12,7 @@
 -- 
 -- Rev :
 --
+--  20101219 - franciscom - BUGID 4111 - cfield_testprojects ALTER
 --  20101211 - franciscom - updated to 2.0
 --  20100911 - franciscom - updated schema to Test Link 1.9 DB
 --  20100705 - asimon - added column build_id to user_assignments
@@ -160,8 +161,7 @@ CREATE TABLE /*prefix*/cfield_testprojects (
 	display_order smallint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_display_order DEFAULT ((1)),
 	active tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_active DEFAULT ((1)),
 	location tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_location DEFAULT ((1)),
-	required_on_design tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_design DEFAULT ((0)),
-	required_on_execution tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_execution DEFAULT ((0)),
+	required_on tinyint NOT NULL CONSTRAINT /*prefix*/DF_cfield_testprojects_required_on_design DEFAULT ((0)),
  CONSTRAINT /*prefix*/PK_cfield_testprojects PRIMARY KEY CLUSTERED 
 (
 	field_id ASC,

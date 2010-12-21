@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author		Kevin Levy <kevinlevy@users.sourceforge.net>
  * @copyright 	2009, TestLink community 
- * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.76.2.1 2010/12/02 18:04:55 asimon83 Exp $
+ * @version    	CVS: $Id: resultsMoreBuilds.php,v 1.76.2.2 2010/12/21 12:00:22 amkhullar Exp $
  *
  * @internal Revisions:
  *  20101202 - asimon - BUGID 4027: Query metrics start date and end date are not working - getting all results
@@ -140,15 +140,14 @@ function initializeGui(&$dbHandler,&$argsObj,$dateFormat)
     $tester = $argsObj->executorSelected > 0 ? $argsObj->executorSelected : TL_USER_ANYBODY  ;
     
     // BUGID 4027
-	$date_range->start->time = $gui->startTime;
-	$date_range->end->time = $gui->endTime;
+
     
     $re = new newResults($dbHandler, $tplan_mgr,$tproject_info,$tplan_info, 
                       	 $testsuiteIds, $buildsToQuery,
                          $argsObj->platformsSelected, $statusForClass,
                          $latest_resultset, $argsObj->keywordSelected,
-                         $assignee, $date_range->start->time,
-                         $date_range->end->time, $tester,
+                         $assignee, $gui->startTime,
+                         $gui->endTime, $tester,
                          $argsObj->search_notes_string, null);
                       
     $gui->suiteList = $re->getSuiteList();  // test executions results

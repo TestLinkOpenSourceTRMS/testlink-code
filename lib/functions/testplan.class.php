@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.241 2010/12/15 15:11:50 asimon83 Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.242 2010/12/21 12:01:25 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
  *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
  *  20101202 - asimon - fixed filtering issues when filtering for multiple statuses
  *  20101110 - amitkhullar - BUGID 3995 Refix->Custom Field Filters not working properly since the cf_hash is array
@@ -2585,7 +2586,7 @@ class testplan extends tlObjectWithAttachments
 				   " AND NH.parent_id = {$tc_value['tc_id']} " .
 				   " {$cf_query} ";
 			
-			$rows = $this->db->fetchRowsIntoMap($sql,'value');
+			$rows = $this->db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
 			// if there exist as many rows as custom fields to be filtered by => tc does meet the criteria
 			if(count($rows) == $cf_qty) 
 			{

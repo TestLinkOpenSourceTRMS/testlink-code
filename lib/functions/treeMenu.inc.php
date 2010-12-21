@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: treeMenu.inc.php,v 1.158 2010/12/15 15:11:50 asimon83 Exp $
+ * @version    	CVS: $Id: treeMenu.inc.php,v 1.159 2010/12/21 12:01:25 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
  *  20101215 - asimon - BUGID 4023: correct filtering also for platforms
  *  20101209 - asimon - allow correct filtering of test case name and other attributes also for right frame
  *  20101118 - amitkhullar - BUGID 3995 Custom Field Filters not working properly since the cf_hash is array
@@ -1463,7 +1464,7 @@ function extjs_renderExecTreeNodeOnOpen(&$node,$node_type,$tcase_node,$tc_action
 function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite, $node_type_testcase) {
 	static $tables = null;
 	static $debugMsg = null;
-	
+	$rows = null;
 	if (!$debugMsg) {
 		$tables = tlObject::getDBTables(array('cfield_design_values','nodes_hierarchy'));
 		$debugMsg = 'Function: ' . __FUNCTION__;
@@ -1546,9 +1547,8 @@ function filter_by_cf_values(&$tcase_tree, &$cf_hash, &$db, $node_type_testsuite
 			}
 			$sql .=  " AND ({$cf_sql}) ";
 		}
-			
-			$rows = $db->fetchRowsIntoMap($sql,'value');
-			
+
+			$rows = $db->fetchColumnsIntoArray($sql,'value'); //BUGID 4115
 			//if there exist as many rows as custom fields to be filtered by
 			//the tc does meet the criteria
 			$passed = (count($rows) == count($cf_hash)) ? true : false;

@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: testcase.class.php,v 1.331.2.4 2010/12/12 09:13:41 franciscom Exp $
+ * @version    	CVS: $Id: testcase.class.php,v 1.331.2.5 2010/12/22 21:14:06 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -865,6 +865,8 @@ class testcase extends tlObjectWithAttachments
 	    if($status_ok && sizeof($a_id))
 	    {
 	    	$cfx=0;
+	    	$cf_current_version = null;
+	    	$cf_other_versions = null;
 		  	$allTCKeywords = $this->getKeywords($a_id,null,'testcase_id',' ORDER BY keyword ASC ');
 		  	$allReqs = $req_mgr->get_all_for_tcase($a_id);
 		  	foreach($a_id as $key => $tc_id)

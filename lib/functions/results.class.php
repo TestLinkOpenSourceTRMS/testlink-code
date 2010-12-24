@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.163.2.1 2010/11/20 15:00:09 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.163.2.2 2010/12/24 14:12:44 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -249,6 +249,9 @@ class results extends tlObjectWithDB
 							$executor = null, $search_notes_string = null, $linkExecutionBuild = null, 
 							&$suiteStructure = null, &$flatArray = null, &$linked_tcversions = null)
 	{
+		$tstartOn = microtime(true);
+		echo ($tstartOn) . '<br>';
+
 		$this->priorityLevelsCfg = config_get('priority_levels');
 		$this->resultsCfg = config_get('results');
 		$this->testCaseCfg = config_get('testcase_cfg');
@@ -325,10 +328,17 @@ class results extends tlObjectWithDB
 			// if you just query the executions table for those rows with status = $this->map_tc_status['passed']
 			// that is not the way to determine last result
 			$all_results = $this->latest_results;
+			
+			$tstart = microtime(true);
+			echo ($tstart) . '<br>';
 			$this->executionsMap = $this->buildExecutionsMap($builds_to_query, $platforms_to_query, 'a', $keywordId,
 			                                                 $owner, $startTime, $endTime, $executor,
 			                                                 $search_notes_string, $linkExecutionBuild,
 			                                                 $all_results);
+
+			$tend = microtime(true);
+			echo ($tend) . '<br>';
+            echo ($tend - $tstart) . ' seconds<br>';
             
             // new dBug($this->executionsMap);
             
@@ -355,7 +365,13 @@ class results extends tlObjectWithDB
 			$this->totalsForBuilds = $this->createTotalsForBuilds($arrBuilds);
 			$this->aggregateBuildResults = $this->tallyBuildResults($this->mapOfLastResultByBuild,
 			                                                        $arrBuilds, $this->totalsForBuilds);
+
+
 		} // end if block
+
+			$tendOn = microtime(true);
+			echo ($tendOn) . '<br>';
+            echo ($tendOn - $tstartOn) . ' seconds<br>';
 	} // end results constructor
 
 
@@ -907,7 +923,7 @@ class results extends tlObjectWithDB
 		$sql = "/* $debugMsg */ ";
 		$sql .= " SELECT user_id FROM {$this->tables['user_assignments']} " .
 		        " user_assignments WHERE feature_id = "  . $feature_id ;
-		$owner_row =  $this->db->fetchFirstRow($sql,'testcase_id', 1);
+		$owner_row =  $this->db->fetchFirstRow($sql);
 		$owner_id = $owner_row['user_id'] == '' ? -1 : $owner_row['user_id'];
 		return $owner_id;
 	}	// end function
@@ -1350,6 +1366,9 @@ class results extends tlObjectWithDB
 		
 		$suffixLink = htmlspecialchars($this->testCasePrefix . $this->testCaseCfg->glue_character);
 		
+		$queryCounter = 0;
+		$usersForFeatures = $this->getUsersForfeatures($this->testPlanID);
+		$has_no_platform = (sizeof($platforms_to_query) == 0);
 		foreach($this->linked_tcversions as $tcase_info)
 		{
 			foreach($tcase_info as $index => $info) 
@@ -1358,7 +1377,7 @@ class results extends tlObjectWithDB
 				// In this case, check if platform_id is 0; if so,
 				// it means platforms haven't been added yet,
 				// so include all executions.
-				if (sizeof($platforms_to_query) == 0) 
+				if ($has_no_platform) 
 				{
 					if ($info['platform_id'] != 0) 
 					{
@@ -1386,7 +1405,7 @@ class results extends tlObjectWithDB
 					$version = $info['tcversion_number'];
 				}
 			                                        ;
-				$owner_id = $this->getUserForFeature($info['feature_id']);
+				$owner_id = $usersForFeatures[$info['feature_id']];
 
 				// BUGID - 2374: Show Assigned User in the Not Run Test Cases Report 
 				$infoToSave = array('testcaseID' => $testcaseID,
@@ -1450,6 +1469,12 @@ class results extends tlObjectWithDB
 					  //echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
 
 					$execQuery = $this->db->fetchArrayRowsIntoMap($sql,'id');
+					if( $queryCounter == 0)
+					{
+					  echo "<br>debug - <b><i>" . __FUNCTION__ . "</i></b><br><b>" . $sql . "</b><br>";
+					}
+					$queryCounter++;
+					
 					if ($execQuery)
 					{
 						if ($lastResult != $this->map_tc_status['not_run']) 
@@ -1499,6 +1524,7 @@ class results extends tlObjectWithDB
 		
 		unset($infoToSave);
 		
+		echo 'Query Counter:' . $queryCounter . '<br>';
 		return $executionsMap;
 	} // end function
 
@@ -1949,6 +1975,24 @@ class results extends tlObjectWithDB
 		}
         return $ret;
 	}
+
+
+
+	function getUsersForFeatures($tplan_id)
+	{
+		$debugMsg = 'Class:' . __CLASS__ . ' - Method: ' . __FUNCTION__;
+		$sql = "/* $debugMsg */ ";
+
+		$sql .=	" SELECT COALESCE(UA.user_id,-1) AS user_id, TPTCV.id AS feature_id " .
+				" FROM {$this->tables['testplan_tcversions']} TPTCV " .
+				" LEFT OUTER JOIN {$this->tables['user_assignments']} UA " .
+				" ON UA.feature_id = TPTCV.id " .
+				" WHERE TPTCV.testplan_id={$tplan_id}";
+
+		$rs =  $this->db->fetchRowsIntoMap($sql,'feature_id');
+		return $rs;
+	}	// end function
+
 
 
 } // ---- end class result -----

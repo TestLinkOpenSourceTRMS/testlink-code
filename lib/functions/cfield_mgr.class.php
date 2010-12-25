@@ -7,7 +7,7 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.104 2010/12/19 17:55:21 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.105 2010/12/25 20:23:24 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -638,6 +638,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     	$input_name = $this->buildHTMLInputName($p_field_def,$name_suffix);
     	$size = isset($this->sizes[$verbose_type]) ? intval($this->sizes[$verbose_type]) : 0;
     	
+    	$required = $p_field_def['required'] ? ' class="required" ' : ' class="" ';
     	if( $field_size > 0)
     	{
     	  $size=$field_size;
@@ -671,7 +672,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
         	   }
         	}
         	$html_identity=$input_name . $t_name_suffix;
-  			$str_out .="<select name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
+  			$str_out .="<select {$required} name=\"{$html_identity}\" id=\"{$input_name}\" {$t_multiple}";
   			$str_out .= ' size="' . $t_list_size . '">';
         	
   			$t_selected_values = explode( '|', $t_custom_field_value );
@@ -733,7 +734,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 				$js_function = '"textCounter(this.form.' . $input_name . 
 				               ',document.getElementById(\''. $counterId.'\'),' . $this->max_length_value .');" ';
 			
-				$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
+				$str_out .= '<textarea ' . $required . ' name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
 					    	'onKeyDown=' . $js_function . ' onKeyUp=' . $js_function . 'cols="' .
 					        $cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
 
@@ -745,7 +746,7 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
             else
             {
             	// unlimited
-				$str_out .= '<textarea name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
+				$str_out .= '<textarea ' . $required . ' name="' . $input_name . '" ' . " id=\"{$input_name}\" " .
 					    	'cols="' . $cols . '" rows="' . $rows . '">' . "{$t_custom_field_value}</textarea>\n";
             		
             }
@@ -757,34 +758,34 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
 		break;
       
       case 'datetime':
-      $cfg=config_get('gui');
-      
-      // Important
-      // We can do this mix (get date format configuration from standard variable 
-      // and time format from an specific custom field config) because string used 
-      // for date_format on strftime() has no problem
-      // on date() calls (that are used in create_date_selection_set() ).
-      $datetime_format=config_get('date_format') . " " .$cfg->custom_fields->time_format;
-      $str_out .=create_date_selection_set($input_name,$datetime_format,
-                                           $t_custom_field_value, false, true, $show_on_filters) ;
+      	$cfg=config_get('gui');
+      	
+      	// Important
+      	// We can do this mix (get date format configuration from standard variable 
+      	// and time format from an specific custom field config) because string used 
+      	// for date_format on strftime() has no problem
+      	// on date() calls (that are used in create_date_selection_set() ).
+      	$datetime_format=config_get('date_format') . " " .$cfg->custom_fields->time_format;
+      	$str_out .=create_date_selection_set($input_name,$datetime_format,
+      	                                     $t_custom_field_value, false, true, $show_on_filters) ;
       break;
       
 
       default:
-      $dynamic_call='string_input_' . str_replace(' ', '_', $verbose_type);
-      if( function_exists($dynamic_call) )
-      {
-          $str_out .= $dynamic_call($p_field_def, $input_name, $t_custom_field_value);      
-      }
-      else if( method_exists($this, $dynamic_call) )
-      {
-          $str_out .= $this->$dynamic_call($p_field_def, $input_name, $t_custom_field_value);
-      }
-      else
-      {
-          // treat it as an simple string  
-     		  $str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
-      }
+      	$dynamic_call='string_input_' . str_replace(' ', '_', $verbose_type);
+      	if( function_exists($dynamic_call) )
+      	{
+      	    $str_out .= $dynamic_call($p_field_def, $input_name, $t_custom_field_value);      
+      	}
+      	else if( method_exists($this, $dynamic_call) )
+      	{
+      	    $str_out .= $this->$dynamic_call($p_field_def, $input_name, $t_custom_field_value);
+      	}
+      	else
+      	{
+      	    // treat it as an simple string  
+     		$str_out .= $this->string_input_string($p_field_def,$input_name,$t_custom_field_value,$size);
+      	}
       break;
 
 
@@ -2360,9 +2361,10 @@ function getXMLServerParams($node_id)
   */
   function string_input_string($p_field_def, $p_input_name, $p_custom_field_value, $p_size) 
   {
-  	$str_out='';
+    $required = $p_field_def['required'] ? ' class="required" ' : ' class="" ';
+ 	$str_out='';
     $size = intval($p_size) > 0 ? $p_size : self::DEFAULT_INPUT_SIZE;
-  	$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" ";
+  	$str_out .= "<input type=\"text\" name=\"{$p_input_name}\" id=\"{$p_input_name}\" size=\"{$size}\" {$required} ";
 	if( 0 < $p_field_def['length_max'] )
 	{
 	  $str_out .= ' maxlength="' . $p_field_def['length_max'] . '"';
@@ -2554,8 +2556,12 @@ function html_table_inputs($cfields_map,$name_suffix='',$input_values=null)
 			// logic to validate CF content
 			$cf_html_string = $this->string_custom_field_input($cf_info,$name_suffix);
 			$dummy = explode(' ', strstr($cf_html_string,'id="custom_field_'));
-	     	$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);
-    		$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id}>" . htmlspecialchars($label) . ":</td><td>" .
+	     	$td_label_id = str_replace('id="', 'id="label_', $dummy[0]);           
+	     	
+    		$required_sign = $cf_info['required'] ? ' (*) ' : '  ';
+    		$required_hint = $cf_info['required'] ? ' title="required field" ' : '  ';
+    		$cf_smarty .= "<tr><td class=\"labelHolder\" {$td_label_id} {$required_hint} > " . $required_sign .
+    					  htmlspecialchars($label) . ":</td><td>" .
     			          $this->string_custom_field_input($cf_info,$name_suffix) .
     					  "</td></tr>\n";
     	}

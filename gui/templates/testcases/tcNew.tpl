@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcNew.tpl,v 1.20 2010/12/02 10:22:16 asimon83 Exp $
+$Id: tcNew.tpl,v 1.21 2010/12/25 20:23:24 franciscom Exp $
 Purpose: smarty template - create new testcase
 
 20101202 - asimon - BUGID 4067: Tree refreshes after every action taken in Test Specification when update tree is disabled
@@ -20,7 +20,7 @@ Purpose: smarty template - create new testcase
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
-{lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,
+{lang_get var='labels' s='btn_create,cancel,warning,title_new_tc,warning_required_cf,
                           warning_empty_tc_title'}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -44,6 +44,8 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
+var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
+
 
 function validateForm(f)
 {
@@ -61,6 +63,14 @@ function validateForm(f)
 	if (cf_designTime)
  	{
  		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+
+		if(!checkRequiredCF.status_ok)
+	  {
+	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
+	      return false;
+		}
+
  		var cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)
 	  {

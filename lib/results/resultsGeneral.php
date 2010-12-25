@@ -4,13 +4,14 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.71 $
- * @modified $Date: 2010/10/18 22:55:29 $ by $Author: erikeloff $
+ * @version $Revision: 1.72 $
+ * @modified $Date: 2010/12/25 10:24:43 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
  *
  * Revisions:
+ *	20101225 - franciscom - added processing time feedback
  *  20101018 - Julian - BUGID 2236 - Milestones Report broken - removed useless code
  *  20100811 - asimon - removed "results by assigned testers" table,
  *                      was replaced by new report "results by tester per build"
@@ -35,6 +36,7 @@ require_once('results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db,true,false,"checkRights");
 
+$timerOn = microtime(true);
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
@@ -60,6 +62,7 @@ $gui->statistics->testers = null;
 $gui->statistics->milestones = null;
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
+$gui->elapsed_time = 0; 
 
 $mailCfg = buildMailCfg($gui);
 
@@ -257,6 +260,9 @@ else // do report
 } 
 
 // ----------------------------------------------------------------------------
+$timerOff = microtime(true);
+$gui->elapsed_time = round($timerOff - $timerOn,2);
+
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
 $smarty->assign('buildColDefinition', $colDefinition);

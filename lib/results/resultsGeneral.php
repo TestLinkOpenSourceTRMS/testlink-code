@@ -4,8 +4,8 @@
  * This script is distributed under the GNU General Public License 2 or later.
  * 
  * @filesource $RCSfile: resultsGeneral.php,v $
- * @version $Revision: 1.71 $
- * @modified $Date: 2010/10/18 22:55:29 $ by $Author: erikeloff $
+ * @version $Revision: 1.71.2.1 $
+ * @modified $Date: 2010/12/25 10:23:17 $ by $Author: franciscom $
  * @author	Martin Havlat <havlat at users.sourceforge.net>
  * 
  * Show Test Results over all Builds.
@@ -35,6 +35,7 @@ require_once('results.class.php');
 require_once('displayMgr.php');
 testlinkInitPage($db,true,false,"checkRights");
 
+$timerOn = microtime(true);
 
 $tplan_mgr = new testplan($db);
 $tproject_mgr = new testproject($db);
@@ -60,6 +61,7 @@ $gui->statistics->testers = null;
 $gui->statistics->milestones = null;
 $gui->tplan_name = $tplan_info['name'];
 $gui->tproject_name = $tproject_info['name'];
+$gui->elapsed_time = 0; 
 
 $mailCfg = buildMailCfg($gui);
 
@@ -73,7 +75,9 @@ if( is_null($gui->platformSet) )
 
 $metricsMgr = new tlTestPlanMetrics($db);
 
-$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
+// $re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS,ALL_PLATFORMS);
+// default is ALL PLATFORMS
+$re = new results($db, $tplan_mgr, $tproject_info, $tplan_info,ALL_TEST_SUITES,ALL_BUILDS);
 // ----------------------------------------------------------------------------
 $topLevelSuites = $re->getTopLevelSuites();
 
@@ -257,6 +261,8 @@ else // do report
 } 
 
 // ----------------------------------------------------------------------------
+$timerOff = microtime(true);
+$gui->elapsed_time = round($timerOff - $timerOn,2);
 $smarty = new TLSmarty;
 $smarty->assign('gui', $gui);
 $smarty->assign('buildColDefinition', $colDefinition);

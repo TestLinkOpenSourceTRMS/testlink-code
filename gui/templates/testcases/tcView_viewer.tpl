@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.85 2010/11/02 09:33:02 asimon83 Exp $
+$Id: tcView_viewer.tpl,v 1.85.2.1 2010/12/25 11:38:57 franciscom Exp $
 viewer for test case in test specification
 
 rev:
@@ -295,7 +295,11 @@ function launchInsertStep(step_id)
 {if $session['testprojectOptions']->automationEnabled}
   <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$tcView_viewer_labels.execution_type} {$smarty.const.TITLE_SEP}</span>
-		{$gui->execution_types[$args_testcase.execution_type]}
+		{if isset($gui->execution_types[$args_testcase.execution_type])}
+		  {$gui->execution_types[$args_testcase.execution_type]}
+		{else}
+		  Unknown execution type code: {$args_testcase.execution_type}
+		{/if}  
 	</div>
 {/if}
 

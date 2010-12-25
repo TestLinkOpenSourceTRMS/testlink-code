@@ -1,10 +1,11 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: inc_exec_controls.tpl,v 1.14 2010/06/24 17:25:53 asimon83 Exp $
+$Id: inc_exec_controls.tpl,v 1.15 2010/12/25 11:56:24 franciscom Exp $
 Purpose: draw execution controls (input for notes and results)
 Author : franciscom
 
 Rev: 
+  20101225 - franciscom - fixed event viewer warning due to typo error
   BUGID 3479: Bulk Execution - Custom Fields Bulk Assignment
 *}	
       {assign var="ResultsStatusCode" value=$tlCfg->results.status_code}
@@ -59,7 +60,7 @@ Rev:
     		</tr>
         {if $args_save_type == 'bulk' && $args_execution_time_cfields != ''}
           <tr><td colspan="2">
-  					<div id="cfields_exec_time_tcversionid_{$tcversion_id}" class="custom_field_container" 
+  					<div id="cfields_exec_time_tcversionid_{$args_tcversion_id}" class="custom_field_container" 
   						style="background-color:#dddddd;">
             {$args_labels.testcase_customfields}
             {$args_execution_time_cfields.0} {* 0 => bulk *}

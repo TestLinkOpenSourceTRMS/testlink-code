@@ -6,12 +6,14 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.164 2010/11/20 14:58:37 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.165 2010/12/25 10:15:45 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
  *
  * @internal Revisions:
+ * 20101225 - franciscom - BUGID 4124: General Test Plan Metrics Fails (BLANK Page)
+ *
  * 20101019 - eloff - BUGID 3794 - added contribution by rtessier
  * 20100821 - asimon - BUGID 3682
  * 20100721 - asimon - BUGID 3406, 1508: changed for user assignments per build:
@@ -1290,6 +1292,7 @@ class results extends tlObjectWithDB
 	 *
 	 * @internal Revisions:
 	 * 
+	 *	20101225 - franciscom - BUGID 4124: General Test Plan Metrics Fails (BLANK Page)
 	 *  20100518 - franciscom - BUGID 3474: Link to test case in Query Metrics Report is broken if using platforms
 	 *	20090302 - amitkhullar - added a parameter $all_results to get latest results (0) only otherwise 
 	 * 				all results are displayed in reports (1). 
@@ -1309,6 +1312,12 @@ class results extends tlObjectWithDB
 	                                    $search_notes_string, $executeLinkBuild, $all_results = 1)
 	{
 		$searchBugs= config_get('bugInterfaceOn');
+
+
+		// BUGID 4124: General Test Plan Metrics Fails (BLANK Page)
+		setlocale(LC_ALL, TL_DEFAULT_LOCALE);   // needed to avoid PHP warnings due to TIMEZONE setting
+		$format = config_get('timestamp_format');
+
 		
 		// first make sure we initialize the executionsMap
 		// otherwise duplicate executions will be added to suites
@@ -1468,9 +1477,12 @@ class results extends tlObjectWithDB
 								//@todo: Refactor for this code - BUGID 2242 
 								$infoToSave['bugString'] = $searchBugs ? $this->buildBugString($this->db, $executions_id) : '';
 								
-								$dummy = null;
-								$infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
-									                                                   $exec_row['execution_ts']);
+								// BUGID 4124 -  this call is absolutely time consuming
+								// $dummy = null;
+								// $infoToSave['execution_ts'] = localize_dateOrTimeStamp(null, $dummy,'timestamp_format',
+								// 	                                                   $exec_row['execution_ts']);
+								$infoToSave['execution_ts'] = strftime($format,strtotime($exec_row['execution_ts']));
+								
 								//-amitkhullar - BugID:2267
 								$prefixLink = '<a href="lib/execute/execSetResults.php?level=testcase&build_id=' . $infoToSave['build_id'];
 								

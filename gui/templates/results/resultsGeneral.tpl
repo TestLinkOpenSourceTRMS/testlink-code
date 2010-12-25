@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: resultsGeneral.tpl,v 1.25 2010/10/18 15:24:51 mx-julian Exp $
+$Id: resultsGeneral.tpl,v 1.25.2.1 2010/12/25 10:28:07 franciscom Exp $
 Purpose: smarty template - show Test Results and Metrics
 Revisions:
     20101018 - Julian - added info for milestone progress how percentage is calculated
@@ -18,7 +18,7 @@ Revisions:
        	 th_overall_priority, th_progress, th_expected, th_overall, th_milestone,
        	 th_tc_priority_high, th_tc_priority_medium, th_tc_priority_low,
          title_res_by_kw,title_res_by_owner,title_res_by_top_level_suites,
-         title_report_tc_priorities,title_report_milestones,
+         title_report_tc_priorities,title_report_milestones,elapsed_seconds,
          title_metrics_x_build,title_res_by_platform,th_platform,important_notice,
          report_tcase_platorm_relationship, th_tc_total, th_completed, th_goal,
          th_build, th_tc_assigned, th_perc_completed, from, until'}
@@ -202,6 +202,7 @@ Revisions:
 	{/if}
 	
 	<p>{$labels.generated_by_TestLink_on} {$smarty.now|date_format:$gsmarty_timestamp_format}</p>
+	<p>{$labels.elapsed_seconds} {$gui->elapsed_time}</p>
 
 {else}
   	{$gui->do_report.msg}

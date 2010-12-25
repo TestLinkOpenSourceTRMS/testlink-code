@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: tcView_viewer.tpl,v 1.86 2010/11/13 11:07:58 franciscom Exp $
+$Id: tcView_viewer.tpl,v 1.87 2010/12/25 11:40:29 franciscom Exp $
 viewer for test case in test specification
 
 rev:
+    20101225 - franciscom - added warning for excution type with message ONLY in english
     20101102 - asimon - BUGID 2864: replaced old open_top() by openLinkedReqWindow()
     20100901 - franciscom - refactoring using inc_tcbody.tpl
                             added launchInsertStep()
@@ -293,7 +294,11 @@ function launchInsertStep(step_id)
 {if $session['testprojectOptions']->automationEnabled}
   <div {$addInfoDivStyle}>
 		<span class="labelHolder">{$tcView_viewer_labels.execution_type} {$smarty.const.TITLE_SEP}</span>
-		{$gui->execution_types[$args_testcase.execution_type]}
+		{if isset($gui->execution_types[$args_testcase.execution_type])}
+		  {$gui->execution_types[$args_testcase.execution_type]}
+		{else}
+		  Unknown execution type code: {$args_testcase.execution_type}
+		{/if}  
 	</div>
 {/if}
 

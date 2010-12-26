@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.26 2010/11/24 17:11:18 mx-julian Exp $
+$Id: reqSpecEdit.tpl,v 1.27 2010/12/26 10:28:41 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev:
+  20101226 - franciscom - BUGID 4088: Required parameter for custom fields 
   20101124 - Julian - BUGID 4051: Ajax login on timeout for requirement specifications to avoid data loss
   20101006 - asimon - BUGID 3854
   20100810 - asimon - BUGID 3317: disabled total count of requirements by default
@@ -13,7 +14,7 @@ rev:
 {* ------------------------------------------------------------------------- *}
 
 {lang_get var="labels"
-          s='warning,warning_empty_req_spec_title,title,scope,req_total,type,
+          s='warning,warning_empty_req_spec_title,title,scope,req_total,type,warning_required_cf,
              doc_id,cancel,show_event_history,warning_empty_doc_id,warning_countreq_numeric'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
@@ -28,9 +29,13 @@ rev:
 	var warning_empty_req_spec_title = "{$labels.warning_empty_req_spec_title|escape:'javascript'}";
 	var warning_empty_doc_id = "{$labels.warning_empty_doc_id|escape:'javascript'}";
 	var warning_countreq_numeric = "{$labels.warning_countreq_numeric|escape:'javascript'}";
+	var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
+
+	
 	function validateForm(f)
 	{
-   
+  	var cf_designTime = document.getElementById('custom_field_container');
+ 
 		if (isWhitespace(f.doc_id.value)) 
   	{
     	alert_message(alert_box_title,warning_empty_doc_id);
@@ -44,14 +49,48 @@ rev:
 			selectField(f,'title');
 			return false;
 		}
+		
 		{if $gui->external_req_management}
-		if (isNaN(parseInt(f.countReq.value)))
-		{
-			alert_message(alert_box_title,warning_countreq_numeric);
-			selectField(f,'countReq');
-			return false;
-		}
+		  if (isNaN(parseInt(f.countReq.value)))
+		  {
+		  	alert_message(alert_box_title,warning_countreq_numeric);
+		  	selectField(f,'countReq');
+		  	return false;
+		  }
 		{/if}
+
+    /* Validation of a limited type of custom fields */
+	  if (cf_designTime)
+ 	  {
+ 	  	var cfields_container = cf_designTime.getElementsByTagName('input');
+ 	
+ 	    /* BUGID 4088: Required parameter for custom fields */
+ 	 		var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+		  if(!checkRequiredCF.status_ok)
+	    {
+	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
+	      return false;
+		  }
+ 	
+ 	  	var cfieldsChecks = validateCustomFields(cfields_container);
+	  	if(!cfieldsChecks.status_ok)
+	    {
+	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	        return false;
+	  	}
+    
+      /* Text area needs a special access */
+ 	  	cfields_container = cf_designTime.getElementsByTagName('textarea');
+ 	  	cfieldsChecks = validateCustomFields(cfields_container);
+	  	if(!cfieldsChecks.status_ok)
+	    {
+	      	var warning_msg = cfMessages[cfieldsChecks.msg_id];
+	        alert_message(alert_box_title,warning_msg.replace(/%s/, cfieldsChecks.cfield_label));
+	        return false;
+	  	}
+	  }
+
 		return Ext.ux.requireSessionAndSubmit(f);
 	}
 	</script>

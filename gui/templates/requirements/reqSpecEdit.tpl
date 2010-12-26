@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqSpecEdit.tpl,v 1.27 2010/12/26 10:28:41 franciscom Exp $
+$Id: reqSpecEdit.tpl,v 1.28 2010/12/26 11:23:28 franciscom Exp $
 Purpose: smarty template - create a new req document
 
 rev:
@@ -157,7 +157,7 @@ rev:
 		
 	    <br />
 		{if $gui->cfields neq ""}
-			<div class="custom_field_container">
+			<div class="custom_field_container" id="custom_field_container">
 		    	{$gui->cfields}
 		    </div>
 		<br />

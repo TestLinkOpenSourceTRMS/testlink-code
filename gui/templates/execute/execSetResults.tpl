@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.65 2010/12/26 10:03:57 franciscom Exp $
+$Id: execSetResults.tpl,v 1.66 2010/12/26 10:12:50 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
+  20101226 - franciscom - BUGID 4088: Required parameter for custom fields
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  - {literal} {/literal} REMOVED
                           on JS section space is needed on {}
                           panel.load({url:url2load}); ->   panel.load({ url:url2load });
@@ -131,19 +132,18 @@ function validateForm(f)
   var access_key;
   cfield_container=document.getElementById('save_button_clicked').value;
   access_key='cfields_exec_time_tcversionid_'+cfield_container; 
-    
+
   if( document.getElementById(access_key) != null )
   {    
  	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
    
        /* BUGID 4088: Required parameter for custom fields */
- 	 	  var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+ 	 	  var checkRequiredCF = checkRequiredCustomFields(cfields_inputs);
 		  if(!checkRequiredCF.status_ok)
 	    {
 	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
 	      return false;
 		  }
-
    
       cfValidityChecks=validateCustomFields(cfields_inputs);
       if( !cfValidityChecks.status_ok )

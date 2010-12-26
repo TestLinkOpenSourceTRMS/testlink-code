@@ -5,13 +5,14 @@
  *
  * Filename $RCSfile: requirement_spec_mgr.class.php,v $
  *
- * @version $Revision: 1.88 $
- * @modified $Date: 2010/11/09 11:11:28 $ by $Author: asimon83 $
+ * @version $Revision: 1.89 $
+ * @modified $Date: 2010/12/26 10:25:13 $ by $Author: franciscom $
  * @author Francisco Mancardi
  *
  * Manager for requirement specification (requirement container)
  *
  * @internal revision:
+ *	20101226 - franciscom - html_table_of_custom_field_inputs() refactored
  *  20101109 - asimon - BUGID 3989: now it is configurable if custom fields without values are shown
  *	20100908 - franciscom - BUGID 3762 Import Req Spec - custom fields values are ignored
  *							createFromXML()
@@ -1213,28 +1214,16 @@ function get_linked_cfields($id,$tproject_id=null)
 
 
   returns: html string
+  
+  @internal revision
+  20101226 - franciscom - refactored to use same logic that other similar method on other objects
 
 */
-function html_table_of_custom_field_inputs($id,$tproject_id=null,$parent_id=null,$name_suffix='')
+function html_table_of_custom_field_inputs($id,$tproject_id=null,$parent_id=null,$name_suffix='', $input_values = null)
 {
-    $NO_WARNING_IF_MISSING=true;
     $cf_smarty = '';
     $cf_map = $this->get_linked_cfields($id,$tproject_id);
-
-	if(!is_null($cf_map))
-	{
-		$cf_smarty = "<table>";
-		foreach($cf_map as $cf_id => $cf_info)
-		{
-            $label=str_replace(TL_LOCALIZE_TAG,'',
-                               lang_get($cf_info['label'],null,$NO_WARNING_IF_MISSING));
-
-			$cf_smarty .= '<tr><td class="labelHolder">' . htmlspecialchars($label) . ":</td><td>" .
-				          $this->cfield_mgr->string_custom_field_input($cf_info,$name_suffix) .
-						  "</td></tr>\n";
-		}
-		$cf_smarty .= "</table>";
-	}
+	$cf_smarty = $this->cfield_mgr->html_table_inputs($cf_map,$name_suffix,$input_values);
 	return $cf_smarty;
 }
 

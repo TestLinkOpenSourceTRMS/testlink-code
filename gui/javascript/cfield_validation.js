@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfield_validation.js,v 1.6 2010/12/26 09:32:46 franciscom Exp $
+$Id: cfield_validation.js,v 1.7 2010/12/26 10:00:37 franciscom Exp $
 
 functions to validate custom field contents
 
@@ -177,19 +177,23 @@ function checkRequiredCustomFields(cfields_inputs)
       checkStatus.status_ok = !(cfield_value.length == 0);
       if(checkStatus.status_ok)
       {
-          // check for whitespace now!
-          checkStatus.status_ok = false;
-          for (var z = 0; z < s.length; z++) 
+          // check each character for whitespace now!
+          for (var z = 0; z < cfield_value.length; z++) 
           {
+              checkStatus.status_ok = false;
               // Check that current character isn't whitespace.
-              var c = s.charAt(z);
-              if (cfield_value.indexOf(c) == -1) 
+              var c = cfield_value.charAt(z);
+              if (whitespace.indexOf(c) == -1) 
               {
+                  // if I found at leat a char not present into
+                  // whitespace set this means it will not be a String
+                  // full of whitespaces 
                   checkStatus.status_ok = true;
+                  break;  
               }
           }
       }
-      
+       
 		  if( !checkStatus.status_ok )
       {
          // get label

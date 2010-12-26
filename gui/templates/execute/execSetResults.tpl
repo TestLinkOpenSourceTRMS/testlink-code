@@ -1,6 +1,6 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: execSetResults.tpl,v 1.64 2010/11/13 09:39:45 franciscom Exp $
+$Id: execSetResults.tpl,v 1.65 2010/12/26 10:03:57 franciscom Exp $
 Purpose: smarty template - show tests to add results
 Rev:
   20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility  - {literal} {/literal} REMOVED
@@ -52,7 +52,7 @@ Rev:
 	           testcaseversion,btn_print,execute_and_save_results,warning,warning_nothing_will_be_saved,
 	           test_exec_steps,test_exec_expected_r,btn_save_tc_exec_results,only_test_cases_assigned_to,
              deleted_user,click_to_open,reqs,requirement,show_tcase_spec,edit_execution, 
-             btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,
+             btn_save_exec_and_movetonext,step_number,btn_export,btn_export_testcases,warning_required_cf,
              preconditions,platform,platform_description,exec_not_run_result_note'}
 
 
@@ -115,7 +115,13 @@ function set_combo_group(formid,combo_id_prefix,value_to_assign)
 // BUGID 3943: Escape all messages (string)
 var alert_box_title="{$labels.warning|escape:'javascript'}";
 var warning_nothing_will_be_saved="{$labels.warning_nothing_will_be_saved|escape:'javascript'}";
+var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
+
+/**
+ * 
+ *
+ */
 function validateForm(f)
 {
   var status_ok=true;
@@ -129,6 +135,16 @@ function validateForm(f)
   if( document.getElementById(access_key) != null )
   {    
  	    cfields_inputs = document.getElementById(access_key).getElementsByTagName('input');
+   
+       /* BUGID 4088: Required parameter for custom fields */
+ 	 	  var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+		  if(!checkRequiredCF.status_ok)
+	    {
+	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
+	      return false;
+		  }
+
+   
       cfValidityChecks=validateCustomFields(cfields_inputs);
       if( !cfValidityChecks.status_ok )
       {

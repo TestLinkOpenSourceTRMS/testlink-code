@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.340 2010/12/14 08:48:17 mx-julian Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.341 2010/12/26 13:43:16 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -372,6 +372,9 @@ $tlCfg->validation_cfg->user_login_valid_regex='/^[\w \- .]+$/';
  * $regex = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/";
  * </code>
  **/
+// This expression does not allow Top Level Domian (last part of domain name) longer than 4
+// If you need to change this
+// Configure this on custom_config.inc.php
 $tlCfg->validation_cfg->user_email_valid_regex_js =  "/^(\w+)([-+.][\w]+)*@(\w[-\w]*\.){1,5}([A-Za-z]){2,4}$/";
 $tlCfg->validation_cfg->user_email_valid_regex_php = "/^([\w]+)(.[\w]+)*@([\w-]+\.){1,5}([A-Za-z]){2,4}$/U";
 

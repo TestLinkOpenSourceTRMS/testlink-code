@@ -7,11 +7,12 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.106 2010/12/26 09:25:13 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.107 2010/12/26 09:44:33 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
  * 20101226	- franciscom - create() changes to make it more resilent
+ *						   update() - BUGID 4088: Required parameter for custom fields	
  * 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
  * 20101110 - franciscom - BUGID 3843 -> get_linked_items_at_design() new method
  * 20101109 - asimon - BUGID 3989: save custom field values only to db if they are not empty 
@@ -1266,8 +1267,13 @@ function create($cf)
                  show_on_testplan_design
                  enable_on_testplan_design
                  node_type_id
+                 required
 
     returns: -
+    
+    @internal revision
+    20101226 - franciscom - BUGID 4088: Required parameter for custom fields
+    
   */
 	function update($cf)
 	{
@@ -1275,6 +1281,8 @@ function create($cf)
 		$my_label = $this->db->prepare_string($cf['label']);
 		$my_pvalues = $this->db->prepare_string($cf['possible_values']);
 
+		$required = intval($cf['required']) > 0 ? 1 : 0;
+		
 		$sql ="UPDATE {$this->tables['custom_fields']}  " .
 			 " SET name='{$my_name}',label='{$my_label}'," .
 			 "     type={$cf['type']},possible_values='{$my_pvalues}'," .
@@ -1283,7 +1291,8 @@ function create($cf)
 			 "     show_on_testplan_design={$cf['show_on_testplan_design']}," .
 			 "     enable_on_testplan_design={$cf['enable_on_testplan_design']}," .
 			 "     show_on_execution={$cf['show_on_execution']}," .
-			 "     enable_on_execution={$cf['enable_on_execution']}" .
+			 "     enable_on_execution={$cf['enable_on_execution']}," .
+			 "     required={$required}" .
 			 " WHERE id={$cf['id']}";
 		$result = $this->db->exec_query($sql);
 

@@ -7,10 +7,11 @@
  * @author 		franciscom
  * @copyright 	2005-2009, TestLink community
  * @copyright 	Mantis BT team (some parts of code was reuse from the Mantis project) 
- * @version    	CVS: $Id: cfield_mgr.class.php,v 1.105 2010/12/25 20:23:24 franciscom Exp $
+ * @version    	CVS: $Id: cfield_mgr.class.php,v 1.106 2010/12/26 09:25:13 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ * 20101226	- franciscom - create() changes to make it more resilent
  * 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
  * 20101110 - franciscom - BUGID 3843 -> get_linked_items_at_design() new method
  * 20101109 - asimon - BUGID 3989: save custom field values only to db if they are not empty 
@@ -1199,17 +1200,26 @@ function _get_ui_mgtm_cfg_for_node_type($map_node_id_cfg)
     returns: -
 
     rev: 
+    	 20101226 - franciscom - added default management to avoid crashes when used to import
+    	 						 with files with older structure (missing fields) 
     	 20101219 - franciscom - BUGID 4088: Required parameter for custom fields
     	 20080810 - franciscom - BUGID 1650
 
   */
-	function create($cf)
-  {
+function create($cf)
+{
     $ret = array('status_ok' => 0, 'id' => 0, 'msg' => 'ko');
 
     $my_name=$this->db->prepare_string($cf['name']);
     $my_label=$this->db->prepare_string($cf['label']);
     $my_pvalues=$this->db->prepare_string($cf['possible_values']);
+
+	// This method is also used to create CF using import.
+	// To avoid crash if people import using old format (previous to 2.0), 
+	// I will check for missing fields and add default value.
+	//
+	$default_values = array('required' => 0);
+	$cf = array_merge($default_values,$cf);
 
     $sql="INSERT INTO {$this->object_table} " .
          " (name,label,type,possible_values, " .

@@ -1,8 +1,9 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: containerNew.tpl,v 1.13 2010/12/02 17:58:58 asimon83 Exp $
+$Id: containerNew.tpl,v 1.14 2010/12/26 08:49:46 franciscom Exp $
 Purpose: smarty template - create containers
 
+20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 20101202 - asimon - BUGID 4067: refresh tree problems 
 20101012 - franciscom - BUGID 3887: CF Types validation
 20100501 - franciscom - BUGID 3410: Smarty 3.0 compatibility
@@ -10,12 +11,12 @@ Purpose: smarty template - create containers
                         templates. On 3.0 RC smarty.template do not contains current dir
 
 20070214 - franciscom -
-BUGID 628: Name edit � Invalid action parameter/other behaviours if �Enter� pressed.
+BUGID 628: Name edit Invalid action parameter/other behaviours if �Enter� pressed.
 20061231 - franciscom - using parent_info
 20060804 - franciscom - changes to add option transfer
 *}
 {lang_get var="labels"
-          s="warning_empty_testsuite_name,title_create,tc_keywords,
+          s="warning_empty_testsuite_name,title_create,tc_keywords,warning_required_cf,
              warning,btn_create_testsuite"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes"}
@@ -38,6 +39,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_container_name = "{$labels.warning_empty_testsuite_name|escape:'javascript'}";
+var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 function validateForm(f)
 {
@@ -53,6 +55,13 @@ function validateForm(f)
 	if (cf_designTime)
  	{
  		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+		if(!checkRequiredCF.status_ok)
+	  {
+	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
+	      return false;
+		}
+
  		var cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)
 	  	{

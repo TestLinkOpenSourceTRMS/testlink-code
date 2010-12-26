@@ -1,9 +1,10 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: containerEdit.tpl,v 1.13 2010/11/13 11:02:52 franciscom Exp $
+$Id: containerEdit.tpl,v 1.14 2010/12/26 08:49:46 franciscom Exp $
 Purpose: smarty template - edit test specification: containers 
 
 @internal revision
+20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101012 - franciscom - BUGID 3887: CF Types validation
 20100315 - amitkhullar - Added Cancel button
@@ -11,7 +12,7 @@ Purpose: smarty template - edit test specification: containers
 
 *}
 {lang_get var="labels"
-          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning'}
+          s='warning_empty_testsuite_name,title_edit_level,btn_save,tc_keywords,cancel,warning,warning_required_cf'}
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
 {config_load file="input_dimensions.conf" section=$cfg_section}
 
@@ -33,6 +34,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 //BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_container_name = "{$labels.warning_empty_testsuite_name|escape:'javascript'}";
+var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 function validateForm(f)
 {
@@ -48,6 +50,15 @@ function validateForm(f)
 	if (cf_designTime)
  	{
  		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		
+ 		var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+		if(!checkRequiredCF.status_ok)
+	  {
+	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
+	      return false;
+		}
+
+ 		
  		var cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)
 	  	{

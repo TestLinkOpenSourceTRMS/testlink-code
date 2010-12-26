@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: tcEdit.tpl,v 1.34 2010/11/13 11:07:58 franciscom Exp $ 
+$Id: tcEdit.tpl,v 1.35 2010/12/26 08:46:25 franciscom Exp $ 
 Purpose: smarty template - edit test specification: test case
 
 @internal Revisions:
+  20101226 - franciscom - BUGID 
   20101010 - franciscom - refactoring of BUGID 3062 -> gui/javascript/tcase_utils.js
                           added testsuite_id for same logic
   20100810 - asimon - BUGID 3579: solved tree refreshing problems
@@ -16,7 +17,7 @@ Purpose: smarty template - edit test specification: test case
 *}
 
 {lang_get var="labels"
-          s="warning,warning_empty_tc_title,btn_save,
+          s="warning,warning_empty_tc_title,btn_save,warning_required_cf,
              version,title_edit_tc,cancel,warning_unsaved"}
 
 {include file="inc_head.tpl" openHead='yes' jsValidate="yes" editorType=$gui->editorType}
@@ -42,6 +43,7 @@ var {$opt_cfg->js_ot_name} = new OptionTransfer("{$opt_cfg->from->name}","{$opt_
 //BUGID 3943: Escape all messages (string)
 var warning_empty_testcase_name = "{$labels.warning_empty_tc_title|escape:'javascript'}";
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
+var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 /**
  * validate certain form controls before submitting
@@ -58,9 +60,21 @@ function validateForm(the_form)
 		return false;
 	}
 	var cf_designTime = document.getElementById('cfields_design_time');
+	
+	
 	if (cf_designTime)
  	{
  		var cfields_container = cf_designTime.getElementsByTagName('input');
+	  
+	  var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+	  if(!checkRequiredCF.status_ok)
+	  {
+	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
+	      return false;
+	  }
+
+
+
  		var cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)
 	  	{

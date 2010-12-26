@@ -8,11 +8,12 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi (francisco.mancardi@gmail.com)
  * @copyright 	2005-2009, TestLink community 
- * @version    	CVS: $Id: cfieldsExport.php,v 1.4 2010/03/15 20:23:09 franciscom Exp $
+ * @version    	CVS: $Id: cfieldsExport.php,v 1.5 2010/12/26 09:10:18 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses 		config.inc.php
  *
  * @internal Revisions:
+ * 20101226 - franciscom - BUGID 4088: Required parameter for custom fields
  * 20100315 - franciscom - added tlInputParameter() on init_args + goback managament
  * 20090719 - franciscom - db table prefix management		
  *
@@ -81,6 +82,9 @@ function init_args()
   
   returns: -
 
+	@internal revision
+	20101226 - franciscom - BUGID 4088: Required parameter for custom fields
+		
 */
 function doExport(&$dbHandler,$filename)
 {
@@ -89,7 +93,7 @@ function doExport(&$dbHandler,$filename)
     $sql = " SELECT name,label,type,possible_values,default_value,valid_regexp, " .
 		     " length_min,length_max,show_on_design,enable_on_design,show_on_execution," .
 		     " enable_on_execution,show_on_testplan_design,enable_on_testplan_design, " .
-		     " node_type_id " .
+		     " node_type_id,required " .
 		     " FROM {$tables['custom_fields']} CF,{$tables['cfield_node_types']} " .
 		     " WHERE CF.id=field_id ";
   

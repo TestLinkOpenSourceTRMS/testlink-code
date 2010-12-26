@@ -1,6 +1,6 @@
 /*  
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: cfield_validation.js,v 1.5 2010/12/25 20:23:24 franciscom Exp $
+$Id: cfield_validation.js,v 1.6 2010/12/26 09:32:46 franciscom Exp $
 
 functions to validate custom field contents
 
@@ -15,6 +15,8 @@ Global Dependencies:  cfChecks,cfMessages
                       declared and initialized in inc_jsCfieldsValidation.tpl   
     
 rev:
+    20101226 - franciscom - BUGID 4088: Required parameter for custom fields
+                            checkRequiredCustomFields()
     20090823 - franciscom - changed logic to for BUGID 2414
     20090421 - franciscom - BUGID 2414 - check for text area character qty.
     20090101 - franciscom - changes email_check regexp with one taken from EXT-JS Vtypes.js
@@ -119,8 +121,18 @@ function validateCustomFields(cfields_inputs)
 }
 
 /**
- * 
- *
+  function: checkRequiredCustomFields 
+            For every custom field, do check (get class name) to understand
+            if is a REQUIRED field.
+            IMPORTANT NOTICE: At first validation failure, processing is aborted
+
+  args: cfields_inputs: set of html inputs used to manage the custom fields.
+  
+  returns: object -> obj.status_ok: true if all check passed
+                     obj.msg_id: not used, maintained for compatobility with validateCustomFields()
+                                 
+                     obj.cfield_label: label of offending custom field, used on user's feedback
+                     
  */
 function checkRequiredCustomFields(cfields_inputs)
 {
@@ -180,7 +192,6 @@ function checkRequiredCustomFields(cfields_inputs)
       
 		  if( !checkStatus.status_ok )
       {
-         alert('REQEEEE'); 
          // get label
          var cfield_label = document.getElementById('label_'+elemID).firstChild.nodeValue;
          checkStatus.msg_id='required_cf';  // USELESS

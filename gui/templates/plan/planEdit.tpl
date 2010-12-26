@@ -1,9 +1,10 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: planEdit.tpl,v 1.18 2010/11/13 09:43:37 franciscom Exp $
+$Id: planEdit.tpl,v 1.19 2010/12/26 09:38:42 franciscom Exp $
 
 Purpose: smarty template - create Test Plan
 Revisions:
+20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 20101012 - franciscom - BUGID 3892: CF Types validation
 20090513 - franciscom - added is_public
@@ -18,7 +19,7 @@ Bug confirmed on IE
           s="warning,warning_empty_tp_name,testplan_title_edit,public,
              testplan_th_name,testplan_th_notes,testplan_question_create_tp_from,
              opt_no,testplan_th_active,btn_testplan_create,btn_upd,cancel,
-             show_event_history,testplan_txt_notes"}
+             show_event_history,testplan_txt_notes,warning_required_cf"}
 
 
 
@@ -28,6 +29,7 @@ Bug confirmed on IE
 // BUGID 3943: Escape all messages (string)
 var alert_box_title = "{$labels.warning|escape:'javascript'}";
 var warning_empty_tp_name = "{$labels.warning_empty_tp_name|escape:'javascript'}";
+var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
 function validateForm(f)
 {
@@ -43,6 +45,15 @@ function validateForm(f)
 	if (cf_designTime)
  	{
  		var cfields_container = cf_designTime.getElementsByTagName('input');
+ 		
+    /* BUGID 4088: Required parameter for custom fields */
+ 	 	var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+		if(!checkRequiredCF.status_ok)
+	  {
+	    alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
+	    return false;
+		}
+ 		
  		var cfieldsChecks = validateCustomFields(cfields_container);
 		if(!cfieldsChecks.status_ok)
 	  {

@@ -1,8 +1,9 @@
 {*
 TestLink Open Source Project - http://testlink.sourceforge.net/
-$Id: reqEdit.tpl,v 1.39 2010/12/11 11:21:13 franciscom Exp $
+$Id: reqEdit.tpl,v 1.40 2010/12/26 09:35:23 franciscom Exp $
 Purpose: smarty template - create / edit a req  
 internal revision
+20101226 - franciscom - BUGID 4088: Required parameter for custom fields
 20101211 - franciscom - BUGID 4056: Requirement Revisioning
 20101130 - Julian - BUGID 4063: "Save" and "Cancel" Button at the top of the page
 20101124 - Julian - BUGID 4049: Ajax login on timeout for requirements to avoid data loss
@@ -23,7 +24,7 @@ internal revision
           s='show_event_history,btn_save,cancel,status,scope,warning,req_doc_id,
              title,warning_expected_coverage,type,warning_expected_coverage_range,
              warning_empty_reqdoc_id,expected_coverage,warning_empty_req_title,
-             insert_last_req_doc_id,suggest_create_revision,revision_log_title,
+             insert_last_req_doc_id,suggest_create_revision,revision_log_title,warning_required_cf,
              please_add_revision_log,suggest_create_revision_html,warning_suggest_create_revision'}
              
 {assign var="cfg_section" value=$smarty.template|basename|replace:".tpl":""}
@@ -45,6 +46,7 @@ internal revision
   // var confirm_title = "{$labels.warning|escape:'javascript'}";
   var confirm_title = "{$labels.warning_suggest_create_revision|escape:'javascript'}";
   var confirm_text = "{$labels.suggest_create_revision_html}";
+  var warning_required_cf = "{$labels.warning_required_cf|escape:'javascript'}";
 
   // To manage hide/show expected coverage logic, depending of req type
   var js_expected_coverage_cfg = new Array();
@@ -114,6 +116,15 @@ internal revision
 	  if (cf_designTime)
  	  {
  	  	var cfields_container = cf_designTime.getElementsByTagName('input');
+ 	
+ 	    /* BUGID 4088: Required parameter for custom fields */
+ 	 		var checkRequiredCF = checkRequiredCustomFields(cfields_container);
+		  if(!checkRequiredCF.status_ok)
+	    {
+	      alert_message(alert_box_title,warning_required_cf.replace(/%s/, checkRequiredCF.cfield_label));
+	      return false;
+		  }
+ 	
  	  	var cfieldsChecks = validateCustomFields(cfields_container);
 	  	if(!cfieldsChecks.status_ok)
 	    {

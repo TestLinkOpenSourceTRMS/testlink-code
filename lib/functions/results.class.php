@@ -6,7 +6,7 @@
  * @package 	TestLink
  * @author 		Kevin Levy, franciscom
  * @copyright 	2004-2009, TestLink community 
- * @version    	CVS: $Id: results.class.php,v 1.165 2010/12/25 10:15:45 franciscom Exp $
+ * @version    	CVS: $Id: results.class.php,v 1.166 2010/12/27 08:15:01 amkhullar Exp $
  * @link 		http://www.teamst.org/index.php
  * @uses		config.inc.php 
  * @uses		common.php 
@@ -909,7 +909,7 @@ class results extends tlObjectWithDB
 		$sql = "/* $debugMsg */ ";
 		$sql .= " SELECT user_id FROM {$this->tables['user_assignments']} " .
 		        " user_assignments WHERE feature_id = "  . $feature_id ;
-		$owner_row =  $this->db->fetchFirstRow($sql,'testcase_id', 1);
+		$owner_row =  $this->db->fetchFirstRow($sql);
 		$owner_id = $owner_row['user_id'] == '' ? -1 : $owner_row['user_id'];
 		return $owner_id;
 	}	// end function

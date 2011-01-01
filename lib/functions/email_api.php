@@ -1,7 +1,9 @@
 <?php
+/* vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
+ *
  *
  * Email API (adapted from third party code)
  *
@@ -9,8 +11,12 @@
  * @author 		franciscom
  * @author 		2002 - 2004 Mantis Team (the code is based on mantis BT project code)
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: email_api.php,v 1.12 2010/05/02 17:11:36 franciscom Exp $
+ * @version    	CVS: $Id: email_api.php,v 1.13 2011/01/01 17:31:24 franciscom Exp $
  * @link 		http://www.teamst.org/
+ *
+ *
+ * @internal revision
+ * 20110101 - franciscom - refactoring to use last PHPMAILER version
  *
  */
 
@@ -75,29 +81,41 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 	# Select the method to send mail
 	switch ( config_get( 'phpMailer_method' ) ) {
-		case 0: $mail->IsMail();
+		case PHPMAILER_METHOD_MAIL: $mail->IsMail();
+	break;
+
+		case PHPMAILER_METHOD_SENDMAIL: $mail->IsSendmail();
 				break;
 
-		case 1: $mail->IsSendmail();
-				break;
+		case PHPMAILER_METHOD_SMTP: $mail->IsSMTP();
+			# SMTP collection is always kept alive
+			#
+			$mail->SMTPKeepAlive = true;
 
-		case 2: $mail->IsSMTP();
-				{
-					# SMTP collection is always kept alive
-					#
-					$mail->SMTPKeepAlive = true;
-					# @@@ yarick123: It is said in phpMailer comments, that phpMailer::smtp has private access.
-					# but there is no common method to reset PHPMailer object, so
-					# I see the smallest evel - to initialize only one 'private'
-					# field phpMailer::smtp in order to reuse smtp connection.
+			# Copied from last mantis version
+			if ( !is_blank( config_get( 'smtp_username' ) ) ) {
+				# Use SMTP Authentication
+				$mail->SMTPAuth = true;
+				$mail->Username = config_get( 'smtp_username' );
+				$mail->Password = config_get( 'smtp_password' );
+			}
 
-					if( is_null( $g_phpMailer_smtp ) )  {
-						register_shutdown_function( 'email_smtp_close' );
-					} else {
-						$mail->smtp = $g_phpMailer_smtp;
-					}
-				}
-				break;
+			if ( !is_blank( config_get( 'smtp_connection_mode' ) ) ) {
+				$mail->SMTPSecure = config_get( 'smtp_connection_mode' );
+			}
+
+			$mail->Port = config_get( 'smtp_port' );
+
+
+			if( is_null( $g_phpMailer_smtp ) )  
+			{
+				register_shutdown_function( 'email_smtp_close' );
+			} 
+			else 
+			{
+				$mail->smtp = $g_phpMailer_smtp;
+			}
+		break;
 	}
 	$mail->IsHTML($htmlFormat);    # set email format to plain text
 	$mail->WordWrap = 80;

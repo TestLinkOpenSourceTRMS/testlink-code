@@ -11,7 +11,7 @@
  * @author 		franciscom
  * @author 		2002 - 2004 Mantis Team (the code is based on mantis BT project code)
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: email_api.php,v 1.13 2011/01/01 17:31:24 franciscom Exp $
+ * @version    	CVS: $Id: email_api.php,v 1.14 2011/01/02 10:43:29 franciscom Exp $
  * @link 		http://www.teamst.org/
  *
  *
@@ -130,12 +130,6 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 	}
 	$mail->Sender   = config_get( 'return_path_email' );
 	$mail->FromName = '';
-
-	if ( !is_blank( config_get( 'smtp_username' ) ) ) {     # Use SMTP Authentication
-		$mail->SMTPAuth = true;
-		$mail->Username = config_get( 'smtp_username' );
-		$mail->Password = config_get( 'smtp_password' );
-	}
 
 	$t_debug_to = '';
 	# add to the Recipient list

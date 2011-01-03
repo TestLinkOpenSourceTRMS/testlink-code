@@ -1,7 +1,9 @@
 <?php
+/* vim: tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
 /** 
  * TestLink Open Source Project - http://testlink.sourceforge.net/
  * This script is distributed under the GNU General Public License 2 or later.
+ *
  *
  * Email API (adapted from third party code)
  *
@@ -9,8 +11,14 @@
  * @author 		franciscom
  * @author 		2002 - 2004 Mantis Team (the code is based on mantis BT project code)
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: email_api.php,v 1.12 2010/05/02 17:11:36 franciscom Exp $
+ * @version    	CVS: $Id: email_api.php,v 1.12.6.1 2011/01/03 21:05:27 franciscom Exp $
  * @link 		http://www.teamst.org/
+ *
+ *
+ * @internal revision
+ * 20110102 - franciscom - found some pieces of code that need to be removed in order
+ *						   to make refactoring work OK	
+ * 20110101 - franciscom - refactoring to use last PHPMAILER version
  *
  */
 
@@ -25,7 +33,7 @@ require_once( 'string_api.php');
 
 
 /** @var mixed reusable object of class SMTP */
-$g_phpMailer_smtp = null;
+$g_phpMailer = null;
 
 
 /** 
@@ -41,7 +49,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
                      $p_exit_on_error = false, $htmlFormat = false ) 
 {
 
-	global $g_phpMailer_smtp;
+	global $g_phpMailer;
 	$op = new stdClass();
 	$op->status_ok = true;
  	$op->msg = 'ok';
@@ -52,7 +60,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 	{
 		$op->status_ok=false;
 		$op->msg=lang_get('stmp_host_unconfigured');
-		return $op;
+		return $op;  // >>>---->
 	}
 
 	$t_recipient = trim( $p_recipient );
@@ -74,30 +82,44 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
   	$mail->SetLanguage( 'en', PHPMAILER_PATH . 'language' . DIRECTORY_SEPARATOR );
 
 	# Select the method to send mail
-	switch ( config_get( 'phpMailer_method' ) ) {
-		case 0: $mail->IsMail();
+	switch ( config_get( 'phpMailer_method' ) ) 
+	{
+		case PHPMAILER_METHOD_MAIL: $mail->IsMail();
+		break;
+
+		case PHPMAILER_METHOD_SENDMAIL: $mail->IsSendmail();
 				break;
 
-		case 1: $mail->IsSendmail();
-				break;
+		case PHPMAILER_METHOD_SMTP: $mail->IsSMTP();
+			# SMTP collection is always kept alive
+			$mail->SMTPKeepAlive = true;
 
-		case 2: $mail->IsSMTP();
-				{
-					# SMTP collection is always kept alive
-					#
-					$mail->SMTPKeepAlive = true;
-					# @@@ yarick123: It is said in phpMailer comments, that phpMailer::smtp has private access.
-					# but there is no common method to reset PHPMailer object, so
-					# I see the smallest evel - to initialize only one 'private'
-					# field phpMailer::smtp in order to reuse smtp connection.
+			# Copied from last mantis version
+			if ( !is_blank( config_get( 'smtp_username' ) ) ) {
+				# Use SMTP Authentication
+				$mail->SMTPAuth = true;
+				$mail->Username = config_get( 'smtp_username' );
+				$mail->Password = config_get( 'smtp_password' );
+			}
 
-					if( is_null( $g_phpMailer_smtp ) )  {
-						register_shutdown_function( 'email_smtp_close' );
-					} else {
-						$mail->smtp = $g_phpMailer_smtp;
-					}
-				}
-				break;
+			if ( !is_blank( config_get( 'smtp_connection_mode' ) ) ) {
+				$mail->SMTPSecure = config_get( 'smtp_connection_mode' );
+			}
+
+			$mail->Port = config_get( 'smtp_port' );
+
+
+			// is not a lot clear why this is useful (franciscom)
+			// need to use sometime to understand .
+			if( is_null( $g_phpMailer ) )  
+			{
+				register_shutdown_function( 'email_smtp_close' );
+			} 
+			else 
+			{
+				$mail = $g_phpMailer;
+			}
+		break;
 	}
 	$mail->IsHTML($htmlFormat);    # set email format to plain text
 	$mail->WordWrap = 80;
@@ -112,12 +134,6 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 	}
 	$mail->Sender   = config_get( 'return_path_email' );
 	$mail->FromName = '';
-
-	if ( !is_blank( config_get( 'smtp_username' ) ) ) {     # Use SMTP Authentication
-		$mail->SMTPAuth = true;
-		$mail->Username = config_get( 'smtp_username' );
-		$mail->Password = config_get( 'smtp_password' );
-	}
 
 	$t_debug_to = '';
 	# add to the Recipient list
@@ -139,6 +155,7 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 
 	$mail->Subject = $t_subject;
 	$mail->Body    = make_lf_crlf( "\n".$t_message );
+
 	if ( !$mail->Send() ) {
 
 		if ( $p_exit_on_error )  {
@@ -154,30 +171,26 @@ function email_send( $p_from, $p_recipient, $p_subject, $p_message, $p_cc='',
 		}
 	}
 
-	if ( !is_null( $mail->smtp ) )  {
-		# @@@ yarick123: It is said in phpMailer comments, that phpMailer::smtp has private access.
-		# but there is no common method to reset PHPMailer object, so
-		# I see the smallest evel - to initialize only one 'private'
-		# field phpMailer::smtp in order to reuse smtp connection.
-		$g_phpMailer_smtp = $mail->smtp;
-	}
-
 	return $op;
 }
 
 
 
-# --------------------
-# closes opened kept alive SMTP connection (if it was opened)
-function email_smtp_close()  {
-	global $g_phpMailer_smtp;
+/**
+ * closes opened kept alive SMTP connection (if it was opened)
+ * 
+ * @param string 
+ * @return null
+ */
+function email_smtp_close() {
+	global $g_phpMailer;
 
-	if ( !is_null( $g_phpMailer_smtp ) )  {
-		if ( $g_phpMailer_smtp->Connected() )  {
-			$g_phpMailer_smtp->Quit();
-			$g_phpMailer_smtp->Close();
+	if( !is_null( $g_phpMailer ) ) {
+		if( $g_phpMailer->smtp->Connected() ) {
+			$g_phpMailer->smtp->Quit();
+			$g_phpMailer->smtp->Close();
 		}
-		$g_phpMailer_smtp = null;
+		$g_phpMailer = null;
 	}
 }
 

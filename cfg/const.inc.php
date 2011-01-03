@@ -9,7 +9,7 @@
  * @package 	TestLink
  * @author 		Martin Havlat
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: const.inc.php,v 1.167.2.3 2010/12/18 10:56:00 franciscom Exp $
+ * @version    	CVS: $Id: const.inc.php,v 1.167.2.4 2011/01/03 21:01:53 franciscom Exp $
  * @see 		config.inc.php
  *
  * @internal 
@@ -45,6 +45,11 @@ define('TL_LOCALE_PATH', TL_ABS_PATH . 'locale/');
 
 // --------------------------------------------------------------------------------------
 /* [GENERAL MAGIC NUMBERS] */
+
+/** PHPMAILER */
+define('PHPMAILER_METHOD_MAIL', 0);
+define('PHPMAILER_METHOD_SENDMAIL', 1);
+define('PHPMAILER_METHOD_SMTP', 2);
 
 /** Descriptive constant names (actually true/false) */
 define('ENABLED', 	1 );

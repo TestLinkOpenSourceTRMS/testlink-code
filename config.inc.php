@@ -18,10 +18,11 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.333.2.5 2010/12/26 13:42:36 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.333.2.6 2011/01/03 21:00:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
+ *	20110103 - franciscom - BUGID 4131: PHPMAILER - upgrade config options to use SSL or TLS - allows use gmail
  *	20101212 - franciscom - req_cfg->log_message_len
  *  20101118 - asimon - BUGID 4031: added $tlCfg->req_cfg->copy_req_scope_to_tc_summary
  *  20101109 - asimon - added $tlCfg->custom_fields->show_custom_fields_without_value
@@ -319,13 +320,32 @@ $g_return_path_email  = '[return_path_email_not_configured]';
  **/
 $g_mail_priority = 5;
 
-# Taken from mantis for phpmailer config
-define ("SMTP_SEND",2);
-$g_phpMailer_method = SMTP_SEND;
+/**
+ * Taken from mantis for phpmailer config
+ * select the method to mail by:
+ * PHPMAILER_METHOD_MAIL - mail()
+ * PHPMAILER_METHOD_SENDMAIL - sendmail
+ * PHPMAILER_METHOD_SMTP - SMTP
+ */
+$g_phpMailer_method = PHPMAILER_METHOD_SMTP;
 
 /** Configure only if SMTP server requires authentication */
 $g_smtp_username    = '';  # user
 $g_smtp_password    = '';  # password
+
+/**
+ * This control the connection mode to SMTP server. 
+ * Can be '', 'ssl','tls'
+ * @global string $g_smtp_connection_mode
+ */
+$g_smtp_connection_mode = '';
+
+/**
+ * The smtp port to use.  The typical SMTP ports are 25 and 587.  The port to use
+ * will depend on the SMTP server configuration and hence others may be used.
+ * @global int $g_smtp_port
+ */
+$g_smtp_port = 25;                        
 
 
 // ----------------------------------------------------------------------------

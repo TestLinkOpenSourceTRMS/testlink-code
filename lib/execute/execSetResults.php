@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.172 $
- * @modified $Date: 2010/11/06 18:46:33 $ $Author: amkhullar $
+ * @version $Revision: 1.173 $
+ * @modified $Date: 2011/01/04 10:42:34 $ $Author: asimon83 $
  *
  * rev:
+ *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
  *  20100927 - asimon - avoid warning in event log
  *	20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
  *							added $gui->tcversionSet
@@ -172,7 +173,9 @@ if(is_null($args->filter_status) || in_array($cfg->tc_status['not_run'],$args->f
 }
 
 // Added platform_id filter
-$filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
+// BUGID 3643 - don't apply filters further down below, do the filtering already here
+//$filters = array('tcase_id' => $args->tc_id,  'keyword_id' => $args->keyword_id,
+$filters = array('tcase_id' => $args->testcases_to_show,  'keyword_id' => $args->keyword_id,
                  'assigned_to' => $args->filter_assigned_to, 'exec_status' => $args->filter_status,
                  'build_id' => $args->build_id, 'cf_hash' => $args->cf_selected,
                  'platform_id' => $args->platform_id);
@@ -313,18 +316,19 @@ if ($userid_array)
 }
 smarty_assign_tsuite_info($smarty,$_REQUEST,$db,$tree_mgr,$tcase_id,$args->tproject_id);
 
+// BUGID 3643 - don't apply filters here
 // BUGID 2455, BUGID 3026
 // BUGID 3516
 // remove testcases which shall not be displayed because they were filtered out
-if (!is_null($args->testcases_to_show) && $args->level == 'testsuite') {
-	foreach($gui->map_last_exec as $key => $tc) {
-		if (!in_array($tc['testcase_id'], $args->testcases_to_show)) {
-			unset($gui->map_last_exec[$key]); // tc shall not be displayed
-		}
-	}
-	// fix indexes for smarty
-	$gui->map_last_exec = array_values($gui->map_last_exec);
-}
+//if (!is_null($args->testcases_to_show) && $args->level == 'testsuite') {
+//	foreach($gui->map_last_exec as $key => $tc) {
+//		if (!in_array($tc['testcase_id'], $args->testcases_to_show)) {
+//			unset($gui->map_last_exec[$key]); // tc shall not be displayed
+//		}
+//	}
+//	// fix indexes for smarty
+//	$gui->map_last_exec = array_values($gui->map_last_exec);
+//}
 
 // $gui->can_use_bulk_op=$args->level == 'testsuite' && (!is_null($gui->map_last_exec) && count($gui->map_last_exec) > 1) ? 1 : 0;
 $gui->can_use_bulk_op = ($args->level == 'testsuite' && count($gui->map_last_exec) > 1) ? 1 : 0;

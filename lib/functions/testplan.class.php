@@ -9,11 +9,12 @@
  * @package 	TestLink
  * @author 		franciscom
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testplan.class.php,v 1.235.2.7 2010/12/21 12:01:02 amkhullar Exp $
+ * @version    	CVS: $Id: testplan.class.php,v 1.235.2.8 2011/01/04 14:14:55 asimon83 Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
  * @internal Revisions:
+ *  20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
  *  20101221 - amitkhullar - BUGID 4115 Custom Field Filtering Issue 
  *  20101215 - asimon - BUGID 4023: correct filtering also with platforms
  *  20101202 - asimon - fixed filtering issues when filtering for multiple statuses
@@ -1518,6 +1519,7 @@ class testplan extends tlObjectWithAttachments
  	 Note: test urgency is set to default in the new Test plan (not copied)
  	 
  	 @internal revisions
+ 	 20110104 - asimon - BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
  	 20101114 - franciscom - BUGID 4017: Create plan as copy - Priorities are ALWAYS COPIED
 	*/
 	private function copy_linked_tcversions($id,$new_tplan_id,$user_id=-1, $options=null,$mappings=null, $build_id_mapping)
@@ -1599,10 +1601,11 @@ class testplan extends tlObjectWithAttachments
 				$sql .= " ) " . $sql_values . " ) ";  
 					   
 				// BUGID 3846
-				if (!in_array($tcversion_id, $already_linked_versions)) {
+				// BUGID 4118: Copy Test plan feature is not copying test cases for all platforms
+				if (!in_array($tcversion_id, $already_linked_versions[$platform_id])) {
 					$this->db->exec_query($sql);
 					$new_feature_id = $this->db->insert_id($this->tables['testplan_tcversions']);
-					$already_linked_versions[] = $tcversion_id;
+					$already_linked_versions[$platform_id][] = $tcversion_id;
 				}
 				
 				if($my['options']['copy_assigned_to'] && $elem['tester'] > 0)

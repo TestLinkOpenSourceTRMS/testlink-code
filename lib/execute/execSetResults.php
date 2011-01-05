@@ -4,10 +4,11 @@
  *
  * Filename $RCSfile: execSetResults.php,v $
  *
- * @version $Revision: 1.172.2.1 $
- * @modified $Date: 2011/01/04 10:42:38 $ $Author: asimon83 $
+ * @version $Revision: 1.172.2.2 $
+ * @modified $Date: 2011/01/05 12:42:06 $ $Author: asimon83 $
  *
  * rev:
+ *  20110105 - asimon - BUGID 3878: "Save and move to next" does not respect filter settings
  *  20110104 - aismon - BUGID 3643: apply filters earlier in script instead of loading unnecessary data
  *  20100927 - asimon - avoid warning in event log
  *	20100926 - franciscom - BUGID 3421: Test Case Execution feature - Add Export All test Case in TEST SUITE button
@@ -221,6 +222,12 @@ if(!is_null($linked_tcversions))
         if ($args->save_and_next) 
         {
 			$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$tcversion_id,$args->platform_id);
+			
+			// BUGID 3878
+			while (!is_null($nextItem) && !in_array($nextItem['tcase_id'], $args->testcases_to_show)) {
+				$nextItem = $tplan_mgr->getTestCaseNextSibling($args->tplan_id,$nextItem['tcversion_id'],$args->platform_id);
+			}
+			
 			if( !is_null($nextItem) )
 			{
 				$tcase_id = $nextItem['tcase_id'];

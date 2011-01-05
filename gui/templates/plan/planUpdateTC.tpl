@@ -1,6 +1,6 @@
 {* 
 TestLink Open Source Project - http://testlink.sourceforge.net/ 
-$Id: planUpdateTC.tpl,v 1.16 2010/11/13 09:58:50 franciscom Exp $
+$Id: planUpdateTC.tpl,v 1.17 2011/01/05 19:32:06 franciscom Exp $
 
 Author: franciscom
 
@@ -8,6 +8,7 @@ Purpose: generate a list of Test Cases linked to Test Plan
          that have a newer available version.
          
 rev:
+		20110105 - franciscom - BUGID 4135: Smarty 3.0 compatibility
     20101113 - franciscom - BUGID 3410: Smarty 3.0 compatibility
 	  20100724 - asimon - added closing ">" for "<td class="clickable_icon">"
     20091212 - franciscom - BUGID 2652 - contribution refactored
@@ -79,7 +80,7 @@ function validateForm(f)
   	{foreach from=$gui->items item=ts}
   	  {assign var="item_number" value=$item_number+1}
   	  {assign var="ts_id" value=$ts.testsuite.id}
-  	  {assign var="div_id" value=div_$ts_id}
+  	  {assign var="div_id" value="div_$ts_id"}
   	
   	  <div id="{$div_id}"  style="margin:0px 0px 0px {$ts.level}0px;">
   	    <h3 class="testlink">
@@ -96,7 +97,7 @@ function validateForm(f)
        <input type="hidden" name="update_value_{$ts_id}"  id="update_value_{$ts_id}"  value="0" />
               
        {* ------------------------------------------------------------------------- *}      
-       {if $ts.testcase_qty gt 0 || $ts.linked_testcase_qty gt 0 }
+       {if $ts.testcase_qty gt 0 || $ts.linked_testcase_qty gt 0}
           
           <table border="0" cellspacing="0" cellpadding="2" style="font-size:small;" width="100%">
             <tr style="background-color:blue;font-weight:bold;color:white">
@@ -119,11 +120,11 @@ function validateForm(f)
               {assign var='is_linked' value=0}
               {assign var="draw_update_inputs" value=0}
               
-              {if $tcase.linked_version_id != 0 }
+              {if $tcase.linked_version_id != 0}
                  {assign var='is_linked' value=1}
               {/if}
               
-              {if $is_linked }
+              {if $is_linked}
                  {if $tcase.tcversions_active_status[$tcase.linked_version_id] == 1}             
                    {assign var='is_active' value=1}
                  {/if}
@@ -139,11 +140,11 @@ function validateForm(f)
               {/if}    
               {* ------------------------------------------------ *}
   
-              {if $is_active || $is_linked }  
-     				    {if $is_linked }
+              {if $is_active || $is_linked}  
+     				    {if $is_linked}
       			    <tr class="testlink">
       			      <td width="20">
-        				    {if $draw_update_inputs }
+        				    {if $draw_update_inputs}
         				      <input type='checkbox' 
         				             name='{$update_cb}[{$tcase.id}]' 
         				             id='{$update_cb}{$tcase.id}' 
@@ -167,7 +168,7 @@ function validateForm(f)
                   </td>
   
                   <td>
-                    {if $draw_update_inputs } 
+                    {if $draw_update_inputs} 
                       <select name="new_tcversion_for_tcid[{$tcase.id}]">
            				       {html_options options=$tcase.tcversions disabled=disabled}
            				    </select>
@@ -175,7 +176,7 @@ function validateForm(f)
                   </td>
          
                   {* ------------------------------------------------------------------------- *}      
-                  {if $ts.linked_testcase_qty gt 0 }
+                  {if $ts.linked_testcase_qty gt 0}
             				<td>
                        {if $tcase.executed eq 'yes'}
                               &nbsp;&nbsp;&nbsp;{$labels.has_been_executed}

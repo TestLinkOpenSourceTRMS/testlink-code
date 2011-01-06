@@ -2,7 +2,7 @@
 /** 
  * 	TestLink Open Source Project - http://testlink.sourceforge.net/
  * 
- * 	@version 	$Id: archiveData.php,v 1.78.2.1 2010/12/01 14:37:04 asimon83 Exp $
+ * 	@version 	$Id: archiveData.php,v 1.78.2.2 2011/01/06 13:41:07 franciscom Exp $
  * 	@author 	Martin Havlat
  * 
  * 	Allows you to show test suites, test cases.
@@ -30,10 +30,15 @@ testlinkInitPage($db);
 
 $templateCfg = templateConfiguration();
 $viewerArgs = null;
-$args = init_args($viewerArgs);
+$cfg = array('testcase' => config_get('testcase_cfg'),                  
+			 'testcase_reorder_by' => config_get('testcase_reorder_by'),
+			 'spec' => config_get('spec_cfg'));                         
+
+$args = init_args($viewerArgs,$cfg);
 $smarty = new TLSmarty();
 $gui = new stdClass();
 $gui->page_title = lang_get('container_title_' . $args->feature);
+
 
 switch($args->feature)
 {
@@ -43,7 +48,7 @@ switch($args->feature)
 		$gui->attachments = getAttachmentInfosFrom($item_mgr,$args->id);
 		$gui->id = $args->id;
 		
-		$lblkey = config_get('testcase_reorder_by') == 'NAME' ? '_alpha' : '_externalid';
+		$lblkey = $cfg['testcase_reorder_by'] == 'NAME' ? '_alpha' : '_externalid';
 		$gui->btn_reorder_testcases = lang_get('btn_reorder_testcases' . $lblkey);
 
 		if($args->feature == 'testproject')
@@ -52,7 +57,8 @@ switch($args->feature)
 		}
 		else
 		{
-			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,array('show_mode' => $args->show_mode));
+			$item_mgr->show($smarty,$gui,$templateCfg->template_dir,$args->id,
+							array('show_mode' => $args->show_mode));
         }
         
 		break;
@@ -68,7 +74,7 @@ switch($args->feature)
 		$gui->loadOnCancelURL = '';
 		$gui->attachments = null;
 		$gui->direct_link = null;
-		$gui->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
+		$gui->steps_results_layout = $cfg['spec']->steps_results_layout;
 		// 20101008 - asimon - BUGID 3311
 		$gui->bodyOnUnload = 'storeWindowSize(\'TCEditPopup\')';
     	
@@ -113,7 +119,7 @@ switch($args->feature)
  * 
  *
  */
-function init_args(&$viewerCfg)
+function init_args(&$viewerCfg,$cfgObj)
 {
 	// BUGID 4066 - take care of proper escaping when magic_quotes_gpc is enabled
 	$_REQUEST=strings_stripSlashes($_REQUEST);
@@ -169,24 +175,12 @@ function init_args(&$viewerCfg)
      
         case 'testcase':
 			$args->id = is_null($args->id) ? 0 : $args->id;
-			$spec_cfg = config_get('spec_cfg');
 			$viewerCfg = array('action' => '', 'msg_result' => '','user_feedback' => '');
 			$viewerCfg['disable_edit'] = 0;
-
-			// need to understand if using this logic is ok
-			// Why I'm ignoring $args->setting_refresh_tree_on_action ?
-			// Seems here I have to set refresh always to NO!!!
-			//
-			// $viewerCfg['refresh_tree'] = $spec_cfg->automatic_tree_refresh ? "yes" : "no";
-			// if(isset($_SESSION['setting_refresh_tree_on_action']))
-			// {
-			// 	$viewerCfg['refresh_tree'] = $_SESSION['setting_refresh_tree_on_action'];
-            // }
             $viewerCfg['refreshTree'] = 0;
 			break;
     }
-    $cfg = config_get('testcase_cfg');
-    if (strpos($args->targetTestCase,$cfg->glue_character) === false)
+    if (strpos($args->targetTestCase,$cfgObj['testcase']->glue_character) === false)
     {
     	$args->targetTestCase = $args->tcasePrefix . $args->targetTestCase;
  	}

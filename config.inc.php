@@ -18,7 +18,7 @@
  *
  * @package 	TestLink
  * @copyright 	2005-2009, TestLink community
- * @version    	CVS: $Id: config.inc.php,v 1.333.2.6 2011/01/03 21:00:14 franciscom Exp $
+ * @version    	CVS: $Id: config.inc.php,v 1.333.2.7 2011/01/06 14:44:05 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  * @internal Revisions:
@@ -752,11 +752,9 @@ $tlCfg->exec_cfg->expand_collapse->testsuite_details = LAST_USER_CHOICE;
 
 // ----------------------------------------------------------------------------
 /* [Test Specification] */
-// $g_spec_cfg = new stdClass();
 
 // 'horizontal' ->  step and results on the same row
 // 'vertical'   ->  steps on one row, results in the row bellow
-// $g_spec_cfg->steps_results_layout = 'vertical';
 $tlCfg->spec_cfg->steps_results_layout = 'horizontal';
 
 

@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		TestLink community
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: tcEdit.php,v 1.164 2010/09/10 19:21:48 franciscom Exp $
+ * @version    	CVS: $Id: tcEdit.php,v 1.164.2.1 2011/01/06 14:03:02 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -553,7 +553,7 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
     $guiObj->attachments = null;
 	$guiObj->parent_info = null;
 	$guiObj->user_feedback = '';
-	$guiObj->steps_results_layout = config_get('spec_cfg')->steps_results_layout;
+	$guiObj->steps_results_layout = $cfgObj->spec->steps_results_layout;
 	
 	$guiObj->loadOnCancelURL = $_SESSION['basehref'] . 
 	                           "/lib/testcases/archiveData.php?edit=testcase&id=" . $argsObj->tcase_id .
@@ -567,7 +567,8 @@ function initializeGui(&$dbHandler,&$argsObj,$cfgObj,&$tcaseMgr)
 		$guiObj->parent_info['description'] = lang_get($node_descr[$pnode_info['node_type_id']]);
 	}
 	
-	$guiObj->direct_link = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$argsObj->tcase_id,$argsObj->testproject_id);
+	$guiObj->direct_link = $tcaseMgr->buildDirectWebLink($_SESSION['basehref'],$argsObj->tcase_id,
+														 $argsObj->testproject_id);
 
 	
 	return $guiObj;

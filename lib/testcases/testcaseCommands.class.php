@@ -8,7 +8,7 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi - francisco.mancardi@gmail.com
  * @copyright 	2007-2009, TestLink community 
- * @version    	CVS: $Id: testcaseCommands.class.php,v 1.64.2.1 2010/12/06 08:21:00 asimon83 Exp $
+ * @version    	CVS: $Id: testcaseCommands.class.php,v 1.64.2.2 2011/01/06 14:04:14 franciscom Exp $
  * @link 		http://www.teamst.org/index.php
  *
  *
@@ -293,7 +293,7 @@ class testcaseCommands
     	$guiObj = $this->initGuiBean($argsObj);
     	
     	// BUGID 4067
-   	    $guiObj->refreshTree= $argsObj->refreshTree && $ret['status_ok'] ? 1 : 0;
+   	    $guiObj->refreshTree= $argsObj->refreshTree ? 1 : 0;
         
    	    $guiObj->has_been_executed = $argsObj->has_been_executed;
 		// BUGID 3610

@@ -5,14 +5,16 @@
  *
  * Filename $RCSfile: requirement_mgr.class.php,v $
  *
- * @version $Revision: 1.121 $
- * @modified $Date: 2010/12/18 11:39:16 $ by $Author: franciscom $
+ * @version $Revision: 1.122 $
+ * @modified $Date: 2011/01/06 14:12:09 $ by $Author: mx-julian $
  * @author Francisco Mancardi
  *
  * Manager for requirements.
  * Requirements are children of a requirement specification (requirements container)
  *
  * rev:
+ *	20110106 - Julian - update() - set author,modifier,creation_ts,modifier_ts depending on creation of new revision
+ *                      get_history() - added last_editor to output
  *	20101218 - franciscom - BUGID 4100 createFromMap() - missing update of Req Title when creating new version
  *  20101211 - franciscom - get_history() fixed code to check for NULL dates
  *	20101126 - franciscom - BUGID get_last_version_info() -> get_last_child_info();
@@ -457,13 +459,20 @@ function update($id,$version_id,$reqdoc_id,$title, $scope, $user_id, $status, $t
 	  	         " SET req_doc_id='" . $this->db->prepare_string($reqdoc_id) . "'" .
 	  	         " WHERE id={$id}";
 	  	
-	  	$sql[] = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " .
-	  			 " SET scope='" . $this->db->prepare_string($scope) . "', " .
-	  	         " status='" . $this->db->prepare_string($status) . "', " .
-	  	         " type='" . $this->db->prepare_string($type) . "', " .
-	  	         " modifier_id={$user_id}, modification_ts={$db_now}, " . 
-	  	         " expected_coverage={$expected_coverage} " . 
-	  	         " WHERE id={$version_id}";
+	  	$sql_temp = "/* $debugMsg */ UPDATE {$this->tables['req_versions']} " .
+	  	            " SET scope='" . $this->db->prepare_string($scope) . "', " .
+	  	            " status='" . $this->db->prepare_string($status) . "', " .
+	  	            " expected_coverage={$expected_coverage}, " . 
+	  	            " type='" . $this->db->prepare_string($type) . "', ";
+	  	
+	  	// if a new revision is created set user as author, reset modifier
+	  	if ($create_revision) {
+	  		$sql_temp .= " creation_ts = {$db_now} ,author_id = {$user_id}, modification_ts = '0000-00-00 00:00:00', modifier_id = null ";
+	  	} else {
+	  		$sql_temp .= " modifier_id={$user_id}, modification_ts={$db_now} ";
+	  	}
+	  	
+	  	$sql[] = $sql_temp . " WHERE id={$version_id}";
 
 		foreach($sql as $stm)
 		{
@@ -2625,11 +2634,17 @@ function html_table_of_custom_field_values($id,$child_id,$tproject_id=null)
 				// Postgres NULL DATE -> NULL
 				// MSSQL    NULL DATE - ???
 				$key4date = 'creation_ts';
+				$key4user = 'author_id';
 				if( ($rs[$ap]['modification_ts'] != '0000-00-00 00:00:00') && !is_null($rs[$ap]['modification_ts']) )
 				{
 					$key4date = 'modification_ts';
+					$key4user = 'modifier_id';
 				}
-  				$rs[$ap]['timestamp'] = $rs[$ap][$key4date];	
+  				$rs[$ap]['timestamp'] = $rs[$ap][$key4date];
+  				$rs[$ap]['last_editor'] = $rs[$ap][$key4user];
+  				// decode user_id for last_editor
+  				$user = tlUser::getByID($this->db,$rs[$ap]['last_editor']);
+  				$rs[$ap]['last_editor'] = $user ? $user->getDisplayName() : $labels['undefined'];
   			}
   		}
   		

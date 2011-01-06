@@ -23,11 +23,11 @@
  * @package 	TestLink
  * @author 		Francisco Mancardi, Andreas Morsing, Martin Havlat, Julian Krien
  * @copyright 	2003-2009, TestLink community 
- * @version    	CVS: $Id: strings.txt,v 1.216.2.8 2010/12/12 10:38:07 mx-julian Exp $
+ * @version    	CVS: $Id: strings.txt,v 1.216.2.9 2011/01/06 14:20:09 mx-julian Exp $
  * @link 		http://www.teamst.org/index.php
  * 
  * @internal Revisions:
- * Last Update according to en_GB string file version 1.751.2.14
+ * Last Update according to en_GB string file version 1.751.2.18
  *
  **/
 
@@ -118,6 +118,7 @@ $TLS_test_suite = "Testsuite";
 $TLS_testsuite_created = "Testsuite erstellt";
 $TLS_type = "Typ";
 $TLS_timestamp	= "Zeitstempel";
+$TLS_timestamp_lastchange = "Letzte Änderung";
 $TLS_title = "Titel";
 $TLS_warning = "Warnung!!";
 $TLS_max_size_file_msg = "Max. Dateigröße:  %s KB";
@@ -235,6 +236,8 @@ $TLS_req_status_obsolete = "Obsolet";
 
 $TLS_reserved_system_role_1 = 'Vom System reservierte Rolle 1';
 $TLS_reserved_system_role_2 = 'Vom System reservierte Rolle 2';
+$TLS_req_created_automatic_log = "Anforderung erstellt";
+$TLS_elapsed_seconds = 'Ausführungsdauer (Sekunden)';
 
 
 // ----- unsorted (TODO move) -------------------------------------
@@ -1279,6 +1282,7 @@ $TLS_adding_tc = "Hinzufügen";
 $TLS_removal_tc = "Entfernen";
 $TLS_added_on_date = "Hinzugefügt am";
 $TLS_info_added_on_date = "Datum, an dem der Testfall dem Testplan hinzugefügt wurde";
+$TLS_empty_tc_summary = "<i>Zusammenfassung des Testfalls ist leer</i>";
 
 $TLS_add_remove_selected_tc_hint = "Operation wird auf ALLE Testsuites angewendet";
 $TLS_btn_add_remove_selected_tc = "Hinzufügen / Entfernen der ausgewählten Testfälle";
@@ -3125,6 +3129,7 @@ $TLS_context = "Kontext (Anzahl Zeilen):";
 $TLS_show_all = "Zeige Alles";
 $TLS_version_short = "v";
 $TLS_version_revision = "v%s r%s";
+$TLS_empty_log_message = "<i>Änderungsprotokoll ist leer</i>";
 
 $TLS_diff_subtitle_tc = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) des Testfalls %s"; 
 $TLS_diff_subtitle_req = "Unterschiede zwischen Version %s (v%s) und Version %s (v%s) der Anforderung %s";
